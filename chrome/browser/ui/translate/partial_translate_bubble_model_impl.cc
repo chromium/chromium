@@ -179,13 +179,17 @@ void PartialTranslateBubbleModelImpl::Translate(
   request.selection_encoding = web_contents->GetEncoding();
   std::string source_language_code = GetSourceLanguageCode();
   if (source_language_code != translate::kUnknownLanguageCode) {
-    // |source_language_code| will be kUnknownLanguageCode if either a) this is
-    // the initial translation triggered from the menu or b) the user
-    // explicitly selects "Detected Language" in the language list. In such
-    // cases, |request.source_language| is left as an "empty" value.
+    // |source_language_code| will be kUnknownLanguageCode if it was initially
+    // returned by page language detection, or if the user explicitly selects
+    // "Detected Language" in the language list. In such cases,
+    // |request.source_language| is left as an "empty" value.
     request.source_language = source_language_code;
   }
   request.target_language = GetTargetLanguageCode();
+
+  // If this is the initial Partial Translate request, then the source language
+  // should be used as a hint for backend language detection.
+  request.apply_lang_hint = !initial_request_completed_;
 
   translate_request_started_time_ = base::TimeTicks::Now();
 
@@ -234,6 +238,7 @@ void PartialTranslateBubbleModelImpl::OnPartialTranslateResponse(
     SetTargetText(response.translated_text);
     SetViewState(PartialTranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE);
     error_type_ = translate::TranslateErrors::NONE;
+    initial_request_completed_ = true;
   }
 
   RecordHistogramsOnPartialTranslateComplete(status_error);

@@ -64,6 +64,7 @@ std::unique_ptr<ContextualSearchContext> PartialTranslateManager::MakeContext(
   context->SetTranslationLanguages(request.source_language.value_or(""),
                                    request.target_language,
                                    /*fluent_languages=*/"");
+  context->SetApplyLangHint(request.apply_lang_hint);
 
   return context;
 }

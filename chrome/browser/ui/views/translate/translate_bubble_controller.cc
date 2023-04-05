@@ -228,13 +228,11 @@ void TranslateBubbleController::CreatePartialTranslateBubble(
   if (partial_model_factory_callback_) {
     model = partial_model_factory_callback_.Run();
   } else {
-    // Start with kUnknownLanguageCode to make the server run language
-    // detection.
     auto translate_ui_languages_manager =
         std::make_unique<translate::TranslateUILanguagesManager>(
             ChromeTranslateClient::GetManagerFromWebContents(web_contents)
                 ->GetWeakPtr(),
-            translate::kUnknownLanguageCode, target_language);
+            source_language, target_language);
 
     Profile* profile =
         Profile::FromBrowserContext(web_contents->GetBrowserContext());

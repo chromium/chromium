@@ -36,6 +36,11 @@ struct PartialTranslateRequest {
 
   // The desired target language.
   std::string target_language;
+
+  // Whether or not |source_language| should be applied as a hint for backend
+  // language detection. Otherwise, backend translation is forced using
+  // |source_language|.
+  bool apply_lang_hint;
 };
 
 // Indicates the outcome of a Partial Translate request.

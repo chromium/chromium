@@ -96,6 +96,10 @@ class PartialTranslateBubbleModelImpl : public PartialTranslateBubbleModel {
   // performed.
   std::u16string target_text_;
 
+  // Whether or not the model has completed a successful Partial Translate
+  // request. This is always false on initialization.
+  bool initial_request_completed_ = false;
+
   // Time when the PartialTranslateManager is directed to start a translation.
   // This is used to know the response time of a Partial Translate request.
   base::TimeTicks translate_request_started_time_;

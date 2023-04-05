@@ -141,6 +141,13 @@ struct ContextualSearchContext
     return related_searches_stamp_;
   }
 
+  // Returns whether the source language of the context should be used as a hint
+  // for backend language detection.
+  bool GetApplyLangHint() const { return apply_lang_hint_; }
+  void SetApplyLangHint(bool apply_lang_hint) {
+    apply_lang_hint_ = apply_lang_hint;
+  }
+
  private:
   // Gets the reliable language of the given |contents| using CLD, or an empty
   // string if none can reliably be determined.
@@ -163,6 +170,7 @@ struct ContextualSearchContext
   bool is_exact_resolve_ = false;
   TranslationLanguages translation_languages_;
   std::string related_searches_stamp_;
+  bool apply_lang_hint_ = false;
 };
 
 #endif  // COMPONENTS_CONTEXTUAL_SEARCH_CORE_BROWSER_CONTEXTUAL_SEARCH_CONTEXT_H_

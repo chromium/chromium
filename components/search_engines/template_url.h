@@ -116,6 +116,11 @@ class TemplateURLRef {
       // indicates experiment status and server processing results so that
       // can be logged in GWS Sawmill logs for offline analysis for the
       // Related Searches MVP experiment.
+      // The |apply_lang_hint| specifies whether or not the |source_lang| should
+      // be used as a hint for backend language detection. Otherwise, backend
+      // translation is forced using |source_lang|. Note that this only supports
+      // Partial Translate and so may only be enabled for select clients on the
+      // server.
       ContextualSearchParams(int version,
                              int contextual_cards_version,
                              std::string home_country,
@@ -125,7 +130,8 @@ class TemplateURLRef {
                              std::string source_lang,
                              std::string target_lang,
                              std::string fluent_languages,
-                             std::string related_searches_stamp);
+                             std::string related_searches_stamp,
+                             bool apply_lang_hint);
       ContextualSearchParams(const ContextualSearchParams& other);
       ~ContextualSearchParams();
 
@@ -171,6 +177,9 @@ class TemplateURLRef {
       // experiment. The value is an arbitrary string that starts with a
       // schema version number.
       std::string related_searches_stamp;
+
+      // Whether hinted language detection should be used on the backend.
+      bool apply_lang_hint = false;
     };
 
     // Estimates dynamic memory usage.
