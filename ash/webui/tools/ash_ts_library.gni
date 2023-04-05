@@ -11,9 +11,19 @@ import("//tools/typescript/ts_library.gni")
 #   - Allows for the use of lit. When use_lit is set to true code can
 #     import from the "lit" or "lit/decorators" packages.
 #   - Allows for the use of lit decorators.
-#
-# In general all new ash typescript code should use this library.
 template("ash_ts_library") {
+  _ash_ts_library_allowlist = [ "//ui/file_manager/build_ts:build_ts" ]
+
+  _target_label = get_label_info(target_name, "label_no_toolchain")
+  _result = filter_exclude([ _target_label ], _ash_ts_library_allowlist)
+  _error_message =
+      "${_target_label} is not allowed to use ash_ts_library. " +
+      "Only allowlisted targets are allowed to use ash_ts_library at this " +
+      "time. Please reach out to zafzal@google.org if you think your " +
+      "target should use ash_ts_library."
+
+  assert(_result == [], _error_message)
+
   ts_library_target_name = "${target_name}__ts_library"
 
   # Intermediate directory we output our compiled TS to before transforming it
