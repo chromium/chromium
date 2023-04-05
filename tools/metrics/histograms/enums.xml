@@ -53753,6 +53753,12 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="2" label="Remote suggestions collapsed"/>
 </enum>
 
+<enum name="IOSNTPOverscrollAction">
+  <int value="0" label="Open New Tab"/>
+  <int value="1" label="Pull to Refresh"/>
+  <int value="2" label="Close Tab"/>
+</enum>
+
 <enum name="IOSOpenInDownloadResult">
   <int value="0" label="Download Succeeded"/>
   <int value="1" label="Download Canceled">

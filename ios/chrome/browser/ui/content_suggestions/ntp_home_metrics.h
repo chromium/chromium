@@ -35,6 +35,15 @@ enum class IOSContentSuggestionsActionType {
   kMaxValue = kTrendingQuery,
 };
 
+// These values are persisted to IOS.NTP.OverscrollAction histograms.
+// Entries should not be renumbered and numeric values should never be reused.
+enum class OverscrollActionType {
+  kOpenedNewTab = 0,
+  kPullToRefresh = 1,
+  kCloseTab = 2,
+  kMaxValue = kCloseTab,
+};
+
 // Metrics recorder for the action used to potentially leave the NTP.
 @interface NTPHomeMetrics : NSObject
 
@@ -50,6 +59,9 @@ enum class IOSContentSuggestionsActionType {
 // Records a user action on a ContentSuggestions module `type`.
 - (void)recordContentSuggestionsActionForType:
     (IOSContentSuggestionsActionType)type;
+
+// Records an Overscroll user action of type: `type`.
+- (void)recordOverscrollActionForType:(OverscrollActionType)type;
 
 @end
 

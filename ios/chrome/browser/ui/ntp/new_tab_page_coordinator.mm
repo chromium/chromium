@@ -258,6 +258,9 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 @property(nonatomic, strong) id<NewTabPageComponentFactoryProtocol>
     componentFactory;
 
+// Recorder for the metrics related to the NTP.
+@property(nonatomic, strong) NTPHomeMetrics* NTPMetrics;
+
 @end
 
 @implementation NewTabPageCoordinator
@@ -616,6 +619,9 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
       [componentFactory contentSuggestionsCoordinatorForBrowser:browser];
   self.feedMetricsRecorder =
       [componentFactory feedMetricsRecorderForBrowser:browser];
+  self.NTPMetrics =
+      [[NTPHomeMetrics alloc] initWithBrowserState:browser->GetBrowserState()];
+  self.NTPMetrics.webState = self.webState;
 }
 
 #pragma mark - Configurators
@@ -677,6 +683,7 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
   self.contentSuggestionsCoordinator.webState = self.webState;
   self.contentSuggestionsCoordinator.ntpDelegate = self;
   self.contentSuggestionsCoordinator.feedDelegate = self;
+  self.contentSuggestionsCoordinator.NTPMetrics = self.NTPMetrics;
   [self.contentSuggestionsCoordinator start];
 }
 
@@ -1226,6 +1233,8 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
   id<ApplicationCommands> applicationCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   [applicationCommandsHandler openURLInNewTab:[OpenNewTabCommand command]];
+  [self.NTPMetrics
+      recordOverscrollActionForType:OverscrollActionType::kOpenedNewTab];
 }
 
 - (void)overscrollActionCloseTab:(OverscrollActionsController*)controller {
@@ -1233,10 +1242,14 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
       HandlerForProtocol(self.browser->GetCommandDispatcher(),
                          BrowserCoordinatorCommands);
   [browserCoordinatorCommandsHandler closeCurrentTab];
+  [self.NTPMetrics
+      recordOverscrollActionForType:OverscrollActionType::kCloseTab];
 }
 
 - (void)overscrollActionRefresh:(OverscrollActionsController*)controller {
   [self reload];
+  [self.NTPMetrics
+      recordOverscrollActionForType:OverscrollActionType::kPullToRefresh];
 }
 
 - (BOOL)shouldAllowOverscrollActionsForOverscrollActionsController:
@@ -1656,6 +1669,7 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
   _webState = webState;
   self.NTPMediator.webState = _webState;
   self.contentSuggestionsCoordinator.webState = _webState;
+  self.NTPMetrics.webState = _webState;
 }
 
 // Called when the NTP changes visibility, either when the user navigates to

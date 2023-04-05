@@ -147,8 +147,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
     BOOL showMostRecentTabStartSurfaceTile;
 // Whether the incognito mode is available.
 @property(nonatomic, assign) BOOL incognitoAvailable;
-// Recorder for the metrics related to the NTP.
-@property(nonatomic, strong) NTPHomeMetrics* NTPMetrics;
 // Browser reference.
 @property(nonatomic, assign) Browser* browser;
 
@@ -194,8 +192,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
     _readingListModelBridge =
         std::make_unique<ReadingListModelBridge>(self, readingListModel);
     _browser = browser;
-    _NTPMetrics = [[NTPHomeMetrics alloc]
-        initWithBrowserState:_browser->GetBrowserState()];
 
     if (IsTrendingQueriesModuleEnabled()) {
       _startSuggestService = StartSuggestServiceFactory::GetForBrowserState(
@@ -257,11 +253,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   _consumer = consumer;
   self.faviconMediator.consumer = consumer;
   [self reloadAllData];
-}
-
-- (void)setWebState:(web::WebState*)webState {
-  _webState = webState;
-  self.NTPMetrics.webState = self.webState;
 }
 
 + (NSUInteger)maxSitesShown {
