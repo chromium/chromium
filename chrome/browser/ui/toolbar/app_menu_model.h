@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_TOOLBAR_APP_MENU_MODEL_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/timer/elapsed_timer.h"
@@ -24,10 +25,6 @@
 class AppMenuIconController;
 class BookmarkSubMenuModel;
 class Browser;
-
-namespace {
-class MockAppMenuModel;
-}  // namespace
 
 // Values should correspond to 'WrenchMenuAction' enum in enums.xml.
 enum AppMenuAction {
@@ -231,8 +228,6 @@ class AppMenuModel : public ui::SimpleMenuModel,
   void CreateZoomMenu();
 
  private:
-  friend class ::MockAppMenuModel;
-
   // Adds actionable global error menu items to the menu.
   // Examples: Extension permissions and sign in errors.
   // Returns a boolean indicating whether any menu items were added.
