@@ -187,28 +187,6 @@ bool LayoutBlockFlow::CanContainFirstFormattedLine() const {
          IsGridItemIncludingNG();
 }
 
-LayoutUnit LayoutBlockFlow::FirstLineBoxBaseline() const {
-  NOT_DESTROYED();
-  if (!ChildrenInline())
-    return LayoutBlock::FirstLineBoxBaseline();
-  if (const absl::optional<LayoutUnit> baseline =
-          FirstLineBoxBaselineOverride())
-    return *baseline;
-  return EmptyLineBaseline(IsHorizontalWritingMode() ? kHorizontalLine
-                                                     : kVerticalLine);
-}
-
-LayoutUnit LayoutBlockFlow::InlineBlockBaseline(
-    LineDirectionMode line_direction) const {
-  NOT_DESTROYED();
-  if (!ChildrenInline())
-    return LayoutBlock::InlineBlockBaseline(line_direction);
-  if (const absl::optional<LayoutUnit> baseline =
-          InlineBlockBaselineOverride(line_direction))
-    return *baseline;
-  return EmptyLineBaseline(line_direction);
-}
-
 void LayoutBlockFlow::WillBeDestroyed() {
   NOT_DESTROYED();
   // Make sure to destroy anonymous children first while they are still

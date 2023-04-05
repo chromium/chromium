@@ -219,8 +219,6 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
   LayoutPoint VisualPointToFlowThreadPoint(
       const LayoutPoint& visual_point) const final;
 
-  LayoutUnit InlineBlockBaseline(LineDirectionMode) const final;
-
   LayoutMultiColumnSet* ColumnSetAtBlockOffset(LayoutUnit,
                                                PageBoundaryRule) const final;
 

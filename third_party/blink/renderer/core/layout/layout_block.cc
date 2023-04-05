@@ -1147,62 +1147,6 @@ LayoutUnit LayoutBlock::LineHeight(bool first_line,
   return LayoutUnit(style.ComputedLineHeight());
 }
 
-LayoutUnit LayoutBlock::BeforeMarginInLineDirection(
-    LineDirectionMode direction) const {
-  NOT_DESTROYED();
-  // InlineFlowBox::placeBoxesInBlockDirection will flip lines in
-  // case of verticalLR mode, so we can assume verticalRL for now.
-  return direction == kHorizontalLine ? MarginTop() : MarginRight();
-}
-
-LayoutUnit LayoutBlock::BaselinePosition(
-    FontBaseline baseline_type,
-    bool first_line,
-    LineDirectionMode direction,
-    LinePositionMode line_position_mode) const {
-  NOT_DESTROYED();
-  // Inline blocks are replaced elements. Otherwise, just pass off to
-  // the base class.  If we're being queried as though we're the root line
-  // box, then the fact that we're an inline-block is irrelevant, and we behave
-  // just like a block.
-  if (IsInline() && line_position_mode == kPositionOnContainingLine) {
-    // For checkbox and radio controls, we always use the border edge instead
-    // of the margin edge.
-    // FIXME: Might be better to have a custom CSS property instead, so that if
-    //        the theme is turned off, checkboxes/radios will still have decent
-    //        baselines.
-    // FIXME: Need to patch form controls to deal with vertical lines.
-    if (StyleRef().IsCheckboxOrRadioPart())
-      return MarginTop() + Size().Height();
-
-    LayoutUnit baseline_pos = (IsWritingModeRoot() && !IsRubyRun())
-                                  ? LayoutUnit(-1)
-                                  : InlineBlockBaseline(direction);
-    if (baseline_pos != -1)
-      return BeforeMarginInLineDirection(direction) + baseline_pos;
-
-    return LayoutBox::BaselinePosition(baseline_type, first_line, direction,
-                                       line_position_mode);
-  }
-
-  // If we're not replaced, we'll only get called with
-  // PositionOfInteriorLineBoxes.
-  // Note that inline-block counts as replaced here.
-  DCHECK_EQ(line_position_mode, kPositionOfInteriorLineBoxes);
-
-  const SimpleFontData* font_data = Style(first_line)->GetFont().PrimaryFont();
-  DCHECK(font_data);
-  if (!font_data)
-    return LayoutUnit(-1);
-
-  const FontMetrics& font_metrics = font_data->GetFontMetrics();
-  return LayoutUnit((font_metrics.Ascent(baseline_type) +
-                     (LineHeight(first_line, direction, line_position_mode) -
-                      font_metrics.Height()) /
-                         2)
-                        .ToInt());
-}
-
 LayoutUnit LayoutBlock::MinLineHeightForReplacedObject(
     bool is_first_line,
     LayoutUnit replaced_height) const {
@@ -1215,45 +1159,6 @@ LayoutUnit LayoutBlock::MinLineHeightForReplacedObject(
       LineHeight(is_first_line,
                  IsHorizontalWritingMode() ? kHorizontalLine : kVerticalLine,
                  kPositionOfInteriorLineBoxes));
-}
-
-// TODO(mstensho): Figure out if all of this baseline code is needed here, or if
-// it should be moved down to LayoutBlockFlow. LayoutDeprecatedFlexibleBox and
-// LayoutGrid lack baseline calculation overrides, so the code is here just for
-// them. Just walking the block children in logical order seems rather wrong for
-// those two layout modes, though.
-
-absl::optional<LayoutUnit> LayoutBlock::FirstLineBoxBaselineOverride() const {
-  NOT_DESTROYED();
-  if (ShouldApplyLayoutContainment())
-    return LayoutUnit(-1);
-
-  // Orthogonal grid items can participate in baseline alignment along column
-  // axis.
-  if (IsWritingModeRoot() && !IsRubyRun()) {
-    return LayoutUnit(-1);
-  }
-
-  return absl::nullopt;
-}
-
-LayoutUnit LayoutBlock::FirstLineBoxBaseline() const {
-  NOT_DESTROYED();
-  DCHECK(!ChildrenInline());
-  if (const absl::optional<LayoutUnit> baseline =
-          FirstLineBoxBaselineOverride())
-    return *baseline;
-
-  for (LayoutBox* curr = FirstChildBox(); curr; curr = curr->NextSiblingBox()) {
-    if (!curr->IsFloatingOrOutOfFlowPositioned()) {
-      LayoutUnit result = curr->FirstLineBoxBaseline();
-      if (result != -1) {
-        // Translate to our coordinate space.
-        return curr->LogicalTop() + result;
-      }
-    }
-  }
-  return LayoutUnit(-1);
 }
 
 bool LayoutBlock::UseLogicalBottomMarginEdgeForInlineBlockBaseline() const {
@@ -1269,47 +1174,6 @@ bool LayoutBlock::UseLogicalBottomMarginEdgeForInlineBlockBaseline() const {
   return (!StyleRef().IsOverflowVisibleOrClip() &&
           !StyleRef().ShouldIgnoreOverflowPropertyForInlineBlockBaseline()) ||
          ShouldApplyLayoutContainment();
-}
-
-absl::optional<LayoutUnit> LayoutBlock::InlineBlockBaselineOverride(
-    LineDirectionMode line_direction) const {
-  NOT_DESTROYED();
-  if (UseLogicalBottomMarginEdgeForInlineBlockBaseline()) {
-    // We are not calling LayoutBox::baselinePosition here because the caller
-    // should add the margin-top/margin-right, not us.
-    return line_direction == kHorizontalLine ? Size().Height() + MarginBottom()
-                                             : Size().Width() + MarginLeft();
-  }
-
-  if (IsWritingModeRoot() && !IsRubyRun())
-    return LayoutUnit(-1);
-
-  return absl::nullopt;
-}
-
-LayoutUnit LayoutBlock::InlineBlockBaseline(
-    LineDirectionMode line_direction) const {
-  NOT_DESTROYED();
-  DCHECK(!ChildrenInline());
-  if (const absl::optional<LayoutUnit> baseline =
-          InlineBlockBaselineOverride(line_direction))
-    return *baseline;
-
-  bool have_normal_flow_child = false;
-  for (LayoutBox* curr = LastChildBox(); curr;
-       curr = curr->PreviousSiblingBox()) {
-    if (!curr->IsFloatingOrOutOfFlowPositioned()) {
-      have_normal_flow_child = true;
-      LayoutUnit result = curr->InlineBlockBaseline(line_direction);
-      if (result != -1) {
-        // Translate to our coordinate space.
-        return curr->LogicalTop() + result;
-      }
-    }
-  }
-  if (!have_normal_flow_child)
-    return EmptyLineBaseline(line_direction);
-  return LayoutUnit(-1);
 }
 
 const LayoutBlock* LayoutBlock::FirstLineStyleParentBlock() const {

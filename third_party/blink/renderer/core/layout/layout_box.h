@@ -1528,16 +1528,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   PaintLayer* EnclosingFloatPaintingLayer() const;
 
-  virtual LayoutUnit FirstLineBoxBaseline() const {
-    NOT_DESTROYED();
-    return LayoutUnit(-1);
-  }
-  virtual LayoutUnit InlineBlockBaseline(LineDirectionMode) const {
-    NOT_DESTROYED();
-    return LayoutUnit(-1);
-  }  // Returns -1 if we should skip this box when computing the baseline of an
-     // inline-block.
-
   bool ShrinkToAvoidFloats() const;
   virtual bool CreatesNewFormattingContext() const {
     NOT_DESTROYED();
@@ -1587,11 +1577,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
 
   LayoutUnit LineHeight(
-      bool first_line,
-      LineDirectionMode,
-      LinePositionMode = kPositionOnContainingLine) const override;
-  LayoutUnit BaselinePosition(
-      FontBaseline,
       bool first_line,
       LineDirectionMode,
       LinePositionMode = kPositionOnContainingLine) const override;

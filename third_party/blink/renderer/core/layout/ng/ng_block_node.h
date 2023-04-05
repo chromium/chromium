@@ -16,7 +16,6 @@ namespace blink {
 
 class LayoutBox;
 class NGBlockBreakToken;
-class NGBoxFragmentBuilder;
 class NGColumnSpannerPath;
 class NGConstraintSpace;
 class NGEarlyBreak;
@@ -297,11 +296,6 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
       const NGConstraintSpace&,
       const NGPhysicalBoxFragment&,
       const NGBlockBreakToken* previous_container_break_token) const;
-
-  void CopyBaselinesFromLegacyLayout(const NGConstraintSpace&,
-                                     NGBoxFragmentBuilder*) const;
-  LayoutUnit AtomicInlineBaselineFromLegacyLayout(
-      const NGConstraintSpace&) const;
 
   void UpdateMarginPaddingInfoIfNeeded(const NGConstraintSpace&) const;
 

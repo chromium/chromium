@@ -1885,6 +1885,9 @@ const NGLayoutResult* NGBlockNode::RunLegacyLayout(
   DCHECK(!box_->IsLayoutBlock() ||
          To<LayoutBlock>(box_.Get())->CreatesNewFormattingContext());
 
+  // TODO(1229581): Remove this logic.
+  NOTREACHED_NORETURN();
+
   // We cannot enter legacy layout for something fragmentable if we're inside an
   // NG block fragmentation context. LayoutNG and legacy block fragmentation
   // cannot cooperate within the same fragmentation context.
@@ -1961,7 +1964,6 @@ const NGLayoutResult* NGBlockNode::RunLegacyLayout(
       builder.SetIsInitialColumnBalancingPass();
     }
 
-    CopyBaselinesFromLegacyLayout(constraint_space, &builder);
     layout_result = builder.ToBoxFragment();
 
     // When side effects are disabled, it's not possible to disable side effects
@@ -2024,55 +2026,6 @@ const NGLayoutResult* NGBlockNode::RunSimplifiedLayout(
       return algorithm.LayoutWithItemsBuilder();
   }
   return algorithm.Layout();
-}
-
-void NGBlockNode::CopyBaselinesFromLegacyLayout(
-    const NGConstraintSpace& constraint_space,
-    NGBoxFragmentBuilder* builder) const {
-  switch (constraint_space.BaselineAlgorithmType()) {
-    case NGBaselineAlgorithmType::kDefault: {
-      LayoutUnit position = box_->FirstLineBoxBaseline();
-      if (position != -1)
-        builder->SetFirstBaseline(position);
-      break;
-    }
-    case NGBaselineAlgorithmType::kInlineBlock: {
-      LayoutUnit position =
-          AtomicInlineBaselineFromLegacyLayout(constraint_space);
-      if (position != -1)
-        builder->SetFirstBaseline(position);
-      break;
-    }
-  }
-}
-
-LayoutUnit NGBlockNode::AtomicInlineBaselineFromLegacyLayout(
-    const NGConstraintSpace& constraint_space) const {
-  LineDirectionMode line_direction = box_->IsHorizontalWritingMode()
-                                         ? LineDirectionMode::kHorizontalLine
-                                         : LineDirectionMode::kVerticalLine;
-
-  // If this is an inline box, use |BaselinePosition()|. Some LayoutObject
-  // classes override it assuming inline layout calls |BaselinePosition()|.
-  if (box_->IsInline()) {
-    LayoutUnit position = LayoutUnit(box_->BaselinePosition(
-        box_->Style()->GetFontBaseline(), constraint_space.UseFirstLineStyle(),
-        line_direction, kPositionOnContainingLine));
-
-    // BaselinePosition() uses margin edge for atomic inlines. Subtract
-    // margin-over so that the position is relative to the border box.
-    if (box_->IsAtomicInlineLevel())
-      position -= box_->MarginOver();
-
-    if (IsFlippedLinesWritingMode(constraint_space.GetWritingMode()))
-      return box_->Size().Width() - position;
-
-    return position;
-  }
-
-  // If this is a block box, use |InlineBlockBaseline()|. When an inline block
-  // has block children, their inline block baselines need to be propagated.
-  return box_->InlineBlockBaseline(line_direction);
 }
 
 void NGBlockNode::UpdateMarginPaddingInfoIfNeeded(

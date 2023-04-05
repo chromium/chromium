@@ -6757,24 +6757,6 @@ LayoutUnit LayoutBox::LineHeight(bool /*firstLine*/,
   return LayoutUnit();
 }
 
-DISABLE_CFI_PERF
-LayoutUnit LayoutBox::BaselinePosition(
-    FontBaseline baseline_type,
-    bool /*firstLine*/,
-    LineDirectionMode direction,
-    LinePositionMode line_position_mode) const {
-  DCHECK_EQ(line_position_mode, kPositionOnContainingLine);
-  if (IsAtomicInlineLevel()) {
-    LayoutUnit result = direction == kHorizontalLine
-                            ? MarginHeight() + Size().Height()
-                            : MarginWidth() + Size().Width();
-    if (baseline_type == kAlphabeticBaseline)
-      return result;
-    return result - result / 2;
-  }
-  return LayoutUnit();
-}
-
 PaintLayer* LayoutBox::EnclosingFloatPaintingLayer() const {
   NOT_DESTROYED();
   const LayoutObject* curr = this;

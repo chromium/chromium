@@ -982,25 +982,6 @@ LayoutUnit LayoutInline::LineHeight(
   return LayoutUnit(StyleRef().ComputedLineHeight());
 }
 
-LayoutUnit LayoutInline::BaselinePosition(
-    FontBaseline baseline_type,
-    bool first_line,
-    LineDirectionMode direction,
-    LinePositionMode line_position_mode) const {
-  NOT_DESTROYED();
-  DCHECK_EQ(line_position_mode, kPositionOnContainingLine);
-  const SimpleFontData* font_data = Style(first_line)->GetFont().PrimaryFont();
-  DCHECK(font_data);
-  if (!font_data)
-    return LayoutUnit(-1);
-  const FontMetrics& font_metrics = font_data->GetFontMetrics();
-  return LayoutUnit((font_metrics.Ascent(baseline_type) +
-                     (LineHeight(first_line, direction, line_position_mode) -
-                      font_metrics.Height()) /
-                         2)
-                        .ToInt());
-}
-
 void LayoutInline::ImageChanged(WrappedImagePtr, CanDeferInvalidation) {
   NOT_DESTROYED();
   if (!Parent())
