@@ -558,8 +558,9 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, MAYBE_SingleObserver) {
 // anchors outside the viewport. Reactive prefetch relies on anchors from
 // outside the viewport to be included since hints are only requested at onload
 // predictions after that point are ignored.
+// TODO(crbug.com/1408027): Test is flaky.
 IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
-                       SingleObserverPastViewport) {
+                       DISABLED_SingleObserverPastViewport) {
   TestObserver observer;
 
   NavigationPredictorKeyedService* service =
