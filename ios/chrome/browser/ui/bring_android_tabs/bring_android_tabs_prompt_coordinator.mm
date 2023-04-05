@@ -66,8 +66,8 @@ void SetModalPresentationStyle(UIViewController* view_controller) {
     case BringYourOwnTabsPromptType::kHalfSheet: {
       BringAndroidTabsPromptConfirmationAlertViewController* confirmationAlert =
           [[BringAndroidTabsPromptConfirmationAlertViewController alloc]
-              initWithTabCount:static_cast<int>(
-                                   service->GetNumberOfAndroidTabs())];
+              initWithTabsCount:static_cast<int>(
+                                    service->GetNumberOfAndroidTabs())];
       confirmationAlert.delegate = _mediator;
       confirmationAlert.commandHandler = self.commandHandler;
       SetModalPresentationStyle(confirmationAlert);
@@ -76,7 +76,8 @@ void SetModalPresentationStyle(UIViewController* view_controller) {
     }
     case BringYourOwnTabsPromptType::kBottomMessage: {
       _provider = [[BringAndroidTabsPromptBottomMessageProvider alloc]
-          initWithTabCount:static_cast<int>(service->GetNumberOfAndroidTabs())];
+          initWithTabsCount:static_cast<int>(
+                                service->GetNumberOfAndroidTabs())];
       _provider.delegate = _mediator;
       _provider.commandHandler = self.commandHandler;
       _viewController = _provider.viewController;

@@ -18,8 +18,8 @@ class BringAndroidTabsPromptBottomMessageProvider: NSObject {
   // Number of active tabs from Android.
   let tabsCount: Int32
 
-  init(tabCount: Int) {
-    self.tabsCount = Int32(tabCount)
+  init(tabsCount: Int) {
+    self.tabsCount = Int32(tabsCount)
   }
 
   // View controller that manages this view. Should be added to the view
@@ -28,7 +28,7 @@ class BringAndroidTabsPromptBottomMessageProvider: NSObject {
     var viewController = UIHostingController(
       rootView: BringAndroidTabsPromptBottomMessageView(tabsCount: self.tabsCount, provider: self))
     // Workaround of SwiftUI/UIKit interoperality limitation that the topmost
-    // view always have a opaque background.
+    // view always have an opaque background.
     viewController.view.backgroundColor = UIColor.clear
     return viewController
   }()

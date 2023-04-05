@@ -21,7 +21,8 @@
 
 // User has dismissed the prompt. If the dismissal is done using a modal swipe,
 // the parameter `swiped` is YES.
-- (void)bringAndroidTabsPromptViewControllerDidDismissWithSwipe:(BOOL)swiped;
+- (void)bringAndroidTabsPromptViewControllerDidDismissWithSwipe:(BOOL)swiped
+    NS_SWIFT_NAME(bringAndroidTabsPromptViewControllerDidDismiss(swiped:));
 
 @end
 

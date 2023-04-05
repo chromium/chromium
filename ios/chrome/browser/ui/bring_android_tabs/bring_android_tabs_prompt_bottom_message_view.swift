@@ -96,7 +96,7 @@ struct BringAndroidTabsPromptBottomMessageView: View {
   // Close button action handler.
   func close() {
     self.provider?.delegate?.bringAndroidTabsPromptViewControllerDidDismiss(
-      withSwipe: false)
+      swiped: false)
     self.provider?.commandHandler?.dismissBringAndroidTabsPrompt()
   }
 }
