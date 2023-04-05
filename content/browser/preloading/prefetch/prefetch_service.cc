@@ -917,7 +917,8 @@ PrefetchStreamingURLLoaderStatus PrefetchService::OnPrefetchRedirect(
 
   prefetch_container->AddRedirectHop(redirect_info.new_url);
 
-  if (redirect_info.new_method != "GET" || !response_head.headers ||
+  if (!base::FeatureList::IsEnabled(features::kPrefetchRedirects) ||
+      redirect_info.new_method != "GET" || !response_head.headers ||
       response_head.headers->response_code() < 300 ||
       response_head.headers->response_code() >= 400) {
     active_prefetches_.erase(prefetch_container->GetPrefetchContainerKey());
