@@ -14,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
@@ -155,12 +156,12 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
             @NonNull PropertyModel model, boolean showContent) {
         int icon =
                 showContent ? R.drawable.ic_visibility_off_black : R.drawable.ic_visibility_black;
-        String iconString = getContext().getResources().getString(showContent
-                        ? R.string.accessibility_omnibox_conceal_clipboard_contents
-                        : R.string.accessibility_omnibox_reveal_clipboard_contents);
-        String announcementString = getContext().getResources().getString(showContent
-                        ? R.string.accessibility_omnibox_conceal_button_announcement
-                        : R.string.accessibility_omnibox_reveal_button_announcement);
+        String iconString = OmniboxResourceProvider.getString(getContext(),
+                showContent ? R.string.accessibility_omnibox_conceal_clipboard_contents
+                            : R.string.accessibility_omnibox_reveal_clipboard_contents);
+        String announcementString = OmniboxResourceProvider.getString(getContext(),
+                showContent ? R.string.accessibility_omnibox_conceal_button_announcement
+                            : R.string.accessibility_omnibox_reveal_button_announcement);
         Runnable action = showContent ? ()
                 -> concealButtonClickHandler(suggestion, model)
                 : () -> revealButtonClickHandler(suggestion, model);

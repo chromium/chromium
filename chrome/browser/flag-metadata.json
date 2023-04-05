@@ -5323,6 +5323,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "omnibox-cache-suggestion-resources",
+    "owners": ["pnoland", "chrome-omnibox-team@google.com"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "omnibox-carousel-dynamic-spacing",
     "owners": ["christianxu", "chrome-omnibox-team@google.com"],
     "expiry_milestone": 115
@@ -5332,7 +5337,7 @@
     "owners": ["manukh", "chrome-omnibox-team@google.com"],
     "expiry_milestone": 110
   },
-    {
+  {
     "name": "omnibox-consumes-ime-insets",
     "owners": ["pnoland", "chrome-omnibox-team@google.com"],
     "expiry_milestone": 120

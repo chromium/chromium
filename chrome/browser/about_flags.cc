@@ -5439,6 +5439,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     kOmniboxAssistantVoiceSearchVariations,
                                     "OmniboxAssistantVoiceSearch")},
 
+    {"omnibox-cache-suggestion-resources",
+     flag_descriptions::kOmniboxCacheSuggestionResourcesName,
+     flag_descriptions::kOmniboxCacheSuggestionResourcesDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kOmniboxCacheSuggestionResources)},
+
     {"omnibox-consumes-ime-insets",
      flag_descriptions::kOmniboxConsumesImeInsetsName,
      flag_descriptions::kOmniboxConsumesImeInsetsDescription, kOsAndroid,

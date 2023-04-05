@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.ActionChipsDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
@@ -115,18 +116,18 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
     protected void setTabSwitchOrRefineAction(
             PropertyModel model, AutocompleteMatch suggestion, int position) {
         @DrawableRes
-        int icon = 0;
-        String iconString = null;
-        Runnable action = null;
+        int icon;
+        String iconString;
+        Runnable action;
         if (suggestion.hasTabMatch()) {
             icon = R.drawable.switch_to_tab;
-            iconString =
-                    mContext.getResources().getString(R.string.accessibility_omnibox_switch_to_tab);
+            iconString = OmniboxResourceProvider.getString(
+                    mContext, R.string.accessibility_omnibox_switch_to_tab);
             action = () -> mSuggestionHost.onSwitchToTab(suggestion, position);
         } else {
-            icon = R.drawable.btn_suggestion_refine;
-            iconString = mContext.getResources().getString(
+            iconString = OmniboxResourceProvider.getString(mContext,
                     R.string.accessibility_omnibox_btn_refine, suggestion.getFillIntoEdit());
+            icon = R.drawable.btn_suggestion_refine;
             action = () -> mSuggestionHost.onRefineSuggestion(suggestion);
         }
         setActionButtons(model,

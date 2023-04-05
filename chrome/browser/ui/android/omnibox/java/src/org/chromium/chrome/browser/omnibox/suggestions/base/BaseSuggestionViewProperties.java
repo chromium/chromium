@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -78,7 +79,7 @@ public class BaseSuggestionViewProperties {
          */
         public Action(Context context, SuggestionDrawableState icon, @StringRes int descriptionRes,
                 Runnable callback) {
-            this(icon, context.getResources().getString(descriptionRes), callback);
+            this(icon, OmniboxResourceProvider.getString(context, descriptionRes), callback);
         }
     }
 

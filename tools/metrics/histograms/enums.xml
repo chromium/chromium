@@ -58152,6 +58152,7 @@ from previous Chrome versions.
   <int value="-2038973140" label="VideoConference:enabled"/>
   <int value="-2038175774"
       label="AndroidAutofillViewStructureWithFormHierarchyLayer:enabled"/>
+  <int value="-2038132420" label="OmniboxCacheSuggestionResources:enabled"/>
   <int value="-2037390759"
       label="IncognitoBrandConsistencyForAndroid:disabled"/>
   <int value="-2037280696" label="EcheSWASendStartSignaling:disabled"/>
@@ -61356,6 +61357,7 @@ from previous Chrome versions.
   <int value="-308793293" label="WebShare:disabled"/>
   <int value="-308785012"
       label="QuickIntensiveWakeUpThrottlingAfterLoading:enabled"/>
+  <int value="-308107781" label="OmniboxCacheSuggestionResources:disabled"/>
   <int value="-307260007" label="ExtensionsCheckup:disabled"/>
   <int value="-306935714" label="lite-video-force-override-decision"/>
   <int value="-306885206" label="NtpModulesHeaderIcon:disabled"/>

@@ -13,8 +13,9 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.util.ObjectsCompat;
+
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 
 /** Represents graphical decoration for the suggestion components. */
 public class SuggestionDrawableState {
@@ -33,7 +34,7 @@ public class SuggestionDrawableState {
 
     /** Helper to construct SuggestionDrawableState objects.  */
     public static final class Builder {
-        private Drawable mDrawable;
+        private final Drawable mDrawable;
         private boolean mAllowTint;
         private boolean mUseRoundedCorners;
         private boolean mIsLarge;
@@ -84,7 +85,7 @@ public class SuggestionDrawableState {
          * @param res Drawable resource to use.
          */
         public static Builder forDrawableRes(Context ctx, @DrawableRes int res) {
-            return new Builder(AppCompatResources.getDrawable(ctx, res)).setDrawableRes(res);
+            return new Builder(OmniboxResourceProvider.getDrawable(ctx, res)).setDrawableRes(res);
         }
 
         /**

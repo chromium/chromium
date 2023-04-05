@@ -10,12 +10,12 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView.RecycledViewPool;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
@@ -150,15 +150,15 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
                 tileModel.set(TileViewProperties.ICON_TINT,
                         ChromeColors.getSecondaryIconTint(mContext, /* isIncognito= */ false));
                 tileModel.set(TileViewProperties.ICON,
-                        AppCompatResources.getDrawable(
+                        OmniboxResourceProvider.getDrawable(
                                 mContext, R.drawable.ic_suggestion_magnifier));
                 tileModel.set(TileViewProperties.CONTENT_DESCRIPTION,
-                        mContext.getString(
+                        OmniboxResourceProvider.getString(mContext,
                                 R.string.accessibility_omnibox_most_visited_tile_search, title));
             } else {
                 tileModel.set(TileViewProperties.ICON_TINT, null);
                 tileModel.set(TileViewProperties.CONTENT_DESCRIPTION,
-                        mContext.getString(
+                        OmniboxResourceProvider.getString(mContext,
                                 R.string.accessibility_omnibox_most_visited_tile_navigate, title,
                                 url.getHost()));
 

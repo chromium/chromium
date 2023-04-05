@@ -2087,6 +2087,12 @@ const char kOmniboxBookmarkPathsDescription[] =
     "suggest a bookmark titled 'Jupiter' with URL "
     "'en.wikipedia.org/wiki/Jupiter' located in a path containing 'planet.'";
 
+const char kOmniboxCacheSuggestionResourcesName[] =
+    "Omnibox cache suggestion resources";
+const char kOmniboxCacheSuggestionResourcesDescription[] =
+    "When enabled, the omnibox will cache frequently used drawables and "
+    "strings rather than loading them from Android every time they're needed.";
+
 const char kOmniboxClosePopupWithEscapeName[] =
     "Omnibox Close Popup with Escape";
 const char kOmniboxClosePopupWithEscapeDescription[] =

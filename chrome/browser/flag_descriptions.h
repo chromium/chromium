@@ -1172,6 +1172,9 @@ extern const char kOmniboxAssistantVoiceSearchDescription[];
 extern const char kOmniboxBookmarkPathsName[];
 extern const char kOmniboxBookmarkPathsDescription[];
 
+extern const char kOmniboxCacheSuggestionResourcesName[];
+extern const char kOmniboxCacheSuggestionResourcesDescription[];
+
 extern const char kOmniboxClosePopupWithEscapeName[];
 extern const char kOmniboxClosePopupWithEscapeDescription[];
 
