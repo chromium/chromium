@@ -543,7 +543,8 @@ void SyncServiceImpl::ResetEngine(ShutdownReason shutdown_reason,
       // configure result, else we'll dcheck when we try to read the sync error.
       expect_sync_configuration_aborted_ = true;
       if (shutdown_reason != ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA) {
-        data_type_manager_->Stop(shutdown_reason);
+        data_type_manager_->Stop(
+            ShutdownReasonToSyncStopMetadataFate(shutdown_reason));
       }
     }
     data_type_manager_.reset();

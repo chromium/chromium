@@ -169,14 +169,14 @@ void DataTypeManagerImpl::DataTypePreconditionChanged(ModelType type) {
 
     case DataTypeController::PreconditionState::kMustStopAndClearData:
       model_load_manager_.StopDatatype(
-          type, ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA,
+          type, SyncStopMetadataFate::CLEAR_METADATA,
           SyncError(FROM_HERE, syncer::SyncError::DATATYPE_POLICY_ERROR,
                     "Datatype preconditions not met.", type));
       break;
 
     case DataTypeController::PreconditionState::kMustStopAndKeepData:
       model_load_manager_.StopDatatype(
-          type, ShutdownReason::STOP_SYNC_AND_KEEP_DATA,
+          type, SyncStopMetadataFate::KEEP_METADATA,
           SyncError(FROM_HERE, syncer::SyncError::UNREADY_ERROR,
                     "Data type is unready.", type));
       break;
@@ -649,12 +649,12 @@ void DataTypeManagerImpl::OnSingleDataTypeWillStop(ModelType type,
   }
 }
 
-void DataTypeManagerImpl::Stop(ShutdownReason reason) {
+void DataTypeManagerImpl::Stop(SyncStopMetadataFate metadata_fate) {
   if (state_ == STOPPED)
     return;
 
   bool need_to_notify = state_ == CONFIGURING;
-  StopImpl(reason);
+  StopImpl(metadata_fate);
 
   if (need_to_notify) {
     ConfigureResult result(ABORTED, preferred_types_);
@@ -662,14 +662,14 @@ void DataTypeManagerImpl::Stop(ShutdownReason reason) {
   }
 }
 
-void DataTypeManagerImpl::StopImpl(ShutdownReason reason) {
+void DataTypeManagerImpl::StopImpl(SyncStopMetadataFate metadata_fate) {
   state_ = STOPPING;
 
   // Invalidate weak pointer to drop configuration callbacks.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
   // Stop all data types.
-  model_load_manager_.Stop(reason);
+  model_load_manager_.Stop(metadata_fate);
 
   // Individual data type controllers might still be STOPPING, but we don't
   // reflect that in |state_| because, for all practical matters, the manager is

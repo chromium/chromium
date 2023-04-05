@@ -22,7 +22,7 @@ class DataTypeManagerMock : public DataTypeManager {
   MOCK_METHOD(void, DataTypePreconditionChanged, (ModelType), (override));
   MOCK_METHOD(void, ResetDataTypeErrors, (), (override));
   MOCK_METHOD(void, PurgeForMigration, (ModelTypeSet), (override));
-  MOCK_METHOD(void, Stop, (ShutdownReason), (override));
+  MOCK_METHOD(void, Stop, (SyncStopMetadataFate), (override));
   MOCK_METHOD(ModelTypeSet, GetActiveDataTypes, (), (const override));
   MOCK_METHOD(ModelTypeSet, GetPurgedDataTypes, (), (const override));
   MOCK_METHOD(ModelTypeSet, GetActiveProxyDataTypes, (), (const override));

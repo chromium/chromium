@@ -99,7 +99,7 @@ TEST_F(SyncModelLoadManagerTest, StopAfterFinish) {
   ASSERT_EQ(GetController(BOOKMARKS)->state(),
             DataTypeController::MODEL_LOADED);
 
-  model_load_manager.Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
+  model_load_manager.Stop(SyncStopMetadataFate::KEEP_METADATA);
   EXPECT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::NOT_RUNNING);
   EXPECT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
 }
@@ -288,7 +288,7 @@ TEST_F(SyncModelLoadManagerTest, StopClearMetadata) {
   ASSERT_EQ(GetController(BOOKMARKS)->state(),
             DataTypeController::MODEL_LOADED);
 
-  model_load_manager.Stop(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA);
+  model_load_manager.Stop(SyncStopMetadataFate::CLEAR_METADATA);
 
   EXPECT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::NOT_RUNNING);
   EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
@@ -310,7 +310,7 @@ TEST_F(SyncModelLoadManagerTest, StopDataType) {
             DataTypeController::MODEL_LOADED);
 
   model_load_manager.StopDatatype(
-      BOOKMARKS, ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA,
+      BOOKMARKS, SyncStopMetadataFate::CLEAR_METADATA,
       SyncError(FROM_HERE, syncer::SyncError::UNREADY_ERROR,
                 "Data type is unready.", BOOKMARKS));
 
@@ -326,7 +326,7 @@ TEST_F(SyncModelLoadManagerTest, StopDataType_NotRunning) {
   ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::NOT_RUNNING);
 
   model_load_manager.StopDatatype(
-      BOOKMARKS, ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA,
+      BOOKMARKS, SyncStopMetadataFate::CLEAR_METADATA,
       SyncError(FROM_HERE, syncer::SyncError::UNREADY_ERROR,
                 "Data type is unready.", BOOKMARKS));
 
@@ -511,11 +511,11 @@ TEST_F(SyncModelLoadManagerTest, ShouldClearMetadataAfterStopped) {
   model_load_manager.Initialize(/*preferred_types_without_errors=*/types,
                                 /*preferred_types=*/types,
                                 BuildConfigureContext());
-  model_load_manager.Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
+  model_load_manager.Stop(SyncStopMetadataFate::KEEP_METADATA);
   ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::NOT_RUNNING);
 
   ASSERT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
-  model_load_manager.Stop(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA);
+  model_load_manager.Stop(SyncStopMetadataFate::CLEAR_METADATA);
   // Clearing metadata should work even though the type is already stopped.
   EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
 }
@@ -529,7 +529,7 @@ TEST_F(SyncModelLoadManagerTest, ShouldClearMetadataIfNotRunning) {
   ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::NOT_RUNNING);
 
   ASSERT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
-  model_load_manager.Stop(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA);
+  model_load_manager.Stop(SyncStopMetadataFate::CLEAR_METADATA);
 
   // Clearing metadata should work even though the type is not running.
   EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
@@ -555,7 +555,7 @@ TEST_F(SyncModelLoadManagerTest, ShouldClearMetadataIfFailed) {
   ASSERT_EQ(DataTypeController::FAILED, GetController(BOOKMARKS)->state());
 
   EXPECT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
-  model_load_manager.Stop(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA);
+  model_load_manager.Stop(SyncStopMetadataFate::CLEAR_METADATA);
   // Clearing metadata should work even though the type has already failed.
   EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
 }
@@ -577,7 +577,7 @@ TEST_F(SyncModelLoadManagerTest,
       BuildConfigureContext());
 
   // Bring BOOKMARKS to a STOPPING state.
-  model_load_manager.Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
+  model_load_manager.Stop(SyncStopMetadataFate::KEEP_METADATA);
 
   ASSERT_EQ(GetController(APPS)->state(), DataTypeController::NOT_RUNNING);
   ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::STOPPING);
@@ -628,7 +628,7 @@ TEST_F(SyncModelLoadManagerTest,
                                 BuildConfigureContext());
 
   // Bring BOOKMARKS to a STOPPING state.
-  model_load_manager.Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
+  model_load_manager.Stop(SyncStopMetadataFate::KEEP_METADATA);
 
   ASSERT_EQ(GetController(APPS)->state(), DataTypeController::NOT_RUNNING);
   ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::STOPPING);

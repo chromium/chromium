@@ -44,7 +44,7 @@ class DataTypeManagerImpl : public DataTypeManager,
   // Needed only for backend migration.
   void PurgeForMigration(ModelTypeSet undesired_types) override;
 
-  void Stop(ShutdownReason reason) override;
+  void Stop(SyncStopMetadataFate metadata_fate) override;
   ModelTypeSet GetActiveDataTypes() const override;
   ModelTypeSet GetPurgedDataTypes() const override;
   ModelTypeSet GetActiveProxyDataTypes() const override;
@@ -123,7 +123,7 @@ class DataTypeManagerImpl : public DataTypeManager,
   void ConfigurationCompleted(ModelTypeSet succeeded_configuration_types,
                               ModelTypeSet failed_configuration_types);
 
-  void StopImpl(ShutdownReason reason);
+  void StopImpl(SyncStopMetadataFate metadata_fate);
 
   ModelTypeSet GetEnabledTypes() const;
 
