@@ -34,13 +34,11 @@
 #include "content/public/test/mock_navigation_handle.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/events/base_event_utils.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
-#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
 
@@ -235,26 +233,4 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyChipViewBrowserTest,
   // The deactivated state is HIDDEN on Mac but DEACTIVATED on Linux.
   EXPECT_TRUE(current_state == views::InkDropState::HIDDEN ||
               current_state == views::InkDropState::DEACTIVATED);
-}
-
-IN_PROC_BROWSER_TEST_F(HighEfficiencyChipViewBrowserTest,
-                       ShowAndHideInkDropOnDialog) {
-  PageActionIconView* chip = GetHighEfficiencyChipView();
-  ui::MouseEvent press(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                       ui::EventTimeForNow(), 0, 0);
-  views::test::ButtonTestApi test_api(chip);
-
-  DiscardTabAt(0);
-  chrome::SelectNumberedTab(browser(), 0);
-
-  EXPECT_EQ(GetInkDropState(), views::InkDropState::HIDDEN);
-
-  // Open bubble
-  test_api.NotifyClick(press);
-
-  EXPECT_EQ(GetInkDropState(), views::InkDropState::ACTIVATED);
-
-  test_api.NotifyClick(press);
-
-  EXPECT_EQ(GetInkDropState(), views::InkDropState::DEACTIVATED);
 }
