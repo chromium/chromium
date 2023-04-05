@@ -15,6 +15,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
+#include "base/test/repeating_test_future.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -33,15 +34,60 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/models/list_model.h"
 
 namespace ash {
 namespace {
 
+using ::base::test::RepeatingTestFuture;
 using ::base::test::TestFuture;
 using ::google_apis::ApiErrorCode;
 using ::google_apis::util::FormatTimeAsString;
 using ::net::test_server::HttpRequest;
 using ::net::test_server::HttpResponse;
+
+constexpr char kDefaultTaskListsResponseContent[] = R"(
+    {
+      "kind": "tasks#taskLists",
+      "items": [
+        {
+          "id": "qwerty",
+          "title": "My Tasks 1",
+          "updated": "2023-01-30T22:19:22.812Z"
+        },
+        {
+          "id": "asdfgh",
+          "title": "My Tasks 2",
+          "updated": "2022-12-21T23:38:22.590Z"
+        }
+      ]
+    }
+  )";
+
+constexpr char kDefaultTasksResponseContent[] = R"(
+    {
+      "kind": "tasks#tasks",
+      "items": [
+        {
+          "id": "asd",
+          "title": "Parent task, level 1",
+          "status": "needsAction"
+        },
+        {
+          "id": "qwe",
+          "title": "Child task, level 2",
+          "parent": "asd",
+          "status": "needsAction"
+        },
+        {
+          "id": "zxc",
+          "title": "Child task, level 3",
+          "parent": "qwe",
+          "status": "completed"
+        }
+      ]
+    }
+  )";
 
 // Helper class to temporary override `GaiaUrls` singleton.
 class GaiaUrlsOverrider {
@@ -104,10 +150,12 @@ class GlanceablesTasksClientImplTest : public testing::Test {
   }
 
   GlanceablesTasksClientImpl* client() { return client_.get(); }
+  int requests_count() { return requests_count_; }
 
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleDataFileRequest(
       const net::test_server::HttpRequest& request) {
+    ++requests_count_;
     return std::move(generate_response_callback_).Run(request);
   }
 
@@ -122,49 +170,53 @@ class GlanceablesTasksClientImplTest : public testing::Test {
           /*is_trusted=*/true);
   std::unique_ptr<GaiaUrlsOverrider> gaia_urls_overrider_;
   GenerateResponseCallback generate_response_callback_;
+  int requests_count_ = 0;
   std::unique_ptr<GlanceablesTasksClientImpl> client_;
 };
 
 TEST_F(GlanceablesTasksClientImplTest, GetTaskLists) {
   set_generate_response_callback(
       base::BindLambdaForTesting([](const HttpRequest& request) {
-        return CreateSuccessfulResponse(R"(
-          {
-            "kind": "tasks#taskLists",
-            "items": [
-              {
-                "id": "qwerty",
-                "title": "My Tasks 1",
-                "updated": "2023-01-30T22:19:22.812Z"
-              },
-              {
-                "id": "asdfgh",
-                "title": "My Tasks 2",
-                "updated": "2022-12-21T23:38:22.590Z"
-              }
-            ]
-          }
-        )");
+        return CreateSuccessfulResponse(kDefaultTaskListsResponseContent);
       }));
 
-  TestFuture<const std::vector<GlanceablesTaskList>&> future;
-  auto cancel_closure = client()->GetTaskLists(future.GetCallback());
+  TestFuture<ui::ListModel<GlanceablesTaskList>*> future;
+  client()->GetTaskLists(future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
-  EXPECT_FALSE(cancel_closure.is_null());
+  const auto* const task_lists = future.Get();
+  EXPECT_EQ(task_lists->item_count(), 2u);
 
-  const auto& task_lists = future.Get();
-  EXPECT_EQ(task_lists.size(), 2u);
-
-  EXPECT_EQ(task_lists.at(0).id, "qwerty");
-  EXPECT_EQ(task_lists.at(0).title, "My Tasks 1");
-  EXPECT_EQ(FormatTimeAsString(task_lists.at(0).updated),
+  EXPECT_EQ(task_lists->GetItemAt(0)->id, "qwerty");
+  EXPECT_EQ(task_lists->GetItemAt(0)->title, "My Tasks 1");
+  EXPECT_EQ(FormatTimeAsString(task_lists->GetItemAt(0)->updated),
             "2023-01-30T22:19:22.812Z");
 
-  EXPECT_EQ(task_lists.at(1).id, "asdfgh");
-  EXPECT_EQ(task_lists.at(1).title, "My Tasks 2");
-  EXPECT_EQ(FormatTimeAsString(task_lists.at(1).updated),
+  EXPECT_EQ(task_lists->GetItemAt(1)->id, "asdfgh");
+  EXPECT_EQ(task_lists->GetItemAt(1)->title, "My Tasks 2");
+  EXPECT_EQ(FormatTimeAsString(task_lists->GetItemAt(1)->updated),
             "2022-12-21T23:38:22.590Z");
+}
+
+TEST_F(GlanceablesTasksClientImplTest, GetTaskListsOnSubsequentCalls) {
+  set_generate_response_callback(
+      base::BindLambdaForTesting([](const HttpRequest& request) {
+        return CreateSuccessfulResponse(kDefaultTaskListsResponseContent);
+      }));
+
+  RepeatingTestFuture<ui::ListModel<GlanceablesTaskList>*> future;
+  client()->GetTaskLists(future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  EXPECT_EQ(requests_count(), 1);
+  const auto* const task_lists = future.Take();
+
+  // Subsequent request doesn't trigger another network call and returns a
+  // pointer to the same `ui::ListModel`.
+  client()->GetTaskLists(future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(requests_count(), 1);
+  EXPECT_EQ(future.Take(), task_lists);
 }
 
 TEST_F(GlanceablesTasksClientImplTest,
@@ -172,84 +224,74 @@ TEST_F(GlanceablesTasksClientImplTest,
   set_generate_response_callback(base::BindLambdaForTesting(
       [](const HttpRequest& request) { return CreateFailedResponse(); }));
 
-  TestFuture<const std::vector<GlanceablesTaskList>&> future;
-  auto cancel_closure = client()->GetTaskLists(future.GetCallback());
+  TestFuture<ui::ListModel<GlanceablesTaskList>*> future;
+  client()->GetTaskLists(future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
-  EXPECT_FALSE(cancel_closure.is_null());
-
-  const auto& task_lists = future.Get();
-  EXPECT_EQ(task_lists.size(), 0u);
+  const auto* const task_lists = future.Get();
+  EXPECT_EQ(task_lists->item_count(), 0u);
 }
 
 TEST_F(GlanceablesTasksClientImplTest, GetTasks) {
   set_generate_response_callback(
       base::BindLambdaForTesting([](const HttpRequest& request) {
-        return CreateSuccessfulResponse(R"(
-          {
-            "kind": "tasks#tasks",
-            "items": [
-              {
-                "id": "asd",
-                "title": "Parent task, level 1",
-                "status": "needsAction"
-              },
-              {
-                "id": "qwe",
-                "title": "Child task, level 2",
-                "parent": "asd",
-                "status": "needsAction"
-              },
-              {
-                "id": "zxc",
-                "title": "Child task, level 3",
-                "parent": "qwe",
-                "status": "completed"
-              }
-            ]
-          }
-        )");
+        return CreateSuccessfulResponse(kDefaultTasksResponseContent);
       }));
 
-  TestFuture<const std::vector<GlanceablesTask>&> future;
-  auto cancel_closure =
-      client()->GetTasks(future.GetCallback(), "test-task-list-id");
+  TestFuture<ui::ListModel<GlanceablesTask>*> future;
+  client()->GetTasks("test-task-list-id", future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
-  EXPECT_FALSE(cancel_closure.is_null());
+  const auto* const root_tasks = future.Get();
+  EXPECT_EQ(root_tasks->item_count(), 1u);
+  EXPECT_EQ(root_tasks->GetItemAt(0)->id, "asd");
+  EXPECT_EQ(root_tasks->GetItemAt(0)->title, "Parent task, level 1");
+  EXPECT_EQ(root_tasks->GetItemAt(0)->completed, false);
 
-  const auto& root_tasks = future.Get();
-  EXPECT_EQ(root_tasks.size(), 1u);
-  EXPECT_EQ(root_tasks.at(0).id, "asd");
-  EXPECT_EQ(root_tasks.at(0).title, "Parent task, level 1");
-  EXPECT_EQ(root_tasks.at(0).completed, false);
-
-  const auto& subtasks_level_2 = root_tasks.at(0).subtasks;
+  const auto& subtasks_level_2 = root_tasks->GetItemAt(0)->subtasks;
   EXPECT_EQ(subtasks_level_2.size(), 1u);
-  EXPECT_EQ(subtasks_level_2.at(0).id, "qwe");
-  EXPECT_EQ(subtasks_level_2.at(0).title, "Child task, level 2");
-  EXPECT_EQ(subtasks_level_2.at(0).completed, false);
+  EXPECT_EQ(subtasks_level_2.at(0)->id, "qwe");
+  EXPECT_EQ(subtasks_level_2.at(0)->title, "Child task, level 2");
+  EXPECT_EQ(subtasks_level_2.at(0)->completed, false);
 
-  const auto& subtasks_level_3 = subtasks_level_2.at(0).subtasks;
+  const auto& subtasks_level_3 = subtasks_level_2.at(0)->subtasks;
   EXPECT_EQ(subtasks_level_3.size(), 1u);
-  EXPECT_EQ(subtasks_level_3.at(0).id, "zxc");
-  EXPECT_EQ(subtasks_level_3.at(0).title, "Child task, level 3");
-  EXPECT_EQ(subtasks_level_3.at(0).completed, true);
+  EXPECT_EQ(subtasks_level_3.at(0)->id, "zxc");
+  EXPECT_EQ(subtasks_level_3.at(0)->title, "Child task, level 3");
+  EXPECT_EQ(subtasks_level_3.at(0)->completed, true);
+}
+
+TEST_F(GlanceablesTasksClientImplTest, GetTasksOnSubsequentCalls) {
+  set_generate_response_callback(
+      base::BindLambdaForTesting([](const HttpRequest& request) {
+        return CreateSuccessfulResponse(kDefaultTasksResponseContent);
+      }));
+
+  RepeatingTestFuture<ui::ListModel<GlanceablesTask>*> future;
+  client()->GetTasks("test-task-list-id", future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  EXPECT_EQ(requests_count(), 1);
+  const auto* const root_tasks = future.Take();
+
+  // Subsequent request doesn't trigger another network call and returns a
+  // pointer to the same `ui::ListModel`.
+  client()->GetTasks("test-task-list-id", future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(requests_count(), 1);
+  EXPECT_EQ(future.Take(), root_tasks);
 }
 
 TEST_F(GlanceablesTasksClientImplTest, GetTasksReturnsEmptyVectorOnHttpError) {
   set_generate_response_callback(base::BindLambdaForTesting(
       [](const HttpRequest& request) { return CreateFailedResponse(); }));
 
-  TestFuture<const std::vector<GlanceablesTask>&> future;
-  auto cancel_closure =
-      client()->GetTasks(future.GetCallback(), "test-task-list-id");
+  TestFuture<ui::ListModel<GlanceablesTask>*> future;
+  client()->GetTasks("test-task-list-id", future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
-  EXPECT_FALSE(cancel_closure.is_null());
-
-  const auto& root_tasks = future.Get();
-  EXPECT_EQ(root_tasks.size(), 0u);
+  const auto* const root_tasks = future.Get();
+  EXPECT_EQ(root_tasks->item_count(), 0u);
 }
 
 TEST_F(GlanceablesTasksClientImplTest,
@@ -276,15 +318,12 @@ TEST_F(GlanceablesTasksClientImplTest,
         )");
       }));
 
-  TestFuture<const std::vector<GlanceablesTask>&> future;
-  auto cancel_closure =
-      client()->GetTasks(future.GetCallback(), "test-task-list-id");
+  TestFuture<ui::ListModel<GlanceablesTask>*> future;
+  client()->GetTasks("test-task-list-id", future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
-  EXPECT_FALSE(cancel_closure.is_null());
-
-  const auto& root_tasks = future.Get();
-  EXPECT_EQ(root_tasks.size(), 0u);
+  const auto* const root_tasks = future.Get();
+  EXPECT_EQ(root_tasks->item_count(), 0u);
 }
 
 }  // namespace ash
