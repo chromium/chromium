@@ -191,8 +191,8 @@ TEST_F(WebstorePrivateGetExtensionStatusTest, ExtensionEnabled) {
   ExtensionRegistry::Get(profile())->AddEnabled(CreateExtension(kExtensionId));
   auto function =
       base::MakeRefCounted<WebstorePrivateGetExtensionStatusFunction>();
-  absl::optional<base::Value> response = RunFunctionAndReturnSingleValue(
-      function.get(), GenerateArgs(kExtensionId));
+  absl::optional<base::Value> response =
+      RunFunctionAndReturnValue(function.get(), GenerateArgs(kExtensionId));
   VerifyResponse(ExtensionInstallStatus::EXTENSION_INSTALL_STATUS_ENABLED,
                  *response);
 }
@@ -210,7 +210,7 @@ TEST_F(WebstorePrivateGetExtensionStatusTest, ExtensionBlockedByManifestType) {
   SetExtensionSettings(kBlockedManifestTypeExtensionSettings, profile());
   auto function =
       base::MakeRefCounted<WebstorePrivateGetExtensionStatusFunction>();
-  absl::optional<base::Value> response = RunFunctionAndReturnSingleValue(
+  absl::optional<base::Value> response = RunFunctionAndReturnValue(
       function.get(), GenerateArgs(kExtensionId, kExtensionManifest));
   VerifyResponse(
       ExtensionInstallStatus::EXTENSION_INSTALL_STATUS_BLOCKED_BY_POLICY,
@@ -222,7 +222,7 @@ TEST_F(WebstorePrivateGetExtensionStatusTest, ExtensionBlockedByPermission) {
                        profile());
   auto function =
       base::MakeRefCounted<WebstorePrivateGetExtensionStatusFunction>();
-  absl::optional<base::Value> response = RunFunctionAndReturnSingleValue(
+  absl::optional<base::Value> response = RunFunctionAndReturnValue(
       function.get(), GenerateArgs(kExtensionId, kExtensionManifest));
   VerifyResponse(
       ExtensionInstallStatus::EXTENSION_INSTALL_STATUS_BLOCKED_BY_POLICY,
@@ -234,7 +234,7 @@ TEST_F(WebstorePrivateGetExtensionStatusTest,
   SetExtensionSettings(kBlockedAudioPermissionsExtensionSettings, profile());
   auto function =
       base::MakeRefCounted<WebstorePrivateGetExtensionStatusFunction>();
-  absl::optional<base::Value> response = RunFunctionAndReturnSingleValue(
+  absl::optional<base::Value> response = RunFunctionAndReturnValue(
       function.get(), GenerateArgs(kExtensionId, kExtensionManifest));
   VerifyResponse(ExtensionInstallStatus::EXTENSION_INSTALL_STATUS_INSTALLABLE,
                  *response);
@@ -441,7 +441,7 @@ TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
     // string without error.
     ScopedTestDialogAutoConfirm auto_cancel(
         ScopedTestDialogAutoConfirm::ACCEPT);
-    absl::optional<base::Value> response = RunFunctionAndReturnSingleValue(
+    absl::optional<base::Value> response = RunFunctionAndReturnValue(
         function.get(), GenerateArgs(kExtensionId, kExtensionManifest));
     ASSERT_TRUE(response);
     ASSERT_TRUE(response->is_string());
@@ -535,7 +535,7 @@ TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
   function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
   ScopedTestDialogAutoConfirm auto_confirm(ScopedTestDialogAutoConfirm::ACCEPT);
 
-  absl::optional<base::Value> response = RunFunctionAndReturnSingleValue(
+  absl::optional<base::Value> response = RunFunctionAndReturnValue(
       function.get(), GenerateArgs(kExtensionId, kExtensionManifest));
   // The API returns an empty string on success.
   ASSERT_TRUE(response);
@@ -670,7 +670,7 @@ TEST_P(WebstorePrivateBeginInstallWithManifest3FrictionDialogTest,
 
   if (test_case.dialog_action == ScopedTestDialogAutoConfirm::ACCEPT) {
     absl::optional<base::Value> response =
-        RunFunctionAndReturnSingleValue(function.get(), args);
+        RunFunctionAndReturnValue(function.get(), args);
 
     // The API returns empty string when extension is installed successfully.
     ASSERT_TRUE(response);

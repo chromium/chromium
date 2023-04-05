@@ -132,7 +132,7 @@ TEST_F(EnterpriseReportingPrivateGetDeviceIdTest, GetDeviceId) {
       base::MakeRefCounted<EnterpriseReportingPrivateGetDeviceIdFunction>();
   SetClientId(kFakeClientId);
   absl::optional<base::Value> id =
-      RunFunctionAndReturnSingleValue(function.get(), "[]");
+      RunFunctionAndReturnValue(function.get(), "[]");
   ASSERT_TRUE(id);
   ASSERT_TRUE(id->is_string());
   EXPECT_EQ(kFakeClientId, id->GetString());
@@ -315,7 +315,7 @@ TEST_F(EnterpriseReportingPrivateGetPersistentSecretFunctionTest, GetSecret) {
   auto function = base::MakeRefCounted<
       EnterpriseReportingPrivateGetPersistentSecretFunction>();
   absl::optional<base::Value> result1 =
-      RunFunctionAndReturnSingleValue(function.get(), "[]");
+      RunFunctionAndReturnValue(function.get(), "[]");
   ASSERT_TRUE(result1);
   ASSERT_TRUE(result1->is_blob());
   auto generated_blob = result1->GetBlob();
@@ -324,7 +324,7 @@ TEST_F(EnterpriseReportingPrivateGetPersistentSecretFunctionTest, GetSecret) {
   auto function2 = base::MakeRefCounted<
       EnterpriseReportingPrivateGetPersistentSecretFunction>();
   absl::optional<base::Value> result2 =
-      RunFunctionAndReturnSingleValue(function2.get(), "[]");
+      RunFunctionAndReturnValue(function2.get(), "[]");
   ASSERT_TRUE(result2);
   ASSERT_TRUE(result2->is_blob());
   ASSERT_EQ(generated_blob, result2->GetBlob());
@@ -333,7 +333,7 @@ TEST_F(EnterpriseReportingPrivateGetPersistentSecretFunctionTest, GetSecret) {
   auto function3 = base::MakeRefCounted<
       EnterpriseReportingPrivateGetPersistentSecretFunction>();
   absl::optional<base::Value> result3 =
-      RunFunctionAndReturnSingleValue(function3.get(), "[true]");
+      RunFunctionAndReturnValue(function3.get(), "[true]");
   ASSERT_TRUE(result3);
   ASSERT_TRUE(result3->is_blob());
   ASSERT_EQ(generated_blob, result3->GetBlob());
@@ -358,7 +358,7 @@ TEST_F(EnterpriseReportingPrivateGetPersistentSecretFunctionTest, GetSecret) {
   auto function5 = base::MakeRefCounted<
       EnterpriseReportingPrivateGetPersistentSecretFunction>();
   absl::optional<base::Value> result5 =
-      RunFunctionAndReturnSingleValue(function5.get(), "[true]");
+      RunFunctionAndReturnValue(function5.get(), "[true]");
   ASSERT_TRUE(result5);
   ASSERT_TRUE(result5->is_blob());
   ASSERT_NE(generated_blob, result5->GetBlob());
@@ -372,7 +372,7 @@ TEST_F(EnterpriseReportingPrivateGetDeviceInfoTest, GetDeviceInfo) {
   auto function =
       base::MakeRefCounted<EnterpriseReportingPrivateGetDeviceInfoFunction>();
   absl::optional<base::Value> device_info_value =
-      RunFunctionAndReturnSingleValue(function.get(), "[]");
+      RunFunctionAndReturnValue(function.get(), "[]");
   ASSERT_TRUE(device_info_value);
   ASSERT_TRUE(device_info_value->is_dict());
   enterprise_reporting_private::DeviceInfo info;
@@ -452,7 +452,7 @@ class EnterpriseReportingPrivateGetContextInfoTest
     auto function = base::MakeRefCounted<
         EnterpriseReportingPrivateGetContextInfoFunction>();
     absl::optional<base::Value> context_info_value =
-        RunFunctionAndReturnSingleValue(function.get(), "[]");
+        RunFunctionAndReturnValue(function.get(), "[]");
     EXPECT_TRUE(context_info_value);
     EXPECT_TRUE(context_info_value->is_dict());
 

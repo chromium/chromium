@@ -776,8 +776,6 @@ static_library("test_support") {
       "../browser/extensions/extension_apitest.h",
       "../browser/extensions/extension_browsertest.cc",
       "../browser/extensions/extension_browsertest.h",
-      "../browser/extensions/extension_function_test_utils.cc",
-      "../browser/extensions/extension_function_test_utils.h",
       "../browser/extensions/mixin_based_extension_apitest.cc",
       "../browser/extensions/mixin_based_extension_apitest.h",
       "../browser/extensions/permissions_test_util.cc",

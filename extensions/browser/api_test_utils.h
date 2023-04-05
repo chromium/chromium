@@ -21,11 +21,6 @@ class BrowserContext;
 namespace extensions {
 class ExtensionFunctionDispatcher;
 
-// TODO(yoz): crbug.com/394840: Remove duplicate functionality in
-// chrome/browser/extensions/extension_function_test_utils.h.
-//
-// TODO(ckehoe): Accept args as std::unique_ptr<base::Value>,
-// and migrate existing users to the new API.
 namespace api_test_utils {
 
 // A helper class to handle waiting for a function response.
@@ -57,38 +52,11 @@ class SendResponseHelper {
   std::unique_ptr<bool> response_;
 };
 
-enum RunFunctionFlags : int { NONE = 0, INCLUDE_INCOGNITO = 1 };
-
-// TODO(crbug.com/394840): This struct should be deleted and replaced with an
-// `enum class` type, once all the uses of `RunFunctionFlags` have been removed
-// from the codebase.
-
-// This struct acts as a migration path to allow the gradual replacement of the
-// aforementioned `RunFunctionFlags`, with a new enum type like this:
-//
-//   enum class FunctionMode { kNone, kIncognito, };
-//
-// Once all use of `RunFunctionFlags` are gone, it will be possible to just just
-// remove this polyfill.
-struct FunctionMode {
-  // Fake enum keys.
-  enum Internal {
-    kNone,
-    kIncognito,
-  };
-
-  // Implicit conversion is allowed in this struct, so that it is possible to
-  // gradually migrate all uses of `RunFunctionFlags` to an enum class later on.
-  FunctionMode(int value);  // NOLINT
-
-  operator int() const { return value; }  // NOLINT
-
-  int value = kNone;
+// The mode a function is supposed to be run with.
+enum class FunctionMode {
+  kNone,
+  kIncognito,
 };
-
-// Parses JSON and returns the dictionary, or absl::nullopt if the JSON is
-// invalid or not a dictionary.
-absl::optional<base::Value::Dict> ParseDictionary(const std::string& data);
 
 // Get |key| from |val| as the specified type. If |key| does not exist, or is
 // not of the specified type, adds a failure to the current test and returns

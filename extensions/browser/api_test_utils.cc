@@ -26,8 +26,6 @@ namespace extensions {
 
 namespace api_test_utils {
 
-FunctionMode::FunctionMode(int value) : value(value) {}
-
 SendResponseHelper::SendResponseHelper(ExtensionFunction* function) {
   function->set_has_callback(true);
   function->set_response_callback(
@@ -52,13 +50,6 @@ void SendResponseHelper::OnResponse(ExtensionFunction::ResponseType response,
 
 void SendResponseHelper::WaitForResponse() {
   run_loop_.Run();
-}
-
-absl::optional<base::Value::Dict> ParseDictionary(const std::string& data) {
-  absl::optional<base::Value> value = base::JSONReader::Read(data);
-  if (!value || !value->is_dict())
-    return absl::nullopt;
-  return std::move(*value).TakeDict();
 }
 
 bool GetBoolean(const base::Value::Dict& dict, const std::string& key) {
