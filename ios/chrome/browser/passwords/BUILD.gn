@@ -218,6 +218,7 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/safe_browsing/core/browser/password_protection:test_support",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/sync_preferences:test_support",
     "//components/ukm:test_support",
     "//ios/chrome/browser/autofill",
     "//ios/chrome/browser/browser_state:test_support",
