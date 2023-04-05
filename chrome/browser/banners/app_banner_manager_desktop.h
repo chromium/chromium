@@ -40,9 +40,6 @@ class AppBannerManagerDesktop
   static void CreateForWebContents(content::WebContents* web_contents);
   using content::WebContentsUserData<AppBannerManagerDesktop>::FromWebContents;
 
-  // Turn off triggering on engagement notifications or navigates, for testing
-  // purposes only.
-  static void DisableTriggeringForTesting();
   virtual TestAppBannerManagerDesktop*
   AsTestAppBannerManagerDesktopForTesting();
 
@@ -64,10 +61,6 @@ class AppBannerManagerDesktop
   bool IsWebAppConsideredInstalled() const override;
   std::string GetAppIdentifier() override;
 
-  // content::WebContentsObserver override.
-  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
-                     const GURL& validated_url) override;
-
   // Called when the web app install initiated by a banner has completed.
   virtual void DidFinishCreatingWebApp(const web_app::AppId& app_id,
                                        webapps::InstallResultCode code);
@@ -81,12 +74,6 @@ class AppBannerManagerDesktop
   // AppBannerManager overrides.
   bool ShouldAllowWebAppReplacementInstall() override;
   void ShowBannerUi(WebappInstallSource install_source) override;
-
-  // SiteEngagementObserver override.
-  void OnEngagementEvent(content::WebContents* web_contents,
-                         const GURL& url,
-                         double score,
-                         site_engagement::EngagementType type) override;
 
   // web_app::WebAppInstallManagerObserver:
   void OnWebAppInstalled(const web_app::AppId& app_id) override;

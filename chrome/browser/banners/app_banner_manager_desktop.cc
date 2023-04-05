@@ -47,8 +47,6 @@ const char kPlatformChromeWebStore[] = "chrome_web_store";
 const char kPlatformPlay[] = "play";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-bool gDisableTriggeringForTesting = false;
-
 }  // namespace
 
 namespace webapps {
@@ -72,10 +70,6 @@ void AppBannerManagerDesktop::CreateForWebContents(
   web_contents->SetUserData(
       UserDataKey(),
       base::WrapUnique(new AppBannerManagerDesktop(web_contents)));
-}
-
-void AppBannerManagerDesktop::DisableTriggeringForTesting() {
-  gDisableTriggeringForTesting = true;
 }
 
 TestAppBannerManagerDesktop*
@@ -189,26 +183,6 @@ void AppBannerManagerDesktop::ShowBannerUi(WebappInstallSource install_source) {
   TrackDisplayEvent(DISPLAY_EVENT_WEB_APP_BANNER_CREATED);
   ReportStatus(SHOWING_APP_INSTALLATION_DIALOG);
   CreateWebApp(install_source);
-}
-
-void AppBannerManagerDesktop::DidFinishLoad(
-    content::RenderFrameHost* render_frame_host,
-    const GURL& validated_url) {
-  if (gDisableTriggeringForTesting)
-    return;
-
-  AppBannerManager::DidFinishLoad(render_frame_host, validated_url);
-}
-
-void AppBannerManagerDesktop::OnEngagementEvent(
-    content::WebContents* web_contents,
-    const GURL& url,
-    double score,
-    site_engagement::EngagementType type) {
-  if (gDisableTriggeringForTesting)
-    return;
-
-  AppBannerManager::OnEngagementEvent(web_contents, url, score, type);
 }
 
 void AppBannerManagerDesktop::OnWebAppInstalled(
