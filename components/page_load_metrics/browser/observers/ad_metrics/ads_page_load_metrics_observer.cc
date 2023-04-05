@@ -428,8 +428,6 @@ void AdsPageLoadMetricsObserver::UpdateAdFrameData(
                               std::forward_as_tuple(ad_id),
                               std::forward_as_tuple());
 
-      if (should_ignore_detected_ad)
-        RecordAdFrameIgnoredByRestrictedAdTagging(true /* ignored */);
       return;
     }
 
@@ -455,12 +453,6 @@ void AdsPageLoadMetricsObserver::UpdateAdFrameData(
 
   bool should_create_new_frame_data =
       !ad_data && is_adframe && !should_ignore_detected_ad;
-
-  // If would've recorded a new ad data normally, record that a frame was
-  // ignored.
-  if (!ad_data && is_adframe && should_ignore_detected_ad) {
-    RecordAdFrameIgnoredByRestrictedAdTagging(true);
-  }
 
   // NOTE: Frame look-up only used for determining cross-origin
   // status for metrics, not granting security permissions.
@@ -926,23 +918,6 @@ void AdsPageLoadMetricsObserver::RecordPageResourceTotalHistograms(
   PAGE_BYTES_HISTOGRAM("PageLoad.Clients.Ads.Resources.Bytes.Ads2",
                        resource_data.ad_network_bytes());
 
-  if (page_ad_density_tracker_.MaxPageAdDensityByArea() != -1) {
-    UMA_HISTOGRAM_PERCENTAGE("PageLoad.Clients.Ads.AdDensity.MaxPercentByArea",
-                             page_ad_density_tracker_.MaxPageAdDensityByArea());
-  }
-
-  if (page_ad_density_tracker_.MaxPageAdDensityByHeight() != -1) {
-    UMA_HISTOGRAM_PERCENTAGE(
-        "PageLoad.Clients.Ads.AdDensity.MaxPercentByHeight",
-        page_ad_density_tracker_.MaxPageAdDensityByHeight());
-  }
-
-  // Records true if both of the density calculations succeeded on the page.
-  UMA_HISTOGRAM_BOOLEAN(
-      "PageLoad.Clients.Ads.AdDensity.Recorded",
-      page_ad_density_tracker_.MaxPageAdDensityByArea() != -1 &&
-          page_ad_density_tracker_.MaxPageAdDensityByHeight() != -1);
-
   ukm::builders::AdPageLoad builder(source_id);
   builder.SetTotalBytes(resource_data.network_bytes() >> 10)
       .SetAdBytes(resource_data.ad_network_bytes() >> 10)
@@ -1162,8 +1137,6 @@ void AdsPageLoadMetricsObserver::RecordPerFrameHistogramsForAdTagging(
   if (!ad_frame_data.ShouldRecordFrameForMetrics())
     return;
 
-  RecordAdFrameIgnoredByRestrictedAdTagging(false /*ignored */);
-
   // Record per-frame histograms to the appropriate visibility prefixes.
   for (const auto visibility :
        {FrameVisibility::kAnyVisibility, ad_frame_data.visibility()}) {
@@ -1248,12 +1221,6 @@ void AdsPageLoadMetricsObserver::ProcessOngoingNavigationResource(
 
   ProcessResourceForFrame(rfh, frame_id_and_request->second);
   ongoing_navigation_resources_.erase(frame_id_and_request);
-}
-
-void AdsPageLoadMetricsObserver::RecordAdFrameIgnoredByRestrictedAdTagging(
-    bool ignored) {
-  UMA_HISTOGRAM_BOOLEAN(
-      "PageLoad.Clients.Ads.FrameCounts.IgnoredByRestrictedAdTagging", ignored);
 }
 
 FrameTreeData* AdsPageLoadMetricsObserver::FindFrameData(FrameTreeNodeId id) {

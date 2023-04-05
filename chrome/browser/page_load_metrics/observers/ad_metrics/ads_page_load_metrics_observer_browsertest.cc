@@ -92,15 +92,6 @@ const char kPeakWindowdPercentHistogramId[] =
 const char kHeavyAdInterventionTypeHistogramId[] =
     "PageLoad.Clients.Ads.HeavyAds.InterventionType2";
 
-const char kMaxAdDensityByAreaHistogramId[] =
-    "PageLoad.Clients.Ads.AdDensity.MaxPercentByArea";
-
-const char kMaxAdDensityByHeightHistogramId[] =
-    "PageLoad.Clients.Ads.AdDensity.MaxPercentByHeight";
-
-const char kMaxAdDensityRecordedHistogramId[] =
-    "PageLoad.Clients.Ads.AdDensity.Recorded";
-
 const char kMemoryMainFrameMaxHistogramId[] =
     "PageLoad.Clients.Ads.Memory.MainFrame.Max";
 
@@ -466,12 +457,6 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
-  histogram_tester.ExpectUniqueSample(kMaxAdDensityByAreaHistogramId,
-                                      expected_page_density_area, 1);
-  histogram_tester.ExpectUniqueSample(kMaxAdDensityByHeightHistogramId,
-                                      expected_page_density_height, 1);
-  histogram_tester.ExpectUniqueSample(kMaxAdDensityRecordedHistogramId, true,
-                                      1);
   auto entries =
       ukm_recorder.GetEntriesByName(ukm::builders::AdPageLoad::kEntryName);
   EXPECT_EQ(1u, entries.size());
@@ -573,12 +558,6 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   int expected_page_density_height =
       ad_height_within_page * 100 / document_height;
 
-  histogram_tester.ExpectUniqueSample(kMaxAdDensityByAreaHistogramId,
-                                      expected_page_density_area, 1);
-  histogram_tester.ExpectUniqueSample(kMaxAdDensityByHeightHistogramId,
-                                      expected_page_density_height, 1);
-  histogram_tester.ExpectUniqueSample(kMaxAdDensityRecordedHistogramId, true,
-                                      1);
   auto entries =
       ukm_recorder.GetEntriesByName(ukm::builders::AdPageLoad::kEntryName);
   EXPECT_EQ(1u, entries.size());
@@ -644,10 +623,6 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
-  histogram_tester.ExpectUniqueSample(kMaxAdDensityByAreaHistogramId, 0, 1);
-  histogram_tester.ExpectUniqueSample(kMaxAdDensityByHeightHistogramId, 0, 1);
-  histogram_tester.ExpectUniqueSample(kMaxAdDensityRecordedHistogramId, true,
-                                      1);
   auto entries =
       ukm_recorder.GetEntriesByName(ukm::builders::AdPageLoad::kEntryName);
   EXPECT_EQ(1u, entries.size());
@@ -1438,8 +1413,6 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   // There should be no observed ads because the ad iframe was same domain.
   histogram_tester.ExpectUniqueSample(
       "PageLoad.Clients.Ads.FrameCounts.AdFrames.Total", 0, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PageLoad.Clients.Ads.FrameCounts.IgnoredByRestrictedAdTagging", 1, 1);
 
   waiter = CreatePageLoadMetricsTestWaiter();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -1462,8 +1435,6 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   histogram_tester.ExpectBucketCount(
       "PageLoad.Clients.Ads.FrameCounts.AdFrames.Total", 1, 1);
-  histogram_tester.ExpectBucketCount(
-      "PageLoad.Clients.Ads.FrameCounts.IgnoredByRestrictedAdTagging", 0, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1501,8 +1472,6 @@ IN_PROC_BROWSER_TEST_F(
   // allowlist rule.
   histogram_tester.ExpectUniqueSample(
       "PageLoad.Clients.Ads.FrameCounts.AdFrames.Total", 0, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PageLoad.Clients.Ads.FrameCounts.IgnoredByRestrictedAdTagging", 1, 1);
 }
 
 // This test harness does not start the test server and allows
