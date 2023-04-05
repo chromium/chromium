@@ -30,7 +30,7 @@
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/gpu_memory_buffer.h"
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include "ui/gfx/mac/io_surface.h"
 #endif
 
@@ -725,7 +725,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalDmabufs(
 }
 #endif
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 // static
 scoped_refptr<VideoFrame> VideoFrame::WrapUnacceleratedIOSurface(
     gfx::GpuMemoryBufferHandle handle,
@@ -1320,7 +1320,7 @@ bool VideoFrame::IsSameDmaBufsAs(const VideoFrame& frame) const {
 }
 #endif
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 CVPixelBufferRef VideoFrame::CvPixelBuffer() const {
   return cv_pixel_buffer_.get();
 }

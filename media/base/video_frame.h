@@ -39,10 +39,10 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/hdr_metadata.h"
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include <CoreVideo/CVPixelBuffer.h>
 #include "base/mac/scoped_cftyperef.h"
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/files/scoped_file.h"
@@ -335,7 +335,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       base::TimeDelta timestamp);
 #endif
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   // Wraps a provided CVPixelBuffer with a VideoFrame. The pixel buffer is
   // retained for the lifetime of the VideoFrame and released upon destruction.
   // The image data is only accessible via the pixel buffer, which could be
@@ -623,7 +623,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   bool IsSameDmaBufsAs(const VideoFrame& frame) const;
 #endif
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   // Returns the backing CVPixelBuffer, if present.
   CVPixelBufferRef CvPixelBuffer() const;
 #endif
@@ -836,7 +836,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   scoped_refptr<DmabufHolder> dmabuf_fds_;
 #endif
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   // CVPixelBuffer, if this frame is wrapping one.
   base::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer_;
 #endif

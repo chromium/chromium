@@ -11,6 +11,8 @@ import("//testing/test.gni")
 import("//third_party/libaom/options.gni")
 import("//third_party/protobuf/proto_library.gni")
 
+assert(use_blink)
+
 proto_library("logging_proto") {
   sources = [ "logging/proto/raw_events.proto" ]
 }

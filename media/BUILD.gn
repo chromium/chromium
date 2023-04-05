@@ -110,7 +110,7 @@ config("media_config") {
 #
 config("subcomponent_config") {
   visibility = media_subcomponent_deps
-  if (is_mac) {
+  if (is_apple) {
     visibility += [ "//media/base/mac" ]
   }
   defines = [ "IS_MEDIA_IMPL" ]
@@ -147,7 +147,7 @@ component("media") {
   ]
 
   # This must be included here since it actually depends on //media/base.
-  if (is_mac) {
+  if (is_mac || (use_blink && is_ios)) {
     public_deps += [ "//media/base/mac" ]
   }
 

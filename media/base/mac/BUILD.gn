@@ -19,7 +19,7 @@ source_set("mac") {
     "videotoolbox_helpers.cc",
     "videotoolbox_helpers.h",
   ]
-  if (is_mac) {
+  if (is_apple) {
     frameworks = [
       "AVFoundation.framework",
       "CoreMedia.framework",

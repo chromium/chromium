@@ -25,12 +25,9 @@
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/constants.h"
 #include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
-
-#if !BUILDFLAG(IS_IOS)
 #include "third_party/opus/src/include/opus.h"
-#endif
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include <AudioToolbox/AudioToolbox.h>
 #endif
 
@@ -237,7 +234,6 @@ class AudioEncoder::ImplBase
   int samples_dropped_from_buffer_;
 };
 
-#if !BUILDFLAG(IS_IOS)
 class AudioEncoder::OpusImpl final : public AudioEncoder::ImplBase {
  public:
   OpusImpl(const scoped_refptr<CastEnvironment>& cast_environment,
@@ -341,9 +337,8 @@ class AudioEncoder::OpusImpl final : public AudioEncoder::ImplBase {
   // perfectly capable of transporting larger than MTU-sized audio frames.
   static const int kOpusMaxPayloadSize = 4000;
 };
-#endif
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 class AudioEncoder::AppleAacImpl final : public AudioEncoder::ImplBase {
   // AAC-LC has two access unit sizes (960 and 1024). The Apple encoder only
   // supports the latter.
@@ -697,7 +692,7 @@ class AudioEncoder::AppleAacImpl final : public AudioEncoder::ImplBase {
   // The number of access units emitted so far by the encoder.
   uint64_t num_access_units_;
 };
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE)
 
 class AudioEncoder::Pcm16Impl final : public AudioEncoder::ImplBase {
  public:
@@ -761,13 +756,11 @@ AudioEncoder::AudioEncoder(
   // as all calls to InsertAudio() are by the same thread.
   DETACH_FROM_THREAD(insert_thread_checker_);
   switch (codec) {
-#if !BUILDFLAG(IS_IOS)
     case CODEC_AUDIO_OPUS:
       impl_ = new OpusImpl(cast_environment, num_channels, sampling_rate,
                            bitrate, std::move(frame_encoded_callback));
       break;
-#endif
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
     case CODEC_AUDIO_AAC:
       impl_ = new AppleAacImpl(cast_environment, num_channels, sampling_rate,
                                bitrate, std::move(frame_encoded_callback));
