@@ -358,12 +358,9 @@ source_set("test_sources") {
       "invitation_unittest.cc",
       "ipcz_driver/ring_buffer_test.cc",
       "ipcz_driver/transport_test.cc",
+      "multiprocess_message_pipe_unittest.cc",
       "node_controller_unittest.cc",
     ]
-  }
-
-  if (!is_ios) {
-    sources += [ "multiprocess_message_pipe_unittest.cc" ]
   }
 
   deps = [
