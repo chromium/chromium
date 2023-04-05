@@ -4,6 +4,8 @@
 
 #include "ui/ozone/platform/flatland/ozone_platform_flatland.h"
 
+#include <fidl/fuchsia.ui.views/cpp/hlcpp_conversion.h>
+
 #include <memory>
 #include <utility>
 #include <vector>
@@ -146,7 +148,8 @@ class OzonePlatformFlatland : public OzonePlatform,
     return std::make_unique<InputMethodFuchsia>(
         window_manager_->GetWindow(widget)->virtual_keyboard_enabled(),
         ime_key_event_dispatcher,
-        window_manager_->GetWindow(widget)->CloneViewRef());
+        fidl::HLCPPToNatural(
+            window_manager_->GetWindow(widget)->CloneViewRef()));
   }
 
   bool InitializeUI(const InitParams& params) override {

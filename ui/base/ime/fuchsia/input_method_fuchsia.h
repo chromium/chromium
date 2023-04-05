@@ -5,8 +5,8 @@
 #ifndef UI_BASE_IME_FUCHSIA_INPUT_METHOD_FUCHSIA_H_
 #define UI_BASE_IME_FUCHSIA_INPUT_METHOD_FUCHSIA_H_
 
+#include <fidl/fuchsia.ui.views/cpp/common_types.h>
 #include <lib/fidl/cpp/binding.h>
-#include <lib/ui/scenic/cpp/view_ref_pair.h>
 
 #include "base/component_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -24,7 +24,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_FUCHSIA) InputMethodFuchsia
  public:
   InputMethodFuchsia(bool enable_virtual_keyboard,
                      ImeKeyEventDispatcher* ime_key_event_dispatcher,
-                     fuchsia::ui::views::ViewRef view_ref);
+                     fuchsia_ui_views::ViewRef view_ref);
   ~InputMethodFuchsia() override;
 
   InputMethodFuchsia(InputMethodFuchsia&) = delete;
