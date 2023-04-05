@@ -161,11 +161,6 @@ const char kBringYourOwnTabsIOSDescription[] =
     "a half-sheet modal by default, or a bottom sticker if specified in the "
     "dropdown option.";
 
-extern const char kCalendarExperienceKitName[] = "Experience Kit Calendar";
-extern const char kCalendarExperienceKitDescription[] =
-    "When enabled, long pressing on dates will trigger Experience Kit Calendar "
-    "event handling.";
-
 extern const char kAppleCalendarExperienceKitName[] =
     "Experience Kit Apple Calendar";
 extern const char kAppleCalendarExperienceKitDescription[] =

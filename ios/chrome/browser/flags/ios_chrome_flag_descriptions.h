@@ -134,10 +134,6 @@ extern const char kBreakpadNoDelayInitialUploadDescription[];
 extern const char kBringYourOwnTabsIOSName[];
 extern const char kBringYourOwnTabsIOSDescription[];
 
-// Title and description for the flag to enable experience kit calendar events.
-extern const char kCalendarExperienceKitName[];
-extern const char kCalendarExperienceKitDescription[];
-
 // Title and description for the flag to enable the the sign-in-only flow
 // when no device level account is detected.
 extern const char kConsistencyNewAccountInterfaceName[];

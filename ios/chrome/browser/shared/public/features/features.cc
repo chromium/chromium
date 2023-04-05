@@ -132,10 +132,6 @@ BASE_FEATURE(kSFSymbolsFollowUp,
              "SFSymbolsFollowUp",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCalendarExperienceKit,
-             "CalendarExperienceKit",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableExpKitAppleCalendar,
              "EnableExpKitAppleCalendar",
              base::FEATURE_DISABLED_BY_DEFAULT);
