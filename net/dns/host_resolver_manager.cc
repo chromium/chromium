@@ -1151,7 +1151,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     // object).
     transaction_info_it->transaction->Start(base::BindOnce(
         &DnsTask::OnDnsTransactionComplete, base::Unretained(this),
-        tick_clock_->NowTicks(), transaction_info_it, request_port));
+        transaction_info_it, request_port));
   }
 
   void OnTimeout() {
@@ -1192,7 +1192,6 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
   // of all work for the individual transaction in this task (see
   // `OnTransactionsFinished()`).
   void OnDnsTransactionComplete(
-      const base::TimeTicks& start_time,
       std::set<TransactionInfo>::iterator transaction_info_it,
       uint16_t request_port,
       int net_error,
