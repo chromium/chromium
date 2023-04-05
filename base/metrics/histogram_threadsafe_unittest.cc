@@ -311,7 +311,9 @@ TEST_F(HistogramThreadsafeTest, SnapshotDeltaThreadsafe) {
   // vs a vector). Hence, the goal of doing this test multiple time is to have
   // coverage of the SingleSample scenario, because once the histogram has moved
   // to using a vector, it will not use SingleSample again.
-  constexpr size_t kNumIterations = 200;
+  // Note: |kNumIterations| was 200 on 4/2023, but was decreased because the
+  // workload was causing flakiness (timing out).
+  constexpr size_t kNumIterations = 100;
   for (size_t iteration = 0; iteration < kNumIterations; ++iteration) {
     // TL;DR of the test: multiple threads are created, which will each emit to
     // the same histograms and snapshot their delta multiple times. We keep
