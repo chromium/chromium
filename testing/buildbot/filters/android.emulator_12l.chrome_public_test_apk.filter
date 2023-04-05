@@ -10,9 +10,6 @@
 -org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testTabAddedFromCustomTab
 -org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testMultiWindow
 
-# crbug.com/1195097
--org.chromium.chrome.browser.permissions.RuntimePermissionTest.testDenyRuntimeDownload
-
 # crbug.com/1225709
 -org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSaveDataUrl
 -org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSaveImage

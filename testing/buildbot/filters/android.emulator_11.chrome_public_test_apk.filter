@@ -41,9 +41,6 @@
 # crbug.com/1036556
 -org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testMediaSuspension
 
-# crbug.com/1195097
--org.chromium.chrome.browser.permissions.RuntimePermissionTest.testDenyRuntimeDownload
-
 # crbug.com/1195129
 -org.chromium.chrome.browser.omnibox.suggestions.SwitchToTabTest.testSwitchToTabInSearchActivity
 -org.chromium.chrome.browser.omnibox.suggestions.SwitchToTabTest.testSwitchToTabSuggestionWhenIncognitoTabOnTop
