@@ -202,7 +202,9 @@ void HistoryClustersServiceTaskUpdateClusterTriggerability::
       clusters.back().GetMostRecentVisit().annotated_visit.visit_row.visit_time;
 
   std::vector<history::Cluster> filtered_clusters;
-  base::ranges::copy_if(clusters, std::back_inserter(filtered_clusters),
+  base::ranges::copy_if(std::make_move_iterator(clusters.begin()),
+                        std::make_move_iterator(clusters.end()),
+                        std::back_inserter(filtered_clusters),
                         [&](const history::Cluster& cluster) {
                           return !cluster.triggerability_calculated;
                         });
