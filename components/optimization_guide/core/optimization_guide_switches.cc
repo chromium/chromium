@@ -121,8 +121,9 @@ bool ShouldPurgeModelAndFeaturesStoreOnStartup() {
 }
 
 bool IsDebugLogsEnabled() {
-  base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
-  return cmd_line->HasSwitch(kDebugLoggingEnabled);
+  static bool enabled =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(kDebugLoggingEnabled);
+  return enabled;
 }
 
 // Parses a list of hosts to have hints fetched for. This overrides scheduling
@@ -211,8 +212,9 @@ absl::optional<std::string> GetModelOverride() {
 }
 
 bool ShouldLogPageContentAnnotationsInput() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+  static bool enabled = base::CommandLine::ForCurrentProcess()->HasSwitch(
       kPageContentAnnotationsLoggingEnabled);
+  return enabled;
 }
 
 absl::optional<base::TimeDelta> PageContentAnnotationsValidationStartupDelay() {
