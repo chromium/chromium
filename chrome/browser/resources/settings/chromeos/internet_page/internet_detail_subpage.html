@@ -311,16 +311,18 @@
   </template>
 
   <!-- APN row item -->
-  <template is="dom-if" if="[[shouldShowApnRow_(managedProperties_,
-      isApnRevampEnabled_)]]">
-    <cr-link-row
-        id="apnSubpageButton"
-        class="hr"
-        label="$i18n{internetApnPageTitle}"
-        sub-label="[[getApnRowSubLabel_(managedProperties_)]]"
-        on-click="onApnRowClicked_"
-        role-description="$i18n{subpageArrowRoleDescription}">
-    </cr-link-row>
+  <template is="dom-if" if="[[showConfigurableSections_]]" restamp>
+    <template is="dom-if" if="[[shouldShowApnRow_(managedProperties_,
+        isApnRevampEnabled_)]]">
+      <cr-link-row
+          id="apnSubpageButton"
+          class="hr"
+          label="$i18n{internetApnPageTitle}"
+          sub-label="[[getApnRowSubLabel_(managedProperties_)]]"
+          on-click="onApnRowClicked_"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+    </template>
   </template>
 
   <template is="dom-if" if="[[hasAdvancedSection_(managedProperties_,

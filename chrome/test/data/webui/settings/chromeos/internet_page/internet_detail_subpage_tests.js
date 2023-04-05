@@ -1112,6 +1112,7 @@ suite('InternetDetailPage', function() {
     test(
         'Cellular network on active sim slot, show config sections',
         async () => {
+          loadTimeData.overrideValues({isApnRevampEnabled: true});
           init();
           const test_iccid = '11111111111111111';
 
@@ -1141,11 +1142,14 @@ suite('InternetDetailPage', function() {
           assertTrue(!!internetDetailPage.shadowRoot
                            .querySelector('cellular-roaming-toggle-button')
                            .getCellularRoamingToggle());
+          assertTrue(!!internetDetailPage.shadowRoot.querySelector(
+              '#apnSubpageButton'));
         });
 
     test(
         'Cellular network on non-active sim slot, hide config sections',
         async () => {
+          loadTimeData.overrideValues({isApnRevampEnabled: true});
           init();
           const test_iccid = '11111111111111111';
 
@@ -1175,6 +1179,8 @@ suite('InternetDetailPage', function() {
           // showing.
           assertTrue(!!internetDetailPage.shadowRoot.querySelector(
               '#connectDisconnect'));
+          assertFalse(!!internetDetailPage.shadowRoot.querySelector(
+              '#apnSubpageButton'));
         });
 
     test(
@@ -1477,13 +1483,27 @@ suite('InternetDetailPage', function() {
         init();
         mojoApi_.setNetworkTypeEnabledState(NetworkType.kCellular, true);
         const apnName = 'test';
+        const testIccid = '11111';
         const cellularNetwork =
             getManagedProperties(NetworkType.kCellular, 'cellular');
         cellularNetwork.typeProperties.cellular.connectedApn = {};
         cellularNetwork.typeProperties.cellular.connectedApn.accessPointName =
             apnName;
+        cellularNetwork.typeProperties.cellular.iccid = testIccid;
         mojoApi_.setManagedPropertiesForTest(cellularNetwork);
         internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
+
+        // Set cellular network as active SIM so that APN row should show up if
+        // the flag is enabled.
+        mojoApi_.setDeviceStateForTest({
+          type: NetworkType.kCellular,
+          deviceState: DeviceStateType.kEnabled,
+          inhibitReason: InhibitReason.kNotInhibited,
+          simInfos: [{
+            iccid: testIccid,
+            isPrimary: true,
+          }],
+        });
         await flushAsync();
         const crLink =
             internetDetailPage.shadowRoot.querySelector('#apnSubpageButton');
