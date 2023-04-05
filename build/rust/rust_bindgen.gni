@@ -7,6 +7,10 @@ import("//build/config/rust.gni")
 import("//build/config/sysroot.gni")
 import("//build/rust/rust_static_library.gni")
 
+if (is_win) {
+  import("//build/toolchain/win/win_toolchain_data.gni")
+}
+
 _rustc_base_path = rust_sysroot
 
 # TODO(danakj): When we're using the Android prebuilt toolchain, there's no
@@ -103,11 +107,9 @@ template("rust_bindgen") {
       "{{cflags_c}}",
     ]
 
-    # This path contains important C headers (e.g. stddef.h) and {{cflags}}
-    # does not include it. Normally this path is implicitly added by clang but
-    # it does not happen for libclang.
-    #
-    # Add it after cflags so includes from deps and configs take precedence.
+    # Clang ships with some headers, which are installed along side the binary,
+    # and which clang itself finds by default, but libclang does not (see also
+    # https://reviews.llvm.org/D95396 which would resolve this but was reverted).
     clang_headers = rebase_path(
             clang_base_path + "/lib/clang/" + clang_version + "/include",
             root_build_dir)
@@ -115,6 +117,23 @@ template("rust_bindgen") {
       args += [ "-imsvc" + clang_headers ]
     } else {
       args += [ "-isystem" + clang_headers ]
+    }
+
+    if (is_win) {
+      # On Windows we fall back to using system headers from a sysroot from
+      # depot_tools. This is negotiated by python scripts and the result is
+      # available in //build/toolchain/win/win_toolchain_data.gni. From there
+      # we get the `include_flags_imsvc` which point to the system headers.
+      if (host_cpu == "x86") {
+        win_toolchain_data = win_toolchain_data_x86
+      } else if (host_cpu == "x64") {
+        win_toolchain_data = win_toolchain_data_x64
+      } else if (host_cpu == "arm64") {
+        win_toolchain_data = win_toolchain_data_arm64
+      } else {
+        error("Unsupported host_cpu, add it to win_toolchain_data.gni")
+      }
+      args += [ "${win_toolchain_data.include_flags_imsvc}" ]
     }
 
     # Passes C comments through as rustdoc attributes.
