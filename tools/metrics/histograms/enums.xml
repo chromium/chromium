@@ -51540,6 +51540,13 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   </int>
 </enum>
 
+<enum name="IbanSuggestionsEvent">
+  <int value="0" label="IBAN suggestions shown"/>
+  <int value="1" label="IBAN suggestions shown (once)"/>
+  <int value="2" label="IBAN suggestion selected"/>
+  <int value="3" label="IBAN suggestion selected (once)"/>
+</enum>
+
 <enum name="ICCProfileAnalyzeResult">
   <int value="0"
       label="Extracted primary matrix and numerical transfer function

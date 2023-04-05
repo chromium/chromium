@@ -70,6 +70,33 @@ base::WeakPtr<IBANManager> IBANManager::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+void IBANManager::UmaRecorder::OnIbanSuggestionsShown(
+    FieldGlobalId field_global_id) {
+  // Log metrics related to the IBAN-related suggestions in the popup.
+  autofill_metrics::LogIndividualIbanSuggestionsEvent(
+      autofill_metrics::IbanSuggestionsEvent::kIbanSuggestionsShown);
+  if (most_recent_suggestions_shown_field_global_id_ != field_global_id) {
+    autofill_metrics::LogIndividualIbanSuggestionsEvent(
+        autofill_metrics::IbanSuggestionsEvent::kIbanSuggestionsShownOnce);
+  }
+
+  most_recent_suggestions_shown_field_global_id_ = field_global_id;
+}
+
+void IBANManager::UmaRecorder::OnIbanSuggestionSelected() {
+  // We log every time the IBAN suggestion is selected.
+  autofill_metrics::LogIndividualIbanSuggestionsEvent(
+      autofill_metrics::IbanSuggestionsEvent::kIbanSuggestionSelected);
+  if (most_recent_suggestion_selected_field_global_id_ !=
+      most_recent_suggestions_shown_field_global_id_) {
+    autofill_metrics::LogIndividualIbanSuggestionsEvent(
+        autofill_metrics::IbanSuggestionsEvent::kIbanSuggestionSelectedOnce);
+  }
+
+  most_recent_suggestion_selected_field_global_id_ =
+      most_recent_suggestions_shown_field_global_id_;
+}
+
 void IBANManager::SendIBANSuggestions(const std::vector<IBAN*>& ibans,
                                       const QueryHandler& query_handler) {
   if (!query_handler.handler_) {
@@ -101,10 +128,21 @@ void IBANManager::SendIBANSuggestions(const std::vector<IBAN*>& ibans,
     }
   }
 
+  if (suggested_ibans.empty()) {
+    return;
+  }
+
   // Return suggestions to query handler.
   query_handler.handler_->OnSuggestionsReturned(
       query_handler.field_id_, query_handler.autoselect_first_suggestion_,
       AutofillSuggestionGenerator::GetSuggestionsForIBANs(suggested_ibans));
+
+  uma_recorder_.OnIbanSuggestionsShown(query_handler.field_id_);
+}
+
+void IBANManager::OnSingleFieldSuggestionSelected(const std::u16string& value,
+                                                  int frontend_id) {
+  uma_recorder_.OnIbanSuggestionSelected();
 }
 
 }  // namespace autofill
