@@ -803,7 +803,7 @@ need to be translated for each locale.-->
         +<ph name="NUMBER">$1<ex>3</ex></ph> more
       </message>
       <message name="IDS_MESSAGE_CENTER_NOTIFICATION_PROGRESS_PERCENTAGE" desc="The summary text in a notification that is shown with progress bar.">
-        <ph name="NUMBER">$1<ex>75</ex></ph> %
+        <ph name="NUMBER">$1<ex>75</ex></ph>%
       </message>
       <message name="IDS_MESSAGE_CENTER_NOTIFICATION_CHROMEOS_SYSTEM" desc="The label to describe the notification comes from ChromeOS system.">
         <ph name="IDS_SHORT_PRODUCT_OS_NAME">$1<ex>ChromeOS</ex></ph> system
