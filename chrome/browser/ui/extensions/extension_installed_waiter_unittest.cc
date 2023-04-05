@@ -139,7 +139,7 @@ TEST_F(ExtensionInstalledWaiterTest, BrowserShutdownWhileWaiting) {
   auto foo = MakeExtensionNamed("foo");
   WaitFor(foo, browser.get());
 
-  browser->OnWindowClosing();
+  browser.reset();
   EXPECT_EQ(1, giving_up_called_);
   EXPECT_EQ(0, done_called_);
 }
