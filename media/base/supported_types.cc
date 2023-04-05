@@ -34,6 +34,10 @@
 #include "media/base/android/media_codec_util.h"  // nogncheck
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif
+
 namespace media {
 
 namespace {
@@ -294,6 +298,8 @@ bool IsAACSupported(const AudioType& type) {
   if (__builtin_available(macOS 10.15, *))
     return true;
   return false;
+#elif BUILDFLAG(IS_WIN)
+  return base::win::GetVersion() >= base::win::Version::WIN11_22H2;
 #else
   return false;
 #endif

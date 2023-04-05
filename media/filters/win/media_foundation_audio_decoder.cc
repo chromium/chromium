@@ -10,12 +10,12 @@
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/task/sequenced_task_runner.h"
+#include "base/task/bind_post_task.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/windows_version.h"
 #include "media/base/audio_buffer.h"
+#include "media/base/audio_discard_helper.h"
 #include "media/base/audio_sample_types.h"
-#include "media/base/audio_timestamp_helper.h"
 #include "media/base/limits.h"
 #include "media/base/status.h"
 #include "media/base/timestamp_constants.h"
@@ -27,6 +27,75 @@
 namespace media {
 
 namespace {
+
+bool CodecSupportsFloatOutput(AudioCodec codec) {
+#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+  if (codec == AudioCodec::kAC3 || codec == AudioCodec::kEAC3) {
+    return true;
+  }
+#endif
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  if (codec == AudioCodec::kAAC) {
+    return true;
+  }
+#endif
+  return false;
+}
+
+bool CodecSupportsFormat(const AudioDecoderConfig& config,
+                         const WAVEFORMATEX& format) {
+  // Can this really happen? Seems like it's required by the subtype being
+  // MFAudioFormat_Float.
+  if (format.nBlockAlign != format.nChannels * sizeof(float)) {
+    return false;
+  }
+
+  if (config.channels() == format.nChannels &&
+      config.samples_per_second() == static_cast<int>(format.nSamplesPerSec)) {
+    return true;
+  }
+
+  // Sometimes HE-AAC configurations may be off by a factor of two, so allow
+  // such cases -- they'll reconfigure upon first decoded frame.
+  if (config.codec() == AudioCodec::kAAC &&
+      2 * config.channels() == format.nChannels &&
+      2 * config.samples_per_second() ==
+          static_cast<int>(format.nSamplesPerSec)) {
+    return true;
+  }
+
+  return false;
+}
+
+absl::optional<MFT_REGISTER_TYPE_INFO> GetTypeInfo(
+    const AudioDecoderConfig& config) {
+  switch (config.codec()) {
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+    case AudioCodec::kDTSXP2:
+      return MFT_REGISTER_TYPE_INFO{MFMediaType_Audio, MFAudioFormat_DTS_UHD};
+    case AudioCodec::kDTS:
+    case AudioCodec::kDTSE:
+      return MFT_REGISTER_TYPE_INFO{MFMediaType_Audio, MFAudioFormat_DTS_RAW};
+#endif
+#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+    case AudioCodec::kAC3:
+      return MFT_REGISTER_TYPE_INFO{MFMediaType_Audio, MFAudioFormat_Dolby_AC3};
+    case AudioCodec::kEAC3:
+      return MFT_REGISTER_TYPE_INFO{MFMediaType_Audio,
+                                    MFAudioFormat_Dolby_DDPlus};
+#endif
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+    case AudioCodec::kAAC:
+      if (config.profile() == AudioCodecProfile::kXHE_AAC &&
+          base::win::GetVersion() >= base::win::Version::WIN11_22H2) {
+        return MFT_REGISTER_TYPE_INFO{MFMediaType_Audio, MFAudioFormat_AAC};
+      }
+      [[fallthrough]];
+#endif
+    default:
+      return absl::nullopt;
+  }
+}
 
 bool PopulateInputSample(IMFSample* sample, const DecoderBuffer& input) {
   Microsoft::WRL::ComPtr<IMFMediaBuffer> buffer;
@@ -56,24 +125,33 @@ bool PopulateInputSample(IMFSample* sample, const DecoderBuffer& input) {
   return true;
 }
 
+int GetBytesPerFrame(AudioCodec codec) {
+  switch (codec) {
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+    // DTS Sound Unbound MFT v1.3 supports 24-bit PCM output only
+    case AudioCodec::kDTS:
+    case AudioCodec::kDTSE:
+    case AudioCodec::kDTSXP2:
+      return 3;
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+    default:
+      return 4;
+  }
+}
+
 }  // namespace
 
 // static
 std::unique_ptr<MediaFoundationAudioDecoder>
-MediaFoundationAudioDecoder::Create(
-    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+MediaFoundationAudioDecoder::Create() {
   return InitializeMediaFoundation()
-             ? std::make_unique<MediaFoundationAudioDecoder>(
-                   std::move(task_runner))
+             ? std::make_unique<MediaFoundationAudioDecoder>()
              : nullptr;
 }
 
-MediaFoundationAudioDecoder::MediaFoundationAudioDecoder(
-    scoped_refptr<base::SequencedTaskRunner> task_runner) {
-  task_runner_ = task_runner;
-}
+MediaFoundationAudioDecoder::MediaFoundationAudioDecoder() = default;
 
-MediaFoundationAudioDecoder::~MediaFoundationAudioDecoder() {}
+MediaFoundationAudioDecoder::~MediaFoundationAudioDecoder() = default;
 
 AudioDecoderType MediaFoundationAudioDecoder::GetDecoderType() const {
   return AudioDecoderType::kMediaFoundation;
@@ -84,27 +162,6 @@ void MediaFoundationAudioDecoder::Initialize(const AudioDecoderConfig& config,
                                              InitCB init_cb,
                                              const OutputCB& output_cb,
                                              const WaitingCB& waiting_cb) {
-  switch (config.codec()) {
-#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
-    case AudioCodec::kDTS:
-    case AudioCodec::kDTSE:
-    case AudioCodec::kDTSXP2:
-      break;
-#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
-#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
-    case AudioCodec::kAC3:
-    case AudioCodec::kEAC3:
-      break;
-#endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
-    default:
-      std::move(init_cb).Run(
-          DecoderStatus(DecoderStatus::Codes::kUnsupportedCodec,
-                        "Codec is not supported by MFT"));
-      return;
-  }
-
-  // FIXME: MFT will need to be signed by a Microsoft Certificate
-  //        to support a secured chain of custody on Windows.
   if (config.is_encrypted()) {
     std::move(init_cb).Run(
         DecoderStatus(DecoderStatus::Codes::kUnsupportedEncryptionMode,
@@ -112,21 +169,13 @@ void MediaFoundationAudioDecoder::Initialize(const AudioDecoderConfig& config,
     return;
   }
 
-  // This shouldn't be possible outside of tests since production code will use
-  // the Create() method above.
-  if (!InitializeMediaFoundation()) {
-    std::move(init_cb).Run(
-        DecoderStatus(DecoderStatus::Codes::kMediaFoundationNotAvailable,
-                      "Unable to initialize Microsoft Media Foundation"));
-    return;
-  }
-
   config_ = config;
   output_cb_ = output_cb;
 
-  std::move(init_cb).Run(
-      CreateDecoder() ? DecoderStatus(OkStatus())
-                      : DecoderStatus(DecoderStatus::Codes::kUnsupportedCodec));
+  base::BindPostTaskToCurrentDefault(std::move(init_cb))
+      .Run(CreateDecoder()
+               ? DecoderStatus(OkStatus())
+               : DecoderStatus(DecoderStatus::Codes::kUnsupportedCodec));
 }
 
 void MediaFoundationAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
@@ -139,39 +188,44 @@ void MediaFoundationAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
           rc = PumpOutput(PumpState::kNormal);
         } while (rc == OutputStatus::kSuccess);
         // Return kOk if more input is needed since this is end of stream
-        std::move(decode_cb).Run(rc == OutputStatus::kFailed
-                                     ? DecoderStatus::Codes::kFailed
-                                     : DecoderStatus::Codes::kOk);
+        base::BindPostTaskToCurrentDefault(std::move(decode_cb))
+            .Run(rc == OutputStatus::kFailed ? DecoderStatus::Codes::kFailed
+                                             : DecoderStatus::Codes::kOk);
         return;
       }
       case MF_E_TRANSFORM_TYPE_NOT_SET:
-        std::move(decode_cb).Run(DecoderStatus::Codes::kPlatformDecodeFailure);
+        base::BindPostTaskToCurrentDefault(std::move(decode_cb))
+            .Run(DecoderStatus::Codes::kPlatformDecodeFailure);
         return;
       default:
-        std::move(decode_cb).Run(DecoderStatus::Codes::kFailed);
+        base::BindPostTaskToCurrentDefault(std::move(decode_cb))
+            .Run(DecoderStatus::Codes::kFailed);
         return;
     }
   }
 
   if (buffer->timestamp() == kNoTimestamp) {
-    DVLOG(1) << "Received a buffer without timestamps!";
-    std::move(decode_cb).Run(DecoderStatus::Codes::kMissingTimestamp);
+    DLOG(ERROR) << "Received a buffer without timestamps!";
+    base::BindPostTaskToCurrentDefault(std::move(decode_cb))
+        .Run(DecoderStatus::Codes::kMissingTimestamp);
     return;
   }
 
-  if (timestamp_helper_->base_timestamp() == kNoTimestamp || has_reset_) {
+  if (has_reset_) {
+    ResetTimestampState();
     has_reset_ = false;
-    timestamp_helper_->SetBaseTimestamp(buffer->timestamp());
   }
 
   auto sample = CreateEmptySampleWithBuffer(buffer->data_size(), 0);
   if (!sample) {
-    std::move(decode_cb).Run(DecoderStatus::Codes::kFailed);
+    base::BindPostTaskToCurrentDefault(std::move(decode_cb))
+        .Run(DecoderStatus::Codes::kFailed);
     return;
   }
 
   if (!PopulateInputSample(sample.Get(), *buffer)) {
-    std::move(decode_cb).Run(DecoderStatus::Codes::kFailed);
+    base::BindPostTaskToCurrentDefault(std::move(decode_cb))
+        .Run(DecoderStatus::Codes::kFailed);
     return;
   }
 
@@ -193,21 +247,35 @@ void MediaFoundationAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
         break;
     }
     // Drop remaining samples on error, no need to call PumpOutput
-    std::move(decode_cb).Run(rc);
+    base::BindPostTaskToCurrentDefault(std::move(decode_cb)).Run(rc);
     return;
   }
 
+  current_buffer_time_info_ = buffer->time_info();
+
+  bool decoded_frame_this_loop = false;
   OutputStatus rc;
   do {
     rc = PumpOutput(PumpState::kNormal);
     if (rc == OutputStatus::kNeedMoreInput)
       break;
     if (rc == OutputStatus::kFailed) {
-      std::move(decode_cb).Run(DecoderStatus::Codes::kFailed);
+      base::BindPostTaskToCurrentDefault(std::move(decode_cb))
+          .Run(DecoderStatus::Codes::kFailed);
       return;
     }
+    decoded_frame_this_loop = true;
   } while (rc == OutputStatus::kSuccess);
-  std::move(decode_cb).Run(OkStatus());
+
+  // Even if we didn't decode a frame this loop, we should still send the packet
+  // to the discard helper for caching.
+  if (!decoded_frame_this_loop && !buffer->end_of_stream()) {
+    const bool result =
+        discard_helper_->ProcessBuffers(current_buffer_time_info_, nullptr);
+    DCHECK(!result);
+  }
+
+  base::BindPostTaskToCurrentDefault(std::move(decode_cb)).Run(OkStatus());
 }
 
 void MediaFoundationAudioDecoder::Reset(base::OnceClosure reset_cb) {
@@ -225,56 +293,49 @@ bool MediaFoundationAudioDecoder::NeedsBitstreamConversion() const {
 }
 
 bool MediaFoundationAudioDecoder::CreateDecoder() {
-  // Find the decoder factory.
-  //
-  // Note: It'd be nice if there was an asynchronous DTS MFT (to avoid the need
-  // for a codec pump), but alas MFT_ENUM_FLAG_ASYNC_MFT returns no matches :(
-  MFT_REGISTER_TYPE_INFO type_info;
-  switch (config_.codec()) {
-#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
-    case AudioCodec::kDTSXP2:
-      type_info = {MFMediaType_Audio, MFAudioFormat_DTS_UHD};
-      break;
-    case AudioCodec::kDTS:
-    case AudioCodec::kDTSE:
-      type_info = {MFMediaType_Audio, MFAudioFormat_DTS_RAW};
-      break;
-#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
-#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
-    case AudioCodec::kAC3:
-      type_info = {MFMediaType_Audio, MFAudioFormat_Dolby_AC3};
-      break;
-    case AudioCodec::kEAC3:
-      type_info = {MFMediaType_Audio, MFAudioFormat_Dolby_DDPlus};
-      break;
-#endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
-    default:
-      return false;
+  auto type_info = GetTypeInfo(config_);
+
+  // This shouldn't be possible outside of tests since production code will use
+  // the MediaFoundationAudioDecoder::Create() which enforces this.
+  if (!type_info || !InitializeMediaFoundation()) {
+    return false;
   }
 
+  // Find the decoder factory.
+  //
+  // Note: It'd be nice if there was an asynchronous MFT (to avoid the need
+  // for a codec pump), but alas MFT_ENUM_FLAG_ASYNC_MFT returns no matches :(
   base::win::ScopedCoMem<IMFActivate*> acts;
   UINT32 acts_num = 0;
-  ::MFTEnumEx(MFT_CATEGORY_AUDIO_DECODER,
-              MFT_ENUM_FLAG_SYNCMFT | MFT_ENUM_FLAG_LOCALMFT |
-                  MFT_ENUM_FLAG_SORTANDFILTER,
-              &type_info, NULL, &acts, &acts_num);
-
-  if (acts_num < 1)
+  MFTEnumEx(MFT_CATEGORY_AUDIO_DECODER,
+            MFT_ENUM_FLAG_SYNCMFT | MFT_ENUM_FLAG_LOCALMFT |
+                MFT_ENUM_FLAG_SORTANDFILTER,
+            &type_info.value(), nullptr, &acts, &acts_num);
+  if (acts_num < 1) {
     return false;
+  }
 
-  // Create the decoder from the factory.
-  // Activate the first MFT object
+  // Create the decoder from the factory. Activate the first MFT object.
   RETURN_ON_HR_FAILURE(acts[0]->ActivateObject(IID_PPV_ARGS(&decoder_)),
                        "Failed to activate DTS MFT", false);
+
   // Release all activated and unactivated object after creating the decoder
-  for (UINT32 curr_act = 0; curr_act < acts_num; ++curr_act)
+  for (UINT32 curr_act = 0; curr_act < acts_num; ++curr_act) {
     acts[curr_act]->Release();
+  }
 
-  // Configure DTS input.
   Microsoft::WRL::ComPtr<IMFMediaType> input_type;
-  RETURN_ON_HR_FAILURE(GetDefaultAudioType(config_, &input_type),
-                       "Failed to create IMFMediaType for input data", false);
+  auto hr = E_NOTIMPL;
+  if (config_.codec() == AudioCodec::kAAC) {
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+    hr = GetAacAudioType(config_, &input_type);
+#endif
+  } else {
+    hr = GetDefaultAudioType(config_, &input_type);
+  }
 
+  RETURN_ON_HR_FAILURE(hr, "Failed to create IMFMediaType for input data",
+                       false);
   RETURN_ON_HR_FAILURE(decoder_->SetInputType(0, input_type.Get(), 0),
                        "Failed to set input type for IMFTransform", false);
 
@@ -285,7 +346,6 @@ bool MediaFoundationAudioDecoder::ConfigureOutput() {
   // Reset sample staging buffer before configure output, in case stream
   // configuration changed.
   output_sample_.Reset();
-  // Configure audio output.
   Microsoft::WRL::ComPtr<IMFMediaType> output_type;
   for (uint32_t i = 0;
        SUCCEEDED(decoder_->GetOutputAvailableType(0, i, &output_type)); ++i) {
@@ -327,39 +387,31 @@ bool MediaFoundationAudioDecoder::ConfigureOutput() {
     }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 
-#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
-    if (config_.codec() == AudioCodec::kAC3 ||
-        config_.codec() == AudioCodec::kEAC3) {
-      if (out_subtype == MFAudioFormat_Float) {
-        WAVEFORMATEX* wave_format;
-        UINT32 wave_format_size;
-        RETURN_ON_HR_FAILURE(
-            MFCreateWaveFormatExFromMFMediaType(output_type.Get(), &wave_format,
-                                                &wave_format_size),
-            "Failed to get waveformat for media type", false);
-        if (config_.channels() == wave_format->nChannels &&
-            config_.samples_per_second() ==
-                static_cast<int>(wave_format->nSamplesPerSec) &&
-            wave_format->nBlockAlign ==
-                wave_format->nChannels * sizeof(float)) {
-          RETURN_ON_HR_FAILURE(decoder_->SetOutputType(0, output_type.Get(), 0),
-                               "Failed to set output type IMFTransform", false);
+    if (CodecSupportsFloatOutput(config_.codec()) &&
+        out_subtype == MFAudioFormat_Float) {
+      base::win::ScopedCoMem<WAVEFORMATEX> wave_format;
+      UINT32 wave_format_size;
+      RETURN_ON_HR_FAILURE(
+          MFCreateWaveFormatExFromMFMediaType(output_type.Get(), &wave_format,
+                                              &wave_format_size),
+          "Failed to get waveformat for media type", false);
+      if (CodecSupportsFormat(config_, *wave_format)) {
+        RETURN_ON_HR_FAILURE(decoder_->SetOutputType(0, output_type.Get(), 0),
+                             "Failed to set output type IMFTransform", false);
 
-          MFT_OUTPUT_STREAM_INFO info = {0};
-          RETURN_ON_HR_FAILURE(decoder_->GetOutputStreamInfo(0, &info),
-                               "Failed to get output stream info", false);
+        MFT_OUTPUT_STREAM_INFO info = {0};
+        RETURN_ON_HR_FAILURE(decoder_->GetOutputStreamInfo(0, &info),
+                             "Failed to get output stream info", false);
 
-          output_sample_ =
-              CreateEmptySampleWithBuffer(info.cbSize, info.cbAlignment);
-          RETURN_ON_FAILURE(!!output_sample_, "Failed to create staging sample",
-                            false);
+        output_sample_ =
+            CreateEmptySampleWithBuffer(info.cbSize, info.cbAlignment);
+        RETURN_ON_FAILURE(!!output_sample_, "Failed to create staging sample",
+                          false);
 
-          channel_count_ = wave_format->nChannels;
-        }
-        CoTaskMemFree(wave_format);
+        channel_count_ = wave_format->nChannels;
       }
     }
-#endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+
     if (!output_sample_) {
       output_type.Reset();
       continue;
@@ -380,6 +432,7 @@ bool MediaFoundationAudioDecoder::ConfigureOutput() {
                         "Channel layout and channel count don't match", false);
     }
 
+    const auto current_sample_rate = sample_rate_;
     RETURN_ON_HR_FAILURE(
         output_type->GetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND, &sample_rate_),
         "Failed to get output sample rate", false);
@@ -392,29 +445,14 @@ bool MediaFoundationAudioDecoder::ConfigureOutput() {
                           sample_rate_ <= limits::kMaxSampleRate,
                       "Sample rate is not supported", false);
 
-    if (!timestamp_helper_) {
-      timestamp_helper_ = std::make_unique<AudioTimestampHelper>(sample_rate_);
+    if (current_sample_rate != sample_rate_) {
+      ResetTimestampState();
     }
     decoder_->ProcessMessage(MFT_MESSAGE_NOTIFY_BEGIN_STREAMING, 0);
     return true;
   }
-  RETURN_ON_HR_FAILURE(decoder_->SetOutputType(0, output_type.Get(), 0),
-                       "Failed to set output type IMFTransform", false);
-  return false;
-}
 
-int GetBytesPerFrame(AudioCodec codec) {
-  switch (codec) {
-#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
-    // DTS Sound Unbound MFT v1.3 supports 24-bit PCM output only
-    case AudioCodec::kDTS:
-    case AudioCodec::kDTSE:
-    case AudioCodec::kDTSXP2:
-      return 3;
-#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
-    default:
-      return 4;
-  }
+  return false;
 }
 
 MediaFoundationAudioDecoder::OutputStatus
@@ -433,8 +471,9 @@ MediaFoundationAudioDecoder::PumpOutput(PumpState pump_state) {
 
   if (hr == MF_E_TRANSFORM_STREAM_CHANGE &&
       pump_state != PumpState::kStreamChange) {
-    if (!ConfigureOutput())
+    if (!ConfigureOutput()) {
       return OutputStatus::kFailed;
+    }
 
     DVLOG(1) << "New config: ch=" << channel_count_ << ", sr=" << sample_rate_
              << " (" << config_.AsHumanReadableString() << ")";
@@ -472,15 +511,14 @@ MediaFoundationAudioDecoder::PumpOutput(PumpState pump_state) {
   scoped_refptr<AudioBuffer> audio_buffer;
 
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
-  audio_buffer =
-      AudioBuffer::CreateBuffer(kSampleFormatF32, channel_layout_,
-                                channel_count_, sample_rate_, frames, pool_);
-  audio_buffer->set_timestamp(timestamp_helper_->GetTimestamp());
   // DTS Sound Unbound MFT v1.3.0 outputs 24-bit PCM samples, and will
   // be converted to 32-bit float
   if (config_.codec() == AudioCodec::kDTS ||
       config_.codec() == AudioCodec::kDTSE ||
       config_.codec() == AudioCodec::kDTSXP2) {
+    audio_buffer =
+        AudioBuffer::CreateBuffer(kSampleFormatF32, channel_layout_,
+                                  channel_count_, sample_rate_, frames, pool_);
     float* channel_data =
         reinterpret_cast<float*>(audio_buffer->channel_data()[0]);
     int8_t* pcm24 = reinterpret_cast<int8_t*>(destination);
@@ -495,24 +533,32 @@ MediaFoundationAudioDecoder::PumpOutput(PumpState pump_state) {
   }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 
-#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
-  // AC3,EAC3 MFT is configured to output 32-bit float always
-  if (config_.codec() == AudioCodec::kAC3 ||
-      config_.codec() == AudioCodec::kEAC3) {
+  if (CodecSupportsFloatOutput(config_.codec())) {
     audio_buffer = AudioBuffer::CopyFrom(
         kSampleFormatF32, channel_layout_, channel_count_, sample_rate_, frames,
-        &destination, timestamp_helper_->GetTimestamp(), pool_);
+        &destination, base::TimeDelta(), pool_);
   }
-#endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
 
-  timestamp_helper_->AddFrames(frames);
+  RETURN_ON_FAILURE(!!audio_buffer, "Failed to create output buffer",
+                    OutputStatus::kFailed);
 
   // Important to reset length to 0 since we reuse a same output buffer
   output_buffer->SetCurrentLength(0);
   output_buffer->Unlock();
 
-  output_cb_.Run(std::move(audio_buffer));
+  if (discard_helper_->ProcessBuffers(current_buffer_time_info_,
+                                      audio_buffer.get())) {
+    base::BindPostTaskToCurrentDefault(output_cb_).Run(std::move(audio_buffer));
+  }
+
   return OutputStatus::kSuccess;
+}
+
+void MediaFoundationAudioDecoder::ResetTimestampState() {
+  discard_helper_ =
+      std::make_unique<AudioDiscardHelper>(sample_rate_, config_.codec_delay(),
+                                           /*delayed_discard=*/true);
+  discard_helper_->Reset(config_.codec_delay());
 }
 
 }  // namespace media

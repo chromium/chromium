@@ -12,6 +12,10 @@
 #include "base/android/build_info.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif
+
 namespace media {
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -263,9 +267,14 @@ TEST(SupportedTypesTest, XHE_AACSupported) {
   is_supported = kPropCodecsEnabled &&
                  base::android::BuildInfo::GetInstance()->sdk_int() >=
                      base::android::SDK_VERSION_P;
-#elif BUILDFLAG(IS_MAC) && BUILDFLAG(USE_PROPRIETARY_CODECS)
-  if (__builtin_available(macOS 10.15, *))
+#elif BUILDFLAG(USE_PROPRIETARY_CODECS)
+#if BUILDFLAG(IS_MAC)
+  if (__builtin_available(macOS 10.15, *)) {
     is_supported = true;
+  }
+#elif BUILDFLAG(IS_WIN)
+  is_supported = base::win::GetVersion() >= base::win::Version::WIN11_22H2;
+#endif
 #endif
 
   EXPECT_EQ(is_supported,

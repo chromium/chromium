@@ -10,16 +10,12 @@
 #include "media/base/audio_decoder.h"
 #include "media/base/media_switches.h"
 #include "media/base/offloading_audio_encoder.h"
+#include "media/filters/win/media_foundation_audio_decoder.h"
 #include "media/gpu/ipc/service/vda_video_decoder.h"
 #include "media/gpu/windows/d3d11_video_decoder.h"
 #include "media/gpu/windows/mf_audio_encoder.h"
 #include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_angle_util_win.h"
-#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO) || \
-    BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
-#include "media/filters/win/media_foundation_audio_decoder.h"
-#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO) ||
-        // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
 
 namespace media {
 
@@ -86,13 +82,7 @@ GetPlatformSupportedVideoDecoderConfigs(
 
 std::unique_ptr<AudioDecoder> CreatePlatformAudioDecoder(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
-#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO) || \
-    BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
-  return MediaFoundationAudioDecoder::Create(std::move(task_runner));
-#else
-  return nullptr;
-#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO) ||
-        // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+  return MediaFoundationAudioDecoder::Create();
 }
 
 VideoDecoderType GetPlatformDecoderImplementationType(
