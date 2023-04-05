@@ -1746,9 +1746,6 @@ extern const char kTabEngagementReportingDescription[];
 extern const char kTabGridLayoutAndroidName[];
 extern const char kTabGridLayoutAndroidDescription[];
 
-extern const char kCommerceCouponsName[];
-extern const char kCommerceCouponsDescription[];
-
 extern const char kCommerceDeveloperName[];
 extern const char kCommerceDeveloperDescription[];
 

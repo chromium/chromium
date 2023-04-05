@@ -88,7 +88,6 @@ public class ChromeCachedFlags {
                 ChromeFeatureList.sCctToolbarCustomizations,
                 ChromeFeatureList.sCloseTabSuggestions,
                 ChromeFeatureList.sCommandLineOnNonRooted,
-                ChromeFeatureList.sCommerceCoupons,
                 ChromeFeatureList.sCriticalPersistedTabData,
                 ChromeFeatureList.sDiscoverMultiColumn,
                 ChromeFeatureList.sTabStripRedesign,

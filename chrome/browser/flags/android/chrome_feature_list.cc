@@ -185,7 +185,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kClearOmniboxFocusAfterNavigation,
     &kCloseTabSuggestions,
     &kCriticalPersistedTabData,
-    &kCommerceCoupons,
     &kCCTAllowCrossUidActivitySwitchFromBelow,
     &kCCTBackgroundTab,
     &kCCTBottomBarSwipeUpGesture,
@@ -524,10 +523,6 @@ BASE_FEATURE(kCloseTabSuggestions,
 
 BASE_FEATURE(kCriticalPersistedTabData,
              "CriticalPersistedTabData",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCommerceCoupons,
-             "CommerceCoupons",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTAllowCrossUidActivitySwitchFromBelow,

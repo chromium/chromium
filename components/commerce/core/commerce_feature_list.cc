@@ -125,10 +125,6 @@ BASE_FEATURE(kCommerceAllowServerImages,
              "CommerceAllowServerImages",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCommerceCoupons,
-             "CommerceCoupons",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kCommerceMerchantViewer,
              "CommerceMerchantViewer",
              base::FEATURE_DISABLED_BY_DEFAULT);

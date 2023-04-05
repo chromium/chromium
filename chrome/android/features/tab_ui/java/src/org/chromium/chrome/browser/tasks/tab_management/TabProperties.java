@@ -120,9 +120,6 @@ public class TabProperties {
     public static final WritableObjectPropertyKey<TabListMediator.ShoppingPersistedTabDataFetcher>
             SHOPPING_PERSISTED_TAB_DATA_FETCHER = new WritableObjectPropertyKey<>(true);
 
-    public static final WritableObjectPropertyKey<TabListMediator.CouponPersistedTabDataFetcher>
-            COUPON_PERSISTED_TAB_DATA_FETCHER = new WritableObjectPropertyKey<>(true);
-
     public static final WritableObjectPropertyKey<String> CONTENT_DESCRIPTION_STRING =
             new WritableObjectPropertyKey<>();
 
@@ -140,8 +137,7 @@ public class TabProperties {
             SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND,
             SELECTABLE_TAB_ACTION_BUTTON_SELECTED_BACKGROUND, URL_DOMAIN, ACCESSIBILITY_DELEGATE,
             CARD_TYPE, CONTENT_DESCRIPTION_STRING, CLOSE_BUTTON_DESCRIPTION_STRING,
-            SHOPPING_PERSISTED_TAB_DATA_FETCHER, COUPON_PERSISTED_TAB_DATA_FETCHER,
-            SHOULD_SHOW_PRICE_DROP_TOOLTIP};
+            SHOPPING_PERSISTED_TAB_DATA_FETCHER, SHOULD_SHOW_PRICE_DROP_TOOLTIP};
 
     public static final PropertyKey[] ALL_KEYS_TAB_STRIP = new PropertyKey[] {TAB_ID,
             TAB_SELECTED_LISTENER, TAB_CLOSED_LISTENER, FAVICON, FAVICON_FETCHED, FAVICON_FETCHER,

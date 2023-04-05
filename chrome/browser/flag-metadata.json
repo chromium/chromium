@@ -1985,11 +1985,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-commerce-coupons",
-    "owners": [ "chrome-shopping@google.com" ],
-    "expiry_milestone": 114
-  },
-  {
     "name": "enable-commerce-developer",
     "owners": [ "chrome-shopping@google.com" ],
     "expiry_milestone": 125

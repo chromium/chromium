@@ -72,15 +72,6 @@ found in the LICENSE file.
                 android:layout_height="56dp"
                 android:layout_marginStart="4dp"
                 android:visibility="gone"/>
-            <org.chromium.chrome.browser.tasks.tab_management.CouponCardView
-                android:id="@+id/coupon_info_box_outer"
-                android:layout_below="@id/tab_title"
-                android:background="@drawable/price_card_scrim"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginStart="4dp"
-                android:layout_marginEnd="4dp"
-                android:visibility="gone"/>
             <org.chromium.ui.widget.ButtonCompat
                 android:id="@+id/create_group_button"
                 android:layout_width="wrap_content"
