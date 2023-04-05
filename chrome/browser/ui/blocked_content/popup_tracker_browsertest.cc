@@ -48,12 +48,6 @@
 #endif
 
 namespace {
-const char kPopupFirstDocumentEngagement[] =
-    "ContentSettings.Popups.FirstDocumentEngagementTime2";
-const char kPopupEngagement[] = "ContentSettings.Popups.EngagementTime";
-const char kPopupGestureClose[] =
-    "ContentSettings.Popups.EngagementTime.GestureClose";
-
 const char kUkmEngagementTime[] = "EngagementTime";
 const char kUkmUserInitiatedClose[] = "UserInitiatedClose";
 const char kUkmTrusted[] = "Trusted";
@@ -70,8 +64,8 @@ using UkmEntry = ukm::builders::Popup_Closed;
 
 class PopupTrackerBrowserTest : public InProcessBrowserTest {
  public:
-  PopupTrackerBrowserTest() {}
-  ~PopupTrackerBrowserTest() override {}
+  PopupTrackerBrowserTest() = default;
+  ~PopupTrackerBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -109,10 +103,6 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, NoPopup_NoTracker) {
   EXPECT_FALSE(blocked_content::PopupTracker::FromWebContents(
       browser()->tab_strip_model()->GetActiveWebContents()));
 
-  tester.ExpectTotalCount(kPopupFirstDocumentEngagement, 0);
-  tester.ExpectTotalCount(kPopupEngagement, 0);
-  tester.ExpectTotalCount(kPopupGestureClose, 0);
-
   EXPECT_EQ(0u, GetNumPopupUkmEntries());
 }
 
@@ -141,10 +131,6 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
   browser()->tab_strip_model()->CloseWebContentsAt(
       active_index, TabCloseTypes::CLOSE_USER_GESTURE);
   destroyed_watcher.Wait();
-
-  tester.ExpectTotalCount(kPopupFirstDocumentEngagement, 1);
-  tester.ExpectTotalCount(kPopupEngagement, 1);
-  tester.ExpectTotalCount(kPopupGestureClose, 1);
 
   auto* entry = ExpectAndGetEntry(first_url);
   test_ukm_recorder_->ExpectEntryMetric(entry, kUkmUserInitiatedClose, 1u);
@@ -187,10 +173,6 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
   browser()->tab_strip_model()->CloseWebContentsAt(
       active_index, TabCloseTypes::CLOSE_USER_GESTURE);
   destroyed_watcher.Wait();
-
-  tester.ExpectTotalCount(kPopupFirstDocumentEngagement, 1);
-  tester.ExpectTotalCount(kPopupEngagement, 1);
-  tester.ExpectTotalCount(kPopupGestureClose, 1);
 
   auto* entry = ExpectAndGetEntry(first_url);
   test_ukm_recorder_->ExpectEntryMetric(entry, kUkmUserInitiatedClose, 1u);
@@ -237,9 +219,6 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, DISABLED_ControlClick_HasTracker
       Profile::FromBrowserContext(new_contents->GetBrowserContext()));
   destroyed_watcher.Wait();
 
-  tester.ExpectTotalCount(kPopupFirstDocumentEngagement, 1);
-  tester.ExpectTotalCount(kPopupEngagement, 1);
-
   auto* entry = ExpectAndGetEntry(url);
   test_ukm_recorder_->ExpectEntryMetric(entry, kUkmUserInitiatedClose, 0u);
   test_ukm_recorder_->ExpectEntryMetric(entry, kUkmTrusted, 1u);
@@ -279,9 +258,6 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, DISABLED_ShiftClick_HasTracker) 
       Profile::FromBrowserContext(new_contents->GetBrowserContext()));
   destroyed_watcher.Wait();
 
-  tester.ExpectTotalCount(kPopupFirstDocumentEngagement, 1);
-  tester.ExpectTotalCount(kPopupEngagement, 1);
-
   auto* entry = ExpectAndGetEntry(url);
   test_ukm_recorder_->ExpectEntryMetric(entry, kUkmUserInitiatedClose, 0u);
   test_ukm_recorder_->ExpectEntryMetric(entry, kUkmTrusted, 1u);
@@ -320,9 +296,6 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, AllowlistedPopup_HasTracker) {
       browser()->tab_strip_model()->GetActiveWebContents());
   browser()->tab_strip_model()->CloseAllTabs();
   destroyed_watcher.Wait();
-
-  tester.ExpectTotalCount(kPopupFirstDocumentEngagement, 1);
-  tester.ExpectTotalCount(kPopupEngagement, 1);
 
   auto* entry = ExpectAndGetEntry(url);
   test_ukm_recorder_->ExpectEntryMetric(entry, kUkmUserInitiatedClose, 0u);

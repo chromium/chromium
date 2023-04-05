@@ -66,24 +66,6 @@ PopupTracker::PopupTracker(content::WebContents* contents,
 void PopupTracker::WebContentsDestroyed() {
   base::TimeDelta total_foreground_duration =
       visibility_tracker_.GetForegroundDuration();
-  if (first_load_visible_time_start_) {
-    base::TimeDelta first_load_visible_time =
-        first_load_visible_time_
-            ? *first_load_visible_time_
-            : total_foreground_duration - *first_load_visible_time_start_;
-    UMA_HISTOGRAM_LONG_TIMES(
-        "ContentSettings.Popups.FirstDocumentEngagementTime2",
-        first_load_visible_time);
-  }
-  UMA_HISTOGRAM_CUSTOM_TIMES("ContentSettings.Popups.EngagementTime",
-                             total_foreground_duration, base::Milliseconds(1),
-                             base::Hours(6), 50);
-  if (web_contents()->GetClosedByUserGesture()) {
-    UMA_HISTOGRAM_CUSTOM_TIMES(
-        "ContentSettings.Popups.EngagementTime.GestureClose",
-        total_foreground_duration, base::Milliseconds(1), base::Hours(6), 50);
-  }
-
   if (opener_source_id_ != ukm::kInvalidSourceId) {
     const int kMaxInteractions = 100;
     const int kMaxSubcatagoryInteractions = 50;

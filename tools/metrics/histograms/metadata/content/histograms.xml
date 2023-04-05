@@ -226,35 +226,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSettings.Popups.EngagementTime" units="ms"
-    expires_after="M77">
-  <owner>csharrison@chromium.org</owner>
-  <summary>
-    Measures the total duration a popup WebContents is visible / foregrounded,
-    until it is closed.
-  </summary>
-</histogram>
-
-<histogram name="ContentSettings.Popups.EngagementTime.GestureClose" units="ms"
-    expires_after="M77">
-  <owner>csharrison@chromium.org</owner>
-  <summary>
-    Measures the total duration a popup WebContents is visible / foregrounded,
-    until it is closed via some user gesture (like Ctrl-W).
-  </summary>
-</histogram>
-
-<histogram name="ContentSettings.Popups.FirstDocumentEngagementTime2"
-    units="ms" expires_after="M77">
-  <owner>csharrison@chromium.org</owner>
-  <summary>
-    Measures the total duration a popup WebContents is visible / foregrounded
-    for the duration of its first document load. This time is measured from the
-    first navigation commit to the time either the WebContents is destroyed or
-    when a new navigation commits.
-  </summary>
-</histogram>
-
 <histogram name="ContentSettings.Popups.StrongBlockerActions"
     enum="StrongPopupBlockerAction" expires_after="2023-09-10">
   <owner>csharrison@chromium.org</owner>
