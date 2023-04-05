@@ -160,9 +160,7 @@ void LayoutNGRubyRun::RemoveChild(LayoutObject* child) {
     LayoutBlockFlow* base = RubyBase();
     if (!HasRubyText() && !base->FirstChild()) {
       LayoutBlockFlow::RemoveChild(base);
-      base->DeleteLineBoxTree();
       base->Destroy();
-      DeleteLineBoxTree();
       Destroy();
     }
   }

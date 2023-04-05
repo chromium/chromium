@@ -2230,17 +2230,6 @@ void LayoutObject::ShowLayoutTreeForThis() const {
   ShowLayoutTree(this, nullptr);
 }
 
-void LayoutObject::ShowLineTreeForThis() const {
-  NOT_DESTROYED();
-  if (const LayoutBlock* cb = InclusiveContainingBlock()) {
-    auto* child_block_flow = DynamicTo<LayoutBlockFlow>(cb);
-    if (child_block_flow) {
-      child_block_flow->ShowLineTreeAndMark(nullptr, nullptr, nullptr, nullptr,
-                                            this);
-    }
-  }
-}
-
 void LayoutObject::ShowLayoutObject() const {
   NOT_DESTROYED();
 
@@ -3566,7 +3555,6 @@ PhysicalOffset LayoutObject::OffsetFromAncestor(
 }
 
 LayoutRect LayoutObject::LocalCaretRect(
-    const InlineBox*,
     int,
     LayoutUnit* extra_width_to_end_of_line) const {
   NOT_DESTROYED();
@@ -5030,23 +5018,6 @@ void ShowTree(const blink::LayoutObject* object) {
     object->ShowTreeForThis();
   else
     DLOG(INFO) << "Cannot showTree. Root is (nil)";
-}
-
-void ShowLineTree(const blink::LayoutObject* object) {
-  if (getenv("RUNNING_UNDER_RR")) {
-    // Printing timestamps requires an IPC to get the local time, which
-    // does not work in an rr replay session. Just disable timestamp printing
-    // globally, since we don't need them. Affecting global state isn't a
-    // problem because invoking this from a rr session creates a temporary
-    // program environment that will be destroyed as soon as the invocation
-    // completes.
-    logging::SetLogItems(true, true, false, false);
-  }
-
-  if (object)
-    object->ShowLineTreeForThis();
-  else
-    DLOG(INFO) << "Cannot showLineTree. Root is (nil)";
 }
 
 void ShowLayoutTree(const blink::LayoutObject* object1) {

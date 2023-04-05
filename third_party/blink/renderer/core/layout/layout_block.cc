@@ -54,7 +54,6 @@
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/ng/flex/layout_ng_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
 #include "third_party/blink/renderer/core/layout/ng/mathml/layout_ng_mathml_block.h"
@@ -794,32 +793,6 @@ bool LayoutBlock::HitTestChildren(HitTestResult& result,
   return false;
 }
 
-Position LayoutBlock::PositionForBox(InlineBox* box, bool start) const {
-  NOT_DESTROYED();
-  if (!box)
-    return Position();
-
-  Node* const node = box->GetLineLayoutItem().NonPseudoNode();
-  if (!node) {
-    if (!NonPseudoNode())
-      return Position();
-    if (start)
-      return Position::FirstPositionInOrBeforeNode(*NonPseudoNode());
-    return Position::LastPositionInOrAfterNode(*NonPseudoNode());
-  }
-
-  if (!box->IsInlineTextBox()) {
-    if (start)
-      return Position::FirstPositionInOrBeforeNode(*node);
-    return Position::LastPositionInOrAfterNode(*node);
-  }
-
-  auto* text_box = To<InlineTextBox>(box);
-  return Position::EditingPositionOf(
-      box->GetLineLayoutItem().NonPseudoNode(),
-      start ? text_box->Start() : text_box->Start() + text_box->Len());
-}
-
 static inline bool IsEditingBoundary(const LayoutObject* ancestor,
                                      LineLayoutBox child) {
   DCHECK(!ancestor || ancestor->NonPseudoNode());
@@ -1500,15 +1473,14 @@ inline bool LayoutBlock::IsInlineBoxWrapperActuallyChild() const {
 }
 
 LayoutRect LayoutBlock::LocalCaretRect(
-    const InlineBox* inline_box,
     int caret_offset,
     LayoutUnit* extra_width_to_end_of_line) const {
   NOT_DESTROYED();
   // Do the normal calculation in most cases.
   if ((FirstChild() && !FirstChild()->IsPseudoElement()) ||
-      IsInlineBoxWrapperActuallyChild())
-    return LayoutBox::LocalCaretRect(inline_box, caret_offset,
-                                     extra_width_to_end_of_line);
+      IsInlineBoxWrapperActuallyChild()) {
+    return LayoutBox::LocalCaretRect(caret_offset, extra_width_to_end_of_line);
+  }
 
   LayoutRect caret_rect =
       LocalCaretRectForEmptyElement(Size().Width(), TextIndentOffset());

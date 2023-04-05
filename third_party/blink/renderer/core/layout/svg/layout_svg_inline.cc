@@ -68,7 +68,7 @@ bool LayoutSVGInline::IsObjectBoundingBoxValid() const {
     cursor.MoveToIncludingCulledInline(*this);
     return cursor.IsNotNull();
   }
-  return FirstLineBox();
+  return false;
 }
 
 // static
@@ -95,10 +95,7 @@ gfx::RectF LayoutSVGInline::ObjectBoundingBox() const {
     NGInlineCursor cursor;
     cursor.MoveToIncludingCulledInline(*this);
     ObjectBoundingBoxForCursor(cursor, bounds);
-    return bounds;
   }
-  for (InlineFlowBox* box : *LineBoxes())
-    bounds.Union(gfx::RectF(box->FrameRect()));
   return bounds;
 }
 
@@ -144,13 +141,6 @@ void LayoutSVGInline::AbsoluteQuads(Vector<gfx::QuadF>& quads,
             mode));
       }
     }
-    return;
-  }
-  for (InlineFlowBox* box : *LineBoxes()) {
-    gfx::RectF box_rect(box->FrameRect());
-    quads.push_back(LocalToAbsoluteQuad(
-        gfx::QuadF(SVGLayoutSupport::ExtendTextBBoxWithStroke(*this, box_rect)),
-        mode));
   }
 }
 

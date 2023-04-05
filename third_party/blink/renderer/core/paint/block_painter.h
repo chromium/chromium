@@ -12,7 +12,6 @@
 
 namespace blink {
 
-class InlineBox;
 class LayoutBlock;
 class LayoutBox;
 class ScopedPaintState;
@@ -34,7 +33,6 @@ class BlockPainter {
 
   // See ObjectPainter::PaintAllPhasesAtomically().
   void PaintAllChildPhasesAtomically(const LayoutBox&, const PaintInfo&);
-  static void PaintInlineBox(const InlineBox&, const PaintInfo&);
 
  private:
   void PaintBlockFlowContents(const PaintInfo&, const PhysicalOffset&);

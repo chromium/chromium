@@ -106,10 +106,10 @@ LocalCaretRect LocalCaretRectOfPositionTemplate(
   }
 
   // DeleteSelectionCommandTest.deleteListFromTable goes here.
-  return LocalCaretRect(
-      layout_object, layout_object->PhysicalLocalCaretRect(
-                         nullptr, position.GetPosition().ComputeEditingOffset(),
-                         extra_width_to_end_of_line));
+  return LocalCaretRect(layout_object,
+                        layout_object->PhysicalLocalCaretRect(
+                            position.GetPosition().ComputeEditingOffset(),
+                            extra_width_to_end_of_line));
 }
 
 // This function was added because the caret rect that is calculated by

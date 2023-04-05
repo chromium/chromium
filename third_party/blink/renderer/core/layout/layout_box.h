@@ -1096,20 +1096,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   enum PageBoundaryRule { kAssociateWithFormerPage, kAssociateWithLatterPage };
 
-  virtual InlineBox* CreateInlineBox();
-  void DirtyLineBoxes(bool full_layout);
-
-  // For atomic inline elements, this function returns the inline box that
-  // contains us. Enables the atomic inline LayoutObject to quickly determine
-  // what line it is contained on and to easily iterate over structures on the
-  // line.
-  //
-  // InlineBoxWrapper() and FirstInlineFragment() are mutually exclusive,
-  // depends on IsInLayoutNGInlineFormattingContext().
-  InlineBox* InlineBoxWrapper() const;
-  void SetInlineBoxWrapper(InlineBox*);
-  void DeleteLineBoxWrapper();
-
   bool HasInlineFragments() const final;
   wtf_size_t FirstInlineFragmentItemIndex() const final;
   void ClearFirstInlineFragmentItemIndex() final;
@@ -1502,7 +1488,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   bool HasUnsplittableScrollingOverflow() const;
 
   LayoutRect LocalCaretRect(
-      const InlineBox*,
       int caret_offset,
       LayoutUnit* extra_width_to_end_of_line = nullptr) const override;
 
@@ -2286,10 +2271,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // laid out.
   const BoxLayoutExtraInput* extra_input_ = nullptr;
 
-  // The inline box containing this LayoutBox, for atomic inline elements.
-  // Valid only when !IsInLayoutNGInlineFormattingContext().
-  Member<InlineBox> inline_box_wrapper_;
-
   // The index of the first fragment item associated with this object in
   // |NGFragmentItems::Items()|. Zero means there are no such item.
   // Valid only when IsInLayoutNGInlineFormattingContext().
@@ -2357,27 +2338,6 @@ inline LayoutBox* LayoutBox::PreviousSiblingMultiColumnBox() const {
 inline LayoutBox* LayoutBox::NextSiblingMultiColumnBox() const {
   DCHECK(IsLayoutMultiColumnSpannerPlaceholder() || IsLayoutMultiColumnSet());
   return NextSiblingBox();
-}
-
-inline InlineBox* LayoutBox::InlineBoxWrapper() const {
-  return IsInLayoutNGInlineFormattingContext() ? nullptr : inline_box_wrapper_;
-}
-
-inline void LayoutBox::SetInlineBoxWrapper(InlineBox* box_wrapper) {
-  CHECK(!IsInLayoutNGInlineFormattingContext());
-
-  if (box_wrapper) {
-    DCHECK(!inline_box_wrapper_);
-    // inline_box_wrapper_ should already be nullptr. Deleting it is a safeguard
-    // against security issues. Otherwise, there will two line box wrappers
-    // keeping the reference to this layoutObject, and only one will be notified
-    // when the layoutObject is getting destroyed. The second line box wrapper
-    // will keep a stale reference.
-    if (UNLIKELY(inline_box_wrapper_ != nullptr))
-      DeleteLineBoxWrapper();
-  }
-
-  inline_box_wrapper_ = box_wrapper;
 }
 
 inline wtf_size_t LayoutBox::FirstInlineFragmentItemIndex() const {

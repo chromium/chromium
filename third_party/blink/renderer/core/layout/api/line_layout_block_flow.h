@@ -93,16 +93,6 @@ class LineLayoutBlockFlow : public LineLayoutBox {
 
   LayoutUnit LogicalWidth() { return ToBlockFlow()->LogicalWidth(); }
 
-  LineBoxList* LineBoxes() { return ToBlockFlow()->LineBoxes(); }
-
-  InlineFlowBox* LastLineBox() { return ToBlockFlow()->LastLineBox(); }
-
-  InlineFlowBox* FirstLineBox() { return ToBlockFlow()->FirstLineBox(); }
-
-  RootInlineBox* FirstRootBox() const { return ToBlockFlow()->FirstRootBox(); }
-
-  RootInlineBox* LastRootBox() const { return ToBlockFlow()->LastRootBox(); }
-
  private:
   LayoutBlockFlow* ToBlockFlow() {
     return To<LayoutBlockFlow>(GetLayoutObject());

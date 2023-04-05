@@ -98,7 +98,6 @@ void LayoutNGRubyBase::MoveBlockChildrenTo(LayoutNGRubyBase& to_base,
     auto* anon_block_there = To<LayoutBlockFlow>(last_child_there);
     anon_block_here->MoveAllChildrenTo(anon_block_there,
                                        anon_block_there->Children());
-    anon_block_here->DeleteLineBoxTree();
     anon_block_here->Destroy();
   }
   // Move all remaining children normally. If moving all children, include our

@@ -38,10 +38,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/api/line_layout_item.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
-#include "third_party/blink/renderer/core/layout/line/line_box_list.h"
-#include "third_party/blink/renderer/core/layout/line/root_inline_box.h"
 
 namespace blink {
 
@@ -85,40 +82,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
   void ComputeVisualOverflow(bool recompute_floats) override;
 
-  void DeleteLineBoxTree();
-
   bool CanContainFirstFormattedLine() const;
-
-  const LineBoxList& LineBoxes() const {
-    NOT_DESTROYED();
-    return line_boxes_;
-  }
-  LineBoxList* LineBoxes() {
-    NOT_DESTROYED();
-    return &line_boxes_;
-  }
-  InlineFlowBox* FirstLineBox() const {
-    NOT_DESTROYED();
-    return line_boxes_.First();
-  }
-  InlineFlowBox* LastLineBox() const {
-    NOT_DESTROYED();
-    return line_boxes_.Last();
-  }
-  RootInlineBox* FirstRootBox() const {
-    NOT_DESTROYED();
-    return static_cast<RootInlineBox*>(FirstLineBox());
-  }
-  RootInlineBox* LastRootBox() const {
-    NOT_DESTROYED();
-    return static_cast<RootInlineBox*>(LastLineBox());
-  }
-
-  // Return the number of lines in *this* block flow. Does not recurse into
-  // block flow children.
-  // Will start counting from the first line, and stop counting right after
-  // |stop_root_inline_box|, if specified.
-  int LineCount(const RootInlineBox* stop_root_inline_box = nullptr) const;
 
   LayoutUnit FirstLineBoxBaseline() const override;
   LayoutUnit InlineBlockBaseline(LineDirectionMode) const override;
@@ -138,12 +102,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
   void ChildBecameFloatingOrOutOfFlow(LayoutBox* child);
   void CollapseAnonymousBlockChild(LayoutBlockFlow* child);
-
-  static bool ShouldSkipCreatingRunsForObject(LineLayoutItem obj) {
-    return obj.IsFloating() || (obj.IsOutOfFlowPositioned() &&
-                                !obj.StyleRef().IsOriginalDisplayInlineType() &&
-                                !obj.Container().IsLayoutInline());
-  }
 
   LayoutMultiColumnFlowThread* MultiColumnFlowThread() const {
     NOT_DESTROYED();
@@ -173,13 +131,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   virtual bool AllowsColumns() const;
 
   bool CreatesNewFormattingContext() const override;
-
-  using LayoutBoxModelObject::MoveChildrenTo;
-  void MoveChildrenTo(LayoutBoxModelObject* to_box_model_object,
-                      LayoutObject* start_child,
-                      LayoutObject* end_child,
-                      LayoutObject* before_child,
-                      bool full_remove_insert = false) override;
 
   const char* GetName() const override {
     NOT_DESTROYED();
@@ -214,22 +165,9 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   }
   virtual void WillCollectInlines() { NOT_DESTROYED(); }
 
-#if DCHECK_IS_ON()
-  void ShowLineTreeAndMark(const InlineBox* = nullptr,
-                           const char* = nullptr,
-                           const InlineBox* = nullptr,
-                           const char* = nullptr,
-                           const LayoutObject* = nullptr) const;
-#endif
-
  protected:
   void WillBeDestroyed() override;
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
-
-  void AddOutlineRects(Vector<PhysicalRect>&,
-                       OutlineInfo*,
-                       const PhysicalOffset& additional_offset,
-                       NGOutlineType) const override;
 
   void InvalidateDisplayItemClients(PaintInvalidationReason) const override;
 
@@ -240,15 +178,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
                        HitTestPhase) override;
 
  private:
-  void DirtyLinesFromChangedChild(
-      LayoutObject* child,
-      MarkingBehavior marking_behaviour = kMarkContainerChain) override {
-    NOT_DESTROYED();
-    line_boxes_.DirtyLinesFromChangedChild(
-        LineLayoutItem(this), LineLayoutItem(child),
-        marking_behaviour == kMarkContainerChain);
-  }
-
   void CreateOrDestroyMultiColumnFlowThreadIfNeeded(
       const ComputedStyle* old_style);
 
@@ -275,10 +204,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
  private:
   static void RecalcFloatingDescendantsVisualOverflow(
       const NGPhysicalFragment& fragment);
-
-  LineBoxList line_boxes_;  // All of the root line boxes created for this block
-                            // flow.  For example, <div>Hello<br>world.</div>
-                            // will have two total lines for the <div>.
 
   Member<LayoutMultiColumnFlowThread> multi_column_flow_thread_;
 

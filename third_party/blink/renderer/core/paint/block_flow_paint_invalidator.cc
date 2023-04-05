@@ -39,14 +39,6 @@ void BlockFlowPaintInvalidator::InvalidateDisplayItemClients(
       if (!invalidate_all_lines)
         break;
     }
-  } else if (RootInlineBox* line = block_flow_.FirstRootBox()) {
-    // It's the RootInlineBox that paints the ::first-line background. Note that
-    // since it may be expensive to figure out if the first line is affected by
-    // any ::first-line selectors at all, we just invalidate it unconditionally
-    // which is typically cheaper.
-    if (line->IsFirstLineStyle()) {
-      object_paint_invalidator.InvalidateDisplayItemClient(*line, reason);
-    }
   }
 
   if (block_flow_.MultiColumnFlowThread()) {

@@ -138,7 +138,6 @@ struct SameSizeAsLayoutBox : public LayoutBoxModelObject {
   Member<void*> result;
   HeapVector<Member<const NGLayoutResult>, 1> layout_results;
   void* pointers[2];
-  Member<void*> inline_box_wrapper;
   wtf_size_t first_fragment_item_index_;
   Member<void*> rare_data;
 };
@@ -480,8 +479,7 @@ void LayoutBoxRareData::Trace(Visitor* visitor) const {
 LayoutBox::LayoutBox(ContainerNode* node)
     : LayoutBoxModelObject(node),
       intrinsic_content_logical_height_(-1),
-      intrinsic_logical_widths_initial_block_size_(LayoutUnit::Min()),
-      inline_box_wrapper_(nullptr) {
+      intrinsic_logical_widths_initial_block_size_(LayoutUnit::Min()) {
   SetIsBox();
   if (blink::IsA<HTMLLegendElement>(node))
     SetIsHTMLLegendElement();
@@ -490,7 +488,6 @@ LayoutBox::LayoutBox(ContainerNode* node)
 void LayoutBox::Trace(Visitor* visitor) const {
   visitor->Trace(measure_result_);
   visitor->Trace(layout_results_);
-  visitor->Trace(inline_box_wrapper_);
   visitor->Trace(rare_data_);
   LayoutBoxModelObject::Trace(visitor);
 }
@@ -3125,27 +3122,8 @@ PhysicalOffset LayoutBox::OffsetFromContainerInternal(
   return offset;
 }
 
-InlineBox* LayoutBox::CreateInlineBox() {
-  NOT_DESTROYED();
-  return MakeGarbageCollected<InlineBox>(LineLayoutItem(this));
-}
-
-void LayoutBox::DirtyLineBoxes(bool full_layout) {
-  NOT_DESTROYED();
-  if (!IsInLayoutNGInlineFormattingContext() && inline_box_wrapper_) {
-    if (full_layout) {
-      inline_box_wrapper_->Destroy();
-      inline_box_wrapper_ = nullptr;
-    } else {
-      inline_box_wrapper_->DirtyLineBoxes();
-    }
-  }
-}
-
 bool LayoutBox::HasInlineFragments() const {
   NOT_DESTROYED();
-  if (!IsInLayoutNGInlineFormattingContext())
-    return inline_box_wrapper_;
   return first_fragment_item_index_;
 }
 
@@ -3166,12 +3144,6 @@ void LayoutBox::InLayoutNGInlineFormattingContextWillChange(bool new_value) {
   NOT_DESTROYED();
   if (IsInLayoutNGInlineFormattingContext())
     ClearFirstInlineFragmentItemIndex();
-  else
-    DeleteLineBoxWrapper();
-
-  // Because |first_fragment_item_index_| and |inline_box_wrapper_| are union,
-  // when one is deleted, the other should be initialized to nullptr.
-  DCHECK(new_value ? !first_fragment_item_index_ : !inline_box_wrapper_);
 }
 
 bool LayoutBox::NGPhysicalFragmentList::HasFragmentItems() const {
@@ -3510,16 +3482,6 @@ const FragmentData* LayoutBox::FragmentDataFromPhysicalFragment(
   }
   NOTREACHED();
   return fragment_data;
-}
-
-void LayoutBox::DeleteLineBoxWrapper() {
-  NOT_DESTROYED();
-  if (!IsInLayoutNGInlineFormattingContext() && inline_box_wrapper_) {
-    if (!DocumentBeingDestroyed())
-      inline_box_wrapper_->Remove();
-    inline_box_wrapper_->Destroy();
-    inline_box_wrapper_ = nullptr;
-  }
 }
 
 void LayoutBox::SetSpannerPlaceholder(
@@ -5034,31 +4996,7 @@ LayoutUnit LayoutBox::ContainingBlockLogicalWidthForPositioned(
                     To<LayoutBox>(containing_block)->ClientLogicalWidth());
   }
 
-  DCHECK(containing_block->IsLayoutInline());
-  DCHECK(containing_block->CanContainOutOfFlowPositionedElement(
-      StyleRef().GetPosition()));
-
-  const auto* flow = To<LayoutInline>(containing_block);
-  InlineFlowBox* first = flow->FirstLineBox();
-  InlineFlowBox* last = flow->LastLineBox();
-
-  // If the containing block is empty, return a width of 0.
-  if (!first || !last)
-    return LayoutUnit();
-
-  LayoutUnit from_left;
-  LayoutUnit from_right;
-  if (containing_block->StyleRef().IsLeftToRightDirection()) {
-    from_left = first->LogicalLeft() + first->BorderLogicalLeft();
-    from_right =
-        last->LogicalLeft() + last->LogicalWidth() - last->BorderLogicalRight();
-  } else {
-    from_right = first->LogicalLeft() + first->LogicalWidth() -
-                 first->BorderLogicalRight();
-    from_left = last->LogicalLeft() + last->BorderLogicalLeft();
-  }
-
-  return std::max(LayoutUnit(), from_right - from_left);
+  NOTREACHED_NORETURN();
 }
 
 LayoutUnit LayoutBox::ContainingBlockLogicalHeightForPositioned(
@@ -5586,24 +5524,6 @@ void LayoutBox::ComputePositionedLogicalWidthUsing(
 
   // Use computed values to calculate the horizontal position.
 
-  // FIXME: This hack is needed to calculate the  logical left position for a
-  // 'rtl' relatively positioned, inline because right now, it is using the
-  // logical left position of the first line box when really it should use the
-  // last line box. When this is fixed elsewhere, this block should be removed.
-  if (container_block->IsLayoutInline() &&
-      !container_block->StyleRef().IsLeftToRightDirection()) {
-    const auto* flow = To<LayoutInline>(container_block);
-    InlineFlowBox* first_line = flow->FirstLineBox();
-    InlineFlowBox* last_line = flow->LastLineBox();
-    if (first_line && last_line && first_line != last_line) {
-      computed_values.position_ =
-          logical_left_value + margin_logical_left_value +
-          last_line->BorderLogicalLeft() +
-          (last_line->LogicalLeft() - first_line->LogicalLeft());
-      return;
-    }
-  }
-
   computed_values.position_ = logical_left_value + margin_logical_left_value;
   ComputeLogicalLeftPositionedOffset(computed_values.position_, this,
                                      computed_values.extent_, container_block,
@@ -6011,7 +5931,6 @@ void LayoutBox::ComputePositionedLogicalHeightUsing(
 }
 
 LayoutRect LayoutBox::LocalCaretRect(
-    const InlineBox* box,
     int caret_offset,
     LayoutUnit* extra_width_to_end_of_line) const {
   NOT_DESTROYED();
@@ -6023,18 +5942,10 @@ LayoutRect LayoutBox::LocalCaretRect(
   // before/after elements.
   LayoutUnit caret_width = GetFrameView()->CaretWidth();
   LayoutRect rect(Location(), LayoutSize(caret_width, Size().Height()));
-  bool ltr =
-      box ? box->IsLeftToRightDirection() : StyleRef().IsLeftToRightDirection();
+  bool ltr = StyleRef().IsLeftToRightDirection();
 
   if ((!caret_offset) ^ ltr)
     rect.Move(LayoutSize(Size().Width() - caret_width, LayoutUnit()));
-
-  if (box) {
-    const RootInlineBox& root_box = box->Root();
-    LayoutUnit top = root_box.LineTop();
-    rect.SetY(top);
-    rect.SetHeight(root_box.LineBottom() - top);
-  }
 
   // If height of box is smaller than font height, use the latter one,
   // otherwise the caret might become invisible.
@@ -7339,15 +7250,13 @@ RasterEffectOutset LayoutBox::VisualRectOutsetForRasterEffects() const {
 
 TextDirection LayoutBox::ResolvedDirection() const {
   NOT_DESTROYED();
-  if (IsInline() && IsAtomicInlineLevel()) {
-    if (IsInLayoutNGInlineFormattingContext()) {
-      NGInlineCursor cursor;
-      cursor.MoveTo(*this);
-      if (cursor)
-        return cursor.Current().ResolvedDirection();
+  if (IsInline() && IsAtomicInlineLevel() &&
+      IsInLayoutNGInlineFormattingContext()) {
+    NGInlineCursor cursor;
+    cursor.MoveTo(*this);
+    if (cursor) {
+      return cursor.Current().ResolvedDirection();
     }
-    if (InlineBoxWrapper())
-      return InlineBoxWrapper()->Direction();
   }
   return StyleRef().Direction();
 }

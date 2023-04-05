@@ -341,10 +341,6 @@ void LayoutMultiColumnFlowThread::EvacuateAndDestroy() {
   multicol_container->ResetMultiColumnFlowThread();
   MoveAllChildrenIncludingFloatsTo(multicol_container, true);
 
-  // We used to manually nuke the line box tree here, but that should happen
-  // automatically when moving children around (the code above).
-  DCHECK(!FirstLineBox());
-
   Destroy();
 }
 

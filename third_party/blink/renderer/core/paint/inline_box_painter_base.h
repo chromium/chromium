@@ -26,8 +26,9 @@ struct PaintInfo;
 struct PhysicalOffset;
 struct PhysicalRect;
 
-// Common base class for InlineFlowBoxPainter and NGInlineBoxFragmentPainter.
+// Common Base class for NGInlineBoxFragmentPainter.
 // Implements layout agnostic inline box painting behavior.
+// TODO(1229581): Merge with NGInlineBoxFragmentPainter.
 class InlineBoxPainterBase {
   STACK_ALLOCATED();
 

@@ -28,10 +28,7 @@
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
-#include "third_party/blink/renderer/core/layout/api/line_layout_item.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
-#include "third_party/blink/renderer/core/layout/line/inline_flow_box.h"
-#include "third_party/blink/renderer/core/layout/line/line_box_list.h"
 
 namespace blink {
 
@@ -159,37 +156,6 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   PhysicalRect PhysicalVisualOverflowRect() const final;
   PhysicalRect ReferenceBoxForClipPath() const;
 
-  InlineFlowBox* CreateAndAppendInlineFlowBox();
-
-  void DirtyLineBoxes(bool full_layout);
-
-  // LineBoxes() and FirstInlineFragment() are mutually exclusive,
-  // depends on IsInLayoutNGInlineFormattingContext().
-  const LineBoxList* LineBoxes() const {
-    NOT_DESTROYED();
-    return IsInLayoutNGInlineFormattingContext() ? &LineBoxList::Empty()
-                                                 : &line_boxes_;
-  }
-  LineBoxList* MutableLineBoxes();
-
-  InlineFlowBox* FirstLineBox() const {
-    NOT_DESTROYED();
-    return LineBoxes()->First();
-  }
-  InlineFlowBox* LastLineBox() const {
-    NOT_DESTROYED();
-    return LineBoxes()->Last();
-  }
-  InlineBox* FirstLineBoxIncludingCulling() const {
-    NOT_DESTROYED();
-    return AlwaysCreateLineBoxes() ? FirstLineBox()
-                                   : CulledInlineFirstLineBox();
-  }
-  InlineBox* LastLineBoxIncludingCulling() const {
-    NOT_DESTROYED();
-    return AlwaysCreateLineBoxes() ? LastLineBox() : CulledInlineLastLineBox();
-  }
-
   bool HasInlineFragments() const final;
   wtf_size_t FirstInlineFragmentItemIndex() const final;
   void ClearFirstInlineFragmentItemIndex() final;
@@ -225,8 +191,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   }
   void UpdateShouldCreateBoxFragment();
 
-  LayoutRect LocalCaretRect(const InlineBox*,
-                            int,
+  LayoutRect LocalCaretRect(int,
                             LayoutUnit* extra_width_to_end_of_line) const final;
 
   // When this LayoutInline doesn't generate line boxes of its own, regenerate
@@ -261,8 +226,6 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   void WillBeDestroyed() override;
 
   void InLayoutNGInlineFormattingContextWillChange(bool) final;
-
-  void DeleteLineBoxes();
 
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
@@ -309,8 +272,6 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   bool ComputeInitialShouldCreateBoxFragment(const ComputedStyle& style) const;
 
   PhysicalRect CulledInlineVisualOverflowBoundingBox() const;
-  InlineBox* CulledInlineFirstLineBox() const;
-  InlineBox* CulledInlineLastLineBox() const;
 
   // For PhysicalVisualOverflowRect() only, to get bounding box of visual
   // overflow of line boxes.
@@ -320,8 +281,6 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   // void (const PhysicalRect&).
   template <typename PhysicalRectCollector>
   void CollectLineBoxRects(const PhysicalRectCollector&) const;
-  template <typename PhysicalRectCollector>
-  void CollectCulledLineBoxRects(const PhysicalRectCollector&) const;
 
   // FlippedRectCollector should be like a function:
   // void (const LayoutRect&);
@@ -378,8 +337,6 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
     return gfx::Rect(bounding_box.size());
   }
 
-  virtual InlineFlowBox* CreateInlineFlowBox();  // Subclassed by SVG and Ruby
-
   void DirtyLinesFromChangedChild(LayoutObject*, MarkingBehavior) final;
 
   // TODO(leviw): This should probably be an int. We don't snap equivalent lines
@@ -413,21 +370,11 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
 
   LayoutObjectChildList children_;
 
-  // All of the line boxes created for this inline flow. For example,
-  // <i>Hello<br>world.</i> will have two <i> line boxes.
-  // Valid only when !IsInLayoutNGInlineFormattingContext().
-  LineBoxList line_boxes_;
-
   // The index of the first fragment item associated with this object in
   // |NGFragmentItems::Items()|. Zero means there are no such item.
   // Valid only when IsInLayoutNGInlineFormattingContext().
   wtf_size_t first_fragment_item_index_ = 0u;
-  };
-
-inline LineBoxList* LayoutInline::MutableLineBoxes() {
-  CHECK(!IsInLayoutNGInlineFormattingContext());
-  return &line_boxes_;
-}
+};
 
 inline wtf_size_t LayoutInline::FirstInlineFragmentItemIndex() const {
   if (!IsInLayoutNGInlineFormattingContext())

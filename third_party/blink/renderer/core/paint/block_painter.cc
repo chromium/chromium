@@ -173,22 +173,6 @@ void BlockPainter::PaintAllChildPhasesAtomically(const LayoutBox& child,
     ObjectPainter(child).PaintAllPhasesAtomically(paint_info);
 }
 
-void BlockPainter::PaintInlineBox(const InlineBox& inline_box,
-                                  const PaintInfo& paint_info) {
-  if (paint_info.phase != PaintPhase::kForeground &&
-      paint_info.phase != PaintPhase::kForcedColorsModeBackplate &&
-      paint_info.phase != PaintPhase::kSelectionDragImage)
-    return;
-
-  // Text clips are painted only for the direct inline children of the object
-  // that has a text clip style on it, not block children.
-  DCHECK(paint_info.phase != PaintPhase::kTextClip);
-
-  ObjectPainter(
-      *LineLayoutAPIShim::ConstLayoutObjectFrom(inline_box.GetLineLayoutItem()))
-      .PaintAllPhasesAtomically(paint_info);
-}
-
 DISABLE_CFI_PERF
 void BlockPainter::PaintObject(const PaintInfo& paint_info,
                                const PhysicalOffset& paint_offset) {

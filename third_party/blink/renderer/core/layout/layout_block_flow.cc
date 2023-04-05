@@ -51,8 +51,6 @@
 #include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/line/glyph_overflow.h"
-#include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
@@ -78,7 +76,6 @@
 namespace blink {
 
 struct SameSizeAsLayoutBlockFlow : public LayoutBlock {
-  LineBoxList line_boxes;
   Member<void*> member;
 };
 
@@ -88,13 +85,7 @@ LayoutBlockFlow::LayoutBlockFlow(ContainerNode* node) : LayoutBlock(node) {
   SetChildrenInline(true);
 }
 
-#if DCHECK_IS_ON()
-LayoutBlockFlow::~LayoutBlockFlow() {
-  line_boxes_.AssertIsEmpty();
-}
-#else
 LayoutBlockFlow::~LayoutBlockFlow() = default;
-#endif
 
 LayoutBlockFlow* LayoutBlockFlow::CreateAnonymous(
     Document* document,
@@ -187,14 +178,6 @@ void LayoutBlockFlow::ComputeVisualOverflow(bool recompute_floats) {
   }
 }
 
-// Note: When this function is called from |LayoutInline::SplitFlow()|, some
-// fragments point to destroyed |LayoutObject|.
-void LayoutBlockFlow::DeleteLineBoxTree() {
-  NOT_DESTROYED();
-
-  line_boxes_.DeleteLineBoxTree();
-}
-
 bool LayoutBlockFlow::CanContainFirstFormattedLine() const {
   NOT_DESTROYED();
   // The 'text-indent' only affects a line if it is the first formatted
@@ -205,26 +188,6 @@ bool LayoutBlockFlow::CanContainFirstFormattedLine() const {
          IsGridItemIncludingNG();
 }
 
-int LayoutBlockFlow::LineCount(
-    const RootInlineBox* stop_root_inline_box) const {
-  NOT_DESTROYED();
-#if DCHECK_IS_ON()
-  DCHECK(!stop_root_inline_box ||
-         stop_root_inline_box->Block().DebugPointer() == this);
-#endif
-  if (!ChildrenInline())
-    return 0;
-
-  int count = 0;
-  for (const RootInlineBox* box = FirstRootBox(); box;
-       box = box->NextRootBox()) {
-    count++;
-    if (box == stop_root_inline_box)
-      break;
-  }
-  return count;
-}
-
 LayoutUnit LayoutBlockFlow::FirstLineBoxBaseline() const {
   NOT_DESTROYED();
   if (!ChildrenInline())
@@ -232,24 +195,6 @@ LayoutUnit LayoutBlockFlow::FirstLineBoxBaseline() const {
   if (const absl::optional<LayoutUnit> baseline =
           FirstLineBoxBaselineOverride())
     return *baseline;
-  if (FirstLineBox()) {
-    const SimpleFontData* font_data = Style(true)->GetFont().PrimaryFont();
-    DCHECK(font_data);
-    if (!font_data)
-      return LayoutUnit(-1);
-    // fontMetrics 'ascent' is the distance above the baseline to the 'over'
-    // edge, which is 'top' for horizontal and 'right' for vertical-lr and
-    // vertical-rl. However, firstLineBox()->logicalTop() gives the offset from
-    // the 'left' edge for vertical-lr, hence we need to use the Font Metrics
-    // 'descent' instead. The result should be handled accordingly by the caller
-    // as a 'descent' value, in order to compute properly the max baseline.
-    if (StyleRef().IsFlippedLinesWritingMode()) {
-      return FirstLineBox()->LogicalTop() + font_data->GetFontMetrics().Descent(
-                                                FirstRootBox()->BaselineType());
-    }
-    return FirstLineBox()->LogicalTop() +
-           font_data->GetFontMetrics().Ascent(FirstRootBox()->BaselineType());
-  }
   return EmptyLineBaseline(IsHorizontalWritingMode() ? kHorizontalLine
                                                      : kVerticalLine);
 }
@@ -262,21 +207,6 @@ LayoutUnit LayoutBlockFlow::InlineBlockBaseline(
   if (const absl::optional<LayoutUnit> baseline =
           InlineBlockBaselineOverride(line_direction))
     return *baseline;
-  if (LastLineBox()) {
-    const SimpleFontData* font_data =
-        Style(LastLineBox() == FirstLineBox())->GetFont().PrimaryFont();
-    DCHECK(font_data);
-    if (!font_data)
-      return LayoutUnit(-1);
-    // InlineFlowBox::placeBoxesInBlockDirection will flip lines in
-    // case of verticalLR mode, so we can assume verticalRL for now.
-    if (StyleRef().IsFlippedLinesWritingMode()) {
-      return LogicalHeight() - LastLineBox()->LogicalBottom() +
-             font_data->GetFontMetrics().Ascent(LastRootBox()->BaselineType());
-    }
-    return LastLineBox()->LogicalTop() +
-           font_data->GetFontMetrics().Ascent(LastRootBox()->BaselineType());
-  }
   return EmptyLineBaseline(line_direction);
 }
 
@@ -287,24 +217,6 @@ void LayoutBlockFlow::WillBeDestroyed() {
   // boxes that they are removed from. Effects that do :before/:after only on
   // hover could crash otherwise.
   Children()->DestroyLeftoverChildren();
-
-  if (!DocumentBeingDestroyed()) {
-    // TODO(mstensho): figure out if we need this. We have no test coverage for
-    // it. It looks like all line boxes have been removed at this point.
-    if (FirstLineBox()) {
-      // If we are an anonymous block, then our line boxes might have children
-      // that will outlast this block. In the non-anonymous block case those
-      // children will be destroyed by the time we return from this function.
-      if (IsAnonymousBlock()) {
-        for (InlineFlowBox* box : *LineBoxes()) {
-          while (InlineBox* child_box = box->FirstChild())
-            child_box->Remove();
-        }
-      }
-    }
-  }
-
-  line_boxes_.DeleteLineBoxes();
 
   LayoutBlock::WillBeDestroyed();
 }
@@ -453,13 +365,9 @@ void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
       CollapseAnonymousBlockChild(child_block_flow);
   }
 
-  if (!FirstChild()) {
-    // If this was our last child be sure to clear out our line boxes.
-    if (ChildrenInline())
-      DeleteLineBoxTree();
-  } else if (!BeingDestroyed() &&
-             !old_child->IsFloatingOrOutOfFlowPositioned() &&
-             !old_child->IsAnonymousBlock()) {
+  if (FirstChild() && !BeingDestroyed() &&
+      !old_child->IsFloatingOrOutOfFlowPositioned() &&
+      !old_child->IsAnonymousBlock()) {
     // If the child we're removing means that we can now treat all children as
     // inline without the need for anonymous blocks, then do that.
     MakeChildrenInlineIfPossible();
@@ -564,7 +472,6 @@ bool LayoutBlockFlow::MergeSiblingContiguousAnonymousBlock(
   sibling_that_may_be_deleted->MoveAllChildrenIncludingFloatsTo(
       this, full_remove_insert);
   // Delete the now-empty block's lines and nuke it.
-  sibling_that_may_be_deleted->DeleteLineBoxTree();
   sibling_that_may_be_deleted->Destroy();
   return true;
 }
@@ -725,8 +632,6 @@ void LayoutBlockFlow::MakeChildrenNonInline(LayoutObject* insertion_point) {
   if (!child)
     return;
 
-  DeleteLineBoxTree();
-
   while (child) {
     LayoutObject* inline_run_start;
     LayoutObject* inline_run_end;
@@ -830,19 +735,6 @@ bool LayoutBlockFlow::AllowsColumns() const {
   return true;
 }
 
-void LayoutBlockFlow::MoveChildrenTo(LayoutBoxModelObject* to_box_model_object,
-                                     LayoutObject* start_child,
-                                     LayoutObject* end_child,
-                                     LayoutObject* before_child,
-                                     bool full_remove_insert) {
-  NOT_DESTROYED();
-  if (ChildrenInline())
-    DeleteLineBoxTree();
-  LayoutBoxModelObject::MoveChildrenTo(to_box_model_object, start_child,
-                                       end_child, before_child,
-                                       full_remove_insert);
-}
-
 void LayoutBlockFlow::CreateOrDestroyMultiColumnFlowThreadIfNeeded(
     const ComputedStyle* old_style) {
   NOT_DESTROYED();
@@ -913,41 +805,36 @@ void LayoutBlockFlow::SetShouldDoFullPaintInvalidationForFirstLine() {
   DCHECK(ChildrenInline());
 
   const auto fragments = PhysicalFragments();
-  if (!fragments.IsEmpty()) {
-    DCHECK(!FirstRootBox());
-    for (const NGPhysicalBoxFragment& fragment : fragments) {
-      NGInlineCursor first_line(fragment);
-      if (!first_line) {
-        continue;
-      }
-      first_line.MoveToFirstLine();
-      if (!first_line) {
-        continue;
-      }
-      if (first_line.Current().UsesFirstLineStyle()) {
-        // Mark all descendants of the first line if first-line style.
-        for (NGInlineCursor descendants = first_line.CursorForDescendants();
-             descendants; descendants.MoveToNext()) {
-          const NGFragmentItem* item = descendants.Current().Item();
-          if (UNLIKELY(item->IsLayoutObjectDestroyedOrMoved())) {
-            descendants.MoveToNextSkippingChildren();
-            continue;
-          }
-          LayoutObject* layout_object = item->GetMutableLayoutObject();
-          DCHECK(layout_object);
-          layout_object->StyleRef().ClearCachedPseudoElementStyles();
-          layout_object->SetShouldDoFullPaintInvalidation();
-        }
-        StyleRef().ClearCachedPseudoElementStyles();
-        SetShouldDoFullPaintInvalidation();
-        return;
-      }
-    }
+  if (fragments.IsEmpty()) {
     return;
   }
-
-  if (RootInlineBox* first_root_box = FirstRootBox()) {
-    first_root_box->SetShouldDoFullPaintInvalidationForFirstLine();
+  for (const NGPhysicalBoxFragment& fragment : fragments) {
+    NGInlineCursor first_line(fragment);
+    if (!first_line) {
+      continue;
+    }
+    first_line.MoveToFirstLine();
+    if (!first_line) {
+      continue;
+    }
+    if (first_line.Current().UsesFirstLineStyle()) {
+      // Mark all descendants of the first line if first-line style.
+      for (NGInlineCursor descendants = first_line.CursorForDescendants();
+           descendants; descendants.MoveToNext()) {
+        const NGFragmentItem* item = descendants.Current().Item();
+        if (UNLIKELY(item->IsLayoutObjectDestroyedOrMoved())) {
+          descendants.MoveToNextSkippingChildren();
+          continue;
+        }
+        LayoutObject* layout_object = item->GetMutableLayoutObject();
+        DCHECK(layout_object);
+        layout_object->StyleRef().ClearCachedPseudoElementStyles();
+        layout_object->SetShouldDoFullPaintInvalidation();
+      }
+      StyleRef().ClearCachedPseudoElementStyles();
+      SetShouldDoFullPaintInvalidation();
+      return;
+    }
   }
 }
 
@@ -1018,120 +905,6 @@ PositionWithAffinity LayoutBlockFlow::PositionForPoint(
   if (!IsHorizontalWritingMode())
     point_in_logical_contents = point_in_logical_contents.TransposedPoint();
 
-  if (!FirstRootBox())
-    return CreatePositionWithAffinity(0);
-
-  bool lines_are_flipped = StyleRef().IsFlippedLinesWritingMode();
-  bool blocks_are_flipped = StyleRef().IsFlippedBlocksWritingMode();
-
-  // look for the closest line box in the root box which is at the passed-in y
-  // coordinate
-  InlineBox* closest_box = nullptr;
-  RootInlineBox* first_root_box_with_children = nullptr;
-  RootInlineBox* last_root_box_with_children = nullptr;
-  for (RootInlineBox* root = FirstRootBox(); root; root = root->NextRootBox()) {
-    if (!root->FirstLeafChild())
-      continue;
-    if (!first_root_box_with_children)
-      first_root_box_with_children = root;
-
-    if (!lines_are_flipped && root->IsFirstAfterPageBreak() &&
-        (point_in_logical_contents.Y() < root->LineTopWithLeading() ||
-         (blocks_are_flipped &&
-          point_in_logical_contents.Y() == root->LineTopWithLeading())))
-      break;
-
-    last_root_box_with_children = root;
-
-    // check if this root line box is located at this y coordinate
-    if (point_in_logical_contents.Y() < root->SelectionBottom() ||
-        (blocks_are_flipped &&
-         point_in_logical_contents.Y() == root->SelectionBottom())) {
-      if (lines_are_flipped) {
-        RootInlineBox* next_root_box_with_children = root->NextRootBox();
-        while (next_root_box_with_children &&
-               !next_root_box_with_children->FirstLeafChild())
-          next_root_box_with_children =
-              next_root_box_with_children->NextRootBox();
-
-        if (next_root_box_with_children &&
-            next_root_box_with_children->IsFirstAfterPageBreak() &&
-            (point_in_logical_contents.Y() >
-                 next_root_box_with_children->LineTopWithLeading() ||
-             (!blocks_are_flipped &&
-              point_in_logical_contents.Y() ==
-                  next_root_box_with_children->LineTopWithLeading())))
-          continue;
-      }
-      closest_box = root->ClosestLeafChildForLogicalLeftPosition(
-          point_in_logical_contents.X());
-      if (closest_box)
-        break;
-    }
-  }
-
-  const bool move_caret_to_boundary =
-      ShouldMoveCaretToHorizontalBoundaryWhenPastTopOrBottom();
-  if (!move_caret_to_boundary && !closest_box && last_root_box_with_children) {
-    // y coordinate is below last root line box, pretend we hit it
-    closest_box =
-        last_root_box_with_children->ClosestLeafChildForLogicalLeftPosition(
-            point_in_logical_contents.X());
-  }
-
-  if (closest_box) {
-    if (move_caret_to_boundary) {
-      LayoutUnit first_root_box_with_children_top =
-          std::min<LayoutUnit>(first_root_box_with_children->SelectionTop(),
-                               first_root_box_with_children->LogicalTop());
-      if (point_in_logical_contents.Y() < first_root_box_with_children_top ||
-          (blocks_are_flipped &&
-           point_in_logical_contents.Y() == first_root_box_with_children_top)) {
-        InlineBox* box = first_root_box_with_children->FirstLeafChild();
-        if (box->IsLineBreak()) {
-          if (InlineBox* new_box = box->NextLeafChildIgnoringLineBreak())
-            box = new_box;
-        }
-        // y coordinate is above first root line box, so return the start of the
-        // first
-        return PositionWithAffinity(PositionForBox(box, true));
-      }
-    }
-
-    if (closest_box->GetLineLayoutItem().IsAtomicInlineLevel()) {
-      // We want to pass the original point other than a corrected one.
-      LayoutPoint adjusted_point(point_in_logical_contents);
-      if (!IsHorizontalWritingMode())
-        adjusted_point = adjusted_point.TransposedPoint();
-      return PositionForPointRespectingEditingBoundaries(
-          LineLayoutBox(closest_box->GetLineLayoutItem()),
-          FlipForWritingMode(adjusted_point));
-    }
-
-    // pass the box a top position that is inside it
-    LayoutPoint adjusted_point(point_in_logical_contents.X(),
-                               closest_box->Root().BlockDirectionPointInLine());
-    if (!IsHorizontalWritingMode())
-      adjusted_point = adjusted_point.TransposedPoint();
-    return closest_box->GetLineLayoutItem().PositionForPoint(
-        FlipForWritingMode(adjusted_point));
-  }
-
-  if (last_root_box_with_children) {
-    // We hit this case for Mac behavior when the Y coordinate is below the last
-    // box.
-    DCHECK(move_caret_to_boundary);
-    if (const InlineBox* logically_last_box =
-            last_root_box_with_children->GetLogicalEndNonPseudoBox()) {
-      // TODO(layout-dev): Change |PositionForBox()| to take |const InlineBox*|.
-      return PositionWithAffinity(
-          PositionForBox(const_cast<InlineBox*>(logically_last_box), false));
-    }
-  }
-
-  // Can't reach this. We have a root line box, but it has no kids.
-  // FIXME: This should NOTREACHED(), but clicking on placeholder text
-  // seems to hit this code path.
   return CreatePositionWithAffinity(0);
 }
 
@@ -1143,69 +916,6 @@ bool LayoutBlockFlow::ShouldMoveCaretToHorizontalBoundaryWhenPastTopOrBottom()
       ->GetEditor()
       .Behavior()
       .ShouldMoveCaretToHorizontalBoundaryWhenPastTopOrBottom();
-}
-
-#if DCHECK_IS_ON()
-
-void LayoutBlockFlow::ShowLineTreeAndMark(const InlineBox* marked_box1,
-                                          const char* marked_label1,
-                                          const InlineBox* marked_box2,
-                                          const char* marked_label2,
-                                          const LayoutObject* obj) const {
-  NOT_DESTROYED();
-  if (getenv("RUNNING_UNDER_RR")) {
-    // Printing timestamps requires an IPC to get the local time, which
-    // does not work in an rr replay session. Just disable timestamp printing,
-    // which we don't care about anyway.
-    logging::SetLogItems(true, true, false, false);
-  }
-
-  StringBuilder string_blockflow;
-  DumpLayoutObject(string_blockflow, true, kShowTreeCharacterOffset);
-  for (const RootInlineBox* root = FirstRootBox(); root;
-       root = root->NextRootBox()) {
-    root->DumpLineTreeAndMark(string_blockflow, marked_box1, marked_label1,
-                              marked_box2, marked_label2, obj, 1);
-  }
-  DLOG(INFO) << "\n" << string_blockflow.ToString().Utf8();
-}
-
-#endif
-
-void LayoutBlockFlow::AddOutlineRects(
-    Vector<PhysicalRect>& rects,
-    OutlineInfo* info,
-    const PhysicalOffset& additional_offset,
-    NGOutlineType include_block_overflows) const {
-  NOT_DESTROYED();
-
-  LayoutBlock::AddOutlineRects(rects, info, additional_offset,
-                               include_block_overflows);
-
-  if (ShouldIncludeBlockVisualOverflow(include_block_overflows) &&
-      !HasNonVisibleOverflow() && !HasControlClip()) {
-    for (RootInlineBox* curr = FirstRootBox(); curr;
-         curr = curr->NextRootBox()) {
-      LayoutUnit flipped_left = curr->X();
-      LayoutUnit flipped_right = curr->X() + curr->Width();
-      LayoutUnit top = curr->Y();
-      LayoutUnit bottom = curr->Y() + curr->Height();
-      if (IsHorizontalWritingMode()) {
-        top = std::max(curr->LineTop(), top);
-        bottom = std::min(curr->LineBottom(), bottom);
-      } else {
-        flipped_left = std::max(curr->LineTop(), flipped_left);
-        flipped_right = std::min(curr->LineBottom(), flipped_right);
-      }
-      LayoutRect rect(flipped_left, top, flipped_right - flipped_left,
-                      bottom - top);
-      if (!rect.IsEmpty()) {
-        PhysicalRect physical_rect = FlipForWritingMode(rect);
-        physical_rect.Move(additional_offset);
-        rects.push_back(physical_rect);
-      }
-    }
-  }
 }
 
 void LayoutBlockFlow::InvalidateDisplayItemClients(

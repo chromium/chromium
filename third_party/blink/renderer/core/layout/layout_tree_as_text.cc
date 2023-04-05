@@ -42,7 +42,6 @@
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
@@ -322,86 +321,6 @@ void LayoutTreeAsText::WriteLayoutObject(WTF::TextStream& ts,
     ts << " (display-locked)";
 }
 
-static void WriteInlineBox(WTF::TextStream& ts,
-                           const InlineBox& box,
-                           int indent) {
-  WriteIndent(ts, indent);
-  ts << "+ ";
-  ts << box.BoxName() << " {" << box.GetLineLayoutItem().DebugName() << "}"
-     << " pos=(" << box.X() << "," << box.Y() << ")"
-     << " size=(" << box.Width() << "," << box.Height() << ")"
-     << " baseline=" << box.BaselinePosition(kAlphabeticBaseline) << "/"
-     << box.BaselinePosition(kCentralBaseline);
-}
-
-static void WriteInlineTextBox(WTF::TextStream& ts,
-                               const InlineTextBox& text_box,
-                               int indent) {
-  WriteInlineBox(ts, text_box, indent);
-  String value = text_box.GetText();
-  value.Replace('\\', "\\\\");
-  value.Replace('\n', "\\n");
-  value.Replace('"', "\\\"");
-  ts << " range=(" << text_box.Start() << ","
-     << (text_box.Start() + text_box.Len()) << ")"
-     << " \"" << value << "\"";
-}
-
-static void WriteInlineFlowBox(WTF::TextStream& ts,
-                               const InlineFlowBox& root_box,
-                               int indent) {
-  WriteInlineBox(ts, root_box, indent);
-  ts << "\n";
-  for (const InlineBox* box = root_box.FirstChild(); box;
-       box = box->NextOnLine()) {
-    if (box->IsInlineFlowBox()) {
-      WriteInlineFlowBox(ts, static_cast<const InlineFlowBox&>(*box),
-                         indent + 1);
-      continue;
-    }
-    if (box->IsInlineTextBox())
-      WriteInlineTextBox(ts, static_cast<const InlineTextBox&>(*box),
-                         indent + 1);
-    else
-      WriteInlineBox(ts, *box, indent + 1);
-    ts << "\n";
-  }
-}
-
-void LayoutTreeAsText::WriteLineBoxTree(WTF::TextStream& ts,
-                                        const LayoutBlockFlow& o,
-                                        int indent) {
-  for (const InlineFlowBox* root_box : o.LineBoxes()) {
-    WriteInlineFlowBox(ts, *root_box, indent);
-  }
-}
-
-static void WriteTextRun(WTF::TextStream& ts,
-                         const LayoutText& o,
-                         const InlineTextBox& run) {
-  // FIXME: For now use an "enclosingIntRect" model for x, y and logicalWidth,
-  // although this makes it harder to detect any changes caused by the
-  // conversion to floating point. :(
-  int x = run.X().ToInt();
-  int y = run.Y().ToInt();
-  int logical_width = (run.X() + run.LogicalWidth()).Ceil() - x;
-
-  ts << "text run at (" << x << "," << y << ") width " << logical_width;
-  if (!run.IsLeftToRightDirection() || run.DirOverride()) {
-    ts << (!run.IsLeftToRightDirection() ? " RTL" : " LTR");
-    if (run.DirOverride())
-      ts << " override";
-  }
-  ts << ": "
-     << QuoteAndEscapeNonPrintables(
-            String(o.GetText()).Substring(run.Start(), run.Len()));
-  if (run.HasHyphen()) {
-    ts << " + hyphen string "
-       << QuoteAndEscapeNonPrintables(o.StyleRef().HyphenString());
-  }
-  ts << "\n";
-}
-
 static void WriteTextFragment(WTF::TextStream& ts,
                               const LayoutObject* layout_object,
                               PhysicalRect rect,
@@ -512,11 +431,6 @@ void Write(WTF::TextStream& ts,
     WritePaintProperties(ts, o, indent + 1);
   }
 
-  auto* layout_block_flow = DynamicTo<LayoutBlockFlow>(o);
-  if ((behavior & kLayoutAsTextShowLineTrees) && layout_block_flow) {
-    LayoutTreeAsText::WriteLineBoxTree(ts, *layout_block_flow, indent + 1);
-  }
-
   if (o.IsText() && !o.IsBR()) {
     const auto& text = To<LayoutText>(o);
     if (const LayoutBlockFlow* block_flow = text.FragmentItemsContainer()) {
@@ -525,11 +439,6 @@ void Write(WTF::TextStream& ts,
       for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
         WriteIndent(ts, indent + 1);
         WriteTextFragment(ts, cursor);
-      }
-    } else {
-      for (InlineTextBox* box : text.TextBoxes()) {
-        WriteIndent(ts, indent + 1);
-        WriteTextRun(ts, text, *box);
       }
     }
   }

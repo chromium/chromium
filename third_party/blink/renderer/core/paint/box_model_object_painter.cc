@@ -6,7 +6,6 @@
 
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
-#include "third_party/blink/renderer/core/layout/line/root_inline_box.h"
 #include "third_party/blink/renderer/core/paint/background_image_geometry.h"
 #include "third_party/blink/renderer/core/paint/box_decoration_data.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
@@ -31,11 +30,9 @@ Node* GetNode(const LayoutBoxModelObject& box_model) {
 
 }  // anonymous namespace
 
-BoxModelObjectPainter::BoxModelObjectPainter(const LayoutBoxModelObject& box,
-                                             const InlineFlowBox* flow_box)
+BoxModelObjectPainter::BoxModelObjectPainter(const LayoutBoxModelObject& box)
     : BoxPainterBase(&box.GetDocument(), box.StyleRef(), GetNode(box)),
-      box_model_(box),
-      flow_box_(flow_box) {}
+      box_model_(box) {}
 
 void BoxModelObjectPainter::PaintTextClipMask(
     const PaintInfo& paint_info,
@@ -45,7 +42,6 @@ void BoxModelObjectPainter::PaintTextClipMask(
   PaintInfo mask_paint_info(paint_info.context, CullRect(mask_rect),
                             PaintPhase::kTextClip);
   mask_paint_info.SetFragmentID(paint_info.FragmentID());
-  DCHECK(!flow_box_);
   if (auto* layout_block = DynamicTo<LayoutBlock>(box_model_)) {
     layout_block->PaintObject(mask_paint_info, paint_offset);
   } else {
@@ -98,8 +94,6 @@ BoxPainterBase::FillLayerInfo BoxModelObjectPainter::GetFillLayerInfo(
     BackgroundBleedAvoidance bleed_avoidance,
     bool is_painting_background_in_contents_space) const {
   PhysicalBoxSides sides_to_include;
-  if (flow_box_)
-    sides_to_include = flow_box_->SidesToInclude();
   RespectImageOrientationEnum respect_orientation =
       LayoutObject::ShouldRespectImageOrientation(&box_model_);
   if (auto* style_image = bg_layer.GetImage()) {

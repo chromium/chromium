@@ -28,26 +28,6 @@ class LineLayoutText : public LineLayoutItem {
 
   LineLayoutText() = default;
 
-  InlineTextBox* FirstTextBox() const { return ToText()->FirstTextBox(); }
-
-  InlineTextBox* LastTextBox() const { return ToText()->LastTextBox(); }
-
-  InlineTextBox* CreateInlineTextBox(int start, uint16_t length) {
-    return ToText()->CreateInlineTextBox(start, length);
-  }
-
-  void ExtractTextBox(InlineTextBox* inline_text_box) {
-    ToText()->ExtractTextBox(inline_text_box);
-  }
-
-  void AttachTextBox(InlineTextBox* inline_text_box) {
-    ToText()->AttachTextBox(inline_text_box);
-  }
-
-  void RemoveTextBox(InlineTextBox* inline_text_box) {
-    ToText()->RemoveTextBox(inline_text_box);
-  }
-
   bool IsWordBreak() const { return ToText()->IsWordBreak(); }
 
   bool IsAllCollapsibleWhitespace() const {

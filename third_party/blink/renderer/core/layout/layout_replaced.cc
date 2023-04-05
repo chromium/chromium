@@ -463,40 +463,6 @@ void LayoutReplaced::ComputePositionedLogicalWidth(
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // 6. If at this point the values are over-constrained, ignore the value for
-  //    either 'left' (in case the 'direction' property of the containing block
-  //    is 'rtl') or 'right' (in case 'direction' is 'ltr') and solve for that
-  //    value.
-  // ---------------------------------------------------------------------------
-  // NOTE: Constraints imposed by the width of the containing block and its
-  // content have already been accounted for above.
-  //
-  // FIXME: Deal with differing writing modes here.  Our offset needs to be in
-  // the containing block's coordinate space, so that
-  // can make the result here rather complicated to compute.
-  //
-  // Use computed values to calculate the horizontal position.
-  //
-  // FIXME: This hack is needed to calculate the logical left position for a
-  // 'rtl' relatively positioned, inline containing block because right now, it
-  // is using the logical left position of the first line box when really it
-  // should use the last line box. When this is fixed elsewhere, this block
-  // should be removed.
-  if (container_block->IsLayoutInline() &&
-      !container_block->StyleRef().IsLeftToRightDirection()) {
-    const auto* flow = To<LayoutInline>(container_block);
-    InlineFlowBox* first_line = flow->FirstLineBox();
-    InlineFlowBox* last_line = flow->LastLineBox();
-    if (first_line && last_line && first_line != last_line) {
-      computed_values.position_ =
-          logical_left_value + margin_logical_left_alias +
-          last_line->BorderLogicalLeft() +
-          (last_line->LogicalLeft() - first_line->LogicalLeft());
-      return;
-    }
-  }
-
   LayoutUnit logical_left_pos = logical_left_value + margin_logical_left_alias;
   ComputeLogicalLeftPositionedOffset(logical_left_pos, this,
                                      computed_values.extent_, container_block,
@@ -1219,12 +1185,7 @@ static std::pair<LayoutUnit, LayoutUnit> SelectionTopAndBottom(
     return {logical_rect.offset.block_offset, logical_rect.BlockEndOffset()};
   }
 
-  InlineBox* box = layout_replaced.InlineBoxWrapper();
-  RootInlineBox* root_box = box ? &box->Root() : nullptr;
-  if (!root_box)
-    return fallback;
-
-  return {root_box->SelectionTop(), root_box->SelectionBottom()};
+  return fallback;
 }
 
 PositionWithAffinity LayoutReplaced::PositionForPoint(
@@ -1276,22 +1237,8 @@ PhysicalRect LayoutReplaced::LocalSelectionVisualRect() const {
     return rect;
   }
 
-  if (!InlineBoxWrapper()) {
-    // We're a block-level replaced element.  Just return our own dimensions.
-    return PhysicalRect(PhysicalOffset(), Size());
-  }
-
-  RootInlineBox& root = InlineBoxWrapper()->Root();
-  LayoutUnit new_logical_top =
-      root.Block().StyleRef().IsFlippedBlocksWritingMode()
-          ? InlineBoxWrapper()->LogicalBottom() - root.SelectionBottom()
-          : root.SelectionTop() - InlineBoxWrapper()->LogicalTop();
-  if (root.Block().StyleRef().IsHorizontalWritingMode()) {
-    return PhysicalRect(LayoutUnit(), new_logical_top, Size().Width(),
-                        root.SelectionHeight());
-  }
-  return PhysicalRect(new_logical_top, LayoutUnit(), root.SelectionHeight(),
-                      Size().Height());
+  // We're a block-level replaced element.  Just return our own dimensions.
+  return PhysicalRect(PhysicalOffset(), Size());
 }
 
 bool LayoutReplaced::RespectsCSSOverflow() const {

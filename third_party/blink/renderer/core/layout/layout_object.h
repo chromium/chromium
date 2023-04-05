@@ -77,7 +77,6 @@ class AffineTransform;
 class FragmentDataIterator;
 class HitTestLocation;
 class HitTestRequest;
-class InlineBox;
 class LayoutBlock;
 class LayoutBlockFlow;
 class LayoutFlowThread;
@@ -814,7 +813,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
                         unsigned show_tree_character_offset) const;
   void ShowTreeForThis() const;
   void ShowLayoutTreeForThis() const;
-  void ShowLineTreeForThis() const;
   void ShowLayoutObject() const;
 
   // Dump the subtree established by this layout object to the specified string
@@ -2778,16 +2776,14 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
    * useful for character range rect computations
    */
   virtual LayoutRect LocalCaretRect(
-      const InlineBox*,
       int caret_offset,
       LayoutUnit* extra_width_to_end_of_line = nullptr) const;
   PhysicalRect PhysicalLocalCaretRect(
-      const InlineBox* inline_box,
       int caret_offset,
       LayoutUnit* extra_width_to_end_of_line = nullptr) const {
     NOT_DESTROYED();
     return FlipForWritingMode(
-        LocalCaretRect(inline_box, caret_offset, extra_width_to_end_of_line));
+        LocalCaretRect(caret_offset, extra_width_to_end_of_line));
   }
 
   // When performing a global document tear-down, the layoutObject of the
@@ -4518,6 +4514,7 @@ inline void LayoutObject::SetNeedsPositionedMovementLayout() {
     MarkContainerChainForLayout();
 }
 
+// TODO(1229581): Get rid of this.
 inline void LayoutObject::SetIsInLayoutNGInlineFormattingContext(
     bool new_value) {
   DCHECK(!GetDocument().InPostLifecycleSteps());
@@ -4559,7 +4556,6 @@ CORE_EXPORT bool IsListBox(const LayoutObject* object);
 #if DCHECK_IS_ON()
 // Outside the blink namespace for ease of invocation from gdb.
 CORE_EXPORT void ShowTree(const blink::LayoutObject*);
-CORE_EXPORT void ShowLineTree(const blink::LayoutObject*);
 CORE_EXPORT void ShowLayoutTree(const blink::LayoutObject* object1);
 // We don't make object2 an optional parameter so that showLayoutTree
 // can be called from gdb easily.

@@ -911,24 +911,6 @@ String TextControlElement::InnerEditorValue() const {
   return result.ToString();
 }
 
-static void GetNextSoftBreak(RootInlineBox*& line,
-                             Node*& break_node,
-                             unsigned& break_offset) {
-  RootInlineBox* next;
-  for (; line; line = next) {
-    next = line->NextRootBox();
-    if (next && !line->EndsWithBreak()) {
-      DCHECK(line->LineBreakObj());
-      break_node = line->LineBreakObj().GetNode();
-      break_offset = line->LineBreakPos();
-      line = next;
-      return;
-    }
-  }
-  break_node = nullptr;
-  break_offset = 0;
-}
-
 String TextControlElement::ValueWithHardLineBreaks() const {
   // FIXME: It's not acceptable to ignore the HardWrap setting when there is no
   // layoutObject.  While we have no evidence this has ever been a practical
@@ -976,36 +958,7 @@ String TextControlElement::ValueWithHardLineBreaks() const {
     return result.ToString();
   }
 
-  Node* break_node;
-  unsigned break_offset;
-  RootInlineBox* line = layout_object->FirstRootBox();
-  if (!line)
-    return Value();
-
-  GetNextSoftBreak(line, break_node, break_offset);
-
-  StringBuilder result;
-  for (Node& node : NodeTraversal::DescendantsOf(*inner_text)) {
-    if (IsA<HTMLBRElement>(node)) {
-      DCHECK_EQ(&node, inner_text->lastChild());
-    } else if (auto* text_node = DynamicTo<Text>(node)) {
-      String data = text_node->data();
-      unsigned length = data.length();
-      unsigned position = 0;
-      while (break_node == node && break_offset <= length) {
-        if (break_offset > position) {
-          result.Append(data, position, break_offset - position);
-          position = break_offset;
-          result.Append(kNewlineCharacter);
-        }
-        GetNextSoftBreak(line, break_node, break_offset);
-      }
-      result.Append(data, position, length - position);
-    }
-    while (break_node == node)
-      GetNextSoftBreak(line, break_node, break_offset);
-  }
-  return result.ToString();
+  return Value();
 }
 
 TextControlElement* EnclosingTextControl(const Position& position) {
