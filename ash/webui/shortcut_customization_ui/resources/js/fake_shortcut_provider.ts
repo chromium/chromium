@@ -27,6 +27,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
       null;
   private acceleratorsUpdatedPromise: Promise<void>|null = null;
   private restoreDefaultCallCount: number = 0;
+  private preventProcessingAcceleratorsCallCount: number = 0;
 
   constructor() {
     this.methods = new FakeMethodResolver();
@@ -42,6 +43,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
     this.methods.register('restoreDefault');
     this.methods.register('restoreAllDefaults');
     this.methods.register('addObserver');
+    this.methods.register('preventProcessingAccelerators');
     this.registerObservables();
   }
 
@@ -51,6 +53,8 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
 
   // Disable all observers and reset provider to initial state.
   reset(): void {
+    this.restoreDefaultCallCount = 0;
+    this.preventProcessingAcceleratorsCallCount = 0;
     this.observables = new FakeObservables();
     this.registerObservables();
   }
@@ -132,6 +136,12 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
     return this.methods.resolveMethod('restoreAllDefaults');
   }
 
+  preventProcessingAccelerators(_preventProcessingAccelerators: boolean):
+      Promise<void> {
+    ++this.preventProcessingAcceleratorsCallCount;
+    return this.methods.resolveMethod('preventProcessingAccelerators');
+  }
+
   /**
    * Sets the value that will be returned when calling
    * getAccelerators().
@@ -150,6 +160,10 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
 
   getRestoreDefaultCallCount(): number {
     return this.restoreDefaultCallCount;
+  }
+
+  getPreventProcessingAcceleratorsCallCount(): number {
+    return this.preventProcessingAcceleratorsCallCount;
   }
 
   setFakeHasLauncherButton(hasLauncherButton: boolean): void {

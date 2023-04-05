@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/accelerators/accelerator_alias_converter.h"
+#include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/public/cpp/accelerators_util.h"
 #include "ash/public/mojom/accelerator_configuration.mojom-shared.h"
@@ -324,6 +325,8 @@ AcceleratorConfigurationProvider::~AcceleratorConfigurationProvider() {
   // In unit tests, the Shell instance may already be deleted at this point.
   if (Shell::HasInstance()) {
     Shell::Get()->keyboard_capability()->RemoveObserver(this);
+    Shell::Get()->accelerator_controller()->SetPreventProcessingAccelerators(
+        /*prevent_processing_accelerators=*/false);
   }
 }
 
@@ -397,6 +400,17 @@ AcceleratorConfigurationProvider::GetAcceleratorConfig() {
 std::vector<mojom::AcceleratorLayoutInfoPtr>
 AcceleratorConfigurationProvider::GetAcceleratorLayoutInfos() const {
   return mojo::Clone(layout_infos_);
+}
+
+void AcceleratorConfigurationProvider::PreventProcessingAccelerators(
+    bool prevent_processing_accelerators,
+    PreventProcessingAcceleratorsCallback callback) {
+  // Always reset the pending accelerator whenever the user has just started
+  // or stopped inputting an accelerator.
+  pending_accelerator_.reset();
+  Shell::Get()->accelerator_controller()->SetPreventProcessingAccelerators(
+      prevent_processing_accelerators);
+  std::move(callback).Run();
 }
 
 void AcceleratorConfigurationProvider::GetAcceleratorLayoutInfos(

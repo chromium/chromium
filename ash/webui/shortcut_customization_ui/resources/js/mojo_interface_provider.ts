@@ -118,6 +118,12 @@ export class ShortcutProviderWrapper implements ShortcutProviderInterface {
   restoreAllDefaults(): Promise<{result: AcceleratorResultData}> {
     return this.remote.restoreAllDefaults();
   }
+
+  preventProcessingAccelerators(preventProcessingAccelerators: boolean):
+      Promise<void> {
+    return this.remote.preventProcessingAccelerators(
+        preventProcessingAccelerators);
+  }
 }
 
 export function getShortcutProvider(): ShortcutProviderInterface {

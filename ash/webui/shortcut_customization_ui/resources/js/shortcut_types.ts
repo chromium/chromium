@@ -213,4 +213,6 @@ export interface ShortcutProviderInterface extends
   restoreDefault(source: AcceleratorSource, actionId: number):
       Promise<{result: AcceleratorResultData}>;
   restoreAllDefaults(): Promise<{result: AcceleratorResultData}>;
+  preventProcessingAccelerators(preventProcessingAccelerators: boolean):
+      Promise<void>;
 }

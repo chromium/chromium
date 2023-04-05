@@ -10,6 +10,7 @@
 #include <variant>
 #include <vector>
 
+#include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/accelerator_configuration.h"
@@ -1432,6 +1433,63 @@ TEST_F(AcceleratorConfigurationProviderTest, AddAcceleratorConflictLocked) {
       result->shortcut_name);
 }
 
+TEST_F(AcceleratorConfigurationProviderTest, AddAcceleratorConflictReset) {
+  FakeAcceleratorsUpdatedMojoObserver observer;
+  SetUpObserver(&observer);
+
+  // Initialize default accelerators.
+  const AcceleratorData test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+       TOGGLE_MIRROR_MODE},
+      {/*trigger_on_press=*/true, ui::VKEY_M, ui::EF_COMMAND_DOWN, OPEN_CROSH},
+  };
+
+  AshAcceleratorConfiguration* config =
+      Shell::Get()->ash_accelerator_configuration();
+  config->Initialize(test_data);
+
+  base::RunLoop().RunUntilIdle();
+
+  const ui::Accelerator conflict_accelerator(ui::VKEY_M, ui::EF_COMMAND_DOWN);
+  AcceleratorResultDataPtr result;
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .AddAccelerator(mojom::AcceleratorSource::kAsh, TOGGLE_MIRROR_MODE,
+                          conflict_accelerator, &result);
+
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kConflictCanOverride,
+            result->result);
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_CROSH),
+      result->shortcut_name);
+
+  AcceleratorConfigurationProvider::AcceleratorConfigurationMap actual_config =
+      observer.config();
+  ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh, test_data,
+                               actual_config);
+
+  // Simulate the user is no longer capturing the input, expect that re-pressing
+  // the accelerato will still give the same error
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .PreventProcessingAccelerators(false);
+
+  // Press the same accelerator, expect the same error.
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .AddAccelerator(mojom::AcceleratorSource::kAsh, TOGGLE_MIRROR_MODE,
+                          conflict_accelerator, &result);
+
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kConflictCanOverride,
+            result->result);
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_CROSH),
+      result->shortcut_name);
+
+  ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh, test_data,
+                               observer.config());
+}
+
 TEST_F(AcceleratorConfigurationProviderTest, AddAcceleratorConflictOverride) {
   FakeAcceleratorsUpdatedMojoObserver observer;
   SetUpObserver(&observer);
@@ -1555,6 +1613,22 @@ TEST_F(AcceleratorConfigurationProviderTest, AddAcceleratorConflictThenGood) {
   actual_config = observer.config();
   ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh,
                                updated_test_data, actual_config);
+}
+
+TEST_F(AcceleratorConfigurationProviderTest, PreventProcessingAccelerators) {
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .PreventProcessingAccelerators(true);
+  EXPECT_TRUE(Shell::Get()
+                  ->accelerator_controller()
+                  ->ShouldPreventProcessingAccelerators());
+
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .PreventProcessingAccelerators(false);
+  EXPECT_FALSE(Shell::Get()
+                   ->accelerator_controller()
+                   ->ShouldPreventProcessingAccelerators());
 }
 
 using FlagsKeyboardCodesVariant =
