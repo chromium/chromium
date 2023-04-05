@@ -5,12 +5,15 @@
 #ifndef ASH_USER_EDUCATION_USER_EDUCATION_UTIL_H_
 #define ASH_USER_EDUCATION_USER_EDUCATION_UTIL_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 
 class AccountId;
 
 namespace ash {
 
+enum class TutorialId;
 struct UserSession;
 
 namespace user_education_util {
@@ -24,6 +27,9 @@ ASH_EXPORT bool IsPrimaryAccountActive();
 
 // Returns whether `account_id` is associated with the primary user account.
 ASH_EXPORT bool IsPrimaryAccountId(const AccountId& account_id);
+
+// Returns the unique string representation of the specified `tutorial_id`.
+ASH_EXPORT std::string ToString(TutorialId tutorial_id);
 
 }  // namespace user_education_util
 }  // namespace ash

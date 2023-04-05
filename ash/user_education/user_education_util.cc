@@ -8,6 +8,7 @@
 #include "ash/public/cpp/session/user_info.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/user_education/user_education_types.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/session_manager_types.h"
 
@@ -51,6 +52,21 @@ bool IsPrimaryAccountActive() {
 
 bool IsPrimaryAccountId(const AccountId& account_id) {
   return account_id.is_valid() ? GetPrimaryAccountId() == account_id : false;
+}
+
+std::string ToString(TutorialId tutorial_id) {
+  switch (tutorial_id) {
+    case TutorialId::kCaptureModeTourPrototype1:
+      return "AshCaptureModeTourPrototype1";
+    case TutorialId::kCaptureModeTourPrototype2:
+      return "AshCaptureModeTourPrototype2";
+    case TutorialId::kHoldingSpaceTourPrototype1:
+      return "AshHoldingSpaceTourPrototype1";
+    case TutorialId::kHoldingSpaceTourPrototype2:
+      return "AshHoldingSpaceTourPrototype2";
+    case TutorialId::kWelcomeTourPrototype1:
+      return "AshWelcomeTourPrototype1";
+  }
 }
 
 }  // namespace ash::user_education_util

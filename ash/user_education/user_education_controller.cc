@@ -68,8 +68,8 @@ UserEducationController* UserEducationController::Get() {
 
 void UserEducationController::StartTutorial(
     UserEducationPrivateApiKey,
-    const user_education::TutorialIdentifier& tutorial_id,
-    const ui::ElementContext& element_context,
+    TutorialId tutorial_id,
+    ui::ElementContext element_context,
     base::OnceClosure completed_callback,
     base::OnceClosure aborted_callback) {
   // NOTE: User education in Ash is currently only supported for the primary

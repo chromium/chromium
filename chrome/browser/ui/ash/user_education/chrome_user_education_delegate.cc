@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/user_education/chrome_user_education_delegate.h"
 
+#include "ash/user_education/user_education_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -41,7 +42,7 @@ ChromeUserEducationDelegate::~ChromeUserEducationDelegate() = default;
 
 void ChromeUserEducationDelegate::RegisterTutorial(
     const AccountId& account_id,
-    user_education::TutorialIdentifier tutorial_id,
+    ash::TutorialId tutorial_id,
     user_education::TutorialDescription tutorial_description) {
   Profile* profile = Profile::FromBrowserContext(
       ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
@@ -53,12 +54,13 @@ void ChromeUserEducationDelegate::RegisterTutorial(
 
   UserEducationServiceFactory::GetForProfile(profile)
       ->tutorial_registry()
-      .AddTutorial(std::move(tutorial_id), std::move(tutorial_description));
+      .AddTutorial(ash::user_education_util::ToString(tutorial_id),
+                   std::move(tutorial_description));
 }
 
 void ChromeUserEducationDelegate::StartTutorial(
     const AccountId& account_id,
-    user_education::TutorialIdentifier tutorial_id,
+    ash::TutorialId tutorial_id,
     ui::ElementContext element_context,
     base::OnceClosure completed_callback,
     base::OnceClosure aborted_callback) {
@@ -72,8 +74,8 @@ void ChromeUserEducationDelegate::StartTutorial(
 
   UserEducationServiceFactory::GetForProfile(profile)
       ->tutorial_service()
-      .StartTutorial(std::move(tutorial_id), std::move(element_context),
-                     std::move(completed_callback),
+      .StartTutorial(ash::user_education_util::ToString(tutorial_id),
+                     std::move(element_context), std::move(completed_callback),
                      std::move(aborted_callback));
 }
 

@@ -13,7 +13,6 @@
 #include "ash/user_education/user_education_private_api_key.h"
 #include "base/functional/callback_forward.h"
 #include "base/scoped_observation.h"
-#include "components/user_education/common/tutorial_identifier.h"
 
 namespace ui {
 class ElementContext;
@@ -24,6 +23,8 @@ namespace ash {
 class SessionController;
 class TutorialController;
 class UserEducationDelegate;
+
+enum class TutorialId;
 
 // The controller, owned by `Shell`, for user education features in Ash.
 class ASH_EXPORT UserEducationController : public SessionObserver {
@@ -42,8 +43,8 @@ class ASH_EXPORT UserEducationController : public SessionObserver {
   // `aborted_callback` will be run on tutorial finish.
   // NOTE: Currently only the primary user profile is supported.
   void StartTutorial(UserEducationPrivateApiKey,
-                     const user_education::TutorialIdentifier& tutorial_id,
-                     const ui::ElementContext& element_context,
+                     TutorialId tutorial_id,
+                     ui::ElementContext element_context,
                      base::OnceClosure completed_callback,
                      base::OnceClosure aborted_callback);
 

@@ -4,10 +4,14 @@
 
 #include "ash/user_education/user_education_util.h"
 
+#include <set>
+#include <string>
+
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/public/cpp/session/user_info.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/user_education/user_education_types.h"
 #include "components/account_id/account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -93,6 +97,18 @@ TEST_F(UserEducationUtilTest, IsPrimaryAccountId) {
   EXPECT_FALSE(IsPrimaryAccountId(AccountId()));
   EXPECT_TRUE(IsPrimaryAccountId(primary_account_id));
   EXPECT_FALSE(IsPrimaryAccountId(secondary_account_id));
+}
+
+// Verifies that `ToString()` is working as intended.
+TEST_F(UserEducationUtilTest, ToString) {
+  std::set<std::string> tutorial_id_strs;
+  for (size_t i = static_cast<size_t>(TutorialId::kMinValue);
+       i <= static_cast<size_t>(TutorialId::kMaxValue); ++i) {
+    // Currently the only constraint on `ToString()` is that it returns a unique
+    // value for each distinct tutorial ID.
+    auto tutorial_id_str = ToString(static_cast<TutorialId>(i));
+    EXPECT_TRUE(tutorial_id_strs.emplace(std::move(tutorial_id_str)).second);
+  }
 }
 
 }  // namespace ash::user_education_util

@@ -873,6 +873,7 @@ component("ash") {
     "user_education/user_education_controller.h",
     "user_education/user_education_delegate.h",
     "user_education/user_education_private_api_key.h",
+    "user_education/user_education_types.h",
     "user_education/user_education_util.cc",
     "user_education/user_education_util.h",
     "user_education/welcome_tour/welcome_tour_controller.cc",

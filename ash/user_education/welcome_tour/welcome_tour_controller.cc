@@ -9,6 +9,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/user_education/user_education_constants.h"
 #include "ash/user_education/user_education_controller.h"
+#include "ash/user_education/user_education_types.h"
 #include "ash/user_education/user_education_util.h"
 #include "base/check_op.h"
 #include "components/user_education/common/tutorial_description.h"
@@ -19,9 +20,6 @@ namespace {
 
 // The singleton instance owned by the `UserEducationController`.
 WelcomeTourController* g_instance = nullptr;
-
-// Unique identifier for the Welcome Tour tutorial.
-constexpr char kTutorialId[] = "AshWelcomeTourPrototype1";
 
 }  // namespace
 
@@ -46,16 +44,15 @@ WelcomeTourController* WelcomeTourController::Get() {
 }
 
 // TODO(http://b/275616974): Implement tutorial descriptions.
-std::map<user_education::TutorialIdentifier,
-         user_education::TutorialDescription>
+std::map<TutorialId, user_education::TutorialDescription>
 WelcomeTourController::GetTutorialDescriptions() {
-  std::map<user_education::TutorialIdentifier,
-           user_education::TutorialDescription>
+  std::map<TutorialId, user_education::TutorialDescription>
       tutorial_descriptions_by_id;
 
   user_education::TutorialDescription& tutorial_description =
       tutorial_descriptions_by_id
-          .emplace(std::piecewise_construct, std::forward_as_tuple(kTutorialId),
+          .emplace(std::piecewise_construct,
+                   std::forward_as_tuple(TutorialId::kWelcomeTourPrototype1),
                    std::forward_as_tuple())
           .first->second;
 
@@ -128,7 +125,8 @@ void WelcomeTourController::MaybeStartTutorial() {
 
   // TODO(http://b/275616974): Use production context after registering views.
   UserEducationController::Get()->StartTutorial(
-      UserEducationPrivateApiKey(), kTutorialId, ui::ElementContext(),
+      UserEducationPrivateApiKey(), TutorialId::kWelcomeTourPrototype1,
+      ui::ElementContext(),
       /*completed_callback=*/base::DoNothing(),
       /*aborted_callback=*/base::DoNothing());
 }

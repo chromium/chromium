@@ -26,10 +26,10 @@ class ChromeUserEducationDelegate : public ash::UserEducationDelegate,
   // ash::UserEducationDelegate:
   void RegisterTutorial(
       const AccountId& account_id,
-      user_education::TutorialIdentifier tutorial_id,
+      ash::TutorialId tutorial_id,
       user_education::TutorialDescription tutorial_description) override;
   void StartTutorial(const AccountId& account_id,
-                     user_education::TutorialIdentifier tutorial_id,
+                     ash::TutorialId tutorial_id,
                      ui::ElementContext element_context,
                      base::OnceClosure completed_callback,
                      base::OnceClosure aborted_callback) override;
