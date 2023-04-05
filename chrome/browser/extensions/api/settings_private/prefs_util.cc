@@ -182,6 +182,10 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[autofill::prefs::kAutofillCreditCardFidoAuthEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  (*s_allowlist)[autofill::prefs::kAutofillPaymentMethodsMandatoryReauth] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+#endif
   (*s_allowlist)[payments::kCanMakePaymentEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[bookmarks::prefs::kShowBookmarkBar] =
