@@ -45,8 +45,11 @@ void LensRegionSearchController::Start(content::WebContents* web_contents,
                                        bool use_fullscreen_capture,
                                        bool is_google_default_search_provider) {
   is_google_default_search_provider_ = is_google_default_search_provider;
-  if (!web_contents || !browser_)
+  // Return early if web contents/browser don't exist and if capture mode is
+  // already active.
+  if (!web_contents || !browser_ || in_capture_mode_) {
     return;
+  }
 
   Observe(web_contents);
   if (!screenshot_flow_)
