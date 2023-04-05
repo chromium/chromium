@@ -35,6 +35,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "third_party/blink/renderer/core/accessibility/axid.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -1271,6 +1272,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool RequestSetSequentialFocusNavigationStartingPointAction();
   bool RequestSetValueAction(const String&);
   bool RequestShowContextMenuAction();
+  bool RequestExpandAction();
+  bool RequestCollapseAction();
 
   // These are actions, just like the actions above, and they allow us
   // to keep track of nodes that gain or lose accessibility focus, but
@@ -1295,6 +1298,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual bool OnNativeSetSequentialFocusNavigationStartingPointAction();
   virtual bool OnNativeSetValueAction(const String&);
   bool OnNativeShowContextMenuAction();
+  bool OnNativeKeyboardAction(const ax::mojom::Action action);
 
   // Notifications that this object may have changed.
   // TODO(accessibility): Remove virtual -- the only override is in a unit test.
@@ -1527,6 +1531,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // objects generated. Returns nullptr if a native scroll action to the node is
   // not possible.
   LayoutObject* GetLayoutObjectForNativeScrollAction() const;
+
+  void DispatchKeyboardEvent(LocalDOMWindow* local_dom_window,
+                             WebInputEvent::Type type,
+                             ax::mojom::blink::Action action) const;
 
   static unsigned number_of_live_ax_objects_;
 

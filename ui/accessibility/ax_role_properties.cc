@@ -1149,4 +1149,10 @@ bool IsPlainContentElement(ax::mojom::Role role) {
   }
 }
 
+bool SupportsArrowKeysForExpandCollapse(const ax::mojom::Role role) {
+  // TODO(accessibility): Investigate if other roles should implement this
+  // pattern.
+  return role == ax::mojom::Role::kTreeItem;
+}
+
 }  // namespace ui

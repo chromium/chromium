@@ -215,6 +215,8 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   void DoDefaultAction(const BrowserAccessibility& node);
   void GetImageData(const BrowserAccessibility& node,
                     const gfx::Size& max_size);
+  void Expand(const BrowserAccessibility& node);
+  void Collapse(const BrowserAccessibility& node);
   // Per third_party/blink/renderer/core/layout/hit_test_location.h, Blink
   // expects hit test points in page coordinates. However, WebAXObject::HitTest
   // applies the visual viewport offset, so we want to pass that function a

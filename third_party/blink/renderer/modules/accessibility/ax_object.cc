@@ -503,35 +503,6 @@ void AddIntListAttributeFromOffsetVector(
     node_data->AddIntListAttribute(attr, offset_values);
 }
 
-blink::KeyboardEvent* CreateKeyboardEvent(
-    blink::LocalDOMWindow* local_dom_window,
-    blink::WebInputEvent::Type type,
-    ax::mojom::blink::Action action) {
-  blink::WebKeyboardEvent key(type,
-                              blink::WebInputEvent::Modifiers::kNoModifiers,
-                              base::TimeTicks::Now());
-  switch (action) {
-    case ax::mojom::blink::Action::kShowContextMenu:
-      key.dom_key = ui::DomKey::CONTEXT_MENU;
-      key.dom_code = static_cast<int>(ui::DomCode::CONTEXT_MENU);
-      key.native_key_code = key.windows_key_code = blink::VKEY_APPS;
-      break;
-    case ax::mojom::blink::Action::kScrollUp:
-      key.dom_key = ui::DomKey::PAGE_UP;
-      key.dom_code = static_cast<int>(ui::DomCode::PAGE_UP);
-      key.native_key_code = key.windows_key_code = blink::VKEY_PRIOR;
-      break;
-    case ax::mojom::blink::Action::kScrollDown:
-      key.dom_key = ui::DomKey::PAGE_DOWN;
-      key.dom_code = static_cast<int>(ui::DomCode::PAGE_DOWN);
-      key.native_key_code = key.windows_key_code = blink::VKEY_NEXT;
-      break;
-    default:
-      NOTREACHED();
-  }
-  return blink::KeyboardEvent::Create(key, local_dom_window, true);
-}
-
 }  // namespace
 
 int32_t ToAXMarkerType(DocumentMarker::MarkerType marker_type) {
@@ -5857,12 +5828,10 @@ void AXObject::Scroll(ax::mojom::blink::Action scroll_action) const {
     return;
 
   LocalDOMWindow* local_dom_window = GetDocument()->domWindow();
-  KeyboardEvent* keydown = CreateKeyboardEvent(
-      local_dom_window, WebInputEvent::Type::kRawKeyDown, scroll_action);
-  GetNode()->DispatchEvent(*keydown);
-  KeyboardEvent* keyup = CreateKeyboardEvent(
-      local_dom_window, WebInputEvent::Type::kKeyUp, scroll_action);
-  GetNode()->DispatchEvent(*keyup);
+  DispatchKeyboardEvent(local_dom_window, WebInputEvent::Type::kRawKeyDown,
+                        scroll_action);
+  DispatchKeyboardEvent(local_dom_window, WebInputEvent::Type::kKeyUp,
+                        scroll_action);
 }
 
 bool AXObject::IsTableLikeRole() const {
@@ -6246,10 +6215,14 @@ bool AXObject::PerformAction(const ui::AXActionData& action_data) {
       return RequestFocusAction();
     case ax::mojom::blink::Action::kClearAccessibilityFocus:
       return InternalClearAccessibilityFocusAction();
+    case ax::mojom::blink::Action::kCollapse:
+      return RequestCollapseAction();
     case ax::mojom::blink::Action::kDecrement:
       return RequestDecrementAction();
     case ax::mojom::blink::Action::kDoDefault:
       return RequestClickAction();
+    case ax::mojom::blink::Action::kExpand:
+      return RequestExpandAction();
     case ax::mojom::blink::Action::kFocus:
       return RequestFocusAction();
     case ax::mojom::blink::Action::kIncrement:
@@ -6268,7 +6241,6 @@ bool AXObject::PerformAction(const ui::AXActionData& action_data) {
           WTF::String::FromUTF8(action_data.value.c_str()));
     case ax::mojom::blink::Action::kShowContextMenu:
       return RequestShowContextMenuAction();
-
     case ax::mojom::blink::Action::kScrollBackward:
     case ax::mojom::blink::Action::kScrollDown:
     case ax::mojom::blink::Action::kScrollForward:
@@ -6277,11 +6249,8 @@ bool AXObject::PerformAction(const ui::AXActionData& action_data) {
     case ax::mojom::blink::Action::kScrollUp:
       Scroll(action_data.action);
       return true;
-
     case ax::mojom::blink::Action::kAnnotatePageImages:
-    case ax::mojom::blink::Action::kCollapse:
     case ax::mojom::blink::Action::kCustomAction:
-    case ax::mojom::blink::Action::kExpand:
     case ax::mojom::blink::Action::kGetImageData:
     case ax::mojom::blink::Action::kGetTextLocation:
     case ax::mojom::blink::Action::kHideTooltip:
@@ -6427,6 +6396,32 @@ bool AXObject::RequestShowContextMenuAction() {
   return OnNativeShowContextMenuAction();
 }
 
+bool AXObject::RequestExpandAction() {
+  // TODO(accessibility): Handle AOM event dispatching if needed.
+  if (ui::SupportsArrowKeysForExpandCollapse(RoleValue())) {
+    return OnNativeKeyboardAction(ax::mojom::blink::Action::kExpand);
+  }
+  return RequestClickAction();
+}
+
+bool AXObject::RequestCollapseAction() {
+  // TODO(accessibility): Handle AOM event dispatching if needed.
+  if (ui::SupportsArrowKeysForExpandCollapse(RoleValue())) {
+    return OnNativeKeyboardAction(ax::mojom::blink::Action::kCollapse);
+  }
+  return RequestClickAction();
+}
+
+bool AXObject::OnNativeKeyboardAction(const ax::mojom::Action action) {
+  LocalDOMWindow* local_dom_window = GetDocument()->domWindow();
+
+  DispatchKeyboardEvent(local_dom_window, WebInputEvent::Type::kRawKeyDown,
+                        action);
+  DispatchKeyboardEvent(local_dom_window, WebInputEvent::Type::kKeyUp, action);
+
+  return true;
+}
+
 bool AXObject::InternalSetAccessibilityFocusAction() {
   return false;
 }
@@ -6446,6 +6441,47 @@ LayoutObject* AXObject::GetLayoutObjectForNativeScrollAction() const {
   GetDocument()->UpdateStyleAndLayoutForNode(
       node, DocumentUpdateReason::kDisplayLock);
   return node->GetLayoutObject();
+}
+
+void AXObject::DispatchKeyboardEvent(LocalDOMWindow* local_dom_window,
+                                     WebInputEvent::Type type,
+                                     ax::mojom::blink::Action action) const {
+  blink::WebKeyboardEvent key(type,
+                              blink::WebInputEvent::Modifiers::kNoModifiers,
+                              base::TimeTicks::Now());
+  switch (action) {
+    case ax::mojom::blink::Action::kExpand:
+      DCHECK(ui::SupportsArrowKeysForExpandCollapse(RoleValue()));
+      key.dom_key = ui::DomKey::ARROW_RIGHT;
+      key.dom_code = static_cast<int>(ui::DomCode::ARROW_RIGHT);
+      key.native_key_code = key.windows_key_code = blink::VKEY_RIGHT;
+      break;
+    case ax::mojom::blink::Action::kCollapse:
+      DCHECK(ui::SupportsArrowKeysForExpandCollapse(RoleValue()));
+      key.dom_key = ui::DomKey::ARROW_LEFT;
+      key.dom_code = static_cast<int>(ui::DomCode::ARROW_LEFT);
+      key.native_key_code = key.windows_key_code = blink::VKEY_LEFT;
+      break;
+    case ax::mojom::blink::Action::kShowContextMenu:
+      key.dom_key = ui::DomKey::CONTEXT_MENU;
+      key.dom_code = static_cast<int>(ui::DomCode::CONTEXT_MENU);
+      key.native_key_code = key.windows_key_code = blink::VKEY_APPS;
+      break;
+    case ax::mojom::blink::Action::kScrollUp:
+      key.dom_key = ui::DomKey::PAGE_UP;
+      key.dom_code = static_cast<int>(ui::DomCode::PAGE_UP);
+      key.native_key_code = key.windows_key_code = blink::VKEY_PRIOR;
+      break;
+    case ax::mojom::blink::Action::kScrollDown:
+      key.dom_key = ui::DomKey::PAGE_DOWN;
+      key.dom_code = static_cast<int>(ui::DomCode::PAGE_DOWN);
+      key.native_key_code = key.windows_key_code = blink::VKEY_NEXT;
+      break;
+    default:
+      NOTREACHED();
+  }
+  GetNode()->DispatchEvent(
+      *blink::KeyboardEvent::Create(key, local_dom_window, true));
 }
 
 bool AXObject::OnNativeScrollToMakeVisibleAction() const {
@@ -6554,10 +6590,8 @@ bool AXObject::OnNativeShowContextMenuAction() {
           SynthesizedKeyboardEventsForAccessibilityActionsEnabled()) {
     // To make less evident that the events are synthesized, we have to emit
     // them in this order: 1) keydown. 2) contextmenu. 3) keyup.
-    KeyboardEvent* keydown =
-        CreateKeyboardEvent(local_dom_window, WebInputEvent::Type::kRawKeyDown,
-                            ax::mojom::blink::Action::kShowContextMenu);
-    GetNode()->DispatchEvent(*keydown);
+    DispatchKeyboardEvent(local_dom_window, WebInputEvent::Type::kRawKeyDown,
+                          ax::mojom::blink::Action::kShowContextMenu);
   }
 
   ContextMenuAllowedScope scope;
@@ -6573,10 +6607,8 @@ bool AXObject::OnNativeShowContextMenuAction() {
   if (!IsDetached() && result != WebInputEventResult::kHandledSystem &&
       RuntimeEnabledFeatures::
           SynthesizedKeyboardEventsForAccessibilityActionsEnabled()) {
-    KeyboardEvent* keyup =
-        CreateKeyboardEvent(local_dom_window, WebInputEvent::Type::kKeyUp,
-                            ax::mojom::blink::Action::kShowContextMenu);
-    GetNode()->DispatchEvent(*keyup);
+    DispatchKeyboardEvent(local_dom_window, WebInputEvent::Type::kKeyUp,
+                          ax::mojom::blink::Action::kShowContextMenu);
   }
 
   return true;

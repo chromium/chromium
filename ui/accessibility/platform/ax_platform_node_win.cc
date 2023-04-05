@@ -2558,7 +2558,7 @@ IFACEMETHODIMP AXPlatformNodeWin::Collapse() {
     return UIA_E_INVALIDOPERATION;
 
   AXActionData action_data;
-  action_data.action = ax::mojom::Action::kDoDefault;
+  action_data.action = ax::mojom::Action::kCollapse;
   if (GetDelegate()->AccessibilityPerformAction(action_data))
     return S_OK;
   return E_FAIL;
@@ -2574,7 +2574,7 @@ IFACEMETHODIMP AXPlatformNodeWin::Expand() {
     return UIA_E_INVALIDOPERATION;
 
   AXActionData action_data;
-  action_data.action = ax::mojom::Action::kDoDefault;
+  action_data.action = ax::mojom::Action::kExpand;
   if (GetDelegate()->AccessibilityPerformAction(action_data))
     return S_OK;
   return E_FAIL;

@@ -420,8 +420,10 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
       break;
     case ax::mojom::Action::kBlur:
     case ax::mojom::Action::kClearAccessibilityFocus:
+    case ax::mojom::Action::kCollapse:
     case ax::mojom::Action::kDecrement:
     case ax::mojom::Action::kDoDefault:
+    case ax::mojom::Action::kExpand:
     case ax::mojom::Action::kIncrement:
     case ax::mojom::Action::kScrollToPoint:
     case ax::mojom::Action::kScrollToPositionAtRowColumn:
@@ -440,8 +442,6 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
       target->PerformAction(data);
       break;
     case ax::mojom::Action::kCustomAction:
-    case ax::mojom::Action::kCollapse:
-    case ax::mojom::Action::kExpand:
     case ax::mojom::Action::kHitTest:
     case ax::mojom::Action::kReplaceSelectedText:
     case ax::mojom::Action::kNone:

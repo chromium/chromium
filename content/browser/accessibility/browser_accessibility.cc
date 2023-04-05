@@ -1297,6 +1297,12 @@ bool BrowserAccessibility::AccessibilityPerformAction(
     case ax::mojom::Action::kDecrement:
       manager_->Decrement(*this);
       return true;
+    case ax::mojom::Action::kExpand:
+      manager_->Expand(*this);
+      return true;
+    case ax::mojom::Action::kCollapse:
+      manager_->Collapse(*this);
+      return true;
     case ax::mojom::Action::kScrollBackward:
     case ax::mojom::Action::kScrollForward:
     case ax::mojom::Action::kScrollUp:
