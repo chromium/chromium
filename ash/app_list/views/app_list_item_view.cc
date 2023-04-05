@@ -43,6 +43,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -51,6 +52,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_list.h"
@@ -792,11 +794,7 @@ void AppListItemView::OnImplicitAnimationsCompleted() {
 }
 
 void AppListItemView::SetTouchDragging(bool touch_dragging) {
-  // Drag and drop refactor handles all drag operations as Mouse Dragging.
-  // TODO(b/261985897): Figure out a way to correctly direct drag operations.
-  DCHECK(!app_list_features::IsDragAndDropRefactorEnabled());
-
-  if (touch_dragging_ == touch_dragging) {
+  if (mouse_dragging_ || touch_dragging_ == touch_dragging) {
     return;
   }
 
@@ -815,6 +813,10 @@ void AppListItemView::SetTouchDragging(bool touch_dragging) {
 }
 
 void AppListItemView::SetMouseDragging(bool mouse_dragging) {
+  if (touch_dragging_ || mouse_dragging_ == mouse_dragging) {
+    return;
+  }
+
   mouse_dragging_ = mouse_dragging;
 
   SetState(STATE_NORMAL);
@@ -829,7 +831,6 @@ void AppListItemView::OnMouseDragTimer() {
 void AppListItemView::OnTouchDragTimer(
     const gfx::Point& tap_down_location,
     const gfx::Point& tap_down_root_location) {
-  DCHECK(!app_list_features::IsDragAndDropRefactorEnabled());
   // Show scaled up app icon to indicate draggable state.
   if (!InitiateDrag(tap_down_location, tap_down_root_location)) {
     return;
@@ -1276,7 +1277,6 @@ void AppListItemView::WriteDragData(const gfx::Point& press_pt,
     return;
   }
 
-  SetMouseDragging(true);
   if (item_weak_) {
     data->provider().SetDragImage(GetIconImage(), press_pt.OffsetFromOrigin());
     base::Pickle data_pickle;
@@ -1285,17 +1285,39 @@ void AppListItemView::WriteDragData(const gfx::Point& press_pt,
   }
 }
 
-void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {
-  if (app_list_features::IsDragAndDropRefactorEnabled() &&
-      event->type() != ui::ET_GESTURE_TAP_DOWN) {
-    Button::OnGestureEvent(event);
-    return;
+bool AppListItemView::MaybeStartDrag(const gfx::Point& location) {
+  DCHECK(app_list_features::IsDragAndDropRefactorEnabled());
+
+  int drag_operations = GetDragOperations(location);
+  views::Widget* widget = GetWidget();
+  DCHECK(widget);
+  if (drag_operations == ui::DragDropTypes::DRAG_NONE ||
+      widget->dragged_view()) {
+    return false;
   }
+
+  auto data = std::make_unique<ui::OSExchangeData>();
+  WriteDragData(location, data.get());
+
+  gfx::Point widget_location(location);
+  views::View::ConvertPointToWidget(this, &widget_location);
+  widget->RunShellDrag(this, std::move(data), widget_location, drag_operations,
+                       ui::mojom::DragEventSource::kTouch);
+  return true;
+}
+
+void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {
+  const bool is_drag_and_drop_enabled =
+      app_list_features::IsDragAndDropRefactorEnabled();
 
   switch (event->type()) {
     case ui::ET_GESTURE_SCROLL_BEGIN:
       if (touch_dragging_) {
-        grid_delegate_->StartDragAndDropHostDragAfterLongPress();
+        if (is_drag_and_drop_enabled) {
+          OnDragStarted();
+        } else {
+          grid_delegate_->StartDragAndDropHostDragAfterLongPress();
+        }
         event->SetHandled();
       } else {
         touch_drag_timer_.Stop();
@@ -1303,15 +1325,21 @@ void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {
       break;
     case ui::ET_GESTURE_SCROLL_UPDATE:
       if (touch_dragging_ && drag_state_ != DragState::kNone) {
-        grid_delegate_->UpdateDragFromItem(/*is_touch=*/true, *event);
-        event->SetHandled();
+        if (is_drag_and_drop_enabled) {
+          MaybeStartDrag(event->location());
+        } else {
+          grid_delegate_->UpdateDragFromItem(/*is_touch=*/true, *event);
+          event->SetHandled();
+        }
       }
       break;
     case ui::ET_GESTURE_SCROLL_END:
     case ui::ET_SCROLL_FLING_START:
       if (touch_dragging_) {
-        SetTouchDragging(false);
-        event->SetHandled();
+        if (!is_drag_and_drop_enabled) {
+          SetTouchDragging(false);
+          event->SetHandled();
+        }
       }
       break;
     case ui::ET_GESTURE_TAP_DOWN:
@@ -1334,10 +1362,26 @@ void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {
       break;
     case ui::ET_GESTURE_LONG_TAP:
     case ui::ET_GESTURE_END:
+      if (is_drag_and_drop_enabled && drag_state_ == DragState::kInitialized) {
+        // Reset `drag_state_` if there was an attempt to initiate it (i.e. the
+        // touch drag timer fired) but was not properly started (i.e. the app
+        // item was never actually dragged) before a release event occurred.
+        drag_state_ = DragState::kNone;
+      }
       touch_drag_timer_.Stop();
       SetTouchDragging(false);
       if (IsShowingAppMenu()) {
         grid_delegate_->SetSelectedView(this);
+      }
+      break;
+    case ui::ET_GESTURE_LONG_PRESS:
+      if (is_drag_and_drop_enabled) {
+        // Handle the long press event on long press to avoid RootView to
+        // trigger View::DoDrag for this view before the item is dragged.
+        gfx::Point screen_location(event->location());
+        View::ConvertPointToScreen(this, &screen_location);
+        ShowContextMenu(screen_location, ui::MENU_SOURCE_TOUCH);
+        event->SetHandled();
       }
       break;
     case ui::ET_GESTURE_TWO_FINGER_TAP:

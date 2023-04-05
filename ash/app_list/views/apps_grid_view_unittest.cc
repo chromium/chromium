@@ -586,15 +586,11 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
     if (pointer == AppsGridView::TOUCH) {
       generator->MoveTouch(from);
       generator->PressTouch();
-      if (!use_drag_drop_refactor_) {
-        view->FireTouchDragTimerForTest();
-      }
+      view->FireTouchDragTimerForTest();
     } else {
       generator->MoveMouseTo(from);
       generator->PressLeftButton();
-      if (!use_drag_drop_refactor_) {
-        view->FireMouseDragTimerForTest();
-      }
+      view->FireMouseDragTimerForTest();
     }
     current_drag_location_ = from;
 
@@ -1075,9 +1071,7 @@ TEST_P(AppsGridViewClamshellAndTabletTest, InFolderBetweenRowsAnimation) {
   generator->MoveMouseTo(
       dragged_item_view->GetIconBoundsInScreen().CenterPoint());
   generator->PressLeftButton();
-  if (!use_drag_drop_refactor()) {
-    dragged_item_view->FireMouseDragTimerForTest();
-  }
+  dragged_item_view->FireMouseDragTimerForTest();
 
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
@@ -3611,9 +3605,7 @@ TEST_P(AppsGridViewTabletTest, ReparentDragToNewPage) {
   // Initiate drag.
   generator->MoveMouseTo(dragged_view->GetBoundsInScreen().CenterPoint());
   generator->PressLeftButton();
-  if (!use_drag_drop_refactor()) {
-    dragged_view->FireMouseDragTimerForTest();
-  }
+  dragged_view->FireMouseDragTimerForTest();
   generator->MoveMouseBy(10, 10);
 
   // Drag the item outside the folder bounds.
@@ -3694,9 +3686,7 @@ TEST_P(AppsGridViewTabletTest, ReparentDragToAFolderOnNewPage) {
   // Initiate drag.
   generator->MoveMouseTo(dragged_view->GetBoundsInScreen().CenterPoint());
   generator->PressLeftButton();
-  if (!use_drag_drop_refactor()) {
-    dragged_view->FireMouseDragTimerForTest();
-  }
+  dragged_view->FireMouseDragTimerForTest();
   generator->MoveMouseBy(10, 10);
 
   // Drag the item outside the folder bounds.
@@ -3773,9 +3763,7 @@ TEST_P(AppsGridViewTabletTest, DragAcrossPagesToTheLastSlot) {
   // Initiate drag.
   generator->MoveMouseTo(dragged_view->GetBoundsInScreen().CenterPoint());
   generator->PressLeftButton();
-  if (!use_drag_drop_refactor()) {
-    dragged_view->FireMouseDragTimerForTest();
-  }
+  dragged_view->FireMouseDragTimerForTest();
   generator->MoveMouseBy(10, 10);
   MaybeCheckHaptickEventsCount(1);
 
@@ -3876,9 +3864,7 @@ TEST_P(AppsGridViewTabletTest, DragAcrossPagesToSecondToLastSlot) {
   // Initiate drag.
   generator->MoveMouseTo(dragged_view->GetBoundsInScreen().CenterPoint());
   generator->PressLeftButton();
-  if (!use_drag_drop_refactor()) {
-    dragged_view->FireMouseDragTimerForTest();
-  }
+  dragged_view->FireMouseDragTimerForTest();
   generator->MoveMouseBy(10, 10);
   MaybeCheckHaptickEventsCount(1);
 
@@ -6042,9 +6028,7 @@ TEST_P(AppsGridViewClamshellAndTabletTest, QuickDragToRemoveItemFromFolder) {
   GetEventGenerator()->MoveMouseTo(
       item_in_folder->GetBoundsInScreen().CenterPoint());
   GetEventGenerator()->PressLeftButton();
-  if (!use_drag_drop_refactor()) {
-    item_in_folder->FireMouseDragTimerForTest();
-  }
+  item_in_folder->FireMouseDragTimerForTest();
 
   // Drag item outside of the folder, to slot 0.
   const gfx::Point to =
@@ -6085,9 +6069,7 @@ TEST_P(AppsGridViewClamshellAndTabletTest,
   GetEventGenerator()->MoveMouseTo(
       dragged_item->GetBoundsInScreen().CenterPoint());
   GetEventGenerator()->PressLeftButton();
-  if (!use_drag_drop_refactor()) {
-    dragged_item->FireMouseDragTimerForTest();
-  }
+  dragged_item->FireMouseDragTimerForTest();
   GetEventGenerator()->MoveMouseBy(10, 10);
 
   // Wait for layer animations before the drag to trigger drag reorder
