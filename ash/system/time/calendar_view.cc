@@ -910,6 +910,7 @@ void CalendarView::UpdateOnScreenMonthMap() {
   }
 
   MaybeUpdateLoadingBarVisibility();
+  calendar_view_controller_->CalendarLoaded();
 }
 
 bool CalendarView::EventsFetchComplete() {
@@ -1423,6 +1424,13 @@ void CalendarView::OnSelectedDateUpdated() {
   if (event_list_view_ && IsDateCellViewFocused()) {
     RequestFocusForEventListCloseButton();
   }
+}
+
+void CalendarView::OnCalendarLoaded() {
+  // We might have some cached upcoming events so we can show the
+  // `up_next_view_` as soon as the calendar has loaded i.e. before waiting for
+  // the event fetch to complete.
+  MaybeShowUpNextView();
 }
 
 void CalendarView::ScrollUpOneMonth() {

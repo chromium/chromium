@@ -117,6 +117,7 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   void OpenEventList() override;
   void CloseEventList() override;
   void OnSelectedDateUpdated() override;
+  void OnCalendarLoaded() override;
 
   // views::ViewObserver:
   void OnViewBoundsChanged(views::View* observed_view) override;
