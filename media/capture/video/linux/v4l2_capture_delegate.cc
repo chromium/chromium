@@ -138,6 +138,47 @@ int GetControllingSpecialControl(int control_id) {
   return 0;
 }
 
+// Determines if |control_id| is special, i.e. controls another one's state.
+bool IsSpecialControl(int control_id) {
+  switch (control_id) {
+    case V4L2_CID_AUTO_WHITE_BALANCE:
+    case V4L2_CID_EXPOSURE_AUTO:
+    case V4L2_CID_EXPOSURE_AUTO_PRIORITY:
+    case V4L2_CID_FOCUS_AUTO:
+      return true;
+  }
+  return false;
+}
+
+// Determines if |control_id| should be skipped, https://crbug.com/697885.
+#if !defined(V4L2_CID_PAN_SPEED)
+#define V4L2_CID_PAN_SPEED (V4L2_CID_CAMERA_CLASS_BASE + 32)
+#endif
+#if !defined(V4L2_CID_TILT_SPEED)
+#define V4L2_CID_TILT_SPEED (V4L2_CID_CAMERA_CLASS_BASE + 33)
+#endif
+#if !defined(V4L2_CID_PANTILT_CMD)
+#define V4L2_CID_PANTILT_CMD (V4L2_CID_CAMERA_CLASS_BASE + 34)
+#endif
+bool IsBlockedControl(int control_id) {
+  switch (control_id) {
+    case V4L2_CID_PAN_RELATIVE:
+    case V4L2_CID_TILT_RELATIVE:
+    case V4L2_CID_PAN_RESET:
+    case V4L2_CID_TILT_RESET:
+    case V4L2_CID_PAN_ABSOLUTE:
+    case V4L2_CID_TILT_ABSOLUTE:
+    case V4L2_CID_ZOOM_ABSOLUTE:
+    case V4L2_CID_ZOOM_RELATIVE:
+    case V4L2_CID_ZOOM_CONTINUOUS:
+    case V4L2_CID_PAN_SPEED:
+    case V4L2_CID_TILT_SPEED:
+    case V4L2_CID_PANTILT_CMD:
+      return true;
+  }
+  return false;
+}
+
 bool IsNonEmptyRange(const mojom::RangePtr& range) {
   return range->min < range->max;
 }
@@ -209,49 +250,6 @@ std::vector<uint32_t> V4L2CaptureDelegate::GetListOfUsableFourCcs(
     supported_formats.push_back(format.fourcc);
 
   return supported_formats;
-}
-
-// Determines if |control_id| is special, i.e. controls another one's state.
-// static
-bool V4L2CaptureDelegate::IsSpecialControl(int control_id) {
-  switch (control_id) {
-    case V4L2_CID_AUTO_WHITE_BALANCE:
-    case V4L2_CID_EXPOSURE_AUTO:
-    case V4L2_CID_EXPOSURE_AUTO_PRIORITY:
-    case V4L2_CID_FOCUS_AUTO:
-      return true;
-  }
-  return false;
-}
-
-// Determines if |control_id| should be skipped, https://crbug.com/697885.
-#if !defined(V4L2_CID_PAN_SPEED)
-#define V4L2_CID_PAN_SPEED (V4L2_CID_CAMERA_CLASS_BASE + 32)
-#endif
-#if !defined(V4L2_CID_TILT_SPEED)
-#define V4L2_CID_TILT_SPEED (V4L2_CID_CAMERA_CLASS_BASE + 33)
-#endif
-#if !defined(V4L2_CID_PANTILT_CMD)
-#define V4L2_CID_PANTILT_CMD (V4L2_CID_CAMERA_CLASS_BASE + 34)
-#endif
-// static
-bool V4L2CaptureDelegate::IsBlockedControl(int control_id) {
-  switch (control_id) {
-    case V4L2_CID_PAN_RELATIVE:
-    case V4L2_CID_TILT_RELATIVE:
-    case V4L2_CID_PAN_RESET:
-    case V4L2_CID_TILT_RESET:
-    case V4L2_CID_PAN_ABSOLUTE:
-    case V4L2_CID_TILT_ABSOLUTE:
-    case V4L2_CID_ZOOM_ABSOLUTE:
-    case V4L2_CID_ZOOM_RELATIVE:
-    case V4L2_CID_ZOOM_CONTINUOUS:
-    case V4L2_CID_PAN_SPEED:
-    case V4L2_CID_TILT_SPEED:
-    case V4L2_CID_PANTILT_CMD:
-      return true;
-  }
-  return false;
 }
 
 V4L2CaptureDelegate::V4L2CaptureDelegate(
@@ -830,89 +828,100 @@ mojom::RangePtr V4L2CaptureDelegate::RetrieveUserControlRange(int control_id) {
 }
 
 void V4L2CaptureDelegate::ResetUserAndCameraControlsToDefault() {
+  // Set V4L2_CID_AUTO_WHITE_BALANCE to false first.
+  v4l2_control auto_white_balance = {};
+  auto_white_balance.id = V4L2_CID_AUTO_WHITE_BALANCE;
+  auto_white_balance.value = false;
+  if (!RunIoctl(VIDIOC_S_CTRL, &auto_white_balance))
+    return;
+
+  std::vector<struct v4l2_ext_control> special_camera_controls;
+  // Set V4L2_CID_EXPOSURE_AUTO to V4L2_EXPOSURE_MANUAL.
+  v4l2_ext_control auto_exposure = {};
+  auto_exposure.id = V4L2_CID_EXPOSURE_AUTO;
+  auto_exposure.value = V4L2_EXPOSURE_MANUAL;
+  special_camera_controls.push_back(auto_exposure);
+  // Set V4L2_CID_EXPOSURE_AUTO_PRIORITY to false.
+  v4l2_ext_control priority_auto_exposure = {};
+  priority_auto_exposure.id = V4L2_CID_EXPOSURE_AUTO_PRIORITY;
+  priority_auto_exposure.value = false;
+  special_camera_controls.push_back(priority_auto_exposure);
+  // Set V4L2_CID_FOCUS_AUTO to false.
+  v4l2_ext_control auto_focus = {};
+  auto_focus.id = V4L2_CID_FOCUS_AUTO;
+  auto_focus.value = false;
+  special_camera_controls.push_back(auto_focus);
+
   struct v4l2_ext_controls ext_controls = {};
-  ext_controls.which = V4L2_CTRL_WHICH_CUR_VAL;
-  ext_controls.count = 0;
-  const bool use_modern_s_ext_ctrls =
-      DoIoctl(VIDIOC_S_EXT_CTRLS, &ext_controls) == 0;
+  ext_controls.ctrl_class = V4L2_CID_CAMERA_CLASS;
+  ext_controls.count = special_camera_controls.size();
+  ext_controls.controls = special_camera_controls.data();
+  if (DoIoctl(VIDIOC_S_EXT_CTRLS, &ext_controls) < 0)
+    DPLOG(INFO) << "VIDIOC_S_EXT_CTRLS";
 
   for (const auto& control : kControls) {
     std::vector<struct v4l2_ext_control> camera_controls;
-    std::vector<struct v4l2_ext_control> manual_special_camera_controls;
-    std::vector<struct v4l2_ext_control> special_camera_controls;
 
     v4l2_queryctrl range = {};
-    // Start right below the base so that the first next retrieved control ID
-    // is always the first available control ID within the class even if that
-    // control ID is equal to the base (V4L2_CID_BRIGHTNESS equals to
-    // V4L2_CID_USER_BASE).
-    range.id = (control.control_base - 1) | V4L2_CTRL_FLAG_NEXT_CTRL;
+    range.id = control.control_base | V4L2_CTRL_FLAG_NEXT_CTRL;
     while (0 == DoIoctl(VIDIOC_QUERYCTRL, &range)) {
       if (V4L2_CTRL_ID2CLASS(range.id) != V4L2_CTRL_ID2CLASS(control.class_id))
         break;
-
-      v4l2_ext_control ext_control = {};
-      ext_control.id = range.id;
-      ext_control.value = range.default_value;
-
-      // Prepare to query for the next control as `range` is an in-out
-      // parameter.
       range.id |= V4L2_CTRL_FLAG_NEXT_CTRL;
 
-      if (range.flags & (V4L2_CTRL_FLAG_DISABLED | V4L2_CTRL_FLAG_READ_ONLY)) {
-        // Permanently disabled or permanently read-only.
+      if (IsSpecialControl(range.id & ~V4L2_CTRL_FLAG_NEXT_CTRL))
         continue;
-      }
-      if (IsBlockedControl(ext_control.id)) {
+      if (IsBlockedControl(range.id & ~V4L2_CTRL_FLAG_NEXT_CTRL))
         continue;
-      }
 
-      if (IsSpecialControl(ext_control.id)) {
-        special_camera_controls.push_back(ext_control);
-        if (ext_control.id == V4L2_CID_EXPOSURE_AUTO) {
-          ext_control.value = V4L2_EXPOSURE_MANUAL;
-        } else {
-          ext_control.value = false;  // Not automatic but manual.
-        }
-        manual_special_camera_controls.push_back(ext_control);
-      } else {
-        camera_controls.push_back(ext_control);
-      }
+      struct v4l2_ext_control ext_control = {};
+      ext_control.id = range.id & ~V4L2_CTRL_FLAG_NEXT_CTRL;
+      ext_control.value = range.default_value;
+      camera_controls.push_back(ext_control);
     }
 
     if (!camera_controls.empty()) {
-      // Set special controls to manual modes first.
-      if (!manual_special_camera_controls.empty()) {
-        ext_controls.which =
-            use_modern_s_ext_ctrls ? V4L2_CTRL_WHICH_CUR_VAL : control.class_id;
-        ext_controls.count = manual_special_camera_controls.size();
-        ext_controls.controls = manual_special_camera_controls.data();
-        if (DoIoctl(VIDIOC_S_EXT_CTRLS, &ext_controls) < 0) {
-          DPLOG(INFO) << "VIDIOC_S_EXT_CTRLS";
-        }
-      }
-
-      // Set non-special controls to the default values.
-      ext_controls.which =
-          use_modern_s_ext_ctrls ? V4L2_CTRL_WHICH_CUR_VAL : control.class_id;
-      ext_controls.count = camera_controls.size();
-      ext_controls.controls = camera_controls.data();
-      if (DoIoctl(VIDIOC_S_EXT_CTRLS, &ext_controls) < 0) {
+      struct v4l2_ext_controls ext_controls2 = {};
+      ext_controls2.ctrl_class = control.class_id;
+      ext_controls2.count = camera_controls.size();
+      ext_controls2.controls = camera_controls.data();
+      if (DoIoctl(VIDIOC_S_EXT_CTRLS, &ext_controls2) < 0)
         DPLOG(INFO) << "VIDIOC_S_EXT_CTRLS";
-      }
-    }
-
-    // Set special controls to the default values.
-    if (!special_camera_controls.empty()) {
-      ext_controls.which =
-          use_modern_s_ext_ctrls ? V4L2_CTRL_WHICH_CUR_VAL : control.class_id;
-      ext_controls.count = special_camera_controls.size();
-      ext_controls.controls = special_camera_controls.data();
-      if (DoIoctl(VIDIOC_S_EXT_CTRLS, &ext_controls) < 0) {
-        DPLOG(INFO) << "VIDIOC_S_EXT_CTRLS";
-      }
     }
   }
+
+  // Now set the special flags to the default values
+  v4l2_queryctrl range = {};
+  range.id = V4L2_CID_AUTO_WHITE_BALANCE;
+  DoIoctl(VIDIOC_QUERYCTRL, &range);
+  auto_white_balance.value = range.default_value;
+  DoIoctl(VIDIOC_S_CTRL, &auto_white_balance);
+
+  special_camera_controls.clear();
+  memset(&range, 0, sizeof(range));
+  range.id = V4L2_CID_EXPOSURE_AUTO;
+  DoIoctl(VIDIOC_QUERYCTRL, &range);
+  auto_exposure.value = range.default_value;
+  special_camera_controls.push_back(auto_exposure);
+
+  memset(&range, 0, sizeof(range));
+  range.id = V4L2_CID_EXPOSURE_AUTO_PRIORITY;
+  DoIoctl(VIDIOC_QUERYCTRL, &range);
+  priority_auto_exposure.value = range.default_value;
+  special_camera_controls.push_back(priority_auto_exposure);
+
+  memset(&range, 0, sizeof(range));
+  range.id = V4L2_CID_FOCUS_AUTO;
+  DoIoctl(VIDIOC_QUERYCTRL, &range);
+  auto_focus.value = range.default_value;
+  special_camera_controls.push_back(auto_focus);
+
+  memset(&ext_controls, 0, sizeof(ext_controls));
+  ext_controls.ctrl_class = V4L2_CID_CAMERA_CLASS;
+  ext_controls.count = special_camera_controls.size();
+  ext_controls.controls = special_camera_controls.data();
+  if (DoIoctl(VIDIOC_S_EXT_CTRLS, &ext_controls) < 0)
+    DPLOG(INFO) << "VIDIOC_S_EXT_CTRLS";
 }
 
 bool V4L2CaptureDelegate::MapAndQueueBuffer(int index) {

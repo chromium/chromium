@@ -35,110 +35,119 @@ static struct {
 } const kControls[] = {{V4L2_CID_USER_BASE, V4L2_CID_USER_CLASS},
                        {V4L2_CID_CAMERA_CLASS_BASE, V4L2_CID_CAMERA_CLASS}};
 
+// Determines if |control_id| is special, i.e. controls another one's state, or
+// if it should be denied (see https://crbug.com/697885).
+#if !defined(V4L2_CID_PAN_SPEED)
+#define V4L2_CID_PAN_SPEED (V4L2_CID_CAMERA_CLASS_BASE + 32)
+#endif
+#if !defined(V4L2_CID_TILT_SPEED)
+#define V4L2_CID_TILT_SPEED (V4L2_CID_CAMERA_CLASS_BASE + 33)
+#endif
+#if !defined(V4L2_CID_PANTILT_CMD)
+#define V4L2_CID_PANTILT_CMD (V4L2_CID_CAMERA_CLASS_BASE + 34)
+#endif
+static bool IsSpecialOrBlockedControl(int control_id) {
+  switch (control_id) {
+    case V4L2_CID_AUTO_WHITE_BALANCE:
+    case V4L2_CID_EXPOSURE_AUTO:
+    case V4L2_CID_EXPOSURE_AUTO_PRIORITY:
+    case V4L2_CID_FOCUS_AUTO:
+    case V4L2_CID_PAN_RELATIVE:
+    case V4L2_CID_TILT_RELATIVE:
+    case V4L2_CID_PAN_RESET:
+    case V4L2_CID_TILT_RESET:
+    case V4L2_CID_PAN_ABSOLUTE:
+    case V4L2_CID_TILT_ABSOLUTE:
+    case V4L2_CID_ZOOM_ABSOLUTE:
+    case V4L2_CID_ZOOM_RELATIVE:
+    case V4L2_CID_ZOOM_CONTINUOUS:
+    case V4L2_CID_PAN_SPEED:
+    case V4L2_CID_TILT_SPEED:
+    case V4L2_CID_PANTILT_CMD:
+      return true;
+  }
+  return false;
+}
+
 static void SetControlsToMaxValues(int device_fd) {
-  v4l2_ext_controls ext_controls;
-  memset(&ext_controls, 0, sizeof(ext_controls));
-  ext_controls.which = V4L2_CTRL_WHICH_CUR_VAL;
-  ext_controls.count = 0;
-  const bool use_modern_s_ext_ctrls =
-      HANDLE_EINTR(ioctl(device_fd, VIDIOC_S_EXT_CTRLS, &ext_controls)) == 0;
+  // Set V4L2_CID_AUTO_WHITE_BALANCE to false first.
+  v4l2_control auto_white_balance = {};
+  auto_white_balance.id = V4L2_CID_AUTO_WHITE_BALANCE;
+  auto_white_balance.value = false;
+  if (HANDLE_EINTR(ioctl(device_fd, VIDIOC_S_CTRL, &auto_white_balance)) < 0)
+    DPLOG(ERROR) << "VIDIOC_S_CTRL";
+
+  std::vector<struct v4l2_ext_control> special_camera_controls;
+  // Set V4L2_CID_EXPOSURE_AUTO to V4L2_EXPOSURE_MANUAL.
+  v4l2_ext_control auto_exposure = {};
+  auto_exposure.id = V4L2_CID_EXPOSURE_AUTO;
+  auto_exposure.value = V4L2_EXPOSURE_MANUAL;
+  special_camera_controls.push_back(auto_exposure);
+  // Set V4L2_CID_EXPOSURE_AUTO_PRIORITY to false.
+  v4l2_ext_control priority_auto_exposure = {};
+  priority_auto_exposure.id = V4L2_CID_EXPOSURE_AUTO_PRIORITY;
+  priority_auto_exposure.value = false;
+  special_camera_controls.push_back(priority_auto_exposure);
+  // Set V4L2_CID_FOCUS_AUTO to false.
+  v4l2_ext_control auto_focus = {};
+  auto_focus.id = V4L2_CID_FOCUS_AUTO;
+  auto_focus.value = false;
+  special_camera_controls.push_back(auto_focus);
+
+  struct v4l2_ext_controls camera_ext_controls = {};
+  camera_ext_controls.ctrl_class = V4L2_CID_CAMERA_CLASS;
+  camera_ext_controls.count = special_camera_controls.size();
+  camera_ext_controls.controls = special_camera_controls.data();
+  if (HANDLE_EINTR(ioctl(device_fd, VIDIOC_S_EXT_CTRLS, &camera_ext_controls)) <
+      0) {
+    DPLOG(ERROR) << "VIDIOC_S_EXT_CTRLS";
+  }
 
   for (const auto& control : kControls) {
     std::vector<struct v4l2_ext_control> camera_controls;
-    std::vector<struct v4l2_ext_control> manual_special_camera_controls;
 
     v4l2_queryctrl range = {};
-    // Start right below the base so that the first next retrieved control ID
-    // is always the first available control ID within the class even if that
-    // control ID is equal to the base (V4L2_CID_BRIGHTNESS equals to
-    // V4L2_CID_USER_BASE).
-    range.id = (control.control_base - 1) | V4L2_CTRL_FLAG_NEXT_CTRL;
+    range.id = control.control_base | V4L2_CTRL_FLAG_NEXT_CTRL;
     while (0 == HANDLE_EINTR(ioctl(device_fd, VIDIOC_QUERYCTRL, &range))) {
       if (V4L2_CTRL_ID2CLASS(range.id) != V4L2_CTRL_ID2CLASS(control.class_id))
         break;
-
-      v4l2_ext_control ext_control = {};
-      ext_control.id = range.id;
-
-      // Prepare to query for the next control as `range` is an in-out
-      // parameter.
       range.id |= V4L2_CTRL_FLAG_NEXT_CTRL;
 
-      if (range.flags & (V4L2_CTRL_FLAG_DISABLED | V4L2_CTRL_FLAG_READ_ONLY)) {
-        // Permanently disabled or permanently read-only.
+      if (IsSpecialOrBlockedControl(range.id & ~V4L2_CTRL_FLAG_NEXT_CTRL))
         continue;
-      }
-      if (V4L2CaptureDelegate::IsBlockedControl(ext_control.id)) {
-        continue;
-      }
+      DVLOG(1) << __func__ << " " << range.name << " set to " << range.maximum;
 
-      if (V4L2CaptureDelegate::IsSpecialControl(ext_control.id)) {
-        if (ext_control.id == V4L2_CID_EXPOSURE_AUTO) {
-          ext_control.value = V4L2_EXPOSURE_MANUAL;
-        } else {
-          ext_control.value = false;  // Not automatic but manual.
-        }
-        manual_special_camera_controls.push_back(ext_control);
-        DVLOG(1) << __func__ << " " << range.name << " set to manual";
-      } else {
-        ext_control.value = range.maximum;
-        camera_controls.push_back(ext_control);
-        DVLOG(1) << __func__ << " " << range.name << " set to "
-                 << range.maximum;
-      }
+      struct v4l2_ext_control ext_control = {};
+      ext_control.id = range.id & ~V4L2_CTRL_FLAG_NEXT_CTRL;
+      ext_control.value = range.maximum;
+      camera_controls.push_back(ext_control);
     }
 
-    // Set special controls to manual modes.
-    if (!manual_special_camera_controls.empty()) {
-      ext_controls.which =
-          use_modern_s_ext_ctrls ? V4L2_CTRL_WHICH_CUR_VAL : control.class_id;
-      ext_controls.count = manual_special_camera_controls.size();
-      ext_controls.controls = manual_special_camera_controls.data();
-      if (HANDLE_EINTR(ioctl(device_fd, VIDIOC_S_EXT_CTRLS, &ext_controls)) <
-          0) {
-        DPLOG(ERROR) << "VIDIOC_S_EXT_CTRLS";
-      }
-    }
-
-    // Set non-special controls to maximum values.
     if (!camera_controls.empty()) {
-      ext_controls.which =
-          use_modern_s_ext_ctrls ? V4L2_CTRL_WHICH_CUR_VAL : control.class_id;
+      struct v4l2_ext_controls ext_controls = {};
+      ext_controls.ctrl_class = control.class_id;
       ext_controls.count = camera_controls.size();
       ext_controls.controls = camera_controls.data();
       if (HANDLE_EINTR(ioctl(device_fd, VIDIOC_S_EXT_CTRLS, &ext_controls)) < 0)
         DPLOG(ERROR) << "VIDIOC_S_EXT_CTRLS";
     }
 
-    // Start right below the base so that the first next retrieved control ID
-    // is always the first available control ID within the class even if that
-    // control ID is equal to the base (V4L2_CID_BRIGHTNESS equals to
-    // V4L2_CID_USER_BASE).
-    range.id = (control.control_base - 1) | V4L2_CTRL_FLAG_NEXT_CTRL;
+    range.id = control.control_base | V4L2_CTRL_FLAG_NEXT_CTRL;
     while (0 == HANDLE_EINTR(ioctl(device_fd, VIDIOC_QUERYCTRL, &range))) {
       if (V4L2_CTRL_ID2CLASS(range.id) != V4L2_CTRL_ID2CLASS(control.class_id))
         break;
-
-      v4l2_control readback = {};
-      readback.id = range.id;
-
-      // Prepare to query for the next control as `range` is an in-out
-      // parameter.
       range.id |= V4L2_CTRL_FLAG_NEXT_CTRL;
 
-      if (range.flags & (V4L2_CTRL_FLAG_DISABLED | V4L2_CTRL_FLAG_READ_ONLY)) {
-        // Permanently disabled or permanently read-only.
+      if (IsSpecialOrBlockedControl(range.id & ~V4L2_CTRL_FLAG_NEXT_CTRL))
         continue;
-      }
-      if (V4L2CaptureDelegate::IsBlockedControl(readback.id) ||
-          V4L2CaptureDelegate::IsSpecialControl(readback.id)) {
-        continue;
-      }
+      DVLOG(1) << __func__ << " " << range.name << " set to " << range.maximum;
 
+      v4l2_control readback = {};
+      readback.id = range.id & ~V4L2_CTRL_FLAG_NEXT_CTRL;
       if (HANDLE_EINTR(ioctl(device_fd, VIDIOC_G_CTRL, &readback)) < 0)
         DPLOG(ERROR) << range.name << ", failed to be read.";
-      EXPECT_EQ(range.maximum, readback.value)
-          << " control " << range.name << " didn't set correctly";
+      EXPECT_EQ(range.maximum, readback.value) << " control " << range.name
+                                               << " didnt set correctly";
     }
   }
 }
@@ -186,7 +195,15 @@ class V4L2CaptureDelegateTest : public ::testing::Test {
 
 }  // anonymous namespace
 
-TEST_F(V4L2CaptureDelegateTest, CreateAndDestroyAndVerifyControls) {
+// Fails on Linux, see crbug/732355
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_CreateAndDestroyAndVerifyControls \
+  DISABLED_CreateAndDestroyAndVerifyControls
+#else
+#define MAYBE_CreateAndDestroyAndVerifyControls \
+  CreateAndDestroyAndVerifyControls
+#endif
+TEST_F(V4L2CaptureDelegateTest, MAYBE_CreateAndDestroyAndVerifyControls) {
   // Check that there is at least a video device, otherwise bail.
   const base::FilePath path("/dev/");
   base::FileEnumerator enumerator(path, false, base::FileEnumerator::FILES,

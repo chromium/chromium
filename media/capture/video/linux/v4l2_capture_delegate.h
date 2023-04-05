@@ -78,9 +78,6 @@ class CAPTURE_EXPORT V4L2CaptureDelegate final {
 
   base::WeakPtr<V4L2CaptureDelegate> GetWeakPtr();
 
-  static bool IsBlockedControl(int control_id);
-  static bool IsSpecialControl(int control_id);
-
  private:
   friend class V4L2CaptureDelegateTest;
 
