@@ -55,6 +55,7 @@ source_set("tab_helper") {
     "follow_tab_helper.mm",
   ]
   deps = [
+    ":feature_flags",
     ":javascript_feature",
     ":service",
     ":service_factory",
@@ -145,6 +146,17 @@ source_set("browser_agent") {
     "//ios/chrome/browser/ui/ntp/metrics",
     "//ui/base",
   ]
+}
+
+source_set("feature_flags") {
+  sources = [
+    "follow_features.h",
+    "follow_features.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {

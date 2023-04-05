@@ -75,6 +75,7 @@
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/flags/ios_chrome_flag_descriptions.h"
 #import "ios/chrome/browser/flags/system_flags.h"
+#import "ios/chrome/browser/follow/follow_features.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/policy/cloud/user_policy_constants.h"
 #import "ios/chrome/browser/policy/cloud/user_policy_switch.h"
@@ -1456,6 +1457,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kBringYourOwnTabsIOS,
                                     kBringYourOwnTabsIOSVariations,
                                     "BringYourOwnTabsIOS")},
+    {"enable-follow-IPH-exp-params",
+     flag_descriptions::kEnableFollowIPHExpParamsName,
+     flag_descriptions::kEnableFollowIPHExpParamsDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kEnableFollowIPHExpParams)},
     {"enable-follow-management-instant-reload",
      flag_descriptions::kEnableFollowManagementInstantReloadName,
      flag_descriptions::kEnableFollowManagementInstantReloadDescription,
