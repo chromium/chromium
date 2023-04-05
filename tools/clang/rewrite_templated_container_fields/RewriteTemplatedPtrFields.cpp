@@ -892,11 +892,17 @@ class VectorRawPtrRewriter {
 
     // TODO: check vector<S*> it = get()[0];
     auto rhs_iterator_call = cxxMemberCallExpr(
-        callee(functionDecl(anyOf(hasName("begin"), hasName("end")))),
+        callee(functionDecl(anyOf(hasName("begin"), hasName("cbegin"),
+                                  hasName("rbegin"), hasName("crbegin"),
+                                  hasName("end"), hasName("cend"),
+                                  hasName("rend"), hasName("crend")))),
         has(memberExpr(has(rhs_expr))));
 
     auto lhs_iterator_call = cxxMemberCallExpr(
-        callee(functionDecl(anyOf(hasName("begin"), hasName("end")))),
+        callee(functionDecl(anyOf(hasName("begin"), hasName("cbegin"),
+                                  hasName("rbegin"), hasName("crbegin"),
+                                  hasName("end"), hasName("cend"),
+                                  hasName("rend"), hasName("crend")))),
         has(memberExpr(has(lhs_expr))));
 
     auto rhs_cxx_temp_expr = cxxTemporaryObjectExpr(rhs_type_loc);

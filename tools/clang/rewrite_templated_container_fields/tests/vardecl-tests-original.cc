@@ -90,9 +90,25 @@ void fct() {
   }
 
   {
-    // Expected rewrite: std::vector<raw_ptr<S>>::iterator it;
+    // Expected rewrite: std::vector<raw_ptr<S>>::iterator
     std::vector<S*>::iterator it = o.member.begin();
-    (void)it;
+    // Expected rewrite: std::vector<raw_ptr<S>>::reverse_iterator
+    std::vector<S*>::reverse_iterator it2 = o.member.rbegin();
+    // Expected rewrite: std::vector<raw_ptr<S>>::const_iterator
+    std::vector<S*>::const_iterator it3 = o.member.cbegin();
+    // Expected rewrite: std::vector<raw_ptr<S>>::const_reverse_iterator
+    std::vector<S*>::const_reverse_iterator it4 = o.member.crbegin();
+  }
+
+  {
+    // Expected rewrite: std::vector<raw_ptr<S>>::iterator
+    std::vector<S*>::iterator it = o.member.end();
+    // Expected rewrite: std::vector<raw_ptr<S>>::reverse_iterator
+    std::vector<S*>::reverse_iterator it2 = o.member.rend();
+    // Expected rewrite: std::vector<raw_ptr<S>>::const_iterator
+    std::vector<S*>::const_iterator it3 = o.member.cend();
+    // Expected rewrite: std::vector<raw_ptr<S>>::const_reverse_iterator
+    std::vector<S*>::const_reverse_iterator it4 = o.member.crend();
   }
 
   {
