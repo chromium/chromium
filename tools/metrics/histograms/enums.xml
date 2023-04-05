@@ -26179,6 +26179,14 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="65" label="Header overrides '.headers' file edited"/>
   <int value="66" label="Local overrides enabled"/>
   <int value="67" label="Local overrides disabled"/>
+  <int value="68" label="Breakpoint removed from context menu"/>
+  <int value="69" label="Breakpoints in file removed from remove button"/>
+  <int value="70" label="Breakpoints in file removed from context menu"/>
+  <int value="71"
+      label="Breakpoints in file enabled or disabled from checkbox"/>
+  <int value="72"
+      label="Breakpoints in file enabled or disabled form context menu"/>
+  <int value="73" label="Breakpoint condition edited from sidebar"/>
 </enum>
 
 <enum name="DevToolsBackgroundService">
@@ -26196,6 +26204,7 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="2" label="Breakpoint marker context menu"/>
   <int value="3" label="Line gutter context menu"/>
   <int value="4" label="Keyboard Shortcut"/>
+  <int value="5" label="Linkifier"/>
 </enum>
 
 <enum name="DevToolsBreakpointWithConditionAdded">
