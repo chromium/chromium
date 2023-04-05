@@ -967,6 +967,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/resources/ResourceMapper.java",
   "java/src/org/chromium/chrome/browser/rlz/RevenueStats.java",
   "java/src/org/chromium/chrome/browser/rlz/RlzPingHandler.java",
+  "java/src/org/chromium/chrome/browser/safe_browsing/PasswordProtectionBroadcastReceiver.java",
   "java/src/org/chromium/chrome/browser/safe_browsing/SafeBrowsingPasswordReuseDialogBridge.java",
   "java/src/org/chromium/chrome/browser/safe_browsing/SafeBrowsingReferringAppBridge.java",
   "java/src/org/chromium/chrome/browser/safe_browsing/SafeBrowsingSettingsLauncher.java",
