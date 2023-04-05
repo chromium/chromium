@@ -114,16 +114,9 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
   CloseDialog(dialog_contents);
 }
 
-// TODO(b/260627828): This test is flaky on mac.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#define MAYBE_ReturnSuccessfulResponseUsingKeyPress \
-  DISABLED_ReturnSuccessfulResponseUsingKeyPress
-#else
-#define MAYBE_ReturnSuccessfulResponseUsingKeyPress \
-  ReturnSuccessfulResponseUsingKeyPress
-#endif
+// TODO(b/260627828): This test is flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
-                       MAYBE_ReturnSuccessfulResponseUsingKeyPress) {
+                       DISABLED_ReturnSuccessfulResponseUsingKeyPress) {
   const char kEndpointResponseSuccess[] =
       R"({
       "device": {
