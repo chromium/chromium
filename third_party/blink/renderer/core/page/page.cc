@@ -1063,13 +1063,6 @@ bool Page::RequestBeginMainFrameNotExpected(bool new_state) {
   return true;
 }
 
-bool Page::LocalMainFrameNetworkIsAlmostIdle() const {
-  LocalFrame* frame = DynamicTo<LocalFrame>(MainFrame());
-  if (!frame)
-    return true;
-  return frame->GetIdlenessDetector()->NetworkIsAlmostIdle();
-}
-
 void Page::AddAutoplayFlags(int32_t value) {
   autoplay_flags_ |= value;
 }

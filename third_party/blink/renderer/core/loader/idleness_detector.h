@@ -42,7 +42,6 @@ class CORE_EXPORT IdlenessDetector
 
   base::TimeTicks GetNetworkAlmostIdleTime();
   base::TimeTicks GetNetworkIdleTime();
-  bool NetworkIsAlmostIdle();
 
   void Trace(Visitor*) const;
 
