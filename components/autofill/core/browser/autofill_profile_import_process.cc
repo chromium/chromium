@@ -87,7 +87,8 @@ bool ProfileImportProcess::prompt_shown() const {
 bool ProfileImportProcess::UserDeclined() const {
   return user_decision_ == UserDecision::kDeclined ||
          user_decision_ == UserDecision::kEditDeclined ||
-         user_decision_ == UserDecision::kMessageDeclined;
+         user_decision_ == UserDecision::kMessageDeclined ||
+         user_decision_ == UserDecision::kNever;
 }
 
 bool ProfileImportProcess::UserAccepted() const {
@@ -374,18 +375,16 @@ void ProfileImportProcess::SetUserDecision(
       break;
 
     // If the confirmable merge was declided or ignored, the original merge
-    // candidate should be maintined. Note that the decline/ignore does not mean
-    // that silent updates are not performed.
+    // candidate should be maintined. Note that the decline/ignore/never does
+    // not mean that silent updates are not performed.
     case UserDecision::kDeclined:
     case UserDecision::kEditDeclined:
     case UserDecision::kMessageDeclined:
     case UserDecision::kMessageTimeout:
     case UserDecision::kIgnored:
     case UserDecision::kAutoDeclined:
-      confirmed_import_candidate_ = merge_candidate_;
-      break;
-
     case UserDecision::kNever:
+      confirmed_import_candidate_ = merge_candidate_;
       break;
 
     case UserDecision::kUndefined:

@@ -5255,6 +5255,11 @@ TEST_F(PersonalDataManagerTest, SaveProfileMigrationStrikes) {
   // Until the strikes are removed again.
   personal_data_->RemoveStrikesToBlockProfileMigration(kGuid);
   EXPECT_FALSE(personal_data_->IsProfileMigrationBlocked(kGuid));
+
+  // `AddMaxStrikesToBlockProfileMigration()` should add sufficiently many
+  // strikes.
+  personal_data_->AddMaxStrikesToBlockProfileMigration(kGuid);
+  EXPECT_TRUE(personal_data_->IsProfileMigrationBlocked(kGuid));
 }
 
 TEST_F(PersonalDataManagerTest, SaveProfileUpdateStrikes) {

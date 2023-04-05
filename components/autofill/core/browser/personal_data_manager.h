@@ -529,6 +529,10 @@ class PersonalDataManager : public KeyedService,
   // Does nothing if the strike database is not available.
   void AddStrikeToBlockProfileMigration(const std::string& guid);
 
+  // Adds enough strikes to the profile identified by `guid` to block migrations
+  // for it.
+  void AddMaxStrikesToBlockProfileMigration(const std::string& guid);
+
   // Removes potential strikes to block a profile identified by its `guid` for
   // migrations. Does nothing if the strike database is not available.
   void RemoveStrikesToBlockProfileMigration(const std::string& guid);

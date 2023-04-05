@@ -200,8 +200,9 @@ class AutofillClient : public RiskDataLoader {
     kEditAccepted,
     // The user declined the save/update/migration flow from the edit dialog.
     kEditDeclined,
-    // The user selected to never save a new profile on a given domain or update
-    // a specific profile (currently not supported).
+    // The user selected to never migrate a `kLocalOrSyncable` profile to the
+    // account storage.
+    // Currently unused for new profile and update prompts.
     kNever,
     // The user ignored the prompt.
     kIgnored,

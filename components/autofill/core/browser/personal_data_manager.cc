@@ -1781,6 +1781,14 @@ void PersonalDataManager::AddStrikeToBlockProfileMigration(
   GetProfileMigrationStrikeDatabase()->AddStrike(guid);
 }
 
+void PersonalDataManager::AddMaxStrikesToBlockProfileMigration(
+    const std::string& guid) {
+  if (AutofillProfileMigrationStrikeDatabase* db =
+          GetProfileMigrationStrikeDatabase()) {
+    db->AddStrikes(db->GetMaxStrikesLimit() - db->GetStrikes(guid), guid);
+  }
+}
+
 void PersonalDataManager::RemoveStrikesToBlockProfileMigration(
     const std::string& guid) {
   if (!GetProfileMigrationStrikeDatabase()) {
