@@ -204,8 +204,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
 
   void RemoveObserver(Observer* const observer) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(observers_.HasObserver(observer));
+    DCHECK(HasObserver(observer));
     observers_.RemoveObserver(observer);
+  }
+
+  bool HasObserver(Observer* const observer) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return observers_.HasObserver(observer);
   }
 
   // Processes a syncing status event. Returns true if the event was useful.
