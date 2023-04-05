@@ -30,8 +30,6 @@
 
 #include "third_party/blink/renderer/core/layout/text_run_constructor.h"
 
-#include "third_party/blink/renderer/core/layout/api/line_layout_item.h"
-#include "third_party/blink/renderer/core/layout/api/line_layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/platform/text/bidi_text_run.h"
 
