@@ -240,33 +240,25 @@ void RenderAccessibilityImpl::AccessibilityModeChanged(const ui::AXMode& mode) {
   DCHECK(web_view);
   WebSettings* settings = web_view->GetSettings();
   DCHECK(settings);
-  if (mode.has_mode(ui::AXMode::kInlineTextBoxes)) {
-    settings->SetInlineTextBoxAccessibilityEnabled(true);
-    // If accessibility was already on, update it to load inline text boxes.
-    // Otherwise, just build the tree naturally.
-    if (was_on) {
-      ax_context_->UpdateAXForAllDocuments();
-      ComputeRoot().LoadInlineTextBoxes();
-    }
-  } else {
-    settings->SetInlineTextBoxAccessibilityEnabled(false);
-  }
+  // TODO(accessibility) Remove inline text box setting and just use the AXMode.
+  bool use_inline_textboxes = mode.has_mode(ui::AXMode::kInlineTextBoxes);
+  settings->SetInlineTextBoxAccessibilityEnabled(use_inline_textboxes);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
   StartOrStopLabelingImages(old_mode, mode);
 
-  if (ax_context_)
+  if (ax_context_) {
     ax_context_->SetAXMode(mode);
-  else
+  } else {
     DidCreateNewDocument();
+  }
 
   DCHECK(ax_context_);
   DCHECK_EQ(accessibility_mode_, ax_context_->GetAXMode());
 
+  // Build (or rebuild) the accessibility tree with the new mode.
   if (was_on) {
-    // When the accessibility mode changes, all state contained in the
-    // serializer, which prevents previously serialized data from being
-    // reserialized, is now out-of-date.
-    ax_context_->ResetSerializer();
+    ax_context_->MarkDocumentDirty();
   }
 
   // Fire a load complete event so that any ATs present can treat the page as
@@ -278,9 +270,7 @@ void RenderAccessibilityImpl::FireLoadCompleteIfLoaded() {
   if (GetMainDocument().IsLoaded() &&
       GetMainDocument().GetFrame()->GetEmbeddingToken()) {
     DCHECK(ax_context_);
-    ax_context_->UpdateAXForAllDocuments();
     ax_context_->FireLoadCompleteIfLoaded();
-    ax_context_->UpdateAXForAllDocuments();
   }
 }
 
@@ -503,7 +493,6 @@ void RenderAccessibilityImpl::Reset(int32_t reset_token) {
   DCHECK(!accessibility_mode_.is_mode_off());
   reset_token_ = reset_token;
   ax_context_->ResetSerializer();
-  ax_context_->ClearDirtyObjectsAndPendingEvents();
   FireLoadCompleteIfLoaded();
 }
 

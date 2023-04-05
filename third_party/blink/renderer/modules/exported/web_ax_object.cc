@@ -838,13 +838,6 @@ ax::mojom::SortDirection WebAXObject::SortDirection() const {
   return private_->GetSortDirection();
 }
 
-void WebAXObject::LoadInlineTextBoxes() const {
-  if (IsDetached())
-    return;
-
-  private_->LoadInlineTextBoxes();
-}
-
 WebAXObject WebAXObject::NextOnLine() const {
   if (IsDetached())
     return WebAXObject();

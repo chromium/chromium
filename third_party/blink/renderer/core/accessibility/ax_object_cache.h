@@ -209,8 +209,6 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   // Returns true if there are any pending updates that need processing.
   virtual bool IsDirty() const = 0;
 
-  virtual void ResetSerializer() = 0;
-
   virtual void SerializeLocationChanges() = 0;
 
   virtual AXObject* GetPluginRoot() = 0;
@@ -221,7 +219,20 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
                                    base::TimeDelta timeout,
                                    ui::AXTreeUpdate*) = 0;
 
+  // Recompute the entire tree and reserialize it.
+  // This method is useful when something that potentially affects most of the
+  // page occurs, such as an inertness change or a fullscreen toggle.
+  // This keeps the existing nodes, but recomputes all of their properties and
+  // reserializes everything.
+  // Compared with ResetSerializer() and MarkAXObjectDirtyWithDetails() with
+  // subtree = true, this does more work, because it recomputes the entire tree
+  // structure and properties of each node.
   virtual void MarkDocumentDirty() = 0;
+
+  // Compared with MarkDocumentDirty(), this does less work, because it assumes
+  // the AXObjectCache's tree of objects and properties is correct, but needs to
+  // be reserialized.
+  virtual void ResetSerializer() = 0;
 
   virtual void MarkElementDirty(const Node*) = 0;
 
@@ -251,8 +262,6 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   // Returns a vector of the images found in |updates|.
   virtual void GetImagesToAnnotate(ui::AXTreeUpdate& updates,
                                    std::vector<ui::AXNodeData*>&) = 0;
-
-  virtual void ClearDirtyObjectsAndPendingEvents() = 0;
 
   // Note that any pending event also causes its corresponding object to
   // become dirty.

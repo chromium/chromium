@@ -32,6 +32,19 @@ class BLINK_EXPORT WebAXContext {
 
   void SetAXMode(const ui::AXMode&) const;
 
+  // Recompute the entire tree and reserialize it.
+  // This method is useful when something that potentially affects most of the
+  // page occurs, such as an inertness change or a fullscreen toggle.
+  // This keeps the existing nodes, but recomputes all of their properties and
+  // reserializes everything.
+  // Compared with ResetSerializer() and MarkAXObjectDirtyWithDetails() with
+  // subtree = true, this does more work, because it recomputes the entire tree
+  // structure and properties of each node.
+  void MarkDocumentDirty();
+
+  // Compared with MarkDocumentDirty(), this does less work, because it assumes
+  // the AXObjectCache's tree of objects and properties is correct, but needs to
+  // be reserialized.
   void ResetSerializer();
 
   // Get a new AXID that's not used by any accessibility node in this process,
@@ -73,9 +86,6 @@ class BLINK_EXPORT WebAXContext {
   // Returns a vector of the images found in |updates|.
   void GetImagesToAnnotate(ui::AXTreeUpdate& updates,
                            std::vector<ui::AXNodeData*>&);
-
-  // Clears out the list of dirty AXObjects and of pending events.
-  void ClearDirtyObjectsAndPendingEvents();
 
   // Note that any pending event also causes its corresponding object to
   // become dirty.

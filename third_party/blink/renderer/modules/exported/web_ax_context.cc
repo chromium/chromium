@@ -31,6 +31,13 @@ void WebAXContext::SetAXMode(const ui::AXMode& mode) const {
   private_->SetAXMode(mode);
 }
 
+void WebAXContext::MarkDocumentDirty() {
+  if (!HasActiveDocument()) {
+    return;
+  }
+  private_->GetAXObjectCache().MarkDocumentDirty();
+}
+
 void WebAXContext::ResetSerializer() {
   if (!HasActiveDocument()) {
     return;
@@ -113,13 +120,6 @@ void WebAXContext::SerializeDirtyObjectsAndEvents(
 void WebAXContext::GetImagesToAnnotate(ui::AXTreeUpdate& updates,
                                        std::vector<ui::AXNodeData*>& nodes) {
   private_->GetAXObjectCache().GetImagesToAnnotate(updates, nodes);
-}
-
-void WebAXContext::ClearDirtyObjectsAndPendingEvents() {
-  if (!HasActiveDocument()) {
-    return;
-  }
-  private_->GetAXObjectCache().ClearDirtyObjectsAndPendingEvents();
 }
 
 bool WebAXContext::HasDirtyObjects() {
