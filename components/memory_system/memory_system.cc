@@ -39,7 +39,13 @@
 #if BUILDFLAG(USE_ALLOCATION_EVENT_DISPATCHER)
 #include "base/allocator/dispatcher/dispatcher.h"
 #include "base/allocator/dispatcher/initializer.h"
+
+#if HEAP_PROFILING_SUPPORTED
+// If profiling is not supported, the PoissonAllocationSampler is removed from
+// base, which causes linker errors. Since we need it only for the dispatcher,
+// we include it only if both, dispatcher and heap-profiling, are enabled.
 #include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
+#endif
 #endif
 
 namespace memory_system {
@@ -95,6 +101,7 @@ struct MemorySystem::Impl {
   // Has the allocator shim been initialized successfully?
   bool IsAllocatorShimInitialized();
 
+#if HEAP_PROFILING_SUPPORTED
 #if BUILDFLAG(USE_ALLOCATION_EVENT_DISPATCHER)
   // Check if the the dispatcher should include the PoissonAllocationSampler as
   // observer.
@@ -103,7 +110,6 @@ struct MemorySystem::Impl {
       const InitializationData& initialization_data);
 #endif
 
-#if HEAP_PROFILING_SUPPORTED
   std::unique_ptr<heap_profiling::HeapProfilerController>
       heap_profiler_controller_;
 #endif
@@ -210,7 +216,7 @@ void MemorySystem::Impl::InitializeHeapProfiler(
 }
 
 #if BUILDFLAG(USE_ALLOCATION_EVENT_DISPATCHER)
-
+#if HEAP_PROFILING_SUPPORTED
 bool MemorySystem::Impl::DispatcherIncludesPoissonAllocationSampler(
     const DispatcherParameters& dispatcher_parameters,
     const InitializationData& initialization_data) {
@@ -218,19 +224,17 @@ bool MemorySystem::Impl::DispatcherIncludesPoissonAllocationSampler(
     case DispatcherParameters::PoissonAllocationSamplerInclusion::kEnforce:
       return true;
     case DispatcherParameters::PoissonAllocationSamplerInclusion::kDynamic:
-#if HEAP_PROFILING_SUPPORTED
       return initialization_data.has_profiling_client_started;
-#else
-      return false;
-#endif
     case DispatcherParameters::PoissonAllocationSamplerInclusion::kIgnore:
       return false;
   }
 }
+#endif
 
 void MemorySystem::Impl::InitializeDispatcher(
     const DispatcherParameters& dispatcher_parameters,
     InitializationData& initialization_data) {
+#if HEAP_PROFILING_SUPPORTED
   // Include the PoissonAllocationSampler as an optional observer always, even
   // if the inclusion parameter is |kEnforce|. If we distinguish between
   // mandatory and optional, the nesting becomes a real mess once we add yet
@@ -242,9 +246,12 @@ void MemorySystem::Impl::InitializeDispatcher(
   auto* const poisson_allocation_sampler =
       include_poisson_allocation_sampler ? base::PoissonAllocationSampler::Get()
                                          : nullptr;
+#endif
 
   base::allocator::dispatcher::CreateInitializer()
-      .SetOptionalObservers(poisson_allocation_sampler)
+#if HEAP_PROFILING_SUPPORTED
+      .AddOptionalObservers(poisson_allocation_sampler)
+#endif
       .DoInitialize(base::allocator::dispatcher::Dispatcher::GetInstance());
 }
 

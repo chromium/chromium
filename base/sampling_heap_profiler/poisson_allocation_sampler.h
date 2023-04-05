@@ -113,11 +113,12 @@ class BASE_EXPORT PoissonAllocationSampler {
   ALWAYS_INLINE static void RecordFree(void* address);
 #endif
 
-  void OnAllocation(void* address,
-                    size_t,
-                    base::allocator::dispatcher::AllocationSubsystem,
-                    const char* context);
-  void OnFree(void* address);
+  ALWAYS_INLINE void OnAllocation(
+      void* address,
+      size_t,
+      base::allocator::dispatcher::AllocationSubsystem,
+      const char* context);
+  ALWAYS_INLINE void OnFree(void* address);
 
   static PoissonAllocationSampler* Get();
 
@@ -245,7 +246,7 @@ ALWAYS_INLINE void PoissonAllocationSampler::RecordFree(void* address) {
 }
 #endif
 
-inline void PoissonAllocationSampler::OnAllocation(
+ALWAYS_INLINE void PoissonAllocationSampler::OnAllocation(
     void* address,
     size_t size,
     base::allocator::dispatcher::AllocationSubsystem type,
@@ -281,7 +282,7 @@ inline void PoissonAllocationSampler::OnAllocation(
   DoRecordAllocation(state, address, size, type, context);
 }
 
-inline void PoissonAllocationSampler::OnFree(void* address) {
+ALWAYS_INLINE void PoissonAllocationSampler::OnFree(void* address) {
   // The allocation hooks may be installed before the sampler is started. Check
   // if its ever been started first to avoid extra work on the fast path,
   // because it's the most common case. Note that DoRecordFree still needs to be

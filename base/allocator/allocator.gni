@@ -16,7 +16,7 @@ declare_args() {
   # Use the new allocation event dispatcher to distribute events to event observers.
   # If set to false, PoissonAllocationSampler will hook into PartitionAllocator and
   # AllocatorShims directly.
-  use_allocation_event_dispatcher = false
+  use_allocation_event_dispatcher = true
 }
 
 assert(
