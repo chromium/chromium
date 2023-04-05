@@ -192,6 +192,10 @@ void BluetoothRemoteGattCharacteristicFloss::GattCharacteristicWrite(
 
   auto [callback, error_callback, data] = std::move(pending_write_callbacks_);
 
+  if (!callback || !error_callback) {
+    return;
+  }
+
   if (status == GattStatus::kSuccess) {
     cached_data_ = data;
 
