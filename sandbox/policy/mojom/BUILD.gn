@@ -14,7 +14,6 @@ mojom("mojom") {
     "context.mojom",
     "sandbox.mojom",
   ]
-  webui_module_path = "/"
 
   enabled_features = []
   if (enable_oop_printing) {

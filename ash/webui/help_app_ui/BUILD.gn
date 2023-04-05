@@ -68,7 +68,6 @@ static_library("help_app_ui") {
 
 mojom("mojo_bindings") {
   sources = [ "help_app_ui.mojom" ]
-  webui_module_path = "/"
 }
 
 source_set("unit_tests") {
@@ -102,7 +101,7 @@ group("closure_compile") {
 }
 
 js2gtest("browser_tests_js") {
-  test_type = "mojo_webui"
+  test_type = "mojo_lite_webui"
 
   sources = [ "test/help_app_ui_gtest_browsertest.js" ]
 
@@ -139,24 +138,9 @@ source_set("browser_test_support") {
   ]
 }
 
-mojo_test_flags = mojom_js_args + [
-                    "language_in=ECMASCRIPT_2020",
-                    "js_module_root=" +
-                        rebase_path("resources", root_build_dir),
-                    "js_module_root=" + rebase_path(
-                            "$root_gen_dir/mojom-webui/ash/webui/help_app_ui",
-                            root_build_dir),
-                    "js_module_root=" + rebase_path(
-                            "$root_gen_dir/mojom-webui/ash/webui/help_app_ui/search",
-                            root_build_dir),
-                    "js_module_root=" + rebase_path(
-                            "$root_gen_dir/mojom-webui/chromeos/ash/components/local_search_service/public/mojom",
-                            root_build_dir),
-                  ]
-
 js_type_check("closure_compile_test_lib") {
   testonly = true
-  closure_flags = system_app_closure_flags_strict + mojo_test_flags
+  closure_flags = system_app_closure_flags_strict
   deps = [
     ":test_driver_api_js",
     ":test_driver_js",
@@ -168,7 +152,7 @@ js_type_check("closure_compile_test_lib") {
 # checks and "could not determine type" errors which don't add a lot of value.
 js_type_check("closure_compile_browsertests") {
   testonly = true
-  closure_flags = system_app_closure_flags + mojo_test_flags
+  closure_flags = system_app_closure_flags
   deps = [
     ":test_help_app_guest_ui_browsertest_js",
     ":test_help_app_ui_browsertest_js",
