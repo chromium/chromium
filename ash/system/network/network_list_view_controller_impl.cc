@@ -14,6 +14,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/typography.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/network_detailed_network_view_impl.h"
 #include "ash/system/network/network_list_mobile_header_view.h"
@@ -611,6 +612,7 @@ size_t NetworkListViewControllerImpl::CreateWifiGroupHeader(
                : IDS_ASH_QUICK_SETTINGS_UNKNOWN_NETWORKS));
   header->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
   header->SetBorder(views::CreateEmptyBorder(kWifiGroupLabelPadding));
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2, *header);
 
   if (is_known) {
     known_header_ = network_detailed_network_view()
