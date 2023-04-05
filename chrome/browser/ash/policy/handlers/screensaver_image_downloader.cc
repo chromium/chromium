@@ -86,6 +86,22 @@ int GetResponseCode(network::SimpleURLLoader* simple_loader) {
   }
   return simple_loader->ResponseInfo()->headers->response_code();
 }
+
+bool CheckOrCreateDownloadDirectory(const base::FilePath& download_directory) {
+  if (!base::DirectoryExists(download_directory) &&
+      !base::CreateDirectory(download_directory)) {
+    LOG(ERROR) << "Cannot create download directory";
+    // TODO(b/276208772): Track result with metrics
+    return false;
+  }
+  if (!base::PathIsWritable(download_directory)) {
+    LOG(ERROR) << "Cannot write to download directory";
+    // TODO(b/276208772): Track result with metrics
+    return false;
+  }
+  return true;
+}
+
 }  // namespace
 
 ScreensaverImageDownloader::Job::Job(const std::string& image_url,
@@ -111,35 +127,33 @@ ScreensaverImageDownloader::~ScreensaverImageDownloader() = default;
 void ScreensaverImageDownloader::QueueDownloadJob(
     std::unique_ptr<Job> download_job) {
   CHECK(download_job);
+
+  // TODO(b/276208772): Track queue usage with metrics
+  if (queue_state_ == QueueState::kWaiting) {
+    CHECK(downloading_queue_.empty());
+    StartDownloadJob(std::move(download_job));
+  } else {
+    downloading_queue_.emplace(std::move(download_job));
+  }
+}
+
+void ScreensaverImageDownloader::StartDownloadJob(
+    std::unique_ptr<Job> download_job) {
+  queue_state_ = QueueState::kDownloading;
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(
-          [](const base::FilePath& path) {
-            if (!base::DirectoryExists(path) && !base::CreateDirectory(path)) {
-              LOG(ERROR) << "Cannot create download directory";
-              // TODO(b/276208772): Track result with metrics
-              return false;
-            }
-            if (!base::PathIsWritable(path)) {
-              LOG(ERROR) << "Cannot write to download directory";
-              // TODO(b/276208772): Track result with metrics
-              return false;
-            }
-            return true;
-          },
-          download_directory_),
-      base::BindOnce(&ScreensaverImageDownloader::DownloadImageToFileInternal,
+      base::BindOnce(&CheckOrCreateDownloadDirectory, download_directory_),
+      base::BindOnce(&ScreensaverImageDownloader::StartDownloadJobInternal,
                      weak_ptr_factory_.GetWeakPtr(), std::move(download_job)));
 }
 
-void ScreensaverImageDownloader::DownloadImageToFileInternal(
+void ScreensaverImageDownloader::StartDownloadJobInternal(
     std::unique_ptr<Job> download_job,
     bool can_download_file) {
   if (!can_download_file) {
-    // TODO(b/276208772): Track result with metrics
-    ReplyDownloadJobWithResult(
-        std::move(download_job),
-        ScreensaverImageDownloadResult::kFileSystemWriteError, absl::nullopt);
+    FinishDownloadJob(std::move(download_job),
+                      ScreensaverImageDownloadResult::kFileSystemWriteError,
+                      absl::nullopt);
     return;
   }
 
@@ -175,9 +189,9 @@ void ScreensaverImageDownloader::OnUrlDownloadedToTempFile(
           FROM_HERE,
           base::BindOnce(base::IgnoreResult(&base::DeleteFile), temp_path));
     }
-    ReplyDownloadJobWithResult(std::move(download_job),
-                               ScreensaverImageDownloadResult::kNetworkError,
-                               absl::nullopt);
+    FinishDownloadJob(std::move(download_job),
+                      ScreensaverImageDownloadResult::kNetworkError,
+                      absl::nullopt);
     return;
   }
 
@@ -195,23 +209,30 @@ void ScreensaverImageDownloader::OnUrlDownloadToFileComplete(
     bool file_is_present) {
   if (!file_is_present) {
     DLOG(WARNING) << "Could not save the downloaded file to " << path;
-    ReplyDownloadJobWithResult(std::move(download_job),
-                               ScreensaverImageDownloadResult::kFileSaveError,
-                               absl::nullopt);
+    FinishDownloadJob(std::move(download_job),
+                      ScreensaverImageDownloadResult::kFileSaveError,
+                      absl::nullopt);
     return;
   }
 
-  ReplyDownloadJobWithResult(std::move(download_job),
-                             ScreensaverImageDownloadResult::kSuccess, path);
+  FinishDownloadJob(std::move(download_job),
+                    ScreensaverImageDownloadResult::kSuccess, path);
 }
 
-void ScreensaverImageDownloader::ReplyDownloadJobWithResult(
+void ScreensaverImageDownloader::FinishDownloadJob(
     std::unique_ptr<Job> download_job,
     ScreensaverImageDownloadResult result,
     absl::optional<base::FilePath> path) {
   // TODO(b/276208772): Track result with metrics
   CHECK(!download_job->result_callback.is_null());
   std::move(download_job->result_callback).Run(result, path);
+
+  if (downloading_queue_.empty()) {
+    queue_state_ = QueueState::kWaiting;
+  } else {
+    StartDownloadJob(std::move(downloading_queue_.front()));
+    downloading_queue_.pop();
+  }
 }
 
 }  // namespace policy

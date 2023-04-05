@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/queue.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -31,6 +32,16 @@ enum class ScreensaverImageDownloadResult {
 // Provides a service to download external image files that will be displayed in
 // the managed screensaver feature.
 class ScreensaverImageDownloader {
+ private:
+  // Expresses the state of the downloading job queue. It only has two possible
+  // states:
+  //   * Waiting: No job is being executed and the queue is empty.
+  //   * Downloading: A job is in progress, and additional jobs may be in queue.
+  enum class QueueState {
+    kWaiting,
+    kDownloading,
+  };
+
  public:
   // Convenience definition for the callback provided by clients wanting to
   // download images.
@@ -72,9 +83,17 @@ class ScreensaverImageDownloader {
   void QueueDownloadJob(std::unique_ptr<Job> download_job);
 
  private:
-  // Creates a new request to download an image from an external URL.
-  void DownloadImageToFileInternal(std::unique_ptr<Job> download_job,
-                                   bool can_download_file);
+  friend class ScreensaverImageDownloaderTest;
+
+  // Verifies that the download directory is present and writable, or attempts
+  // to create it otherwise. The result of this operation is passed along to
+  // `StartDownloadJobInternal`.
+  void StartDownloadJob(std::unique_ptr<Job> download_job);
+
+  // Triggers a new URL request to download an image, if `can_download_file` is
+  // true. Otherwise, it completes the job with an error result.
+  void StartDownloadJobInternal(std::unique_ptr<Job> download_job,
+                                bool can_download_file);
 
   // Moves the downloaded image to its desired path. To avoid reading errors,
   // every image is initially downloaded to a temporary file. On network error,
@@ -90,9 +109,17 @@ class ScreensaverImageDownloader {
                                    std::unique_ptr<Job> download_job,
                                    bool file_is_present);
 
-  void ReplyDownloadJobWithResult(std::unique_ptr<Job> download_job,
-                                  ScreensaverImageDownloadResult result,
-                                  absl::optional<base::FilePath> path);
+  // Completes a job by calling `result` with `result` and `path`. It will
+  // attempt to start the next pending job, if there is any.
+  void FinishDownloadJob(std::unique_ptr<Job> download_job,
+                         ScreensaverImageDownloadResult result,
+                         absl::optional<base::FilePath> path);
+
+  QueueState queue_state_ = QueueState::kWaiting;
+
+  // To avoid multiple URL requests, only one job can be executed. Additional
+  // jobs will be queued, and executed sequentially.
+  base::queue<std::unique_ptr<Job>> downloading_queue_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
