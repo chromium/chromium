@@ -66,6 +66,21 @@ UserEducationController* UserEducationController::Get() {
   return g_instance;
 }
 
+void UserEducationController::StartTutorial(
+    UserEducationPrivateApiKey,
+    const user_education::TutorialIdentifier& tutorial_id,
+    const ui::ElementContext& element_context,
+    base::OnceClosure completed_callback,
+    base::OnceClosure aborted_callback) {
+  // NOTE: User education in Ash is currently only supported for the primary
+  // user profile. This is a self-imposed restriction.
+  auto account_id = Shell::Get()->session_controller()->GetActiveAccountId();
+  CHECK(user_education_util::IsPrimaryAccountId(account_id));
+  delegate_->StartTutorial(account_id, tutorial_id, element_context,
+                           std::move(completed_callback),
+                           std::move(aborted_callback));
+}
+
 void UserEducationController::OnChromeTerminating() {
   session_observation_.Reset();
 }

@@ -7,9 +7,11 @@
 #include <map>
 
 #include "ash/constants/ash_features.h"
+#include "ash/session/test_session_controller_client.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/test/ash_test_base.h"
+#include "ash/user_education/mock_user_education_delegate.h"
 #include "ash/user_education/tutorial_controller.h"
+#include "ash/user_education/user_education_ash_test_base.h"
 #include "ash/user_education/user_education_constants.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/account_id/account_id.h"
@@ -23,6 +25,8 @@ namespace ash {
 namespace {
 
 // Aliases.
+using session_manager::SessionState;
+using testing::_;
 using testing::Contains;
 using testing::ElementsAre;
 using testing::Eq;
@@ -44,7 +48,7 @@ MATCHER_P3(BubbleStep, element_id, body_text_id, has_next_button, "") {
 // WelcomeTourControllerTest ---------------------------------------------------
 
 // Base class for tests of the `WelcomeTourController`.
-class WelcomeTourControllerTest : public NoSessionAshTestBase {
+class WelcomeTourControllerTest : public UserEducationAshTestBase {
  public:
   WelcomeTourControllerTest() {
     // NOTE: The `WelcomeTourController` exists only when the Welcome Tour
@@ -96,6 +100,48 @@ TEST_F(WelcomeTourControllerTest, GetTutorialDescriptions) {
                   BubbleStep(kExploreAppListItemViewElementId,
                              IDS_ASH_WELCOME_TOUR_EXPLORE_APP_BUBBLE_BODY_TEXT,
                              /*has_next_button=*/false))))));
+}
+
+// Verifies that the Welcome Tour tutorial is started when the primary user
+// session is first activated and then never again.
+TEST_F(WelcomeTourControllerTest, StartsTutorial) {
+  AccountId primary_account_id = AccountId::FromUserEmail("primary@test");
+  AccountId secondary_account_id = AccountId::FromUserEmail("secondary@test");
+
+  // Ensure delegate exists and disallow any unexpected tutorial starts.
+  auto* user_education_delegate = this->user_education_delegate();
+  ASSERT_TRUE(user_education_delegate);
+  EXPECT_CALL(*user_education_delegate, StartTutorial).Times(0);
+
+  // Add a primary and secondary user session. This should *not* trigger the
+  // Welcome Tour tutorial to start.
+  auto* session_controller_client = GetSessionControllerClient();
+  session_controller_client->AddUserSession(primary_account_id.GetUserEmail());
+  session_controller_client->AddUserSession(
+      secondary_account_id.GetUserEmail());
+
+  // Activate the primary user session. This *should* trigger the Welcome Tour
+  // tutorial to start.
+  EXPECT_CALL(
+      *user_education_delegate,
+      StartTutorial(Eq(primary_account_id), Eq("AshWelcomeTourPrototype1"),
+                    Eq(ui::ElementContext()), /*completed_callback=*/_,
+                    /*aborted_callback=*/_));
+  session_controller_client->SetSessionState(SessionState::ACTIVE);
+  testing::Mock::VerifyAndClearExpectations(user_education_delegate);
+
+  // Disallow any unexpected tutorial starts.
+  EXPECT_CALL(*user_education_delegate, StartTutorial).Times(0);
+
+  // Switch to the secondary user session and back again. This should *not*
+  // trigger the Welcome Tour tutorial to start.
+  session_controller_client->SwitchActiveUser(secondary_account_id);
+  session_controller_client->SwitchActiveUser(primary_account_id);
+
+  // Deactivate and then reactivate the primary user session. This should *not*
+  // trigger the Welcome Tour tutorial to start.
+  session_controller_client->SetSessionState(SessionState::LOCKED);
+  session_controller_client->SetSessionState(SessionState::ACTIVE);
 }
 
 }  // namespace ash
