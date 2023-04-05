@@ -1142,6 +1142,10 @@ void AppPlatformMetrics::RecordAppsUsageTime() {
 
 void AppPlatformMetrics::RecordAppsUsageTimeUkm() {
   if (!ShouldRecordUkm(profile_)) {
+    // Attempt to clean up pre-existing data in the pref store. This is useful
+    // (and harmless) because we routinely clean up usage data that has already
+    // been reported.
+    CleanUpAppsUsageInfoInPrefStore();
     return;
   }
 
