@@ -16,43 +16,20 @@
 #include "base/strings/string_piece.h"
 #include "fuchsia_web/runners/common/web_content_runner.h"
 
-WebComponent::WebComponent(
-    base::StringPiece debug_name,
-    WebContentRunner* runner,
-    std::unique_ptr<base::StartupContext> context,
-    fidl::InterfaceRequest<fuchsia::sys::ComponentController>
-        controller_request)
+WebComponent::WebComponent(base::StringPiece debug_name,
+                           WebContentRunner* runner,
+                           std::unique_ptr<base::StartupContext> context)
     : debug_name_(debug_name),
       runner_(runner),
       startup_context_(std::move(context)),
-      controller_binding_(this),
       navigation_listener_binding_(this) {
   DCHECK(!debug_name_.empty());
   DCHECK(runner);
 
   LOG(INFO) << "Creating component " << debug_name_;
-
-  // If the ComponentController request is valid then bind it, and configure it
-  // to destroy this component on error.
-  if (controller_request.is_valid()) {
-    controller_binding_.Bind(std::move(controller_request));
-    controller_binding_.set_error_handler([this](zx_status_t status) {
-      ZX_LOG_IF(ERROR, status != ZX_ERR_PEER_CLOSED, status)
-          << " ComponentController disconnected for component " << debug_name_;
-      // Teardown the component with dummy values, since ComponentController
-      // channel isn't there to receive them.
-      DestroyComponent(0, fuchsia::sys::TerminationReason::UNKNOWN);
-    });
-  }
 }
 
-WebComponent::~WebComponent() {
-  if (controller_binding_.is_bound()) {
-    // Send process termination details to the client.
-    controller_binding_.events().OnTerminated(termination_exit_code_,
-                                              termination_reason_);
-  }
-}
+WebComponent::~WebComponent() = default;
 
 void WebComponent::EnableRemoteDebugging() {
   DCHECK(!component_started_);
@@ -78,7 +55,7 @@ void WebComponent::StartComponent() {
       ZX_LOG(ERROR, status)
           << " component " << debug_name_ << ": Frame disconnected";
     }
-    DestroyComponent(status, fuchsia::sys::TerminationReason::EXITED);
+    DestroyComponent(status);
   });
 
   // Route logging from the Frame to the component's LogSink.
@@ -127,26 +104,6 @@ void WebComponent::LoadUrl(
       [](fuchsia::web::NavigationController_LoadUrl_Result) {});
 }
 
-void WebComponent::Kill() {
-  // Close the web content, allowing the `frame_` implementation to use its
-  // default timeout.
-  frame_->Close({});
-}
-
-void WebComponent::Detach() {
-  controller_binding_.set_error_handler(nullptr);
-}
-
-void WebComponent::CreateView(
-    zx::eventpair view_token_value,
-    fidl::InterfaceRequest<fuchsia::sys::ServiceProvider> incoming_services,
-    fidl::InterfaceHandle<fuchsia::sys::ServiceProvider> outgoing_services) {
-  scenic::ViewRefPair view_ref_pair = scenic::ViewRefPair::New();
-  CreateViewWithViewRef(std::move(view_token_value),
-                        std::move(view_ref_pair.control_ref),
-                        std::move(view_ref_pair.view_ref));
-}
-
 void WebComponent::CreateViewWithViewRef(
     zx::eventpair view_token_value,
     fuchsia::ui::views::ViewRefControl control_ref,
@@ -154,7 +111,7 @@ void WebComponent::CreateViewWithViewRef(
   DCHECK(frame_);
   if (view_is_bound_) {
     LOG(ERROR) << "CreateView() called more than once.";
-    DestroyComponent(ZX_ERR_BAD_STATE, fuchsia::sys::TerminationReason::EXITED);
+    DestroyComponent(ZX_ERR_BAD_STATE);
     return;
   }
 
@@ -170,7 +127,7 @@ void WebComponent::CreateView2(fuchsia::ui::app::CreateView2Args view_args) {
   DCHECK(frame_);
   if (view_is_bound_) {
     LOG(ERROR) << "CreateView() called more than once.";
-    DestroyComponent(ZX_ERR_BAD_STATE, fuchsia::sys::TerminationReason::EXITED);
+    DestroyComponent(ZX_ERR_BAD_STATE);
     return;
   }
 
@@ -188,8 +145,7 @@ void WebComponent::OnNavigationStateChanged(
   if (change.has_page_type()) {
     switch (change.page_type()) {
       case fuchsia::web::PageType::ERROR:
-        DestroyComponent(ZX_ERR_INTERNAL,
-                         fuchsia::sys::TerminationReason::EXITED);
+        DestroyComponent(ZX_ERR_INTERNAL);
         break;
       case fuchsia::web::PageType::NORMAL:
         break;
@@ -201,14 +157,9 @@ void WebComponent::OnNavigationStateChanged(
   callback();
 }
 
-void WebComponent::DestroyComponent(int64_t exit_code,
-                                    fuchsia::sys::TerminationReason reason) {
-  LOG(INFO) << "Component " << debug_name_
-            << " is shutting down. reason=" << static_cast<int>(reason)
+void WebComponent::DestroyComponent(int64_t exit_code) {
+  LOG(INFO) << "Component " << debug_name_ << " is shutting down."
             << " exit_code=" << exit_code;
-
-  termination_reason_ = reason;
-  termination_exit_code_ = exit_code;
 
   runner_->DestroyComponent(this);
   // `this` is no longer valid.

@@ -4,7 +4,6 @@
 
 #include "fuchsia_web/runners/common/web_content_runner.h"
 
-#include <fuchsia/sys/cpp/fidl.h>
 #include <lib/fdio/directory.h>
 #include <lib/fidl/cpp/binding_set.h>
 #include <lib/sys/cpp/component_context.h>
@@ -32,11 +31,6 @@ bool IsChannelClosed(const zx::channel& channel) {
   zx_status_t status =
       channel.wait_one(ZX_ERR_PEER_CLOSED, zx::time(), &observed);
   return status == ZX_OK;
-}
-
-std::string CreateUniqueComponentName() {
-  static int last_component_id_ = 0;
-  return base::StringPrintf("web-component:%d", ++last_component_id_);
 }
 
 }  // namespace
@@ -85,26 +79,6 @@ void WebContentRunner::CreateFrameWithParams(
   EnsureWebInstanceAndContext();
 
   context_->CreateFrameWithParams(std::move(params), std::move(request));
-}
-
-void WebContentRunner::StartComponent(
-    fuchsia::sys::Package package,
-    fuchsia::sys::StartupInfo startup_info,
-    fidl::InterfaceRequest<fuchsia::sys::ComponentController>
-        controller_request) {
-  GURL url(package.resolved_url);
-  if (!url.is_valid()) {
-    LOG(ERROR) << "Rejected invalid URL: " << url;
-    return;
-  }
-
-  std::unique_ptr<WebComponent> component = std::make_unique<WebComponent>(
-      CreateUniqueComponentName(), this,
-      std::make_unique<base::StartupContext>(std::move(startup_info)),
-      std::move(controller_request));
-  component->StartComponent();
-  component->LoadUrl(url, std::vector<fuchsia::net::http::Header>());
-  RegisterComponent(std::move(component));
 }
 
 void WebContentRunner::DestroyComponent(WebComponent* component) {
