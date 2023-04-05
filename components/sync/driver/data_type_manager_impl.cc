@@ -594,18 +594,12 @@ DataTypeManagerImpl::PrepareConfigureParams() {
   downloaded_types_.RemoveAll(disabled_types);
   force_redownload_types_.RemoveAll(types_to_download);
 
-  ModelTypeSet types_to_purge;
-  // If we're using transport-only mode, don't clear any old data. The reason is
-  // that if a user temporarily disables Sync, we don't want to wipe (and later
-  // redownload) all their data, just because Sync restarted in transport-only
-  // mode.
   // TODO(crbug.com/1142771): "Purging" logic is only implemented for NIGORI -
   // verify whether it is actually needed at all.
-  if (last_requested_context_.sync_mode == SyncMode::kFull) {
-    types_to_purge = Difference(ModelTypeSet::All(), downloaded_types_);
-    types_to_purge.RemoveAll(inactive_types);
-    types_to_purge.RemoveAll(unready_types);
-  }
+  ModelTypeSet types_to_purge =
+      Difference(ModelTypeSet::All(), downloaded_types_);
+  types_to_purge.RemoveAll(inactive_types);
+  types_to_purge.RemoveAll(unready_types);
   DCHECK(Intersection(active_types, types_to_purge).Empty());
 
   DCHECK(Intersection(downloaded_types_, crypto_types).Empty());
