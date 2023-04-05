@@ -256,6 +256,21 @@ material_files = [
   "@material/web/radio/radio.js",
 ]
 
+ts_library("bundle_lit_ts") {
+  tsconfig_base = "tsconfig_base.json"
+  definitions = [ "lit_exports.d.ts" ]
+  composite = true
+
+  # Client code that runs through optimize_webui will attempt to find lit
+  # resources in $chrome_resources_dir. As such if ts code depends on mwc
+  # it also needs to depend on the rules that move lit resources into
+  # $chrome_resources_dir.
+  extra_deps = [
+    ":copy_lit_bundle",
+    ":copy_tslib",
+  ]
+}
+
 js_library("bundle_lit_js") {
   sources = [ "lit_exports.js" ]
 }
