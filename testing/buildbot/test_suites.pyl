@@ -3791,6 +3791,11 @@
       'media_unittests': {},
       'midi_unittests': {},
       'mojo_unittests': {},
+      'net_unittests': {
+        'args': [
+          '--gtest_filter=-*WebSocket*',
+        ],
+      },
       'shell_dialogs_unittests': {},
       'skia_unittests': {},
       'sql_unittests': {},
