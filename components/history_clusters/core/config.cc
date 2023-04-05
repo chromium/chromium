@@ -265,6 +265,9 @@ Config::Config() {
 
   // The `kUseEngagementScoreCache` feature and child params.
   {
+    use_engagement_score_cache =
+        base::FeatureList::IsEnabled(features::kUseEngagementScoreCache);
+
     engagement_score_cache_size = GetFieldTrialParamByFeatureAsInt(
         features::kUseEngagementScoreCache, "engagement_score_cache_size",
         engagement_score_cache_size);

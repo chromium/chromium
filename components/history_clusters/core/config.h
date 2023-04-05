@@ -264,6 +264,11 @@ struct Config {
 
   // The `kUseEngagementScoreCache` feature and child params.
 
+  // Whether to use a cache to store the site engagement scores per host. Used
+  // in both the old (OnDeviceClusteringBackend) and new
+  // (ContextClustererHistoryServiceObserver) clustering paths.
+  bool use_engagement_score_cache = true;
+
   // The max number of hosts that should be stored in the engagement score
   // cache.
   int engagement_score_cache_size = 100;
