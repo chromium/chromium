@@ -4,8 +4,8 @@
 
 #include "base/fuchsia/test_component_context_for_process.h"
 
-#include <fidl/fuchsia.sys/cpp/fidl.h>
-#include <fuchsia/sys/cpp/fidl.h>
+#include <fidl/fuchsia.buildinfo/cpp/fidl.h>
+#include <fuchsia/buildinfo/cpp/fidl.h>
 #include <lib/async/default.h>
 #include <lib/sys/cpp/component_context.h>
 
@@ -93,72 +93,59 @@ TEST_F(TestComponentContextForProcessTest, PublishTestInterface) {
 }
 
 TEST_F(TestComponentContextForProcessTest, ProvideSystemService) {
-  // Expose fuchsia.sys.Loader through the TestComponentContextForProcess.
-  // This service was chosen because it is one of the ambient services in
-  // Fuchsia's hermetic environment for component tests.
-  const base::StringPiece kServiceNames[] = {::fuchsia::sys::Loader::Name_};
+  // Expose fuchsia.buildinfo.Provider through the
+  // TestComponentContextForProcess. This service was chosen because it is one
+  // of the ambient services in Fuchsia's hermetic environment for Chromium
+  // tests.
+  const base::StringPiece kServiceNames[] = {
+      ::fuchsia::buildinfo::Provider::Name_};
   test_context_.AddServices(kServiceNames);
 
-  // Connect to the Loader service via the process
+  // Connect to the BuildInfo provider service via the process
   // TestComponentContextForProcess.
   RunLoop wait_loop;
-  auto loader =
-      ComponentContextForProcess()->svc()->Connect<::fuchsia::sys::Loader>();
-  loader.set_error_handler(
+  auto provider = ComponentContextForProcess()
+                      ->svc()
+                      ->Connect<::fuchsia::buildinfo::Provider>();
+  provider.set_error_handler(
       [quit_loop = wait_loop.QuitClosure()](zx_status_t status) {
         ZX_LOG(ERROR, status);
         ADD_FAILURE();
         quit_loop.Run();
       });
 
-  // Use the Loader to verify that the actual system service was connected. If
-  // it is connected, then calling `LoadUrl` for the current test component url
-  // will succeed. The URL cannot be obtained programmatically - see
-  // fxbug.dev/51490.
-  const char kComponentUrl[] =
-      "fuchsia-pkg://fuchsia.com/base_unittests#meta/base_unittests.cm";
-  loader->LoadUrl(kComponentUrl, [quit_loop = wait_loop.QuitClosure(),
-                                  expected_path = kComponentUrl](
-                                     ::fuchsia::sys::PackagePtr package) {
-    // |package| would be null on failure.
-    ASSERT_TRUE(package);
-    EXPECT_EQ(package->resolved_url, expected_path);
-    quit_loop.Run();
-  });
+  // If the BuildInfo service is actually connected then GetBuildInfo() will
+  // return a result, otherwise the channel will be observed closing (as above).
+  provider->GetBuildInfo([quit_loop = wait_loop.QuitClosure()](
+                             auto build_info) { quit_loop.Run(); });
   wait_loop.Run();
 }
 
 TEST_F(TestComponentContextForProcessTest, ProvideSystemServiceNatural) {
-  // Expose fuchsia.sys.Loader through the TestComponentContextForProcess.
-  // This service was chosen because it is one of the ambient services in
-  // Fuchsia's hermetic environment for component tests.
+  // Expose fuchsia.buildinfo.Provider through the
+  // TestComponentContextForProcess. This service was chosen because it is one
+  // of the ambient services in Fuchsia's hermetic environment for Chromium
+  // tests.
   const base::StringPiece kServiceNames[] = {
-      fidl::DiscoverableProtocolName<fuchsia_sys::Loader>};
+      fidl::DiscoverableProtocolName<fuchsia_buildinfo::Provider>};
   test_context_.AddServices(kServiceNames);
 
-  // Connect to the Loader service via the process
-  // TestComponentContextForProcess using natural bindings.
+  // Connect to the BuildInfo provider service via the process
+  // TestComponentContextForProcess.
   RunLoop wait_loop;
-  auto client_end = fuchsia_component::Connect<fuchsia_sys::Loader>();
-  EXPECT_TRUE(client_end.is_ok()) << client_end.status_string();
-  fidl::Client loader(std::move(client_end.value()),
-                      async_get_default_dispatcher());
+  auto client_end = fuchsia_component::Connect<fuchsia_buildinfo::Provider>();
+  ASSERT_TRUE(client_end.is_ok());
+  fidl::Client provider(std::move(client_end.value()),
+                        async_get_default_dispatcher());
 
-  // Use the Loader to verify that the actual system service was connected. If
-  // it is connected, then calling `LoadUrl` for the current test component url
-  // will succeed. The URL cannot be obtained programmatically - see
-  // fxbug.dev/51490.
-  const char kComponentUrl[] =
-      "fuchsia-pkg://fuchsia.com/base_unittests#meta/base_unittests.cm";
-  loader->LoadUrl({kComponentUrl})
-      .ThenExactlyOnce(
-          [quit_loop = wait_loop.QuitClosure(), expected_path = kComponentUrl](
-              const fidl::Result<fuchsia_sys::Loader::LoadUrl>& result) {
-            ASSERT_TRUE(result.is_ok()) << result.error_value().status_string();
-            ASSERT_TRUE(result->package());
-            EXPECT_EQ(result->package()->resolved_url(), expected_path);
-            quit_loop.Run();
-          });
+  // If the BuildInfo service is actually connected then GetBuildInfo() will
+  // return a result, otherwise the bindings will report an error.
+  provider->GetBuildInfo().ThenExactlyOnce(
+      [quit_loop = wait_loop.QuitClosure()](auto build_info) {
+        EXPECT_FALSE(build_info.is_error())
+            << build_info.error_value().status();
+        quit_loop.Run();
+      });
   wait_loop.Run();
 }
 
