@@ -86,6 +86,19 @@ bool ThreadProfilerConfiguration::IsProfilerEnabledForCurrentProcessAndThread(
              thread);
 }
 
+bool ThreadProfilerConfiguration::IsStartupProfilingEnabled() const {
+  if (const ChildProcessConfiguration* child_process_configuration =
+          absl::get_if<ChildProcessConfiguration>(&configuration_)) {
+    return *child_process_configuration == kChildProcessProfileEnabled;
+  }
+
+  const absl::optional<VariationGroup>& variation_group =
+      absl::get<BrowserProcessConfiguration>(configuration_);
+
+  return variation_group.has_value() && (*variation_group == kProfileEnabled ||
+                                         *variation_group == kProfileControl);
+}
+
 bool ThreadProfilerConfiguration::GetSyntheticFieldTrial(
     std::string* trial_name,
     std::string* group_name) const {
@@ -114,6 +127,9 @@ bool ThreadProfilerConfiguration::GetSyntheticFieldTrial(
     case kProfileEnabled:
       *group_name = "Enabled";
       break;
+
+    case kProfilePeriodicOnly:
+      *group_name = "PeriodicOnly";
   }
 
   return true;
@@ -157,8 +173,10 @@ bool ThreadProfilerConfiguration::EnableForVariationGroup(
     absl::optional<VariationGroup> variation_group) {
   // Enable if assigned to a variation group, and the group is one of the groups
   // that are to be enabled.
-  return variation_group.has_value() && (*variation_group == kProfileEnabled ||
-                                         *variation_group == kProfileControl);
+  return variation_group.has_value() &&
+         (*variation_group == kProfileEnabled ||
+          *variation_group == kProfileControl ||
+          *variation_group == kProfilePeriodicOnly);
 }
 
 // static
@@ -210,12 +228,22 @@ ThreadProfilerConfiguration::GenerateBrowserProcessConfiguration(
       relative_populations =
           platform_configuration.GetEnableRates(release_channel);
 
-  CHECK_EQ(0, relative_populations.experiment % 2);
-  return ChooseVariationGroup({
-      {kProfileEnabled, relative_populations.enabled},
-      {kProfileControl, relative_populations.experiment / 2},
-      {kProfileDisabled, relative_populations.experiment / 2},
-  });
+  if (relative_populations.add_periodic_only_group) {
+    CHECK_EQ(0, relative_populations.experiment % 3);
+    return ChooseVariationGroup({
+        {kProfileEnabled, relative_populations.enabled},
+        {kProfileControl, relative_populations.experiment / 3},
+        {kProfileDisabled, relative_populations.experiment / 3},
+        {kProfilePeriodicOnly, relative_populations.experiment / 3},
+    });
+  } else {
+    CHECK_EQ(0, relative_populations.experiment % 2);
+    return ChooseVariationGroup({
+        {kProfileEnabled, relative_populations.enabled},
+        {kProfileControl, relative_populations.experiment / 2},
+        {kProfileDisabled, relative_populations.experiment / 2},
+    });
+  }
 }
 
 // static

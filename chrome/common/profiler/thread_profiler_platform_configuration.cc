@@ -148,9 +148,12 @@ AndroidPlatformConfiguration::GetEnableRates(
 
   DCHECK(*release_channel == version_info::Channel::CANARY ||
          *release_channel == version_info::Channel::DEV);
-  // Put all users in 50/50 experiment groups to maximize signal in the relevant
-  // metrics.
-  return RelativePopulations{0, 100};
+  // TODO(crbug.com/1430519): Change the relative population to {80, 20} after
+  // the DAU shift has been mitigated.
+  // Set all the population in experiment group. Because we have 3 experiment
+  // groups, set population of experiment group to 99, the largest integer
+  // < 100 and divisible by 3.
+  return RelativePopulations{1, 99, /* add_periodic_only_group=*/true};
 }
 
 double AndroidPlatformConfiguration::GetChildProcessEnableFraction(

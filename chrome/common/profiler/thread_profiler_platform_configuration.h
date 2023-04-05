@@ -38,6 +38,12 @@ class ThreadProfilerPlatformConfiguration {
   struct RelativePopulations {
     int enabled;
     int experiment;
+
+    // TODO(crbug.com/1430519): Remove this field when the DAU shift is
+    // explained.
+    // Add a third group periodic_only to the experiment. |experiment| must be
+    // divisible by 3 when this flag is true.
+    bool add_periodic_only_group = false;
   };
 
   virtual ~ThreadProfilerPlatformConfiguration() = default;

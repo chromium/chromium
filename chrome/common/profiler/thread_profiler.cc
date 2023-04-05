@@ -179,7 +179,9 @@ void ThreadProfiler::SetAuxUnwinderFactory(
   }
 
   aux_unwinder_factory_ = factory;
-  startup_profiler_->AddAuxUnwinder(aux_unwinder_factory_.Run());
+  if (startup_profiler_) {
+    startup_profiler_->AddAuxUnwinder(aux_unwinder_factory_.Run());
+  }
   if (periodic_profiler_)
     periodic_profiler_->AddAuxUnwinder(aux_unwinder_factory_.Run());
 }
@@ -244,17 +246,19 @@ ThreadProfiler::ThreadProfiler(
   const base::StackSamplingProfiler::SamplingParams sampling_params =
       ThreadProfilerConfiguration::Get()->GetSamplingParams();
 
-  startup_profiler_ = std::make_unique<StackSamplingProfiler>(
-      base::GetSamplingProfilerCurrentThreadToken(), sampling_params,
-      std::make_unique<CallStackProfileBuilder>(
-          CallStackProfileParams(
-              process_, thread,
-              CallStackProfileParams::Trigger::kProcessStartup),
-          work_id_recorder_.get()),
-      CreateCoreUnwindersFactory(),
-      GetApplyPerSampleMetadataCallback(process_));
+  if (ThreadProfilerConfiguration::Get()->IsStartupProfilingEnabled()) {
+    startup_profiler_ = std::make_unique<StackSamplingProfiler>(
+        base::GetSamplingProfilerCurrentThreadToken(), sampling_params,
+        std::make_unique<CallStackProfileBuilder>(
+            CallStackProfileParams(
+                process_, thread,
+                CallStackProfileParams::Trigger::kProcessStartup),
+            work_id_recorder_.get()),
+        CreateCoreUnwindersFactory(),
+        GetApplyPerSampleMetadataCallback(process_));
 
-  startup_profiler_->Start();
+    startup_profiler_->Start();
+  }
 
   // Estimated time at which the startup profiling will be completed. It's OK if
   // this doesn't exactly coincide with the end of the startup profiling, since
