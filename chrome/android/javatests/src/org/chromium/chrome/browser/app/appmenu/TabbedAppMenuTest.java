@@ -473,9 +473,11 @@ public class TabbedAppMenuTest {
     @LargeTest
     @Feature({"Browser", "Main", "QuickDelete"})
     @EnableFeatures({ChromeFeatureList.QUICK_DELETE_FOR_ANDROID})
-    public void testQuickDeleteMenu_NotShownInIncognito() throws IOException {
-        mActivityTestRule.newIncognitoTabFromMenu();
+    public void testQuickDeleteMenu_NotShownInIncognito() {
+        // Hide first any shown app menu as it can interfere with this test.
+        hitEnterAndAssertAppMenuDismissed();
 
+        mActivityTestRule.newIncognitoTabFromMenu();
         showAppMenuAndAssertMenuShown();
         assertEquals(-1,
                 AppMenuTestSupport.findIndexOfMenuItemById(

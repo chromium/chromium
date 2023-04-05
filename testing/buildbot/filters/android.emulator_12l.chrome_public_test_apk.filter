@@ -57,9 +57,6 @@
 # crbug.com/1429718
 -org.chromium.chrome.browser.bookmarks.BookmarkPersonalizedSigninPromoDismissTest.testPromoImpressionCountIncrementAfterDisplayingSigninPromo
 
-# crbug.com/1429722
--org.chromium.chrome.browser.app.appmenu.TabbedAppMenuTest.testQuickDeleteMenu_NotShownInIncognito
-
 # crbug.com/1429741
 -org.chromium.chrome.browser.display_cutout.DisplayCutoutTest.testViewportFitCoverForced
 -org.chromium.chrome.browser.display_cutout.DisplayCutoutTest.testViewportFitCoverNoCutout
