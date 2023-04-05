@@ -51,7 +51,7 @@ void SharedStorageWorkletMessagingProxy::
   auto disconnect_handler = WTF::BindOnce(
       &SharedStorageWorkletMessagingProxy::
           OnSharedStorageWorkletServiceDisconnectedOnWorkletThread,
-      WrapPersistent(this));
+      WrapCrossThreadPersistent(this));
 
   static_cast<SharedStorageWorkletThread*>(worker_thread)
       ->InitializeSharedStorageWorkletService(std::move(receiver),
