@@ -123,12 +123,36 @@ std::string ErrorsToString(const std::set<SupportToolError>& errors) {
   return base::JoinString(error_messages, ", ");
 }
 
+// Returns the upload_parameters string for LogUploadEvent.
+std::string GetUploadParameters(
+    const base::FilePath& filename,
+    policy::RemoteCommandJob::UniqueIDType command_id) {
+  return base::StringPrintf(policy::kUploadParametersFormatter, command_id,
+                            filename.BaseName().value().c_str());
+}
+
 }  // namespace
 
 namespace policy {
 
 const char kCommandNotEnabledForUserMessage[] =
     "FETCH_SUPPORT_PACKET command is not enabled for this user type.";
+
+// The format specified in
+// chrome/browser/policy/messaging_layer/upload/file_upload_impl.cc.
+// TODO(b/276945026): Test if the format from XMLWriter is accepted by File
+// Storage Server and update the code to use it if it is.
+const char kUploadParametersFormatter[] = R"(
+  "<File-Type>\r\n"
+  "  support_file\r\n"
+  "</File-Type>\r\n"
+  "<Command-ID>\r\n"
+  "  %ld\r\n"
+  "</Command-ID>\r\n"
+  "<Filename>\r\n"
+  "  %s\r\n"
+  "</Filename>\r\n"
+  "text/xml")";
 
 DeviceCommandFetchSupportPacketJob::DeviceCommandFetchSupportPacketJob()
     : target_dir_(kTargetDir) {}
@@ -349,13 +373,13 @@ void DeviceCommandFetchSupportPacketJob::OnReportQueueCreated(
 }
 
 void DeviceCommandFetchSupportPacketJob::EnqueueEvent() {
-  // TODO(b/264399756): Fill in the details of log_upload_event with necessary
-  // details. For now, we have empty log upload event as placeholder.
-  ash::reporting::LogUploadEvent log_upload_event;
+  auto log_upload_event = std::make_unique<ash::reporting::LogUploadEvent>();
+  log_upload_event->mutable_upload_settings()->set_origin_path(
+      exported_path_.value());
+  log_upload_event->mutable_upload_settings()->set_upload_parameters(
+      GetUploadParameters(exported_path_, unique_id()));
   report_queue_->Enqueue(
-      std::make_unique<ash::reporting::LogUploadEvent>(
-          std::move(log_upload_event)),
-      reporting::Priority::SLOW_BATCH,
+      std::move(log_upload_event), reporting::Priority::SLOW_BATCH,
       base::BindOnce(&DeviceCommandFetchSupportPacketJob::OnEventEnqueued,
                      weak_ptr_factory_.GetWeakPtr()));
 }

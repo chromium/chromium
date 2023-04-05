@@ -28,6 +28,11 @@ namespace policy {
 // not enabled for user's type.
 extern const char kCommandNotEnabledForUserMessage[];
 
+// Formatter for the upload_parameters field of LogUploadEvent. It will format
+// the string as an XML request metadata for the log upload request to the File
+// Storage Server. Contains File-Type, Command-ID and Filename fields.
+extern const char kUploadParametersFormatter[];
+
 // SupportPacketDetails will contain the details of the data collection that's
 // requested by the remote command's payload. Command payload contains the
 // JSON-encoded version of SupportPacketDetails proto message in

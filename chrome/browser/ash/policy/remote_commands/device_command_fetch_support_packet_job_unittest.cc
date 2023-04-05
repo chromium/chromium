@@ -11,12 +11,15 @@
 #include <utility>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
@@ -116,9 +119,13 @@ TEST_F(DeviceCommandFetchSupportPacketTest, Success) {
 
   std::unique_ptr<reporting::MockReportQueueStrict> mock_report_queue =
       std::make_unique<reporting::MockReportQueueStrict>();
+  ash::reporting::LogUploadEvent enqueued_event;
   EXPECT_CALL(*mock_report_queue.get(), AddRecord)
-      .WillOnce(testing::WithArgs<2>(
-          [](reporting::ReportQueue::EnqueueCallback callback) {
+      .WillOnce(testing::WithArgs<0, 2>(
+          [&enqueued_event](std::string serialized_record,
+                            reporting::ReportQueue::EnqueueCallback callback) {
+            // Parse the enqueued event from serialized record proto.
+            ASSERT_TRUE(enqueued_event.ParseFromString(serialized_record));
             std::move(callback).Run(reporting::Status::StatusOK());
           }));
   job->SetReportQueueForTesting(std::move(mock_report_queue));
@@ -138,9 +145,20 @@ TEST_F(DeviceCommandFetchSupportPacketTest, Success) {
   ASSERT_TRUE(job_finished_future.Wait()) << "Job did not finish.";
   EXPECT_EQ(job->status(), RemoteCommandJob::ACKED);
 
+  base::FilePath exported_file = job->GetExportedFilepathForTesting();
+
+  // Check the contents of LogUploadEvent that the job enqueued.
+  std::string expected_upload_parameters =
+      base::StringPrintf(kUploadParametersFormatter, kUniqueID,
+                         exported_file.BaseName().value().c_str());
+  EXPECT_EQ(
+      expected_upload_parameters,
+      *enqueued_event.mutable_upload_settings()->mutable_upload_parameters());
+  EXPECT_EQ(exported_file.value(),
+            *enqueued_event.mutable_upload_settings()->mutable_origin_path());
+
   int64_t file_size;
-  ASSERT_TRUE(
-      base::GetFileSize(job->GetExportedFilepathForTesting(), &file_size));
+  ASSERT_TRUE(base::GetFileSize(exported_file, &file_size));
   EXPECT_GT(file_size, 0);
 }
 
