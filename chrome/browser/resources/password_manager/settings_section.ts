@@ -156,11 +156,6 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   }
   // </if>
 
-  private getShortcutBannerDescription_(): string {
-    return this.i18n(
-        'addShortcutDescription', this.i18n('localPasswordManager'));
-  }
-
   private onTrustedVaultBannerClick_() {
     switch (this.trustedVaultBannerState_) {
       case TrustedVaultBannerState.OPTED_IN:
