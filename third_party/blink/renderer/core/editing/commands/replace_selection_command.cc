@@ -947,7 +947,6 @@ void ReplaceSelectionCommand::MergeEndIfNeeded(EditingState* editing_state) {
 
   // Bail to avoid infinite recursion.
   if (moving_paragraph_) {
-    NOTREACHED();
     return;
   }
 
