@@ -33,12 +33,13 @@
 
 namespace {
 const CGFloat kTextTopMargin = 6.0;
-const CGFloat kMultilineTextTopMargin = 13.0;
+const CGFloat kMultilineTextTopMargin = 12.0;
 /// Trailing margin of the text. This margin is increased when the text is on
 /// multiple lines, otherwise text of the first lines without the gradient seems
 /// too close to the trailing (button/end).
 const CGFloat kTextTrailingMargin = 0.0;
 const CGFloat kMultilineTextTrailingMargin = 4.0;
+const CGFloat kMultilineLineSpacing = 2.0;
 const CGFloat kTrailingButtonSize = 24;
 const CGFloat kTrailingButtonTrailingMargin = 14;
 const CGFloat kTopGradientColorOpacity = 0.85;
@@ -128,6 +129,7 @@ BOOL IsMultilineSearchSuggestionEnabled() {
     [_textTruncatingLabel
         setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh + 1
                                         forAxis:UILayoutConstraintAxisVertical];
+    _textTruncatingLabel.lineSpacing = kMultilineLineSpacing;
 
     _textStackView = [[UIStackView alloc]
         initWithArrangedSubviews:@[ _textTruncatingLabel ]];
