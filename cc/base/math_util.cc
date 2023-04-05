@@ -984,11 +984,18 @@ float MathUtil::AsFloatSafely(float value) {
 }
 
 gfx::Vector3dF MathUtil::GetXAxis(const gfx::Transform& transform) {
+  if (transform.IsScaleOrTranslation()) {
+    return gfx::Vector3dF(transform.To2dScale().x(), 0, 0);
+  }
+
   return gfx::Vector3dF(transform.rc(0, 0), transform.rc(1, 0),
                         transform.rc(2, 0));
 }
 
 gfx::Vector3dF MathUtil::GetYAxis(const gfx::Transform& transform) {
+  if (transform.IsScaleOrTranslation()) {
+    return gfx::Vector3dF(0, transform.To2dScale().y(), 0);
+  }
   return gfx::Vector3dF(transform.rc(0, 1), transform.rc(1, 1),
                         transform.rc(2, 1));
 }

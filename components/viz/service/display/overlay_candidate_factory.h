@@ -132,7 +132,6 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
   raw_ptr<const AggregatedRenderPass> render_pass_;
   raw_ptr<DisplayResourceProvider> resource_provider_;
   raw_ptr<const SurfaceDamageRectList> surface_damage_rect_list_;
-  raw_ptr<const SkM44> output_color_matrix_;
   const gfx::RectF primary_rect_;
   const bool is_delegated_context_;
   const bool supports_clip_rect_;
@@ -142,6 +141,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
   // The union of all surface damages that are not specifically assigned to a
   // draw quad.
   gfx::Rect unassigned_surface_damage_;
+  bool has_custom_color_matrix_;
 };
 
 }  // namespace viz
