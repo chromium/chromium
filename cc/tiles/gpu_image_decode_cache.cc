@@ -540,6 +540,33 @@ class HeapDiscardableMemory : public base::DiscardableMemory {
   size_t size_;
 };
 
+absl::optional<SkYUVAPixmapInfo> GetYUVADecodeInfo(
+    const DrawImage& draw_image,
+    AuxImage aux_image,
+    int upload_scale_mip_level,
+    const SkYUVAPixmapInfo::SupportedDataTypes& yuva_supported_data_types) {
+  SkYUVAPixmapInfo yuva_pixmap_info;
+  if (!draw_image.paint_image().IsYuv(yuva_supported_data_types,
+                                      AuxImage::kDefault, &yuva_pixmap_info)) {
+    return absl::nullopt;
+  }
+  DCHECK(yuva_pixmap_info.isValid());
+
+  if (upload_scale_mip_level > 0) {
+    // Scaled decode. We always promote to 4:4:4 when scaling YUV to avoid
+    // blurriness. See comment in DrawAndScaleImage() for details 0
+    SkYUVAInfo yuva_info = yuva_pixmap_info.yuvaInfo().makeSubsampling(
+        SkYUVAInfo::Subsampling::k444);
+    size_t row_bytes[SkYUVAInfo::kMaxPlanes] = {};
+    for (int i = 0; i < yuva_info.numPlanes(); ++i) {
+      row_bytes[i] = yuva_pixmap_info.rowBytes(0);
+    }
+    return SkYUVAPixmapInfo(yuva_info, yuva_pixmap_info.dataType(), row_bytes);
+  }
+  // Original size decode.
+  return yuva_pixmap_info;
+}
+
 }  // namespace
 
 // Extract the information to uniquely identify a DrawImage for the purposes of
@@ -941,6 +968,7 @@ GpuImageDecodeCache::ImageData::ImageData(
     bool is_bitmap_backed,
     bool can_do_hardware_accelerated_decode,
     bool do_hardware_accelerated_decode,
+    const SkImageInfo& image_info,
     absl::optional<SkYUVAPixmapInfo> yuva_info)
     : paint_image_id(paint_image_id),
       mode(mode),
@@ -950,6 +978,7 @@ GpuImageDecodeCache::ImageData::ImageData(
       upload_scale_mip_level(upload_scale_mip_level),
       needs_mips(needs_mips),
       is_bitmap_backed(is_bitmap_backed),
+      image_info(image_info),
       yuva_pixmap_info(yuva_info),
       decode(is_bitmap_backed,
              can_do_hardware_accelerated_decode,
@@ -2185,9 +2214,7 @@ void GpuImageDecodeCache::DecodeImageIfNecessary(
                                            base::Unretained(this)));
     }
 
-    SkImageInfo image_info = CreateImageInfoForDrawImage(
-        draw_image, AuxImage::kDefault, image_data->upload_scale_mip_level);
-    image_info = image_info.makeColorSpace(
+    SkImageInfo image_info = image_data->image_info.makeColorSpace(
         ColorSpaceForImageDecode(draw_image, image_data->mode));
     auto release_proc = [](const void*, void*) {};
 
@@ -2352,16 +2379,19 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
     if (image_data->decode.do_hardware_accelerated_decode()) {
       UploadImageIfNecessary_TransferCache_HardwareDecode(
           draw_image, image_data, target_color_space);
-    } else if (image_data->yuva_pixmap_info.has_value()) {
-      const bool needs_tone_mapping =
-          decoded_target_colorspace &&
-          gfx::ColorSpace(*decoded_target_colorspace).IsToneMappedByDefault();
-      UploadImageIfNecessary_TransferCache_SoftwareDecode_YUVA(
-          draw_image, image_data, decoded_target_colorspace,
-          needs_tone_mapping ? target_color_params : absl::nullopt);
     } else {
-      UploadImageIfNecessary_TransferCache_SoftwareDecode_RGBA(
-          draw_image, image_data, target_color_params);
+      // Do not color convert YUVA images unless the the color conversion also
+      // performs tone mapping.
+      if (image_data->yuva_pixmap_info.has_value()) {
+        if (!decoded_target_colorspace ||
+            !gfx::ColorSpace(*decoded_target_colorspace)
+                 .IsToneMappedByDefault()) {
+          target_color_params = absl::nullopt;
+        }
+      }
+      UploadImageIfNecessary_TransferCache_SoftwareDecode(
+          draw_image, image_data, decoded_target_colorspace,
+          target_color_params);
     }
   } else {
     // Grab a reference to our decoded image. For the kCpu path, we will use
@@ -2425,52 +2455,37 @@ void GpuImageDecodeCache::UploadImageIfNecessary_TransferCache_HardwareDecode(
       decode_sync_token.GetConstData());
 }
 
-void GpuImageDecodeCache::
-    UploadImageIfNecessary_TransferCache_SoftwareDecode_YUVA(
-        const DrawImage& draw_image,
-        ImageData* image_data,
-        sk_sp<SkColorSpace> decoded_target_colorspace,
-        absl::optional<TargetColorParams> target_color_params) {
+void GpuImageDecodeCache::UploadImageIfNecessary_TransferCache_SoftwareDecode(
+    const DrawImage& draw_image,
+    ImageData* image_data,
+    sk_sp<SkColorSpace> decoded_target_colorspace,
+    absl::optional<TargetColorParams> target_color_params) {
   DCHECK_EQ(image_data->mode, DecodedDataMode::kTransferCache);
   DCHECK(use_transfer_cache_);
   DCHECK(!image_data->decode.do_hardware_accelerated_decode());
-  DCHECK(image_data->yuva_pixmap_info.has_value());
 
-  SkPixmap yuv_pixmaps[3];
-  if (!image_data->decode.y_image()->peekPixels(&yuv_pixmaps[0]) ||
-      !image_data->decode.u_image()->peekPixels(&yuv_pixmaps[1]) ||
-      !image_data->decode.v_image()->peekPixels(&yuv_pixmaps[2])) {
-    return;
+  ClientImageTransferCacheEntry::Image image;
+  SkPixmap image_pixmaps[SkYUVAInfo::kMaxPlanes];
+  if (image_data->yuva_pixmap_info.has_value()) {
+    if (!image_data->decode.y_image()->peekPixels(&image_pixmaps[0]) ||
+        !image_data->decode.u_image()->peekPixels(&image_pixmaps[1]) ||
+        !image_data->decode.v_image()->peekPixels(&image_pixmaps[2])) {
+      return;
+    }
+    image = ClientImageTransferCacheEntry::Image(
+        image_pixmaps, image_data->yuva_pixmap_info->yuvaInfo().planeConfig(),
+        image_data->yuva_pixmap_info->yuvaInfo().subsampling(),
+        decoded_target_colorspace.get(),
+        image_data->yuva_pixmap_info->yuvaInfo().yuvColorSpace());
+  } else {
+    if (!image_data->decode.image()->peekPixels(&image_pixmaps[0])) {
+      return;
+    }
+    image = ClientImageTransferCacheEntry::Image(&image_pixmaps[0]);
   }
-  ClientImageTransferCacheEntry image_entry(
-      ClientImageTransferCacheEntry::Image(
-          yuv_pixmaps, image_data->yuva_pixmap_info->yuvaInfo().planeConfig(),
-          image_data->yuva_pixmap_info->yuvaInfo().subsampling(),
-          decoded_target_colorspace.get(),
-          image_data->yuva_pixmap_info->yuvaInfo().yuvColorSpace()),
-      image_data->needs_mips, target_color_params);
-  if (!image_entry.IsValid())
-    return;
-  InsertTransferCacheEntry(image_entry, image_data);
-}
 
-void GpuImageDecodeCache::
-    UploadImageIfNecessary_TransferCache_SoftwareDecode_RGBA(
-        const DrawImage& draw_image,
-        ImageData* image_data,
-        absl::optional<TargetColorParams> target_color_params) {
-  DCHECK_EQ(image_data->mode, DecodedDataMode::kTransferCache);
-  DCHECK(use_transfer_cache_);
-  DCHECK(!image_data->decode.do_hardware_accelerated_decode());
-  DCHECK(!image_data->yuva_pixmap_info.has_value());
-
-  SkPixmap pixmap;
-  if (!image_data->decode.image()->peekPixels(&pixmap))
-    return;
-
-  ClientImageTransferCacheEntry image_entry(
-      ClientImageTransferCacheEntry::Image(&pixmap), image_data->needs_mips,
-      target_color_params);
+  ClientImageTransferCacheEntry image_entry(image, image_data->needs_mips,
+                                            target_color_params);
   if (!image_entry.IsValid())
     return;
   InsertTransferCacheEntry(image_entry, image_data);
@@ -2629,12 +2644,10 @@ GpuImageDecodeCache::CreateImageData(const DrawImage& draw_image,
                "GpuImageDecodeCache::CreateImageData");
   lock_.AssertAcquired();
 
-  int upload_scale_mip_level =
-      CalculateUploadScaleMipLevel(draw_image, AuxImage::kDefault);
+  const auto [image_info, upload_scale_mip_level] =
+      CreateImageInfoForDrawImage(draw_image, AuxImage::kDefault);
   bool needs_mips = ShouldGenerateMips(draw_image, AuxImage::kDefault,
                                        upload_scale_mip_level);
-  const SkImageInfo image_info = CreateImageInfoForDrawImage(
-      draw_image, AuxImage::kDefault, upload_scale_mip_level);
   const bool image_larger_than_max_texture =
       image_info.width() > max_texture_size_ ||
       image_info.height() > max_texture_size_;
@@ -2647,9 +2660,6 @@ GpuImageDecodeCache::CreateImageData(const DrawImage& draw_image,
   } else {
     mode = DecodedDataMode::kGpu;
   }
-
-  size_t data_size = image_info.computeMinByteSize();
-  DCHECK(!SkImageInfo::ByteSizeOverflowed(data_size));
 
   // We need to cache the result of color conversion on the cpu if the image
   // will be color converted during the decode.
@@ -2701,45 +2711,39 @@ GpuImageDecodeCache::CreateImageData(const DrawImage& draw_image,
     if ((is_jpeg && allow_accelerated_jpeg_decodes_) ||
         (is_webp && allow_accelerated_webp_decodes_)) {
       do_hardware_accelerated_decode = true;
-      data_size = EstimateHardwareDecodedDataSize(image_metadata);
       DCHECK(!is_bitmap_backed);
     }
   }
 
-  SkYUVAPixmapInfo yuva_pixmap_info;
-  const bool is_yuv =
-      !do_hardware_accelerated_decode &&
-      draw_image.paint_image().IsYuv(yuva_supported_data_types_,
-                                     AuxImage::kDefault, &yuva_pixmap_info) &&
-      mode != DecodedDataMode::kCpu && !image_larger_than_max_texture;
-
-  absl::optional<SkYUVAPixmapInfo> optional_yuva_pixmap_info;
-  if (is_yuv) {
-    DCHECK(yuva_pixmap_info.isValid());
-    if (upload_scale_mip_level > 0) {
-      // Scaled decode. We always promote to 4:4:4 when scaling YUV to avoid
-      // blurriness. See comment in DrawAndScaleImage() for details 0
-      SkYUVAInfo yuva_info = yuva_pixmap_info.yuvaInfo().makeSubsampling(
-          SkYUVAInfo::Subsampling::k444);
-      size_t row_bytes[SkYUVAInfo::kMaxPlanes] = {};
-      for (int i = 0; i < yuva_info.numPlanes(); ++i) {
-        row_bytes[i] = yuva_pixmap_info.rowBytes(0);
-      }
-      optional_yuva_pixmap_info =
-          SkYUVAPixmapInfo(yuva_info, yuva_pixmap_info.dataType(), row_bytes);
-    } else {
-      // Original size decode.
-      optional_yuva_pixmap_info = yuva_pixmap_info;
-    }
-    data_size = optional_yuva_pixmap_info->computeTotalBytes();
-    DCHECK(!SkImageInfo::ByteSizeOverflowed(data_size));
+  absl::optional<SkYUVAPixmapInfo> yuva_pixmap_info;
+  if (!do_hardware_accelerated_decode && mode != DecodedDataMode::kCpu &&
+      !image_larger_than_max_texture) {
+    yuva_pixmap_info =
+        GetYUVADecodeInfo(draw_image, AuxImage::kDefault,
+                          upload_scale_mip_level, yuva_supported_data_types_);
   }
+
+  // Compute the size needed to decode the images.
+  size_t data_size = 0;
+  {
+    if (do_hardware_accelerated_decode) {
+      data_size = EstimateHardwareDecodedDataSize(image_metadata);
+    } else {
+      if (yuva_pixmap_info) {
+        data_size = yuva_pixmap_info->computeTotalBytes();
+      } else {
+        data_size = image_info.computeMinByteSize();
+      }
+      DCHECK(!SkImageInfo::ByteSizeOverflowed(data_size));
+    }
+  }
+
   return base::WrapRefCounted(new ImageData(
       draw_image.paint_image().stable_id(), mode, data_size,
       draw_image.target_color_params(),
       CalculateDesiredFilterQuality(draw_image), upload_scale_mip_level,
       needs_mips, is_bitmap_backed, can_do_hardware_accelerated_decode,
-      do_hardware_accelerated_decode, optional_yuva_pixmap_info));
+      do_hardware_accelerated_decode, image_info, yuva_pixmap_info));
 }
 
 void GpuImageDecodeCache::WillAddCacheEntry(const DrawImage& draw_image) {
@@ -2925,10 +2929,11 @@ void GpuImageDecodeCache::RunPendingContextThreadOperations() {
   ids_pending_deletion_.clear();
 }
 
-SkImageInfo GpuImageDecodeCache::CreateImageInfoForDrawImage(
+std::tuple<SkImageInfo, int> GpuImageDecodeCache::CreateImageInfoForDrawImage(
     const DrawImage& draw_image,
-    AuxImage aux_image,
-    int upload_scale_mip_level) const {
+    AuxImage aux_image) const {
+  const int upload_scale_mip_level =
+      CalculateUploadScaleMipLevel(draw_image, AuxImage::kDefault);
   gfx::Size mip_size =
       CalculateSizeForMipLevel(draw_image, aux_image, upload_scale_mip_level);
 
@@ -2954,8 +2959,9 @@ SkImageInfo GpuImageDecodeCache::CreateImageInfoForDrawImage(
     }
   }
 
-  return SkImageInfo::Make(mip_size.width(), mip_size.height(), color_type,
-                           kPremul_SkAlphaType);
+  return {SkImageInfo::Make(mip_size.width(), mip_size.height(), color_type,
+                            kPremul_SkAlphaType),
+          upload_scale_mip_level};
 }
 
 bool GpuImageDecodeCache::TryLockImage(HaveContextLock have_context_lock,

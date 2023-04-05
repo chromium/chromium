@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -529,6 +530,7 @@ class CC_EXPORT GpuImageDecodeCache
               bool is_bitmap_backed,
               bool can_do_hardware_accelerated_decode,
               bool do_hardware_accelerated_decode,
+              const SkImageInfo& image_info,
               absl::optional<SkYUVAPixmapInfo> yuva_pixmap_info);
 
     bool IsGpuOrTransferCache() const;
@@ -544,8 +546,13 @@ class CC_EXPORT GpuImageDecodeCache
     bool needs_mips = false;
     bool is_bitmap_backed;
     bool is_budgeted = false;
-    absl::optional<SkYUVAPixmapInfo> yuva_pixmap_info;
     base::TimeTicks last_use;
+
+    // The RGBA image info for the image. This is always valid, even if the
+    // image will be decoded to YUVA.
+    SkImageInfo image_info;
+    // The YUVA image info for the image, if the image is to be decoded to YUVA.
+    absl::optional<SkYUVAPixmapInfo> yuva_pixmap_info;
 
     // If true, this image is no longer in our |persistent_cache_| and will be
     // deleted as soon as its ref count reaches zero.
@@ -669,9 +676,12 @@ class CC_EXPORT GpuImageDecodeCache
       const DrawImage& image,
       bool allow_hardware_decode);
   void WillAddCacheEntry(const DrawImage& draw_image);
-  SkImageInfo CreateImageInfoForDrawImage(const DrawImage& draw_image,
-                                          AuxImage aux_image,
-                                          int upload_scale_mip_level) const;
+
+  // Returns the SkImageInfo for the resulting image and the mip level for
+  // upload.
+  std::tuple<SkImageInfo, int> CreateImageInfoForDrawImage(
+      const DrawImage& draw_image,
+      AuxImage aux_image) const;
 
   // Finds the ImageData that should be used for the given DrawImage. Looks
   // first in the |in_use_cache_|, and then in the |persistent_cache_|.
@@ -709,14 +719,10 @@ class CC_EXPORT GpuImageDecodeCache
       const DrawImage& draw_image,
       ImageData* image_data,
       sk_sp<SkColorSpace> color_space);
-  void UploadImageIfNecessary_TransferCache_SoftwareDecode_YUVA(
+  void UploadImageIfNecessary_TransferCache_SoftwareDecode(
       const DrawImage& draw_image,
       ImageData* image_data,
       sk_sp<SkColorSpace> decoded_target_colorspace,
-      absl::optional<TargetColorParams> target_color_params);
-  void UploadImageIfNecessary_TransferCache_SoftwareDecode_RGBA(
-      const DrawImage& draw_image,
-      ImageData* image_data,
       absl::optional<TargetColorParams> target_color_params);
   void UploadImageIfNecessary_GpuCpu_YUVA(
       const DrawImage& draw_image,

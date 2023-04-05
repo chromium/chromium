@@ -51,6 +51,10 @@ class CC_PAINT_EXPORT ClientImageTransferCacheEntry final
  public:
   // Abstraction around RGBA vs YUVA images.
   struct CC_PAINT_EXPORT Image {
+    Image();
+    Image(const Image&);
+    Image& operator=(const Image&);
+
     // Constructor for RGBA images.
     explicit Image(const SkPixmap* pixmap);
 
@@ -66,15 +70,14 @@ class CC_PAINT_EXPORT ClientImageTransferCacheEntry final
         nullptr, nullptr, nullptr, nullptr};
 
     // The YUVA parameters. These should be unchanged for RGBA images.
-    const SkYUVAInfo::PlaneConfig yuv_plane_config =
+    SkYUVAInfo::PlaneConfig yuv_plane_config =
         SkYUVAInfo::PlaneConfig::kUnknown;
-    const SkYUVAInfo::Subsampling yuv_subsampling =
-        SkYUVAInfo::Subsampling::kUnknown;
-    const SkYUVColorSpace yuv_color_space = kIdentity_SkYUVColorSpace;
+    SkYUVAInfo::Subsampling yuv_subsampling = SkYUVAInfo::Subsampling::kUnknown;
+    SkYUVColorSpace yuv_color_space = kIdentity_SkYUVColorSpace;
 
     // The color space that will be assigned to the image when it is
     // deserialized.
-    const raw_ptr<const SkColorSpace> color_space;
+    raw_ptr<const SkColorSpace> color_space = nullptr;
   };
 
   ClientImageTransferCacheEntry(
