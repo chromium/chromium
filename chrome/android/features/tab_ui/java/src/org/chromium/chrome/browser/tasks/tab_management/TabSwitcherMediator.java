@@ -737,6 +737,11 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
 
     @Override
     public void hideTabSwitcherView(boolean animate) {
+        if (mMode == TabListMode.GRID) {
+            mIsTransitionInProgress = true;
+            notifyBackPressStateChangedInternal();
+        }
+
         if (!animate) mContainerViewModel.set(ANIMATE_VISIBILITY_CHANGES, false);
         setVisibility(false);
         mContainerViewModel.set(ANIMATE_VISIBILITY_CHANGES, true);
@@ -747,10 +752,6 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
             // We need to hide the dialog immediately.
             mTabGridDialogControllerSupplier.get().hideDialog(false);
         }
-        if (mMode != TabListMode.GRID) return;
-
-        mIsTransitionInProgress = animate;
-        notifyBackPressStateChangedInternal();
     }
 
     boolean prepareTabSwitcherView() {
