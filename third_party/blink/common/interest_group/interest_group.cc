@@ -68,12 +68,9 @@ std::string ConvertAdSizeToString(const blink::AdSize& ad_size) {
 
 InterestGroup::Ad::Ad() = default;
 
-InterestGroup::Ad::Ad(GURL render_url, absl::optional<std::string> metadata)
-    : Ad(std::move(render_url), absl::nullopt, std::move(metadata)) {}
-
 InterestGroup::Ad::Ad(GURL render_url,
-                      absl::optional<std::string> size_group,
-                      absl::optional<std::string> metadata)
+                      absl::optional<std::string> metadata,
+                      absl::optional<std::string> size_group)
     : render_url(std::move(render_url)),
       size_group(std::move(size_group)),
       metadata(std::move(metadata)) {}
