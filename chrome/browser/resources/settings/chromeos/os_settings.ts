@@ -43,6 +43,7 @@ import './device_page/stylus.js';
 import './kerberos_page/kerberos_accounts.js';
 import './kerberos_page/kerberos_page.js';
 import './multidevice_page/multidevice_page.js';
+import './nearby_share_page/nearby_share_high_visibility_page.js';
 import './nearby_share_page/nearby_share_receive_dialog.js';
 import './nearby_share_page/nearby_share_subpage.js';
 import './personalization_page/personalization_page.js';
@@ -144,6 +145,7 @@ export {MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData,
 export {NotificationAccessSetupOperationStatus} from './multidevice_page/multidevice_notification_access_setup_dialog.js';
 export {PermissionsSetupStatus, SetupFlowStatus} from './multidevice_page/multidevice_permissions_setup_dialog.js';
 export {Account, NearbyAccountManagerBrowserProxy, NearbyAccountManagerBrowserProxyImpl} from './nearby_share_page/nearby_account_manager_browser_proxy.js';
+export {NearbyShareHighVisibilityPageElement} from './nearby_share_page/nearby_share_high_visibility_page.js';
 export {getReceiveManager, observeReceiveManager, setReceiveManagerForTesting} from './nearby_share_page/nearby_share_receive_manager.js';
 export {dataUsageStringToEnum, NearbyShareDataUsage} from './nearby_share_page/types.js';
 export {ChromeVoxSubpageBrowserProxy, ChromeVoxSubpageBrowserProxyImpl} from './os_a11y_page/chromevox_subpage_browser_proxy.js';

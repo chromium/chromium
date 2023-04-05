@@ -405,7 +405,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ],
  ['MultideviceWifiSyncItem', 'multidevice_wifi_sync_item_tests.js'],
  ['NearbyShareConfirmPage', 'nearby_share_confirm_page_test.js'],
- ['NearbyShareHighVisibilityPage', 'nearby_share_high_visibility_page_test.js'],
+ [
+   'NearbySharePageNearbyShareHighVisibilityPage',
+   'nearby_share_page/nearby_share_high_visibility_page_test.js'
+ ],
  ['NearbyShareReceiveDialog', 'nearby_share_receive_dialog_tests.js'],
  [
    'NearbyShareSubpage',
