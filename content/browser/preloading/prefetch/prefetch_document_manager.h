@@ -56,6 +56,7 @@ class CONTENT_EXPORT PrefetchDocumentManager
       const GURL& url,
       const PrefetchType& prefetch_type,
       const blink::mojom::Referrer& referrer,
+      const network::mojom::NoVarySearchPtr& no_vary_search_expected,
       base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer);
 
   absl::optional<base::UnguessableToken> initiator_devtools_navigation_token()

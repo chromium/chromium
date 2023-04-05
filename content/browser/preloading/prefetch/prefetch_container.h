@@ -16,6 +16,7 @@
 #include "content/browser/preloading/speculation_host_devtools_observer.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
+#include "net/http/http_no_vary_search_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -56,6 +57,7 @@ class CONTENT_EXPORT PrefetchContainer {
       const GURL& url,
       const PrefetchType& prefetch_type,
       const blink::mojom::Referrer& referrer,
+      absl::optional<net::HttpNoVarySearchData> no_vary_search_expected,
       base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager);
   ~PrefetchContainer();
 
@@ -80,6 +82,11 @@ class CONTENT_EXPORT PrefetchContainer {
   const PrefetchType& GetPrefetchType() const { return prefetch_type_; }
 
   const blink::mojom::Referrer& GetReferrer() const { return referrer_; }
+
+  const absl::optional<net::HttpNoVarySearchData>& GetNoVarySearchExpected()
+      const {
+    return no_vary_search_expected_;
+  }
 
   base::WeakPtr<PrefetchContainer> GetWeakPtr() {
     return weak_method_factory_.GetWeakPtr();
@@ -342,6 +349,9 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // The referrer to use for the request.
   const blink::mojom::Referrer referrer_;
+
+  // The No-Vary-Search hint of the prefetch.
+  const absl::optional<net::HttpNoVarySearchData> no_vary_search_expected_;
 
   // The |PrefetchDocumentManager| that requested |this|. Initially it owns
   // |this|, but once the network request for the prefetch is started,

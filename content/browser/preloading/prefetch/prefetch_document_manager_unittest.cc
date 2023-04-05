@@ -168,6 +168,78 @@ class PrefetchDocumentManagerTest : public RenderViewHostTestHarness {
   std::unique_ptr<TestPrefetchService> prefetch_service_;
 };
 
+TEST_F(PrefetchDocumentManagerTest, PopulateNoVarySearchHint) {
+  // Process the candidates with the |PrefetchDocumentManager| for the current
+  // document.
+  auto* prefetch_document_manager =
+      PrefetchDocumentManager::GetOrCreateForCurrentDocument(
+          &GetPrimaryMainFrame());
+  auto initiator_devtools_navigation_token = base::UnguessableToken::Create();
+  // Create list of SpeculationCandidatePtrs.
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  // Create candidate for private cross-origin prefetch. This candidate should
+  // be prefetched by |PrefetchDocumentManager|.
+  auto candidate1 = blink::mojom::SpeculationCandidate::New();
+  const auto test_url1 = GetCrossOriginUrl("/candidate1.html?a=2&b=3");
+  candidate1->action = blink::mojom::SpeculationAction::kPrefetch;
+  candidate1->requires_anonymous_client_ip_when_cross_origin = false;
+  candidate1->url = test_url1;
+  candidate1->referrer = blink::mojom::Referrer::New();
+  candidate1->no_vary_search_expected = network::mojom::NoVarySearch::New();
+  candidate1->no_vary_search_expected->vary_on_key_order = false;
+  candidate1->no_vary_search_expected->search_variance =
+      network::mojom::SearchParamsVariance::NewNoVaryParams({"a"});
+
+  auto candidate2 = blink::mojom::SpeculationCandidate::New();
+  const auto test_url2 = GetCrossOriginUrl("/candidate2.html?a=2&b=3");
+  candidate2->action = blink::mojom::SpeculationAction::kPrefetch;
+  candidate2->requires_anonymous_client_ip_when_cross_origin = false;
+  candidate2->url = test_url2;
+  candidate2->referrer = blink::mojom::Referrer::New();
+  candidate2->no_vary_search_expected = network::mojom::NoVarySearch::New();
+  candidate2->no_vary_search_expected->vary_on_key_order = true;
+  candidate2->no_vary_search_expected->search_variance =
+      network::mojom::SearchParamsVariance::NewVaryParams({"a"});
+
+  auto candidate3 = blink::mojom::SpeculationCandidate::New();
+  const auto test_url3 = GetCrossOriginUrl("/candidate3.html?a=2&b=3");
+  candidate3->action = blink::mojom::SpeculationAction::kPrefetch;
+  candidate3->requires_anonymous_client_ip_when_cross_origin = false;
+  candidate3->url = test_url3;
+  candidate3->referrer = blink::mojom::Referrer::New();
+
+  candidates.push_back(std::move(candidate1));
+  candidates.push_back(std::move(candidate2));
+  candidates.push_back(std::move(candidate3));
+
+  prefetch_document_manager->ProcessCandidates(
+      initiator_devtools_navigation_token, candidates,
+      /*devtools_observer=*/nullptr);
+
+  ASSERT_EQ(GetPrefetches().size(), 3u);
+  {
+    auto& prefetch = GetPrefetches()[0];
+    ASSERT_TRUE(prefetch);
+    ASSERT_TRUE(prefetch->GetNoVarySearchExpected().has_value());
+    EXPECT_FALSE(prefetch->GetNoVarySearchExpected()->vary_on_key_order());
+    EXPECT_THAT(prefetch->GetNoVarySearchExpected()->no_vary_params(),
+                UnorderedElementsAreArray({"a"}));
+  }
+  {
+    auto& prefetch = GetPrefetches()[1];
+    ASSERT_TRUE(prefetch);
+    ASSERT_TRUE(prefetch->GetNoVarySearchExpected().has_value());
+    EXPECT_TRUE(prefetch->GetNoVarySearchExpected()->vary_on_key_order());
+    EXPECT_THAT(prefetch->GetNoVarySearchExpected()->vary_params(),
+                UnorderedElementsAreArray({"a"}));
+  }
+  {
+    auto& prefetch = GetPrefetches()[2];
+    ASSERT_TRUE(prefetch);
+    EXPECT_FALSE(prefetch->GetNoVarySearchExpected().has_value());
+  }
+}
+
 TEST_F(PrefetchDocumentManagerTest, ProcessNoVarySearchResponse) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
