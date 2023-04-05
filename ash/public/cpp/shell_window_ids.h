@@ -158,7 +158,8 @@ enum ShellWindowId {
   kShellWindowId_PowerMenuContainer,
 
   // The container for bubbles briefly overlaid onscreen to show settings
-  // changes (volume, brightness, input method bubbles, etc.).
+  // changes (volume, brightness, input method bubbles, etc.), tray bubbles and
+  // notifier elements such as notification popups and system nudges.
   kShellWindowId_SettingBubbleContainer,
 
   // Contains special accessibility windows that can inset the display work area

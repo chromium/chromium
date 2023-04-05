@@ -60,7 +60,7 @@ class ASH_EXPORT AshMessagePopupCollection
   void SetTrayBubbleHeight(int height);
 
   // message_center::MessagePopupCollection:
-  int GetToastOriginX(const gfx::Rect& toast_bounds) const override;
+  int GetPopupOriginX(const gfx::Rect& popup_bounds) const override;
   int GetBaseline() const override;
   gfx::Rect GetWorkArea() const override;
   bool IsTopDown() const override;

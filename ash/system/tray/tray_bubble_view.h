@@ -20,6 +20,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/message_center/message_center_observer.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/mouse_watcher.h"
@@ -39,7 +40,8 @@ class SystemShadow;
 // border rendering. This also has its own delegate for handling mouse events
 // and other implementation specific details.
 class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
-                                  public views::MouseWatcherListener {
+                                  public views::MouseWatcherListener,
+                                  public message_center::MessageCenterObserver {
  public:
   METADATA_HEADER(TrayBubbleView);
 
@@ -213,6 +215,11 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   // Getter and setter for `param_.use_fixed_height`.
   bool ShouldUseFixedHeight() const;
   void SetShouldUseFixedHeight(bool shoud_use_fixed_height);
+
+  // message_center::MessageCenterObserver:
+  void OnNotificationDisplayed(
+      const std::string& notification_id,
+      const message_center::DisplaySource source) override;
 
  protected:
   // views::View:

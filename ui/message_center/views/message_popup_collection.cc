@@ -424,7 +424,7 @@ void MessagePopupCollection::CalculateBounds() {
         kNotificationWidth,
         GetPopupItem(i)->popup->GetHeightForWidth(kNotificationWidth));
 
-    int origin_x = GetToastOriginX(gfx::Rect(preferred_size));
+    int origin_x = GetPopupOriginX(gfx::Rect(preferred_size));
 
     int origin_y = base;
     if (!IsTopDown())
