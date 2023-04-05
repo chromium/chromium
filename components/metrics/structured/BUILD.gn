@@ -78,13 +78,11 @@ source_set("common") {
     "histogram_util.h",
     "recorder.cc",
     "recorder.h",
-    "structured_metrics_features.cc",
-    "structured_metrics_features.h",
   ]
 
   public_deps = [
     ":events",
-    "//base",
+    ":structured_metrics_features",
   ]
 
   deps = [
@@ -93,6 +91,15 @@ source_set("common") {
     "//components/prefs",
     "//third_party/metrics_proto",
   ]
+}
+
+static_library("structured_metrics_features") {
+  sources = [
+    "structured_metrics_features.cc",
+    "structured_metrics_features.h",
+  ]
+
+  public_deps = [ "//base" ]
 }
 
 action("gen_structured_events") {
