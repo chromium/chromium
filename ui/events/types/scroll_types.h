@@ -5,6 +5,8 @@
 #ifndef UI_EVENTS_TYPES_SCROLL_TYPES_H_
 #define UI_EVENTS_TYPES_SCROLL_TYPES_H_
 
+#include <stdint.h>
+
 namespace ui {
 
 enum class ScrollGranularity : uint8_t {

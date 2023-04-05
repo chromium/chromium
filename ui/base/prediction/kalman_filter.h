@@ -5,6 +5,8 @@
 #ifndef UI_BASE_PREDICTION_KALMAN_FILTER_H_
 #define UI_BASE_PREDICTION_KALMAN_FILTER_H_
 
+#include <stdint.h>
+
 #include "base/component_export.h"
 #include "ui/gfx/geometry/matrix3_f.h"
 
