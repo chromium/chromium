@@ -32,7 +32,7 @@ bool ParseElementMatch(BufferSource* source, ElementMatch* element_match) {
   uint16_t element_version = DisassemblerVersionOfType(exe_type);
   if (element_version != unsafe_element_header.version) {
     LOG(ERROR) << "Element version doesn't match. Expected: " << element_version
-               << ", Actual:" << unsafe_element_header.version;
+               << ", Actual: " << unsafe_element_header.version << ".";
     return false;
   }
   if (!unsafe_element_header.old_length || !unsafe_element_header.new_length) {
@@ -344,7 +344,7 @@ bool EnsemblePatchReader::Initialize(BufferSource* source) {
   }
   if (header_.major_version != kMajorVersion) {
     LOG(ERROR) << "Patch major version doesn't match. Expected: "
-               << kMajorVersion << ", Actual:" << header_.major_version;
+               << kMajorVersion << ", Actual: " << header_.major_version << ".";
     return false;
   }
   // |header_| is assumed to be safe from this point forward.

@@ -288,9 +288,14 @@ section.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
-
 ## [1.0] - 2021-10-27
 ### Added
-Major/Minor version is encoded in PatchHeader
-Disassembler version associated with an element version is encoded in PatchElementHeader.
+* Major/Minor version is encoded in PatchHeader.
+* Disassembler version associated with an element version is encoded in
+  PatchElementHeader.
+
+## [2.0] - 2023-04-05
+### Fixed
+* [crbug.com/1429086](https://crbug.com/1429086): OffsetMapper had insufficient
+  tiebreaking in an `std::sort()` call. This can lead to patching failure across
+  different builds, due to sort non-determinism.
