@@ -19,19 +19,28 @@ async function init() {
   const [outerKey] = parseKeylist();
   const bitLimit = parseBitLimit();
   const innerKey = token();
-  const urls = generateUrls(8, "../../shared_storage/resources/frame",
+  const numUrls = 8;
+  const urls = generateUrls(numUrls, "../../shared_storage/resources/frame",
                             [innerKey]);
+  const bitsPerCall = Math.log2(numUrls);
 
   await sharedStorage.worklet.addModule("../../shared_storage/resources/simple-module.js");
 
-  for (let i = 0; i < Math.floor(bitLimit / 3); ++i) {
+  for (let i = 0; i < Math.floor(bitLimit / bitsPerCall); ++i) {
     let config = await sharedStorage.selectURL(
         "test-url-selection-operation", urls,
         {data: {'mockResult': 1}, keepAlive: true, resolveToConfig: true});
     assert_true(config instanceof FencedFrameConfig);
     attachFencedFrame(config, 'opaque-ads');
-    const result = await nextValueFromServer(innerKey);
-    assert_equals(result, "frame1_loaded");
+    try {
+      const result = await nextValueFromServer(innerKey);
+      assert_equals(result, "frame1_loaded",
+          `for origin ${location.origin}, index ${i} when budget should remain;`);
+    } catch (error) {
+      writeValueToServer(outerKey,
+          `run_url_selection_limit_inner_failed ${error}`);
+      return;
+    }
   }
 
   // Either the per-origin per-pageload bit limit or the overall per-pageload
@@ -41,11 +50,19 @@ async function init() {
       "test-url-selection-operation", urls,
       {data: {'mockResult': 1}, resolveToConfig: true});
   assert_true(config instanceof FencedFrameConfig);
-  attachFencedFrame(config, 'opaque-ads');
-  const result = await nextValueFromServer(innerKey);
-  assert_equals(result, "frame0_loaded");
+    attachFencedFrame(config, 'opaque-ads');
+  try {
+    const result = await nextValueFromServer(innerKey);
+      assert_equals(result, "frame0_loaded",
+          `for origin ${location.origin} when budget should be exhausted;`);
+  } catch (error) {
+    writeValueToServer(outerKey,
+            `run_url_selection_limit_inner_failed ${error}`);
+    return;
+  }
 
-  writeValueToServer(outerKey, "run_url_selection_limit_inner_loaded");
+  // No errors were caught, so this portion of the test succeeded.
+  writeValueToServer(outerKey, "run_url_selection_limit_inner_succeeded");
 }
 
 init();

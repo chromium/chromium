@@ -361,11 +361,11 @@ BASE_FEATURE(kSharedStorageSelectURLLimit,
              base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<int> kSharedStorageSelectURLBitBudgetPerPageLoad = {
     &kSharedStorageSelectURLLimit, "SharedStorageSelectURLBitBudgetPerPageLoad",
-    60};
+    12};
 const base::FeatureParam<int>
     kSharedStorageSelectURLBitBudgetPerOriginPerPageLoad = {
         &kSharedStorageSelectURLLimit,
-        "SharedStorageSelectURLBitBudgetPerOriginPerPageLoad", 24};
+        "SharedStorageSelectURLBitBudgetPerOriginPerPageLoad", 6};
 
 BASE_FEATURE(kPrerender2SequentialPrerendering,
              "Prerender2SequentialPrerendering",
