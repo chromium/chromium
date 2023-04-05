@@ -16,6 +16,7 @@
 #include "content/browser/web_contents/aura/types.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/overscroll_configuration.h"
+#include "content/public/browser/preloading.h"
 #include "third_party/skia/include/core/SkDrawLooper.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
@@ -562,6 +563,12 @@ void GestureNavSimple::OnOverscrollModeChange(OverscrollMode old_mode,
       "Overscroll.Started3",
       GetUmaNavigationType(GetDirectionFromMode(mode_), source_),
       UmaNavigationType::NAVIGATION_TYPE_COUNT);
+
+  if (ShouldNavigateBack(&controller, mode_)) {
+    web_contents_->BackNavigationLikely(
+        preloading_predictor::kBackGestureNavigation,
+        WindowOpenDisposition::CURRENT_TAB);
+  }
 
   const bool is_touchpad = source == OverscrollSource::TOUCHPAD;
   const float start_threshold =

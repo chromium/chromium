@@ -33,6 +33,9 @@ namespace content_preloading_predictor {
 // https://wicg.github.io/nav-speculation/prerendering.html#speculation-rules
 static constexpr PreloadingPredictor kSpeculationRules(50, "SpeculationRules");
 
+// When a mouse down of a mouse back button is seen.
+static constexpr PreloadingPredictor kMouseBackButton(51, "MouseBackButton");
+
 // TODO(crbug.com/1309934): Add more predictors as we integrate Preloading
 // logging.
 }  // namespace content_preloading_predictor

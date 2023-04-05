@@ -149,6 +149,35 @@ void CONTENT_EXPORT AnalyzePrerenderActivationHeader(
     PrerenderTriggerType trigger_type,
     const std::string& embedder_histogram_suffix);
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// These are also mapped onto the second content internal range of
+// `PreloadingEligibility`.
+enum class PrerenderBackNavigationEligibility {
+  kEligible = 0,
+
+  kNoBackEntry = 1,
+  kTargetIsSameDocument = 2,
+  kMethodNotGet = 3,
+  kTargetIsFailedNavigation = 4,
+  kBfcacheEntryExists = 5,
+  kTargetIsSameSite = 6,
+  kNoHttpCacheEntry = 7,
+  kTargetingOtherWindow = 8,
+  kTargetIsNonHttp = 9,
+
+  kMaxValue = kTargetIsNonHttp,
+};
+
+// Maps `eligibility` onto a content internal range of PreloadingEligibility.
+CONTENT_EXPORT PreloadingEligibility
+ToPreloadingEligibility(PrerenderBackNavigationEligibility eligibility);
+
+void RecordPrerenderBackNavigationEligibility(
+    PreloadingPredictor predictor,
+    PrerenderBackNavigationEligibility eligibility,
+    PreloadingAttempt* preloading_attempt);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_METRICS_H_

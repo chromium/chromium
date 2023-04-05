@@ -861,6 +861,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       PreloadingAttempt* preloading_attempt,
       absl::optional<base::RepeatingCallback<bool(const GURL&)>>
           url_match_predicate = absl::nullopt) override;
+  void BackNavigationLikely(PreloadingPredictor predictor,
+                            WindowOpenDisposition disposition) override;
 
   // NavigatorDelegate ---------------------------------------------------------
 
@@ -2323,6 +2325,11 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   int suppress_unresponsive_renderer_count_ = 0;
 
   std::unique_ptr<PrerenderHostRegistry> prerender_host_registry_;
+
+  // Used to ignore multiple back navigation hints in rapid succession. For
+  // example, we may get multiple hints due to imprecise mouse movement while
+  // the user is trying to move the mouse to the back button.
+  base::TimeTicks last_back_navigation_hint_time_ = base::TimeTicks::Min();
 
   std::unique_ptr<power_scheduler::PowerModeVoter> audible_power_mode_voter_;
 

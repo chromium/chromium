@@ -176,6 +176,7 @@ Preload::PreloadingStatus PreloadingTriggeringOutcomeToProtocol(
     case PreloadingTriggeringOutcome::kDuplicate:
     case PreloadingTriggeringOutcome::kTriggeredButOutcomeUnknown:
     case PreloadingTriggeringOutcome::kTriggeredButUpgradedToPrerender:
+    case PreloadingTriggeringOutcome::kNoOp:
       return Preload::PreloadingStatusEnum::NotSupported;
   }
 }
@@ -196,6 +197,7 @@ bool PreloadingTriggeringOutcomeSupportedByPrefetch(
     case PreloadingTriggeringOutcome::kDuplicate:
     case PreloadingTriggeringOutcome::kTriggeredButOutcomeUnknown:
     case PreloadingTriggeringOutcome::kTriggeredButUpgradedToPrerender:
+    case PreloadingTriggeringOutcome::kNoOp:
       return false;
   }
 }
@@ -216,6 +218,7 @@ bool PreloadingTriggeringOutcomeSupportedByPrerender(
     case PreloadingTriggeringOutcome::kDuplicate:
     case PreloadingTriggeringOutcome::kTriggeredButOutcomeUnknown:
     case PreloadingTriggeringOutcome::kTriggeredButUpgradedToPrerender:
+    case PreloadingTriggeringOutcome::kNoOp:
       return false;
   }
 }

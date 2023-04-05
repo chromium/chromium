@@ -34,7 +34,8 @@ void DCHECKTriggeringOutcomeTransitions(PreloadingTriggeringOutcome old_state,
             PreloadingTriggeringOutcome::kFailure,
             PreloadingTriggeringOutcome::kTriggeredButOutcomeUnknown,
             PreloadingTriggeringOutcome::kTriggeredButUpgradedToPrerender,
-            PreloadingTriggeringOutcome::kTriggeredButPending}},
+            PreloadingTriggeringOutcome::kTriggeredButPending,
+            PreloadingTriggeringOutcome::kNoOp}},
 
           {PreloadingTriggeringOutcome::kDuplicate, {}},
 
@@ -66,6 +67,8 @@ void DCHECKTriggeringOutcomeTransitions(PreloadingTriggeringOutcome old_state,
           {PreloadingTriggeringOutcome::kTriggeredButPending,
            {PreloadingTriggeringOutcome::kRunning,
             PreloadingTriggeringOutcome::kFailure}},
+
+          {PreloadingTriggeringOutcome::kNoOp, {}},
       }));
   DCHECK_STATE_TRANSITION(allowed_transitions,
                           /*old_state=*/old_state,
@@ -327,6 +330,9 @@ std::ostream& operator<<(std::ostream& os,
       break;
     case PreloadingTriggeringOutcome::kTriggeredButPending:
       os << "TriggeredButPending";
+      break;
+    case PreloadingTriggeringOutcome::kNoOp:
+      os << "NoOp";
       break;
   }
   return os;

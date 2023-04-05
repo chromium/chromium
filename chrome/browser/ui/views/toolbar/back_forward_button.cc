@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/toolbar/back_forward_button.h"
 
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/toolbar/back_forward_menu_model.h"
@@ -16,6 +17,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/base/window_open_disposition_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view_class_properties.h"
 
@@ -29,7 +31,8 @@ BackForwardButton::BackForwardButton(Direction direction,
                             ? BackForwardMenuModel::ModelType::kBackward
                             : BackForwardMenuModel::ModelType::kForward),
                     browser->tab_strip_model()),
-      browser_(browser) {
+      browser_(browser),
+      direction_(direction) {
   SetHideInkDropWhenShowingContextMenu(false);
   SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                            ui::EF_MIDDLE_MOUSE_BUTTON);
@@ -86,6 +89,35 @@ void BackForwardButton::NotifyClick(const ui::Event& event) {
   // the label for the page about to be loaded. However, the title associated
   // with the ContentsWebView has not yet been updated.
   ToolbarButton::NotifyClick(event);
+}
+
+void BackForwardButton::StateChanged(ButtonState old_state) {
+  ToolbarButton::StateChanged(old_state);
+  if (direction_ != Direction::kBack) {
+    return;
+  }
+
+  if (old_state == ButtonState::STATE_NORMAL &&
+      GetState() == ButtonState::STATE_HOVERED) {
+    content::WebContents* active_contents =
+        browser_->tab_strip_model()->GetActiveWebContents();
+    if (active_contents) {
+      active_contents->BackNavigationLikely(
+          chrome_preloading_predictor::kBackButtonHover,
+          last_back_assumed_disposition_);
+    }
+  }
+}
+
+void BackForwardButton::OnMouseEntered(const ui::MouseEvent& event) {
+  if (direction_ == Direction::kBack) {
+    // Record this before the event triggers `StateChanged` via
+    // `ToolbarButton::OnMouseEntered`.
+    last_back_assumed_disposition_ = ui::DispositionFromEventFlags(
+        event.flags(), WindowOpenDisposition::CURRENT_TAB);
+  }
+
+  ToolbarButton::OnMouseEntered(event);
 }
 
 BEGIN_METADATA(BackForwardButton, ToolbarButton)

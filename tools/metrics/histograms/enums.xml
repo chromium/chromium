@@ -83357,6 +83357,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="7" label="TriggeredButOutcomeUnknown"/>
   <int value="8" label="TriggeredButUpgradedToPrerender"/>
   <int value="9" label="TriggeredButPending"/>
+  <int value="10" label="NoOp"/>
 </enum>
 
 <enum name="PreloadPagesState">
@@ -84524,6 +84525,19 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="22" label="kIsHistoryNavigationInNewChildFrame"/>
   <int value="23" label="kReferrerPolicy (Obsolete)"/>
   <int value="24" label="kRequestDestination"/>
+</enum>
+
+<enum name="PrerenderBackNavigationEligibility">
+  <int value="0" label="Eligible"/>
+  <int value="1" label="No back entry"/>
+  <int value="2" label="Target is same document"/>
+  <int value="3" label="Method not get"/>
+  <int value="4" label="Target is failed navigation"/>
+  <int value="5" label="Bfcache entry exists"/>
+  <int value="6" label="Target is same site"/>
+  <int value="7" label="No HTTP cache entry"/>
+  <int value="8" label="Targeting other window"/>
+  <int value="9" label="Target is non-HTTP(S)"/>
 </enum>
 
 <enum name="PrerenderCancelledInterface">

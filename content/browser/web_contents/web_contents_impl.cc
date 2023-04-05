@@ -74,6 +74,7 @@
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/permissions/permission_util.h"
 #include "content/browser/portal/portal.h"
+#include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/preloading/prerender/prerender_metrics.h"
@@ -218,6 +219,11 @@ namespace {
 
 // The window which we dobounce load info updates in.
 constexpr auto kUpdateLoadStatesInterval = base::Milliseconds(250);
+
+// Kill switch for `BackNavigationLikely`.
+BASE_FEATURE(kBackNavigationPredictionMetrics,
+             "BackNavigationPredictionMetrics",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 using LifecycleState = RenderFrameHost::LifecycleState;
 using LifecycleStateImpl = RenderFrameHostImpl::LifecycleStateImpl;
@@ -8123,6 +8129,13 @@ void WebContentsImpl::DidReceiveInputEvent(
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::DidReceiveInputEvent",
                         "render_widget_host", render_widget_host);
 
+  if (event.GetType() == blink::WebInputEvent::Type::kMouseDown &&
+      static_cast<const blink::WebMouseEvent&>(event).button ==
+          blink::WebPointerProperties::Button::kBack) {
+    BackNavigationLikely(content_preloading_predictor::kMouseBackButton,
+                         WindowOpenDisposition::CURRENT_TAB);
+  }
+
   if (!IsUserInteractionInputType(event.GetType()))
     return;
 
@@ -9651,6 +9664,33 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
         prerendering_url);
   }
   return nullptr;
+}
+
+void WebContentsImpl::BackNavigationLikely(PreloadingPredictor predictor,
+                                           WindowOpenDisposition disposition) {
+  if (!base::FeatureList::IsEnabled(kBackNavigationPredictionMetrics)) {
+    return;
+  }
+
+  CHECK(!IsBeingDestroyed());
+
+  // See the comment of `last_back_navigation_hint_time_` for why this cooldown
+  // exists. The choice of 5 seconds is arbitrary.
+  constexpr base::TimeDelta kCooldown = base::Seconds(5);
+  base::TimeTicks now = ui::EventTimeForNow();
+  if (now - last_back_navigation_hint_time_ < kCooldown) {
+    return;
+  }
+  last_back_navigation_hint_time_ = now;
+
+  if (disposition != WindowOpenDisposition::CURRENT_TAB) {
+    RecordPrerenderBackNavigationEligibility(
+        predictor, PrerenderBackNavigationEligibility::kTargetingOtherWindow,
+        nullptr);
+    return;
+  }
+
+  GetPrerenderHostRegistry()->BackNavigationLikely(predictor);
 }
 
 void WebContentsImpl::AboutToBeDiscarded(WebContents* new_contents) {

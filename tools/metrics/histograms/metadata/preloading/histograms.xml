@@ -21,6 +21,10 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <variants name="PreloadingPredictor">
+  <variant name="BackButtonHover"
+      summary="When the user hovers their mouse over the back button."/>
+  <variant name="BackGestureNavigation"
+      summary="When overscroll that could trigger a back navigation starts."/>
   <variant name="DefaultSearchEngine"
       summary="When preloading is triggered from the default search engine
                suggest service."/>
@@ -32,6 +36,8 @@ chromium-metrics-reviews@google.com.
       summary="When preloading is triggered by OnPointerDown."/>
   <variant name="kUrlPointerHoverOnAnchor"
       summary="When preloading is triggered by OnPointerHover."/>
+  <variant name="MouseBackButton"
+      summary="When a mouse down of a mouse back button is seen."/>
   <variant name="OmniboxDirectURLInput"
       summary="When preloading is triggered from the Omnibox DUI."/>
   <variant name="OmniboxMousePredictor"
@@ -99,6 +105,18 @@ chromium-metrics-reviews@google.com.
     a false negative. These statistics are used to compute recall of the
     preloading predictor. The statistics about false positive and true negative
     cases are not required to compute the recall and are not recorded here.
+  </summary>
+  <token key="PreloadingPredictor" variants="PreloadingPredictor"/>
+</histogram>
+
+<histogram
+    name="Preloading.PrerenderBackNavigationEligibility.{PreloadingPredictor}"
+    enum="PrerenderBackNavigationEligibility" expires_after="2023-09-09">
+  <owner>mcnee@chromium.org</owner>
+  <owner>chrome-brapp-loading@chromium.org</owner>
+  <summary>
+    Records whether prerendering a back navigation is possible at the time of
+    the prediction of a back navigation by {PreloadingPredictor}.
   </summary>
   <token key="PreloadingPredictor" variants="PreloadingPredictor"/>
 </histogram>

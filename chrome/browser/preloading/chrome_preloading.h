@@ -70,6 +70,11 @@ static constexpr content::PreloadingPredictor kOmniboxSearchSuggestDefaultMatch(
     105,
     "OmniboxSearchSuggestDefaultMatch");
 
+// When the user hovers their mouse over the back button.
+static constexpr content::PreloadingPredictor kBackButtonHover(
+    106,
+    "BackButtonHover");
+
 // TODO(crbug.com/1309934): Integrate more Preloading predictors with
 // Preloading logging APIs.
 }  // namespace chrome_preloading_predictor
@@ -123,6 +128,8 @@ enum class ChromePreloadingEligibility {
       static_cast<int>(
           content::PreloadingEligibility::kPreloadingEligibilityContentEnd) +
       6,
+
+  kMaxValue = kPreloadingErrorBackOff,
 };
 
 // Helper method to convert ChromePreloadingEligibility to

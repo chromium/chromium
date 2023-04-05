@@ -110,6 +110,11 @@ static constexpr PreloadingPredictor kUrlPointerHoverOnAnchor(
 // next navigation.
 static constexpr PreloadingPredictor kLinkRel(3, "LinkRel");
 
+// When overscroll that could trigger a back navigation starts.
+static constexpr PreloadingPredictor kBackGestureNavigation(
+    4,
+    "BackGestureNavigation");
+
 // TODO(crbug.com/1309934): Add more predictors as we integrate Preloading
 // logging.
 }  // namespace preloading_predictor
@@ -187,14 +192,20 @@ enum class PreloadingEligibility {
 
   // Values between `kPreloadingEligibilityCommonEnd` (inclusive) and
   // `kPreloadingEligibilityContentEnd` (exclusive) are reserved for enums
-  // defined under `//content`.
+  // defined under `//content`, namely `PrefetchStatus`.
   kPreloadingEligibilityCommonEnd = 50,
 
   // TODO(crbug.com/1309934): Add more specific ineligibility reasons subject to
   // each preloading operation
-  // This constant is used to define the value from which embedders can add more
-  // enums beyond this value.
+  // This constant is used to define the value beyond which embedders can add
+  // more enums.
   kPreloadingEligibilityContentEnd = 100,
+
+  // This is another range reserved for content internal values, namely
+  // `PrerenderBackNavigationEligibility`. Embedders may add more values
+  // beyond this range.
+  kPreloadingEligibilityContentStart2 = 200,
+  kPreloadingEligibilityContentEnd2 = 250,
 };
 
 // The outcome of the holdback check. This is not part of eligibility status to
@@ -268,8 +279,13 @@ enum class PreloadingTriggeringOutcome {
   // `kPrerender2SequentialPrerendering` is disabled.
   kTriggeredButPending = 9,
 
+  // Used for triggers that do not perform a preloading operation. This may be
+  // used for a trigger which we're evaluating the accuracy of before actually
+  // having it preload.
+  kNoOp = 10,
+
   // Required by UMA histogram macro.
-  kMaxValue = kTriggeredButPending,
+  kMaxValue = kNoOp,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

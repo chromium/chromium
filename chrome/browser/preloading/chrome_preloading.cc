@@ -30,6 +30,15 @@ bool IsSideSearch(content::BrowserContext* browser_context, const GURL& url) {
 
 }  // namespace
 
+// Ensure new values do not fall in content internal reserved ranges.
+static_assert(
+    static_cast<int>(ChromePreloadingEligibility::kMaxValue) <
+        static_cast<int>(content::PreloadingEligibility::
+                             kPreloadingEligibilityContentStart2) ||
+    static_cast<int>(ChromePreloadingEligibility::kMaxValue) >
+        static_cast<int>(
+            content::PreloadingEligibility::kPreloadingEligibilityContentEnd2));
+
 content::PreloadingEligibility ToPreloadingEligibility(
     ChromePreloadingEligibility eligibility) {
   return static_cast<content::PreloadingEligibility>(eligibility);
