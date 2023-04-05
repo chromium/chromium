@@ -90,6 +90,19 @@ PrintBackendServiceManager::PrintBackendServiceManager() = default;
 PrintBackendServiceManager::~PrintBackendServiceManager() = default;
 
 // static
+std::string PrintBackendServiceManager::ClientTypeToString(
+    ClientType client_type) {
+  switch (client_type) {
+    case ClientType::kQuery:
+      return "kQuery";
+    case ClientType::kQueryWithUi:
+      return "kQueryWithUi";
+    case ClientType::kPrintDocument:
+      return "kPrintDocument";
+  }
+}
+
+// static
 void PrintBackendServiceManager::LogCallToRemote(
     base::StringPiece name,
     const CallbackContext& context) {
@@ -708,6 +721,9 @@ bool PrintBackendServiceManager::ShouldServiceBeSandboxed(
                                                                    client_type);
   }
 #endif
+  DVLOG(1) << "Print Backend service for " << ClientTypeToString(client_type)
+           << " use to printer `" << printer_name << "` should"
+           << (should_sandbox ? "" : " not") << " be sandboxed";
   return should_sandbox;
 }
 
