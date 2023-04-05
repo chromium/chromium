@@ -1706,6 +1706,12 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   RunTest("testConsoleContextNames", kPageWithContentScript);
 }
 
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, CantInspectNewTabPage) {
+  LoadExtension("can_inspect_url");
+  RunTest("waitForTestResultsAsMessage",
+          base::StrCat({kArbitraryPage, "#chrome://newtab/"}));
+}
+
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, CantInspectChromeScheme) {
   LoadExtension("can_inspect_url");
   RunTest("waitForTestResultsAsMessage",
