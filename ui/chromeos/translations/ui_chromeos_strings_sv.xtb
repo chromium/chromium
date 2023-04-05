@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> har tagits bort.</translation>
 <translation id="2307462900900812319">Konfigurera nätverk</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Inget tillägg med id <ph name="BEGIN_LIST" /><ph name="END_LIST" /> kunde hittas. Kontakta administratören.}other{Inga tillägg med följande id:n: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> kunde hittas. Kontakta administratören.}}</translation>
 <translation id="2325650632570794183">Filtypen stöds inte. Besök Chrome Web Store om du vill hitta en app som kan öppna den här filtypen.</translation>
 <translation id="2326539130272988168">bulgariska</translation>
 <translation id="2337715497728194187">Dela med Bruschetta</translation>

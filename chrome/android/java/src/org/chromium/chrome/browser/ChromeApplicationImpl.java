@@ -59,7 +59,7 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
             // this point to check.
             if (ChromeFeatureList.sEarlyLibraryLoad.isEnabled() && ProductConfig.IS_BUNDLE) {
                 // Kick off library loading in a separate thread so it's ready when we need it.
-                new Thread(() -> LibraryLoader.getInstance().ensureMainDexInitialized()).start();
+                new Thread(() -> LibraryLoader.getInstance().ensureInitialized()).start();
             }
 
             // Initializes the support for dynamic feature modules (browser only).

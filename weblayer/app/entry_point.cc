@@ -19,8 +19,7 @@ bool NativeInit(base::android::LibraryProcessType) {
 JNI_EXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
   base::android::InitVM(vm);
   JNIEnv* env = base::android::AttachCurrentThread();
-  if (!weblayer_test::RegisterNonMainDexNatives(env) ||
-      !weblayer_test::RegisterMainDexNatives(env) ||
+  if (!weblayer_test::RegisterNatives(env) ||
       !weblayer::MaybeRegisterNatives()) {
     return -1;
   }

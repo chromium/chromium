@@ -6845,7 +6845,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7017004637493394352">Кажете „Ok Google“ отново</translation>
 <translation id="7017219178341817193">Добавяне на нова страница</translation>
 <translation id="7017354871202642555">Не може да се зададе режим, след като е настроен прозорец.</translation>
-<translation id="7018275672629230621">Четене и промяна на историята на сърфирането ви</translation>
 <translation id="7019546817926942979">Устройството ви трябва да е включено в електрическата мрежа. Надстройването на Linux може да изтощи батерията. Включете устройството си в електрическата мрежа и опитайте отново.</translation>
 <translation id="7019805045859631636">Бързо</translation>
 <translation id="7022562585984256452">Началната ви страница е зададена.</translation>
@@ -7134,6 +7133,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7308643132139167865">Езици на уебсайтовете</translation>
 <translation id="7310598146671372464">Влизането в профила не бе успешно. Сървърът не поддържа посочените типове шифроване в Kerberos. Моля, обърнете се към администратора си.</translation>
 <translation id="7311089766378749632">Заявка за четене и промяна на <ph name="SITE_NAME" /></translation>
+<translation id="7311244614769792472">Няма намерени резултати</translation>
 <translation id="7312210124139670355">Администраторът ви нулира електронната ви SIM карта. Това може да отнеме няколко минути.</translation>
 <translation id="7317831949569936035">Регистриране в учебно заведение</translation>
 <translation id="7320213904474460808">Мрежа по подразбиране</translation>

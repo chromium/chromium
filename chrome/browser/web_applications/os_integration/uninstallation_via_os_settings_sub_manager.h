@@ -24,8 +24,6 @@ class UninstallationViaOsSettingsSubManager : public OsIntegrationSubManager {
   explicit UninstallationViaOsSettingsSubManager(Profile& profile,
                                                  WebAppRegistrar& registrar);
   ~UninstallationViaOsSettingsSubManager() override;
-  void Start() override;
-  void Shutdown() override;
 
   void Configure(const AppId& app_id,
                  proto::WebAppOsIntegrationState& desired_state,

@@ -48,12 +48,6 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler,
   // TODO(b/237337607): chrome.send() is banned on ash. Migrate to Mojo instead.
   void RegisterMessages() override;
 
-  // ProjectorAppClient:Observer:
-  void OnNewScreencastPreconditionChanged(
-      const NewScreencastPrecondition& precondition) override;
-
-  void set_web_ui_for_test(content::WebUI* web_ui) { set_web_ui(web_ui); }
-
   // ProjectorAppClient::Observer:
   // Notifies the Projector SWA the pending screencasts' state change and
   // updates the pending list in Projector SWA.
@@ -62,6 +56,8 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler,
   void OnSodaProgress(int percentage) override;
   void OnSodaError() override;
   void OnSodaInstalled() override;
+
+  void set_web_ui_for_test(content::WebUI* web_ui) { set_web_ui(web_ui); }
 
  protected:
   // Called when the XHR request is completed. Resolves the javascript promise
@@ -76,10 +72,6 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler,
   // secondary accounts) in the current session. The list of accounts will be
   // used in the account picker in the SWA.
   void GetAccounts(const base::Value::List& args);
-
-  // Requested by the Projector SWA to check the new screencast precondition
-  // state.
-  void GetNewScreencastPrecondition(const base::Value::List& args);
 
   // Requested by the Projector SWA to start a new Projector session if it is
   // possible.

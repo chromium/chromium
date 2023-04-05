@@ -7,16 +7,19 @@
 
 #import <Foundation/Foundation.h>
 
-@protocol InactiveTabsCountConsumer;
+@protocol InactiveTabsInfoConsumer;
+class PrefService;
 class WebStateList;
 
 // This mediator updates the button in the regular Tab Grid showing the presence
 // and number of inactive tabs.
 @interface InactiveTabsButtonMediator : NSObject
 
-// Initializer with `consumer` as the receiver of `webStateList` count updates.
-- (instancetype)initWithConsumer:(id<InactiveTabsCountConsumer>)consumer
+// Initializer with `consumer` as the receiver of Inactive Tabs info updates
+// (count of inactive tabs, user setting).
+- (instancetype)initWithConsumer:(id<InactiveTabsInfoConsumer>)consumer
                     webStateList:(WebStateList*)webStateList
+                     prefService:(PrefService*)prefService
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

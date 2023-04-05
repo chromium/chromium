@@ -61,7 +61,6 @@ android_resources("java_resources") {
     "java/res/layout/bottom_tab_strip_toolbar.xml",
     "java/res/layout/closable_tab_grid_card_item.xml",
     "java/res/layout/closable_tab_list_card_item.xml",
-    "java/res/layout/coupon_card.xml",
     "java/res/layout/incognito_description_container_layout.xml",
     "java/res/layout/iph_drag_and_drop_dialog_layout.xml",
     "java/res/layout/large_message_card_item.xml",
@@ -94,7 +93,6 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupUtils.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_management/ClosableTabGridView.java",
-    "java/src/org/chromium/chrome/browser/tasks/tab_management/CouponCardView.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_management/IncognitoReauthPromoMessageService.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_management/IncognitoReauthPromoViewModel.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_management/IphMessageCardViewModel.java",

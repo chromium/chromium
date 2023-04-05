@@ -6822,7 +6822,6 @@
 <translation id="7017004637493394352">もう一度「OK Google」と言ってください</translation>
 <translation id="7017219178341817193">新しいページを追加</translation>
 <translation id="7017354871202642555">ウィンドウが設定されている場合はモードを設定できません。</translation>
-<translation id="7018275672629230621">閲覧履歴の読み取りと変更</translation>
 <translation id="7019546817926942979">デバイスを電源に接続する必要があります。Linux のアップグレードを行うと、電池を大幅に消耗します。デバイスを電源に接続してから、もう一度お試しください。</translation>
 <translation id="7019805045859631636">速い</translation>
 <translation id="7022562585984256452">ホームページが設定されました。</translation>
@@ -7110,6 +7109,7 @@
 <translation id="7308643132139167865">ウェブサイトの言語</translation>
 <translation id="7310598146671372464">ログインできませんでした。指定した Kerberos 暗号化タイプがサーバーでサポートされていません。管理者にお問い合わせください。</translation>
 <translation id="7311089766378749632"><ph name="SITE_NAME" /> の読み取りと変更をリクエストしています</translation>
+<translation id="7311244614769792472">一致する結果は見つかりませんでした</translation>
 <translation id="7312210124139670355">管理者が eSIM をリセットしています。この処理には数分かかることがあります。</translation>
 <translation id="7317831949569936035">教育機関の登録</translation>
 <translation id="7320213904474460808">デフォルトのネットワーク</translation>

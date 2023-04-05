@@ -164,7 +164,7 @@ void ResponsivenessMetrics::RecordUserInteractionUKM(
                "data",
                UserInteractionTraceData(max_event_duration,
                                         total_event_duration, interaction_type),
-               "frame", ToTraceValue(window->GetFrame()));
+               "frame", GetFrameIdForTracing(window->GetFrame()));
 
   LogResponsivenessHistogram(max_event_duration, kHistogramAllTypes);
   switch (interaction_type) {

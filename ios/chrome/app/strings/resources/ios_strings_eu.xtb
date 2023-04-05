@@ -20,6 +20,7 @@
 <translation id="1103523840287552314">Itzuli <ph name="LANGUAGE" /> beti</translation>
 <translation id="110724200315609752">Erabili irekita dagoen leihoa</translation>
 <translation id="1112015203684611006">Ezin izan da inprimatu.</translation>
+<translation id="1118266931011974190"><ph name="THRESHOLD" /> egun igaro ondoren</translation>
 <translation id="1125564390852150847">Sortu beste fitxa bat.</translation>
 <translation id="1126013303640354461">Google Pay-ko ordainketa-metodoak eta helbideak ez dira enkriptatuko. Chrome-ko arakatze-historia ez da sinkronizatuko.
 Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Google-k ez du jasoko pasaesaldia, ezta gordeko ere. Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, sinkronizazioa berrezarri beharko duzu. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
@@ -231,6 +232,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="2626236249646841566">Egiaztatu konektatuta zaudela eta saiatu berriro saioa hasten.</translation>
 <translation id="2637313651144986786">Bilatu fitxak…</translation>
 <translation id="2647269890314209800">Erabiltzen diren cookieak</translation>
+<translation id="2648721026697078500">Ez mugitu inoiz</translation>
 <translation id="2648803196158606475">Ezabatu irakurritakoak</translation>
 <translation id="2653659639078652383">Bidali</translation>
 <translation id="2664621323652615289">Gelditu</translation>
@@ -346,6 +348,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3305294846493618482">gehiago</translation>
 <translation id="3311748811247479259">Desaktibatuta</translation>
 <translation id="3324193307694657476">Helbidea (2)</translation>
+<translation id="3328459813621383194">Mugitu fitxa inaktiboak</translation>
 <translation id="3328801116991980348">Webgunearen informazioa</translation>
 <translation id="3371831930909698441">Translate zerbitzua erabilgarri dago. Pantailaren behealdean agertzen dira dauden aukerak.</translation>
 <translation id="3377063233124932127">Orain, gordetako laster-markak, pasahitzak eta gauza gehiago goialdean daude.</translation>
@@ -510,6 +513,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="452750746583162491">Berrikusi sinkronizatutako datuak</translation>
 <translation id="4536418791685807335">Hasi saioa berriro.</translation>
 <translation id="4540780316273593836">Arazoren bat izan da</translation>
+<translation id="4550040941166547650">Gailu honetan soilik</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{{COUNT} fitxa inaktibo itxi nahi duzu?}other{{COUNT} fitxa inaktibo itxi nahi dituzu?}}</translation>
 <translation id="457386861538956877">Gehiago…</translation>
 <translation id="4587235830039045480">Gorde pasahitza Google-ko kontuan</translation>
@@ -763,6 +767,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="6193424046394092997">{count,plural, =1{{title} karpetan gehitu da laster-marka}other{{title} karpetan gehitu da laster-marka}}</translation>
 <translation id="6196207969502475924">Ahozko bilaketa</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Itxi {COUNT} fitxa}other{Itxi {COUNT} fitxa}}</translation>
+<translation id="6210079381482819663"><ph name="THRESHOLD" /> egunez edo gehiagoz erabili ez diren fitxak hona ekartzen dira. Hori aldatzeko, joan <ph name="BEGIN_LINK" />Ezarpenak<ph name="END_LINK" /> atalera.</translation>
 <translation id="6213567400989743524">Baztertutako abisuak</translation>
 <translation id="6219550825416862075">Ongi etorri berriro</translation>
 <translation id="6219688215832490856">Ez itzuli inoiz</translation>
@@ -1058,6 +1063,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8059533439631660104">Hautapena tolesten du.</translation>
 <translation id="8065292699993359127">Ireki URLak Chrome-ren ezkutuko moduan</translation>
 <translation id="806745655614357130">Gorde nire datuak bereizita</translation>
+<translation id="8069394452933076548">Hautatu noiz eramaten diren azkenaldian erabili ez diren fitxak fitxa inaktiboen atalera.</translation>
 <translation id="8073670137947914548">Deskargatu da</translation>
 <translation id="8073872304774253879">Hobetu bilaketak eta arakatze-jarduerak</translation>
 <translation id="8076492880354921740">Fitxak</translation>
@@ -1086,6 +1092,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8237382152611443140">Ireki AutoFill Password Settings (pasahitzak automatikoki betetzeko aukeraren ezarpenak).</translation>
 <translation id="8261506727792406068">Ezabatu</translation>
 <translation id="8264966119170358612">Gordeta zeneuzkan pasahitzetako batzuk ikusgai jarri dira, datuen isilpekotasuna urratu delako Google-tik kanpo. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
+<translation id="8265018477030547118">Gailu honetan soilik</translation>
 <translation id="8271720166617117963">Onartu eta hasi saioa</translation>
 <translation id="8278938988428169257">Idatzi hitz edo esaldi bat</translation>
 <translation id="8281781826761538115">Lehenetsia - <ph name="DEFAULT_LOCALE" /></translation>
@@ -1201,6 +1208,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="9055772144595778347">Ezin da hasi saioa</translation>
 <translation id="9055960261314198756">Babes hobetua desaktibatuta dago</translation>
 <translation id="9057972802061533987">Ezin zaio jarraitu. Arazoren bat izan da.</translation>
+<translation id="9061495354530850708">Zure Google-ko kontuan</translation>
 <translation id="9065203028668620118">Editatu</translation>
 <translation id="9068336935206019333">Ireki Chrome-ren ezkutuko moduan</translation>
 <translation id="9079935439869366234">Markatu guztiak irakurri gabeko gisa</translation>

@@ -81,8 +81,8 @@ String IdentifiersFactory::SubresourceRequestId(uint64_t identifier) {
 
 // static
 String IdentifiersFactory::FrameId(Frame* frame) {
-  // Note: this should be equal to ToTraceValue(frame).
-  return String(ToTraceValue(frame).data());
+  // Note: this should be equal to GetFrameIdForTracing(frame).
+  return String(GetFrameIdForTracing(frame).data());
 }
 
 // static

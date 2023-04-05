@@ -3655,7 +3655,7 @@
 <translation id="4131410914670010031">నలుపు మరియు తెలుపు</translation>
 <translation id="413193092008917129">నెట్‌వర్క్ సమస్య విశ్లేషణకు సంబంధించిన కమాండ్ రొటీన్‌లు</translation>
 <translation id="4132183752438206707">Google Play Storeలో యాప్‌లను కనుగొనండి</translation>
-<translation id="4132364317545104286">eSIM ప్రొఫైల్‌కు పేరుమార్చండి</translation>
+<translation id="4132364317545104286">eSIM ప్రొఫైల్‌కు పేరు మార్చండి</translation>
 <translation id="4132969033912447558"><ph name="FILE_NAME" />‌ను కొనసాగించండి</translation>
 <translation id="4133076602192971179">మీ పాస్‌వర్డ్‌ను మార్చడానికి యాప్‌ను తెరవండి</translation>
 <translation id="4134818201340504801">సెటప్‌ను పూర్తి చేయడానికి తగినంత స్టోరేజ్ అందుబాటులో లేదు. దయచేసి స్టోరేజీని ఖాళీ చేసి, మళ్లీ ట్రై చేయండి</translation>
@@ -4357,7 +4357,7 @@
 <translation id="4777943778632837590">నెట్‌వర్క్ పేరు సర్వర్‌లను కాన్ఫిగర్ చేయడం</translation>
 <translation id="4779083564647765204">జూమ్ చేయి</translation>
 <translation id="4779136857077979611">ఒనిగిరి</translation>
-<translation id="4779766576531456629">eSIM సెల్యులర్ నెట్‌వర్క్‌కు పేరుమార్చండి</translation>
+<translation id="4779766576531456629">eSIM సెల్యులర్ నెట్‌వర్క్‌కు పేరు మార్చండి</translation>
 <translation id="4780321648949301421">ఇలా పేజీని సేవ్ చేయండి...</translation>
 <translation id="4781443161433589743">మీరు అత్యంత సురక్షితమైన Chrome సెక్యూరిటీని కలిగి ఉన్నారు</translation>
 <translation id="4781584184731045253">డేటాను, అనుమతులను క్లియర్ చేయండి</translation>
@@ -5115,7 +5115,7 @@
 <translation id="5485754497697573575">అన్ని ట్యాబ్‌లను పునరుద్ధరించు</translation>
 <translation id="5486261815000869482">పాస్‌వర్డ్‌ని నిర్ధారించండి</translation>
 <translation id="5486561344817861625">బ్రౌజర్ పునఃప్రారంభాన్ని ప్రారంభించండి</translation>
-<translation id="5487460042548760727"><ph name="PROFILE_NAME" />కు ప్రొఫైల్ పేరుమార్చండి</translation>
+<translation id="5487460042548760727"><ph name="PROFILE_NAME" />కు ప్రొఫైల్ పేరు మార్చండి</translation>
 <translation id="5487521232677179737">డేటాను తీసివేయండి</translation>
 <translation id="5488093641312826914">'<ph name="COPIED_ITEM_NAME" />' కాపీ చేయబడింది</translation>
 <translation id="5488508217173274228">సింక్ ఎన్‌క్రిప్షన్ ఆప్షన్‌లు</translation>
@@ -6848,7 +6848,6 @@
 <translation id="7017004637493394352">మళ్లీ "Ok Google" చెప్పండి</translation>
 <translation id="7017219178341817193">కొత్త పేజీని జోడించండి</translation>
 <translation id="7017354871202642555">విండో సెట్ చేయబడిన తర్వాత మోడ్ సెట్ చేయబడదు.</translation>
-<translation id="7018275672629230621">మీ బ్రౌజింగ్ హిస్టరీని చదవడం మరియు మార్చడం</translation>
 <translation id="7019546817926942979">మీ పరికరాన్ని ప్లగ్-ఇన్ చేయాలి. Linuxను అప్‌గ్రేడ్ చేయడం వలన మీ బ్యాటరీ గణనీయంగా ఖాళీ అవుతుంది. మీ పరికరాన్ని ఛార్జర్‌కు కనెక్ట్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="7019805045859631636">వేగంగా</translation>
 <translation id="7022562585984256452">మీ హోమ్ పేజీ సెట్ చేయబడింది.</translation>
@@ -7137,6 +7136,7 @@
 <translation id="7308643132139167865">వెబ్‌సైట్ భాషలు</translation>
 <translation id="7310598146671372464">లాగిన్ చేయడం విఫలమైంది. పేర్కొనబడిన Kerberos ఎన్‌క్రిప్షన్ రకాలకు ఈ సర్వర్ మద్దతు ఇవ్వదు. దయచేసి మీ నిర్వాహకుడిని సంప్రదించండి.</translation>
 <translation id="7311089766378749632"><ph name="SITE_NAME" /> లో చదవడానికి, మార్చడానికి రిక్వెస్ట్ చేస్తోంది</translation>
+<translation id="7311244614769792472">ఫలితాలు ఏవీ కనుగొనబడలేదు</translation>
 <translation id="7312210124139670355">మీ అడ్మినిస్ట్రేటర్ మీ eSIMను రీసెట్ చేస్తున్నారు. దీనికి కొన్ని నిమిషాలు పట్టవచ్చు.</translation>
 <translation id="7317831949569936035">స్కూల్ ఎన్‌రోల్‌మెంట్</translation>
 <translation id="7320213904474460808">ఆటోమేటిక్ సెట్టింగ్ నెట్‌వర్క్</translation>
@@ -7377,7 +7377,7 @@
 <translation id="752098910262610337">షార్ట్‌కట్‌లను చూడండి</translation>
 <translation id="7522255036471229694">"Ok Google" చెప్పండి</translation>
 <translation id="7523117833414447032">క్యాపిటల్స్ చదువుతున్నప్పుడు</translation>
-<translation id="7523585675576642403">ప్రొఫైల్‌కు పేరుమార్చండి</translation>
+<translation id="7523585675576642403">ప్రొఫైల్‌కు పేరు మార్చండి</translation>
 <translation id="7525067979554623046">క్రియేట్ చేయండి</translation>
 <translation id="7526658513669652747">{NUM_DOWNLOADS,plural, =1{మరో 1}other{మరో {NUM_DOWNLOADS}}}</translation>
 <translation id="7526989658317409655">ప్లేస్‌హోల్డర్</translation>

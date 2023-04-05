@@ -13,6 +13,8 @@
 @protocol ReadingListListViewControllerAudience;
 @protocol ReadingListListViewControllerDelegate;
 @protocol ReadingListMenuProvider;
+@class SigninPromoViewConfigurator;
+@protocol SigninPromoViewDelegate;
 
 class Browser;
 
@@ -42,5 +44,16 @@ class Browser;
 // Reloads all the data.
 - (void)reloadData;
 
+// Controls the visibility state of the sign-in promo.
+- (void)promoStateChanged:(BOOL)promoEnabled
+        promoConfigurator:(SigninPromoViewConfigurator*)promoConfigurator
+            promoDelegate:(id<SigninPromoViewDelegate>)promoDelegate;
+
+// Updates the sign-in promo view after identity updates.
+- (void)configureSigninPromoWithConfigurator:
+            (SigninPromoViewConfigurator*)promoConfigurator
+                             identityChanged:(BOOL)identityChanged;
+
 @end
+
 #endif  // IOS_CHROME_BROWSER_UI_READING_LIST_READING_LIST_TABLE_VIEW_CONTROLLER_H_

@@ -385,7 +385,6 @@
 <translation id="3083194063661536258">Ви вийшли. Кнопка. Відкриває вікно, де можна ввійти та ввімкнути синхронізацію.</translation>
 <translation id="3091010850649238832">Показати вміст буфера обміну</translation>
 <translation id="3098745985164956033">Деякі зображення надсилаються на сервери Google, що дає змогу покращувати їх описи</translation>
-<translation id="3104179992611025423">Веб-переглядачем керують батьки</translation>
 <translation id="3114507951000454849">Читайте сьогоднішні новини <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">зв’язано з</translation>
 <translation id="3123734510202723619">Оголошення</translation>
@@ -456,6 +455,7 @@
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /> про рекомендований контент</translation>
 <translation id="3495219333887281978">Нижній екран для входу відкрито на половину висоти.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="350276055892098337">Сортувати за старішими</translation>
 <translation id="3507132249039706973">Стандартний захист увімкнено</translation>
 <translation id="3509330069915219067">Офлайн. Chrome не може перевірити наявність оновлень.</translation>
 <translation id="3513704683820682405">Доповнена реальність</translation>
@@ -576,6 +576,7 @@
 <translation id="4177222230309051052">Переглядайте всі закладки</translation>
 <translation id="4177501066905053472">Теми оголошень</translation>
 <translation id="4181841719683918333">Мови</translation>
+<translation id="4188221736490993796">Сортувати від Я до А</translation>
 <translation id="4195643157523330669">Відкрити в новій вкладці</translation>
 <translation id="4196597275619698563">Створити картку</translation>
 <translation id="4198423547019359126">Немає доступних місць для завантаження</translation>
@@ -641,6 +642,7 @@
 <translation id="4565377596337484307">Сховати пароль</translation>
 <translation id="4572422548854449519">Увійдіть у керований обліковий запис</translation>
 <translation id="4576892426230499203">Виберіть інший варіант підтвердження</translation>
+<translation id="4577115723294378384">Сортувати від А до Я</translation>
 <translation id="4578289292431526768">Почати</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# хвилину тому}one{# хвилину тому}few{# хвилини тому}many{# хвилин тому}other{# хвилини тому}}</translation>
 <translation id="4587589328781138893">Сайти</translation>
@@ -664,6 +666,7 @@
 <translation id="4689792375321623175">Пошук зображень через Google <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}many{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4699172675775169585">Кешовані зображення та файли</translation>
+<translation id="4710167854527459075">Сортувати за новішими</translation>
 <translation id="4719927025381752090">Пропонувати переклад</translation>
 <translation id="4720023427747327413">Відкрити в <ph name="PRODUCT_NAME" /></translation>
 <translation id="47217992755561375">Переглянути улюблені сайти</translation>
@@ -833,6 +836,7 @@
 <translation id="5561162485081632007">Виявляє небезпечні події та повідомляє про них</translation>
 <translation id="5561549206367097665">Очікується мережа…</translation>
 <translation id="5568069709869097550">Не вдалося ввійти</translation>
+<translation id="557018954714092179">Створити папку</translation>
 <translation id="5578795271662203820">Шукати зображення в <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Ви можете будь-коли вибрати дані для синхронізації в <ph name="BEGIN_LINK1" />налаштуваннях<ph name="END_LINK1" />.</translation>
 <translation id="5590372121997663538">Запам’ятати цей комп’ютер</translation>
@@ -937,6 +941,7 @@
 <translation id="6138832295072039549">Змініть налаштування сайту тут</translation>
 <translation id="6140709049082532940">Покращений захист:</translation>
 <translation id="6140912465461743537">Країна або регіон</translation>
+<translation id="6148266338772765473">Вилучити посилання</translation>
 <translation id="6150320133806434356">Закладку збережено</translation>
 <translation id="6154478581116148741">Щоб експортувати паролі з цього пристрою, увімкніть блокування екрана</translation>
 <translation id="6159729262978459665">Історію буде видалено на всіх синхронізованих пристроях.</translation>
@@ -1028,6 +1033,7 @@
 <translation id="6590680911007613645">Переконайтеся, що ввели правильний пароль для веб-сайту <ph name="SITE" /></translation>
 <translation id="6593061639179217415">Версія для комп’ютера</translation>
 <translation id="6594121454516132231">Дізнайтеся, як Chrome планує захищати вас від механізмів відстеження на різних сайтах, зберігаючи відкритість і незалежність мережі</translation>
+<translation id="6594347733515723558">Сортування і перегляд</translation>
 <translation id="6595046016124923392">Зображення надсилаються на сервери Google, що дає змогу покращувати їх описи.</translation>
 <translation id="6600954340915313787">Скопійовано в Chrome</translation>
 <translation id="661266467055912436">Покращує захист усіх користувачів в Інтернеті.</translation>

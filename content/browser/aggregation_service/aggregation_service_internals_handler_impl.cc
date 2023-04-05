@@ -56,7 +56,7 @@ CreateWebUIAggregatableReport(
   } else {
     report_body = AggregatableReport(
                       /*payloads=*/{}, request.shared_info().SerializeAsJson(),
-                      request.debug_key(),
+                      request.debug_key(), request.additional_fields(),
                       request.payload_contents().aggregation_coordinator)
                       .GetAsJson();
 

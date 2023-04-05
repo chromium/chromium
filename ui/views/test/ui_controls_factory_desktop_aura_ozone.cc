@@ -189,10 +189,8 @@ bool SendMouseMoveNotifyWhenDone(int screen_x,
   }
 #endif
 
-  gfx::Point screen_point(root_location);
-  host->ConvertDIPToScreenInPixels(&screen_point);
   g_ozone_ui_controls_test_helper->SendMouseMotionNotifyEvent(
-      host->GetAcceleratedWidget(), root_location, screen_point,
+      host->GetAcceleratedWidget(), root_location, screen_location,
       std::move(task));
   return true;
 }
@@ -216,7 +214,9 @@ bool SendMouseEventsNotifyWhenDone(MouseButton type,
     window_hint = nullptr;
   }
 
-  gfx::Point mouse_loc = aura::Env::GetInstance()->last_mouse_location();
+  gfx::Point mouse_loc_in_screen =
+      aura::Env::GetInstance()->last_mouse_location();
+  gfx::Point mouse_loc = mouse_loc_in_screen;
   aura::Window* root_window = RootWindowForPoint(mouse_loc, window_hint);
   if (root_window == nullptr) {
     return true;
@@ -228,11 +228,9 @@ bool SendMouseEventsNotifyWhenDone(MouseButton type,
     screen_position_client->ConvertPointFromScreen(root_window, &mouse_loc);
   }
 
-  gfx::Point mouse_root_loc = mouse_loc;
-  root_window->GetHost()->ConvertDIPToScreenInPixels(&mouse_root_loc);
   g_ozone_ui_controls_test_helper->SendMouseEvent(
       root_window->GetHost()->GetAcceleratedWidget(), type, button_state,
-      accelerator_state, mouse_loc, mouse_root_loc, std::move(task));
+      accelerator_state, mouse_loc, mouse_loc_in_screen, std::move(task));
   return true;
 }
 

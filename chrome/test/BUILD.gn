@@ -776,8 +776,6 @@ static_library("test_support") {
       "../browser/extensions/extension_apitest.h",
       "../browser/extensions/extension_browsertest.cc",
       "../browser/extensions/extension_browsertest.h",
-      "../browser/extensions/extension_function_test_utils.cc",
-      "../browser/extensions/extension_function_test_utils.h",
       "../browser/extensions/mixin_based_extension_apitest.cc",
       "../browser/extensions/mixin_based_extension_apitest.h",
       "../browser/extensions/permissions_test_util.cc",
@@ -2890,7 +2888,6 @@ if (!is_android) {
       sources += [
         "../browser/external_protocol/external_protocol_policy_browsertest.cc",
         "../browser/lifetime/application_lifetime_browsertest.cc",
-        "../browser/password_manager/web_app_profile_switcher_browsertest.cc",
       ]
     }
 
@@ -5230,13 +5227,25 @@ if (!is_android) {
       data_deps = [
         ":telemetry_perf_tests_base",
         "//tools/perf/:perf${telemetry_target_suffix}",
-
-        # Add all the binaries since other Telemetry-based tests use split
-        # targets, but perf tests have had issues migrating. This is not done
-        # in //tools/perf:perf since non-performance tests use it such as
-        # telememtry_perf_unittests.
-        "//tools/perf/chrome_telemetry_build:all_chrome_android_targets_for_perf_testing",
       ]
+
+      if (telemetry_target_suffix == "_android_clank_chrome") {
+        # Depending on Android version, either Chrome.apk or Monochrome.apk can
+        # be selected. See ChromeBackendSettings.GetApkName method in
+        # catapult/telemetry/telemetry/internal/backends/android_browser_backend_settings.py.
+        data_deps += [ "//tools/perf/:perf_android_clank_monochrome" ]
+      }
+
+      if (telemetry_target_suffix == "_android_webview" &&
+          enable_chrome_android_internal) {
+        # This suffix is used by all webview tests. Several different webview
+        # APKs can be used, depending on the platform.
+        data_deps += [
+          "//tools/perf/:perf_android_clank_monochrome",
+          "//tools/perf/:perf_android_clank_trichrome_webview_bundle",
+          "//tools/perf/:perf_android_clank_webview",
+        ]
+      }
     }
   }
 
@@ -8533,6 +8542,7 @@ test("unit_tests") {
       "../browser/safe_browsing/extension_telemetry/cookies_get_all_signal_unittest.cc",
       "../browser/safe_browsing/extension_telemetry/cookies_get_signal_processor_unittest.cc",
       "../browser/safe_browsing/extension_telemetry/cookies_get_signal_unittest.cc",
+      "../browser/safe_browsing/extension_telemetry/declarative_net_request_signal_processor_unittest.cc",
       "../browser/safe_browsing/extension_telemetry/extension_telemetry_config_manager_unittest.cc",
       "../browser/safe_browsing/extension_telemetry/extension_telemetry_file_processor_unittest.cc",
       "../browser/safe_browsing/extension_telemetry/extension_telemetry_persister_unittest.cc",
@@ -9836,6 +9846,10 @@ if (!is_android) {
 
     if (is_linux || is_chromeos || is_win) {
       data_deps += [ "//chrome:packed_resources" ]
+    }
+
+    if (!is_chromeos) {
+      sources += [ "../browser/password_manager/web_app_profile_switcher_interactive_uitest.cc" ]
     }
 
     if (use_ozone) {

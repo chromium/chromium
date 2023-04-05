@@ -101,10 +101,8 @@ export class ApnList extends ApnListBase {
       return [connectedApn];
     }
 
-    const connectedApnIndex = customApnList.findIndex(
-        (apn) => OncMojo.apnMatch(
-            /** @type {!ApnProperties} */ (apn),
-            /** @type {!ApnProperties} */ (connectedApn)));
+    const connectedApnIndex =
+        customApnList.findIndex((apn) => apn.id === connectedApn.id);
 
     if (connectedApnIndex != -1) {
       customApnList.splice(connectedApnIndex, 1);

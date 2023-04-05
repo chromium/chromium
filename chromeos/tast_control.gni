@@ -72,6 +72,11 @@ tast_disabled_tests_from_chrome_all = [
   "security.NetworkListenersARC",
   "security.SELinuxProcessesARC",
 
+  # https://crbug.com/1430753
+  "mlservice.WebHandwritingRecognitionNotSupported",
+  "security.ChromeSandboxed",
+  "security.GPUSandboxed",
+
   # https://crbug.com/1282481
   "quicksettings.OpenSettings",
 

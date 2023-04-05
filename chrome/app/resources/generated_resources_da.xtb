@@ -5526,7 +5526,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5855643921295613558">0,6 sekunder</translation>
 <translation id="5856721540245522153">Aktivér fejlretningsfunktioner</translation>
 <translation id="5857090052475505287">Ny mappe</translation>
-<translation id="5857171483910641802">Genveje foreslås på baggrund af de websites, du ofte søger</translation>
+<translation id="5857171483910641802">Genveje foreslås på baggrund af de websites, du ofte besøger</translation>
 <translation id="5857675236236529683">Når du er klar, kan du se din læseliste her</translation>
 <translation id="5857693745746757503">Spar 50 USD eller mere på en ny Chromebook, hvis du opgraderer i dag</translation>
 <translation id="5858490737742085133">Terminal</translation>
@@ -6850,7 +6850,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7017004637493394352">Sig "Hey Google" igen</translation>
 <translation id="7017219178341817193">Tilføj en ny side</translation>
 <translation id="7017354871202642555">Tilstanden kan ikke indstilles, når vinduet er indstillet.</translation>
-<translation id="7018275672629230621">Læs og rediger din browserhistorik</translation>
 <translation id="7019546817926942979">Din enhed skal være tilsluttet en oplader. Opgradering af Linux kan dræne dit batteri betydeligt hurtigere. Slut din enhed til en oplader, og prøv igen.</translation>
 <translation id="7019805045859631636">Hurtig</translation>
 <translation id="7022562585984256452">Din startside er blevet konfigureret.</translation>
@@ -7139,6 +7138,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7308643132139167865">Sprog på websites</translation>
 <translation id="7310598146671372464">Der kunne ikke logges ind. Serveren understøtter ikke de angivne Kerberos-krypteringstyper. Kontakt din administrator.</translation>
 <translation id="7311089766378749632">Der anmodes om tilladelse til at læse og ændre <ph name="SITE_NAME" /></translation>
+<translation id="7311244614769792472">Der blev ikke fundet nogen resultater</translation>
 <translation id="7312210124139670355">Din administrator er ved at nulstille dit eSIM. Dette kan tage et par minutter.</translation>
 <translation id="7317831949569936035">Skoleindskrivning</translation>
 <translation id="7320213904474460808">Vælg som standardnetværk</translation>

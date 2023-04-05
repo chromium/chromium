@@ -81,7 +81,9 @@ std::u16string ChromePageInfoUiDelegate::GetAutomaticallyBlockedReason(
     case ContentSettingsType::IDLE_DETECTION: {
       if (GetProfile()->IsOffTheRecord()) {
         return l10n_util::GetStringUTF16(
-            IDS_PAGE_INFO_STATE_TEXT_NOT_ALLOWED_IN_INCOGNITO);
+            GetProfile()->IsGuestSession()
+                ? IDS_PAGE_INFO_STATE_TEXT_NOT_ALLOWED_IN_GUEST
+                : IDS_PAGE_INFO_STATE_TEXT_NOT_ALLOWED_IN_INCOGNITO);
       }
       break;
     }

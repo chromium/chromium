@@ -621,9 +621,11 @@ BASE_FEATURE(kDiscardTemporaryInputOnTabSwitch,
              "OmniboxDiscardTemporaryInputOnTabSwitch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// TODO(manukh): Enabled by default 4/5/23 m114. Clean up feature code 5/30 when
+//   m114 reaches stable.
 BASE_FEATURE(kClosePopupWithEscape,
              "OmniboxClosePopupWithEscape",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, adds a "starter pack" of @history, @bookmarks, and @settings
 // scopes to Site Search/Keyword Mode.

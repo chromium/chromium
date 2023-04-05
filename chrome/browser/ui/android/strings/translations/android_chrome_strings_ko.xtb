@@ -385,7 +385,6 @@
 <translation id="3083194063661536258">로그아웃했습니다. 버튼 대화상자를 열어 로그인하고 동기화를 사용 설정합니다.</translation>
 <translation id="3091010850649238832">클립보드 내용 표시</translation>
 <translation id="3098745985164956033">설명을 개선하기 위해 일부 이미지가 Google에 전송됨</translation>
-<translation id="3104179992611025423">부모님이 관리하는 브라우저입니다</translation>
 <translation id="3114507951000454849">오늘의 뉴스 읽기 <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">다음 카드와 연결됨</translation>
 <translation id="3123734510202723619">공지사항</translation>
@@ -456,6 +455,7 @@
 <translation id="3493531032208478708">추천 콘텐츠 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">로그인 하단 시트가 절반 높이로 열렸습니다.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="350276055892098337">오래된 항목순 정렬</translation>
 <translation id="3507132249039706973">표준 보호 모드를 사용 중입니다.</translation>
 <translation id="3509330069915219067">오프라인 상태입니다. Chrome에서 업데이트를 확인할 수 없습니다.</translation>
 <translation id="3513704683820682405">증강 현실</translation>
@@ -576,6 +576,7 @@
 <translation id="4177222230309051052">모든 북마크 가져오기</translation>
 <translation id="4177501066905053472">광고 주제</translation>
 <translation id="4181841719683918333">언어</translation>
+<translation id="4188221736490993796">내림차순으로 정렬</translation>
 <translation id="4195643157523330669">새 탭에서 열기</translation>
 <translation id="4196597275619698563">카드 만들기</translation>
 <translation id="4198423547019359126">사용할 수 있는 다운로드 위치가 없음</translation>
@@ -641,6 +642,7 @@
 <translation id="4565377596337484307">비밀번호 숨김</translation>
 <translation id="4572422548854449519">관리 계정에 로그인</translation>
 <translation id="4576892426230499203">다른 인증 수단을 사용해 보세요.</translation>
+<translation id="4577115723294378384">오름차순으로 정렬</translation>
 <translation id="4578289292431526768">시작</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{#분 전}other{#분 전}}</translation>
 <translation id="4587589328781138893">사이트</translation>
@@ -664,6 +666,7 @@
 <translation id="4689792375321623175">Google로 이미지 검색 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />개}other{<ph name="SHIPPING_OPTION_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />개}}</translation>
 <translation id="4699172675775169585">캐시된 이미지 및 파일</translation>
+<translation id="4710167854527459075">최신 기준 정렬</translation>
 <translation id="4719927025381752090">번역 옵션 제공</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" />에서 열기</translation>
 <translation id="47217992755561375">맞춤 인기 사이트 보기</translation>
@@ -833,6 +836,7 @@
 <translation id="5561162485081632007">위험한 이벤트가 발생하면 이를 감지하여 알립니다.</translation>
 <translation id="5561549206367097665">네트워크 대기 중…</translation>
 <translation id="5568069709869097550">로그인할 수 없음</translation>
+<translation id="557018954714092179">새 폴더 만들기</translation>
 <translation id="5578795271662203820"><ph name="SEARCH_ENGINE" />에서 이 이미지 검색</translation>
 <translation id="5581519193887989363">언제든지 <ph name="BEGIN_LINK1" />설정<ph name="END_LINK1" />에서 동기화할 항목을 선택할 수 있습니다.</translation>
 <translation id="5590372121997663538">이 컴퓨터 기억하기</translation>
@@ -937,6 +941,7 @@
 <translation id="6138832295072039549">여기에서 사이트 설정을 변경하세요.</translation>
 <translation id="6140709049082532940">향상된 보호 모드:</translation>
 <translation id="6140912465461743537">국가/지역</translation>
+<translation id="6148266338772765473">링크 제외</translation>
 <translation id="6150320133806434356">북마크 저장됨</translation>
 <translation id="6154478581116148741">이 기기에서 비밀번호를 내보내려면 설정에서 화면 잠금을 사용 설정하세요</translation>
 <translation id="6159729262978459665">동기화된 모든 기기에서 방문 기록을 지웁니다.</translation>
@@ -1028,6 +1033,7 @@
 <translation id="6590680911007613645">저장하려는 비밀번호가 <ph name="SITE" />의 비밀번호와 일치하는지 확인하세요.</translation>
 <translation id="6593061639179217415">데스크톱 사이트</translation>
 <translation id="6594121454516132231">Chrome이 어떻게 오픈 웹의 장점을 유지하면서 크로스 사이트 추적으로부터 사용자를 보호할 계획인지 알아보세요.</translation>
+<translation id="6594347733515723558">정렬 및 보기 옵션</translation>
 <translation id="6595046016124923392">설명을 개선하기 위해 이미지가 Google로 전송되었습니다.</translation>
 <translation id="6600954340915313787">Chrome에 복사됨</translation>
 <translation id="661266467055912436">모든 웹 사용자를 위해 보안을 향상합니다.</translation>

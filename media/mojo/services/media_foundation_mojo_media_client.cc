@@ -7,13 +7,9 @@
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/cdm/win/media_foundation_cdm_factory.h"
+#include "media/filters/win/media_foundation_audio_decoder.h"
 #include "media/mojo/services/media_foundation_renderer_wrapper.h"
 #include "media/mojo/services/mojo_cdm_helper.h"
-#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO) || \
-    BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
-#include "media/filters/win/media_foundation_audio_decoder.h"
-#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO) ||
-        // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
 
 namespace media {
 
@@ -28,13 +24,7 @@ MediaFoundationMojoMediaClient::~MediaFoundationMojoMediaClient() {
 std::unique_ptr<AudioDecoder>
 MediaFoundationMojoMediaClient::CreateAudioDecoder(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
-#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO) || \
-    BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
-  return std::make_unique<MediaFoundationAudioDecoder>(task_runner);
-#else
-  return nullptr;
-#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO) ||
-        // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+  return MediaFoundationAudioDecoder::Create();
 }
 
 std::unique_ptr<Renderer>

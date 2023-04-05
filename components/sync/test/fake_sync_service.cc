@@ -60,6 +60,11 @@ ModelTypeSet FakeSyncService::GetActiveDataTypes() const {
   return ModelTypeSet();
 }
 
+ModelTypeSet FakeSyncService::GetTypesWithPendingDownloadForInitialSync()
+    const {
+  return ModelTypeSet();
+}
+
 void FakeSyncService::AddObserver(SyncServiceObserver* observer) {}
 
 void FakeSyncService::RemoveObserver(SyncServiceObserver* observer) {}

@@ -1,6 +1,6 @@
 <style>
 /* TODO(crbug.com/1350406): update the style after UI design
-   spec is finalized.*/
+  spec is finalized.*/
 
 :host {
   align-items: center;
@@ -50,20 +50,17 @@
   width: 100%;
 }
 
-.dropdown-item-label {
-  flex: 1;
-  padding-inline-end: 30px;
-}
-
 hr {
   border-top: var(--cr-separator-line);
   height: 0;
 }
 
+cr-checkbox::part(checkbox) {
+  padding-inline-end: 0;
+}
+
 cr-checkbox::part(label-container) {
-  clip: rect(0,0,0,0);
-  display: block;
-  position: fixed;
+  flex: 1;
 }
 
 </style>
@@ -85,31 +82,19 @@ cr-checkbox::part(label-container) {
     on-click="openStorePage_" hidden="[[isWebStoreLinkHidden_(appInfo)]]">
     $i18n{viewInWebStore}
   </button>
-  <div id="openInWindow" tabindex="0" class="dropdown-item"
-      on-click="onOpenInWindowItemClick_" role="button"
-      hidden="[[!isOpenInWindowHidden_(appInfo)]]">
-    <div class="dropdown-item-label">
-      $i18n{appWindowOpenLabel}
-    </div>
-    <cr-checkbox checked="{{appInfo.openInWindow}}"
-      on-click="onOpenInWindowItemClick_">
-      $i18n{appWindowOpenCheckboxLabel}
-    </cr-checkbox>
-  </div>
-  <div id="launchOnStartup" tabindex="0" class="dropdown-item"
-      on-click="onLaunchOnStartupItemClick_" role="button"
-      hidden="[[isLaunchOnStartupHidden_(appInfo)]]">
-    <div class="dropdown-item-label">
-      $i18n{appLaunchAtStartupLabel}
-    </div>
-    <cr-checkbox
+  <cr-checkbox id="openInWindow" class="dropdown-item label-first"
+    on-click="onOpenInWindowItemClick_"
+    hidden="[[!isOpenInWindowHidden_(appInfo)]]"
+    checked="{{appInfo.openInWindow}}">$i18n{appWindowOpenLabel}
+  </cr-checkbox>
+  <cr-checkbox id="launchOnStartup" class="dropdown-item label-first"
+    on-click="onLaunchOnStartupItemClick_"
+    hidden="[[isLaunchOnStartupHidden_(appInfo)]]"
       checked="[[isLaunchOnStartUp_(appInfo)]]"
       disabled=
-      "[[isLaunchOnStartupDisabled_(appInfo)]]"
-      on-click="onLaunchOnStartupItemClick_">
-      $i18n{appLaunchAtStartupCheckboxLabel}
-    </cr-checkbox>
-  </div>
+      "[[isLaunchOnStartupDisabled_(appInfo)]]">
+      $i18n{appLaunchAtStartupLabel}
+  </cr-checkbox>
   <button id="createShortcut" class="dropdown-item"
       on-click="onCreateShortcutItemClick_"
       hidden="[[isCreateShortcutHidden_(appInfo)]]">

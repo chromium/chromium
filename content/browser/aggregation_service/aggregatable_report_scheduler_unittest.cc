@@ -282,8 +282,7 @@ TEST_F(AggregatableReportSchedulerTest,
 
   auto request = AggregatableReportRequest::Create(
       example_request.payload_contents(), std::move(expected_shared_info),
-      /*reporting_path=*/"", /*debug_key=*/absl::nullopt,
-      /*failed_send_attempts=*/0);
+      /*reporting_path=*/"");
   scheduler_->ScheduleRequest(std::move(request.value()));
 
   base::TimeDelta fast_forward_required = kExampleTime - base::Time::Now();

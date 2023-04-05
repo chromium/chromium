@@ -20,15 +20,6 @@ export class UntrustedAppClient extends PostMessageAPIClient {
   }
 
   /**
-   * Notfies the app whether it can start a new session or not.
-   * @param {!projectorApp.NewScreencastPreconditionState} newState
-   * @return {Promise<boolean>}
-   */
-  onNewScreencastPreconditionChanged(newState) {
-    return this.callApiFn('onNewScreencastPreconditionChanged', [newState]);
-  }
-
-  /**
    * Notifies the Projector App the download and installation progress of the
    * SODA binary and language packs.
    * @param {number} progress A number in range 0 -100 indicating installation
@@ -88,9 +79,6 @@ export class TrustedAppRequestHandler extends RequestHandler {
 
     this.registerMethod('getAccounts', (args) => {
       return this.browserProxy_.getAccounts();
-    });
-    this.registerMethod('getNewScreencastPreconditionState', (args) => {
-      return this.browserProxy_.getNewScreencastPreconditionState();
     });
     this.registerMethod('startProjectorSession', (storageDir) => {
       if (!storageDir || storageDir.length != 1) {

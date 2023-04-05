@@ -6,7 +6,6 @@
 #define FUCHSIA_WEB_RUNNERS_COMMON_WEB_CONTENT_RUNNER_H_
 
 #include <fuchsia/io/cpp/fidl.h>
-#include <fuchsia/sys/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/interface_ptr_set.h>
 
@@ -21,8 +20,9 @@
 
 class WebComponent;
 
-// sys::Runner that instantiates components hosting standard web content.
-class WebContentRunner : public fuchsia::sys::Runner {
+// Manages creation of a `fuchsia.web.Context` used to host content for one or
+// more `WebComponent`s.
+class WebContentRunner {
  public:
   struct WebInstanceConfig {
     WebInstanceConfig();
@@ -60,7 +60,7 @@ class WebContentRunner : public fuchsia::sys::Runner {
       CreateWebInstanceAndContextCallback create_web_instance_callback,
       WebInstanceConfig web_instance_config);
 
-  ~WebContentRunner() override;
+  ~WebContentRunner();
 
   WebContentRunner(const WebContentRunner&) = delete;
   WebContentRunner& operator=(const WebContentRunner&) = delete;
@@ -84,12 +84,6 @@ class WebContentRunner : public fuchsia::sys::Runner {
   // Used by WebComponent instances to signal that the ComponentController
   // channel was dropped, and therefore the component should be destroyed.
   void DestroyComponent(WebComponent* component);
-
-  // fuchsia::sys::Runner implementation.
-  void StartComponent(fuchsia::sys::Package package,
-                      fuchsia::sys::StartupInfo startup_info,
-                      fidl::InterfaceRequest<fuchsia::sys::ComponentController>
-                          controller_request) override;
 
   // Registers a WebComponent, or specialization, with this Runner.
   void RegisterComponent(std::unique_ptr<WebComponent> component);

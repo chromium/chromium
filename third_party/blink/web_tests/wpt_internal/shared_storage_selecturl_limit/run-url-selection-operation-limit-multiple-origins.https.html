@@ -18,24 +18,37 @@ function getOtherOriginURL(url) {
 
 promise_test(async () => {
   const ancestorKey = token();
+  const perOriginBitLimit = 6;
+  const bitsKey = "bits";
 
-  let url0 = generateURL("resources/run-url-selection-operation-limit-inner.https.html", [ancestorKey]);
-  url0.searchParams.append("bits", "24");
+  let url0 = generateURL(
+      "resources/run-url-selection-operation-limit-inner.https.html",
+      [ancestorKey]);
+
+  // The per origin per pageload limit is 6 bits.
+  url0.searchParams.append(bitsKey, perOriginBitLimit.toString());
   attachIFrame(url0);
   const result0 = await nextValueFromServer(ancestorKey);
-  assert_equals(result0, "run_url_selection_limit_inner_loaded");
+  assert_equals(result0, "run_url_selection_limit_inner_succeeded");
 
+  // This url will already have a search param of ("bits", "6") appended.
   let url1 = getRemoteOriginURL(url0);
   attachIFrame(url1);
   const result1 = await nextValueFromServer(ancestorKey);
-  assert_equals(result1, "run_url_selection_limit_inner_loaded");
+  assert_equals(result1, "run_url_selection_limit_inner_succeeded");
 
-  let url2 = generateURL("resources/run-url-selection-operation-limit-inner.https.html", [ancestorKey]);
-  url2.searchParams.append("bits", "12");
+  let url2 = generateURL(
+      "resources/run-url-selection-operation-limit-inner.https.html",
+      [ancestorKey]);
+
+  // Since the overall per pageload limit is 12 bits, it should have already
+  // been reached, but we need to verify this using a third origin whose per
+  // origin budget is fresh.
+  url2.searchParams.append(bitsKey, "0");
   url2 = getOtherOriginURL(url2);
   attachIFrame(url2);
   const result2 = await nextValueFromServer(ancestorKey);
-  assert_equals(result2, "run_url_selection_limit_inner_loaded");
+  assert_equals(result2, "run_url_selection_limit_inner_succeeded");
 }, 'selectURL() with overall per-pageload limit');
 </script>
 </body>

@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">כוכב לכת</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> הוצא.</translation>
 <translation id="2307462900900812319">הגדרת רשת</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{לא ניתן למצוא תוסף עם המזהה <ph name="BEGIN_LIST" /><ph name="END_LIST" />. יש לפנות לאדמין.}one{לא ניתן למצוא תוספים עם המזהים <ph name="BEGIN_LIST" /><ph name="END_LIST" />. יש לפנות לאדמין.}two{לא ניתן למצוא תוספים עם המזהים <ph name="BEGIN_LIST" /><ph name="END_LIST" />. יש לפנות לאדמין.}other{לא ניתן למצוא תוספים עם המזהים <ph name="BEGIN_LIST" /><ph name="END_LIST" />. יש לפנות לאדמין.}}</translation>
 <translation id="2325650632570794183">‏סוג קובץ זה אינו נתמך. יש לבקר בחנות האינטרנט של Chrome כדי למצוא יישום שיכול לפתוח קובץ מסוג זה.</translation>
 <translation id="2326539130272988168">בולגרית</translation>
 <translation id="2337715497728194187">‏שיתוף עם Bruschetta</translation>
@@ -274,6 +275,7 @@
 <translation id="3290356915286466215">לא מאובטחת</translation>
 <translation id="3291218047831493686">‏יש להתחבר לרשת הזו כדי לשנות את הגדרת הנעילה של ה-SIM</translation>
 <translation id="3293023191599135697">‏אין תמיכה ברשתות WEP</translation>
+<translation id="3295006446256079333">נפח האחסון הזה</translation>
 <translation id="3295357220137379386">המכשיר תפוס</translation>
 <translation id="3296763833017966289">גרוזינית</translation>
 <translation id="3307875152560779385">אוקראינית</translation>

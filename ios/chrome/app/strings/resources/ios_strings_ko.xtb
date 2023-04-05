@@ -177,6 +177,7 @@
 <translation id="2218443599109088993">축소</translation>
 <translation id="2230173723195178503">웹페이지 로드됨</translation>
 <translation id="2239626343334228536">인터넷 사용 기록 삭제 중...</translation>
+<translation id="22508856139286506">닫은 경고(<ph name="COUNT" />개)</translation>
 <translation id="2251686759395008410">메뉴 → 방문 기록</translation>
 <translation id="2256933947031277845">조직에서 특정 계정으로만 로그인하도록 허용합니다.</translation>
 <translation id="225943865679747347">오류 코드: <ph name="ERROR_CODE" /></translation>
@@ -254,7 +255,7 @@
 <translation id="2718352093833049315">Wi-Fi 연결 시</translation>
 <translation id="2747003861858887689">이전 필드</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> 사이트를 팔로우했습니다.</translation>
-<translation id="2764831210418622012">방금</translation>
+<translation id="2764831210418622012">방금 전</translation>
 <translation id="2772667768515195373">Google 제품 전반에서 저장된 주소를 사용할 수 있습니다. Google 계정(<ph name="USER_EMAIL" />)에 저장된 주소입니다.</translation>
 <translation id="2773292004659987824">시크릿 검색</translation>
 <translation id="277771892408211951">언어 선택</translation>
@@ -1086,6 +1087,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="8237382152611443140">AutoFill Passwords(비밀번호 자동 완성) 설정을 엽니다.</translation>
 <translation id="8261506727792406068">삭제</translation>
 <translation id="8264966119170358612">저장된 비밀번호 중 일부가 서드 파티의 정보 유출로 인해 노출되었습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
+<translation id="8265018477030547118">이 기기에서만</translation>
 <translation id="8271720166617117963">수락 및 로그인</translation>
 <translation id="8278938988428169257">단어 또는 구문 입력</translation>
 <translation id="8281781826761538115">기본값 - <ph name="DEFAULT_LOCALE" /></translation>

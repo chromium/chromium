@@ -1052,6 +1052,48 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
                }];
 }
 
+// Tests that attachListenersForBottomSheet, from the
+// PasswordSuggestionHelperDelegate protocol, is properly used by the
+// PasswordSuggestionHelper object.
+TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
+       AttachListenersForBottomSheet) {
+  // Simulate that the form is parsed and sent to PasswordManager.
+  FormData form = test_helpers::MakeSimpleFormData();
+
+  auto web_frame =
+      web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
+                                /*is_main_frame=*/true, GURL(kTestURL));
+  web::WebFrame* frame = web_frame.get();
+  web_frames_manager_->AddWebFrame(std::move(web_frame));
+
+  EXPECT_CALL(password_manager_, OnPasswordFormsParsed);
+  EXPECT_CALL(password_manager_, OnPasswordFormsRendered);
+
+  [controller_ didFinishPasswordFormExtraction:{form}
+                               withMaxUniqueID:5
+                         triggeredByFormChange:false
+                                       inFrame:frame];
+
+  // Receive suggestions from PasswordManager.
+  PasswordFormFillData form_fill_data;
+  test_helpers::SetPasswordFormFillData(
+      form.url.spec(), "", form.unique_renderer_id.value(), "",
+      form.fields[0].unique_renderer_id.value(), "john.doe@gmail.com", "",
+      form.fields[1].unique_renderer_id.value(), "super!secret", nullptr,
+      nullptr, &form_fill_data);
+
+  std::vector<autofill::FieldRendererId> rendererIds;
+  [[[delegate_ expect] ignoringNonObjectArgs]
+      attachListenersForBottomSheet:rendererIds
+                            inFrame:frame];
+  [controller_ processPasswordFormFillData:form_fill_data
+                                   inFrame:frame
+                               isMainFrame:frame->IsMainFrame()
+                         forSecurityOrigin:frame->GetSecurityOrigin()];
+
+  [delegate_ verify];
+}
+
 class SharedPasswordControllerTestCrossOrigin
     : public SharedPasswordControllerTest,
       public testing::WithParamInterface<bool> {

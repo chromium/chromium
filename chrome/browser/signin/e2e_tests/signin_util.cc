@@ -3,22 +3,25 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/signin/e2e_tests/signin_util.h"
-#include "chrome/browser/signin/e2e_tests/sign_in_test_observer.h"
 
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/e2e_tests/live_test.h"
+#include "chrome/browser/signin/e2e_tests/sign_in_test_observer.h"
 #include "chrome/browser/signin/e2e_tests/test_accounts_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
 #include "chrome/browser/ui/webui/signin/signin_email_confirmation_dialog.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/driver/sync_service.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/gaia_urls.h"
 
@@ -49,30 +52,38 @@ void SignInFunctions::SignInFromWeb(const TestAccount& test_account,
   ASSERT_TRUE(add_tab_function_.Run(0,
                                     GaiaUrls::GetInstance()->add_account_url(),
                                     ui::PageTransition::PAGE_TRANSITION_TYPED));
-  SignInFromCurrentPage(test_account, previously_signed_in_accounts);
+  SignInFromCurrentPage(
+      browser_.Run()->tab_strip_model()->GetActiveWebContents(), test_account,
+      previously_signed_in_accounts);
 }
 
 void SignInFunctions::SignInFromSettings(const TestAccount& test_account,
                                          int previously_signed_in_accounts) {
   GURL settings_url("chrome://settings");
+  Browser* browser = browser_.Run();
   ASSERT_TRUE(add_tab_function_.Run(0, settings_url,
                                     ui::PageTransition::PAGE_TRANSITION_TYPED));
-  auto* settings_tab =
-      browser_.Run()->tab_strip_model()->GetActiveWebContents();
+  ui_test_utils::TabAddedWaiter signin_tab_waiter(browser);
+  auto* settings_tab = browser->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(content::ExecuteScript(
       settings_tab,
       base::StringPrintf(
           kSettingsScriptWrapperFormat,
           "settings.SyncBrowserProxyImpl.getInstance().startSignIn();")));
-  SignInFromCurrentPage(test_account, previously_signed_in_accounts);
+  signin_tab_waiter.Wait();
+  SignInFromCurrentPage(browser->tab_strip_model()->GetActiveWebContents(),
+                        test_account, previously_signed_in_accounts);
 }
 
-void SignInFunctions::SignInFromCurrentPage(const TestAccount& test_account,
+void SignInFunctions::SignInFromCurrentPage(content::WebContents* web_contents,
+                                            const TestAccount& test_account,
                                             int previously_signed_in_accounts) {
-  SignInTestObserver observer(identity_manager(browser_.Run()),
-                              account_reconcilor(browser_.Run()));
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  SignInTestObserver observer(IdentityManagerFactory::GetForProfile(profile),
+                              AccountReconcilorFactory::GetForProfile(profile));
   login_ui_test_utils::ExecuteJsToSigninInSigninFrame(
-      browser_.Run(), test_account.user, test_account.password);
+      web_contents, test_account.user, test_account.password);
   observer.WaitForAccountChanges(previously_signed_in_accounts + 1,
                                  PrimarySyncAccountWait::kNotWait);
 }

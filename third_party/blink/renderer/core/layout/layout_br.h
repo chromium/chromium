@@ -43,29 +43,6 @@ class LayoutBR : public LayoutNGText {
   // to return a rect that includes space to illustrate a newline.
   using LayoutText::LocalSelectionVisualRect;
 
-  float Width(unsigned /* from */,
-              unsigned /* len */,
-              const Font&,
-              LayoutUnit /* xpos */,
-              TextDirection,
-              HashSet<const SimpleFontData*>* = nullptr /* fallbackFonts */,
-              gfx::RectF* /* glyphBounds */ = nullptr,
-              float /* expansion */ = false) const override {
-    NOT_DESTROYED();
-    return 0;
-  }
-  float Width(unsigned /* from */,
-              unsigned /* len */,
-              LayoutUnit /* xpos */,
-              TextDirection,
-              bool = false /* firstLine */,
-              HashSet<const SimpleFontData*>* = nullptr /* fallbackFonts */,
-              gfx::RectF* /* glyphBounds */ = nullptr,
-              float /* expansion */ = false) const override {
-    NOT_DESTROYED();
-    return 0;
-  }
-
   int LineHeight(bool first_line) const;
 
   bool IsOfType(LayoutObjectType type) const override {

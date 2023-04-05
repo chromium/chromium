@@ -2304,7 +2304,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
         !features::kAutofillFillAutocompleteUnrecognized.Get()) {
       LOG_AF(buffer)
           << Tr{}
-          << "Skipped: kAutofillFillAutoccompleteUnrecognized not enabled";
+          << "Skipped: kAutofillFillAutocompleteUnrecognized not enabled";
       continue;
     }
 
@@ -3014,11 +3014,16 @@ bool BrowserAutofillManager::FillFieldWithValue(
       *autofill_field, profile_or_credit_card, forced_fill_values, field_data,
       cvc, action, failure_to_fill);
   if (filled_field) {
-    if (failure_to_fill)
+    if (failure_to_fill) {
       *failure_to_fill = "Decided to fill";
-    // Mark the cached field as autofilled, so that we can detect when a
-    // user edits an autofilled field (for metrics).
-    autofill_field->is_autofilled = true;
+    }
+    if (action == mojom::RendererFormDataAction::kFill ||
+        !base::FeatureList::IsEnabled(
+            features::kAutofillOnlyCacheIsAutofilledOnFill)) {
+      // Mark the cached field as autofilled, so that we can detect when a
+      // user edits an autofilled field (for metrics).
+      autofill_field->is_autofilled = true;
+    }
     if (const AutofillProfile** profile =
             absl::get_if<const AutofillProfile*>(&profile_or_credit_card)) {
       autofill_field->set_autofill_source_profile_guid((*profile)->guid());

@@ -4477,9 +4477,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
         EvalJs(nodeA, "getComputedStyle(nested_fenced_frame).height")
             .ExtractString();
 
-    // Wait for 2 rAFs to make things deterministic.
-    ASSERT_TRUE(EvalJsAfterLifecycleUpdate(nodeA, "", "").error.empty());
-    ASSERT_TRUE(EvalJsAfterLifecycleUpdate(nodeA, "", "").error.empty());
+    ASSERT_TRUE(WaitForFencedFrameSizeFreeze(nodeA->current_frame_host()));
 
     // Navigate the fenced frame, which should force its inner size to the
     // nearest allowed one.
@@ -4496,9 +4494,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
                   .ExtractString(),
               frame_height);
 
-    // Wait for 2 rAFs to make things deterministic.
-    ASSERT_TRUE(EvalJsAfterLifecycleUpdate(nodeA, "", "").error.empty());
-    ASSERT_TRUE(EvalJsAfterLifecycleUpdate(nodeA, "", "").error.empty());
+    ASSERT_TRUE(WaitForFencedFrameSizeFreeze(nodeA->current_frame_host()));
 
     // Check that the inner size is what we expect.
     int inner_width = EvalJs(nodeB, "innerWidth").ExtractInt();
@@ -4517,9 +4513,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
     ASSERT_TRUE(EvalJs(nodeA, "getComputedStyle(nested_fenced_frame).width")
                     .error.empty());
 
-    // Wait for 2 rAFs to make things deterministic.
-    ASSERT_TRUE(EvalJsAfterLifecycleUpdate(nodeA, "", "").error.empty());
-    ASSERT_TRUE(EvalJsAfterLifecycleUpdate(nodeA, "", "").error.empty());
+    ASSERT_TRUE(WaitForFencedFrameSizeFreeze(nodeA->current_frame_host()));
 
     // Check that the inner size hasn't changed.
     inner_width = EvalJs(nodeB, "innerWidth").ExtractInt();

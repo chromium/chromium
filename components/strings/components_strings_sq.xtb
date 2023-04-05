@@ -181,7 +181,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1374468813861204354">sugjerime</translation>
 <translation id="1375198122581997741">Rreth versionit</translation>
 <translation id="1376836354785490390">Shfaq më pak</translation>
-<translation id="1377321085342047638">Numri i kartës</translation>
 <translation id="1380591466760231819">Palosje si letër</translation>
 <translation id="138218114945450791">Blu e çelur</translation>
 <translation id="1382194467192730611">Pajisja USB është e lejuar nga administratori</translation>
@@ -228,7 +227,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1476595624592550506">Ndrysho fjalëkalimin</translation>
 <translation id="1482879811280872320">Çiklizmi</translation>
 <translation id="1483493594462132177">Dërgo</translation>
-<translation id="1484290072879560759">Zgjidh adresën e dërgimit</translation>
 <translation id="1492194039220927094">Politikat e detyruara:</translation>
 <translation id="149293076951187737">Kur mbyll të gjitha skedat "e fshehta" në Chrome, aktiviteti yt në këto skeda fshihet nga kjo pajisje:
           <ph name="BEGIN_LIST" />
@@ -256,7 +254,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="153384715582417236">Kaq ishte për momentin</translation>
 <translation id="1536390784834419204">Përkthe faqen</translation>
 <translation id="1539840569003678498">Raporti u dërgua:</translation>
-<translation id="154408704832528245">Zgjidh adresën e dorëzimit</translation>
 <translation id="1549470594296187301">Duhet të aktivizohet JavaScript për të përdorur këtë funksion.</translation>
 <translation id="1551884710160394169">Freeware dhe shareware</translation>
 <translation id="1553358976309200471">Përditëso Chrome</translation>
@@ -370,7 +367,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Detajet e kartës virtuale</translation>
 <translation id="1803020234906945288">Ushqyerja e shëndetshme</translation>
-<translation id="1803264062614276815">Emri i mbajtësit të kartës</translation>
 <translation id="1803351196216024260">Mund të kërkojë të përdorë mikrofonin tënd</translation>
 <translation id="1807246157184219062">I lehtë</translation>
 <translation id="1807528111851433570">Fleta e fillimit</translation>
@@ -619,7 +615,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2450021089947420533">Udhëtimet</translation>
 <translation id="2456755709261364512">Bateria duhet të karikohet mbi <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
 <translation id="2463739503403862330">Plotëso</translation>
-<translation id="2465655957518002998">Zgjidh mënyrën e dorëzimit</translation>
 <translation id="2465688316154986572">Kapje me tel</translation>
 <translation id="2465914000209955735">Menaxho skedarët që ke shkarkuar në Chrome</translation>
 <translation id="2466004615675155314">Shfaq informacione nga uebi</translation>
@@ -741,7 +736,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2730600605555029057">Muzika klasike</translation>
 <translation id="2731382536835015353">44 x 68 inç</translation>
 <translation id="2734319753272419592">Lejo që Google të përdorë karrocat e tua për të kërkuar për ulje të personalizuara. Kur të jenë të disponueshme, uljet do të shfaqen automatikisht në karrocat e tua.</translation>
-<translation id="2738330467931008676">Zgjidh adresën e marrjes</translation>
 <translation id="2740531572673183784">Në rregull</translation>
 <translation id="2742511345840685325">Pingpongu</translation>
 <translation id="2742870351467570537">Hiq artikujt e zgjedhur</translation>
@@ -823,7 +817,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2983666748527428214">Hap skedën "e fshehtë"</translation>
 <translation id="2985306909656435243">Nëse aktivizohet, Chromium do të ruajë një kopje të kartës tënde në këtë pajisje për plotësim më të shpejtë të formularit.</translation>
 <translation id="2985398929374701810">Fut një adresë të vlefshme</translation>
-<translation id="2986368408720340940">Kjo mënyrë marrjeje nuk ofrohet. Provo një mënyrë tjetër.</translation>
 <translation id="2987034854559945715">Nuk ka asnjë veçori që përputhet</translation>
 <translation id="2989742184762224133">Dy kapje me tel lart</translation>
 <translation id="2991174974383378012">Ndarja me sajtet e uebit</translation>
@@ -855,7 +848,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3086579638707268289">Aktiviteti yt në ueb po monitorohet</translation>
 <translation id="3087734570205094154">Në fund</translation>
 <translation id="3095940652251934233">Statement</translation>
-<translation id="3096100844101284527">Shto adresën e marrjes</translation>
 <translation id="3096195745018397576">Rrobat për fëmijë</translation>
 <translation id="3098513225387949945">U shpërfill, pasi lista "çaktivizo" përmban një motiv të barabartë me "*", i cili është ekuivalent me çaktivizimin e politikës.</translation>
 <translation id="3105172416063519923">ID-ja e elementit:</translation>
@@ -1382,7 +1374,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4333561522337981382">Të menaxhojë dritaret në të gjitha ekranet e tua</translation>
 <translation id="4340575312453649552">Kjo reklamë përdorte shumë burime për pajisjen tënde, prandaj Chrome e hoqi.</translation>
 <translation id="4340982228985273705">Ky kompjuter nuk është zbuluar si i menaxhuar nga ndërmarrja, prandaj politika mund të instalojë automatikisht vetëm shtesat e strehuara në "Dyqanin e uebit të Chrome". URL-ja e përditësimit të "Dyqanit të uebit të Chrome" është "<ph name="CWS_UPDATE_URL" />".</translation>
-<translation id="4346197816712207223">Kartat e pranuara të kreditit</translation>
 <translation id="4348834659292907206">Lidhja me <ph name="SITE" /> nuk është e sigurt</translation>
 <translation id="4349365535725594680">Përmbajtja konfidenciale nuk mund të ndahet</translation>
 <translation id="4349810866125026513">Ngarko gjithsesi</translation>
@@ -1586,7 +1577,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4850886885716139402">Pamja</translation>
 <translation id="4852429274334674023">Sistemet operative</translation>
 <translation id="4853901935952445031">Ky sajt nuk do të mund të përdorë U2F API pas shkurtit 2022. Nëse je zotëruesi i këtij sajti, duhet ta ndryshosh atë për të përdorur Web Authentication API.</translation>
-<translation id="4854362297993841467">Kjo mënyrë dorëzimi nuk ofrohet. Provo një mënyrë tjetër.</translation>
 <translation id="4854853140771946034">Krijo shpejt një shënim të ri në Google Keep</translation>
 <translation id="4858792381671956233">I pyete prindërit e tu nëse nuk ka problem të vizitosh këtë sajt</translation>
 <translation id="485902285759009870">Po verifikon kodin...</translation>
@@ -1788,7 +1778,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5316812925700871227">Rrotullo në drejtim të kundërt të akrepave të orës</translation>
 <translation id="5317780077021120954">Ruaj</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> nga <ph name="NUM_MATCHES" /></translation>
-<translation id="5324080437450482387">Zgjidh informacionet e kontaktit</translation>
 <translation id="5329858041417644019">Shfletuesi yt nuk është i menaxhuar</translation>
 <translation id="5332219387342487447">Mënyra e dërgimit</translation>
 <translation id="5332769172018416402">Pyet me një mesazh</translation>
@@ -1891,7 +1880,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5593349413089863479">Lidhja nuk është plotësisht e sigurt</translation>
 <translation id="5595485650161345191">Redakto adresën</translation>
 <translation id="5596939519753369075">2 x 3,5 inç</translation>
-<translation id="5598944008576757369">Zgjidh mënyrën e pagesës</translation>
 <translation id="560412284261940334">Menaxhimi nuk mbështetet</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Si mund t'i menaxhosh të dhënat e tua:<ph name="END_BOLD" /> Chrome i fshin në mënyrë automatike sajtet që janë më të vjetra se 4 javë. Një sajt që e viziton përsëri mund të shfaqet përsëri në listë. Gjithashtu mund të bllokosh një sajt që të mos sugjerojë reklama për ty dhe mund t'i çaktivizosh reklamat e sugjeruara nga sajtet në çdo kohë te cilësimet e Chrome.</translation>
@@ -1923,7 +1911,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="568292603005599551">Pozicioni i imazhit në boshtin X</translation>
 <translation id="5684277895745049190">Lista</translation>
 <translation id="5684874026226664614">Mos! Kjo faqe nuk mund të përkthehej.</translation>
-<translation id="5685654322157854305">Shto adresën e dërgimit</translation>
 <translation id="5689199277474810259">Eksporto në JSON</translation>
 <translation id="5689516760719285838">Vendndodhja</translation>
 <translation id="569000877158168851">Vlera e DnsOverHttpsTemplates nuk është e përshtatshme dhe nuk do të përdoret, përveçse nëse politika DnsOverHttpsMode është caktuar te <ph name="SECURE_DNS_MODE_AUTOMATIC" /> ose <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
@@ -2788,7 +2775,6 @@ Detaje shtesë:
 <translation id="776110834126722255">E vjetruar</translation>
 <translation id="7761159795823346334">Të lejohet kamera?</translation>
 <translation id="7761701407923456692">Certifikata e serverit nuk përputhet me URL-në.</translation>
-<translation id="7763386264682878361">Analizuesi i manifestit të pagesës</translation>
 <translation id="7764225426217299476">Shto adresë</translation>
 <translation id="7766518757692125295">Bordura</translation>
 <translation id="7773005668374414287">E njëjta renditje e kthyer lart</translation>
@@ -2892,7 +2878,6 @@ Detaje shtesë:
 <translation id="8038817883578389970">Garat me makina</translation>
 <translation id="8041089156583427627">Dërgo komentet</translation>
 <translation id="8041940743680923270">Përdor parazgjedhjen globale (pyet)</translation>
-<translation id="8042918947222776840">Zgjidh mënyrën e marrjes</translation>
 <translation id="8052898407431791827">U kopjua në kujtesën e fragmenteve</translation>
 <translation id="8055534648776115597">Arsimi profesional dhe i vazhduar</translation>
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" nuk është konfiguruar mirë. Zakonisht këtë problem e zgjidh çinstalimi i "<ph name="SOFTWARE_NAME" />". <ph name="FURTHER_EXPLANATION" /></translation>
@@ -3266,7 +3251,6 @@ Detaje shtesë:
 <translation id="9008201768610948239">Shpërfill</translation>
 <translation id="9018120810758822233">Fut kodin tënd të sigurisë për <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">mail</translation>
-<translation id="9020200922353704812">Adresa e faturimit të kartës është e detyrueshme</translation>
 <translation id="9020542370529661692">Kjo faqe është përkthyer në <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Shtyp "Tab" dhe më pas "Enter" për ta ndarë këtë skedë duke ndarë lidhjen, duke krijuar një kod QR, duke transmetuar etj.</translation>
@@ -3303,7 +3287,6 @@ Detaje shtesë:
 <translation id="9101630580131696064">Tabakaja 1</translation>
 <translation id="9103537084693478942">Softuerët e videove</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> përdor zakonisht enkriptimin për mbrojtjen e informacioneve të tua. Kur Chromium u përpoq të lidhej me <ph name="SITE" /> këtë herë, sajti i uebit dërgoi prapa kredenciale të pazakonta dhe të pasakta. Kjo mund të ndodhë kur një sulmues pretendon se është <ph name="SITE" /> ose kur lidhja është ndërprerë nga një ekran i identifikimit të Wi-Fi. Informacionet e tua janë ende të sigurta sepse Chromium e ndaloi lidhjen përpara se të shkëmbeheshin të dhënat.</translation>
-<translation id="9106062320799175032">Shto adresë faturimi</translation>
 <translation id="9107467864910557787">Shfletuesi yt menaxhohet nga <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">Politika e administratorit çaktivizon ndarjen e ekranit me <ph name="APPLICATION_TITLE" /> kur përmbajtja konfidenciale është e dukshme</translation>
 <translation id="9114524666733003316">Karta po konfirmohet…</translation>
@@ -3324,7 +3307,6 @@ Detaje shtesë:
 <translation id="9139318394846604261">Blerje</translation>
 <translation id="9141013498910525015">Menaxho adresat</translation>
 <translation id="9144951720726881238">Data e skadimit:</translation>
-<translation id="9148088599418889305">Zgjidh mënyrën e dërgimit</translation>
 <translation id="9148507642005240123">&amp;Zhbëje redaktimin</translation>
 <translation id="9150045010208374699">Përdor kamerën</translation>
 <translation id="9150685862434908345">Administratori yt mund të ndryshojë konfigurimin e shfletuesit në distancë. Aktiviteti në këtë pajisje mund të menaxhohet edhe jashtë Chrome. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
@@ -3375,7 +3357,6 @@ Detaje shtesë:
 <translation id="964050462028070434">Menaxho fjalëkalimet dhe çelësat e kalimit…</translation>
 <translation id="96680173638229310">Makinat dhe automjetet</translation>
 <translation id="969892804517981540">Ndërtimi zyrtar</translation>
-<translation id="973773823069644502">Shto adresën e dorëzimit</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Asnjë}=1{1 artikull}other{# artikuj}}</translation>
 <translation id="976522784004777030">5 x 8 inç</translation>
 <translation id="977502174772294970">Dasmat</translation>

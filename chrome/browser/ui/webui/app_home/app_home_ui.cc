@@ -22,11 +22,7 @@ void AddAppHomeLocalizedStrings(content::WebUIDataSource* ui_source) {
   static constexpr webui::LocalizedString kAppHomeLocalizedStrings[] = {
       {"appHomeTitle", IDS_APP_HOME_TITLE},
       {"appWindowOpenLabel", IDS_APP_HOME_OPEN_IN_WINDOW},
-      {"appWindowOpenCheckboxLabel",
-       IDS_ACCNAME_APP_HOME_OPEN_IN_WINDOW_CHECKBOX},
       {"appLaunchAtStartupLabel", IDS_APP_HOME_LAUNCH_AT_STARTUP},
-      {"appLaunchAtStartupCheckboxLabel",
-       IDS_ACCNAME_APP_HOME_LAUNCH_AT_STARTUP_CHECKBOX},
       {"createShortcutForAppLabel", IDS_APP_HOME_CREATE_SHORTCUT},
       {"installLocallyLabel", IDS_APP_HOME_INSTALL_LOCALLY},
       {"uninstallAppLabel", IDS_APP_HOME_UNINSTALL_APP},

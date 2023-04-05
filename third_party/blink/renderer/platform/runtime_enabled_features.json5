@@ -304,11 +304,6 @@
       base_feature: "none",
     },
     {
-      // TODO(crbug.com/1393662): Remove this flag after M113 branch.
-      name: "AllowDiscoverableCredentialsForSecurePaymentConfirmation",
-      status: "stable",
-    },
-    {
       name: "AndroidDownloadableFontsMatching",
       base_feature: "none",
       public: true,

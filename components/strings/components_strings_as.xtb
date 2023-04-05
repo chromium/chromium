@@ -181,7 +181,6 @@
 <translation id="1374468813861204354">পৰামৰ্শ</translation>
 <translation id="1375198122581997741">সংস্কৰণৰ বিষয়ে</translation>
 <translation id="1376836354785490390">কমকৈ দেখুৱাওক</translation>
-<translation id="1377321085342047638">কার্ডৰ নম্বৰ</translation>
 <translation id="1380591466760231819">লেটাৰ ফ'ল্ড</translation>
 <translation id="138218114945450791">পাতল নীলা</translation>
 <translation id="1382194467192730611">আপোনাৰ প্ৰশাসকে অনুমতি দিয়া ইউএছবি ডিভাইচ</translation>
@@ -228,7 +227,6 @@
 <translation id="1476595624592550506">আপোনাৰ পাছৱর্ড সলনি কৰক</translation>
 <translation id="1482879811280872320">চাইকেল চলোৱা</translation>
 <translation id="1483493594462132177">পঠিয়াওক</translation>
-<translation id="1484290072879560759">শ্বিপিঙৰ ঠিকনা বাছনি কৰক</translation>
 <translation id="1492194039220927094">নীতি বলৱৎ কৰা:</translation>
 <translation id="149293076951187737">আপুনি Chromeৰ আটাইবোৰ ইনক’গ্নিট’ টেব বন্ধ কৰিলে, আপুনি সেই টেবসমূহত কৰা কাৰ্যকলাপ এই ডিভাইচটোৰ পৰা মচা হ’ব:
           <ph name="BEGIN_LIST" />
@@ -256,7 +254,6 @@
 <translation id="153384715582417236">এতিয়াৰ বাবে ইমানেই</translation>
 <translation id="1536390784834419204">পৃষ্ঠাখন অনুবাদ কৰক</translation>
 <translation id="1539840569003678498">অভিযোগ পঠিওৱা হ’ল:</translation>
-<translation id="154408704832528245">ডেলিভাৰী ঠিকনা বাছনি কৰক</translation>
 <translation id="1549470594296187301">এই সুবিধাটো ব্যৱহাৰ কৰিবলৈ হ'লে JavaScript সক্ষম কৰা থাকিবই লাগিব।</translation>
 <translation id="1551884710160394169">ফ্ৰীৱেৰ আৰু শ্বেয়াৰৱেৰ</translation>
 <translation id="1553358976309200471">Chrome আপডে’ট কৰক</translation>
@@ -370,7 +367,6 @@
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">ভাৰ্ছুৱেল কাৰ্ডৰ সবিশেষ</translation>
 <translation id="1803020234906945288">স্বাস্থ্যসন্মত খাদ্য</translation>
-<translation id="1803264062614276815">কার্ড অধিকাৰীৰ নাম</translation>
 <translation id="1803351196216024260">মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰিবলৈ বিচাৰিব পাৰে</translation>
 <translation id="1807246157184219062">পাতল</translation>
 <translation id="1807528111851433570">আৰম্ভণিৰ শ্বীট</translation>
@@ -619,7 +615,6 @@
 <translation id="2450021089947420533">যাত্ৰাসমূহ</translation>
 <translation id="2456755709261364512">আপোনাৰ বেটাৰী <ph name="REQUIRED_BATTERY_PRECENT" />%তকৈ বেছি চাৰ্জ হ’বই লাগিব</translation>
 <translation id="2463739503403862330">পুৰ কৰক</translation>
-<translation id="2465655957518002998">ডেলিভাৰীৰ পদ্ধতি বাছনি কৰক</translation>
 <translation id="2465688316154986572">ষ্টে'পল</translation>
 <translation id="2465914000209955735">আপুনি Chromeত ডাউনল’ড কৰা ফাইল পৰিচালনা কৰক</translation>
 <translation id="2466004615675155314">ৱেবৰ পৰা তথ্য দেখুৱাওক</translation>
@@ -741,7 +736,6 @@
 <translation id="2730600605555029057">শাস্ত্ৰীয় সংগীত</translation>
 <translation id="2731382536835015353">৪৪ x ৬৮ ইঞ্চি</translation>
 <translation id="2734319753272419592">ব্যক্তিগতকৃত ৰেহাইৰ সন্ধান কৰিবলৈ Googleক আপোনাৰ কাৰ্ট ব্যৱহাৰ কৰিবলৈ দিয়ক। উপলব্ধ হ’লে, ৰেহাইসমূহ স্বয়ংক্ৰিয়ভাৱে আপোনাৰ কাৰ্টত দেখা পোৱা যাব।</translation>
-<translation id="2738330467931008676">পিক আপ কৰাৰ ঠিকনা বাছনি কৰক</translation>
 <translation id="2740531572673183784">ঠিক আছে</translation>
 <translation id="2742511345840685325">টেবুল টেনিছ</translation>
 <translation id="2742870351467570537">বাছি লোৱা সামগ্ৰীবোৰ আঁতৰাওক</translation>
@@ -823,7 +817,6 @@
 <translation id="2983666748527428214">ইনক’গনিট’ টেব খোলক</translation>
 <translation id="2985306909656435243">যদি সক্ষম কৰা হয়, তেন্তে দ্ৰুতভাৱে ফৰ্ম পূৰাবলৈ Chromiumএ আপোনাৰ কার্ডৰ এটা প্ৰতিলিপি এই ডিভাইচটোত ষ্ট’ৰ কৰিব।</translation>
 <translation id="2985398929374701810">এটা মান্য ঠিকনা দিয়ক</translation>
-<translation id="2986368408720340940">এই পিক্‌ আপ পদ্ধতিটো নাই। অন্য কোনো পদ্ধতি ব্যৱহাৰ কৰি চাওক।</translation>
 <translation id="2987034854559945715">কোনো মিলা সুবিধা নাই</translation>
 <translation id="2989742184762224133">ওপৰৰ অংশত দুবাৰ ষ্টে'পল কৰক</translation>
 <translation id="2991174974383378012">ৱেবছাইটৰ সৈতে শ্বেয়াৰ কৰি থকা হৈছে</translation>
@@ -855,7 +848,6 @@
 <translation id="3086579638707268289">ৱেবত আপোনাৰ কাৰ্যকলাপ নিৰীক্ষণ কৰি থকা হৈছে</translation>
 <translation id="3087734570205094154">একেবাৰে তলি</translation>
 <translation id="3095940652251934233">ভাষ্য</translation>
-<translation id="3096100844101284527">পিক আপ কৰাৰ ঠিকনা যোগ কৰক</translation>
 <translation id="3096195745018397576">শিশুৰ পোছাক</translation>
 <translation id="3098513225387949945">অক্ষম সূচীখনত '*'ৰ সমান এটা আর্হি থকাৰ বাবে উপেক্ষা কৰা হৈছে, যিটো নীতিটো অক্ষম কৰাৰ সমকক্ষ।</translation>
 <translation id="3105172416063519923">সম্পদৰ আইডি:</translation>
@@ -1378,7 +1370,6 @@
 <translation id="4333561522337981382">আপোনাৰ আটাইবোৰ ডিছপ্লে’ত থকা ৱিণ্ড’সমূহ পৰিচালনা কৰক</translation>
 <translation id="4340575312453649552">এই বিজ্ঞাপনটোৱে আপোনাৰ ডিভাইচৰ অতি বেছি সমল ব্যৱহাৰ কৰাৰ কাৰণে Chromeএ এইটো আঁতৰাইছে।</translation>
 <translation id="4340982228985273705">এই কম্পিউটাৰটো এণ্টাৰপ্ৰাইজৰ দ্বাৰা পৰিচালিত হোৱা হিচাপে চিনাক্ত হোৱা নাই গতিকে নীতিয়ে কেৱল Chrome Webstoreত হ’ষ্ট কৰা এক্সটেনশ্বনহে স্বয়ংক্ৰিয়ভাৱে ইনষ্টল কৰিব পাৰিব। Chrome Webstore আপডে’ট কৰা URL হৈছে "<ph name="CWS_UPDATE_URL" />"।</translation>
-<translation id="4346197816712207223">গ্ৰহণ কৰা ক্ৰেডিট কাৰ্ডসমূহ</translation>
 <translation id="4348834659292907206"><ph name="SITE" />লৈ কৰা সংযোগটো সুৰক্ষিত নহয়</translation>
 <translation id="4349365535725594680">গোপনীয় সমল শ্বেয়াৰ কৰিব নোৱাৰি</translation>
 <translation id="4349810866125026513">যিকোনো প্ৰকাৰে আপল’ড কৰক</translation>
@@ -1582,7 +1573,6 @@
 <translation id="4850886885716139402">চাওক</translation>
 <translation id="4852429274334674023">অপাৰেটিং ছিষ্টেম</translation>
 <translation id="4853901935952445031">এই ছাইটটোৱে ফেব্ৰুৱাৰী, ২০২২ৰ পাছত U2F API ব্যৱহাৰ কৰিব নোৱাৰিব। যদি আপুনি এই ছাইটটোৰ গৰাকী, তেন্তে আপুনি Web Authentication API ব্যৱহাৰ কৰিবলৈ ইয়াক সলনি কৰা উচিত।</translation>
-<translation id="4854362297993841467">ডেলিভাৰীৰ এই পদ্ধতিটো নাই। অন্য কোনো পদ্ধতি ব্যৱহাৰ কৰি চাওক।</translation>
 <translation id="4854853140771946034">Google Keepত ক্ষিপ্ৰভাৱে এটা নতুন টোকা সৃষ্টি কৰক</translation>
 <translation id="4858792381671956233">আপুনি আপোনাৰ অভিভাৱকক এই ছাইটটোলৈ যোৱাটো ঠিক হ’বনে নহয় সুধিছে</translation>
 <translation id="485902285759009870">ক’ডটো সত্যাপন কৰি থকা হৈছে...</translation>
@@ -1784,7 +1774,6 @@
 <translation id="5316812925700871227">ঘড়ীৰ কাঁটাৰ বিপৰীত দিশত ঘূৰাওক</translation>
 <translation id="5317780077021120954">ছেভ কৰক</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="NUM_MATCHES" />ৰ <ph name="MATCH_POSITION" /></translation>
-<translation id="5324080437450482387">সম্পর্কৰ তথ্য বাছনি কৰক</translation>
 <translation id="5329858041417644019">আপোনাৰ ব্ৰাউজাৰটো পৰিচালিত নহয়</translation>
 <translation id="5332219387342487447">শ্বিপিঙৰ পদ্ধতি</translation>
 <translation id="5332769172018416402">এটা বাৰ্তা পঠিয়াই সোধক</translation>
@@ -1887,7 +1876,6 @@
 <translation id="5593349413089863479">সংযোগটো সম্পূৰ্ণৰূপে সুৰক্ষিত নহয়</translation>
 <translation id="5595485650161345191">ঠিকনা সম্পাদনা কৰক</translation>
 <translation id="5596939519753369075">২ x ৩.৫ ইঞ্চি</translation>
-<translation id="5598944008576757369">পৰিশোধ পদ্ধতি বাছনি কৰক</translation>
 <translation id="560412284261940334">পৰিচালক প্ৰযোজ্য নহয়</translation>
 <translation id="5605670050355397069">লেজাৰ</translation>
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />আপুনি নিজৰ ডেটা কেনেকৈ পৰিচালনা কৰিব পাৰে:<ph name="END_BOLD" /> Chromeএ ৪ সপ্তাহতকৈ পুৰণি হোৱা ছাইটসমূহ স্বয়ংক্ৰিয়ভাৱে মচে। আপুনি পুনৰ চোৱা কোনো ছাইট সূচীখনত পুনৰ প্ৰদৰ্শিত হ’ব পাৰে। আপুনি কোনো ছাইটকো আপোনাক বিজ্ঞাপনৰ পৰামৰ্শ দিয়াৰ পৰা অৱৰোধ কৰিব পাৰে আৰু Chromeৰ ছেটিঙত যিকোনো সময়তে ছাইটে পৰামৰ্শ দিয়া বিজ্ঞাপনসমূহ অফ কৰিব পাৰে।</translation>
@@ -1919,7 +1907,6 @@
 <translation id="568292603005599551">প্ৰতিচ্ছবি X স্থান</translation>
 <translation id="5684277895745049190">সূচী</translation>
 <translation id="5684874026226664614">ওঁহ এই পৃষ্ঠাটো অনুবাদ কৰিব পৰা নগ’ল।</translation>
-<translation id="5685654322157854305">যি পঠিয়াব লাগে সেই ঠাইৰ ঠিকনা যোগ কৰক</translation>
 <translation id="5689199277474810259">JSON হিচাপে ৰপ্তানি কৰক</translation>
 <translation id="5689516760719285838">অৱস্থান</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplatesৰ মানটো প্ৰাসংগিক নহয় আৰু DnsOverHttpsMode নীতিটো <ph name="SECURE_DNS_MODE_AUTOMATIC" /> অথবা <ph name="SECURE_DNS_MODE_SECURE" /> হিচাপে ছেট নকৰা পর্যন্ত সেয়া ব্যৱহাৰ কৰা নহ’ব।</translation>
@@ -2784,7 +2771,6 @@
 <translation id="776110834126722255">অপ্ৰচলিত</translation>
 <translation id="7761159795823346334">কেমেৰাৰ অনুমতি দিবনে?</translation>
 <translation id="7761701407923456692">ছাৰ্ভাৰৰ প্ৰমাণপত্ৰ URLৰ সৈতে নিমিলে।</translation>
-<translation id="7763386264682878361">পৰিশোধ ঘোষণাৰ পার্ছাৰ</translation>
 <translation id="7764225426217299476">ঠিকনা যোগ কৰক</translation>
 <translation id="7766518757692125295">স্কাৰ্ট</translation>
 <translation id="7773005668374414287">ওপৰমুখীয়াকৈ একেই ক্ৰম</translation>
@@ -2888,7 +2874,6 @@
 <translation id="8038817883578389970">অট’ ৰে’চিং</translation>
 <translation id="8041089156583427627">মতামত পঠিয়াওক</translation>
 <translation id="8041940743680923270">গ্ল’বেল ডিফ’ল্ট ব্যৱহাৰ কৰক (সোধক)</translation>
-<translation id="8042918947222776840">পিক্‌আপৰ পদ্ধতি বাছনি কৰক</translation>
 <translation id="8052898407431791827">প্ৰতিলিপি কৰি ক্লিপব’ৰ্ডত ৰখা হ’ল</translation>
 <translation id="8055534648776115597">বৃত্তি সম্পৰ্কীয় শিক্ষা আৰু আধৰুৱা শিক্ষা পুনৰ আৰম্ভ কৰা</translation>
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />"ক সঠিককৈ কনফিগাৰ কৰা হোৱা নাই। "<ph name="SOFTWARE_NAME" />" আনইনষ্টল কৰিলে সাধাৰণতে সমস্যাটো সমাধান কৰে। <ph name="FURTHER_EXPLANATION" /></translation>
@@ -3262,7 +3247,6 @@
 <translation id="9008201768610948239">উপেক্ষা কৰক</translation>
 <translation id="9018120810758822233"><ph name="CREDIT_CARD" />ৰ বাবে থকা আপোনাৰ সুৰক্ষা ক’ডটো দিয়ক</translation>
 <translation id="901834265349196618">ইমেইল</translation>
-<translation id="9020200922353704812">কার্ড বিলিংৰ ঠিকনাৰ আৱশ্যক</translation>
 <translation id="9020542370529661692">এই পৃষ্ঠাটো <ph name="TARGET_LANGUAGE" />লৈ অনুবাদ কৰা হৈছে</translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, লিংকটো শ্বেয়াৰ কৰি, এটা কিউআৰ ক’ড সৃষ্টি কৰি, কাষ্ট কৰি আৰু বহুতো সুবিধাৰ জৰিয়তে এই টেবটো শ্বেয়াৰ কৰিবলৈ টেব টিপক আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
@@ -3299,7 +3283,6 @@
 <translation id="9101630580131696064">ট্ৰে’ ১</translation>
 <translation id="9103537084693478942">ভিডিঅ’ ছফ্টৱেৰ</translation>
 <translation id="9103872766612412690">আপোনাৰ তথ্য সুৰক্ষিত কৰিবলৈ <ph name="SITE" />এ সচৰাচৰতে এনক্ৰিপশ্বন ব্যৱহাৰ কৰে৷ Chromiumএ <ph name="SITE" />ৰ সৈতে সংযোগ কৰিবলৈ চেষ্টা কৰোঁতে ৱেবছাইটটোৱে সচৰাচৰতে ব্যৱহাৰ নোহোৱা আৰু অশুদ্ধ ক্ৰেডেনশ্বিয়েল পঠিয়াইছে৷ কোনো আক্ৰমণকাৰীয়ে <ph name="SITE" />ৰ ভেশ ধৰিলে বা কোনো ৱাই-ফাই ছাইন ইন স্ক্ৰীণে সংযোগত বাধা প্ৰদান কৰিলে এনে হ’ব পাৰে৷ আপোনাৰ ডেটা এতিয়াও সুৰক্ষিত হৈ আছে কিয়নো Chromiumএ কোনো ডেটা আদান-প্ৰদান হোৱাৰ পূৰ্বেই সংযোগ বন্ধ কৰিছে৷</translation>
-<translation id="9106062320799175032">বিলিঙৰ ঠিকনা যোগ কৰক</translation>
 <translation id="9107467864910557787"><ph name="MANAGER" />এ আপোনাৰ ব্ৰাউজাৰটো পৰিচালনা কৰে</translation>
 <translation id="91108059142052966">প্ৰশাসকৰ নীতিয়ে গোপনীয় সমল দৃশ্যমান হৈ থাকোঁতে <ph name="APPLICATION_TITLE" />ৰ সৈতে স্ক্ৰীন শ্বেয়াৰ কৰাৰ সুবিধাটো অক্ষম কৰে</translation>
 <translation id="9114524666733003316">কার্ড নিশ্চিত কৰি থকা হৈছে...</translation>
@@ -3320,7 +3303,6 @@
 <translation id="9139318394846604261">Shopping</translation>
 <translation id="9141013498910525015">ঠিকনাসমূহ পৰিচালনা কৰক</translation>
 <translation id="9144951720726881238">ম্যাদ উকলাৰ তাৰিখ:</translation>
-<translation id="9148088599418889305">শ্বিপিঙৰ পদ্ধতি বাছনি কৰক</translation>
 <translation id="9148507642005240123">সম্পাদনা &amp;আনডু কৰক</translation>
 <translation id="9150045010208374699">আপোনাৰ কেমেৰা ব্যৱহাৰ কৰক</translation>
 <translation id="9150685862434908345">আপোনাৰ প্ৰশাসকে দূৰৰপৰাই আপোনাৰ ব্ৰাউজাৰৰ ছেটআপ সলনি কৰিব পাৰে। এই ডিভাইচটোত কৰা কাৰ্যকলাপ Chromeৰ বাহিৰৰ পৰাও পৰিচালনা কৰা হ'ব পাৰে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
@@ -3371,7 +3353,6 @@
 <translation id="964050462028070434">পাছৱৰ্ড আৰু পাছকী পৰিচালনা কৰক…</translation>
 <translation id="96680173638229310">অট’ আৰু বাহন</translation>
 <translation id="969892804517981540">আনুষ্ঠানিক বিল্ড</translation>
-<translation id="973773823069644502">ডেলিভাৰীৰ ঠিকনা যোগ কৰক</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{এটাও নহয়}=1{১টা বস্তু}one{#টা বস্তু}other{#টা বস্তু}}</translation>
 <translation id="976522784004777030">৫ x ৮ ইঞ্চি</translation>
 <translation id="977502174772294970">বিবাহ উদ্‌যাপন</translation>

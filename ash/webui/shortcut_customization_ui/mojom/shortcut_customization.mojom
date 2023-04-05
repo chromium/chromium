@@ -77,6 +77,15 @@ interface AcceleratorConfigurationProvider {
   GetAcceleratorLayoutInfos()
       => (array<ash.mojom.AcceleratorLayoutInfo> layout_infos);
 
+  // If `prevent_processing_accelerators` is true, will prevent the system from
+  // processing Ash Accelerators. If false, will enable processing Ash
+  // accelerators. This returns an empty promise so that clients will be able
+  // to continue processing inputs after accelerators have been
+  // disabled/enabled.
+  // This also serves as the mechanism to inform the service when the user has
+  // started/stopped inputting an accelerator.
+  PreventProcessingAccelerators(bool prevent_processing_accelerators) => ();
+
   // Adds an accelerator to `action_id`. If there is a conflict when attempting
   // to add the accelerator, this will return the conflict accelerator's
   // name. The browser process implementor will handle validation of the

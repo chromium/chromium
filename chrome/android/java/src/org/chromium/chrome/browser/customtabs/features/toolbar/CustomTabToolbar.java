@@ -751,7 +751,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         String title = mLocationBar.mTitleBar.getText().toString();
         return new CustomTabCaptureStateToken(url, title, getBackground().getColor(),
                 mLocationBar.mAnimDelegate.getSecurityIconRes(),
-                mLocationBar.mAnimDelegate.isInAnimation());
+                mLocationBar.mAnimDelegate.isInAnimation(), getWidth());
     }
 
     /**

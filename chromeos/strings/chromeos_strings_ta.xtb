@@ -698,6 +698,7 @@
 <translation id="7103252855940681301"><ph name="COUNT" /> சாதனங்களில் <ph name="INDEX" />வது சாதனத்தின் பெயர் <ph name="NAME" />.</translation>
 <translation id="7108668606237948702">உள்ளிடு</translation>
 <translation id="7130438335435247835">ஆக்சஸ் பாயிண்ட் நேம் (APN)</translation>
+<translation id="7131634559772719176">முன்னமைவை உறுதிப்படுத்துங்கள்</translation>
 <translation id="7134436342991564651">{0,plural, =1{நேம் சர்வர்}other{நேம் சர்வர்கள்}}</translation>
 <translation id="7143207342074048698">இணைத்தல்</translation>
 <translation id="7144878232160441200">மீண்டும் முயற்சி செய்க</translation>
@@ -803,6 +804,7 @@
 <translation id="80398733265834479">தன்னியக்க வண்ணப் பயன்முறையை இயக்கும்</translation>
 <translation id="8041089156583427627">கருத்துத் தெரிவிக்கவும்</translation>
 <translation id="8045012663542226664">மைக்ரோஃபோனை ஒலியடக்கும்</translation>
+<translation id="8050091914317269817">இந்த வால்பேப்பரைத் தேர்ந்தெடுத்தால் தானியங்கு டார்க் பயன்முறையும் வால்பேப்பர் வண்ணப் பொருத்தமும் இயக்கப்படும்.</translation>
 <translation id="8075838845814659848">மீதமுள்ள சார்ஜ்</translation>
 <translation id="8076492880354921740">தாவல்கள்</translation>
 <translation id="8082366717211101304">Android ஆப்ஸில் இருந்து DNS கோரிக்கையைத் தீர்க்க முடியவில்லை</translation>

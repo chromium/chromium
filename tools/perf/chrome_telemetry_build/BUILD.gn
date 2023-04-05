@@ -154,22 +154,6 @@ if (is_android) {
       }
     }
   }
-
-  # This group exists solely for performance testing. Ideally, perf testing
-  # would use the same split targets as other Telemetry-based tests, but
-  # switching has proven to be very difficult due to interactions with Pinpoint.
-  group("all_chrome_android_targets_for_perf_testing") {
-    testonly = true
-    data_deps = [ "//chrome/android/webapk/shell_apk:maps_go_webapk" ]
-    foreach(_target_suffix, telemetry_android_browser_target_suffixes) {
-      data_deps += [ ":telemetry_chrome_test${_target_suffix}" ]
-    }
-    if (enable_chrome_android_internal) {
-      foreach(_target_suffix, telemetry_clank_browser_target_suffixes) {
-        data_deps += [ ":telemetry_chrome_test${_target_suffix}" ]
-      }
-    }
-  }
 }
 
 group("telemetry_chrome_test_without_chrome") {

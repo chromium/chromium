@@ -23,6 +23,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -40,6 +41,7 @@
 #include "components/sync/driver/sync_service.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_tracker.h"
+#include "components/sync_device_info/local_device_info_provider.h"
 #include "sql/init_status.h"
 #include "ui/base/page_transition_types.h"
 
@@ -657,8 +659,11 @@ class HistoryService : public KeyedService,
 
   // Generic Stuff -------------------------------------------------------------
 
-  // Sets the history service's device info tracker.
-  void SetDeviceInfoTracker(syncer::DeviceInfoTracker* device_info_tracker);
+  // Sets the history service's device info tracker and local device info
+  // provider.
+  void SetDeviceInfoServices(
+      syncer::DeviceInfoTracker* device_info_tracker,
+      syncer::LocalDeviceInfoProvider* local_device_info_provider);
 
   // syncer::DeviceInfoTracker::Observer overrides.
   void OnDeviceInfoChange() override;
@@ -724,6 +729,8 @@ class HistoryService : public KeyedService,
 
   // The same as AddPageWithDetails() but takes a vector.
   void AddPagesWithDetails(const URLRows& info, VisitSource visit_source);
+
+  base::SafeRef<HistoryService> AsSafeRef();
 
   base::WeakPtr<HistoryService> AsWeakPtr();
 
@@ -806,6 +813,11 @@ class HistoryService : public KeyedService,
   // Notification from the backend that it has finished loading. Sends
   // notification (NOTIFY_HISTORY_LOADED) and sets backend_loaded_ to true.
   void OnDBLoaded();
+
+  // Generic Stuff -------------------------------------------------------------
+
+  // Sets the history backend's local device Originator Cache GUID.
+  void SendLocalDeviceOriginatorCacheGuidToBackend();
 
   // Observers ----------------------------------------------------------------
 
@@ -1089,6 +1101,13 @@ class HistoryService : public KeyedService,
   base::ScopedObservation<syncer::DeviceInfoTracker,
                           syncer::DeviceInfoTracker::Observer>
       device_info_tracker_observation_{this};
+
+  // Subscription for change notifications to local device information; notifies
+  // when local device information becomes available.
+  base::CallbackListSubscription local_device_info_available_subscription_;
+
+  raw_ptr<syncer::LocalDeviceInfoProvider> local_device_info_provider_ =
+      nullptr;
 
   // All vended weak pointers are invalidated in Cleanup().
   base::WeakPtrFactory<HistoryService> weak_ptr_factory_{this};

@@ -24,17 +24,17 @@ void WaitUntilUIReady(Browser* browser);
 // Executes JavaScript code to sign in a user with email and password to the
 // auth iframe hosted by gaia_auth extension. This function automatically
 // detects the version of GAIA sign in page to use.
-void ExecuteJsToSigninInSigninFrame(Browser* browser,
+void ExecuteJsToSigninInSigninFrame(content::WebContents* web_contents,
                                     const std::string& email,
                                     const std::string& password);
 
 // Executes JS to sign in the user in the new GAIA sign in flow.
-void SigninInNewGaiaFlow(Browser* browser,
+void SigninInNewGaiaFlow(content::WebContents* web_contents,
                          const std::string& email,
                          const std::string& password);
 
 // Executes JS to sign in the user in the old GAIA sign in flow.
-void SigninInOldGaiaFlow(Browser* browser,
+void SigninInOldGaiaFlow(content::WebContents* web_contents,
                          const std::string& email,
                          const std::string& password);
 

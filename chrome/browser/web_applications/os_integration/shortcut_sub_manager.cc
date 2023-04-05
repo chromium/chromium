@@ -72,10 +72,6 @@ void ShortcutSubManager::Configure(
                   .Then(std::move(configure_done)));
 }
 
-void ShortcutSubManager::Start() {}
-
-void ShortcutSubManager::Shutdown() {}
-
 void ShortcutSubManager::Execute(
     const AppId& app_id,
     const absl::optional<SynchronizeOsOptions>& synchronize_options,

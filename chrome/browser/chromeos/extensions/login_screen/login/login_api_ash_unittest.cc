@@ -315,7 +315,7 @@ TEST_F(LoginApiUnittest, FetchDataForNextLoginAttemptClearsPref) {
   local_state->SetString(prefs::kLoginExtensionApiDataForNextLoginAttempt,
                          data_for_next_login_attempt);
 
-  absl::optional<base::Value> value = RunFunctionAndReturnSingleValue(
+  absl::optional<base::Value> value = RunFunctionAndReturnValue(
       new LoginFetchDataForNextLoginAttemptFunction(), "[]");
   ASSERT_EQ(data_for_next_login_attempt, value->GetString());
 
@@ -328,9 +328,9 @@ TEST_F(LoginApiUnittest, FetchDataForNextLoginAttemptClearsPref) {
 TEST_F(LoginApiUnittest, SetDataForNextLoginAttempt) {
   const std::string data_for_next_login_attempt = "hello world";
 
-  absl::optional<base::Value> value = RunFunctionAndReturnSingleValue(
-      new LoginSetDataForNextLoginAttemptFunction(),
-      "[\"" + data_for_next_login_attempt + "\"]");
+  absl::optional<base::Value> value =
+      RunFunctionAndReturnValue(new LoginSetDataForNextLoginAttemptFunction(),
+                                "[\"" + data_for_next_login_attempt + "\"]");
 
   PrefService* local_state = g_browser_process->local_state();
   ASSERT_EQ(

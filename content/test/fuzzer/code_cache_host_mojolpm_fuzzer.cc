@@ -25,6 +25,7 @@
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-mojolpm.h"
 #include "third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h"
 #include "url/origin.h"
@@ -85,7 +86,8 @@ class CodeCacheHostTestcase
       uint32_t id,
       int renderer_id,
       const Origin& origin,
-      const net::NetworkIsolationKey& key,
+      const net::NetworkIsolationKey& nik,
+      const blink::StorageKey& storage_key,
       mojo::PendingReceiver<::blink::mojom::CodeCacheHost>&& receiver);
 
   // Create and bind a new instance for fuzzing. This ensures that the new
@@ -249,9 +251,10 @@ void CodeCacheHostTestcase::AddCodeCacheHostImpl(
     int renderer_id,
     const Origin& origin,
     const net::NetworkIsolationKey& nik,
+    const blink::StorageKey& storage_key,
     mojo::PendingReceiver<::blink::mojom::CodeCacheHost>&& receiver) {
   auto code_cache_host = std::make_unique<content::CodeCacheHostImpl>(
-      renderer_id, generated_code_cache_context_, nik);
+      renderer_id, generated_code_cache_context_, nik, storage_key);
   code_cache_host->SetCacheStorageControlForTesting(
       cache_storage_control_wrapper_.get());
   UniqueCodeCacheReceiverSet receivers(
@@ -305,7 +308,8 @@ void CodeCacheHostTestcase::AddCodeCacheHost(
           FROM_HERE,
           base::BindOnce(&CodeCacheHostTestcase::AddCodeCacheHostImpl,
                          base::Unretained(this), id, renderer_id, *origin,
-                         net::NetworkIsolationKey(), std::move(receiver)),
+                         net::NetworkIsolationKey(), blink::StorageKey(),
+                         std::move(receiver)),
           base::BindOnce(AddCodeCacheHostInstance, id, std::move(remote),
                          std::move(run_closure)));
 }

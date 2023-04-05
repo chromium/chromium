@@ -29,8 +29,6 @@ class OsIntegrationSubManager {
  public:
   OsIntegrationSubManager() = default;
   virtual ~OsIntegrationSubManager() = default;
-  virtual void Start() = 0;
-  virtual void Shutdown() = 0;
   // desired_state can still be empty after the configure_done has completed
   // running.
   virtual void Configure(const AppId& app_id,

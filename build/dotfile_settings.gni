@@ -36,7 +36,7 @@ build_dotfile_settings = {
     "//build/toolchain/nacl/BUILD.gn",
     "//build/toolchain/toolchain.gni",
     "//build/toolchain/win/BUILD.gn",
-    "//build/toolchain/win/toolchain.gni",
+    "//build/toolchain/win/win_toolchain_data.gni",
     "//build/toolchain/zos/BUILD.gn",
     "//build/util/branding.gni",
   ]

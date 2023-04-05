@@ -31,10 +31,7 @@ constexpr char kExpectedKeyFetchServerUrl[] =
 class OhttpKeyServiceTest : public ::testing::Test {
  public:
   void SetUp() override {
-    pref_service_.registry()->RegisterTimePref(
-        prefs::kSafeBrowsingHashRealTimeOhttpExpirationTime, base::Time());
-    pref_service_.registry()->RegisterStringPref(
-        prefs::kSafeBrowsingHashRealTimeOhttpKey, "");
+    RegisterProfilePrefs(pref_service_.registry());
     test_url_loader_factory_ =
         std::make_unique<network::TestURLLoaderFactory>();
     test_shared_loader_factory_ =
@@ -43,6 +40,8 @@ class OhttpKeyServiceTest : public ::testing::Test {
     ohttp_key_service_ = std::make_unique<OhttpKeyService>(
         test_shared_loader_factory_, &pref_service_);
   }
+
+  void TearDown() override { ohttp_key_service_->Shutdown(); }
 
  protected:
   void SetupSuccessResponse() {
@@ -76,13 +75,13 @@ TEST_F(OhttpKeyServiceTest, GetOhttpKey_Success) {
   absl::optional<OhttpKeyService::OhttpKeyAndExpiration> ohttp_key =
       ohttp_key_service_->get_ohttp_key_for_testing();
   EXPECT_TRUE(ohttp_key.has_value());
-  EXPECT_EQ(ohttp_key.value().expiration, base::Time::Now() + base::Days(30));
+  EXPECT_EQ(ohttp_key.value().expiration, base::Time::Now() + base::Days(7));
   EXPECT_EQ(ohttp_key.value().key, kTestOhttpKey);
   EXPECT_EQ(pref_service_.GetString(prefs::kSafeBrowsingHashRealTimeOhttpKey),
             kTestOhttpKey);
   EXPECT_EQ(pref_service_.GetTime(
                 prefs::kSafeBrowsingHashRealTimeOhttpExpirationTime),
-            base::Time::Now() + base::Days(30));
+            base::Time::Now() + base::Days(7));
 }
 
 TEST_F(OhttpKeyServiceTest, GetOhttpKey_Failure) {
@@ -150,12 +149,22 @@ TEST_F(OhttpKeyServiceTest, GetOhttpKey_WithExpiredCache) {
 
   test_url_loader_factory_->AddResponse(kExpectedKeyFetchServerUrl,
                                         "NewOhttpKey");
-  task_environment_.FastForwardBy(base::Days(20));
+  task_environment_.FastForwardBy(base::Days(5));
   base::MockCallback<OhttpKeyService::Callback> response_callback2;
   // The new key should not be fetched because the old key has not expired.
   EXPECT_CALL(response_callback2, Run(Optional(std::string(kTestOhttpKey))))
       .Times(1);
   ohttp_key_service_->GetOhttpKey(response_callback2.Get());
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(OhttpKeyServiceTest, GetOhttpKey_Disabled) {
+  SetupSuccessResponse();
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::NO_SAFE_BROWSING);
+  base::MockCallback<OhttpKeyService::Callback> response_callback;
+  EXPECT_CALL(response_callback, Run(Eq(absl::nullopt))).Times(1);
+
+  ohttp_key_service_->GetOhttpKey(response_callback.Get());
   task_environment_.RunUntilIdle();
 }
 
@@ -193,6 +202,54 @@ TEST_F(OhttpKeyServiceTest, PopulateKeyFromPref_EmptyKey) {
   absl::optional<OhttpKeyService::OhttpKeyAndExpiration> ohttp_key =
       ohttp_key_service->get_ohttp_key_for_testing();
   EXPECT_FALSE(ohttp_key.has_value());
+}
+
+TEST_F(OhttpKeyServiceTest, AsyncFetch) {
+  SetupSuccessResponse();
+
+  task_environment_.RunUntilIdle();
+  auto original_expiration = base::Time::Now() + base::Days(7);
+  EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
+            original_expiration);
+
+  task_environment_.FastForwardBy(base::Days(5));
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
+            original_expiration);
+
+  task_environment_.FastForwardBy(base::Days(1));
+  task_environment_.RunUntilIdle();
+  // OHTTP key is extended by async fetch.
+  EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
+            original_expiration + base::Days(6));
+}
+
+TEST_F(OhttpKeyServiceTest, AsyncFetch_PrefChanges) {
+  SetupSuccessResponse();
+
+  task_environment_.RunUntilIdle();
+  auto original_expiration = base::Time::Now() + base::Days(7);
+  EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
+            original_expiration);
+
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::NO_SAFE_BROWSING);
+  task_environment_.FastForwardBy(base::Days(6));
+  task_environment_.RunUntilIdle();
+  // The expiration is not extended because the service is disabled.
+  EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
+            original_expiration);
+
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+  task_environment_.FastForwardBy(base::Days(6));
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
+            original_expiration);
+
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
+  task_environment_.RunUntilIdle();
+  // The service is re-enabled, so the expiration date is updated.
+  EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
+            base::Time::Now() + base::Days(7));
 }
 
 TEST_F(OhttpKeyServiceTest, Shutdown) {

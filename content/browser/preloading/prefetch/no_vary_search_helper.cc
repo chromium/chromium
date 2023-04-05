@@ -21,9 +21,9 @@
 
 namespace content {
 
-namespace {
-// Parse No-Vary-Search from mojom structure received from network service.
-net::HttpNoVarySearchData ParseHttpNoVarySearchDataFromMojom(
+// static
+net::HttpNoVarySearchData
+NoVarySearchHelper::ParseHttpNoVarySearchDataFromMojom(
     const network::mojom::NoVarySearchPtr& no_vary_search_ptr) {
   if (no_vary_search_ptr->search_variance->is_vary_params()) {
     return net::HttpNoVarySearchData::CreateFromVaryParams(
@@ -34,7 +34,6 @@ net::HttpNoVarySearchData ParseHttpNoVarySearchDataFromMojom(
       no_vary_search_ptr->search_variance->get_no_vary_params(),
       no_vary_search_ptr->vary_on_key_order);
 }
-}  // namespace
 
 NoVarySearchHelper::NoVarySearchHelper() = default;
 NoVarySearchHelper::~NoVarySearchHelper() = default;

@@ -182,7 +182,6 @@
 <translation id="1374468813861204354">ការផ្តល់យោបល់</translation>
 <translation id="1375198122581997741">អំពីកំណែ</translation>
 <translation id="1376836354785490390">បង្ហាញ​តិច</translation>
-<translation id="1377321085342047638">លេខកាត</translation>
 <translation id="1380591466760231819">បត់ជា​សំបុត្រ</translation>
 <translation id="138218114945450791">ខៀវខ្ចី</translation>
 <translation id="1382194467192730611">អ្នក​គ្រប់គ្រង​របស់អ្នកបានអនុញ្ញាត​ឧបករណ៍ USB</translation>
@@ -229,7 +228,6 @@
 <translation id="1476595624592550506">ប្ដូរ​ពាក្យ​សម្ងាត់​របស់​អ្នក</translation>
 <translation id="1482879811280872320">ការ​ជិះកង់</translation>
 <translation id="1483493594462132177">ផ្ញើ</translation>
-<translation id="1484290072879560759">ជ្រើសរើសអាសយដ្ឋាន​ដឹក​ជញ្ជូន</translation>
 <translation id="1492194039220927094">ការជំរុញ​គោលការណ៍៖</translation>
 <translation id="149293076951187737">នៅពេលអ្នកបិទផ្ទាំងឯកជន Chrome ទាំងអស់ សកម្មភាពរបស់អ្នកនៅក្នុងផ្ទាំងទាំងនោះត្រូវបានសម្អាតចេញពីឧបករណ៍នេះ៖
           <ph name="BEGIN_LIST" />
@@ -257,7 +255,6 @@
 <translation id="153384715582417236">មានតែប៉ុណ្ណឹងទេ</translation>
 <translation id="1536390784834419204">បកប្រែ​ទំព័រ</translation>
 <translation id="1539840569003678498">បានផ្ញើ​របាយការណ៍៖</translation>
-<translation id="154408704832528245">ជ្រើសរើស​អាសយដ្ឋាន​ចែកចាយ</translation>
 <translation id="1549470594296187301">ត្រូវបើកដំណើរការ JavaScript ដើម្បីប្រើលក្ខណៈពិសេសនេះ។</translation>
 <translation id="1551884710160394169">កម្មវិធី​ឥតគិតថ្លៃ</translation>
 <translation id="1553358976309200471">ធ្វើបច្ចុប្បន្នភាព Chrome</translation>
@@ -372,7 +369,6 @@
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">ព័ត៌មានលម្អិតអំពីកាតនិម្មិត</translation>
 <translation id="1803020234906945288">ការពិសា​អាហារដែល​ល្អចំពោះ​សុខភាព</translation>
-<translation id="1803264062614276815">ឈ្មោះ​ម្ចាស់​បណ្ណ</translation>
 <translation id="1803351196216024260">អាច​ស្នើសុំប្រើ​មីក្រូហ្វូន​របស់អ្នក</translation>
 <translation id="1807246157184219062">ភ្លឺ</translation>
 <translation id="1807528111851433570">សន្លឹក​ចាប់ផ្ដើម</translation>
@@ -622,7 +618,6 @@
 <translation id="2450021089947420533">ការស្វែងរក</translation>
 <translation id="2456755709261364512">ត្រូវ​តែ​សាកថ្ម​របស់​អ្នក​ឱ្យ​លើស​ពី <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
 <translation id="2463739503403862330">បំពេញ</translation>
-<translation id="2465655957518002998">ជ្រើសរើស​មធ្យោបាយ​ចែកចាយ</translation>
 <translation id="2465688316154986572">កិប</translation>
 <translation id="2465914000209955735">គ្រប់គ្រងឯកសារ​ដែលអ្នកបាន​ទាញយកនៅក្នុង Chrome</translation>
 <translation id="2466004615675155314">បង្ហាញព័ត៌មាន​ពីបណ្ដាញ</translation>
@@ -744,7 +739,6 @@
 <translation id="2730600605555029057">តន្ត្រី​បុរាណ</translation>
 <translation id="2731382536835015353">44 x 68 in</translation>
 <translation id="2734319753272419592">អនុញ្ញាតឱ្យ Google ប្រើកន្ត្រករបស់អ្នក ដើម្បីស្វែងរក​ការបញ្ចុះតម្លៃ​ដែលមានលក្ខណៈផ្ទាល់ខ្លួន។ នៅពេលមាន ការបញ្ចុះតម្លៃ​នឹង​បង្ហាញ​នៅក្នុងកន្ត្រក​របស់អ្នក​ដោយស្វ័យប្រវត្តិ។</translation>
-<translation id="2738330467931008676">ជ្រើសរើស​អាសយដ្ឋាន​ទទួល</translation>
 <translation id="2740531572673183784">យល់ព្រម</translation>
 <translation id="2742511345840685325">កីឡា​វាយកូនបាល់​លើតុ</translation>
 <translation id="2742870351467570537">ដកធាតុដែលបានជ្រើសរើសចេញ</translation>
@@ -826,7 +820,6 @@
 <translation id="2983666748527428214">បើកផ្ទាំង​ឯកជន</translation>
 <translation id="2985306909656435243">បើបើកដំណើរការ នោះ Chromium នឹងផ្ទុកច្បាប់ចម្លងកាតរបស់អ្នកនៅលើឧបករណ៍នេះសម្រាប់ការបំពេញសំណុំបែបបទឲ្យបានលឿនជាងមុន។</translation>
 <translation id="2985398929374701810">បញ្ចូលអាសយដ្ឋានដែលត្រឹមត្រូវ</translation>
-<translation id="2986368408720340940">មិនមានមធ្យោបាយទៅយកនេះទេ។ សូម​សាកល្បងមធ្យោបាយផ្សេង។</translation>
 <translation id="2987034854559945715">គ្មាន​មុខងារ​ដែលត្រូវគ្នា​ទេ</translation>
 <translation id="2989742184762224133">កិប​ពីរគ្រាប់​ខាងលើ</translation>
 <translation id="2991174974383378012">ការចែករំលែកជាមួយគេហទំព័រ</translation>
@@ -858,7 +851,6 @@
 <translation id="3086579638707268289">សកម្មភាព​របស់អ្នក​នៅលើ​បណ្ដាញ​កំពុង​ត្រូវបាន​ឃ្លាំមើល</translation>
 <translation id="3087734570205094154">ខាងក្រោម</translation>
 <translation id="3095940652251934233">Statement</translation>
-<translation id="3096100844101284527">បញ្ចូល​អាសយដ្ឋាន​ទទួល</translation>
 <translation id="3096195745018397576">សម្លៀកបំពាក់​ក្មេង</translation>
 <translation id="3098513225387949945">មិនបាន​អើពើ ដោយសារ​បញ្ជីបិទ​មានតួអក្សរ​ជំនួស '*' ដែលស្មើនឹង​ការបិទ​គោលការណ៍។</translation>
 <translation id="3105172416063519923">ID ទ្រព្យសកម្ម៖</translation>
@@ -1386,7 +1378,6 @@
 <translation id="4333561522337981382">គ្រប់គ្រងវិនដូនៅលើផ្ទាំងអេក្រង់ទាំងអស់របស់អ្នក</translation>
 <translation id="4340575312453649552">ការផ្សាយពាណិជ្ជកម្មនេះបាន​ប្រើធនធានច្រើនពេកសម្រាប់​ឧបករណ៍របស់អ្នក ដូច្នេះ Chrome បានលុបវា​ចេញ។</translation>
 <translation id="4340982228985273705">កុំព្យូទ័រនេះ​មិនត្រូវបាន​រកឃើញ​ថាជា​សហគ្រាស​ដែលបាន​គ្រប់គ្រង​ទេ ដូច្នេះ​គោលការណ៍​អាចដំឡើង​កម្មវិធី​បន្ថែម​ដែលបាន​បង្ហោះដោយ​ស្វ័យប្រវត្តិ​នៅ​លើ Chrome Webstore តែ​ប៉ុណ្ណោះ។ URL កំណែថ្មី​របស់ Chrome Webstore គឺ "<ph name="CWS_UPDATE_URL" />" ។</translation>
-<translation id="4346197816712207223">បណ្ណ​ឥណទាន​ដែល​​ទទួលយក</translation>
 <translation id="4348834659292907206">ការតភ្ជាប់ទៅ <ph name="SITE" /> មិនមាន​សុវត្ថិភាពទេ</translation>
 <translation id="4349365535725594680">មិនអាច​ចែករំលែក​ខ្លឹមសារសម្ងាត់​បានទេ</translation>
 <translation id="4349810866125026513">មិនអីទេ បង្ហោះ​ចុះ</translation>
@@ -1591,7 +1582,6 @@
 <translation id="4850886885716139402">មើល</translation>
 <translation id="4852429274334674023">ប្រព័ន្ធ​ប្រតិបត្តិការ</translation>
 <translation id="4853901935952445031">គេហទំព័រនេះ​នឹងមិនអាច​ប្រើ U2F API នៅក្រោយ​ខែកុម្ភៈ ឆ្នាំ 2022 បានទេ។ ប្រសិនបើ​អ្នកជាម្ចាស់​គេហទំព័រនេះ អ្នកគួរតែ​ប្ដូរវា​ទៅប្រើ Web Authentication API។</translation>
-<translation id="4854362297993841467">មិនមានមធ្យោបាយ​ដឹកជញ្ជូនផ្ទាល់នេះទេ។ សូមសាកល្បងមធ្យោបាយផ្សេង។</translation>
 <translation id="4854853140771946034">បង្កើត​កំណត់ចំណាំថ្មី​នៅក្នុង Google Keep បានរហ័ស</translation>
 <translation id="4858792381671956233">អ្នកបានសាកសួរមាតាបិតារបស់អ្នក ថាអ្នកអាចចូលទៅទំព័រនេះបានដែរទេ</translation>
 <translation id="485902285759009870">កំពុង​ផ្ទៀង​ផ្ទាត់​​លេខ​កូដ...</translation>
@@ -1793,7 +1783,6 @@
 <translation id="5316812925700871227">បង្វិលបញ្ច្រាសទ្រនិចនាឡិកា</translation>
 <translation id="5317780077021120954">រក្សាទុក</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> ក្នុង​ចំណោម <ph name="NUM_MATCHES" /></translation>
-<translation id="5324080437450482387">ជ្រើសរើស​ព័ត៌មាន​ទំនាក់ទំនង</translation>
 <translation id="5329858041417644019">កម្មវិធីរុករកតាមអ៊ីនធឺណិត​របស់អ្នកមិនត្រូវ​បានគ្រប់គ្រងទេ</translation>
 <translation id="5332219387342487447">វិធីសាស្រ្ត​នៃការ​ដឹកជញ្ជូន</translation>
 <translation id="5332769172018416402">ស្នើសុំតាម​សារ</translation>
@@ -1896,7 +1885,6 @@
 <translation id="5593349413089863479">ការ​តភ្ជាប់នេះមិនមានសុវត្ថិភាពទាំងស្រុងទេ</translation>
 <translation id="5595485650161345191">កែអាសយដ្ឋាន</translation>
 <translation id="5596939519753369075">2 x 3.5 in</translation>
-<translation id="5598944008576757369">ជ្រើសរើស​វិធី​បង់ប្រាក់</translation>
 <translation id="560412284261940334">ការគ្រប់គ្រងមិនត្រូវបានគាំទ្រទេ</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />របៀប​ដែល​អ្នក​អាច​គ្រប់គ្រង​ទិន្នន័យ​របស់អ្នក៖<ph name="END_BOLD" /> Chrome លុប​គេហទំព័រ​​ដែល​ចាស់​ជាង 4 សប្ដាហ៍ដោយ​ស្វ័យ​ប្រវត្តិ។ គេហទំព័រ​ដែល​អ្នក​ចូលមើល​ម្ដង​ទៀតអាចបង្ហាញ​ឡើងវិញ​នៅ​ក្នុង​បញ្ជី។ អ្នក​ក៏​អាច​ទប់ស្កាត់​គេហទំព័រ​កុំឱ្យ​​​ណែនាំការ​ផ្សាយពាណិជ្ជកម្ម​សម្រាប់​អ្នក និង​បិទ​ការ​ផ្សាយពាណិជ្ជកម្ម​ដែល​ណែនាំ​ដោយ​គេហទំព័រ​បាន​គ្រប់​ពេល​នៅ​ក្នុងការកំណត់ Chrome។</translation>
@@ -1928,7 +1916,6 @@
 <translation id="568292603005599551">ទីតាំង​រូបភាព X</translation>
 <translation id="5684277895745049190">បញ្ជី</translation>
 <translation id="5684874026226664614">អូ។ ទំព័រនេះមិនអាចបកប្រែទេ។</translation>
-<translation id="5685654322157854305">បញ្ចូល​អាសយដ្ឋាន​ដឹកជញ្ជូន</translation>
 <translation id="5689199277474810259">នាំចេញទៅជា JSON</translation>
 <translation id="5689516760719285838">ទីតាំង</translation>
 <translation id="569000877158168851">តម្លៃ DnsOverHttpsTemplates គឺ​មិន​ពាក់ព័ន្ធ​ទេ ហើយ​នឹង​មិន​ត្រូវបាន​ប្រើប្រាស់​ឡើយ លុះត្រាតែ​កំណត់​គោលការណ៍ DnsOverHttpsMode ទៅ <ph name="SECURE_DNS_MODE_AUTOMATIC" /> ឬ <ph name="SECURE_DNS_MODE_SECURE" />។</translation>
@@ -2795,7 +2782,6 @@
 <translation id="776110834126722255">បានបញ្ឈប់</translation>
 <translation id="7761159795823346334">អនុញ្ញាត​ឱ្យប្រើ​កាមេរ៉ា​ដែរទេ?</translation>
 <translation id="7761701407923456692">វិញ្ញាបនប័ត្ររបស់ម៉ាស៊ីនមេមិនត្រូវគ្នានឹង URL នេះទេ។</translation>
-<translation id="7763386264682878361">ការបង់ប្រាក់​សម្រាប់​កម្មវិធី​ញែក​ជាក់លាក់</translation>
 <translation id="7764225426217299476">បន្ថែមអាសយដ្ឋាន</translation>
 <translation id="7766518757692125295">ស្រទាប់ខាងក្រៅ</translation>
 <translation id="7773005668374414287">ផ្ងារឡើង​តាមលំដាប់​លំដោយដូចគ្នា</translation>
@@ -2900,7 +2886,6 @@
 <translation id="8038817883578389970">ការប្រណាំង​យានយន្ត</translation>
 <translation id="8041089156583427627">ផ្ញើមតិ</translation>
 <translation id="8041940743680923270">ប្រើលំនាំដើមជាសកល (សួរ)</translation>
-<translation id="8042918947222776840">ជ្រើសរើស​មធ្យោបាយ​ទៅយក</translation>
 <translation id="8052898407431791827">បានចម្លង​ទៅ​ឃ្លីបបត</translation>
 <translation id="8055534648776115597">ការអប់រំបន្ត និង​វិជ្ជាជីវៈ</translation>
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" មិនបានកំណត់រចនាសម្ព័ន្ធត្រឹមត្រូវទេ។ ជាធម្មតាការលុប "<ph name="SOFTWARE_NAME" />" អាចដោះស្រាយបញ្ហានេះបាន។ <ph name="FURTHER_EXPLANATION" /></translation>
@@ -3274,7 +3259,6 @@
 <translation id="9008201768610948239">មិនអើពើ</translation>
 <translation id="9018120810758822233">បញ្ចូល​លេខកូដសុវត្ថិភាព​របស់អ្នក​សម្រាប់ <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">អ៊ីម៉ែល</translation>
-<translation id="9020200922353704812">តម្រូវ​ឲ្យមាន​អាសយដ្ឋាន​ចេញវិក្កយបត្រសម្រាប់បណ្ណ</translation>
 <translation id="9020542370529661692">គេហទំព័រនេះត្រូវបានបកប្រែទៅ <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" /> ចុច tab រួចចុច Enter ដើម្បីចែករំលែកផ្ទាំងនេះដោយចែករំលែកតំណ, បង្កើតកូដ QR, បញ្ជូន និងអ្វីៗជាច្រើនទៀត</translation>
@@ -3311,7 +3295,6 @@
 <translation id="9101630580131696064">ទម្រទី 1</translation>
 <translation id="9103537084693478942">កម្មវិធី​វីដេអូ</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> ជាធម្មតាប្រើការអ៊ិនគ្រីបដើម្បីការពារព័ត៌មានរបស់អ្នក។ នៅពេលដែល Chromium ព្យាយាមភ្ជាប់ទៅ <ph name="SITE" /> នៅពេលនេះ នោះគេហទំព័រនឹងផ្ញើត្រឡប់មកវិញនូវព័ត៌មានអត្តសញ្ញាណដែលមិនប្រក្រតី និងមិនត្រឹមត្រូវ។ វាអាចកើតឡើងនៅពេលដែលអ្នកវាយប្រហារកំពុងព្យាយាមក្លែងជា <ph name="SITE" /> ឬនៅពេលដែលអេក្រង់ចូល Wi-Fi បង្កការរំខានដល់ការតភ្ជាប់។ ព័ត៌មានរបស់អ្នកគឺនៅតែមានសុវត្ថិភាពដដែល ពីព្រោះ Chromium បានបញ្ឈប់ការតភ្ជាប់នោះ មុនពេលដែលមានការផ្តោះប្តូរទិន្នន័យ។</translation>
-<translation id="9106062320799175032">បញ្ចូល​អាសយដ្ឋាន​ចេញ​វិក្កយបត្រ</translation>
 <translation id="9107467864910557787">កម្មវិធីរុករកតាមអ៊ីនធឺណិត​របស់អ្នកស្ថិតក្រោមការគ្រប់គ្រងរបស់ <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">គោលការណ៍​របស់អ្នកគ្រប់គ្រង​បិទការបង្ហាញអេក្រង់​ជាមួយ <ph name="APPLICATION_TITLE" /> នៅពេលអាច​មើលឃើញខ្លឹមសារ​សម្ងាត់</translation>
 <translation id="9114524666733003316">កំពុង​បញ្ជាក់​បណ្ណ​ឥណទាន...</translation>
@@ -3332,7 +3315,6 @@
 <translation id="9139318394846604261">ទិញទំនិញ</translation>
 <translation id="9141013498910525015">គ្រប់គ្រង​អាសយដ្ឋាន</translation>
 <translation id="9144951720726881238">កាល​បរិច្ឆេទ​ផុតកំណត់៖</translation>
-<translation id="9148088599418889305">ជ្រើសរើស​មធ្យោបាយ​ដឹកជញ្ជូន​តាមប្រៃសណីយ៍</translation>
 <translation id="9148507642005240123">បកក្រោយការកែប្រែ</translation>
 <translation id="9150045010208374699">ប្រើកាមេរ៉ារបស់អ្នក</translation>
 <translation id="9150685862434908345">អ្នកគ្រប់គ្រង​របស់អ្នក​អាចប្ដូរ​ការរៀបចំ​កម្មវិធីរុករកតាមអ៊ីនធឺណិត​របស់អ្នក​ពីចម្ងាយបាន។ សកម្មភាព​នៅលើឧបករណ៍នេះ​ក៏អាចត្រូវបាន​គ្រប់គ្រងក្រៅពី Chrome ផងដែរ។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
@@ -3383,7 +3365,6 @@
 <translation id="964050462028070434">គ្រប់គ្រង​ពាក្យសម្ងាត់ និង​កូដសម្ងាត់…</translation>
 <translation id="96680173638229310">យានយន្ត និង​យានជំនិះ</translation>
 <translation id="969892804517981540">លេខកំណែផ្លូវការ</translation>
-<translation id="973773823069644502">បញ្ចូល​អាសយដ្ឋាន​ចែកចាយ</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{គ្មាន}=1{ធាតុ 1}other{ធាតុ #}}</translation>
 <translation id="976522784004777030">5 x 8 in</translation>
 <translation id="977502174772294970">អាពាហ៍ពិពាហ៍</translation>

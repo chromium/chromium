@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.merchant_viewer;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
 import androidx.annotation.VisibleForTesting;
@@ -93,6 +94,18 @@ public class MerchantTrustBottomSheetCoordinator implements View.OnLayoutChangeL
 
         createToolbarView();
         createThinWebView();
+
+        View toolbarView = mToolbarView.getView();
+        ViewTreeObserver observer = toolbarView.getViewTreeObserver();
+        observer.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                toolbarView.getViewTreeObserver().removeOnPreDrawListener(this);
+                setThinWebViewLayout();
+                return true;
+            }
+        });
+
         mMediator.setupSheetWebContents(mThinWebView, mToolbarModel);
         mSheetContent =
                 new MerchantTrustBottomSheetContent(mToolbarView.getView(), mThinWebView.getView(),
@@ -173,6 +186,10 @@ public class MerchantTrustBottomSheetCoordinator implements View.OnLayoutChangeL
     private void createThinWebView() {
         mThinWebView = ThinWebViewFactory.create(
                 mContext, new ThinWebViewConstraints(), mIntentRequestTracker);
+        setThinWebViewLayout();
+    }
+
+    private void setThinWebViewLayout() {
         mThinWebView.getView().setLayoutParams(new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 (int) (getMaxViewHeight() * MerchantTrustBottomSheetContent.FULL_HEIGHT_RATIO)

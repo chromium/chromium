@@ -481,8 +481,11 @@ IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, MAYBE_RemoveHistory) {
 IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, MAYBE_TreeModelDeletion) {
   // Check that removing cookies and storage API usage via the CookiesTreeModel
   // also removes the associated access records.
+  content::CookieChangeObserver cookie_observer(
+      chrome_test_utils::GetActiveWebContents(this), 9);
   NavigateToTopLevelPage();
   NavigateToEmbeddedPage();
+  cookie_observer.Wait();
 
   auto cookies = GetAllCookies();
   auto records = GetAllAccessRecords();

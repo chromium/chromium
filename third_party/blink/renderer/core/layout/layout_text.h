@@ -173,40 +173,6 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   UChar32 FirstCharacterAfterWhitespaceCollapsing() const;
   UChar32 LastCharacterAfterWhitespaceCollapsing() const;
 
-  virtual float Width(unsigned from,
-                      unsigned len,
-                      const Font&,
-                      LayoutUnit x_pos,
-                      TextDirection,
-                      HashSet<const SimpleFontData*>* fallback_fonts = nullptr,
-                      gfx::RectF* glyph_bounds = nullptr,
-                      float expansion = 0) const;
-  virtual float Width(unsigned from,
-                      unsigned len,
-                      LayoutUnit x_pos,
-                      TextDirection,
-                      bool first_line = false,
-                      HashSet<const SimpleFontData*>* fallback_fonts = nullptr,
-                      gfx::RectF* glyph_bounds = nullptr,
-                      float expansion = 0) const;
-
-  float MinLogicalWidth() const;
-  float MaxLogicalWidth() const;
-
-  void TrimmedPrefWidths(LayoutUnit lead_width,
-                         LayoutUnit& first_line_min_width,
-                         bool& has_breakable_start,
-                         LayoutUnit& last_line_min_width,
-                         bool& has_breakable_end,
-                         bool& has_breakable_char,
-                         bool& has_break,
-                         LayoutUnit& first_line_max_width,
-                         LayoutUnit& last_line_max_width,
-                         LayoutUnit& min_width,
-                         LayoutUnit& max_width,
-                         bool& strip_front_spaces,
-                         TextDirection);
-
   virtual PhysicalRect PhysicalLinesBoundingBox() const;
 
   // Returns the bounding box of visual overflow rects of all line boxes,
@@ -431,12 +397,6 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   void CollectLineBoxRects(const PhysicalRectCollector&,
                            ClippingOption option = kNoClipping) const;
 
-  void ComputePreferredLogicalWidths(float lead_width);
-  void ComputePreferredLogicalWidths(
-      float lead_width,
-      HashSet<const SimpleFontData*>& fallback_fonts,
-      gfx::RectF& glyph_bounds);
-
   // Make length() private so that callers that have a LayoutText*
   // will use the more efficient textLength() instead, while
   // callers with a LayoutObject* can continue to use length().
@@ -464,15 +424,6 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   }
 
   void DeleteTextBoxes();
-  float WidthFromFont(const Font&,
-                      int start,
-                      int len,
-                      float lead_width,
-                      float text_width_so_far,
-                      TextDirection,
-                      HashSet<const SimpleFontData*>* fallback_fonts,
-                      gfx::RectF* glyph_bounds_accumulation,
-                      float expansion = 0) const;
 
   void ApplyTextTransform();
   void SecureText(UChar mask);

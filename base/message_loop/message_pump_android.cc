@@ -69,12 +69,8 @@ MessagePumpForUI::MessagePumpForUI()
   CHECK_NE(non_delayed_fd_, -1);
   DCHECK_EQ(TimeTicks::GetClock(), TimeTicks::Clock::LINUX_CLOCK_MONOTONIC);
 
-  // We can't create the timerfd with TFD_NONBLOCK | TFD_CLOEXEC as we can't
-  // include timerfd.h. See comments above on __NR_timerfd_create. It looks like
-  // they're just aliases to O_NONBLOCK and O_CLOEXEC anyways, so this should be
-  // fine.
   delayed_fd_ = checked_cast<int>(
-      timerfd_create(CLOCK_MONOTONIC, O_NONBLOCK | O_CLOEXEC));
+      timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK | TFD_CLOEXEC));
   CHECK_NE(delayed_fd_, -1);
 
   looper_ = ALooper_prepare(0);

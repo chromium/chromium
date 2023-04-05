@@ -5,7 +5,6 @@
 #ifndef BASE_TEST_TEST_TRACE_PROCESSOR_EXPORT_H_
 #define BASE_TEST_TEST_TRACE_PROCESSOR_EXPORT_H_
 
-#if defined(COMPONENT_BUILD)
 #if defined(WIN32)
 
 #if defined(TEST_TRACE_PROCESSOR_IMPL)
@@ -23,9 +22,5 @@
 #endif  // defined(TEST_TRACE_PROCESSOR_IMPL)
 
 #endif  // defined(WIN32)
-
-#else  // defined(COMPONENT_BUILD)
-#define TEST_TRACE_PROCESSOR_EXPORT
-#endif
 
 #endif  // BASE_TEST_TEST_TRACE_PROCESSOR_EXPORT_H_

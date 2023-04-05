@@ -61,6 +61,7 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="7" label="kNotShownLocalHost"/>
   <int value="8" label="kNotShownOptimizationGuideNotAllowed"/>
   <int value="9" label="kShownWithoutMsbb"/>
+  <int value="10" label="kSameTabNavigation"/>
 </enum>
 
 <enum name="AboutThisSiteStatus">
@@ -3551,6 +3552,7 @@ Unknown properties are collapsed to zero. -->
   <int value="4" label="Launched From SearchBox"/>
   <int value="5" label="Launched From RecentApps"/>
   <int value="6" label="Launched From ContinueSection"/>
+  <int value="7" label="Launched From Quick App Access"/>
 </enum>
 
 <enum name="AppListLaunchRecorderError">
@@ -7206,6 +7208,16 @@ others/histograms.xml -->
   <int value="9479" label="IBAN: False Positive (Empty)"/>
   <int value="9480" label="IBAN: False Negative (Mismatch)"/>
   <int value="9481" label="IBAN: False Negative (Unknown)"/>
+</enum>
+
+<enum name="AutofillFormControlType">
+  <int value="0" label="Empty"/>
+  <int value="1" label="Other"/>
+  <int value="2" label="Text"/>
+  <int value="3" label="Textarea"/>
+  <int value="4" label="Checkbox"/>
+  <int value="5" label="Radio"/>
+  <int value="6" label="Select one"/>
 </enum>
 
 <enum name="AutofillFormDynamicity">
@@ -26353,6 +26365,7 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="69" label="disableColorFormatSetting"/>
   <int value="71" label="outermostTargetSelector"/>
   <int value="72" label="jsProfilerTemporarilyEnable"/>
+  <int value="73" label="highlightErrorsElementsPanel"/>
 </enum>
 
 <enum name="DevToolsGridOverlayOpenedFrom">
@@ -53506,6 +53519,8 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="38" label="OtherDataDetector"/>
   <int value="39" label="ActionOther"/>
   <int value="40" label="UnknownMenuAction"/>
+  <int value="41" label="OpenURL"/>
+  <int value="42" label="AddToReadingList"/>
 </enum>
 
 <enum name="IOSEditMenuError">
@@ -57922,7 +57937,6 @@ from previous Chrome versions.
   <int value="-2136173537" label="QuickAnswers:enabled"/>
   <int value="-2135013329" label="StylusRichGestures:disabled"/>
   <int value="-2134886830" label="ChromeWideEchoCancellation:disabled"/>
-  <int value="-2134511704" label="CommerceCoupons:enabled"/>
   <int value="-2134333982" label="ShowArcFilesApp:enabled"/>
   <int value="-2134244069" label="HttpFormWarning:enabled"/>
   <int value="-2133892372" label="ResamplingInputEvents:disabled"/>
@@ -58568,6 +58582,7 @@ from previous Chrome versions.
       label="AutofillEnableRankingFormulaCreditCards:enabled"/>
   <int value="-1821058653" label="enable-delay-agnostic-aec"/>
   <int value="-1819497481" label="TouchTextEditingRedesign:disabled"/>
+  <int value="-1818994562" label="ScanningAppJelly:enabled"/>
   <int value="-1818947212" label="OutOfBlinkCors:disabled"/>
   <int value="-1818565030"
       label="AutofillUseConsistentPopupSettingsIcons:disabled"/>
@@ -62033,6 +62048,7 @@ from previous Chrome versions.
   <int value="63187126" label="DownloadsAutoResumptionNative:enabled"/>
   <int value="63693157" label="cast-streaming-force-disable-hardware-h264"/>
   <int value="64016368" label="SafeBrowsingSeparateNetworkContexts:enabled"/>
+  <int value="64547625" label="ScanningAppJelly:disabled"/>
   <int value="64942701" label="OfflinePagesSvelteConcurrentLoading:disabled"/>
   <int value="65245449" label="FilesBannerFramework:enabled"/>
   <int value="65750425" label="OmniboxMostVisitedTilesDynamicSpacing:disabled"/>
@@ -63283,7 +63299,6 @@ from previous Chrome versions.
   <int value="749312701" label="ChromeOSAccountManager:disabled"/>
   <int value="749516419" label="DragToSnapInClamshellMode:disabled"/>
   <int value="749994865" label="MessagesForAndroidSyncError:enabled"/>
-  <int value="750028579" label="CommerceCoupons:disabled"/>
   <int value="751734414" label="OmniboxOnClobberFocusTypeOnContent:disabled"/>
   <int value="751862578" label="OffsetParentNewSpecBehavior:enabled"/>
   <int value="752194066" label="enable-app-window-cycling"/>
@@ -108534,6 +108549,7 @@ others/histograms.xml -->
   <int value="2" label="Unmask details denote we should not offer FIDO opt-in"/>
   <int value="3" label="Card authorization token is empty"/>
   <int value="4" label="Blocked by strike database"/>
+  <int value="5" label="User opted in from settings"/>
 </enum>
 
 <enum name="WebBluetoothConnectGATTOutcome">

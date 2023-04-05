@@ -21,6 +21,7 @@ build_webui_tests("build") {
   ts_deps = [
     "//chrome/browser/resources/app_home:build_ts",
     "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_elements:build_ts",
   ]
   ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
 }

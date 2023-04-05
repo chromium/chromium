@@ -9,6 +9,9 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_image_data_source.h"
 
+@protocol InactiveTabsCommands;
+@protocol InactiveTabsInfoConsumer;
+class PrefService;
 @class SnapshotCache;
 @protocol TabCollectionConsumer;
 class WebStateList;
@@ -18,10 +21,13 @@ class WebStateList;
 @interface InactiveTabsMediator : NSObject <GridImageDataSource>
 
 // Initializer with `consumer` as the receiver of `webStateList` updates.
-- (instancetype)initWithConsumer:(id<TabCollectionConsumer>)consumer
-                    webStateList:(WebStateList*)webStateList
-                   snapshotCache:(SnapshotCache*)snapshotCache
-    NS_DESIGNATED_INITIALIZER;
+- (instancetype)
+    initWithConsumer:
+        (id<TabCollectionConsumer, InactiveTabsInfoConsumer>)consumer
+      commandHandler:(id<InactiveTabsCommands>)commandHandler
+        webStateList:(WebStateList*)webStateList
+         prefService:(PrefService*)prefService
+       snapshotCache:(SnapshotCache*)snapshotCache NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Returns the number of items pushed to the consumer.

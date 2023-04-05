@@ -3088,6 +3088,21 @@
             ]
         }
     ],
+    "ConsolidatedIPCForProxyCreation": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230323",
+                    "enable_features": [
+                        "ConsolidatedIPCForProxyCreation"
+                    ]
+                }
+            ]
+        }
+    ],
     "ContentCaptureExperiment": [
         {
             "platforms": [
@@ -6523,21 +6538,6 @@
             ]
         }
     ],
-    "IOSForceTranslateEnabled": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSForceTranslateEnabled"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSFullscreenAPI": [
         {
             "platforms": [
@@ -7602,6 +7602,28 @@
             ]
         }
     ],
+    "LessChattyNetworkService": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LessChattyNetworkService"
+                    ]
+                }
+            ]
+        }
+    ],
     "LimitImageDecodeCacheAge": [
         {
             "platforms": [
@@ -8123,6 +8145,26 @@
                     "enable_features": [
                         "PPAPISharedImagesSwapChain",
                         "UseMojoVideoDecoderForPepper"
+                    ]
+                }
+            ]
+        }
+    ],
+    "NavigationUpdatesChildViewsVisibility": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NavigationUpdatesChildViewsVisibility"
                     ]
                 }
             ]

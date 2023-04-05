@@ -13,13 +13,13 @@ namespace zucchini {
 
 // A change in major version indicates breaking changes such that a patch
 // definitely cannot be applied by a zucchini binary whose major version doesn't
-// match.
-enum : uint16_t { kMajorVersion = 1 };
+// match. See README.md for logs.
+enum : uint16_t { kMajorVersion = 2 };
 
 // A change in minor version indicates possibly breaking changes at the element
 // level, such that it may not be possible to apply a patch whose minor version
 // doesn't match this version. To determine if a given patch may be applied with
-// this version, VerifyPatch() should be called.
+// this version, VerifyPatch() should be called. See README.md for logs.
 enum : uint16_t { kMinorVersion = 0 };
 
 // A empty or error value for major or minor version numbers.

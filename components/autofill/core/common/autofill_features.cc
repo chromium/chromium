@@ -307,6 +307,12 @@ BASE_FEATURE(kAutofillExtractAllDatalists,
 BASE_FEATURE(kAutofillFeedback,
              "AutofillFeedback",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Makes is_autofilled = true cached only after filling and not previewing.
+BASE_FEATURE(kAutofillOnlyCacheIsAutofilledOnFill,
+             "AutofillOnlyCacheIsAutofilledOnFill",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete,
              "AutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete",
              base::FEATURE_DISABLED_BY_DEFAULT);

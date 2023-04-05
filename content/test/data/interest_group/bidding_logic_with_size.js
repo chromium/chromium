@@ -20,7 +20,11 @@ function generateBid(interestGroup, auctionSignals, perBuyerSignals,
     'allowComponentAuction': allowComponentAuction
   };
   if (interestGroup.adComponents && interestGroup.adComponents[0])
-    result.adComponents = [interestGroup.adComponents[0].renderUrl];
+    result.adComponents = [{
+      url: interestGroup.adComponents[0].renderUrl,
+      width: "50px",
+      height: "25px"
+    }];
   return result;
 }
 

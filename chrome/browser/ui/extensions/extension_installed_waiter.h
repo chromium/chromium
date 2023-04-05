@@ -63,7 +63,7 @@ class ExtensionInstalledWaiter : public extensions::ExtensionRegistryObserver,
                            extensions::UnloadedExtensionReason reason) override;
 
   // BrowserListObserver:
-  void OnBrowserClosing(Browser* browser) override;
+  void OnBrowserRemoved(Browser* browser) override;
 
   const scoped_refptr<const extensions::Extension> extension_;
   const raw_ptr<const Browser> browser_;

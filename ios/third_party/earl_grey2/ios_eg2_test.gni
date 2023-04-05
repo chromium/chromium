@@ -47,6 +47,11 @@ template("ios_eg2_test_app_host") {
       ]
     }
 
+    # XCTestSupport framework is required for running EG tests with Xcode 14.3 or later.
+    if (xcode_version_int >= 1430) {
+      extra_system_frameworks += [ "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCTestSupport.framework" ]
+    }
+
     if (!defined(ldflags)) {
       ldflags = []
     }

@@ -78,8 +78,11 @@ public class FencedFrameTest {
         String fencedFrameUrl = mWebServer.setResponse(path, fencedFrameHtml, headers);
 
         String mainPath = "/main_document.html";
-        String mainResponseStr = "<html><body><fencedframe style='width: 100%; height: 100%' src="
-                + fencedFrameUrl + "></fencedframe></body></html>";
+        String mainResponseStr =
+                "<html><body><fencedframe style='width: 100%; height: 100%'></fencedframe>"
+                + "<script>const url = new URL(\"" + fencedFrameUrl + "\");"
+                + "document.querySelector(\"fencedframe\").config = new FencedFrameConfig(url);"
+                + "</script></body></html>";
         return mWebServer.setResponse(mainPath, mainResponseStr, null);
     }
 
@@ -218,12 +221,24 @@ public class FencedFrameTest {
                 + "   <div style=\"background-color: rgb(0, 255, 0);\"></div>"
                 + "   <div style=\"background-color: rgb(0, 0, 255);\"></div>"
                 + "   <div style=\"background-color: rgb(128, 128, 128);\"></div>"
+                + "   <script>fencedFrameObserver.notifyJava();</script>"
                 + "  </body>"
                 + "</html>";
         String mainUrl = generateFencedFrame(fencedFrameSource);
 
+        final JavascriptEventObserver fencedFrameObserver = new JavascriptEventObserver();
+        final String fencedFrameObserverName = "fencedFrameObserver";
+        AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
+
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
+            fencedFrameObserver.register(mTestView.getWebContents(), fencedFrameObserverName);
+        });
+
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), mainUrl);
+        // We need to wait for the fenced frame to load because loadUrlSync only waits
+        // for the outermost main frame.
+        Assert.assertTrue(fencedFrameObserver.waitForEvent(WAIT_TIMEOUT_MS));
         mActivityTestRule.waitForVisualStateCallback(mAwContents);
 
         int expectedQuadrantColors[] = {Color.rgb(255, 0, 0), Color.rgb(0, 255, 0),

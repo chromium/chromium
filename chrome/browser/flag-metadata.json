@@ -870,6 +870,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "bottom-omnibox-steady-state",
+    "owners": [ "stkhapugin@chromium.org", "christianxu@google.com", "bling-flags@google.com"],
+    "expiry_milestone": 122
+  },
+  {
     "name": "bring-your-own-tabs-ios",
     "owners": [ "ginnyhuang@chromium.org", "hiramahmood@google.com", "bling-get-set-up@google.com" ],
     "expiry_milestone": 120
@@ -1978,11 +1983,6 @@
     // This flag is used for debugging on Android; it causes Android Chromium
     // builds to read command-line arguments from a writable location on disk.
     "expiry_milestone": -1
-  },
-  {
-    "name": "enable-commerce-coupons",
-    "owners": [ "chrome-shopping@google.com" ],
-    "expiry_milestone": 114
   },
   {
     "name": "enable-commerce-developer",
@@ -5767,7 +5767,7 @@
   {
     "name": "origin-agent-cluster-default",
     "owners": [ "vogelheim", "chrome-security-owp-team@google.com" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 120
   },
   {
     "name": "os-feedback-jelly",
@@ -6500,6 +6500,13 @@
     "name": "sanitizer-api",
     "owners": [ "//third_party/blink/renderer/modules/sanitizer_api/OWNERS" ],
     "expiry_milestone": 109
+  },
+  {
+    "name": "scanning-app-jelly",
+    "owners": [
+      "//ash/webui/scanning/OWNERS"
+    ],
+    "expiry_milestone": 122
   },
   {
     "name": "scheduler-configuration",

@@ -6858,7 +6858,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7017004637493394352">Dywedwch "Ok Google" eto</translation>
 <translation id="7017219178341817193">Ychwanegu tudalen newydd</translation>
 <translation id="7017354871202642555">Methu â gosod modd ar ôl gosod y ffenestr.</translation>
-<translation id="7018275672629230621">Darllen a newid eich hanes pori</translation>
 <translation id="7019546817926942979">Mae angen plygio eich dyfais i mewn. Gall uwchraddio Linux ddefnyddio'ch batri'n sylweddol. Cysylltwch eich dyfais â gwefrydd a rhowch gynnig arall arni.</translation>
 <translation id="7019805045859631636">Cyflym</translation>
 <translation id="7022562585984256452">Mae eich tudalen hafan wedi'i gosod.</translation>
@@ -7147,6 +7146,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7308643132139167865">Ieithoedd gwefannau</translation>
 <translation id="7310598146671372464">Wedi methu â mewngofnodi Nid yw'r gweinydd yn cefnogi mathau amgryptio Kerberos a nodwyd. Cysylltwch â'ch gweinyddwr.</translation>
 <translation id="7311089766378749632">Wrthi'n gofyn i ddarllen a newid <ph name="SITE_NAME" /></translation>
+<translation id="7311244614769792472">Ni chanfuwyd unrhyw ganlyniadau</translation>
 <translation id="7312210124139670355">Mae eich gweinyddwr yn ailosod eich eSIM. Gallai hyn gymryd ychydig funudau.</translation>
 <translation id="7317831949569936035">Cofrestru ysgol</translation>
 <translation id="7320213904474460808">Gwneud y rhwydwaith yn ddiofyn</translation>

@@ -910,6 +910,7 @@ void CalendarView::UpdateOnScreenMonthMap() {
   }
 
   MaybeUpdateLoadingBarVisibility();
+  calendar_view_controller_->CalendarLoaded();
 }
 
 bool CalendarView::EventsFetchComplete() {
@@ -1423,6 +1424,13 @@ void CalendarView::OnSelectedDateUpdated() {
   if (event_list_view_ && IsDateCellViewFocused()) {
     RequestFocusForEventListCloseButton();
   }
+}
+
+void CalendarView::OnCalendarLoaded() {
+  // We might have some cached upcoming events so we can show the
+  // `up_next_view_` as soon as the calendar has loaded i.e. before waiting for
+  // the event fetch to complete.
+  MaybeShowUpNextView();
 }
 
 void CalendarView::ScrollUpOneMonth() {
@@ -1984,6 +1992,8 @@ void CalendarView::OnCloseEventListAnimationComplete() {
   }
   calendar_view_controller_->OnEventListClosed();
 
+  MaybeShowUpNextView();
+
   up_button_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_CALENDAR_UP_BUTTON_ACCESSIBLE_DESCRIPTION));
   down_button_->SetTooltipText(l10n_util::GetStringUTF16(
@@ -2130,7 +2140,7 @@ void CalendarView::SetCalendarSlidingSurfaceBounds(bool event_list_view_open) {
 }
 
 void CalendarView::MaybeShowUpNextView() {
-  if (!features::IsCalendarJellyEnabled() || !EventsFetchComplete() ||
+  if (!features::IsCalendarJellyEnabled() ||
       calendar_view_controller_->UpcomingEvents().empty()) {
     RemoveUpNextView();
     return;
@@ -2141,14 +2151,6 @@ void CalendarView::MaybeShowUpNextView() {
     return;
   }
 
-  up_next_view_ = calendar_sliding_surface_->AddChildView(
-      std::make_unique<CalendarUpNextView>(
-          calendar_view_controller_.get(),
-          base::BindRepeating(&CalendarView::OpenEventListForTodaysDate,
-                              base::Unretained(this))));
-
-  MaybeCreateLayerMask();
-
   // If the `event_list_view_` is currently showing and the `up_next_view_` is
   // not, then early return. In this scenario we want the up next view to be
   // there when the user closes the `event_list_view_` but we don't want all the
@@ -2156,6 +2158,13 @@ void CalendarView::MaybeShowUpNextView() {
   if (event_list_view_) {
     return;
   }
+
+  up_next_view_ = calendar_sliding_surface_->AddChildView(
+      std::make_unique<CalendarUpNextView>(
+          calendar_view_controller_.get(),
+          base::BindRepeating(&CalendarView::OpenEventListForTodaysDate,
+                              base::Unretained(this))));
+  MaybeCreateLayerMask();
 
   // If the event list and up next views aren't currently displayed, then
   // construct the view and put the calendar into the state of showing the up

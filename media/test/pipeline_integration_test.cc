@@ -47,6 +47,10 @@
 #include "media/filters/mac/audio_toolbox_audio_decoder.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "media/filters/win/media_foundation_audio_decoder.h"
+#endif
+
 #define EXPECT_HASH_EQ(a, b) EXPECT_EQ(a, b)
 #define EXPECT_VIDEO_FORMAT_EQ(a, b) EXPECT_EQ(a, b)
 #define EXPECT_COLOR_SPACE_EQ(a, b) EXPECT_EQ(a, b)
@@ -2101,13 +2105,15 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackHashed_M4A) {
   // EXPECT_HASH_EQ("3.77,4.53,4.75,3.48,3.67,3.76,", GetAudioHash());
 }
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 std::unique_ptr<AudioDecoder> CreateXheAacDecoder(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
 #if BUILDFLAG(IS_MAC)
   return std::make_unique<AudioToolboxAudioDecoder>();
 #elif BUILDFLAG(IS_ANDROID)
   return std::make_unique<MediaCodecAudioDecoder>(task_runner);
+#elif BUILDFLAG(IS_WIN)
+  return MediaFoundationAudioDecoder::Create();
 #else
 #error "xHE-AAC decoding is not supported on this platform.";
 #endif
@@ -2127,7 +2133,7 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackXHE_AAC) {
   });
 
   ASSERT_EQ(PIPELINE_OK,
-            Start("noise-xhe-aac.mp4", kHashed, CreateVideoDecodersCB(),
+            Start("noise-xhe-aac.mp4", kNormal, CreateVideoDecodersCB(),
                   prepend_audio_decoders_cb));
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
@@ -2155,7 +2161,7 @@ TEST_F(PipelineIntegrationTest, MSE_BasicPlaybackXHE_AAC) {
 
   TestMediaSource source("noise-xhe-aac.mp4", kAppendWholeFile);
   EXPECT_EQ(PIPELINE_OK, StartPipelineWithMediaSource(
-                             &source, kHashed, prepend_audio_decoders_cb));
+                             &source, kNormal, prepend_audio_decoders_cb));
   source.EndOfStream();
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
@@ -2173,7 +2179,7 @@ TEST_F(PipelineIntegrationTest, MSE_BasicPlaybackXHE_AAC) {
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
 }
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 
 TEST_F(PipelineIntegrationTest, BasicPlaybackHi10P) {
   ASSERT_EQ(PIPELINE_OK, Start("bear-320x180-hi10p.mp4"));

@@ -26,8 +26,7 @@ class WebContentRunner;
 // resources and service bindings.  Runners for specialized web-based content
 // (e.g. Cast applications) can extend this class to configure the Frame to
 // their needs, publish additional APIs, etc.
-class WebComponent : public fuchsia::sys::ComponentController,
-                     public fuchsia::ui::app::ViewProvider,
+class WebComponent : public fuchsia::ui::app::ViewProvider,
                      public fuchsia::web::NavigationEventListener {
  public:
   // Creates a WebComponent encapsulating a web.Frame.
@@ -37,13 +36,9 @@ class WebComponent : public fuchsia::sys::ComponentController,
   // [context| will be retained to provide component-specific services.
   //   If |context| includes an outgoing-directory request then the component
   //   will publish a ViewProvider implementation.
-  // |controller_request| may optionally be supplied and used to control the
-  //   lifetime of this component instance.
   WebComponent(base::StringPiece debug_name,
                WebContentRunner* runner,
-               std::unique_ptr<base::StartupContext> context,
-               fidl::InterfaceRequest<fuchsia::sys::ComponentController>
-                   controller_request);
+               std::unique_ptr<base::StartupContext> context);
 
   WebComponent(const WebComponent&) = delete;
   WebComponent& operator=(const WebComponent&) = delete;
@@ -71,16 +66,7 @@ class WebComponent : public fuchsia::sys::ComponentController,
     return startup_context_.get();
   }
 
-  // fuchsia::sys::ComponentController implementation.
-  void Kill() override;
-  void Detach() override;
-
   // fuchsia::ui::app::ViewProvider implementation.
-  void CreateView(
-      zx::eventpair view_token,
-      fidl::InterfaceRequest<fuchsia::sys::ServiceProvider> incoming_services,
-      fidl::InterfaceHandle<fuchsia::sys::ServiceProvider> outgoing_services)
-      override;
   void CreateViewWithViewRef(zx::eventpair view_token,
                              fuchsia::ui::views::ViewRefControl control_ref,
                              fuchsia::ui::views::ViewRef view_ref) override;
@@ -93,13 +79,13 @@ class WebComponent : public fuchsia::sys::ComponentController,
       fuchsia::web::NavigationState change,
       OnNavigationStateChangedCallback callback) override;
 
-  // Reports the supplied exit-code and reason to the `controller_binding_` and
-  // requests that the `runner_` delete this component.
-  // `reason` should be set to EXITED for expected terminations, in which case
-  // `exit_code` should be set to a `zx_status_t` value, e.g. the status
-  // reported by the error-handler for the component's `Frame`.
-  virtual void DestroyComponent(int64_t exit_code,
-                                fuchsia::sys::TerminationReason reason);
+  // Requests that the owning `runner_` teardown this `WebComponent`.
+  // `exit_code` indicates either a positive application-specific reason for
+  // termination, or a valid `zx_status_t` value.
+  // `ZX_OK` is used to indicate normal termination, whether self-initiated by
+  // the hosted content (e.g. `window.close()`) or due to a component stop
+  // request.
+  virtual void DestroyComponent(int64_t exit_code);
 
   // Invokes `Close()` on `frame_` with the specified `timeout`.
   void CloseFrameWithTimeout(base::TimeDelta timeout);
@@ -116,21 +102,11 @@ class WebComponent : public fuchsia::sys::ComponentController,
 
   fuchsia::web::FramePtr frame_;
 
-  // Bindings used to manage the lifetime of this component instance.
-  fidl::Binding<fuchsia::sys::ComponentController> controller_binding_;
-
   // Objects used for binding and exporting the ViewProvider service.
   std::unique_ptr<base::ScopedServiceBinding<fuchsia::ui::app::ViewProvider>>
       view_provider_binding_;
 
-  // Termination reason and exit-code to be reported via the
-  // sys::ComponentController::OnTerminated event.
-  fuchsia::sys::TerminationReason termination_reason_ =
-      fuchsia::sys::TerminationReason::UNKNOWN;
-  int64_t termination_exit_code_ = 0;
-
   bool view_is_bound_ = false;
-
   bool component_started_ = false;
   bool enable_remote_debugging_ = false;
 

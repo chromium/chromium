@@ -13,3 +13,8 @@ mojom("annotator_mojo_bindings") {
   sources = [ "annotator_structs.mojom" ]
   webui_module_path = "/$cur_dir"
 }
+
+mojom("projector_mojo_bindings") {
+  sources = [ "projector_types.mojom" ]
+  webui_module_path = "/$cur_dir"
+}

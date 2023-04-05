@@ -262,7 +262,6 @@ public abstract class ChromeFeatureList {
             "ClearOmniboxFocusAfterNavigation";
     public static final String CLOSE_TAB_SUGGESTIONS = "CloseTabSuggestions";
     public static final String COMMAND_LINE_ON_NON_ROOTED = "CommandLineOnNonRooted";
-    public static final String COMMERCE_COUPONS = "CommerceCoupons";
     public static final String COMMERCE_MERCHANT_VIEWER = "CommerceMerchantViewer";
     public static final String COMMERCE_PRICE_TRACKING = "CommercePriceTracking";
     public static final String CONTEXTUAL_PAGE_ACTIONS = "ContextualPageActions";
@@ -587,7 +586,6 @@ public abstract class ChromeFeatureList {
             new CachedFlag(CLOSE_TAB_SUGGESTIONS, false);
     public static final CachedFlag sCommandLineOnNonRooted =
             new CachedFlag(COMMAND_LINE_ON_NON_ROOTED, false);
-    public static final CachedFlag sCommerceCoupons = new CachedFlag(COMMERCE_COUPONS, false);
     public static final CachedFlag sCriticalPersistedTabData =
             new CachedFlag(CRITICAL_PERSISTED_TAB_DATA, false);
     public static final CachedFlag sDiscoverMultiColumn = new CachedFlag(FEED_MULTI_COLUMN, false);
@@ -660,7 +658,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sUseChimeAndroidSdk =
             new CachedFlag(USE_CHIME_ANDROID_SDK, false);
     public static final CachedFlag sUseLibunwindstackNativeUnwinderAndroid =
-            new CachedFlag(USE_LIBUNWINDSTACK_NATIVE_UNWINDER_ANDROID, true);
+            new CachedFlag(USE_LIBUNWINDSTACK_NATIVE_UNWINDER_ANDROID, false);
     public static final CachedFlag sWebApkTrampolineOnInitialIntent =
             new CachedFlag(WEB_APK_TRAMPOLINE_ON_INITIAL_INTENT, true);
 

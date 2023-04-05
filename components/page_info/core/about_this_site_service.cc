@@ -167,6 +167,11 @@ void AboutThisSiteService::OnOpenedDirectlyFromSidePanel() {
       AboutThisSiteInteraction::kOpenedDirectlyFromSidePanel);
 }
 
+// static
+void AboutThisSiteService::OnSameTabNavigation() {
+  RecordAboutThisSiteInteraction(AboutThisSiteInteraction::kSameTabNavigation);
+}
+
 base::WeakPtr<AboutThisSiteService> AboutThisSiteService::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }

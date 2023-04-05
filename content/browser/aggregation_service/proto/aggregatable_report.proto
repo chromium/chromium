@@ -66,4 +66,5 @@ message AggregatableReportRequest {
   string reporting_path = 3;
   optional uint64 debug_key = 4;
   int32 failed_send_attempts = 5;
+  map<string, string> additional_fields = 6;
 }

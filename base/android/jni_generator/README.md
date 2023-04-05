@@ -28,11 +28,9 @@ resolved by the runtime (via `dlsym()`). There are a number of notable
 exceptions to this. See usage of `jni_registration_generator.py` in the
 codebase.
 
-The `jni_registration_generator.py` exposes two registration methods:
-* `RegisterNonMainDexNatives` - Registers native functions needed by multiple
-  process types (e.g. Rendereres, GPU process).
-* `RegisterMainDexNatives` - Registers native functions needed only by the
-  browser process.
+The `jni_registration_generator.py` exposes a registration function when using
+manual registation:
+* `RegisterNatives` - Registers all native functions.
 
 ### Exposing Java Methods
 

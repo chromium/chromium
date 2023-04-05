@@ -51,14 +51,19 @@ source_set("bring_android_tabs_ui") {
 
 swift_source_set("bring_android_tabs_ui_swift") {
   bridge_header = "bring_android_tabs_swift_bridge.h"
-  sources =
-      [ "bring_android_tabs_prompt_confirmation_alert_view_controller.swift" ]
+  sources = [
+    "bring_android_tabs_prompt_bottom_message_provider.swift",
+    "bring_android_tabs_prompt_bottom_message_view.swift",
+    "bring_android_tabs_prompt_confirmation_alert_view_controller.swift",
+  ]
   deps = [
     ":bring_android_tabs_ui",
     ":constants",
     "resources:bring_android_tabs_icon",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/ui/icons:symbols",
+    "//ios/chrome/common/ui/colors:swift",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ui/base",
   ]

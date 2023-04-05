@@ -9,12 +9,14 @@
 
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_user_education_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_view_controller.h"
@@ -41,6 +43,7 @@ NSString* const kInactiveTabsUserEducationShownOnce =
 
 @interface InactiveTabsCoordinator () <
     GridViewControllerDelegate,
+    InactiveTabsCommands,
     InactiveTabsUserEducationCoordinatorDelegate,
     InactiveTabsViewControllerDelegate,
     SettingsNavigationControllerDelegate>
@@ -85,7 +88,9 @@ NSString* const kInactiveTabsUserEducationShownOnce =
       SnapshotBrowserAgent::FromBrowser(self.browser)->snapshot_cache();
   self.mediator = [[InactiveTabsMediator alloc]
       initWithConsumer:self.viewController.gridViewController
+        commandHandler:self
           webStateList:self.browser->GetWebStateList()
+           prefService:GetApplicationContext()->GetLocalState()
          snapshotCache:snapshotCache];
   self.viewController.gridViewController.imageDataSource = self.mediator;
   self.viewController.gridViewController.menuProvider = self.menuProvider;
@@ -238,6 +243,12 @@ NSString* const kInactiveTabsUserEducationShownOnce =
 - (void)didTapInactiveTabsSettingsLinkInGridViewController:
     (GridViewController*)gridViewController {
   [self presentSettings];
+}
+
+#pragma mark - InactiveTabsCommands
+
+- (void)inactiveTabsExplicitlyDisabledByUser {
+  [self.delegate inactiveTabsCoordinatorDidFinish:self];
 }
 
 #pragma mark - InactiveTabsUserEducationCoordinatorDelegate

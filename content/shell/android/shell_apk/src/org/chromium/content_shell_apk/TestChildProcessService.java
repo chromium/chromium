@@ -14,7 +14,6 @@ import android.os.RemoteException;
 import android.util.SparseArray;
 
 import org.chromium.base.CommandLine;
-import org.chromium.base.JNIUtils;
 import org.chromium.base.Log;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
@@ -83,9 +82,6 @@ public class TestChildProcessService extends Service {
             // Store the command line before loading the library to avoid an assert in CommandLine.
             mCommandLine = CommandLine.getJavaSwitchesOrNull();
 
-            // Non-main processes are launched for testing. Mark them as such so that the JNI
-            // in the seconary dex won't be registered. See https://crbug.com/810720.
-            JNIUtils.enableSelectiveJniRegistration();
             LibraryLoader.getInstance().loadNow();
             LibraryLoader.getInstance().ensureInitialized();
 

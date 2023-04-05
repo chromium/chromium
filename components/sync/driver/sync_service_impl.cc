@@ -543,7 +543,8 @@ void SyncServiceImpl::ResetEngine(ShutdownReason shutdown_reason,
       // configure result, else we'll dcheck when we try to read the sync error.
       expect_sync_configuration_aborted_ = true;
       if (shutdown_reason != ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA) {
-        data_type_manager_->Stop(shutdown_reason);
+        data_type_manager_->Stop(
+            ShutdownReasonToSyncStopMetadataFate(shutdown_reason));
       }
     }
     data_type_manager_.reset();
@@ -1211,9 +1212,24 @@ ModelTypeSet SyncServiceImpl::GetActiveDataTypes() const {
 
   // Persistent auth errors lead to PAUSED, which implies
   // data_type_manager_==null above.
-  DCHECK(!GetAuthError().IsPersistentError());
+  CHECK(!GetAuthError().IsPersistentError());
 
   return data_type_manager_->GetActiveDataTypes();
+}
+
+ModelTypeSet SyncServiceImpl::GetTypesWithPendingDownloadForInitialSync()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!data_type_manager_) {
+    return ModelTypeSet();
+  }
+
+  // Persistent auth errors lead to PAUSED, which implies
+  // data_type_manager_==null above.
+  CHECK(!GetAuthError().IsPersistentError());
+
+  return data_type_manager_->GetTypesWithPendingDownloadForInitialSync();
 }
 
 void SyncServiceImpl::SetSyncRequestedAndIgnoreNotification(bool is_requested) {
@@ -1856,8 +1872,6 @@ void SyncServiceImpl::OverrideNetworkForTest(
                 ResetEngineReason::kShutdown);
     // The startup logic and DCHECKs require that datatypes start stopped.
     // Since ResetEngine() doesn't do this, it is necessary to stop them here.
-    // STOP_SYNC_AND_KEEP_DATA is used instead of BROWSER_SHUTDOWN_AND_KEEP_DATA
-    // because crbug.com/1400437 is removing shutdown logic from controllers.
     for (const auto& [type, controller] : data_type_controllers_) {
       controller->Stop(SyncStopMetadataFate::KEEP_METADATA, base::DoNothing());
     }

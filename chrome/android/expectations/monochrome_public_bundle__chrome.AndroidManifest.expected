@@ -813,6 +813,14 @@
       </intent-filter>  # DIFF-ANCHOR: 4ed161a4
       <meta-data android:name="android.appwidget.provider" android:resource="@xml/quick_action_search_widget_small_info"/>
     </receiver>  # DIFF-ANCHOR: 5a0b9536
+    <receiver  # DIFF-ANCHOR: 8d506dab
+        android:name="org.chromium.chrome.browser.safe_browsing.PasswordProtectionBroadcastReceiver"
+        android:exported="true"
+        android:permission="com.google.android.gms.permission.INTERNAL_BROADCAST">
+      <intent-filter>  # DIFF-ANCHOR: 84a815d3
+        <action android:name="com.android.chrome.safe_browsing.LOGIN"/>
+      </intent-filter>  # DIFF-ANCHOR: 84a815d3
+    </receiver>  # DIFF-ANCHOR: 8d506dab
     <receiver  # DIFF-ANCHOR: a0d83ae5
         android:name="org.chromium.chrome.browser.searchwidget.SearchWidgetProvider"
         android:exported="true"

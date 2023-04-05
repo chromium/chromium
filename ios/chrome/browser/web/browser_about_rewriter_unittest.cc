@@ -11,8 +11,8 @@
 
 using BrowserAboutRewriterTest = PlatformTest;
 
-// Test that chrome://newtab is re-written to about://newtab,
-// but that about://newtab is not re-written twice.
+// Test that chrome://newtab is re-written to about://newtab/,
+// but that about://newtab/ is not re-written twice.
 TEST_F(BrowserAboutRewriterTest, NtpTest) {
   GURL url = GURL(kChromeUINewTabURL);
   EXPECT_TRUE(WillHandleWebBrowserAboutURL(&url, /*browser_state=*/nullptr));

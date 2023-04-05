@@ -23,6 +23,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
@@ -47,6 +48,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/task/post_job.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -773,41 +775,59 @@ std::vector<std::string> ExtractTestsFromFilter(const std::string& filter,
 class TestRunner {
  public:
   explicit TestRunner(TestLauncher* launcher,
-                      size_t runner_count = 1u,
+                      size_t max_workers = 1u,
                       size_t batch_size = 1u)
       : launcher_(launcher),
-        runner_count_(runner_count),
+        max_workers_(max_workers),
         batch_size_(batch_size) {}
 
   // Sets |test_names| to be run, with |batch_size| tests per process.
-  // Posts LaunchNextTask |runner_count| number of times, each with a separate
-  // task runner.
+  // Posts a job to run LaunchChildGTestProcess on |max_workers| workers.
   void Run(const std::vector<std::string>& test_names);
 
  private:
   // Called to check if the next batch has to run on the same
   // sequence task runner and using the same temporary directory.
-  static bool ShouldReuseStateFromLastBatch(
-      const std::vector<std::string>& test_names) {
+  static bool IsPreTestBatch(const std::vector<std::string>& test_names) {
     return test_names.size() == 1u &&
            test_names.front().find(kPreTestPrefix) != std::string::npos;
   }
 
-  // Launches the next child process on |task_runner| and clears
-  // |last_task_temp_dir| from the previous task.
-  void LaunchNextTask(scoped_refptr<TaskRunner> task_runner,
-                      const FilePath& last_task_temp_dir);
+  bool IsSingleThreaded() const { return batch_size_ == 0; }
 
-  // Forwards |last_task_temp_dir| and launches the next task on main thread.
-  // The method is called on |task_runner|.
-  void ClearAndLaunchNext(scoped_refptr<TaskRunner> main_thread_runner,
-                          scoped_refptr<TaskRunner> task_runner,
-                          const FilePath& last_task_temp_dir) {
-    main_thread_runner->PostTask(
-        FROM_HERE,
-        BindOnce(&TestRunner::LaunchNextTask, weak_ptr_factory_.GetWeakPtr(),
-                 task_runner, last_task_temp_dir));
+  void WorkerTask(scoped_refptr<TaskRunner> main_task_runner,
+                  base::JobDelegate* delegate);
+
+  size_t GetMaxConcurrency(size_t worker_count) {
+    AutoLock auto_lock(lock_);
+    if (IsSingleThreaded()) {
+      return tests_to_run_.empty() ? 0 : 1;
+    }
+
+    // Round up the division to ensure enough workers for all tests.
+    return std::min((tests_to_run_.size() + batch_size_ - 1) / batch_size_,
+                    max_workers_);
   }
+
+  std::vector<std::string> GetNextBatch() EXCLUSIVE_LOCKS_REQUIRED(lock_) {
+    size_t batch_size;
+    // Single threaded case runs all tests in one batch.
+    if (IsSingleThreaded()) {
+      batch_size = tests_to_run_.size();
+    }
+    // Run remaining tests up to |batch_size_|.
+    else {
+      batch_size = std::min(batch_size_, tests_to_run_.size());
+    }
+    std::vector<std::string> batch(tests_to_run_.rbegin(),
+                                   tests_to_run_.rbegin() + batch_size);
+    tests_to_run_.erase(tests_to_run_.end() - batch_size, tests_to_run_.end());
+    return batch;
+  }
+
+  // Cleans up |task_temp_dir| from a previous task and quits |run_loop| if
+  // |done|.
+  void CleanupTask(base::ScopedTempDir task_temp_dir, bool done);
 
   // No-op error function that replaces libxml's default, which writes to
   // stderr.
@@ -815,16 +835,16 @@ class TestRunner {
 
   ThreadChecker thread_checker_;
 
-  std::vector<std::string> tests_to_run_;
   const raw_ptr<TestLauncher> launcher_;
-  std::vector<scoped_refptr<TaskRunner>> task_runners_;
-  // Number of sequenced task runners to use.
-  const size_t runner_count_;
-  // Number of TaskRunners that have finished.
-  size_t runners_done_ = 0;
+  JobHandle job_handle_;
+  // Max number of workers to use.
+  const size_t max_workers_;
   // Number of tests per process, 0 is special case for all tests.
   const size_t batch_size_;
   RunLoop run_loop_;
+  // Protects member used concurrently by worker tasks.
+  base::Lock lock_;
+  std::vector<std::string> tests_to_run_ GUARDED_BY(lock_);
   // Set the global libxml error context and function pointer for the lifetime
   // of this test runner.
   ScopedXmlErrorFunc xml_error_func_{nullptr, &NullXmlErrorFunc};
@@ -834,71 +854,88 @@ class TestRunner {
 
 void TestRunner::Run(const std::vector<std::string>& test_names) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  // No sequence runners, fail immediately.
-  CHECK_GT(runner_count_, 0u);
-  tests_to_run_ = test_names;
-  // Reverse test order to avoid coping the whole vector when removing tests.
-  ranges::reverse(tests_to_run_);
-  runners_done_ = 0;
-  task_runners_.clear();
-  for (size_t i = 0; i < runner_count_; i++) {
-    task_runners_.push_back(ThreadPool::CreateSequencedTaskRunner(
-        {MayBlock(), TaskShutdownBehavior::BLOCK_SHUTDOWN}));
-    SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        BindOnce(&TestRunner::LaunchNextTask, weak_ptr_factory_.GetWeakPtr(),
-                 task_runners_.back(), FilePath()));
-  }
-  run_loop_.Run();
-}
-
-void TestRunner::LaunchNextTask(scoped_refptr<TaskRunner> task_runner,
-                                const FilePath& last_task_temp_dir) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  // delete previous temporary directory
-  if (!last_task_temp_dir.empty() &&
-      !DeletePathRecursively(last_task_temp_dir)) {
-    // This needs to be non-fatal at least for Windows.
-    LOG(WARNING) << "Failed to delete " << last_task_temp_dir.AsUTF8Unsafe();
-  }
-
-  // No more tests to run, finish sequence.
-  if (tests_to_run_.empty()) {
-    runners_done_++;
-    // All sequence runners are done, quit the loop.
-    if (runners_done_ == runner_count_)
-      run_loop_.QuitWhenIdle();
+  // No workers, fail immediately.
+  CHECK_GT(max_workers_, 0u);
+  if (test_names.empty()) {
     return;
   }
 
-  // Create a temporary directory for this task. This directory will hold the
-  // flags and results files for the child processes as well as their User Data
-  // dir, where appropriate. For platforms that support per-child temp dirs,
-  // this directory will also contain one subdirectory per child for that
-  // child's process-wide temp dir.
-  base::FilePath task_temp_dir;
-  CHECK(CreateTemporaryDirInDir(GetTempDirForTesting(), {}, &task_temp_dir));
-  bool post_to_current_runner = true;
-  size_t batch_size = (batch_size_ == 0) ? tests_to_run_.size() : batch_size_;
-
-  int child_index = 0;
-  while (post_to_current_runner && !tests_to_run_.empty()) {
-    batch_size = std::min(batch_size, tests_to_run_.size());
-    std::vector<std::string> batch(tests_to_run_.rbegin(),
-                                   tests_to_run_.rbegin() + batch_size);
-    tests_to_run_.erase(tests_to_run_.end() - batch_size, tests_to_run_.end());
-    task_runner->PostTask(
-        FROM_HERE,
-        BindOnce(&TestLauncher::LaunchChildGTestProcess, Unretained(launcher_),
-                 SingleThreadTaskRunner::GetCurrentDefault(), batch,
-                 task_temp_dir,
-                 CreateChildTempDirIfSupported(task_temp_dir, child_index++)));
-    post_to_current_runner = ShouldReuseStateFromLastBatch(batch);
+  {
+    AutoLock auto_lock(lock_);
+    tests_to_run_ = test_names;
+    // Reverse test order to avoid copying the whole vector when removing tests.
+    std::reverse(tests_to_run_.begin(), tests_to_run_.end());
   }
-  task_runner->PostTask(
-      FROM_HERE, BindOnce(&TestRunner::ClearAndLaunchNext, Unretained(this),
-                          SingleThreadTaskRunner::GetCurrentDefault(),
-                          task_runner, task_temp_dir));
+
+  job_handle_ = base::PostJob(
+      FROM_HERE, {TaskPriority::USER_BLOCKING, MayBlock()},
+      BindRepeating(&TestRunner::WorkerTask, Unretained(this),
+                    SingleThreadTaskRunner::GetCurrentDefault()),
+      BindRepeating(&TestRunner::GetMaxConcurrency, Unretained(this)));
+
+  run_loop_.Run();
+}
+
+void TestRunner::WorkerTask(scoped_refptr<TaskRunner> main_task_runner,
+                            base::JobDelegate* delegate) {
+  bool done = false;
+  while (!done && !delegate->ShouldYield()) {
+    // Create a temporary directory for this task. This directory will hold the
+    // flags and results files for the child processes as well as their User
+    // Data dir, where appropriate. For platforms that support per-child temp
+    // dirs, this directory will also contain one subdirectory per child for
+    // that child's process-wide temp dir.
+    base::ScopedTempDir task_temp_dir;
+    CHECK(task_temp_dir.CreateUniqueTempDirUnderPath(GetTempDirForTesting()));
+    int child_index = 0;
+
+    std::vector<std::vector<std::string>> batches;
+    {
+      AutoLock auto_lock(lock_);
+      if (!tests_to_run_.empty()) {
+        batches.push_back(GetNextBatch());
+        while (IsPreTestBatch(batches.back())) {
+          DCHECK(!tests_to_run_.empty());
+          batches.push_back(GetNextBatch());
+        }
+      }
+      done = tests_to_run_.empty();
+    }
+    for (const auto& batch : batches) {
+      launcher_->LaunchChildGTestProcess(
+          main_task_runner, batch, task_temp_dir.GetPath(),
+          CreateChildTempDirIfSupported(task_temp_dir.GetPath(),
+                                        child_index++));
+    }
+
+    // Cleaning up test results is scheduled to |main_task_runner| because it
+    // must happen after all post processing step that was scheduled in
+    // LaunchChildGTestProcess to |main_task_runner|.
+    main_task_runner->PostTask(
+        FROM_HERE,
+        BindOnce(&TestRunner::CleanupTask, weak_ptr_factory_.GetWeakPtr(),
+                 std::move(task_temp_dir), done));
+  }
+}
+
+void TestRunner::CleanupTask(base::ScopedTempDir task_temp_dir, bool done) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+
+  // delete previous temporary directory
+  if (!task_temp_dir.Delete()) {
+    // This needs to be non-fatal at least for Windows.
+    LOG(WARNING) << "Failed to delete "
+                 << task_temp_dir.GetPath().AsUTF8Unsafe();
+  }
+
+  if (!done) {
+    return;
+  }
+
+  if (job_handle_) {
+    job_handle_.Cancel();
+    run_loop_.QuitWhenIdle();
+  }
 }
 
 // Returns the number of files and directories in |dir|, or 0 if |dir| is empty.

@@ -7,17 +7,38 @@
 
 #include <string>
 
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/ui/settings/autofill/cells/autofill_address_profile_source.h"
 
 // Item for autofill profile (address).
-@interface AutofillProfileItem : TableViewMultiDetailTextItem
+@interface AutofillProfileItem : TableViewItem
+
+// The image in the cell. If nil, won't be added to the view hierarchy.
+@property(nonatomic, readwrite, strong) UIImage* image;
+
+// The text label in the cell.
+@property(nonatomic, readwrite, copy) NSString* title;
+
+// Detail text to be displayed. The detail text label is configured with
+// multiline (no limit).
+@property(nonatomic, strong) NSString* detailText;
 
 // The GUID used by the PersonalDataManager to identify profiles.
 @property(nonatomic, assign) std::string GUID;
 
 // Denotes whether the profile is local, syncable or account profile.
 @property(nonatomic, assign) AutofillAddressProfileSource autofillProfileSource;
+
+@end
+
+@interface AutofillProfileCell : TableViewCell
+
+// The cell imageView.
+@property(nonatomic, readonly, strong) UIImageView* imageView;
+// The cell text.
+@property(nonatomic, readonly, strong) UILabel* textLabel;
+// The cell detail text.
+@property(nonatomic, readonly, strong) UILabel* detailTextLabel;
 
 @end
 

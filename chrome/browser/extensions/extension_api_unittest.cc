@@ -26,19 +26,7 @@ void ExtensionApiUnittest::SetUp() {
   extension_ = ExtensionBuilder("Test").Build();
 }
 
-std::unique_ptr<base::Value> ExtensionApiUnittest::RunFunctionAndReturnValue(
-    ExtensionFunction* function,
-    const std::string& args) {
-  auto result = RunFunctionAndReturnSingleValue(function, args);
-  if (!result) {
-    return nullptr;
-  }
-
-  return base::Value::ToUniquePtrValue(std::move(result).value());
-}
-
-absl::optional<base::Value>
-ExtensionApiUnittest::RunFunctionAndReturnSingleValue(
+absl::optional<base::Value> ExtensionApiUnittest::RunFunctionAndReturnValue(
     ExtensionFunction* function,
     const std::string& args) {
   function->set_extension(extension());
@@ -50,8 +38,7 @@ absl::optional<base::Value::Dict>
 ExtensionApiUnittest::RunFunctionAndReturnDictionary(
     ExtensionFunction* function,
     const std::string& args) {
-  absl::optional<base::Value> value =
-      RunFunctionAndReturnSingleValue(function, args);
+  absl::optional<base::Value> value = RunFunctionAndReturnValue(function, args);
   // We expect to either have successfully retrieved a dictionary from the
   // value or the value to have been nullopt.
   EXPECT_TRUE(!value || value->is_dict());
@@ -65,8 +52,7 @@ ExtensionApiUnittest::RunFunctionAndReturnDictionary(
 absl::optional<base::Value::List>
 ExtensionApiUnittest::RunFunctionAndReturnList(ExtensionFunction* function,
                                                const std::string& args) {
-  absl::optional<base::Value> value =
-      RunFunctionAndReturnSingleValue(function, args);
+  absl::optional<base::Value> value = RunFunctionAndReturnValue(function, args);
 
   // We expect to have successfully retrieved a list from the value.
   EXPECT_TRUE(!value || value->is_list());
@@ -87,7 +73,7 @@ std::string ExtensionApiUnittest::RunFunctionAndReturnError(
 
 void ExtensionApiUnittest::RunFunction(ExtensionFunction* function,
                                        const std::string& args) {
-  RunFunctionAndReturnSingleValue(function, args);
+  RunFunctionAndReturnValue(function, args);
 }
 
 }  // namespace extensions

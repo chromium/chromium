@@ -110,6 +110,7 @@ NSArray<NSValue*>* StringRangeInLines(NSAttributedString* attributed_string,
   self = [super initWithFrame:frame];
   if (self) {
     self.lineBreakMode = NSLineBreakByClipping;
+    self.lineSpacing = 0;
     _isMultilineEnabled =
         base::FeatureList::IsEnabled(kMultilineFadeTruncatingLabel);
     [self setup];
@@ -204,11 +205,13 @@ NSArray<NSValue*>* StringRangeInLines(NSAttributedString* attributed_string,
       round(wrappingStringSize.height / singleLineStringSize.height);
   const NSInteger numberOfLinesToDraw =
       MIN(maxNumberOfLines, wrappingStringNumberOfLines);
+  const CGFloat totalLineSpacing =
+      MAX((numberOfLinesToDraw - 1), 0) * self.lineSpacing;
 
   const CGFloat boundingWidth =
       MIN(ceil(singleLineStringSize.width), bounds.size.width);
-  CGFloat boundingHeight =
-      ceil(singleLineStringSize.height * numberOfLinesToDraw);
+  CGFloat boundingHeight = ceil(
+      singleLineStringSize.height * numberOfLinesToDraw + totalLineSpacing);
   boundingHeight = MIN(boundingHeight, bounds.size.height);
   const CGRect boundingRect = CGRectMake(bounds.origin.x, bounds.origin.y,
                                          boundingWidth, boundingHeight);
@@ -277,16 +280,20 @@ NSArray<NSValue*>* StringRangeInLines(NSAttributedString* attributed_string,
     return;
   }
 
+  const CGFloat lineSpacing = self.lineSpacing;
+  const CGFloat totalLineSpacing = MAX(lineCount - 1, 0) * lineSpacing;
   // Offset to vertical center the text.
   const CGFloat verticalOffset =
-      (requestedRect.size.height - lineCount * lineHeight) / 2;
+      (requestedRect.size.height - lineCount * lineHeight - totalLineSpacing) /
+      2;
   const NSInteger lastLine = lineCount - 1;
 
   /* Draw every line before last line. */
   for (int i = 0; i < lastLine; ++i) {
     const CGRect lineRect =
         CGRectMake(requestedRect.origin.x,
-                   requestedRect.origin.y + i * lineHeight + verticalOffset,
+                   requestedRect.origin.y + i * (lineHeight + lineSpacing) +
+                       verticalOffset,
                    requestedRect.size.width, lineHeight);
     const NSRange stringRange = stringRangeForLines[i].rangeValue;
     NSAttributedString* subString =
@@ -298,10 +305,11 @@ NSArray<NSValue*>* StringRangeInLines(NSAttributedString* attributed_string,
   }
 
   /*  Draw last line. */
-  const CGRect lastLineRect = CGRectMake(
-      requestedRect.origin.x,
-      requestedRect.origin.y + lastLine * lineHeight + verticalOffset,
-      requestedRect.size.width, lineHeight);
+  const CGRect lastLineRect =
+      CGRectMake(requestedRect.origin.x,
+                 requestedRect.origin.y +
+                     lastLine * (lineHeight + lineSpacing) + verticalOffset,
+                 requestedRect.size.width, lineHeight);
   // Last line takes all the remaining text, from start of last line to end of
   // `attributedText`.
   const NSRange lastLineRange =

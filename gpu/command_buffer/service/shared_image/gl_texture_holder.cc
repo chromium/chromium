@@ -104,7 +104,6 @@ GLuint GLTextureHolder::GetServiceId() const {
 void GLTextureHolder::Initialize(
     const GLCommonImageBackingFactory::FormatInfo& format_info,
     bool framebuffer_attachment_angle,
-    const bool disable_tex_storage,
     base::span<const uint8_t> pixel_data,
     const std::string& debug_label) {
   DCHECK(!texture_ && !passthrough_texture_);
@@ -141,7 +140,7 @@ void GLTextureHolder::Initialize(
 
   // Initialize the texture storage/image parameters and upload initial pixels
   // if available.
-  if (format_info.supports_storage && !disable_tex_storage) {
+  if (format_info.supports_storage) {
     {
       gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter_);
       api->glTexStorage2DEXTFn(format_desc_.target, /*levels=*/1,

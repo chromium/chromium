@@ -13,6 +13,7 @@
 #include "ash/app_list/app_list_presenter_impl.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/search/search_box_model.h"
+#include "ash/app_list/quick_app_access_model.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/app_list_toast_container_view.h"
@@ -44,6 +45,8 @@
 #include "ash/scoped_animation_disabler.h"
 #include "ash/screen_util.h"
 #include "ash/session/session_controller_impl.h"
+#include "ash/shelf/home_button.h"
+#include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/float/float_controller.h"
@@ -1145,6 +1148,7 @@ void AppListControllerImpl::OpenSearchResult(const std::string& result_id,
       case AppListLaunchedFrom::kLaunchedFromGrid:
       case AppListLaunchedFrom::kLaunchedFromShelf:
       case AppListLaunchedFrom::kLaunchedFromContinueTask:
+      case AppListLaunchedFrom::kLaunchedFromQuickAppAccess:
         break;
       case AppListLaunchedFrom::DEPRECATED_kLaunchedFromSuggestionChip:
         NOTREACHED();
@@ -1176,6 +1180,7 @@ void AppListControllerImpl::OpenSearchResult(const std::string& result_id,
     case AppListLaunchedFrom::kLaunchedFromRecentApps:
     case AppListLaunchedFrom::kLaunchedFromShelf:
     case AppListLaunchedFrom::DEPRECATED_kLaunchedFromSuggestionChip:
+    case AppListLaunchedFrom::kLaunchedFromQuickAppAccess:
       NOTREACHED();
       break;
   }
@@ -1242,6 +1247,10 @@ void AppListControllerImpl::ActivateItem(const std::string& id,
     case AppListLaunchedFrom::kLaunchedFromRecentApps:
       RecordLauncherWorkflowMetrics(AppListUserAction::kAppLaunchFromRecentApps,
                                     is_tablet_mode, last_show_timestamp_);
+      break;
+    case AppListLaunchedFrom::kLaunchedFromQuickAppAccess:
+      // TODO(b/266734005): Implement user action to record launching from quick
+      // app access.
       break;
     case AppListLaunchedFrom::kLaunchedFromContinueTask:
     case AppListLaunchedFrom::kLaunchedFromSearchBox:
@@ -1898,6 +1907,12 @@ int AppListControllerImpl::GetPreferredBubbleWidth(
   DCHECK(bubble_presenter_);
 
   return bubble_presenter_->GetPreferredBubbleWidth(root_window);
+}
+
+void AppListControllerImpl::SetHomeButtonQuickApp(const std::string& app_id) {
+  if (features::IsHomeButtonQuickAppAccessEnabled()) {
+    model_provider_->quick_app_access_model()->SetQuickApp(app_id);
+  }
 }
 
 }  // namespace ash

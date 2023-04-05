@@ -102,8 +102,10 @@ import org.chromium.components.messages.MessageStateHandler;
 import org.chromium.components.messages.MessagesTestHelper;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.util.DOMUtils;
+import org.chromium.content_public.browser.test.util.FencedFrameUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -1254,7 +1256,8 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures({"FencedFrames<Study,PrivacySandboxAdsAPIsOverride"})
+    @Features.
+    EnableFeatures({"FencedFrames<Study,PrivacySandboxAdsAPIsOverride,FencedFramesAPIChanges"})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
             "force-fieldtrial-params=Study.Group:implementation_type/mparch"})
     public void
@@ -1283,6 +1286,18 @@ public class UrlOverridingTest {
             TestThreadUtils.runOnUiThreadBlocking(
                     () -> { tab.getWebContents().removeObserver(observer); });
         }
+
+        // Because fenced frames are now being loaded with a config object, it
+        // needs extra time to load the page outside of what the
+        // WebContentsObserver is waiting for. Wait for the the fenced frame's
+        // navigation to commit before continuing.
+        final String fencedFrameUrl = mTestServer.getURL(NAVIGATION_FROM_USER_GESTURE_PAGE);
+        RenderFrameHost mainFrame = TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> mActivityTestRule.getWebContents().getMainFrame());
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(FencedFrameUtils.getLastFencedFrame(mainFrame, fencedFrameUrl),
+                    Matchers.notNullValue());
+        });
 
         // Click page to launch app. There's no easy way to know when an out of process subframe is
         // ready to receive input, even if the document is loaded and javascript runs. If the click

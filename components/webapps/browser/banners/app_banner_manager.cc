@@ -155,6 +155,10 @@ void TrackBeforeInstallEventPrompt(AppBannerManager::State state) {
 }
 }  // anonymous namespace
 
+namespace test {
+bool g_disable_banner_triggering_for_testing = false;
+}
+
 // static
 AppBannerManager* AppBannerManager::FromWebContents(
     content::WebContents* web_contents) {
@@ -229,6 +233,10 @@ void AppBannerManager::AddObserver(Observer* observer) {
 
 void AppBannerManager::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
+}
+
+bool AppBannerManager::TriggeringDisabledForTesting() const {
+  return test::g_disable_banner_triggering_for_testing;
 }
 
 bool AppBannerManager::IsPromptAvailableForTesting() const {
@@ -735,6 +743,10 @@ void AppBannerManager::DidFinishNavigation(content::NavigationHandle* handle) {
 void AppBannerManager::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
+  if (TriggeringDisabledForTesting()) {
+    return;
+  }
+
   UrlType url_type = GetUrlType(render_frame_host, validated_url);
   if (url_type != UrlType::kValidForBanner) {
     return;
@@ -821,6 +833,10 @@ void AppBannerManager::OnEngagementEvent(
     const GURL& url,
     double score,
     site_engagement::EngagementType /*type*/) {
+  if (TriggeringDisabledForTesting()) {
+    return;
+  }
+
   // Only trigger a banner using site engagement if:
   //  1. engagement increased for the web contents which we are attached to; and
   //  2. there are no currently active media players; and

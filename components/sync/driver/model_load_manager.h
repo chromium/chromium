@@ -11,9 +11,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/sync/base/sync_stop_metadata_fate.h"
 #include "components/sync/driver/configure_context.h"
 #include "components/sync/driver/data_type_controller.h"
-#include "components/sync/engine/shutdown_reason.h"
 
 namespace base {
 class ElapsedTimer;
@@ -68,12 +68,12 @@ class ModelLoadManager {
                   const ConfigureContext& context);
 
   // Can be called at any time. Synchronously stops all datatypes.
-  void Stop(ShutdownReason shutdown_reason);
+  void Stop(SyncStopMetadataFate metadata_fate);
 
-  // Stops an individual datatype |type| for |shutdown_reason|. |error| must be
-  // an actual error (i.e. not UNSET).
+  // Stops an individual datatype |type|. |error| must be an actual error (i.e.
+  // not UNSET).
   void StopDatatype(ModelType type,
-                    ShutdownReason shutdown_reason,
+                    SyncStopMetadataFate metadata_fate,
                     SyncError error);
 
  private:
@@ -87,7 +87,7 @@ class ModelLoadManager {
 
   // A helper to stop an individual datatype.
   void StopDatatypeImpl(const SyncError& error,
-                        ShutdownReason shutdown_reason,
+                        SyncStopMetadataFate metadata_fate,
                         DataTypeController* dtc,
                         DataTypeController::StopCallback callback);
 

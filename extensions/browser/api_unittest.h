@@ -55,7 +55,6 @@ class ApiUnitTest : public ExtensionsTest {
 
   // Various ways of running an API function. These methods take ownership of
   // |function|. |args| should be in JSON format, wrapped in a list.
-  // See also the RunFunction* methods in extension_function_test_utils.h.
 
   // Return the function result as a base::Value.
   absl::optional<base::Value> RunFunctionAndReturnValue(

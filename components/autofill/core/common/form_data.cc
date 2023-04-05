@@ -185,6 +185,23 @@ std::ostream& operator<<(std::ostream& os, const FormData& form) {
   return os;
 }
 
+FormFieldData* FormData::FindFieldByGlobalId(const FieldGlobalId& global_id) {
+  auto fields_it =
+      base::ranges::find(fields, global_id, &FormFieldData::global_id);
+
+  // If the field is found, return a pointer to the field, otherwise return
+  // nullptr.
+  return fields_it != fields.end() ? &*fields_it : nullptr;
+}
+
+FormFieldData* FormData::FindFieldByName(const base::StringPiece16 name_or_id) {
+  auto fields_it = base::ranges::find(fields, name_or_id, &FormFieldData::name);
+
+  // If the field is found, return a pointer to the field, otherwise return
+  // nullptr.
+  return fields_it != fields.end() ? &*fields_it : nullptr;
+}
+
 void SerializeFormData(const FormData& form_data, base::Pickle* pickle) {
   pickle->WriteInt(kFormDataPickleVersion);
   pickle->WriteString16(form_data.name);

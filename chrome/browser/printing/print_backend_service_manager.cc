@@ -658,9 +658,9 @@ PrintBackendServiceManager::RegisterClient(
     // Service not already available, so launch it now so that it will be
     // ready by the time the client gets to point of invoking a Mojo call.
     DCHECK(absl::holds_alternative<std::string>(destination));
-    bool is_sandboxed;
-    GetService(remote_id, /*printer_name=*/absl::get<std::string>(destination),
-               client_type, &is_sandboxed);
+    bool should_sandbox = ShouldServiceBeSandboxed(
+        /*printer_name=*/absl::get<std::string>(destination), client_type);
+    GetService(remote_id, client_type, should_sandbox);
   }
 
   return client_id;
@@ -676,7 +676,7 @@ size_t PrintBackendServiceManager::GetClientsRegisteredCount() const {
 #if BUILDFLAG(IS_WIN)
 bool PrintBackendServiceManager::PrinterDriverKnownToRequireElevatedPrivilege(
     const std::string& printer_name,
-    ClientType client_type) {
+    ClientType client_type) const {
   // Any Windows printer driver which causes a UI dialog to be displayed does
   // not work if printing is started from within a sandboxed environment.
   // crbug.com/1243873
@@ -694,11 +694,9 @@ bool PrintBackendServiceManager::PrinterDriverKnownToRequireElevatedPrivilege(
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-const mojo::Remote<mojom::PrintBackendService>&
-PrintBackendServiceManager::GetService(const RemoteId& remote_id,
-                                       const std::string& printer_name,
-                                       ClientType client_type,
-                                       bool* is_sandboxed) {
+bool PrintBackendServiceManager::ShouldServiceBeSandboxed(
+    const std::string& printer_name,
+    ClientType client_type) const {
   // Determine if sandboxing is appropriate.  This might be already known for
   // certain drivers/configurations, or learned during runtime.
   bool should_sandbox =
@@ -710,14 +708,20 @@ PrintBackendServiceManager::GetService(const RemoteId& remote_id,
                                                                    client_type);
   }
 #endif
-  *is_sandboxed = should_sandbox;
+  return should_sandbox;
+}
 
+const mojo::Remote<mojom::PrintBackendService>&
+PrintBackendServiceManager::GetService(const RemoteId& remote_id,
+                                       ClientType client_type,
+                                       bool sandboxed) {
   if (sandboxed_service_remote_for_test_) {
     // The presence of a sandboxed remote for testing signals a testing
     // environment.  If no unsandboxed test service was provided for fallback
     // processing then use the sandboxed one for that as well.
-    if (!should_sandbox && unsandboxed_service_remote_for_test_)
+    if (!sandboxed && unsandboxed_service_remote_for_test_) {
       return *unsandboxed_service_remote_for_test_;
+    }
 
     return *sandboxed_service_remote_for_test_;
   }
@@ -726,7 +730,7 @@ PrintBackendServiceManager::GetService(const RemoteId& remote_id,
   // be needed by client callers.
   DCHECK_GT(GetClientsRegisteredCount(), 0u);
 
-  if (should_sandbox) {
+  if (sandboxed) {
     // On the first print that will try to use sandboxed service, make note that
     // so far no drivers have been discovered to require fallback beyond any
     // predetermined known cases.
@@ -739,7 +743,7 @@ PrintBackendServiceManager::GetService(const RemoteId& remote_id,
     }
   }
 
-  if (should_sandbox) {
+  if (sandboxed) {
     return GetServiceFromBundle(remote_id, client_type, /*sandboxed=*/true,
                                 sandboxed_remotes_bundles_);
   }
@@ -1176,8 +1180,10 @@ PrintBackendServiceManager::GetServiceAndCallbackContextForQuery(
     CallbackContext& context) {
   context.remote_id = GetRemoteIdForPrinterName(printer_name);
   context.saved_callback_id = base::UnguessableToken::Create();
-  return GetService(context.remote_id, printer_name, ClientType::kQuery,
-                    &context.is_sandboxed);
+  context.is_sandboxed =
+      ShouldServiceBeSandboxed(printer_name, ClientType::kQuery);
+  return GetService(context.remote_id, ClientType::kQuery,
+                    context.is_sandboxed);
 }
 
 const mojo::Remote<mojom::PrintBackendService>&
@@ -1187,8 +1193,10 @@ PrintBackendServiceManager::GetServiceAndCallbackContextForQueryWithUiClient(
     CallbackContext& context) {
   context.remote_id = GetRemoteIdForQueryWithUiClientId(client_id);
   context.saved_callback_id = base::UnguessableToken::Create();
-  return GetService(context.remote_id, printer_name, ClientType::kQueryWithUi,
-                    &context.is_sandboxed);
+  context.is_sandboxed =
+      ShouldServiceBeSandboxed(printer_name, ClientType::kQueryWithUi);
+  return GetService(context.remote_id, ClientType::kQueryWithUi,
+                    context.is_sandboxed);
 }
 
 const mojo::Remote<mojom::PrintBackendService>&
@@ -1198,8 +1206,10 @@ PrintBackendServiceManager::GetServiceAndCallbackContextForPrintDocumentClient(
     CallbackContext& context) {
   context.remote_id = GetRemoteIdForPrintDocumentClientId(client_id);
   context.saved_callback_id = base::UnguessableToken::Create();
-  return GetService(context.remote_id, printer_name, ClientType::kPrintDocument,
-                    &context.is_sandboxed);
+  context.is_sandboxed =
+      ShouldServiceBeSandboxed(printer_name, ClientType::kPrintDocument);
+  return GetService(context.remote_id, ClientType::kPrintDocument,
+                    context.is_sandboxed);
 }
 
 template <class... T, class... X>

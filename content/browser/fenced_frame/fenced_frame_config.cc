@@ -71,6 +71,23 @@ FencedFrameConfig::FencedFrameConfig(const GURL& mapped_url)
                   VisibilityToContent::kTransparent),
       mode_(DeprecatedFencedFrameMode::kOpaqueAds) {}
 
+FencedFrameConfig::FencedFrameConfig(const GURL& mapped_url,
+                                     const gfx::Size& content_size,
+                                     bool is_ad_component)
+    : mapped_url_(absl::in_place,
+                  mapped_url,
+                  VisibilityToEmbedder::kOpaque,
+                  VisibilityToContent::kTransparent),
+      content_size_(absl::in_place,
+                    content_size,
+                    VisibilityToEmbedder::kTransparent,
+                    VisibilityToContent::kTransparent),
+      deprecated_should_freeze_initial_size_(absl::in_place,
+                                             false,
+                                             VisibilityToEmbedder::kTransparent,
+                                             VisibilityToContent::kOpaque),
+      is_ad_component_(is_ad_component) {}
+
 FencedFrameConfig::FencedFrameConfig(const GURL& urn_uuid,
                                      const GURL& mapped_url)
     : urn_uuid_(urn_uuid),

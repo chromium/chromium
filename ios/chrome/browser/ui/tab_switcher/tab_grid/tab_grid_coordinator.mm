@@ -14,6 +14,7 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/bring_android_tabs/bring_android_tabs_to_ios_service.h"
 #import "ios/chrome/browser/bring_android_tabs/bring_android_tabs_to_ios_service_factory.h"
@@ -724,7 +725,8 @@
   if (IsInactiveTabsEnabled()) {
     self.inactiveTabsButtonMediator = [[InactiveTabsButtonMediator alloc]
         initWithConsumer:baseViewController.regularTabsConsumer
-            webStateList:_inactiveBrowser->GetWebStateList()];
+            webStateList:_inactiveBrowser->GetWebStateList()
+             prefService:GetApplicationContext()->GetLocalState()];
   }
 
   self.incognitoTabsMediator = [[TabGridMediator alloc]
@@ -1121,7 +1123,7 @@
 
 - (void)inactiveTabsCoordinatorDidFinish:
     (InactiveTabsCoordinator*)inactiveTabsCoordinator {
-  DCHECK(IsInactiveTabsEnabled());
+  DCHECK(IsInactiveTabsEnabled() || IsInactiveTabsExplictlyDisabledByUser());
   [self.inactiveTabsCoordinator hide];
 }
 

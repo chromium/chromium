@@ -1010,7 +1010,7 @@ TEST_F(PersonalDataManagerTest, OnAcceptedLocalIBANSave) {
 
   // Start with a new IBAN.
   IBAN iban0(base::GenerateUuid());
-  iban0.set_value(u"IE64 IRCE 9205 0112 3456 78");
+  iban0.set_value(u"FR76 3000 6000 0112 3456 7890 189");
   iban0.set_nickname(u"Nickname 0");
   // Add the IBAN to the database.
   personal_data_->OnAcceptedLocalIBANSave(iban0);
@@ -1039,7 +1039,7 @@ TEST_F(PersonalDataManagerTest, OnAcceptedLocalIBANSave) {
   // Creates a new `iban2` which has the same value as `iban0` but with
   // different nickname and call `OnAcceptedLocalIBANSave()`.
   IBAN iban2(base::GenerateUuid());
-  iban2.set_value(u"IE64 IRCE 9205 0112 3456 78");
+  iban2.set_value(u"FR76 3000 6000 0112 3456 7890 189");
   iban2.set_nickname(u"Nickname 2");
   personal_data_->OnAcceptedLocalIBANSave(iban2);
   WaitForOnPersonalDataChanged();
@@ -1077,7 +1077,7 @@ TEST_F(PersonalDataManagerTest, OnAcceptedLocalIBANSave_IsOffTheRecordTrue) {
 
   // Start with a new IBAN.
   IBAN iban0(base::GenerateUuid());
-  iban0.set_value(u"IE64 IRCE 9205 0112 3456 78");
+  iban0.set_value(u"FR76 3000 6000 0112 3456 7890 189");
   iban0.set_nickname(u"Nickname 0");
 
   // Add the IBAN to the database.

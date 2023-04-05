@@ -5,6 +5,7 @@ source_set("eg2_tests") {
   ]
   testonly = true
   sources = [
+    "pinned_tabs_context_egtest.mm",
     "pinned_tabs_drag_drop_egtest.mm",
     "pinned_tabs_overflow_egtest.mm",
   ]

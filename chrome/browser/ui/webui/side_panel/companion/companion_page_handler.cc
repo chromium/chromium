@@ -50,7 +50,7 @@ CompanionPageHandler::~CompanionPageHandler() = default;
 void CompanionPageHandler::PrimaryPageChanged(content::Page& page) {
   // Only notify the companion UI the page changed if we can share
   // information about the page by user consent.
-  if (IsUserPermittedToSharePageInfoWithCompanion(GetProfile()->GetPrefs())) {
+  if (!IsUserPermittedToSharePageInfoWithCompanion(GetProfile()->GetPrefs())) {
     return;
   }
   NotifyURLChanged();

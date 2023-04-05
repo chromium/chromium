@@ -52,14 +52,9 @@ class ExtensionApiUnittest : public BrowserWithTestWindowTest {
   // |function|. |args| should be in JSON format, wrapped in a list.
   // See also the RunFunction* methods in api_test_utils.h.
 
-  // DEPRECATED. Use RunFunctionAndReturnSingleValue.
-  std::unique_ptr<base::Value> RunFunctionAndReturnValue(
-      ExtensionFunction* function,
-      const std::string& args);
-
   // Return the function result as a base::Value, if successful, or nullopt on
   // failure.
-  absl::optional<base::Value> RunFunctionAndReturnSingleValue(
+  absl::optional<base::Value> RunFunctionAndReturnValue(
       ExtensionFunction* function,
       const std::string& args);
 

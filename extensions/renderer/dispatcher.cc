@@ -1017,6 +1017,7 @@ void Dispatcher::OnRendererAssociatedRequest(
 
 void Dispatcher::OnEventDispatcherRequest(
     mojo::PendingAssociatedReceiver<mojom::EventDispatcher> dispatcher) {
+  CHECK(!dispatcher_.is_bound());
   dispatcher_.Bind(std::move(dispatcher));
 }
 

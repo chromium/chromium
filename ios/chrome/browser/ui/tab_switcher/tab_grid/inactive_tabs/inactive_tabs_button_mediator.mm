@@ -6,8 +6,12 @@
 
 #import "base/notreached.h"
 #import "base/scoped_observation.h"
+#import "components/prefs/ios/pref_observer_bridge.h"
+#import "components/prefs/pref_change_registrar.h"
+#import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_count_consumer.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_info_consumer.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 
@@ -18,36 +22,60 @@
 using ScopedWebStateListObservation =
     base::ScopedObservation<WebStateList, WebStateListObserver>;
 
-@interface InactiveTabsButtonMediator () <WebStateListObserving> {
+@interface InactiveTabsButtonMediator () <PrefObserverDelegate,
+                                          WebStateListObserving>
+@end
+
+@implementation InactiveTabsButtonMediator {
   // The UI consumer to which updates are made.
-  __weak id<InactiveTabsCountConsumer> _consumer;
+  __weak id<InactiveTabsInfoConsumer> _consumer;
   // The list of inactive tabs.
   WebStateList* _webStateList;
   // Observers of _webStateList.
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
   std::unique_ptr<ScopedWebStateListObservation> _scopedWebStateListObservation;
+  // Preference service from the application context.
+  PrefService* _prefService;
+  // Pref observer to track changes to prefs.
+  std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
+  // Registrar for pref changes notifications.
+  PrefChangeRegistrar _prefChangeRegistrar;
 }
 
-@end
-
-@implementation InactiveTabsButtonMediator
-
-- (instancetype)initWithConsumer:(id<InactiveTabsCountConsumer>)consumer
-                    webStateList:(WebStateList*)webStateList {
+- (instancetype)initWithConsumer:(id<InactiveTabsInfoConsumer>)consumer
+                    webStateList:(WebStateList*)webStateList
+                     prefService:(PrefService*)prefService {
   DCHECK(IsInactiveTabsEnabled());
   DCHECK(consumer);
   DCHECK(webStateList);
+  DCHECK(prefService);
   self = [super init];
   if (self) {
     _consumer = consumer;
     _webStateList = webStateList;
+
+    // Observe the web state list.
     _webStateListObserverBridge =
         std::make_unique<WebStateListObserverBridge>(self);
     _scopedWebStateListObservation =
         std::make_unique<ScopedWebStateListObservation>(
             _webStateListObserverBridge.get());
     _scopedWebStateListObservation->Observe(_webStateList);
-    [_consumer advertizeInactiveTabsWithCount:_webStateList->count()];
+
+    // Observe the preferences for changes to Inactive Tabs settings.
+    _prefService = prefService;
+    _prefChangeRegistrar.Init(_prefService);
+    _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
+    // Register to observe any changes on pref backed values displayed by the
+    // screen.
+    _prefObserverBridge->ObserveChangesForPreference(
+        prefs::kInactiveTabsTimeThreshold, &_prefChangeRegistrar);
+
+    // Push the info to the consumer.
+    [_consumer updateInactiveTabsCount:_webStateList->count()];
+    NSInteger daysThreshold =
+        _prefService->GetInteger(prefs::kInactiveTabsTimeThreshold);
+    [_consumer updateInactiveTabsDaysThreshold:daysThreshold];
   }
   return self;
 }
@@ -57,6 +85,19 @@ using ScopedWebStateListObservation =
   _scopedWebStateListObservation.reset();
   _webStateListObserverBridge.reset();
   _webStateList = nullptr;
+  _prefChangeRegistrar.RemoveAll();
+  _prefObserverBridge.reset();
+  _prefService = nullptr;
+}
+
+#pragma mark - PrefObserverDelegate
+
+- (void)onPreferenceChanged:(const std::string&)preferenceName {
+  if (preferenceName == prefs::kInactiveTabsTimeThreshold) {
+    NSInteger daysThreshold =
+        _prefService->GetInteger(prefs::kInactiveTabsTimeThreshold);
+    [_consumer updateInactiveTabsDaysThreshold:daysThreshold];
+  }
 }
 
 #pragma mark - WebStateListObserving
@@ -101,7 +142,7 @@ using ScopedWebStateListObservation =
     // Consumer will be updated at the end of the batch.
     return;
   }
-  [_consumer advertizeInactiveTabsWithCount:_webStateList->count()];
+  [_consumer updateInactiveTabsCount:_webStateList->count()];
 }
 
 - (void)webStateList:(WebStateList*)webStateList
@@ -133,7 +174,7 @@ using ScopedWebStateListObservation =
 
 - (void)webStateListBatchOperationEnded:(WebStateList*)webStateList {
   DCHECK_EQ(_webStateList, webStateList);
-  [_consumer advertizeInactiveTabsWithCount:_webStateList->count()];
+  [_consumer updateInactiveTabsCount:_webStateList->count()];
 }
 
 - (void)webStateListDestroyed:(WebStateList*)webStateList {

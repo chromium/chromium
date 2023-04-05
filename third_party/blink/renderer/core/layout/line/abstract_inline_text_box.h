@@ -34,7 +34,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/range.h"
-#include "third_party/blink/renderer/core/layout/api/line_layout_text.h"
+#include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
 namespace blink {
@@ -56,9 +56,7 @@ class CORE_EXPORT AbstractInlineTextBox
 
   static void GetWordBoundariesForText(Vector<WordBoundaries>&, const String&);
 
-  virtual ~AbstractInlineTextBox();
-
-  LineLayoutText GetLineLayoutItem() const { return line_layout_item_; }
+  virtual ~AbstractInlineTextBox() { DCHECK(!layout_text_); }
 
   virtual void Detach();
   virtual scoped_refptr<AbstractInlineTextBox> NextInlineTextBox() const = 0;
@@ -72,7 +70,7 @@ class CORE_EXPORT AbstractInlineTextBox
   virtual unsigned TextOffsetInFormattingContext(unsigned) const = 0;
   virtual Direction GetDirection() const = 0;
   Node* GetNode() const;
-  LayoutObject* GetLayoutObject() const;
+  LayoutText* GetLayoutText() const { return layout_text_; }
   AXObjectCache* ExistingAXObjectCache() const;
   virtual void CharacterWidths(Vector<float>&) const = 0;
   void GetWordBoundaries(Vector<WordBoundaries>&) const;
@@ -85,14 +83,13 @@ class CORE_EXPORT AbstractInlineTextBox
   virtual bool NeedsTrailingSpace() const = 0;
 
  protected:
-  explicit AbstractInlineTextBox(LineLayoutText line_layout_item);
+  explicit AbstractInlineTextBox(LayoutText* layout_text)
+      : layout_text_(layout_text) {}
 
   LayoutText* GetFirstLetterPseudoLayoutText() const;
 
  private:
-  // Weak ptrs; these are nulled when InlineTextBox::destroy() calls
-  // AbstractInlineTextBox::willDestroy.
-  LineLayoutText line_layout_item_;
+  WeakPersistent<LayoutText> layout_text_;
 };
 
 }  // namespace blink

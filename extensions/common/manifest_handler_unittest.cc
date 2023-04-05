@@ -159,8 +159,8 @@ class ManifestHandlerTest : public testing::Test {
 };
 
 TEST_F(ManifestHandlerTest, DependentHandlers) {
-  ScopedTestingManifestHandlerRegistry scoped_registry;
   ParsingWatcher watcher;
+  ScopedTestingManifestHandlerRegistry scoped_registry;
   std::vector<std::string> prereqs;
   ManifestHandlerRegistry* registry = ManifestHandlerRegistry::Get();
   registry->RegisterHandler(std::make_unique<TestManifestHandler>(
@@ -209,6 +209,7 @@ TEST_F(ManifestHandlerTest, DependentHandlers) {
 }
 
 TEST_F(ManifestHandlerTest, FailingHandlers) {
+  ParsingWatcher watcher;
   ScopedTestingManifestHandlerRegistry scoped_registry;
   // Can't use ExtensionBuilder, because this extension will fail to
   // be parsed.
@@ -227,7 +228,6 @@ TEST_F(ManifestHandlerTest, FailingHandlers) {
   EXPECT_TRUE(extension.get());
 
   // Register a handler for "a" that fails.
-  ParsingWatcher watcher;
   ManifestHandlerRegistry* registry = ManifestHandlerRegistry::Get();
   registry->RegisterHandler(std::make_unique<FailingTestManifestHandler>(
       "A", SingleKey("a"), std::vector<std::string>(), &watcher));

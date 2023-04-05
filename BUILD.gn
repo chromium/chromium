@@ -191,6 +191,7 @@ group("gn_all") {
         "//gpu:gpu_unittests",
         "//media:media_unittests",
         "//media/capture:capture_unittests",
+        "//media/cast:cast_unittests",
         "//media/midi:midi_unittests",
         "//media/mojo:media_mojo_unittests",
         "//mojo",
@@ -243,7 +244,6 @@ group("gn_all") {
     if (!is_ios) {
       deps += [
         "//google_apis/gcm:mcs_probe",
-        "//media/cast:cast_unittests",
         "//third_party/catapult/telemetry:bitmaptools($host_toolchain)",
       ]
       if (!is_android) {

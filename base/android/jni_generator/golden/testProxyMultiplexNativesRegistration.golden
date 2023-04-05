@@ -360,7 +360,7 @@ JNI_GENERATOR_EXPORT void Java_J_N_resolve_1for_1void_1LLATTARRAOOAOOA(
 // Step 3: Method declarations.
 
 
-static const JNINativeMethod kMethods_J_NMAIN_DEX[] = {
+static const JNINativeMethod kMethods_J_N[] = {
     { "resolve_for_boolean", "(J)Z", reinterpret_cast<void*>(Java_J_N_resolve_1for_1boolean) },
     { "resolve_for_class", "(J)Ljava/lang/Class;",
         reinterpret_cast<void*>(Java_J_N_resolve_1for_1class) },
@@ -396,14 +396,14 @@ static const JNINativeMethod kMethods_J_NMAIN_DEX[] = {
 
 namespace {
 
-JNI_REGISTRATION_EXPORT bool RegisterNative_J_NMAIN_DEX(JNIEnv* env) {
-  const int number_of_methods = std::size(kMethods_J_NMAIN_DEX);
+JNI_REGISTRATION_EXPORT bool RegisterNative_J_N(JNIEnv* env) {
+  const int number_of_methods = std::size(kMethods_J_N);
 
   base::android::ScopedJavaLocalRef<jclass> native_clazz =
       base::android::GetClass(env, "J/N");
   if (env->RegisterNatives(
       native_clazz.obj(),
-      kMethods_J_NMAIN_DEX,
+      kMethods_J_N,
       number_of_methods) < 0) {
 
     jni_generator::HandleRegistrationError(env, native_clazz.obj(), __FILE__);
@@ -416,21 +416,16 @@ JNI_REGISTRATION_EXPORT bool RegisterNative_J_NMAIN_DEX(JNIEnv* env) {
 }  // namespace
 
 
-// Step 4: Main dex and non-main dex registration functions.
+// Step 4: Registration function.
 
 namespace test {
 
-bool RegisterMainDexNatives(JNIEnv* env) {
+bool RegisterNatives(JNIEnv* env) {
   // Register natives in a proxy.
-  if (!RegisterNative_J_NMAIN_DEX(env)) {
+  if (!RegisterNative_J_N(env)) {
     return false;
   }
 
-
-  return true;
-}
-
-bool RegisterNonMainDexNatives(JNIEnv* env) {
 
   return true;
 }

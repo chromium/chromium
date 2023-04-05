@@ -13,7 +13,7 @@ namespace chromecast {
 class NetworkChangeNotifierFactoryCast
     : public net::NetworkChangeNotifierFactory {
  public:
-  NetworkChangeNotifierFactoryCast() {}
+  NetworkChangeNotifierFactoryCast() = default;
 
   NetworkChangeNotifierFactoryCast(const NetworkChangeNotifierFactoryCast&) =
       delete;
@@ -23,7 +23,10 @@ class NetworkChangeNotifierFactoryCast
   ~NetworkChangeNotifierFactoryCast() override;
 
   // net::NetworkChangeNotifierFactory implementation:
-  std::unique_ptr<net::NetworkChangeNotifier> CreateInstance() override;
+  std::unique_ptr<net::NetworkChangeNotifier> CreateInstanceWithInitialTypes(
+      net::NetworkChangeNotifier::ConnectionType /*initial_type*/,
+      net::NetworkChangeNotifier::ConnectionSubtype /*initial_subtype*/)
+      override;
 };
 
 }  // namespace chromecast

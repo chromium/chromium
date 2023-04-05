@@ -178,6 +178,7 @@
 <translation id="2218443599109088993">ಝೂಮ್ ಔಟ್</translation>
 <translation id="2230173723195178503">ವೆಬ್‌ಪುಟ ಲೋಡ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2239626343334228536">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಲಾಗುತ್ತಿದೆ...</translation>
+<translation id="22508856139286506">ವಜಾಗೊಳಿಸಿದ ಎಚ್ಚರಿಕೆಗಳು (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">ಮೆನು → ಇತಿಹಾಸ</translation>
 <translation id="2256933947031277845">ಕೆಲವು ಖಾತೆಗಳ ಮೂಲಕ ಮಾತ್ರ ಸೈನ್ ಇನ್ ಮಾಡಲು ನಿಮ್ಮ ಸಂಸ್ಥೆ ನಿಮಗೆ ಅನುಮತಿ ನೀಡುತ್ತದೆ.</translation>
 <translation id="225943865679747347">ದೋಷ ಕೋಡ್: <ph name="ERROR_CODE" /></translation>
@@ -1092,6 +1093,7 @@
 <translation id="8237382152611443140">ಸ್ವಯಂ ಭರ್ತಿ ಪಾಸ್‌ವರ್ಡ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="8261506727792406068">ಅಳಿಸಿ</translation>
 <translation id="8264966119170358612">Google ಅಲ್ಲದ ಡೇಟಾ ಉಲ್ಲಂಘನೆಯಲ್ಲಿ ನೀವು ಉಳಿಸಿದ ಕೆಲವು ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಬಹಿರಂಗವಾಗಿವೆ. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
+<translation id="8265018477030547118">ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ</translation>
 <translation id="8271720166617117963">ಸಮ್ಮತಿಸಿ ಮತ್ತು ಸೈನ್‌ ಇನ್‌ ಮಾಡಿ</translation>
 <translation id="8278938988428169257">ಒಂದು ಪದ ಅಥವಾ ಪದಗುಚ್ಛವನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="8281781826761538115">ಡಿಫಾಲ್ಟ್ - <ph name="DEFAULT_LOCALE" /></translation>

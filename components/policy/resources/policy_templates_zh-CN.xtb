@@ -100,6 +100,7 @@
 <translation id="1079425471279127373">通过设置此政策，您可以使用 Device Attributes API 允许强制安装的 Web 应用的某些来源获取设备属性（例如序列号、主机名）。
 
       Device Attributes API 是一个 Web API 列表，请参阅 https://wicg.github.io/WebApiDevice/device_attributes。这些 API 仅适用于通过 <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> 强制安装的 Web 应用或在自助服务终端会话中配置的应用所对应的来源。</translation>
+<translation id="1079498696402787191">使用已允许在 TLS 握手时使用的哈希的默认值。</translation>
 <translation id="1079801999187584280">禁止使用开发者工具</translation>
 <translation id="1082802595100075771">允许用户选择使用匿名 Google 服务为无标签图片提供自动说明</translation>
 <translation id="1087057100912843460">允许更新</translation>
@@ -3202,6 +3203,7 @@
 <translation id="3973371701361892765">一律不自动隐藏任务栏</translation>
 <translation id="3977304360459208438">在传输层安全协议 (TLS) 中使用 3DES 加密套件的默认设置</translation>
 <translation id="3979738908158213640">有权在 SAML 身份验证过程中执行设备认证的网址</translation>
+<translation id="3982322576186033243">禁止在 TLS 握手时使用不安全哈希</translation>
 <translation id="3983162212222338509">系统 DNS 解析可能在网络进程中运行，也可能在网络进程外运行，或部分在网络进程中、部分在网络进程外运行，具体取决于系统配置和功能标志。</translation>
 <translation id="3986700049001404598">允许用户通过 Chrome 任务管理器终止进程</translation>
 <translation id="398884292557092447">如果此政策设为 True 或未设置，则用户可以控制界面中的信用卡信息自动填充建议。
@@ -4593,6 +4595,7 @@
 <translation id="5328965694451556034">报告登录/退出</translation>
 <translation id="5329018127554115226">将停用高效模式。</translation>
 <translation id="5330684698007383292">允许 <ph name="PRODUCT_FRAME_NAME" />处理以下内容类型</translation>
+<translation id="5331342092479819688">允许在 TLS 握手时使用不安全哈希</translation>
 <translation id="5331746669335642668"><ph name="PRODUCT_NAME" /> 云政策会替换平台政策。</translation>
 <translation id="5334501839642146593">一律不向 Google 发送指标</translation>
 <translation id="5340008866815063393">启用关于政策数据的报告</translation>
@@ -4898,6 +4901,9 @@
           如果您停用了此设置，密码管理器将不允许在密码管理器窗口中以明文形式显示存储的密码。
 
           如果您启用了此政策或未设置此政策，用户将可以在密码管理器中查看以明文形式显示的密码。</translation>
+<translation id="5618908165853580022">此政策允许 <ph name="PRODUCT_NAME" /> 在 TLS 握手流程中使用旧版不安全哈希。
+
+      如果此政策未配置，<ph name="PRODUCT_NAME" /> 将会按照默认发布流程禁止采用不安全哈希。如果此政策已启用，<ph name="PRODUCT_NAME" /> 将会允许服务器在协商 TLS 握手时使用不安全哈希。如果此政策已停用，<ph name="PRODUCT_NAME" /> 将会禁止服务器在协商 TLS 握手时使用不安全哈希。在版本 119 中，此政策将被移除。</translation>
 <translation id="5619498195290770056">通过设置此政策，您可以创建一个网址格式列表，从而指定哪些网站无法设置 Cookie。
 
       如果您未设置此政策，那么，倘若 <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> 已设置，系统便会将它应用于所有网站，否则就会应用用户的个人设置。
@@ -7451,6 +7457,13 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="7999336306414770162">停用设备 VPD 信息报告功能</translation>
 <translation id="7999818120028621358">启用关于数据泄露预防事件的报告</translation>
 <translation id="8001701200415781021">限制哪些 Google 帐号可以设置为 <ph name="PRODUCT_NAME" /> 中的浏览器主帐号</translation>
+<translation id="8005143535239983809">此政策用于控制浏览器能否自动记住网站上的密码并将其保存到内置的密码管理工具中。此政策不会限制访问或更改下述类型的密码内容：已保存到密码管理工具，且可能已同步到 Google 帐号个人资料和 <ph name="ANDROID_NAME" />。
+
+如果此政策已启用，用户便可让 <ph name="PRODUCT_NAME" /> 记住密码并在自己下次登录相应网站时提供密码。
+
+如果此政策已停用，用户将无法保存新密码，但先前保存的密码仍可正常使用。
+
+如果您设置了此政策，用户便无法在 <ph name="PRODUCT_NAME" /> 中更改它。如果您未设置此政策，用户将能够关闭密码保存功能。</translation>
 <translation id="800595420827930383">使用旧版平台证书验证程序</translation>
 <translation id="8006219716745491366">如果 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 已开启，您便可通过设置 <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> 来指定用于从搜索引擎提取搜索字词的备用网址列表。网址应包含字符串<ph name="SEARCH_TERM_MARKER" />。
 
@@ -8214,6 +8227,11 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="8687958770985542440">重新启用 Web Components v0 API 直至 M84。</translation>
 <translation id="8693243869659262736">使用内置 DNS 客户端</translation>
 <translation id="8695006038397632296">创建扩展程序安装请求并将其上传到管理控制台</translation>
+<translation id="8695108198606654558">此政策仅用于控制 Chrome 安装后首次运行时的导入行为。如果是处于在 <ph name="PRODUCT_NAME" /> 安装前已有一款不同浏览器被广泛使用的环境中，此政策让您能够更顺畅地过渡到所安装的这款浏览器。此政策不会影响 Google 帐号的密码管理工具功能。
+
+如果此政策已启用，首次运行时系统会从先前的默认浏览器导入已保存的密码，用户也可从“设置”页面中手动导入。
+如果此政策已停用，首次运行时系统不会导入任何已保存的密码，用户也无法从“设置”页面中手动导入。
+如果此政策未设置，首次运行时系统不会导入任何已保存的密码，但用户可以选择从“设置”页面中执行导入操作。</translation>
 <translation id="8698286761337647563">用于指定提前多少天通知密码快要到期的 SAML 用户</translation>
 <translation id="8699392919012430269">报告设备的蓝牙信息。
 
@@ -8252,6 +8270,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       “http://notexample.com/”、“http://example.com.invalid.com/”和“http://example.comabc/”仅在“Default”模式下匹配。
 
       “http://acme.com/ABC”仅在“IESiteListMode”下匹配。</translation>
+<translation id="8728854710675158426">已允许在 TLS 握手时使用不安全哈希</translation>
 <translation id="8734543507835977857">在会话启动后才开始实施电源管理延迟和会话时长限制</translation>
 <translation id="8736538322216687231">强制启用最低级别的 YouTube 受限模式</translation>
 <translation id="8744844164152340112">控制用于在 OOBE 期间和会话期间呈现界面的主题（深色/浅色/自动）。

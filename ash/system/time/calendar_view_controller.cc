@@ -214,6 +214,12 @@ void CalendarViewController::OnEventListClosed() {
   is_event_list_showing_ = false;
 }
 
+void CalendarViewController::CalendarLoaded() {
+  for (auto& observer : observers_) {
+    observer.OnCalendarLoaded();
+  }
+}
+
 void CalendarViewController::RecordEventListItemActivated(
     const ui::Event& event) {
   // The EventListItemView is used by both the event list view and the up next

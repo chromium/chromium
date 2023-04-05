@@ -37,11 +37,6 @@ Polymer({
 
     const client = AppTrustedCommFactory.getPostMessageAPIClient();
 
-    this.addWebUIListener(
-        'onNewScreencastPreconditionChanged', (precondition) => {
-          client.onNewScreencastPreconditionChanged(precondition);
-        });
-
     this.addWebUIListener('onSodaInstallProgressUpdated', (progress) => {
       if (isNaN(progress)) {
         console.error(

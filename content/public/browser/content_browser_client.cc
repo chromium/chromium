@@ -506,6 +506,10 @@ bool ContentBrowserClient::IsInterestGroupAPIAllowed(
   return false;
 }
 
+void ContentBrowserClient::OnAuctionComplete(
+    RenderFrameHost* render_frame_host,
+    InterestGroupManager::InterestGroupDataKey data_key) {}
+
 bool ContentBrowserClient::IsAttributionReportingOperationAllowed(
     content::BrowserContext* browser_context,
     AttributionReportingOperation operation,

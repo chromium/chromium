@@ -665,14 +665,16 @@ QuotaErrorOr<BucketLocator> QuotaDatabase::GetLruEvictableBucket(
       continue;
     }
 
-    GURL read_gurl = read_storage_key->origin().GetURL();
-    if (special_storage_policy &&
+    // Only the default bucket is persisted by `navigator.storage.persist()`.
+    const bool is_default = statement.ColumnString(2) == kDefaultBucketName;
+    const GURL read_gurl = read_storage_key->origin().GetURL();
+    if (is_default && special_storage_policy &&
         (special_storage_policy->IsStorageDurable(read_gurl) ||
          special_storage_policy->IsStorageUnlimited(read_gurl))) {
       continue;
     }
     return BucketLocator(read_bucket_id, std::move(read_storage_key).value(),
-                         type, statement.ColumnString(2) == kDefaultBucketName);
+                         type, is_default);
   }
   return base::unexpected(QuotaError::kNotFound);
 }
@@ -1211,10 +1213,11 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::CreateBucketInternal(
         " RETURNING " BUCKET_INFO_FIELDS_SELECTOR;
   // clang-format on
 
+  const base::Time now = GetNow();
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
   BindBucketInitParamsToInsertStatement(params, type, /*use_count=*/0,
-                                        /*last_accessed=*/GetNow(),
-                                        /*last_modified=*/GetNow(), statement);
+                                        /*last_accessed=*/now,
+                                        /*last_modified=*/now, statement);
   QuotaErrorOr<BucketInfo> result = BucketInfoFromSqlStatement(statement);
   const bool done = !statement.Step();
   DCHECK(done);

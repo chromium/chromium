@@ -28,6 +28,7 @@ source_set("tab_grid") {
     "//components/sessions",
     "//components/strings",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/bring_android_tabs",
     "//ios/chrome/browser/bring_android_tabs:features",

@@ -190,4 +190,68 @@ TEST_F(PersistentSystemProfileTest, ProfileExtensions) {
   EXPECT_EQ(variations::HashName("bar"), fetched.field_trial(1).group_id());
 }
 
+TEST_F(PersistentSystemProfileTest, OverwriteFieldTrialsInProfile) {
+  // Set system profile with the field trial.
+  SystemProfileProto proto;
+  SystemProfileProto::FieldTrial* trial = proto.add_field_trial();
+  trial->set_name_id(variations::HashName("foo"));
+  trial->set_group_id(456);
+  persistent_profile()->SetSystemProfile(proto, false);
+
+  // Overwrite the same trial with different group.
+  persistent_profile()->AddFieldTrial("foo", "bar");
+
+  // The fetched profile should have the latest group name,
+  SystemProfileProto fetched;
+  ASSERT_TRUE(
+      PersistentSystemProfile::GetSystemProfile(*memory_allocator(), &fetched));
+  ASSERT_EQ(1, fetched.field_trial_size());
+  EXPECT_EQ(variations::HashName("foo"), fetched.field_trial(0).name_id());
+  EXPECT_EQ(variations::HashName("bar"), fetched.field_trial(0).group_id());
+}
+
+TEST_F(PersistentSystemProfileTest, OverwriteFieldTrials) {
+  // Set up a non-empty system profile.
+  SystemProfileProto proto;
+  proto.set_client_uuid("id");
+  persistent_profile()->SetSystemProfile(proto, false);
+
+  // Set and overwrite the same trial with different group.
+  persistent_profile()->AddFieldTrial("foo", "bar");
+  persistent_profile()->AddFieldTrial("foo", "bar2");
+
+  // The fetched profile should have the latest group name,
+  SystemProfileProto fetched;
+  ASSERT_TRUE(
+      PersistentSystemProfile::GetSystemProfile(*memory_allocator(), &fetched));
+  ASSERT_EQ(1, fetched.field_trial_size());
+  EXPECT_EQ(variations::HashName("foo"), fetched.field_trial(0).name_id());
+  EXPECT_EQ(variations::HashName("bar2"), fetched.field_trial(0).group_id());
+}
+
+TEST_F(PersistentSystemProfileTest, DeleteFieldTrials) {
+  // Set up a non-empty system profile.
+  SystemProfileProto proto;
+  proto.set_client_uuid("id");
+  persistent_profile()->SetSystemProfile(proto, false);
+
+  // Set and delete the trial.
+  persistent_profile()->AddFieldTrial("foo", "bar");
+  persistent_profile()->RemoveFieldTrial("foo");
+
+  // The fetched profile should not have the deleted trial.
+  SystemProfileProto fetched;
+  ASSERT_TRUE(
+      PersistentSystemProfile::GetSystemProfile(*memory_allocator(), &fetched));
+  ASSERT_EQ(0, fetched.field_trial_size());
+
+  // Reset the trial and the fetched profile should have the latest group name.
+  persistent_profile()->AddFieldTrial("foo", "bar2");
+  ASSERT_TRUE(
+      PersistentSystemProfile::GetSystemProfile(*memory_allocator(), &fetched));
+  ASSERT_EQ(1, fetched.field_trial_size());
+  EXPECT_EQ(variations::HashName("foo"), fetched.field_trial(0).name_id());
+  EXPECT_EQ(variations::HashName("bar2"), fetched.field_trial(0).group_id());
+}
+
 }  // namespace metrics

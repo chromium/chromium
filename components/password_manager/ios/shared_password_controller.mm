@@ -658,6 +658,12 @@ BOOL canProcessCrossOriginIframes() {
                                                      inFrame:frame];
 }
 
+- (void)attachListenersForBottomSheet:
+            (const std::vector<autofill::FieldRendererId>&)rendererIds
+                              inFrame:(web::WebFrame*)frame {
+  [self.delegate attachListenersForBottomSheet:rendererIds inFrame:frame];
+}
+
 #pragma mark - Private methods
 
 - (void)didFinishPasswordFormExtraction:(const std::vector<FormData>&)forms

@@ -45,9 +45,6 @@ class NewTabPageTabHelper : public web::WebStateObserver,
   // controllers have been created.
   bool IsActive() const;
 
-  // Returns true if an `url` is either chrome://newtab or about://newtab.
-  bool IsNTPURL(const GURL& url);
-
   // Returns the selected feed for the next NTP.
   FeedType GetNextNTPFeedType();
 

@@ -21,7 +21,6 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/hdr_static_metadata.h"
-#include "ui/gfx/range/range.h"
 
 namespace display {
 
@@ -62,7 +61,7 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
       int32_t year_of_manufacture,
       const gfx::Size& maximum_cursor_size,
       VariableRefreshRateState variable_refresh_rate_state,
-      const absl::optional<gfx::Range>& vertical_display_range_limits,
+      const absl::optional<uint16_t>& vsync_rate_min,
       const DrmFormatsAndModifiers& drm_formats_and_modifiers_);
 
   DisplaySnapshot(const DisplaySnapshot&) = delete;
@@ -124,8 +123,8 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
       VariableRefreshRateState variable_refresh_rate_state) {
     variable_refresh_rate_state_ = variable_refresh_rate_state;
   }
-  const absl::optional<gfx::Range>& vertical_display_range_limits() const {
-    return vertical_display_range_limits_;
+  const absl::optional<uint16_t>& vsync_rate_min() const {
+    return vsync_rate_min_;
   }
   const DrmFormatsAndModifiers& GetDRMFormatsAndModifiers() const {
     return drm_formats_and_modifiers_;
@@ -268,9 +267,8 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
 
   // Whether VRR is enabled, disabled, or not capable on this display.
   VariableRefreshRateState variable_refresh_rate_state_;
-  // The supported vrefresh frequency range for this display. Omitted if this
-  // display is not VRR capable.
-  const absl::optional<gfx::Range> vertical_display_range_limits_;
+  // The minimum supported vsync rate for this display in Hz.
+  const absl::optional<uint16_t> vsync_rate_min_;
 
   // A list of supported Linux DRM formats and corresponding lists of modifiers
   // for each one.

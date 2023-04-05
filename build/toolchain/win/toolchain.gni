@@ -11,6 +11,7 @@ import("//build/toolchain/cc_wrapper.gni")
 import("//build/toolchain/goma.gni")
 import("//build/toolchain/rbe.gni")
 import("//build/toolchain/toolchain.gni")
+import("//build/toolchain/win/win_toolchain_data.gni")
 
 assert(is_win, "Should only be running on Windows")
 
@@ -532,16 +533,15 @@ template("win_toolchains") {
   assert(defined(invoker.toolchain_arch))
   toolchain_arch = invoker.toolchain_arch
 
-  win_toolchain_data = exec_script("//build/toolchain/win/setup_toolchain.py",
-                                   [
-                                     visual_studio_path,
-                                     windows_sdk_path,
-                                     visual_studio_runtime_dirs,
-                                     "win",
-                                     toolchain_arch,
-                                     "environment." + toolchain_arch,
-                                   ],
-                                   "scope")
+  if (toolchain_arch == "x86") {
+    win_toolchain_data = win_toolchain_data_x86
+  } else if (toolchain_arch == "x64") {
+    win_toolchain_data = win_toolchain_data_x64
+  } else if (toolchain_arch == "arm64") {
+    win_toolchain_data = win_toolchain_data_arm64
+  } else {
+    error("Unsupported toolchain_arch, add it to win_toolchain_data.gni")
+  }
 
   # The toolchain using MSVC only makes sense when not doing cross builds.
   # Chromium exclusively uses the win_clang_ toolchain below, but V8 and

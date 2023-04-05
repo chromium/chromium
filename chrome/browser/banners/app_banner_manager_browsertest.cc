@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -67,6 +68,8 @@ class AppBannerManagerTest : public AppBannerManager {
   AppBannerManagerTest& operator=(const AppBannerManagerTest&) = delete;
 
   ~AppBannerManagerTest() override {}
+
+  bool TriggeringDisabledForTesting() const override { return false; }
 
   void RequestAppBanner(const GURL& validated_url) override {
     // Filter out about:blank navigations - we use these in testing to force
@@ -215,7 +218,9 @@ class AppBannerManagerTest : public AppBannerManager {
 
 class AppBannerManagerBrowserTest : public AppBannerManagerBrowserTestBase {
  public:
-  AppBannerManagerBrowserTest() = default;
+  AppBannerManagerBrowserTest()
+      : disable_banner_trigger_(&test::g_disable_banner_triggering_for_testing,
+                                true) {}
 
   AppBannerManagerBrowserTest(const AppBannerManagerBrowserTest&) = delete;
   AppBannerManagerBrowserTest& operator=(const AppBannerManagerBrowserTest&) =
@@ -225,9 +230,6 @@ class AppBannerManagerBrowserTest : public AppBannerManagerBrowserTestBase {
     AppBannerSettingsHelper::SetTotalEngagementToTrigger(10);
     site_engagement::SiteEngagementScore::SetParamValuesForTesting();
 
-    // Make sure app banners are disabled in the browser, otherwise they will
-    // interfere with the test.
-    AppBannerManagerDesktop::DisableTriggeringForTesting();
     AppBannerManagerBrowserTestBase::SetUpOnMainThread();
   }
 
@@ -311,6 +313,10 @@ class AppBannerManagerBrowserTest : public AppBannerManagerBrowserTestBase {
     if (expected_state)
       EXPECT_EQ(expected_state, manager->state());
   }
+
+ private:
+  // Disable the banners in the browser so it won't interfere with the test.
+  base::AutoReset<bool> disable_banner_trigger_;
 };
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,

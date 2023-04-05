@@ -6498,10 +6498,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kTabGridLayoutAndroidVariations,
                                     "TabGridLayoutAndroid")},
 
-    {"enable-commerce-coupons", flag_descriptions::kCommerceCouponsName,
-     flag_descriptions::kCommerceCouponsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(commerce::kCommerceCoupons)},
-
     {"enable-commerce-merchant-viewer",
      flag_descriptions::kCommerceMerchantViewerAndroidName,
      flag_descriptions::kCommerceMerchantViewerAndroidDescription, kOsAndroid,
@@ -7769,6 +7765,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kProductivityLauncherImageSearchName,
      flag_descriptions::kProductivityLauncherImageSearchDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kProductivityLauncherImageSearch)},
+    {"scanning-app-jelly", flag_descriptions::kScanningAppJellyName,
+     flag_descriptions::kScanningAppJellyDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kScanningAppJelly)},
     {"shelf-auto-hide-separation",
      flag_descriptions::kShelfAutoHideSeparationName,
      flag_descriptions::kShelfAutoHideSeparationDescription, kOsCrOS,

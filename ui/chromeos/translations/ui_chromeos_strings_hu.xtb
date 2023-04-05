@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">Bolygó</translation>
 <translation id="2305020378527873881">A(z) <ph name="VOLUME_NAME" /> kiadása megtörtént.</translation>
 <translation id="2307462900900812319">Hálózat beállítása</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Nem található a(z) <ph name="BEGIN_LIST" /><ph name="END_LIST" /> azonosítójú bővítmény. Forduljon a rendszergazdához.}other{Nem találhatók a(z) <ph name="BEGIN_LIST" /><ph name="END_LIST" /> azonosítójú bővítmények. Forduljon a rendszergazdához.}}</translation>
 <translation id="2325650632570794183">Ez a fájltípus nem támogatott. Kérjük, látogasson el a Chrome Internetes áruházba olyan alkalmazás kereséséhez, amely meg tudja nyitni ezt a fájltípust.</translation>
 <translation id="2326539130272988168">bolgár</translation>
 <translation id="2337715497728194187">Megosztás a Bruschettával</translation>
@@ -274,6 +275,7 @@
 <translation id="3290356915286466215">Nem bizt.</translation>
 <translation id="3291218047831493686">A SIM-zárolási beállítás módosítása érdekében csatlakozzon ehhez a hálózathoz</translation>
 <translation id="3293023191599135697">A WEP-hálózatok nem támogatottak</translation>
+<translation id="3295006446256079333">Ez a mennyiség</translation>
 <translation id="3295357220137379386">Az eszköz elfoglalt</translation>
 <translation id="3296763833017966289">grúz</translation>
 <translation id="3307875152560779385">ukrán</translation>

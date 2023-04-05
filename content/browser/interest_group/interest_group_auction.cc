@@ -578,6 +578,7 @@ class InterestGroupAuction::BuyerHelper
     DCHECK_EQ(0, num_outstanding_bids_);
     num_outstanding_bids_ = bid_states_.size();
     num_outstanding_bidding_signals_received_calls_ = num_outstanding_bids_;
+    start_generating_bids_time_ = base::TimeTicks::Now();
 
     // Request processes for all bidder worklets.
     for (auto& bid_state : bid_states_) {
@@ -639,6 +640,14 @@ class InterestGroupAuction::BuyerHelper
     BidState* state = generate_bid_client_receiver_set_.current_context();
     const blink::InterestGroup& interest_group = state->bidder->interest_group;
     auction_->ReportBiddingLatency(interest_group, bidding_latency);
+
+    // This is intentionally recorded here as opposed to in
+    // OnGenerateBidCompleteInternal in order to exclude bids that were
+    // filtered during reprioritization. It also excludes those bids that
+    // encountered a fatal error, except for timeouts; those we record to this
+    // metric separately and explicitly in OnTimeout.
+    auction_->auction_metrics_recorder_->RecordBidForOneInterestGroupLatency(
+        base::TimeTicks::Now() - start_generating_bids_time_);
     OnGenerateBidCompleteInternal(
         state, std::move(mojo_bid), std::move(mojo_kanon_bid),
         bidding_signals_data_version, has_bidding_signals_data_version,
@@ -1389,6 +1398,10 @@ class InterestGroupAuction::BuyerHelper
     auction_->auction_metrics_recorder_
         ->RecordBidsAbortedByBuyerCumulativeTimeout(pending_bids.size());
     for (auto* pending_bid : pending_bids) {
+      // We specifically include timeouts in this metric.
+      auction_->auction_metrics_recorder_->RecordBidForOneInterestGroupLatency(
+          base::TimeTicks::Now() - start_generating_bids_time_);
+
       // Fail bids individually, with errors. This does potentially do extra
       // work over just failing the entire auction directly, but ensures there's
       // a single failure path, reducing the chance of future breakages.
@@ -1410,6 +1423,10 @@ class InterestGroupAuction::BuyerHelper
       const absl::optional<uint32_t>& bidding_signals_data_version,
       const absl::optional<GURL>& debug_loss_report_url,
       const absl::optional<GURL>& debug_win_report_url) {
+    // We record the bid duration even if the bid is invalid to avoid bias.
+    auction_->auction_metrics_recorder_->RecordGenerateSingleBidLatency(
+        mojo_bid->bid_duration);
+
     if (!IsValidBid(mojo_bid->bid)) {
       generate_bid_client_receiver_set_.ReportBadMessage("Invalid bid value");
       return nullptr;
@@ -1536,6 +1553,9 @@ class InterestGroupAuction::BuyerHelper
 
   int num_outstanding_bidding_signals_received_calls_ = 0;
   int num_outstanding_bids_ = 0;
+
+  // Records the time at which StartGeneratingBids was called for UKM.
+  base::TimeTicks start_generating_bids_time_;
 
   // True if any interest group owned by `owner_` participating in this auction
   // has `use_biddings_signals_prioritization` set to true. When this is true,
@@ -1725,6 +1745,8 @@ void InterestGroupAuction::StartBiddingAndScoringPhase(
   on_seller_receiver_callback_ = std::move(on_seller_receiver_callback);
   bidding_and_scoring_phase_callback_ =
       std::move(bidding_and_scoring_phase_callback);
+
+  bidding_and_scoring_phase_start_time_ = base::TimeTicks::Now();
 
   outstanding_bid_sources_ = buyer_helpers_.size() + component_auctions_.size();
 
@@ -2729,6 +2751,9 @@ void InterestGroupAuction::OnSellerWorkletFatalError(
 void InterestGroupAuction::OnComponentAuctionComplete(
     InterestGroupAuction* component_auction,
     bool success) {
+  auction_metrics_recorder_->RecordComponentAuctionLatency(
+      base::TimeTicks::Now() - bidding_and_scoring_phase_start_time_);
+
   // TODO(morlovich): Can try to consolidate these as kBothKAnonModes when
   // possible.
   ScoredBid* non_kanon_enforced_bid =

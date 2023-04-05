@@ -33,10 +33,6 @@ ShortcutMenuHandlingSubManager::ShortcutMenuHandlingSubManager(
 
 ShortcutMenuHandlingSubManager::~ShortcutMenuHandlingSubManager() = default;
 
-void ShortcutMenuHandlingSubManager::Start() {}
-
-void ShortcutMenuHandlingSubManager::Shutdown() {}
-
 void ShortcutMenuHandlingSubManager::Configure(
     const AppId& app_id,
     proto::WebAppOsIntegrationState& desired_state,

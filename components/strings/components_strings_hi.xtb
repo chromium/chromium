@@ -181,7 +181,6 @@
 <translation id="1374468813861204354">सुझाव</translation>
 <translation id="1375198122581997741">वर्शन के बारे में</translation>
 <translation id="1376836354785490390">कम दिखाएं</translation>
-<translation id="1377321085342047638">कार्ड नंबर</translation>
 <translation id="1380591466760231819">लेटर फ़ोल्ड</translation>
 <translation id="138218114945450791">हल्का नीला</translation>
 <translation id="1382194467192730611">आपके व्यवस्थापक ने इस यूएसबी डिवाइस की मंज़ूरी दी है</translation>
@@ -228,7 +227,6 @@
 <translation id="1476595624592550506">अपना पासवर्ड बदलें</translation>
 <translation id="1482879811280872320">साइकलिंग</translation>
 <translation id="1483493594462132177">भेजें</translation>
-<translation id="1484290072879560759">शिपिंग पता चुनें</translation>
 <translation id="1492194039220927094">नीतियां भेजें:</translation>
 <translation id="149293076951187737">Chrome में खोले गए सभी गुप्त टैब बंद करने पर, इन टैब में हुई आपकी गतिविधि का डेटा इस डिवाइस से हटा दिया जाता है:
           <ph name="BEGIN_LIST" />
@@ -256,7 +254,6 @@
 <translation id="153384715582417236">फिलहाल बस इतना ही</translation>
 <translation id="1536390784834419204">पेज का अनुवाद करें</translation>
 <translation id="1539840569003678498">रिपोर्ट भेज दी गई:</translation>
-<translation id="154408704832528245">डिलीवरी पता चुनें</translation>
 <translation id="1549470594296187301">इस सुविधा का उपयोग करने के लिए JavaScript को सक्षम किया जाना चाहिए.</translation>
 <translation id="1551884710160394169">मुफ़्त सॉफ़्टवेयर और शेयरवेयर</translation>
 <translation id="1553358976309200471">Chrome अपडेट करें</translation>
@@ -371,7 +368,6 @@
 <translation id="1800473098294731951">बी9</translation>
 <translation id="1801812870656502108">वर्चुअल कार्ड की जानकारी</translation>
 <translation id="1803020234906945288">पौष्टिक खाना</translation>
-<translation id="1803264062614276815">कार्ड के मालिक का नाम</translation>
 <translation id="1803351196216024260">साइट, आपके माइक्रोफ़ोन का इस्तेमाल करने की अनुमति मांग सकती है</translation>
 <translation id="1807246157184219062">हल्का</translation>
 <translation id="1807528111851433570">स्टार्ट शीट</translation>
@@ -620,7 +616,6 @@
 <translation id="2450021089947420533">'Chrome इतिहास' में आपकी गतिविधियां</translation>
 <translation id="2456755709261364512">आपकी बैटरी <ph name="REQUIRED_BATTERY_PRECENT" />% से ज़्यादा चार्ज होनी चाहिए</translation>
 <translation id="2463739503403862330">भरें</translation>
-<translation id="2465655957518002998">डिलीवरी का तरीका चुनें</translation>
 <translation id="2465688316154986572">स्टेपल</translation>
 <translation id="2465914000209955735">आपने Chrome में जो फ़ाइलें डाउनलोड की हैं उन्हें मैनेज करें</translation>
 <translation id="2466004615675155314">वेब से जानकारी दिखाता है</translation>
@@ -742,7 +737,6 @@
 <translation id="2730600605555029057">शास्त्रीय संगीत</translation>
 <translation id="2731382536835015353">44 x 68 इंच</translation>
 <translation id="2734319753272419592">Google को अपने कार्ट का ऐक्सेस दें, ताकि वह आपके हिसाब से छूट का पता लगा सके. उपलब्ध होने पर, आपके कार्ट पर छूट अपने-आप दिखेंगी.</translation>
-<translation id="2738330467931008676">पिकअप का पता चुनें</translation>
 <translation id="2740531572673183784">ठीक है</translation>
 <translation id="2742511345840685325">टेबल टेनिस</translation>
 <translation id="2742870351467570537">चयनित आइटम निकालें</translation>
@@ -824,7 +818,6 @@
 <translation id="2983666748527428214">गुप्त टैब खोलें</translation>
 <translation id="2985306909656435243">अगर सक्षम किया गया हो, तो ज़्यादा तेज़ी से फ़ॉर्म भरने के लिए क्रोमियम इस डिवाइस पर आपके कार्ड की एक कॉपी संग्रहित करेगा.</translation>
 <translation id="2985398929374701810">मान्य पता डालें</translation>
-<translation id="2986368408720340940">पिकअप का यह तरीका उपलब्ध नहीं है. कोई दूसरा तरीका आज़माएं.</translation>
 <translation id="2987034854559945715">कोई मिलते-जुलते फ़ीचर नहीं</translation>
 <translation id="2989742184762224133">सबसे ऊपर ड्युएल स्टेपल</translation>
 <translation id="2991174974383378012">वेबसाइटों के साथ साझाकरण</translation>
@@ -856,7 +849,6 @@
 <translation id="3086579638707268289">वेब पर की जा रही आपकी गतिविधि पर नज़र रखी जा रही है</translation>
 <translation id="3087734570205094154">नीचे</translation>
 <translation id="3095940652251934233">जानकारी</translation>
-<translation id="3096100844101284527">पिकअप का पता जोड़ें</translation>
 <translation id="3096195745018397576">बच्चों के कपड़े</translation>
 <translation id="3098513225387949945">नज़रअंदाज़ किया गया, क्योंकि 'बंद है' वाली सूची में '*' जैसा पैटर्न शामिल है. इसका मतलब नीति को बंद करना होता है.</translation>
 <translation id="3105172416063519923">एसेट आईडी:</translation>
@@ -1348,6 +1340,7 @@
 <translation id="4274173425554582601">कंप्यूटर और इलेक्ट्रॉनिक्स</translation>
 <translation id="4275830172053184480">अपना डिवाइस फिर से प्रारंभ करें</translation>
 <translation id="4277028893293644418">पासवर्ड रीसेट करें</translation>
+<translation id="4277937682389409325">स्थानीय पता</translation>
 <translation id="4278390842282768270">अनुमति है</translation>
 <translation id="4281998142035485137">{0,plural, =1{क्या आपको गोपनीय फ़ाइल खोलनी है?}one{क्या आपको गोपनीय फ़ाइल खोलनी है?}other{क्या आपको गोपनीय फ़ाइलें खोलनी हैं?}}</translation>
 <translation id="4282346679996504092">इस प्रॉडक्ट के लिए, सूचनाएं पाने की सुविधा बंद कर दी गई है और बुकमार्क को हटा दिया गया है</translation>
@@ -1382,7 +1375,6 @@
 <translation id="4333561522337981382">आपके सभी डिसप्ले पर विंडो मैनेज करना</translation>
 <translation id="4340575312453649552">यह विज्ञापन आपके डिवाइस के बहुत से संसाधन इस्तेमाल करता था, इसलिए Chrome ने इसे हटा दिया है.</translation>
 <translation id="4340982228985273705">इस कंप्यूटर की पहचान एंटरप्राइज़ की ओर से प्रबंधित होने के रूप में नहीं की गई है, इसलिए नीति सिर्फ़ Chrome वेबस्टोर पर होस्ट किए जाने वाले एक्सटेंशन ही अपने आप इंस्टॉल कर सकती है. Chrome वेबस्टोर अपडेट यूआरएल "<ph name="CWS_UPDATE_URL" />" है.</translation>
-<translation id="4346197816712207223">स्वीकार किए जाने वाले क्रेडिट कार्ड</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> से कनेक्शन सुरक्षित नहीं है</translation>
 <translation id="4349365535725594680">गोपनीय कॉन्टेंट शेयर नहीं किया जा सकता</translation>
 <translation id="4349810866125026513">फिर भी अपलोड करें</translation>
@@ -1586,7 +1578,6 @@
 <translation id="4850886885716139402">देखें</translation>
 <translation id="4852429274334674023">ऑपरेटिंग सिस्टम</translation>
 <translation id="4853901935952445031">फ़रवरी 2022 के बाद, यह साइट U2F एपीआई का इस्तेमाल नहीं कर पाएगी. अगर आप इस साइट के मालिक हैं, तो आपको वेब ऑथेंटिकेशन एपीआई का इस्तेमाल करने के लिए इसकी सेटिंग को बदलना चाहिए.</translation>
-<translation id="4854362297993841467">वितरण का यह तरीका उपलब्ध नहीं है. कोई दूसरा तरीका आज़माएं.</translation>
 <translation id="4854853140771946034">Google Keep में जल्दी से नया नोट बनाएं</translation>
 <translation id="4858792381671956233">आपने अपने अभिभावकों से पूछा है कि इस साइट पर जाना ठीक है या नहीं</translation>
 <translation id="485902285759009870">कोड की पुष्टि की जा रही है...</translation>
@@ -1788,7 +1779,6 @@
 <translation id="5316812925700871227">घड़ी की विपरीत दिशा में घुमाएं</translation>
 <translation id="5317780077021120954">सेव करें</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="NUM_MATCHES" /> में से <ph name="MATCH_POSITION" /></translation>
-<translation id="5324080437450482387">संपर्क जानकारी चुनें</translation>
 <translation id="5329858041417644019">आपका ब्राउज़र प्रबंधित नहीं है</translation>
 <translation id="5332219387342487447">शिपिंग का तरीका</translation>
 <translation id="5332769172018416402">मैसेज में पूछें</translation>
@@ -1891,7 +1881,6 @@
 <translation id="5593349413089863479">कनेक्शन पूरी तरह सुरक्षित नहीं है</translation>
 <translation id="5595485650161345191">पते में बदलाव करें</translation>
 <translation id="5596939519753369075">2 x 3.5 इंच</translation>
-<translation id="5598944008576757369">भुगतान का तरीका चुनें</translation>
 <translation id="560412284261940334">प्रबंधन समर्थित नहीं</translation>
 <translation id="5605670050355397069">लेजर</translation>
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />अपना डेटा कैसे मैनेज करें:<ph name="END_BOLD" /> Chrome, उन साइटों को अपने-आप मिटा देता है जो चार हफ़्ते से ज़्यादा पुरानी होती हैं. किसी साइट को फिर से विज़िट करने पर, उसे सूची में दोबारा शामिल किया जा सकता है. आप जब चाहें, Chrome की सेटिंग में जाकर, किसी साइट को विज्ञापनों का सुझाव देने से रोका जा सकता है. साथ ही, साइट की ओर से सुझाए गए विज्ञापनों को बंद किया जा सकता है.</translation>
@@ -1923,7 +1912,6 @@
 <translation id="568292603005599551">इमेज X की स्थिति</translation>
 <translation id="5684277895745049190">सूची</translation>
 <translation id="5684874026226664614">ओह. इस पेज का अनुवाद नहीं किया जा सका.</translation>
-<translation id="5685654322157854305">शिपिंग पता जोड़ें</translation>
 <translation id="5689199277474810259">JSON में एक्सपोर्ट करें</translation>
 <translation id="5689516760719285838">जगह की जानकारी</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplates का मान सही नहीं है. इसका इस्तेमाल तब तक नहीं किया जाएगा, जब तक कि DnsOverHttpsMode नीति <ph name="SECURE_DNS_MODE_AUTOMATIC" /> या <ph name="SECURE_DNS_MODE_SECURE" /> पर सेट न हो.</translation>
@@ -2789,7 +2777,6 @@
 <translation id="776110834126722255">समर्थन नहीं है या रोक दिया गया है</translation>
 <translation id="7761159795823346334">क्या आप Chromium को कैमरा ऐक्सेस करने की अनुमति देना चाहते हैं?</translation>
 <translation id="7761701407923456692">सर्वर का प्रमाणपत्र यूआरएल से मेल नहीं खाता.</translation>
-<translation id="7763386264682878361">भुगतान मेनिफ़ेस्ट पार्सर</translation>
 <translation id="7764225426217299476">पता जोड़ें</translation>
 <translation id="7766518757692125295">स्कर्ट</translation>
 <translation id="7773005668374414287">इसी तरह सीधा करके रखें</translation>
@@ -2893,7 +2880,6 @@
 <translation id="8038817883578389970">ऑटो रेसिंग</translation>
 <translation id="8041089156583427627">सुझाव भेजें</translation>
 <translation id="8041940743680923270">वैश्विक डिफ़ॉल्ट का उपयोग करें (पूछें)</translation>
-<translation id="8042918947222776840">पिकअप का तरीका चुनें</translation>
 <translation id="8052898407431791827">स्क्रीनशॉट को क्लिपबोर्ड पर कॉपी किया गया</translation>
 <translation id="8055534648776115597">व्यावसायिक और प्रौढ़ शिक्षा</translation>
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" सही तरीके से कॉन्फ़िगर नहीं किया गया है. आमतौर पर "<ph name="SOFTWARE_NAME" />" को अनइंस्टॉल करने से समस्या ठीक हो जाती है. <ph name="FURTHER_EXPLANATION" /></translation>
@@ -3268,7 +3254,6 @@
 <translation id="9008201768610948239">ध्यान न दें</translation>
 <translation id="9018120810758822233">अपने <ph name="CREDIT_CARD" /> का सुरक्षा कोड डालें</translation>
 <translation id="901834265349196618">ईमेल</translation>
-<translation id="9020200922353704812">कार्ड बिलिंग पता ज़रूरी है</translation>
 <translation id="9020542370529661692">इस पेज का <ph name="TARGET_LANGUAGE" /> में अनुवाद कर दिया गया है</translation>
 <translation id="9020742383383852663">ए8</translation>
 <translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, लिंक शेयर करके, क्यूआर कोड बनाकर, कास्ट करके, और अन्य विकल्पों की मदद से इस टैब को शेयर करने के लिए, पहले Tab और फिर Enter दबाएं</translation>
@@ -3305,7 +3290,6 @@
 <translation id="9101630580131696064">ट्रे 1</translation>
 <translation id="9103537084693478942">वीडियो सॉफ़्टवेयर</translation>
 <translation id="9103872766612412690">आपकी जानकारी की सुरक्षा करने के लिए <ph name="SITE" /> आम तौर पर, सुरक्षित करने के तरीके (एन्क्रिप्शन) का उपयोग करती है. जब 'क्रोमियम' ने इस बार <ph name="SITE" /> से कनेक्ट करने की कोशिश की तो, वेबसाइट ने असामान्य और गलत क्रेडेंशियल वापस भेजे. ऐसा तब हो सकता है जब कोई हमलावर <ph name="SITE" /> होने का दावा करने की कोशिश कर रहा हो या किसी वाई-फ़ाई 'साइन इन स्क्रीन' की वजह से कनेक्शन में खराबी आ गई हो. आपकी जानकारी अभी भी सुरक्षित है क्योंकि किसी भी डेटा को एक्सचेंज करने से पहले ही 'क्रोमियम' ने कनेक्शन रोक दिया था.</translation>
-<translation id="9106062320799175032">बिलिंग पता जोड़ें</translation>
 <translation id="9107467864910557787"><ph name="MANAGER" /> आपके ब्राउज़र को मैनेज करता है</translation>
 <translation id="91108059142052966">एडमिन नीति के तहत, स्क्रीन पर गोपनीय कॉन्टेंट दिखने पर, <ph name="APPLICATION_TITLE" /> के साथ स्क्रीन शेयर करना बंद कर दिया जाता है.</translation>
 <translation id="9114524666733003316">कार्ड की पुष्टि की जा रही है...</translation>
@@ -3326,7 +3310,6 @@
 <translation id="9139318394846604261">खरीदारी</translation>
 <translation id="9141013498910525015">पते प्रबंधित करें</translation>
 <translation id="9144951720726881238">खत्म होने की तारीख:</translation>
-<translation id="9148088599418889305">शिपिंग का तरीका चुनें</translation>
 <translation id="9148507642005240123">&amp;बदलाव को पहले जैसा करें</translation>
 <translation id="9150045010208374699">अपना कैमरा उपयोग करें</translation>
 <translation id="9150685862434908345">आपका एडमिन किसी दूसरे डिवाइस से आपके ब्राउज़र का सेटअप बदल सकता है. इस डिवाइस की गतिविधि को भी Chrome से बाहर प्रबंधित किया जा सकता है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
@@ -3377,7 +3360,6 @@
 <translation id="964050462028070434">पासवर्ड और पासकी मैनेज करें…</translation>
 <translation id="96680173638229310">ऑटो और वाहन</translation>
 <translation id="969892804517981540">आधिकारिक बिल्ड</translation>
-<translation id="973773823069644502">डिलीवरी का पता जोड़ें</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{कुछ नहीं}=1{1 आइटम}one{# आइटम}other{# आइटम}}</translation>
 <translation id="976522784004777030">5 x 8 इंच</translation>
 <translation id="977502174772294970">शादी के जुड़ी सेवाएं</translation>

@@ -47,6 +47,10 @@ class ASH_EXPORT CalendarViewController {
     // Invoked when the selected date is updated in the
     // `CalendarViewController`.
     virtual void OnSelectedDateUpdated() {}
+
+    // Invoked when the calendar UI has completed rendering (including business
+    // logic like scrolling to the current month).
+    virtual void OnCalendarLoaded() {}
   };
 
   void AddObserver(Observer* observer);
@@ -70,6 +74,9 @@ class ASH_EXPORT CalendarViewController {
 
   // Gets called when the `CalendarEventListView` is closed.
   void OnEventListClosed();
+
+  // Gets called when the `CalendarView` has completed loading its UI.
+  void CalendarLoaded();
 
   // Records the event list item being pressed on and the type of event.
   // Captures whether it was from the `CalendarEventListView` or implicitly the

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.signin.account_picker;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.core.AllOf.allOf;
@@ -305,7 +306,7 @@ public class AccountPickerBottomSheetRenderTest {
         View view = mCoordinator.getBottomSheetViewForTesting();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { view.findViewById(R.id.account_picker_selected_account).performClick(); });
-        CriteriaHelper.pollUiThread(view.findViewById(R.id.account_picker_account_list)::isShown);
+        ViewUtils.onViewWaiting(allOf(withId(R.id.account_picker_account_list), isDisplayed()));
     }
 
     private void buildAndShowCollapsedBottomSheet() {
@@ -319,8 +320,7 @@ public class AccountPickerBottomSheetRenderTest {
                     mAccountPickerDelegate, accountPickerBottomSheetStrings);
 
         });
-        CriteriaHelper.pollUiThread(mCoordinator.getBottomSheetViewForTesting().findViewById(
-                R.id.account_picker_selected_account)::isShown);
+        ViewUtils.onViewWaiting(allOf(withId(R.id.account_picker_selected_account), isDisplayed()));
     }
 
     private BottomSheetController getBottomSheetController() {

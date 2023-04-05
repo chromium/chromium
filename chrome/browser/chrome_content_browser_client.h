@@ -321,6 +321,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
                                  InterestGroupApiOperation operation,
                                  const url::Origin& top_frame_origin,
                                  const url::Origin& api_origin) override;
+  void OnAuctionComplete(content::RenderFrameHost* render_frame_host,
+                         content::InterestGroupManager::InterestGroupDataKey
+                             winner_data_key) override;
   bool IsAttributionReportingOperationAllowed(
       content::BrowserContext* browser_context,
       AttributionReportingOperation operation,

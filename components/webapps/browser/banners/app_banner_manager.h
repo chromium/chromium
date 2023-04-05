@@ -38,6 +38,10 @@ enum class WebappInstallSource;
 struct InstallableData;
 struct Screenshot;
 
+namespace test {
+extern bool g_disable_banner_triggering_for_testing;
+}  // namespace test
+
 // Coordinates the creation of an app banner, from detecting eligibility to
 // fetching data and creating the infobar. Sites declare that they want an app
 // banner using the web app manifest. One web/native app may occupy the pipeline
@@ -191,6 +195,13 @@ class AppBannerManager : public content::WebContentsObserver,
   void RemoveObserver(Observer* observer);
 
   virtual base::WeakPtr<AppBannerManager> GetWeakPtr() = 0;
+
+  // This is used to determine if the `AppBannerManager` pipeline should be
+  // disabled. A test may disable the original `AppBannerManager` (by using
+  // `test::g_disable_banner_triggering_for_testing`) but instead use a
+  // `TestAppBannerManager` that override this method to `true`, allowing that
+  // class to function correctly.
+  virtual bool TriggeringDisabledForTesting() const;
 
   // Returns whether the site can call "event.prompt()" to prompt the user to
   // install the site.

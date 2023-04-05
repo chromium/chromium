@@ -8,6 +8,7 @@
 #include "base/containers/flat_set.h"
 #include "base/json/json_writer.h"
 #include "base/strings/escape.h"
+#include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/fedcm_metrics.h"
@@ -88,7 +89,9 @@ constexpr char kTokenKey[] = "token";
 
 // Body content types.
 constexpr char kUrlEncodedContentType[] = "application/x-www-form-urlencoded";
-constexpr char kResponseBodyContentType[] = "application/json";
+constexpr char kPlusJson[] = "+json";
+constexpr char kApplicationJson[] = "application/json";
+constexpr char kTextJson[] = "text/json";
 
 // 1 MiB is an arbitrary upper bound that should account for any reasonable
 // response size that is a part of this protocol.
@@ -266,12 +269,29 @@ void ParseIdentityProviderMetadata(const base::Value::Dict& idp_metadata_value,
           blink::mojom::ManifestImageResource_Purpose::MASKABLE);
 }
 
-ParseStatus GetResponseError(std::string* response_body, int response_code) {
-  if (response_code == net::HTTP_NOT_FOUND)
-    return ParseStatus::kHttpNotFoundError;
+// This method follows https://mimesniff.spec.whatwg.org/#json-mime-type.
+bool IsJsonMimeType(const std::string& mime_type) {
+  if (base::EndsWith(mime_type, kPlusJson)) {
+    return true;
+  }
 
-  if (!response_body)
+  return mime_type == kApplicationJson || mime_type == kTextJson;
+}
+
+ParseStatus GetResponseError(std::string* response_body,
+                             int response_code,
+                             const std::string& mime_type) {
+  if (response_code == net::HTTP_NOT_FOUND) {
+    return ParseStatus::kHttpNotFoundError;
+  }
+
+  if (!response_body) {
     return ParseStatus::kNoResponseError;
+  }
+
+  if (!IsJsonMimeType(mime_type)) {
+    return ParseStatus::kInvalidResponseError;
+  }
 
   return ParseStatus::kSuccess;
 }
@@ -301,9 +321,10 @@ void OnJsonParsed(
 void OnDownloadedJson(
     IdpNetworkRequestManager::ParseJsonCallback parse_json_callback,
     std::unique_ptr<std::string> response_body,
-    int response_code) {
+    int response_code,
+    const std::string& mime_type) {
   ParseStatus parse_status =
-      GetResponseError(response_body.get(), response_code);
+      GetResponseError(response_body.get(), response_code, mime_type);
 
   if (parse_status != ParseStatus::kSuccess) {
     std::move(parse_json_callback)
@@ -503,7 +524,8 @@ void OnTokenRequestParsed(
 
 void OnLogoutCompleted(IdpNetworkRequestManager::LogoutCallback callback,
                        std::unique_ptr<std::string> response_body,
-                       int response_code) {
+                       int response_code,
+                       const std::string& mime_type) {
   std::move(callback).Run();
 }
 
@@ -744,9 +766,14 @@ void IdpNetworkRequestManager::OnDownloadedUrl(
   int response_code = response_info && response_info->headers
                           ? response_info->headers->response_code()
                           : url_loader->NetError();
+  std::string mime_type;
+  if (response_info && response_info->headers) {
+    response_info->headers->GetMimeType(&mime_type);
+  }
 
   url_loader.reset();
-  std::move(callback).Run(std::move(response_body), response_code);
+  std::move(callback).Run(std::move(response_body), response_code,
+                          std::move(mime_type));
 }
 
 void IdpNetworkRequestManager::FetchClientMetadata(
@@ -777,7 +804,7 @@ IdpNetworkRequestManager::CreateUncredentialedResourceRequest(
   resource_request->url = target_url;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
-                                      kResponseBodyContentType);
+                                      kApplicationJson);
   resource_request->destination =
       network::mojom::RequestDestination::kWebIdentity;
   // See https://github.com/fedidcg/FedCM/issues/379 for why the Origin header
@@ -827,7 +854,7 @@ IdpNetworkRequestManager::CreateCredentialedResourceRequest(
   }
   resource_request->redirect_mode = network::mojom::RedirectMode::kError;
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
-                                      kResponseBodyContentType);
+                                      kApplicationJson);
 
   resource_request->credentials_mode =
       network::mojom::CredentialsMode::kInclude;

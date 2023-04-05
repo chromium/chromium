@@ -3071,11 +3071,6 @@ const char kTabGridLayoutAndroidDescription[] =
     "Allows users to see their tabs in a grid layout in the tab switcher on "
     "phones.";
 
-const char kCommerceCouponsName[] = "Coupon Annotations";
-const char kCommerceCouponsDescription[] =
-    "Allows users to view annotations for available coupons in the Tab "
-    "Switching UI and on the Tab itself when a known coupon in available";
-
 const char kCommerceDeveloperName[] = "Commerce developer mode";
 const char kCommerceDeveloperDescription[] =
     "Allows users in the allowlist to enter the developer mode";
@@ -6159,6 +6154,12 @@ const char kArcInputOverlayNameAlphaV2[] = "Enable ARC Input Overlay Alpha V2";
 const char kArcInputOverlayDescriptionAlphaV2[] =
     "Enable menu and action reposition feature for Gaming Input Overlay based "
     "on Alpha.";
+
+const char kScanningAppJellyName[] =
+    "Enable jelly colors for the Scanning App.";
+const char kScanningAppJellyDescription[] =
+    "Enable jelly colors for the Scanning App. Requires "
+    "jelly-colors flag to be enabled.";
 
 const char kShelfAutoHideSeparationName[] =
     "Enable separate shelf auto-hide preferences.";

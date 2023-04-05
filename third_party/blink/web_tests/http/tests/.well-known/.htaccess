@@ -1,0 +1,3 @@
+<Files "web-identity">
+Header set Content-Type "application/json"
+</Files>

@@ -9,6 +9,7 @@
 #import "base/ios/block_types.h"
 #import "base/notreached.h"
 #import "components/bookmarks/common/bookmark_features.h"
+#import "components/reading_list/features/reading_list_switches.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -525,9 +526,19 @@ enum AuthenticationState {
 // Opts in the bookmark and reading list account storage and continues the
 // sign-in flow.
 - (void)optInBookmarkReadingListAccountStorage {
-  DCHECK(
-      base::FeatureList::IsEnabled(bookmarks::kEnableBookmarksAccountStorage));
-  // TODO(crbug.com/1430453): Need to call the right APIs to opt in, as soon as
+  bool bookmarksAccountStorageEnabled =
+      base::FeatureList::IsEnabled(bookmarks::kEnableBookmarksAccountStorage);
+  bool dualReadingListModelEnabled = base::FeatureList::IsEnabled(
+      reading_list::switches::kReadingListEnableDualReadingListModel);
+  bool readingListTransportUponSignInEnabled = base::FeatureList::IsEnabled(
+      reading_list::switches::kReadingListEnableSyncTransportModeUponSignIn);
+  CHECK(bookmarksAccountStorageEnabled ||
+        (dualReadingListModelEnabled && readingListTransportUponSignInEnabled))
+      << "bookmarksAccountStorageEnabled: " << bookmarksAccountStorageEnabled
+      << ", dualReadingListModelEnabled: " << dualReadingListModelEnabled
+      << ", readingListTransportUponSignInEnabled: "
+      << readingListTransportUponSignInEnabled;
+  // TODO(crbug.com/1427044): Need to call the right APIs to opt in, as soon as
   // those APIs will be implemented.
   [self continueSignin];
 }

@@ -214,6 +214,9 @@ class CONTENT_EXPORT FencedFrameProperty {
 struct CONTENT_EXPORT FencedFrameConfig {
   FencedFrameConfig();
   explicit FencedFrameConfig(const GURL& mapped_url);
+  explicit FencedFrameConfig(const GURL& mapped_url,
+                             const gfx::Size& content_size,
+                             bool is_ad_component);
   FencedFrameConfig(const GURL& urn_uuid, const GURL& url);
   FencedFrameConfig(const GURL& mapped_url, bool is_ad_component);
   FencedFrameConfig(

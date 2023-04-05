@@ -275,6 +275,11 @@ sync_pb::PasswordSpecificsMetadata SpecificsMetadataFromPassword(
   password_metadata.set_blacklisted(password_form.blocked_by_user);
   password_metadata.set_date_last_used_windows_epoch_micros(
       password_form.date_last_used.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordIssuesInSpecificsMetadata)) {
+    *password_metadata.mutable_password_issues() =
+        PasswordIssuesMapToProto(password_form.password_issues);
+  }
   return password_metadata;
 }
 

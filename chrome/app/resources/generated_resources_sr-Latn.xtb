@@ -6837,7 +6837,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7017004637493394352">Kažite ponovo „Hej Google“</translation>
 <translation id="7017219178341817193">Dodajte novu stranicu</translation>
 <translation id="7017354871202642555">Nije moguće podesiti režim nakon podešavanja prozora.</translation>
-<translation id="7018275672629230621">Čitanje istorije pregledanja i menjanje te istorije</translation>
 <translation id="7019546817926942979">Uređaj treba da bude priključen. Nadogradnjom Linux-a možete značajno da ispraznite bateriju. Povežite uređaj sa punjačem i probajte ponovo.</translation>
 <translation id="7019805045859631636">Brzo</translation>
 <translation id="7022562585984256452">Početna stranica je podešena.</translation>
@@ -7126,6 +7125,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7308643132139167865">Jezici veb-sajtova</translation>
 <translation id="7310598146671372464">Prijavljivanje nije uspelo. Server ne podržava navedene Kerberos tipove šifrovanja. Kontaktirajte administratora.</translation>
 <translation id="7311089766378749632">Zahtev za čitanje i menjanje za <ph name="SITE_NAME" /></translation>
+<translation id="7311244614769792472">Nije pronađen nijedan rezultat</translation>
 <translation id="7312210124139670355">Administrator resetuje eSIM. To može da potraje nekoliko minuta.</translation>
 <translation id="7317831949569936035">Registracija za školu</translation>
 <translation id="7320213904474460808">Postavi kao podrazumevanu mrežu</translation>

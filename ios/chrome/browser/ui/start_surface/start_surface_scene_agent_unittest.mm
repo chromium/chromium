@@ -149,7 +149,7 @@ TEST_F(StartSurfaceSceneAgentTest, RemoveExcessNTP) {
   ASSERT_EQ(2, web_state_list->count());
   // NTP at index 3 should be the one saved, so the remaining WebState with an
   // NTP should be at index 1.
-  EXPECT_TRUE(IsURLNtp(web_state_list->GetWebStateAt(1)->GetVisibleURL()));
+  EXPECT_TRUE(IsUrlNtp(web_state_list->GetWebStateAt(1)->GetVisibleURL()));
 }
 
 // Tests that only the NTP tab with navigation history is the only NTP tab that
@@ -174,7 +174,7 @@ TEST_F(StartSurfaceSceneAgentTest, OnlyRemoveEmptyNTPTabs) {
   WebStateList* web_state_list =
       scene_state_.interfaceProvider.mainInterface.browser->GetWebStateList();
   ASSERT_EQ(2, web_state_list->count());
-  EXPECT_TRUE(IsURLNtp(web_state_list->GetWebStateAt(1)->GetVisibleURL()));
+  EXPECT_TRUE(IsUrlNtp(web_state_list->GetWebStateAt(1)->GetVisibleURL()));
 }
 
 // Tests that, starting with an active WebState with no navigation history and a
@@ -198,7 +198,7 @@ TEST_F(StartSurfaceSceneAgentTest, KeepNTPAsActiveTab) {
   [agent_ sceneState:scene_state_
       transitionedToActivationLevel:SceneActivationLevelBackground];
   ASSERT_EQ(2, web_state_list->count());
-  EXPECT_TRUE(IsURLNtp(web_state_list->GetWebStateAt(0)->GetVisibleURL()));
+  EXPECT_TRUE(IsUrlNtp(web_state_list->GetWebStateAt(0)->GetVisibleURL()));
   EXPECT_EQ(web_state_list->GetActiveWebState(),
             web_state_list->GetWebStateAt(0));
 }

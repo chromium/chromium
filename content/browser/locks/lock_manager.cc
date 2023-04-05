@@ -8,11 +8,11 @@
 #include <list>
 #include <memory>
 #include <tuple>
-#include <unordered_set>
 #include <utility>
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/guid.h"
 #include "base/memory/raw_ptr.h"
@@ -299,11 +299,11 @@ class LockManager::BucketState {
   // requests against that resource. All the granted locks for a resource reside
   // at the front of the resource's
   // request queue.
-  std::unordered_map<std::string, std::list<Lock>> resource_names_to_requests_;
+  base::flat_map<std::string, std::list<Lock>> resource_names_to_requests_;
 
   // BucketState::lock_id_to_iterator_ maps a lock's id to the
   // iterator pointing to its location in its associated request queue.
-  std::unordered_map<int64_t, std::list<Lock>::iterator> lock_id_to_iterator_;
+  base::flat_map<int64_t, std::list<Lock>::iterator> lock_id_to_iterator_;
 
   // Any OriginState is owned by a LockManager so a raw pointer back to an
   // OriginState's owning LockManager is safe.

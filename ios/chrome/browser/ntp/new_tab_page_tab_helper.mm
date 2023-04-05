@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/chrome/browser/url/url_util.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -25,20 +26,12 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-// Internally the NTP URL is about://newtab/.  However, with
-// `url::kAboutScheme`, there's no host value, only a path.  Use this value for
-// matching the NTP.
-const char kAboutNewTabPath[] = "//newtab/";
-
-}  // namespace
-
 NewTabPageTabHelper::~NewTabPageTabHelper() = default;
 
 NewTabPageTabHelper::NewTabPageTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
   web_state->AddObserver(this);
-  active_ = IsNTPURL(web_state_->GetVisibleURL());
+  active_ = IsUrlNtp(web_state_->GetVisibleURL());
   next_ntp_feed_type_ = DefaultFeedType();
 }
 
@@ -60,7 +53,7 @@ FeedType NewTabPageTabHelper::DefaultFeedType() {
 void NewTabPageTabHelper::SetDelegate(
     id<NewTabPageTabHelperDelegate> delegate) {
   delegate_ = delegate;
-  active_ = IsNTPURL(web_state_->GetVisibleURL());
+  active_ = IsUrlNtp(web_state_->GetVisibleURL());
   if (active_) {
     UpdateItem(web_state_->GetNavigationManager()->GetPendingItem());
   }
@@ -76,15 +69,6 @@ void NewTabPageTabHelper::SetShowStartSurface(bool show_start_surface) {
 
 bool NewTabPageTabHelper::IsActive() const {
   return active_;
-}
-
-bool NewTabPageTabHelper::IsNTPURL(const GURL& url) {
-  // `url` can be chrome://newtab/ or about://newtab/ depending on where `url`
-  // comes from (the VisibleURL chrome:// from a navigation item or the actual
-  // webView url about://).  If the url is about://newtab/, there is no origin
-  // to match, so instead check the scheme and the path.
-  return url.DeprecatedGetOriginAsURL() == kChromeUINewTabURL ||
-         (url.SchemeIs(url::kAboutScheme) && url.path() == kAboutNewTabPath);
 }
 
 FeedType NewTabPageTabHelper::GetNextNTPFeedType() {
@@ -127,7 +111,7 @@ void NewTabPageTabHelper::WebStateDestroyed(web::WebState* web_state) {
 void NewTabPageTabHelper::DidStartNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
-  if (IsNTPURL(navigation_context->GetUrl())) {
+  if (IsUrlNtp(navigation_context->GetUrl())) {
     UpdateItem(web_state_->GetNavigationManager()->GetPendingItem());
   } else {
     SetActive(false);
@@ -150,7 +134,7 @@ void NewTabPageTabHelper::PageLoaded(
     web::WebState* web_state,
     web::PageLoadCompletionStatus load_completion_status) {
   if (load_completion_status == web::PageLoadCompletionStatus::SUCCESS) {
-    if (IsNTPURL(web_state->GetVisibleURL())) {
+    if (IsUrlNtp(web_state->GetVisibleURL())) {
       SetActive(true);
     }
   }

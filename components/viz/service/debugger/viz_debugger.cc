@@ -27,7 +27,7 @@ namespace viz {
 // support.
 static const int kVizDebuggerVersion = 1;
 
-std::atomic<bool> VizDebugger::enabled_;
+std::atomic<bool> VizDebugger::enabled_ = false;
 
 VizDebugger::BufferInfo::BufferInfo() = default;
 VizDebugger::BufferInfo::~BufferInfo() = default;
@@ -494,7 +494,6 @@ void VizDebugger::StartDebugStream(
   base::Value::Dict dict;
   dict.Set("connection", "ok");
   debug_output_->LogFrame(base::Value(std::move(dict)));
-
   enabled_.store(true);
   read_write_lock_.WriteUnLock();
 }

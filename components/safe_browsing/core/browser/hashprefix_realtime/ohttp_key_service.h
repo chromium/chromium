@@ -9,7 +9,9 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
@@ -61,9 +63,33 @@ class OhttpKeyService : public KeyedService {
   absl::optional<OhttpKeyAndExpiration> get_ohttp_key_for_testing();
 
  private:
+  // Listens to Safe Browsing state changes to enable/disable the service.
+  void OnSafeBrowsingStateChanged();
+
+  // Enables/disables the service.
+  void SetEnabled(bool enable);
+
+  // Starts to fetch a new key from the Safe Browsing key hosting endpoint. It
+  // may be triggered by sync (|GetOhttpKey|) or async (|MaybeStartAsyncFetch|)
+  // workflows.
+  void StartFetch(Callback callback);
+
   // Called when the response from the Safe Browsing key hosting endpoint is
   // received.
   void OnURLLoaderComplete(std::unique_ptr<std::string> response_body);
+
+  // Async workflow:
+  // Starts to fetch a new key if the current key is close to expiration.
+  // Otherwise, reschedule to check again in an hour.
+  void MaybeStartOrRescheduleAsyncFetch();
+  // Called when the async fetch is completed. This function schedules the next
+  // async fetch based on the fetch result. Note that it does not use the
+  // |ohttp_key| parameter because |ohttp_key_| already gets populated to it
+  // when relevant before this method is called.
+  void OnAsyncFetchCompleted(absl::optional<std::string> ohttp_key);
+  // Returns if async fetch should be started immediately, which is if the
+  // |ohttp_key_| is unpopulated, is expired, or will soon expire.
+  bool ShouldStartAsyncFetch();
 
   // Pref functions:
   // Gets the key and expiration time from pref. If there is an unexpired key,
@@ -88,6 +114,17 @@ class OhttpKeyService : public KeyedService {
   // Unowned object used for synchronizing the OHTTP key between the prefs and
   // the OHTTP key service.
   raw_ptr<PrefService> pref_service_;
+
+  // Observes changes in Safe Browsing state.
+  PrefChangeRegistrar pref_change_registrar_;
+
+  // Keeps track of the state of the service. The service should be enabled when
+  // standard protection is on, and disabled when Safe Browsing is off or
+  // enhanced protection is on.
+  bool enabled_ = false;
+
+  // Used to schedule async key fetch.
+  base::OneShotTimer async_fetch_timer_;
 
   base::WeakPtrFactory<OhttpKeyService> weak_factory_{this};
 };

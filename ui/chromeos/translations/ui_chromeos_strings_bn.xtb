@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">গ্রহ</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> সরিয়ে দেওয়া হয়েছে।</translation>
 <translation id="2307462900900812319">নেটওয়ার্ক কনফিগার করুন</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{আইডি সহ <ph name="BEGIN_LIST" /><ph name="END_LIST" /> একটি এক্সটেনশন শনাক্ত করা যাবে না। আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।}one{আইডি সহ <ph name="BEGIN_LIST" /><ph name="END_LIST" /> একটি এক্সটেনশন শনাক্ত করা যাবে না। আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।}other{আইডি সহ <ph name="BEGIN_LIST" /><ph name="END_LIST" /> একটি এক্সটেনশন শনাক্ত করা যাবে না। আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।}}</translation>
 <translation id="2325650632570794183">এই ফাইল প্রকারটি সমর্থিত নয়৷ এই ধরণের ফাইল খুলতে পারে এমন অ্যাপ খুঁজতে অনুগ্রহ করে Chrome ওয়েব স্টোর দেখুন৷</translation>
 <translation id="2326539130272988168">বুলগেরিয়ান</translation>
 <translation id="2337715497728194187">Bruschetta-এর মাধ্যমে শেয়ার করুন</translation>
@@ -274,6 +275,7 @@
 <translation id="3290356915286466215">সুরক্ষিত নেই</translation>
 <translation id="3291218047831493686">সিম লক সেটিং পরিবর্তন করতে এই নেটওয়ার্কে কানেক্ট করুন</translation>
 <translation id="3293023191599135697">WEP নেটওয়ার্ক কাজ করবে না</translation>
+<translation id="3295006446256079333">এই ভলিউম</translation>
 <translation id="3295357220137379386">ডিভাইসটি আগেই অন্য কোথাও কানেক্ট রয়েছে</translation>
 <translation id="3296763833017966289">জর্জিয়ান</translation>
 <translation id="3307875152560779385">ইউক্রেনিয়ান</translation>

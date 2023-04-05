@@ -914,4 +914,9 @@ ChromeExtensionsBrowserClient::GetWebViewStoragePartitionConfig(
       browser_context, owner_site_instance, partition_name, in_memory);
 }
 
+void ChromeExtensionsBrowserClient::CreatePasswordReuseDetectionManager(
+    content::WebContents* web_contents) const {
+  ChromePasswordReuseDetectionManagerClient::CreateForWebContents(web_contents);
+}
+
 }  // namespace extensions

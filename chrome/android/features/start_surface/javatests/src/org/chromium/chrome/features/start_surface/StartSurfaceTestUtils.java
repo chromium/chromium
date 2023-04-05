@@ -169,8 +169,7 @@ public class StartSurfaceTestUtils {
     public static void startAndWaitNativeInitialization(
             ChromeTabbedActivityTestRule activityTestRule) {
         Assert.assertTrue(NativeLibraryLoadedStatus.getProviderForTesting() == null
-                || !NativeLibraryLoadedStatus.getProviderForTesting()
-                            .areMainDexNativeMethodsReady());
+                || !NativeLibraryLoadedStatus.getProviderForTesting().areNativeMethodsReady());
 
         CommandLine.getInstance().removeSwitch(ChromeSwitches.DISABLE_NATIVE_INITIALIZATION);
         TestThreadUtils.runOnUiThreadBlocking(

@@ -194,28 +194,8 @@ TEST_F(BreadcrumbManagerTabHelperTest, ChromeNewTabNavigationStart) {
       << events.front();
 }
 
-// Tests metadata for about://newtab NTP navigation.
-TEST_F(BreadcrumbManagerTabHelperTest, AboutNewTabNavigationStart) {
-  ASSERT_TRUE(EventsEmpty());
-
-  web::FakeNavigationContext context;
-  context.SetUrl(GURL("about://newtab"));
-  first_web_state_.OnNavigationStarted(&context);
-  const auto& events = GetEvents();
-  ASSERT_EQ(1u, events.size());
-
-  EXPECT_NE(std::string::npos,
-            events.front().find(base::StringPrintf(
-                "%s%lld", breadcrumbs::kBreadcrumbDidStartNavigation,
-                context.GetNavigationId())))
-      << events.front();
-  EXPECT_NE(std::string::npos,
-            events.front().find(breadcrumbs::kBreadcrumbNtpNavigation))
-      << events.front();
-}
-
 // Tests metadata for about://newtab/ NTP navigation.
-TEST_F(BreadcrumbManagerTabHelperTest, AboutNewTabNavigationStart2) {
+TEST_F(BreadcrumbManagerTabHelperTest, AboutNewTabNavigationStart) {
   ASSERT_TRUE(EventsEmpty());
 
   web::FakeNavigationContext context;

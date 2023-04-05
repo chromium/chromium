@@ -104,6 +104,7 @@ extern NSString* const kSettingsSymbol;
 extern NSString* const kSettingsFilledSymbol;
 extern NSString* const kShareSymbol;
 extern NSString* const kXMarkSymbol;
+extern NSString* const kXMarkCircleFillSymbol;
 extern NSString* const kPlusSymbol;
 extern NSString* const kSearchSymbol;
 extern NSString* const kCheckmarkSymbol;

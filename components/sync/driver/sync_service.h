@@ -357,6 +357,11 @@ class SyncService : public KeyedService {
   // be the empty set. Once the configuration completes the set will be updated.
   virtual ModelTypeSet GetActiveDataTypes() const = 0;
 
+  // Returns the datatypes that are about to become active, but are currently
+  // in the process of downloading the initial data from the server (either
+  // actively ongoing or queued).
+  virtual ModelTypeSet GetTypesWithPendingDownloadForInitialSync() const = 0;
+
   //////////////////////////////////////////////////////////////////////////////
   // ACTIONS / STATE CHANGE REQUESTS
   //////////////////////////////////////////////////////////////////////////////

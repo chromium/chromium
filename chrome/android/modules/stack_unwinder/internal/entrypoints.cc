@@ -10,11 +10,7 @@ extern "C" {
 // This JNI registration method is found and called by module framework
 // code.
 JNI_GENERATOR_EXPORT bool JNI_OnLoad_stack_unwinder(JNIEnv* env) {
-  if (!base::android::IsSelectiveJniRegistrationEnabled(env) &&
-      !stack_unwinder::RegisterNonMainDexNatives(env)) {
-    return false;
-  }
-  if (!stack_unwinder::RegisterMainDexNatives(env)) {
+  if (!stack_unwinder::RegisterNatives(env)) {
     return false;
   }
   return true;

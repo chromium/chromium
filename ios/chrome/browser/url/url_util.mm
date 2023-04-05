@@ -36,8 +36,17 @@ bool UrlHasChromeScheme(NSURL* url) {
   return net::UrlSchemeIs(url, base::SysUTF8ToNSString(kChromeUIScheme));
 }
 
-bool IsURLNtp(const GURL& url) {
-  return UrlHasChromeScheme(url) && url.host() == kChromeUINewTabHost;
+bool IsUrlNtp(const GURL& url) {
+  // Check for "chrome://newtab".
+  if (url.SchemeIs(kChromeUIScheme)) {
+    return url.host_piece() == kChromeUINewTabHost;
+  }
+  // Check for "about://newtab/". Since "about:" scheme is not standardised,
+  // check the full path.
+  if (url.SchemeIs(url::kAboutScheme)) {
+    return url == kChromeUIAboutNewTabURL;
+  }
+  return false;
 }
 
 bool IsHandledProtocol(const std::string& scheme) {

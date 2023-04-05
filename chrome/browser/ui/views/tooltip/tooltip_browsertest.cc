@@ -381,8 +381,8 @@ IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
   EXPECT_FALSE(helper()->IsTooltipVisible());
 }
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-// https://crbug.com/1212403. Flaky on linux-chromeos-rel, windows.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+// https://crbug.com/1212403. Flaky on linux-chromeos-rel, windows, linux.
 // TODO(elkurin): Keyboard triggered tooltip needs command line switch on server
 // side while Lacros cannot set Ash flag.
 #define MAYBE_ScriptFocusHidesKeyboardTriggeredTooltip \

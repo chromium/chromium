@@ -83,11 +83,18 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialGroup {
 class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialObserver {
  public:
   // Called when the list of synthetic field trial groups has changed.
+  // `trials_updated` contains a list of trials that were updated or added.
+  // `trials_removed` are the field trials that are no longer active.
+  // If there is an overlap of the trial names between the 2 lists, the
+  // `trials_updated` contains the latest group.
+  // `groups` contains the final list of all active groups.
   virtual void OnSyntheticTrialsChanged(
+      const std::vector<SyntheticTrialGroup>& trials_updated,
+      const std::vector<SyntheticTrialGroup>& trials_removed,
       const std::vector<SyntheticTrialGroup>& groups) = 0;
 
  protected:
-  virtual ~SyntheticTrialObserver() {}
+  virtual ~SyntheticTrialObserver() = default;
 };
 
 }  // namespace variations

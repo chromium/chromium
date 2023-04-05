@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/metrics/field_trial.h"
+#include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -16,9 +17,33 @@
 #include "components/variations/synthetic_trials.h"
 #include "components/variations/synthetic_trials_active_group_id_provider.h"
 #include "components/variations/variations_crash_keys.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace variations {
+namespace {
+
+using ::testing::Contains;
+
+class MockSyntheticTrialObserver : public SyntheticTrialObserver {
+ public:
+  MockSyntheticTrialObserver() = default;
+  ~MockSyntheticTrialObserver() override = default;
+
+  MOCK_METHOD(void,
+              OnSyntheticTrialsChanged,
+              (const std::vector<SyntheticTrialGroup>&,
+               const std::vector<SyntheticTrialGroup>&,
+               const std::vector<SyntheticTrialGroup>&),
+              (override));
+};
+
+}  // namespace
+
+bool operator==(const SyntheticTrialGroup& a, const SyntheticTrialGroup& b) {
+  return a.group_name() == b.group_name() && a.trial_name() == b.trial_name() &&
+         a.annotation_mode() == b.annotation_mode();
+}
 
 class SyntheticTrialRegistryTest : public ::testing::Test {
  public:
@@ -267,6 +292,73 @@ TEST_F(SyntheticTrialRegistryTest, GetSyntheticFieldTrialActiveGroups) {
   std::string trial2_hash =
       base::StringPrintf("%x-%x", trial2_id.name, trial2.id().group);
   EXPECT_TRUE(base::Contains(output, trial2_hash));
+}
+
+TEST_F(SyntheticTrialRegistryTest, NotifyObserver) {
+  SyntheticTrialRegistry registry;
+  MockSyntheticTrialObserver observer;
+  registry.AddSyntheticTrialObserver(&observer);
+
+  SyntheticTrialGroup trial1("TestTrial1", "Group1",
+                             SyntheticTrialAnnotationMode::kNextLog);
+  EXPECT_CALL(observer, OnSyntheticTrialsChanged(
+                            std::vector<SyntheticTrialGroup>({trial1}),
+                            std::vector<SyntheticTrialGroup>(),
+                            std::vector<SyntheticTrialGroup>({trial1})));
+  registry.RegisterSyntheticFieldTrial(trial1);
+
+  SyntheticTrialGroup trial2("TestTrial2", "Group1",
+                             SyntheticTrialAnnotationMode::kNextLog);
+  EXPECT_CALL(observer,
+              OnSyntheticTrialsChanged(
+                  std::vector<SyntheticTrialGroup>({trial2}),
+                  std::vector<SyntheticTrialGroup>(),
+                  std::vector<SyntheticTrialGroup>({trial1, trial2})));
+  registry.RegisterSyntheticFieldTrial(trial2);
+
+  SyntheticTrialGroup trial3("TestTrial1", "Group2",
+                             SyntheticTrialAnnotationMode::kNextLog);
+  EXPECT_CALL(observer,
+              OnSyntheticTrialsChanged(
+                  std::vector<SyntheticTrialGroup>({trial3}),
+                  std::vector<SyntheticTrialGroup>(),
+                  std::vector<SyntheticTrialGroup>({trial3, trial2})));
+  registry.RegisterSyntheticFieldTrial(trial3);
+
+  registry.RemoveSyntheticTrialObserver(&observer);
+}
+
+TEST_F(SyntheticTrialRegistryTest, NotifyObserverExternalTrials) {
+  SyntheticTrialRegistry registry(
+      /*enable_external_experiment_allowlist=*/false);
+  MockSyntheticTrialObserver observer;
+  registry.AddSyntheticTrialObserver(&observer);
+
+  const std::string context = "TestTrial1";
+  const auto mode = SyntheticTrialRegistry::kOverrideExistingIds;
+  const SyntheticTrialGroup kTrial1(context, "100",
+                                    SyntheticTrialAnnotationMode::kNextLog);
+  const SyntheticTrialGroup kTrial2(context, "101",
+                                    SyntheticTrialAnnotationMode::kNextLog);
+  const SyntheticTrialGroup kTrial3(context, "102",
+                                    SyntheticTrialAnnotationMode::kNextLog);
+
+  EXPECT_CALL(observer,
+              OnSyntheticTrialsChanged(
+                  std::vector<SyntheticTrialGroup>({kTrial1, kTrial2}),
+                  std::vector<SyntheticTrialGroup>(),
+                  std::vector<SyntheticTrialGroup>({kTrial1, kTrial2})));
+  registry.RegisterExternalExperiments(context, {100, 101}, mode);
+
+  // Registering one trial with override should remove existing trials.
+  EXPECT_CALL(observer,
+              OnSyntheticTrialsChanged(
+                  std::vector<SyntheticTrialGroup>({kTrial3}),
+                  std::vector<SyntheticTrialGroup>({kTrial1, kTrial2}),
+                  std::vector<SyntheticTrialGroup>({kTrial3})));
+  registry.RegisterExternalExperiments(context, {102}, mode);
+
+  registry.RemoveSyntheticTrialObserver(&observer);
 }
 
 }  // namespace variations

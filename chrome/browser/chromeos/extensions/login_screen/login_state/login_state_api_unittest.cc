@@ -53,7 +53,7 @@ class LoginStateApiUnittest : public ExtensionApiUnittest {
 TEST_F(LoginStateApiUnittest, GetProfileType_UserProfile) {
   auto function = base::MakeRefCounted<LoginStateGetProfileTypeFunction>();
   EXPECT_EQ("USER_PROFILE",
-            RunFunctionAndReturnSingleValue(function.get(), "[]")->GetString());
+            RunFunctionAndReturnValue(function.get(), "[]")->GetString());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -108,7 +108,7 @@ TEST_F(LoginStateApiAshUnittest, GetSessionState) {
     session_manager::SessionManager::Get()->SetSessionState(test.session_state);
     auto function = base::MakeRefCounted<LoginStateGetSessionStateFunction>();
     absl::optional<base::Value> result =
-        RunFunctionAndReturnSingleValue(function.get(), "[]");
+        RunFunctionAndReturnValue(function.get(), "[]");
     EXPECT_EQ(test.expected, result->GetString());
   }
 }

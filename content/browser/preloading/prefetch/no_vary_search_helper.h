@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 #include "net/http/http_no_vary_search_data.h"
+#include "services/network/public/mojom/no_vary_search.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
@@ -52,6 +53,10 @@ class CONTENT_EXPORT NoVarySearchHelper
   // for ease of use (remove query/reference during lookup).
   const std::vector<std::pair<GURL, net::HttpNoVarySearchData>>*
   GetAllForUrlWithoutRefAndQueryForTesting(const GURL& url) const;
+
+  // Parse No-Vary-Search from mojom structure received from network service.
+  static net::HttpNoVarySearchData ParseHttpNoVarySearchDataFromMojom(
+      const network::mojom::NoVarySearchPtr& no_vary_search_ptr);
 
  private:
   friend class base::RefCounted<NoVarySearchHelper>;

@@ -10,7 +10,7 @@
 #include "media/cast/encoding/external_video_encoder.h"
 #include "media/cast/encoding/video_encoder_impl.h"
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include "media/cast/encoding/h264_vt_encoder.h"
 #endif
 
@@ -35,7 +35,6 @@ std::unique_ptr<VideoEncoder> VideoEncoder::Create(
   }
 #endif  // BUILDFLAG(IS_APPLE)
 
-#if !BUILDFLAG(IS_IOS)
   // If the system provides a hardware-accelerated encoder, use it.
   if (video_config.use_hardware_encoder) {
     return base::WrapUnique<VideoEncoder>(new SizeAdaptableExternalVideoEncoder(
@@ -47,12 +46,6 @@ std::unique_ptr<VideoEncoder> VideoEncoder::Create(
   DCHECK(encoding_support::IsSoftwareEnabled(video_config.codec));
   return base::WrapUnique<VideoEncoder>(
       new VideoEncoderImpl(cast_environment, video_config, status_change_cb));
-
-#else
-  // We currently only support the VideoToolbox library on iOS, so no other
-  // encoder is available.
-  return nullptr;
-#endif
 }
 
 std::unique_ptr<VideoFrameFactory> VideoEncoder::CreateVideoFrameFactory() {

@@ -133,62 +133,63 @@ class IndexedDBTest : public testing::Test,
         IsThirdPartyStoragePartitioningEnabled());
 
     kNormalFirstPartyStorageKey =
-        blink::StorageKey::CreateFromStringForTesting("http://normal/");
+        blink::StorageKey::CreateFromStringForTesting("http://normal.com/");
     storage::BucketInfo bucket_info = InitBucket(kNormalFirstPartyStorageKey);
     kNormalFirstPartyBucketLocator = bucket_info.ToBucketLocator();
 
     kSessionOnlyFirstPartyStorageKey =
-        blink::StorageKey::CreateFromStringForTesting("http://session-only/");
+        blink::StorageKey::CreateFromStringForTesting(
+            "http://session-only.com/");
     bucket_info = InitBucket(kSessionOnlyFirstPartyStorageKey);
     kSessionOnlyFirstPartyBucketLocator = bucket_info.ToBucketLocator();
 
     kSessionOnlySubdomainFirstPartyStorageKey =
         blink::StorageKey::CreateFromStringForTesting(
-            "http://subdomain.session-only/");
+            "http://subdomain.session-only.com/");
     bucket_info = InitBucket(kSessionOnlySubdomainFirstPartyStorageKey);
     kSessionOnlySubdomainFirstPartyBucketLocator =
         bucket_info.ToBucketLocator();
 
-    kNormalThirdPartyStorageKey =
-        blink::StorageKey::Create(url::Origin::Create(GURL("http://normal/")),
-                                  net::SchemefulSite(GURL("http://rando/")),
-                                  blink::mojom::AncestorChainBit::kCrossSite);
+    kNormalThirdPartyStorageKey = blink::StorageKey::Create(
+        url::Origin::Create(GURL("http://normal.com/")),
+        net::SchemefulSite(GURL("http://rando.com/")),
+        blink::mojom::AncestorChainBit::kCrossSite);
     bucket_info = InitBucket(kNormalThirdPartyStorageKey);
     kNormalThirdPartyBucketLocator = bucket_info.ToBucketLocator();
 
     kSessionOnlyThirdPartyStorageKey = blink::StorageKey::Create(
-        url::Origin::Create(GURL("http://session-only/")),
-        net::SchemefulSite(GURL("http://rando/")),
+        url::Origin::Create(GURL("http://session-only.com/")),
+        net::SchemefulSite(GURL("http://rando.com/")),
         blink::mojom::AncestorChainBit::kCrossSite);
     bucket_info = InitBucket(kSessionOnlyThirdPartyStorageKey);
     kSessionOnlyThirdPartyBucketLocator = bucket_info.ToBucketLocator();
 
     kSessionOnlySubdomainThirdPartyStorageKey = blink::StorageKey::Create(
-        url::Origin::Create(GURL("http://subdomain.session-only/")),
-        net::SchemefulSite(GURL("http://rando/")),
+        url::Origin::Create(GURL("http://subdomain.session-only.com/")),
+        net::SchemefulSite(GURL("http://rando.com/")),
         blink::mojom::AncestorChainBit::kCrossSite);
     bucket_info = InitBucket(kSessionOnlySubdomainThirdPartyStorageKey);
     kSessionOnlySubdomainThirdPartyBucketLocator =
         bucket_info.ToBucketLocator();
 
-    kInvertedNormalThirdPartyStorageKey =
-        blink::StorageKey::Create(url::Origin::Create(GURL("http://rando/")),
-                                  net::SchemefulSite(GURL("http://normal/")),
-                                  blink::mojom::AncestorChainBit::kCrossSite);
+    kInvertedNormalThirdPartyStorageKey = blink::StorageKey::Create(
+        url::Origin::Create(GURL("http://rando.com/")),
+        net::SchemefulSite(GURL("http://normal.com/")),
+        blink::mojom::AncestorChainBit::kCrossSite);
     bucket_info = InitBucket(kInvertedNormalThirdPartyStorageKey);
     kInvertedNormalThirdPartyBucketLocator = bucket_info.ToBucketLocator();
 
     kInvertedSessionOnlyThirdPartyStorageKey = blink::StorageKey::Create(
-        url::Origin::Create(GURL("http://rando/")),
-        net::SchemefulSite(GURL("http://session-only/")),
+        url::Origin::Create(GURL("http://rando.com/")),
+        net::SchemefulSite(GURL("http://session-only.com/")),
         blink::mojom::AncestorChainBit::kCrossSite);
     bucket_info = InitBucket(kInvertedSessionOnlyThirdPartyStorageKey);
     kInvertedSessionOnlyThirdPartyBucketLocator = bucket_info.ToBucketLocator();
 
     kInvertedSessionOnlySubdomainThirdPartyStorageKey =
         blink::StorageKey::Create(
-            url::Origin::Create(GURL("http://rando/")),
-            net::SchemefulSite(GURL("http://subdomain.session-only/")),
+            url::Origin::Create(GURL("http://rando.com/")),
+            net::SchemefulSite(GURL("http://subdomain.session-only.com/")),
             blink::mojom::AncestorChainBit::kCrossSite);
     bucket_info = InitBucket(kInvertedSessionOnlySubdomainThirdPartyStorageKey);
     kInvertedSessionOnlySubdomainThirdPartyBucketLocator =
@@ -196,7 +197,7 @@ class IndexedDBTest : public testing::Test,
 
     std::vector<storage::mojom::StoragePolicyUpdatePtr> policy_updates;
     policy_updates.emplace_back(storage::mojom::StoragePolicyUpdate::New(
-        url::Origin::Create(GURL("http://subdomain.session-only")),
+        url::Origin::Create(GURL("http://subdomain.session-only.com")),
         /*should_purge_on_shutdown=*/true));
     context_->ApplyPolicyUpdates(std::move(policy_updates));
   }
@@ -360,17 +361,30 @@ TEST_P(IndexedDBTest, ClearSessionOnlyDatabases) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(base::DirectoryExists(normal_path_first_party));
-  EXPECT_TRUE(base::DirectoryExists(session_only_path_first_party));
+  // TODO(https://crbug.com/1429467): This directory shouldn't be deleted
+  // because it's a first-party context, which we only want to delete data for
+  // based on origin.
+  EXPECT_FALSE(base::DirectoryExists(session_only_path_first_party));
   EXPECT_FALSE(base::DirectoryExists(session_only_subdomain_path_first_party));
   EXPECT_TRUE(base::DirectoryExists(normal_path_third_party));
-  EXPECT_TRUE(base::DirectoryExists(session_only_path_third_party));
+  // TODO(https://crbug.com/1429467): Delete this conditional and always
+  // EXPECT_TRUE once this issue is fixed.
+  if (IsThirdPartyStoragePartitioningEnabled()) {
+    EXPECT_TRUE(base::DirectoryExists(session_only_path_third_party));
+  } else {
+    EXPECT_FALSE(base::DirectoryExists(session_only_path_third_party));
+  }
   EXPECT_FALSE(base::DirectoryExists(session_only_subdomain_path_third_party));
   EXPECT_TRUE(base::DirectoryExists(inverted_normal_path_third_party));
-  EXPECT_TRUE(base::DirectoryExists(inverted_session_only_path_third_party));
+  // When storage partitioning is enabled these will be deleted because they
+  // have a matching top-level site, but otherwise they won't be because the
+  // deletion logic only considers the origin.
   if (IsThirdPartyStoragePartitioningEnabled()) {
+    EXPECT_FALSE(base::DirectoryExists(inverted_session_only_path_third_party));
     EXPECT_FALSE(base::DirectoryExists(
         inverted_session_only_subdomain_path_third_party));
   } else {
+    EXPECT_TRUE(base::DirectoryExists(inverted_session_only_path_third_party));
     EXPECT_TRUE(base::DirectoryExists(
         inverted_session_only_subdomain_path_third_party));
   }

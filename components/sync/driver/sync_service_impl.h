@@ -123,6 +123,7 @@ class SyncServiceImpl : public SyncService,
   bool IsSetupInProgress() const override;
   ModelTypeSet GetPreferredDataTypes() const override;
   ModelTypeSet GetActiveDataTypes() const override;
+  ModelTypeSet GetTypesWithPendingDownloadForInitialSync() const override;
   void StopAndClear() override;
   void OnDataTypeRequestsSyncStartup(ModelType type) override;
   void TriggerRefresh(const ModelTypeSet& types) override;

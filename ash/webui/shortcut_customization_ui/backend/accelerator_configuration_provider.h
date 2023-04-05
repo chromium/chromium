@@ -74,6 +74,9 @@ class AcceleratorConfigurationProvider
                        observer) override;
   void GetAcceleratorLayoutInfos(
       GetAcceleratorLayoutInfosCallback callback) override;
+  void PreventProcessingAccelerators(
+      bool prevent_processing_accelerators,
+      PreventProcessingAcceleratorsCallback callback) override;
   void AddAccelerator(mojom::AcceleratorSource source,
                       uint32_t action_id,
                       const ui::Accelerator& accelerator,

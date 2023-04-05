@@ -42,6 +42,7 @@
 namespace {
 
 constexpr char kTestHost[] = "a.test";
+constexpr char kTestHost2[] = "b.test";
 
 void ProvideRequestHandlerKeyCommitmentsToNetworkService(
     base::StringPiece host,
@@ -65,7 +66,8 @@ void ProvideRequestHandlerKeyCommitmentsToNetworkService(
 }
 
 void JoinInterestGroup(const content::ToRenderFrameHost& adapter,
-                       net::EmbeddedTestServer* https_server) {
+                       net::EmbeddedTestServer* https_server,
+                       const std::string& owner_host) {
   // join interest group
   auto command = content::JsReplace(
       R"(
@@ -90,11 +92,35 @@ void JoinInterestGroup(const content::ToRenderFrameHost& adapter,
       }
       return "Success";
     })())",
-      https_server->GetURL(kTestHost, "/"),
-      https_server->GetURL(kTestHost, "/interest_group/bidding_logic.js"),
-      https_server->GetURL(kTestHost,
+      https_server->GetURL(owner_host, "/"),
+      https_server->GetURL(owner_host, "/interest_group/bidding_logic.js"),
+      https_server->GetURL(owner_host,
                            "/interest_group/trusted_bidding_signals.json"),
       GURL("https://example.com/render"));
+  EXPECT_EQ("Success", EvalJs(adapter, command));
+}
+
+void RunAdAuction(const content::ToRenderFrameHost& adapter,
+                  net::EmbeddedTestServer* https_server,
+                  const std::string& seller_host,
+                  const std::string& buyer_host) {
+  std::string command = content::JsReplace(
+      R"(
+      (async function() {
+        try {
+          await navigator.runAdAuction({
+            seller: $1,
+            decisionLogicUrl: $2,
+            interestGroupBuyers: [$3],
+          });
+        } catch (e) {
+          return e.toString();
+        }
+        return "Success";
+      })())",
+      https_server->GetURL(seller_host, "/"),
+      https_server->GetURL(seller_host, "/interest_group/decision_logic.js"),
+      https_server->GetURL(buyer_host, "/"));
   EXPECT_EQ("Success", EvalJs(adapter, command));
 }
 
@@ -355,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
 
   // Join an interest group.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
-  JoinInterestGroup(web_contents(), https_test_server());
+  JoinInterestGroup(web_contents(), https_test_server(), kTestHost);
 
   // Waiting for the browsing data model to be populated, otherwise the test is
   // flaky.
@@ -401,10 +427,44 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
   ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
 
   // Join an interest group.
-  JoinInterestGroup(web_contents(), https_test_server());
+  JoinInterestGroup(web_contents(), https_test_server(), kTestHost);
   WaitForModelUpdate(allowed_browsing_data_model, 1);
 
   // Validate that an interest group is reported to the browsing data model.
+  url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
+  content::InterestGroupManager::InterestGroupDataKey data_key{testOrigin,
+                                                               testOrigin};
+  ValidateBrowsingDataEntries(allowed_browsing_data_model,
+                              {{kTestHost,
+                                data_key,
+                                {BrowsingDataModel::StorageType::kInterestGroup,
+                                 /*storage_size=*/0, /*cookie_count=*/0}}});
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
+                       AuctionWinReportedCorrectly) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
+  JoinInterestGroup(web_contents(), https_test_server(), kTestHost);
+
+  // Run an auction on `kTestHost2`. A different host is used to ensure the
+  // correct host (`kTestHost`) is reported as having accessed storage.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server()->GetURL(kTestHost2, "/echo")));
+
+  auto* content_settings =
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetPrimaryMainFrame());
+
+  // Validate that the allowed browsing data model is empty.
+  auto* allowed_browsing_data_model =
+      content_settings->allowed_browsing_data_model();
+  ValidateBrowsingDataEntries(allowed_browsing_data_model, {});
+  ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
+
+  RunAdAuction(web_contents(), https_test_server(), /*seller_host=*/kTestHost2,
+               /*buyer_host=*/kTestHost);
+  WaitForModelUpdate(allowed_browsing_data_model, 1);
+
   url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
   content::InterestGroupManager::InterestGroupDataKey data_key{testOrigin,
                                                                testOrigin};

@@ -273,11 +273,13 @@ PrefetchContainer::PrefetchContainer(
     const GURL& url,
     const PrefetchType& prefetch_type,
     const blink::mojom::Referrer& referrer,
+    absl::optional<net::HttpNoVarySearchData> no_vary_search_expected,
     base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager)
     : referring_render_frame_host_id_(referring_render_frame_host_id),
       prefetch_url_(url),
       prefetch_type_(prefetch_type),
       referrer_(referrer),
+      no_vary_search_expected_(std::move(no_vary_search_expected)),
       prefetch_document_manager_(prefetch_document_manager),
       ukm_source_id_(prefetch_document_manager_
                          ? prefetch_document_manager_->render_frame_host()

@@ -33,14 +33,14 @@ class WestonTestOzoneUIControlsTestHelper
                      base::OnceClosure closure) override;
   void SendMouseMotionNotifyEvent(gfx::AcceleratedWidget widget,
                                   const gfx::Point& mouse_loc,
-                                  const gfx::Point& mouse_root_loc,
+                                  const gfx::Point& mouse_loc_in_screen,
                                   base::OnceClosure closure) override;
   void SendMouseEvent(gfx::AcceleratedWidget widget,
                       ui_controls::MouseButton type,
                       int button_state,
                       int accelerator_state,
                       const gfx::Point& mouse_loc,
-                      const gfx::Point& mouse_root_loc,
+                      const gfx::Point& mouse_loc_in_screen,
                       base::OnceClosure closure) override;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void SendTouchEvent(gfx::AcceleratedWidget widget,

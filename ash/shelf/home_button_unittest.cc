@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/assistant/assistant_controller_impl.h"
@@ -21,6 +22,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shelf/shelf_view.h"
 #include "ash/shelf/shelf_view_test_api.h"
@@ -36,6 +38,7 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/animation/bounds_animator.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
@@ -146,13 +149,62 @@ class HomeButtonWithTextTest : public HomeButtonTestBase {
   bool IsLabelVisible() const {
     if (!home_button())
       return false;
-    auto* label_container = home_button()->label_container_for_test();
-    return label_container->GetVisible() && label_container->layer()->visible();
+    auto* label_container = home_button()->expandable_container_for_test();
+    return label_container->GetVisible() &&
+           label_container->layer()->visible() &&
+           home_button()->nudge_label_for_test();
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+class HomeButtonWithQuickAppAccess : public HomeButtonTestBase {
+ public:
+  HomeButtonWithQuickAppAccess() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kHomeButtonQuickAppAccess);
+  }
+  ~HomeButtonWithQuickAppAccess() override = default;
+
+  bool IsQuickAppVisible() const {
+    if (!home_button()) {
+      return false;
+    }
+    auto* expandable_container = home_button()->expandable_container_for_test();
+    if (!expandable_container) {
+      return false;
+    }
+
+    return expandable_container->GetVisible() &&
+           expandable_container->layer()->visible() &&
+           home_button()->quick_app_button_for_test();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(HomeButtonWithQuickAppAccess, Basic) {
+  EXPECT_FALSE(IsQuickAppVisible());
+
+  const std::string quick_app_id = "Quick App Item";
+  Shell::Get()->app_list_controller()->SetHomeButtonQuickApp(quick_app_id);
+
+  EXPECT_TRUE(IsQuickAppVisible());
+
+  GetPrimaryShelf()->shelf_layout_manager()->LayoutShelf();
+  gfx::Point quick_app_center = home_button()
+                                    ->quick_app_button_for_test()
+                                    ->GetBoundsInScreen()
+                                    .CenterPoint();
+
+  // Test launching the quick app.
+  GetEventGenerator()->MoveMouseTo(quick_app_center);
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_EQ(1, GetTestAppListClient()->activate_item_count());
+  EXPECT_EQ(quick_app_id, GetTestAppListClient()->activate_item_last_id());
+}
 
 enum class TestAccessibilityFeature {
   kTabletModeShelfNavigationButtons,

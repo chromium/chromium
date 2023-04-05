@@ -282,6 +282,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
                        ThirdPartyCookiesReadAndWrite) {
+  content::CookieChangeObserver observer(web_contents(), 2);
   base::HistogramTester histogram_tester;
   NavigateToPageWithFrame("a.com");  // Same origin cookie read.
   // 3p cookie write
@@ -289,6 +290,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
   // 3p cookie read
   NavigateFrameTo("b.com", "/");
   NavigateToUntrackedUrl();
+  observer.Wait();
 
   histogram_tester.ExpectUniqueSample(kReadCookieHistogram, 1, 1);
   histogram_tester.ExpectUniqueSample(kWriteCookieHistogram, 1, 1);
@@ -305,6 +307,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
                        ThirdPartyCookiesIPAddress) {
+  content::CookieChangeObserver observer(web_contents(), 2);
   base::HistogramTester histogram_tester;
   NavigateToPageWithFrame("a.com");  // Same origin cookie read.
   GURL url =
@@ -317,6 +320,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
   NavigateFrameToUrl(url);           // 3p cookie write
   NavigateFrameTo(url.host(), "/");  // 3p cookie read
   NavigateToUntrackedUrl();
+  observer.Wait();
 
   histogram_tester.ExpectUniqueSample(kReadCookieHistogram, 1, 1);
   histogram_tester.ExpectUniqueSample(kWriteCookieHistogram, 1, 1);
@@ -333,6 +337,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
                        MultipleThirdPartyCookiesReadAndWrite) {
+  content::CookieChangeObserver observer(web_contents(), 4);
   base::HistogramTester histogram_tester;
   NavigateToPageWithFrame("a.com");  // Same origin cookie read.
   // 3p cookie write
@@ -344,6 +349,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
   // 3p cookie read
   NavigateFrameTo("c.com", "/");
   NavigateToUntrackedUrl();
+  observer.Wait();
 
   histogram_tester.ExpectUniqueSample(kReadCookieHistogram, 2, 1);
   histogram_tester.ExpectUniqueSample(kWriteCookieHistogram, 2, 1);
@@ -388,6 +394,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
                        ThirdPartyDocCookieReadAndWrite) {
+  content::CookieChangeObserver observer(web_contents(), 2);
   base::HistogramTester histogram_tester;
   NavigateToPageWithFrame("a.com");  // Same origin cookie read.
   NavigateFrameTo("b.com", "/empty.html");
@@ -401,6 +408,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
   // Read a third-party cookie.
   EXPECT_TRUE(content::ExecJs(frame, "let x = document.cookie;"));
   NavigateToUntrackedUrl();
+  observer.Wait();
 
   histogram_tester.ExpectUniqueSample(kReadCookieHistogram, 1, 1);
   histogram_tester.ExpectUniqueSample(kWriteCookieHistogram, 1, 1);
@@ -443,6 +451,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
                        ThirdPartyDocCookieWriteNoRead) {
+  content::CookieChangeObserver observer(web_contents());
   base::HistogramTester histogram_tester;
   NavigateToPageWithFrame("a.com");  // Same origin cookie read.
   NavigateFrameTo("b.com", "/empty.html");
@@ -453,6 +462,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
   EXPECT_TRUE(content::ExecJs(
       frame, "document.cookie = 'foo=bar;SameSite=None;Secure';"));
   NavigateToUntrackedUrl();
+  observer.Wait();
 
   histogram_tester.ExpectUniqueSample(kReadCookieHistogram, 0, 1);
   histogram_tester.ExpectUniqueSample(kWriteCookieHistogram, 1, 1);

@@ -143,9 +143,9 @@ void ImagePaintTimingDetector::ReportCandidateToTrace(
   auto value = std::make_unique<TracedValue>();
   PopulateTraceValue(*value, largest_image_record);
   // TODO(yoav): Report first animated frame times as well.
-  TRACE_EVENT_MARK_WITH_TIMESTAMP2("loading", "LargestImagePaint::Candidate",
-                                   time, "data", std::move(value), "frame",
-                                   ToTraceValue(&frame_view_->GetFrame()));
+  TRACE_EVENT_MARK_WITH_TIMESTAMP2(
+      "loading", "LargestImagePaint::Candidate", time, "data", std::move(value),
+      "frame", GetFrameIdForTracing(&frame_view_->GetFrame()));
 }
 
 void ImagePaintTimingDetector::ReportNoCandidateToTrace() {
@@ -161,7 +161,7 @@ void ImagePaintTimingDetector::ReportNoCandidateToTrace() {
                         frame_view_->GetFrame().IsInFencedFrameTree());
   TRACE_EVENT2("loading", "LargestImagePaint::NoCandidate", "data",
                std::move(value), "frame",
-               ToTraceValue(&frame_view_->GetFrame()));
+               GetFrameIdForTracing(&frame_view_->GetFrame()));
 }
 
 ImageRecord* ImagePaintTimingDetector::UpdateMetricsCandidate() {

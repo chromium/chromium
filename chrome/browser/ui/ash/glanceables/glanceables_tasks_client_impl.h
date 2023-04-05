@@ -10,10 +10,12 @@
 #include <vector>
 
 #include "ash/glanceables/tasks/glanceables_tasks_client.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "google_apis/tasks/tasks_api_requests.h"
+#include "ui/base/models/list_model.h"
 
 namespace google_apis {
 class RequestSender;
@@ -28,6 +30,9 @@ struct NetworkTrafficAnnotationTag;
 }  // namespace net
 
 namespace ash {
+
+struct GlanceablesTask;
+struct GlanceablesTaskList;
 
 // Provides implementation for `GlanceablesTasksClient`. Responsible for
 // communication with Google Tasks API.
@@ -47,10 +52,10 @@ class GlanceablesTasksClientImpl : public GlanceablesTasksClient {
   ~GlanceablesTasksClientImpl() override;
 
   // GlanceablesTasksClient:
-  base::OnceClosure GetTaskLists(
+  void GetTaskLists(
       GlanceablesTasksClient::GetTaskListsCallback callback) override;
-  base::OnceClosure GetTasks(GlanceablesTasksClient::GetTasksCallback callback,
-                             const std::string& task_list_id) override;
+  void GetTasks(const std::string& task_list_id,
+                GlanceablesTasksClient::GetTasksCallback callback) override;
 
  private:
   // Callback for `GetTaskLists()`. Transforms fetched items to ash-friendly
@@ -61,13 +66,13 @@ class GlanceablesTasksClientImpl : public GlanceablesTasksClient {
                      google_apis::ApiErrorCode> result) const;
 
   // Callback for `GetTasks()`. Transforms fetched items to ash-friendly types.
-  void OnTasksFetched(GlanceablesTasksClient::GetTasksCallback callback,
+  void OnTasksFetched(const std::string& task_list_id,
+                      GlanceablesTasksClient::GetTasksCallback callback,
                       base::expected<std::unique_ptr<google_apis::tasks::Tasks>,
-                                     google_apis::ApiErrorCode> result) const;
+                                     google_apis::ApiErrorCode> result);
 
-  // Creates `request_sender_` by calling `create_request_sender_callback_` on
-  // demand.
-  void EnsureRequestSenderExists();
+  // Returns lazily initialized `request_sender_`.
+  google_apis::RequestSender* GetRequestSender();
 
   // Callback passed from `GlanceablesKeyedService` that creates
   // `request_sender_`.
@@ -75,6 +80,14 @@ class GlanceablesTasksClientImpl : public GlanceablesTasksClient {
 
   // Helper class that sends requests, handles retries and authentication.
   std::unique_ptr<google_apis::RequestSender> request_sender_;
+
+  // All available task lists. Initialized after the first fetch request to
+  // distinguish between "not fetched yet" vs. "fetched, but has no items".
+  std::unique_ptr<ui::ListModel<GlanceablesTaskList>> task_lists_;
+
+  // All available tasks grouped by task list id.
+  base::flat_map<std::string, std::unique_ptr<ui::ListModel<GlanceablesTask>>>
+      tasks_in_task_lists_;
 
   base::WeakPtrFactory<GlanceablesTasksClientImpl> weak_factory_{this};
 };

@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/core/layout/api/line_layout_text.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/style/shadow_data.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
@@ -32,7 +31,7 @@ class TextPainterTest : public RenderingTest {
         context_(*paint_controller_) {}
 
  protected:
-  LineLayoutText GetLineLayoutText() { return LineLayoutText(layout_text_); }
+  const LayoutText& GetLayoutText() { return *layout_text_; }
 
   PaintInfo CreatePaintInfoForBackground() {
     return PaintInfo(context_, CullRect(),
@@ -67,7 +66,7 @@ TEST_F(TextPainterTest, TextPaintingStyle_Simple) {
   UpdateAllLifecyclePhasesForTest();
 
   TextPaintStyle text_style = TextPainter::TextPaintingStyle(
-      GetLineLayoutText().GetDocument(), GetLineLayoutText().StyleRef(),
+      GetLayoutText().GetDocument(), GetLayoutText().StyleRef(),
       CreatePaintInfoForBackground());
   EXPECT_EQ(Color(0, 0, 255), text_style.fill_color);
   EXPECT_EQ(Color(0, 0, 255), text_style.stroke_color);
@@ -91,7 +90,7 @@ TEST_F(TextPainterTest, TextPaintingStyle_AllProperties) {
   UpdateAllLifecyclePhasesForTest();
 
   TextPaintStyle text_style = TextPainter::TextPaintingStyle(
-      GetLineLayoutText().GetDocument(), GetLineLayoutText().StyleRef(),
+      GetLayoutText().GetDocument(), GetLayoutText().StyleRef(),
       CreatePaintInfoForBackground());
   EXPECT_EQ(Color(255, 0, 0), text_style.fill_color);
   EXPECT_EQ(Color(0, 255, 0), text_style.stroke_color);
@@ -121,7 +120,7 @@ TEST_F(TextPainterTest, TextPaintingStyle_UsesTextAsClip) {
   UpdateAllLifecyclePhasesForTest();
 
   TextPaintStyle text_style = TextPainter::TextPaintingStyle(
-      GetLineLayoutText().GetDocument(), GetLineLayoutText().StyleRef(),
+      GetLayoutText().GetDocument(), GetLayoutText().StyleRef(),
       CreatePaintInfoForTextClip());
   EXPECT_EQ(Color::kBlack, text_style.fill_color);
   EXPECT_EQ(Color::kBlack, text_style.stroke_color);
@@ -149,7 +148,7 @@ TEST_F(TextPainterTest,
   UpdateLayoutText();
 
   TextPaintStyle text_style = TextPainter::TextPaintingStyle(
-      GetLineLayoutText().GetDocument(), GetLineLayoutText().StyleRef(),
+      GetLayoutText().GetDocument(), GetLayoutText().StyleRef(),
       CreatePaintInfoForBackground());
   EXPECT_EQ(Color(255, 0, 0), text_style.fill_color);
   EXPECT_EQ(Color(0, 255, 0), text_style.stroke_color);
@@ -174,7 +173,7 @@ TEST_F(TextPainterTest, TextPaintingStyle_ForceBackgroundToWhite_Darkened) {
   UpdateLayoutText();
 
   TextPaintStyle text_style = TextPainter::TextPaintingStyle(
-      GetLineLayoutText().GetDocument(), GetLineLayoutText().StyleRef(),
+      GetLayoutText().GetDocument(), GetLayoutText().StyleRef(),
       CreatePaintInfoForBackground());
   EXPECT_EQ(Color(255, 220, 220).Dark(), text_style.fill_color);
   EXPECT_EQ(Color(220, 255, 220).Dark(), text_style.stroke_color);

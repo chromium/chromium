@@ -9,10 +9,10 @@
 #include <string>
 
 #include "components/sync/base/model_type.h"
+#include "components/sync/base/sync_stop_metadata_fate.h"
 #include "components/sync/driver/data_type_controller.h"
 #include "components/sync/driver/data_type_status_table.h"
 #include "components/sync/engine/configure_reason.h"
-#include "components/sync/engine/shutdown_reason.h"
 #include "components/sync/model/sync_error.h"
 
 namespace syncer {
@@ -83,12 +83,9 @@ class DataTypeManager {
 
   // Synchronously stops all registered data types. If called after Configure()
   // is called but before it finishes, it will abort the configure and any data
-  // types that have been started will be stopped. If called with reason
-  // |DISABLE_SYNC_AND_CLEAR_DATA|, purges sync data for all datatypes.
-  // TODO(crbug.com/1400437): Replace ShutdownReason with SyncStopMetadataFate,
-  // so it's clear that |BROWSER_SHUTDOWN_AND_KEEP_DATA| isn't propagated. This
-  // will also mean KEEP_METADATA can be interpreted as paused.
-  virtual void Stop(ShutdownReason reason) = 0;
+  // types that have been started will be stopped. If called with metadata fate
+  // |CLEAR_METADATA|, clears sync data for all datatypes.
+  virtual void Stop(SyncStopMetadataFate metadata_fate) = 0;
 
   // Get the set of current active data types (those chosen or configured by the
   // user which have not also encountered a runtime error). Note that during
@@ -106,6 +103,11 @@ class DataTypeManager {
   // Returns the datatypes that are configured but not connected to the sync
   // engine. Note that during configuration, this will be empty.
   virtual ModelTypeSet GetActiveProxyDataTypes() const = 0;
+
+  // Returns the datatypes that are about to become active, but are currently
+  // in the process of downloading the initial data from the server (either
+  // actively ongoing or queued).
+  virtual ModelTypeSet GetTypesWithPendingDownloadForInitialSync() const = 0;
 
   // The current state of the data type manager.
   virtual State state() const = 0;

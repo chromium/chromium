@@ -342,7 +342,7 @@ struct TestParams {
       supported_color_primary_matrix_ids_;
   base::flat_set<gfx::ColorSpace::TransferID> supported_color_transfer_ids_;
   absl::optional<gfx::HDRStaticMetadata> hdr_static_metadata_;
-  absl::optional<gfx::Range> vertical_display_range_limits_;
+  absl::optional<uint16_t> vsync_rate_min_;
 
   const unsigned char* edid_blob;
   size_t edid_blob_length;
@@ -560,7 +560,7 @@ struct TestParams {
      {},
      {},
      absl::nullopt,
-     gfx::Range(24, 75),
+     24,
      kOverscanDisplay,
      kOverscanDisplayLength},
     {0x10ACu,
@@ -586,7 +586,7 @@ struct TestParams {
        gfx::ColorSpace::MatrixID::SMPTE170M}},
      {},
      absl::nullopt,
-     gfx::Range(49, 86),
+     49,
      kMisdetectedDisplay,
      kMisdetectedDisplayLength},
     {0x22f0u,
@@ -610,7 +610,7 @@ struct TestParams {
      {},
      {},
      absl::nullopt,
-     gfx::Range(48, 85),
+     48,
      kLP2565A,
      kLP2565ALength},
     {0x22f0u,
@@ -634,7 +634,7 @@ struct TestParams {
      {},
      {},
      absl::nullopt,
-     gfx::Range(48, 85),
+     48,
      kLP2565B,
      kLP2565BLength},
     {0x22f0u,
@@ -658,7 +658,7 @@ struct TestParams {
      {},
      {},
      absl::nullopt,
-     gfx::Range(24, 60),
+     24,
      kHPz32x,
      kHPz32xLength},
     {0x30E4u,
@@ -735,7 +735,7 @@ struct TestParams {
      {gfx::ColorSpace::TransferID::BT709, gfx::ColorSpace::TransferID::PQ,
       gfx::ColorSpace::TransferID::HLG},
      absl::make_optional<gfx::HDRStaticMetadata>(603.666, 530.095, 0.00454),
-     gfx::Range(24, 75),
+     24,
      kHDRMetadata,
      kHDRMetadataLength},
 
@@ -830,16 +830,10 @@ TEST_P(EDIDParserTest, ParseEdids) {
                 epsilon);
   }
 
-  const absl::optional<gfx::Range> vertical_display_range_limits =
-      parser_.vertical_display_range_limits();
-  EXPECT_EQ(GetParam().vertical_display_range_limits_.has_value(),
-            vertical_display_range_limits.has_value());
-  if (GetParam().vertical_display_range_limits_.has_value() &&
-      vertical_display_range_limits.has_value()) {
-    EXPECT_EQ(vertical_display_range_limits->start(),
-              GetParam().vertical_display_range_limits_->start());
-    EXPECT_EQ(vertical_display_range_limits->end(),
-              GetParam().vertical_display_range_limits_->end());
+  const absl::optional<uint16_t> vsync_rate_min = parser_.vsync_rate_min();
+  EXPECT_EQ(GetParam().vsync_rate_min_.has_value(), vsync_rate_min.has_value());
+  if (GetParam().vsync_rate_min_.has_value() && vsync_rate_min.has_value()) {
+    EXPECT_EQ(vsync_rate_min.value(), GetParam().vsync_rate_min_.value());
   }
 }
 

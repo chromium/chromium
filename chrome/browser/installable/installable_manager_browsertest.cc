@@ -10,6 +10,7 @@
 #include <string>
 #include <tuple>
 
+#include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -260,7 +261,9 @@ class NestedCallbackTester {
 
 class InstallableManagerBrowserTest : public InProcessBrowserTest {
  public:
-  InstallableManagerBrowserTest() {
+  InstallableManagerBrowserTest()
+      : disable_banner_trigger_(&test::g_disable_banner_triggering_for_testing,
+                                true) {
     scoped_feature_list_.InitAndEnableFeature(
         webapps::features::kDesktopPWAsDetailedInstallDialog);
   }
@@ -269,10 +272,6 @@ class InstallableManagerBrowserTest : public InProcessBrowserTest {
     embedded_test_server()->ServeFilesFromSourceDirectory(
         "chrome/test/data/banners");
     ASSERT_TRUE(embedded_test_server()->Start());
-
-    // Make sure app banners are disabled in the browser so they do not
-    // interfere with the test.
-    AppBannerManagerDesktop::DisableTriggeringForTesting();
   }
 
   // Returns a test server URL to a page controlled by a service worker with
@@ -350,6 +349,9 @@ class InstallableManagerBrowserTest : public InProcessBrowserTest {
   }
 
  private:
+  // Disable the banners in the browser so it won't interfere with the test.
+  base::AutoReset<bool> disable_banner_trigger_;
+
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

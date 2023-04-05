@@ -96,6 +96,8 @@ sync_pb::PasswordSpecificsMetadata CreateSpecificsMetadata(
       password_specifics_data.blacklisted());
   password_specifics_metadata.set_date_last_used_windows_epoch_micros(
       password_specifics_data.date_last_used());
+  *password_specifics_metadata.mutable_password_issues() =
+      password_specifics_data.password_issues();
   return password_specifics_metadata;
 }
 
@@ -217,6 +219,26 @@ TEST(PasswordProtoUtilsTest, ConvertSpecificsToFormAndBack) {
             .SerializeAsString(),
         Eq(specifics.SerializeAsString()));
   }
+}
+
+TEST(PasswordProtoUtilsTest, CopiesPasswordIssuesToMetadata) {
+  sync_pb::PasswordSpecificsData specifics_data =
+      CreateSpecificsData("http://www.origin.com/", "username_element",
+                          "username_value", "password_element", "signon_realm",
+                          {InsecureType::kLeaked, InsecureType::kPhished,
+                           InsecureType::kReused, InsecureType::kWeak});
+
+  // Build expected password specfics.
+  sync_pb::PasswordSpecifics specifics;
+  *specifics.mutable_client_only_encrypted_data() = specifics_data;
+  *specifics.mutable_unencrypted_metadata() =
+      CreateSpecificsMetadata(specifics.client_only_encrypted_data());
+
+  EXPECT_THAT(SpecificsFromPassword(
+                  PasswordFromSpecifics(specifics.client_only_encrypted_data()),
+                  /*base_password_data=*/{})
+                  .SerializeAsString(),
+              Eq(specifics.SerializeAsString()));
 }
 
 TEST(PasswordProtoUtilsTest, SpecificsDataFromPasswordPreservesUnknownFields) {

@@ -157,7 +157,7 @@ class PageDiscardingHelper : public GraphOwned,
   static void RemovesDiscardAttemptMarkerForTesting(PageNode* page_node);
 
   using SiteDataReaderCallback =
-      base::RepeatingCallback<const SiteDataReader*(const PageNode*)>;
+      base::RepeatingCallback<SiteDataReader*(const PageNode*)>;
 
   // Sets a callback that will be invoked to create SiteDataReader objects for a
   // given PageNode in tests.

@@ -94,10 +94,15 @@ const CGFloat kTableViewSeparatorInsetWithIcon = 60;
     return;
   }
   _emptyView = emptyView;
-  _emptyView.scrollViewContentInsets = self.view.safeAreaInsets;
+  [self updateEmptyViewInsets];
   self.tableView.backgroundView = _emptyView;
   // Since this would replace any loadingView, set it to nil.
   self.loadingView = nil;
+}
+
+- (void)setEmptyViewTopOffset:(CGFloat)offset {
+  _emptyViewTopOffset = offset;
+  [self updateEmptyViewInsets];
 }
 
 #pragma mark - Public
@@ -110,7 +115,7 @@ const CGFloat kTableViewSeparatorInsetWithIcon = 60;
   [super viewSafeAreaInsetsDidChange];
   // The safe area insets aren't propagated to the inner scroll view. Manually
   // set the content insets.
-  self.emptyView.scrollViewContentInsets = self.view.safeAreaInsets;
+  [self updateEmptyViewInsets];
 }
 
 - (void)startLoadingIndicatorWithLoadingMessage:(NSString*)loadingMessage {
@@ -312,6 +317,17 @@ const CGFloat kTableViewSeparatorInsetWithIcon = 60;
       dequeueReusableHeaderFooterViewWithIdentifier:reuseIdentifier];
   [item configureHeaderFooterView:view withStyler:self.styler];
   return view;
+}
+
+#pragma mark - Private
+
+// Sets the empty view's insets to the sum of the top offset and the safe area
+// insets.
+- (void)updateEmptyViewInsets {
+  UIEdgeInsets safeAreaInsets = self.view.safeAreaInsets;
+  _emptyView.scrollViewContentInsets = UIEdgeInsetsMake(
+      safeAreaInsets.top + self.emptyViewTopOffset, safeAreaInsets.left,
+      safeAreaInsets.bottom, safeAreaInsets.right);
 }
 
 @end

@@ -67,7 +67,6 @@ specific_include_rules = {
     "+chrome/browser/apps/platform_apps/app_browsertest_util.h",
     "+chrome/browser/extensions/api/permissions/permissions_api.h",
     "+chrome/browser/extensions/extension_apitest.h",
-    "+chrome/browser/extensions/extension_function_test_utils.h",
     "+chrome/browser/extensions/extension_service_test_base.h",
     "+chrome/browser/ui/browser.h",
     "+chrome/common/pref_names.h",

@@ -3323,6 +3323,12 @@ void HistoryBackend::SetSyncDeviceInfo(SyncDeviceInfoMap sync_device_info) {
   sync_device_info_ = std::move(sync_device_info);
 }
 
+void HistoryBackend::SetLocalDeviceOriginatorCacheGuid(
+    std::string local_device_originator_cache_guid) {
+  local_device_originator_cache_guid_ =
+      std::move(local_device_originator_cache_guid);
+}
+
 void HistoryBackend::ProcessDBTask(
     std::unique_ptr<HistoryDBTask> task,
     scoped_refptr<base::SequencedTaskRunner> origin_loop,

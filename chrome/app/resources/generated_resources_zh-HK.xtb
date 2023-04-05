@@ -6848,7 +6848,6 @@
 <translation id="7017004637493394352">再說一次「Ok Google」</translation>
 <translation id="7017219178341817193">新增網頁</translation>
 <translation id="7017354871202642555">無法在視窗建立之後再設定模式。</translation>
-<translation id="7018275672629230621">讀取及變更您的瀏覽記錄</translation>
 <translation id="7019546817926942979">裝置需要接上電源。升級 Linux 相當耗電。請將裝置連接充電器，然後再試一次。</translation>
 <translation id="7019805045859631636">快</translation>
 <translation id="7022562585984256452">首頁已設定完成。</translation>
@@ -7137,6 +7136,7 @@
 <translation id="7308643132139167865">網站語言</translation>
 <translation id="7310598146671372464">無法登入。伺服器不支援特定的 Kerberos 加密類型。請聯絡您的管理員。</translation>
 <translation id="7311089766378749632">正在要求讀取並變更 <ph name="SITE_NAME" /></translation>
+<translation id="7311244614769792472">找不到任何結果</translation>
 <translation id="7312210124139670355">管理員正在重設您的 eSIM 卡。這項操作可能需時數分鐘。</translation>
 <translation id="7317831949569936035">學校註冊程序</translation>
 <translation id="7320213904474460808">預設網絡</translation>

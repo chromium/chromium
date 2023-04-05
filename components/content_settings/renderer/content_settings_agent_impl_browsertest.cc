@@ -219,7 +219,6 @@ class ContentSettingsAgentImplBrowserTest : public content::RenderViewTest {
         const GURL& url,
         base::Time expected_response_time,
         mojo_base::BigBuffer data,
-        const url::Origin& cache_storage_origin,
         const std::string& cache_storage_cache_name) override {}
 
    private:

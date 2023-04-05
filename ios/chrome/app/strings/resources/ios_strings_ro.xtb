@@ -178,6 +178,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2218443599109088993">Micșorează</translation>
 <translation id="2230173723195178503">Pagina web s-a încărcat</translation>
 <translation id="2239626343334228536">Se șterg datele de navigare...</translation>
+<translation id="22508856139286506">Avertismente respinse (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Meniu → Istoric</translation>
 <translation id="2256933947031277845">Organizația îți permite să te conectezi doar cu anumite conturi.</translation>
 <translation id="225943865679747347">Cod de eroare: <ph name="ERROR_CODE" /></translation>
@@ -1092,6 +1093,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8237382152611443140">Deschide Setările pentru completarea automată a parolei.</translation>
 <translation id="8261506727792406068">Șterge</translation>
 <translation id="8264966119170358612">Unele dintre parolele salvate au fost expuse într-o încălcare a securității datelor independentă de Google. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
+<translation id="8265018477030547118">Numai pe acest dispozitiv</translation>
 <translation id="8271720166617117963">Acceptă și conectează-te</translation>
 <translation id="8278938988428169257">Introdu un cuvânt sau o expresie</translation>
 <translation id="8281781826761538115">Prestabilit – <ph name="DEFAULT_LOCALE" /></translation>

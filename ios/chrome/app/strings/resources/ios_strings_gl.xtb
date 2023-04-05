@@ -20,6 +20,7 @@
 <translation id="1103523840287552314">Traducir sempre o <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Ir á ventá aberta</translation>
 <translation id="1112015203684611006">Erro impresión</translation>
+<translation id="1118266931011974190">Despois de <ph name="THRESHOLD" /> días</translation>
 <translation id="1125564390852150847">Crear pestana nova</translation>
 <translation id="1126013303640354461">Non se encriptarán os métodos de pago nin os enderezos de Google Pay. Non se sincronizará o historial de navegación de Chrome.
 Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A frase de acceso non se lle envía a Google nin se almacena neste servizo. Se esqueces a frase de acceso ou queres cambiar esta opción de configuración, terás que restablecer a sincronización. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
@@ -177,6 +178,7 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="2218443599109088993">Afastar</translation>
 <translation id="2230173723195178503">Cargouse a páxina web</translation>
 <translation id="2239626343334228536">Borrando datos de navegación…</translation>
+<translation id="22508856139286506">Advertencias ignoradas (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Menú → Historial</translation>
 <translation id="2256933947031277845">A túa organización só che permite iniciar sesión con certas contas.</translation>
 <translation id="225943865679747347">Código de erro: <ph name="ERROR_CODE" /></translation>
@@ -231,6 +233,7 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2626236249646841566">Comproba a túa conexión e tenta iniciar sesión de novo.</translation>
 <translation id="2637313651144986786">Busca nas pestanas…</translation>
 <translation id="2647269890314209800">Cookies en uso</translation>
+<translation id="2648721026697078500">Non mover nunca</translation>
 <translation id="2648803196158606475">Eliminar os elementos lidos</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2664621323652615289">Deter</translation>
@@ -346,6 +349,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3305294846493618482">máis</translation>
 <translation id="3311748811247479259">Non</translation>
 <translation id="3324193307694657476">Enderezo 2</translation>
+<translation id="3328459813621383194">Mover as pestanas inactivas</translation>
 <translation id="3328801116991980348">Información do sitio</translation>
 <translation id="3371831930909698441">A tradución está dispoñible. Hai opcións dispoñibles na parte inferior da pantalla.</translation>
 <translation id="3377063233124932127">Agora os marcadores e os contrasinais que teñas gardados, ademais doutros elementos, aparecen na parte superior.</translation>
@@ -510,6 +514,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="452750746583162491">Revisar os datos sincronizados</translation>
 <translation id="4536418791685807335">Proba a volver iniciar sesión.</translation>
 <translation id="4540780316273593836">Produciuse un erro</translation>
+<translation id="4550040941166547650">Só neste dispositivo</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Queres pechar {COUNT} pestana inactiva?}other{Queres pechar {COUNT} pestanas inactivas?}}</translation>
 <translation id="457386861538956877">Máis...</translation>
 <translation id="4587235830039045480">Garda o contrasinal na túa Conta de Google</translation>
@@ -763,6 +768,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6193424046394092997">{count,plural, =1{Marcador engadido a {title}}other{Marcadores engadidos a {title}}}</translation>
 <translation id="6196207969502475924">Busca por voz</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Pechar {COUNT} pestana}other{Pechar {COUNT} pestanas}}</translation>
+<translation id="6210079381482819663">As pestanas que non se usen durante <ph name="THRESHOLD" /> días ou máis moveranse aquí. Podes cambiar esta opción en calquera momento en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="6213567400989743524">Advertencias ignoradas</translation>
 <translation id="6219550825416862075">Dámosche a benvida de novo</translation>
 <translation id="6219688215832490856">Non traducir nunca</translation>
@@ -1058,6 +1064,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8059533439631660104">Contrae a sección.</translation>
 <translation id="8065292699993359127">Abrir URL en Chrome no modo de incógnito</translation>
 <translation id="806745655614357130">Conservar os meus datos por separado</translation>
+<translation id="8069394452933076548">Selecciona cando queres que as pestanas que non se usasen recentemente se movan á sección de pestanas inactivas.</translation>
 <translation id="8073670137947914548">A descarga finalizou</translation>
 <translation id="8073872304774253879">Mellorar as buscas e a navegación</translation>
 <translation id="8076492880354921740">Pestanas</translation>
@@ -1086,6 +1093,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8237382152611443140">Abre os axustes de AutoFill Passwords (Autocompletar contrasinais)</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8264966119170358612">Algúns dos teus contrasinais gardados quedaron expostos nunha violación da seguranza dos datos allea a Google. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
+<translation id="8265018477030547118">Almacenaríase só neste dispositivo</translation>
 <translation id="8271720166617117963">Aceptar e iniciar sesión</translation>
 <translation id="8278938988428169257">Escribe unha palabra ou frase</translation>
 <translation id="8281781826761538115">Idioma predeterminado: <ph name="DEFAULT_LOCALE" /></translation>
@@ -1201,6 +1209,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="9055772144595778347">Imposible in. sesión</translation>
 <translation id="9055960261314198756">A protección mellorada está desactivada</translation>
 <translation id="9057972802061533987">Non se puido seguir o contido. Produciuse un erro.</translation>
+<translation id="9061495354530850708">Na túa Conta de Google</translation>
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9068336935206019333">Abrir no modo de incógnito de Chrome</translation>
 <translation id="9079935439869366234">Marcar todo como non lido</translation>

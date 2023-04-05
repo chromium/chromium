@@ -250,7 +250,8 @@ void InspectorTraceEvents::PaintTiming(Document* document,
                                        double timestamp) {
   TRACE_EVENT_MARK_WITH_TIMESTAMP2("loading,rail,devtools.timeline", name,
                                    trace_event::ToTraceTimestamp(timestamp),
-                                   "frame", ToTraceValue(document->GetFrame()),
+                                   "frame",
+                                   GetFrameIdForTracing(document->GetFrame()),
                                    "data", [&](perfetto::TracedValue context) {
                                      GetNavigationTracingData(
                                          std::move(context), document);
@@ -259,7 +260,8 @@ void InspectorTraceEvents::PaintTiming(Document* document,
 
 void InspectorTraceEvents::FrameStartedLoading(LocalFrame* frame) {
   TRACE_EVENT_INSTANT1("devtools.timeline", "FrameStartedLoading",
-                       TRACE_EVENT_SCOPE_THREAD, "frame", ToTraceValue(frame));
+                       TRACE_EVENT_SCOPE_THREAD, "frame",
+                       GetFrameIdForTracing(frame));
 }
 
 namespace {

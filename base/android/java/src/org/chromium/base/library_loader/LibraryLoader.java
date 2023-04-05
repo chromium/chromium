@@ -18,7 +18,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.JNIUtils;
 import org.chromium.base.Log;
 import org.chromium.base.NativeLibraryLoadedStatus;
 import org.chromium.base.NativeLibraryLoadedStatus.NativeLibraryLoadedStatusProvider;
@@ -122,10 +121,6 @@ public class LibraryLoader {
     // The type of process the shared library is loaded in. Gets passed to native after loading.
     // Avoids locking: should be initialized very early.
     private @LibraryProcessType int mLibraryProcessType;
-
-    // Makes sure non-Main Dex initialization happens only once. Does not use any class members
-    // except the volatile |mLoadState|.
-    private final Object mNonMainDexLock = new Object();
 
     // Mediates all communication between Linker instances in different processes.
     private final MultiProcessMediator mMediator = new MultiProcessMediator();
@@ -422,13 +417,8 @@ public class LibraryLoader {
         if (BuildConfig.ENABLE_ASSERTS) {
             NativeLibraryLoadedStatus.setProvider(new NativeLibraryLoadedStatusProvider() {
                 @Override
-                public boolean areMainDexNativeMethodsReady() {
-                    return isMainDexLoaded();
-                }
-
-                @Override
                 public boolean areNativeMethodsReady() {
-                    return isLoaded();
+                    return isMainDexLoaded();
                 }
             });
         }
@@ -800,27 +790,14 @@ public class LibraryLoader {
         }
     }
 
+    // This used to actually do stuff, but now we have removed the concept of MainDex/non-MainDex
+    // JNI. However, entirely removing the "middle state" (LoadState.MAIN_DEX) causes issues with
+    // robolectric tests using GURL. See https://crbug.com/1371542#c13.
     @VisibleForTesting
     protected void loadNonMainDex() {
-        if (mLoadState == LoadState.LOADED) {
-            if (sEnableStateForTesting) {
-                mLoadStateForTesting = LoadState.LOADED;
-            }
-            return;
-        }
-        synchronized (mNonMainDexLock) {
-            assert mLoadState != LoadState.NOT_LOADED;
-            if (mLoadState == LoadState.LOADED) return;
-            try (TraceEvent te = TraceEvent.scoped("LibraryLoader.loadNonMainDex")) {
-                if (!JNIUtils.isSelectiveJniRegistrationEnabled()) {
-                    // On M+ the native symbols are exported, and registering natives seems fast.
-                    LibraryLoaderJni.get().registerNonMainDexJni();
-                }
-                mLoadState = LoadState.LOADED;
-                if (sEnableStateForTesting) {
-                    mLoadStateForTesting = LoadState.LOADED;
-                }
-            }
+        mLoadState = LoadState.LOADED;
+        if (sEnableStateForTesting) {
+            mLoadStateForTesting = LoadState.LOADED;
         }
     }
 
@@ -979,9 +956,5 @@ public class LibraryLoader {
         // Performs auxiliary initialization useful right after the native library load. Returns
         // true on success and false on failure.
         boolean libraryLoaded(@LibraryProcessType int processType);
-
-        // Registers JNI for non-main processes. For details see android_native_libraries.md,
-        // android_dynamic_feature_modules.md and jni_generator/README.md
-        void registerNonMainDexJni();
     }
 }

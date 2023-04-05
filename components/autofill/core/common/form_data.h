@@ -169,6 +169,14 @@ struct FormData {
   // elements.
   bool SameFormAs(const FormData& other) const;
 
+  // Finds a field in FormData by its id attribute.
+  // Returns a pointer to the field if found, otherwise returns nullptr.
+  FormFieldData* FindFieldByGlobalId(const FieldGlobalId& global_id);
+
+  // Finds a field in the FormData by its name or id.
+  // Returns a pointer to the field if found, otherwise returns nullptr.
+  FormFieldData* FindFieldByName(const base::StringPiece16 name_or_id);
+
   // TODO(crbug/1211834): This function is deprecated.
   // Same as SameFormAs() except calling FormFieldData.SimilarFieldAs() to
   // compare fields.

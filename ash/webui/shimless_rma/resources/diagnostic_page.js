@@ -40,6 +40,24 @@ export class DiagnosticPage extends DiagnosticPageBase {
     return {
       // Set by shimless_rma.js.
       allButtonsDisabled: Boolean,
+
+      /**
+       * Media track representing the front camera if present.
+       * @private {?MediaStreamTrack}
+       */
+      frontCameraTrack_: Object,
+
+      /**
+       * Media track representing the rear camera if present.
+       * @private {?MediaStreamTrack}
+       */
+      rearCameraTrack_: Object,
+
+      /**
+       * Media track representing the internal microphone if present.
+       * @private {?MediaStreamTrack}
+       */
+      audioTrack_: Object,
     };
   }
 
@@ -58,6 +76,87 @@ export class DiagnosticPage extends DiagnosticPageBase {
     super.ready();
 
     focusPageTitle(this);
+
+    this.loadMediaTracks_();
+  }
+
+  /**
+   * Sets the media tracks for front camera, rear camera, and microphones. The
+   * cameras are temporarily enabled to access their info.
+   * @private
+   */
+  loadMediaTracks_() {
+    navigator.mediaDevices
+        .getUserMedia({
+          video: {
+            facingMode: {exact: 'user'},
+          },
+        })
+        .then(stream => {
+          this.frontCameraTrack_ = stream.getVideoTracks()[0];
+          this.frontCameraTrack_.stop();
+        })
+        .catch(err => {});
+
+    navigator.mediaDevices
+        .getUserMedia({
+          video: {
+            facingMode: {exact: 'environment'},
+          },
+        })
+        .then(stream => {
+          this.rearCameraTrack_ = stream.getVideoTracks()[0];
+          this.rearCameraTrack_.stop();
+        })
+        .catch(err => {});
+
+    navigator.mediaDevices
+        .getUserMedia({
+          audio: true,
+        })
+        .then(stream => {
+          this.audioTrack_ = stream.getAudioTracks()[0];
+          this.audioTrack_.stop();
+        })
+        .catch(err => {});
+  }
+
+  /**
+   * @param {!MediaStreamTrack} mediaTrack
+   * @return {string}
+   * @private
+   */
+  getCameraResolution_(mediaTrack) {
+    const width =
+        /** @type {!ConstrainDouble} */ (mediaTrack.getCapabilities().width)
+            .max;
+    const height =
+        /** @type {!ConstrainDouble} */ (mediaTrack.getCapabilities().height)
+            .max;
+    return `${width} x ${height}`;
+  }
+
+  /**
+   * @param {!MediaStreamTrack} mediaTrack
+   * @return {string}
+   * @private
+   */
+  getCameraFps_(mediaTrack) {
+    return `${
+        /** @type {!ConstrainDouble} */ (mediaTrack.getCapabilities().frameRate)
+            .max} fps`;
+  }
+
+  /**
+   * @param {!MediaStreamTrack} mediaTrack
+   * @return {string}
+   * @private
+   */
+  getAudioChannel_(mediaTrack) {
+    const channelCount = /** @type {!ConstrainDouble} */ (
+                             mediaTrack.getCapabilities().channelCount)
+                             .max;
+    return channelCount >= 2 ? 'Stereo' : 'Mono';
   }
 }
 

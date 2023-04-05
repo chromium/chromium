@@ -30,8 +30,6 @@
 
 #include "third_party/blink/renderer/core/layout/text_run_constructor.h"
 
-#include "third_party/blink/renderer/core/layout/api/line_layout_item.h"
-#include "third_party/blink/renderer/core/layout/api/line_layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/platform/text/bidi_text_run.h"
 
@@ -132,27 +130,6 @@ TextRun ConstructTextRun(const Font& font,
                               ? TextDirection::kLtr
                               : DetermineDirectionality(string),
                           flags);
-}
-
-TextRun ConstructTextRun(const Font& font,
-                         const LineLayoutText text,
-                         unsigned offset,
-                         unsigned length,
-                         const ComputedStyle& style) {
-  SECURITY_DCHECK(offset + length <= text.TextLength());
-  if (text.HasEmptyText()) {
-    return ConstructTextRunInternal(font, static_cast<const LChar*>(nullptr), 0,
-                                    style, TextDirection::kLtr);
-  }
-  if (text.Is8Bit()) {
-    return ConstructTextRunInternal(font, text.Characters8() + offset, length,
-                                    style, TextDirection::kLtr);
-  }
-
-  TextRun run = ConstructTextRunInternal(font, text.Characters16() + offset,
-                                         length, style, TextDirection::kLtr);
-  run.SetDirection(DirectionForRun(run));
-  return run;
 }
 
 }  // namespace blink

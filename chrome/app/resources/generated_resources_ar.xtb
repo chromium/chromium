@@ -118,6 +118,7 @@
 <translation id="1091767800771861448">‏اضغط على ESCAPE للتخطي (الإصدارات غير الرسمية فقط).</translation>
 <translation id="1093457606523402488">شبكات مرئية:</translation>
 <translation id="1095761715416917775">ضمان إمكانية الوصول إلى بيانات المزامنة دائمًا</translation>
+<translation id="1095879482467973146">‏"مدير كلمات المرور في Google" على الويب</translation>
 <translation id="109647177154844434">‏سيؤدي إلغاء تثبيت نظام Parallels Desktop إلى حذف صورة نظام التشغيل Windows، ويشمل هذا تطبيقاته وإعداداته وبياناته. هل أنت متأكّد من أنّك تريد المتابعة؟</translation>
 <translation id="1097016918605049747">تعذَّرت ترجمة هذه الصفحة</translation>
 <translation id="1097658378307015415">قبل تسجيل الدخول، يُرجى الدخول كضيف لتفعيل الشبكة <ph name="NETWORK_ID" /></translation>
@@ -329,7 +330,7 @@
 <translation id="1272508081857842302">فتح <ph name="BEGIN_LINK" />الروابط المتوافقة<ph name="END_LINK" /></translation>
 <translation id="1272978324304772054">لا ينتمي حساب المستخدم هذا إلى النطاق المسجَّل به هذا الجهاز. إذا أردت التسجيل بنطاق مختلف، فيلزمك إجراء استرداد الجهاز أولاً.</translation>
 <translation id="1273937721055267968">حظر <ph name="DOMAIN" /></translation>
-<translation id="1274997165432133392">ملفات تعريف الارتباط وبيانات الموقع الإلكتروني الأخرى</translation>
+<translation id="1274997165432133392">ملفات تعريف الارتباط والبيانات الأخرى للمواقع الإلكترونية</translation>
 <translation id="1275718070701477396">تم التحديد</translation>
 <translation id="1276994519141842946">تعذّر إلغاء تثبيت <ph name="APP_NAME" />.</translation>
 <translation id="1277020343994096713">يجب إنشاء رقم تعريف شخصي جديد يختلف عن رقم التعريف الشخصي الحالي.</translation>
@@ -1491,6 +1492,7 @@
 <translation id="2252017960592955005">‏ميزة Viewing Protection (إصدار تجريبي)</translation>
 <translation id="225240747099314620">السماح بالمعرّفات للمحتوى المحمي (قد تكون هناك حاجة إلى إعادة تشغيل الكمبيوتر)</translation>
 <translation id="2253318212986772520">‏يتعذَّر استرداد ملف PPD للطابعة <ph name="PRINTER_NAME" />.</translation>
+<translation id="2253927598983295051">اختيار المحتوى الذي تتم مشاركته مع "<ph name="APP_NAME" />"</translation>
 <translation id="2255077166240162850">تم تقييد الجهاز بوضع أو بنطاق آخر.</translation>
 <translation id="2255317897038918278">‏الطابع الزمني لـ Microsoft</translation>
 <translation id="2256115617011615191">إعادة التشغيل الآن</translation>
@@ -1836,6 +1838,7 @@
 <translation id="2532589005999780174">وضع التباين العالي</translation>
 <translation id="2533649878691950253">تم حظر تعرّف هذا الموقع الإلكتروني على موقعك الجغرافي الدقيق لأنّك عادةً لا تسمح بهذا الإجراء.</translation>
 <translation id="253434972992662860">إي&amp;قاف مؤقت</translation>
+<translation id="253498598929009420">سيتمكّن الموقع الإلكتروني من الاطّلاع على محتوى شاشتك.</translation>
 <translation id="253557089021624350">عدد مرات التحقق من الاتصال</translation>
 <translation id="2535799430745250929">لا تتوفّر شبكة جوّال</translation>
 <translation id="2537395079978992874">بإمكان <ph name="ORIGIN" /> عرض الملفات والمجلدات التالية وتعديلها:</translation>
@@ -2195,7 +2198,7 @@
 <translation id="2844169650293029770">‏جهاز USB-C (المنفذ الأمامي الأيسر)</translation>
 <translation id="2844809857160214557">عرض مهام الطباعة وإدارتها</translation>
 <translation id="2845382757467349449">عرض شريط الإشارات المرجعية دائمًا</translation>
-<translation id="2845751331501453107">إنّ ظهور إعلانات مخصّصة أو غير مخصّصة لك أثناء التصفّح يعتمد على هذا الخيار و<ph name="BEGIN_LINK1" />الإعلانات المقترَحة من المواقع الإلكترونية<ph name="LINK_END1" /> و<ph name="BEGIN_LINK2" />إعدادات ملفات تعريف الارتباط<ph name="LINK_END2" /> وما إذا كان الموقع الإلكتروني الذي تعرضه يخصِّص الإعلانات.</translation>
+<translation id="2845751331501453107">إنّ ظهور إعلانات مخصّصة أو غير مخصّصة لك أثناء التصفّح يعتمد على هذا الإعداد وعلى <ph name="BEGIN_LINK1" />الإعلانات المقترَحة من المواقع الإلكترونية<ph name="LINK_END1" /> و<ph name="BEGIN_LINK2" />إعدادات ملفات تعريف الارتباط<ph name="LINK_END2" /> وما إذا كان الموقع الإلكتروني الذي تعرضه يخصِّص الإعلانات.</translation>
 <translation id="284581348330507117">إنشاء كلمات مرور فريدة</translation>
 <translation id="284805635805850872">هل تريد إزالة البرامج الضارة؟</translation>
 <translation id="2849035674501872372">بحث</translation>
@@ -4877,7 +4880,7 @@
 <translation id="5278823018825269962">رقم تعريف الحالة</translation>
 <translation id="5279600392753459966">حجب الكل</translation>
 <translation id="5280064835262749532">تحديث بيانات اعتماد <ph name="SHARE_PATH" /></translation>
-<translation id="5280243692621919988">محو ملفات تعريف الارتباط وبيانات الموقع الإلكتروني عند إغلاق جميع النوافذ</translation>
+<translation id="5280243692621919988">محو ملفات تعريف الارتباط وبيانات المواقع الإلكترونية عند إغلاق جميع النوافذ</translation>
 <translation id="5280335021886535443">يمكنك الضغط على |<ph name="ACCELERATOR" />| للتركيز على فقاعة المساعدة هذه.</translation>
 <translation id="5280426389926346830">هل تريد إنشاء اختصار؟</translation>
 <translation id="5281013262333731149">يتم فتحه في: <ph name="OPEN_BROWSER" /></translation>
@@ -5150,7 +5153,7 @@
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">هل هذه هي الصفحة الرئيسية التي كنت تتوقع ظهورها؟</translation>
 <translation id="5522156646677899028">هذه الإضافة تحتوي على ثغرة أمنية خطيرة.</translation>
-<translation id="5522403133543437426">محرك البحث المُستخدَم في شريط العناوين</translation>
+<translation id="5522403133543437426">محرك البحث المستخدَم في شريط العناوين -</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{ثبَّت مشرفك إضافة واحدة.}zero{ثبَّت مشرفك # إضافة.}two{ثبَّت مشرفك إضافتَين.}few{ثبَّت مشرفك # إضافات.}many{ثبَّت مشرفك # إضافةً.}other{ثبَّت مشرفك # إضافة.}}</translation>
 <translation id="5523558474028191231">يمكن أن يحتوي الاسم على أحرف وأرقام ورموز خاصة، ويجب ألا يزيد عن <ph name="MAX_CHARACTER_COUNT" /> حرف.</translation>
 <translation id="5526701598901867718">الكل (غير آمن)</translation>
@@ -6843,7 +6846,6 @@
 <translation id="7017004637493394352">‏قل "Ok Google" مرة أخرى</translation>
 <translation id="7017219178341817193">إضافة صفحة جديدة</translation>
 <translation id="7017354871202642555">لا يمكن ضبط الوضع بعد تعيين النافذة.</translation>
-<translation id="7018275672629230621">الاطّلاع على سجل التصفح وتغييره</translation>
 <translation id="7019546817926942979">‏يجب توصيل الجهاز بمصدر طاقة. قد تؤدي ترقية نظام التشغيل Linux إلى استهلاك البطارية بشكل كبير. يُرجى توصيل جهازك بالشاحن وإعادة المحاولة.</translation>
 <translation id="7019805045859631636">سريع</translation>
 <translation id="7022562585984256452">تم ضبط صفحتك الرئيسية.</translation>
@@ -7133,6 +7135,7 @@
 <translation id="7308643132139167865">لغات المواقع الإلكترونية</translation>
 <translation id="7310598146671372464">‏تعذّر تسجيل الدخول لأن الخادم لا يدعم أنواع ترميز Kerberos المحدَّدة. يُرجى الاتصال بمشرفك.</translation>
 <translation id="7311089766378749632">الإضافات التي تطلب إذن الاطّلاع على محتوى <ph name="SITE_NAME" /> وتعديله</translation>
+<translation id="7311244614769792472">لم يتم العثور على نتائج.</translation>
 <translation id="7312210124139670355">‏المشرف يعيد ضبط شريحة eSIM حاليًا. قد تستغرق هذه العملية بضع دقائق.</translation>
 <translation id="7317831949569936035">تسجيل الجهاز ضمن المؤسسة التعليمية</translation>
 <translation id="7320213904474460808">الاتصال بالشبكة تلقائيًا</translation>
@@ -7245,7 +7248,7 @@
 <translation id="7410421966064092098">لا يمكن للمواقع الإلكترونية المساعدة في إثبات أنّك لست برنامج تتبُّع.</translation>
 <translation id="7410852728357935715">البث على جهاز</translation>
 <translation id="7411614333737930931">يُرجى إعادة تشغيل الجهاز والمحاولة مجددًا.</translation>
-<translation id="741204030948306876">نعم، موافق</translation>
+<translation id="741204030948306876">نعم، أوافق</translation>
 <translation id="7412226954991670867">‏ذاكرة GPU</translation>
 <translation id="7414464185801331860">18 ضعفًا</translation>
 <translation id="7415454883318062233">اكتمل الإعداد</translation>
@@ -7495,7 +7498,7 @@
 <translation id="7634280112532283638">الحدّ من الاحتيال والمحتوى غير المرغوب فيه</translation>
 <translation id="7634566076839829401">حدث خطأ ما. يُرجى إعادة المحاولة.</translation>
 <translation id="7635048370253485243">ثبَّت المشرف هذه الإضافة.</translation>
-<translation id="7635711411613274199">إنّ ظهور إعلانات مخصّصة أو غير مخصّصة لك أثناء التصفّح يعتمد على هذا الخيار و<ph name="BEGIN_LINK1" />مواضيع الإعلانات<ph name="LINK_END1" /> و<ph name="BEGIN_LINK2" />إعدادات ملفات تعريف الارتباط<ph name="LINK_END2" /> وما إذا كان الموقع الإلكتروني الذي تعرضه يخصّص الإعلانات.</translation>
+<translation id="7635711411613274199">إنّ ظهور إعلانات مخصّصة أو غير مخصّصة لك أثناء التصفّح يعتمد على هذا الإعداد وعلى <ph name="BEGIN_LINK1" />مواضيع الإعلانات<ph name="LINK_END1" /> و<ph name="BEGIN_LINK2" />إعدادات ملفات تعريف الارتباط<ph name="LINK_END2" /> وما إذا كان الموقع الإلكتروني الذي تعرضه يخصّص الإعلانات.</translation>
 <translation id="7636919061354591437">تثبيت على هذا الجهاز</translation>
 <translation id="7637253234491814483">يمكنك لمس أداة استشعار بصمة الإصبع في أعلى يمين لوحة المفاتيح، بجانب زر التشغيل. يتم تخزين بيانات بصمة الإصبع بشكل آمن ولا يتم نقلها من جهاز <ph name="DEVICE_TYPE" /> الخاص بك.</translation>
 <translation id="7637272932128132922">عندما كانت علامة التبويب هذه غير نشطة، نجحت ميزة "توفير الذاكرة" في تفريغ مساحة من الذاكرة لتنفيذ مهام أخرى. يمكنك تغيير إعدادات هذه الميزة في أي وقت من خلال <ph name="SETTINGS_LINK" />.</translation>
@@ -8456,7 +8459,7 @@
 <translation id="8458627787104127436">فتح كل الـ (<ph name="URL_COUNT" />) عنوان في نافذة جديدة</translation>
 <translation id="8460448946170646641">مراجعة العناصر الرئيسية للتحكّم في الخصوصية والأمان</translation>
 <translation id="8460490661223303637">‏أزال متصفِّح Chrome بعضًا من محتوى الصفحة بهدف توفير مساحة من الذاكرة.</translation>
-<translation id="8460932807646981183">إدارة محركات البحث والبحث في المواقع الإلكترونية</translation>
+<translation id="8460932807646981183">إدارة محركات البحث وعمليات البحث في المواقع الإلكترونية</translation>
 <translation id="84613761564611563">تم طلب واجهة المستخدم لإعداد الشبكة، يُرجى الانتظار...</translation>
 <translation id="8461914792118322307">الخادم الوكيل</translation>
 <translation id="8463001014623882202">تعذَّرت المصادقة</translation>
@@ -8977,7 +8980,7 @@
 <translation id="8915307125957890427">انقر بزر الماوس الأيمن على علامة تبويب واختَر "إضافة علامة تبويب إلى مجموعة"، ثم اختَر "مجموعة جديدة".</translation>
 <translation id="8915370057835397490">جارٍ تحميل الاقتراح</translation>
 <translation id="8916476537757519021">الإطار الفرعي للتصفح المتخفي: <ph name="SUBFRAME_SITE" /></translation>
-<translation id="8917490105272468696">نعم، أنا موافق</translation>
+<translation id="8917490105272468696">نعم، أوافق</translation>
 <translation id="8918637186205009138">جهاز <ph name="DEVICE_TYPE" /> الخاص بـ <ph name="GIVEN_NAME" /></translation>
 <translation id="8922624386829239660">تحريك الشاشة عند وصول مؤشر الماوس إلى حواف الشاشة</translation>
 <translation id="8923880975836399332">أزرق مخضر داكن</translation>

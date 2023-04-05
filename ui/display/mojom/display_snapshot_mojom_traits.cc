@@ -151,9 +151,9 @@ bool StructTraits<display::mojom::DisplaySnapshotDataView,
   if (!data.ReadVariableRefreshRateState(&variable_refresh_rate_state))
     return false;
 
-  absl::optional<gfx::Range> vertical_display_range_limits;
-  if (!data.ReadVerticalDisplayRangeLimits(&vertical_display_range_limits))
-    return false;
+  const absl::optional<uint16_t> vsync_rate_min =
+      data.vsync_rate_min() > 0 ? absl::make_optional(data.vsync_rate_min())
+                                : absl::nullopt;
 
   display::DrmFormatsAndModifiers drm_formats_and_modifiers;
 #if BUILDFLAG(IS_CHROMEOS)
@@ -173,8 +173,8 @@ bool StructTraits<display::mojom::DisplaySnapshotDataView,
       data.bits_per_channel(), hdr_static_metadata, display_name, file_path,
       std::move(modes), panel_orientation, std::move(edid), current_mode,
       native_mode, data.product_code(), data.year_of_manufacture(),
-      maximum_cursor_size, variable_refresh_rate_state,
-      vertical_display_range_limits, drm_formats_and_modifiers);
+      maximum_cursor_size, variable_refresh_rate_state, vsync_rate_min,
+      drm_formats_and_modifiers);
   return true;
 }
 

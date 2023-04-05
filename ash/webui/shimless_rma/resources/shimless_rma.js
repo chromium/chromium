@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './critical_error_page.js';
+import './diagnostic_page.js';
 import './hardware_error_page.js';
 import './onboarding_choose_destination_page.js';
 import './onboarding_choose_wipe_device_page.js';
@@ -29,8 +30,8 @@ import './wrapup_restock_page.js';
 import './wrapup_wait_for_manual_wp_enable_page.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';

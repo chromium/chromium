@@ -124,12 +124,15 @@ suite('acceleratorEditDialogTest', function() {
         dialog!.querySelector('#pendingAccelerator');
     assertFalse(!!pendingAccelerator);
 
+    assertEquals(0, provider.getPreventProcessingAcceleratorsCallCount());
+
     // Clicking on the "Add Shortcut" button should hide the button and show
     // the pending shortcut.
     const addButton =
         dialog!.querySelector('#addAcceleratorButton') as CrButtonElement;
     addButton!.click();
     await flush();
+    assertEquals(1, provider.getPreventProcessingAcceleratorsCallCount());
     assertTrue(buttonContainer!.hidden);
     // Expected the dialog's "done" button to be disabled when adding a new
     // accelerator.
@@ -148,7 +151,9 @@ suite('acceleratorEditDialogTest', function() {
     const cancelButton = pendingAccelerator!.shadowRoot!.querySelector(
                              '#cancelButton') as CrButtonElement;
     cancelButton.click();
-    await flush();
+    await flushTasks();
+
+    assertEquals(2, provider.getPreventProcessingAcceleratorsCallCount());
 
     // "done" button should now be enabled.
     assertFalse(doneButton!.disabled);

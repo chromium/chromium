@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">ດາວເຄາະ</translation>
 <translation id="2305020378527873881">ຖອດ <ph name="VOLUME_NAME" /> ອອກແລ້ວ.</translation>
 <translation id="2307462900900812319">ປັບຕັ້ງຄ່າເຄືອຂ່າຍ</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{ບໍ່ພົບສ່ວນຂະຫຍາຍທີ່ມີ ID <ph name="BEGIN_LIST" /><ph name="END_LIST" />. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.}other{ບໍ່ພົບສ່ວນຂະຫຍາຍທີ່ມີ ID <ph name="BEGIN_LIST" /><ph name="END_LIST" />. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.}}</translation>
 <translation id="2325650632570794183">ປະເພດໄຟລ໌ນີ້ບໍ່ຖືກຮອງຮັບ. ກະລຸນາເຂົ້າໄປເບິ່ງ Chrome Web Store ເພື່ອຊອກຫາແອັບທີ່ສາມາດເປີດໄຟລ໌ປະເພດນີ້ໄດ້.</translation>
 <translation id="2326539130272988168">ບັງກາຣຽນ</translation>
 <translation id="2337715497728194187">ແບ່ງປັນກັບ Bruschetta</translation>
@@ -274,6 +275,7 @@
 <translation id="3290356915286466215">ບໍ່ປອດໄພ</translation>
 <translation id="3291218047831493686">ເຊື່ອມຕໍ່ຫາເຄືອຂ່າຍນີ້ເພື່ອປ່ຽນການຕັ້ງຄ່າການລັອກ SIM</translation>
 <translation id="3293023191599135697">ບໍ່ຮອງຮັບເຄືອຂ່າຍ WEP</translation>
+<translation id="3295006446256079333">ລະດັບສຽງນີ້</translation>
 <translation id="3295357220137379386">ອຸປະກອນບໍ່ຫວ່າງ</translation>
 <translation id="3296763833017966289">ພາສາຈໍເຈຍ</translation>
 <translation id="3307875152560779385">ພາສາຢູເຄຣນຽນ</translation>

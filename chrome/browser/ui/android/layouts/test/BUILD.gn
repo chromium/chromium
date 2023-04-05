@@ -15,5 +15,6 @@ android_library("java") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//content/public/test/android:content_java_test_support",
+    "//third_party/junit:junit",
   ]
 }

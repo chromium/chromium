@@ -472,4 +472,11 @@ SiteDataRecorder::Data* SiteDataRecorder::Data::GetForTesting(
   return GetSiteDataNodeDataFromPageNode(page_node);
 }
 
+// static
+SiteDataReader* SiteDataRecorder::Data::GetReaderForPageNode(
+    const PageNode* page_node) {
+  const auto* site_data = FromPageNode(page_node);
+  return site_data ? site_data->reader() : nullptr;
+}
+
 }  // namespace performance_manager

@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">Planeet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> is verwijderd.</translation>
 <translation id="2307462900900812319">Netwerk configureren</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Er kan geen extensie met de ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> worden gevonden. Neem contact op met je beheerder.}other{Er kunnen geen extensies met de ID's <ph name="BEGIN_LIST" /><ph name="END_LIST" /> worden gevonden. Neem contact op met je beheerder.}}</translation>
 <translation id="2325650632570794183">Dit bestandstype wordt niet ondersteund. Ga naar de Chrome Web Store om een app te vinden die dit bestandstype kan openen.</translation>
 <translation id="2326539130272988168">Bulgaars</translation>
 <translation id="2337715497728194187">Delen met Bruschetta</translation>

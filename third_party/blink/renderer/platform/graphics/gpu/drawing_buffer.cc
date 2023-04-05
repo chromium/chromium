@@ -1840,13 +1840,6 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
   uint32_t usage = gpu::SHARED_IMAGE_USAGE_GLES2 |
                    gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
                    gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-  // On Android, TexStorage* is not used when WEBGL1 back buffer mailbox is
-  // created. crbug.com/1429675.
-#if BUILDFLAG(IS_ANDROID)
-  if (webgl_version_ == kWebGL1) {
-    usage |= gpu::SHARED_IMAGE_USAGE_WEBGL1;
-  }
-#endif
   if (initial_gpu_ == gl::GpuPreference::kHighPerformance)
     usage |= gpu::SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU;
   GrSurfaceOrigin origin = opengl_flip_y_extension_

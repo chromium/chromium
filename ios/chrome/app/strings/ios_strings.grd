@@ -4195,6 +4195,9 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       <message name="IDS_IOS_VOICE_SEARCH_SETTING_TTS" desc="The label for setting switch enabling text-to-speech response after voice search [Length: 29em] [iOS only]">
         Speak Answers Back
       </message>
+      <message name="IDS_IOS_SIGNIN_PROMO_READING_LIST" desc="Text to inform the user that they can sign in and sync to get the reading list shared between devices.">
+        Sign in to open and save your reading list in your Google Account.
+      </message>
       <message name="IDS_IOS_SIGNIN_PROMO_BOOKMARKS_WITH_UNITY" desc="Text to inform the user that they can sign in and sync to get bookmarks shared between devices. [iOS only]">
         To get your bookmarks on all your devices, turn on sync.
       </message>

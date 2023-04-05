@@ -311,11 +311,23 @@ class OsIntegrationManager : public AppRegistrarObserver {
  private:
   class OsHooksBarrier;
 
-  virtual void ExecuteAllSubManagerConfigurations(
+  virtual void StartSubManagerExecutionIfRequired(
       const AppId& app_id,
       absl::optional<SynchronizeOsOptions> options,
       std::unique_ptr<proto::WebAppOsIntegrationState> desired_states,
-      base::OnceClosure callback);
+      base::OnceClosure on_all_execution_done);
+
+  // Use to call Execute() on each sub manager recursively through callbacks
+  // so as to ensure that execution happens serially in the order the sub
+  // managers are stored inside the sub_managers_ vector, and that consecutive
+  // sub managers execute only if the one before it has finished executing.
+  void ExecuteNextSubmanager(
+      const AppId& app_id,
+      absl::optional<SynchronizeOsOptions> options,
+      proto::WebAppOsIntegrationState* desired_state,
+      const proto::WebAppOsIntegrationState current_state,
+      size_t index,
+      base::OnceClosure on_all_execution_done_db_write);
 
   virtual void WriteStateToDB(
       const AppId& app_id,

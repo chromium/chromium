@@ -10,12 +10,12 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/observer_list.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/uuid.h"
 #include "components/performance_manager/frame_node_source.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
@@ -439,7 +439,9 @@ void TestServiceWorkerContext::StopServiceWorker(int64_t version_id) {
 std::string TestServiceWorkerContext::AddClient(
     int64_t version_id,
     const content::ServiceWorkerClientInfo& client_info) {
-  return AddClientWithClientID(version_id, base::GenerateGUID(), client_info);
+  return AddClientWithClientID(
+      version_id, base::Uuid::GenerateRandomV4().AsLowercaseString(),
+      client_info);
 }
 
 std::string TestServiceWorkerContext::AddClientWithClientID(

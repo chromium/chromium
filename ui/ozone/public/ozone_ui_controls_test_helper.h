@@ -39,7 +39,7 @@ class OzoneUIControlsTestHelper {
   // Sends mouse motion notify event and executes |closure| when done.
   virtual void SendMouseMotionNotifyEvent(gfx::AcceleratedWidget widget,
                                           const gfx::Point& mouse_loc,
-                                          const gfx::Point& mouse_root_loc,
+                                          const gfx::Point& mouse_loc_in_screen,
                                           base::OnceClosure closure) = 0;
 
   // Sends mouse event and executes |closure| when done.
@@ -48,7 +48,7 @@ class OzoneUIControlsTestHelper {
                               int button_state,
                               int accelerator_state,
                               const gfx::Point& mouse_loc,
-                              const gfx::Point& mouse_root_loc,
+                              const gfx::Point& mouse_loc_in_screen,
                               base::OnceClosure closure) = 0;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

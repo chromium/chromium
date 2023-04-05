@@ -1746,9 +1746,6 @@ extern const char kTabEngagementReportingDescription[];
 extern const char kTabGridLayoutAndroidName[];
 extern const char kTabGridLayoutAndroidDescription[];
 
-extern const char kCommerceCouponsName[];
-extern const char kCommerceCouponsDescription[];
-
 extern const char kCommerceDeveloperName[];
 extern const char kCommerceDeveloperDescription[];
 
@@ -3542,6 +3539,9 @@ extern const char kArcInputOverlayDescriptionBeta[];
 
 extern const char kArcInputOverlayNameAlphaV2[];
 extern const char kArcInputOverlayDescriptionAlphaV2[];
+
+extern const char kScanningAppJellyName[];
+extern const char kScanningAppJellyDescription[];
 
 extern const char kSecondaryGoogleAccountUsageName[];
 extern const char kSecondaryGoogleAccountUsageDescription[];

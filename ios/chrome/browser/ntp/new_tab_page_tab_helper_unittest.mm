@@ -94,7 +94,7 @@ TEST_F(NewTabPageTabHelperTest, TestAlreadyNTP) {
               base::SysUTF16ToNSString(pending_item_->GetTitle()));
 }
 
-// Tests a newly created NTP webstate using about://newtab.
+// Tests a newly created NTP webstate using about://newtab/.
 TEST_F(NewTabPageTabHelperTest, TestAlreadyAboutNTP) {
   GURL url(kChromeUIAboutNewTabURL);
   fake_web_state_.SetVisibleURL(url);

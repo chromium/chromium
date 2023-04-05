@@ -78,6 +78,12 @@ ExtensionHost::ExtensionHost(const Extension* extension,
 
   ExtensionWebContentsObserver::GetForWebContents(host_contents())->
       dispatcher()->set_delegate(this);
+
+  // Create password reuse detection manager when new extension web contents are
+  // created.
+  ExtensionsBrowserClient::Get()->CreatePasswordReuseDetectionManager(
+      host_contents_.get());
+
   ExtensionHostRegistry::Get(browser_context_)->ExtensionHostCreated(this);
 }
 

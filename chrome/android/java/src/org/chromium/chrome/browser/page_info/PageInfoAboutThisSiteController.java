@@ -37,6 +37,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.LayoutInflaterUtils;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.url.GURL;
 
 /**
@@ -141,6 +142,9 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
 
                 TextView title = toolbarView.findViewById(R.id.title);
                 title.setTextAppearance(R.style.TextAppearance_TextLarge_Primary);
+                // Style change affects the toolbar height. Requests layout again.
+                ViewUtils.requestLayout(
+                        toolbarView, "PageInfoAboutThisSiteController.onToolbarCreated");
             }
 
             @Override

@@ -91,7 +91,7 @@ DisplaySnapshot::DisplaySnapshot(
     int32_t year_of_manufacture,
     const gfx::Size& maximum_cursor_size,
     VariableRefreshRateState variable_refresh_rate_state,
-    const absl::optional<gfx::Range>& vertical_display_range_limits,
+    const absl::optional<uint16_t>& vsync_rate_min,
     const DrmFormatsAndModifiers& drm_formats_and_modifiers)
     : display_id_(display_id),
       port_display_id_(port_display_id),
@@ -122,7 +122,7 @@ DisplaySnapshot::DisplaySnapshot(
       year_of_manufacture_(year_of_manufacture),
       maximum_cursor_size_(maximum_cursor_size),
       variable_refresh_rate_state_(variable_refresh_rate_state),
-      vertical_display_range_limits_(vertical_display_range_limits),
+      vsync_rate_min_(vsync_rate_min),
       drm_formats_and_modifiers_(drm_formats_and_modifiers) {
   // We must explicitly clear out the bytes that represent the serial number.
   const size_t end = std::min(
@@ -158,7 +158,7 @@ std::unique_ptr<DisplaySnapshot> DisplaySnapshot::Clone() {
       hdr_static_metadata_, display_name_, sys_path_, std::move(clone_modes),
       panel_orientation_, edid_, cloned_current_mode, cloned_native_mode,
       product_code_, year_of_manufacture_, maximum_cursor_size_,
-      variable_refresh_rate_state_, vertical_display_range_limits_,
+      variable_refresh_rate_state_, vsync_rate_min_,
       drm_formats_and_modifiers_);
 }
 
@@ -197,9 +197,8 @@ void DisplaySnapshot::AddIndexToDisplayId() {
 }
 
 bool DisplaySnapshot::IsVrrCapable() const {
-  // TODO(b/221220344): Add check that vertical limits are valid.
   return variable_refresh_rate_state_ != display::kVrrNotCapable &&
-         vertical_display_range_limits_.has_value();
+         vsync_rate_min_.has_value() && vsync_rate_min_.value() > 0;
 }
 
 bool DisplaySnapshot::IsVrrEnabled() const {

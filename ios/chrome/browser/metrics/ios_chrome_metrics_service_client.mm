@@ -270,6 +270,8 @@ void IOSChromeMetricsServiceClient::Initialize() {
       std::make_unique<variations::SyntheticTrialRegistry>(
           IsExternalExperimentAllowlistEnabled());
 
+  synthetic_trial_observation_.Observe(synthetic_trial_registry_.get());
+
   metrics_service_ = std::make_unique<metrics::MetricsService>(
       metrics_state_manager_, this, local_state);
   RegisterMetricsServiceProviders();

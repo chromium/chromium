@@ -28,7 +28,6 @@ source_set("common") {
     "//url",
   ]
   public_deps = [
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys:fuchsia.sys_hlcpp",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.app:fuchsia.ui.app_hlcpp",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web:fuchsia.web_hlcpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
@@ -173,7 +172,6 @@ source_set("cast_runner_test_core") {
   public_deps = [
     "./cast/fidl:fidl_hlcpp",
     "//base",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys:fuchsia.sys_hlcpp",
     "//url",
   ]
 }

@@ -86,7 +86,7 @@ void ExtensionInstalledWaiter::OnExtensionUnloaded(
     delete this;
 }
 
-void ExtensionInstalledWaiter::OnBrowserClosing(Browser* browser) {
+void ExtensionInstalledWaiter::OnBrowserRemoved(Browser* browser) {
   if (browser == browser_)
     delete this;
 }

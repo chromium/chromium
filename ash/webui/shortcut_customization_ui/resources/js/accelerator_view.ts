@@ -158,7 +158,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   }
 
 
-  private startCapture(): void {
+  private async startCapture(): Promise<void> {
     if (this.isCapturing) {
       return;
     }
@@ -170,9 +170,12 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
       bubbles: true,
       composed: true,
     }));
+
+    // Block processing accelerators.
+    await this.shortcutProvider.preventProcessingAccelerators(true);
   }
 
-  private endCapture(): void {
+  private async endCapture(): Promise<void> {
     if (!this.isCapturing) {
       return;
     }
@@ -187,6 +190,8 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
       bubbles: true,
       composed: true,
     }));
+
+    await this.shortcutProvider.preventProcessingAccelerators(false);
   }
 
   private onKeyDown(e: KeyboardEvent): void {

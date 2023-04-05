@@ -145,16 +145,14 @@ class ASH_EXPORT TrayItemView : public views::View,
   std::unique_ptr<gfx::SlideAnimation> animation_;
 
   // The target visibility for the item when all the animation is done.
-  // Initialized to true because View visibility defaults to true during
-  // construction.
-  bool target_visible_ = true;
+  bool target_visible_ = false;
 
   // Use scale in animating in the item to the tray.
   bool use_scale_in_animation_ = true;
 
   // Only one of |label_| and |image_view_| should be non-null.
-  IconizedLabel* label_ = nullptr;
-  views::ImageView* image_view_ = nullptr;
+  IconizedLabel* label_;
+  views::ImageView* image_view_;
 
   // Measure animation smoothness metrics for `animation_`.
   absl::optional<ui::ThroughputTracker> throughput_tracker_;

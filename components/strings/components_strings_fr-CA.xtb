@@ -181,7 +181,6 @@
 <translation id="1374468813861204354">suggestions</translation>
 <translation id="1375198122581997741">À propos de la version</translation>
 <translation id="1376836354785490390">Afficher moins</translation>
-<translation id="1377321085342047638">Num. carte</translation>
 <translation id="1380591466760231819">Pli roulé</translation>
 <translation id="138218114945450791">Bleu ciel</translation>
 <translation id="1382194467192730611">Appareil USB autorisé par votre administrateur</translation>
@@ -228,7 +227,6 @@
 <translation id="1476595624592550506">Modifiez votre mot de passe</translation>
 <translation id="1482879811280872320">Cyclisme</translation>
 <translation id="1483493594462132177">Envoi</translation>
-<translation id="1484290072879560759">Choisir une adresse d'expédition</translation>
 <translation id="1492194039220927094">Notifications poussées des politiques :</translation>
 <translation id="149293076951187737">Lorsque vous fermez tous les onglets de navigation privée de Chrome, votre activité dans ces onglets est effacée de cet appareil :
           <ph name="BEGIN_LIST" />
@@ -256,7 +254,6 @@
 <translation id="153384715582417236">C'est tout pour le moment</translation>
 <translation id="1536390784834419204">Traduire la page</translation>
 <translation id="1539840569003678498">Envoi du rapport :</translation>
-<translation id="154408704832528245">Choisir une adresse de livraison</translation>
 <translation id="1549470594296187301">Pour utiliser cette fonctionnalité, vous devez activer JavaScript.</translation>
 <translation id="1551884710160394169">Gratuiciels et partagiciels</translation>
 <translation id="1553358976309200471">Mettre à jour Chrome</translation>
@@ -370,7 +367,6 @@
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Détails de la carte virtuelle</translation>
 <translation id="1803020234906945288">Alimentation saine</translation>
-<translation id="1803264062614276815">Nom du titulaire de la carte</translation>
 <translation id="1803351196216024260">Les sites peuvent demander à utiliser votre microphone</translation>
 <translation id="1807246157184219062">Clair</translation>
 <translation id="1807528111851433570">Feuille de début</translation>
@@ -619,7 +615,6 @@
 <translation id="2450021089947420533">Explorations</translation>
 <translation id="2456755709261364512">Votre pile doit être chargée à plus de <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
 <translation id="2463739503403862330">Remplir</translation>
-<translation id="2465655957518002998">Choisir un mode de livraison</translation>
 <translation id="2465688316154986572">Agrafe</translation>
 <translation id="2465914000209955735">Gérez les fichiers que vous avez téléchargés dans Chrome</translation>
 <translation id="2466004615675155314">Afficher les informations provenant du Web</translation>
@@ -741,7 +736,6 @@
 <translation id="2730600605555029057">Musique classique</translation>
 <translation id="2731382536835015353">44 po x 68 po</translation>
 <translation id="2734319753272419592">Laissez Google utiliser vos paniers pour rechercher des rabais personnalisés. Lorsqu'ils sont offerts, les rabais s'affichent automatiquement sur vos paniers.</translation>
-<translation id="2738330467931008676">Choisir une adresse de ramassage</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742511345840685325">Tennis de table</translation>
 <translation id="2742870351467570537">Supprimer les éléments sélectionnés</translation>
@@ -823,7 +817,6 @@
 <translation id="2983666748527428214">Ouvrir l'onglet de navigation privée</translation>
 <translation id="2985306909656435243">Si l'option est activée, Chromium conservera une copie de votre carte sur cet appareil pour vous permettre de remplir plus rapidement vos formulaires.</translation>
 <translation id="2985398929374701810">Entrez une adresse valide</translation>
-<translation id="2986368408720340940">Ce mode de ramassage n'est pas disponible. Essayez un autre mode.</translation>
 <translation id="2987034854559945715">Aucune fonctionnalité correspondante</translation>
 <translation id="2989742184762224133">Double agrafe en haut</translation>
 <translation id="2991174974383378012">Partage avec des sites Web</translation>
@@ -855,7 +848,6 @@
 <translation id="3086579638707268289">Votre activité sur le Web est actuellement surveillée</translation>
 <translation id="3087734570205094154">Bas</translation>
 <translation id="3095940652251934233">Relevé</translation>
-<translation id="3096100844101284527">Ajouter une adresse de ramassage</translation>
 <translation id="3096195745018397576">Vêtements pour enfants</translation>
 <translation id="3098513225387949945">Ignoré parce que la liste de désactivation contient un motif égal à « * », ce qui équivaut à désactiver la politique.</translation>
 <translation id="3105172416063519923">Identifiant de ressource :</translation>
@@ -1382,7 +1374,6 @@
 <translation id="4333561522337981382">Gérer les fenêtres sur tous vos écrans</translation>
 <translation id="4340575312453649552">Cette annonce utilisait trop de ressources pour votre appareil, alors Chrome l'a supprimée.</translation>
 <translation id="4340982228985273705">Cet ordinateur n'est pas détecté comme étant géré par une entreprise, la politique peut donc uniquement installer des extensions hébergées par la boutique Chrome Webstore. L'URL de mise à jour de la boutique Chrome Webstore est « <ph name="CWS_UPDATE_URL" /> ».</translation>
-<translation id="4346197816712207223">Cartes de crédit acceptées</translation>
 <translation id="4348834659292907206">La connexion au site <ph name="SITE" /> n'est pas sécurisée</translation>
 <translation id="4349365535725594680">Impossible de partager le contenu confidentiel</translation>
 <translation id="4349810866125026513">Téléverser quand même</translation>
@@ -1586,7 +1577,6 @@
 <translation id="4850886885716139402">Affichage</translation>
 <translation id="4852429274334674023">Systèmes d'exploitation</translation>
 <translation id="4853901935952445031">Ce site ne pourra plus utiliser l'API U2F après février 2022. Si le site vous appartient, vous devrez le modifier afin d'utiliser l'API Web Authentification.</translation>
-<translation id="4854362297993841467">Ce mode de livraison n'est pas disponible. Essayez un autre mode.</translation>
 <translation id="4854853140771946034">Créer rapidement une note dans Google Keep</translation>
 <translation id="4858792381671956233">Tu as demandé l'autorisation de tes parents pour consulter ce site</translation>
 <translation id="485902285759009870">Vérification du code en cours…</translation>
@@ -1788,7 +1778,6 @@
 <translation id="5316812925700871227">Faire pivoter dans le sens antihoraire</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> sur <ph name="NUM_MATCHES" /></translation>
-<translation id="5324080437450482387">Choisir des coordonnées</translation>
 <translation id="5329858041417644019">Votre navigateur n'est pas géré</translation>
 <translation id="5332219387342487447">Mode de livraison</translation>
 <translation id="5332769172018416402">Demander dans un message</translation>
@@ -1891,7 +1880,6 @@
 <translation id="5593349413089863479">La connexion n'est pas entièrement sécurisée</translation>
 <translation id="5595485650161345191">Modifier l'adresse</translation>
 <translation id="5596939519753369075">2 po x 3,5 po</translation>
-<translation id="5598944008576757369">Choisir un mode de paiement</translation>
 <translation id="560412284261940334">La gestion n'est pas prise en charge</translation>
 <translation id="5605670050355397069">Grand livre</translation>
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Comment gérer vos données :<ph name="END_BOLD" /> Chrome supprime automatiquement les sites ayant de plus de quatre semaines. Un site que vous visitez de nouveau peut réapparaître dans la liste. Vous pouvez également empêcher un site de vous suggérer des annonces et désactiver les annonces suggérées par le site à tout moment dans les paramètres de Chrome.</translation>
@@ -1923,7 +1911,6 @@
 <translation id="568292603005599551">Position X de l'image</translation>
 <translation id="5684277895745049190">Liste</translation>
 <translation id="5684874026226664614">Oups… Impossible de traduire cette page.</translation>
-<translation id="5685654322157854305">Ajouter une adresse d'expédition</translation>
 <translation id="5689199277474810259">Exporter au format JSON</translation>
 <translation id="5689516760719285838">Lieu</translation>
 <translation id="569000877158168851">La valeur DnsOverHttpsTemplates n'est pas pertinente et ne sera pas utilisée, à moins que la politique DnsOverHttpsMode soit définie à <ph name="SECURE_DNS_MODE_AUTOMATIC" /> ou à <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
@@ -2789,7 +2776,6 @@ Détails supplémentaires :
 <translation id="776110834126722255">Obsolète</translation>
 <translation id="7761159795823346334">Autoriser l'accès à l'appareil photo?</translation>
 <translation id="7761701407923456692">Le certificat du serveur ne correspond pas à l'adresse URL.</translation>
-<translation id="7763386264682878361">Analyseur de fichier de configuration de paiement</translation>
 <translation id="7764225426217299476">Ajouter une adresse</translation>
 <translation id="7766518757692125295">Jupe</translation>
 <translation id="7773005668374414287">Même ordre, face vers le haut</translation>
@@ -2893,7 +2879,6 @@ Détails supplémentaires :
 <translation id="8038817883578389970">Course automobile</translation>
 <translation id="8041089156583427627">Envoyer des commentaires</translation>
 <translation id="8041940743680923270">Utiliser le paramètre global par défaut (« Demander »)</translation>
-<translation id="8042918947222776840">Choisir un mode de ramassage</translation>
 <translation id="8052898407431791827">Copiée dans le presse-papiers</translation>
 <translation id="8055534648776115597">Formations professionnelles et continues</translation>
 <translation id="8057711352706143257">« <ph name="SOFTWARE_NAME" /> » n'est pas correctement configuré. La désinstallation de « <ph name="SOFTWARE_NAME" /> » résout généralement le problème. <ph name="FURTHER_EXPLANATION" /></translation>
@@ -3267,7 +3252,6 @@ Détails supplémentaires :
 <translation id="9008201768610948239">OK</translation>
 <translation id="9018120810758822233">Entrer votre code de sécurité pour <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">courriel</translation>
-<translation id="9020200922353704812">Carte de l'adresse de facturation requise</translation>
 <translation id="9020542370529661692">Cette page a été traduite en <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour partager cet onglet en partageant le lien, en créant un code QR, en diffusant du contenu et plus</translation>
@@ -3304,7 +3288,6 @@ Détails supplémentaires :
 <translation id="9101630580131696064">Bac 1</translation>
 <translation id="9103537084693478942">Logiciels de vidéo</translation>
 <translation id="9103872766612412690">Un chiffrement est normalement utilisé sur le site <ph name="SITE" /> pour protéger vos données personnelles. Lors de la dernière tentative de connexion de Chromium au site <ph name="SITE" />, des identifiants inhabituels et incorrects ont été retournés. Cela peut arriver lorsqu'un individu malveillant tente de se faire passer pour <ph name="SITE" /> ou qu'un écran de connexion Wi-Fi a interrompu la connexion. Vos données restent sécurisées, car Chromium a interrompu la connexion avant l'échange des données.</translation>
-<translation id="9106062320799175032">Ajouter l'adresse de facturation</translation>
 <translation id="9107467864910557787">Votre navigateur est géré par <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">La politique définie par l'administrateur désactive le partage d'écran avec <ph name="APPLICATION_TITLE" /> lorsque le contenu affiché est confidentiel</translation>
 <translation id="9114524666733003316">Confirmation de la carte en cours…</translation>
@@ -3325,7 +3308,6 @@ Détails supplémentaires :
 <translation id="9139318394846604261">Magasinage</translation>
 <translation id="9141013498910525015">Gérer les adresses</translation>
 <translation id="9144951720726881238">Date d'expiration :</translation>
-<translation id="9148088599418889305">Choisir un mode d'expédition</translation>
 <translation id="9148507642005240123">&amp;Annuler la modification</translation>
 <translation id="9150045010208374699">Utiliser votre caméra</translation>
 <translation id="9150685862434908345">Votre administrateur peut modifier la configuration de votre navigateur à distance. L'activité sur cet appareil peut aussi être gérée à l'extérieur de Chrome. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
@@ -3376,7 +3358,6 @@ Détails supplémentaires :
 <translation id="964050462028070434">Gérer les mots de passe et les clés d'accès…</translation>
 <translation id="96680173638229310">Voitures et véhicules</translation>
 <translation id="969892804517981540">Version officielle</translation>
-<translation id="973773823069644502">Ajouter une adresse de livraison</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Aucun}=1{1 élément}one{# élément}other{# éléments}}</translation>
 <translation id="976522784004777030">5 po x 8 po</translation>
 <translation id="977502174772294970">Mariages</translation>

@@ -285,8 +285,9 @@ TEST(Uint128, ConversionTests) {
   EXPECT_EQ(from_precise_double, from_precise_ints);
   EXPECT_DOUBLE_EQ(static_cast<double>(from_precise_ints), precise_double);
 
-  double approx_double = 0xffffeeeeddddcccc * std::pow(2.0, 64.0) +
-                         0xbbbbaaaa99998888;
+  double approx_double =
+      static_cast<double>(0xffffeeeeddddcccc) * std::pow(2.0, 64.0) +
+      static_cast<double>(0xbbbbaaaa99998888);
   absl::uint128 from_approx_double(approx_double);
   EXPECT_DOUBLE_EQ(static_cast<double>(from_approx_double), approx_double);
 

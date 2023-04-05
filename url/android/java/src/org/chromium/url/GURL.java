@@ -113,6 +113,9 @@ public class GURL {
         LibraryLoader.getInstance().ensureMainDexInitialized();
         // Record metrics only for the UI thread where the delay in loading the library is relevant.
         if (ThreadUtils.runningOnUiThread()) {
+            // "MainDex" in name of histogram is a dated reference to when we used to have 2
+            // sections of the native library, main dex and non-main dex. Maintaining name for
+            // consistency in metrics.
             RecordHistogram.recordTimesHistogram("Startup.Android.GURLEnsureMainDexInitialized",
                     SystemClock.elapsedRealtime() - time);
             if (sReportCallback != null && new Random().nextInt(100) < DEBUG_REPORT_PERCENTAGE) {

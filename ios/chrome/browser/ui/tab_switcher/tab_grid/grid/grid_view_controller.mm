@@ -162,9 +162,13 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 @property(nonatomic) BOOL showingSuggestedActions;
 // YES if the dragged tab moved to a new index.
 @property(nonatomic, assign) BOOL dragEndAtNewIndex;
-// Whether there are inactive tabs to consider. If there are and the grid is in
-// TabGridModeNormal, a button is displayed at the top, advertizing them.
-@property(nonatomic, assign) NSUInteger inactiveTabsCount;
+// The number of currently inactive tabs. If there are (inactiveTabsCount > 0)
+// and the grid is in TabGridModeNormal, a button is displayed at the top,
+// advertizing them.
+@property(nonatomic, assign) NSInteger inactiveTabsCount;
+// The number of days after which tabs are considered inactive. This is
+// displayed to the user in the Inactive Tabs button when inactiveTabsCount > 0.
+@property(nonatomic, assign) NSInteger inactiveTabsDaysThreshold;
 // Tracks if a drop action initiated in this grid is in progress.
 @property(nonatomic) BOOL localDragActionInProgress;
 
@@ -550,7 +554,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       header.buttonAction = ^{
         [weakSelf didTapInactiveTabsButton];
       };
-      [header configureWithDaysThreshold:InactiveTabsTimeThreshold().InDays()];
+      [header configureWithDaysThreshold:self.inactiveTabsDaysThreshold];
       if (IsShowInactiveTabsCountEnabled()) {
         [header configureWithCount:self.inactiveTabsCount];
       }
@@ -597,7 +601,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       header.settingsLinkAction = ^{
         [weakSelf didTapInactiveTabsSettingsLink];
       };
-      header.daysThreshold = InactiveTabsTimeThreshold().InDays();
+      header.daysThreshold = self.inactiveTabsDaysThreshold;
       return header;
   }
 }
@@ -712,7 +716,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       return CGSizeMake(collectionView.bounds.size.width, height);
     }
     case TabGridModeInactive:
-      DCHECK(IsInactiveTabsEnabled());
+      if (!IsInactiveTabsEnabled() || IsInactiveTabsExplictlyDisabledByUser()) {
+        return CGSizeZero;
+      }
       // The Inactive Tabs grid has a header to inform about the feature and a
       // link to its settings.
       return [self inactiveTabsPreambleHeaderSize];
@@ -1410,52 +1416,44 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   ios::provider::DismissModalsForCollectionView(self.collectionView);
 }
 
-#pragma mark - InactiveTabsCountConsumer
+#pragma mark - InactiveTabsInfoConsumer
 
-- (void)advertizeInactiveTabsWithCount:(NSUInteger)count {
-  DCHECK(IsInactiveTabsEnabled() || IsInactiveTabsExplictlyDisabledByUser());
-
-  // Update `inactiveTabsCount`.
-  NSUInteger oldCount = self.inactiveTabsCount;
+- (void)updateInactiveTabsCount:(NSInteger)count {
   if (self.inactiveTabsCount == count) {
     return;
   }
+  NSInteger oldCount = self.inactiveTabsCount;
   self.inactiveTabsCount = count;
-
-  if (!IsShowInactiveTabsCountEnabled()) {
-    return;
-  }
 
   // Update the header.
   if (oldCount == 0 || count == 0) {
     // The header should appear or disappear. Reload the section.
-    NSIndexSet* openTabsSection =
-        [NSIndexSet indexSetWithIndex:kOpenTabsSectionIndex];
-    // Prevent the animation, as it leads to a jarrying effect when closing all
-    // inactive tabs: the inactive tabs view controller gets popped, and the
-    // underlying regular Tab Grid moves tabs up.
-    // Note: this could be revisited when supporting iPad, as the user could
-    // have closed all inactive tabs in a different window.
-    [UIView performWithoutAnimation:^{
-      [self.collectionView reloadSections:openTabsSection];
-    }];
-    // Make sure to restore the selection. `reloadSections` cleared it.
-    // https://developer.apple.com/forums/thread/656529
-    [self selectCollectionViewItemWithID:self.selectedItemID
-                                animated:NO
-                          scrollPosition:UICollectionViewScrollPositionNone];
+    [self reloadInactiveTabsButtonHeader];
   } else {
     // The header just needs to be updated with the new count.
-    NSIndexPath* indexPath =
-        [NSIndexPath indexPathForItem:0 inSection:kOpenTabsSectionIndex];
-    InactiveTabsButtonHeader* header =
-        base::mac::ObjCCast<InactiveTabsButtonHeader>([self.collectionView
-            supplementaryViewForElementKind:UICollectionElementKindSectionHeader
-                                atIndexPath:indexPath]);
-    // Note: At this point, `header` could be nil if not visible, or if the
-    // supplementary view is not an InactiveTabsButtonHeader.
-    [header configureWithCount:count];
+    [self updateInactiveTabsButtonHeaderIfNeeded];
   }
+}
+
+- (void)updateInactiveTabsDaysThreshold:(NSInteger)daysThreshold {
+  if (self.inactiveTabsDaysThreshold == daysThreshold) {
+    return;
+  }
+  NSInteger oldDaysThreshold = self.inactiveTabsDaysThreshold;
+  self.inactiveTabsDaysThreshold = daysThreshold;
+
+  // Update the header.
+  if (oldDaysThreshold == kInactiveTabsDisabledByUser ||
+      daysThreshold == kInactiveTabsDisabledByUser) {
+    // The header should appear or disappear. Reload the section.
+    [self reloadInactiveTabsButtonHeader];
+  } else {
+    // The header just needs to be updated with the new days threshold.
+    [self updateInactiveTabsButtonHeaderIfNeeded];
+  }
+
+  // Update the preamble.
+  [self updateInactiveTabsPreambleHeaderIfNeeded];
 }
 
 #pragma mark - LayoutSwitcher
@@ -1961,6 +1959,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   return [itemIdentifiers copy];
 }
 
+// Returns the size that should be dedicated the the Inactive Tabs button
+// header.
 - (CGSize)inactiveTabsButtonHeaderSize {
   NSString* kind = UICollectionElementKindSectionHeader;
   NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0
@@ -1979,6 +1979,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   return CGSizeMake(width, size.height);
 }
 
+// Returns the size that should be dedicated the the Inactive Tabs preamble
+// header.
 - (CGSize)inactiveTabsPreambleHeaderSize {
   NSString* kind = UICollectionElementKindSectionHeader;
   NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0
@@ -1995,6 +1997,54 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
             withHorizontalFittingPriority:UILayoutPriorityRequired
                   verticalFittingPriority:UILayoutPriorityFittingSizeLevel];
   return CGSizeMake(width, size.height);
+}
+
+// Reloads the section containing the Inactive Tabs button header.
+- (void)reloadInactiveTabsButtonHeader {
+  NSIndexSet* openTabsSection =
+      [NSIndexSet indexSetWithIndex:kOpenTabsSectionIndex];
+  // Prevent the animation, as it leads to a jarrying effect when closing all
+  // inactive tabs: the inactive tabs view controller gets popped, and the
+  // underlying regular Tab Grid moves tabs up.
+  // Note: this could be revisited when supporting iPad, as the user could
+  // have closed all inactive tabs in a different window.
+  [UIView performWithoutAnimation:^{
+    [self.collectionView reloadSections:openTabsSection];
+  }];
+  // Make sure to restore the selection. `reloadSections` cleared it.
+  // https://developer.apple.com/forums/thread/656529
+  [self selectCollectionViewItemWithID:self.selectedItemID
+                              animated:NO
+                        scrollPosition:UICollectionViewScrollPositionNone];
+}
+
+// Reconfigures the Inactive Tabs button header.
+- (void)updateInactiveTabsButtonHeaderIfNeeded {
+  NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0
+                                               inSection:kOpenTabsSectionIndex];
+  InactiveTabsButtonHeader* header =
+      base::mac::ObjCCast<InactiveTabsButtonHeader>([self.collectionView
+          supplementaryViewForElementKind:UICollectionElementKindSectionHeader
+                              atIndexPath:indexPath]);
+  // Note: At this point, `header` could be nil if not visible, or if the
+  // supplementary view is not an InactiveTabsButtonHeader.
+  [header configureWithDaysThreshold:self.inactiveTabsDaysThreshold];
+  if (IsShowInactiveTabsCountEnabled()) {
+    [header configureWithCount:self.inactiveTabsCount];
+  }
+}
+
+// Reconfigures the Inactive Tabs preamble header.
+- (void)updateInactiveTabsPreambleHeaderIfNeeded {
+  NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0
+                                               inSection:kOpenTabsSectionIndex];
+  InactiveTabsPreambleHeader* header =
+      base::mac::ObjCCast<InactiveTabsPreambleHeader>([self.collectionView
+          supplementaryViewForElementKind:UICollectionElementKindSectionHeader
+                              atIndexPath:indexPath]);
+  // Note: At this point, `header` could be nil if not visible, or if the
+  // supplementary view is not an InactiveTabsPreambleHeader.
+  header.daysThreshold = self.inactiveTabsDaysThreshold;
 }
 
 #pragma mark Suggested Actions Section

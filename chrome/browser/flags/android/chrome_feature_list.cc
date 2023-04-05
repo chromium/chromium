@@ -185,7 +185,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kClearOmniboxFocusAfterNavigation,
     &kCloseTabSuggestions,
     &kCriticalPersistedTabData,
-    &kCommerceCoupons,
     &kCCTAllowCrossUidActivitySwitchFromBelow,
     &kCCTBackgroundTab,
     &kCCTBottomBarSwipeUpGesture,
@@ -524,10 +523,6 @@ BASE_FEATURE(kCloseTabSuggestions,
 
 BASE_FEATURE(kCriticalPersistedTabData,
              "CriticalPersistedTabData",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCommerceCoupons,
-             "CommerceCoupons",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTAllowCrossUidActivitySwitchFromBelow,
@@ -1104,12 +1099,9 @@ BASE_FEATURE(kUpdateNotificationScheduleServiceImmediateShowOption,
 
 // Use the LibunwindstackNativeUnwinderAndroid for only browser main thread, and
 // only on Android.
-//
-// Enable by default to collect stack java samples for scroll jank effort as
-// soon as possible.
 BASE_FEATURE(kUseLibunwindstackNativeUnwinderAndroid,
              "UseLibunwindstackNativeUnwinderAndroid",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUserMediaScreenCapturing,
              "UserMediaScreenCapturing",

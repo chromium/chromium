@@ -175,7 +175,7 @@ NSString* GetActiveTabId(WebStateList* web_state_list) {
     return;
   }
   // NTP tabs get no favicon.
-  if (IsURLNtp(webState->GetVisibleURL())) {
+  if (IsUrlNtp(webState->GetVisibleURL())) {
     return;
   }
   UIImage* defaultFavicon =

@@ -214,32 +214,6 @@ class TabGridViewBinder {
                         view.getResources().getString(R.string.accessibility_tab_price_card,
                                 priceDrop.previousPrice, priceDrop.price));
             }, true);
-        } else if (TabProperties.COUPON_PERSISTED_TAB_DATA_FETCHER == propertyKey) {
-            CouponCardView couponCardView =
-                    (CouponCardView) view.fastFindViewById(R.id.coupon_info_box_outer);
-            if (model.get(TabProperties.COUPON_PERSISTED_TAB_DATA_FETCHER) == null) {
-                couponCardView.setVisibility(View.GONE);
-                return;
-            }
-            fetchPriceDrop(model, (priceDrop) -> {
-                if (priceDrop != null) {
-                    couponCardView.setVisibility(View.GONE);
-                    return;
-                }
-                model.get(TabProperties.COUPON_PERSISTED_TAB_DATA_FETCHER)
-                        .fetch((couponPersistedTabData) -> {
-                            // TODO(crbug.com/1337117): add logging for when
-                            // couponPersistedTabData is not null
-                            if (couponPersistedTabData == null
-                                    || couponPersistedTabData.getCouponAnnotationText() == null) {
-                                couponCardView.setVisibility(View.GONE);
-                            } else {
-                                couponCardView.setCouponString(
-                                        couponPersistedTabData.getCouponAnnotationText());
-                                couponCardView.setVisibility(View.VISIBLE);
-                            }
-                        });
-            }, false);
         } else if (TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP == propertyKey) {
             if (model.get(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP)) {
                 PriceCardView priceCardView =

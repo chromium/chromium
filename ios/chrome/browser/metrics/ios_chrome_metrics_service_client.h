@@ -13,16 +13,18 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/threading/thread_checker.h"
 #include "components/metrics/file_metrics_provider.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_service_client.h"
+#import "components/metrics/persistent_synthetic_trial_observer.h"
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
 #include "components/ukm/observers/history_delete_observer.h"
 #include "components/ukm/observers/ukm_consent_state_observer.h"
 #include "components/variations/synthetic_trial_registry.h"
 #import "ios/chrome/browser/metrics/incognito_web_state_observer.h"
-#include "ios/web/public/deprecated/global_web_state_observer.h"
+#import "ios/web/public/deprecated/global_web_state_observer.h"
 
 class ChromeBrowserState;
 class IOSChromeStabilityMetricsProvider;
@@ -146,6 +148,12 @@ class IOSChromeMetricsServiceClient : public IncognitoWebStateObserver,
 
   // The synthetic trial registry shared by metrics_service_ and ukm_service_.
   std::unique_ptr<variations::SyntheticTrialRegistry> synthetic_trial_registry_;
+
+  // Metrics service observer for synthetic trials.
+  metrics::PersistentSyntheticTrialObserver synthetic_trial_observer_;
+  base::ScopedObservation<variations::SyntheticTrialRegistry,
+                          variations::SyntheticTrialObserver>
+      synthetic_trial_observation_{&synthetic_trial_observer_};
 
   // The MetricsService that `this` is a client of.
   std::unique_ptr<metrics::MetricsService> metrics_service_;

@@ -622,7 +622,7 @@ void LayoutShiftTracker::ReportShift(double score_delta,
   TRACE_EVENT_INSTANT2(
       "loading", "LayoutShift", TRACE_EVENT_SCOPE_THREAD, "data",
       PerFrameTraceData(score_delta, weighted_score_delta, had_recent_input),
-      "frame", ToTraceValue(&frame));
+      "frame", GetFrameIdForTracing(&frame));
 
   if (ShouldLog(frame)) {
     VLOG(1) << "in " << (frame.IsOutermostMainFrame() ? "" : "subframe ")

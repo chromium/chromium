@@ -38,6 +38,24 @@ class AuctionMetricsRecorderTest : public testing::Test {
     task_environment_.FastForwardBy(delta);
   }
 
+  bool HasMetric(std::string metric_name) {
+    std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> entries =
+        ukm_recorder_.GetEntries(
+            ukm::builders::AdsInterestGroup_AuctionLatency::kEntryName,
+            {metric_name});
+    EXPECT_THAT(entries, testing::SizeIs(1));
+    if (entries.size() != 1) {
+      return false;
+    }
+
+    EXPECT_EQ(entries.at(0).source_id, source_id_);
+    if (entries.at(0).source_id != source_id_) {
+      return false;
+    }
+
+    return entries.at(0).metrics.contains(metric_name);
+  }
+
   absl::optional<int64_t> GetMetricValue(std::string metric_name) {
     std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> entries =
         ukm_recorder_.GetEntries(
@@ -277,6 +295,156 @@ TEST_F(AuctionMetricsRecorderTest,
       GetMetricValue(
           UkmEntry::kNumInterestGroupsWithSeparateBidsForKAnonAndNonKAnonName),
       17);
+}
+
+TEST_F(AuctionMetricsRecorderTest,
+       ComponentAuctionLatencyMetricsHaveNoValuesForSingleSellerAuctions) {
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  EXPECT_FALSE(HasMetric(UkmEntry::kMeanComponentAuctionLatencyInMillisName));
+  EXPECT_FALSE(HasMetric(UkmEntry::kMaxComponentAuctionLatencyInMillisName));
+}
+
+TEST_F(AuctionMetricsRecorderTest, ComponentAuctionLatencyWithOneRecord) {
+  recorder().RecordComponentAuctionLatency(base::Milliseconds(205));
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 205 becomes 200 because of bucketing
+  EXPECT_EQ(GetMetricValue(UkmEntry::kMeanComponentAuctionLatencyInMillisName),
+            200);
+  EXPECT_EQ(GetMetricValue(UkmEntry::kMaxComponentAuctionLatencyInMillisName),
+            200);
+}
+
+TEST_F(AuctionMetricsRecorderTest, ComponentAuctionLatencyWithTwoRecords) {
+  recorder().RecordComponentAuctionLatency(base::Milliseconds(305));
+  recorder().RecordComponentAuctionLatency(base::Milliseconds(505));
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 405 becomes 400 because of bucketing
+  EXPECT_EQ(GetMetricValue(UkmEntry::kMeanComponentAuctionLatencyInMillisName),
+            400);
+  // 505 becomes 500 because of bucketing
+  EXPECT_EQ(GetMetricValue(UkmEntry::kMaxComponentAuctionLatencyInMillisName),
+            500);
+}
+
+TEST_F(AuctionMetricsRecorderTest,
+       ComponentAuctionLatencyIgnoresNegativeValues) {
+  recorder().RecordComponentAuctionLatency(base::Milliseconds(305));
+  recorder().RecordComponentAuctionLatency(base::Milliseconds(505));
+  recorder().RecordComponentAuctionLatency(base::Milliseconds(-300));
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 405 becomes 400 because of bucketing
+  EXPECT_EQ(GetMetricValue(UkmEntry::kMeanComponentAuctionLatencyInMillisName),
+            400);
+  // 505 becomes 500 because of bucketing
+  EXPECT_EQ(GetMetricValue(UkmEntry::kMaxComponentAuctionLatencyInMillisName),
+            500);
+}
+
+TEST_F(AuctionMetricsRecorderTest,
+       BidForOneInterestGroupLatencyMetricsHaveNoValuesForNoGenerateBids) {
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  EXPECT_FALSE(
+      HasMetric(UkmEntry::kMeanBidForOneInterestGroupLatencyInMillisName));
+  EXPECT_FALSE(
+      HasMetric(UkmEntry::kMaxBidForOneInterestGroupLatencyInMillisName));
+}
+
+TEST_F(AuctionMetricsRecorderTest, BidForOneInterestGroupLatencyWithOneRecord) {
+  recorder().RecordBidForOneInterestGroupLatency(base::Milliseconds(305));
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 205 becomes 200 because of bucketing
+  EXPECT_EQ(
+      GetMetricValue(UkmEntry::kMeanBidForOneInterestGroupLatencyInMillisName),
+      300);
+  EXPECT_EQ(
+      GetMetricValue(UkmEntry::kMaxBidForOneInterestGroupLatencyInMillisName),
+      300);
+}
+
+TEST_F(AuctionMetricsRecorderTest,
+       BidForOneInterestGroupLatencyWithTwoRecords) {
+  recorder().RecordBidForOneInterestGroupLatency(base::Milliseconds(405));
+  recorder().RecordBidForOneInterestGroupLatency(base::Milliseconds(605));
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 405 becomes 400 because of bucketing
+  EXPECT_EQ(
+      GetMetricValue(UkmEntry::kMeanBidForOneInterestGroupLatencyInMillisName),
+      500);
+  // 505 becomes 500 because of bucketing
+  EXPECT_EQ(
+      GetMetricValue(UkmEntry::kMaxBidForOneInterestGroupLatencyInMillisName),
+      600);
+}
+
+TEST_F(AuctionMetricsRecorderTest,
+       BidForOneInterestGroupLatencyIgnoresNegativeValues) {
+  recorder().RecordBidForOneInterestGroupLatency(base::Milliseconds(405));
+  recorder().RecordBidForOneInterestGroupLatency(base::Milliseconds(605));
+  recorder().RecordBidForOneInterestGroupLatency(base::Milliseconds(-400));
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 405 becomes 400 because of bucketing
+  EXPECT_EQ(
+      GetMetricValue(UkmEntry::kMeanBidForOneInterestGroupLatencyInMillisName),
+      500);
+  // 505 becomes 500 because of bucketing
+  EXPECT_EQ(
+      GetMetricValue(UkmEntry::kMaxBidForOneInterestGroupLatencyInMillisName),
+      600);
+}
+
+TEST_F(AuctionMetricsRecorderTest,
+       GenerateSingleBidLatencyMetricsHaveNoValuesForNoGenerateBids) {
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  EXPECT_FALSE(HasMetric(UkmEntry::kMeanGenerateSingleBidLatencyInMillisName));
+  EXPECT_FALSE(HasMetric(UkmEntry::kMaxGenerateSingleBidLatencyInMillisName));
+}
+
+TEST_F(AuctionMetricsRecorderTest, GenerateSingleBidLatencyWithOneRecord) {
+  recorder().RecordGenerateSingleBidLatency(base::Milliseconds(405));
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 405 becomes 400 because of bucketing
+  EXPECT_EQ(GetMetricValue(UkmEntry::kMeanGenerateSingleBidLatencyInMillisName),
+            400);
+  EXPECT_EQ(GetMetricValue(UkmEntry::kMaxGenerateSingleBidLatencyInMillisName),
+            400);
+}
+
+TEST_F(AuctionMetricsRecorderTest, GenerateSingleBidLatencyWithTwoRecords) {
+  recorder().RecordGenerateSingleBidLatency(base::Milliseconds(505));
+  recorder().RecordGenerateSingleBidLatency(base::Milliseconds(705));
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 605 becomes 600 because of bucketing
+  EXPECT_EQ(GetMetricValue(UkmEntry::kMeanGenerateSingleBidLatencyInMillisName),
+            600);
+  // 505 becomes 500 because of bucketing
+  EXPECT_EQ(GetMetricValue(UkmEntry::kMaxGenerateSingleBidLatencyInMillisName),
+            700);
+}
+
+TEST_F(AuctionMetricsRecorderTest,
+       GenerateSingleBidLatencyIgnoresNegativeValues) {
+  recorder().RecordGenerateSingleBidLatency(base::Milliseconds(505));
+  recorder().RecordGenerateSingleBidLatency(base::Milliseconds(705));
+  recorder().RecordGenerateSingleBidLatency(base::Milliseconds(-500));
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 605 becomes 600 because of bucketing
+  EXPECT_EQ(GetMetricValue(UkmEntry::kMeanGenerateSingleBidLatencyInMillisName),
+            600);
+  // 505 becomes 500 because of bucketing
+  EXPECT_EQ(GetMetricValue(UkmEntry::kMaxGenerateSingleBidLatencyInMillisName),
+            700);
 }
 
 }  // namespace

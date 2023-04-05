@@ -486,7 +486,12 @@ class TestFuchsiaCdmContext : public media::CdmContext,
 
 class WebEngineAudioRendererTestBase : public testing::Test {
  public:
-  WebEngineAudioRendererTestBase() = default;
+  WebEngineAudioRendererTestBase() {
+    // Mock clock is initialized to 0 by default. Advance it by an arbitrary
+    // value to avoid dependency on the default behavior.
+    constexpr base::TimeDelta kBaseTime = base::Seconds(3452);
+    task_environment_.AdvanceClock(kBaseTime);
+  }
   ~WebEngineAudioRendererTestBase() override = default;
 
   void CreateUninitializedRenderer();
@@ -776,6 +781,17 @@ TEST_P(WebEngineAudioRendererTest, InitializeAndBuffer) {
   ProduceDemuxerPacket(base::Milliseconds(10));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(stream_sink_->received_packets()->size(), 1U);
+}
+
+TEST_P(WebEngineAudioRendererTest, SetZeroRateBeforeStart) {
+  ASSERT_NO_FATAL_FAILURE(CreateAndInitializeRenderer());
+
+  // `SetPlaybackRate(0.0)` may be called before `StartPlaying()`. This should
+  // not prevent stream buffering.
+  audio_renderer_->GetTimeSource()->SetPlaybackRate(0.0);
+  task_environment_.RunUntilIdle();
+
+  ASSERT_NO_FATAL_FAILURE(FillBuffer());
 }
 
 TEST_P(WebEngineAudioRendererTest, StartPlaybackBeforeStreamSinkConnected) {

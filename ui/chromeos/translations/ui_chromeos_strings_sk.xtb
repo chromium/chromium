@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">Planéta</translation>
 <translation id="2305020378527873881">Zväzok <ph name="VOLUME_NAME" /> bol odpojený.</translation>
 <translation id="2307462900900812319">Konfigurovať sieť</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Rozšírenie s identifikátorom <ph name="BEGIN_LIST" /><ph name="END_LIST" /> sa nedá nájsť. Kontaktujte svojho správcu.}few{Rozšírenia s identifikátormi <ph name="BEGIN_LIST" /><ph name="END_LIST" /> sa nedajú nájsť. Kontaktujte svojho správcu.}many{Extensions with the IDs <ph name="BEGIN_LIST" /><ph name="END_LIST" /> can’t be located. Contact your administrator.}other{Rozšírenia s identifikátormi <ph name="BEGIN_LIST" /><ph name="END_LIST" /> sa nedajú nájsť. Kontaktujte svojho správcu.}}</translation>
 <translation id="2325650632570794183">Tento typ súboru nie je podporovaný. Navštívte Internetový obchod Chrome, kde nájdete aplikáciu, pomocou ktorej môžete tento typ súboru otvoriť.</translation>
 <translation id="2326539130272988168">Bulharská klávesnica</translation>
 <translation id="2337715497728194187">Zdieľať s virtuálnym počítačom Bruschetta</translation>
@@ -274,6 +275,7 @@
 <translation id="3290356915286466215">Nezabezpečené</translation>
 <translation id="3291218047831493686">Ak chcete zmeniť nastavenie zámky SIM karty, pripojte sa k tejto sieti</translation>
 <translation id="3293023191599135697">Siete WEP nie sú podporované</translation>
+<translation id="3295006446256079333">Tento objem</translation>
 <translation id="3295357220137379386">Zariadenie je zaneprázdnené</translation>
 <translation id="3296763833017966289">Gruzínčina</translation>
 <translation id="3307875152560779385">Ukrajinská klávesnica</translation>

@@ -574,6 +574,14 @@ void AdAuctionServiceImpl::OnAuctionComplete(
   DCHECK(blink::IsValidFencedFrameURL(ad_descriptor->url));
   DCHECK(urn_uuid.is_valid());
 
+  GetContentClient()->browser()->OnAuctionComplete(
+      &render_frame_host(),
+      InterestGroupManager::InterestGroupDataKey{
+          reporter->winning_bid_info()
+              .storage_interest_group->interest_group.owner,
+          reporter->winning_bid_info().storage_interest_group->joining_origin,
+      });
+
   content::AdAuctionData ad_auction_data{winning_group_key->owner,
                                          winning_group_key->name};
   FencedFrameURLMapping& current_fenced_frame_urls_map =

@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2305020378527873881">S'ha expulsat <ph name="VOLUME_NAME" />.</translation>
 <translation id="2307462900900812319">Configura la xarxa</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{No es troba cap extensió amb l'identificador: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> Contacta amb l'administrador.}other{No es troben extensions amb els identificadors: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> Contacta amb l'administrador.}}</translation>
 <translation id="2325650632570794183">Aquest tipus de fitxer no és compatible. Visiteu Chrome Web Store per trobar una aplicació que pugui obrir aquest tipus de fitxer.</translation>
 <translation id="2326539130272988168">Búlgar</translation>
 <translation id="2337715497728194187">Comparteix amb Bruschetta</translation>

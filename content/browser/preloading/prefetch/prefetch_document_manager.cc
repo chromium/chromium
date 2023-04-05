@@ -153,7 +153,8 @@ void PrefetchDocumentManager::ProcessCandidates(
              *initiator_devtools_navigation_token);
   }
 
-  std::vector<std::tuple<GURL, PrefetchType, blink::mojom::Referrer>>
+  std::vector<std::tuple<GURL, PrefetchType, blink::mojom::Referrer,
+                         network::mojom::NoVarySearchPtr>>
       prefetches;
 
   auto should_process_entry =
@@ -176,7 +177,7 @@ void PrefetchDocumentManager::ProcessCandidates(
               candidate->url,
               PrefetchType(use_isolated_network_context, use_prefetch_proxy,
                            candidate->eagerness),
-              *candidate->referrer);
+              *candidate->referrer, candidate->no_vary_search_expected.Clone());
           return true;
         }
         return false;
@@ -185,15 +186,18 @@ void PrefetchDocumentManager::ProcessCandidates(
   base::EraseIf(candidates, should_process_entry);
 
   if (const auto& host_to_bypass = PrefetchBypassProxyForHost()) {
-    for (auto& [prefetch_url, prefetch_type, referrer] : prefetches) {
+    for (auto& [prefetch_url, prefetch_type, referrer,
+                no_vary_search_expected] : prefetches) {
       if (prefetch_type.IsProxyRequired() &&
           prefetch_url.host() == *host_to_bypass)
         prefetch_type.SetProxyBypassedForTest();
     }
   }
 
-  for (const auto& [prefetch_url, prefetch_type, referrer] : prefetches) {
-    PrefetchUrl(prefetch_url, prefetch_type, referrer, devtools_observer);
+  for (auto& [prefetch_url, prefetch_type, referrer, no_vary_search_expected] :
+       prefetches) {
+    PrefetchUrl(prefetch_url, prefetch_type, referrer, no_vary_search_expected,
+                devtools_observer);
   }
 }
 
@@ -201,6 +205,7 @@ void PrefetchDocumentManager::PrefetchUrl(
     const GURL& url,
     const PrefetchType& prefetch_type,
     const blink::mojom::Referrer& referrer,
+    const network::mojom::NoVarySearchPtr& mojo_no_vary_search_expected,
     base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer) {
   // Skip any prefetches that have already been requested.
   auto prefetch_container_iter = all_prefetches_.find(url);
@@ -214,10 +219,16 @@ void PrefetchDocumentManager::PrefetchUrl(
     return;
   }
 
+  absl::optional<net::HttpNoVarySearchData> no_vary_search_expected;
+  if (mojo_no_vary_search_expected) {
+    no_vary_search_expected =
+        NoVarySearchHelper::ParseHttpNoVarySearchDataFromMojom(
+            mojo_no_vary_search_expected);
+  }
   // Create a new |PrefetchContainer| and take ownership of it
   auto container = std::make_unique<PrefetchContainer>(
       render_frame_host().GetGlobalId(), url, prefetch_type, referrer,
-      weak_method_factory_.GetWeakPtr());
+      std::move(no_vary_search_expected), weak_method_factory_.GetWeakPtr());
   container->SetDevToolsObserver(std::move(devtools_observer));
   if (base::FeatureList::IsEnabled(network::features::kPrefetchNoVarySearch)) {
     container->SetNoVarySearchHelper(no_vary_search_helper_);

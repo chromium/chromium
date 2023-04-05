@@ -18,6 +18,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
@@ -292,6 +293,8 @@ bool VisitedLinkWriter::Init() {
 
 void VisitedLinkWriter::AddURL(const GURL& url, bool update_file) {
   TRACE_EVENT0("browser", "VisitedLinkWriter::AddURL");
+  UMA_HISTOGRAM_COUNTS_10M("History.VisitedLinks.HashTableUsageOnLinkAdded",
+                           used_items_);
   Hash index = TryToAddURL(url);
   if (!table_builder_ && !table_is_loading_from_file_ && index != null_hash_) {
     // Not rebuilding, so we want to keep the file on disk up to date.
@@ -869,6 +872,9 @@ bool VisitedLinkWriter::CreateApartURLTable(
   // The table is the size of the table followed by the entries.
   uint32_t alloc_size =
       num_entries * sizeof(Fingerprint) + sizeof(SharedHeader);
+  UMA_HISTOGRAM_CUSTOM_COUNTS(
+      "History.VisitedLinks.HashTableSizeOnTableCreation",
+      alloc_size / 1024 / 1024, 1, 10000, 100);
 
   // Create the shared memory object.
   *memory = base::ReadOnlySharedMemoryRegion::Create(alloc_size);

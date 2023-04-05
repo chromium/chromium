@@ -50,3 +50,4 @@ pass/fail bool.
 have deflates, we can still generate a raw patch.
 - Updating puffdiff.cc, puffpatch.cc, and puffin_stream.cc to close streams properly.
 This is an existing bug in the AOSP implementation, will notify the owners.
+- Removing unnecessary symlink at third_party/puffin/src.

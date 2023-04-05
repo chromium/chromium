@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881">"<ph name="VOLUME_NAME" />" wurde ausgeworfen.</translation>
 <translation id="2307462900900812319">Netzwerk konfigurieren</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Es konnte keine Erweiterung mit der ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> gefunden werden. Wende dich an deinen Administrator.}other{Es konnten keine Erweiterungen mit den IDs <ph name="BEGIN_LIST" /><ph name="END_LIST" /> gefunden werden. Wende dich an deinen Administrator.}}</translation>
 <translation id="2325650632570794183">Dieser Dateityp wird nicht unterstützt. Finde im Chrome Web Store eine App, mit der du diesen Dateityp öffnen kannst.</translation>
 <translation id="2326539130272988168">Bulgarisch</translation>
 <translation id="2337715497728194187">Für Bruschetta freigeben</translation>

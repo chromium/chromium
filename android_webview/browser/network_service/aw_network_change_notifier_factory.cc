@@ -9,12 +9,14 @@
 
 namespace android_webview {
 
-AwNetworkChangeNotifierFactory::AwNetworkChangeNotifierFactory() {}
+AwNetworkChangeNotifierFactory::AwNetworkChangeNotifierFactory() = default;
 
-AwNetworkChangeNotifierFactory::~AwNetworkChangeNotifierFactory() {}
+AwNetworkChangeNotifierFactory::~AwNetworkChangeNotifierFactory() = default;
 
 std::unique_ptr<net::NetworkChangeNotifier>
-AwNetworkChangeNotifierFactory::CreateInstance() {
+AwNetworkChangeNotifierFactory::CreateInstanceWithInitialTypes(
+    net::NetworkChangeNotifier::ConnectionType /*initial_type*/,
+    net::NetworkChangeNotifier::ConnectionSubtype /*initial_subtype*/) {
   return base::WrapUnique(new AwNetworkChangeNotifier(&delegate_));
 }
 

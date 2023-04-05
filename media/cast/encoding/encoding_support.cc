@@ -100,13 +100,6 @@ bool IsHardwareH264EncodingEnabled(
 }  // namespace
 
 bool IsSoftwareEnabled(Codec codec) {
-// As written, iOS only supports the VideoToolbox H264 encoder.
-//
-// TODO(https://crbug.com/1383572): media/cast should more clearly delineate
-// intended behavior for iOS.
-#if BUILDFLAG(IS_IOS)
-  return false;
-#else
   switch (codec) {
     case CODEC_VIDEO_VP8:
       return true;
@@ -125,7 +118,6 @@ bool IsSoftwareEnabled(Codec codec) {
     default:
       return false;
   }
-#endif
 }
 
 bool IsHardwareEnabled(

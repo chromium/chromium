@@ -108,17 +108,12 @@ NodeRssMap GetPageNodeRssEstimateKb(
   return result;
 }
 
-const SiteDataReader* GetSiteDataReaderForPageNode(const PageNode* page_node) {
-  const auto* site_data = SiteDataRecorder::Data::FromPageNode(page_node);
-  return site_data ? site_data->reader() : nullptr;
-}
-
 }  // namespace
 
 PageDiscardingHelper::PageDiscardingHelper()
     : page_discarder_(std::make_unique<mechanism::PageDiscarder>()),
       site_data_reader_callback_(
-          base::BindRepeating(&GetSiteDataReaderForPageNode)) {}
+          base::BindRepeating(&SiteDataRecorder::Data::GetReaderForPageNode)) {}
 
 PageDiscardingHelper::~PageDiscardingHelper() = default;
 

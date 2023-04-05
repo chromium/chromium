@@ -19,12 +19,6 @@ export class ProjectorBrowserProxy {
   getAccounts() {}
 
   /**
-   * Checks whether the SWA can trigger a new Projector session.
-   * @return {Promise<!projectorApp.NewScreencastPreconditionState>}
-   */
-  getNewScreencastPreconditionState() {}
-
-  /**
    * Launches the Projector recording session. Returns true if a projector
    * recording session was successfully launched.
    * @param {string} storageDir, the directory name in which the screen cast
@@ -145,11 +139,6 @@ export class ProjectorBrowserProxyImpl {
   /** @override */
   getAccounts() {
     return sendWithPromise('getAccounts');
-  }
-
-  /** @override */
-  getNewScreencastPreconditionState() {
-    return sendWithPromise('getNewScreencastPreconditionState');
   }
 
   /** @override */

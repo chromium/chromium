@@ -48,6 +48,8 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialsActiveGroupIdProvider
 
   // metrics::SyntheticTrialObserver:
   void OnSyntheticTrialsChanged(
+      const std::vector<SyntheticTrialGroup>& trials_updated,
+      const std::vector<SyntheticTrialGroup>& trials_removed,
       const std::vector<SyntheticTrialGroup>& groups) override;
 
   std::vector<ActiveGroupId> synthetic_trials_;

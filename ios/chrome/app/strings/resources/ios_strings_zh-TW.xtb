@@ -20,6 +20,7 @@
 <translation id="1103523840287552314">一律翻譯<ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">切換至已開啟的視窗</translation>
 <translation id="1112015203684611006">列印失敗。</translation>
+<translation id="1118266931011974190"><ph name="THRESHOLD" /> 天後</translation>
 <translation id="1125564390852150847">新增分頁。</translation>
 <translation id="1126013303640354461">系統將不會加密你在 Google Pay 中的付款方式和地址，也不會同步 Chrome 中的瀏覽記錄。
 只有知道通關密語的人才能讀取你加密的資料。系統不會將通關密語傳送給 Google，Google 也不會儲存通關密語。如果你忘記通關密語或想要變更這項設定，就必須重設同步功能。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -85,7 +86,7 @@
 <translation id="1506063256525392513">這項操作可以讓你拍照、上傳相片及掃描 QR 圖碼</translation>
 <translation id="1509486075633541495">登入網站</translation>
 <translation id="1509960214886564027">許多網站的功能可能無法正常運作</translation>
-<translation id="152234381334907219">永不儲存</translation>
+<translation id="152234381334907219">一律不儲存</translation>
 <translation id="1523341279170789507">允許所有 Cookie</translation>
 <translation id="1531836666020185856">精選內容</translation>
 <translation id="1535268707340844072">你目前的設定可能會導致某些網站無法正常運作。如要管理所有網站的 Cookie，請參閱 <ph name="BEGIN_LINK" />Cookie 設定<ph name="END_LINK" />。</translation>
@@ -232,10 +233,11 @@
 <translation id="2626236249646841566">請檢查你的連線狀態，然後再次嘗試登入。</translation>
 <translation id="2637313651144986786">搜尋分頁...</translation>
 <translation id="2647269890314209800">使用中的 Cookie</translation>
+<translation id="2648721026697078500">永不移動</translation>
 <translation id="2648803196158606475">刪除已讀取的項目</translation>
 <translation id="2653659639078652383">提交</translation>
 <translation id="2664621323652615289">停止</translation>
-<translation id="2671426118752779020">你可以在 iPhone 上的其他應用程式中，使用 Google 密碼管理員中所儲存的密碼。</translation>
+<translation id="2671426118752779020">你可以在 iPhone 上的其他應用程式中，使用 Google 密碼管理員所儲存的密碼。</translation>
 <translation id="2690858294534178585">相機正在使用中</translation>
 <translation id="26915454213703967">使用 Google 搜尋圖片內容</translation>
 <translation id="2691653761409724435">無法離線使用</translation>
@@ -301,7 +303,7 @@
 <translation id="2982481275546140226">清除資料</translation>
 <translation id="298306318844797842">新增付款方式...</translation>
 <translation id="2989805286512600854">在新分頁中開啟</translation>
-<translation id="3020183492814296499">快速鍵</translation>
+<translation id="3020183492814296499">捷徑</translation>
 <translation id="3037605927509011580">糟糕！</translation>
 <translation id="3039722182465315531">不登入</translation>
 <translation id="3074499504015191586">翻譯整頁內容</translation>
@@ -347,6 +349,7 @@
 <translation id="3305294846493618482">更多</translation>
 <translation id="3311748811247479259">關閉</translation>
 <translation id="3324193307694657476">地址 2</translation>
+<translation id="3328459813621383194">移動閒置分頁</translation>
 <translation id="3328801116991980348">網站資訊</translation>
 <translation id="3371831930909698441">有可用的翻譯。翻譯選項的位置接近畫面底部。</translation>
 <translation id="3377063233124932127">你儲存的書籤、密碼等內容現在會顯示在頂端。</translation>
@@ -511,6 +514,7 @@
 <translation id="452750746583162491">查看已同步處理的資料</translation>
 <translation id="4536418791685807335">請嘗試重新登入。</translation>
 <translation id="4540780316273593836">發生錯誤</translation>
+<translation id="4550040941166547650">僅在這部裝置上</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{要關閉 {COUNT} 個閒置分頁嗎？}other{要關閉 {COUNT} 個閒置分頁嗎？}}</translation>
 <translation id="457386861538956877">更多…</translation>
 <translation id="4587235830039045480">將密碼儲存到 Google 帳戶</translation>
@@ -764,6 +768,7 @@
 <translation id="6193424046394092997">{count,plural, =1{已將書籤加入「{title}」}other{已將書籤加入「{title}」}}</translation>
 <translation id="6196207969502475924">語音搜尋</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{關閉 {COUNT} 個分頁}other{關閉 {COUNT} 個分頁}}</translation>
+<translation id="6210079381482819663"><ph name="THRESHOLD" /> 天以上未使用的分頁會移到這裡。你隨時可以前往<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />進行變更。</translation>
 <translation id="6213567400989743524">已忽略的警告</translation>
 <translation id="6219550825416862075">歡迎回來</translation>
 <translation id="6219688215832490856">一律不翻譯</translation>
@@ -978,7 +983,7 @@
 <translation id="7531345132340165516">目前網站</translation>
 <translation id="7537586195939242955">很抱歉，目前無法將您的通行票證加到 Passbook。</translation>
 <translation id="754655535278952384">已在 <ph name="TIME" />勾選</translation>
-<translation id="7553234618121028547">如要關閉，請開啟<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />並前往「密碼選項」部分。</translation>
+<translation id="7553234618121028547">如要關閉這項功能，請開啟「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」並前往「密碼選項」部分。</translation>
 <translation id="7554645225856321710">全部關閉</translation>
 <translation id="7554791636758816595">新分頁</translation>
 <translation id="7561196759112975576">一律使用</translation>
@@ -1059,6 +1064,7 @@
 <translation id="8059533439631660104">收合這個專區。</translation>
 <translation id="8065292699993359127">在 Chrome 無痕模式中開啟網址</translation>
 <translation id="806745655614357130">分開保留我的資料</translation>
+<translation id="8069394452933076548">針對最近沒有使用的分頁，選擇過多久要移至閒置分頁區塊。</translation>
 <translation id="8073670137947914548">下載完成</translation>
 <translation id="8073872304774253879">改善搜尋和瀏覽體驗</translation>
 <translation id="8076492880354921740">分頁</translation>
@@ -1087,6 +1093,7 @@
 <translation id="8237382152611443140">開啟 [自動填入密碼] 設定</translation>
 <translation id="8261506727792406068">刪除</translation>
 <translation id="8264966119170358612">由於發生第三方 (非 Google) 資料侵害事件，你儲存的某些密碼已外洩。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="8265018477030547118">僅儲存在這部裝置上</translation>
 <translation id="8271720166617117963">接受並登入</translation>
 <translation id="8278938988428169257">輸入字詞或詞組</translation>
 <translation id="8281781826761538115">預設 - <ph name="DEFAULT_LOCALE" /></translation>
@@ -1202,6 +1209,7 @@
 <translation id="9055772144595778347">無法登入</translation>
 <translation id="9055960261314198756">強化防護功能已關閉</translation>
 <translation id="9057972802061533987">無法追蹤，發生錯誤。</translation>
+<translation id="9061495354530850708">在你的 Google 帳戶中</translation>
 <translation id="9065203028668620118">編輯</translation>
 <translation id="9068336935206019333">在 Chrome 無痕模式中開啟</translation>
 <translation id="9079935439869366234">全部標示為未讀取</translation>

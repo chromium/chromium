@@ -68,14 +68,12 @@ void UIResourceLayer::SetUV(const gfx::PointF& top_left,
     cc_layer()->SetUV(top_left, bottom_right);
     return;
   }
-  if (uv_.origin() == top_left && uv_.bottom_right() == bottom_right) {
+  if (uv_top_left_ == top_left && uv_bottom_right_ == bottom_right) {
     return;
   }
 
-  uv_.set_origin(top_left);
-  uv_.set_width(bottom_right.x() - top_left.x());
-  uv_.set_height(bottom_right.y() - top_left.y());
-  DCHECK_EQ(uv_.bottom_right(), bottom_right);
+  uv_top_left_ = top_left;
+  uv_bottom_right_ = bottom_right;
   NotifyPropertyChanged();
 }
 

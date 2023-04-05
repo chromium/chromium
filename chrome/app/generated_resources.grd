@@ -5960,16 +5960,8 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Open in window
       </message>
 
-      <message name="IDS_ACCNAME_APP_HOME_OPEN_IN_WINDOW_CHECKBOX" desc="Accessibility label for the Open in window checkbox for App Home">
-        Enable opening app in window
-      </message>
-
       <message name="IDS_APP_HOME_LAUNCH_AT_STARTUP" desc="Label of menu entry for toggling an app to run on startup from App Home context menu">
         Launch at startup
-      </message>
-
-      <message name="IDS_ACCNAME_APP_HOME_LAUNCH_AT_STARTUP_CHECKBOX" desc="Accessibility label for the Launch at startup checkbox for App Home">
-        Enable launching app at startup
       </message>
 
       <message name="IDS_APP_HOME_CREATE_SHORTCUT" desc="Menu entry label for creating a shortcut for an app from context menu on App Home">

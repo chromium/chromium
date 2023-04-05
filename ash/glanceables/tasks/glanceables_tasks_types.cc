@@ -4,6 +4,9 @@
 
 #include "ash/glanceables/tasks/glanceables_tasks_types.h"
 
+#include <algorithm>
+#include <memory>
+
 namespace ash {
 
 GlanceablesTaskList::GlanceablesTaskList(const std::string& id,
@@ -16,13 +19,15 @@ GlanceablesTaskList::~GlanceablesTaskList() = default;
 // ----------------------------------------------------------------------------
 // GlanceablesTask:
 
-GlanceablesTask::GlanceablesTask(const std::string& id,
-                                 const std::string& title,
-                                 bool completed,
-                                 const std::vector<GlanceablesTask>& subtasks)
-    : id(id), title(title), completed(completed), subtasks(subtasks) {}
-
-GlanceablesTask::GlanceablesTask(const GlanceablesTask&) = default;
+GlanceablesTask::GlanceablesTask(
+    const std::string& id,
+    const std::string& title,
+    bool completed,
+    std::vector<std::unique_ptr<GlanceablesTask>> subtasks)
+    : id(id),
+      title(title),
+      completed(completed),
+      subtasks(std::move(subtasks)) {}
 
 GlanceablesTask::~GlanceablesTask() = default;
 

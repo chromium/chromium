@@ -118,6 +118,7 @@
 <translation id="1091767800771861448">건너뛰려면 Esc 키를 누르세요(비공식 빌드만 해당).</translation>
 <translation id="1093457606523402488">표시된 네트워크:</translation>
 <translation id="1095761715416917775">언제든지 동기화 데이터에 액세스할 수 있도록 하세요</translation>
+<translation id="1095879482467973146">웹용 Google 비밀번호 관리자</translation>
 <translation id="109647177154844434">Parallels Desktop을 제거하면 Windows 이미지가 삭제됩니다. 여기에는 애플리케이션, 설정, 데이터가 포함됩니다. 계속하시겠습니까?</translation>
 <translation id="1097016918605049747">페이지를 번역할 수 없습니다</translation>
 <translation id="1097658378307015415">로그인하기 전에 게스트로 로그인하여 <ph name="NETWORK_ID" /> 네트워크를 활성화하세요.</translation>
@@ -1500,6 +1501,7 @@
 <translation id="2252017960592955005">사생활 보호(베타)</translation>
 <translation id="225240747099314620">보호된 콘텐츠에 대한 식별자 허용(컴퓨터를 다시 시작해야 할 수 있음)</translation>
 <translation id="2253318212986772520"><ph name="PRINTER_NAME" />의 PPD를 가져올 수 없습니다.</translation>
+<translation id="2253927598983295051"><ph name="APP_NAME" />님과 공유할 항목을 선택하세요</translation>
 <translation id="2255077166240162850">이 기기가 다른 도메인 또는 모드로 잠겼습니다.</translation>
 <translation id="2255317897038918278">Microsoft Time Stamping</translation>
 <translation id="2256115617011615191">지금 다시 시작</translation>
@@ -1849,6 +1851,7 @@
 <translation id="2532589005999780174">고대비 모드</translation>
 <translation id="2533649878691950253">내가 일반적으로 이 옵션을 허용하지 않으므로 사이트에서 나의 정확한 위치를 확인하지 못하도록 차단했습니다.</translation>
 <translation id="253434972992662860">일시중지(&amp;P)</translation>
+<translation id="253498598929009420">사이트에서 화면의 콘텐츠를 볼 수 있습니다.</translation>
 <translation id="253557089021624350">프로그램 사용자 수</translation>
 <translation id="2535799430745250929">모바일 네트워크가 없습니다.</translation>
 <translation id="2537395079978992874"><ph name="ORIGIN" />에서 다음 파일과 폴더를 보고 수정할 수 있습니다.</translation>
@@ -6847,7 +6850,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7017004637493394352">다시 한번 "Ok Google"이라고 말하세요.</translation>
 <translation id="7017219178341817193">새 페이지 추가</translation>
 <translation id="7017354871202642555">창이 설정된 후에는 모드를 설정할 수 없습니다.</translation>
-<translation id="7018275672629230621">인터넷 사용기록 조회 및 변경</translation>
 <translation id="7019546817926942979">기기 전원을 연결해야 합니다. Linux 업그레이드에는 배터리가 많이 소모될 수 있습니다. 기기를 충전기에 연결한 다음 다시 시도해 주세요.</translation>
 <translation id="7019805045859631636">빠르게</translation>
 <translation id="7022562585984256452">홈페이지가 설정되었습니다.</translation>
@@ -7136,6 +7138,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7308643132139167865">웹사이트 언어</translation>
 <translation id="7310598146671372464">로그인하지 못했습니다. 서버가 지정된 Kerberos 암호화 유형을 지원하지 않습니다. 관리자에게 문의하세요.</translation>
 <translation id="7311089766378749632"><ph name="SITE_NAME" /> 사이트 읽기 및 변경 요청</translation>
+<translation id="7311244614769792472">검색결과 없음</translation>
 <translation id="7312210124139670355">관리자가 eSIM을 재설정하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
 <translation id="7317831949569936035">학교 등록</translation>
 <translation id="7320213904474460808">기본 네트워크 설정</translation>

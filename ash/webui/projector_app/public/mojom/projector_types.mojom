@@ -1,0 +1,39 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+module ash.projector.mojom;
+
+// Passed from the browser to JS WebUI to provide the new
+// screencast precondition state.
+enum NewScreencastPreconditionState {
+    kDisabled = 1,
+    kEnabled = 2,
+    kHidden = 3,
+};
+
+// Passed from the browser to JS WebUI to provide the reason
+// for the new screencast precondition state.
+enum NewScreencastPreconditionReason {
+    kSodaInstallationErrorUnspecifiedError = 0,
+    kOnDeviceRecognitionNotSupported = 1,
+    kUserLocaleNotSupported = 2,
+    kInProjectorSession = 3,
+    kScreenRecordingInProgress = 4,
+    kSodaDownloadInProgress = 5,
+    kOutOfDiskSpace = 6,
+    kNoMic = 7,
+    kDriveFSUnMounted = 8,
+    kDriveFSMountFailed = 9,
+    kOthers = 10,
+    kSodaInstallationErrorNeedsReboot = 11,
+    kAudioCaptureDisabledByPolicy = 12,
+    kEnabledBySoda = 13,
+    kEnabledByServerSideSpeechRecognition = 14,
+};
+
+// Passed from the browser to JS WebUI to pass new screencast
+// precondition and the reasons for the enabled/disabled state.
+struct NewScreencastPrecondition {
+    NewScreencastPreconditionState state;
+    array<NewScreencastPreconditionReason> reasons;
+};

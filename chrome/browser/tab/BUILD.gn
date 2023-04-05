@@ -34,7 +34,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab/TrustedCdn.java",
     "java/src/org/chromium/chrome/browser/tab/WebContentsState.java",
     "java/src/org/chromium/chrome/browser/tab/WebContentsStateBridge.java",
-    "java/src/org/chromium/chrome/browser/tab/state/CouponPersistedTabData.java",
     "java/src/org/chromium/chrome/browser/tab/state/CriticalPersistedTabData.java",
     "java/src/org/chromium/chrome/browser/tab/state/CriticalPersistedTabDataObserver.java",
     "java/src/org/chromium/chrome/browser/tab/state/EmptyByteBufferPersistedTabDataStorage.java",
@@ -139,10 +138,7 @@ generate_jni("jni_headers") {
 
 proto_java_library("critical_persisted_tab_data_proto_java") {
   proto_path = "java/src/org/chromium/chrome/browser/tab/state/proto"
-  sources = [
-    "$proto_path/coupon_persisted_tab_data.proto",
-    "$proto_path/shopping_persisted_tab_data.proto",
-  ]
+  sources = [ "$proto_path/shopping_persisted_tab_data.proto" ]
 }
 
 flatbuffer_java_library("critical_persisted_tab_data_flatbuffer_java") {

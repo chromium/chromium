@@ -265,6 +265,8 @@ void VariationsIdsProvider::OnFieldTrialGroupFinalized(
 }
 
 void VariationsIdsProvider::OnSyntheticTrialsChanged(
+    const std::vector<SyntheticTrialGroup>& trials_updated,
+    const std::vector<SyntheticTrialGroup>& trials_removed,
     const std::vector<SyntheticTrialGroup>& groups) {
   base::AutoLock scoped_lock(lock_);
 

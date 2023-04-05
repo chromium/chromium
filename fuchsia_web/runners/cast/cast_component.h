@@ -79,8 +79,7 @@ class CastComponent final
 
   // WebComponent overrides.
   void StartComponent() override;
-  void DestroyComponent(int64_t termination_exit_code,
-                        fuchsia::sys::TerminationReason reason) override;
+  void DestroyComponent(int64_t exit_code) override;
 
  private:
   void OnRewriteRulesReceived(
@@ -93,11 +92,6 @@ class CastComponent final
       OnNavigationStateChangedCallback callback) override;
 
   // fuchsia::ui::app::ViewProvider implementation.
-  void CreateView(
-      zx::eventpair view_token,
-      fidl::InterfaceRequest<fuchsia::sys::ServiceProvider> incoming_services,
-      fidl::InterfaceHandle<fuchsia::sys::ServiceProvider> outgoing_services)
-      override;
   void CreateViewWithViewRef(zx::eventpair view_token,
                              fuchsia::ui::views::ViewRefControl control_ref,
                              fuchsia::ui::views::ViewRef view_ref) override;

@@ -113,7 +113,7 @@ void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
       }
       break;
     case ui::ET_GESTURE_SCROLL_UPDATE:
-      if (is_drag_active_) {
+      if (is_drag_active_ && multitask_menu_) {
         multitask_menu_->UpdateDrag(window_location.y(),
                                     /*down=*/details.scroll_y() > 0);
         event->SetHandled();
@@ -122,11 +122,11 @@ void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
     case ui::ET_GESTURE_SCROLL_END:
       // If an unsupported gesture is sent, make sure we reset `is_drag_active_`
       // to stop consuming events.
-      if (is_drag_active_) {
+      if (is_drag_active_ && multitask_menu_) {
         multitask_menu_->EndDrag();
         event->SetHandled();
-        is_drag_active_ = false;
       }
+      is_drag_active_ = false;
       break;
     case ui::ET_SCROLL_FLING_START:
       if (!is_drag_active_) {

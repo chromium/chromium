@@ -92,4 +92,12 @@ void FencedFrameURLMappingTestPeer::FillMap(const GURL& url) {
   DCHECK(fenced_frame_url_mapping_->IsFull());
 }
 
+bool WaitForFencedFrameSizeFreeze(RenderFrameHost* rfh) {
+  // Currently we observed that the size freezing requires two
+  // `requestAnimationFrame` calls to make sure it is completed. If only calling
+  // `requestAnimationFrame` once, the test can still be flaky.
+  return EvalJsAfterLifecycleUpdate(rfh, "", "").error.empty() &&
+         EvalJsAfterLifecycleUpdate(rfh, "", "").error.empty();
+}
+
 }  // namespace content

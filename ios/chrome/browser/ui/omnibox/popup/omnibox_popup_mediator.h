@@ -11,11 +11,13 @@
 
 #import "components/history/core/browser/top_sites.h"
 #import "components/omnibox/browser/autocomplete_result.h"
+#import "ios/chrome/browser/ui/omnibox/popup/autocomplete_controller_observer_bridge.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_result_consumer.h"
 #import "ios/chrome/browser/ui/omnibox/popup/carousel_item_menu_provider.h"
 #import "ios/chrome/browser/ui/omnibox/popup/favicon_retriever.h"
 #import "ios/chrome/browser/ui/omnibox/popup/image_retriever.h"
 #import "ios/chrome/browser/ui/omnibox/popup/popup_debug_info_consumer.h"
+#import "ios/chrome/browser/ui/omnibox/popup/remote_suggestions_service_observer_bridge.h"
 #import "ui/base/window_open_disposition.h"
 
 @protocol ApplicationCommands;
@@ -92,7 +94,10 @@ class OmniboxPopupMediatorDelegate {
 @property(nonatomic, weak) id<BrowserCommands> dispatcher;
 @property(nonatomic, weak) id<AutocompleteResultConsumer> consumer;
 /// Consumer for debug info.
-@property(nonatomic, weak) id<PopupDebugInfoConsumer> debugInfoConsumer;
+@property(nonatomic, weak) id<PopupDebugInfoConsumer,
+                              RemoteSuggestionsServiceObserver,
+                              AutocompleteControllerObserver>
+    debugInfoConsumer;
 @property(nonatomic, weak) id<ApplicationCommands> applicationCommandsHandler;
 /// Scheduler to notify about events happening in this popup.
 @property(nonatomic, weak) DefaultBrowserPromoNonModalScheduler* promoScheduler;
@@ -122,13 +127,14 @@ class OmniboxPopupMediatorDelegate {
 @property(nonatomic, weak) id<CarouselItemConsumer> carouselItemConsumer;
 
 /// Designated initializer. Takes ownership of `imageFetcher`.
-- (instancetype)initWithFetcher:
-                    (std::unique_ptr<image_fetcher::ImageDataFetcher>)
-                        imageFetcher
-                  faviconLoader:(FaviconLoader*)faviconLoader
-         autocompleteController:(AutocompleteController*)autocompleteController
-                       delegate:(OmniboxPopupMediatorDelegate*)delegate
-                        tracker:(feature_engagement::Tracker*)tracker;
+- (instancetype)
+             initWithFetcher:
+                 (std::unique_ptr<image_fetcher::ImageDataFetcher>)imageFetcher
+               faviconLoader:(FaviconLoader*)faviconLoader
+      autocompleteController:(AutocompleteController*)autocompleteController
+    remoteSuggestionsService:(RemoteSuggestionsService*)remoteSuggestionsService
+                    delegate:(OmniboxPopupMediatorDelegate*)delegate
+                     tracker:(feature_engagement::Tracker*)tracker;
 
 - (void)updateMatches:(const AutocompleteResult&)result;
 

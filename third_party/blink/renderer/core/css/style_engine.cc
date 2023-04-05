@@ -754,7 +754,7 @@ void StyleEngine::ClearResolvers() {
 
   if (resolver_) {
     TRACE_EVENT1("blink", "StyleEngine::clearResolver", "frame",
-                 ToTraceValue(GetDocument().GetFrame()));
+                 GetFrameIdForTracing(GetDocument().GetFrame()));
     resolver_->Dispose();
     resolver_.Clear();
   }

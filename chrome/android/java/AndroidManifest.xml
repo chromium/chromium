@@ -459,6 +459,15 @@ by a child template that "extends" this file.
             </intent-filter>
         </receiver>
 
+        <!-- Phishing Protection related -->
+        <receiver android:name="org.chromium.chrome.browser.safe_browsing.PasswordProtectionBroadcastReceiver" 
+        android:exported="true"
+        android:permission="com.google.android.gms.permission.INTERNAL_BROADCAST">
+            <intent-filter>
+                <action android:name="com.android.chrome.safe_browsing.LOGIN" />
+            </intent-filter>
+        </receiver> 
+
         <!-- Upgrade related -->
         <receiver android:name="org.chromium.chrome.browser.upgrade.PackageReplacedBroadcastReceiver"
             android:exported="false">

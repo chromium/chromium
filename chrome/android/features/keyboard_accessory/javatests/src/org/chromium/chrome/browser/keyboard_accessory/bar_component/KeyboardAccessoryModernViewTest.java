@@ -296,7 +296,8 @@ public class KeyboardAccessoryModernViewTest {
             mModel.get(BAR_ITEMS).set(createAutofillChipAndTab("John", null));
         });
         KeyboardAccessoryModernView view = mKeyboardAccessoryView.take();
-        CriteriaHelper.pollUiThread(view.mBarItemsView::isShown);
+        CriteriaHelper.pollUiThread(
+                () -> view.mBarItemsView.isShown() && view.mBarItemsView.getChildAt(1) != null);
         CriteriaHelper.pollUiThread(viewsAreRightAligned(view, view.mBarItemsView.getChildAt(1)));
 
         rotateActivityToLandscape();
@@ -476,6 +477,7 @@ public class KeyboardAccessoryModernViewTest {
 
     @Test
     @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES})
     public void testCustomIconUrlSet_imageReturnedByPersonalDataManager_customIconSetOnChipView()
             throws InterruptedException {
         GURL customIconUrl = mock(GURL.class);

@@ -35,6 +35,7 @@ union RecordHeader {
 constexpr uint32_t kTypeIdSystemProfile = 0x330A7150;  // SHA1(SystemProfile)
 constexpr size_t kSystemProfileAllocSize = 4 << 10;    // 4 KiB
 constexpr size_t kMaxRecordSize = (1 << 24) - sizeof(RecordHeader);
+constexpr char kFieldTrialDeletionSentinel[] = "";
 
 static_assert(sizeof(RecordHeader) == sizeof(base::subtle::Atomic32),
               "bad RecordHeader size");
@@ -330,7 +331,6 @@ void PersistentSystemProfile::AddFieldTrial(base::StringPiece trial,
                                             base::StringPiece group) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!trial.empty());
-  DCHECK(!group.empty());
 
   base::Pickle pickler;
   pickler.WriteString(trial);
@@ -340,6 +340,17 @@ void PersistentSystemProfile::AddFieldTrial(base::StringPiece trial,
              base::StringPiece(pickler.data_as_char(), pickler.size()));
 }
 
+void PersistentSystemProfile::RemoveFieldTrial(base::StringPiece trial) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(!trial.empty());
+
+  base::Pickle pickler;
+  pickler.WriteString(trial);
+  pickler.WriteString(kFieldTrialDeletionSentinel);
+
+  WriteToAll(kFieldTrialInfo,
+             base::StringPiece(pickler.data_as_char(), pickler.size()));
+}
 // static
 bool PersistentSystemProfile::HasSystemProfile(
     const base::PersistentMemoryAllocator& memory_allocator) {
@@ -378,7 +389,8 @@ void PersistentSystemProfile::MergeUpdateRecords(
 
   RecordType type;
   std::string record;
-  std::set<uint32_t> known_field_trial_ids;
+  std::map<uint32_t, uint32_t> field_trials;
+  bool updated = false;
 
   // This is done separate from the code that gets the profile because it
   // compartmentalizes the code and makes it possible to reuse this section
@@ -397,10 +409,10 @@ void PersistentSystemProfile::MergeUpdateRecords(
 
       case kFieldTrialInfo: {
         // Get the set of known trial IDs so duplicates don't get added.
-        if (known_field_trial_ids.empty()) {
+        if (field_trials.empty()) {
           for (int i = 0; i < system_profile->field_trial_size(); ++i) {
-            known_field_trial_ids.insert(
-                system_profile->field_trial(i).name_id());
+            field_trials[system_profile->field_trial(i).name_id()] =
+                system_profile->field_trial(i).group_id();
           }
         }
 
@@ -411,16 +423,30 @@ void PersistentSystemProfile::MergeUpdateRecords(
         if (iter.ReadStringPiece(&trial) && iter.ReadStringPiece(&group)) {
           variations::ActiveGroupId field_ids =
               variations::MakeActiveGroupId(trial, group);
-          if (!base::Contains(known_field_trial_ids, field_ids.name)) {
-            SystemProfileProto::FieldTrial* field_trial =
-                system_profile->add_field_trial();
-            field_trial->set_name_id(field_ids.name);
-            field_trial->set_group_id(field_ids.group);
-            known_field_trial_ids.insert(field_ids.name);
+          if (group == kFieldTrialDeletionSentinel) {
+            field_trials.erase(field_ids.name);
+          } else {
+            field_trials[field_ids.name] = field_ids.group;
           }
         }
+        updated = true;
       } break;
     }
+  }
+
+  // Skip rewriting the field trials if there was no update.
+  if (!updated) {
+    return;
+  }
+
+  // Rewrite the full list of field trials to avoid duplicates.
+  system_profile->clear_field_trial();
+
+  for (const auto& trial : field_trials) {
+    SystemProfileProto::FieldTrial* field_trial =
+        system_profile->add_field_trial();
+    field_trial->set_name_id(trial.first);
+    field_trial->set_group_id(trial.second);
   }
 }
 

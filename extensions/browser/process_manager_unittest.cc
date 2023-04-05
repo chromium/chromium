@@ -67,6 +67,12 @@ class ProcessManagerTest : public ExtensionsTest {
         &process_manager_delegate_);
   }
 
+  void TearDown() override {
+    extensions_browser_client()->set_process_manager_delegate(nullptr);
+    extension_registry_.reset();
+    ExtensionsTest::TearDown();
+  }
+
   // Use original_context() to make it clear it is a non-incognito context.
   BrowserContext* original_context() { return browser_context(); }
   ExtensionRegistry* extension_registry() { return extension_registry_.get(); }

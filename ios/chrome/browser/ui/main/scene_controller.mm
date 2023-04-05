@@ -194,20 +194,6 @@ bool IsSigninForcedByPolicy() {
   return policy_mode == BrowserSigninMode::kForced;
 }
 
-// Internally the NTP URL is about://newtab/.  However, with
-// `url::kAboutScheme`, there's no host value, only a path.  Use this value for
-// matching the NTP.
-const char kAboutNewTabPath[] = "//newtab/";
-
-bool IsNTPURL(const GURL& url) {
-  // `url` can be chrome://newtab/ or about://newtab/ depending on where `url`
-  // comes from (the VisibleURL chrome:// from a navigation item or the actual
-  // webView url about://).  If the url is about://newtab/, there is no origin
-  // to match, so instead check the scheme and the path.
-  return url.DeprecatedGetOriginAsURL() == kChromeUINewTabURL ||
-         (url.SchemeIs(url::kAboutScheme) && url.path() == kAboutNewTabPath);
-}
-
 void InjectNTP(Browser* browser) {
   // Don't inject an NTP for an empty web state list.
   if (!browser->GetWebStateList()->count())
@@ -215,8 +201,9 @@ void InjectNTP(Browser* browser) {
 
   // Don't inject an NTP on an NTP.
   web::WebState* webState = browser->GetWebStateList()->GetActiveWebState();
-  if (IsNTPURL(webState->GetVisibleURL()))
+  if (IsUrlNtp(webState->GetVisibleURL())) {
     return;
+  }
 
   // Queue up start surface with active tab.
   StartSurfaceRecentTabBrowserAgent* browser_agent =
@@ -2377,7 +2364,7 @@ void InjectNTP(Browser* browser) {
     // all tabs trying to load into the same NTP, causing a race condition that
     // results in wrong behavior.
     if (navigation_manager->IsRestoreSessionInProgress() &&
-        IsURLNtp(currentWebState->GetVisibleURL())) {
+        IsUrlNtp(currentWebState->GetVisibleURL())) {
       navigation_manager->AddRestoreCompletionCallback(base::BindOnce(^{
         [self
             dismissModalDialogsWithCompletion:^{
@@ -2767,8 +2754,8 @@ void InjectNTP(Browser* browser) {
   // Note that it's safe to use -GetVisibleURL here, as it doesn't matter if the
   // NTP hasn't finished loading.
   if (!alwaysInsertNewTab && currentWebState &&
-      IsURLNtp(currentWebState->GetVisibleURL()) &&
-      IsURLNtp(urlLoadParams.web_params.url)) {
+      IsUrlNtp(currentWebState->GetVisibleURL()) &&
+      IsUrlNtp(urlLoadParams.web_params.url)) {
     if (tabOpenedCompletion) {
       tabOpenedCompletion();
     }
@@ -2778,7 +2765,7 @@ void InjectNTP(Browser* browser) {
   // If the current tab isn't an NTP, open a new tab.  Be sure to use
   // -GetLastCommittedURL incase the NTP is still loading.
   if (alwaysInsertNewTab ||
-      !(currentWebState && IsURLNtp(currentWebState->GetVisibleURL()))) {
+      !(currentWebState && IsUrlNtp(currentWebState->GetVisibleURL()))) {
     [targetBVC appendTabAddedCompletion:tabOpenedCompletion];
     UrlLoadParams newTabParams = urlLoadParams;
     newTabParams.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
