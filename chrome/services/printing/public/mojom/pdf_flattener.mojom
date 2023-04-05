@@ -11,8 +11,8 @@ import "mojo/public/mojom/base/shared_memory.mojom";
 // can no longer be modified and makes most JavaScript objects useless.
 interface PdfFlattener {
   // Flattens a PDF.
-  // |src_pdf_region| contains the PDF needing to be flattened.
-  // |flattened_pdf_region| contains the flattened PDF.
+  // `src_pdf_region` contains the PDF needing to be flattened.
+  // `flattened_pdf_region` contains the flattened PDF.
   FlattenPdf(mojo_base.mojom.ReadOnlySharedMemoryRegion src_pdf_region)
       => (mojo_base.mojom.ReadOnlySharedMemoryRegion? flattened_pdf_region);
 };

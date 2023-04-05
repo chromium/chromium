@@ -30,14 +30,14 @@ interface PdfNupConverter {
   };
 
   // Convert a list of PDF pages to a N-up PDF.
-  // |pages_per_sheet| is the number of pages to put on a single sheet.
-  // |page_size| is the output page size, measured in PDF "user space" units.
-  // |printable_area| is the printable area of the output page, measured in
+  // `pages_per_sheet` is the number of pages to put on a single sheet.
+  // `page_size` is the output page size, measured in PDF "user space" units.
+  // `printable_area` is the printable area of the output page, measured in
   // PDF "user space" units.
-  // |pdf_page_regions| is a list of pdf pages to be converted to a N-up page.
-  // The number of items in |pdf_page_regions| can be different from N.  It
+  // `pdf_page_regions` is a list of pdf pages to be converted to a N-up page.
+  // The number of items in `pdf_page_regions` can be different from N.  It
   // will return a N-up PDF document of
-  // Math.ceil(size of |pdf_page_regions| / N) pages in it.
+  // Math.ceil(size of `pdf_page_regions` / N) pages in it.
   NupPageConvert(
       uint32 pages_per_sheet,
       gfx.mojom.Size page_size,
@@ -46,9 +46,9 @@ interface PdfNupConverter {
    => (Status status, mojo_base.mojom.ReadOnlySharedMemoryRegion? pdf_region);
 
   // Convert a PDF document to a N-up PDF document.
-  // |pages_per_sheet| is the number of pages to put on a single sheet.
-  // |page_size| is the output page size, measured in PDF "user space" units.
-  // |printable_area| is the printable area of the output page, measured in
+  // `pages_per_sheet` is the number of pages to put on a single sheet.
+  // `page_size` is the output page size, measured in PDF "user space" units.
+  // `printable_area` is the printable area of the output page, measured in
   // PDF "user space" units.
   NupDocumentConvert(uint32 pages_per_sheet,
                      gfx.mojom.Size page_size,
