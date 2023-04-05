@@ -80,11 +80,11 @@ BASE_FEATURE(kPageInfoHideSiteSettings,
 
 BASE_FEATURE(kPageInfoCookiesSubpage,
              "PageInfoCookiesSubpage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPageSpecificSiteDataDialog,
              "PageSpecificSiteDataDialog",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #endif
 

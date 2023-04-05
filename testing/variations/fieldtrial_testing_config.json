@@ -9113,25 +9113,6 @@
             ]
         }
     ],
-    "PageSpecificSiteDataDialog": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20221012",
-                    "enable_features": [
-                        "PageInfoCookiesSubpage",
-                        "PageSpecificSiteDataDialog"
-                    ]
-                }
-            ]
-        }
-    ],
     "PaintHoldingCrossOrigin": [
         {
             "platforms": [

@@ -946,31 +946,17 @@ TEST_F(PageInfoBubbleViewTest, UpdatingSiteDataRetainsLayout) {
 
   EXPECT_EQ(kExpectedChildren, api_->current_view()->children().size());
 
-  // Create a fake list of cookies.
-  PageInfoUI::CookieInfo first_party_cookies;
-  first_party_cookies.allowed = 10;
-  first_party_cookies.blocked = 0;
-  first_party_cookies.is_first_party = true;
+  // Create a fake cookies info.
+  PageInfoUI::CookiesNewInfo cookies;
+  cookies.allowed_sites_count = 10;
+  cookies.blocked_sites_count = 32;
+  cookies.status = CookieControlsStatus::kDisabled;
+  cookies.enforcement = CookieControlsEnforcement::kNoEnforcement;
 
-  PageInfoUI::CookieInfo third_party_cookies;
-  third_party_cookies.allowed = 6;
-  third_party_cookies.blocked = 32;
-  third_party_cookies.is_first_party = false;
-
-  const CookieInfoList cookies = {first_party_cookies, third_party_cookies};
-
-  // Update the number of cookies.
+  // Update the cookies info.
   api_->SetCookieInfo(cookies);
 
   EXPECT_EQ(kExpectedChildren, api_->current_view()->children().size());
-
-  std::u16string expected;
-  // Check the number of cookies shown is correct.
-  expected = l10n_util::GetPluralStringFUTF16(
-      IDS_PAGE_INFO_NUM_COOKIES,
-      first_party_cookies.allowed + third_party_cookies.allowed);
-  size_t index = api_->GetCookiesLinkText().find(expected);
-  EXPECT_NE(std::string::npos, index);
 }
 
 // Tests opening the bubble between navigation start and finish. The bubble
