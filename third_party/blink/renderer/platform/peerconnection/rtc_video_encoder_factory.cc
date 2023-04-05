@@ -39,7 +39,7 @@ BASE_FEATURE(kMediaFoundationH264CbpEncoding,
 // Enables VP9 encode acceleration for Windows.
 BASE_FEATURE(kMediaFoundationVP9Encoding,
              "MediaFoundationVP9Encoding",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 absl::optional<media::VideoCodecProfile> WebRTCFormatToCodecProfile(
