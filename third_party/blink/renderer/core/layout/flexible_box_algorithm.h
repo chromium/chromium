@@ -418,7 +418,6 @@ class CORE_EXPORT FlexLayoutAlgorithm {
 
   void LayoutColumnReverse(LayoutUnit main_axis_content_size,
                            LayoutUnit border_scrollbar_padding_before);
-  bool IsNGFlexBox() const;
 
   FlexItem* FlexItemAtIndex(wtf_size_t line_index, wtf_size_t item_index) const;
 

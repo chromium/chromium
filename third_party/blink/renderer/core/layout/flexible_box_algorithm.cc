@@ -523,24 +523,14 @@ void FlexLine::ComputeLineItemsPosition(LayoutUnit main_axis_start_offset,
           is_reversed);
   LayoutUnit main_axis_offset = initial_position + main_axis_start_offset;
 
-  bool should_flip_main_axis;
-  if (algorithm_->IsNGFlexBox()) {
-    should_flip_main_axis = style.ResolvedIsRowReverseFlexDirection();
-
-    if (is_webkit_box && available_free_space < 0 &&
-        (style.ResolvedIsRowReverseFlexDirection() ==
-         style.IsLeftToRightDirection()))
-      main_axis_offset += available_free_space;
-  } else {
-    should_flip_main_axis = !style.ResolvedIsColumnFlexDirection() &&
-                            !algorithm_->IsLeftToRightFlow();
-
-    // When a -webkit-box has negative available-space it always places that
-    // overflow to the line-right. (Even if we have "direction: rtl" or
-    // "-webkit-box-direction: reverse"). In the future it will hopefully be
-    // possible to remove this quirk.
-    if (should_flip_main_axis && is_webkit_box && available_free_space < 0)
-      main_axis_offset += available_free_space;
+  // When a -webkit-box has negative available-space it always places that
+  // overflow to the line-right. (Even if we have "direction: rtl" or
+  // "-webkit-box-direction: reverse"). In the future it will hopefully be
+  // possible to remove this quirk.
+  if (is_webkit_box && available_free_space < 0 &&
+      (style.ResolvedIsRowReverseFlexDirection() ==
+       style.IsLeftToRightDirection())) {
+    main_axis_offset += available_free_space;
   }
 
   LayoutUnit max_major_descent;
@@ -586,7 +576,7 @@ void FlexLine::ComputeLineItemsPosition(LayoutUnit main_axis_start_offset,
     // on the left. This will be fixed later in
     // LayoutFlexibleBox::FlipForRightToLeftColumn.
     *flex_item.offset_ = FlexOffset(
-        should_flip_main_axis
+        style.ResolvedIsRowReverseFlexDirection()
             ? container_logical_width_ - main_axis_offset - child_main_extent
             : main_axis_offset,
         cross_axis_offset + flex_item.FlowAwareMarginBefore());
@@ -1202,10 +1192,6 @@ void FlexLayoutAlgorithm::LayoutColumnReverse(
     LayoutUnit border_scrollbar_padding_before) {
   DCHECK(IsColumnFlow());
   DCHECK(Style()->ResolvedIsColumnReverseFlexDirection());
-  DCHECK(all_items_.empty() || IsNGFlexBox())
-      << "This method relies on NG having passed in 0 for initial main axis "
-         "offset for column-reverse flex boxes. That needs to be fixed if this "
-         "method is to be used in legacy.";
   for (FlexLine& line_context : FlexLines()) {
     for (wtf_size_t child_number = 0;
          child_number < line_context.line_items_.size(); ++child_number) {
@@ -1224,14 +1210,6 @@ void FlexLayoutAlgorithm::LayoutColumnReverse(
           margins.block_end + margins.block_start;
     }
   }
-}
-
-bool FlexLayoutAlgorithm::IsNGFlexBox() const {
-  DCHECK(!all_items_.empty())
-      << "You can't call IsNGFlexBox before adding items.";
-  // The FlexItems created by legacy will have an empty ng_input_node. An NG
-  // FlexItem's ng_input_node will have a LayoutBox.
-  return all_items_.at(0).ng_input_node_.GetLayoutBox();
 }
 
 FlexItem* FlexLayoutAlgorithm::FlexItemAtIndex(wtf_size_t line_index,
