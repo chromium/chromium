@@ -28,6 +28,7 @@
 #include "components/metrics/file_metrics_provider.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_service_client.h"
+#include "components/metrics/persistent_synthetic_trial_observer.h"
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/ukm/observers/history_delete_observer.h"
@@ -225,6 +226,12 @@ class ChromeMetricsServiceClient
 
   // The synthetic trial registry shared by metrics_service_ and ukm_service_.
   std::unique_ptr<variations::SyntheticTrialRegistry> synthetic_trial_registry_;
+
+  // Metrics service observer for synthetic trials.
+  metrics::PersistentSyntheticTrialObserver synthetic_trial_observer_;
+  base::ScopedObservation<variations::SyntheticTrialRegistry,
+                          variations::SyntheticTrialObserver>
+      synthetic_trial_observation_{&synthetic_trial_observer_};
 
   // |cros_system_profile_provider_| must be declared before |ukm_service_| due
   // to some metrics providers have a dependency on |system_profile_provider_|

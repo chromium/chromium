@@ -38,7 +38,8 @@ void SyntheticTrialRegistry::AddSyntheticTrialObserver(
     SyntheticTrialObserver* observer) {
   synthetic_trial_observer_list_.AddObserver(observer);
   if (!synthetic_trial_groups_.empty())
-    observer->OnSyntheticTrialsChanged(synthetic_trial_groups_);
+    observer->OnSyntheticTrialsChanged(synthetic_trial_groups_, {},
+                                       synthetic_trial_groups_);
 }
 
 void SyntheticTrialRegistry::RemoveSyntheticTrialObserver(
@@ -59,16 +60,24 @@ void SyntheticTrialRegistry::RegisterExternalExperiments(
     return;
   }
 
+  std::vector<SyntheticTrialGroup> trials_updated;
+  std::vector<SyntheticTrialGroup> trials_removed;
+
   // When overriding previous external experiments, remove them now.
   if (mode == kOverrideExistingIds) {
-    auto is_external = [](const SyntheticTrialGroup& group) {
-      return group.is_external();
-    };
-    base::EraseIf(synthetic_trial_groups_, is_external);
+    auto it = synthetic_trial_groups_.begin();
+    while (it != synthetic_trial_groups_.end()) {
+      if (it->is_external()) {
+        trials_removed.push_back(*it);
+        // Keep iterator valid after erase.
+        it = synthetic_trial_groups_.erase(it);
+      } else {
+        ++it;
+      }
+    }
   }
 
   const base::TimeTicks start_time = base::TimeTicks::Now();
-  int trials_added = 0;
   for (int experiment_id : experiment_ids) {
     const std::string experiment_id_str = base::NumberToString(experiment_id);
     const base::StringPiece study_name =
@@ -102,29 +111,29 @@ void SyntheticTrialRegistry::RegisterExternalExperiments(
     entry.SetStartTime(start_time);
     entry.SetIsExternal(true);
     synthetic_trial_groups_.push_back(entry);
-    trials_added++;
+    trials_updated.push_back(entry);
   }
 
   base::UmaHistogramCounts100("UMA.ExternalExperiment.GroupCount",
-                              trials_added);
+                              trials_updated.size());
 
-  if (trials_added > 0)
-    NotifySyntheticTrialObservers();
+  if (!trials_updated.empty() || !trials_removed.empty()) {
+    NotifySyntheticTrialObservers(trials_updated, trials_removed);
+  }
 }
 
 void SyntheticTrialRegistry::RegisterSyntheticFieldTrial(
     const SyntheticTrialGroup& trial) {
   for (auto& entry : synthetic_trial_groups_) {
     if (entry.id().name == trial.id().name) {
-      // Don't necessarily need to notify observers when setting
-      // |annotation_mode| as it is only used when producing metrics reports
-      // and does not affect variations service.
       entry.SetAnnotationMode(trial.annotation_mode());
       if (entry.id().group != trial.id().group) {
         entry.SetGroupName(trial.group_name());
         entry.SetStartTime(base::TimeTicks::Now());
-        NotifySyntheticTrialObservers();
       }
+      // Always notify the observers since some observers like persistent system
+      // profile need to be updated when annotation mode is changed.
+      NotifySyntheticTrialObservers({entry}, {});
       return;
     }
   }
@@ -132,7 +141,7 @@ void SyntheticTrialRegistry::RegisterSyntheticFieldTrial(
   SyntheticTrialGroup trial_group = trial;
   trial_group.SetStartTime(base::TimeTicks::Now());
   synthetic_trial_groups_.push_back(trial_group);
-  NotifySyntheticTrialObservers();
+  NotifySyntheticTrialObservers({trial_group}, {});
 }
 
 base::StringPiece SyntheticTrialRegistry::GetStudyNameForExpId(
@@ -157,9 +166,12 @@ base::StringPiece SyntheticTrialRegistry::GetStudyNameForExpId(
   return base::StringPiece(it->second.data(), truncate_pos);
 }
 
-void SyntheticTrialRegistry::NotifySyntheticTrialObservers() {
+void SyntheticTrialRegistry::NotifySyntheticTrialObservers(
+    const std::vector<SyntheticTrialGroup>& trials_updated,
+    const std::vector<SyntheticTrialGroup>& trials_removed) {
   for (SyntheticTrialObserver& observer : synthetic_trial_observer_list_) {
-    observer.OnSyntheticTrialsChanged(synthetic_trial_groups_);
+    observer.OnSyntheticTrialsChanged(trials_updated, trials_removed,
+                                      synthetic_trial_groups_);
   }
 }
 

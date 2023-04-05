@@ -12,6 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation_traits.h"
 #include "components/variations/synthetic_trials.h"
 
 namespace metrics {
@@ -88,6 +89,7 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
   FRIEND_TEST_ALL_PREFIXES(SyntheticTrialRegistryTest,
                            GetSyntheticFieldTrialActiveGroups);
   FRIEND_TEST_ALL_PREFIXES(VariationsCrashKeysTest, BasicFunctionality);
+  FRIEND_TEST_ALL_PREFIXES(SyntheticTrialRegistryTest, NotifyObserver);
 
   // Registers a field trial name and group to be used to annotate UMA and UKM
   // reports with a particular Chrome configuration state.
@@ -127,7 +129,9 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
       base::StringPiece suffix = "") const;
 
   // Notifies observers on a synthetic trial list change.
-  void NotifySyntheticTrialObservers();
+  void NotifySyntheticTrialObservers(
+      const std::vector<SyntheticTrialGroup>& trials_updated,
+      const std::vector<SyntheticTrialGroup>& trials_removed);
 
   // Whether the allowlist is enabled. Some configurations, like WebLayer
   // do not use the allowlist.
@@ -142,5 +146,24 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
 };
 
 }  // namespace variations
+
+namespace base {
+
+// TODO(crbug.com/1430486): the methods in SyntheticTrialRegistry to remove
+// these traits.
+template <>
+struct ScopedObservationTraits<variations::SyntheticTrialRegistry,
+                               variations::SyntheticTrialObserver> {
+  static void AddObserver(variations::SyntheticTrialRegistry* source,
+                          variations::SyntheticTrialObserver* observer) {
+    source->AddSyntheticTrialObserver(observer);
+  }
+  static void RemoveObserver(variations::SyntheticTrialRegistry* source,
+                             variations::SyntheticTrialObserver* observer) {
+    source->RemoveSyntheticTrialObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // COMPONENTS_VARIATIONS_SYNTHETIC_TRIAL_REGISTRY_H_

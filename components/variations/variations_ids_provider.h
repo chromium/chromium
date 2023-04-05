@@ -204,6 +204,8 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
 
   // metrics::SyntheticTrialObserver:
   void OnSyntheticTrialsChanged(
+      const std::vector<SyntheticTrialGroup>& trials_updated,
+      const std::vector<SyntheticTrialGroup>& trials_removed,
       const std::vector<SyntheticTrialGroup>& groups) override;
 
   // Prepares the variation IDs cache with initial values if not already done.

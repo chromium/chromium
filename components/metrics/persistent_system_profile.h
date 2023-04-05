@@ -49,6 +49,9 @@ class PersistentSystemProfile {
   // Records the existence of a field trial.
   void AddFieldTrial(base::StringPiece trial, base::StringPiece group);
 
+  // Removes the field trial from the system profile.
+  void RemoveFieldTrial(base::StringPiece trial);
+
   // Tests if a persistent memory allocator contains an system profile.
   static bool HasSystemProfile(
       const base::PersistentMemoryAllocator& memory_allocator);

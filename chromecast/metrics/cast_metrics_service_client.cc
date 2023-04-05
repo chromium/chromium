@@ -28,6 +28,7 @@
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/net/net_metrics_log_uploader.h"
+#include "components/metrics/persistent_synthetic_trial_observer.h"
 #include "components/metrics/url_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -334,6 +335,7 @@ void CastMetricsServiceClient::InitializeMetricsService() {
   synthetic_trial_registry_ =
       std::make_unique<variations::SyntheticTrialRegistry>(
           IsExternalExperimentAllowlistEnabled());
+  synthetic_trial_observation_.Observe(synthetic_trial_registry_.get());
 
   metrics_service_.reset(new ::metrics::MetricsService(
       metrics_state_manager_.get(), this, pref_service_));

@@ -15,9 +15,11 @@ SyntheticTrialsActiveGroupIdProvider::GetInstance() {
   return base::Singleton<SyntheticTrialsActiveGroupIdProvider>::get();
 }
 
-SyntheticTrialsActiveGroupIdProvider::SyntheticTrialsActiveGroupIdProvider() {}
+SyntheticTrialsActiveGroupIdProvider::SyntheticTrialsActiveGroupIdProvider() =
+    default;
 
-SyntheticTrialsActiveGroupIdProvider::~SyntheticTrialsActiveGroupIdProvider() {}
+SyntheticTrialsActiveGroupIdProvider::~SyntheticTrialsActiveGroupIdProvider() =
+    default;
 
 void SyntheticTrialsActiveGroupIdProvider::GetActiveGroupIds(
     std::vector<ActiveGroupId>* output) {
@@ -32,6 +34,8 @@ void SyntheticTrialsActiveGroupIdProvider::ResetForTesting() {
 }
 
 void SyntheticTrialsActiveGroupIdProvider::OnSyntheticTrialsChanged(
+    const std::vector<SyntheticTrialGroup>& trials_updated,
+    const std::vector<SyntheticTrialGroup>& trials_removed,
     const std::vector<SyntheticTrialGroup>& groups) {
   {
     base::AutoLock scoped_lock(lock_);

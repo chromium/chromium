@@ -11,12 +11,14 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chromecast/public/cast_sys_info.h"
 #include "components/metrics/enabled_state_provider.h"
 #include "components/metrics/metrics_log_store.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_service_client.h"
+#include "components/metrics/persistent_synthetic_trial_observer.h"
 #include "components/variations/synthetic_trial_registry.h"
 
 class PrefRegistrySimple;
@@ -132,6 +134,10 @@ class CastMetricsServiceClient : public ::metrics::MetricsServiceClient,
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   std::unique_ptr<::metrics::MetricsStateManager> metrics_state_manager_;
   std::unique_ptr<variations::SyntheticTrialRegistry> synthetic_trial_registry_;
+  ::metrics::PersistentSyntheticTrialObserver synthetic_trial_observer_;
+  base::ScopedObservation<variations::SyntheticTrialRegistry,
+                          variations::SyntheticTrialObserver>
+      synthetic_trial_observation_{&synthetic_trial_observer_};
   std::unique_ptr<::metrics::MetricsService> metrics_service_;
   std::unique_ptr<::metrics::EnabledStateProvider> enabled_state_provider_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
