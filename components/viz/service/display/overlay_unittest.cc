@@ -2604,7 +2604,7 @@ TEST_F(UnderlayTest, AllowFilteredQuadOnTopForProtectedVideo) {
       resource_provider_.get(), child_resource_provider_.get(),
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
       pass->output_rect, gfx::ProtectedVideoType::kHardwareProtected,
-      MultiPlaneFormat::kYUV_420_BIPLANAR)
+      MultiPlaneFormat::kNV12)
       ->needs_blending = false;
   pass->shared_quad_state_list.front()->opacity = 1.0;
 
@@ -4576,7 +4576,7 @@ TEST_F(SingleOverlayOnTopTest, IsOverlayRequiredHwProtectedVideo) {
       resource_provider_.get(), child_resource_provider_.get(),
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
       kSmallCandidateRect, gfx::ProtectedVideoType::kHardwareProtected,
-      MultiPlaneFormat::kYUV_420_BIPLANAR);
+      MultiPlaneFormat::kNV12);
   SurfaceDamageRectList surface_damage_rect_list;
   OverlayCandidate candidate;
   auto color_mat = GetIdentityColorMatrix();
@@ -4599,7 +4599,7 @@ TEST_F(SingleOverlayOnTopTest, RequiredOverlayClippingAndSubsampling) {
       resource_provider_.get(), child_resource_provider_.get(),
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
       kVideoCandidateRect, gfx::ProtectedVideoType::kHardwareProtected,
-      MultiPlaneFormat::kYUV_420_BIPLANAR);
+      MultiPlaneFormat::kNV12);
   pass->shared_quad_state_list.back()->clip_rect = kOverlayClipRect;
   SurfaceDamageRectList surface_damage_rect_list;
   OverlayCandidate candidate;
@@ -4633,7 +4633,7 @@ TEST_F(SingleOverlayOnTopTest,
       resource_provider_.get(), child_resource_provider_.get(),
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
       kVideoCandidateRect, gfx::ProtectedVideoType::kHardwareProtected,
-      MultiPlaneFormat::kYUV_420_BIPLANAR);
+      MultiPlaneFormat::kNV12);
   pass->shared_quad_state_list.back()->clip_rect = kOverlayClipRect;
   SurfaceDamageRectList surface_damage_rect_list;
   gfx::RectF primary_rect(0, 0, 100, 120);
@@ -4820,7 +4820,7 @@ TEST_F(UnderlayTest, ProtectedVideoOverlayScaling) {
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
         pass->output_rect, gfx::ProtectedVideoType::kHardwareProtected,
-        MultiPlaneFormat::kYUV_420_BIPLANAR,
+        MultiPlaneFormat::kNV12,
         gfx::ScaleToRoundedSize(kDisplaySize, res_scale))
         ->needs_blending = false;
     pass->shared_quad_state_list.front()->opacity = 1.0;
@@ -5890,11 +5890,10 @@ TEST_F(MultiOverlayTest, RequiredOverlayOnly) {
     auto* sqs = pass->CreateAndAppendSharedQuadState();
     sqs->overlay_damage_index = surface_damage_rect_list.size();
     surface_damage_rect_list.emplace_back(kBottomLeft);
-    CreateCandidateQuadAt(resource_provider_.get(),
-                          child_resource_provider_.get(), child_provider_.get(),
-                          sqs, pass.get(), kBottomLeft,
-                          gfx::ProtectedVideoType::kHardwareProtected,
-                          MultiPlaneFormat::kYUV_420_BIPLANAR);
+    CreateCandidateQuadAt(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), sqs, pass.get(), kBottomLeft,
+        gfx::ProtectedVideoType::kHardwareProtected, MultiPlaneFormat::kNV12);
     overlay_processor_->AddExpectedRect(kBottomLeft, true);
   }
   {

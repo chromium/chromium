@@ -25,11 +25,11 @@ gfx::BufferFormat ToBufferFormat(viz::SharedImageFormat format) {
     return viz::BufferFormat(format.resource_format());
   }
 
-  if (format == viz::MultiPlaneFormat::kYVU_420) {
+  if (format == viz::MultiPlaneFormat::kYV12) {
     return gfx::BufferFormat::YVU_420;
-  } else if (format == viz::MultiPlaneFormat::kYUV_420_BIPLANAR) {
+  } else if (format == viz::MultiPlaneFormat::kNV12) {
     return gfx::BufferFormat::YUV_420_BIPLANAR;
-  } else if (format == viz::MultiPlaneFormat::kYUVA_420_TRIPLANAR) {
+  } else if (format == viz::MultiPlaneFormat::kNV12A) {
     return gfx::BufferFormat::YUVA_420_TRIPLANAR;
   } else if (format == viz::MultiPlaneFormat::kP010) {
     return gfx::BufferFormat::P010;
@@ -168,8 +168,8 @@ GLenum TextureStorageFormat(viz::SharedImageFormat format,
 bool HasVkFormat(viz::SharedImageFormat format) {
   if (format.is_single_plane()) {
     return viz::HasVkFormat(format.resource_format());
-  } else if (format == viz::MultiPlaneFormat::kYVU_420 ||
-             format == viz::MultiPlaneFormat::kYUV_420_BIPLANAR ||
+  } else if (format == viz::MultiPlaneFormat::kYV12 ||
+             format == viz::MultiPlaneFormat::kNV12 ||
              format == viz::MultiPlaneFormat::kP010) {
     return true;
   }
@@ -187,10 +187,10 @@ VkFormat ToVkFormat(viz::SharedImageFormat format, int plane_index) {
   // The following SharedImageFormat constants have PrefersExternalSampler()
   // false so they create a separate VkImage per plane and return the single
   // planar equivalents.
-  if (format == viz::MultiPlaneFormat::kYVU_420) {
+  if (format == viz::MultiPlaneFormat::kYV12) {
     // Based on VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM.
     return VK_FORMAT_R8_UNORM;
-  } else if (format == viz::MultiPlaneFormat::kYUV_420_BIPLANAR) {
+  } else if (format == viz::MultiPlaneFormat::kNV12) {
     // Based on VK_FORMAT_G8_B8R8_2PLANE_420_UNORM.
     return plane_index == 0 ? VK_FORMAT_R8_UNORM : VK_FORMAT_R8G8_UNORM;
   } else if (format == viz::MultiPlaneFormat::kP010) {

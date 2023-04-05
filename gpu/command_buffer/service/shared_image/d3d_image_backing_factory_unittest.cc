@@ -1616,8 +1616,8 @@ D3DImageBackingFactoryTest::CreateVideoImages(const gfx::Size& size,
     gmb_handle.dxgi_token = gfx::DXGIHandleToken();
 
     auto backing = shared_image_factory_->CreateSharedImage(
-        mailboxes[0], viz::MultiPlaneFormat::kYUV_420_BIPLANAR, size,
-        gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+        mailboxes[0], viz::MultiPlaneFormat::kNV12, size, gfx::ColorSpace(),
+        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
         std::move(gmb_handle));
     if (!backing) {
       return {};
@@ -1669,7 +1669,7 @@ D3DImageBackingFactoryTest::CreateVideoImages(const gfx::Size& size,
     auto& backing = shared_image_backings[0];
     EXPECT_EQ(backing->mailbox(), mailboxes[0]);
     EXPECT_EQ(backing->size(), size);
-    EXPECT_EQ(backing->format(), viz::MultiPlaneFormat::kYUV_420_BIPLANAR);
+    EXPECT_EQ(backing->format(), viz::MultiPlaneFormat::kNV12);
     EXPECT_EQ(backing->color_space(), gfx::ColorSpace());
     EXPECT_EQ(backing->surface_origin(), kTopLeft_GrSurfaceOrigin);
     EXPECT_EQ(backing->alpha_type(), kPremul_SkAlphaType);
@@ -2192,7 +2192,7 @@ TEST_F(D3DImageBackingFactoryTest, MultiplanarUploadAndReadback) {
       gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_RASTER |
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT |
       gpu::SHARED_IMAGE_USAGE_CPU_UPLOAD;
-  constexpr auto format = viz::MultiPlaneFormat::kYUV_420_BIPLANAR;
+  constexpr auto format = viz::MultiPlaneFormat::kNV12;
   const gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
 
   auto owned_backing = shared_image_factory_->CreateSharedImage(

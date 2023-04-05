@@ -293,9 +293,9 @@ bool HasEquivalentBufferFormat(SharedImageFormat format) {
     return HasEquivalentBufferFormat(format.resource_format());
   }
 
-  return format == MultiPlaneFormat::kYVU_420 ||
-         format == MultiPlaneFormat::kYUV_420_BIPLANAR ||
-         format == MultiPlaneFormat::kYUVA_420_TRIPLANAR ||
+  return format == MultiPlaneFormat::kYV12 ||
+         format == MultiPlaneFormat::kNV12 ||
+         format == MultiPlaneFormat::kNV12A ||
          format == MultiPlaneFormat::kP010;
 }
 

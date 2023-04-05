@@ -900,7 +900,7 @@ class IOSurfaceImageBackingFactoryGMBTest
       return supports_ar30_;
     } else if (format == viz::SinglePlaneFormat::kRGBA_1010102) {
       return supports_ab30_;
-    } else if (format == viz::MultiPlaneFormat::kYUV_420_BIPLANAR) {
+    } else if (format == viz::MultiPlaneFormat::kNV12) {
       return supports_ycbcr_420v_;
     } else if (format == viz::MultiPlaneFormat::kP010) {
       return supports_ycbcr_p010_;
@@ -1022,7 +1022,7 @@ const auto kSinglePlaneFormats =
 const auto kGMBFormats =
     ::testing::Values(viz::SinglePlaneFormat::kRGBA_8888,
                       viz::SinglePlaneFormat::kBGRA_1010102,
-                      viz::MultiPlaneFormat::kYUV_420_BIPLANAR,
+                      viz::MultiPlaneFormat::kNV12,
                       viz::MultiPlaneFormat::kP010);
 
 std::string TestParamToString(

@@ -521,8 +521,7 @@ TEST_F(StructTraitsTest, CompositorFrame) {
   const ResourceId single_plane_id(1337);
   const ResourceId multi_plane_id(1338);
   const SharedImageFormat single_plane_format = SinglePlaneFormat::kALPHA_8;
-  const SharedImageFormat multi_plane_format =
-      MultiPlaneFormat::kYUV_420_BIPLANAR;
+  const SharedImageFormat multi_plane_format = MultiPlaneFormat::kNV12;
   const uint32_t tr_filter = 1234;
   const gfx::Size tr_size(1234, 5678);
   TransferableResource single_plane_resource;
@@ -1259,7 +1258,7 @@ TEST_F(StructTraitsTest, SharedImageFormatWithSinglePlane) {
 }
 
 TEST_F(StructTraitsTest, SharedImageFormatWithMultiPlane) {
-  SharedImageFormat input = MultiPlaneFormat::kYUV_420_BIPLANAR;
+  SharedImageFormat input = MultiPlaneFormat::kNV12;
   SharedImageFormat output;
   mojo::test::SerializeAndDeserialize<mojom::SharedImageFormat>(input, output);
   EXPECT_EQ(input, output);

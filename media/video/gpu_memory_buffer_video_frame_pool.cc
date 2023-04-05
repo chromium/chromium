@@ -1152,7 +1152,7 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
 
     switch (output_format_) {
       case GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB:
-        multi_planar_format = viz::MultiPlaneFormat::kYUV_420_BIPLANAR;
+        multi_planar_format = viz::MultiPlaneFormat::kNV12;
         break;
       case GpuVideoAcceleratorFactories::OutputFormat::P010:
         multi_planar_format = viz::MultiPlaneFormat::kP010;
@@ -1160,7 +1160,7 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
       default:
         // Other formats aren't applicable.
         // TODO(hitawala): Add support for OutputFormat::I420 that can use 1 GMB
-        // instead of 3 and return equivalent viz::MultiPlaneFormat::kYVU_420.
+        // instead of 3 and return equivalent viz::MultiPlaneFormat::kYV12.
         break;
     }
   }

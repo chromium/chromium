@@ -159,7 +159,7 @@ class CompoundImageBackingTest : public testing::Test {
 
     return CompoundImageBacking::CreateSharedMemory(
         &test_factory_, allow_shm_overlays, Mailbox::GenerateForSharedImage(),
-        std::move(handle), viz::MultiPlaneFormat::kYUV_420_BIPLANAR, size,
+        std::move(handle), viz::MultiPlaneFormat::kNV12, size,
         gfx::ColorSpace(), kBottomLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
         SHARED_IMAGE_USAGE_DISPLAY_READ);
   }

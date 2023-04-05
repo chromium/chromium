@@ -48,7 +48,7 @@ DXGI_FORMAT GetDXGIFormatForCreateTexture(viz::SharedImageFormat format) {
     }
   }
 
-  if (format == viz::MultiPlaneFormat::kYUV_420_BIPLANAR) {
+  if (format == viz::MultiPlaneFormat::kNV12) {
     return DXGI_FORMAT_NV12;
   }
 
@@ -72,7 +72,7 @@ DXGI_FORMAT GetDXGIFormatForGMB(viz::SharedImageFormat format) {
         return DXGI_FORMAT_UNKNOWN;
     }
   }
-  if (format == viz::MultiPlaneFormat::kYUV_420_BIPLANAR) {
+  if (format == viz::MultiPlaneFormat::kNV12) {
     return DXGI_FORMAT_NV12;
   }
   return DXGI_FORMAT_UNKNOWN;

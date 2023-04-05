@@ -639,8 +639,8 @@ const auto kSharedImageFormats =
                       viz::SinglePlaneFormat::kR_16,
                       viz::SinglePlaneFormat::kRG_1616,
                       viz::SinglePlaneFormat::kRGBA_F16,
-                      viz::MultiPlaneFormat::kYUV_420_BIPLANAR,
-                      viz::MultiPlaneFormat::kYVU_420);
+                      viz::MultiPlaneFormat::kNV12,
+                      viz::MultiPlaneFormat::kYV12);
 
 INSTANTIATE_TEST_SUITE_P(,
                          GLTextureImageBackingFactoryWithFormatTest,
@@ -658,8 +658,8 @@ const auto kReadbackFormats =
                       viz::SinglePlaneFormat::kRG_88,
                       viz::SinglePlaneFormat::kRGBX_8888,
                       viz::SinglePlaneFormat::kBGRX_8888,
-                      viz::MultiPlaneFormat::kYUV_420_BIPLANAR,
-                      viz::MultiPlaneFormat::kYVU_420);
+                      viz::MultiPlaneFormat::kNV12,
+                      viz::MultiPlaneFormat::kYV12);
 
 INSTANTIATE_TEST_SUITE_P(,
                          GLTextureImageBackingFactoryWithReadbackTest,

@@ -32,7 +32,7 @@ class SharedImageFormatTest : public testing::Test {
 
 TEST_F(SharedImageFormatTest, MultiPlaneYUVBiplanar8bit) {
   // 8-bit 4:2:0 Y_UV biplanar format (YUV_420_BIPLANAR)
-  SharedImageFormat format = MultiPlaneFormat::kYUV_420_BIPLANAR;
+  SharedImageFormat format = MultiPlaneFormat::kNV12;
   // Test for NumChannelsInPlane
   std::vector<int> expected_channels = {1, 2};
   TestNumChannelsInPlane(expected_channels, format);
@@ -46,7 +46,7 @@ TEST_F(SharedImageFormatTest, MultiPlaneYUVBiplanar8bit) {
 
 TEST_F(SharedImageFormatTest, MultiPlaneYVU) {
   // 8-bit 4:2:0 Y_V_U format (YVU_420)
-  SharedImageFormat format = MultiPlaneFormat::kYVU_420;
+  SharedImageFormat format = MultiPlaneFormat::kYV12;
   // Test for NumChannelsInPlane
   std::vector<int> expected_channels = {1, 1, 1};
   TestNumChannelsInPlane(expected_channels, format);

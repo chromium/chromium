@@ -522,13 +522,13 @@ void OutputThunk(void* decompression_output_refcon,
 
 gfx::BufferFormat ToBufferFormat(viz::SharedImageFormat format) {
   DCHECK(format.is_multi_plane());
-  if (format == viz::MultiPlaneFormat::kYVU_420) {
+  if (format == viz::MultiPlaneFormat::kYV12) {
     return gfx::BufferFormat::YVU_420;
   }
-  if (format == viz::MultiPlaneFormat::kYUV_420_BIPLANAR) {
+  if (format == viz::MultiPlaneFormat::kNV12) {
     return gfx::BufferFormat::YUV_420_BIPLANAR;
   }
-  if (format == viz::MultiPlaneFormat::kYUVA_420_TRIPLANAR) {
+  if (format == viz::MultiPlaneFormat::kNV12A) {
     return gfx::BufferFormat::YUVA_420_TRIPLANAR;
   }
   if (format == viz::MultiPlaneFormat::kP010) {
@@ -2190,7 +2190,7 @@ bool VTVideoDecodeAccelerator::ProcessFrame(const Frame& frame) {
     picture_size_ = frame.image_size;
 
     if (has_alpha_) {
-      si_format_ = viz::MultiPlaneFormat::kYUVA_420_TRIPLANAR;
+      si_format_ = viz::MultiPlaneFormat::kNV12A;
       picture_format_ = PIXEL_FORMAT_NV12A;
     } else if (config_.profile == VP9PROFILE_PROFILE2 ||
                config_.profile == HEVCPROFILE_MAIN10 ||
@@ -2198,7 +2198,7 @@ bool VTVideoDecodeAccelerator::ProcessFrame(const Frame& frame) {
       si_format_ = viz::MultiPlaneFormat::kP010;
       picture_format_ = PIXEL_FORMAT_P016LE;
     } else {
-      si_format_ = viz::MultiPlaneFormat::kYUV_420_BIPLANAR;
+      si_format_ = viz::MultiPlaneFormat::kNV12;
       picture_format_ = PIXEL_FORMAT_NV12;
     }
 

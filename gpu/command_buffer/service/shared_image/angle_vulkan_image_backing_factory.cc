@@ -52,10 +52,8 @@ AngleVulkanImageBackingFactory::AngleVulkanImageBackingFactory(
       rg_iter != supported_formats_.end()) {
     auto& r_info = r_iter->second[0];
     auto& rg_info = rg_iter->second[0];
-    supported_formats_[viz::MultiPlaneFormat::kYUV_420_BIPLANAR] = {r_info,
-                                                                    rg_info};
-    supported_formats_[viz::MultiPlaneFormat::kYVU_420] = {r_info, r_info,
-                                                           r_info};
+    supported_formats_[viz::MultiPlaneFormat::kNV12] = {r_info, rg_info};
+    supported_formats_[viz::MultiPlaneFormat::kYV12] = {r_info, r_info, r_info};
   }
 }
 

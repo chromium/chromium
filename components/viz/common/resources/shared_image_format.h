@@ -246,15 +246,15 @@ inline constexpr SharedImageFormat kBGRA_1010102 =
 
 // Constants for common multi-planar formats.
 namespace MultiPlaneFormat {
-inline constexpr SharedImageFormat kYVU_420 =
+inline constexpr SharedImageFormat kYV12 =
     SharedImageFormat::MultiPlane(SharedImageFormat::PlaneConfig::kY_V_U,
                                   SharedImageFormat::Subsampling::k420,
                                   SharedImageFormat::ChannelFormat::k8);
-inline constexpr SharedImageFormat kYUV_420_BIPLANAR =
+inline constexpr SharedImageFormat kNV12 =
     SharedImageFormat::MultiPlane(SharedImageFormat::PlaneConfig::kY_UV,
                                   SharedImageFormat::Subsampling::k420,
                                   SharedImageFormat::ChannelFormat::k8);
-inline constexpr SharedImageFormat kYUVA_420_TRIPLANAR =
+inline constexpr SharedImageFormat kNV12A =
     SharedImageFormat::MultiPlane(SharedImageFormat::PlaneConfig::kY_UV_A,
                                   SharedImageFormat::Subsampling::k420,
                                   SharedImageFormat::ChannelFormat::k8);

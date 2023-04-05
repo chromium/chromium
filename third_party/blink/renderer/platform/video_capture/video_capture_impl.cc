@@ -554,9 +554,9 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
       buffer_context_->gmb_resources()->mailboxes[plane] =
           create_multiplanar_image
               ? sii->CreateSharedImage(
-                    viz::MultiPlaneFormat::kYUV_420_BIPLANAR,
-                    gpu_memory_buffer_->GetSize(), *(frame_info_->color_space),
-                    kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+                    viz::MultiPlaneFormat::kNV12, gpu_memory_buffer_->GetSize(),
+                    *(frame_info_->color_space), kTopLeft_GrSurfaceOrigin,
+                    kPremul_SkAlphaType, usage,
                     gpu_memory_buffer_->CloneHandle())
               : sii->CreateSharedImage(
                     gpu_memory_buffer_.get(),

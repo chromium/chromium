@@ -860,7 +860,7 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_SharedImageFormat) {
   EXPECT_EQ(VideoFrameResourceType::RGB, resources.type);
   EXPECT_EQ(1u, resources.resources.size());
   EXPECT_EQ(1u, resources.release_callbacks.size());
-  EXPECT_EQ(viz::MultiPlaneFormat::kYVU_420, resources.resources[0].format);
+  EXPECT_EQ(viz::MultiPlaneFormat::kYV12, resources.resources[0].format);
   EXPECT_EQ(resources.resources[0].synchronization_type,
             viz::TransferableResource::SynchronizationType::kSyncToken);
 
@@ -1076,8 +1076,7 @@ TEST_F(VideoResourceUpdaterTest,
   EXPECT_EQ(1u, resources.resources.size());
   EXPECT_EQ((GLenum)GL_TEXTURE_RECTANGLE_ARB,
             resources.resources[0].mailbox_holder.texture_target);
-  EXPECT_EQ(viz::MultiPlaneFormat::kYUV_420_BIPLANAR,
-            resources.resources[0].format);
+  EXPECT_EQ(viz::MultiPlaneFormat::kNV12, resources.resources[0].format);
   EXPECT_EQ(0u, GetSharedImageCount());
 
   video_frame = CreateTestYuvHardwareVideoFrame(PIXEL_FORMAT_NV12, 1,
@@ -1092,8 +1091,7 @@ TEST_F(VideoResourceUpdaterTest,
   EXPECT_EQ((GLenum)GL_TEXTURE_EXTERNAL_OES,
             resources.resources[0].mailbox_holder.texture_target);
   // |updater| doesn't set |buffer_format| in this case.
-  EXPECT_EQ(viz::MultiPlaneFormat::kYUV_420_BIPLANAR,
-            resources.resources[0].format);
+  EXPECT_EQ(viz::MultiPlaneFormat::kNV12, resources.resources[0].format);
   EXPECT_EQ(0u, GetSharedImageCount());
 }
 

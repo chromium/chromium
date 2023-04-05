@@ -37,10 +37,10 @@ viz::ResourceFormat GetPlaneFormat(viz::SharedImageFormat format,
     return format.resource_format();
   }
 
-  if (format == viz::MultiPlaneFormat::kYUV_420_BIPLANAR) {
+  if (format == viz::MultiPlaneFormat::kNV12) {
     return plane_index == 0 ? viz::ResourceFormat::RED_8
                             : viz::ResourceFormat::RG_88;
-  } else if (format == viz::MultiPlaneFormat::kYVU_420) {
+  } else if (format == viz::MultiPlaneFormat::kYV12) {
     return viz::ResourceFormat::RED_8;
   }
 
@@ -56,8 +56,8 @@ viz::ResourceFormat GetPlaneFormat(viz::SharedImageFormat format,
 bool GLTextureImageBacking::SupportsPixelReadbackWithFormat(
     viz::SharedImageFormat format) {
   if (format.is_multi_plane()) {
-    if (format == viz::MultiPlaneFormat::kYUV_420_BIPLANAR ||
-        format == viz::MultiPlaneFormat::kYVU_420) {
+    if (format == viz::MultiPlaneFormat::kNV12 ||
+        format == viz::MultiPlaneFormat::kYV12) {
       return true;
     }
     return false;
@@ -79,8 +79,8 @@ bool GLTextureImageBacking::SupportsPixelReadbackWithFormat(
 bool GLTextureImageBacking::SupportsPixelUploadWithFormat(
     viz::SharedImageFormat format) {
   if (format.is_multi_plane()) {
-    if (format == viz::MultiPlaneFormat::kYUV_420_BIPLANAR ||
-        format == viz::MultiPlaneFormat::kYVU_420) {
+    if (format == viz::MultiPlaneFormat::kNV12 ||
+        format == viz::MultiPlaneFormat::kYV12) {
       return true;
     }
     return false;
