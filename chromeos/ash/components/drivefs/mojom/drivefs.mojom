@@ -137,6 +137,9 @@ interface DriveFs {
   // Attempts to cancel an in progress upload. `path` must be made absolute
   // from the drive mount point.
   CancelUploadByPath(mojo_base.mojom.FilePath path);
+
+  // Enable Docs offline explicitly.
+  SetDocsOfflineEnabled(bool enabled) => (FileError error);
 };
 
 // Implemented by Chrome, used from DriveFS.

@@ -65,6 +65,7 @@ enum class Stage {
   kCannotGetFreeSpace,
   kCannotListFiles,
   kNotEnoughSpace,
+  kCannotEnableDocsOffline,
 };
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)
@@ -315,6 +316,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
 
   // Invoked on retrieval of free space at the beginning of the setup process.
   void OnFreeSpaceRetrieved1(int64_t free_space);
+
+  // Invoked once Docs offline has been enabled.
+  void OnDocsOfflineEnabled(drive::FileError error);
 
   // Periodically check for free space.
   void CheckFreeSpace();
