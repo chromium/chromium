@@ -38,10 +38,10 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierLinux
 
   ~NetworkChangeNotifierLinux() override;
 
+  static NetworkChangeCalculatorParams NetworkChangeCalculatorParamsLinux();
+
  private:
   class BlockingThreadObjects;
-
-  static NetworkChangeCalculatorParams NetworkChangeCalculatorParamsLinux();
 
   // NetworkChangeNotifier:
   ConnectionType GetCurrentConnectionType() const override;

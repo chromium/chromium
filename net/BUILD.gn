@@ -1343,7 +1343,7 @@ component("net") {
     }
   }
 
-  if (is_android || is_chromeos) {
+  if (is_android || is_chromeos || is_linux) {
     sources += [
       "base/network_change_notifier_passive.cc",
       "base/network_change_notifier_passive.h",

@@ -248,6 +248,13 @@ component("network_service") {
     ]
   }
 
+  if (is_linux) {
+    sources += [
+      "network_change_notifier_passive_factory.cc",
+      "network_change_notifier_passive_factory.h",
+    ]
+  }
+
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [

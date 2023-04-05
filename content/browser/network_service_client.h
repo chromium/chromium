@@ -34,7 +34,7 @@ class WebRtcConnectionsObserver;
 
 class NetworkServiceClient
     : public network::mojom::URLLoaderNetworkServiceObserver,
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
       public net::NetworkChangeNotifier::ConnectionTypeObserver,
       public net::NetworkChangeNotifier::MaxBandwidthObserver,
       public net::NetworkChangeNotifier::IPAddressObserver,
@@ -66,7 +66,9 @@ class NetworkServiceClient
 
 #if BUILDFLAG(IS_ANDROID)
   void OnApplicationStateChange(base::android::ApplicationState state);
+#endif
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
   // net::NetworkChangeNotifier::ConnectionTypeObserver implementation:
   void OnConnectionTypeChanged(
       net::NetworkChangeNotifier::ConnectionType type) override;
@@ -78,7 +80,7 @@ class NetworkServiceClient
 
   // net::NetworkChangeNotifier::IPAddressObserver implementation:
   void OnIPAddressChanged() override;
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(USE_SOCKET_BROKER)
   // Called when the network service sandbox is enabled.
@@ -129,6 +131,9 @@ class NetworkServiceClient
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<base::android::ApplicationStatusListener>
       app_status_listener_;
+#endif
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
   mojo::Remote<network::mojom::NetworkChangeManager> network_change_manager_;
 #endif  // BUILDFLAG(IS_ANDROID)
 

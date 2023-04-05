@@ -94,6 +94,10 @@
 #include "components/os_crypt/sync/key_storage_config_linux.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "services/network/network_change_notifier_passive_factory.h"
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/application_status_listener.h"
 #include "net/android/http_auth_negotiate_android.h"
@@ -330,8 +334,16 @@ NetworkService::NetworkService(
 
   // |registry_| is nullptr when an in-process NetworkService is
   // created directly, like in most unit tests.
-  if (registry_)
+  if (registry_) {
     mojo::SetDefaultProcessErrorHandler(base::BindRepeating(&HandleBadMessage));
+#if BUILDFLAG(IS_LINUX)
+    if (base::FeatureList::IsEnabled(
+            features::kAddressTrackerLinuxOutOfNetworkService)) {
+      net::NetworkChangeNotifier::SetFactory(
+          new network::NetworkChangeNotifierPassiveFactory());
+    }
+#endif
+  }
 
   if (receiver.is_valid())
     Bind(std::move(receiver));
