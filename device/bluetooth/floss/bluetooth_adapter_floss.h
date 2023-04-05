@@ -339,14 +339,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
   // crbug.com/687396.
   std::vector<scoped_refptr<BluetoothAdvertisementFloss>> advertisements_;
 
-  // While we are doing discovery, we will also maintain a separate LE scan
-  // session to respond on the current discovery session.
-  std::unique_ptr<device::BluetoothLowEnergyScanSession> le_discovery_session_;
-
-  // Delegate for forwarding scan session notifications.
-  std::unique_ptr<device::BluetoothLowEnergyScanSession::Delegate>
-      le_discovery_session_delegate_;
-
   // Default BLE advertising interval.
   // 100 ms is one of the recommended values on Floss AdvertisingSetParameters.
   // b/253718595 will provide a 'no preference' option so that Floss can choose
