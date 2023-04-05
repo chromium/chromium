@@ -57,6 +57,7 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   const mojom::TouchpadSettings* GetTouchpadSettings(DeviceId id) override;
   const mojom::PointingStickSettings* GetPointingStickSettings(
       DeviceId id) override;
+  const mojom::KeyboardPolicies& GetKeyboardPolicies() override;
   void SetKeyboardSettings(DeviceId id,
                            mojom::KeyboardSettingsPtr settings) override;
   void SetTouchpadSettings(DeviceId id,
@@ -84,6 +85,7 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
  private:
   void Init();
 
+  void ScheduleDeviceSettingsRefresh();
   void RefreshAllDeviceSettings();
 
   void DispatchKeyboardConnected(DeviceId id);

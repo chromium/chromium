@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FakeInputDeviceSettingsProvider, fakeKeyboards, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsPerDeviceKeyboardSubsectionElement, SettingsToggleButtonElement} from 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+
+import {FakeInputDeviceSettingsProvider, fakeKeyboards, PolicyStatus, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsPerDeviceKeyboardSubsectionElement, SettingsToggleButtonElement} from 'chrome://os-settings/chromeos/os_settings.js';
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -311,5 +313,28 @@ suite('<settings-per-device-keyboard-subsection>', () => {
 
     await flushTasks();
     assertEquals(null, subsection.shadowRoot!.activeElement);
+  });
+
+  /**
+   * Verifies that the indicator policy is properly reflected in the UI.
+   */
+  test('top row are fkeys policy reflected in UI', async () => {
+    subsection.set('keyboardPolicies', {
+      topRowAreFkeysPolicy:
+          {policy_status: PolicyStatus.kManaged, value: false},
+    });
+    await flushTasks();
+    const topRowAreFunctionKeysToggle = subsection.shadowRoot!.querySelector(
+        '#externalTopRowAreFunctionKeysButton');
+    assert(topRowAreFunctionKeysToggle);
+    let policyIndicator = topRowAreFunctionKeysToggle.shadowRoot!.querySelector(
+        'cr-policy-pref-indicator');
+    assertTrue(isVisible(policyIndicator));
+
+    subsection.set('keyboardPolicies', {topRowAreFkeysPolicy: undefined});
+    await flushTasks();
+    policyIndicator = topRowAreFunctionKeysToggle.shadowRoot!.querySelector(
+        'cr-policy-pref-indicator');
+    assertFalse(isVisible(policyIndicator));
   });
 });

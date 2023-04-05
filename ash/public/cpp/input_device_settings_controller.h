@@ -27,6 +27,8 @@ class ASH_PUBLIC_EXPORT InputDeviceSettingsController {
     virtual void OnKeyboardConnected(const mojom::Keyboard& keyboard) {}
     virtual void OnKeyboardDisconnected(const mojom::Keyboard& keyboard) {}
     virtual void OnKeyboardSettingsUpdated(const mojom::Keyboard& keyboard) {}
+    virtual void OnKeyboardPoliciesUpdated(
+        const mojom::KeyboardPolicies& keyboard_policies) {}
 
     virtual void OnTouchpadConnected(const mojom::Touchpad& touchpad) {}
     virtual void OnTouchpadDisconnected(const mojom::Touchpad& touchpad) {}
@@ -69,7 +71,12 @@ class ASH_PUBLIC_EXPORT InputDeviceSettingsController {
   virtual const mojom::PointingStickSettings* GetPointingStickSettings(
       DeviceId id) = 0;
 
-  // Configure the settings for keyboard of `id` with the provided `settings`.
+  // Returns the current set of enterprise policies which control keyboard
+  // settings.
+  virtual const mojom::KeyboardPolicies& GetKeyboardPolicies() = 0;
+
+  // Configure the settings for keyboard of `id` with the provided
+  // `settings`.
   virtual void SetKeyboardSettings(DeviceId id,
                                    mojom::KeyboardSettingsPtr settings) = 0;
   // Configure the settings for touchpad of `id` with the provided `settings`.

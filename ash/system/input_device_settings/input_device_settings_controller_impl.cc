@@ -235,6 +235,10 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
   // but all dependencies of `InputDeviceSettingsControllerImpl` must be
   // updated due to the active pref service change first. Therefore, schedule
   // a task so other dependencies are updated first.
+  ScheduleDeviceSettingsRefresh();
+}
+
+void InputDeviceSettingsControllerImpl::ScheduleDeviceSettingsRefresh() {
   if (!settings_refresh_pending_) {
     settings_refresh_pending_ = true;
     sequenced_task_runner_->PostTask(
@@ -274,12 +278,16 @@ void InputDeviceSettingsControllerImpl::RefreshAllDeviceSettings() {
 }
 
 void InputDeviceSettingsControllerImpl::OnKeyboardPoliciesChanged() {
-  for (const auto& [id, keyboard] : keyboards_) {
-    keyboard_pref_handler_->InitializeKeyboardSettings(
-        active_pref_service_, policy_handler_->keyboard_policies(),
-        keyboard.get());
-    DispatchKeyboardSettingsChanged(id);
+  for (auto& observer : observers_) {
+    observer.OnKeyboardPoliciesUpdated(policy_handler_->keyboard_policies());
   }
+  ScheduleDeviceSettingsRefresh();
+}
+
+const mojom::KeyboardPolicies&
+InputDeviceSettingsControllerImpl::GetKeyboardPolicies() {
+  CHECK(policy_handler_);
+  return policy_handler_->keyboard_policies();
 }
 
 const mojom::KeyboardSettings*

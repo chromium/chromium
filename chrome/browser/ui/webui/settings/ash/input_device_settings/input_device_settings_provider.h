@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_INPUT_DEVICE_SETTINGS_INPUT_DEVICE_SETTINGS_PROVIDER_H_
 
 #include "ash/public/cpp/input_device_settings_controller.h"
+#include "ash/public/mojom/input_device_settings.mojom.h"
 #include "chrome/browser/ui/webui/settings/ash/input_device_settings/input_device_settings_provider.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -50,6 +51,10 @@ class InputDeviceSettingsProvider
   // InputDeviceSettingsController::Observer:
   void OnKeyboardConnected(const ::ash::mojom::Keyboard& keyboard) override;
   void OnKeyboardDisconnected(const ::ash::mojom::Keyboard& keyboard) override;
+  void OnKeyboardSettingsUpdated(
+      const ::ash::mojom::Keyboard& keyboard) override;
+  void OnKeyboardPoliciesUpdated(
+      const ::ash::mojom::KeyboardPolicies& keyboard_policies) override;
   void OnTouchpadConnected(const ::ash::mojom::Touchpad& touchpad) override;
   void OnTouchpadDisconnected(const ::ash::mojom::Touchpad& touchpad) override;
   void OnPointingStickConnected(
