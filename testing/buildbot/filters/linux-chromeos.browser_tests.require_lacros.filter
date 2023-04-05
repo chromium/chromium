@@ -73,5 +73,6 @@ WebKioskAshRequiresLacrosTest*
 -SelectToSpeakKeystrokeSelectionTest.TwoTextFieldsFullySelected
 -SelectToSpeakKeystrokeSelectionTest.contentEditableExternallySelected
 -SelectToSpeakMouseSelectionTest.SpeaksNodeWhenClicked
+-SelectToSpeakMouseSelectionTest.VoiceSwitching
 # TODO(b/268056158) Flaky
 -SelectToSpeakTestWithVoiceSwitching.BreaksAtLanguageBounds
