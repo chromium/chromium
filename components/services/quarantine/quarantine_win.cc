@@ -14,16 +14,15 @@
 #include <shobjidl.h>
 #include <wininet.h>
 
-
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
-#include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/uuid.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"
 #include "components/services/quarantine/common.h"
@@ -238,7 +237,7 @@ void QuarantineFile(const base::FilePath& file,
 
   std::string braces_guid = "{" + client_guid + "}";
   GUID guid = GUID_NULL;
-  if (base::IsValidGUID(client_guid)) {
+  if (base::Uuid::ParseCaseInsensitive(client_guid).is_valid()) {
     HRESULT hr = CLSIDFromString(base::UTF8ToWide(braces_guid).c_str(), &guid);
     if (FAILED(hr))
       guid = GUID_NULL;
