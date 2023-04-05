@@ -7,11 +7,11 @@
 #include <stddef.h>
 
 #include <utility>
-
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/sequence_checker.h"
 #include "base/threading/platform_thread.h"
 #include "base/win/access_token.h"
 #include "base/win/current_module.h"
@@ -109,7 +109,7 @@ class PolicyDiagnosticList final : public sandbox::PolicyList {
 };
 
 // Helper to track the number of live processes, sets an event when there are
-// none.
+// none and resets it when one is added.
 class TargetTracker {
  public:
   TargetTracker(HANDLE no_targets) : no_targets_event_(no_targets) {
@@ -119,29 +119,24 @@ class TargetTracker {
   TargetTracker& operator=(const TargetTracker&) = delete;
   ~TargetTracker() {}
 
-  void Track(DWORD process_id) { process_ids_.insert(process_id); }
-
-  void Add(DWORD process_id) {
-    size_t count = process_ids_.count(process_id);
-    if (count == 0) {
-      ++untracked_targets_;
-    }
+  void Add() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(target_events_sequence_);
     ++targets_;
     if (1 == targets_) {
       ::ResetEvent(no_targets_event_);
     }
   }
-  void Remove(DWORD process_id) {
-    size_t erase_result = process_ids_.erase(process_id);
-    if (erase_result != 1U) {
-      --untracked_targets_;
-      DCHECK_GE(untracked_targets_, 0);
-    }
+  void Remove() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(target_events_sequence_);
+    // This cannot be a CHECK as Windows job notifications may not always be
+    // delivered - the main purpose of this class & `no_targets_event_` is to
+    // allow tests to validate that notifications are received.
+    // TODO(crbug.com/1429177) - make this available only in tests.
+    DCHECK_NE(targets_, 0U);
     --targets_;
     if (targets_ == 0) {
       ::SetEvent(no_targets_event_);
     }
-    DCHECK_GE(targets_, 0);
   }
 
  private:
@@ -149,12 +144,8 @@ class TargetTracker {
   const HANDLE no_targets_event_;
   // Number of processes we're tracking (both directly associated with a
   // TargetPolicy in a job, and those launched by tracked jobs).
-  int targets_ = 0;
-  // Just those processes that are not associated with a TargetPolicy.
-  int untracked_targets_ = 0;
-  // Processes are registered when their job is first seen, and removed if they
-  // their id is removed.
-  std::set<DWORD> process_ids_;
+  size_t targets_ GUARDED_BY_CONTEXT(target_events_sequence_) = 0;
+  SEQUENCE_CHECKER(target_events_sequence_);
 };
 
 // The worker thread stays in a loop waiting for asynchronous notifications
@@ -219,13 +210,13 @@ DWORD WINAPI TargetEventsThread(PVOID param) {
 
         case JOB_OBJECT_MSG_NEW_PROCESS: {
           // Child process created from sandboxed process.
-          targets.Add(static_cast<DWORD>(reinterpret_cast<uintptr_t>(ovl)));
+          targets.Add();
           break;
         }
 
         case JOB_OBJECT_MSG_EXIT_PROCESS:
         case JOB_OBJECT_MSG_ABNORMAL_EXIT_PROCESS: {
-          targets.Remove(static_cast<DWORD>(reinterpret_cast<uintptr_t>(ovl)));
+          targets.Remove();
           break;
         }
 
@@ -235,7 +226,7 @@ DWORD WINAPI TargetEventsThread(PVOID param) {
           // JOB_OBJECT_MSG_EXIT_PROCESS notification for the failed-to-start
           // process.
           // Windows does not reveal the process id.
-          targets.Add(0);
+          targets.Add();
           break;
         }
 
@@ -244,7 +235,7 @@ DWORD WINAPI TargetEventsThread(PVOID param) {
                                           sandbox::SBOX_FATAL_MEMORY_EXCEEDED);
           DCHECK(res);
           // We also get the ACTIVE_PROCESS_ZERO event which reaps the job.
-          targets.Remove(static_cast<DWORD>(reinterpret_cast<uintptr_t>(ovl)));
+          targets.Remove();
           break;
         }
 
@@ -258,7 +249,6 @@ DWORD WINAPI TargetEventsThread(PVOID param) {
       tracker.reset(reinterpret_cast<JobTracker*>(ovl));
       DCHECK(tracker->policy->HasJob());
 
-      targets.Track(tracker->process_id);
       jobs.push_back(std::move(tracker));
     } else if (THREAD_CTRL_GET_POLICY_INFO == key) {
       // Clone the policies for sandbox diagnostics.
