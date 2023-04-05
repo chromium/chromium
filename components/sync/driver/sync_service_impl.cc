@@ -1872,8 +1872,6 @@ void SyncServiceImpl::OverrideNetworkForTest(
                 ResetEngineReason::kShutdown);
     // The startup logic and DCHECKs require that datatypes start stopped.
     // Since ResetEngine() doesn't do this, it is necessary to stop them here.
-    // STOP_SYNC_AND_KEEP_DATA is used instead of BROWSER_SHUTDOWN_AND_KEEP_DATA
-    // because crbug.com/1400437 is removing shutdown logic from controllers.
     for (const auto& [type, controller] : data_type_controllers_) {
       controller->Stop(SyncStopMetadataFate::KEEP_METADATA, base::DoNothing());
     }
