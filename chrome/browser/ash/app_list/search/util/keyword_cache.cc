@@ -60,7 +60,12 @@ void KeywordCache::Train(const std::string& item) {
 double KeywordCache::CalculateBoostChange(const std::string& item) const {
   bool is_boosted = IsBoosted(item);
 
-  double selected_item_score = last_item_scores_.at(item);
+  auto it = last_item_scores_.find(item);
+  if (it == last_item_scores_.end()) {
+    return 0;
+  }
+  double selected_item_score = it->second;
+
   int rank = 0;
   int num_item_above = 0;
 

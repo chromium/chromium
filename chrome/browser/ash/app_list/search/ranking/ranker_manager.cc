@@ -103,9 +103,12 @@ RankerManager::RankerManager(Profile* profile, SearchController* controller) {
       PersistentProto<MrfuCacheProto>(
           state_dir.AppendASCII("mrfu_categories.pb"), kStandardWriteDelay)));
 
-  if (search_features::IsLauncherKeywordExtractionScoringEnabled()) {
-    AddRanker(std::make_unique<KeywordRanker>());
-  }
+  // TODO(b/274921356): Temporarly comment out the `KeywordRanker` construction to avoid any 
+  // possible crashes. Re-enable it when we make sure this problem has been fixed.
+  //
+  // if (search_features::IsLauncherKeywordExtractionScoringEnabled()) {
+  //   AddRanker(std::make_unique<KeywordRanker>());
+  // }
 
   // 5. Result post-processing.
   // Nb. the best match ranker relies on score normalization, and the answer
