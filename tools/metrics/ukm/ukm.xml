@@ -19930,6 +19930,11 @@ be describing additional metrics about the same event.
     Associated with the Source ID of the page user navigates to. Contains
     information about the type of attempt, its eligibility, triggering outcome,
     failure reason and whether the attempt was triggered accurately or not.
+
+    Note that this event is sampled based on the PreloadingConfig feature
+    configuration (in addition to the normal UKM sampling mechanism). The
+    sampling rate for each event (which may vary for different preloading
+    features) is logged in the SamplingLikelihood field.
   </summary>
   <metric name="AccurateTriggering" enum="Boolean">
     <summary>
@@ -20020,6 +20025,11 @@ be describing additional metrics about the same event.
     preloading attempt is triggered (user navigates from). All the metrics data
     are similar to Preloading.Attempt and please see the comments for more
     details.
+
+    Note that this event is sampled based on the PreloadingConfig feature
+    configuration (in addition to the normal UKM sampling mechanism). The
+    sampling rate for each event (which may vary for different preloading
+    features) is logged in the SamplingLikelihood field.
   </summary>
   <metric name="AccurateTriggering" enum="Boolean">
     <summary>
