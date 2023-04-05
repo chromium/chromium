@@ -206,10 +206,20 @@ suite('ApnListTest', function() {
       customApnList: [connectedApn],
     };
     await flushTasks();
-    const apns = apnList.shadowRoot.querySelectorAll('apn-list-item');
+    let apns = apnList.shadowRoot.querySelectorAll('apn-list-item');
     assertEquals(apns.length, 1);
     assertTrue(OncMojo.apnMatch(apns[0].apn, connectedApn));
     assertTrue(apns[0].isConnected);
+
+    // Simulate the APN no longer being connected.
+    apnList.managedCellularProperties = {
+      customApnList: [connectedApn],
+    };
+    await flushTasks();
+    apns = apnList.shadowRoot.querySelectorAll('apn-list-item');
+    assertEquals(apns.length, 1);
+    assertTrue(OncMojo.apnMatch(apns[0].apn, connectedApn));
+    assertFalse(apns[0].isConnected);
   });
 
   test(
