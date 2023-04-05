@@ -1,6 +1,6 @@
-# ![Logo](chrome/app/theme/chromium/product_logo_64.png) Chromium Unofficial Build
+# ![Logo](chrome/app/theme/chromium/product_logo_64.png) Chrome Experience
 
-Chromium Unofficial Build is an browser, with all Google Chrome goodies.
+Chrome Experience is an open source browser, with all Google Chrome goodies.
 
 To check out the source code locally, don't use `git clone`! Instead,
 follow [the instructions on how to get the code](docs/get_the_code.md).
