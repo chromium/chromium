@@ -4,53 +4,51 @@
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
-import {DevicePageBrowserProxyImpl, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
-import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
+import {SettingsManageA11yPageElement} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {DevicePageBrowserProxyImpl, Router, routes, SettingsToggleButtonElement} from 'chrome://os-settings/chromeos/os_settings.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
-import {TestDevicePageBrowserProxy} from './device_page/test_device_page_browser_proxy.js';
+import {TestDevicePageBrowserProxy} from '../device_page/test_device_page_browser_proxy.js';
 
-suite('ManageAccessibilityPageTests', function() {
-  let page = null;
-  let deviceBrowserProxy = null;
-
-  function initPage(opt_prefs) {
-    page = document.createElement('settings-manage-a11y-page');
-    page.prefs = opt_prefs || getDefaultPrefs();
-    document.body.appendChild(page);
-  }
-
-  function getDefaultPrefs() {
-    return {
-      'settings': {
-        'a11y': {
-          'tablet_mode_shelf_nav_buttons_enabled': {
-            key: 'settings.a11y.tablet_mode_shelf_nav_buttons_enabled',
-            type: chrome.settingsPrivate.PrefType.BOOLEAN,
-            value: false,
-          },
-          'dictation': {
-            key: 'prefs.settings.a11y.dictation',
-            type: chrome.settingsPrivate.PrefType.BOOLEAN,
-            value: true,
-          },
-          'dictation_locale': {
-            key: 'prefs.settings.a11y.dictation_locale',
-            type: chrome.settingsPrivate.PrefType.STRING,
-            value: 'en-US',
-          },
-        },
-        'accessibility': {
-          key: 'settings.accessibility',
+suite('<settings-manage-a11y-page>', () => {
+  let page: SettingsManageA11yPageElement;
+  let deviceBrowserProxy: TestDevicePageBrowserProxy;
+  const defaultPrefs = {
+    'settings': {
+      'a11y': {
+        'tablet_mode_shelf_nav_buttons_enabled': {
+          key: 'settings.a11y.tablet_mode_shelf_nav_buttons_enabled',
           type: chrome.settingsPrivate.PrefType.BOOLEAN,
           value: false,
         },
+        'dictation': {
+          key: 'prefs.settings.a11y.dictation',
+          type: chrome.settingsPrivate.PrefType.BOOLEAN,
+          value: true,
+        },
+        'dictation_locale': {
+          key: 'prefs.settings.a11y.dictation_locale',
+          type: chrome.settingsPrivate.PrefType.STRING,
+          value: 'en-US',
+        },
       },
-    };
+      'accessibility': {
+        key: 'settings.accessibility',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: false,
+      },
+    },
+  };
+
+  function initPage() {
+    page = document.createElement('settings-manage-a11y-page');
+    page.prefs = defaultPrefs;
+    document.body.appendChild(page);
   }
 
   setup(function() {
@@ -61,20 +59,16 @@ suite('ManageAccessibilityPageTests', function() {
     DevicePageBrowserProxyImpl.setInstanceForTesting(deviceBrowserProxy);
 
     loadTimeData.overrideValues({isKioskModeActive: true});
-    PolymerTest.clearBody();
     Router.getInstance().navigateTo(routes.MANAGE_ACCESSIBILITY);
   });
 
   teardown(function() {
-    if (page) {
-      page.remove();
-    }
+    page.remove();
     Router.getInstance().resetRouteForTesting();
   });
 
   test(
-      'Page loads without crashing when prefs are not yet initialized ' +
-          'in kiosk mode',
+      'Page loads without crashing when prefs are not yet initialized in kiosk mode',
       () => {
         loadTimeData.overrideValues({isKioskModeActive: true});
         page = document.createElement('settings-manage-a11y-page');
@@ -82,7 +76,7 @@ suite('ManageAccessibilityPageTests', function() {
 
         // Intentionally set prefs after page is appended to DOM to simulate
         // asynchronicity of initializing prefs
-        page.prefs = getDefaultPrefs();
+        page.prefs = defaultPrefs;
       });
 
   test('some parts are hidden in kiosk mode', function() {
@@ -98,11 +92,11 @@ suite('ManageAccessibilityPageTests', function() {
 
     // Accessibility learn more link should be hidden.
     assertFalse(
-        isVisible(page.shadowRoot.querySelector('setings-localized-link')));
+        isVisible(page.shadowRoot!.querySelector('setings-localized-link')));
 
     // Shelf navigation buttons are not shown in kiosk mode, even if
     // showTabletModeShelfNavigationButtonsSettings is true.
-    assertFalse(isVisible(page.shadowRoot.querySelector(
+    assertFalse(isVisible(page.shadowRoot!.querySelector(
         '#shelfNavigationButtonsEnabledControl')));
 
     const allowed_subpages = [
@@ -111,7 +105,7 @@ suite('ManageAccessibilityPageTests', function() {
       'ttsSubpageButton',
     ];
 
-    const subpages = page.root.querySelectorAll('cr-link-row');
+    const subpages = page.root!.querySelectorAll('cr-link-row');
     subpages.forEach(function(subpage) {
       if (isVisible(subpage)) {
         assertTrue(allowed_subpages.includes(subpage.id));
@@ -119,7 +113,8 @@ suite('ManageAccessibilityPageTests', function() {
     });
 
     // Additional features link is not visible.
-    assertFalse(isVisible(page.$.additionalFeaturesLink));
+    assertFalse(
+        isVisible(page.shadowRoot!.querySelector('#additionalFeaturesLink')));
   });
 
   test('Dictation labels', async () => {
@@ -138,8 +133,10 @@ suite('ManageAccessibilityPageTests', function() {
     flush();
 
     // Dictation toggle.
-    const dictationSetting = page.shadowRoot.querySelector('#enableDictation');
-    assertTrue(!!dictationSetting);
+    const dictationSetting =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#enableDictation');
+    assert(dictationSetting);
     assertTrue(dictationSetting.checked);
     assertEquals('Dictation', dictationSetting.label);
     assertEquals(
@@ -148,11 +145,13 @@ suite('ManageAccessibilityPageTests', function() {
 
     // Dictation locale menu.
     const dictationLocaleMenuLabel =
-        page.shadowRoot.querySelector('#dictationLocaleMenuLabel');
+        page.shadowRoot!.querySelector<HTMLElement>(
+            '#dictationLocaleMenuLabel');
     const dictationLocaleMenuSubtitle =
-        page.shadowRoot.querySelector('#dictationLocaleMenuSubtitle');
-    assertTrue(!!dictationLocaleMenuLabel);
-    assertTrue(!!dictationLocaleMenuSubtitle);
+        page.shadowRoot!.querySelector<HTMLElement>(
+            '#dictationLocaleMenuSubtitle');
+    assert(dictationLocaleMenuLabel);
+    assert(dictationLocaleMenuSubtitle);
     assertEquals('Language', dictationLocaleMenuLabel.innerText);
     assertEquals(
         'English (United States) is processed locally and works offline',
@@ -207,37 +206,37 @@ suite('ManageAccessibilityPageTests', function() {
       },
     ];
     webUIListenerCallback('dictation-locales-set', locales);
-    page.dictationLocaleSubtitleOverride_ = 'Testing';
+    page.set('dictationLocaleSubtitleOverride_', 'Testing');
     flush();
     assertEquals(
         'English (United States) is processed locally and works offline',
-        page.computeDictationLocaleSubtitle_());
+        page.get('dictationLocaleMenuSubtitle_'));
 
     // Changing the Dictation locale pref should change the subtitle
     // computation.
-    page.prefs.settings.a11y.dictation_locale.value = 'es';
+    page.set('prefs.settings.a11y.dictation_locale.value', 'es');
     assertEquals(
         'Couldn’t download Spanish speech files. Download will be attempted ' +
             'later. Speech is sent to Google for processing until download ' +
             'is completed.',
-        page.computeDictationLocaleSubtitle_());
+        page.get('dictationLocaleMenuSubtitle_'));
 
-    page.prefs.settings.a11y.dictation_locale.value = 'de';
+    page.set('prefs.settings.a11y.dictation_locale.value', 'de');
     assertEquals(
         'German speech is sent to Google for processing',
-        page.computeDictationLocaleSubtitle_());
+        page.get('dictationLocaleMenuSubtitle_'));
 
-    page.prefs.settings.a11y.dictation_locale.value = 'fr-FR';
+    page.set('prefs.settings.a11y.dictation_locale.value', 'fr-FR');
     assertEquals(
         'French (France) speech is sent to Google for processing',
-        page.computeDictationLocaleSubtitle_());
+        page.get('dictationLocaleMenuSubtitle_'));
 
     // Only use the subtitle override once.
-    page.useDictationLocaleSubtitleOverride_ = true;
-    assertEquals('Testing', page.computeDictationLocaleSubtitle_());
-    assertFalse(page.useDictationLocaleSubtitleOverride_);
+    page.set('useDictationLocaleSubtitleOverride_', true);
+    assertEquals('Testing', page['computeDictationLocaleSubtitle_']());
+    assertFalse(page.get('useDictationLocaleSubtitleOverride_'));
     assertEquals(
         'French (France) speech is sent to Google for processing',
-        page.computeDictationLocaleSubtitle_());
+        page['computeDictationLocaleSubtitle_']());
   });
 });

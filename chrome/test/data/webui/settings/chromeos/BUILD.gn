@@ -72,7 +72,6 @@ build_webui_tests("build") {
     "kerberos_accounts_test.js",
     "kerberos_page_test.js",
     "lock_screen_subpage_tests.ts",
-    "manage_accessibility_page_tests.js",
     "manage_users_subpage_tests.js",
     "multidevice_combined_setup_item_tests.js",
     "multidevice_feature_item_tests.js",
@@ -212,6 +211,7 @@ build_webui_tests("build") {
 
     "os_a11y_page/audio_and_captions_page_tests.ts",
     "os_a11y_page/keyboard_and_text_input_page_tests.ts",
+    "os_a11y_page/manage_accessibility_page_tests.ts",
     "os_a11y_page/text_to_speech_page_tests.ts",
     "os_a11y_page/text_to_speech_subpage_tests.ts",
     "os_a11y_page/tts_subpage_test.ts",
