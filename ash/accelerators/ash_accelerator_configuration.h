@@ -63,8 +63,8 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration {
       const ui::Accelerator& accelerator) override;
   mojom::AcceleratorConfigResult ReplaceAccelerator(
       AcceleratorActionId action_id,
-      const ui::Accelerator& old_acc,
-      const ui::Accelerator& new_acc) override;
+      const ui::Accelerator& old_accelerator,
+      const ui::Accelerator& new_accelerator) override;
   mojom::AcceleratorConfigResult RestoreDefault(
       AcceleratorActionId action_id) override;
   mojom::AcceleratorConfigResult RestoreAllDefaults() override;
@@ -123,6 +123,12 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration {
   mojom::AcceleratorConfigResult DoAddAccelerator(
       AcceleratorActionId action_id,
       const ui::Accelerator& accelerator);
+
+  // Replace the accelerator, does not notify observers.
+  mojom::AcceleratorConfigResult DoReplaceAccelerator(
+      AcceleratorActionId action_id,
+      const ui::Accelerator& old_accelerator,
+      const ui::Accelerator& new_accelerator);
 
   void NotifyAcceleratorsUpdated();
 

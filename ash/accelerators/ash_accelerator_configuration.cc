@@ -197,9 +197,21 @@ AcceleratorConfigResult AshAcceleratorConfiguration::RemoveAccelerator(
 
 AcceleratorConfigResult AshAcceleratorConfiguration::ReplaceAccelerator(
     AcceleratorActionId action_id,
-    const ui::Accelerator& old_acc,
-    const ui::Accelerator& new_acc) {
-  return AcceleratorConfigResult::kActionLocked;
+    const ui::Accelerator& old_accelerator,
+    const ui::Accelerator& new_accelerator) {
+  CHECK(::features::IsShortcutCustomizationEnabled());
+
+  const AcceleratorConfigResult result =
+      DoReplaceAccelerator(action_id, old_accelerator, new_accelerator);
+  if (result == AcceleratorConfigResult::kSuccess) {
+    UpdateAndNotifyAccelerators();
+  }
+
+  VLOG(1) << "ReplaceAccelerator caleld for ActionID: " << action_id
+          << ", old accelerator: " << old_accelerator.GetShortcutText()
+          << ", new accelerator: " << new_accelerator.GetShortcutText()
+          << " returned: " << static_cast<int>(result);
+  return result;
 }
 
 AcceleratorConfigResult AshAcceleratorConfiguration::RestoreDefault(
@@ -400,6 +412,30 @@ AcceleratorConfigResult AshAcceleratorConfiguration::DoAddAccelerator(
 
   // TODO(jimmyxgong): Update prefs to match updated state.
   return AcceleratorConfigResult::kSuccess;
+}
+
+mojom::AcceleratorConfigResult
+AshAcceleratorConfiguration::DoReplaceAccelerator(
+    AcceleratorActionId action_id,
+    const ui::Accelerator& old_accelerator,
+    const ui::Accelerator& new_accelerator) {
+  CHECK(::features::IsShortcutCustomizationEnabled());
+
+  // Check that `old_accelerator` belongs to `action_id`.
+  const AcceleratorAction* found_id = accelerator_to_id_.Find(old_accelerator);
+  if (!found_id || *found_id != action_id) {
+    return AcceleratorConfigResult::kNotFound;
+  }
+
+  // First remove the old accelerator.
+  const AcceleratorConfigResult remove_result =
+      DoRemoveAccelerator(action_id, old_accelerator);
+  if (remove_result != AcceleratorConfigResult::kSuccess) {
+    return remove_result;
+  }
+
+  // Now add the new accelerator.
+  return DoAddAccelerator(action_id, new_accelerator);
 }
 
 const DeprecatedAcceleratorData*
