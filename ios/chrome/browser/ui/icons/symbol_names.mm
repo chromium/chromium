@@ -129,6 +129,7 @@ NSString* const kDocSymbol = @"doc";
 NSString* const kOpenInDownloadsSymbol = @"arrow.down.to.line.compact";
 NSString* const kOpenInDownloadsiOS14Symbol = @"arrow.down.to.line.alt";
 NSString* const kExternalLinkSymbol = @"arrow.up.forward.square";
+NSString* const kChevronDownSymbol = @"chevron.down";
 NSString* const kChevronForwardSymbol = @"chevron.forward";
 NSString* const kGlobeAmericasSymbol = @"globe.americas.fill";
 NSString* const kGlobeSymbol = @"globe";
