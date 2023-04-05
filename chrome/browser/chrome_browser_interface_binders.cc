@@ -959,6 +959,7 @@ void PopulateChromeWebUIFrameBinders(
       ash::OobeUI, ash::personalization_app::PersonalizationAppUI,
       ash::settings::OSSettingsUI, ash::DiagnosticsDialogUI,
       ash::FirmwareUpdateAppUI,
+      ash::printing::printing_manager::PrintManagementUI,
 #endif
       NewTabPageUI, OmniboxPopupUI, BookmarksSidePanelUI>(map);
 

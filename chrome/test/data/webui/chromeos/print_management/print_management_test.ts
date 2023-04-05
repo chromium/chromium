@@ -10,6 +10,7 @@ import {setMetadataProviderForTesting} from 'chrome://print-management/mojo_inte
 import {PrintJobEntryElement} from 'chrome://print-management/print_job_entry.js';
 import {PrintManagementElement} from 'chrome://print-management/print_management.js';
 import {ActivePrintJobInfo, ActivePrintJobState, CompletedPrintJobInfo, PrinterErrorCode, PrintingMetadataProviderInterface, PrintJobCompletionStatus, PrintJobInfo, PrintJobsObserverRemote} from 'chrome://print-management/printing_manager.mojom-webui.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -814,6 +815,40 @@ suite('PrintManagementTest', () => {
     // TODO(crbug/1093527): Show error message to user after UX guidance.
     assertTrue(!querySelector(page!, '#ongoingList'));
     verifyPrintJobs(expectedHistoryList, getHistoryPrintJobEntries(page!));
+  });
+
+  test('IsJellyEnabledForPrintManagementUpdatesCSS', async () => {
+    const disabledUrl = 'chrome://resources/chromeos/colors/cros_styles.css';
+    const linkEl = document.createElement('link');
+    linkEl.href = disabledUrl;
+    document.head.appendChild(linkEl);
+
+    // Setup for disabled test.
+    loadTimeData.overrideValues({
+      isJellyEnabledForPrintManagement: false,
+    });
+
+    await initializePrintManagementApp([]);
+
+    assertTrue(linkEl.href.includes(disabledUrl));
+
+    // Clean up element.
+    page?.remove();
+    page = null;
+    document.body.innerHTML = '';
+
+    // Setup for enabled test.
+    loadTimeData.overrideValues({
+      isJellyEnabledForPrintManagement: true,
+    });
+
+    await initializePrintManagementApp([]);
+
+    const enabledUrl = 'chrome://theme/colors.css';
+    assertTrue(linkEl.href.includes(enabledUrl));
+
+    // Clean up test element.
+    document.head.removeChild(linkEl);
   });
 });
 
