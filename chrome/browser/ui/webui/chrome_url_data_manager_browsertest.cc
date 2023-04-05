@@ -394,8 +394,11 @@ static constexpr const char* const kChromeUrls[] = {
 #endif
 #if !BUILDFLAG(IS_MAC)
     "chrome://sandbox",
+// NaCl isn't supported on ARM64 Windows.
+#if !BUILDFLAG(IS_WIN) || !defined(ARCH_CPU_ARM64)
     "chrome://nacl",
 #endif
+#endif  // !BUILDFLAG(IS_MAC)
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_LACROS)
     // TODO(https://crbug.com/1219651): this test is flaky on mac.
     "chrome://bluetooth-internals",
