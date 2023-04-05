@@ -1075,7 +1075,9 @@ class VectorRawPtrRewriter {
     // Handles: std::swap(member, temp); std::swap(temp, member);
     auto std_swap_call =
         traverse(clang::TK_IgnoreUnlessSpelledInSource,
-                 callExpr(callee(functionDecl(hasName("std::swap"))),
+                 callExpr(anyOf(callee(functionDecl(hasName("std::swap"))),
+                                isExpandedFromMacro("EXPECT_EQ"),
+                                isExpandedFromMacro("ASSERT_EQ")),
                           hasArgument(0, lhs_expr_variations),
                           hasArgument(1, rhs_expr_variations),
                           unless(isExpansionInSystemHeader())));

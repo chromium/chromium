@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 #include <vector>
 
+#define EXPECT_EQ(x, y) x == y
+#define ASSERT_EQ(x, y) EXPECT_EQ(x, y)
+
 struct S {};
 
 struct obj {
@@ -129,6 +132,14 @@ void fct() {
     // Expected rewrite: std::vector<raw_ptr<S>> d;
     std::vector<S*> d;
     std::swap(d, *a);
+
+    // Expected rewrite: std::vector<raw_ptr<S>> e;
+    std::vector<S*> e;
+    EXPECT_EQ(e, *a);
+
+    // Expected rewrite: std::vector<raw_ptr<S>> d;
+    std::vector<S*> f;
+    ASSERT_EQ(f, *a);
   }
 
   {
