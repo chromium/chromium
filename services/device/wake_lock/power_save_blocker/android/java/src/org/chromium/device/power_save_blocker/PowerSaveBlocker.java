@@ -16,7 +16,8 @@ import java.util.WeakHashMap;
 class PowerSaveBlocker {
     // Counter associated to a view to know how many PowerSaveBlocker are
     // currently registered. Using WeakHashMap to prevent leaks in Android WebView.
-    private static WeakHashMap<View, Integer> sBlockViewCounter = new WeakHashMap<View, Integer>();
+    private static final WeakHashMap<View, Integer> sBlockViewCounter =
+            new WeakHashMap<View, Integer>();
 
     // WeakReference to prevent leaks in Android WebView.
     private WeakReference<View> mKeepScreenOnView;
@@ -38,11 +39,11 @@ class PowerSaveBlocker {
         if (prev_counter == null) {
             sBlockViewCounter.put(view, 1);
         } else {
-            assert prev_counter.intValue() >= 0;
-            sBlockViewCounter.put(view, prev_counter.intValue() + 1);
+            assert prev_counter >= 0;
+            sBlockViewCounter.put(view, prev_counter + 1);
         }
 
-        if (prev_counter == null || prev_counter.intValue() == 0) view.setKeepScreenOn(true);
+        if (prev_counter == null || prev_counter == 0) view.setKeepScreenOn(true);
     }
 
     @CalledByNative
@@ -59,9 +60,9 @@ class PowerSaveBlocker {
 
         Integer prev_counter = sBlockViewCounter.get(view);
         assert prev_counter != null;
-        assert prev_counter.intValue() > 0;
-        sBlockViewCounter.put(view, prev_counter.intValue() - 1);
+        assert prev_counter > 0;
+        sBlockViewCounter.put(view, prev_counter - 1);
 
-        if (prev_counter.intValue() == 1) view.setKeepScreenOn(false);
+        if (prev_counter == 1) view.setKeepScreenOn(false);
     }
 }
