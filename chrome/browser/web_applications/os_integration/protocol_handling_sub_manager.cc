@@ -80,10 +80,6 @@ void ProtocolHandlingSubManager::Configure(
   std::move(configure_done).Run();
 }
 
-void ProtocolHandlingSubManager::Start() {}
-
-void ProtocolHandlingSubManager::Shutdown() {}
-
 void ProtocolHandlingSubManager::Execute(
     const AppId& app_id,
     const absl::optional<SynchronizeOsOptions>& synchronize_options,

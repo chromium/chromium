@@ -63,10 +63,6 @@ void UninstallationViaOsSettingsSubManager::Configure(
   std::move(configure_done).Run();
 }
 
-void UninstallationViaOsSettingsSubManager::Start() {}
-
-void UninstallationViaOsSettingsSubManager::Shutdown() {}
-
 void UninstallationViaOsSettingsSubManager::Execute(
     const AppId& app_id,
     const absl::optional<SynchronizeOsOptions>& synchronize_options,

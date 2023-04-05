@@ -22,8 +22,6 @@ class ProtocolHandlingSubManager : public OsIntegrationSubManager {
  public:
   ProtocolHandlingSubManager(Profile* profile, WebAppRegistrar& registrar);
   ~ProtocolHandlingSubManager() override;
-  void Start() override;
-  void Shutdown() override;
   void Configure(const AppId& app_id,
                  proto::WebAppOsIntegrationState& desired_state,
                  base::OnceClosure configure_done) override;

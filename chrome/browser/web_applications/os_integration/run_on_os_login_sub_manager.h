@@ -30,8 +30,6 @@ class RunOnOsLoginSubManager : public OsIntegrationSubManager {
                                   WebAppSyncBridge& sync_bridge,
                                   WebAppIconManager& icon_manager);
   ~RunOnOsLoginSubManager() override;
-  void Start() override;
-  void Shutdown() override;
 
   void Configure(const AppId& app_id,
                  proto::WebAppOsIntegrationState& desired_state,

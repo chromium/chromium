@@ -140,10 +140,6 @@ void FileHandlingSubManager::Configure(
   std::move(configure_done).Run();
 }
 
-void FileHandlingSubManager::Start() {}
-
-void FileHandlingSubManager::Shutdown() {}
-
 void FileHandlingSubManager::Execute(
     const AppId& app_id,
     const absl::optional<SynchronizeOsOptions>& synchronize_options,
@@ -215,9 +211,11 @@ void FileHandlingSubManager::Register(
 
   // TODO(https://crbug.com/1295044): remove after fully deprecate old
   // `InstallOsHooks/UninstallOsHooks` paths.
-  ScopedRegistryUpdate update(&sync_bridge_.get());
-  update->UpdateApp(app_id)->SetFileHandlerOsIntegrationState(
-      OsIntegrationState::kEnabled);
+  {
+    ScopedRegistryUpdate update(&sync_bridge_.get());
+    update->UpdateApp(app_id)->SetFileHandlerOsIntegrationState(
+        OsIntegrationState::kEnabled);
+  }
 
   RegisterFileHandlersWithOs(
       app_id, registrar_->GetAppShortName(app_id), &profile_.get(),

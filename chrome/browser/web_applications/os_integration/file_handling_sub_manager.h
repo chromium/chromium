@@ -32,8 +32,6 @@ class FileHandlingSubManager : public OsIntegrationSubManager {
                          WebAppRegistrar& registrar,
                          WebAppSyncBridge& sync_bridge);
   ~FileHandlingSubManager() override;
-  void Start() override;
-  void Shutdown() override;
 
   void Configure(const AppId& app_id,
                  proto::WebAppOsIntegrationState& desired_state,

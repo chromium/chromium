@@ -26,8 +26,6 @@ class ShortcutMenuHandlingSubManager : public OsIntegrationSubManager {
                                  WebAppIconManager& icon_manager,
                                  WebAppRegistrar& registrar);
   ~ShortcutMenuHandlingSubManager() override;
-  void Start() override;
-  void Shutdown() override;
 
   void Configure(const AppId& app_id,
                  proto::WebAppOsIntegrationState& desired_state,

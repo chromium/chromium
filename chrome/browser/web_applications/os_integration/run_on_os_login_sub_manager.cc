@@ -104,10 +104,6 @@ void RunOnOsLoginSubManager::Configure(
   std::move(configure_done).Run();
 }
 
-void RunOnOsLoginSubManager::Start() {}
-
-void RunOnOsLoginSubManager::Shutdown() {}
-
 void RunOnOsLoginSubManager::Execute(
     const AppId& app_id,
     const absl::optional<SynchronizeOsOptions>& synchronize_options,
