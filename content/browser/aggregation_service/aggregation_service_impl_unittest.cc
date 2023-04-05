@@ -64,6 +64,7 @@ AggregatableReport CreateExampleAggregatableReport() {
   return AggregatableReport(
       std::move(payloads), "example_shared_info",
       /*debug_key=*/absl::nullopt,
+      /*additional_fields=*/{},
       ::aggregation_service::mojom::AggregationCoordinator::kDefault);
 }
 

@@ -165,6 +165,7 @@ AggregatableReport CreateExampleAggregatableReport() {
   return AggregatableReport(
       std::move(payloads), shared_info.SerializeAsJson(),
       /*debug_key=*/absl::nullopt,
+      /*additional_fields=*/{},
       ::aggregation_service::mojom::AggregationCoordinator::kDefault);
 }
 

@@ -1104,6 +1104,36 @@ TEST_F(AggregationServiceStorageSqlTest,
       stored_requests_and_ids[0].request, request));
 }
 
+TEST_F(AggregationServiceStorageSqlTest,
+       StoreRequestWithAdditionalFields_DeserializedWithFields) {
+  OpenDatabase();
+
+  EXPECT_FALSE(storage_->NextReportTimeAfter(base::Time::Min()).has_value());
+  EXPECT_TRUE(
+      storage_->GetRequestsReportingOnOrBefore(base::Time::Max()).empty());
+
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest();
+
+  AggregatableReportRequest request =
+      AggregatableReportRequest::Create(
+          example_request.payload_contents(),
+          example_request.shared_info().Clone(),
+          /*reporting_path=*/std::string(),
+          /*debug_key=*/absl::nullopt,
+          /*additional_fields=*/{{"additional_key", "example_value"}})
+          .value();
+
+  storage_->StoreRequest(aggregation_service::CloneReportRequest(request));
+
+  std::vector<AggregationServiceStorage::RequestAndId> stored_requests_and_ids =
+      storage_->GetRequestsReportingOnOrBefore(base::Time::Max());
+
+  ASSERT_EQ(stored_requests_and_ids.size(), 1u);
+  EXPECT_TRUE(aggregation_service::ReportRequestsEqual(
+      stored_requests_and_ids[0].request, request));
+}
+
 TEST_F(AggregationServiceStorageSqlInMemoryTest,
        DatabaseInMemoryReopened_RequestsNotPersisted) {
   OpenDatabase();
