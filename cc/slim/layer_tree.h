@@ -135,6 +135,15 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTree {
   virtual void SetNeedsAnimate() = 0;
   virtual void SetNeedsRedraw() = 0;
 
+  // Works in combination with DelayedScheduler to indicate all the updates in
+  // for a frame has arrived and a frame should be produced now. If compositor
+  // is ready, it will immediately call `LayerTreeClient::BeginFrame`.
+  // It is never a requirement to call MaybeCompositeNow every frame, and
+  // calling it never guarantees a frame is produced immediately.
+  // TODO(boliu): Move this method to DelayedScheduler once DelayedScheduler
+  // moved out of slim.
+  virtual void MaybeCompositeNow() = 0;
+
   // Set the top controls visual height for the next frame submitted.
   virtual void UpdateTopControlsVisibleHeight(float height) = 0;
 };

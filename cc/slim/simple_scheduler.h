@@ -21,6 +21,10 @@ class COMPONENT_EXPORT(CC_SLIM) SimpleScheduler : public Scheduler {
   void Initialize(SchedulerClient* client) override;
   void OnBeginFrameFromViz(
       const viz::BeginFrameArgs& begin_frame_args) override;
+  void OnBeginFramePausedChanged(bool paused) override {}
+  void SetNeedsBeginFrame(bool needs_begin_frame) override {}
+  void SetIsSwapThrottled(bool is_swap_throttled) override {}
+  void MaybeCompositeNow() override {}
 
  private:
   raw_ptr<SchedulerClient> client_ = nullptr;

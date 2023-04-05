@@ -62,6 +62,7 @@ class COMPONENT_EXPORT(CC_SLIM) FrameSinkImpl
   // Called by LayerTree. Virtual for testing.
   virtual bool BindToClient(FrameSinkImplClient* client);
   virtual void SetNeedsBeginFrame(bool needs_begin_frame);
+  void MaybeCompositeNow();
   void UploadUIResource(cc::UIResourceId resource_id,
                         cc::UIResourceBitmap resource_bitmap);
   void MarkUIResourceForDeletion(cc::UIResourceId resource_id);
