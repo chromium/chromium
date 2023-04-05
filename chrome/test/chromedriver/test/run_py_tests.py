@@ -3124,7 +3124,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
                                 })
     decoded_pdf = base64.b64decode(pdf)
     self.assertTrue(decoded_pdf.startswith(b'%PDF'))
-    self.assertTrue(decoded_pdf.endswith(b'%%EOF'))
+    self.assertTrue(decoded_pdf.endswith(b'%%EOF\n'))
 
   def testPrintInvalidArgument(self):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
@@ -5511,7 +5511,7 @@ class HeadlessChromeDriverTest(ChromeDriverBaseTestWithWebServer):
                                 })
     decoded_pdf = base64.b64decode(pdf)
     self.assertTrue(decoded_pdf.startswith(b"%PDF"))
-    self.assertTrue(decoded_pdf.endswith(b"%%EOF"))
+    self.assertTrue(decoded_pdf.endswith(b"%%EOF\n"))
 
   def testPrintInvalidArgumentHeadless(self):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
