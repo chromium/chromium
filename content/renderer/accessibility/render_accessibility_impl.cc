@@ -209,6 +209,7 @@ void RenderAccessibilityImpl::DidCommitProvisionalLoad(
   ax_image_annotator_->Destroy();
   ax_image_annotator_.reset();
   page_language_.clear();
+  serialization_in_flight_ = false;
   weak_factory_for_pending_events_.InvalidateWeakPtrs();
   weak_factory_for_serialization_pipeline_.InvalidateWeakPtrs();
 }
@@ -697,10 +698,6 @@ int RenderAccessibilityImpl::GetDeferredEventsDelay() {
                                       : kDelayForDeferredUpdatesBeforePageLoad;
 }
 
-bool RenderAccessibilityImpl::IsWaitingForAck() const {
-  return weak_factory_for_pending_events_.HasWeakPtrs();
-}
-
 void RenderAccessibilityImpl::AXReadyCallback() {
   if (!serialize_post_lifecycle_) {
     return;
@@ -712,8 +709,8 @@ void RenderAccessibilityImpl::AXReadyCallback() {
   DCHECK(render_frame_);
   DCHECK(render_frame_->in_frame_tree());
 
-  if (IsWaitingForAck()) {
-    // Another serialization is in flight. WHen it's finished, a new
+  if (serialization_in_flight_) {
+    // Another serialization is in flight. When it's finished, a new
     // serialization will be triggered if necessary.
     return;
   }
@@ -763,6 +760,7 @@ void RenderAccessibilityImpl::AXReadyCallback() {
   weak_factory_for_serialization_pipeline_.InvalidateWeakPtrs();
 
   last_serialization_timestamp_ = now;
+  serialization_in_flight_ = true;
 
   SendPendingAccessibilityEvents();
 }
@@ -771,7 +769,8 @@ void RenderAccessibilityImpl::ScheduleImmediateAXUpdate() {
   if (serialize_post_lifecycle_) {
     // This makes sure that we'll serialize at the next available opportunity.
     last_serialization_timestamp_ = kSerializeAtNextOpportunity;
-    if (IsWaitingForAck()) {
+    if (serialization_in_flight_) {
+      immediate_update_required_after_ack_ = true;
       return;  // Wait until current serialization message has been received.
     }
 
@@ -862,6 +861,8 @@ void RenderAccessibilityImpl::LegacyScheduleSendPendingAccessibilityEvents(
   // When no accessibility events are in-flight post a task to send
   // the events to the browser. We use PostTask so that we can queue
   // up additional events.
+  DCHECK(!serialization_in_flight_);
+  serialization_in_flight_ = true;
   render_frame_->GetTaskRunner(blink::TaskType::kInternalDefault)
       ->PostDelayedTask(
           FROM_HERE,
@@ -1232,7 +1233,7 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
                "RenderAccessibilityImpl::SendPendingAccessibilityEvents");
   base::ElapsedTimer timer;
 
-  DCHECK(!serialize_post_lifecycle_ || !IsWaitingForAck());
+  DCHECK(!serialize_post_lifecycle_ || !serialization_in_flight_);
 
   if (!serialize_post_lifecycle_) {
     // Clear status here in case we return early.
@@ -1241,6 +1242,7 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
   WebDocument document = GetMainDocument();
   DCHECK(serialize_post_lifecycle_ || !document.IsNull());
   if (document.IsNull()) {
+    serialization_in_flight_ = false;
     return;
   }
 
@@ -1297,6 +1299,7 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
       // defer so that the batch of events is larger. If any interactive events
       // come in, the batch will be processed immediately.
       legacy_event_schedule_mode_ = LegacyEventScheduleMode::kDeferEvents;
+      serialization_in_flight_ = false;
       return;
     }
 
@@ -1353,6 +1356,7 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
     DCHECK(updates_and_events->events.empty())
         << "If there are no updates, there also shouldn't be any events, "
            "because events always mark an object dirty.";
+    serialization_in_flight_ = false;
     return;
   }
 
@@ -1423,6 +1427,7 @@ void RenderAccessibilityImpl::LegacyOnAccessibilityEventsHandled() {
   DCHECK(!serialize_post_lifecycle_);
   DCHECK_EQ(legacy_event_schedule_status_,
             LegacyEventScheduleStatus::kWaitingForAck);
+  serialization_in_flight_ = false;
   legacy_event_schedule_status_ = LegacyEventScheduleStatus::kNotWaiting;
   switch (legacy_event_schedule_mode_) {
     case LegacyEventScheduleMode::kDeferEvents:
@@ -1439,7 +1444,13 @@ void RenderAccessibilityImpl::OnSerializationReceived() {
   // dirty. In that case, make sure a visual update is scheduled so that
   // AXReadyCallback() will be called. ScheduleAXUpdate() will only schedule a
   // visual update if the AXObjectCache is dirty.
-  ax_context_->ScheduleAXUpdate();
+  serialization_in_flight_ = false;
+  if (immediate_update_required_after_ack_) {
+    ScheduleImmediateAXUpdate();
+    immediate_update_required_after_ack_ = false;
+  } else {
+    ax_context_->ScheduleAXUpdate();
+  }
 }
 
 void RenderAccessibilityImpl::OnLoadInlineTextBoxes(
@@ -1494,6 +1505,7 @@ void RenderAccessibilityImpl::OnGetImageData(const ui::AXActionTarget* target,
 
 void RenderAccessibilityImpl::LegacyCancelScheduledEvents() {
   DCHECK(!serialize_post_lifecycle_);
+  serialization_in_flight_ = false;
   switch (legacy_event_schedule_status_) {
     case LegacyEventScheduleStatus::kScheduledDeferred:
     case LegacyEventScheduleStatus::kScheduledImmediate:  // Fallthrough
