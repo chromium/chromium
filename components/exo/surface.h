@@ -333,9 +333,6 @@ class Surface final : public ui::PropertyHandler {
   // Returns true if surface has been assigned a surface delegate.
   bool HasSurfaceDelegate() const;
 
-  // Returns a pointer to the SurfaceDelegate for this surface, used by tests.
-  SurfaceDelegate* GetDelegateForTesting();
-
   // Surface does not own observers. It is the responsibility of the observer
   // to remove itself when it is done observing.
   void AddSurfaceObserver(SurfaceObserver* observer);
