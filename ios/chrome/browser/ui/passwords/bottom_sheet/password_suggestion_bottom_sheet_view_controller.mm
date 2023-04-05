@@ -144,15 +144,35 @@ CGFloat const kTableViewCornerRadius = 10;
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   TableViewURLCell* cell =
       [tableView dequeueReusableCellWithIdentifier:@"cell"];
+  cell.selectionStyle = UITableViewCellSelectionStyleNone;
+
   cell.titleLabel.text = [self suggestionAtRow:indexPath.row];
   cell.textLabel.lineBreakMode = NSLineBreakByTruncatingHead;
   cell.URLLabel.text = [self descriptionAtRow:indexPath.row];
   cell.URLLabel.hidden = NO;
 
-  cell.titleLabel.textColor = (_row == indexPath.row && !_tableViewIsMinimized)
-                                  ? [UIColor greenColor]
-                                  : [UIColor colorNamed:kTextPrimaryColor];
+  cell.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+
+  if (_tableViewIsMinimized && (_suggestions.count > 1)) {
+    // The table view is showing a single suggestion and the chevron down
+    // symbol, which can be tapped in order to expand the list of suggestions.
+    cell.accessoryView = [[UIImageView alloc]
+        initWithImage:DefaultSymbolTemplateWithPointSize(
+                          kChevronDownSymbol, kSymbolAccessoryPointSize)];
+    cell.accessoryView.tintColor = [UIColor colorNamed:kTextQuaternaryColor];
+  } else if (_row == indexPath.row) {
+    // The table view is showing all suggestions, and this cell contains the
+    // currently selected suggestion, so we display a checkmark on this cell.
+    cell.accessoryView = [[UIImageView alloc]
+        initWithImage:DefaultSymbolTemplateWithPointSize(
+                          kCheckmarkSymbol, kSymbolAccessoryPointSize)];
+    cell.accessoryView.tintColor = [UIColor colorNamed:kBlueColor];
+  } else {
+    // The table view is showing all suggestions, and this cell does not contain
+    // the currently selected suggestion.
+    cell.accessoryView = nil;
+  }
   return cell;
 }
 
