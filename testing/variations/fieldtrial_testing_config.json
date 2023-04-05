@@ -2436,6 +2436,26 @@
             ]
         }
     ],
+    "CheckHTMLParserBudgetLessOften": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Nonstable_20230320",
+                    "enable_features": [
+                        "CheckHTMLParserBudgetLessOften"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeCartDomBasedHeuristics": [
         {
             "platforms": [
