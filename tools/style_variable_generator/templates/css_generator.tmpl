@@ -36,9 +36,9 @@ html:not(body) {
 
 }
 
-{%- if font_families %}
-
+{%- if font_families or typefaces %}
 html {
+{%- if font_families %}
   /* font families */
 {%-   for name, value in font_families.items() %}
   {{name | to_css_var_name}}: {{value}};
@@ -57,6 +57,7 @@ html {
   {{name | to_css_var_name}}-line-height: {{typeface.line_height}}px;
 
 {%   endfor -%}
+{%- endif %}
 }
 {%- endif %}
 
