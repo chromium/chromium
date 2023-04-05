@@ -31,6 +31,7 @@
 // sandbox: Google User-Land Application Sandbox
 namespace sandbox {
 
+class BrokerServicesTargetTracker;
 class PolicyDiagnosticsReceiver;
 class ProcessState;
 class TargetPolicy;
@@ -60,6 +61,11 @@ class [[clang::lto_visibility_public]] BrokerServices {
   // If the return is ERROR_GENERIC, you can call ::GetLastError() to get
   // more information.
   virtual ResultCode Init() = 0;
+
+  // May be called in place of Init in test code to add a tracker that validates
+  // job notifications and signals an event when all tracked processes are done.
+  virtual ResultCode InitForTesting(
+      std::unique_ptr<BrokerServicesTargetTracker> target_tracker) = 0;
 
   // Pre-creates an alternate desktop. Must be called before a non-default
   // desktop is used by any process.
@@ -119,13 +125,6 @@ class [[clang::lto_visibility_public]] BrokerServices {
                                  std::unique_ptr<TargetPolicy> policy,
                                  DWORD* last_error,
                                  PROCESS_INFORMATION* target) = 0;
-
-  // This call blocks (waits) for all the targets to terminate.
-  // Returns:
-  //   ALL_OK if successful. All other return values imply failure.
-  //   If the return is ERROR_GENERIC, you can call ::GetLastError() to get
-  //   more information.
-  virtual ResultCode WaitForAllTargets() = 0;
 
   // This call creates a snapshot of policies managed by the sandbox and
   // returns them via a helper class.
@@ -229,6 +228,18 @@ class [[clang::lto_visibility_public]] PolicyDiagnosticsReceiver {
   // will not be called.
   virtual void OnError(ResultCode code) = 0;
   virtual ~PolicyDiagnosticsReceiver() {}
+};
+
+// For tests only -  this class is notified when the sandbox's internal tracking
+// thread sees a process added or removed. Methods in this class should complete
+// quickly and should not have side effects.
+class [[clang::lto_visibility_public]] BrokerServicesTargetTracker {
+ public:
+  // Called when job notifications indicate that a new process is added.
+  virtual void OnTargetAdded() = 0;
+  // Called when job notifications indicate that a process has finished.
+  virtual void OnTargetRemoved() = 0;
+  virtual ~BrokerServicesTargetTracker() {}
 };
 
 }  // namespace sandbox

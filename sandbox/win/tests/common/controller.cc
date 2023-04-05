@@ -4,6 +4,7 @@
 
 #include "sandbox/win/tests/common/controller.h"
 
+#include <memory>
 #include <string>
 
 #include "base/check.h"
@@ -12,6 +13,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
+#include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -25,11 +27,58 @@
 
 namespace {
 
+// Used by the machinery that counts how many processes the sandbox is tracking.
+HANDLE g_no_targets_event = nullptr;
+
+// Helper to track the number of live processes, sets an event when there are
+// none and resets it when one process is added.
+class TargetTracker : public sandbox::BrokerServicesTargetTracker {
+ public:
+  TargetTracker(HANDLE no_targets) : no_targets_event_(no_targets) {
+    // We create this in a test thread but it is only accessed on the sandbox
+    // internal events thread.
+    DETACH_FROM_SEQUENCE(target_events_sequence_);
+    ::ResetEvent(no_targets_event_);
+  }
+  TargetTracker(const TargetTracker&) = delete;
+  TargetTracker& operator=(const TargetTracker&) = delete;
+  ~TargetTracker() override {}
+
+  void OnTargetAdded() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(target_events_sequence_);
+    ++targets_;
+    if (1 == targets_) {
+      ::ResetEvent(no_targets_event_);
+    }
+  }
+  void OnTargetRemoved() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(target_events_sequence_);
+    CHECK_NE(targets_, 0U);
+    --targets_;
+    if (targets_ == 0) {
+      ::SetEvent(no_targets_event_);
+    }
+  }
+
+ private:
+  // Event is owned by the test framework but we can set it.
+  const HANDLE no_targets_event_;
+  // Number of processes we're tracking (both directly associated with a
+  // TargetPolicy in a job, and those launched by tracked jobs).
+  size_t targets_ GUARDED_BY_CONTEXT(target_events_sequence_) = 0;
+  SEQUENCE_CHECKER(target_events_sequence_);
+};
+
 bool IsProcessRunning(HANDLE process) {
   DWORD exit_code = 0;
   if (::GetExitCodeProcess(process, &exit_code))
     return exit_code == STILL_ACTIVE;
   return false;
+}
+
+bool WaitForAllTargetsInternal() {
+  ::WaitForSingleObject(g_no_targets_event, INFINITE);
+  return true;
 }
 
 }  // namespace
@@ -87,8 +136,15 @@ BrokerServices* GetBroker() {
   }
 
   if (!is_initialized) {
-    if (SBOX_ALL_OK != broker->Init())
-      return NULL;
+    g_no_targets_event = ::CreateEventW(nullptr, true, false, nullptr);
+    if (!g_no_targets_event) {
+      return nullptr;
+    }
+
+    auto tracker = std::make_unique<TargetTracker>(g_no_targets_event);
+    if (SBOX_ALL_OK != broker->InitForTesting(std::move(tracker))) {
+      return nullptr;
+    }
 
     is_initialized = true;
   }
@@ -142,6 +198,10 @@ TargetPolicy* TestRunner::GetPolicy() {
 TestRunner::~TestRunner() {
   if (target_process_.IsValid() && kill_on_destruction_)
     ::TerminateProcess(target_process_.Get(), 0);
+}
+
+bool TestRunner::WaitForAllTargets() {
+  return WaitForAllTargetsInternal();
 }
 
 bool TestRunner::AddRule(SubSystem subsystem,

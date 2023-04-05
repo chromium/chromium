@@ -256,7 +256,7 @@ TEST(IntegrationTestsTest, WaitForStuckChild) {
   runner.SetKillOnDestruction(false);
   ASSERT_EQ(SBOX_TEST_SUCCEEDED,
             runner.RunTest(L"IntegrationTestsTest_stuck 100"));
-  ASSERT_EQ(SBOX_ALL_OK, runner.broker()->WaitForAllTargets());
+  ASSERT_TRUE(runner.WaitForAllTargets());
 }
 
 // Running from inside job that allows us to escape from it should be ok.
@@ -321,7 +321,7 @@ TEST(IntegrationTestsTest, GetPolicyDiagnosticsReflectsActiveChildren) {
   }
 
   SetEvent(handle_done.Get());
-  ASSERT_EQ(SBOX_ALL_OK, runner.broker()->WaitForAllTargets());
+  ASSERT_TRUE(runner.WaitForAllTargets());
 
   // TODO(ajgo) WaitForAllTargets is satisfied when the final process
   // in a job exits but before the final job notification is received
@@ -355,7 +355,7 @@ TEST(IntegrationTestsTest, JobMemoryLimitCounted) {
   ASSERT_EQ(WAIT_OBJECT_0,
             ::WaitForSingleObject(handle_started.Get(),
                                   sandbox::SboxTestEventTimeout()));
-  ASSERT_EQ(SBOX_ALL_OK, runner.broker()->WaitForAllTargets());
+  ASSERT_TRUE(runner.WaitForAllTargets());
   DWORD exit_code = 0;
   ASSERT_TRUE(::GetExitCodeProcess(runner.process(), &exit_code));
   ASSERT_EQ(DWORD{SBOX_FATAL_MEMORY_EXCEEDED}, exit_code);
