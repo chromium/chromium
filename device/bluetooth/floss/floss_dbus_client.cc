@@ -197,6 +197,7 @@ const char kServerSendNotification[] = "SendNotification";
 const char kOnServerRegistered[] = "OnServerRegistered";
 const char kOnServerConnectionState[] = "OnServerConnectionState";
 const char kOnServerServiceAdded[] = "OnServiceAdded";
+const char kOnServerServiceRemoved[] = "OnServiceRemoved";
 const char kOnServerCharacteristicReadRequest[] = "OnCharacteristicReadRequest";
 const char kOnServerDescriptorReadRequest[] = "OnDescriptorReadRequest";
 const char kOnServerCharacteristicWriteRequest[] =

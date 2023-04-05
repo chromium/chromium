@@ -590,6 +590,9 @@ void FlossGattManagerClient::Init(dbus::Bus* bus,
       gatt::kOnServerServiceAdded,
       &FlossGattServerObserver::GattServerServiceAdded);
   gatt_server_exported_callback_manager_.AddMethod(
+      gatt::kOnServerServiceRemoved,
+      &FlossGattServerObserver::GattServerServiceRemoved);
+  gatt_server_exported_callback_manager_.AddMethod(
       gatt::kOnServerCharacteristicReadRequest,
       &FlossGattServerObserver::GattServerCharacteristicReadRequest);
   gatt_server_exported_callback_manager_.AddMethod(
@@ -861,6 +864,13 @@ void FlossGattManagerClient::GattServerServiceAdded(GattStatus status,
                                                     GattService service) {
   for (auto& observer : gatt_server_observers_) {
     observer.GattServerServiceAdded(status, service);
+  }
+}
+
+void FlossGattManagerClient::GattServerServiceRemoved(GattStatus status,
+                                                      int32_t handle) {
+  for (auto& observer : gatt_server_observers_) {
+    observer.GattServerServiceRemoved(status, handle);
   }
 }
 

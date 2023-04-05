@@ -69,11 +69,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattCharacteristicFloss
       std::vector<uint8_t> value) override;
 
   void ResolveInstanceId(const GattService& service);
+  int32_t InstanceId() const { return floss_instance_id_; }
   const std::vector<std::unique_ptr<BluetoothLocalGattDescriptorFloss>>&
   GetDescriptors() const;
 
  private:
-  friend class BluetoothAdapterFloss;
   friend class BluetoothLocalGattServiceFloss;
   friend class BluetoothLocalGattDescriptorFloss;
 

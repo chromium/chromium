@@ -197,6 +197,7 @@ void BluetoothAdapterFloss::AddAdapterObservers() {
   FlossDBusManager::Get()->GetAdapterClient()->AddObserver(this);
   FlossDBusManager::Get()->GetLEScanClient()->AddObserver(this);
   FlossDBusManager::Get()->GetBatteryManagerClient()->AddObserver(this);
+  FlossDBusManager::Get()->GetGattManagerClient()->AddServerObserver(this);
 #if BUILDFLAG(IS_CHROMEOS)
   FlossDBusManager::Get()->GetAdminClient()->AddObserver(this);
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -206,6 +207,7 @@ void BluetoothAdapterFloss::RemoveAdapterObservers() {
   // Clean up observers
   FlossDBusManager::Get()->GetAdapterClient()->RemoveObserver(this);
   FlossDBusManager::Get()->GetLEScanClient()->RemoveObserver(this);
+  FlossDBusManager::Get()->GetGattManagerClient()->RemoveServerObserver(this);
 #if BUILDFLAG(IS_CHROMEOS)
   FlossDBusManager::Get()->GetAdminClient()->RemoveObserver(this);
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -1213,7 +1215,7 @@ void BluetoothAdapterFloss::RemoveLocalGattService(
     return;
   }
 
-  // TODO: Unregister registered service.
+  // TODO(@sarveshkalwit): Unregister registered service.
   owned_gatt_services_.erase(service_iter);
 }
 
@@ -1225,27 +1227,37 @@ device::BluetoothLocalGattService* BluetoothAdapterFloss::GetGattService(
 }
 
 void BluetoothAdapterFloss::RegisterGattService(
+    BluetoothLocalGattServiceFloss* service) {
+  FlossDBusManager::Get()->GetGattManagerClient()->AddService(
+      base::BindOnce(&BluetoothAdapterFloss::OnGattServiceAdded,
+                     weak_ptr_factory_.GetWeakPtr(), service),
+      service->ToGattService());
+}
+
+void BluetoothAdapterFloss::OnGattServiceAdded(
     BluetoothLocalGattServiceFloss* service,
-    base::OnceClosure callback,
-    device::BluetoothGattService::ErrorCallback error_callback) {
-  // TODO: Forced success. Update when GATT server work completed. Route this
-  // request to the GATT manager client to have it translated into a DBUS call.
-  // The daemon should callback with an updated GATT service structure
-  // containing the registered instance ID/handle. Design a way to update the
-  // instance ID/handle for the service object while allowing other applications
-  // to access them through old identifiers.
-  service->SetRegistered(true);
-  std::move(callback).Run();
+    DBusResult<Void> ret) {
+  if (!ret.has_value()) {
+    service->GattServerServiceAdded(GattStatus::kError,
+                                    service->ToGattService());
+  }
 }
 
 void BluetoothAdapterFloss::UnregisterGattService(
+    BluetoothLocalGattServiceFloss* service) {
+  FlossDBusManager::Get()->GetGattManagerClient()->RemoveService(
+      base::BindOnce(&BluetoothAdapterFloss::OnGattServiceRemoved,
+                     weak_ptr_factory_.GetWeakPtr(), service),
+      service->InstanceId());
+}
+
+void BluetoothAdapterFloss::OnGattServiceRemoved(
     BluetoothLocalGattServiceFloss* service,
-    base::OnceClosure callback,
-    device::BluetoothGattService::ErrorCallback error_callback) {
-  DCHECK(FlossDBusManager::Get());
-  // TODO: Forced success. Update when GATT server work completed.
-  service->SetRegistered(false);
-  std::move(callback).Run();
+    DBusResult<Void> ret) {
+  if (!ret.has_value()) {
+    service->GattServerServiceRemoved(GattStatus::kError,
+                                      service->InstanceId());
+  }
 }
 
 bool BluetoothAdapterFloss::SendValueChanged(
@@ -1255,8 +1267,18 @@ bool BluetoothAdapterFloss::SendValueChanged(
     return false;
   }
 
-  // TODO: Forced success. Update when GATT server work completed.
+  std::string service_name =
+      FlossDBusManager::Get()->GetGattManagerClient()->ServiceName();
+  FlossDBusManager::Get()->GetGattManagerClient()->ServerSendNotification(
+      base::DoNothing(), service_name, characteristic->InstanceId(),
+      /*confirm=*/false, value);
+  // TODO(@sarveshkalwit) How to confirm success?
   return true;
+}
+
+void BluetoothAdapterFloss::GattServerNotificationSent(std::string address,
+                                                       GattStatus status) {
+  NOTIMPLEMENTED();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

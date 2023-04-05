@@ -55,7 +55,14 @@ class BluetoothLocalGattServiceFloss
       const std::string& identifier) override;
   std::string GetIdentifier() const override;
 
+  // BluetoothGattServiceFloss overrides.
+  void GattServerServiceAdded(GattStatus status, GattService service) override;
+  void GattServerServiceRemoved(GattStatus status, int32_t handle) override;
+
   void SetRegistered(bool is_registered);
+  GattService ToGattService();
+  void ResolveInstanceId(const GattService& service);
+  int32_t InstanceId() const { return floss_instance_id_; }
 
  private:
   friend class BluetoothLocalGattCharacteristicFloss;
@@ -71,8 +78,13 @@ class BluetoothLocalGattServiceFloss
                            const std::string& error_name,
                            const std::string& error_message);
 
+  // Adds a characteristic to this service. Returns the index of the
+  // characteristic.
   int32_t AddCharacteristic(
       std::unique_ptr<BluetoothLocalGattCharacteristicFloss> characteristic);
+
+  // Whether or not this service is an included service.
+  bool is_included_service_ = false;
 
   // Function to generate a new, unique instance id for each GATT attribute.
   static uint32_t NewInstanceId();
@@ -87,12 +99,26 @@ class BluetoothLocalGattServiceFloss
   // If this service is registered.
   bool is_registered_ = false;
 
-  // Characteristics contained by this service.
-  std::map<std::string, std::unique_ptr<BluetoothLocalGattCharacteristicFloss>>
-      characteristics_;
+  // UUID of this service.
+  device::BluetoothUUID uuid_;
 
-  // Data about the remote gatt service represented by this class.
-  GattService local_service_;
+  // Client and Floss-assigned instance ids.
+  int32_t client_instance_id_;
+  int32_t floss_instance_id_;
+
+  // Manage callbacks.
+  std::pair<base::OnceClosure, device::BluetoothGattService::ErrorCallback>
+      register_callbacks_;
+  std::pair<base::OnceClosure, device::BluetoothGattService::ErrorCallback>
+      unregister_callbacks_;
+
+  // Services included by this service.
+  std::vector<std::unique_ptr<BluetoothLocalGattServiceFloss>>
+      included_services_;
+
+  // Characteristics contained by this service.
+  std::vector<std::unique_ptr<BluetoothLocalGattCharacteristicFloss>>
+      characteristics_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
