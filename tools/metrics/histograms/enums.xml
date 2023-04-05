@@ -53506,6 +53506,8 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="38" label="OtherDataDetector"/>
   <int value="39" label="ActionOther"/>
   <int value="40" label="UnknownMenuAction"/>
+  <int value="41" label="OpenURL"/>
+  <int value="42" label="AddToReadingList"/>
 </enum>
 
 <enum name="IOSEditMenuError">

@@ -242,9 +242,10 @@ enum EditMenuAdditionType {
   kPhoneMenu = 8,
   kDateMenu = 16,
   kUnitMenu = 32,
-  kReadOnlyMenu = kBasicMenu | kEmailMenu | kPhoneMenu | kDateMenu | kUnitMenu,
-  kAllMenu = kBasicMenu | kEditableMenu | kEmailMenu | kPhoneMenu | kDateMenu |
-             kUnitMenu
+  kLinkMenu = 64,
+  kReadOnlyMenu =
+      kBasicMenu | kEmailMenu | kPhoneMenu | kDateMenu | kUnitMenu | kLinkMenu,
+  kAllMenu = kReadOnlyMenu | kEditableMenu
 };
 
 // Helper functions to build expected menu depending on the OS and the type.
@@ -278,6 +279,8 @@ NSArray* BuildExpectedMenu(EditMenuAdditionType additions) {
       {@"New Mail Message", 16, kEmailMenu},
       {@"Send Message", 16, kEmailMenu | kPhoneMenu},
       {@"Add to Contacts", 16, kEmailMenu | kPhoneMenu},
+      {@"Open Link", 16, kLinkMenu},
+      {@"Add to Reading List", 16, kLinkMenu},
       {@"Create Event", 16, kDateMenu},
       {@"Create Reminder", 16, kDateMenu},
       {@"Show in Calendar", 16, kDateMenu},
@@ -360,6 +363,20 @@ NSArray* BuildExpectedMenu(EditMenuAdditionType additions) {
   TriggerEditMenu();
   NSArray* items = GetEditMenuActions();
   NSArray* expected = BuildExpectedMenu(EditMenuAdditionType::kEditableMenu);
+  GREYAssertEqualObjects(items, expected, @"Edit Menu item don't match");
+}
+
+- (void)testURLMenu {
+  if (!base::ios::IsRunningOnIOS16OrLater()) {
+    EARL_GREY_TEST_SKIPPED(@"No contextual edit action on iOS15-");
+  }
+  std::string pageText = "https://www.chromium.org/";
+  [self loadPageWithType:kInputSelectionUrl forText:pageText];
+  TriggerEditMenu();
+
+  NSArray* items = GetEditMenuActions();
+  NSArray* expected = BuildExpectedMenu(EditMenuAdditionType::kLinkMenu);
+
   GREYAssertEqualObjects(items, expected, @"Edit Menu item don't match");
 }
 
