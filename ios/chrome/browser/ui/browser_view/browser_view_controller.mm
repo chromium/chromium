@@ -17,6 +17,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -42,6 +43,7 @@
 #import "ios/chrome/browser/shared/ui/util/named_guide_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ui/authentication/re_signin_infobar_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator.h"
@@ -301,9 +303,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   LayoutGuideCenter* _layoutGuideCenter;
 
   ReadingListModel* _readingModel;
-
-  // Used to retrieve the account email for the reading list snackbar.
-  signin::IdentityManager* _identityManager;
 }
 
 // Activates/deactivates the object. This will enable/disable the ability for
@@ -504,7 +503,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     _layoutGuideCenter = dependencies.layoutGuideCenter;
     _webStateList = dependencies.webStateList;
     _readingModel = dependencies.readingModel;
-    _identityManager = dependencies.identityManager;
     _voiceSearchController = dependencies.voiceSearchController;
     self.secondaryToolbarContainerCoordinator =
         dependencies.secondaryToolbarContainerCoordinator;
@@ -985,7 +983,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 
   _bookmarksCoordinator = nil;
-  _identityManager = nullptr;
 }
 
 #pragma mark - NSObject
@@ -2083,10 +2080,17 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
 
+  // The identity manager should not be null in incognito mode, as the new items
+  // are added to the original account's reading list if the user is signed in.
+  // To reduce the risk of misuse, it is not added as a property to the BVC,
+  // and will be moved outside of BVC in https://crbug.com/1272540 soon.
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForBrowserState(
+          self.browserState->GetOriginalChromeBrowserState());
   CoreAccountId accountId =
       _readingModel->GetAccountWhereEntryIsSavedTo(URLs.lastObject.URL);
   AccountInfo accountInfo =
-      _identityManager->FindExtendedAccountInfoByAccountId(accountId);
+      identityManager->FindExtendedAccountInfoByAccountId(accountId);
 
   NSString* snackbarText = nil;
   if (!accountInfo.IsEmpty() &&

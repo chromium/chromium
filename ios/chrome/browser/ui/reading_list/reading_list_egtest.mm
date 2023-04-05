@@ -649,6 +649,17 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
                          kDistillableTitle, @"Wrong page name");
 }
 
+// Tests that URL can be added in the incognito mode and that a snackbar
+// appears after the item is added. See https://crbug.com/1428055.
+- (void)testSavingToReadingListInIncognito {
+  GURL pageURL(self.testServer->GetURL(kDistillableURL));
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey loadURL:pageURL];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  AddCurrentPageToReadingList();
+}
+
 // Tests that offline page does not request online resources.
 - (void)testSavingToReadingListAndLoadDistilledNoOnlineResource {
   self.serverServesRedImage = false;
