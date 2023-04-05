@@ -27,24 +27,28 @@ Encryptor::Key::Key(base::span<const uint8_t> key, const Algorithm& algo)
     : algo_(algo), key_(key.begin(), key.end()) {
   switch (algo_) {
     case Key::Algorithm::kAES256GCM:
-      DCHECK_EQ(key.size(), Key::kAES256GCMKeySize);
+      CHECK_EQ(key.size(), Key::kAES256GCMKeySize);
       break;
   }
 }
 
-Encryptor::Key::Key(const Key&) = default;
-Encryptor::Key& Encryptor::Key::operator=(const Key&) = default;
+Encryptor::Key::Key(Key&& other) = default;
+Encryptor::Key& Encryptor::Key::operator=(Key&& other) = default;
 
 Encryptor::Key::~Key() = default;
+
+Encryptor::Key Encryptor::Key::Clone() const {
+  return Key(key_, algo_);
+}
 
 Encryptor::Encryptor() = default;
 
 Encryptor::Encryptor(Encryptor&& other) = default;
 Encryptor& Encryptor::operator=(Encryptor&& other) = default;
 
-Encryptor::Encryptor(const KeyRing& keys,
-                     const std::string& provider_for_encryption)
-    : keys_(keys), provider_for_encryption_(provider_for_encryption) {}
+Encryptor::Encryptor(KeyRing keys, const std::string& provider_for_encryption)
+    : keys_(std::move(keys)),
+      provider_for_encryption_(provider_for_encryption) {}
 Encryptor::~Encryptor() = default;
 
 std::vector<uint8_t> Encryptor::Key::Encrypt(
@@ -177,7 +181,12 @@ absl::optional<std::string> Encryptor::DecryptData(
 }
 
 Encryptor Encryptor::Clone() const {
-  return Encryptor(keys_, provider_for_encryption_);
+  KeyRing keyring;
+  for (const auto& [provider, key] : keys_) {
+    keyring.emplace(provider, key.Clone());
+  }
+
+  return Encryptor(std::move(keyring), provider_for_encryption_);
 }
 
 }  // namespace os_crypt_async

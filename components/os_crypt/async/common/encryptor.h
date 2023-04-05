@@ -28,8 +28,11 @@ class Encryptor {
   // encryption key.
   class Key {
    public:
-    Key(const Key&);
-    Key& operator=(const Key&);
+    // Moveable, not copyable.
+    Key(Key&& other);
+    Key& operator=(Key&& other);
+    Key(const Key&) = delete;
+    Key& operator=(const Key&) = delete;
 
     ~Key();
 
@@ -44,10 +47,15 @@ class Encryptor {
 
    private:
     friend class Encryptor;
+    // OSCryptAsync and tests need to be able to Clone() keys.
+    friend class OSCryptAsync;
+    FRIEND_TEST_ALL_PREFIXES(EncryptorTestBase, MultipleKeys);
 
     std::vector<uint8_t> Encrypt(base::span<const uint8_t> plaintext) const;
     absl::optional<std::vector<uint8_t>> Decrypt(
         base::span<const uint8_t> ciphertext) const;
+
+    Key Clone() const;
 
     Algorithm algo_;
     std::vector<uint8_t> key_;
@@ -92,7 +100,7 @@ class Encryptor {
   // Create an encryptor with a set of `keys`. The `provider_for_encryption`
   // specifies which provider is used for encryption, and must have a
   // corresponding key in `keys`.
-  Encryptor(const KeyRing& keys, const std::string& provider_for_encryption);
+  Encryptor(KeyRing keys, const std::string& provider_for_encryption);
 
   // Clone is used by the factory to vend instances.
   Encryptor Clone() const;

@@ -105,13 +105,12 @@ class EncryptorTestBase : public ::testing::Test {
   static_assert(kKeyLength == Encryptor::Key::kAES256GCMKeySize,
                 "Key lengths must be the same.");
 
-  // This is here so it can access the private methods in Encryptor via friends.
   static const Encryptor GetEncryptor() { return Encryptor(); }
 
   static const Encryptor GetEncryptor(
-      const Encryptor::KeyRing& keys,
+      Encryptor::KeyRing keys,
       const std::string& provider_for_encryption) {
-    return Encryptor(keys, provider_for_encryption);
+    return Encryptor(std::move(keys), provider_for_encryption);
   }
 
   static std::vector<uint8_t> GenerateRandomTestKey(size_t length) {
@@ -150,22 +149,22 @@ class EncryptorTest : public EncryptorTestWithOSCrypt,
 
       case TestType::kWithSingleKey: {
         Encryptor::KeyRing key_ring;
-        key_ring.insert({"TEST", GenerateRandomAES256TestKey()});
-        return GetEncryptor(key_ring, "TEST");
+        key_ring.emplace("TEST", GenerateRandomAES256TestKey());
+        return GetEncryptor(std::move(key_ring), "TEST");
       }
 
       case TestType::kWithMultipleKeys: {
         Encryptor::KeyRing key_ring;
-        key_ring.insert({"BLAH", GenerateRandomAES256TestKey()});
-        key_ring.insert({"TEST", GenerateRandomAES256TestKey()});
-        return GetEncryptor(key_ring, "BLAH");
+        key_ring.emplace("BLAH", GenerateRandomAES256TestKey());
+        key_ring.emplace("TEST", GenerateRandomAES256TestKey());
+        return GetEncryptor(std::move(key_ring), "BLAH");
       }
 
       case TestType::kWithMultipleKeysBackwards: {
         Encryptor::KeyRing key_ring;
-        key_ring.insert({"TEST", GenerateRandomAES256TestKey()});
-        key_ring.insert({"BLAH", GenerateRandomAES256TestKey()});
-        return GetEncryptor(key_ring, "BLAH");
+        key_ring.emplace("TEST", GenerateRandomAES256TestKey());
+        key_ring.emplace("BLAH", GenerateRandomAES256TestKey());
+        return GetEncryptor(std::move(key_ring), "BLAH");
       }
     }
   }
@@ -320,10 +319,10 @@ TEST_F(EncryptorTestBase, MultipleKeys) {
   Encryptor::Key bar_key = GenerateRandomAES256TestKey();
 
   Encryptor::KeyRing key_ring_both;
-  key_ring_both.insert({"FOO", foo_key});
-  key_ring_both.insert({"BAR", bar_key});
+  key_ring_both.emplace("FOO", foo_key.Clone());
+  key_ring_both.emplace("BAR", bar_key.Clone());
 
-  const Encryptor foo_encryptor = GetEncryptor(key_ring_both, "FOO");
+  const Encryptor foo_encryptor = GetEncryptor(std::move(key_ring_both), "FOO");
 
   // Should encrypt with FOO key.
   auto ciphertext = foo_encryptor.EncryptString("secret");
@@ -338,8 +337,8 @@ TEST_F(EncryptorTestBase, MultipleKeys) {
   // Decrypt with just the FOO key should succeed.
   {
     Encryptor::KeyRing key_ring_foo;
-    key_ring_foo.insert({"FOO", foo_key});
-    const Encryptor encryptor = GetEncryptor(key_ring_foo, "FOO");
+    key_ring_foo.emplace("FOO", foo_key.Clone());
+    const Encryptor encryptor = GetEncryptor(std::move(key_ring_foo), "FOO");
     auto decrypted = encryptor.DecryptData(*ciphertext);
     ASSERT_TRUE(decrypted);
     EXPECT_EQ("secret", *decrypted);
@@ -348,18 +347,18 @@ TEST_F(EncryptorTestBase, MultipleKeys) {
   // Decrypt with just the BAR key should fail.
   {
     Encryptor::KeyRing key_ring_bar;
-    key_ring_bar.insert({"BAR", bar_key});
-    const Encryptor encryptor = GetEncryptor(key_ring_bar, "BAR");
+    key_ring_bar.emplace("BAR", bar_key.Clone());
+    const Encryptor encryptor = GetEncryptor(std::move(key_ring_bar), "BAR");
     auto decrypted = encryptor.DecryptData(*ciphertext);
     EXPECT_TRUE(MaybeVerifyDecryptOperation(decrypted, *ciphertext));
   }
 
   // Verify that order of keys in the keyring does not matter.
   {
-    Encryptor::KeyRing key_ring_both_reversed;
-    key_ring_both.insert({"BAR", bar_key});
-    key_ring_both.insert({"FOO", foo_key});
-    const Encryptor encryptor = GetEncryptor(key_ring_both, "FOO");
+    Encryptor::KeyRing key_ring;
+    key_ring.emplace("BAR", bar_key.Clone());
+    key_ring.emplace("FOO", foo_key.Clone());
+    const Encryptor encryptor = GetEncryptor(std::move(key_ring), "FOO");
     auto decrypted = encryptor.DecryptData(*ciphertext);
     ASSERT_TRUE(decrypted);
     EXPECT_EQ("secret", *decrypted);
@@ -379,10 +378,10 @@ TEST_F(EncryptorTestBase, MultipleKeys) {
   // Verify that the encryption provider does not matter when decrypting, it
   // just needs the key.
   {
-    Encryptor::KeyRing key_ring_both_reversed;
-    key_ring_both.insert({"BAR", bar_key});
-    key_ring_both.insert({"FOO", foo_key});
-    const Encryptor encryptor = GetEncryptor(key_ring_both, "BAR");
+    Encryptor::KeyRing key_ring;
+    key_ring.emplace("BAR", bar_key.Clone());
+    key_ring.emplace("FOO", foo_key.Clone());
+    const Encryptor encryptor = GetEncryptor(std::move(key_ring), "BAR");
     auto decrypted = encryptor.DecryptData(*ciphertext);
     ASSERT_TRUE(decrypted);
     EXPECT_EQ("secret", *decrypted);
@@ -401,8 +400,9 @@ TEST_F(EncryptorTestWithOSCrypt, EmptyandNonEmpty) {
   // by an empty Encryptor. This is because OSCrypt is used for empty
   // encryptors.
   Encryptor::KeyRing key_ring_both;
-  key_ring_both.insert({"TEST", GenerateRandomAES256TestKey()});
-  const Encryptor test_encryptor = GetEncryptor(key_ring_both, "TEST");
+  key_ring_both.emplace("TEST", GenerateRandomAES256TestKey());
+  const Encryptor test_encryptor =
+      GetEncryptor(std::move(key_ring_both), "TEST");
 
   const Encryptor encryptor = GetEncryptor();
   auto encrypted = encryptor.EncryptString("secret");
@@ -414,8 +414,8 @@ TEST_F(EncryptorTestWithOSCrypt, EmptyandNonEmpty) {
 
 TEST_F(EncryptorTestWithOSCrypt, ShortCiphertext) {
   Encryptor::KeyRing key_ring;
-  key_ring.insert({"TEST", GenerateRandomAES256TestKey()});
-  const Encryptor encryptor = GetEncryptor(key_ring, "TEST");
+  key_ring.emplace("TEST", GenerateRandomAES256TestKey());
+  const Encryptor encryptor = GetEncryptor(std::move(key_ring), "TEST");
   // Create some bad data for the decryptor. Use the "TEST" prefix to ensure it
   // gets passed to the AES256 decryptor.
   std::string bad_data = "TEST";
@@ -459,13 +459,14 @@ TEST_F(EncryptorTestBase, AlgorithmDecryptCompatibility) {
   // "v10" is the OSCrypt tag for data encrypted with Algorithm::kAES256GCM. See
   // `kEncryptionVersionPrefix` in os_crypt_win.cc.
   constexpr char kEncryptionVersionPrefix[] = "v10";
-  key_ring.insert(
-      {kEncryptionVersionPrefix,
-       Encryptor::Key(random_key, Encryptor::Key::Algorithm::kAES256GCM)});
+  key_ring.emplace(
+      kEncryptionVersionPrefix,
+      Encryptor::Key(random_key, Encryptor::Key::Algorithm::kAES256GCM));
 
   // Construct an Encryptor with the same key that was used by OSCrypt to
   // encrypt the data.
-  const Encryptor encryptor = GetEncryptor(key_ring, kEncryptionVersionPrefix);
+  const Encryptor encryptor =
+      GetEncryptor(std::move(key_ring), kEncryptionVersionPrefix);
 
   // The data should decrypt.
   EXPECT_TRUE(encryptor.DecryptString(ciphertext, &plaintext));
@@ -487,13 +488,14 @@ TEST_F(EncryptorTestBase, AlgorithmEncryptCompatibility) {
   // "v10" is the OSCrypt tag for data encrypted with Algorithm::kAES256GCM. See
   // `kEncryptionVersionPrefix` in os_crypt_win.cc.
   constexpr char kEncryptionVersionPrefix[] = "v10";
-  key_ring.insert(
-      {kEncryptionVersionPrefix,
-       Encryptor::Key(random_key, Encryptor::Key::Algorithm::kAES256GCM)});
+  key_ring.emplace(
+      kEncryptionVersionPrefix,
+      Encryptor::Key(random_key, Encryptor::Key::Algorithm::kAES256GCM));
 
   // Construct an Encryptor with this key. The encryption provider tag will be
   // "v10" to match OSCrypt's encryption. Encrypt the data.
-  const Encryptor encryptor = GetEncryptor(key_ring, kEncryptionVersionPrefix);
+  const Encryptor encryptor =
+      GetEncryptor(std::move(key_ring), kEncryptionVersionPrefix);
   auto ciphertext = encryptor.EncryptString("secret");
   EXPECT_TRUE(ciphertext);
 
