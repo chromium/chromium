@@ -538,7 +538,10 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
                                 new_space, fragment_geometry))
       return NGLayoutCacheStatus::kNeedsLayout;
 
-    recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatus #2.1");
+    recordreplay::Assert("[RUN-1219-1663] CalculateSizeBasedLayoutCacheStatus #2.1 old=(%s) new=(%s)",
+      old_space.ToString().Ascii().c_str(),
+      new_space.ToString().Ascii().c_str()
+    );
     // We don't have to check our style if we know the constraint space sizes
     // will remain the same.
     if (new_space.AreSizesEqual(old_space))
