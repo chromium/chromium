@@ -187,7 +187,7 @@ TEST_F(GLTextureImageBackingFactoryTest, EstimatedSize) {
 
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, /*is_thread_safe=*/false);
+      alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
   ASSERT_TRUE(backing);
 
   size_t backing_estimated_size = backing->GetEstimatedSize();
@@ -297,7 +297,7 @@ TEST_P(GLTextureImageBackingFactoryWithFormatTest, Basic) {
 
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, /*is_thread_safe=*/false);
+      alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
   ASSERT_TRUE(backing);
 
   // Check clearing.
@@ -428,7 +428,7 @@ TEST_P(GLTextureImageBackingFactoryInitialDataTest, InitialData) {
 
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      initial_data);
+      "TestLabel", initial_data);
   ASSERT_TRUE(backing);
   EXPECT_TRUE(backing->IsCleared());
 
@@ -509,7 +509,7 @@ TEST_P(GLTextureImageBackingFactoryWithUploadTest, UploadFromMemory) {
 
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, /*is_thread_safe=*/false);
+      alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
   ASSERT_TRUE(backing);
 
   // Upload from bitmap with expected stride.
@@ -551,7 +551,7 @@ TEST_P(GLTextureImageBackingFactoryWithReadbackTest, ReadbackToMemory) {
 
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, /*is_thread_safe=*/false);
+      alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
   ASSERT_TRUE(backing);
 
   std::vector<SkBitmap> src_bitmaps =

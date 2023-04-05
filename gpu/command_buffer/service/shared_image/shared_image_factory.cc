@@ -305,7 +305,8 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
                                            GrSurfaceOrigin surface_origin,
                                            SkAlphaType alpha_type,
                                            gpu::SurfaceHandle surface_handle,
-                                           uint32_t usage) {
+                                           uint32_t usage,
+                                           std::string debug_label) {
   auto* factory = GetFactoryByUsage(usage, format, size,
                                     /*pixel_data=*/{}, gfx::EMPTY_BUFFER);
   if (!factory) {
@@ -315,7 +316,7 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
 
   auto backing = factory->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, IsSharedBetweenThreads(usage));
+      alpha_type, usage, std::move(debug_label), IsSharedBetweenThreads(usage));
 
   if (backing) {
     DVLOG(1) << "CreateSharedImage[" << backing->GetName()
@@ -333,6 +334,7 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
                                            GrSurfaceOrigin surface_origin,
                                            SkAlphaType alpha_type,
                                            uint32_t usage,
+                                           std::string debug_label,
                                            base::span<const uint8_t> data) {
   if (!format.is_single_plane()) {
     // Pixel upload path only supports single-planar formats.
@@ -352,9 +354,9 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
     return false;
   }
 
-  auto backing =
-      factory->CreateSharedImage(mailbox, format, size, color_space,
-                                 surface_origin, alpha_type, usage, data);
+  auto backing = factory->CreateSharedImage(mailbox, format, size, color_space,
+                                            surface_origin, alpha_type, usage,
+                                            std::move(debug_label), data);
   if (backing) {
     DVLOG(1) << "CreateSharedImagePixels[" << backing->GetName()
              << "] with pixels size=" << size.ToString()
@@ -374,6 +376,7 @@ bool SharedImageFactory::CreateSharedImage(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     gfx::GpuMemoryBufferHandle buffer_handle) {
   if (!format.is_multi_plane()) {
     // Only use this for new multi-planar path for now. All legacy multi-planar
@@ -416,11 +419,12 @@ bool SharedImageFactory::CreateSharedImage(
   if (use_compound) {
     backing = CompoundImageBacking::CreateSharedMemory(
         factory, kAllowShmOverlays, mailbox, std::move(buffer_handle), format,
-        size, color_space, surface_origin, alpha_type, usage);
+        size, color_space, surface_origin, alpha_type, usage,
+        std::move(debug_label));
   } else {
-    backing = factory->CreateSharedImage(mailbox, format, size, color_space,
-                                         surface_origin, alpha_type, usage,
-                                         std::move(buffer_handle));
+    backing = factory->CreateSharedImage(
+        mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+        std::move(debug_label), std::move(buffer_handle));
   }
 
   if (backing) {
@@ -443,7 +447,8 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
                                            const gfx::ColorSpace& color_space,
                                            GrSurfaceOrigin surface_origin,
                                            SkAlphaType alpha_type,
-                                           uint32_t usage) {
+                                           uint32_t usage,
+                                           std::string debug_label) {
   auto si_format =
       viz::SharedImageFormat::SinglePlane(viz::GetResourceFormat(format));
   gfx::GpuMemoryBufferType gmb_type = handle.type;
@@ -480,11 +485,12 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
   if (use_compound) {
     backing = CompoundImageBacking::CreateSharedMemory(
         factory, kAllowShmOverlays, mailbox, std::move(handle), format, plane,
-        size, color_space, surface_origin, alpha_type, usage);
+        size, color_space, surface_origin, alpha_type, usage,
+        std::move(debug_label));
   } else {
-    backing = factory->CreateSharedImage(mailbox, std::move(handle), format,
-                                         plane, size, color_space,
-                                         surface_origin, alpha_type, usage);
+    backing = factory->CreateSharedImage(
+        mailbox, std::move(handle), format, plane, size, color_space,
+        surface_origin, alpha_type, usage, std::move(debug_label));
   }
 
   if (backing) {

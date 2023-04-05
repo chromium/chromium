@@ -138,9 +138,10 @@ void GpuMemoryAblationExperiment::AllocateGpuMemory() {
   auto mailbox = Mailbox::GenerateForSharedImage();
   auto color_space = gfx::ColorSpace::CreateSRGB();
 
-  if (!factory_->CreateSharedImage(
-          mailbox, kFormat, size_, color_space, kTopLeft_GrSurfaceOrigin,
-          kPremul_SkAlphaType, gpu::kNullSurfaceHandle, kUsage)) {
+  if (!factory_->CreateSharedImage(mailbox, kFormat, size_, color_space,
+                                   kTopLeft_GrSurfaceOrigin,
+                                   kPremul_SkAlphaType, gpu::kNullSurfaceHandle,
+                                   kUsage, "GpuMemoryAblation")) {
     return;
   }
 

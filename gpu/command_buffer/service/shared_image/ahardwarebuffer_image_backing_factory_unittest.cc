@@ -127,7 +127,7 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, GLSkiaGL) {
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, /*is_thread_safe=*/false);
+      alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
   EXPECT_TRUE(backing);
 
   GLenum expected_target = GL_TEXTURE_2D;
@@ -189,7 +189,7 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, InitialData) {
   uint32_t usage = SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_DISPLAY_READ;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      initial_data);
+      "TestLabel", initial_data);
   EXPECT_TRUE(backing);
 
   std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
@@ -218,7 +218,7 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, InvalidFormat) {
   uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, /*is_thread_safe=*/false);
+      alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
   EXPECT_FALSE(backing);
 }
 
@@ -234,13 +234,13 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, InvalidSize) {
   uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, /*is_thread_safe=*/false);
+      alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
   EXPECT_FALSE(backing);
 
   size = gfx::Size(INT_MAX, INT_MAX);
   backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, /*is_thread_safe=*/false);
+      alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
   EXPECT_FALSE(backing);
 }
 
@@ -255,7 +255,7 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, EstimatedSize) {
   uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, /*is_thread_safe=*/false);
+      alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
   EXPECT_TRUE(backing);
 
   size_t backing_estimated_size = backing->GetEstimatedSize();
@@ -437,7 +437,7 @@ GlLegacySharedImage::GlLegacySharedImage(
     usage |= SHARED_IMAGE_USAGE_DISPLAY_READ;
   backing_ = backing_factory->CreateSharedImage(
       mailbox_, format, surface_handle, size_, color_space, surface_origin,
-      alpha_type, usage, is_thread_safe);
+      alpha_type, usage, "TestLabel", is_thread_safe);
   EXPECT_TRUE(backing_);
 
   // Check clearing.

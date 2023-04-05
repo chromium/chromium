@@ -150,6 +150,7 @@ class TestSharedImageBackingFactory : public SharedImageBackingFactory {
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       uint32_t usage,
+      std::string debug_label,
       bool is_thread_safe) override {
     NOTREACHED();
     return nullptr;
@@ -162,6 +163,7 @@ class TestSharedImageBackingFactory : public SharedImageBackingFactory {
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       uint32_t usage,
+      std::string debug_label,
       base::span<const uint8_t> pixel_data) override {
     NOTREACHED();
     return nullptr;
@@ -175,7 +177,8 @@ class TestSharedImageBackingFactory : public SharedImageBackingFactory {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage) override {
+      uint32_t usage,
+      std::string debug_label) override {
     auto test_image_backing = std::make_unique<TestImageBacking>(
         mailbox,
         viz::SharedImageFormat::SinglePlane(viz::GetResourceFormat(format)),

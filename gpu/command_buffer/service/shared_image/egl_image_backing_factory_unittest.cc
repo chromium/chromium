@@ -393,7 +393,7 @@ TEST_F(EGLImageBackingFactoryThreadSafeTest, Dawn_SkiaGL) {
   // requested to be.
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space,
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, "TestLabel",
       /* is_thread_safe=*/true);
   ASSERT_NE(backing, nullptr);
 
@@ -479,11 +479,11 @@ CreateAndValidateSharedImageRepresentations::
         viz::ResourceSizes::CheckedSizeInBytes<unsigned int>(size_, format));
     backing_ = backing_factory->CreateSharedImage(
         mailbox_, format, size_, color_space, surface_origin, alpha_type, usage,
-        initial_data);
+        "TestLabel", initial_data);
   } else {
     backing_ = backing_factory->CreateSharedImage(
         mailbox_, format, surface_handle, size_, color_space, surface_origin,
-        alpha_type, usage, is_thread_safe);
+        alpha_type, usage, "TestLabel", is_thread_safe);
   }
 
   // As long as either |chromium_image_ar30| or |chromium_image_ab30| is

@@ -68,6 +68,7 @@ GLTextureImageBackingFactory::CreateSharedImage(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     bool is_thread_safe) {
   DCHECK(!is_thread_safe);
   return CreateSharedImageInternal(mailbox, format, surface_handle, size,
@@ -84,6 +85,7 @@ GLTextureImageBackingFactory::CreateSharedImage(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     base::span<const uint8_t> pixel_data) {
   return CreateSharedImageInternal(mailbox, format, kNullSurfaceHandle, size,
                                    color_space, surface_origin, alpha_type,
@@ -100,7 +102,8 @@ GLTextureImageBackingFactory::CreateSharedImage(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage) {
+    uint32_t usage,
+    std::string debug_label) {
   NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 }

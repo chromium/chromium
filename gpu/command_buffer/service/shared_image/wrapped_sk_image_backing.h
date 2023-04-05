@@ -48,7 +48,7 @@ class WrappedSkImageBacking : public ClearTrackingSharedImageBacking {
   ~WrappedSkImageBacking() override;
 
   // Initializes without pixel data.
-  bool Initialize();
+  bool Initialize(const std::string& debug_label);
 
   // Initializes with pixel data that is uploaded to texture. If pixel data is
   // provided and the image format is not ETC1 then |stride| is used. If
@@ -56,7 +56,9 @@ class WrappedSkImageBacking : public ClearTrackingSharedImageBacking {
   // SkImageInfo from size() and format() and then SkImageInfo::minRowBytes() is
   // used for the stride. For ETC1 textures pixel data must be provided since
   // updating compressed textures is not supported.
-  bool InitializeWithData(base::span<const uint8_t> pixels, size_t stride);
+  bool InitializeWithData(const std::string& debug_label,
+                          base::span<const uint8_t> pixels,
+                          size_t stride);
 
   // SharedImageBacking implementation.
   SharedImageBackingType GetType() const override;

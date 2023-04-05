@@ -115,7 +115,7 @@ TEST_F(ExternalVkImageBackingFactoryDawnTest, DawnWrite_SkiaVulkanRead) {
   const gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space,
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, "TestLabel",
       /*is_thread_safe=*/false);
   ASSERT_NE(backing, nullptr);
 
@@ -230,7 +230,7 @@ TEST_F(ExternalVkImageBackingFactoryDawnTest, SkiaVulkanWrite_DawnRead) {
   const gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space,
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, "TestLabel",
       /*is_thread_safe=*/false);
   ASSERT_NE(backing, nullptr);
 
@@ -383,7 +383,7 @@ TEST_P(ExternalVkImageBackingFactoryWithFormatTest, Basic) {
   // Verify backing can be created.
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, gpu::kNullSurfaceHandle, size, color_space,
-      surface_origin, alpha_type, usage, /*is_thread_safe=*/false);
+      surface_origin, alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
   ASSERT_TRUE(backing);
 
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
@@ -501,7 +501,7 @@ TEST_P(ExternalVkImageBackingFactoryWithFormatTest, Upload) {
   // Verify backing can be created.
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, gpu::kNullSurfaceHandle, size, color_space,
-      surface_origin, alpha_type, usage, /*is_thread_safe=*/false);
+      surface_origin, alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
   ASSERT_TRUE(backing);
 
   std::vector<SkBitmap> bitmaps = AllocateRedBitmaps(format, size);

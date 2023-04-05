@@ -65,7 +65,7 @@ TEST_F(SharedImageFactoryTest, Basic) {
   uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
   EXPECT_TRUE(factory_->CreateSharedImage(
       mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType, surface_handle, usage));
+      kPremul_SkAlphaType, surface_handle, usage, "TestLabel"));
   EXPECT_TRUE(factory_->DestroySharedImage(mailbox));
 }
 
@@ -78,10 +78,10 @@ TEST_F(SharedImageFactoryTest, DuplicateMailbox) {
   uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
   EXPECT_TRUE(factory_->CreateSharedImage(
       mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType, surface_handle, usage));
+      kPremul_SkAlphaType, surface_handle, usage, "TestLabel"));
   EXPECT_FALSE(factory_->CreateSharedImage(
       mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType, surface_handle, usage));
+      kPremul_SkAlphaType, surface_handle, usage, "TestLabel"));
 
   GpuPreferences preferences;
   GpuDriverBugWorkarounds workarounds;
@@ -91,7 +91,7 @@ TEST_F(SharedImageFactoryTest, DuplicateMailbox) {
       /*is_for_display_compositor=*/false);
   EXPECT_FALSE(other_factory->CreateSharedImage(
       mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType, surface_handle, usage));
+      kPremul_SkAlphaType, surface_handle, usage, "TestLabel"));
 }
 
 TEST_F(SharedImageFactoryTest, DestroyInexistentMailbox) {

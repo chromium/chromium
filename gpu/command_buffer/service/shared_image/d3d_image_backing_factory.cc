@@ -356,6 +356,7 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label_client,
     bool is_thread_safe) {
   DCHECK(!is_thread_safe);
 
@@ -485,6 +486,7 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     base::span<const uint8_t> pixel_data) {
   NOTIMPLEMENTED();
   return nullptr;
@@ -498,6 +500,7 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     gfx::GpuMemoryBufferHandle handle) {
   return CreateSharedImageGMBs(mailbox, std::move(handle), format,
                                gfx::BufferPlane::DEFAULT, size, color_space,
@@ -513,7 +516,8 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage) {
+    uint32_t usage,
+    std::string debug_label) {
   if (!IsPlaneValidForGpuMemoryBufferFormat(plane, buffer_format)) {
     LOG(ERROR) << "Invalid plane " << gfx::BufferPlaneToString(plane)
                << " for format " << gfx::BufferFormatToString(buffer_format);

@@ -40,7 +40,8 @@ bool OutputPresenter::Image::Initialize(const gfx::Size& size,
 
   if (!factory_->CreateSharedImage(
           mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin,
-          kPremul_SkAlphaType, deps_->GetSurfaceHandle(), shared_image_usage)) {
+          kPremul_SkAlphaType, deps_->GetSurfaceHandle(), shared_image_usage,
+          "OutputPresenter")) {
     DLOG(ERROR) << "CreateSharedImage failed.";
     return false;
   }

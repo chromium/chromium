@@ -76,7 +76,8 @@ TEST_P(WrappedSkImageBackingFactoryTest, Basic) {
 
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, gpu::kNullSurfaceHandle, size, kColorSpace,
-      kSurfaceOrigin, kAlphaType, kUsage, /*is_thread_safe=*/false);
+      kSurfaceOrigin, kAlphaType, kUsage, "TestLabel",
+      /*is_thread_safe=*/false);
   ASSERT_TRUE(backing);
 
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
@@ -141,7 +142,8 @@ TEST_P(WrappedSkImageBackingFactoryTest, Upload) {
 
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, gpu::kNullSurfaceHandle, size, kColorSpace,
-      kSurfaceOrigin, kAlphaType, kUsage, /*is_thread_safe=*/false);
+      kSurfaceOrigin, kAlphaType, kUsage, "TestLabel",
+      /*is_thread_safe=*/false);
   ASSERT_TRUE(backing);
 
   std::vector<SkBitmap> bitmaps = AllocateRedBitmaps(format, size);

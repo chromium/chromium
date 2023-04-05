@@ -151,9 +151,11 @@ bool SharedImageStub::CreateSharedImage(const Mailbox& mailbox,
     OnError();
     return false;
   }
+
+  const std::string debug_label = GetLabel();
   if (!factory_->CreateSharedImage(mailbox, std::move(handle), format, plane,
                                    size, color_space, surface_origin,
-                                   alpha_type, usage)) {
+                                   alpha_type, usage, std::move(debug_label))) {
     LOG(ERROR) << "SharedImageStub: Unable to create shared image";
     OnError();
     return false;
@@ -187,9 +189,11 @@ bool SharedImageStub::CreateSharedImage(const Mailbox& mailbox,
     OnError();
     return false;
   }
+
+  const std::string debug_label = GetLabel();
   if (!factory_->CreateSharedImage(mailbox, format, size, color_space,
                                    surface_origin, alpha_type, usage,
-                                   std::move(handle))) {
+                                   std::move(debug_label), std::move(handle))) {
     LOG(ERROR) << "SharedImageStub: Unable to create shared image with "
                   "multiplanar format";
     OnError();
@@ -240,10 +244,11 @@ void SharedImageStub::OnCreateSharedImage(
     return;
   }
 
-  if (!factory_->CreateSharedImage(params->mailbox, params->format,
-                                   params->size, params->color_space,
-                                   params->surface_origin, params->alpha_type,
-                                   gpu::kNullSurfaceHandle, params->usage)) {
+  const std::string debug_label = GetLabel();
+  if (!factory_->CreateSharedImage(
+          params->mailbox, params->format, params->size, params->color_space,
+          params->surface_origin, params->alpha_type, gpu::kNullSurfaceHandle,
+          params->usage, std::move(debug_label))) {
     LOG(ERROR) << "SharedImageStub: Unable to create shared image";
     OnError();
     return;
@@ -289,9 +294,11 @@ void SharedImageStub::OnCreateSharedImageWithData(
   auto subspan =
       memory.subspan(params->pixel_data_offset, params->pixel_data_size);
 
+  const std::string debug_label = GetLabel();
   if (!factory_->CreateSharedImage(
           params->mailbox, params->format, params->size, params->color_space,
-          params->surface_origin, params->alpha_type, params->usage, subspan)) {
+          params->surface_origin, params->alpha_type, params->usage,
+          std::move(debug_label), subspan)) {
     LOG(ERROR) << "SharedImageStub: Unable to create shared image";
     OnError();
     return;
@@ -587,6 +594,13 @@ void SharedImageStub::DestroySharedImage(const Mailbox& mailbox,
   channel_->scheduler()->ScheduleTask(
       gpu::Scheduler::Task(sequence_, std::move(done_cb),
                            std::vector<gpu::SyncToken>({sync_token})));
+}
+
+std::string SharedImageStub::GetLabel() const {
+  // For cross process shared images, compose the label from the client id and
+  // client pid for easier identification in debug tools.
+  return "Cid:" + base::NumberToString(channel_->client_id()) +
+         "_Pid:" + base::NumberToString(channel_->client_pid());
 }
 
 }  // namespace gpu

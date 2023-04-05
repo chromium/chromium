@@ -58,6 +58,7 @@ std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::CreateSharedImage(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     bool is_thread_safe) {
   return MakeEglImageBacking(mailbox, format, size, color_space, surface_origin,
                              alpha_type, usage, base::span<const uint8_t>());
@@ -71,6 +72,7 @@ std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::CreateSharedImage(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     base::span<const uint8_t> pixel_data) {
   return MakeEglImageBacking(mailbox, format, size, color_space, surface_origin,
                              alpha_type, usage, pixel_data);
@@ -85,7 +87,8 @@ std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::CreateSharedImage(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage) {
+    uint32_t usage,
+    std::string debug_label) {
   NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 }

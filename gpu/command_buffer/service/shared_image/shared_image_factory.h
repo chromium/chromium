@@ -6,6 +6,7 @@
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_SHARED_IMAGE_FACTORY_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -56,7 +57,8 @@ class GPU_GLES2_EXPORT SharedImageFactory {
                          GrSurfaceOrigin surface_origin,
                          SkAlphaType alpha_type,
                          SurfaceHandle surface_handle,
-                         uint32_t usage);
+                         uint32_t usage,
+                         std::string debug_label);
   bool CreateSharedImage(const Mailbox& mailbox,
                          viz::SharedImageFormat si_format,
                          const gfx::Size& size,
@@ -64,6 +66,7 @@ class GPU_GLES2_EXPORT SharedImageFactory {
                          GrSurfaceOrigin surface_origin,
                          SkAlphaType alpha_type,
                          uint32_t usage,
+                         std::string debug_label,
                          base::span<const uint8_t> pixel_data);
   bool CreateSharedImage(const Mailbox& mailbox,
                          viz::SharedImageFormat si_format,
@@ -72,6 +75,7 @@ class GPU_GLES2_EXPORT SharedImageFactory {
                          GrSurfaceOrigin surface_origin,
                          SkAlphaType alpha_type,
                          uint32_t usage,
+                         std::string debug_label,
                          gfx::GpuMemoryBufferHandle buffer_handle);
   bool CreateSharedImage(const Mailbox& mailbox,
                          gfx::GpuMemoryBufferHandle handle,
@@ -81,7 +85,8 @@ class GPU_GLES2_EXPORT SharedImageFactory {
                          const gfx::ColorSpace& color_space,
                          GrSurfaceOrigin surface_origin,
                          SkAlphaType alpha_type,
-                         uint32_t usage);
+                         uint32_t usage,
+                         std::string debug_label);
   bool UpdateSharedImage(const Mailbox& mailbox);
   bool UpdateSharedImage(const Mailbox& mailbox,
                          std::unique_ptr<gfx::GpuFence> in_fence);

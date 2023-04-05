@@ -779,7 +779,8 @@ SkiaOutputSurfaceImplOnGpu::CreateSharedImageRepresentationSkia(
   SharedImageFormat si_format = SharedImageFormat::SinglePlane(resource_format);
   bool result = shared_image_factory_->CreateSharedImage(
       mailbox, si_format, size, color_space, kBottomLeft_GrSurfaceOrigin,
-      kUnpremul_SkAlphaType, gpu::kNullSurfaceHandle, kUsage);
+      kUnpremul_SkAlphaType, gpu::kNullSurfaceHandle, kUsage,
+      "SkiaOutputSurface");
   if (!result) {
     DLOG(ERROR) << "Failed to create shared image.";
     return nullptr;
@@ -2360,7 +2361,7 @@ void SkiaOutputSurfaceImplOnGpu::CreateSharedImage(
   shared_image_factory_->CreateSharedImage(
       mailbox, si_format, size, color_space, kTopLeft_GrSurfaceOrigin,
       si_format.HasAlpha() ? kPremul_SkAlphaType : kOpaque_SkAlphaType,
-      surface_handle, usage);
+      surface_handle, usage, "SkiaOutputSurface");
   skia_representations_.emplace(mailbox, nullptr);
 }
 
@@ -2398,7 +2399,7 @@ void SkiaOutputSurfaceImplOnGpu::CreateSolidColorSharedImage(
       mailbox, si_format, size, color_space, kTopLeft_GrSurfaceOrigin,
       kPremul_SkAlphaType,
       gpu::SHARED_IMAGE_USAGE_SCANOUT | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
-      pixel_span);
+      "SkiaSolidColor", pixel_span);
   solid_color_images_.insert(mailbox);
 }
 

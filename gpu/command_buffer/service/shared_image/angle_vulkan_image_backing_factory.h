@@ -28,6 +28,7 @@ class AngleVulkanImageBackingFactory : public GLCommonImageBackingFactory {
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       uint32_t usage,
+      std::string debug_label,
       bool is_thread_safe) override;
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
@@ -37,6 +38,7 @@ class AngleVulkanImageBackingFactory : public GLCommonImageBackingFactory {
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       uint32_t usage,
+      std::string debug_label,
       base::span<const uint8_t> pixel_data) override;
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
@@ -47,7 +49,8 @@ class AngleVulkanImageBackingFactory : public GLCommonImageBackingFactory {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage) override;
+      uint32_t usage,
+      std::string debug_label) override;
   bool IsSupported(uint32_t usage,
                    viz::SharedImageFormat format,
                    const gfx::Size& size,

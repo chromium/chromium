@@ -216,7 +216,7 @@ void SharedImageInterfaceInProcess::CreateSharedImageOnGpuThread(
   DCHECK(shared_image_factory_);
   if (!shared_image_factory_->CreateSharedImage(
           mailbox, format, size, color_space, surface_origin, alpha_type,
-          surface_handle, usage)) {
+          surface_handle, usage, "Viz")) {
     context_state_->MarkContextLost();
     return;
   }
@@ -272,7 +272,7 @@ void SharedImageInterfaceInProcess::CreateSharedImageWithDataOnGpuThread(
   DCHECK(shared_image_factory_);
   if (!shared_image_factory_->CreateSharedImage(
           mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-          pixel_data)) {
+          "Viz", pixel_data)) {
     context_state_->MarkContextLost();
     return;
   }
@@ -348,7 +348,7 @@ void SharedImageInterfaceInProcess::CreateGMBSharedImageOnGpuThread(
   DCHECK(shared_image_factory_);
   if (!shared_image_factory_->CreateSharedImage(
           mailbox, std::move(handle), format, plane, size, color_space,
-          surface_origin, alpha_type, usage)) {
+          surface_origin, alpha_type, usage, "Viz")) {
     context_state_->MarkContextLost();
     return;
   }
