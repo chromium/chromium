@@ -392,7 +392,12 @@ bool ComServerApp::SwapInNewVersion() {
 
   const base::ScopedClosureRunner reset_shutdown_event(
       SignalShutdownEvent(updater_scope()));
-  StopGoogleUpdateProcesses(updater_scope());
+
+  absl::optional<base::FilePath> target =
+      GetGoogleUpdateExePath(updater_scope());
+  if (target) {
+    StopProcessesUnderPath(target->DirName(), base::Seconds(45));
+  }
 
   const bool succeeded = list->Do();
   if (succeeded) {

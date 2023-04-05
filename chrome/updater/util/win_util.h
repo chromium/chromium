@@ -21,6 +21,7 @@
 #include "base/hash/hash.h"
 #include "base/process/process_iterator.h"
 #include "base/scoped_generic.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_handle.h"
@@ -341,9 +342,11 @@ absl::optional<base::ScopedTempDir> CreateSecureTempDir();
 // Returns `true` if the legacy GoogleUpdate shutdown event is signaled.
 bool IsShutdownEventSignaled(UpdaterScope scope);
 
-// Attempts to stop the legacy GoogleUpdate processes. Returns `true` if all the
-// processes exited cleanly.
-bool StopGoogleUpdateProcesses(UpdaterScope scope);
+// Stops processes running under the provided `path`, by first waiting
+// `wait_period`, and if the processes still have not exited, by terminating the
+// processes.
+void StopProcessesUnderPath(const base::FilePath& path,
+                            const base::TimeDelta& wait_period);
 
 // Returns `true` if the argument is a guid.
 bool IsGuid(const std::wstring& s);

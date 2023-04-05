@@ -893,7 +893,8 @@ bool IsShutdownEventSignaled(UpdaterScope scope) {
   return event.IsSignaled();
 }
 
-bool StopGoogleUpdateProcesses(UpdaterScope scope) {
+void StopProcessesUnderPath(const base::FilePath& path,
+                            const base::TimeDelta& wait_period) {
   // Filters processes running under `path_prefix`.
   class PathPrefixProcessFilter : public base::ProcessFilter {
    public:
@@ -920,13 +921,7 @@ bool StopGoogleUpdateProcesses(UpdaterScope scope) {
     const base::FilePath path_prefix_;
   };
 
-  constexpr base::TimeDelta kShutdownWaitSeconds = base::Seconds(45);
-
-  absl::optional<base::FilePath> target = GetGoogleUpdateExePath(scope);
-  if (!target)
-    return false;
-
-  PathPrefixProcessFilter path_prefix_filter(target->DirName());
+  PathPrefixProcessFilter path_prefix_filter(path);
 
   base::ProcessIterator iter(&path_prefix_filter);
   base::flat_set<std::wstring> process_names_to_cleanup;
@@ -936,11 +931,8 @@ bool StopGoogleUpdateProcesses(UpdaterScope scope) {
   }
 
   for (const auto& exe_file : process_names_to_cleanup) {
-    base::CleanupProcesses(exe_file, kShutdownWaitSeconds, -1,
-                           &path_prefix_filter);
+    base::CleanupProcesses(exe_file, wait_period, -1, &path_prefix_filter);
   }
-
-  return true;
 }
 
 absl::optional<base::CommandLine> CommandLineForLegacyFormat(
