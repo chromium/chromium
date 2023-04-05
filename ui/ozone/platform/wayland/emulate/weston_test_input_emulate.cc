@@ -112,12 +112,12 @@ void WestonTestInputEmulate::RemoveObserver(Observer* obs) {
 void WestonTestInputEmulate::EmulatePointerMotion(
     gfx::AcceleratedWidget widget,
     const gfx::Point& mouse_surface_loc,
-    const gfx::Point& mouse_screen_loc_in_px) {
+    const gfx::Point& mouse_screen_loc) {
   if (AnyWindowWaitingForBufferCommit()) {
     auto pending_event = std::make_unique<PendingEvent>(
         ui::EventType::ET_MOUSE_MOVED, widget, this);
     pending_event->pointer_surface_location = mouse_surface_loc;
-    pending_event->pointer_screen_location_in_px = mouse_screen_loc_in_px;
+    pending_event->pointer_screen_location = mouse_screen_loc;
     pending_events_.emplace_back(std::move(pending_event));
     return;
   }
@@ -135,7 +135,7 @@ void WestonTestInputEmulate::EmulatePointerMotion(
   DCHECK(wayland_proxy);
 
   wl_surface* target_surface = nullptr;
-  gfx::Point target_location = mouse_screen_loc_in_px;
+  gfx::Point target_location = mouse_screen_loc;
   if (widget) {
     auto* wlsurface = wayland_proxy->GetWlSurfaceForAcceleratedWidget(widget);
     bool screen_coordinates =
@@ -143,11 +143,9 @@ void WestonTestInputEmulate::EmulatePointerMotion(
             ->IsScreenCoordinatesEnabled();
 
     target_surface = screen_coordinates ? nullptr : wlsurface;
-    target_location =
-        screen_coordinates ? mouse_screen_loc_in_px : mouse_surface_loc;
+    target_location = screen_coordinates ? mouse_screen_loc : mouse_surface_loc;
   }
 
-  // TODO(crbug.com/1306688): The coordinate should be in DIP.
   timespec ts = (base::TimeTicks::Now() - base::TimeTicks()).ToTimeSpec();
   weston_test_move_pointer(weston_test_, target_surface,
                            static_cast<uint64_t>(ts.tv_sec) >> 32,
@@ -483,7 +481,7 @@ void WestonTestInputEmulate::DispatchPendingEvents() {
         }
         EmulatePointerMotion(
             /*widget=*/event->widget, event->pointer_surface_location,
-            event->pointer_screen_location_in_px);
+            event->pointer_screen_location);
         break;
       case ui::EventType::ET_MOUSE_PRESSED:
       case ui::EventType::ET_MOUSE_RELEASED:

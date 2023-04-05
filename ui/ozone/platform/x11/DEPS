@@ -4,3 +4,9 @@ include_rules = [
   "+ui/base",
   "+ui/linux",
 ]
+
+specific_include_rules = {
+  "x11_ozone_ui_controls_test_helper.cc": [
+    "+ui/aura",
+  ]
+}

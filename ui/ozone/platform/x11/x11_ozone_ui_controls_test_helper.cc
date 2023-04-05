@@ -4,6 +4,8 @@
 
 #include "ui/ozone/platform/x11/x11_ozone_ui_controls_test_helper.h"
 
+#include "ui/aura/window_tree_host.h"
+
 namespace ui {
 
 X11OzoneUIControlsTestHelper::X11OzoneUIControlsTestHelper() = default;
@@ -29,10 +31,15 @@ void X11OzoneUIControlsTestHelper::SendKeyEvents(gfx::AcceleratedWidget widget,
 void X11OzoneUIControlsTestHelper::SendMouseMotionNotifyEvent(
     gfx::AcceleratedWidget widget,
     const gfx::Point& mouse_loc,
-    const gfx::Point& mouse_root_loc,
+    const gfx::Point& mouse_loc_in_screen,
     base::OnceClosure closure) {
+  auto* host = aura::WindowTreeHost::GetForAcceleratedWidget(widget);
+  gfx::Point mouse_loc_in_screen_px = mouse_loc_in_screen;
+  // TODO(crbug.com/1430805): fix this conversion.
+  host->ConvertDIPToPixels(&mouse_loc_in_screen_px);
+
   x11_ui_controls_test_helper_.SendMouseMotionNotifyEvent(
-      widget, mouse_loc, mouse_root_loc, std::move(closure));
+      widget, mouse_loc, mouse_loc_in_screen_px, std::move(closure));
 }
 
 void X11OzoneUIControlsTestHelper::SendMouseEvent(
@@ -41,11 +48,16 @@ void X11OzoneUIControlsTestHelper::SendMouseEvent(
     int button_state,
     int accelerator_state,
     const gfx::Point& mouse_loc,
-    const gfx::Point& mouse_root_loc,
+    const gfx::Point& mouse_loc_in_screen,
     base::OnceClosure closure) {
+  auto* host = aura::WindowTreeHost::GetForAcceleratedWidget(widget);
+  gfx::Point mouse_loc_in_screen_px = mouse_loc_in_screen;
+  // TODO(crbug.com/1430805): fix this conversion.
+  host->ConvertDIPToPixels(&mouse_loc_in_screen_px);
+
   x11_ui_controls_test_helper_.SendMouseEvent(
-      widget, type, button_state, accelerator_state, mouse_loc, mouse_root_loc,
-      std::move(closure));
+      widget, type, button_state, accelerator_state, mouse_loc,
+      mouse_loc_in_screen_px, std::move(closure));
 }
 
 void X11OzoneUIControlsTestHelper::RunClosureAfterAllPendingUIEvents(

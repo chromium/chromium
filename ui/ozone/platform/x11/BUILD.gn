@@ -195,6 +195,7 @@ source_set("test_support") {
   ]
 
   deps = [
+    "//ui/aura:aura",
     "//ui/base/x",
     "//ui/base/x:test_support",
   ]

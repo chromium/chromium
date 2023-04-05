@@ -117,11 +117,11 @@ void X11UIControlsTestHelper::SendKeyEvents(gfx::AcceleratedWidget widget,
 void X11UIControlsTestHelper::SendMouseMotionNotifyEvent(
     gfx::AcceleratedWidget widget,
     const gfx::Point& mouse_loc,
-    const gfx::Point& mouse_root_loc,
+    const gfx::Point& mouse_loc_in_screen_px,
     base::OnceClosure closure) {
   x11::MotionNotifyEvent xevent{
-      .root_x = static_cast<int16_t>(mouse_root_loc.x()),
-      .root_y = static_cast<int16_t>(mouse_root_loc.y()),
+      .root_x = static_cast<int16_t>(mouse_loc_in_screen_px.x()),
+      .root_y = static_cast<int16_t>(mouse_loc_in_screen_px.y()),
       .event_x = static_cast<int16_t>(mouse_loc.x()),
       .event_y = static_cast<int16_t>(mouse_loc.y()),
       .state = static_cast<x11::KeyButMask>(button_down_mask),
@@ -133,18 +133,19 @@ void X11UIControlsTestHelper::SendMouseMotionNotifyEvent(
   return;
 }
 
-void X11UIControlsTestHelper::SendMouseEvent(gfx::AcceleratedWidget widget,
-                                             MouseButton type,
-                                             int button_state,
-                                             int accelerator_state,
-                                             const gfx::Point& mouse_loc,
-                                             const gfx::Point& mouse_root_loc,
-                                             base::OnceClosure closure) {
+void X11UIControlsTestHelper::SendMouseEvent(
+    gfx::AcceleratedWidget widget,
+    MouseButton type,
+    int button_state,
+    int accelerator_state,
+    const gfx::Point& mouse_loc,
+    const gfx::Point& mouse_loc_in_screen_px,
+    base::OnceClosure closure) {
   x11::ButtonEvent xevent;
   xevent.event_x = mouse_loc.x();
   xevent.event_y = mouse_loc.y();
-  xevent.root_x = mouse_root_loc.x();
-  xevent.root_y = mouse_root_loc.y();
+  xevent.root_x = mouse_loc_in_screen_px.x();
+  xevent.root_y = mouse_loc_in_screen_px.y();
   switch (type) {
     case LEFT:
       xevent.detail = static_cast<x11::Button>(1);

@@ -61,7 +61,7 @@ class WestonTestInputEmulate : public wl::WaylandProxy::Delegate {
   void RemoveObserver(Observer* obs);
   void EmulatePointerMotion(gfx::AcceleratedWidget widget,
                             const gfx::Point& mouse_surface_loc,
-                            const gfx::Point& mouse_screen_loc_in_px);
+                            const gfx::Point& mouse_screen_loc);
 
   // |widget| is only needed to queue up the event if the widget is not yet
   // configured. If the event is being dequeued then |widget| will be 0.
@@ -93,9 +93,9 @@ class WestonTestInputEmulate : public wl::WaylandProxy::Delegate {
     base::WeakPtr<TestWindow> test_window;
 
     // Set for type == ET_MOUSE_MOVED. Locations are
-    // in surface local, and pixel screen coordinates respectively.
+    // in surface local, and dip screen coordinates respectively.
     gfx::Point pointer_surface_location;
-    gfx::Point pointer_screen_location_in_px;
+    gfx::Point pointer_screen_location;
 
     // Set for type == ET_TOUCH_*. Location is in dip screen coordinates.
     gfx::Point touch_screen_location;

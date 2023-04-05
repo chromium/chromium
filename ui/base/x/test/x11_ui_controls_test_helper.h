@@ -37,7 +37,7 @@ class COMPONENT_EXPORT(UI_BASE_X) X11UIControlsTestHelper {
   // Sends mouse motion notify event and executes |closure| when done.
   void SendMouseMotionNotifyEvent(gfx::AcceleratedWidget widget,
                                   const gfx::Point& mouse_loc,
-                                  const gfx::Point& mouse_root_loc,
+                                  const gfx::Point& mouse_loc_in_screen_px,
                                   base::OnceClosure closure);
 
   // Sends mouse event and executes |closure| when done.
@@ -46,7 +46,7 @@ class COMPONENT_EXPORT(UI_BASE_X) X11UIControlsTestHelper {
                       int button_state,
                       int accelerator_state,
                       const gfx::Point& mouse_loc,
-                      const gfx::Point& mouse_root_loc,
+                      const gfx::Point& mouse_loc_in_screen_px,
                       base::OnceClosure closure);
 
   void RunClosureAfterAllPendingUIEvents(base::OnceClosure closure);
