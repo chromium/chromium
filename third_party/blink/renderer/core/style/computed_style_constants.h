@@ -403,7 +403,7 @@ enum class ViewportUnitFlag {
 };
 
 enum class TimelineAxis { kBlock, kInline, kVertical, kHorizontal };
-enum class TimelineScroller { kNearest, kRoot };
+enum class TimelineScroller { kNearest, kRoot, kSelf };
 
 }  // namespace blink
 

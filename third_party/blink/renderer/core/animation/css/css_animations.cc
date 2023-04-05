@@ -647,25 +647,24 @@ TimelineType* GetTimeline(const CSSTimelineMap<TimelineType>* timelines,
   return i != timelines->end() ? i->value.Get() : nullptr;
 }
 
-// TODO(crbug.com/1429575): Support 'self', and avoid absl::optional.
 Element* ResolveReferenceElement(Document& document,
-                                 absl::optional<TimelineScroller> scroller,
+                                 TimelineScroller scroller,
                                  Element* reference_element) {
-  switch (scroller.value_or(TimelineScroller::kNearest)) {
+  switch (scroller) {
     case TimelineScroller::kNearest:
+    case TimelineScroller::kSelf:
       return reference_element;
     case TimelineScroller::kRoot:
       return document.ScrollingElementNoLayout();
   }
 }
 
-// TODO(crbug.com/1429575): Support 'self', and avoid absl::optional.
-ScrollTimeline::ReferenceType ComputeReferenceType(
-    absl::optional<TimelineScroller> scroller) {
-  switch (scroller.value_or(TimelineScroller::kRoot)) {
+ScrollTimeline::ReferenceType ComputeReferenceType(TimelineScroller scroller) {
+  switch (scroller) {
     case TimelineScroller::kNearest:
       return ScrollTimeline::ReferenceType::kNearestAncestor;
     case TimelineScroller::kRoot:
+    case TimelineScroller::kSelf:
       return ScrollTimeline::ReferenceType::kSource;
   }
 }
@@ -696,7 +695,7 @@ struct CSSScrollTimelineOptions {
 
  public:
   CSSScrollTimelineOptions(Document& document,
-                           absl::optional<TimelineScroller> scroller,
+                           TimelineScroller scroller,
                            Element* reference_element,
                            TimelineAxis axis)
       : reference_type(ComputeReferenceType(scroller)),
@@ -781,8 +780,7 @@ CSSScrollTimelineMap CSSAnimations::CalculateChangedScrollTimelines(
     // Note: ScrollTimeline does not use insets.
     ScrollTimeline* existing_timeline =
         GetTimeline(existing_scroll_timelines, *name);
-    CSSScrollTimelineOptions options(document,
-                                     /* scroller */ absl::nullopt,
+    CSSScrollTimelineOptions options(document, TimelineScroller::kSelf,
                                      &animating_element, axis);
     if (existing_timeline && TimelineMatches(*existing_timeline, options)) {
       changed_timelines.erase(name);
