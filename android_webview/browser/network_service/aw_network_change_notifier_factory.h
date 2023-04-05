@@ -33,7 +33,10 @@ class AwNetworkChangeNotifierFactory :
   ~AwNetworkChangeNotifierFactory() override;
 
   // NetworkChangeNotifierFactory:
-  std::unique_ptr<net::NetworkChangeNotifier> CreateInstance() override;
+  std::unique_ptr<net::NetworkChangeNotifier> CreateInstanceWithInitialTypes(
+      net::NetworkChangeNotifier::ConnectionType /*initial_type*/,
+      net::NetworkChangeNotifier::ConnectionSubtype /*initial_subtype*/)
+      override;
 
  private:
   // Delegate passed to the instances created by this class.

@@ -11,7 +11,9 @@
 namespace chromecast {
 
 std::unique_ptr<net::NetworkChangeNotifier>
-NetworkChangeNotifierFactoryFuchsia::CreateInstance() {
+NetworkChangeNotifierFactoryFuchsia::CreateInstanceWithInitialTypes(
+    net::NetworkChangeNotifier::ConnectionType /*initial_type*/,
+    net::NetworkChangeNotifier::ConnectionSubtype /*initial_subtype*/) {
   auto require_wlan = GetSwitchValueBoolean(switches::kRequireWlan, false);
 
   // Caller assumes ownership.

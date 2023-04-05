@@ -10,13 +10,14 @@
 namespace chromecast {
 
 std::unique_ptr<net::NetworkChangeNotifier>
-NetworkChangeNotifierFactoryCast::CreateInstance() {
+NetworkChangeNotifierFactoryCast::CreateInstanceWithInitialTypes(
+    net::NetworkChangeNotifier::ConnectionType /*initial_type*/,
+    net::NetworkChangeNotifier::ConnectionSubtype /*initial_subtype*/) {
   // Caller assumes ownership.
   return std::make_unique<net::NetworkChangeNotifierLinux>(
       GetIgnoredInterfaces());
 }
 
-NetworkChangeNotifierFactoryCast::~NetworkChangeNotifierFactoryCast() {
-}
+NetworkChangeNotifierFactoryCast::~NetworkChangeNotifierFactoryCast() = default;
 
 }  // namespace chromecast

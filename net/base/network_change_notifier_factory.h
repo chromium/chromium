@@ -8,17 +8,24 @@
 #include <memory>
 
 #include "net/base/net_export.h"
+#include "net/base/network_change_notifier.h"
 
 namespace net {
 
-class NetworkChangeNotifier;
 // NetworkChangeNotifierFactory provides a mechanism for overriding the default
 // instance creation process of NetworkChangeNotifier.
 class NET_EXPORT NetworkChangeNotifierFactory {
  public:
   NetworkChangeNotifierFactory() = default;
   virtual ~NetworkChangeNotifierFactory() = default;
-  virtual std::unique_ptr<NetworkChangeNotifier> CreateInstance() = 0;
+  virtual std::unique_ptr<NetworkChangeNotifier> CreateInstanceWithInitialTypes(
+      NetworkChangeNotifier::ConnectionType initial_type,
+      NetworkChangeNotifier::ConnectionSubtype initial_subtype) = 0;
+  std::unique_ptr<NetworkChangeNotifier> CreateInstance() {
+    return CreateInstanceWithInitialTypes(
+        NetworkChangeNotifier::kDefaultInitialConnectionType,
+        NetworkChangeNotifier::kDefaultInitialConnectionSubtype);
+  }
 };
 
 }  // namespace net

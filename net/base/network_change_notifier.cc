@@ -302,8 +302,10 @@ std::unique_ptr<NetworkChangeNotifier> NetworkChangeNotifier::CreateIfNeeded(
       return nullptr;
   }
 
-  if (g_network_change_notifier_factory)
-    return g_network_change_notifier_factory->CreateInstance();
+  if (g_network_change_notifier_factory) {
+    return g_network_change_notifier_factory->CreateInstanceWithInitialTypes(
+        initial_type, initial_subtype);
+  }
 
 #if BUILDFLAG(IS_WIN)
   std::unique_ptr<NetworkChangeNotifierWin> network_change_notifier =
