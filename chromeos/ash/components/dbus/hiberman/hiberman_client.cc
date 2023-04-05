@@ -27,7 +27,9 @@ namespace {
 // image is being loaded and prepared. As a worst case estimate, loading 8GB at
 // 100MB/s takes about 80 seconds. 5 minutes would give us a fudge factor of
 // roughly 4x.
-constexpr int kHibermanResumeTimeoutMS = 5 * 60 * 1000;
+constexpr int kHibermanResumeTimeoutMs = 5 * 60 * 1000;
+constexpr int kHibermanTestHibermanAliveTimeoutMs = 1000;
+constexpr char kMethodNameHasOwner[] = "NameHasOwner";
 
 HibermanClient* g_instance = nullptr;
 
@@ -46,16 +48,21 @@ class HibermanClientImpl : public HibermanClient {
     proxy_ = bus->GetObjectProxy(
         ::hiberman::kHibernateServiceName,
         dbus::ObjectPath(::hiberman::kHibernateServicePath));
+    TestHibermanAlive(bus);
   }
 
   // HibermanClient override:
+  bool IsAlive() const override { return alive_; }
+
   void WaitForServiceToBeAvailable(
       chromeos::WaitForServiceToBeAvailableCallback callback) override {
+    VLOG(1) << "Start WaitForServiceToBeAvailable";
     proxy_->WaitForServiceToBeAvailable(std::move(callback));
   }
 
   void ResumeFromHibernate(const std::string& account_id,
                            ResumeFromHibernateCallback callback) override {
+    VLOG(1) << "Attempt ResumeFromHibernate";
     dbus::MethodCall method_call(::hiberman::kHibernateResumeInterface,
                                  ::hiberman::kResumeFromHibernateMethod);
     dbus::MessageWriter writer(&method_call);
@@ -63,13 +70,14 @@ class HibermanClientImpl : public HibermanClient {
     // Bind with the weak pointer of |this| so the response is not
     // handled once |this| is already destroyed.
     proxy_->CallMethod(
-        &method_call, kHibermanResumeTimeoutMS,
+        &method_call, kHibermanResumeTimeoutMs,
         base::BindOnce(&HibermanClientImpl::HandleResponse,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
   }
 
   void ResumeFromHibernateAS(const std::string& auth_session_id,
                              ResumeFromHibernateCallback callback) override {
+    VLOG(1) << "Attempt ResumeFromHibernateAS";
     dbus::MethodCall method_call(::hiberman::kHibernateResumeInterface,
                                  ::hiberman::kResumeFromHibernateASMethod);
     dbus::MessageWriter writer(&method_call);
@@ -79,7 +87,7 @@ class HibermanClientImpl : public HibermanClient {
     // Bind with the weak pointer of |this| so the response is not
     // handled once |this| is already destroyed.
     proxy_->CallMethod(
-        &method_call, kHibermanResumeTimeoutMS,
+        &method_call, kHibermanResumeTimeoutMs,
         base::BindOnce(&HibermanClientImpl::HandleResponse,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
   }
@@ -87,8 +95,37 @@ class HibermanClientImpl : public HibermanClient {
  private:
   void HandleResponse(chromeos::VoidDBusMethodCallback callback,
                       dbus::Response* response) {
+    VLOG(1) << "Received Resume Response: " << (response != nullptr);
     std::move(callback).Run(response != nullptr);
   }
+
+  void TestHibermanAlive(dbus::Bus* bus) {
+    dbus::ObjectProxy* dbus_proxy = bus->GetObjectProxy(
+        DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS));
+
+    dbus::MethodCall method_call(DBUS_INTERFACE_DBUS, kMethodNameHasOwner);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(hiberman::kHibernateServiceName);
+
+    dbus_proxy->CallMethod(&method_call, kHibermanTestHibermanAliveTimeoutMs,
+                           base::BindOnce(&HibermanClientImpl::OnTestAlive,
+                                          weak_factory_.GetWeakPtr()));
+  }
+
+  void OnTestAlive(dbus::Response* response) {
+    dbus::MessageReader reader(response);
+    if (!response || !reader.PopBool(&alive_) || !alive_) {
+      VLOG(1) << hiberman::kHibernateServiceName << " is unowned.";
+      alive_ = false;
+      return;
+    }
+
+    VLOG(1) << hiberman::kHibernateServiceName << " is alive and responsive";
+  }
+
+  // We need to test if hiberman is responding on the dbus interface, we do this
+  // to make sure we don't block login unnecessarily.
+  bool alive_ = false;
 
   // D-Bus proxy for hiberman, not owned.
   dbus::ObjectProxy* proxy_ = nullptr;

@@ -30,6 +30,7 @@ class COMPONENT_EXPORT(HIBERMAN_CLIENT) FakeHibermanClient
   static FakeHibermanClient* Get();
 
   // HibermanClient override:
+  bool IsAlive() const override;
   void WaitForServiceToBeAvailable(
       chromeos::WaitForServiceToBeAvailableCallback callback) override;
   void ResumeFromHibernate(const std::string& account_id,

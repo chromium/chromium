@@ -33,6 +33,10 @@ FakeHibermanClient* FakeHibermanClient::Get() {
   return g_instance;
 }
 
+bool FakeHibermanClient::IsAlive() const {
+  return true;
+}
+
 void FakeHibermanClient::ResumeFromHibernate(
     const std::string& account_id,
     ResumeFromHibernateCallback callback) {

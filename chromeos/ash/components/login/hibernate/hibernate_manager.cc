@@ -7,10 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chromeos/ash/components/cryptohome/userdataauth_util.h"
-
-#if BUILDFLAG(ENABLE_HIBERNATE)
-#include "chromeos/ash/components/dbus/hiberman/hiberman_client.h"  // nogncheck
-#endif
+#include "chromeos/ash/components/dbus/hiberman/hiberman_client.h"
 
 namespace ash {
 
@@ -25,34 +22,33 @@ base::WeakPtr<HibernateManager> HibernateManager::AsWeakPtr() {
 void HibernateManager::PrepareHibernateAndMaybeResumeAuthOp(
     std::unique_ptr<UserContext> user_context,
     AuthOperationCallback callback) {
+  auto* client = HibermanClient::Get();
+  if (!client || !client->IsAlive()) {
+    std::move(callback).Run(std::move(user_context), absl::nullopt);
+    return;
+  }
+
   PrepareHibernateAndMaybeResume(
       std::move(user_context),
       base::BindOnce(&HibernateManager::ResumeFromHibernateAuthOpCallback,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-#if BUILDFLAG(ENABLE_HIBERNATE)
 void HibernateManager::PrepareHibernateAndMaybeResume(
     std::unique_ptr<UserContext> user_context,
     HibernateResumeCallback callback) {
+  auto* client = HibermanClient::Get();
+  if (!client || !client->IsAlive()) {
+    std::move(callback).Run(std::move(user_context), true);
+    return;
+  }
+
   // In a successful resume case, this function never returns, as execution
   // continues in the resumed hibernation image.
-  HibermanClient::Get()->ResumeFromHibernateAS(
+  client->ResumeFromHibernateAS(
       user_context->GetAuthSessionId(),
       base::BindOnce(std::move(callback), std::move(user_context)));
 }
-
-#else  // !ENABLE_HIBERNATE
-
-void HibernateManager::PrepareHibernateAndMaybeResume(
-    std::unique_ptr<UserContext> user_context,
-    HibernateResumeCallback callback) {
-  // If resume from hibernate is not enabled, just immediately turn around and
-  // call the callback.
-  std::move(callback).Run(std::move(user_context), true);
-}
-
-#endif
 
 void HibernateManager::ResumeFromHibernateAuthOpCallback(
     AuthOperationCallback callback,

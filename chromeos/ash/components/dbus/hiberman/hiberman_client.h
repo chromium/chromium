@@ -39,6 +39,8 @@ class COMPONENT_EXPORT(HIBERMAN_CLIENT) HibermanClient {
   // Returns the global instance which may be null if not initialized.
   static HibermanClient* Get();
 
+  virtual bool IsAlive() const = 0;
+
   // Actual DBus Methods:
   // Runs the callback as soon as the service becomes available.
   virtual void WaitForServiceToBeAvailable(

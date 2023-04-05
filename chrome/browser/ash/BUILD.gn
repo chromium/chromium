@@ -6,7 +6,6 @@ import("//build/config/chromebox_for_meetings/buildflags.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ozone.gni")
 import("//build/config/sanitizers/sanitizers.gni")
-import("//chromeos/ash/components/hibernate/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
 import("//printing/buildflags/buildflags.gni")
@@ -3826,6 +3825,7 @@ source_set("ash") {
     "//chromeos/ash/components/dbus/featured",
     "//chromeos/ash/components/dbus/federated",
     "//chromeos/ash/components/dbus/fwupd",
+    "//chromeos/ash/components/dbus/hiberman",
     "//chromeos/ash/components/dbus/human_presence",
     "//chromeos/ash/components/dbus/image_burner",
     "//chromeos/ash/components/dbus/image_loader",
@@ -3848,7 +3848,6 @@ source_set("ash") {
     "//chromeos/ash/components/dbus/virtual_file_provider",
     "//chromeos/ash/components/device_activity",
     "//chromeos/ash/components/fwupd",
-    "//chromeos/ash/components/hibernate:buildflags",
     "//chromeos/ash/components/local_search_service/public/cpp",
     "//chromeos/ash/components/mojo_service_manager",
     "//chromeos/ash/components/multidevice:stub_multidevice_util",
@@ -4072,10 +4071,6 @@ source_set("ash") {
     ":dbus_service_files",
     ":mojo_service_manager_policy",
   ]
-
-  if (enable_hibernate) {
-    deps += [ "//chromeos/ash/components/dbus/hiberman" ]
-  }
 
   if (enable_rlz) {
     deps += [ "//components/rlz" ]
