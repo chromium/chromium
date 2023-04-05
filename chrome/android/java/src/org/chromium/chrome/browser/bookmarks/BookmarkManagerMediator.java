@@ -410,6 +410,14 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
         assert mUiObservers.size() == 0;
     }
 
+    void onAttachedToWindow() {
+        mBookmarkUndoController.setEnabled(true);
+    }
+
+    void onDetachedFromWindow() {
+        mBookmarkUndoController.setEnabled(false);
+    }
+
     /**
      * See BookmarkManager(Coordinator)#onBackPressed.
      */

@@ -9,6 +9,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnAttachStateChangeListener;
 import android.view.ViewGroup;
 
 import androidx.annotation.LayoutRes;
@@ -45,7 +46,8 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 
 /** Responsible for setting up sub-components and routing incoming/outgoing signals */
-public class BookmarkManagerCoordinator implements SearchDelegate, BackPressHandler {
+public class BookmarkManagerCoordinator
+        implements SearchDelegate, BackPressHandler, OnAttachStateChangeListener {
     private static final int FAVICON_MAX_CACHE_SIZE_BYTES =
             10 * ConversionUtils.BYTES_PER_MEGABYTE; // 10MB
 
@@ -132,6 +134,8 @@ public class BookmarkManagerCoordinator implements SearchDelegate, BackPressHand
 
         bookmarkDelegateSupplier.set(/*bookmarkDelegate=*/mMediator);
 
+        mMainView.addOnAttachStateChangeListener(this);
+
         RecordUserAction.record("MobileBookmarkManagerOpen");
         if (!isDialogUi) {
             RecordUserAction.record("MobileBookmarkManagerPageOpen");
@@ -145,6 +149,7 @@ public class BookmarkManagerCoordinator implements SearchDelegate, BackPressHand
      */
     public void onDestroyed() {
         RecordUserAction.record("MobileBookmarkManagerClose");
+        mMainView.removeOnAttachStateChangeListener(this);
         mSelectableListLayout.onDestroyed();
         mMediator.onDestroy();
     }
@@ -186,6 +191,18 @@ public class BookmarkManagerCoordinator implements SearchDelegate, BackPressHand
     /** Opens the given BookmarkId. */
     public void openBookmark(BookmarkId bookmarkId) {
         mMediator.openBookmark(bookmarkId);
+    }
+
+    // OnAttachStateChangeListener implementation.
+
+    @Override
+    public void onViewAttachedToWindow(@NonNull View view) {
+        mMediator.onAttachedToWindow();
+    }
+
+    @Override
+    public void onViewDetachedFromWindow(@NonNull View view) {
+        mMediator.onDetachedFromWindow();
     }
 
     // BackPressHandler implementation.
