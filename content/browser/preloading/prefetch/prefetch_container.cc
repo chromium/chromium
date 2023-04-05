@@ -387,7 +387,7 @@ void PrefetchContainer::OnEligibilityCheckComplete(
         .Run(is_eligible);
   }
 
-  if (url == prefetch_url_) {
+  if (url == prefetch_url_ && redirect_chain_.size() == 1) {
     // This case is for just the URL that was originally requested to be
     // prefetched.
     if (!is_eligible) {
@@ -404,7 +404,9 @@ void PrefetchContainer::OnEligibilityCheckComplete(
       }
     }
 
-    prefetch_document_manager_->OnEligibilityCheckComplete(is_eligible);
+    if (prefetch_document_manager_) {
+      prefetch_document_manager_->OnEligibilityCheckComplete(is_eligible);
+    }
   } else {
     // This case is for any URLs from redirects.
     if (!is_eligible) {
