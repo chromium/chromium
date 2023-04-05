@@ -348,7 +348,6 @@ public class FirstRunIntegrationTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1295396")
     public void testAbortFirstRun() throws Exception {
         launchViewIntent(TEST_URL);
         Activity chromeLauncherActivity = waitForActivity(ChromeLauncherActivity.class);
@@ -632,7 +631,6 @@ public class FirstRunIntegrationTest {
     @MediumTest
     // TODO(https://crbug.com/1111490): Change this test case when policy can handle cases when ToS
     // is accepted in Browser App.
-    @DisabledTest(message = "https://crbug.com/1331277")
     public void testSkipTosPage_WithCctPolicy() throws Exception {
         skipTosDialogViaPolicy();
         FirstRunStatus.setSkipWelcomePage(true);
