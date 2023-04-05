@@ -259,8 +259,6 @@ bool StructTraits<media::mojom::H265MetadataDataView, media::H265Metadata>::
     Read(media::mojom::H265MetadataDataView data,
          media::H265Metadata* out_metadata) {
   out_metadata->temporal_idx = data.temporal_idx();
-  out_metadata->spatial_idx = data.spatial_idx();
-  out_metadata->layer_sync = data.layer_sync();
   return true;
 }
 
@@ -296,14 +294,8 @@ bool StructTraits<media::mojom::Vp9MetadataDataView, media::Vp9Metadata>::Read(
 bool StructTraits<media::mojom::Av1MetadataDataView, media::Av1Metadata>::Read(
     media::mojom::Av1MetadataDataView data,
     media::Av1Metadata* out_metadata) {
-  out_metadata->inter_pic_predicted = data.inter_pic_predicted();
-  out_metadata->switch_frame = data.switch_frame();
-  out_metadata->end_of_picture = data.end_of_picture();
   out_metadata->temporal_idx = data.temporal_idx();
-  out_metadata->spatial_idx = data.spatial_idx();
-  return data.ReadSpatialLayerResolutions(
-             &out_metadata->spatial_layer_resolutions) &&
-         data.ReadFDiffs(&out_metadata->f_diffs);
+  return true;
 }
 
 // static

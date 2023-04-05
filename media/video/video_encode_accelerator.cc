@@ -42,21 +42,12 @@ bool BitstreamBufferMetadata::end_of_picture() const {
   if (vp9) {
     return vp9->end_of_picture;
   }
-  if (av1) {
-    return av1->end_of_picture;
-  }
   return true;
 }
 
 absl::optional<uint8_t> BitstreamBufferMetadata::spatial_idx() const {
   if (vp9) {
     return vp9->spatial_idx;
-  }
-  if (av1) {
-    return av1->spatial_idx;
-  }
-  if (h265) {
-    return h265->spatial_idx;
   }
   return absl::nullopt;
 }
@@ -245,8 +236,7 @@ bool operator==(const H264Metadata& l, const H264Metadata& r) {
 }
 
 bool operator==(const H265Metadata& l, const H265Metadata& r) {
-  return l.temporal_idx == r.temporal_idx && l.spatial_idx == r.spatial_idx &&
-         l.layer_sync == r.layer_sync;
+  return l.temporal_idx == r.temporal_idx;
 }
 
 bool operator==(const Vp8Metadata& l, const Vp8Metadata& r) {
@@ -267,12 +257,7 @@ bool operator==(const Vp9Metadata& l, const Vp9Metadata& r) {
 }
 
 bool operator==(const Av1Metadata& l, const Av1Metadata& r) {
-  return l.inter_pic_predicted == r.inter_pic_predicted &&
-         l.switch_frame == r.switch_frame &&
-         l.end_of_picture == r.end_of_picture &&
-         l.temporal_idx == r.temporal_idx && l.spatial_idx == r.spatial_idx &&
-         l.spatial_layer_resolutions == r.spatial_layer_resolutions &&
-         l.f_diffs == r.f_diffs;
+  return l.temporal_idx == r.temporal_idx;
 }
 
 bool operator==(const BitstreamBufferMetadata& l,

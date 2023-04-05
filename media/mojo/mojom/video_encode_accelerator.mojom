@@ -258,8 +258,6 @@ struct H264Metadata {
 
 struct H265Metadata {
   uint8 temporal_idx;
-  uint8 spatial_idx;
-  bool layer_sync;
 };
 
 struct Vp8Metadata {
@@ -281,13 +279,7 @@ struct Vp9Metadata {
 };
 
 struct Av1Metadata {
-  bool inter_pic_predicted;
-  bool switch_frame;
-  bool end_of_picture;
   uint8 temporal_idx;
-  uint8 spatial_idx;
-  array<gfx.mojom.Size> spatial_layer_resolutions;
-  array<uint8> f_diffs;
 };
 
 // Codec specific metadata.

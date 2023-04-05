@@ -245,14 +245,6 @@ class StructTraits<media::mojom::H265MetadataDataView, media::H265Metadata> {
     return h265.temporal_idx;
   }
 
-  static uint8_t spatial_idx(const media::H265Metadata& h265) {
-    return h265.spatial_idx;
-  }
-
-  static bool layer_sync(const media::H265Metadata& h265) {
-    return h265.layer_sync;
-  }
-
   static bool Read(media::mojom::H265MetadataDataView data,
                    media::H265Metadata* out_metadata);
 };
@@ -316,27 +308,8 @@ class StructTraits<media::mojom::Vp9MetadataDataView, media::Vp9Metadata> {
 template <>
 class StructTraits<media::mojom::Av1MetadataDataView, media::Av1Metadata> {
  public:
-  static bool inter_pic_predicted(const media::Av1Metadata& av1) {
-    return av1.inter_pic_predicted;
-  }
-  static bool switch_frame(const media::Av1Metadata& av1) {
-    return av1.switch_frame;
-  }
-  static bool end_of_picture(const media::Av1Metadata& av1) {
-    return av1.end_of_picture;
-  }
   static uint8_t temporal_idx(const media::Av1Metadata& av1) {
     return av1.temporal_idx;
-  }
-  static uint8_t spatial_idx(const media::Av1Metadata& av1) {
-    return av1.spatial_idx;
-  }
-  static const std::vector<gfx::Size>& spatial_layer_resolutions(
-      const media::Av1Metadata& av1) {
-    return av1.spatial_layer_resolutions;
-  }
-  static const std::vector<uint8_t>& f_diffs(const media::Av1Metadata& av1) {
-    return av1.f_diffs;
   }
 
   static bool Read(media::mojom::Av1MetadataDataView data,
