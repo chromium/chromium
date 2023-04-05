@@ -1694,6 +1694,20 @@ void XRSession::UpdatePresentationFrameState(
   mojo_from_viewer_ = getPoseMatrix(mojo_from_viewer_pose);
   DVLOG(2) << __func__ << " : mojo_from_viewer_ valid? "
            << (mojo_from_viewer_ ? true : false);
+  // TODO(https://crbug.com/1430868): We need to do this because inline sessions
+  // don't have enough data to send up a mojo::XRView; but blink::XRViews rely
+  // on having mojo_from_view set in a blink::XRViewData based upon the value
+  // sent up in a mojo::XRView. Really, mojo::XRView should only be setting
+  // viewer_from_view, and inline can go back to ignoring it, since the current
+  // behavior essentially has two out of sync mojo_from_viewer transforms, one
+  // is just implicitly embedded into an XRView. See
+  // https://crbug.com/1428489#c7 for more details.
+  if (!immersive() && mojo_from_viewer_) {
+    for (XRViewData* view : views()) {
+      // viewer_from_view multiplication omitted as it is identity.
+      view->SetMojoFromView(*mojo_from_viewer_.get() /* * viewer_from_view */);
+    }
+  }
 
   emulated_position_ = emulated_position;
 

@@ -186,6 +186,10 @@ gfx::Transform XRViewData::UnprojectPointer(double x,
   return inv_pointer.InverseOrIdentity();
 }
 
+void XRViewData::SetMojoFromView(const gfx::Transform& mojo_from_view) {
+  mojo_from_view_ = mojo_from_view;
+}
+
 XRRigidTransform* XRView::refSpaceFromView() const {
   return ref_space_from_view_;
 }
