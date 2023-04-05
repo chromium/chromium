@@ -2315,5 +2315,93 @@ class LayerTreeHostAnimationTestRebuildPropertyTreesOnAnimationSetNeedsCommit
 MULTI_THREAD_TEST_F(
     LayerTreeHostAnimationTestRebuildPropertyTreesOnAnimationSetNeedsCommit);
 
+class LayerTreeHostTestPauseRendering : public LayerTreeHostAnimationTest {
+ public:
+  void SetupTree() override {
+    LayerTreeHostAnimationTest::SetupTree();
+    layer_ = Layer::Create();
+    layer_->SetBounds(gfx::Size(4, 4));
+    layer_tree_host()->root_layer()->AddChild(layer_);
+    layer_tree_host()->SetElementIdsForTesting();
+  }
+
+  void BeginTest() override {
+    AttachAnimationsToTimeline();
+
+    // Set up an animation which is committed to the impl thread in the first
+    // frame.
+    animation_->AttachElement(layer_->element_id());
+    AddAnimatedTransformToAnimation(animation_.get(), 4, 1, 1);
+
+    PostSetNeedsCommitToMainThread();
+  }
+
+  void WillCommit(const CommitState& state) override {
+    // First frame pauses rendering.
+    if (layer_tree_host()->SourceFrameNumber() == 0) {
+      EXPECT_FALSE(rendering_paused_);
+      rendering_paused_ = layer_tree_host()->PauseRendering();
+    }
+  }
+
+  void DidCommitAndDrawFrame() override {
+    if (layer_tree_host()->SourceFrameNumber() == 1) {
+      rendering_paused_.reset();
+    }
+  }
+
+  void WillCommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
+    // If this is the pending tree which resumes rendering, delay its
+    // activation so we can ensure draws don't resume until this is activated.
+    if (host_impl->pending_tree()->source_frame_number() == 1) {
+      host_impl->BlockNotifyReadyToActivateForTesting(true, true);
+      has_pending_tree_which_resumes_draws_ = true;
+    }
+  }
+
+  void WillActivateTreeOnThread(LayerTreeHostImpl* host_impl) override {
+    EXPECT_FALSE(has_pending_tree_which_resumes_draws_);
+  }
+
+  void WillBeginImplFrameOnThread(LayerTreeHostImpl* host_impl,
+                                  const viz::BeginFrameArgs& args,
+                                  bool has_damage) override {
+    if (!has_pending_tree_which_resumes_draws_) {
+      return;
+    }
+
+    EXPECT_EQ(host_impl->pending_tree()->source_frame_number(), 1);
+
+    constexpr size_t kNumOfFramesToDelayActivation = 5;
+    if (++impl_frames_while_activation_delayed_ ==
+        kNumOfFramesToDelayActivation) {
+      has_pending_tree_which_resumes_draws_ = false;
+      waiting_for_draw_after_rendering_resumes_ = true;
+      host_impl->BlockNotifyReadyToActivateForTesting(false, true);
+    }
+  }
+
+  void WillPrepareToDrawOnThread(LayerTreeHostImpl* host_impl) override {
+    EXPECT_FALSE(has_pending_tree_which_resumes_draws_);
+
+    if (waiting_for_draw_after_rendering_resumes_) {
+      EXPECT_EQ(host_impl->active_tree()->source_frame_number(), 1);
+      EndTest();
+    }
+  }
+
+ private:
+  // State accessed only on main thread.
+  scoped_refptr<Layer> layer_;
+  std::unique_ptr<ScopedPauseRendering> rendering_paused_;
+
+  // State accessed only on impl thread.
+  bool has_pending_tree_which_resumes_draws_ = false;
+  bool waiting_for_draw_after_rendering_resumes_ = false;
+  size_t impl_frames_while_activation_delayed_ = 0;
+};
+
+MULTI_THREAD_TEST_F(LayerTreeHostTestPauseRendering);
+
 }  // namespace
 }  // namespace cc

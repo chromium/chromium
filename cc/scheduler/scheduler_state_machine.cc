@@ -300,7 +300,8 @@ bool SchedulerStateMachine::PendingDrawsShouldBeAborted() const {
   // active tree and the main thread might be blocked on activation of
   // the most recent commit.
   return is_layer_tree_frame_sink_lost || !can_draw_ || !visible_ ||
-         begin_frame_source_paused_;
+         begin_frame_source_paused_ ||
+         waiting_for_activation_after_rendering_resumed_;
 }
 
 bool SchedulerStateMachine::ShouldAbortCurrentFrame() const {
@@ -982,6 +983,7 @@ void SchedulerStateMachine::WillActivate() {
   active_tree_needs_first_draw_ = pending_tree_needs_first_draw_on_activation_;
   pending_tree_needs_first_draw_on_activation_ = false;
   needs_redraw_ = true;
+  waiting_for_activation_after_rendering_resumed_ = false;
 
   previous_pending_tree_was_impl_side_ = current_pending_tree_is_impl_side_;
   current_pending_tree_is_impl_side_ = false;
@@ -1175,7 +1177,24 @@ void SchedulerStateMachine::SetDeferBeginMainFrame(
 }
 
 void SchedulerStateMachine::SetPauseRendering(bool pause_rendering) {
+  if (pause_rendering_ == pause_rendering) {
+    return;
+  }
+
   pause_rendering_ = pause_rendering;
+
+  // If we're resuming rendering, we shouldn't already have a pending tree from
+  // the main thread.
+  // Note: This is possible if the main thread does the following:
+  // 1. Pause rendering followed by a commit for the ongoing BeginMainFrame.
+  // 2. Resume rendering before the above commit activates.
+  // The current users of PauseRendering wait on the commit in #1 to be flushed
+  // so it can never happen.
+  DCHECK(pause_rendering_ || !has_pending_tree_);
+
+  // When resuming rendering, main thread always commits at least one frame.
+  // Dont draw any impl frames until this commit is activated.
+  waiting_for_activation_after_rendering_resumed_ = !pause_rendering_;
 }
 
 // These are the cases where we require a BeginFrame message to make progress
