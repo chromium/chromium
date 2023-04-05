@@ -91,8 +91,8 @@ class ScreensaverImageDownloaderTest : public testing::Test {
   std::unique_ptr<ScreensaverImageDownloader> screensaver_image_downloader_;
 };
 
-// crbug.com/1430802: flaky on Linux,
-#if BUILDFLAG(IS_LINUX)
+// crbug.com/1430802: flaky on Linux and Chrome OS
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DownloadImagesTest DISABLED_DownloadImagesTest
 #else
 #define MAYBE_DownloadImagesTest DownloadImagesTest
