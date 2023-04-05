@@ -3088,6 +3088,21 @@
             ]
         }
     ],
+    "ConsolidatedIPCForProxyCreation": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230323",
+                    "enable_features": [
+                        "ConsolidatedIPCForProxyCreation"
+                    ]
+                }
+            ]
+        }
+    ],
     "ContentCaptureExperiment": [
         {
             "platforms": [
