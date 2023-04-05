@@ -63,10 +63,10 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="Autofill.CreditCardIssuerId">
-  <variant name="Amex" summary="Card issued by American Express."/>
-  <variant name="CapitalOne" summary="Card issued by Capital One."/>
-  <variant name="Chase" summary="Card issued by Chase."/>
-  <variant name="Marqeta" summary="Card issued by Marqeta."/>
+  <variant name="Amex" summary="card issued by American Express"/>
+  <variant name="CapitalOne" summary="card issued by Capital One"/>
+  <variant name="Chase" summary="card issued by Chase"/>
+  <variant name="Marqeta" summary="card issued by Marqeta"/>
 </variants>
 
 <variants name="Autofill.DialogError">
@@ -1220,6 +1220,19 @@ chromium-metrics-reviews@google.com.
     in general.
   </summary>
   <token key="CardMetadataVisible" variants="Autofill.CardMetadataVisible"/>
+</histogram>
+
+<histogram name="Autofill.CreditCard.{CardIssuer}.ShownWithMetadata"
+    enum="Boolean" expires_after="2024-03-01">
+  <owner>vishwasuppoor@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Emits true if a {CardIssuer} was shown with metadata in Autofill
+    suggestions. Emits false if every {CardIssuer} was shown without metadata in
+    Autofill suggestions. Only cards with issuer ids are considered. It is
+    emitted every time Autofill suggestions are shown.
+  </summary>
+  <token key="CardIssuer" variants="Autofill.CreditCardIssuerId"/>
 </histogram>
 
 <histogram name="Autofill.CreditCardFillingInfoBar"
