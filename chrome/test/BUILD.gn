@@ -9580,6 +9580,7 @@ if (!is_android) {
       "../browser/extensions/api/extension_action/page_action_interactive_test.cc",
       "../browser/extensions/api/notifications/notifications_apitest.cc",
       "../browser/extensions/api/omnibox/omnibox_api_interactive_test.cc",
+      "../browser/extensions/api/runtime/runtime_interactive_apitest.cc",
       "../browser/extensions/api/tabs/tabs_interactive_test.cc",
       "../browser/extensions/api/tabs/window_open_interactive_apitest.cc",
       "../browser/extensions/app_window_uitest.cc",
