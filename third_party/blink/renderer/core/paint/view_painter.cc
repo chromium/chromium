@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/background_image_geometry.h"
-#include "third_party/blink/renderer/core/paint/block_painter.h"
 #include "third_party/blink/renderer/core/paint/box_decoration_data.h"
 #include "third_party/blink/renderer/core/paint/box_model_object_painter.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
@@ -27,15 +26,6 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
-
-void ViewPainter::Paint(const PaintInfo& paint_info) {
-  // If we ever require layout but receive a paint anyway, something has gone
-  // horribly wrong.
-  DCHECK(!layout_view_.NeedsLayout());
-  DCHECK(!layout_view_.GetFrameView()->ShouldThrottleRendering());
-
-  BlockPainter(layout_view_).Paint(paint_info);
-}
 
 // Behind the root element of the main frame of the page, there is an infinite
 // canvas. This is by default white, but it can be overridden by

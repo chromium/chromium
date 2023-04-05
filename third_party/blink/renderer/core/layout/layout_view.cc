@@ -457,13 +457,13 @@ TrackedDescendantsMap& LayoutView::SvgTextDescendantsMap() {
 
 void LayoutView::Paint(const PaintInfo& paint_info) const {
   NOT_DESTROYED();
-  ViewPainter(*this).Paint(paint_info);
+  NOTREACHED_NORETURN();
 }
 
 void LayoutView::PaintBoxDecorationBackground(const PaintInfo& paint_info,
                                               const PhysicalOffset&) const {
   NOT_DESTROYED();
-  ViewPainter(*this).PaintBoxDecorationBackground(paint_info);
+  NOTREACHED_NORETURN();
 }
 
 void LayoutView::InvalidatePaintForViewAndDescendants() {
