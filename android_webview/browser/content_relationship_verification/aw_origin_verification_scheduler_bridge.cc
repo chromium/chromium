@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "android_webview/browser/aw_origin_verification_scheduler_bridge.h"
+#include "android_webview/browser/content_relationship_verification/aw_origin_verification_scheduler_bridge.h"
 
 #include <string>
 #include "android_webview/browser_jni_headers/AwOriginVerificationSchedulerBridge_jni.h"

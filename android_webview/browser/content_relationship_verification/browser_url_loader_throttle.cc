@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/content_relationship_verification/browser_url_loader_throttle.h"
+#include "android_webview/browser/content_relationship_verification/browser_url_loader_throttle.h"
 
 #include "base/android/build_info.h"
 #include "base/check_op.h"
@@ -20,7 +20,9 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/platform/resource_request_blocked_reason.h"
 
-namespace content_relationship_verification {
+using content_relationship_verification::ResponseHeaderVerificationResult;
+
+namespace android_webview {
 
 BrowserURLLoaderThrottle::OriginVerificationSchedulerBridge::
     OriginVerificationSchedulerBridge() = default;
@@ -45,8 +47,9 @@ BrowserURLLoaderThrottle::~BrowserURLLoaderThrottle() = default;
 bool BrowserURLLoaderThrottle::VerifyHeader(
     const network::mojom::URLResponseHead& response_head) {
   std::string header_value;
-  response_head.headers->GetNormalizedHeader(kEmbedderAncestorHeader,
-                                             &header_value);
+  response_head.headers->GetNormalizedHeader(
+      content_relationship_verification::kEmbedderAncestorHeader,
+      &header_value);
   ResponseHeaderVerificationResult header_verification_result =
       content_relationship_verification::ResponseHeaderVerifier::Verify(
           base::android::BuildInfo::GetInstance()->host_package_name(),
@@ -125,13 +128,14 @@ void BrowserURLLoaderThrottle::OnDalVerificationComplete(std::string url,
     return;
   }
   delegate_->CancelWithExtendedError(
-      kNetErrorCodeForContentRelationshipVerification,
-      static_cast<int>(kExtendedErrorReason),
-      kCustomCancelReasonForURLLoader);
+      content_relationship_verification::
+          kNetErrorCodeForContentRelationshipVerification,
+      static_cast<int>(content_relationship_verification::kExtendedErrorReason),
+      content_relationship_verification::kCustomCancelReasonForURLLoader);
 }
 
 const char* BrowserURLLoaderThrottle::NameForLoggingWillProcessResponse() {
   return "DigitalAssetLinksBrowserThrottle";
 }
 
-}  // namespace content_relationship_verification
+}  // namespace android_webview

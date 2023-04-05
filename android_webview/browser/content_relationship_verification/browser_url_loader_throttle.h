@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CONTENT_RELATIONSHIP_VERIFICATION_BROWSER_URL_LOADER_THROTTLE_H_
-#define COMPONENTS_CONTENT_RELATIONSHIP_VERIFICATION_BROWSER_URL_LOADER_THROTTLE_H_
+#ifndef ANDROID_WEBVIEW_BROWSER_CONTENT_RELATIONSHIP_VERIFICATION_BROWSER_URL_LOADER_THROTTLE_H_
+#define ANDROID_WEBVIEW_BROWSER_CONTENT_RELATIONSHIP_VERIFICATION_BROWSER_URL_LOADER_THROTTLE_H_
 
 #include <memory>
 
@@ -17,7 +17,7 @@
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "url/gurl.h"
 
-namespace content_relationship_verification {
+namespace android_webview {
 
 // TODO(crbug.com/1376958): Add CSP as method to allow content access in this
 // throttle and then move it to components/third_party_restrictions.
@@ -88,6 +88,6 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
   base::WeakPtrFactory<BrowserURLLoaderThrottle> weak_factory_{this};
 };
 
-}  // namespace content_relationship_verification
+}  // namespace android_webview
 
-#endif  // COMPONENTS_CONTENT_RELATIONSHIP_VERIFICATION_BROWSER_URL_LOADER_THROTTLE_H_
+#endif  // ANDROID_WEBVIEW_BROWSER_CONTENT_RELATIONSHIP_VERIFICATION_BROWSER_URL_LOADER_THROTTLE_H_
