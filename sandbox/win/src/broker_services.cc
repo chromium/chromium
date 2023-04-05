@@ -108,6 +108,55 @@ class PolicyDiagnosticList final : public sandbox::PolicyList {
   std::vector<std::unique_ptr<sandbox::PolicyInfo>> internal_list_;
 };
 
+// Helper to track the number of live processes, sets an event when there are
+// none.
+class TargetTracker {
+ public:
+  TargetTracker(HANDLE no_targets) : no_targets_event_(no_targets) {
+    ::ResetEvent(no_targets_event_);
+  }
+  TargetTracker(const TargetTracker&) = delete;
+  TargetTracker& operator=(const TargetTracker&) = delete;
+  ~TargetTracker() {}
+
+  void Track(DWORD process_id) { process_ids_.insert(process_id); }
+
+  void Add(DWORD process_id) {
+    size_t count = process_ids_.count(process_id);
+    if (count == 0) {
+      ++untracked_targets_;
+    }
+    ++targets_;
+    if (1 == targets_) {
+      ::ResetEvent(no_targets_event_);
+    }
+  }
+  void Remove(DWORD process_id) {
+    size_t erase_result = process_ids_.erase(process_id);
+    if (erase_result != 1U) {
+      --untracked_targets_;
+      DCHECK_GE(untracked_targets_, 0);
+    }
+    --targets_;
+    if (targets_ == 0) {
+      ::SetEvent(no_targets_event_);
+    }
+    DCHECK_GE(targets_, 0);
+  }
+
+ private:
+  // Event is owned by BrokerServices but we can set it.
+  const HANDLE no_targets_event_;
+  // Number of processes we're tracking (both directly associated with a
+  // TargetPolicy in a job, and those launched by tracked jobs).
+  int targets_ = 0;
+  // Just those processes that are not associated with a TargetPolicy.
+  int untracked_targets_ = 0;
+  // Processes are registered when their job is first seen, and removed if they
+  // their id is removed.
+  std::set<DWORD> process_ids_;
+};
+
 // The worker thread stays in a loop waiting for asynchronous notifications
 // from the job objects. Right now we only care about knowing when the last
 // process on a job terminates, but in general this is the place to tell
@@ -122,12 +171,8 @@ DWORD WINAPI TargetEventsThread(PVOID param) {
   std::unique_ptr<TargetEventsThreadParams> params(
       reinterpret_cast<TargetEventsThreadParams*>(param));
 
-  std::set<DWORD> child_process_ids;
   std::list<std::unique_ptr<JobTracker>> jobs;
-
-  int target_counter = 0;
-  int untracked_target_counter = 0;
-  ::ResetEvent(params->no_targets);
+  TargetTracker targets(params->no_targets);
 
   while (true) {
     DWORD event = 0;
@@ -165,8 +210,6 @@ DWORD WINAPI TargetEventsThread(PVOID param) {
           // with it has terminated. It is safe to free the tracker
           // and release its reference to the associated policy object
           // which will Close the job handle.
-
-          // Erase directly.
           jobs.erase(std::remove_if(
                          jobs.begin(), jobs.end(),
                          [&](auto&& p) -> bool { return p.get() == tracker; }),
@@ -176,40 +219,23 @@ DWORD WINAPI TargetEventsThread(PVOID param) {
 
         case JOB_OBJECT_MSG_NEW_PROCESS: {
           // Child process created from sandboxed process.
-          DWORD process_id =
-              static_cast<DWORD>(reinterpret_cast<uintptr_t>(ovl));
-          size_t count = child_process_ids.count(process_id);
-          if (count == 0)
-            untracked_target_counter++;
-          ++target_counter;
-          if (1 == target_counter) {
-            ::ResetEvent(params->no_targets);
-          }
+          targets.Add(static_cast<DWORD>(reinterpret_cast<uintptr_t>(ovl)));
           break;
         }
 
         case JOB_OBJECT_MSG_EXIT_PROCESS:
         case JOB_OBJECT_MSG_ABNORMAL_EXIT_PROCESS: {
-          size_t erase_result = child_process_ids.erase(
-              static_cast<DWORD>(reinterpret_cast<uintptr_t>(ovl)));
-          if (erase_result != 1U) {
-            // The process was untracked e.g. a child process of the target.
-            --untracked_target_counter;
-            DCHECK(untracked_target_counter >= 0);
-          }
-          --target_counter;
-          if (0 == target_counter)
-            ::SetEvent(params->no_targets);
-
-          DCHECK(target_counter >= 0);
+          targets.Remove(static_cast<DWORD>(reinterpret_cast<uintptr_t>(ovl)));
           break;
         }
 
         case JOB_OBJECT_MSG_ACTIVE_PROCESS_LIMIT: {
           // A child process attempted and failed to create a child process.
+          // Counters must increment here as Windows will also send us a
+          // JOB_OBJECT_MSG_EXIT_PROCESS notification for the failed-to-start
+          // process.
           // Windows does not reveal the process id.
-          untracked_target_counter++;
-          target_counter++;
+          targets.Add(0);
           break;
         }
 
@@ -217,6 +243,8 @@ DWORD WINAPI TargetEventsThread(PVOID param) {
           bool res = ::TerminateJobObject(tracker->policy->GetJobHandle(),
                                           sandbox::SBOX_FATAL_MEMORY_EXCEEDED);
           DCHECK(res);
+          // We also get the ACTIVE_PROCESS_ZERO event which reaps the job.
+          targets.Remove(static_cast<DWORD>(reinterpret_cast<uintptr_t>(ovl)));
           break;
         }
 
@@ -230,7 +258,7 @@ DWORD WINAPI TargetEventsThread(PVOID param) {
       tracker.reset(reinterpret_cast<JobTracker*>(ovl));
       DCHECK(tracker->policy->HasJob());
 
-      child_process_ids.insert(tracker->process_id);
+      targets.Track(tracker->process_id);
       jobs.push_back(std::move(tracker));
     } else if (THREAD_CTRL_GET_POLICY_INFO == key) {
       // Clone the policies for sandbox diagnostics.

@@ -9,6 +9,7 @@
 
 #include <windows.h>
 
+#include "base/debug/alias.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -135,6 +136,31 @@ SBOX_TESTS_COMMAND int IntegrationTestsTest_event(int argc, wchar_t** argv) {
     return SBOX_TEST_SECOND_ERROR;
 
   return SBOX_TEST_SUCCEEDED;
+}
+
+// Sets the first inherited event, then allocates memory until it is killed.
+SBOX_TESTS_COMMAND int IntegrationTestsTest_memory(int argc, wchar_t** argv) {
+  if (argc < 1) {
+    return SBOX_TEST_INVALID_PARAMETER;
+  }
+
+  base::win::ScopedHandle handle_started(
+      reinterpret_cast<HANDLE>(wcstoul(argv[0], nullptr, 16)));
+  if (!handle_started.IsValid()) {
+    return SBOX_TEST_NOT_FOUND;
+  }
+
+  if (!::SetEvent(handle_started.Get())) {
+    return SBOX_TEST_FIRST_ERROR;
+  }
+
+  volatile void* ptr = nullptr;
+  do {
+    ptr = malloc(32 * 1000 * 1000);
+    base::debug::Alias(&ptr);
+  } while (ptr);
+
+  return SBOX_TEST_SECOND_ERROR;
 }
 
 // Creates a job and tries to run a process inside it. The function can be
@@ -310,6 +336,29 @@ TEST(IntegrationTestsTest, GetPolicyDiagnosticsReflectsActiveChildren) {
     auto policies = waiter->WaitForPolicies();
     ASSERT_EQ(policies->size(), 0U);
   }
+}
+
+// SetJobNotificationReceiver validation
+TEST(IntegrationTestsTest, JobMemoryLimitCounted) {
+  TestRunner runner;
+
+  runner.SetAsynchronous(true);
+  base::win::ScopedHandle handle_started(
+      CreateEventW(nullptr, true, false, nullptr));
+
+  runner.GetPolicy()->AddHandleToShare(handle_started.Get());
+  runner.GetPolicy()->GetConfig()->SetJobMemoryLimit(256 * 1000 * 1000);
+  auto cmd_line = base::StringPrintf(L"IntegrationTestsTest_memory %p",
+                                     handle_started.Get());
+
+  ASSERT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(cmd_line.c_str()));
+  ASSERT_EQ(WAIT_OBJECT_0,
+            ::WaitForSingleObject(handle_started.Get(),
+                                  sandbox::SboxTestEventTimeout()));
+  ASSERT_EQ(SBOX_ALL_OK, runner.broker()->WaitForAllTargets());
+  DWORD exit_code = 0;
+  ASSERT_TRUE(::GetExitCodeProcess(runner.process(), &exit_code));
+  ASSERT_EQ(DWORD{SBOX_FATAL_MEMORY_EXCEEDED}, exit_code);
 }
 
 }  // namespace sandbox
