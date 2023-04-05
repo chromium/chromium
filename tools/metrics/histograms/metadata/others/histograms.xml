@@ -14827,36 +14827,6 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="WebHistory.LocalResultMissingOnServer" units="%"
-    expires_after="2018-08-30">
-  <owner>zea@chromium.org</owner>
-  <summary>
-    Percentage of results that are present locally but are not returned by the
-    web history API call. Recorded every time a signed-in user visits the
-    chrome://history page and the results from the web history are received.
-  </summary>
-</histogram>
-
-<histogram name="WebHistory.QueryCompletion" enum="WebHistoryStatus"
-    expires_after="M77">
-  <owner>zea@chromium.org</owner>
-  <summary>
-    Whether the web history API call was successful. Every time a signed-in user
-    visits the chrome://history page this query is executed to get the user's
-    synced web history. If successful, the local and remote results are merged
-    and shown in the history page.
-  </summary>
-</histogram>
-
-<histogram name="WebHistory.ResponseTime" units="ms" expires_after="2018-08-30">
-  <owner>zea@chromium.org</owner>
-  <summary>
-    Time it took for the web history to reply. Recorded when the web history API
-    call triggered by visiting chrome://history receives the data, measuring how
-    much time it took for the server to reply.
-  </summary>
-</histogram>
-
 <histogram name="WebP.DecodedImageFormat" enum="WebpDecodedFormat"
     expires_after="2020-12-13">
   <obsolete>

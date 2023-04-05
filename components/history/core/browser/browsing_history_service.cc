@@ -218,10 +218,6 @@ void BrowsingHistoryService::WebHistoryTimeout(
   // TODO(dubroy): Communicate the failure to the front end.
   if (!query_task_tracker_.HasTrackedTasks())
     ReturnResultsToDriver(std::move(state));
-
-  UMA_HISTOGRAM_ENUMERATION("WebHistory.QueryCompletion",
-                            WEB_HISTORY_QUERY_TIMED_OUT,
-                            NUM_WEB_HISTORY_QUERY_BUCKETS);
 }
 
 void BrowsingHistoryService::QueryHistory(const std::u16string& search_text,
@@ -616,24 +612,6 @@ void BrowsingHistoryService::ReturnResultsToDriver(
   // results at the same time as we have pending local.
   if (!state->remote_results.empty()) {
     MergeDuplicateResults(state.get(), &results);
-
-    // In the best case, we expect that all local results are duplicated on
-    // the server. Keep track of how many are missing.
-    int combined_count = 0;
-    int local_count = 0;
-    for (const HistoryEntry& entry : results) {
-      if (entry.entry_type == HistoryEntry::LOCAL_ENTRY)
-        ++local_count;
-      else if (entry.entry_type == HistoryEntry::COMBINED_ENTRY)
-        ++combined_count;
-    }
-
-    int local_and_combined = combined_count + local_count;
-    if (local_and_combined > 0) {
-      UMA_HISTOGRAM_PERCENTAGE("WebHistory.LocalResultMissingOnServer",
-                               local_count * 100.0 / local_and_combined);
-    }
-
   } else {
     // TODO(skym): Is the optimization to skip merge on local only results worth
     // the complexity increase here?
@@ -664,20 +642,12 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
     base::Time start_time,
     WebHistoryService::Request* request,
     const base::Value* results_value) {
-  base::TimeDelta delta = clock_->Now() - start_time;
-  UMA_HISTOGRAM_TIMES("WebHistory.ResponseTime", delta);
-
   // If the response came in too late, do nothing.
   // TODO(dubroy): Maybe show a banner, and prompt the user to reload?
   if (!web_history_timer_->IsRunning())
     return;
   web_history_timer_->Stop();
   web_history_request_.reset();
-
-  UMA_HISTOGRAM_ENUMERATION(
-      "WebHistory.QueryCompletion",
-      results_value ? WEB_HISTORY_QUERY_SUCCEEDED : WEB_HISTORY_QUERY_FAILED,
-      NUM_WEB_HISTORY_QUERY_BUCKETS);
 
   if (results_value) {
     has_synced_results_ = true;
