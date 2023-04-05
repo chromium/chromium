@@ -52,7 +52,7 @@ std::unique_ptr<message_center::Notification> CreateNotification(
       /*display_source=*/std::u16string(), /*origin_url=*/GURL(), notifier_id,
       /*optional_fields=*/message_center::RichNotificationData(),
       /*delegate=*/
-      new message_center::HandleNotificationClickDelegate(
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           message_center::HandleNotificationClickDelegate::ButtonClickCallback(
               base::DoNothing())),
       ash::kSystemTrayRecordingIcon,
