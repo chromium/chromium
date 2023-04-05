@@ -143,7 +143,7 @@
     didStartNavigation:(web::NavigationContext*)navigation {
   // Don't alert the consumer if this navigation is the first navigation in
   // a newly opened tab. That doesn't count.
-  if (IsURLNtp(webState->GetVisibleURL()) &&
+  if (IsUrlNtp(webState->GetVisibleURL()) &&
       webState->GetLastCommittedURL().is_empty()) {
     return;
   }

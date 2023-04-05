@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/chrome/browser/url/url_util.h"
 #import "ios/net/protocol_handler_util.h"
 #import "ios/web/public/favicon/favicon_url.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -24,17 +25,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-
-// Returns true if navigation URL repesents Chrome's New Tab Page.
-bool IsNtpUrl(const GURL& url) {
-  return url.DeprecatedGetOriginAsURL() == kChromeUINewTabURL ||
-         (url.SchemeIs(url::kAboutScheme) &&
-          (url.path() == "//newtab" || url.path() == "//newtab/"));
-}
-
-}  // namespace
 
 using LoggingBlock = void (^)(const std::string& event);
 
@@ -101,7 +91,7 @@ void BreadcrumbManagerTabHelper::DidStartNavigation(
     web::NavigationContext* navigation_context) {
   LogDidStartNavigation(navigation_context->GetNavigationId(),
                         navigation_context->GetUrl(),
-                        IsNtpUrl(navigation_context->GetUrl()),
+                        IsUrlNtp(navigation_context->GetUrl()),
                         navigation_context->IsRendererInitiated(),
                         navigation_context->HasUserGesture(),
                         navigation_context->GetPageTransition());
@@ -128,7 +118,7 @@ void BreadcrumbManagerTabHelper::PageLoaded(
     web::WebState* web_state,
     web::PageLoadCompletionStatus load_completion_status) {
   LogPageLoaded(
-      IsNtpUrl(web_state->GetLastCommittedURL()),
+      IsUrlNtp(web_state->GetLastCommittedURL()),
       web_state->GetLastCommittedURL(),
       load_completion_status == web::PageLoadCompletionStatus::SUCCESS,
       web_state->GetContentsMimeType());

@@ -350,7 +350,7 @@ NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
   }
 
   // NTP tabs get the Chrome product favicon.
-  if (IsURLNtp(webState->GetVisibleURL())) {
+  if (IsUrlNtp(webState->GetVisibleURL())) {
     UIImage* chromeProductIcon = CustomSymbolWithPointSize(
         kChromeProductSymbol, kPinnedCellFaviconSymbolPointSize);
     completion(chromeProductIcon);

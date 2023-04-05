@@ -255,7 +255,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
     return;
   }
   // NTP tabs get no favicon.
-  if (IsURLNtp(webState->GetVisibleURL())) {
+  if (IsUrlNtp(webState->GetVisibleURL())) {
     return;
   }
   completion([UIImage imageNamed:@"default_world_favicon_regular"]);

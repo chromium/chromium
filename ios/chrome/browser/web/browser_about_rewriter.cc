@@ -45,7 +45,7 @@ bool WillHandleWebBrowserAboutURL(GURL* url, web::BrowserState* browser_state) {
   if (!url->SchemeIs(kChromeUIScheme))
     return false;
 
-  // Translate chrome://newtab back into about://newtab so the WebState shows a
+  // Translate chrome://newtab back into about://newtab/ so the WebState shows a
   // blank page under the NTP.
   if (url->DeprecatedGetOriginAsURL() == kChromeUINewTabURL) {
     GURL::Replacements replacements;

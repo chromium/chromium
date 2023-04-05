@@ -954,13 +954,13 @@ TEST_F(WebStateObserverTest, NewPageNavigation) {
   ASSERT_TRUE(LoadUrl(url));
 }
 
-// Tests loading about://newtab and immediately loading another web page without
-// waiting until about://newtab navigation finishes.
+// Tests loading about://newtab/ and immediately loading another web page
+// without waiting until about://newtab/ navigation finishes.
 TEST_F(WebStateObserverTest, AboutNewTabNavigation) {
   GURL first_url("about://newtab/");
   const GURL second_url = test_server_->GetURL("/echoall");
 
-  // Perform about://newtab navigation and immediately perform the second
+  // Perform about://newtab/ navigation and immediately perform the second
   // navigation without waiting until the first navigation finishes.
 
   // Load `first_url`.

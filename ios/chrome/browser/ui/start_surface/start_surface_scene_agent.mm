@@ -143,7 +143,7 @@ const char kExcessNTPTabsRemoved[] = "IOS.NTP.ExcessRemovedTabCount";
   web::WebState* activeWebState =
       self.sceneState.interfaceProvider.mainInterface.browser->GetWebStateList()
           ->GetActiveWebState();
-  if (!activeWebState || IsURLNtp(activeWebState->GetVisibleURL())) {
+  if (!activeWebState || IsUrlNtp(activeWebState->GetVisibleURL())) {
     return;
   }
 
@@ -155,7 +155,7 @@ const char kExcessNTPTabsRemoved[] = "IOS.NTP.ExcessRemovedTabCount";
   WebStateList* webStateList = browser->GetWebStateList();
   for (int i = 0; i < webStateList->count(); i++) {
     web::WebState* webState = webStateList->GetWebStateAt(i);
-    if (IsURLNtp(webState->GetVisibleURL())) {
+    if (IsUrlNtp(webState->GetVisibleURL())) {
       NewTabPageTabHelper::FromWebState(webState)->SetShowStartSurface(true);
       webStateList->ActivateWebStateAt(i);
       return;
@@ -185,7 +185,7 @@ const char kExcessNTPTabsRemoved[] = "IOS.NTP.ExcessRemovedTabCount";
   BOOL activeWebStateIsEmptyNTP = NO;
   for (int i = 0; i < webStateList->count(); i++) {
     web::WebState* webState = webStateList->GetWebStateAt(i);
-    if (IsURLNtp(webState->GetVisibleURL())) {
+    if (IsUrlNtp(webState->GetVisibleURL())) {
       // Check if there is navigation history for this WebState that is showing
       // the NTP. If there is, then set `keepOneNTP` to NO, indicating that all
       // WebStates in NTPs with no navigation history will get removed.
@@ -222,7 +222,7 @@ const char kExcessNTPTabsRemoved[] = "IOS.NTP.ExcessRemovedTabCount";
   for (NSNumber* index in emptyNtpIndices) {
     web::WebState* webState =
         browser->GetWebStateList()->GetWebStateAt([index intValue]);
-    DCHECK(IsURLNtp(webState->GetVisibleURL()));
+    DCHECK(IsUrlNtp(webState->GetVisibleURL()));
     webStateList->CloseWebStateAt([index intValue],
                                   WebStateList::CLOSE_NO_FLAGS);
   }

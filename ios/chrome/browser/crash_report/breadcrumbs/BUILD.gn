@@ -15,6 +15,7 @@ source_set("breadcrumbs") {
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/web_content_area",
+    "//ios/chrome/browser/url",
     "//ios/chrome/browser/url:constants",
     "//ios/chrome/browser/web_state_list",
     "//ios/net",
