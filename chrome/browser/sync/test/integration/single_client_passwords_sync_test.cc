@@ -201,6 +201,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTestWithVerifier,
   EXPECT_TRUE(entities[0].specifics().password().has_unencrypted_metadata());
   EXPECT_TRUE(
       entities[0].specifics().password().unencrypted_metadata().has_url());
+  EXPECT_TRUE(entities[0]
+                  .specifics()
+                  .password()
+                  .unencrypted_metadata()
+                  .has_password_issues());
 }
 
 // Same as above but with custom passphrase set, which requires to prune commit
