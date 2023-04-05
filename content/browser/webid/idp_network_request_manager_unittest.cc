@@ -9,6 +9,7 @@
 #include <string>
 #include <tuple>
 #include <utility>
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -17,8 +18,10 @@
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -106,13 +109,28 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
         network::mojom::ClientSecurityState::New());
   }
 
+  void AddResponse(const GURL& url,
+                   net::HttpStatusCode http_status,
+                   const std::string mime_type,
+                   const std::string& content) {
+    auto head = network::mojom::URLResponseHead::New();
+    std::string raw_header = "HTTP/1.1 " + base::NumberToString(http_status) +
+                             " " + net::GetHttpReasonPhrase(http_status) +
+                             "\n"
+                             "Content-type: " +
+                             mime_type + "\n\n";
+    head->headers = net::HttpResponseHeaders::TryToCreate(raw_header);
+    test_url_loader_factory().AddResponse(url, std::move(head), content,
+                                          network::URLLoaderCompletionStatus());
+  }
+
   std::tuple<FetchStatus, std::set<GURL>>
   SendWellKnownRequestAndWaitForResponse(
       const char* test_data,
-      net::HttpStatusCode http_status = net::HTTP_OK) {
+      net::HttpStatusCode http_status = net::HTTP_OK,
+      const std::string& mime_type = "application/json") {
     GURL well_known_url(kTestWellKnownUrl);
-    test_url_loader_factory().AddResponse(well_known_url.spec(), test_data,
-                                          http_status);
+    AddResponse(well_known_url, http_status, mime_type, test_data);
 
     base::RunLoop run_loop;
     FetchStatus parsed_fetch_status;
@@ -134,10 +152,10 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
   std::tuple<FetchStatus, IdentityProviderMetadata>
   SendConfigRequestAndWaitForResponse(
       const char* test_data,
-      net::HttpStatusCode http_status = net::HTTP_OK) {
+      net::HttpStatusCode http_status = net::HTTP_OK,
+      const std::string& mime_type = "application/json") {
     GURL config_url(kTestConfigUrl);
-    test_url_loader_factory().AddResponse(config_url.spec(), test_data,
-                                          http_status);
+    AddResponse(config_url, http_status, mime_type, test_data);
 
     base::RunLoop run_loop;
     FetchStatus parsed_fetch_status;
@@ -161,10 +179,10 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
   std::tuple<FetchStatus, AccountList> SendAccountsRequestAndWaitForResponse(
       const std::string& test_accounts,
       const char* client_id = "",
-      net::HttpStatusCode response_code = net::HTTP_OK) {
+      net::HttpStatusCode response_code = net::HTTP_OK,
+      const std::string& mime_type = "application/json") {
     GURL accounts_endpoint(kTestAccountsEndpoint);
-    test_url_loader_factory().AddResponse(accounts_endpoint.spec(),
-                                          test_accounts, response_code);
+    AddResponse(accounts_endpoint, response_code, mime_type, test_accounts);
 
     base::RunLoop run_loop;
     FetchStatus parsed_accounts_response;
@@ -187,11 +205,11 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
   std::tuple<FetchStatus, std::string> SendTokenRequestAndWaitForResponse(
       const char* account,
       const char* request,
-      net::HttpStatusCode http_status = net::HTTP_OK) {
+      net::HttpStatusCode http_status = net::HTTP_OK,
+      const std::string& mime_type = "application/json") {
     const char response[] = R"({"token": "token"})";
     GURL token_endpoint(kTestTokenEndpoint);
-    test_url_loader_factory().AddResponse(token_endpoint.spec(), response,
-                                          http_status);
+    AddResponse(token_endpoint, http_status, mime_type, response);
 
     FetchStatus fetch_status;
     std::string token;
@@ -214,9 +232,8 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
       const char* client_id,
       const std::string& response = R"({})") {
     GURL client_id_endpoint(kTestClientMetadataEndpoint);
-    test_url_loader_factory().AddResponse(
-        client_id_endpoint.spec() + "?client_id=" + client_id, response,
-        net::HTTP_OK);
+    AddResponse(GURL(client_id_endpoint.spec() + "?client_id=" + client_id),
+                net::HTTP_OK, "application/json", response);
 
     IdpClientMetadata data;
     base::RunLoop run_loop;
@@ -996,8 +1013,8 @@ TEST_F(IdpNetworkRequestManagerTest, DontCallCallbackAfterManagerDeletion) {
   })";
 
   GURL accounts_endpoint(kTestAccountsEndpoint);
-  test_url_loader_factory().AddResponse(accounts_endpoint.spec(),
-                                        test_accounts_json);
+  AddResponse(accounts_endpoint, net::HTTP_OK, "application/json",
+              test_accounts_json);
 
   bool callback_called = false;
   auto callback = base::BindLambdaForTesting(
@@ -1089,6 +1106,51 @@ TEST_F(IdpNetworkRequestManagerTest, FetchClientMetadataInvalidUrls) {
                                terms_of_service_url + R"("})");
   ASSERT_EQ(GURL(), data.privacy_policy_url);
   ASSERT_EQ(GURL(), data.terms_of_service_url);
+}
+
+TEST_F(IdpNetworkRequestManagerTest, WellKnownWrongMimeType) {
+  FetchStatus fetch_status;
+  std::set<GURL> urls;
+  std::tie(fetch_status, urls) =
+      SendWellKnownRequestAndWaitForResponse(R"({
+  "provider_urls": ["https://idp.test/fedcm.json"]
+  })",
+                                             net::HTTP_OK, "text/html");
+  EXPECT_EQ(ParseStatus::kInvalidResponseError, fetch_status.parse_status);
+  EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
+  EXPECT_EQ(std::set<GURL>{}, urls);
+}
+
+TEST_F(IdpNetworkRequestManagerTest, ConfigWrongMimeType) {
+  FetchStatus fetch_status;
+  IdentityProviderMetadata idp_metadata;
+  std::tie(fetch_status, idp_metadata) = SendConfigRequestAndWaitForResponse(
+      R"({"branding" : { "color": "blue" } })", net::HTTP_OK, "text/html");
+  EXPECT_EQ(ParseStatus::kInvalidResponseError, fetch_status.parse_status);
+  EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
+}
+
+TEST_F(IdpNetworkRequestManagerTest, AccountsWrongMimeType) {
+  const auto* test_single_account_json = kSingleAccountEndpointValidJson;
+
+  FetchStatus accounts_response;
+  AccountList accounts;
+  std::tie(accounts_response, accounts) = SendAccountsRequestAndWaitForResponse(
+      test_single_account_json, /*client_id=*/"", net::HTTP_OK, "text/html");
+
+  EXPECT_EQ(ParseStatus::kInvalidResponseError, accounts_response.parse_status);
+  EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
+  EXPECT_TRUE(accounts.empty());
+}
+
+TEST_F(IdpNetworkRequestManagerTest, TokenWrongMimeType) {
+  std::string token;
+  FetchStatus fetch_status;
+  std::tie(fetch_status, token) = SendTokenRequestAndWaitForResponse(
+      "account", "request", net::HTTP_OK, "text/html");
+  EXPECT_EQ("", token);
+  EXPECT_EQ(ParseStatus::kInvalidResponseError, fetch_status.parse_status);
+  EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
 }
 
 }  // namespace

@@ -127,7 +127,8 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
       base::OnceCallback<void(FetchStatus, AccountList)>;
   using DownloadCallback =
       base::OnceCallback<void(std::unique_ptr<std::string> response_body,
-                              int response_code)>;
+                              int response_code,
+                              const std::string& mime_type)>;
   using FetchWellKnownCallback =
       base::OnceCallback<void(FetchStatus, const std::set<GURL>&)>;
   using FetchConfigCallback = base::OnceCallback<
