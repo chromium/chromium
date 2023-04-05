@@ -324,12 +324,11 @@ bool SyncChannel::SyncContext::Pop() {
   bool result;
   {
     base::AutoLock auto_lock(deserializers_lock_);
-    PendingSyncMsg msg = deserializers_.back();
-    delete msg.deserializer;
-    delete msg.done_event;
-    msg.done_event = nullptr;
-    deserializers_.pop_back();
+    PendingSyncMsg& msg = deserializers_.back();
+    msg.deserializer.ClearAndDelete();
+    msg.done_event.ClearAndDelete();
     result = msg.send_result;
+    deserializers_.pop_back();
   }
 
   // We got a reply to a synchronous Send() call that's blocking the listener

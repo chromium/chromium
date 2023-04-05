@@ -95,7 +95,7 @@ bool SyncMessageFilter::Send(Message* message) {
 
   {
     base::AutoLock auto_lock(lock_);
-    delete pending_message.deserializer;
+    pending_message.deserializer.ClearAndDelete();
     pending_sync_messages_.erase(&pending_message);
   }
 

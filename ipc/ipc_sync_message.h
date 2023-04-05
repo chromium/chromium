@@ -83,12 +83,12 @@ class IPC_MESSAGE_SUPPORT_EXPORT MessageReplyDeserializer {
 // that knows how to deserialize the response.
 struct PendingSyncMsg {
   PendingSyncMsg(int id, MessageReplyDeserializer* d, base::WaitableEvent* e)
-      : id(id), deserializer(d), done_event(e), send_result(false) {}
+      : id(id), deserializer(d), done_event(e) {}
 
   int id;
-  raw_ptr<MessageReplyDeserializer, DanglingUntriaged> deserializer;
-  raw_ptr<base::WaitableEvent, DanglingUntriaged> done_event;
-  bool send_result;
+  bool send_result = false;
+  raw_ptr<MessageReplyDeserializer> deserializer;
+  raw_ptr<base::WaitableEvent> done_event;
 };
 
 }  // namespace IPC
