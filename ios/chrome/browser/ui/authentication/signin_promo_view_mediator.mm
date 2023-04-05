@@ -62,6 +62,7 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
         ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO:
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO:
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO:
+    case signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST:
       return true;
     case signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE:
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_LINK:
@@ -101,9 +102,6 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER:
     case signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE:
     case signin_metrics::AccessPoint::ACCESS_POINT_CREATOR_FEED_FOLLOW:
-    // TODO(crbug.com/1420194): Change the value when the signin promo will be
-    // supported in reading list.
-    case signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST:
     case signin_metrics::AccessPoint::ACCESS_POINT_REAUTH_INFO_BAR:
     case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:
     case signin_metrics::AccessPoint::ACCESS_POINT_SEARCH_COMPANION:

@@ -35,6 +35,11 @@ extern const CGFloat kTableViewSeparatorInsetWithIcon;
 // changes made afterwards are not guaranteed to take effect.
 @property(nonatomic, readwrite, strong) ChromeTableViewStyler* styler;
 
+// Top offset of the empty view which will be applied in addition to the safe
+// area insets. Useful when a non-content cell (eg. sign-in promo) is shown at
+// the top of the table view.
+@property(nonatomic, readwrite, assign) CGFloat emptyViewTopOffset;
+
 // Initializes the view controller, configured with `style`. The default
 // ChromeTableViewStyler will be used.
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_DESIGNATED_INITIALIZER;
