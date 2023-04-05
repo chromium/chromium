@@ -52,7 +52,15 @@ void InstallUIControlsAura() {
 TestBrowserUi::TestBrowserUi() {
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+  // TODO(1429079): Make these pass with x64 win magic numbers.
+  // 255 * 4 is the max pixel_delta_threshold allowed by
+  // FuzzySkiaGoldMatchingAlgorithm.
+  SetPixelMatchAlgorithm(
+      std::make_unique<ui::test::FuzzySkiaGoldMatchingAlgorithm>(
+          /*max_different_pixels=*/40, /*pixel_delta_threshold=*/255 * 4));
+#elif BUILDFLAG(IS_WIN) || \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   // Default to fuzzy diff. The magic number is chosen based on
   // past experiments.
   SetPixelMatchAlgorithm(
