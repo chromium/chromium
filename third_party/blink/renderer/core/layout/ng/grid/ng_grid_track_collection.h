@@ -210,7 +210,6 @@ class CORE_EXPORT NGGridLayoutTrackCollection
   NGGridLayoutTrackCollection CreateSubgridCollection(
       wtf_size_t begin_range_index,
       wtf_size_t end_range_index,
-      LayoutUnit subgrid_gutter_size,
       GridTrackSizingDirection subgrid_track_direction) const;
 
   GridTrackSizingDirection Direction() const { return track_direction_; }
@@ -230,9 +229,7 @@ class CORE_EXPORT NGGridLayoutTrackCollection
   explicit NGGridLayoutTrackCollection(GridTrackSizingDirection track_direction)
       : track_direction_(track_direction) {}
 
-  bool is_subgrid_{false};
   LayoutUnit gutter_size_;
-  LayoutUnit subgrid_gutter_size_;
   NGGridRangeVector ranges_;
   TrackSpanProperties properties_;
   Vector<SetGeometry, 16> sets_geometry_;

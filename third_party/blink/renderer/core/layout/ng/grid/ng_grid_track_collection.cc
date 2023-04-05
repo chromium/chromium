@@ -552,17 +552,11 @@ LayoutUnit NGGridLayoutTrackCollection::GetSetOffset(
   // its accumulated margin, border, scrollbar, padding, and gutter size.
   LayoutUnit extra_margin;
 
-  if (!set_index) {
+  if (!set_index)
     extra_margin = start_extra_margin_;
-  } else if (set_index == sets_geometry_.size() - 1) {
+  else if (set_index == sets_geometry_.size() - 1)
     extra_margin = -end_extra_margin_;
-  } else if (is_subgrid_) {
-    // "Meanwhile, half the size of the difference between the subgrid’s gutters
-    // (row-gap/column-gap) and its parent grid’s gutters is applied as an extra
-    // layer of (potentially negative) margin to the items not at those edges."
-    // https://www.w3.org/TR/css-grid-2/#subgrid-item-contribution
-    extra_margin -= (gutter_size_ - subgrid_gutter_size_) / 2;
-  }
+
   return sets_geometry_[set_index].offset + extra_margin -
          sets_geometry_start_offset_;
 }
@@ -608,13 +602,10 @@ LayoutUnit NGGridLayoutTrackCollection::ComputeSetSpanSize(
   if (IsSpanningIndefiniteSet(begin_set_index, end_set_index))
     return kIndefiniteSize;
 
-  const LayoutUnit gutter_size =
-      is_subgrid_ ? subgrid_gutter_size_ : gutter_size_;
-
   // While the set offsets are guaranteed to be in non-decreasing order, if an
   // extra margin is larger than any of the offsets or the gutter size saturates
   // the end offset, the following difference may become negative.
-  return (GetSetOffset(end_set_index) - gutter_size -
+  return (GetSetOffset(end_set_index) - gutter_size_ -
           GetSetOffset(begin_set_index))
       .ClampNegativeToZero();
 }
@@ -639,7 +630,6 @@ NGGridLayoutTrackCollection
 NGGridLayoutTrackCollection::CreateSubgridCollection(
     wtf_size_t begin_range_index,
     wtf_size_t end_range_index,
-    LayoutUnit subgrid_gutter_size,
     GridTrackSizingDirection subgrid_track_direction) const {
   DCHECK_LE(begin_range_index, end_range_index);
   DCHECK_LT(end_range_index, ranges_.size());
@@ -708,9 +698,7 @@ NGGridLayoutTrackCollection::CreateSubgridCollection(
     subgrid.baselines_ = std::move(subgrid_baselines);
   }
 
-  subgrid.is_subgrid_ = true;
   subgrid.gutter_size_ = gutter_size_;
-  subgrid.subgrid_gutter_size_ = subgrid_gutter_size;
   subgrid.sets_geometry_start_offset_ = subgrid.start_extra_margin_ =
       start_extra_margin_;
   subgrid.end_extra_margin_ = end_extra_margin_;

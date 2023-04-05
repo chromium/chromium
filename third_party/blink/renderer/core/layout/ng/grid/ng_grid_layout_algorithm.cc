@@ -1561,8 +1561,8 @@ void NGGridLayoutAlgorithm::InitializeTrackCollection(
     // subgrid that must inherit the track collection of its parent grid.
     DCHECK(opt_subgrid_data.IsSubgrid());
 
-    layout_data->SetTrackCollection(opt_subgrid_data.CreateSubgridCollection(
-        track_direction, GutterSize(track_direction)));
+    layout_data->SetTrackCollection(
+        opt_subgrid_data.CreateSubgridCollection(track_direction));
     return;
   }
 
@@ -1792,8 +1792,8 @@ void NGGridLayoutAlgorithm::CompleteTrackSizingAlgorithm(
       // subgrid that must inherit the track collection of its parent grid.
       DCHECK(opt_subgrid_data.IsSubgrid());
 
-      layout_data.SetTrackCollection(opt_subgrid_data.CreateSubgridCollection(
-          track_direction, GutterSize(track_direction)));
+      layout_data.SetTrackCollection(
+          opt_subgrid_data.CreateSubgridCollection(track_direction));
     } else {
       ComputeUsedTrackSizes(sizing_subtree, track_direction, sizing_constraint,
                             opt_needs_additional_pass);

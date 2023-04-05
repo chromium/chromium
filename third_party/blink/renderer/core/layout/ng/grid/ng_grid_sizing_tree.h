@@ -48,8 +48,7 @@ class NGSubgriddedItemData {
   }
 
   std::unique_ptr<NGGridLayoutTrackCollection> CreateSubgridCollection(
-      GridTrackSizingDirection track_direction,
-      LayoutUnit subgrid_gutter_size) const;
+      GridTrackSizingDirection track_direction) const;
 
  private:
   const GridItemData* item_data_in_parent_{nullptr};
