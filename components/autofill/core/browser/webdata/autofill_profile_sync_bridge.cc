@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_profile_sync_util.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/proto/autofill_sync.pb.h"
 #include "components/autofill/core/browser/webdata/autofill_profile_sync_difference_tracker.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
@@ -78,6 +79,12 @@ AutofillProfileSyncBridge::AutofillProfileSyncBridge(
       app_locale_(app_locale),
       web_data_backend_(backend) {
   DCHECK(web_data_backend_);
+
+  // Ensure the CountryNames instance has the locale set, as it is used deeper
+  // in subsequent bridge lifecycle's calls, which may happen at a very early
+  // application launching stage.
+  // TODO(1430250): Find a unified place for setting the locale
+  CountryNames::SetLocaleString(app_locale);
 
   scoped_observation_.Observe(web_data_backend_.get());
 
