@@ -1421,8 +1421,6 @@ def make_report_high_entropy(cg_context):
     ext_attrs = cg_context.logging_target.extended_attributes
     if "HighEntropy" not in ext_attrs:
         return None
-    if cg_context.attribute_set:
-        return None
 
     node = SequenceNode([
         TextNode("// [HighEntropy]"),
