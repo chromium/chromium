@@ -108,16 +108,14 @@ struct InactiveTabsButton: View {
   @ViewBuilder
   private func disclosure() -> some View {
     if #available(iOS 16.0, *) {
-      Image(systemName: "chevron.right")
+      Image(systemName: kChevronForwardSymbol)
         .foregroundColor(.textTertiary)
         .fontWeight(.semibold)
-        .flipsForRightToLeftLayoutDirection(true)
     } else {
       // fontWeight is not available on Image. Wrap it in a Text.
-      Text(Image(systemName: "chevron.right"))
+      Text(Image(systemName: kChevronForwardSymbol))
         .foregroundColor(.textTertiary)
         .fontWeight(.semibold)
-        .flipsForRightToLeftLayoutDirection(true)
     }
   }
 

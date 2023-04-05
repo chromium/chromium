@@ -97,6 +97,7 @@ swift_source_set("inactive_tabs_button_ui_swift") {
   ]
   deps = [
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/common/ui/colors:swift",
     "//ui/base",
   ]

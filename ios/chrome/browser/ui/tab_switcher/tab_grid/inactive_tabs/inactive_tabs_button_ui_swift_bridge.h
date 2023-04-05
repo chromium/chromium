@@ -8,6 +8,7 @@
 // Bridging header between Swift and Obj-C. These types/imports need to be pure
 // Obj-C and have no C++ in them.
 
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
 
 // Explicitly import the bridging header of the Swift dependencies, as the
