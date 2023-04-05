@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL collapse can set selection to a node inside a shadow tree getSelection(...).getComposedRanges is not a function
+FAIL collapse abort steps when called with a disconnected node inside a shadow tree getSelection(...).getComposedRanges is not a function
+FAIL extend can set selection to a node inside a shadow tree getSelection(...).getComposedRanges is not a function
+FAIL extend abort steps when called with a disconnected node inside a shadow tree getSelection(...).getComposedRanges is not a function
+Harness: the test ran to completion.
+

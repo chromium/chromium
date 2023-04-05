@@ -201,12 +201,15 @@ window.onload = () => {
       const popover = createPopover(t);
       popover.setAttribute('popover',type);
       assert_false(popover.matches(':popover-open'));
-      assert_false(popover.matches(':open'),'popovers never match :open');
-      assert_false(popover.matches(':closed'),'popovers never match :closed');
+      // FIXME: Once :open/:closed are defined in HTML we should remove these two constants.
+      const openPseudoClassIsSupported = CSS.supports('selector(:open))');
+      const closePseudoClassIsSupported = CSS.supports('selector(:closed))');
+      assert_false(openPseudoClassIsSupported && popover.matches(':open'),'popovers never match :open');
+      assert_false(closePseudoClassIsSupported && popover.matches(':closed'),'popovers never match :closed');
       popover.showPopover();
       assert_true(popover.matches(':popover-open'));
-      assert_false(popover.matches(':open'),'popovers never match :open');
-      assert_false(popover.matches(':closed'),'popovers never match :closed');
+      assert_false(openPseudoClassIsSupported && popover.matches(':open'),'popovers never match :open');
+      assert_false(closePseudoClassIsSupported && popover.matches(':closed'),'popovers never match :closed');
       popover.hidePopover();
     },`A popover=${type} never matches :open or :closed`);
   });
