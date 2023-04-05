@@ -1193,32 +1193,38 @@ TEST_P(QuotaDatabaseTest, Expiration) {
   EXPECT_EQ(1U, expired_buckets->size());
 }
 
-TEST_P(QuotaDatabaseTest, Persistent) {
+TEST_P(QuotaDatabaseTest, PersistentPolicy) {
   QuotaDatabase db(ProfilePath());
+  const auto storage_key =
+      StorageKey::CreateFromStringForTesting("http://google/");
+  BucketInitParams default_params =
+      BucketInitParams::ForDefaultBucket(storage_key);
+  BucketInitParams non_default_params(storage_key, "inbox");
 
-  // Default `persistent` value.
-  BucketInitParams params(
-      StorageKey::CreateFromStringForTesting("http://google/"),
-      "google_bucket");
-  QuotaErrorOr<BucketInfo> result = db.UpdateOrCreateBucket(params, 0);
+  // Insert default bucket first (so it's LRU).
+  QuotaErrorOr<BucketInfo> result = db.UpdateOrCreateBucket(default_params, 0);
   ASSERT_TRUE(result.has_value());
-  EXPECT_FALSE(params.persistent.has_value());
-  EXPECT_FALSE(result->persistent);
+  const BucketId default_id = result.value().id;
 
-  // Non-default `persistent` value.
-  BucketInitParams params2(
-      StorageKey::CreateFromStringForTesting("http://example/"),
-      "example_bucket");
-  params2.persistent = !params2.persistent;
-  result = db.UpdateOrCreateBucket(params2, 0);
+  // Then non default bucket.
+  result = db.UpdateOrCreateBucket(non_default_params, 0);
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(params2.persistent, result->persistent);
+  const BucketId non_default_id = result.value().id;
+  EXPECT_NE(non_default_id, default_id);
 
-  // Update `persistent` value.
-  EXPECT_TRUE(result->persistent);
-  result = db.UpdateBucketPersistence(result->id, false);
-  ASSERT_TRUE(result.has_value());
-  EXPECT_FALSE(result->persistent);
+  // Get evictable bucket --- should be the default one.
+  auto policy = base::MakeRefCounted<MockSpecialStoragePolicy>();
+  QuotaErrorOr<BucketLocator> lru_result =
+      db.GetLruEvictableBucket(kTemp, {}, policy.get());
+  ASSERT_TRUE(lru_result.has_value());
+  EXPECT_EQ(default_id, lru_result.value().id);
+
+  // Check that durable policy applies to the default bucket but not the non
+  // default (non default buckets use the persist columnn in the database).
+  policy->AddDurable(storage_key.origin().GetURL());
+  lru_result = db.GetLruEvictableBucket(kTemp, {}, policy.get());
+  ASSERT_TRUE(lru_result.has_value());
+  EXPECT_EQ(non_default_id, lru_result.value().id);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
