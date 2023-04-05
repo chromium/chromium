@@ -233,6 +233,11 @@
 
 #pragma mark - Public
 
+- (Browser*)browser {
+  NOTREACHED();
+  return nil;
+}
+
 - (Browser*)regularBrowser {
   // Ensure browser which is actually used by the mediator is returned, as it
   // may have been updated.
@@ -595,7 +600,7 @@
                                      : ViewRevealState::Hidden;
   self.thumbStripCoordinator = [[ThumbStripCoordinator alloc]
       initWithBaseViewController:self.baseViewController
-                         browser:self.browser
+                         browser:nil
                     initialState:initialState];
   ThumbStripCoordinator* thumbStripCoordinator = self.thumbStripCoordinator;
   thumbStripCoordinator.regularBrowser = self.regularBrowser;
@@ -687,8 +692,7 @@
       HandlerForProtocol(self.dispatcher, IncognitoReauthCommands);
   baseViewController.reauthAgent = reauthAgent;
   baseViewController.tabPresentationDelegate = self;
-  baseViewController.layoutGuideCenter =
-      LayoutGuideCenterForBrowser(self.browser);
+  baseViewController.layoutGuideCenter = LayoutGuideCenterForBrowser(nil);
   baseViewController.delegate = self;
   _baseViewController = baseViewController;
 
@@ -950,17 +954,24 @@
   if (tabGridMediator == self.regularTabsMediator) {
     base::RecordAction(base::UserMetricsAction(
         "MobileTabGridSelectionCloseRegularTabsConfirmationPresented"));
+
+    self.actionSheetCoordinator = [[ActionSheetCoordinator alloc]
+        initWithBaseViewController:self.baseViewController
+                           browser:self.regularBrowser
+                             title:nil
+                           message:nil
+                     barButtonItem:buttonAnchor];
   } else {
     base::RecordAction(base::UserMetricsAction(
         "MobileTabGridSelectionCloseIncognitoTabsConfirmationPresented"));
-  }
 
-  self.actionSheetCoordinator = [[ActionSheetCoordinator alloc]
-      initWithBaseViewController:self.baseViewController
-                         browser:self.browser
-                           title:nil
-                         message:nil
-                   barButtonItem:buttonAnchor];
+    self.actionSheetCoordinator = [[ActionSheetCoordinator alloc]
+        initWithBaseViewController:self.baseViewController
+                           browser:self.incognitoBrowser
+                             title:nil
+                           message:nil
+                     barButtonItem:buttonAnchor];
+  }
 
   self.actionSheetCoordinator.alertStyle = UIAlertControllerStyleActionSheet;
 
@@ -1378,7 +1389,8 @@
 
 #pragma mark - SnackbarCoordinatorDelegate
 
-- (CGFloat)bottomOffsetForCurrentlyPresentedView {
+- (CGFloat)snackbarCoordinatorBottomOffsetForCurrentlyPresentedView:
+    (SnackbarCoordinator*)snackbarCoordinator {
   NSString* bottomToolbarGuideName;
   if ([self.bvcContainer currentBVC]) {
     // Use the BVC bottom bar as the offset as it is currently presented.
@@ -1387,8 +1399,19 @@
     // The tab grid is being show so use tab grid bottom bar.
     bottomToolbarGuideName = kTabGridBottomToolbarGuide;
   }
-  UIView* bottomToolbar = [LayoutGuideCenterForBrowser(self.browser)
+
+  Browser* browser = nil;
+  if (snackbarCoordinator == self.snackbarCoordinator) {
+    browser = self.regularBrowser;
+  } else if (snackbarCoordinator == self.incognitoSnackbarCoordinator) {
+    browser = self.incognitoBrowser;
+  }
+
+  DCHECK(browser);
+
+  UIView* bottomToolbar = [LayoutGuideCenterForBrowser(browser)
       referencedViewUnderName:bottomToolbarGuideName];
+
   return CGRectGetHeight(bottomToolbar.bounds);
 }
 

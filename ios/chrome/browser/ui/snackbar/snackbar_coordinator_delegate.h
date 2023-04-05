@@ -7,13 +7,16 @@
 
 #import <Foundation/Foundation.h>
 
+@class SnackbarCoordinator;
+
 // A delegate which provides an offset from the bottom of the window to
 // present a snackbar message above.
 @protocol SnackbarCoordinatorDelegate <NSObject>
 
 // Returns the current offset to use from the bottom of the screen to display
 // the snackbar UI.
-- (CGFloat)bottomOffsetForCurrentlyPresentedView;
+- (CGFloat)snackbarCoordinatorBottomOffsetForCurrentlyPresentedView:
+    (SnackbarCoordinator*)snackbarCoordinator;
 
 @end
 

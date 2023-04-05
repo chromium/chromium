@@ -52,7 +52,8 @@
 #pragma mark - SnackbarCommands
 
 - (void)showSnackbarMessage:(MDCSnackbarMessage*)message {
-  CGFloat offset = [self.delegate bottomOffsetForCurrentlyPresentedView];
+  CGFloat offset = [self.delegate
+      snackbarCoordinatorBottomOffsetForCurrentlyPresentedView:self];
   [self showSnackbarMessage:message bottomOffset:offset];
 }
 
