@@ -25,6 +25,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
@@ -61,6 +62,7 @@ class FakeKeyboardPrefHandler : public KeyboardPrefHandler {
       PrefService* pref_service,
       const mojom::KeyboardPolicies& keyboard_policies,
       mojom::Keyboard* keyboard) override {
+    keyboard->settings = mojom::KeyboardSettings::New();
     num_keyboard_settings_initialized_++;
   }
   void UpdateKeyboardSettings(PrefService* pref_service,
@@ -400,6 +402,27 @@ TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsUpdateMultiple) {
                                    mojom::KeyboardSettings::New());
   EXPECT_EQ(observer_->num_keyboards_settings_updated(), 2u);
   EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_updated(), 1u);
+}
+
+TEST_F(InputDeviceSettingsControllerTest, RecordsMetricsInitialSettings) {
+  // Initially expect no user preferences recorded.
+  base::HistogramTester histogram_tester;
+
+  controller_->OnKeyboardListUpdated(
+      {kSampleKeyboardUsb, kSampleKeyboardBluetooth}, {});
+
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.ExternalChromeOS.TopRowAreFKeys."
+      "Initial",
+      /*expected_count=*/2u);
+  const AccountId account_id = AccountId::FromUserEmail(kUserEmail1);
+  SimulateUserLogin(account_id);
+  task_runner_->RunUntilIdle();
+
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.ExternalChromeOS.TopRowAreFKeys."
+      "Initial",
+      /*expected_count=*/4u);
 }
 
 }  // namespace ash

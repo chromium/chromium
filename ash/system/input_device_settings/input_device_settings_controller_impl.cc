@@ -189,6 +189,7 @@ void InputDeviceSettingsControllerImpl::Init() {
           base::BindRepeating(
               &InputDeviceSettingsControllerImpl::OnPointingStickListUpdated,
               base::Unretained(this)));
+  metrics_manager_ = std::make_unique<InputDeviceSettingsMetricsManager>();
 }
 
 void InputDeviceSettingsControllerImpl::InitializePolicyHandler() {
@@ -250,6 +251,9 @@ void InputDeviceSettingsControllerImpl::RefreshAllDeviceSettings() {
     keyboard_pref_handler_->InitializeKeyboardSettings(
         active_pref_service_, policy_handler_->keyboard_policies(),
         keyboard.get());
+    if (active_pref_service_) {
+      metrics_manager_->RecordKeyboardInitialMetrics(*keyboard);
+    }
     DispatchKeyboardSettingsChanged(id);
   }
   for (const auto& [id, touchpad] : touchpads_) {
@@ -615,6 +619,9 @@ void InputDeviceSettingsControllerImpl::OnKeyboardListUpdated(
     keyboard_pref_handler_->InitializeKeyboardSettings(
         active_pref_service_, policy_handler_->keyboard_policies(),
         mojom_keyboard.get());
+    if (active_pref_service_) {
+      metrics_manager_->RecordKeyboardInitialMetrics(*mojom_keyboard);
+    }
     keyboards_.insert_or_assign(keyboard.id, std::move(mojom_keyboard));
     DispatchKeyboardConnected(keyboard.id);
   }
