@@ -1445,7 +1445,9 @@ IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest,
                                          "A square is also rectangle.");
 }
 
-IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest, SmartReplacePhrase) {
+// TODO(crbug.com/1430861): Test is flaky.
+IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest,
+                       DISABLED_SmartReplacePhrase) {
   SendFinalResultAndWaitForEditableValue("This is a difficult test.",
                                          "This is a difficult test.");
   SendFinalResultAndWaitForEditableValue("replace difficult with simple",
