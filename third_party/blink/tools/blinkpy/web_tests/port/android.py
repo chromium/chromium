@@ -67,11 +67,10 @@ perf_control = None
 _sanitize_android_tag = lambda t: t.replace('_', '-')
 
 # product constants used by the wpt runner.
-ANDROID_WEBLAYER = 'android_weblayer'
 ANDROID_WEBVIEW = 'android_webview'
 CHROME_ANDROID = 'chrome_android'
 
-PRODUCTS = [ANDROID_WEBLAYER, ANDROID_WEBVIEW, CHROME_ANDROID]
+PRODUCTS = [ANDROID_WEBVIEW, CHROME_ANDROID]
 
 PRODUCTS_TO_STEPNAMES = {
     ANDROID_WEBVIEW: 'system_webview_wpt',

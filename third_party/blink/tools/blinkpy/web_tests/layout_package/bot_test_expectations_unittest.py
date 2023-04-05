@@ -80,24 +80,26 @@ class BotTestExpectationsFactoryTest(unittest.TestCase):
 
     def test_results_url_for_builder_with_custom_step_name(self):
         factory = bot_test_expectations.BotTestExpectationsFactory(
-            self.fake_builder_list(), 'weblayer_shell_wpt')
+            self.fake_builder_list(), 'fake_step')
 
         self.assertEqual(
             factory._results_url_for_builder('Dummy builder name'),
-            'https://test-results.appspot.com/testfile?testtype=weblayer_shell_wpt'
-            '&name=results-small.json&master=dummy.main&builder=Dummy%20builder%20name')
+            'https://test-results.appspot.com/testfile?testtype=fake_step'
+            '&name=results-small.json&master=dummy.main&builder=Dummy%20builder%20name'
+        )
 
         self.assertEqual(
             factory._results_url_for_builder('Dummy tryserver builder name'),
             'https://test-results.appspot.com/testfile?'
-            'testtype=weblayer_shell_wpt'
+            'testtype=fake_step'
             '&name=results-small.json&master=tryserver.dummy.main'
             '&builder=Dummy%20tryserver%20builder%20name')
 
         self.assertEqual(
-            factory._results_url_for_builder('Dummy tryserver builder name', True),
+            factory._results_url_for_builder('Dummy tryserver builder name',
+                                             True),
             'https://test-results.appspot.com/testfile?'
-            'testtype=weblayer_shell_wpt%20%28with%20patch%29'
+            'testtype=fake_step%20%28with%20patch%29'
             '&name=results-small.json&master=tryserver.dummy.main'
             '&builder=Dummy%20tryserver%20builder%20name')
 
