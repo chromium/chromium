@@ -346,8 +346,6 @@ source_set("unit_tests") {
       "persistence/site_data/site_data_impl_unittest.cc",
       "persistence/site_data/site_data_reader_unittest.cc",
       "persistence/site_data/site_data_writer_unittest.cc",
-      "persistence/site_data/unittest_utils.cc",
-      "persistence/site_data/unittest_utils.h",
 
       # TODO(crbug.com/1225070): Consider using this policy on Android.
       "graph/policies/bfcache_policy_unittest.cc",

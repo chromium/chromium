@@ -7,7 +7,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/bind.h"
-#include "components/performance_manager/persistence/site_data/unittest_utils.h"
+#include "components/performance_manager/test_support/persistence/unittest_utils.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERFORMANCE_MANAGER_PERSISTENCE_SITE_DATA_UNITTEST_UTILS_H_
-#define COMPONENTS_PERFORMANCE_MANAGER_PERSISTENCE_SITE_DATA_UNITTEST_UTILS_H_
+#ifndef COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_PERSISTENCE_UNITTEST_UTILS_H_
+#define COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_PERSISTENCE_UNITTEST_UTILS_H_
 
 #include <memory>
 #include <vector>
@@ -12,7 +12,6 @@
 #include "components/performance_manager/performance_manager_impl.h"
 #include "components/performance_manager/persistence/site_data/site_data_impl.h"
 #include "components/performance_manager/persistence/site_data/site_data_store.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -67,4 +66,4 @@ class NoopSiteDataStore : public SiteDataStore {
 }  // namespace testing
 }  // namespace performance_manager
 
-#endif  // COMPONENTS_PERFORMANCE_MANAGER_PERSISTENCE_SITE_DATA_UNITTEST_UTILS_H_
+#endif  // COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_PERSISTENCE_UNITTEST_UTILS_H_

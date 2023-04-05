@@ -10,13 +10,12 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/performance_manager/mechanisms/page_loader.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
-#include "components/performance_manager/public/persistence/site_data/feature_usage.h"
 #include "components/performance_manager/public/persistence/site_data/site_data_reader.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
+#include "components/performance_manager/test_support/persistence/test_site_data_reader.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -62,41 +61,6 @@ class MockBackgroundTabLoadingPolicy : public BackgroundTabLoadingPolicy {
   }
 
   std::map<const PageNode*, SiteDataReader*> site_data_readers_;
-};
-
-class MockSiteDataReader : public SiteDataReader {
- public:
-  MockSiteDataReader(bool updates_favicon_in_background,
-                     bool updates_title_in_background,
-                     bool uses_audio_in_background)
-      : updates_favicon_in_background_(updates_favicon_in_background),
-        updates_title_in_background_(updates_title_in_background),
-        uses_audio_in_background_(uses_audio_in_background) {}
-
-  SiteFeatureUsage UpdatesFaviconInBackground() const override {
-    return updates_favicon_in_background_
-               ? SiteFeatureUsage::kSiteFeatureInUse
-               : SiteFeatureUsage::kSiteFeatureNotInUse;
-  }
-  SiteFeatureUsage UpdatesTitleInBackground() const override {
-    return updates_title_in_background_
-               ? SiteFeatureUsage::kSiteFeatureInUse
-               : SiteFeatureUsage::kSiteFeatureNotInUse;
-  }
-  SiteFeatureUsage UsesAudioInBackground() const override {
-    return uses_audio_in_background_ ? SiteFeatureUsage::kSiteFeatureInUse
-                                     : SiteFeatureUsage::kSiteFeatureNotInUse;
-  }
-  bool DataLoaded() const override { return true; }
-  void RegisterDataLoadedCallback(base::OnceClosure&& callback) override {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(callback));
-  }
-
- private:
-  const bool updates_favicon_in_background_;
-  const bool updates_title_in_background_;
-  const bool uses_audio_in_background_;
 };
 
 }  // namespace
@@ -249,21 +213,21 @@ TEST_F(BackgroundTabLoadingPolicyTest, AllLoadingSlotsUsed) {
 
   policy()->ScheduleLoadForRestoredTabs(to_load);
   task_env().RunUntilIdle();
-  testing::Mock::VerifyAndClear(loader());
+  ::testing::Mock::VerifyAndClear(loader());
   EXPECT_EQ(0, num_all_tabs_loaded_calls());
 
   // The 3rd page should start loading when the 1st page finishes loading.
   page_nodes[0]->SetLoadingState(PageNode::LoadingState::kLoading);
   EXPECT_CALL(*loader(), LoadPageNode(to_load[2].page_node.get()));
   page_nodes[0]->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
-  testing::Mock::VerifyAndClear(loader());
+  ::testing::Mock::VerifyAndClear(loader());
   EXPECT_EQ(0, num_all_tabs_loaded_calls());
 
   // The 4th page should start loading when the 2nd page finishes loading.
   page_nodes[1]->SetLoadingState(PageNode::LoadingState::kLoading);
   EXPECT_CALL(*loader(), LoadPageNode(to_load[3].page_node.get()));
   page_nodes[1]->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
-  testing::Mock::VerifyAndClear(loader());
+  ::testing::Mock::VerifyAndClear(loader());
   EXPECT_EQ(0, num_all_tabs_loaded_calls());
 
   // The "all tabs loaded" callback should be loaded after the 3rd and 4th pages
@@ -295,7 +259,7 @@ TEST_F(BackgroundTabLoadingPolicyTest, LoadingStateLoadedBusy) {
   policy()->ScheduleLoadForRestoredTabs(
       page_node_and_notification_permission_to_load_vector);
   task_env().RunUntilIdle();
-  testing::Mock::VerifyAndClear(loader());
+  ::testing::Mock::VerifyAndClear(loader());
 
   // Transition to kLoading, to kLoadedBusy, and then back to kLoading. This
   // should not crash.
@@ -396,10 +360,8 @@ TEST_F(BackgroundTabLoadingPolicyTest, ShouldLoad_OldTab) {
 // notification permission before it starts loading but before it is scored
 // should not decrement the number of tabs scored.
 TEST_F(BackgroundTabLoadingPolicyTest, RemoveTabWithNotificationPermission) {
-  MockSiteDataReader site_data_reader_default(
-      /* updates_favicon_in_background=*/false,
-      /* updates_title_in_background=*/false,
-      /* uses_audio_in_background=*/false);
+  testing::SimpleTestSiteDataReader site_data_reader_default(
+      {.updates_favicon = false, .updates_title = false, .uses_audio = false});
   std::vector<PageNodeAndNotificationPermission> to_load;
 
   // Tab without notification permission.
@@ -439,32 +401,21 @@ TEST_F(BackgroundTabLoadingPolicyTest, RemoveTabWithNotificationPermission) {
   EXPECT_CALL(*loader(),
               LoadPageNode(page_node_without_notification_permission.get()));
   task_env().RunUntilIdle();
-  testing::Mock::VerifyAndClear(loader());
+  ::testing::Mock::VerifyAndClear(loader());
 }
 
 TEST_F(BackgroundTabLoadingPolicyTest, ScoreAndScheduleTabLoad) {
   // Use 1 loading slot so only one PageNode loads at a time.
   policy()->SetMaxSimultaneousLoadsForTesting(1);
 
-  MockSiteDataReader site_data_reader_favicon(
-      /* updates_favicon_in_background=*/true,
-      /* updates_title_in_background=*/false,
-      /* uses_audio_in_background=*/false);
-
-  MockSiteDataReader site_data_reader_title(
-      /* updates_favicon_in_background=*/false,
-      /* updates_title_in_background=*/true,
-      /* uses_audio_in_background=*/false);
-
-  MockSiteDataReader site_data_reader_audio(
-      /* updates_favicon_in_background=*/false,
-      /* updates_title_in_background=*/false,
-      /* uses_audio_in_background=*/true);
-
-  MockSiteDataReader site_data_reader_default(
-      /* updates_favicon_in_background=*/false,
-      /* updates_title_in_background=*/false,
-      /* uses_audio_in_background=*/false);
+  testing::SimpleTestSiteDataReader site_data_reader_favicon(
+      {.updates_favicon = true, .updates_title = false, .uses_audio = false});
+  testing::SimpleTestSiteDataReader site_data_reader_title(
+      {.updates_favicon = false, .updates_title = true, .uses_audio = false});
+  testing::SimpleTestSiteDataReader site_data_reader_audio(
+      {.updates_favicon = false, .updates_title = false, .uses_audio = true});
+  testing::SimpleTestSiteDataReader site_data_reader_default(
+      {.updates_favicon = false, .updates_title = false, .uses_audio = false});
 
   // Create PageNodes with decreasing last visibility time (oldest to newest).
   std::vector<
@@ -559,7 +510,7 @@ TEST_F(BackgroundTabLoadingPolicyTest, ScoreAndScheduleTabLoad) {
   EXPECT_CALL(*loader(), LoadPageNode(expected_load_order[0].page_node.get()));
   policy()->ScheduleLoadForRestoredTabs(to_load);
   task_env().RunUntilIdle();
-  testing::Mock::VerifyAndClear(loader());
+  ::testing::Mock::VerifyAndClear(loader());
 
   // Other tabs start loading when the previous tab finishes loading.
   for (size_t i = 1; i < expected_load_order.size(); ++i) {
@@ -569,7 +520,7 @@ TEST_F(BackgroundTabLoadingPolicyTest, ScoreAndScheduleTabLoad) {
                 LoadPageNode(expected_load_order[i].page_node.get()));
     PageNodeImpl::FromNode(expected_load_order[i - 1].page_node.get())
         ->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
-    testing::Mock::VerifyAndClear(loader());
+    ::testing::Mock::VerifyAndClear(loader());
   }
 }
 
@@ -599,7 +550,7 @@ TEST_F(BackgroundTabLoadingPolicyTest, OnMemoryPressure) {
 
   policy()->ScheduleLoadForRestoredTabs(to_load);
   task_env().RunUntilIdle();
-  testing::Mock::VerifyAndClear(loader());
+  ::testing::Mock::VerifyAndClear(loader());
 
   // Simulate memory pressure and expect the tab loader to disable loading.
   system_node()->OnMemoryPressureForTesting(

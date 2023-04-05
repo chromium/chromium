@@ -153,6 +153,9 @@ class SiteDataRecorder::Data {
 
   static const Data* FromPageNode(const PageNode* page_node);
   static Data* GetForTesting(const PageNode* page_node);
+
+  // Convenience accessor.
+  static SiteDataReader* GetReaderForPageNode(const PageNode* page_node);
 };
 
 }  // namespace performance_manager

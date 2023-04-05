@@ -16,6 +16,16 @@ source_set("test_support_common") {
     "voting.h",
   ]
 
+  # The site data database isn't supported on Android.
+  if (!is_android) {
+    sources += [
+      "persistence/test_site_data_reader.cc",
+      "persistence/test_site_data_reader.h",
+      "persistence/unittest_utils.cc",
+      "persistence/unittest_utils.h",
+    ]
+  }
+
   deps = [
     "//base/test:test_support",
     "//components/performance_manager",

@@ -8,6 +8,7 @@
 
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/threading/sequence_bound.h"
@@ -17,10 +18,11 @@
 #include "components/performance_manager/persistence/site_data/site_data_impl.h"
 #include "components/performance_manager/persistence/site_data/site_data_writer.h"
 #include "components/performance_manager/persistence/site_data/tab_visibility.h"
-#include "components/performance_manager/persistence/site_data/unittest_utils.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
+#include "components/performance_manager/test_support/persistence/test_site_data_reader.h"
+#include "components/performance_manager/test_support/persistence/unittest_utils.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/web_contents_tester.h"
@@ -84,7 +86,7 @@ class MockDataCache : public SiteDataCache {
   // SiteDataCache:
   std::unique_ptr<SiteDataReader> GetReaderForOrigin(
       const url::Origin& origin) override {
-    return nullptr;
+    return std::make_unique<testing::SimpleTestSiteDataReader>();
   }
   std::unique_ptr<SiteDataWriter> GetWriterForOrigin(
       const url::Origin& origin) override {
@@ -377,6 +379,34 @@ TEST_F(SiteDataRecorderTest, LoadEvent) {
     EXPECT_CALL(*mock_writer, NotifySiteUnloaded(TabVisibility::kBackground));
     node_impl->SetLoadingState(PageNode::LoadingState::kLoading);
     ::testing::Mock::VerifyAndClear(mock_writer);
+  }));
+}
+
+TEST_F(SiteDataRecorderTest, NodeDataAccessors) {
+  // SiteDataRecorder::Data objects should exist for all page nodes.
+  // Reader and writer objects aren't created until the page navigates to an
+  // origin.
+  base::WeakPtr<PageNode> page_node =
+      PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
+  const SiteDataRecorder::Data* data = nullptr;
+  RunTaskOnPMSequence(base::BindLambdaForTesting([&]() {
+    ASSERT_TRUE(page_node);
+    data = SiteDataRecorder::Data::FromPageNode(page_node.get());
+    ASSERT_TRUE(data);
+    EXPECT_FALSE(data->reader());
+    EXPECT_FALSE(data->writer());
+    EXPECT_FALSE(SiteDataRecorder::Data::GetReaderForPageNode(page_node.get()));
+  }));
+
+  NavigatePageNodeOnUIThread(web_contents(), kTestUrl1);
+
+  RunTaskOnPMSequence(base::BindLambdaForTesting([&]() {
+    ASSERT_TRUE(page_node);
+    EXPECT_EQ(SiteDataRecorder::Data::FromPageNode(page_node.get()), data);
+    EXPECT_TRUE(data->reader());
+    EXPECT_TRUE(data->writer());
+    EXPECT_EQ(SiteDataRecorder::Data::GetReaderForPageNode(page_node.get()),
+              data->reader());
   }));
 }
 

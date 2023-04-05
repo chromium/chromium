@@ -9,7 +9,6 @@
 
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -18,8 +17,7 @@
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chrome/browser/performance_manager/test_support/page_discarding_utils.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
-#include "components/performance_manager/public/persistence/site_data/feature_usage.h"
-#include "components/performance_manager/public/persistence/site_data/site_data_reader.h"
+#include "components/performance_manager/test_support/persistence/test_site_data_reader.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,55 +27,6 @@ namespace policies {
 using CanDiscardResult = PageDiscardingHelper::CanDiscardResult;
 using DiscardReason = PageDiscardingHelper::DiscardReason;
 using ::testing::Return;
-
-// A SiteDataReader that returns mock data. By default it returns
-// kSiteFeatureNotInUse for all features.
-// TODO(crbug.com/1426484): This was copied from
-// background_tab_loading_policy_unittest.cc. Move it to a common helper file.
-class MockSiteDataReader : public SiteDataReader {
- public:
-  void set_updates_favicon_in_background(bool updates_favicon_in_background) {
-    updates_favicon_in_background_ = updates_favicon_in_background;
-  }
-  void set_updates_title_in_background(bool updates_title_in_background) {
-    updates_title_in_background_ = updates_title_in_background;
-  }
-  void set_uses_audio_in_background(bool uses_audio_in_background) {
-    uses_audio_in_background_ = uses_audio_in_background;
-  }
-
-  // SiteDataReader:
-
-  SiteFeatureUsage UpdatesFaviconInBackground() const override {
-    return updates_favicon_in_background_
-               ? SiteFeatureUsage::kSiteFeatureInUse
-               : SiteFeatureUsage::kSiteFeatureNotInUse;
-  }
-  SiteFeatureUsage UpdatesTitleInBackground() const override {
-    return updates_title_in_background_
-               ? SiteFeatureUsage::kSiteFeatureInUse
-               : SiteFeatureUsage::kSiteFeatureNotInUse;
-  }
-  SiteFeatureUsage UsesAudioInBackground() const override {
-    return uses_audio_in_background_ ? SiteFeatureUsage::kSiteFeatureInUse
-                                     : SiteFeatureUsage::kSiteFeatureNotInUse;
-  }
-
-  // Fake that the data is always loaded.
-  bool DataLoaded() const override { return true; }
-
-  // Invoke the provided callback immediately to fake that the data is already
-  // loaded.
-  void RegisterDataLoadedCallback(base::OnceClosure&& callback) override {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(callback));
-  }
-
- private:
-  bool updates_favicon_in_background_ = false;
-  bool updates_title_in_background_ = false;
-  bool uses_audio_in_background_ = false;
-};
 
 class PageDiscardingHelperTest
     : public testing::GraphTestHarnessWithMockDiscarder {
@@ -96,7 +45,7 @@ class PageDiscardingHelperTest
     // the graph is torn down in TearDown().
     PageDiscardingHelper::GetFromGraph(graph())
         ->SetSiteDataReaderCallbackForTesting(base::BindRepeating(
-            &PageDiscardingHelperTest::GetMockSiteDataReader,
+            &PageDiscardingHelperTest::GetTestSiteDataReader,
             base::Unretained(this)));
   }
 
@@ -105,8 +54,8 @@ class PageDiscardingHelperTest
     testing::GraphTestHarnessWithMockDiscarder::TearDown();
   }
 
-  const SiteDataReader* GetMockSiteDataReader(const PageNode*) const {
-    return &mock_site_data_reader_;
+  SiteDataReader* GetTestSiteDataReader(const PageNode*) {
+    return &site_data_reader_;
   }
 
   // Convenience wrappers for PageNodeHelper::CanDiscard().
@@ -127,7 +76,7 @@ class PageDiscardingHelperTest
  protected:
   base::HistogramTester* histogram_tester() { return histogram_tester_.get(); }
 
-  MockSiteDataReader mock_site_data_reader_;
+  testing::SimpleTestSiteDataReader site_data_reader_;
 
  private:
   std::unique_ptr<base::HistogramTester> histogram_tester_;
@@ -401,7 +350,7 @@ TEST_F(PageDiscardingHelperTest, TestCannotDiscardWithDevToolsOpen) {
 
 TEST_F(PageDiscardingHelperTest,
        TestCannotProactivelyDiscardUpdatesTitleInBackground) {
-  mock_site_data_reader_.set_updates_title_in_background(true);
+  site_data_reader_.set_updates_title_in_background(true);
   EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::URGENT));
   EXPECT_FALSE(CanDiscard(page_node(), DiscardReason::PROACTIVE));
   EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::EXTERNAL));
@@ -409,7 +358,7 @@ TEST_F(PageDiscardingHelperTest,
 
 TEST_F(PageDiscardingHelperTest,
        TestCannotProactivelyDiscardUpdatesFaviconInBackground) {
-  mock_site_data_reader_.set_updates_favicon_in_background(true);
+  site_data_reader_.set_updates_favicon_in_background(true);
   EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::URGENT));
   EXPECT_FALSE(CanDiscard(page_node(), DiscardReason::PROACTIVE));
   EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::EXTERNAL));

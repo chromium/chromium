@@ -150,9 +150,8 @@ void TabDataAccess::SetUsedInBgFromSiteDataDB(
           return;
         }
         auto* reader =
-            performance_manager::SiteDataRecorder::Data::FromPageNode(
-                page_node.get())
-                ->reader();
+            performance_manager::SiteDataRecorder::Data::GetReaderForPageNode(
+                page_node.get());
         // The tab won't have a reader if it doesn't have an URL tracked in the
         // site data database.
         if (!reader) {

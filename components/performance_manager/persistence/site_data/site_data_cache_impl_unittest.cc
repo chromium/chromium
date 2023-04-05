@@ -12,7 +12,7 @@
 #include "components/performance_manager/persistence/site_data/site_data_cache_factory.h"
 #include "components/performance_manager/persistence/site_data/site_data_cache_inspector.h"
 #include "components/performance_manager/persistence/site_data/site_data_impl.h"
-#include "components/performance_manager/persistence/site_data/unittest_utils.h"
+#include "components/performance_manager/test_support/persistence/unittest_utils.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
