@@ -27,9 +27,6 @@ class PLATFORM_EXPORT BidiParagraph {
   STACK_ALLOCATED();
 
  public:
-  BidiParagraph() = default;
-  ~BidiParagraph();
-
   // Splits the given paragraph to bidi runs and resolves the bidi embedding
   // level of each run.
   //
@@ -40,7 +37,7 @@ class PLATFORM_EXPORT BidiParagraph {
 
   // @return the entire text is unidirectional.
   bool IsUnidirectional() const {
-    return ubidi_getDirection(ubidi_) != UBIDI_MIXED;
+    return ubidi_getDirection(ubidi_.get()) != UBIDI_MIXED;
   }
 
   // The base direction (a.k.a. paragraph direction) of this block.
@@ -89,7 +86,12 @@ class PLATFORM_EXPORT BidiParagraph {
       Vector<int32_t, 32>* indices_in_visual_order_out);
 
  private:
-  UBiDi* ubidi_ = nullptr;
+  struct UBiDiDeleter {
+    void operator()(UBiDi* ubidi) const { ubidi_close(ubidi); }
+  };
+  using UBidiPtr = std::unique_ptr<UBiDi, UBiDiDeleter>;
+
+  UBidiPtr ubidi_;
   TextDirection base_direction_ = TextDirection::kLtr;
 };
 

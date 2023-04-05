@@ -9,14 +9,10 @@
 
 namespace blink {
 
-BidiParagraph::~BidiParagraph() {
-  ubidi_close(ubidi_);
-}
-
 bool BidiParagraph::SetParagraph(const String& text,
                                  absl::optional<TextDirection> base_direction) {
   DCHECK(!ubidi_);
-  ubidi_ = ubidi_open();
+  ubidi_ = UBidiPtr(ubidi_open());
 
   UBiDiLevel para_level;
   if (base_direction) {
@@ -27,17 +23,16 @@ bool BidiParagraph::SetParagraph(const String& text,
   }
 
   ICUError error;
-  ubidi_setPara(ubidi_, text.Characters16(), text.length(), para_level, nullptr,
-                &error);
+  ubidi_setPara(ubidi_.get(), text.Characters16(), text.length(), para_level,
+                nullptr, &error);
   if (U_FAILURE(error)) {
     NOTREACHED();
-    ubidi_close(ubidi_);
     ubidi_ = nullptr;
     return false;
   }
 
   if (!base_direction) {
-    base_direction_ = DirectionFromLevel(ubidi_getParaLevel(ubidi_));
+    base_direction_ = DirectionFromLevel(ubidi_getParaLevel(ubidi_.get()));
   }
 
   return true;
@@ -55,7 +50,7 @@ TextDirection BidiParagraph::BaseDirectionForString(const StringView& text) {
 
 unsigned BidiParagraph::GetLogicalRun(unsigned start, UBiDiLevel* level) const {
   int32_t end;
-  ubidi_getLogicalRun(ubidi_, start, &end, level);
+  ubidi_getLogicalRun(ubidi_.get(), start, &end, level);
   return end;
 }
 
