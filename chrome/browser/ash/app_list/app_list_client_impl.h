@@ -108,6 +108,7 @@ class AppListClientImpl
   void QueryWouldTriggerLauncherSearchIph() override;
   std::unique_ptr<ash::ScopedIphSession> CreateLauncherSearchIphSession()
       override;
+  void OpenSearchBoxIphUrl() override;
   void LoadIcon(int profile_id, const std::string& app_id) override;
   ash::AppListSortOrder GetPermanentSortingOrder() const override;
 

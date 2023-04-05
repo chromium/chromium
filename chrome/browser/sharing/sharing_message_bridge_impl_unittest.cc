@@ -253,7 +253,7 @@ TEST_F(SharingMessageBridgeTest, ShouldInvokeCallbackOnSyncStoppedEvent) {
 
   EXPECT_CALL(callback,
               Run(HasErrorCode(SharingMessageCommitError::SYNC_TURNED_OFF)));
-  bridge()->ApplyStopSyncChanges(nullptr);
+  bridge()->ApplyDisableSyncChanges(nullptr);
 
   EXPECT_EQ(bridge()->GetCallbacksCountForTesting(), 0u);
   histogram_tester.ExpectUniqueSample(

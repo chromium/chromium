@@ -54,6 +54,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.params.ParameterAnnotations;
@@ -62,13 +63,13 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.feed.FeedPlaceholderLayout;
@@ -87,6 +88,7 @@ import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNTP;
 import org.chromium.chrome.features.tasks.SingleTabSwitcherMediator;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -167,14 +169,16 @@ public class StartSurfaceTest {
             @Override
             public void onFinishedShowing(@LayoutType int layoutType) {
                 mCurrentlyActiveLayout = layoutType;
-                mLayoutChangedCallbackHelper.notifyCalled();
+                // Let all observers finish running.
+                ThreadUtils.postOnUiThread(mLayoutChangedCallbackHelper::notifyCalled);
             }
         };
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mActivityTestRule.getActivity().getLayoutManagerSupplier().addObserver((manager) -> {
                 if (manager.getActiveLayout() != null) {
                     mCurrentlyActiveLayout = manager.getActiveLayout().getLayoutType();
-                    mLayoutChangedCallbackHelper.notifyCalled();
+                    // Let all observers finish running.
+                    ThreadUtils.postOnUiThread(mLayoutChangedCallbackHelper::notifyCalled);
                 }
                 manager.addObserver(mLayoutObserver);
             });
@@ -572,6 +576,16 @@ public class StartSurfaceTest {
                                 AsyncInitializationActivity.FIRST_DRAW_COMPLETED_TIME_MS_UMA,
                                 isInstantStart)));
         int expectedRecordCount = mImmediateReturn ? 1 : 0;
+
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(
+                    RecordHistogram.getHistogramTotalCountForTesting(
+                            StartSurfaceConfiguration.getHistogramName(
+                                    ExploreSurfaceCoordinator.FEED_CONTENT_FIRST_LOADED_TIME_MS_UMA,
+                                    isInstantStart)),
+                    is(expectedRecordCount));
+        });
+
         // Histograms should be only recorded when StartSurface is shown immediately after
         // launch.
         if (isSingleTabSwitcher) {
@@ -591,12 +605,6 @@ public class StartSurfaceTest {
                 RecordHistogram.getHistogramTotalCountForTesting(
                         ReturnToChromeUtil
                                 .LAST_ACTIVE_TAB_IS_NTP_WHEN_OVERVIEW_IS_SHOWN_AT_LAUNCH_UMA));
-
-        Assert.assertEquals(expectedRecordCount,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        StartSurfaceConfiguration.getHistogramName(
-                                ExploreSurfaceCoordinator.FEED_CONTENT_FIRST_LOADED_TIME_MS_UMA,
-                                isInstantStart)));
 
         Assert.assertEquals(expectedRecordCount,
                 RecordHistogram.getHistogramTotalCountForTesting(

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import <Foundation/Foundation.h>
-#import <objc/runtime.h>
 
 #include "base/feature_list.h"
 #include "base/mac/foundation_util.h"
@@ -18,8 +17,7 @@
 // `CFPrefsManagedSource` and `_CFXPreferences` are used to determine the scope
 // of a policy. A policy can be read with `copyValueForKey()` below with
 // `kCFPreferencesAnyUser` will be treated as machine scope policy. Otherwise,
-// it will be user scope policy. The implementation of these two interfaces are
-// only available during runtime and will be obtained with `objc_getClass()`.
+// it will be user scope policy.
 @interface _CFXPreferences : NSObject
 @end
 
@@ -35,50 +33,54 @@
 namespace {
 
 base::scoped_nsobject<_CFXPreferences> CreateCFXPrefs() {
-  // _CFXPreferences is only available during runtime.
-  return base::scoped_nsobject<_CFXPreferences>(
-      [[objc_getClass("_CFXPreferences") alloc] init]);
+  Class prefs_class = NSClassFromString(@"_CFXPreferences");
+  if (!prefs_class) {
+    return {};
+  }
+
+  return base::scoped_nsobject<_CFXPreferences>([[prefs_class alloc] init]);
 }
 
 base::scoped_nsobject<CFPrefsManagedSource>
-CreateCFPrefsManagedSourceForMachine(CFStringRef application_id, id cfxPrefs) {
-  if (!cfxPrefs)
-    return base::scoped_nsobject<CFPrefsManagedSource>();
-
-  // CFPrefsManagedSource is only available during runtime.
-  base::scoped_nsobject<CFPrefsManagedSource> source(
-      [objc_getClass("CFPrefsManagedSource") alloc]);
-
-  if (![source respondsToSelector:@selector
-               (initWithDomain:
-                          user:byHost:containerPath:containingPreferences:)] ||
-      ![source respondsToSelector:@selector(copyValueForKey:)]) {
-    return base::scoped_nsobject<CFPrefsManagedSource>();
+CreateCFPrefsManagedSourceForMachine(CFStringRef application_id, id cfx_prefs) {
+  if (!cfx_prefs) {
+    return {};
   }
 
-  [source initWithDomain:base::mac::CFToNSCast(application_id)
+  Class source_class = NSClassFromString(@"CFPrefsManagedSource");
+  if (!source_class ||
+      ![source_class
+          instancesRespondToSelector:@selector
+          (initWithDomain:user:byHost:containerPath:containingPreferences:)] ||
+      ![source_class instancesRespondToSelector:@selector(copyValueForKey:)]) {
+    return {};
+  }
+
+  return base::scoped_nsobject<CFPrefsManagedSource>([[source_class alloc]
+             initWithDomain:base::mac::CFToNSCast(application_id)
                        user:base::mac::CFToNSCast(kCFPreferencesAnyUser)
                      byHost:YES
               containerPath:nil
-      containingPreferences:cfxPrefs];
-  return source;
+      containingPreferences:cfx_prefs]);
 }
 
-class MachinePolicyScope : public MacPreferences::PolicyScope {
- public:
-  MachinePolicyScope() = default;
-  ~MachinePolicyScope() override = default;
+}  // namespace
 
-  void Init(CFStringRef application_id) override {
-    if (!cfx_prefs_)
-      cfx_prefs_.reset(CreateCFXPrefs());
-    machine_scope_.reset(
-        CreateCFPrefsManagedSourceForMachine(application_id, cfx_prefs_));
+class MacPreferences::PolicyScope {
+ public:
+  void Init(CFStringRef application_id) {
+    if (!cfx_prefs_) {
+      cfx_prefs_ = CreateCFXPrefs();
+    }
+    machine_scope_ =
+        CreateCFPrefsManagedSourceForMachine(application_id, cfx_prefs_);
   }
 
-  Boolean IsManagedPolicyAvailable(CFStringRef key) override {
-    if (!machine_scope_)
+  Boolean IsManagedPolicyAvailable(CFStringRef key) {
+    if (!machine_scope_) {
       return YES;
+    }
+
     return base::scoped_nsobject<id>([machine_scope_
                copyValueForKey:base::mac::CFToNSCast(key)]) != nil;
   }
@@ -88,10 +90,8 @@ class MachinePolicyScope : public MacPreferences::PolicyScope {
   base::scoped_nsobject<CFPrefsManagedSource> machine_scope_;
 };
 
-}  // namespace
-
 MacPreferences::MacPreferences()
-    : policy_scope_(std::make_unique<MachinePolicyScope>()) {}
+    : policy_scope_(std::make_unique<PolicyScope>()) {}
 MacPreferences::~MacPreferences() = default;
 
 Boolean MacPreferences::AppSynchronize(CFStringRef application_id) {

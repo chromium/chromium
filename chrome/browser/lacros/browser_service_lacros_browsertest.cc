@@ -209,10 +209,10 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
   // Create an additional profile.
   base::FilePath path_profile2 =
       profile_manager->user_data_dir().Append(FILE_PATH_LITERAL("Profile 2"));
-  Profile* profile2 =
+  Profile& profile2 =
       profiles::testing::CreateProfileSync(profile_manager, path_profile2);
   // Open a browser window to make it the last used profile.
-  chrome::NewEmptyWindow(profile2);
+  chrome::NewEmptyWindow(&profile2);
   Browser* browser2 = ui_test_utils::WaitForBrowserToOpen();
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
 
@@ -286,9 +286,9 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   base::FilePath profile2_path =
       profile_manager->user_data_dir().Append(FILE_PATH_LITERAL("Profile 2"));
-  Profile* profile2 =
+  Profile& profile2 =
       profiles::testing::CreateProfileSync(profile_manager, profile2_path);
-  chrome::NewEmptyWindow(profile2);
+  chrome::NewEmptyWindow(&profile2);
   ui_test_utils::WaitForBrowserToOpen();
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   auto* tab_strip = browser()->tab_strip_model();

@@ -4,8 +4,8 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/guid.h"
 #include "base/test/task_environment.h"
+#include "base/uuid.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/engine/loopback_server/loopback_connection_manager.h"
 #include "components/sync/engine/syncer_proto_util.h"
@@ -35,7 +35,7 @@ SyncEntity NewBookmarkEntity(const std::string& url,
   SyncEntity entity;
   entity.mutable_specifics()->mutable_bookmark()->set_url(url);
   entity.set_parent_id_string(parent_id);
-  entity.set_id_string(base::GenerateGUID());
+  entity.set_id_string(base::Uuid::GenerateRandomV4().AsLowercaseString());
   return entity;
 }
 
@@ -273,7 +273,7 @@ TEST_F(LoopbackServerTest, CommitCommandUpdate) {
 }
 
 TEST_F(LoopbackServerTest, CommitBookmarkCreationWithClientTag) {
-  const std::string kGuid = base::GenerateGUID();
+  const std::string kGuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   const std::string kClientTagHash =
       ClientTagHash::FromUnhashed(BOOKMARKS, kGuid).value();
 
@@ -293,7 +293,7 @@ TEST_F(LoopbackServerTest, CommitBookmarkCreationWithClientTag) {
 // Verifies that a bookmark update (non-creation) does not populate the client
 // tag of a bookmark, if no client tag was provided upon creation.
 TEST_F(LoopbackServerTest, CommitBookmarkUpdateWithClientTag) {
-  const std::string kGuid = base::GenerateGUID();
+  const std::string kGuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   const std::string kClientTagHash =
       ClientTagHash::FromUnhashed(BOOKMARKS, kGuid).value();
 

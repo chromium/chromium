@@ -196,4 +196,16 @@ std::ostream& operator<<(std::ostream& out, const Uuid& uuid) {
   return out << uuid.AsLowercaseString();
 }
 
+std::string GenerateGUID() {
+  return GenerateUuid();
+}
+
+bool IsValidGUID(StringPiece input) {
+  return IsValidUuid(input);
+}
+
+bool IsValidGUIDOutputString(StringPiece input) {
+  return IsValidUuidOutputString(input);
+}
+
 }  // namespace base

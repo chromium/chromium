@@ -36,8 +36,9 @@ namespace blink {
 String ConvertHTMLTextToInterchangeFormat(const String& in, const Text& node) {
   // Assume all the text comes from node.
   if (node.GetLayoutObject() &&
-      node.GetLayoutObject()->Style()->PreserveNewline())
+      node.GetLayoutObject()->Style()->ShouldPreserveBreaks()) {
     return in;
+  }
 
   const char kConvertedSpaceString[] = "<span>\xA0</span>";
   static_assert((static_cast<unsigned char>('\xA0') == kNoBreakSpaceCharacter),

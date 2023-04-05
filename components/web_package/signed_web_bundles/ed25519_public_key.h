@@ -13,11 +13,8 @@
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/types/expected.h"
+#include "mojo/public/cpp/bindings/default_construct_tag.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace mojo {
-struct DefaultConstructTraits;
-}  // namespace mojo
 
 namespace web_package {
 
@@ -53,17 +50,14 @@ class Ed25519PublicKey {
 
   const std::array<uint8_t, kLength>& bytes() const { return *bytes_; }
 
+  explicit Ed25519PublicKey(mojo::DefaultConstruct::Tag) {}
+
  private:
-  friend mojo::DefaultConstructTraits;
   FRIEND_TEST_ALL_PREFIXES(StructTraitsTest, Ed25519PublicKey);
 
-  explicit Ed25519PublicKey(std::array<uint8_t, kLength> bytes);
-
-  // The default constructor is only present so that this class can be used as
-  // part of mojom `StructTraits`, which require a class to be
-  // default-constructible. `mojo::DefaultConstructTraits` allows us to at least
-  // make the default constructor private.
   Ed25519PublicKey() = default;
+
+  explicit Ed25519PublicKey(std::array<uint8_t, kLength> bytes);
 
   // This field is `absl::nullopt` only when the default constructor is used,
   // which only happens as part of mojom `StructTraits`. All methods of this

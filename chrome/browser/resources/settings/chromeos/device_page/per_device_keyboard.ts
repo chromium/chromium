@@ -24,6 +24,7 @@ import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin, DeepLinkingMixinInterface} from '../deep_linking_mixin.js';
+import {KeyboardPolicies} from '../mojom-webui/input_device_settings.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
@@ -59,6 +60,10 @@ export class SettingsPerDeviceKeyboardElement extends
 
       keyboards: {
         type: Array,
+      },
+
+      keyboardPolicies: {
+        type: Object,
       },
 
       /**
@@ -97,6 +102,7 @@ export class SettingsPerDeviceKeyboardElement extends
   }
 
   protected keyboards: Keyboard[];
+  protected keyboardPolicies: KeyboardPolicies;
   private prefs: chrome.settingsPrivate.PrefObject;
   private autoRepeatDelays: number[];
   private autoRepeatIntervals: number[];

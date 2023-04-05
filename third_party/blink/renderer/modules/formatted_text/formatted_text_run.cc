@@ -21,7 +21,7 @@ FormattedTextRunInternal::FormattedTextRunInternal(
       document->GetStyleResolver().CreateComputedStyleBuilder();
   builder.SetDisplay(EDisplay::kInline);
   layout_text_ = LayoutText::CreateAnonymousForFormattedText(
-      *document, builder.TakeStyle(), text.Impl(), LegacyLayout::kAuto);
+      *document, builder.TakeStyle(), text.Impl());
   layout_text_->SetIsLayoutNGObjectForFormattedText(true);
 }
 

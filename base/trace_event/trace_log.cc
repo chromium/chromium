@@ -970,6 +970,7 @@ void TraceLog::InitializePerfettoIfNeeded() {
   perfetto::TracingInitArgs init_args;
   init_args.backends = perfetto::BackendType::kInProcessBackend;
   init_args.platform = perfetto_platform;
+  init_args.disallow_merging_with_system_tracks = true;
   perfetto::Tracing::Initialize(init_args);
   TrackEvent::Register();
 }
@@ -1781,16 +1782,11 @@ TraceEventHandle TraceLog::AddTraceEventWithThreadIdAndTimestamps(
                          bind_id, args, flags);
     }
 
-#if BUILDFLAG(IS_ANDROID)
-      trace_event->SendToATrace();
-#endif
-
-      if (trace_options() & kInternalEchoToConsole) {
-        console_message = EventToConsoleMessage(
-            phase == TRACE_EVENT_PHASE_COMPLETE ? TRACE_EVENT_PHASE_BEGIN
-                                                : phase,
-            timestamp, trace_event);
-      }
+    if (trace_options() & kInternalEchoToConsole) {
+      console_message = EventToConsoleMessage(
+          phase == TRACE_EVENT_PHASE_COMPLETE ? TRACE_EVENT_PHASE_BEGIN : phase,
+          timestamp, trace_event);
+    }
   }
 
   if (!console_message.empty())
@@ -1925,9 +1921,6 @@ void TraceLog::UpdateTraceEventDurationExplicit(
       DCHECK(trace_event->phase() == TRACE_EVENT_PHASE_COMPLETE);
 
       trace_event->UpdateDuration(now, thread_now);
-#if BUILDFLAG(IS_ANDROID)
-      trace_event->SendToATrace();
-#endif
     }
 
     if (trace_options() & kInternalEchoToConsole) {

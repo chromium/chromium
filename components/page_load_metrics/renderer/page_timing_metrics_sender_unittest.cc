@@ -9,6 +9,7 @@
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "components/page_load_metrics/renderer/fake_page_timing_sender.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/subresource_load_metrics.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 #include "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom-shared.h"
 
@@ -170,16 +171,22 @@ TEST_F(PageTimingMetricsSenderTest, SendSubresourceLoadMetrics) {
                           PageTimingMetadataRecorder::MonotonicTiming());
   validator_.ExpectPageLoadTiming(timing);
 
-  metrics_sender_->DidObserveSubresourceLoad(5, 2, true, 10, 15);
+  blink::SubresourceLoadMetrics details{
+      .number_of_subresources_loaded = 5,
+      .number_of_subresource_loads_handled_by_service_worker = 2,
+      .pervasive_payload_requested = true,
+      .pervasive_bytes_fetched = 10,
+      .total_bytes_fetched = 15,
+  };
+  metrics_sender_->DidObserveSubresourceLoad(details);
 
-  mojom::SubresourceLoadMetricsPtr expected =
-      mojom::SubresourceLoadMetrics::New();
-  expected->number_of_subresources_loaded = 5;
-  expected->number_of_subresource_loads_handled_by_service_worker = 2;
-  expected->pervasive_payload_requested = true;
-  expected->pervasive_bytes_fetched = 10;
-  expected->total_bytes_fetched = 15;
-  validator_.UpdateExpectedSubresourceLoadMetrics(*expected);
+  blink::SubresourceLoadMetrics expected = {};
+  expected.number_of_subresources_loaded = 5;
+  expected.number_of_subresource_loads_handled_by_service_worker = 2;
+  expected.pervasive_payload_requested = true;
+  expected.pervasive_bytes_fetched = 10;
+  expected.total_bytes_fetched = 15;
+  validator_.UpdateExpectedSubresourceLoadMetrics(expected);
   metrics_sender_->mock_timer()->Fire();
   validator_.VerifyExpectedSubresourceLoadMetrics();
 }

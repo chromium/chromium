@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/ash/common/assert.js';
-
 import {startIOTask} from '../../common/js/api.js';
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
 import {str, strf, util} from '../../common/js/util.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
+import {State} from '../../externs/ts/state.js';
+import {getStore} from '../../state/store.js';
 
 /**
  * An event handler of the background page for file operations.
@@ -60,6 +61,10 @@ export class FileOperationHandler {
       item.id = taskId;
       item.type = getTypeFromIOTaskType_(event.type);
       item.itemCount = event.itemCount;
+      const state = /** @type {State} */ (getStore().getState());
+      const volume = state.volumes[event.destinationVolumeId];
+      item.isDestinationDrive =
+          volume?.volumeType === VolumeManagerCommon.VolumeType.DRIVE;
       item.cancelCallback = () => {
         chrome.fileManagerPrivate.cancelIOTask(event.taskId);
       };

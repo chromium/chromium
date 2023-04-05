@@ -471,7 +471,8 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
     mojom::FrameRenderDataUpdatePtr render_data,
     mojom::CpuTimingPtr new_cpu_timing,
     mojom::InputTimingPtr input_timing_delta,
-    mojom::SubresourceLoadMetricsPtr subresource_load_metrics,
+    const absl::optional<blink::SubresourceLoadMetrics>&
+        subresource_load_metrics,
     uint32_t soft_navigation_count,
     internal::PageLoadTrackerPageType page_type) {
   if (embedder_interface_->IsExtensionUrl(
@@ -637,7 +638,7 @@ void PageLoadMetricsUpdateDispatcher::UpdateSubFrameMetadata(
 }
 
 void PageLoadMetricsUpdateDispatcher::UpdateMainFrameSubresourceLoadMetrics(
-    const mojom::SubresourceLoadMetrics& subresource_load_metrics) {
+    const blink::SubresourceLoadMetrics& subresource_load_metrics) {
   subresource_load_metrics_ = subresource_load_metrics;
 }
 

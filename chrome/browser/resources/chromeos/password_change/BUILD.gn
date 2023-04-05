@@ -6,7 +6,7 @@ import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 src_files_manifest = "$target_gen_dir/src_files_manifest.json"
@@ -50,27 +50,31 @@ preprocess_if_expr("preprocess_src") {
   in_files = [
     "confirm_password_change.html",
     "confirm_password_change.js",
+    "password_change.js",
     "password_change_app.html",
     "password_change_app.js",
     "urgent_password_expiry_notification.html",
+    "urgent_password_expiry_notification_app.js",
   ]
 }
 
-web_component_files = [
-  "password_change.js",
-  "urgent_password_expiry_notification_app.js",
-]
-
 preprocess_if_expr("preprocess_gen") {
-  deps = [ ":web_components" ]
+  deps = [ ":html_wrapper_files" ]
   in_folder = target_gen_dir
   out_folder = preprocess_folder
   out_manifest = gen_files_manifest
-  in_files = web_component_files
+  in_files = [
+    "password_change.html.js",
+    "urgent_password_expiry_notification_app.html.js",
+  ]
 }
 
-html_to_js("web_components") {
-  js_files = web_component_files
+html_to_wrapper("html_wrapper_files") {
+  in_files = [
+    "password_change.html",
+    "urgent_password_expiry_notification_app.html",
+  ]
+  use_js = true
 }
 
 js_type_check("closure_compile") {
@@ -86,7 +90,6 @@ js_type_check("closure_compile") {
 }
 
 js_library("password_change") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/password_change/password_change.js" ]
   deps = [
     "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/common/resources:load_time_data.m",
@@ -97,6 +100,4 @@ js_library("password_change") {
     "$externs_path/webview_tag.js",
     "$externs_path/chrome_send.js",
   ]
-
-  extra_deps = [ ":web_components" ]
 }

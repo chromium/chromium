@@ -322,7 +322,7 @@ FileManagerPrivateInternalSetDefaultTaskFunction::Run() {
 
   file_manager::file_tasks::UpdateDefaultTask(profile, descriptor, suffixes,
                                               mime_types);
-  return RespondNow(WithArguments());
+  return RespondNow(NoArguments());
 }
 
 }  // namespace extensions

@@ -58,6 +58,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
     kFailNearFilter,
     kFailPriority,
     kFailNotSharedImage,
+    kFailRoundedDisplayMasksNotSupported,
   };
   using TrackingId = uint32_t;
   static constexpr TrackingId kDefaultTrackingId{0};
@@ -65,12 +66,6 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // Returns true if |quad| will not block quads underneath from becoming
   // an overlay.
   static bool IsInvisibleQuad(const DrawQuad* quad);
-
-  // Returns true if any of the quads in the list given by |quad_list_begin|
-  // and |quad_list_end| are visible and on top of |candidate|.
-  static bool IsOccluded(const OverlayCandidate& candidate,
-                         QuadList::ConstIterator quad_list_begin,
-                         QuadList::ConstIterator quad_list_end);
 
   // Modifies the |candidate|'s |display_rect| to be clipped within |clip_rect|.
   // This function will also update the |uv_rect| based on what clipping was
@@ -181,6 +176,9 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
 
   // Helps to identify whether this is a solid color quad or not.
   bool is_solid_color = false;
+
+  // Helps to identify whether this candidate has rounded-display masks or not.
+  bool has_rounded_display_masks = false;
 
   // If |rpdq| is present, then the renderer must draw the filter effects and
   // copy the result into the buffer backing of a render pass.

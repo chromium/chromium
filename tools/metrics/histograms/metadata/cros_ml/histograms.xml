@@ -136,7 +136,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MachineLearningService.GrammarChecker.Check.Event"
-    enum="Boolean" expires_after="2023-07-09">
+    enum="Boolean" expires_after="2023-10-01">
   <owner>jiwan@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <summary>The result of grammar check, which can be OK or ERROR.</summary>
@@ -203,7 +203,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="MachineLearningService.MojoConnectionEvent"
     enum="MachineLearningServiceMojoConnectionEvent" expires_after="2023-09-12">
   <owner>alanlxl@chromium.org</owner>
-  <owner>honglinyu@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <summary>
     Events related to the connection and disconnection of the Mojo IPC channel
@@ -215,7 +214,6 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-08-27">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
-  <owner>honglinyu@chromium.org</owner>
   <summary>
     Number of worker processes registered in ml-service. Only used in Chrome OS.
     Sampled every 5 minutes.
@@ -223,10 +221,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MachineLearningService.PeakTotalMemoryKb" units="KB"
-    expires_after="2023-07-30">
+    expires_after="2023-10-01">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
-  <owner>honglinyu@chromium.org</owner>
   <summary>
     Peak total (shared and non-shared) memory used by Chrome OS ML Service over
     the last 24 hours. Sampled every 5 minutes, so may miss short-lived spikes.
@@ -237,7 +234,6 @@ chromium-metrics-reviews@google.com.
     enum="MachineLearningServiceProcessError" expires_after="2023-08-20">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
-  <owner>honglinyu@chromium.org</owner>
   <summary>
     Process handling errors of ml-service. Emitted when there is error in
     process handling. For example, &quot;failed to spawning worker process&quot;
@@ -250,7 +246,6 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-07-15">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
-  <owner>honglinyu@chromium.org</owner>
   <summary>
     The &quot;errno&quot; of waitpid calls used by ml-service's control process
     to reap the worker processes. This is only recorded when waitpid meets error
@@ -275,17 +270,15 @@ chromium-metrics-reviews@google.com.
     units="KB" expires_after="2023-07-15">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
-  <owner>honglinyu@chromium.org</owner>
   <summary>
     Memory usage increase caused by one Chrome OS ML Service request.
   </summary>
 </histogram>
 
 <histogram name="MachineLearningService.TotalMemoryKb" units="KB"
-    expires_after="2023-07-30">
+    expires_after="2023-10-01">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
-  <owner>honglinyu@chromium.org</owner>
   <summary>
     Total (shared and non-shared) memory used by Chrome OS ML Service, sampled
     every 5 minutes.
@@ -321,10 +314,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="MachineLearningService.WebPlatformTfLiteFlatBufferModel.Compute.Event"
     enum="MachineLearningServiceWebPlatformTfLiteFlatBufferModelComputeEvent"
-    expires_after="2023-05-01">
+    expires_after="2023-11-01">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
-  <owner>honglinyu@chromium.org</owner>
   <summary>
     The result of compute/inference based on a web platform model loaded, which
     can be OK or some specific error. The error code could be logged in machine
@@ -335,10 +327,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="MachineLearningService.WebPlatformTfLiteFlatBufferModel.CreateModelLoaderResult.Event"
     enum="MachineLearningServiceWebPlatformTfLiteFlatBufferModelCreateModelLoaderResultEvent"
-    expires_after="2023-05-01">
+    expires_after="2023-11-01">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
-  <owner>honglinyu@chromium.org</owner>
   <summary>
     The result of creating web platform model loader, which can be success or
     some specific error. The error code could be logged in machine learning
@@ -349,10 +340,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="MachineLearningService.WebPlatformTfLiteFlatBufferModel.Load.Event"
     enum="MachineLearningServiceWebPlatformTfLiteFlatBufferModelLoadEvent"
-    expires_after="2023-05-01">
+    expires_after="2023-11-01">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
-  <owner>honglinyu@chromium.org</owner>
   <summary>
     The result of loading a web platform model, which can be OK or some specific
     error. The error code could be logged in machine learning service in
@@ -364,7 +354,6 @@ chromium-metrics-reviews@google.com.
     units="microseconds" expires_after="2023-08-27">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
-  <owner>honglinyu@chromium.org</owner>
   <summary>
     The wall time used for the worker process to accept the mojo connection to
     control process in ml-service. Only used in Chrome OS.
@@ -375,7 +364,6 @@ chromium-metrics-reviews@google.com.
     units="microseconds" expires_after="2023-08-20">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
-  <owner>honglinyu@chromium.org</owner>
   <summary>
     The wall time used by the control process to reap and cleanup the worker
     processes in ml-service. Only used in Chrome OS.
@@ -386,7 +374,6 @@ chromium-metrics-reviews@google.com.
     units="exit status" expires_after="2023-08-08">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
-  <owner>honglinyu@chromium.org</owner>
   <summary>
     The exit status of the worker processes of ml-service. Only used in Chrome
     OS. This is only emitted when the worker process exits with non-zero status.
@@ -443,7 +430,6 @@ chromium-metrics-reviews@google.com.
     units="KB" expires_after="2019-07-01">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
-  <owner>honglinyu@chromium.org</owner>
   <summary>
     Deprecated 07/2019, because we change to record total (shared+unshared)
     memory rather than only private memory. Replaced by
@@ -471,7 +457,6 @@ chromium-metrics-reviews@google.com.
     units="KB" expires_after="M95">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
-  <owner>honglinyu@chromium.org</owner>
   <summary>
     Memory usage increase caused by obsolete {ObsoleteRequestName} request.
   </summary>
@@ -576,7 +561,6 @@ chromium-metrics-reviews@google.com.
     units="KB" expires_after="2023-07-01">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
-  <owner>honglinyu@chromium.org</owner>
   <summary>Memory usage increase caused by {RequestName} request.</summary>
   <token key="RequestName">
     <variant name="DocumentScanner.DetectCornersFromJPEG"/>

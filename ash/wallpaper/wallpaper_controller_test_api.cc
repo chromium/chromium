@@ -72,6 +72,13 @@ void WallpaperControllerTestApi::SetCalculatedColors(
   controller_->SetCalculatedColors(calculated_colors);
 }
 
+void WallpaperControllerTestApi::ResetCalculatedColors() {
+  if (controller_->color_calculator_) {
+    controller_->color_calculator_.reset();
+  }
+  controller_->ResetCalculatedColors();
+}
+
 void WallpaperControllerTestApi::SetDefaultWallpaper(
     const AccountId& account_id) {
   base::Time::Exploded exploded{

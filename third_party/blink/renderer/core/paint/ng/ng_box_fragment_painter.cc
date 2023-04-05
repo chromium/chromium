@@ -2101,7 +2101,6 @@ bool NGBoxFragmentPainter::HitTestTextItem(
       hit_test.inline_root_offset);
 }
 
-// Replicates logic in legacy InlineFlowBox::NodeAtPoint().
 bool NGBoxFragmentPainter::HitTestLineBoxFragment(
     const HitTestContext& hit_test,
     const NGPhysicalLineBoxFragment& fragment,

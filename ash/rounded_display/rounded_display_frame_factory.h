@@ -58,7 +58,7 @@ class ASH_EXPORT RoundedDisplayFrameFactory {
   // Note: This method is also used in unittests.
   static std::unique_ptr<RoundedDisplayUiResource> CreateUiResource(
       const gfx::Size& size,
-      viz::ResourceFormat format,
+      viz::SharedImageFormat format,
       UiSourceId ui_source_id,
       bool is_overlay);
 

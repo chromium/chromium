@@ -47,7 +47,8 @@ struct SimpleGeoposition {
 // and update next request time.
 class ASH_EXPORT GeolocationController
     : public system::TimezoneSettings::Observer,
-      public chromeos::PowerManagerClient::Observer {
+      public chromeos::PowerManagerClient::Observer,
+      public SimpleGeolocationProvider::Delegate {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -86,6 +87,9 @@ class ASH_EXPORT GeolocationController
 
   // chromeos::PowerManagerClient::Observer:
   void SuspendDone(base::TimeDelta sleep_duration) override;
+
+  // SimpleGeolocationProvider::Delegate:
+  bool IsPreciseGeolocationAllowed() const override;
 
   // Returns sunset and sunrise time calculated from `geoposition_`. If the
   // position is not set, returns the default sunset 6 PM and sunrise 6 AM.

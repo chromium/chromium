@@ -133,8 +133,7 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
       const ExecutionContext*,
       const CSSPropertyID*,
       wtf_size_t length,
-      Vector<const CSSProperty*>&,
-      bool (*predicate)(const CSSProperty&) = nullptr);
+      Vector<const CSSProperty*>&);
 
   enum Flag : Flags {
     kInterpolable = 1 << 0,

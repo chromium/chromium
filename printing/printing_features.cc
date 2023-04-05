@@ -91,6 +91,12 @@ const base::FeatureParam<bool> kEnableOopPrintDriversSandbox{
 BASE_FEATURE(kEnablePrintContentAnalysis,
              "EnablePrintContentAnalysis",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables print scanning after preview options have been selected instead of
+// when the user initiates the printing to bring up the preview
+BASE_FEATURE(kEnablePrintScanAfterPreview,
+             "EnablePrintScanAfterPreview",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
 }  // namespace features

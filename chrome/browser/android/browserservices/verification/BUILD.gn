@@ -73,7 +73,6 @@ robolectric_binary("verification_junit_tests") {
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_browser_browser_java",
     "//third_party/androidx:androidx_test_core_java",
-    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]

@@ -16,7 +16,7 @@
 
 CompanionSidePanelUntrustedUI::CompanionSidePanelUntrustedUI(
     content::WebUI* web_ui)
-    : ui::UntrustedBubbleWebUIController(web_ui), web_ui_(web_ui) {
+    : ui::UntrustedBubbleWebUIController(web_ui) {
   // Set up the chrome-untrusted://companion-side-panel source.
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(
@@ -58,7 +58,7 @@ void CompanionSidePanelUntrustedUI::CreateCompanionPageHandler(
     mojo::PendingReceiver<side_panel::mojom::CompanionPageHandler> receiver,
     mojo::PendingRemote<side_panel::mojom::CompanionPage> page) {
   companion_page_handler_ = std::make_unique<companion::CompanionPageHandler>(
-      std::move(receiver), std::move(page), browser_, this);
+      std::move(receiver), std::move(page), this);
 }
 
 base::WeakPtr<CompanionSidePanelUntrustedUI>

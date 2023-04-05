@@ -59,7 +59,10 @@ source_set("mojom_mapped_types") {
     "signed_web_bundles/ed25519_signature.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//mojo/public/cpp/bindings",
+  ]
 }
 
 source_set("unit_tests") {

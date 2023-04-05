@@ -20,6 +20,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/preloading.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/preloading_test_util.h"
@@ -52,7 +53,8 @@ class AnchorElementPreloaderBrowserTest
         {{blink::features::kAnchorElementInteraction,
           GetAnchorElementInteractionFieldTrialParams()},
          {blink::features::kSpeculationRulesPointerDownHeuristics, {}}},
-        {blink::features::kSpeculationRulesPointerHoverHeuristics});
+        {blink::features::kSpeculationRulesPointerHoverHeuristics,
+         features::kPreloadingConfig});
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
     https_server_->ServeFilesFromSourceDirectory("chrome/test/data/preload");

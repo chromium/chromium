@@ -18,6 +18,8 @@ function generateBid(
       'ad': ad,
       'bid': 2,
       'adCost': 3,
+      'bidCurrency':
+          interestGroup.owner.startsWith("https://a.test") ? 'USD' : 'CAD',
       'render': ad.renderUrl,
       'adComponents': [interestGroup.adComponents[0].renderUrl]
   };
@@ -180,7 +182,7 @@ function validateBrowserSignals(browserSignals, isGenerateBid) {
     if (browserSignals.prevWins.length !== 0)
       throw 'Wrong prevWins ' + JSON.stringify(browserSignals.prevWins);
   } else {
-    if (Object.keys(browserSignals).length !== 9) {
+    if (Object.keys(browserSignals).length !== 11) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }

@@ -406,7 +406,7 @@ IN_PROC_BROWSER_TEST_P(ClientSideDetectionServiceBrowserTest,
     run_loop.Run();
   }
 
-  int first_thresholds_map_size =
+  size_t first_thresholds_map_size =
       csd_service->GetVisualTfLiteModelThresholds().size();
 
   // Second time

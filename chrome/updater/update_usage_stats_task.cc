@@ -43,8 +43,8 @@ void UpdateUsageStatsTask::Run(base::OnceClosure callback) {
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&UpdateUsageStatsTask::UsageStatsAllowed, this,
-                     persisted_data_->GetAppIds()),
+      base::BindOnce(&OtherAppUsageStatsAllowed, persisted_data_->GetAppIds(),
+                     scope_),
       base::BindOnce(&SetUsageStatsEnabled, persisted_data_)
           .Then(std::move(callback)));
 }

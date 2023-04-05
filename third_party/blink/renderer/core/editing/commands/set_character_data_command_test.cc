@@ -4,10 +4,11 @@
 
 #include "third_party/blink/renderer/core/editing/commands/set_character_data_command.h"
 
+#include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/commands/editing_state.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
-#include "third_party/blink/renderer/core/layout/layout_text_combine.h"
+#include "third_party/blink/renderer/core/layout/layout_text.h"
 
 namespace blink {
 
@@ -137,23 +138,12 @@ TEST_F(SetCharacterDataCommandTest, CombinedText) {
   UpdateAllLifecyclePhasesForTest();
 
   ASSERT_TRUE(text_node->GetLayoutObject());
-  if (sample_layout_object.IsLayoutNGObject()) {
-    EXPECT_EQ(R"DUMP(
+  EXPECT_EQ(R"DUMP(
 LayoutNGBlockFlow DIV id="sample" (editable)
   +--LayoutNGTextCombine (anonymous)
   |  +--LayoutText #text ""
 )DUMP",
-              ToSimpleLayoutTree(sample_layout_object));
-  } else {
-    EXPECT_EQ(R"DUMP(
-LayoutBlockFlow DIV id="sample" (editable)
-  +--LayoutTextCombine #text ""
-)DUMP",
-              ToSimpleLayoutTree(sample_layout_object));
-    ASSERT_TRUE(text_node->GetLayoutObject()->IsCombineText());
-    EXPECT_FALSE(
-        To<LayoutTextCombine>(text_node->GetLayoutObject())->IsCombined());
-  }
+            ToSimpleLayoutTree(sample_layout_object));
 
   SimpleEditCommand* command =
       MakeGarbageCollected<SetCharacterDataCommand>(text_node, 0, 0, "text");
@@ -161,45 +151,23 @@ LayoutBlockFlow DIV id="sample" (editable)
   UpdateAllLifecyclePhasesForTest();
 
   ASSERT_TRUE(text_node->GetLayoutObject());
-  if (sample_layout_object.IsLayoutNGObject()) {
-    EXPECT_EQ(R"DUMP(
+  EXPECT_EQ(R"DUMP(
 LayoutNGBlockFlow DIV id="sample" (editable)
   +--LayoutNGTextCombine (anonymous)
   |  +--LayoutText #text "text"
 )DUMP",
-              ToSimpleLayoutTree(sample_layout_object));
-  } else {
-    EXPECT_EQ(R"DUMP(
-LayoutBlockFlow DIV id="sample" (editable)
-  +--LayoutTextCombine #text "text"
-)DUMP",
-              ToSimpleLayoutTree(sample_layout_object));
-    ASSERT_TRUE(text_node->GetLayoutObject()->IsCombineText());
-    EXPECT_TRUE(
-        To<LayoutTextCombine>(text_node->GetLayoutObject())->IsCombined());
-  }
+            ToSimpleLayoutTree(sample_layout_object));
 
   command->DoUnapply();
   UpdateAllLifecyclePhasesForTest();
 
   ASSERT_TRUE(text_node->GetLayoutObject());
-  if (sample_layout_object.IsLayoutNGObject()) {
-    EXPECT_EQ(R"DUMP(
+  EXPECT_EQ(R"DUMP(
 LayoutNGBlockFlow DIV id="sample" (editable)
   +--LayoutNGTextCombine (anonymous)
   |  +--LayoutText #text ""
 )DUMP",
-              ToSimpleLayoutTree(sample_layout_object));
-  } else {
-    EXPECT_EQ(R"DUMP(
-LayoutBlockFlow DIV id="sample" (editable)
-  +--LayoutTextCombine #text ""
-)DUMP",
-              ToSimpleLayoutTree(sample_layout_object));
-    ASSERT_TRUE(text_node->GetLayoutObject()->IsCombineText());
-    EXPECT_FALSE(
-        To<LayoutTextCombine>(text_node->GetLayoutObject())->IsCombined());
-  }
+            ToSimpleLayoutTree(sample_layout_object));
 }
 
 }  // namespace blink

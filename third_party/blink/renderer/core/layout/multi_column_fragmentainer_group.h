@@ -103,7 +103,6 @@ class CORE_EXPORT MultiColumnFragmentainerGroup {
   LayoutUnit LogicalHeightInFlowThreadAt(unsigned column_index) const;
 
   void ResetColumnHeight();
-  bool RecalculateColumnHeight(LayoutMultiColumnSet&);
 
   LayoutSize FlowThreadTranslationAtOffset(LayoutUnit,
                                            LayoutBox::PageBoundaryRule,
@@ -169,10 +168,6 @@ class CORE_EXPORT MultiColumnFragmentainerGroup {
 
  private:
   LayoutUnit HeightAdjustedForRowOffset(LayoutUnit height) const;
-  LayoutUnit CalculateMaxColumnHeight() const;
-  void SetAndConstrainColumnHeight(LayoutUnit);
-
-  LayoutUnit RebalanceColumnHeightIfNeeded() const;
 
   LayoutRect ColumnRectAt(unsigned column_index) const;
   LayoutUnit LogicalTopInFlowThreadAt(unsigned column_index) const {
@@ -196,9 +191,6 @@ class CORE_EXPORT MultiColumnFragmentainerGroup {
   // in this group, with the difference that, while the logical height can be
   // 0, the height of a column must be >= 1px.
   LayoutUnit logical_height_;
-
-  // Maximum logical height allowed.
-  LayoutUnit max_logical_height_;
 
   bool is_logical_height_known_ = false;
 };

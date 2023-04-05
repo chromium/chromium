@@ -43,7 +43,7 @@ class NetworkingPrivateDelegateObserver {
   virtual void OnCertificateListsChanged() = 0;
 
  protected:
-  virtual ~NetworkingPrivateDelegateObserver() {}
+  virtual ~NetworkingPrivateDelegateObserver() = default;
 };
 
 }  // namespace extensions

@@ -26,10 +26,9 @@ class LayoutNGMathMLBlock : public LayoutNGBlock {
   bool CanHaveChildren() const final;
   void StyleDidChange(StyleDifference, const ComputedStyle*) final;
 
-  PaginationBreakability GetPaginationBreakability(
-      FragmentationEngine) const final {
+  bool IsMonolithic() const final {
     NOT_DESTROYED();
-    return kForbidBreaks;
+    return true;
   }
 };
 

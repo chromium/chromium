@@ -89,7 +89,7 @@ class SigninFirstRunViewBinder {
 
         if (isAccountSupervised) {
             view.getBrowserManagedHeaderView().setVisibility(View.VISIBLE);
-            view.getPrivacyDisclaimer().setText(R.string.fre_browser_managed_by_parents);
+            view.getPrivacyDisclaimer().setText(R.string.fre_browser_managed_by_parent);
             view.getPrivacyDisclaimer().setCompoundDrawablesRelativeWithIntrinsicBounds(
                     R.drawable.ic_account_child_20dp, 0, 0, 0);
         } else if (hasPolicy) {

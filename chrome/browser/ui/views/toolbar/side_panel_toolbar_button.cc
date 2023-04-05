@@ -19,6 +19,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/view_class_properties.h"
@@ -56,9 +57,14 @@ void SidePanelToolbarButton::UpdateToolbarButtonIcon() {
   const bool is_right_aligned = browser_->profile()->GetPrefs()->GetBoolean(
       prefs::kSidePanelHorizontalAlignment);
   if (is_right_aligned)
-    SetVectorIcons(kSidePanelIcon, kSidePanelTouchIcon);
+    SetVectorIcons(features::IsChromeRefresh2023() ? kSidePanelChromeRefreshIcon
+                                                   : kSidePanelIcon,
+                   kSidePanelTouchIcon);
   else
-    SetVectorIcons(kSidePanelLeftIcon, kSidePanelLeftTouchIcon);
+    SetVectorIcons(features::IsChromeRefresh2023()
+                       ? kSidePanelLeftChromeRefreshIcon
+                       : kSidePanelLeftIcon,
+                   kSidePanelLeftTouchIcon);
 }
 
 bool SidePanelToolbarButton::ShouldShowInkdropAfterIphInteraction() {

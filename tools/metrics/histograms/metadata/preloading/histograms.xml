@@ -134,10 +134,11 @@ chromium-metrics-reviews@google.com.
   <summary>
     After the user starts a new navigation, the outcome of any eligible
     preloading attempt of type {PreloadingType} that is triggered by
-    {PreloadingPredictor} is recorded as a true positive or a false negative.
-    These statistics are used to compute recall of the preloading attempt. The
-    statistics about false positive and true negative cases are not required to
-    compute the recall and are not recorded here.
+    {PreloadingPredictor} or the lack of an attempt by an eligible predictor is
+    recorded as a true positive or a false negative. These statistics are used
+    to compute recall of the preloading attempt. The statistics about false
+    positive and true negative cases are not required to compute the recall and
+    are not recorded here.
   </summary>
   <token key="PreloadingType" variants="PreloadingType"/>
   <token key="PreloadingPredictor" variants="PreloadingPredictor"/>

@@ -17,6 +17,8 @@
 #include "ash/components/arc/test/fake_memory_instance.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/test/base/testing_profile.h"
@@ -30,7 +32,8 @@ namespace mechanism {
 
 class TestWorkingSetTrimmerChromeOS : public testing::Test {
  public:
-  TestWorkingSetTrimmerChromeOS() = default;
+  TestWorkingSetTrimmerChromeOS()
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   TestWorkingSetTrimmerChromeOS(const TestWorkingSetTrimmerChromeOS&) = delete;
   TestWorkingSetTrimmerChromeOS& operator=(
       const TestWorkingSetTrimmerChromeOS&) = delete;
@@ -118,6 +121,10 @@ class TestWorkingSetTrimmerChromeOS : public testing::Test {
     arc::ArcSessionRunner* runner_;
   };
 
+  content::BrowserTaskEnvironment& task_environment() {
+    return task_environment_;
+  }
+
   std::unique_ptr<WorkingSetTrimmerChromeOS> trimmer_;
 
  private:
@@ -201,11 +208,13 @@ TEST_F(TestWorkingSetTrimmerChromeOS, TrimArcVmWorkingSetNoArcSessionManager) {
 
 TEST_F(TestWorkingSetTrimmerChromeOS,
        TrimArcVmWorkingSet_GuestReclaimEnabled_Success) {
+  base::HistogramTester histogram_tester;
+  base::ScopedMockElapsedTimersForTest mock_elapsed_timers;
   base::test::ScopedFeatureList feature_list;
   base::FieldTrialParams params;
   params["guest_reclaim_enabled"] = "true";
   feature_list.InitAndEnableFeatureWithParameters(arc::kGuestZram, params);
-  memory_instance()->set_reclaim_all_result(2, 0);
+  memory_instance()->set_reclaim_all_result(2, 1);
   // Making arc session trim result to be false to be sure it's not being used.
   FakeArcSessionHolder session_holder(arc_session_runner());
   session_holder.session()->set_trim_result(false, "test_reason");
@@ -215,12 +224,20 @@ TEST_F(TestWorkingSetTrimmerChromeOS,
       [&result](bool r, const std::string&) { result = r; }));
   base::RunLoop().RunUntilIdle();
 
+  histogram_tester.ExpectUniqueSample("Arc.GuestZram.SuccessfulReclaim", 1, 1);
+  histogram_tester.ExpectUniqueSample("Arc.GuestZram.ReclaimedProcess", 2, 1);
+  histogram_tester.ExpectUniqueSample("Arc.GuestZram.UnreclaimedProcess", 1, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Arc.GuestZram.TotalReclaimTime",
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
   ASSERT_TRUE(result);
   ASSERT_TRUE(*result);
 }
 
 TEST_F(TestWorkingSetTrimmerChromeOS,
        TrimArcVmWorkingSet_GuestReclaimEnabled_Failure) {
+  base::HistogramTester histogram_tester;
+  base::ScopedMockElapsedTimersForTest mock_elapsed_timers;
   base::test::ScopedFeatureList feature_list;
   base::FieldTrialParams params;
   params["guest_reclaim_enabled"] = "true";
@@ -232,12 +249,20 @@ TEST_F(TestWorkingSetTrimmerChromeOS,
       [&result](bool r, const std::string&) { result = r; }));
   base::RunLoop().RunUntilIdle();
 
+  histogram_tester.ExpectUniqueSample("Arc.GuestZram.SuccessfulReclaim", 0, 1);
+  histogram_tester.ExpectUniqueSample("Arc.GuestZram.ReclaimedProcess", 0, 0);
+  histogram_tester.ExpectUniqueSample("Arc.GuestZram.UnreclaimedProcess", 0, 0);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Arc.GuestZram.TotalReclaimTime",
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 0);
   ASSERT_TRUE(result);
   ASSERT_FALSE(*result);
 }
 
 TEST_F(TestWorkingSetTrimmerChromeOS,
        TrimArcVmWorkingSet_GuestReclaimEnabled_AnonPagesOnly) {
+  base::HistogramTester histogram_tester;
+  base::ScopedMockElapsedTimersForTest mock_elapsed_timers;
   base::test::ScopedFeatureList feature_list;
   base::FieldTrialParams params;
   params["guest_reclaim_enabled"] = "true";
@@ -251,6 +276,12 @@ TEST_F(TestWorkingSetTrimmerChromeOS,
       [&result](bool r, const std::string&) { result = r; }));
   base::RunLoop().RunUntilIdle();
 
+  histogram_tester.ExpectUniqueSample("Arc.GuestZram.SuccessfulReclaim", 1, 1);
+  histogram_tester.ExpectUniqueSample("Arc.GuestZram.ReclaimedProcess", 2, 1);
+  histogram_tester.ExpectUniqueSample("Arc.GuestZram.UnreclaimedProcess", 0, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Arc.GuestZram.TotalReclaimTime",
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
   ASSERT_TRUE(result);
   ASSERT_TRUE(*result);
 }

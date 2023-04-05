@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PRIVACY_BUDGET_ENCOUNTERED_SURFACE_TRACKER_H_
 #define CHROME_BROWSER_PRIVACY_BUDGET_ENCOUNTERED_SURFACE_TRACKER_H_
 
+#include <stdint.h>
+
 #include <map>
 
 #include "base/containers/flat_set.h"

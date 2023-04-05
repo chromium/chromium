@@ -35,6 +35,7 @@ class CONTENT_EXPORT SetBidBindings : public Bindings {
       bool has_top_level_seller_origin,
       const mojom::BidderWorkletNonSharedParams*
           bidder_worklet_non_shared_params,
+      const std::string& per_buyer_currency,
       base::RepeatingCallback<bool(const GURL&)> is_ad_excluded,
       base::RepeatingCallback<bool(const GURL&)> is_component_ad_excluded);
 
@@ -60,6 +61,8 @@ class CONTENT_EXPORT SetBidBindings : public Bindings {
 
   raw_ptr<const mojom::BidderWorkletNonSharedParams>
       bidder_worklet_non_shared_params_ = nullptr;
+
+  std::string per_buyer_currency_;
 
   // Callbacks set by ReInitialize and cleared by Reset which tell if an ad URL
   // can be used in a valid bid. Used to check the bid for non-k-anonymous ads.

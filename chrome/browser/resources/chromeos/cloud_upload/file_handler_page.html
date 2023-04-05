@@ -1,13 +1,13 @@
 <style>
-  :host {
+  #dialog {
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    height: 475px;
+    height: 375px;
     width: 512px;
   }
 
-  #header:focus-visible {
+  #dialog:focus-visible {
     outline: none;
   }
 
@@ -71,14 +71,16 @@
 
 <!-- TODO(b:251046594): Use localized strings -->
 <!-- autofocus for screen reader to read header on dialog open-->
-<div id="header" autofocus tabindex="-1">
-  <div id="title">
-    Choose an app to open <span id="file-type"></span> files
+<div id="dialog" role="dialog" autofocus tabindex="-1" aria-labelledby="title">
+  <div id="header">
+    <div id="title">
+      Choose an app to open <span id="file-type"></span> files
+    </div>
   </div>
-</div>
-<div id="content" role="listbox" 
-  aria-multiselectable="false" tabindex="-1"></div>
-<div id="button-container">
-  <cr-button class="cancel-button">Cancel</cr-button>
-  <cr-button class="action-button">Open</cr-button>
+  <div id="content" role="listbox" aria-multiselectable="false" tabindex="-1"
+    aria-label="Application options"></div>
+  <div id="button-container">
+    <cr-button class="cancel-button">Cancel</cr-button>
+    <cr-button class="action-button">Open</cr-button>
+  </div>
 </div>

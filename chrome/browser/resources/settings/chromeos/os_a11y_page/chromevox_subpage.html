@@ -22,6 +22,7 @@ found in the LICENSE file.
   }
 
   .settings-box {
+    justify-content: space-between;
     margin-inline-end: var(--cr-section-padding);
     padding-inline-end: 0;
     padding-inline-start: 0;
@@ -37,8 +38,17 @@ found in the LICENSE file.
     padding-inline-start: var(--cr-section-padding);
   }
 
+  .text-row {
+    min-height: var(--cr-section-min-height);
+  }
+
+  cr-input {
+    --cr-input-error-display: none;
+    width: 80px;
+  }
+
   #developerOptionsExpandButton {
-    min-height: 48px;
+    min-height: var(--cr-section-min-height);
     padding-inline-end: var(--cr-section-padding);
   }
 
@@ -172,6 +182,24 @@ found in the LICENSE file.
       pref="{{prefs.settings.a11y.chromevox.menu_braille_commands}}"
       label="$i18n{chromeVoxMenuBrailleCommands}">
   </settings-toggle-button>
+  <div class="text-row">
+    <div>$i18n{chromeVoxVirtualBrailleDisplay}</div>
+    <div class="secondary">$i18n{chromeVoxVirtualBrailleDisplayDetails}</div>
+  </div>
+  <div class="settings-box continuation indented">
+    $i18n{chromeVoxVirtualBrailleDisplayRows}
+    <cr-input id="virtualBrailleDisplayRowsInput" type="number" min="1" max="99"
+        value="[[prefs.settings.a11y.chromevox.virtual_braille_rows.value]]"
+        on-input="onBrailleRowsInput_" on-focusout="onBrailleRowsFocusout_">
+    </cr-input>
+  </div>
+  <div class="settings-box continuation indented">
+    $i18n{chromeVoxVirtualBrailleDisplayColumns}
+    <cr-input id="virtualBrailleDisplayColumnsInput" type="number" min="1" max="99"
+        value="[[prefs.settings.a11y.chromevox.virtual_braille_columns.value]]"
+        on-input="onBrailleColumnsInput_" on-focusout="onBrailleColumnsFocusout_">
+    </cr-input>
+  </div>
 </div>
 <cr-expand-button id="developerOptionsExpandButton" class="hr"
     expanded="{{developerOptionsExpanded_}}">

@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
-#include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 
 namespace blink {
@@ -65,24 +64,8 @@ bool EditCommand::IsRenderedCharacter(const Position& position) {
   if (!layout_object || !layout_object->IsText())
     return false;
 
-  // Use NG offset mapping when LayoutNG is enabled.
   if (auto* mapping = NGOffsetMapping::GetFor(position)) {
     return mapping->IsBeforeNonCollapsedContent(position);
-  }
-
-  // TODO(editing-dev): This doesn't handle first-letter correctly. Fix it.
-  const auto* layout_text = To<LayoutText>(layout_object);
-  const int offset_in_node = position.OffsetInContainerNode();
-  for (InlineTextBox* box : layout_text->TextBoxes()) {
-    if (offset_in_node < static_cast<int>(box->Start()) &&
-        !layout_text->ContainsReversedText()) {
-      // The offset we're looking for is before this node this means the offset
-      // must be in content that is not laid out. Return false.
-      return false;
-    }
-    if (offset_in_node >= static_cast<int>(box->Start()) &&
-        offset_in_node < static_cast<int>(box->Start() + box->Len()))
-      return true;
   }
 
   return false;

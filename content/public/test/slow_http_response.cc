@@ -45,11 +45,6 @@ SlowHttpResponse::SlowHttpResponse(GotRequestCallback got_request)
 
 SlowHttpResponse::~SlowHttpResponse() = default;
 
-bool SlowHttpResponse::IsHandledUrl() {
-  //  return url_ == kSlowResponseUrl || url_ == kFinishSlowResponseUrl;
-  return false;
-}
-
 base::StringPairs SlowHttpResponse::ResponseHeaders() {
   return {{"Content-type", "text/html"}};
 }

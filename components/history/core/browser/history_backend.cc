@@ -445,8 +445,8 @@ SegmentID HistoryBackend::GetLastSegmentID(VisitID from_visit) {
     visit_id = row.referring_visit;
 
     if (visit_set.find(visit_id) != visit_set.end()) {
-      NOTREACHED() << "Loop in referer chain, giving up";
-      break;
+      DLOG(WARNING) << "Loop in referer chain, possible db corruption";
+      return 0;
     }
     visit_set.insert(visit_id);
   }
@@ -1091,8 +1091,6 @@ void HistoryBackend::InitImpl(
   // we only set db_ to the created database if creation is successful. That
   // way other methods won't do anything as db_ is still null.
 
-  TimeTicks beginning_time = TimeTicks::Now();
-
   // Compute the file names.
   history_dir_ = history_database_params.history_dir;
 
@@ -1188,8 +1186,6 @@ void HistoryBackend::InitImpl(
 
   // Start expiring old stuff.
   expirer_.StartExpiringOldStuff(base::Days(kExpireDaysThreshold));
-
-  LOCAL_HISTOGRAM_TIMES("History.InitTime", TimeTicks::Now() - beginning_time);
 }
 
 void HistoryBackend::OnMemoryPressure(
@@ -2196,11 +2192,19 @@ void HistoryBackend::ReplaceClusters(
   ScheduleCommit();
 }
 
-int64_t HistoryBackend::ReserveNextClusterId() {
-  TRACE_EVENT0("browser", "HistoryBackend::ReserveNextClusterId");
-  return db_ ? db_->ReserveNextClusterId(/*originator_cache_guid=*/"",
-                                         /*originator_cluster_id=*/0)
-             : 0;
+int64_t HistoryBackend::ReserveNextClusterIdWithVisit(
+    const ClusterVisit& cluster_visit) {
+  TRACE_EVENT0("browser", "HistoryBackend::ReserveNextClusterIdWithVisit");
+  int64_t cluster_id =
+      db_ ? db_->ReserveNextClusterId(/*originator_cache_guid=*/"",
+                                      /*originator_cluster_id=*/0)
+          : 0;
+  if (cluster_id == 0) {
+    // DB write was not successful, just return.
+    return 0;
+  }
+  AddVisitsToCluster(cluster_id, {cluster_visit});
+  return cluster_id;
 }
 
 void HistoryBackend::AddVisitsToCluster(
@@ -2347,7 +2351,7 @@ VisitVector HistoryBackend::GetRedirectChain(VisitRow visit) {
       if (!db_->GetRowForVisit(visit.referring_visit, &referring_visit))
         return {};
       if (visit_set.count(referring_visit.visit_id)) {
-        NOTREACHED() << "Loop in visit redirect chain, giving up";
+        DLOG(WARNING) << "Loop in visit redirect chain, possible db corruption";
         break;
       }
       result.push_back(referring_visit);
@@ -2690,14 +2694,10 @@ void HistoryBackend::DeleteFTSIndexDatabases() {
   base::FilePath::StringType filepattern = FILE_PATH_LITERAL("History Index *");
   base::FileEnumerator enumerator(history_dir_, false,
                                   base::FileEnumerator::FILES, filepattern);
-  int num_databases_deleted = 0;
   base::FilePath current_file;
   while (!(current_file = enumerator.Next()).empty()) {
-    if (sql::Database::Delete(current_file))
-      num_databases_deleted++;
+    sql::Database::Delete(current_file);
   }
-  UMA_HISTOGRAM_COUNTS_1M("History.DeleteFTSIndexDatabases",
-                          num_databases_deleted);
 }
 
 std::vector<favicon_base::FaviconRawBitmapResult> HistoryBackend::GetFavicon(
@@ -3317,6 +3317,10 @@ void HistoryBackend::KillHistoryDatabase() {
   expirer_.SetDatabases(nullptr, nullptr);
 
   CloseAllDatabases();
+}
+
+void HistoryBackend::SetSyncDeviceInfo(SyncDeviceInfoMap sync_device_info) {
+  sync_device_info_ = std::move(sync_device_info);
 }
 
 void HistoryBackend::ProcessDBTask(

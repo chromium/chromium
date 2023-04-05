@@ -156,8 +156,7 @@ class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
 
   void OnJapaneseSettingsReceived(ime::mojom::JapaneseConfigPtr config);
   void OnJapaneseDecoderConnected(bool bound);
-  void ConnectToImeService(ime::mojom::ConnectionTarget connection_target,
-                           const std::string& engine_id);
+  void ConnectToImeService(const std::string& engine_id);
 
   void HandleOnFocusAsyncForNativeMojoEngine(
       const std::string& engine_id,

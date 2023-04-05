@@ -19,6 +19,7 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "url/gurl.h"
 
 namespace ui {
 class SimpleMenuModel;
@@ -46,6 +47,9 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
   // returns false.
   virtual std::unique_ptr<ScopedIphSession>
   CreateLauncherSearchIphSession() = 0;
+
+  // Opens the url in a browser for the search box IPH.
+  virtual void OpenSearchBoxIphUrl() = 0;
 
   // Invoked to start a new Google Assistant session.
   virtual void StartAssistant() = 0;

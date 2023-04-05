@@ -6,17 +6,13 @@
 
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
-#include "base/logging.h"
 #include "base/values.h"
 #include "chromeos/crosapi/mojom/networking_private.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/api/networking_private.h"
-#include "extensions/common/extension.h"
 
 using extensions::NetworkingPrivateDelegate;
 
@@ -278,8 +274,9 @@ void NetworkingPrivateLacros::GetState(const std::string& guid,
                                        FailureCallback failure_callback) {
   auto* networking_private =
       GetNetworkingPrivateRemoteAndCheck(is_primary_user_, failure_callback);
-  if (!networking_private)
+  if (!networking_private) {
     return;
+  }
 
   (*networking_private)
       ->GetState(std::move(guid),
@@ -294,8 +291,9 @@ void NetworkingPrivateLacros::SetProperties(const std::string& guid,
                                             FailureCallback failure_callback) {
   auto* networking_private =
       GetNetworkingPrivateRemoteAndCheck(is_primary_user_, failure_callback);
-  if (!networking_private)
+  if (!networking_private) {
     return;
+  }
 
   (*networking_private)
       ->SetProperties(std::move(guid), std::move(properties),
@@ -310,8 +308,9 @@ void NetworkingPrivateLacros::CreateNetwork(bool shared,
                                             FailureCallback failure_callback) {
   auto* networking_private =
       GetNetworkingPrivateRemoteAndCheck(is_primary_user_, failure_callback);
-  if (!networking_private)
+  if (!networking_private) {
     return;
+  }
 
   (*networking_private)
       ->CreateNetwork(shared, base::Value(std::move(properties)),
@@ -325,8 +324,9 @@ void NetworkingPrivateLacros::ForgetNetwork(const std::string& guid,
                                             FailureCallback failure_callback) {
   auto* networking_private =
       GetNetworkingPrivateRemoteAndCheck(is_primary_user_, failure_callback);
-  if (!networking_private)
+  if (!networking_private) {
     return;
+  }
 
   (*networking_private)
       ->ForgetNetwork(std::move(guid), allow_forget_shared_config,
@@ -342,8 +342,9 @@ void NetworkingPrivateLacros::GetNetworks(const std::string& network_type,
                                           FailureCallback failure_callback) {
   auto* networking_private =
       GetNetworkingPrivateRemoteAndCheck(is_primary_user_, failure_callback);
-  if (!networking_private)
+  if (!networking_private) {
     return;
+  }
 
   (*networking_private)
       ->GetNetworks(std::move(network_type), configured_only, visible_only,
@@ -357,8 +358,9 @@ void NetworkingPrivateLacros::StartConnect(const std::string& guid,
                                            FailureCallback failure_callback) {
   auto* networking_private =
       GetNetworkingPrivateRemoteAndCheck(is_primary_user_, failure_callback);
-  if (!networking_private)
+  if (!networking_private) {
     return;
+  }
 
   (*networking_private)
       ->StartConnect(std::move(guid),
@@ -372,8 +374,9 @@ void NetworkingPrivateLacros::StartDisconnect(
     FailureCallback failure_callback) {
   auto* networking_private =
       GetNetworkingPrivateRemoteAndCheck(is_primary_user_, failure_callback);
-  if (!networking_private)
+  if (!networking_private) {
     return;
+  }
 
   (*networking_private)
       ->StartDisconnect(std::move(guid),
@@ -388,8 +391,9 @@ void NetworkingPrivateLacros::StartActivate(
     FailureCallback failure_callback) {
   auto* networking_private =
       GetNetworkingPrivateRemoteAndCheck(is_primary_user_, failure_callback);
-  if (!networking_private)
+  if (!networking_private) {
     return;
+  }
 
   (*networking_private)
       ->StartActivate(std::move(guid), std::move(specified_carrier),
@@ -403,8 +407,9 @@ void NetworkingPrivateLacros::GetCaptivePortalStatus(
     FailureCallback failure_callback) {
   auto* networking_private =
       GetNetworkingPrivateRemoteAndCheck(is_primary_user_, failure_callback);
-  if (!networking_private)
+  if (!networking_private) {
     return;
+  }
 
   (*networking_private)
       ->GetCaptivePortalStatus(
@@ -420,8 +425,9 @@ void NetworkingPrivateLacros::UnlockCellularSim(
     FailureCallback failure_callback) {
   auto* networking_private =
       GetNetworkingPrivateRemoteAndCheck(is_primary_user_, failure_callback);
-  if (!networking_private)
+  if (!networking_private) {
     return;
+  }
 
   (*networking_private)
       ->UnlockCellularSim(std::move(guid), std::move(pin), std::move(puk),
@@ -438,8 +444,9 @@ void NetworkingPrivateLacros::SetCellularSimState(
     FailureCallback failure_callback) {
   auto* networking_private =
       GetNetworkingPrivateRemoteAndCheck(is_primary_user_, failure_callback);
-  if (!networking_private)
+  if (!networking_private) {
     return;
+  }
 
   (*networking_private)
       ->SetCellularSimState(std::move(guid), require_pin,
@@ -455,8 +462,9 @@ void NetworkingPrivateLacros::SelectCellularMobileNetwork(
     FailureCallback failure_callback) {
   auto* networking_private =
       GetNetworkingPrivateRemoteAndCheck(is_primary_user_, failure_callback);
-  if (!networking_private)
+  if (!networking_private) {
     return;
+  }
 
   (*networking_private)
       ->SelectCellularMobileNetwork(

@@ -48,7 +48,11 @@ HistoryClustersServiceTaskGetMostRecentClusters::
 }
 
 HistoryClustersServiceTaskGetMostRecentClusters::
-    ~HistoryClustersServiceTaskGetMostRecentClusters() = default;
+    ~HistoryClustersServiceTaskGetMostRecentClusters() {
+  if (!done_) {
+    std::move(callback_).Run({}, continuation_params_);
+  }
+}
 
 void HistoryClustersServiceTaskGetMostRecentClusters::Start() {
   // Shouldn't request more clusters if history has been exhausted.

@@ -119,7 +119,7 @@ class SystemLiveCaptionServiceTest : public InProcessBrowserTest {
     const base::FilePath profile_path =
         profile_manager->GenerateNextProfileDirectoryPath();
     secondary_profile_ =
-        profiles::testing::CreateProfileSync(profile_manager, profile_path);
+        &profiles::testing::CreateProfileSync(profile_manager, profile_path);
     CHECK(secondary_profile_);
 
     // Replace our CrosSpeechRecognitionService with a fake one. We can pass a

@@ -239,6 +239,10 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
   // GetDisabledProjects().
   base::flat_set<uint64_t> disallowed_projects_;
 
+  // The number of scans of external metrics that occurred since the last
+  // upload. This is only incremented if events were added by the scan.
+  int external_metrics_scans_ = 0;
+
   base::WeakPtrFactory<StructuredMetricsProvider> weak_factory_{this};
 };
 

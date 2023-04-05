@@ -5,7 +5,6 @@
 
 #include <iterator>
 
-#include "base/guid.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
@@ -13,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -76,7 +76,7 @@ class SuggestionSelectionTest : public testing::Test {
       const char* first_name,
       const char* last_name = "Morrison") {
     std::unique_ptr<AutofillProfile> profile_ptr =
-        std::make_unique<AutofillProfile>(base::GenerateGUID(),
+        std::make_unique<AutofillProfile>(base::GenerateUuid(),
                                           test::kEmptyOrigin);
     test::SetProfileInfo(profile_ptr.get(), first_name, "Mitchell", last_name,
                          "johnwayne@me.xyz", "Fox",
@@ -322,7 +322,7 @@ TEST_F(SuggestionSelectionTest, RemoveProfilesNotUsedSinceTimestamp) {
   std::vector<std::unique_ptr<AutofillProfile>> all_profile_data;
   for (size_t i = 0; i < kNumProfiles; ++i) {
     all_profile_data.push_back(std::make_unique<AutofillProfile>(
-        base::GenerateGUID(), "https://example.com"));
+        base::GenerateUuid(), "https://example.com"));
     all_profile_data[i]->set_use_date(kCurrentTime - (i * k30Days));
   }
 

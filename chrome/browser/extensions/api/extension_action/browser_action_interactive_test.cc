@@ -869,7 +869,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveFencedFrameTest,
   content::TestNavigationObserver observer(
       content::WebContents::FromRenderFrameHost(primary_rfh));
   std::string script =
-      "document.querySelector('fencedframe').src = '" + foo_url.spec() + "'";
+      "document.querySelector('fencedframe').config = new FencedFrameConfig('" +
+      foo_url.spec() + "')";
   EXPECT_TRUE(ExecuteScript(primary_rfh, script));
   observer.WaitForNavigationFinished();
 

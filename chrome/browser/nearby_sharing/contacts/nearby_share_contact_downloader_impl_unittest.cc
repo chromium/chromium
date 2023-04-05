@@ -14,10 +14,10 @@
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/client/fake_nearby_share_client.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
-#include "chrome/browser/nearby_sharing/common/nearby_share_http_result.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_downloader_impl.h"
 #include "chrome/browser/nearby_sharing/proto/contact_rpc.pb.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
+#include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -116,7 +116,7 @@ class NearbyShareContactDownloaderImplTest
     EXPECT_FALSE(result_);
     FakeNearbyShareClient* client = fake_client_factory_.instances().back();
     std::move(client->list_contact_people_requests()[0].error_callback)
-        .Run(NearbyShareHttpError::kBadRequest);
+        .Run(ash::nearby::NearbyHttpError::kBadRequest);
   }
 
   void TimeoutListContactPeopleRequest(

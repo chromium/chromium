@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_POWER_BOOKMARKS_COMMON_POWER_H_
 #define COMPONENTS_POWER_BOOKMARKS_COMMON_POWER_H_
 
-#include "base/guid.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/sync/protocol/power_bookmark_specifics.pb.h"
 #include "url/gurl.h"
 
@@ -27,8 +27,8 @@ class Power {
 
   ~Power();
 
-  const base::GUID& guid() const { return guid_; }
-  void set_guid(base::GUID guid) { guid_ = guid; }
+  const base::Uuid& guid() const { return guid_; }
+  void set_guid(base::Uuid guid) { guid_ = guid; }
 
   std::string guid_string() const { return guid_.AsLowercaseString(); }
 
@@ -73,7 +73,7 @@ class Power {
   std::unique_ptr<Power> Clone() const;
 
  private:
-  base::GUID guid_;
+  base::Uuid guid_;
   GURL url_;
   sync_pb::PowerBookmarkSpecifics::PowerType power_type_;
   base::Time time_modified_;

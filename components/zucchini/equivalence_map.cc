@@ -4,6 +4,7 @@
 
 #include "components/zucchini/equivalence_map.h"
 
+#include <tuple>
 #include <utility>
 
 #include "base/containers/cxx20_erase.h"
@@ -312,17 +313,25 @@ void OffsetMapper::PruneEquivalencesAndSortBySource(
     std::deque<Equivalence>* equivalences) {
   std::sort(equivalences->begin(), equivalences->end(),
             [](const Equivalence& a, const Equivalence& b) {
-              return a.src_offset < b.src_offset;
+              // Sort by ascending |src_offset| (required by loop below),
+              // then by descending |length| (optimization to reduce churn),
+              // then by ascending |dst_offset| (for total ordering).
+              return std::tuple(a.src_offset, -a.length, a.dst_offset) <
+                     std::tuple(b.src_offset, -b.length, b.dst_offset);
             });
 
   for (auto current = equivalences->begin(); current != equivalences->end();
        ++current) {
+    if (current->length == 0) {
+      continue;
+    }
+
     // A "reaper" is an equivalence after |current| that overlaps with it, but
     // is longer, and so truncates |current|.  For example:
     //  ******  <=  |current|
-    //    **
     //    ****
-    //      ****
+    //    **
+    //     ****
     //      **********  <= |next| as reaper.
     // If a reaper is found (as |next|), every equivalence strictly between
     // |current| and |next| would be truncated to 0 and discarded. Handling this
@@ -352,13 +361,23 @@ void OffsetMapper::PruneEquivalencesAndSortBySource(
       current = next - 1;
     } else {
       // Shrink all equivalences that overlap with |current|. These are all
-      // worse than |current| since no reaper is found.
+      // worse (same length or shorter), since no reaper is found.
       for (auto reduced = current + 1; reduced != next; ++reduced) {
+        //                Clipping Case 1:     Clipping Case 2:
+        // |current|        cccccccc             cccccccc
+        // |reduced|             rrrrr             rrrr
+        // New |reduced|            rr             (empty)
+        // |delta|          3                    6
+        // |capped_delta|   3                    4
         offset_t delta = current->src_end() - reduced->src_offset;
-        reduced->length -= std::min(reduced->length, delta);
-        reduced->src_offset += delta;
-        reduced->dst_offset += delta;
-        DCHECK_EQ(reduced->src_offset, current->src_end());
+        offset_t capped_delta = std::min(reduced->length, delta);
+        reduced->length -= capped_delta;
+        // For Case 1, below is same as adding |delta|. For Case 2, offsets
+        // become irrelevant. However, |dst_offset + delta| may create an offset
+        // outside the file, or even overflow. So for robustness,
+        // |capped_delta| is used.
+        reduced->src_offset += capped_delta;
+        reduced->dst_offset += capped_delta;
       }
     }
   }
@@ -478,6 +497,7 @@ void EquivalenceMap::CreateCandidates(
 void EquivalenceMap::SortByDestination() {
   std::sort(candidates_.begin(), candidates_.end(),
             [](const EquivalenceCandidate& a, const EquivalenceCandidate& b) {
+              // Values should be distinct; no tiebreaker is needed.
               return a.eq.dst_offset < b.eq.dst_offset;
             });
 }

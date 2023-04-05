@@ -252,6 +252,7 @@ void NativeWidgetMac::InitNativeWidget(Widget::InitParams params) {
     SetZOrderLevel(params.EffectiveZOrderLevel());
 
   GetNSWindowMojo()->SetIgnoresMouseEvents(!params.accept_events);
+  GetNSWindowMojo()->SetVisibleOnAllSpaces(params.visible_on_all_workspaces);
 
   delegate_->OnNativeWidgetCreated();
 

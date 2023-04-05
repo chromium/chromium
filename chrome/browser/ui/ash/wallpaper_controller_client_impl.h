@@ -54,6 +54,9 @@ class WallpaperControllerClientImpl
   // Tests can provide a mock interface for the ash controller.
   void InitForTesting(ash::WallpaperController* controller);
 
+  void SetWallpaperFetcherDelegateForTesting(
+      std::unique_ptr<wallpaper_handlers::WallpaperFetcherDelegate>);
+
   // Sets the initial wallpaper. Should be called after the session manager has
   // been initialized.
   void SetInitialWallpaper();
@@ -207,7 +210,7 @@ class WallpaperControllerClientImpl
            std::unique_ptr<wallpaper_handlers::GooglePhotosPhotosFetcher>>
       google_photos_photos_fetchers_;
 
-  const std::unique_ptr<wallpaper_handlers::WallpaperFetcherDelegate>
+  std::unique_ptr<wallpaper_handlers::WallpaperFetcherDelegate>
       wallpaper_fetcher_delegate_;
 
   base::ScopedMultiSourceObservation<file_manager::VolumeManager,

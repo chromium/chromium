@@ -380,6 +380,13 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
   // Returns true if this security origin is serialized to "null".
   bool SerializesAsNull() const;
 
+  // Whether document.open was called in between two different windows, causing
+  // the SecurityOrigin to be shared by both. This is only used to record
+  // metrics.
+  // To be removed after shipping DocumentOpenSandboxInheritanceRemoval feature.
+  void set_aliased_by_document_open() { aliased_by_document_open_ = true; }
+  bool aliased_by_document_open() const { return aliased_by_document_open_; }
+
  private:
   // Various serialisation and test routines that need direct nonce access.
   friend struct mojo::UrlOriginAdapter;
@@ -442,6 +449,7 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
   bool block_local_access_from_local_origin_ = false;
   bool is_opaque_origin_potentially_trustworthy_ = false;
   bool cross_agent_cluster_access_ = false;
+  bool aliased_by_document_open_ = false;
 
   // A security origin can have an empty |agent_cluster_id_|. It occurs in the
   // cases where a security origin hasn't been assigned to a document yet.

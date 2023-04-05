@@ -42,6 +42,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
+#include "media/base/win/mf_feature_checks.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -313,6 +314,8 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
 #if BUILDFLAG(IS_WIN)
     if (IsMediaFoundationClearKey(key_system)) {
       RegisterMediaFoundationClearKeyCdm(enabled_features);
+      enabled_features.push_back(
+          {media::kHardwareSecureDecryptionExperiment, {}});
       // TODO(crbug.com/1412485): Remove this line so that real hardware
       // capabilities can be checked.
       command_line->AppendSwitchASCII(
@@ -1011,6 +1014,22 @@ IN_PROC_BROWSER_TEST_F(ECKIncognitoEncryptedMediaTest, LoadSessionAfterClose) {
 // and H264 is always supported.
 class MediaFoundationEncryptedMediaTest : public EncryptedMediaTestBase {
  public:
+  void SetUp() override {
+    EncryptedMediaTestBase::SetUp();
+
+    // Run test only if the test machine supports MediaFoundation playback.
+    // Otherwise, NotSupportedError is expected.
+    if (!media::SupportMediaFoundationEncryptedPlayback()) {
+      auto os_version = static_cast<int>(base::win::GetVersion());
+      DLOG(INFO) << "os_version=" << os_version;
+      GTEST_SKIP()
+          << "Test method "
+          << ::testing::UnitTest::GetInstance()->current_test_info()->name()
+          << " is inconclusive since MediaFoundation "
+             "playback is not supported.";
+    }
+  }
+
   void TestLicenseExchange(const std::string& encrypted_media) {
     // Skip the playback since we test the EME parts only.
     RunSimpleEncryptedMediaTest(encrypted_media,

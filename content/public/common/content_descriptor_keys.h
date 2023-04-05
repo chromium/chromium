@@ -15,6 +15,10 @@ extern const char kV8Snapshot32DataDescriptor[];
 extern const char kV8Snapshot64DataDescriptor[];
 extern const char kV8ContextSnapshotDataDescriptor[];
 
+// A list of directories the network service needs (recursive) access to in
+// order to function.
+extern const char kNetworkContextParentDirsDescriptor[];
+
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_COMMON_CONTENT_DESCRIPTOR_KEYS_H_

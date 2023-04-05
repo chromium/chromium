@@ -65,6 +65,7 @@ bool AddCommandLineArgsFromConfig(const base::Value::Dict& config,
       switches::kDisableGpuWatchdog,
       switches::kDisableQuic,
       switches::kDisableMipmapGeneration,
+      switches::kDisableWebRtcHWDecoding,
       // TODO(crbug.com/1082821): Remove this switch from the allow-list.
       switches::kEnableCastStreamingReceiver,
       switches::kEnableFeatures,

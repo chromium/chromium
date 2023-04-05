@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "ash/test/ash_test_helper.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/exo/buffer.h"
@@ -22,7 +23,7 @@
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/ash/input_method_manager.h"
-#include "ui/base/ime/ash/mock_input_method_manager.h"
+#include "ui/base/ime/ash/mock_input_method_manager_impl.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/input_method_observer.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -448,7 +449,8 @@ TEST_F(TextInputTest, SetTypeModeFlag) {
   EXPECT_CALL(observer, OnTextInputStateChanged(text_input())).Times(1);
   text_input()->SetTypeModeFlags(
       ui::TEXT_INPUT_TYPE_URL, ui::TEXT_INPUT_MODE_URL, flags,
-      /*should_do_learning=*/false, /*can_compose_inline=*/false);
+      /*should_do_learning=*/false, /*can_compose_inline=*/false,
+      /*surrounding_text_supported=*/true);
   testing::Mock::VerifyAndClearExpectations(&observer);
 
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_URL, text_input()->GetTextInputType());
@@ -976,6 +978,70 @@ TEST_F(TextInputTest, FinalizeVirtualKeyboardChangesDoesntSendStaleBounds) {
   EXPECT_CALL(*delegate(), OnVirtualKeyboardVisibilityChanged).Times(0);
   EXPECT_CALL(*delegate(), OnVirtualKeyboardOccludedBoundsChanged(kBounds2));
   text_input()->EnsureCaretNotInRect(kBounds2);
+}
+
+TEST_F(TextInputTest, SetSurroundingTextSupport) {
+  testing::NiceMock<TestingInputMethodObserver> observer(GetInputMethod());
+
+  constexpr bool kShouldDoLearning = true;
+  constexpr bool kCanComposeInline = true;
+
+  ash::input_method::MockInputMethodManagerImpl* input_method_manager =
+      ash_test_helper()->input_method_manager();
+
+  constexpr char kEnglishId[] =
+      "_comp_ime_jkghodnilhceideoidjikpgommlajknkxkb:us::eng";
+  constexpr char kJapaneseId[] =
+      "_comp_ime_jkghodnilhceideoidjikpgommlajknknacl_mozc_jp";
+
+  input_method_manager->SetCurrentInputMethodId(kEnglishId);
+
+  EXPECT_CALL(observer, OnTextInputStateChanged(text_input())).Times(1);
+  EXPECT_CALL(*delegate(), Activated).Times(1);
+  text_input()->Activate(seat(), surface(),
+                         ui::TextInputClient::FOCUS_REASON_OTHER);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  testing::Mock::VerifyAndClearExpectations(delegate());
+
+  // When a client does not support surrounding text, we force a NULL input type
+  // for xkb input methods like English.
+
+  text_input()->SetTypeModeFlags(
+      ui::TEXT_INPUT_TYPE_SEARCH, ui::TEXT_INPUT_MODE_SEARCH,
+      ui::TEXT_INPUT_FLAG_NONE, kShouldDoLearning, kCanComposeInline,
+      /*surrounding_text_supported=*/false);
+
+  EXPECT_EQ(ui::TEXT_INPUT_TYPE_NULL, text_input()->GetTextInputType());
+
+  // When switching to a non-xkb input method, we restore the original input
+  // type requested.
+
+  EXPECT_CALL(observer, OnTextInputStateChanged(text_input())).Times(1);
+  input_method_manager->SetCurrentInputMethodId(kJapaneseId);
+  // The MockInputMethodManagerImpl doesn't currently fire this observer
+  // callback, so do it explicitly.
+  text_input()->InputMethodChanged(nullptr, nullptr, false);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  EXPECT_EQ(ui::TEXT_INPUT_TYPE_SEARCH, text_input()->GetTextInputType());
+
+  EXPECT_CALL(observer, OnTextInputStateChanged(text_input())).Times(1);
+  input_method_manager->SetCurrentInputMethodId(kEnglishId);
+  text_input()->InputMethodChanged(nullptr, nullptr, false);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  EXPECT_EQ(ui::TEXT_INPUT_TYPE_NULL, text_input()->GetTextInputType());
+
+  // When surrounding text is supported, the requested input type is left
+  // untouched.
+
+  EXPECT_CALL(observer, OnTextInputStateChanged(text_input())).Times(1);
+  text_input()->SetTypeModeFlags(
+      ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_TEXT,
+      ui::TEXT_INPUT_FLAG_NONE, kShouldDoLearning, kCanComposeInline,
+      /*surrounding_text_supported=*/true);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT, text_input()->GetTextInputType());
+
+  EXPECT_CALL(*delegate(), Deactivated).Times(1);
 }
 
 }  // anonymous namespace

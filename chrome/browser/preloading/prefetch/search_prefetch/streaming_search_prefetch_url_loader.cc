@@ -21,6 +21,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/c/system/data_pipe.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -71,9 +72,9 @@ StreamingSearchPrefetchURLLoader::ResponseReader::ResponseReader(
     mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client,
     base::OnceCallback<void(ResponseReader*)> forwarding_disconnection_callback,
     absl::optional<network::URLLoaderCompletionStatus> status,
-    StreamingSearchPrefetchURLLoader* loader)
+    base::WeakPtr<StreamingSearchPrefetchURLLoader> loader)
     : disconnection_callback_(std::move(forwarding_disconnection_callback)),
-      loader_(loader),
+      loader_(std::move(loader)),
       url_loader_completion_status_(status) {
   forwarding_receiver_.Bind(std::move(forward_receiver));
   forwarding_client_.Bind(std::move(forwarding_client));
@@ -84,12 +85,23 @@ StreamingSearchPrefetchURLLoader::ResponseReader::ResponseReader(
                      base::Unretained(this)));
 }
 
-StreamingSearchPrefetchURLLoader::ResponseReader::~ResponseReader() = default;
+StreamingSearchPrefetchURLLoader::ResponseReader::~ResponseReader() {
+  // Always ensure we recorded something on destruction.
+  OnDestroyed();
+
+  // TODO(crbug.com/1400881): For now prerender is the only use case. After
+  // refactoring it should specify the client type.
+  base::UmaHistogramEnumeration(
+      "Omnibox.SearchPreload.ResponseDataReaderFinalStatus.Prerender", status_);
+}
 
 void StreamingSearchPrefetchURLLoader::ResponseReader::OnStatusCodeReady(
     const network::URLLoaderCompletionStatus& status) {
   DCHECK(!url_loader_completion_status_);
   url_loader_completion_status_ = status;
+  if (url_loader_completion_status_->error_code != net::OK) {
+    status_ = ResponseDataReaderStatus::kNetworkError;
+  }
   MaybeSendCompletionSignal();
 }
 
@@ -100,13 +112,13 @@ void StreamingSearchPrefetchURLLoader::ResponseReader::
   MojoResult rv =
       CreateDataPipeForServingData(producer_handle_, consumer_handle);
   if (rv != MOJO_RESULT_OK) {
+    status_ = ResponseDataReaderStatus::kServingError;
     OnForwardingDisconnection();
     return;
   }
   handle_watcher_ = std::make_unique<mojo::SimpleWatcher>(
       FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL,
       base::SequencedTaskRunner::GetCurrentDefault());
-
   // It is safe to use `base::Unretained(this)` as `this` owns the watcher.
   handle_watcher_->Watch(
       producer_handle_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
@@ -120,6 +132,10 @@ void StreamingSearchPrefetchURLLoader::ResponseReader::
 }
 
 void StreamingSearchPrefetchURLLoader::ResponseReader::PushData() {
+  if (!loader_) {
+    // This will be deleted soon.
+    return;
+  }
   while (true) {
     base::StringPiece response_data =
         loader_->GetMoreDataFromCache(write_position_);
@@ -141,6 +157,8 @@ void StreamingSearchPrefetchURLLoader::ResponseReader::PushData() {
 
     if (result != MOJO_RESULT_OK) {
       OnForwardingDisconnection();
+      // This case is usually caused by the client stopping loading.
+      status_ = ResponseDataReaderStatus::kServingError;
       return;
     }
 
@@ -159,6 +177,7 @@ void StreamingSearchPrefetchURLLoader::ResponseReader::OnDataHandleReady(
     return;
   }
   if (result != MOJO_RESULT_OK) {
+    status_ = ResponseDataReaderStatus::kServingError;
     OnForwardingDisconnection();
     return;
   }
@@ -171,6 +190,9 @@ void StreamingSearchPrefetchURLLoader::ResponseReader::
     return;
   }
   if (producer_handle_) {
+    if (url_loader_completion_status_->error_code == net::OK) {
+      status_ = ResponseDataReaderStatus::kCompleted;
+    }
     forwarding_client_->OnComplete(*url_loader_completion_status_);
   }
   producer_handle_.reset();
@@ -178,8 +200,33 @@ void StreamingSearchPrefetchURLLoader::ResponseReader::
 
 void StreamingSearchPrefetchURLLoader::ResponseReader::
     OnForwardingDisconnection() {
-  if (disconnection_callback_) {
-    std::move(disconnection_callback_).Run(this);
+  if (!disconnection_callback_) {
+    return;
+  }
+
+  // If we receive the disconnection signal before completing serving, there
+  // should be a serving error.
+  if (status_ == ResponseDataReaderStatus::kCreated) {
+    status_ = ResponseDataReaderStatus::kServingError;
+  }
+  std::move(disconnection_callback_).Run(this);
+}
+
+void StreamingSearchPrefetchURLLoader::ResponseReader::OnDestroyed() {
+  switch (status_) {
+    // Has completed serving.
+    case ResponseDataReaderStatus::kCompleted:
+    // For tracking failures.
+    case ResponseDataReaderStatus::kServingError:
+    case ResponseDataReaderStatus::kNetworkError:
+    case ResponseDataReaderStatus::kCanceledByLoader:
+      return;
+    // The `StreamingSearchPrefetchURLLoader` is destroyed, or it wants to
+    // create a new reader and serves to a new clients, so this instance is
+    // destroyed.
+    case ResponseDataReaderStatus::kCreated:
+      status_ = ResponseDataReaderStatus::kCanceledByLoader;
+      return;
   }
 }
 
@@ -328,6 +375,7 @@ void StreamingSearchPrefetchURLLoader::SetUpForwardingClient(
       &StreamingSearchPrefetchURLLoader::OnURLLoaderClientMojoDisconnect,
       weak_factory_.GetWeakPtr()));
   forwarding_client_.Bind(std::move(forwarding_client));
+  forwarding_result_ = ForwardingResult::kStartedServing;
 
   // If the object previously encountered an error while still owned elsewhere,
   // schedule the delete for now.
@@ -363,12 +411,13 @@ void StreamingSearchPrefetchURLLoader::CreateResponseReaderForPrerender(
     mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client) {
   DCHECK(prerender_utils::SearchPreloadShareableCacheIsEnabled());
   DCHECK(streaming_prefetch_request_);
+  was_served_to_prerender_reader_ = true;
   response_reader_for_prerender_ = std::make_unique<ResponseReader>(
       std::move(receiver), std::move(forwarding_client),
       base::BindOnce(
           &StreamingSearchPrefetchURLLoader::OnPrerenderForwardingDisconnect,
           weak_factory_.GetWeakPtr()),
-      status_, this);
+      status_, weak_factory_.GetWeakPtr());
   response_reader_for_prerender_->StartReadingResponseFromData(
       resource_response_);
   response_reader_for_prerender_->PushData();
@@ -491,6 +540,7 @@ void StreamingSearchPrefetchURLLoader::OnReceiveRedirect(
   if (streaming_prefetch_request_) {
     streaming_prefetch_request_->ErrorEncountered();
   } else {
+    forwarding_result_ = ForwardingResult::kFailed;
     PostTaskToDeleteSelf();
   }
 }
@@ -556,6 +606,7 @@ void StreamingSearchPrefetchURLLoader::OnStartLoadingResponseBodyFromData() {
       CreateDataPipeForServingData(producer_handle_, consumer_handle);
 
   if (rv != MOJO_RESULT_OK) {
+    forwarding_result_ = ForwardingResult::kFailed;
     PostTaskToDeleteSelf();
     return;
   }
@@ -580,11 +631,16 @@ void StreamingSearchPrefetchURLLoader::OnHandleReady(
     const mojo::HandleSignalsState& state) {
   DCHECK(forwarding_client_);
   DCHECK(!streaming_prefetch_request_);
-  if (result != MOJO_RESULT_OK) {
-    PostTaskToDeleteSelf();
+  if (result == MOJO_RESULT_OK) {
+    PushData();
     return;
   }
-  PushData();
+  // This loader has pushed all bytes to the clients, do nothing in this case.
+  if (!serving_from_data_) {
+    return;
+  }
+  forwarding_result_ = ForwardingResult::kFailed;
+  PostTaskToDeleteSelf();
 }
 
 base::StringPiece StreamingSearchPrefetchURLLoader::GetMoreDataFromCache(
@@ -626,6 +682,7 @@ void StreamingSearchPrefetchURLLoader::PushData() {
     }
 
     if (result != MOJO_RESULT_OK) {
+      forwarding_result_ = ForwardingResult::kFailed;
       PostTaskToDeleteSelf();
       return;
     }
@@ -645,6 +702,7 @@ void StreamingSearchPrefetchURLLoader::Finish() {
   producer_handle_.reset();
   if (status_) {
     forwarding_client_->OnComplete(status_.value());
+    forwarding_result_ = ForwardingResult::kCompleted;
     OnForwardingComplete();
   }
 }
@@ -655,8 +713,13 @@ void StreamingSearchPrefetchURLLoader::OnComplete(
   if (forwarding_client_ && (!serving_from_data_ || is_in_fallback_)) {
     DCHECK(!streaming_prefetch_request_);
     forwarding_client_->OnComplete(status);
+    forwarding_result_ = ForwardingResult::kCompleted;
     OnForwardingComplete();
     return;
+  }
+  status_ = status;
+  if (response_reader_for_prerender_) {
+    response_reader_for_prerender_->OnStatusCodeReady(status);
   }
 
   if (streaming_prefetch_request_) {
@@ -668,11 +731,6 @@ void StreamingSearchPrefetchURLLoader::OnComplete(
       streaming_prefetch_request_->ErrorEncountered();
       return;
     }
-  }
-
-  status_ = status;
-  if (response_reader_for_prerender_) {
-    response_reader_for_prerender_->OnStatusCodeReady(status);
   }
 }
 
@@ -779,6 +837,15 @@ void StreamingSearchPrefetchURLLoader::PostTaskToDeleteSelf() {
     pending_delete_ = true;
     return;
   }
+
+  if (forwarding_result_ != ForwardingResult::kNotServed) {
+    base::UmaHistogramEnumeration(
+        was_served_to_prerender_reader_
+            ? "Omnibox.SearchPreload.ForwardingResult.WasServedToPrerender"
+            : "Omnibox.SearchPreload.ForwardingResult.NotServedToPrerender",
+        forwarding_result_);
+  }
+
   // To avoid UAF bugs, post a separate task to delete this object.
   base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
       FROM_HERE, std::move(self_pointer_));

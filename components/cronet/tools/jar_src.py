@@ -12,9 +12,14 @@ import zipfile
 REPOSITORY_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
 
+# pylint: disable=wrong-import-position
+# pylint: disable=import-error
 sys.path.insert(0, os.path.join(REPOSITORY_ROOT, 'build/android/gyp'))
-from util import build_utils  # pylint: disable=wrong-import-position
+from util import build_utils
 import action_helpers  # build_utils adds //build to sys.path.
+import zip_helpers
+# pylint: enable=import-error
+# pylint: enable=wrong-import-position
 
 JAVA_PACKAGE_PREFIX = 'org/chromium/'
 
@@ -103,7 +108,7 @@ def main():
     for src_search_dir in options.src_search_dirs:
       subpaths = dir_to_files_map[src_search_dir]
       if subpaths:
-        build_utils.DoZip(subpaths, z, base_dir=src_search_dir)
+        zip_helpers.add_files_to_zip(subpaths, z, base_dir=src_search_dir)
       else:
         raise Exception(
             'Directory %s does not contain any files and can be'
@@ -111,7 +116,7 @@ def main():
 
     # Jar additional src jars
     if options.src_jars:
-      build_utils.MergeZips(z, options.src_jars, compress=True)
+      zip_helpers.merge_zips(z, options.src_jars, compress=True)
 
   if options.depfile:
     deps = []

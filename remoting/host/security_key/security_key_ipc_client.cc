@@ -4,6 +4,7 @@
 
 #include "remoting/host/security_key/security_key_ipc_client.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -12,8 +13,7 @@
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "ipc/ipc_channel.h"
-#include "ipc/ipc_listener.h"
+#include "remoting/host/chromoting_host_services_client.h"
 #include "remoting/host/security_key/security_key_ipc_constants.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -23,7 +23,11 @@
 namespace remoting {
 
 SecurityKeyIpcClient::SecurityKeyIpcClient()
-    : named_channel_handle_(remoting::GetSecurityKeyIpcChannel()) {}
+    : SecurityKeyIpcClient(std::make_unique<ChromotingHostServicesClient>()) {}
+
+SecurityKeyIpcClient::SecurityKeyIpcClient(
+    std::unique_ptr<ChromotingHostServicesProvider> service_provider)
+    : service_provider_(std::move(service_provider)) {}
 
 SecurityKeyIpcClient::~SecurityKeyIpcClient() {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -32,15 +36,7 @@ SecurityKeyIpcClient::~SecurityKeyIpcClient() {
 bool SecurityKeyIpcClient::CheckForSecurityKeyIpcServerChannel() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  if (test_ipc_channel_pipe_.is_valid()) {
-    return true;
-  }
-
-  if (!channel_handle_.is_valid()) {
-    channel_handle_ =
-        mojo::NamedPlatformChannel::ConnectToServer(named_channel_handle_);
-  }
-  return channel_handle_.is_valid();
+  return service_provider_->GetSessionServices() != nullptr;
 }
 
 void SecurityKeyIpcClient::EstablishIpcConnection(
@@ -49,7 +45,7 @@ void SecurityKeyIpcClient::EstablishIpcConnection(
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(connected_callback);
   DCHECK(connection_error_callback);
-  DCHECK(!ipc_channel_);
+  DCHECK(!security_key_forwarder_.is_bound());
 
   connected_callback_ = std::move(connected_callback);
   connection_error_callback_ = std::move(connection_error_callback);
@@ -64,7 +60,8 @@ bool SecurityKeyIpcClient::SendSecurityKeyRequest(
   DCHECK(!request_payload.empty());
   DCHECK(response_callback);
 
-  if (!ipc_channel_) {
+  if (!security_key_forwarder_.is_bound() ||
+      !security_key_forwarder_.is_connected()) {
     LOG(ERROR) << "Request made before IPC connection was established.";
     return false;
   }
@@ -86,49 +83,11 @@ bool SecurityKeyIpcClient::SendSecurityKeyRequest(
 
 void SecurityKeyIpcClient::CloseIpcConnection() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  ipc_channel_.reset();
+  security_key_forwarder_.reset();
 }
 
-void SecurityKeyIpcClient::SetIpcChannelHandleForTest(
-    const mojo::NamedPlatformChannel::ServerName& server_name) {
-  named_channel_handle_ = server_name;
-}
-
-void SecurityKeyIpcClient::SetIpcChannelPipeForTest(
-    mojo::ScopedMessagePipeHandle pipe) {
-  test_ipc_channel_pipe_ = std::move(pipe);
-}
-
-void SecurityKeyIpcClient::SetExpectedIpcServerSessionIdForTest(
-    uint32_t expected_session_id) {
-  expected_ipc_server_session_id_ = expected_session_id;
-}
-
-bool SecurityKeyIpcClient::OnMessageReceived(const IPC::Message& message) {
+void SecurityKeyIpcClient::OnQueryVersionResult(uint32_t unused_version) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  CHECK(false) << "Unexpected call to OnMessageReceived: " << message.type();
-  return false;
-}
-
-void SecurityKeyIpcClient::OnChannelConnected(int32_t peer_pid) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-
-#if BUILDFLAG(IS_WIN)
-  DWORD peer_session_id;
-  if (!ProcessIdToSessionId(peer_pid, &peer_session_id)) {
-    PLOG(ERROR) << "ProcessIdToSessionId failed";
-    std::move(connection_error_callback_).Run();
-    return;
-  }
-
-  if (peer_session_id != expected_ipc_server_session_id_) {
-    LOG(ERROR)
-        << "Cannot establish connection with IPC server running in session: "
-        << peer_session_id;
-    std::move(connection_error_callback_).Run();
-    return;
-  }
-#endif  // BUILDFLAG(IS_WIN)
 
   std::move(connected_callback_).Run();
 }
@@ -137,7 +96,6 @@ void SecurityKeyIpcClient::OnChannelError() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   security_key_forwarder_.reset();
-  ipc_channel_.reset();
   if (connection_error_callback_) {
     std::move(connection_error_callback_).Run();
   }
@@ -163,30 +121,20 @@ void SecurityKeyIpcClient::ConnectToIpcChannel() {
   // Verify that any existing IPC connection has been closed.
   CloseIpcConnection();
 
-  mojo::ScopedMessagePipeHandle pipe = std::move(test_ipc_channel_pipe_);
-  if (!pipe.is_valid()) {
-    if (!channel_handle_.is_valid() && !CheckForSecurityKeyIpcServerChannel()) {
-      LOG(ERROR) << "Invalid channel handle.";
-      OnChannelError();
-      return;
-    }
-    pipe = mojo_connection_.Connect(std::move(channel_handle_));
-  }
-
-  ipc_channel_ = IPC::Channel::CreateClient(
-      pipe.release(), this, base::SingleThreadTaskRunner::GetCurrentDefault());
-
-  if (!ipc_channel_->Connect()) {
-    LOG(ERROR) << "Failed to connect IPC Channel.";
+  if (!CheckForSecurityKeyIpcServerChannel()) {
+    LOG(ERROR) << "Invalid channel handle.";
     OnChannelError();
     return;
   }
-
-  auto* associated_interface_support =
-      ipc_channel_->GetAssociatedInterfaceSupport();
-
-  associated_interface_support->GetRemoteAssociatedInterface(
-      security_key_forwarder_.BindNewEndpointAndPassReceiver());
+  service_provider_->GetSessionServices()->BindSecurityKeyForwarder(
+      security_key_forwarder_.BindNewPipeAndPassReceiver());
+  security_key_forwarder_.set_disconnect_handler(base::BindOnce(
+      &SecurityKeyIpcClient::OnChannelError, base::Unretained(this)));
+  // This is to determine if the peer binding is successful. If the connection
+  // is disconnected before OnQueryVersionResult() is called, it means the
+  // server has rejected the binding request.
+  security_key_forwarder_.QueryVersion(base::BindOnce(
+      &SecurityKeyIpcClient::OnQueryVersionResult, base::Unretained(this)));
 }
 
 }  // namespace remoting

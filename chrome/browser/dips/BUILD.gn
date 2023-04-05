@@ -27,6 +27,7 @@ source_set("unit_tests") {
   sources = [
     "cookie_access_filter_unittest.cc",
     "dips_bounce_detector_unittest.cc",
+    "dips_browser_signin_detector_unittest.cc",
     "dips_cleanup_service_unittest.cc",
     "dips_database_unittest.cc",
     "dips_service_unittest.cc",

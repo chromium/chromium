@@ -184,6 +184,7 @@ mojom("test_mojom") {
         {
           mojom = "mojo.test.default_construct.mojom.TestStruct"
           cpp = "::mojo::test::default_construct::TestStruct"
+          default_constructible = false
         },
       ]
       traits_headers = [ "default_construct_unittest_mojom_traits.h" ]

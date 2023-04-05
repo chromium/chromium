@@ -110,6 +110,15 @@ extern const char kFeedSeenRefreshThresholdInSeconds[];
 // threshold when the last refresh was unseen.
 extern const char kFeedUnseenRefreshThresholdInSeconds[];
 
+// Feature param under `kEnableFeedInvisibleForegroundRefresh` to enable using
+// engagement as a signal to invalidate the cache when the app is foregrounded.
+// This can result in a visible refresh when the NTP is visible during
+// foregrounding, or invisible refresh when a non-NTP is shown during
+// foregrounding. The engagement signals may include a deep scroll or 4 views,
+// and no sooner than 5 minutes from the last refresh.
+extern const char
+    kEnableFeedUseInteractivityInvalidationForForegroundRefreshes[];
+
 // Whether the Following Feed is enabled on NTP.
 bool IsWebChannelsEnabled();
 
@@ -203,6 +212,13 @@ double GetFeedSeenRefreshThresholdInSeconds();
 
 // Returns the refresh threshold (aka feed expiration) for an unseen feed.
 double GetFeedUnseenRefreshThresholdInSeconds();
+
+// YES if user engagement is used as a signal to invalidate the cache when the
+// app is foregrounded. This can result in a visible refresh when the NTP is
+// visible during foregrounding, or invisible refresh when a non-NTP is shown
+// during foregrounding. The engagement signals may include a deep scroll or 4
+// views, and no sooner than 5 minutes from the last refresh.
+bool IsFeedUseInteractivityInvalidationForForegroundRefreshesEnabled();
 
 // YES if enabled Feed bottom sign-in promo.
 bool IsFeedBottomSignInPromoEnabled();

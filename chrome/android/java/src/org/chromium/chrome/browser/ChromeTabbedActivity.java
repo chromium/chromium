@@ -35,6 +35,7 @@ import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.LifecycleRegistry;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.CommandLine;
 import org.chromium.base.IntentUtils;
@@ -221,6 +222,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This is the main activity for ChromeMobile when not running in document mode.  All the tabs
@@ -1177,6 +1179,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     private void setInitialOverviewState(boolean shouldShowOverviewPageOnStart) {
+        if (isTablet()) {
+            if (mFromResumption) {
+                setInitialOverviewState();
+            }
+            return;
+        }
         if (mHasDeterminedOverviewStateForCurrentSession) return;
 
         mHasDeterminedOverviewStateForCurrentSession = true;
@@ -1206,6 +1214,16 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
         mAppLaunchDrawBlocker.onOverviewPageAvailable(
                 mOverviewShownOnStart && !isInstantStartEnabled());
+    }
+
+    /**
+     * Called on warm startup on Tablet to show a home surface instead of the last active Tab if the
+     * user has left Chrome for a while.
+     */
+    private void setInitialOverviewState() {
+        ReturnToChromeUtil.setInitialOverviewStateOnResumeOnTablet(
+                mTabModelSelector.isIncognitoSelected(), shouldShowNtpHomeSurfaceOnStartup(),
+                getCurrentTabModel(), getTabCreator(false));
     }
 
     private void logMainIntentBehavior(Intent intent) {
@@ -1269,6 +1287,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
             boolean noRestoreState =
                     CommandLine.getInstance().hasSwitch(ChromeSwitches.NO_RESTORE_STATE);
+            boolean shouldShowHomeSurfaceAtStartupOnTablet = false;
+            final AtomicBoolean isActiveUrlNTP = new AtomicBoolean(false);
             if (noRestoreState) {
                 // Clear the state files because they are inconsistent and useless from now on.
                 mTabModelOrchestrator.clearState();
@@ -1279,7 +1299,17 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 // Never attempt to restore incognito tabs when this activity was previously swiped
                 // away in Recents. http://crbug.com/626629
                 boolean ignoreIncognitoFiles = !hadCipherData;
-                mTabModelOrchestrator.loadState(ignoreIncognitoFiles);
+                Callback<String> onStandardActiveIndexRead = null;
+                shouldShowHomeSurfaceAtStartupOnTablet = shouldShowNtpHomeSurfaceOnStartup();
+                if (shouldShowHomeSurfaceAtStartupOnTablet) {
+                    onStandardActiveIndexRead = url -> {
+                        if (!mTabModelSelector.isIncognitoSelected()
+                                && UrlUtilities.isNTPUrl(url)) {
+                            isActiveUrlNTP.set(true);
+                        }
+                    };
+                }
+                mTabModelOrchestrator.loadState(ignoreIncognitoFiles, onStandardActiveIndexRead);
             }
 
             mInactivityTracker.register(this.getLifecycleDispatcher());
@@ -1316,6 +1346,13 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             boolean activeTabBeingRestored = !isIntentWithEffect
                     || (shouldShowOverviewPageOnStart()
                             && !mTabModelSelector.isIncognitoSelected());
+
+            if (shouldShowHomeSurfaceAtStartupOnTablet && !isActiveUrlNTP.get()
+                    && !isIntentWithEffect && !hasTabWaitingForReparenting) {
+                ReturnToChromeUtil.createNewTab(getTabCreator(false));
+                activeTabBeingRestored = false;
+                mCreatedTabOnStartup = true;
+            }
 
             mTabModelOrchestrator.restoreTabs(activeTabBeingRestored);
 
@@ -1485,7 +1522,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     int shortcutSource = intent.getIntExtra(
                             WebappConstants.EXTRA_SOURCE, ShortcutSource.UNKNOWN);
                     LaunchMetrics.recordHomeScreenLaunchIntoTab(url, shortcutSource);
-                    if (fromAppWidget && url.startsWith(UrlConstants.CHROME_DINO_URL)) {
+                    if (fromAppWidget && UrlConstants.CHROME_DINO_URL.equals(url)) {
                         RecordUserAction.record("QuickActionSearchWidget.StartDinoGame");
                     }
                     break;
@@ -2260,7 +2297,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         // crbug.com/1416719: back press on start surface should close the app.
         final boolean isStartSurfaceHomepageShowing =
                 mStartSurfaceSupplier.hasValue() && mStartSurfaceSupplier.get().isHomepageShown();
-        final Tab currentTab = isStartSurfaceHomepageShowing ? null : getActivityTab();
+        final Tab activityTab = BackPressManager.shouldUseActivityTabProvider()
+                ? getActivityTabProvider().get()
+                : getActivityTab();
+        final Tab currentTab = isStartSurfaceHomepageShowing ? null : activityTab;
         if (currentTab == null) {
             minimizeAppAndCloseTabOnBackPress(null);
             return true;
@@ -3030,5 +3070,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             mIsStartSurfaceRefactorEnabled = ReturnToChromeUtil.isStartSurfaceRefactorEnabled(this);
         }
         return mIsStartSurfaceRefactorEnabled;
+    }
+
+    /**
+     * Returns whether to show a NTP as the home surface at startup on tablet.
+     */
+    private boolean shouldShowNtpHomeSurfaceOnStartup() {
+        assert mInactivityTracker != null;
+        return ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
+                isTablet(), getIntent(), mTabModelSelector, mInactivityTracker);
     }
 }

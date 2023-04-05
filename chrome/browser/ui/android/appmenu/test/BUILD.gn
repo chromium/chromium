@@ -5,6 +5,7 @@
 import("//build/config/android/rules.gni")
 
 android_library("test_support_java") {
+  resources_package = "org.chromium.chrome.browser.ui.appmenu"
   testonly = true
 
   sources = [
@@ -15,6 +16,7 @@ android_library("test_support_java") {
     "//base:base_java_test_support",
     "//chrome/browser/ui/android/appmenu:java",
     "//chrome/browser/ui/android/appmenu/internal:java",
+    "//components/browser_ui/widget/android:java_resources",
     "//ui/android:ui_no_recycler_view_java",
   ]
 }

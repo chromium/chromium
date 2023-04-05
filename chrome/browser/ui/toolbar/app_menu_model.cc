@@ -83,6 +83,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"
@@ -1078,6 +1079,33 @@ void AppMenuModel::Build() {
                                        kIconSize));
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+  if (features::IsChromeRefresh2023()) {
+    auto set_icon = [this](int command_id, const gfx::VectorIcon& vector_icon) {
+      auto index = GetIndexOfCommandId(command_id);
+      if (index) {
+        SetIcon(index.value(),
+                ui::ImageModel::FromVectorIcon(
+                    vector_icon,
+                    app_menu_icon_controller_->GetIconColor(absl::nullopt)));
+      }
+    };
+    set_icon(IDC_NEW_TAB, kNewTabRefreshIcon);
+    set_icon(IDC_NEW_WINDOW, kNewWindowIcon);
+    set_icon(IDC_NEW_INCOGNITO_WINDOW, kIncognitoRefreshMenuIcon);
+    set_icon(IDC_RECENT_TABS_MENU, kHistoryIcon);
+    set_icon(IDC_SHOW_DOWNLOADS, kDownloadMenuIcon);
+    set_icon(IDC_BOOKMARKS_MENU, kBookmarksListsMenuIcon);
+    set_icon(IDC_PRINT, kPrintMenuIcon);
+    set_icon(IDC_ROUTE_MEDIA, kCastMenuIcon);
+    set_icon(IDC_FIND, kSearchMenuIcon);
+    set_icon(IDC_MORE_TOOLS_MENU, kMoreToolsMenuIcon);
+    set_icon(IDC_OPTIONS, kSettingsMenuIcon);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    set_icon(IDC_HELP_MENU, kHelpMenuIcon);
+#endif
+    set_icon(IDC_EXIT, kExitMenuIcon);
+  }
 
   uma_action_recorded_ = false;
 }

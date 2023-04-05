@@ -7,7 +7,6 @@
  * @const @enum {string}
  */
 export const ProgressItemState = {
-  PENDING: 'pending',  // Task has been posted but no events have arrived yet.
   SCANNING: 'scanning',
   PROGRESSING: 'progressing',
   COMPLETED: 'completed',

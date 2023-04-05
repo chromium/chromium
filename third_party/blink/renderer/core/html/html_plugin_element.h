@@ -163,7 +163,7 @@ class CORE_EXPORT HTMLPlugInElement
   void FinishParsingChildren() final;
 
   // Element overrides:
-  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
   bool SupportsFocus() const final { return true; }
   bool IsFocusableStyle() const final;
   bool IsKeyboardFocusable() const final;

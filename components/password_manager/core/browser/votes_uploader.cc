@@ -728,10 +728,10 @@ bool VotesUploader::FindUsernameInOtherPossibleUsernames(
     const std::u16string& username) {
   DCHECK(!username_correction_vote_);
 
-  for (const ValueElementPair& pair : match.all_possible_usernames) {
-    if (pair.first == username) {
+  for (const AlternativeElement& element : match.all_possible_usernames) {
+    if (element.value == username) {
       username_correction_vote_ = match;
-      username_correction_vote_->username_element = pair.second;
+      username_correction_vote_->username_element = element.name;
       return true;
     }
   }

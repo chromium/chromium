@@ -13,6 +13,12 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 
+namespace gpu {
+
+class GpuMemoryBufferManager;
+
+}  // namespace gpu
+
 namespace blink {
 
 class WebGraphicsContext3DProvider;
@@ -47,6 +53,10 @@ class PLATFORM_EXPORT SharedGpuContext {
   // to not interfere with the next test.
   static void ResetForTesting();
 
+  static gpu::GpuMemoryBufferManager* GetGpuMemoryBufferManager();
+  static void SetGpuMemoryBufferManagerForTesting(
+      gpu::GpuMemoryBufferManager* mgr);
+
  private:
   friend class WTF::ThreadSpecific<SharedGpuContext>;
 
@@ -62,6 +72,8 @@ class PLATFORM_EXPORT SharedGpuContext {
   bool is_gpu_compositing_disabled_ = false;
   std::unique_ptr<WebGraphicsContext3DProviderWrapper>
       context_provider_wrapper_;
+
+  gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager_ = nullptr;
 };
 
 }  // blink

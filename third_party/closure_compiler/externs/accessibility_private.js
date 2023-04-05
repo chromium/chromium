@@ -676,6 +676,19 @@ chrome.accessibilityPrivate.onTwoFingerTouchStop;
 chrome.accessibilityPrivate.onSelectToSpeakStateChangeRequested;
 
 /**
+ * Fired when Chrome OS wants to send an updated list of keys currently pressed
+ * to Select to Speak.
+ * @type {!ChromeEvent}
+ */
+chrome.accessibilityPrivate.onSelectToSpeakKeysPressedChanged;
+
+/**
+ * Fired when Chrome OS wants to send a mouse event Select to Speak.
+ * @type {!ChromeEvent}
+ */
+chrome.accessibilityPrivate.onSelectToSpeakMouseChanged;
+
+/**
  * Fired when an action is performed in the Select-to-speak panel.
  * @type {!ChromeEvent}
  */

@@ -27,6 +27,10 @@ TestExtensionDir::~TestExtensionDir() {
   std::ignore = crx_dir_.Delete();
 }
 
+TestExtensionDir::TestExtensionDir(TestExtensionDir&&) noexcept = default;
+
+TestExtensionDir& TestExtensionDir::operator=(TestExtensionDir&&) = default;
+
 void TestExtensionDir::WriteManifest(base::StringPiece manifest) {
   WriteFile(FILE_PATH_LITERAL("manifest.json"), manifest);
 }

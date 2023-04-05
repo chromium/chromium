@@ -192,6 +192,15 @@ void VideoConferenceAppServiceClient::OnCapabilityAccessUpdate(
     }
   }
 
+  // For some apps, the instance is firstly removed, and then
+  // OnCapabilityAccessUpdate is called. There is a chance that the app_id is
+  // removed after OnInstanceUpdate, but added back in OnCapabilityAccessUpdate.
+  // Thus we want to remove the app_id if it is not capturing and no instance
+  // running.
+  if (!state.is_capturing_microphone && !state.is_capturing_camera) {
+    MaybeRemoveApp(app_id);
+  }
+
   HandleMediaUsageUpdate();
 }
 

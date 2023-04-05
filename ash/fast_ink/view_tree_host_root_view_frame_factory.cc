@@ -37,8 +37,9 @@
 namespace ash {
 namespace {
 
-constexpr viz::ResourceFormat kResourceFormat =
-    SK_B32_SHIFT ? viz::RGBA_8888 : viz::BGRA_8888;
+constexpr viz::SharedImageFormat kSharedImageFormat =
+    SK_B32_SHIFT ? viz::SinglePlaneFormat::kRGBA_8888
+                 : viz::SinglePlaneFormat::kBGRA_8888;
 
 constexpr uint32_t kUiSourceId = 1u;
 
@@ -59,10 +60,11 @@ ViewTreeHostRootViewFrameFactory::ViewTreeHostRootViewFrameFactory(
 
 // static
 std::unique_ptr<ViewTreeHostUiResource>
-ViewTreeHostRootViewFrameFactory::CreateUiResource(const gfx::Size& size,
-                                                   viz::ResourceFormat format,
-                                                   UiSourceId ui_source_id,
-                                                   bool is_overlay_candidate) {
+ViewTreeHostRootViewFrameFactory::CreateUiResource(
+    const gfx::Size& size,
+    viz::SharedImageFormat format,
+    UiSourceId ui_source_id,
+    bool is_overlay_candidate) {
   DCHECK(!size.IsEmpty());
   DCHECK(ui_source_id > 0);
 
@@ -72,7 +74,8 @@ ViewTreeHostRootViewFrameFactory::CreateUiResource(const gfx::Size& size,
       aura::Env::GetInstance()
           ->context_factory()
           ->GetGpuMemoryBufferManager()
-          ->CreateGpuMemoryBuffer(size, viz::BufferFormat(format),
+          ->CreateGpuMemoryBuffer(size,
+                                  viz::BufferFormat(format.resource_format()),
                                   gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
                                   gpu::kNullSurfaceHandle, nullptr);
 
@@ -309,8 +312,8 @@ ViewTreeHostRootViewFrameFactory::AcquireUiResource(
     const gfx::Size& size,
     bool is_overlay_candidate,
     UiResourceManager& resource_manager) const {
-  viz::ResourceId reusable_resource_id =
-      resource_manager.FindResourceToReuse(size, kResourceFormat, kUiSourceId);
+  viz::ResourceId reusable_resource_id = resource_manager.FindResourceToReuse(
+      size, kSharedImageFormat, kUiSourceId);
 
   std::unique_ptr<ViewTreeHostUiResource> resource;
 
@@ -319,7 +322,7 @@ ViewTreeHostRootViewFrameFactory::AcquireUiResource(
         resource_manager.ReleaseAvailableResource(reusable_resource_id)
             .release()));
   } else {
-    resource = CreateUiResource(size, kResourceFormat, kUiSourceId,
+    resource = CreateUiResource(size, kSharedImageFormat, kUiSourceId,
                                 is_overlay_candidate);
   }
 

@@ -92,6 +92,30 @@ std::vector<GURL> ExternalConstantsOverrider::UpdateURL() const {
   return {};
 }
 
+GURL ExternalConstantsOverrider::CrashUploadURL() const {
+  if (!override_values_.contains(kDevOverrideKeyCrashUploadUrl)) {
+    return next_provider_->CrashUploadURL();
+  }
+  const base::Value* crash_upload_url_value =
+      override_values_.Find(kDevOverrideKeyCrashUploadUrl);
+  CHECK(crash_upload_url_value->is_string())
+      << "Unexpected type of override[" << kDevOverrideKeyCrashUploadUrl
+      << "]: " << base::Value::GetTypeName(crash_upload_url_value->type());
+  return {GURL(crash_upload_url_value->GetString())};
+}
+
+GURL ExternalConstantsOverrider::DeviceManagementURL() const {
+  if (!override_values_.contains(kDevOverrideKeyDeviceManagementUrl)) {
+    return next_provider_->DeviceManagementURL();
+  }
+  const base::Value* device_management_url_value =
+      override_values_.Find(kDevOverrideKeyDeviceManagementUrl);
+  CHECK(device_management_url_value->is_string())
+      << "Unexpected type of override[" << kDevOverrideKeyCrashUploadUrl
+      << "]: " << base::Value::GetTypeName(device_management_url_value->type());
+  return {GURL(device_management_url_value->GetString())};
+}
+
 bool ExternalConstantsOverrider::UseCUP() const {
   if (!override_values_.contains(kDevOverrideKeyUseCUP)) {
     return next_provider_->UseCUP();

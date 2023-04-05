@@ -113,6 +113,13 @@ export class PasswordManagerSideBarElement extends RouteObserverMixin
   private onItemClick_(e: Event) {
     e.preventDefault();
   }
+
+  private getCompromisedPasswordsBadge_(): string {
+    if (this.compromisedPasswords_ > 99) {
+      return '99+';
+    }
+    return String(this.compromisedPasswords_);
+  }
 }
 
 declare global {

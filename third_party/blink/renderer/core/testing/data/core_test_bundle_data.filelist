@@ -330,7 +330,6 @@ testing/data/page_contains_viewport_iframe.html
 testing/data/page_with_blank_iframe.html
 testing/data/page_with_grandchild.html
 testing/data/parent_detaching_frame.html
-testing/data/percent-height-descendants.html
 testing/data/percent-height.html
 testing/data/pinch-viewport-fixed-pos.html
 testing/data/pinch-viewport-input-field-long-and-wide.html

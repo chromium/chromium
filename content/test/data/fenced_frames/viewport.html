@@ -10,6 +10,10 @@
   </style>
 </head>
 <body>
-  <fencedframe src="viewport_child.html"></fencedframe>
+  <fencedframe></fencedframe>
+  <script>
+    const url = new URL("viewport_child.html", location.href);
+    document.querySelector("fencedframe").config = new FencedFrameConfig(url);
+  </script>
 </body>
 </html>

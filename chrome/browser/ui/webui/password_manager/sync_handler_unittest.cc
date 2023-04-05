@@ -237,4 +237,19 @@ TEST_F(SyncHandlerTest, AccountInfo) {
   EXPECT_EQ(account_info.email, *update_args[1]->GetDict().FindString("email"));
 }
 
+TEST_F(SyncHandlerTest, NotEligibleForAccountStorageWhenSetupNotComplete) {
+  CreateTestSyncAccount();
+  ON_CALL(*sync_service()->GetMockUserSettings(), IsFirstSetupComplete())
+      .WillByDefault(Return(false));
+
+  base::Value::List args;
+  args.Append(kTestCallbackId);
+  web_ui()->ProcessWebUIMessage(GURL(), "GetSyncInfo", std::move(args));
+
+  auto& data = *web_ui()->call_data().back();
+  ASSERT_TRUE(CallbackReturnedSuccessfully(data));
+  ASSERT_TRUE(data.arg3()->is_dict());
+  EXPECT_FALSE(*data.arg3()->GetDict().FindBool("isEligibleForAccountStorage"));
+}
+
 }  // namespace password_manager

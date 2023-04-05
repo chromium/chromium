@@ -12,10 +12,12 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "os": "Linux",
               "other_value": "dimension_mixin",
               "value": "ds1"
             },
             {
+              "os": "Linux",
               "other_value": "dimension_mixin",
               "value": "ds2"
             }

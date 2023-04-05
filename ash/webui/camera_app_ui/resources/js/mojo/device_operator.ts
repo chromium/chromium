@@ -465,7 +465,7 @@ export class DeviceOperator {
    *     support pan control.
    */
   async getPanDefault(deviceId: string): Promise<number|undefined> {
-    const tag: CameraMetadataTag = 0x8001000d;
+    const tag = 0x8001000d as CameraMetadataTag;
     const data = await this.getStaticMetadata(deviceId, tag);
     return data[0];
   }
@@ -475,7 +475,7 @@ export class DeviceOperator {
    *     support tilt control.
    */
   async getTiltDefault(deviceId: string): Promise<number|undefined> {
-    const tag: CameraMetadataTag = 0x80010016;
+    const tag = 0x80010016 as CameraMetadataTag;
     const data = await this.getStaticMetadata(deviceId, tag);
     return data[0];
   }
@@ -485,7 +485,7 @@ export class DeviceOperator {
    *     support zoom control.
    */
   async getZoomDefault(deviceId: string): Promise<number|undefined> {
-    const tag: CameraMetadataTag = 0x80010019;
+    const tag = 0x80010019 as CameraMetadataTag;
     const data = await this.getStaticMetadata(deviceId, tag);
     return data[0];
   }
@@ -536,7 +536,7 @@ export class DeviceOperator {
    */
   async isPortraitModeSupported(deviceId: string): Promise<boolean> {
     // TODO(wtlee): Change to portrait mode tag.
-    const portraitModeTag: CameraMetadataTag = 0x80000000;
+    const portraitModeTag = 0x80000000 as CameraMetadataTag;
 
     const portraitMode =
         await this.getStaticMetadata(deviceId, portraitModeTag);

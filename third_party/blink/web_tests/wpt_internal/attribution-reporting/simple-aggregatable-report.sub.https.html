@@ -10,6 +10,7 @@
 <script>
 attribution_reporting_promise_test(async t => {
   const source = {
+    source_event_id: generateSourceEventId(),
     destination: `https://{{host}}`,
     aggregation_keys: {
       campaignCounts: "0x159",
@@ -35,7 +36,12 @@ attribution_reporting_promise_test(async t => {
 
   const reportingOrigin = getDefaultReportingOrigin();
 
-  await registerAttributionSrc(t, {source, cookie: 'foo=bar;Secure;HttpOnly;Path=/', reportingOrigin});
+  await registerAttributionSrc(t, {
+    source,
+    cookie: 'foo=bar;Secure;HttpOnly;Path=/',
+    reportingOrigin
+  });
+  await waitForSourceToBeRegistered(source.source_event_id);
   await registerAttributionSrc(t, {trigger, reportingOrigin});
 
   const payload = await pollAggregatableReports(reportingOrigin);

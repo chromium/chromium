@@ -7,9 +7,9 @@
  * Settings subpage for managing and configuring Hotspot.
  */
 
+import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import '../../settings_shared.css.js';
 import '../../controls/settings_toggle_button.js';
-import '../../prefs/prefs.js';
 
 import {getHotspotConfig} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.js';
 import {HotspotAllowStatus, HotspotInfo, HotspotState, SetHotspotConfigResult} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js';

@@ -5,11 +5,13 @@
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
+import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createCreditCard;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createLocalCreditCard;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createVirtualCreditCard;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.DISMISS_HANDLER;
@@ -55,8 +57,10 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 @DoNotBatch(reason = "The methods of ChromeAccessibilityUtil don't seem to work with batching.")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TouchToFillCreditCardViewTest {
-    private static final CreditCard VISA =
-            createLocalCreditCard("Visa", "4111111111111111", "5", "2050");
+    private static final CreditCard VISA = createCreditCard(
+            "Visa", "4111111111111111", "5", "2050", true, "Visa", "• • • • 1111", 0, "visa");
+    private static final CreditCard NICKNAMED_VISA = createCreditCard(
+            "Visa", "4111111111111111", "5", "2050", true, "Best Card", "• • • • 1111", 0, "visa");
     private static final CreditCard MASTER_CARD =
             createLocalCreditCard("MasterCard", "5555555555554444", "8", "2050");
     private static final CreditCard VIRTUAL_CARD = createVirtualCreditCard(/* name= */ "Mojo Jojo",
@@ -217,6 +221,36 @@ public class TouchToFillCreditCardViewTest {
         assertFalse(recyclerView.isLayoutSuppressed());
     }
 
+    @Test
+    @MediumTest
+    public void testCardNameContentLabelForNicknamedCardContainsANetworkName() {
+        runOnUiThreadBlocking(() -> {
+            mTouchToFillCreditCardModel.get(SHEET_ITEMS)
+                    .add(new ListItem(CREDIT_CARD, createCardModel(NICKNAMED_VISA)));
+            mTouchToFillCreditCardModel.set(VISIBLE, true);
+        });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        TextView cardName =
+                mTouchToFillCreditCardView.getContentView().findViewById(R.id.card_name);
+        assertTrue(cardName.getContentDescription().toString().equals("Best Card visa"));
+    }
+
+    @Test
+    @MediumTest
+    public void testCardNameContentDescriptionIsNotSetForCardWithNoNickname() {
+        runOnUiThreadBlocking(() -> {
+            mTouchToFillCreditCardModel.get(SHEET_ITEMS)
+                    .add(new ListItem(CREDIT_CARD, createCardModel(VISA)));
+            mTouchToFillCreditCardModel.set(VISIBLE, true);
+        });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        TextView cardName =
+                mTouchToFillCreditCardView.getContentView().findViewById(R.id.card_name);
+        assertEquals(cardName.getContentDescription(), null);
+    }
+
     private RecyclerView getCreditCards() {
         return mTouchToFillCreditCardView.getContentView().findViewById(R.id.sheet_item_list);
     }
@@ -245,6 +279,12 @@ public class TouchToFillCreditCardViewTest {
                                 card.getCardNameForAutofillDisplay())
                         .with(TouchToFillCreditCardProperties.CreditCardProperties.CARD_NUMBER,
                                 card.getObfuscatedLastFourDigits());
+        if (!card.getBasicCardIssuerNetwork().equals(
+                    card.getCardNameForAutofillDisplay().toLowerCase())) {
+            creditCardModelBuilder.with(
+                    TouchToFillCreditCardProperties.CreditCardProperties.NETWORK_NAME,
+                    card.getBasicCardIssuerNetwork());
+        }
         if (card.getIsVirtual()) {
             creditCardModelBuilder.with(
                     TouchToFillCreditCardProperties.CreditCardProperties.VIRTUAL_CARD_LABEL,

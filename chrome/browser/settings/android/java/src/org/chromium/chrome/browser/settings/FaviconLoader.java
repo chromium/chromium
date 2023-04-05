@@ -10,7 +10,6 @@ import android.graphics.drawable.Drawable;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
-import org.chromium.components.browser_ui.styles.R;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.url.GURL;
 

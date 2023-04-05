@@ -104,7 +104,8 @@ std::unique_ptr<message_center::Notification>
 CloudUploadNotificationManager::CreateUploadCompleteNotification() {
   // TODO(b/242685536) Use "files" for multi-files when support for multi-files
   // is added.
-  std::string title = "Moved " + base::NumberToString(num_files_) + " file";
+  std::string title = "Moved " + base::NumberToString(num_files_) +
+                      " file to " + cloud_provider_name_;
   std::string message = "Opening in " + target_app_name_;
   auto notification = ash::CreateSystemNotificationPtr(
       /*type=*/message_center::NOTIFICATION_TYPE_SIMPLE,

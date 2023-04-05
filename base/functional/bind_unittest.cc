@@ -1778,6 +1778,44 @@ TEST_F(BindTest, BindAndCallbacks) {
   EXPECT_EQ(123, res);
 }
 
+}  // namespace
+
+// This simulates a race weak pointer that, unlike our `base::WeakPtr<>`,
+// may become invalidated between `operator bool()` is tested and `Lock()`
+// is called in the implementation of `Unwrap()`.
+template <typename T>
+struct MockRacyWeakPtr {
+  explicit MockRacyWeakPtr(T*) {}
+  T* Lock() const { return nullptr; }
+
+  explicit operator bool() const { return true; }
+};
+
+template <typename T>
+struct IsWeakReceiver<MockRacyWeakPtr<T>> : std::true_type {};
+
+template <typename T>
+struct BindUnwrapTraits<MockRacyWeakPtr<T>> {
+  static T* Unwrap(const MockRacyWeakPtr<T>& o) { return o.Lock(); }
+};
+
+template <typename T>
+struct MaybeValidTraits<MockRacyWeakPtr<T>> {
+  static bool MaybeValid(const MockRacyWeakPtr<T>& o) { return true; }
+};
+
+namespace {
+
+// Note this only covers a case of racy weak pointer invalidation. Other
+// weak pointer scenarios (such as a valid pointer) are covered
+// in BindTest.WeakPtrFor{Once,Repeating}.
+TEST_F(BindTest, BindRacyWeakPtrTest) {
+  MockRacyWeakPtr<NoRef> weak(&no_ref_);
+
+  RepeatingClosure cb = base::BindRepeating(&NoRef::VoidMethod0, weak);
+  cb.Run();
+}
+
 // Test null callbacks cause a DCHECK.
 TEST(BindDeathTest, NullCallback) {
   base::RepeatingCallback<void(int)> null_cb;

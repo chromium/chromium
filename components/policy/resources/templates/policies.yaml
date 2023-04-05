@@ -1094,6 +1094,8 @@ policies:
   1093: FileOrDirectoryPickerWithoutGestureAllowedForOrigins
   1094: AppLaunchAutomation
   1095: InsecureHashesInTLSHandshakesEnabled
+  1096: DeviceLoginScreenGeolocationAccessLevel
+
 atomic_groups:
   1: Homepage
   2: RemoteAccess

@@ -42,11 +42,10 @@ bool HTMLFrameElement::LayoutObjectIsNeeded(const DisplayStyle&) const {
   return ContentFrame();
 }
 
-LayoutObject* HTMLFrameElement::CreateLayoutObject(const ComputedStyle& style,
-                                                   LegacyLayout legacy) {
+LayoutObject* HTMLFrameElement::CreateLayoutObject(const ComputedStyle& style) {
   if (IsA<HTMLFrameSetElement>(parentNode()))
     return MakeGarbageCollected<LayoutFrame>(this);
-  return LayoutObject::CreateObject(this, style, legacy);
+  return LayoutObject::CreateObject(this, style);
 }
 
 bool HTMLFrameElement::HasFrameBorder() const {

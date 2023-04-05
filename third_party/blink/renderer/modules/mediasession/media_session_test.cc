@@ -24,9 +24,12 @@ class MockMediaSessionService : public mojom::blink::MediaSessionService {
  public:
   MockMediaSessionService() = default;
 
-  mojo::Remote<mojom::blink::MediaSessionService> CreateRemoteAndBind() {
-    return mojo::Remote<mojom::blink::MediaSessionService>(
-        receiver_.BindNewPipeAndPassRemote());
+  HeapMojoRemote<mojom::blink::MediaSessionService> CreateRemoteAndBind(
+      ContextLifecycleNotifier* notifier,
+      scoped_refptr<base::SequencedTaskRunner> task_runner) {
+    HeapMojoRemote<mojom::blink::MediaSessionService> remote(notifier);
+    remote.Bind(receiver_.BindNewPipeAndPassRemote(), task_runner);
+    return remote;
   }
 
   void SetClient(
@@ -65,7 +68,9 @@ class MediaSessionTest : public PageTestBase {
 
     media_session_ =
         MediaSession::mediaSession(*GetFrame().DomWindow()->navigator());
-    media_session_->service_ = mock_service_->CreateRemoteAndBind();
+    media_session_->service_ = mock_service_->CreateRemoteAndBind(
+        GetFrame().DomWindow(),
+        GetFrame().DomWindow()->GetTaskRunner(TaskType::kMiscPlatformAPI));
     media_session_->clock_ = &test_clock_;
   }
 

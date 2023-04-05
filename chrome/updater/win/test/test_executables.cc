@@ -31,7 +31,7 @@ base::Process LongRunningProcess(UpdaterScope scope,
   base::CommandLine command_line = GetTestProcessCommandLine(scope, test_name);
 
   // This will ensure this new process will run for one minute before dying.
-  command_line.AppendSwitchASCII(updater::kTestSleepMinutesSwitch, "1");
+  command_line.AppendSwitchASCII(updater::kTestSleepSecondsSwitch, "60");
 
   auto init_done_event = updater::CreateInheritableEvent(
       base::WaitableEvent::ResetPolicy::AUTOMATIC,

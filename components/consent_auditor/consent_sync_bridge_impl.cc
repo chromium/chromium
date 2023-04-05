@@ -133,25 +133,23 @@ std::string ConsentSyncBridgeImpl::GetStorageKey(
   return GetStorageKeyFromSpecifics(entity_data.specifics.user_consent());
 }
 
-void ConsentSyncBridgeImpl::ApplyStopSyncChanges(
+void ConsentSyncBridgeImpl::ApplyDisableSyncChanges(
     std::unique_ptr<MetadataChangeList> delete_metadata_change_list) {
   // Sync can only be stopped after initialization.
   DCHECK(deferred_consents_while_initializing_.empty());
 
-  if (delete_metadata_change_list) {
-    // Preserve all consents in the store, but delete their metadata, because it
-    // may become invalid when the sync is reenabled. It is important to report
-    // all user consents, thus, they are persisted for some time even after
-    // signout. We will try to resubmit these consents once the sync is enabled
-    // again. This may lead to same consent being submitted multiple times, but
-    // this is allowed.
-    std::unique_ptr<WriteBatch> batch = store_->CreateWriteBatch();
-    batch->TakeMetadataChangesFrom(std::move(delete_metadata_change_list));
+  // Preserve all consents in the store, but delete their metadata, because it
+  // may become invalid when the sync is reenabled. It is important to report
+  // all user consents, thus, they are persisted for some time even after
+  // signout. We will try to resubmit these consents once the sync is enabled
+  // again. This may lead to same consent being submitted multiple times, but
+  // this is allowed.
+  std::unique_ptr<WriteBatch> batch = store_->CreateWriteBatch();
+  batch->TakeMetadataChangesFrom(std::move(delete_metadata_change_list));
 
-    store_->CommitWriteBatch(std::move(batch),
-                             base::BindOnce(&ConsentSyncBridgeImpl::OnCommit,
-                                            weak_ptr_factory_.GetWeakPtr()));
-  }
+  store_->CommitWriteBatch(std::move(batch),
+                           base::BindOnce(&ConsentSyncBridgeImpl::OnCommit,
+                                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ConsentSyncBridgeImpl::ReadAllDataAndResubmit() {

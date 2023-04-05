@@ -4,6 +4,7 @@
 
 #include "device/bluetooth/floss/fake_floss_gatt_manager_client.h"
 
+#include "base/rand_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"
 
@@ -23,6 +24,44 @@ void FakeFlossGattManagerClient::Connect(ResponseCallback<Void> callback,
                                          const std::string& remote_device,
                                          const BluetoothTransport& transport) {
   std::move(callback).Run(DBusResult<Void>({}));
+}
+
+void FakeFlossGattManagerClient::AddService(ResponseCallback<Void> callback,
+                                            GattService service) {
+  std::move(callback).Run(DBusResult<Void>({}));
+
+  GattService added_service(service);
+  added_service.instance_id = static_cast<int32_t>(base::RandUint64());
+  for (auto& characteristic : added_service.characteristics) {
+    characteristic.instance_id = static_cast<int32_t>(base::RandUint64());
+    for (auto& descriptor : characteristic.descriptors) {
+      descriptor.instance_id = static_cast<int32_t>(base::RandUint64());
+    }
+  }
+
+  int32_t instance_id = added_service.instance_id;
+  if (services_.find(instance_id) != services_.end()) {
+    GattServerServiceAdded(GattStatus::kError, added_service);
+    return;
+  }
+  DCHECK(!base::Contains(services_, instance_id));
+  services_[instance_id] = added_service;
+
+  GattServerServiceAdded(GattStatus::kSuccess, added_service);
+}
+
+void FakeFlossGattManagerClient::RemoveService(ResponseCallback<Void> callback,
+                                               int32_t handle) {
+  std::move(callback).Run(DBusResult<Void>({}));
+
+  if (services_.find(handle) == services_.end()) {
+    GattServerServiceRemoved(GattStatus::kError, handle);
+    return;
+  }
+  DCHECK(base::Contains(services_, handle));
+  services_.erase(handle);
+
+  GattServerServiceRemoved(GattStatus::kSuccess, handle);
 }
 
 }  // namespace floss

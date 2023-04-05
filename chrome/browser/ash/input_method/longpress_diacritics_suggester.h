@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "ash/system/tray/system_nudge_controller.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ash/input_method/longpress_suggester.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
@@ -36,6 +38,11 @@ enum class IMEPKLongpressDiacriticAction {
   kMaxValue = kAutoRepeatSuppressed,
 };
 
+class DiacriticsNudgeController : public ash::SystemNudgeController {
+ protected:
+  std::unique_ptr<SystemNudge> CreateSystemNudge() override;
+};
+
 class LongpressDiacriticsSuggester : public LongpressSuggester {
  public:
   explicit LongpressDiacriticsSuggester(
@@ -59,6 +66,7 @@ class LongpressDiacriticsSuggester : public LongpressSuggester {
 
  private:
   void SetButtonHighlighted(size_t index, bool highlighted);
+  DiacriticsNudgeController nudge_controller_;
   std::vector<std::u16string> GetCurrentShownDiacritics();
 
   // LongpressSuggester:

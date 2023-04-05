@@ -120,7 +120,7 @@ struct AttributionReportJsonConverter {
             },
             [&](const AttributionReport::EventLevelData&) {
               bool ok = AdjustScheduledReportTime(report_body,
-                                                  report.OriginalReportTime());
+                                                  report.initial_report_time());
               DCHECK(ok);
             },
         },

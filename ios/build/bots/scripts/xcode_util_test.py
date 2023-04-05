@@ -191,15 +191,41 @@ class InstallTest(XcodeUtilTest):
   @mock.patch('xcode_util._install_runtime')
   @mock.patch('xcode_util._install_xcode')
   @mock.patch('mac_util.is_macos_13_or_higher', autospec=True)
-  @mock.patch('mac_util.run_codesign_check', autospec=True)
+  @mock.patch('os.path.exists', autospec=True)
+  def test_new_mactoolchain_new_xcode_macos13_good_xcode_cache(
+      self, mock_os_path_exists, mock_macos_13_or_higher, mock_install_xcode,
+      mock_install_runtime, mock_move_runtime):
+    mock_macos_13_or_higher.return_value = True
+    mock_os_path_exists.return_value = False
+    self.mock(xcode_util, '_using_new_mac_toolchain', lambda cmd: True)
+    self.mock(xcode_util, '_is_legacy_xcode_package', lambda path: False)
+
+    is_legacy_xcode = xcode_util.install(
+        self.mac_toolchain,
+        self.xcode_build_version,
+        self.xcode_app_path,
+        runtime_cache_folder=None,
+        ios_version=None)
+
+    self.assertTrue(is_legacy_xcode, 'install should return True')
+    mock_install_xcode.assert_called_with('mac_toolchain', 'TestXcodeVersion',
+                                          'test/path/Xcode.app', True)
+    self.assertFalse(mock_install_runtime.called)
+    self.assertFalse(mock_move_runtime.called)
+
+  @mock.patch('xcode_util.move_runtime', autospec=True)
+  @mock.patch('xcode_util._install_runtime')
+  @mock.patch('xcode_util._install_xcode')
+  @mock.patch('mac_util.is_macos_13_or_higher', autospec=True)
+  @mock.patch('os.path.exists', autospec=True)
   @mock.patch('shutil.rmtree', autospec=True)
   @mock.patch('os.mkdir', autospec=True)
   def test_new_mactoolchain_new_xcode_macos13_codesign_failed(
-      self, mock_mkdir, mock_rmtree, mock_codesign_check,
+      self, mock_mkdir, mock_rmtree, mock_os_path_exists,
       mock_macos_13_or_higher, mock_install_xcode, mock_install_runtime,
       mock_move_runtime):
     mock_macos_13_or_higher.return_value = True
-    mock_codesign_check.return_value = (False, None)
+    mock_os_path_exists.return_value = True
     self.mock(xcode_util, '_using_new_mac_toolchain', lambda cmd: True)
     self.mock(xcode_util, '_is_legacy_xcode_package', lambda path: False)
 
@@ -212,32 +238,6 @@ class InstallTest(XcodeUtilTest):
 
     mock_rmtree.assert_called_with(self.xcode_app_path)
     mock_mkdir.assert_called_with(self.xcode_app_path)
-    self.assertTrue(is_legacy_xcode, 'install should return True')
-    mock_install_xcode.assert_called_with('mac_toolchain', 'TestXcodeVersion',
-                                          'test/path/Xcode.app', True)
-    self.assertFalse(mock_install_runtime.called)
-    self.assertFalse(mock_move_runtime.called)
-
-  @mock.patch('xcode_util.move_runtime', autospec=True)
-  @mock.patch('xcode_util._install_runtime')
-  @mock.patch('xcode_util._install_xcode')
-  @mock.patch('mac_util.is_macos_13_or_higher', autospec=True)
-  @mock.patch('mac_util.run_codesign_check', autospec=True)
-  def test_new_mactoolchain_new_xcode_macos13_codesign_success(
-      self, mock_codesign_check, mock_macos_13_or_higher, mock_install_xcode,
-      mock_install_runtime, mock_move_runtime):
-    mock_macos_13_or_higher.return_value = True
-    mock_codesign_check.return_value = (True, None)
-    self.mock(xcode_util, '_using_new_mac_toolchain', lambda cmd: True)
-    self.mock(xcode_util, '_is_legacy_xcode_package', lambda path: False)
-
-    is_legacy_xcode = xcode_util.install(
-        self.mac_toolchain,
-        self.xcode_build_version,
-        self.xcode_app_path,
-        runtime_cache_folder=None,
-        ios_version=None)
-
     self.assertTrue(is_legacy_xcode, 'install should return True')
     mock_install_xcode.assert_called_with('mac_toolchain', 'TestXcodeVersion',
                                           'test/path/Xcode.app', True)

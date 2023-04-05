@@ -45,6 +45,9 @@ class ContentWebState : public WebState, public content::WebContentsObserver {
 
   ~ContentWebState() override;
 
+  // Returns the WebContents owned by this ContentWebState.
+  content::WebContents* GetWebContents();
+
   // WebState implementation.
   WebStateDelegate* GetDelegate() override;
   void SetDelegate(WebStateDelegate* delegate) override;
@@ -81,6 +84,7 @@ class ContentWebState : public WebState, public content::WebContentsObserver {
   void LoadData(NSData* data, NSString* mime_type, const GURL& url) override;
   void ExecuteUserJavaScript(NSString* javaScript) override;
   NSString* GetStableIdentifier() const override;
+  SessionID GetUniqueIdentifier() const override;
   const std::string& GetContentsMimeType() const override;
   bool ContentIsHTML() const override;
   const std::u16string& GetTitle() const override;
@@ -166,6 +170,8 @@ class ContentWebState : public WebState, public content::WebContentsObserver {
   std::unique_ptr<web::SessionCertificatePolicyCache> certificate_policy_cache_;
   id<CRWWebViewProxy> web_view_proxy_;
   NSString* UUID_;
+  // The unique identifier. Stable across application restarts.
+  const SessionID unique_identifier_;
   base::ObserverList<WebStatePolicyDecider, true> policy_deciders_;
   base::ObserverList<WebStateObserver, true> observers_;
   std::unique_ptr<ContentNavigationManager> navigation_manager_;

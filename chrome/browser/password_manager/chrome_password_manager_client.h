@@ -29,7 +29,6 @@
 #include "components/password_manager/core/browser/password_manager_client_helper.h"
 #include "components/password_manager/core/browser/password_manager_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/password_reuse_detection_manager.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/password_store_backend_error.h"
 #include "components/prefs/pref_member.h"
@@ -37,7 +36,6 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/sync/driver/sync_service.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
-#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -93,8 +91,7 @@ class ChromePasswordManagerClient
     : public password_manager::PasswordManagerClient,
       public content::WebContentsObserver,
       public content::WebContentsUserData<ChromePasswordManagerClient>,
-      public autofill::mojom::PasswordGenerationDriver,
-      public content::RenderWidgetHost::InputEventObserver {
+      public autofill::mojom::PasswordGenerationDriver {
  public:
   static void CreateForWebContentsWithAutofillClient(
       content::WebContents* contents,
@@ -141,10 +138,6 @@ class ChromePasswordManagerClient
   void ShowTouchToFill(
       password_manager::PasswordManagerDriver* driver,
       autofill::mojom::SubmissionReadinessState submission_readiness) override;
-
-  // Notifies `PasswordReuseDetectionManager` about passwords selected from
-  // AllPasswordsBottomSheet.
-  void OnPasswordSelected(const std::u16string& text) override;
 #endif
 
   // Returns a pointer to the DeviceAuthenticator which is created on demand.
@@ -235,17 +228,6 @@ class ChromePasswordManagerClient
                                    const GURL& frame_url) override;
 #endif
 
-  void CheckProtectedPasswordEntry(
-      password_manager::metrics_util::PasswordType reused_password_type,
-      const std::string& username,
-      const std::vector<password_manager::MatchingReusedCredential>&
-          matching_reused_credentials,
-      bool password_field_exists,
-      uint64_t reused_password_hash,
-      const std::string& domain) override;
-
-  void LogPasswordReuseDetectedEvent() override;
-
   // Reporting these events is only supported on desktop platforms.
 #if !BUILDFLAG(IS_ANDROID)
   void MaybeReportEnterpriseLoginEvent(
@@ -300,12 +282,6 @@ class ChromePasswordManagerClient
   void FrameWasScrolled() override;
   void GenerationElementLostFocus() override;
 
-#if BUILDFLAG(IS_ANDROID)
-  void OnImeTextCommittedEvent(const std::u16string& text_str) override;
-  void OnImeSetComposingTextEvent(const std::u16string& text_str) override;
-  void OnImeFinishComposingTextEvent() override;
-#endif  // BUILDFLAG(IS_ANDROID)
-
   // Observer for PasswordGenerationPopup events. Used for testing.
   void SetTestObserver(PasswordGenerationPopupObserver* observer);
 
@@ -322,7 +298,6 @@ class ChromePasswordManagerClient
   bool has_binding_for_credential_manager() const {
     return content_credential_manager_.HasBinding();
   }
-  bool was_on_paste_called() const { return was_on_paste_called_; }
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -346,11 +321,6 @@ class ChromePasswordManagerClient
   // content::WebContentsObserver overrides.
   void PrimaryPageChanged(content::Page& page) override;
   void WebContentsDestroyed() override;
-  void OnPaste() override;
-  void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
-
-  // content::RenderWidgetHost::InputEventObserver overrides.
-  void OnInputEvent(const blink::WebInputEvent&) override;
 
   // Given |bounds| in the renderers coordinate system, return the same bounds
   // in the screens coordinate system.
@@ -394,8 +364,6 @@ class ChromePasswordManagerClient
   password_manager::PasswordManager password_manager_;
   password_manager::PasswordFeatureManagerImpl password_feature_manager_;
   password_manager::HttpAuthManagerImpl httpauth_manager_;
-  password_manager::PasswordReuseDetectionManager
-      password_reuse_detection_manager_;
 
 #if BUILDFLAG(IS_ANDROID)
   // Holds and facilitates a credential store for each origin in this tab.
@@ -404,11 +372,6 @@ class ChromePasswordManagerClient
   // Controller for the Touch To Fill sheet. Created on demand during the first
   // call to GetOrCreateTouchToFillController().
   std::unique_ptr<TouchToFillController> touch_to_fill_controller_;
-
-  // Last composing text from ime, this is updated when ime set composing text
-  // event is triggered. It is sent to password reuse detection manager and
-  // reset when ime finish composing text event is triggered.
-  std::u16string last_composing_text_;
 
   std::unique_ptr<PasswordManagerErrorMessageDelegate>
       password_manager_error_message_delegate_;
@@ -455,9 +418,6 @@ class ChromePasswordManagerClient
   // Whether navigator.credentials.store() was ever called from this
   // WebContents. Used for testing.
   bool was_store_ever_called_ = false;
-
-  // Whether OnPaste() was called from this ChromePasswordManagerClient
-  bool was_on_paste_called_ = false;
 
   // Helper for performing logic that is common between
   // ChromePasswordManagerClient and IOSChromePasswordManagerClient.

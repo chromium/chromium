@@ -15,6 +15,7 @@
 #include "chrome/browser/apps/platform_apps/audio_focus_web_contents_observer.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/file_select_helper.h"
+#include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
@@ -237,6 +238,8 @@ void ChromeAppDelegate::InitWebContents(content::WebContents* web_contents) {
 #endif
 
   zoom::ZoomController::CreateForWebContents(web_contents);
+
+  FileSystemAccessPermissionRequestManager::CreateForWebContents(web_contents);
 }
 
 void ChromeAppDelegate::RenderFrameCreated(

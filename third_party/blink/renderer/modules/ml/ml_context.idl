@@ -24,9 +24,18 @@ dictionary MLComputeResult {
   SecureContext,
   Exposed=(Window, DedicatedWorker)
 ] interface MLContext {
-  [RuntimeEnabled=MachineLearningNeuralNetwork, CallWith=ScriptState, RaisesException] Promise<MLComputeResult> compute(
+  [
+    RuntimeEnabled=MachineLearningNeuralNetwork,
+    CallWith=ScriptState,
+    RaisesException,
+    Exposed=Window
+  ] Promise<MLComputeResult> compute(
       MLGraph graph, MLNamedArrayBufferViews inputs, MLNamedArrayBufferViews outputs);
 
-  [RuntimeEnabled=MachineLearningNeuralNetwork, RaisesException, Exposed=DedicatedWorker]
-      void computeSync(MLGraph graph, MLNamedArrayBufferViews inputs, MLNamedArrayBufferViews outputs);
+  [
+    RuntimeEnabled=MachineLearningNeuralNetwork,
+    RaisesException,
+    Exposed=DedicatedWorker
+  ] void computeSync(
+      MLGraph graph, MLNamedArrayBufferViews inputs, MLNamedArrayBufferViews outputs);
 };

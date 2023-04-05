@@ -13,7 +13,6 @@
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 
 class Browser;
-@class PasswordExporter;
 @protocol PasswordsSettingsCommands;
 @protocol PasswordManagerViewControllerDelegate;
 @protocol PasswordManagerViewControllerPresentationDelegate;

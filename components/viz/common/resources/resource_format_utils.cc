@@ -688,4 +688,11 @@ SkColorType ToClosestSkColorType(bool gpu_compositing,
   }
 }
 
+SkColorType ToClosestSkColorType(bool gpu_compositing,
+                                 SharedImageFormat format) {
+  CHECK(format.is_single_plane());
+  return ResourceFormatToClosestSkColorType(gpu_compositing,
+                                            format.resource_format());
+}
+
 }  // namespace viz

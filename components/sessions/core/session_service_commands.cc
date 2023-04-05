@@ -13,11 +13,11 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/guid.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/pickle.h"
 #include "base/token.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "components/sessions/core/base_session_service_commands.h"
 #include "components/tab_groups/tab_group_color.h"
@@ -810,7 +810,7 @@ void CreateTabsAndWindows(
         SessionID::id_type tab_id = -1;
         std::string guid;
         if (!it.ReadInt(&tab_id) || !it.ReadString(&guid) ||
-            !base::IsValidGUID(guid)) {
+            !base::Uuid::ParseCaseInsensitive(guid).is_valid()) {
           VLOG(1) << "Failed reading command " << command->id();
           return;
         }
@@ -898,7 +898,7 @@ std::unique_ptr<SessionCommand> CreateSessionCommandForPayload(
 }  // namespace
 
 std::unique_ptr<SessionCommand> CreateSetSelectedTabInWindowCommand(
-    const SessionID& window_id,
+    SessionID window_id,
     int index) {
   SelectedTabInIndexPayload payload = { 0 };
   payload.id = window_id.id();
@@ -906,15 +906,14 @@ std::unique_ptr<SessionCommand> CreateSetSelectedTabInWindowCommand(
   return CreateSessionCommandForPayload(kCommandSetSelectedTabInIndex, payload);
 }
 
-std::unique_ptr<SessionCommand> CreateSetTabWindowCommand(
-    const SessionID& window_id,
-    const SessionID& tab_id) {
+std::unique_ptr<SessionCommand> CreateSetTabWindowCommand(SessionID window_id,
+                                                          SessionID tab_id) {
   SessionID::id_type payload[] = { window_id.id(), tab_id.id() };
   return CreateSessionCommandForPayload(kCommandSetTabWindow, payload);
 }
 
 std::unique_ptr<SessionCommand> CreateSetWindowBoundsCommand(
-    const SessionID& window_id,
+    SessionID window_id,
     const gfx::Rect& bounds,
     ui::WindowShowState show_state) {
   WindowBoundsPayload3 payload = { 0 };
@@ -928,7 +927,7 @@ std::unique_ptr<SessionCommand> CreateSetWindowBoundsCommand(
 }
 
 std::unique_ptr<SessionCommand> CreateSetTabIndexInWindowCommand(
-    const SessionID& tab_id,
+    SessionID tab_id,
     int new_index) {
   TabIndexInWindowPayload payload = { 0 };
   payload.id = tab_id.id();
@@ -958,7 +957,7 @@ std::unique_ptr<SessionCommand> CreateWindowClosedCommand(
 }
 
 std::unique_ptr<SessionCommand> CreateSetSelectedNavigationIndexCommand(
-    const SessionID& tab_id,
+    SessionID tab_id,
     int index) {
   SelectedNavigationIndexPayload payload = { 0 };
   payload.id = tab_id.id();
@@ -968,7 +967,7 @@ std::unique_ptr<SessionCommand> CreateSetSelectedNavigationIndexCommand(
 }
 
 std::unique_ptr<SessionCommand> CreateSetWindowTypeCommand(
-    const SessionID& window_id,
+    SessionID window_id,
     SessionWindow::WindowType type) {
   WindowTypePayload payload = { 0 };
   payload.id = window_id.id();
@@ -977,7 +976,7 @@ std::unique_ptr<SessionCommand> CreateSetWindowTypeCommand(
 }
 
 std::unique_ptr<SessionCommand> CreateTabGroupCommand(
-    const SessionID& tab_id,
+    SessionID tab_id,
     absl::optional<tab_groups::TabGroupId> group) {
   TabGroupPayload payload = {0};
   payload.tab_id = tab_id.id();
@@ -1003,9 +1002,8 @@ std::unique_ptr<SessionCommand> CreateTabGroupMetadataUpdateCommand(
   return std::make_unique<SessionCommand>(kCommandSetTabGroupMetadata2, pickle);
 }
 
-std::unique_ptr<SessionCommand> CreatePinnedStateCommand(
-    const SessionID& tab_id,
-    bool is_pinned) {
+std::unique_ptr<SessionCommand> CreatePinnedStateCommand(SessionID tab_id,
+                                                         bool is_pinned) {
   PinnedStatePayload payload = { 0 };
   payload.tab_id = tab_id.id();
   payload.pinned_state = is_pinned;
@@ -1013,7 +1011,7 @@ std::unique_ptr<SessionCommand> CreatePinnedStateCommand(
 }
 
 std::unique_ptr<SessionCommand> CreateSessionStorageAssociatedCommand(
-    const SessionID& tab_id,
+    SessionID tab_id,
     const std::string& session_storage_persistent_id) {
   base::Pickle pickle;
   pickle.WriteInt(tab_id.id());
@@ -1023,14 +1021,14 @@ std::unique_ptr<SessionCommand> CreateSessionStorageAssociatedCommand(
 }
 
 std::unique_ptr<SessionCommand> CreateSetActiveWindowCommand(
-    const SessionID& window_id) {
+    SessionID window_id) {
   ActiveWindowPayload payload = 0;
   payload = window_id.id();
   return CreateSessionCommandForPayload(kCommandSetActiveWindow, payload);
 }
 
 std::unique_ptr<SessionCommand> CreateLastActiveTimeCommand(
-    const SessionID& tab_id,
+    SessionID tab_id,
     base::TimeTicks last_active_time) {
   LastActiveTimePayload payload = {0};
   payload.tab_id = tab_id.id();
@@ -1039,7 +1037,7 @@ std::unique_ptr<SessionCommand> CreateLastActiveTimeCommand(
 }
 
 std::unique_ptr<SessionCommand> CreateSetWindowWorkspaceCommand(
-    const SessionID& window_id,
+    SessionID window_id,
     const std::string& workspace) {
   base::Pickle pickle;
   pickle.WriteInt(window_id.id());
@@ -1048,7 +1046,7 @@ std::unique_ptr<SessionCommand> CreateSetWindowWorkspaceCommand(
 }
 
 std::unique_ptr<SessionCommand> CreateSetWindowVisibleOnAllWorkspacesCommand(
-    const SessionID& window_id,
+    SessionID window_id,
     bool visible_on_all_workspaces) {
   VisibleOnAllWorkspacesPayload payload = {0};
   payload.window_id = window_id.id();
@@ -1057,10 +1055,8 @@ std::unique_ptr<SessionCommand> CreateSetWindowVisibleOnAllWorkspacesCommand(
                                         payload);
 }
 
-std::unique_ptr<SessionCommand> CreateTabNavigationPathPrunedCommand(
-    const SessionID& tab_id,
-    int index,
-    int count) {
+std::unique_ptr<SessionCommand>
+CreateTabNavigationPathPrunedCommand(SessionID tab_id, int index, int count) {
   TabNavigationPathPrunedPayload payload = {0};
   payload.id = tab_id.id();
   payload.index = index;
@@ -1070,42 +1066,42 @@ std::unique_ptr<SessionCommand> CreateTabNavigationPathPrunedCommand(
 }
 
 std::unique_ptr<SessionCommand> CreateUpdateTabNavigationCommand(
-    const SessionID& tab_id,
+    SessionID tab_id,
     const sessions::SerializedNavigationEntry& navigation) {
   return CreateUpdateTabNavigationCommand(kCommandUpdateTabNavigation, tab_id,
                                           navigation);
 }
 
 std::unique_ptr<SessionCommand> CreateSetTabExtensionAppIDCommand(
-    const SessionID& tab_id,
+    SessionID tab_id,
     const std::string& extension_id) {
   return CreateSetTabExtensionAppIDCommand(kCommandSetExtensionAppID, tab_id,
                                            extension_id);
 }
 
 std::unique_ptr<SessionCommand> CreateSetTabUserAgentOverrideCommand(
-    const SessionID& tab_id,
+    SessionID tab_id,
     const SerializedUserAgentOverride& user_agent_override) {
   return CreateSetTabUserAgentOverrideCommand(kCommandSetTabUserAgentOverride2,
                                               tab_id, user_agent_override);
 }
 
 std::unique_ptr<SessionCommand> CreateSetWindowAppNameCommand(
-    const SessionID& window_id,
+    SessionID window_id,
     const std::string& app_name) {
   return CreateSetWindowAppNameCommand(kCommandSetWindowAppName, window_id,
                                        app_name);
 }
 
 std::unique_ptr<SessionCommand> CreateSetWindowUserTitleCommand(
-    const SessionID& window_id,
+    SessionID window_id,
     const std::string& user_title) {
   return CreateSetWindowUserTitleCommand(kCommandSetWindowUserTitle, window_id,
                                          user_title);
 }
 
 std::unique_ptr<SessionCommand> CreateSetTabGuidCommand(
-    const SessionID& tab_id,
+    SessionID tab_id,
     const std::string& guid) {
   base::Pickle pickle;
   pickle.WriteInt(tab_id.id());
@@ -1114,7 +1110,7 @@ std::unique_ptr<SessionCommand> CreateSetTabGuidCommand(
 }
 
 std::unique_ptr<SessionCommand> CreateSetTabDataCommand(
-    const SessionID& tab_id,
+    SessionID tab_id,
     const std::map<std::string, std::string>& data) {
   base::Pickle pickle;
   pickle.WriteInt(tab_id.id());
@@ -1127,14 +1123,14 @@ std::unique_ptr<SessionCommand> CreateSetTabDataCommand(
 }
 
 std::unique_ptr<SessionCommand> CreateAddTabExtraDataCommand(
-    const SessionID& tab_id,
+    SessionID tab_id,
     const std::string& key,
     const std::string& data) {
   return CreateAddExtraDataCommand(kCommandAddTabExtraData, tab_id, key, data);
 }
 
 std::unique_ptr<SessionCommand> CreateAddWindowExtraDataCommand(
-    const SessionID& window_id,
+    SessionID window_id,
     const std::string& key,
     const std::string& data) {
   return CreateAddExtraDataCommand(kCommandAddWindowExtraData, window_id, key,

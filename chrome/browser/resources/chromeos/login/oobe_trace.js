@@ -6,11 +6,20 @@
  * @fileoverview
  * OOBE Tracing Utilities
  *
- * This file contain utilities for measuring OOBE's frontend load timings. When
- * this file is first imported, it assumes the existence of an object in the
- * global object (window) that contains the timestamp  of when OOBE started.
- * This value ('window.oobeInitializationBeginTimestamp'), is set by another
- * script (oobe_trace_start.js) that runs as the first thing in OOBE.
+ * This file contain utilities for measuring OOBE's frontend load timings using
+ * the Performance API. The timestamps are created using performance.now() which
+ * provides us with the number of milliseconds since `performance.timeOrigin`.
+ *
+ * For a typical web page, running `performance.now()` as the first script in
+ * the page gives values that are close enough to zero (typically less than a
+ * few dozen miliseconds) that `timeOrigin` is a reliable reference for timing
+ * the execution of scripts. In a WebUI like OOBE, this is not the case. That is
+ * because `performance.timeOrigin` is set when the BrowserContext is created,
+ * which happens much earlier than the first JavaScript instruction. For OOBE,
+ * running `performance.now()` as the first thing in the page reports ~ 1000ms.
+ *
+ * In order to account for this discrepancy, OOBE executes oobe_trace_start.js
+ * as its first script to set the `FIRST_INSTRUCTION` TraceEvent.
  *
  * For now, the results are written into 'window' as 'oobeTraceLogs'. In the
  * future, these values will be available directly from the OOBE debugger and
@@ -21,9 +30,8 @@ import {assert} from '//resources/ash/common/assert.js';
 
 import {loadTimeData} from './i18n_setup.js';
 
-assert(window.oobeInitializationBeginTimestamp);
-
 export const TraceEvent = {
+  FIRST_INSTRUCTION: 'FIRST_INSTRUCTION',
   FIRST_LINE_AFTER_IMPORTS: 'FIRST_LINE_AFTER_IMPORTS',
   COMMON_SCREENS_ADDED: 'COMMON_SCREENS_ADDED',
   REMAINING_SCREENS_ADDED: 'REMAINING_SCREENS_ADDED',
@@ -43,8 +51,14 @@ class EventEntry {
   constructor(traceEventName) {
     assert(traceEventName in TraceEvent);
     this.name = traceEventName;
-    this.delta = new Date() - window.oobeInitializationBeginTimestamp;
+    this.delta = performance.now();
   }
+}
+
+if (window.oobeInitializationBeginTimestamp) {
+  const oobeTimeOrigin = new EventEntry(TraceEvent.FIRST_INSTRUCTION);
+  oobeTimeOrigin.delta = window.oobeInitializationBeginTimestamp;
+  eventLogs.push(oobeTimeOrigin);
 }
 
 let firstScreenShownEventLogged = false;
@@ -111,6 +125,7 @@ function maybePrintTraces() {
   }
 
   const EventPrintOrder = [
+    TraceEvent.FIRST_INSTRUCTION,
     TraceEvent.FIRST_LINE_AFTER_IMPORTS,
     TraceEvent.COMMON_SCREENS_ADDED,
     TraceEvent.REMAINING_SCREENS_ADDED,

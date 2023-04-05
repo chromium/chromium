@@ -70,9 +70,9 @@ TEST_F(TokenManagedProfileCreatorTest, CreatesProfileWithManagementInfo) {
 
 TEST_F(TokenManagedProfileCreatorTest, LoadsExistingProfile) {
   auto* profile_manager = g_browser_process->profile_manager();
-  auto* new_profile = profiles::testing::CreateProfileSync(
+  Profile& new_profile = profiles::testing::CreateProfileSync(
       profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
-  base::FilePath path = new_profile->GetPath();
+  base::FilePath path = new_profile.GetPath();
   {
     auto* entry = profile_manager->GetProfileAttributesStorage()
                       .GetProfileAttributesWithPath(path);

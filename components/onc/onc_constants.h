@@ -125,6 +125,7 @@ COMPONENT_EXPORT(ONC) extern const char kAllowRoaming[];
 COMPONENT_EXPORT(ONC) extern const char kAPN[];
 COMPONENT_EXPORT(ONC) extern const char kAPNList[];
 COMPONENT_EXPORT(ONC) extern const char kCarrier[];
+COMPONENT_EXPORT(ONC) extern const char kCustomAPNList[];
 COMPONENT_EXPORT(ONC) extern const char kESN[];
 COMPONENT_EXPORT(ONC) extern const char kFamily[];
 COMPONENT_EXPORT(ONC) extern const char kFirmwareRevision[];
@@ -167,7 +168,6 @@ COMPONENT_EXPORT(ONC) extern const char kTechnologyLte[];
 COMPONENT_EXPORT(ONC) extern const char kTechnologyLteAdvanced[];
 COMPONENT_EXPORT(ONC) extern const char kTechnologyUmts[];
 COMPONENT_EXPORT(ONC) extern const char kTechnology5gNr[];
-COMPONENT_EXPORT(ONC) extern const char kUserAPNList[];
 }  // namespace cellular
 
 namespace cellular_provider {

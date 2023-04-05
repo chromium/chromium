@@ -191,6 +191,7 @@ class DeclarativeNetRequestBrowserTest
         {blink::features::kInterestGroupStorage,
          blink::features::kAdInterestGroupAPI, blink::features::kFledge,
          blink::features::kFencedFrames,
+         blink::features::kFencedFramesAPIChanges,
          features::kPrivacySandboxAdsAPIsOverride},
         /*disabled_features=*/
         {// TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid
@@ -6678,13 +6679,14 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, FledgeAuctionScripts) {
   std::string run_auction_command = content::JsReplace(
       R"(
          (async function() {
-           let url = await navigator.runAdAuction({
+           let config = await navigator.runAdAuction({
              seller: $1,
              decisionLogicUrl: $2,
              interestGroupBuyers: [$1],
            });
-           document.querySelector('fencedframe').src = url;
-           return url;
+           document.querySelector('fencedframe').config =
+              new FencedFrameConfig(config);
+           return config;
          })()
       )",
       url::Origin::Create(decision_logic_url).Serialize(),

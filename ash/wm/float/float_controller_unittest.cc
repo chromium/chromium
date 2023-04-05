@@ -785,6 +785,33 @@ TEST_F(WindowFloatTest, FloatWindowUpdatedOnOverview) {
   EXPECT_EQ(window.get(), overview_items[0]->GetWindow());
 }
 
+// Tests the floated window is hidden when there is a pinned window.
+TEST_F(WindowFloatTest, PinnedWindow) {
+  std::unique_ptr<aura::Window> floated_window = CreateFloatedWindow();
+
+  // Create and pin a window. The floated window should be hidden.
+  std::unique_ptr<aura::Window> pinned_window = CreateAppWindow();
+  wm::ActivateWindow(pinned_window.get());
+  window_util::PinWindow(pinned_window.get(), /*trusted=*/false);
+  EXPECT_FALSE(floated_window->IsVisible());
+
+  // Unpin the window.
+  Shell::Get()->accelerator_controller()->PerformActionIfEnabled(UNPIN, {});
+  EXPECT_TRUE(floated_window->IsVisible());
+
+  // Trusted pin the window.
+  window_util::PinWindow(pinned_window.get(), /*trusted=*/true);
+  EXPECT_FALSE(floated_window->IsVisible());
+
+  // Unpin the window by destroying it.
+  pinned_window.reset();
+  EXPECT_TRUE(floated_window->IsVisible());
+
+  // Try pinning the floated window. It should still be visible.
+  window_util::PinWindow(floated_window.get(), /*trusted=*/true);
+  EXPECT_TRUE(floated_window->IsVisible());
+}
+
 // A test class that uses a mock time test environment.
 class WindowFloatMetricsTest : public WindowFloatTest {
  public:

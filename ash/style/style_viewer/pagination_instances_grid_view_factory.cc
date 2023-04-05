@@ -21,10 +21,10 @@ namespace ash {
 namespace {
 
 // Configurations of grid view for `Pagination` instances.
-constexpr size_t kGridViewRowNum = 6;
-constexpr size_t kGridViewColNum = 1;
-constexpr size_t kGridViewRowGroupSize = 2;
-constexpr size_t kGirdViewColGroupSize = 1;
+constexpr size_t kGridViewRowNum = 3;
+constexpr size_t kGridViewColNum = 2;
+constexpr size_t kGridViewRowGroupSize = 1;
+constexpr size_t kGridViewColGroupSize = 1;
 
 // The size of a test page.
 constexpr size_t kPageWidth = 100;
@@ -36,8 +36,11 @@ constexpr size_t kPageHeight = 30;
 // to the pagination controller.
 class PaginationTestContents : public views::BoxLayoutView {
  public:
-  PaginationTestContents(PaginationController* pagination_controller)
-      : pagination_controller_(pagination_controller) {}
+  PaginationTestContents(PaginationController* pagination_controller,
+                         views::BoxLayout::Orientation orientation)
+      : pagination_controller_(pagination_controller) {
+    SetOrientation(orientation);
+  }
   PaginationTestContents(const PaginationTestContents&) = delete;
   PaginationTestContents& operator=(const PaginationTestContents&) = delete;
   ~PaginationTestContents() override = default;
@@ -88,14 +91,21 @@ class PaginationTestContents : public views::BoxLayoutView {
 class PaginationTestScrollView : public views::ScrollView,
                                  public PaginationModelObserver {
  public:
-  PaginationTestScrollView(PaginationModel* model)
+  PaginationTestScrollView(PaginationModel* model,
+                           PaginationView::Orientation orientation)
       : model_(model),
+        orientation_(orientation),
         pagination_controller_(std::make_unique<PaginationController>(
             model_,
-            PaginationController::SCROLL_AXIS_HORIZONTAL,
+            (orientation == PaginationView::Orientation::kHorizontal)
+                ? PaginationController::SCROLL_AXIS_HORIZONTAL
+                : PaginationController::SCROLL_AXIS_VERTICAL,
             base::BindRepeating([](ui::EventType) {}))),
         page_container_(SetContents(std::make_unique<PaginationTestContents>(
-            pagination_controller_.get()))) {
+            pagination_controller_.get(),
+            (orientation == PaginationView::Orientation::kHorizontal)
+                ? views::BoxLayout::Orientation::kHorizontal
+                : views::BoxLayout::Orientation::kVertical))) {
     model_observer_.Observe(model_);
     SetHorizontalScrollBarMode(views::ScrollView::ScrollBarMode::kDisabled);
     SetVerticalScrollBarMode(views::ScrollView::ScrollBarMode::kDisabled);
@@ -125,6 +135,7 @@ class PaginationTestScrollView : public views::ScrollView,
             page_container_->AddChildView(std::make_unique<views::Label>(
                 u"Page " + base::NumberToString16(i + 1)));
         page->SetPreferredSize(gfx::Size(kPageWidth, kPageHeight));
+        page->SetLineHeight(kPageHeight);
       }
     } else {
       for (int i = previous_page_count; i > new_page_count; i--) {
@@ -136,20 +147,34 @@ class PaginationTestScrollView : public views::ScrollView,
   void SelectedPageChanged(int old_selected, int new_selected) override {
     // Scroll to show the label corresponding to the selected page.
     if (model_->is_valid_page(new_selected)) {
-      page_container_->SetX(-new_selected * kPageWidth);
+      if (orientation_ == PaginationView::Orientation::kHorizontal) {
+        page_container_->SetX(-new_selected * kPageWidth);
+      } else {
+        page_container_->SetY(-new_selected * kPageHeight);
+      }
     }
   }
 
   void TransitionChanged() override {
     // Update scrolling during the page transition.
-    const int origin_x = -model_->selected_page() * kPageWidth;
-    const int target_x = -model_->transition().target_page * kPageWidth;
+    const bool horizontal =
+        (orientation_ == PaginationView::Orientation::kHorizontal);
+    const int page_size = horizontal ? kPageWidth : kPageHeight;
+    const int origin_offset = -model_->selected_page() * page_size;
+    const int target_offset = -model_->transition().target_page * page_size;
     const double progress = model_->transition().progress;
-    page_container_->SetX((1 - progress) * origin_x + progress * target_x);
+    const int offset =
+        (1 - progress) * origin_offset + progress * target_offset;
+    if (orientation_ == PaginationView::Orientation::kHorizontal) {
+      page_container_->SetX(offset);
+    } else {
+      page_container_->SetY(offset);
+    }
   }
 
  private:
   base::raw_ptr<PaginationModel> const model_;
+  PaginationView::Orientation orientation_;
   std::unique_ptr<PaginationController> pagination_controller_;
   base::raw_ptr<PaginationTestContents> page_container_;
   base::ScopedObservation<PaginationModel, PaginationModelObserver>
@@ -160,11 +185,8 @@ class PaginationTestScrollView : public views::ScrollView,
 // PaginationGridView:
 class PaginationGridView : public SystemUIComponentsGridView {
  public:
-  PaginationGridView()
-      : SystemUIComponentsGridView(kGridViewRowNum,
-                                   kGridViewColNum,
-                                   kGridViewRowGroupSize,
-                                   kGirdViewColGroupSize) {}
+  PaginationGridView(size_t num_row, size_t num_col)
+      : SystemUIComponentsGridView(num_row, num_col, num_row, num_col) {}
   PaginationGridView(const PaginationGridView&) = delete;
   PaginationGridView& operator=(const PaginationGridView&) = delete;
   ~PaginationGridView() override = default;
@@ -173,40 +195,82 @@ class PaginationGridView : public SystemUIComponentsGridView {
   // model.
   void AddPaginationWithModel(
       const std::u16string& name,
+      PaginationView::Orientation orientation,
       std::unique_ptr<PaginationModel> pagination_model) {
+    AddInstance(name, std::make_unique<PaginationView>(pagination_model.get(),
+                                                       orientation));
     AddInstance(u"", std::make_unique<PaginationTestScrollView>(
-                         pagination_model.get()));
-    AddInstance(name, std::make_unique<PaginationView>(pagination_model.get()));
-    models_.push_back(std::move(pagination_model));
+                         pagination_model.get(), orientation));
+    model_ = std::move(pagination_model);
   }
 
  private:
-  std::vector<std::unique_ptr<PaginationModel>> models_;
+  std::unique_ptr<PaginationModel> model_;
 };
 
 }  // namespace
 
 std::unique_ptr<SystemUIComponentsGridView>
 CreatePaginationInstancesGridView() {
-  auto grid_view = std::make_unique<PaginationGridView>();
+  auto grid_view = std::make_unique<SystemUIComponentsGridView>(
+      kGridViewRowNum, kGridViewColNum, kGridViewRowGroupSize,
+      kGridViewColGroupSize);
 
-  // Add a pagination view with 3 pages.
-  auto model_three = std::make_unique<PaginationModel>(nullptr);
-  model_three->SetTotalPages(3);
-  grid_view->AddPaginationWithModel(u"Pagenation with 3 pages",
-                                    std::move(model_three));
+  // Add a horizontal pagination view with 3 pages.
+  auto* horizontal_instance_grid_view_1 =
+      grid_view->AddInstance(u"", std::make_unique<PaginationGridView>(2, 1));
+  auto model_three_horizontal = std::make_unique<PaginationModel>(nullptr);
+  model_three_horizontal->SetTotalPages(3);
+  horizontal_instance_grid_view_1->AddPaginationWithModel(
+      u"Horizontal pagenation with 3 pages",
+      PaginationView::Orientation::kHorizontal,
+      std::move(model_three_horizontal));
 
-  // Add a pagination view with 4 pages.
-  auto model_five = std::make_unique<PaginationModel>(nullptr);
-  model_five->SetTotalPages(5);
-  grid_view->AddPaginationWithModel(u"Pagenation with 5 pages",
-                                    std::move(model_five));
+  // Add a vertical pagination view with 3 pages.
+  auto* vertical_instance_grid_view_1 =
+      grid_view->AddInstance(u"", std::make_unique<PaginationGridView>(1, 2));
+  auto model_three_vertical = std::make_unique<PaginationModel>(nullptr);
+  model_three_vertical->SetTotalPages(3);
+  vertical_instance_grid_view_1->AddPaginationWithModel(
+      u"Vertical pagenation with 3 pages",
+      PaginationView::Orientation::kVertical, std::move(model_three_vertical));
 
-  // Add a pagination view with 10 pages.
-  auto model_ten = std::make_unique<PaginationModel>(nullptr);
-  model_ten->SetTotalPages(10);
-  grid_view->AddPaginationWithModel(u"Pagenation with 10 pages",
-                                    std::move(model_ten));
+  // Add a Horizontal pagination view with 5 pages.
+  auto* horizontal_instance_grid_view_2 =
+      grid_view->AddInstance(u"", std::make_unique<PaginationGridView>(2, 1));
+  auto model_five_horizontal = std::make_unique<PaginationModel>(nullptr);
+  model_five_horizontal->SetTotalPages(5);
+  horizontal_instance_grid_view_2->AddPaginationWithModel(
+      u"Pagenation with 5 pages", PaginationView::Orientation::kHorizontal,
+      std::move(model_five_horizontal));
+
+  // Add a vertical pagination view with 5 pages.
+  auto* vertical_instance_grid_view_2 =
+      grid_view->AddInstance(u"", std::make_unique<PaginationGridView>(1, 2));
+  auto model_five_vertical = std::make_unique<PaginationModel>(nullptr);
+  model_five_vertical->SetTotalPages(5);
+  vertical_instance_grid_view_2->AddPaginationWithModel(
+      u"Vertical pagenation with 5 pages",
+      PaginationView::Orientation::kVertical, std::move(model_five_vertical));
+
+  // Add a horizontal pagination view with 10 pages.
+  auto* horizontal_instance_grid_view_3 =
+      grid_view->AddInstance(u"", std::make_unique<PaginationGridView>(2, 1));
+  auto model_ten_horizontal = std::make_unique<PaginationModel>(nullptr);
+  model_ten_horizontal->SetTotalPages(10);
+  horizontal_instance_grid_view_3->AddPaginationWithModel(
+      u"Pagenation with 10 pages", PaginationView::Orientation::kHorizontal,
+      std::move(model_ten_horizontal));
+
+  // Add a vertical pagination view with 10 pages.
+  auto* vertical_instance_grid_view_3 =
+      grid_view->AddInstance(u"", std::make_unique<PaginationGridView>(1, 2));
+  auto model_ten_vertical = std::make_unique<PaginationModel>(nullptr);
+  model_ten_vertical->SetTotalPages(10);
+  vertical_instance_grid_view_3->AddPaginationWithModel(
+      u"Vertical pagenation with 10 pages",
+      PaginationView::Orientation::kVertical, std::move(model_ten_vertical));
+
   return grid_view;
 }
 

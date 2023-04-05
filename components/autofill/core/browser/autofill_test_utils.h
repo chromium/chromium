@@ -515,12 +515,13 @@ std::string TenYearsFromNow();
 // Creates a `FieldPrediction` instance, with a plausible value for `source()`.
 ::autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
     FieldPrediction
-    CreateFieldPrediction(ServerFieldType type);
+    CreateFieldPrediction(ServerFieldType type, bool is_override = false);
 
 void AddFieldPredictionToForm(
     const autofill::FormFieldData& field_data,
     ServerFieldType field_type,
-    ::autofill::AutofillQueryResponse_FormSuggestion* form_suggestion);
+    ::autofill::AutofillQueryResponse_FormSuggestion* form_suggestion,
+    bool is_override = false);
 
 void AddFieldPredictionsToForm(
     const autofill::FormFieldData& field_data,

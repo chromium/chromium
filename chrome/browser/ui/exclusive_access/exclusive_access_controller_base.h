@@ -7,8 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "content/public/browser/web_contents_observer.h"
 
 class ExclusiveAccessManager;
 class GURL;
@@ -21,7 +20,7 @@ class WebContents;
 // FullscreenController, KeyboardLockController, and MouseLockController which
 // controls lifetime for which the resource (screen/mouse/keyboard) is held
 // exclusively.
-class ExclusiveAccessControllerBase : public content::NotificationObserver {
+class ExclusiveAccessControllerBase {
  public:
   explicit ExclusiveAccessControllerBase(ExclusiveAccessManager* manager);
 
@@ -29,13 +28,13 @@ class ExclusiveAccessControllerBase : public content::NotificationObserver {
   ExclusiveAccessControllerBase& operator=(
       const ExclusiveAccessControllerBase&) = delete;
 
-  ~ExclusiveAccessControllerBase() override;
+  virtual ~ExclusiveAccessControllerBase();
 
   GURL GetExclusiveAccessBubbleURL() const;
   virtual GURL GetURLForExclusiveAccessBubble() const;
 
   content::WebContents* exclusive_access_tab() const {
-    return tab_with_exclusive_access_;
+    return web_contents_observer_.web_contents();
   }
 
   // Functions implemented by derived classes:
@@ -52,12 +51,6 @@ class ExclusiveAccessControllerBase : public content::NotificationObserver {
   virtual void OnTabClosing(content::WebContents* web_contents);
 
   // Callbacks ////////////////////////////////////////////////////////////////
-
-  // content::NotificationObserver to detect page navigation and exit exclusive
-  // access.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
 
   // For recording UMA.
   void RecordBubbleReshownUMA();
@@ -81,13 +74,20 @@ class ExclusiveAccessControllerBase : public content::NotificationObserver {
   virtual void RecordBubbleReshowsHistogram(int bubble_reshow_count) = 0;
 
  private:
-  void UpdateNotificationRegistrations();
-
   const raw_ptr<ExclusiveAccessManager> manager_;
 
-  content::NotificationRegistrar registrar_;
+  class WebContentsObserver : public content::WebContentsObserver {
+   public:
+    explicit WebContentsObserver(ExclusiveAccessControllerBase& controller);
+    // Detect page navigation and exit exclusive access.
+    void NavigationEntryCommitted(
+        const content::LoadCommittedDetails& load_details) override;
+    // Let the controller set the WebContents to be observed.
+    using content::WebContentsObserver::Observe;
 
-  raw_ptr<content::WebContents> tab_with_exclusive_access_ = nullptr;
+   private:
+    const base::raw_ref<ExclusiveAccessControllerBase> controller_;
+  } web_contents_observer_{*this};
 
   // The number of bubble re-shows for the current session (reset upon exiting).
   int bubble_reshow_count_ = 0;

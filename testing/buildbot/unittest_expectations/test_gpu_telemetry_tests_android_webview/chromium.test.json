@@ -24,7 +24,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_type": "bullhead"
+              "device_type": "bullhead",
+              "os": "Linux"
             }
           ],
           "idempotent": false

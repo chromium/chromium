@@ -711,8 +711,9 @@ bool PepperGraphics2DHost::PrepareTransferableResource(
         size.width(), size.height(), viz::ToClosestSkColorType(true, format),
         kUnknown_SkAlphaType);
     ri->WaitSyncTokenCHROMIUM(in_sync_token.GetConstData());
-    ri->WritePixels(gpu_mailbox, 0, 0, texture_target, src_info.minRowBytes(),
-                    src_info, src);
+    ri->WritePixels(gpu_mailbox, /*dst_x_offset=*/0, /*dst_y_offset=*/0,
+                    /*dst_plane_index=*/0, texture_target,
+                    src_info.minRowBytes(), src_info, src);
 
     gpu::SyncToken out_sync_token;
     ri->GenUnverifiedSyncTokenCHROMIUM(out_sync_token.GetData());

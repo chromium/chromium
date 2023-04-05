@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarCoordinator;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -109,8 +110,7 @@ public class InstantStartToolbarTest {
         TopToolbarCoordinator topToolbarCoordinator =
                 (TopToolbarCoordinator) cta.getToolbarManager().getToolbar();
 
-        onViewWaiting(
-                allOf(withId(org.chromium.chrome.test.R.id.tab_switcher_toolbar), isDisplayed()));
+        onViewWaiting(allOf(withId(R.id.tab_switcher_toolbar), isDisplayed()));
 
         StartSurfaceToolbarCoordinator startSurfaceToolbarCoordinator =
                 topToolbarCoordinator.getStartSurfaceToolbarForTesting();
@@ -144,17 +144,17 @@ public class InstantStartToolbarTest {
 
         StartSurfaceTestUtils.scrollToolbar(cta);
 
-        View surface = cta.findViewById(org.chromium.chrome.test.R.id.control_container);
+        View surface = cta.findViewById(R.id.control_container);
         ChromeRenderTestRule.sanitize(surface);
         mRenderTestRule.render(surface, "singlePane_floatingTopToolbar");
 
         // Focus the omnibox.
-        UrlBar urlBar = cta.findViewById(org.chromium.chrome.R.id.url_bar);
+        UrlBar urlBar = cta.findViewById(R.id.url_bar);
         TestThreadUtils.runOnUiThreadBlocking((Runnable) urlBar::requestFocus);
         // Clear the focus.
         TestThreadUtils.runOnUiThreadBlocking(urlBar::clearFocus);
         // Default search engine logo should still show.
-        surface = cta.findViewById(org.chromium.chrome.test.R.id.control_container);
+        surface = cta.findViewById(R.id.control_container);
         ChromeRenderTestRule.sanitize(surface);
         mRenderTestRule.render(surface, "singlePane_floatingTopToolbar");
     }
@@ -199,48 +199,41 @@ public class InstantStartToolbarTest {
 
         // Check whether the update badge shows on start surface toolbar.
         if (shouldShowUpdateBadgeOnStartAndTabs) {
-            onViewWaiting(allOf(withId(org.chromium.chrome.test.R.id.menu_badge),
-                                  isDescendantOfA(withId(
-                                          org.chromium.chrome.test.R.id.tab_switcher_toolbar))))
+            onViewWaiting(allOf(withId(R.id.menu_badge),
+                                  isDescendantOfA(withId(R.id.tab_switcher_toolbar))))
                     .check(matches(isDisplayed()));
         } else {
-            onView(allOf(withId(org.chromium.chrome.test.R.id.menu_badge),
-                           isDescendantOfA(
-                                   withId(org.chromium.chrome.test.R.id.tab_switcher_toolbar))))
+            onView(allOf(withId(R.id.menu_badge),
+                           isDescendantOfA(withId(R.id.tab_switcher_toolbar))))
                     .check(matches(withEffectiveVisibility(Visibility.INVISIBLE)));
         }
 
         // Navigate to any tab to check whether the update badge shows on toolbar layout.
         StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount = */ 3);
         if (shouldShowUpdateBadgeOnStartAndTabs) {
-            onViewWaiting(allOf(withId(org.chromium.chrome.test.R.id.menu_badge),
-                                  isDescendantOfA(withId(org.chromium.chrome.test.R.id.toolbar))))
+            onViewWaiting(allOf(withId(R.id.menu_badge), isDescendantOfA(withId(R.id.toolbar))))
                     .check(matches(isDisplayed()));
         } else {
-            onView(allOf(withId(org.chromium.chrome.test.R.id.menu_badge),
-                           isDescendantOfA(withId(org.chromium.chrome.test.R.id.toolbar))))
+            onView(allOf(withId(R.id.menu_badge), isDescendantOfA(withId(R.id.toolbar))))
                     .check(matches(withEffectiveVisibility(Visibility.INVISIBLE)));
         }
 
         // Update badge shouldn't show on tab switcher surface toolbar.
         TabUiTestHelper.enterTabSwitcher(cta);
         StartSurfaceTestUtils.waitForTabSwitcherVisible(cta);
-        onViewWaiting(allOf(withId(org.chromium.chrome.test.R.id.menu_button),
-                              isDescendantOfA(
-                                      withId(org.chromium.chrome.test.R.id.tab_switcher_toolbar))))
+        onViewWaiting(
+                allOf(withId(R.id.menu_button), isDescendantOfA(withId(R.id.tab_switcher_toolbar))))
                 .check(matches(isDisplayed()));
         if (shouldShowUpdateBadgeOnStartAndTabs) {
             // If the update badge should show on homepage and tabs, it's suppressed in
             // StartSurfaceToolbarMediator#onStartSurfaceStateChanged when tab switcher surface is
             // shown. So its visibility should be Gone instead of Invisible (as initialized).
-            onView(allOf(withId(org.chromium.chrome.test.R.id.menu_badge),
-                           isDescendantOfA(
-                                   withId(org.chromium.chrome.test.R.id.tab_switcher_toolbar))))
+            onView(allOf(withId(R.id.menu_badge),
+                           isDescendantOfA(withId(R.id.tab_switcher_toolbar))))
                     .check(matches(withEffectiveVisibility(Visibility.GONE)));
         } else {
-            onView(allOf(withId(org.chromium.chrome.test.R.id.menu_badge),
-                           isDescendantOfA(
-                                   withId(org.chromium.chrome.test.R.id.tab_switcher_toolbar))))
+            onView(allOf(withId(R.id.menu_badge),
+                           isDescendantOfA(withId(R.id.tab_switcher_toolbar))))
                     .check(matches(withEffectiveVisibility(Visibility.INVISIBLE)));
         }
     }

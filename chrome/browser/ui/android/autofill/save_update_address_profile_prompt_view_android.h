@@ -38,7 +38,8 @@ class SaveUpdateAddressProfilePromptViewAndroid
   // SaveUpdateAddressProfilePromptView:
   bool Show(SaveUpdateAddressProfilePromptController* controller,
             const AutofillProfile& profile,
-            bool is_update) override;
+            bool is_update,
+            bool is_migration_to_account) override;
 
  private:
   // Populates the content of the existing `java_object_` as a save or update

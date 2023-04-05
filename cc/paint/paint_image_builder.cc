@@ -70,6 +70,10 @@ PaintImage PaintImageBuilder::TakePaintImage() {
     DCHECK(!paint_image_.paint_image_generator_);
   }
 
+  if (paint_image_.HasGainmap()) {
+    DCHECK(paint_image_.paint_image_generator_);
+  }
+
   if (paint_image_.ShouldAnimate()) {
     DCHECK(paint_image_.paint_image_generator_)
         << "Animated images must provide a generator";

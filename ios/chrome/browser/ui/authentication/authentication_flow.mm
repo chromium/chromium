@@ -527,7 +527,7 @@ enum AuthenticationState {
 - (void)optInBookmarkReadingListAccountStorage {
   DCHECK(
       base::FeatureList::IsEnabled(bookmarks::kEnableBookmarksAccountStorage));
-  // TODO(crbug.com/1427044): Need to call the right APIs to opt in, as soon as
+  // TODO(crbug.com/1430453): Need to call the right APIs to opt in, as soon as
   // those APIs will be implemented.
   [self continueSignin];
 }

@@ -69,6 +69,7 @@ struct ServerConfig {
   EnableAuraShellProtocol enable_aura_shell =
       EnableAuraShellProtocol::kDisabled;
   bool surface_submission_in_pixel_coordinates = true;
+  bool use_aura_output_manager = false;
 };
 
 class TestWaylandServerThread;

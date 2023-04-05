@@ -41,35 +41,30 @@ class UpgradeCenterBrowserAgentTest : public PlatformTest {
 };
 
 TEST_F(UpgradeCenterBrowserAgentTest, AddsInfoBarManagerOnWebStateInsert) {
-  auto fake_web_state =
-      std::make_unique<web::FakeWebState>(@"my-stable-identifier");
+  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  NSString* stable_identifier = fake_web_state->GetStableIdentifier();
 
   browser_->GetWebStateList()->InsertWebState(
       WebStateList::kInvalidIndex, std::move(fake_web_state),
       WebStateList::INSERT_NO_FLAGS, WebStateOpener());
 
-  ASSERT_NE(nullptr,
-            fake_upgrade_center_.infoBarManagers[@"my-stable-identifier"]);
+  ASSERT_NE(nullptr, fake_upgrade_center_.infoBarManagers[stable_identifier]);
   ASSERT_EQ(fake_upgrade_center_.infoBarManagers.count, 1U);
 }
 
 TEST_F(UpgradeCenterBrowserAgentTest, RemovesInfoBarManagerOnWebStateDetach) {
-  auto fake_web_state =
-      std::make_unique<web::FakeWebState>(@"my-other-stable-identifier");
+  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  NSString* stable_identifier = fake_web_state->GetStableIdentifier();
 
   browser_->GetWebStateList()->InsertWebState(
       WebStateList::kInvalidIndex, std::move(fake_web_state),
       WebStateList::INSERT_NO_FLAGS, WebStateOpener());
 
-  ASSERT_NE(
-      nullptr,
-      fake_upgrade_center_.infoBarManagers[@"my-other-stable-identifier"]);
+  ASSERT_NE(nullptr, fake_upgrade_center_.infoBarManagers[stable_identifier]);
   ASSERT_EQ(fake_upgrade_center_.infoBarManagers.count, 1U);
 
   browser_->GetWebStateList()->DetachWebStateAt(0);
 
-  ASSERT_EQ(
-      nullptr,
-      fake_upgrade_center_.infoBarManagers[@"my-other-stable-identifier"]);
+  ASSERT_EQ(nullptr, fake_upgrade_center_.infoBarManagers[stable_identifier]);
   ASSERT_EQ(fake_upgrade_center_.infoBarManagers.count, 0U);
 }

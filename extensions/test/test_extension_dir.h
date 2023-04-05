@@ -19,6 +19,12 @@ class TestExtensionDir {
 
   ~TestExtensionDir();
 
+  TestExtensionDir(const TestExtensionDir&) = delete;
+  TestExtensionDir(TestExtensionDir&&) noexcept;
+
+  TestExtensionDir& operator=(const TestExtensionDir&) = delete;
+  TestExtensionDir& operator=(TestExtensionDir&&);
+
   // Writes |manifest| to manifest.json within the unpacked dir.  No validation
   // is performed. If desired this should be done on extension installation.
   void WriteManifest(base::StringPiece manifest);

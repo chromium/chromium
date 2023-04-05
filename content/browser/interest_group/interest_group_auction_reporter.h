@@ -152,6 +152,9 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
     // Ad cost returned by the bidder.
     absl::optional<double> ad_cost;
 
+    // Modeling signals returned by the bidder.
+    absl::optional<uint16_t> modeling_signals;
+
     // How long it took to generate the bid.
     base::TimeDelta bid_duration;
 

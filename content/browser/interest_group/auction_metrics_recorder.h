@@ -73,9 +73,19 @@ class CONTENT_EXPORT AuctionMetricsRecorder {
   // the number of BidderWorklets created in the context of a given auction.
   void ReportBidderWorkletKey(AuctionWorkletManager::WorkletKey& worklet_key);
 
+  // Records InterestGroups that are loaded, but don't reach GenerateBid.
+  // Some of these functions increment by a number of bids at once, while
+  // others increment one at a time, depending on how they're used.
+  void RecordBidsAbortedByBuyerCumulativeTimeout(int64_t num_bids);
+  void RecordBidAbortedByBidderWorkletFatalError();
+  void RecordBidFilteredDuringInterestGroupLoad();
+  void RecordBidFilteredDuringReprioritization();
+  void RecordBidsFilteredByPerBuyerLimits(int64_t num_bids);
+
+  // Records the k-anonymity mode used for this auction.
   void SetKAnonymityBidMode(auction_worklet::mojom::KAnonymityBidMode bid_mode);
 
-  // Counts outcomes on the boundary between GenerateBid and ScoreAd.
+  // Records outcomes on the boundary between GenerateBid and ScoreAd.
   // Each of these is called once for each InterestGroup for which we called
   // GenerateBid.
   void RecordInterestGroupWithNoBids();
@@ -100,6 +110,14 @@ class CONTENT_EXPORT AuctionMetricsRecorder {
   // auction across all component auctions. For memory efficiency, we record a
   // hash of the AuctionWorkletManager::WorkletKey instead of the key itself.
   std::set<size_t> bidder_worklet_keys_;
+
+  // Counts of InterestGroups that were loaded, but didn't reach GenerateBid for
+  // one of a number of reasons, some intentional for performance.
+  int64_t num_bids_aborted_by_buyer_cumulative_timeout_ = 0;
+  int64_t num_bids_aborted_by_bidder_worklet_fatal_error_ = 0;
+  int64_t num_bids_filtered_during_interest_group_load_ = 0;
+  int64_t num_bids_filtered_during_reprioritization_ = 0;
+  int64_t num_bids_filtered_by_per_buyer_limits_ = 0;
 
   // Counts for outcomes on the boundary between GenerateBid and ScoreAd.
   // Incremented for each InterestGroup, and recorded OnAuctionEnd.

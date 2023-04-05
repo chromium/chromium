@@ -116,8 +116,7 @@ ColorSpace::ColorSpace(PrimaryID primaries,
                        MatrixID matrix,
                        RangeID range,
                        const skcms_Matrix3x3* custom_primary_matrix,
-                       const skcms_TransferFunction* custom_transfer_fn,
-                       bool is_hdr)
+                       const skcms_TransferFunction* custom_transfer_fn)
     : primaries_(primaries),
       transfer_(transfer),
       matrix_(matrix),
@@ -126,8 +125,9 @@ ColorSpace::ColorSpace(PrimaryID primaries,
     DCHECK_EQ(PrimaryID::CUSTOM, primaries_);
     SetCustomPrimaries(*custom_primary_matrix);
   }
-  if (custom_transfer_fn)
-    SetCustomTransferFunction(*custom_transfer_fn, is_hdr);
+  if (custom_transfer_fn) {
+    SetCustomTransferFunction(*custom_transfer_fn);
+  }
 }
 
 ColorSpace::ColorSpace(const SkColorSpace& sk_color_space, bool is_hdr)
@@ -137,8 +137,8 @@ ColorSpace::ColorSpace(const SkColorSpace& sk_color_space, bool is_hdr)
                  RangeID::FULL) {
   skcms_TransferFunction fn;
   if (sk_color_space.isNumericalTransferFn(&fn)) {
-    transfer_ = TransferID::CUSTOM;
-    SetCustomTransferFunction(fn, is_hdr);
+    transfer_ = is_hdr ? TransferID::CUSTOM_HDR : TransferID::CUSTOM;
+    SetCustomTransferFunction(fn);
   } else if (skcms_TransferFunction_isHLGish(&fn)) {
     transfer_ = TransferID::HLG;
   } else if (skcms_TransferFunction_isPQish(&fn)) {
@@ -165,7 +165,7 @@ bool ColorSpace::IsValid() const {
 ColorSpace ColorSpace::CreateExtendedSRGB10Bit() {
   return ColorSpace(PrimaryID::P3, TransferID::CUSTOM_HDR, MatrixID::RGB,
                     RangeID::FULL, nullptr,
-                    &SkNamedTransferFnExt::kSRGBExtended1023Over510, true);
+                    &SkNamedTransferFnExt::kSRGBExtended1023Over510);
 }
 
 // static
@@ -237,15 +237,24 @@ void ColorSpace::SetCustomPrimaries(const skcms_Matrix3x3& to_XYZD50) {
   primaries_ = PrimaryID::CUSTOM;
 }
 
-void ColorSpace::SetCustomTransferFunction(const skcms_TransferFunction& fn,
-                                           bool is_hdr) {
+void ColorSpace::SetCustomTransferFunction(const skcms_TransferFunction& fn) {
   DCHECK(transfer_ == TransferID::CUSTOM ||
          transfer_ == TransferID::CUSTOM_HDR);
-  // These are all TransferIDs that will return a transfer function from
-  // GetTransferFunction. When multiple ids map to the same function, this list
-  // prioritizes the most common name (eg SRGB). This applies only to
-  // SDR transfer functions.
+
+  auto check_transfer_fn = [this, &fn](TransferID id) {
+    skcms_TransferFunction id_fn;
+    GetTransferFunction(id, &id_fn);
+    if (!FloatsEqualWithinTolerance(&fn.g, &id_fn.g, 7, 0.001f)) {
+      return false;
+    }
+    transfer_ = id;
+    return true;
+  };
+
   if (transfer_ == TransferID::CUSTOM) {
+    // These are all TransferIDs that will return a transfer function from
+    // GetTransferFunction. When multiple ids map to the same function, this
+    // list prioritizes the most common name (eg SRGB).
     const TransferID kIDsToCheck[] = {
         TransferID::SRGB,         TransferID::LINEAR,
         TransferID::GAMMA18,      TransferID::GAMMA22,
@@ -253,31 +262,25 @@ void ColorSpace::SetCustomTransferFunction(const skcms_TransferFunction& fn,
         TransferID::SMPTE240M,    TransferID::BT709_APPLE,
         TransferID::SMPTEST428_1,
     };
-    const TransferID kIDsToCheckNoHDR[] = {
-        TransferID::SRGB,
-        TransferID::LINEAR,
-    };
-    const TransferID kIDsToCheckHDR[] = {
-        TransferID::SRGB_HDR,
-        TransferID::LINEAR_HDR,
-    };
-    auto check_transfer_fn = [this, &fn](TransferID id) {
-      skcms_TransferFunction id_fn;
-      GetTransferFunction(id, &id_fn);
-      if (!FloatsEqualWithinTolerance(&fn.g, &id_fn.g, 7, 0.001f))
-        return false;
-      transfer_ = id;
-      return true;
-    };
-    for (TransferID id : is_hdr ? kIDsToCheckHDR : kIDsToCheckNoHDR) {
-      if (check_transfer_fn(id))
-        return;
-    }
     for (TransferID id : kIDsToCheck) {
       if (check_transfer_fn(id))
         return;
     }
   }
+
+  if (transfer_ == TransferID::CUSTOM_HDR) {
+    // This list is the same as above, but for HDR TransferIDs.
+    const TransferID kIDsToCheckHDR[] = {
+        TransferID::SRGB_HDR,
+        TransferID::LINEAR_HDR,
+    };
+    for (TransferID id : kIDsToCheckHDR) {
+      if (check_transfer_fn(id)) {
+        return;
+      }
+    }
+  }
+
   transfer_params_[0] = fn.a;
   transfer_params_[1] = fn.b;
   transfer_params_[2] = fn.c;

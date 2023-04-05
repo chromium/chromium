@@ -22,6 +22,7 @@ if (is_android) {
     deps = [
       ":device_features",
       "//base",
+      "//device/fido",
       "//services/device:device_service_jni_headers",
     ]
   }

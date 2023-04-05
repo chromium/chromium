@@ -1,5 +1,5 @@
 <style>
-  :host {
+  #dialog {
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -10,11 +10,11 @@
     padding: 32px;
   }
 
-  #content:focus-visible {
+  #dialog:focus-visible {
     outline: none;
   }
 
-  .title {
+  #title {
     color: var(--cros-text-color-primary);
     font: var(--cros-display-6-font);
   }
@@ -64,15 +64,17 @@
 <!-- TODO(b/258071752): Use localized strings -->
 <cr-lottie id="animation" aria-hidden="true" autoplay>
 </cr-lottie>
-<div class="body-wrapper">
-  <div class="title">
-    Move <span id="number-of-files"></span> <span id="files-text"></span> to
-    <span id="provider-name"></span> to open?
-  </div>
-  <div class="normal-text" id="body-text"> </div>
-  <cr-checkbox id="always-move-checkbox"> </cr-checkbox>
-  <div id="button-container">
-    <cr-button class="cancel-button">$i18n{cancel}</cr-button>
-    <cr-button class="action-button">Move and open</cr-button>
+<div id="dialog" role="dialog" autofocus tabindex="-1" aria-labelledby="title">
+  <div class="body-wrapper">
+    <div id="title">
+      Move <span id="number-of-files"></span> <span id="files-text"></span> to
+      <span id="provider-name"></span> to open?
+    </div>
+    <div class="normal-text" id="body-text"> </div>
+    <cr-checkbox id="always-move-checkbox"> </cr-checkbox>
+    <div id="button-container">
+      <cr-button class="cancel-button">$i18n{cancel}</cr-button>
+      <cr-button class="action-button">Move and open</cr-button>
+    </div>
   </div>
 </div>

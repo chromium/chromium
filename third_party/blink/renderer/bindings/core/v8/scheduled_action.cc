@@ -183,4 +183,8 @@ void ScheduledAction::Trace(Visitor* visitor) const {
   visitor->Trace(arguments_);
 }
 
+CallbackFunctionBase* ScheduledAction::CallbackFunction() {
+  return function_.Get();
+}
+
 }  // namespace blink

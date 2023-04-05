@@ -13,7 +13,10 @@
 <if expr="not is_chromeos">
         <template is="dom-if" if="[[captionSettingsOpensExternally_]]">
           <template is="dom-if" if="[[enableLiveCaption_]]">
-            <settings-live-caption prefs="{{prefs}}"></settings-live-caption>
+            <settings-live-caption prefs="{{prefs}}"
+                languages="[[languages]]"
+                language-helper="[[languageHelper]]">
+            </settings-live-caption>
           </template>
           <cr-link-row id="captions"
               class="hr"
@@ -77,7 +80,10 @@
           <settings-subpage
               associated-control="[[$$('#captions')]]"
               page-title="$i18n{captionsTitle}">
-            <settings-captions prefs="{{prefs}}"></settings-captions>
+            <settings-captions prefs="{{prefs}}"
+                languages="[[languages]]"
+                language-helper="[[languageHelper]]">
+            </settings-captions>
           </settings-subpage>
         </template>
       </template>

@@ -7,7 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/compiler_specific.h"
+#include "base/scoped_observation.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
 
 // The ObjC translations of the C++ observer callbacks are defined here.
@@ -79,7 +80,10 @@ class BookmarkModelBridge : public bookmarks::BookmarkModelObserver {
                                    const std::set<GURL>& removed_urls) override;
 
   __weak id<BookmarkModelBridgeObserver> observer_;
-  bookmarks::BookmarkModel* model_;  // weak
+
+  base::ScopedObservation<bookmarks::BookmarkModel,
+                          bookmarks::BookmarkModelObserver>
+      model_observation_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_BOOKMARKS_BOOKMARK_MODEL_BRIDGE_OBSERVER_H_

@@ -12,6 +12,7 @@
 namespace blink {
 
 class AffineTransform;
+class LayoutText;
 class NGFragmentItem;
 
 // The layout object for the element having "text-combine-upright:all" in
@@ -127,8 +128,9 @@ class CORE_EXPORT LayoutNGTextCombine final : public LayoutNGBlockFlow {
 inline bool LayoutNGTextCombine::ShouldBeParentOf(
     const LayoutObject& layout_object) {
   if (LIKELY(layout_object.IsHorizontalWritingMode()) ||
-      !layout_object.IsText())
+      !layout_object.IsText() || layout_object.IsSVGInlineText()) {
     return false;
+  }
   return UNLIKELY(layout_object.StyleRef().HasTextCombine()) &&
          layout_object.IsLayoutNGObject();
 }

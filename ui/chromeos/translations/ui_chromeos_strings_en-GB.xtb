@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> has been ejected.</translation>
 <translation id="2307462900900812319">Configure network</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{An extension with the ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> can't be located. Contact your administrator.}other{Extensions with the IDs <ph name="BEGIN_LIST" /><ph name="END_LIST" /> can't be located. Contact your administrator.}}</translation>
 <translation id="2325650632570794183">This file type is not supported. Please visit the Chrome Web Store to find an app that can open this type of file.</translation>
 <translation id="2326539130272988168">Bulgarian</translation>
 <translation id="2337715497728194187">Share with Bruschetta</translation>
@@ -473,6 +474,7 @@
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">View</translation>
 <translation id="485316830061041779">German</translation>
+<translation id="4862885579661885411">Files settings</translation>
 <translation id="4867079195717347957">Click to sort the column in descending order.</translation>
 <translation id="4867297348137739678">Last week</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> bytes</translation>

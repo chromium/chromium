@@ -114,8 +114,8 @@ function test_loaf_script(cb, name, type, label) {
 
 }
 
-function test_self_user_callback(cb, name) {
-    test_loaf_script(cb, name, "user-callback");
+function test_self_user_callback(cb, name, label) {
+    test_loaf_script(cb, name, "user-callback", label);
 }
 
 function test_self_event_listener(cb, name) {

@@ -264,6 +264,43 @@ void StorageBucketManager::DidDelete(ScriptPromiseResolver* resolver,
   resolver->Resolve();
 }
 
+void StorageBucketManager::GetBucketForDevtools(
+    ScriptState* script_state,
+    const WTF::String& name,
+    base::OnceCallback<void(StorageBucket*)> callback) {
+  ExecutionContext* context = ExecutionContext::From(script_state);
+  if (!context->GetSecurityOrigin()->CanAccessStorageBuckets()) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  GetBucketManager(script_state)
+      ->GetBucketForDevtools(
+          name,
+          WTF::BindOnce(&StorageBucketManager::DidGetBucketForDevtools,
+                        WrapPersistent(this), WrapPersistent(script_state),
+                        std::move(callback)));
+}
+
+void StorageBucketManager::DidGetBucketForDevtools(
+    ScriptState* script_state,
+    base::OnceCallback<void(StorageBucket*)> callback,
+    mojo::PendingRemote<mojom::blink::BucketHost> bucket_remote,
+    mojom::blink::BucketError) {
+  if (!script_state->ContextIsValid()) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  ScriptState::Scope scope(script_state);
+
+  if (!bucket_remote) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  std::move(callback).Run(MakeGarbageCollected<StorageBucket>(
+      navigator_base_, std::move(bucket_remote)));
+}
+
 void StorageBucketManager::Trace(Visitor* visitor) const {
   visitor->Trace(manager_remote_);
   visitor->Trace(navigator_base_);

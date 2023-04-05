@@ -65,6 +65,10 @@ using ScopedWebStateListObservation =
     didInsertWebState:(web::WebState*)webState
               atIndex:(int)index
            activating:(BOOL)activating {
+  if (_webStateList->IsBatchInProgress()) {
+    // Consumer will be updated at the end of the batch.
+    return;
+  }
   NOTREACHED();
 }
 

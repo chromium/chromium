@@ -106,4 +106,9 @@ absl::optional<ui::ColorId> MenuModel::GetSubmenuBackgroundColorId(
   return absl::nullopt;
 }
 
+absl::optional<ui::ColorId> MenuModel::GetSelectedBackgroundColorId(
+    size_t index) {
+  return absl::nullopt;
+}
+
 }  // namespace ui

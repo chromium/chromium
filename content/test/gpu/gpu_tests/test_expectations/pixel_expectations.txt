@@ -288,12 +288,12 @@ crbug.com/984734 [ android android-webview-instrumentation android-nexus-5x ] Pi
 
 # Failing on Linux and Windows, both Intel HD 630 and NVIDIA Quadro P400
 crbug.com/974380 [ linux ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositing [ Failure ]
-crbug.com/974380 [ win ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositing [ Failure ]
+crbug.com/974380 [ no-clang-coverage win ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositing [ Failure ]
 crbug.com/974380 [ linux ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositingWorker [ Failure ]
-crbug.com/974380 [ win ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositingWorker [ Failure ]
+crbug.com/974380 [ no-clang-coverage win ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositingWorker [ Failure ]
 
 # Producing blank images on Macmini and Macbook Pro
-crbug.com/974380 [ mac ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositingWorker [ Failure ]
+crbug.com/974380 [ mac no-clang-coverage ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositingWorker [ Failure ]
 
 # Times out on Pixel 4s in webview.
 crbug.com/1176918 [ android android-pixel-4 android-webview-instrumentation renderer-skia-gl ] Pixel_Video_Context_Loss_VP9 [ Failure ]
@@ -309,8 +309,6 @@ crbug.com/1230619 [ android android-SM-A235M ] Pixel_WebGLFloat [ Failure ]
 # Flakes on gpu-fyi-try-chromeos-amd64-generic, times out.
 crbug.com/1338173 [ chromeos chromeos-board-amd64-generic ] Pixel_PrecisionRoundedCorner [ Failure ]
 
-
-
 # Failing likely due to protected memory, but cause TBD.
 crbug.com/1420067 [ fuchsia fuchsia-board-astro ] Pixel_Video* [ Failure ]
 crbug.com/1420067 [ fuchsia fuchsia-board-sherlock ] Pixel_Video* [ Failure ]
@@ -318,10 +316,6 @@ crbug.com/1420067 [ fuchsia fuchsia-board-sherlock ] Pixel_Video* [ Failure ]
 # WebGPU pixel tests flakily hang in the metal shader compiler on Mac.
 crbug.com/1268120 [ mac asan ] Pixel_WebGPUToDataURL [ Failure ]
 crbug.com/1268120 [ mac asan ] Pixel_WebGPUDisplayP3 [ Failure ]
-
-crbug.com/1297636 [ asan intel mac-x86_64 monterey release ] Pixel_WebGPUImportUnaccelerated2DCanvas [ Failure ]
-crbug.com/1297636 [ mac-x86_64 mojave no-asan nvidia-0xfe9 release ] Pixel_WebGPUImportUnaccelerated2DCanvas [ Failure ]
-crbug.com/1297636 [ mac-x86_64 no-asan debug ] Pixel_WebGPUImportUnaccelerated2DCanvas [ Failure ]
 
 # Pixel_WebGPUDisplayP3 socket timeout on Mac FYI Retina Release (NVIDIA)
 crbug.com/1392819 [ mac nvidia no-asan ] Pixel_WebGPUDisplayP3 [ Failure ]
@@ -346,7 +340,7 @@ crbug.com/1290953 [ android android-pixel-4 android-webview-instrumentation ] Pi
 
 
 # Vulkan Swiftshader WebGPU interop - missing source image
-crbug.com/1307787 [ linux renderer-skia-vulkan ] Pixel_VulkanSwiftShader_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas [ Failure ]
+crbug.com/1307787 [ linux no-clang-coverage renderer-skia-vulkan ] Pixel_VulkanSwiftShader_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas [ Failure ]
 
 crbug.com/1345777 [ android ] Pixel_VideoStreamFromWebGLCanvas [ Skip ]
 
@@ -361,7 +355,7 @@ crbug.com/1395227 [ asan intel mac-x86_64 monterey release ] Pixel_WebGPUImportV
 crbug.com/1395227 [ mac-x86_64 mojave no-asan nvidia-0xfe9 release ] Pixel_WebGPUImportVideoFrame [ Failure ]
 crbug.com/1395227 [ amd-0x679e mac-x86_64 monterey no-asan release ] Pixel_WebGPUImportVideoFrameOffscreenCanvas [ Failure ]
 crbug.com/1395227 [ asan intel mac-x86_64 monterey release ] Pixel_WebGPUImportVideoFrameOffscreenCanvas [ Failure ]
-crbug.com/1395227 [ win ] Pixel_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas [ Failure ]
+crbug.com/1395227 [ no-clang-coverage win ] Pixel_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas [ Failure ]
 
 
 crbug.com/1372144 [ android android-sm-a135m ] Pixel_CanvasDisplaySRGBAccelerated2D [ Failure ]
@@ -400,13 +394,9 @@ crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_WebGLDisplayP3 [ Failu
 crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_OffscreenCanvasAccelerated2D [ RetryOnFailure ]
 crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_OffscreenCanvasWebGLDefaultWorker [ RetryOnFailure ]
 
-# Flakes on Pixel 4 and Pixel 6
-# finder:group-start crbug.com/1383180
-crbug.com/1383180 [ android android-pixel-4 android-chromium ] Pixel_MediaRecorderFrom2DCanvas [ RetryOnFailure ]
-crbug.com/1383180 [ android android-pixel-6 android-chromium ] Pixel_MediaRecorderFrom2DCanvas [ RetryOnFailure ]
-crbug.com/1383180 [ android android-pixel-4 android-chromium ] Pixel_Video_Context_Loss_VP9 [ RetryOnFailure ]
-crbug.com/1383180 [ android android-pixel-6 android-chromium ] Pixel_Video_MP4_Rounded_Corner [ RetryOnFailure ]
-# finder:group-end
+
+crbug.com/1429731 [ chromeos chromeos-board-kevin ] Pixel_WebGL2_ClearBufferfv_Result_Displayed [ Failure ]
+crbug.com/1429731 [ chromeos chromeos-board-kevin ] Pixel_WebGLFloat [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

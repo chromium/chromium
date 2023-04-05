@@ -83,17 +83,11 @@ const base::TimeDelta InactiveTabsTimeThreshold() {
   return base::Days(14);
 }
 
-NSString* InactiveTabsTimeThresholdDisplayString() {
-  DCHECK(IsInactiveTabsEnabled());
-  return [NSString
-      stringWithFormat:@"%@", @(InactiveTabsTimeThreshold().InDays())];
-}
-
 BASE_FEATURE(kShowInactiveTabsCount,
              "ShowInactiveTabsCount",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsShowInactiveTabsCountEnabled() {
-  DCHECK(IsInactiveTabsEnabled());
+  DCHECK(IsInactiveTabsEnabled() || IsInactiveTabsExplictlyDisabledByUser());
   return base::FeatureList::IsEnabled(kShowInactiveTabsCount);
 }

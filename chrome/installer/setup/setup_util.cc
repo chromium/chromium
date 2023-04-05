@@ -32,7 +32,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -833,28 +832,6 @@ void AddUpdateDowngradeVersionItem(HKEY root,
     list->AddDeleteRegValueWorkItem(root, client_state_key, KEY_WOW64_32KEY,
                                     kRegDowngradeVersion);
   }
-}
-
-bool GetSecureSystemTemp(base::FilePath* temp) {
-  for (const auto key : {base::DIR_WINDOWS, base::DIR_PROGRAM_FILES}) {
-    base::FilePath secure_system_temp;
-    if (!base::PathService::Get(key, &secure_system_temp)) {
-      continue;
-    }
-
-    if (key == base::DIR_WINDOWS) {
-      secure_system_temp = secure_system_temp.AppendASCII("SystemTemp");
-    }
-
-    const bool success = base::PathExists(secure_system_temp) &&
-                         base::PathIsWritable(secure_system_temp);
-    if (success) {
-      *temp = secure_system_temp;
-      return success;
-    }
-  }
-
-  return false;
 }
 
 }  // namespace installer

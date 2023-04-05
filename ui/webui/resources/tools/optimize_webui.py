@@ -31,6 +31,7 @@ for excluded_file in [
     'resources/js/cr.js',  # This file relies on globals.
     'resources/js/load_time_data.js',
     'resources/ash/common/load_time_data.m.js',
+    'resources/mwc/lit/index.js',
 ]:
   # Exclude both the chrome://resources form and the scheme-relative form for
   # files used in Polymer 3.

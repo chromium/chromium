@@ -14,6 +14,11 @@
         "name": "mixins_test args",
         "swarming": {
           "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Linux"
+            }
+          ],
           "value": "test"
         },
         "test": "mixins_test",
@@ -31,7 +36,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "iama": "mixin"
+              "iama": "mixin",
+              "os": "Linux"
             }
           ],
           "value": "test"
@@ -52,7 +58,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "hello": "world"
+              "hello": "world",
+              "os": "Linux"
             }
           ],
           "value": "test"

@@ -13,6 +13,8 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/browser_process.h"
@@ -155,7 +157,9 @@ void WorkingSetTrimmerChromeOS::OnDropArcVmCaches(
     bridge->Reclaim(
         std::move(reclaim_request),
         base::BindOnce(&WorkingSetTrimmerChromeOS::OnArcVmMemoryGuestReclaim,
-                       weak_factory_.GetMutableWeakPtr(), std::move(callback)));
+                       weak_factory_.GetMutableWeakPtr(),
+                       std::make_unique<base::ElapsedTimer>(),
+                       std::move(callback)));
   } else {
     arc::ArcSessionManager* arc_session_manager = arc::ArcSessionManager::Get();
     if (!arc_session_manager) {
@@ -169,14 +173,23 @@ void WorkingSetTrimmerChromeOS::OnDropArcVmCaches(
 }
 
 void WorkingSetTrimmerChromeOS::OnArcVmMemoryGuestReclaim(
+    std::unique_ptr<base::ElapsedTimer> elapsed_timer,
     TrimArcVmWorkingSetCallback callback,
     arc::mojom::ReclaimResultPtr result) {
   VLOG(2) << "Finished trimming memory from guest. " << result->reclaimed
           << " processes were reclaimed successfully. " << result->unreclaimed
           << " processes were not reclaimed.";
+  base::UmaHistogramBoolean("Arc.GuestZram.SuccessfulReclaim",
+                            (result->reclaimed > 0));
   if (result->reclaimed == 0) {
     std::move(callback).Run(false, "No guest process was reclaimed");
   } else {
+    base::UmaHistogramCounts1000("Arc.GuestZram.ReclaimedProcess",
+                                 result->reclaimed);
+    base::UmaHistogramCounts1000("Arc.GuestZram.UnreclaimedProcess",
+                                 result->unreclaimed);
+    base::UmaHistogramMediumTimes("Arc.GuestZram.TotalReclaimTime",
+                                  elapsed_timer->Elapsed());
     std::move(callback).Run(true, "");
   }
 }

@@ -88,7 +88,7 @@ int AppBannerManagerAndroid::GetBadgeStatusForTesting(JNIEnv* env) {
   if (!ambient_badge_manager_) {
     return 0;
   }
-  return (int)ambient_badge_manager_->GetStatus();
+  return (int)ambient_badge_manager_->state();
 }
 
 bool AppBannerManagerAndroid::OnAppDetailsRetrieved(

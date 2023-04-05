@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2305020378527873881">„<ph name="VOLUME_NAME" />“ pašalintas.</translation>
 <translation id="2307462900900812319">Konfigūruoti tinklą</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Nepavyko rasti plėtinio, kurio ID <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Susisiekite su administratoriumi.}one{Nepavyko rasti plėtinių, kurių ID <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Susisiekite su administratoriumi.}few{Nepavyko rasti plėtinių, kurių ID <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Susisiekite su administratoriumi.}many{Nepavyko rasti plėtinių, kurių ID <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Susisiekite su administratoriumi.}other{Nepavyko rasti plėtinių, kurių ID <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Susisiekite su administratoriumi.}}</translation>
 <translation id="2325650632570794183">Šio tipo failas nepalaikomas. Apsilankykite „Chrome“ internetinėje parduotuvėje ir suraskite programą, kurią naudojant galima atidaryti šio tipo failą.</translation>
 <translation id="2326539130272988168">Bulgarų k.</translation>
 <translation id="2337715497728194187">Bendrinti su „Bruschetta“</translation>
@@ -274,6 +275,7 @@
 <translation id="3290356915286466215">Neapsaugota</translation>
 <translation id="3291218047831493686">SIM užrakto nustatymus galite pakeisti prisijungę prie šio tinklo</translation>
 <translation id="3293023191599135697">WEP tinklai nepalaikomi</translation>
+<translation id="3295006446256079333">Šis tomas</translation>
 <translation id="3295357220137379386">Įrenginys užimtas</translation>
 <translation id="3296763833017966289">Gruzinų</translation>
 <translation id="3307875152560779385">Ukrainiečių k.</translation>

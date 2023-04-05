@@ -234,6 +234,7 @@ source_set("ios_web_navigation_unittests") {
     ":web",
     "//base",
     "//base/test:test_support",
+    "//components/sessions:session_id",
     "//components/url_formatter",
     "//ios/net",
     "//ios/testing:ocmock_support",
@@ -373,6 +374,7 @@ source_set("ios_web_web_state_unittests") {
     ":web",
     "//base",
     "//base/test:test_support",
+    "//components/sessions:session_id",
     "//components/url_formatter",
     "//ios/net",
     "//ios/testing:ocmock_support",
@@ -556,6 +558,7 @@ test("ios_web_inttests") {
   deps = [
     ":web",
     "//base/test:test_support",
+    "//components/sessions:session_id",
     "//ios/net",
     "//ios/testing:block_swizzler",
     "//ios/testing:embedded_test_server_support",

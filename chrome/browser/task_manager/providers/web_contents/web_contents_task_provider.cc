@@ -126,6 +126,21 @@ void WebContentsTaskProvider::WebContentsEntry::CreateAllTasks() {
   DCHECK(web_contents()->GetPrimaryMainFrame());
   web_contents()->ForEachRenderFrameHost(
       [this](content::RenderFrameHost* render_frame_host) {
+        const auto state = render_frame_host->GetLifecycleState();
+        // `WebContents::ForEachRenderFrameHost` does not iterate over
+        // speculative or pending commit RFHs.
+        //
+        // TODO(https://crbug.com/1429070): Move this CHECK into
+        // `WebContents::ForEachRenderFrameHost`.
+        CHECK_NE(state, RenderFrameHost::LifecycleState::kPendingCommit);
+        // TODO(https://crbug.com/1429070):
+        // `WebContents::ForEachRenderFrameHost` should explicitly exclude
+        // `kPendingDeletion`, just like `kSpeculative` and `kPendingCommit`.
+        if (state == RenderFrameHost::LifecycleState::kPendingDeletion) {
+          // A `kPendingDeletion` RFH will soon be destroyed. The task manager
+          // does not need to create a task for such a RFH.
+          return;
+        }
         CreateTaskForFrame(render_frame_host);
       });
 }
@@ -261,10 +276,10 @@ void WebContentsTaskProvider::WebContentsEntry::DidFinishNavigation(
   // navigation, since neither |RenderFrameDeleted| nor |RenderFrameHostChanged|
   // is fired to delete the existing task, we do not recreate them.
   //
-  // TODO(crbug.com/1183630): DidFinishNavigation is not called when we create
-  // initial empty documents, and as a result, we will not create new tasks for
-  // these empty documents if they are in a different process from their
-  // embedder/opener (eg: an empty fenced frame or a blank tab created by
+  // TODO(https://crbug.com/1183639): DidFinishNavigation is not called when we
+  // create initial empty documents, and as a result, we will not create new
+  // tasks for these empty documents if they are in a different process from
+  // their embedder/opener (eg: an empty fenced frame or a blank tab created by
   // window.open('', '_blank', 'noopener')). Ideally, we would call
   // CreateTaskForFrame inside RenderFrameCreated instead (which is called for
   // initial documents), but CreateTaskForFrame uses RFH::GetLifecycleState,
@@ -335,7 +350,8 @@ void WebContentsTaskProvider::WebContentsEntry::CreateTaskForFrame(
     case RenderFrameHost::LifecycleState::kActive:
       break;
     default:
-      NOTREACHED();
+      NOTREACHED() << "Illegal RFH state for TaskManager: "
+                   << static_cast<int>(rfh_state);
       break;
   }
 

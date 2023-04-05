@@ -163,15 +163,17 @@ public class AddressEditorTest {
 
         when(mEditorDialog.getContext()).thenReturn(mActivity);
         doNothing().when(mEditorDialog).show(mEditorModelCapture.capture());
-
-        mAddressEditor = new AddressEditor(/*saveToDisk=*/false);
-        mAddressEditor.setEditorDialog(mEditorDialog);
     }
 
     @After
     public void tearDown() {
         // Reset default locale to avoid changing it for other tests.
         Locale.setDefault(DEFAULT_LOCALTE);
+    }
+
+    private void setUpAddressEditor(boolean isMigrationToAccount) {
+        mAddressEditor = new AddressEditor(/*saveToDisk=*/false, isMigrationToAccount);
+        mAddressEditor.setEditorDialog(mEditorDialog);
     }
 
     private void setUpSupportedCountries(List<DropdownKeyValue> supportedContries) {
@@ -228,6 +230,7 @@ public class AddressEditorTest {
     @Test
     @SmallTest
     public void validateUIStrings_NewAddressProfile() {
+        setUpAddressEditor(/*isMigrationToAccount=*/false);
         setUpAddressUiComponents(new ArrayList());
         mAddressEditor.setCustomDoneButtonText("Custom done");
         mAddressEditor.edit(null, unused -> { return; });
@@ -248,6 +251,7 @@ public class AddressEditorTest {
     @Test
     @SmallTest
     public void validateUIStrings_LocalOrSyncAddressProfile_AddressSyncDisabled() {
+        setUpAddressEditor(/*isMigrationToAccount=*/false);
         setUpAddressUiComponents(new ArrayList());
         mAddressEditor.setCustomDoneButtonText("Custom done");
         mAddressEditor.edit(new AutofillAddress(mActivity, sLocalProfile), unused -> { return; });
@@ -268,6 +272,7 @@ public class AddressEditorTest {
     @Test
     @SmallTest
     public void validateUIStrings_LocalOrSyncAddressProfile_AddressSyncEnabled() {
+        setUpAddressEditor(/*isMigrationToAccount=*/false);
         setUpAddressUiComponents(new ArrayList());
         when(mSyncService.isSyncFeatureEnabled()).thenReturn(true);
         when(mSyncService.getSelectedTypes())
@@ -284,7 +289,30 @@ public class AddressEditorTest {
 
     @Test
     @SmallTest
+    public void validateUIStrings_LocalOrSyncAddressProfile_MigrationToAccount() {
+        setUpAddressEditor(/*isMigrationToAccount=*/true);
+        setUpAddressUiComponents(new ArrayList());
+        when(mSyncService.isSyncFeatureEnabled()).thenReturn(true);
+        when(mSyncService.getSelectedTypes())
+                .thenReturn(Collections.singleton(UserSelectableType.AUTOFILL));
+
+        mAddressEditor.edit(new AutofillAddress(mActivity, sLocalProfile), unused -> { return; });
+        EditorModel editorModel = mEditorModelCapture.getValue();
+        Assert.assertNotNull(editorModel);
+        Assert.assertEquals(
+                mActivity.getString(R.string.autofill_edit_account_address_source_notice)
+                        .replace("$1", USER_EMAIL),
+                editorModel.getFooterMessageText());
+        Assert.assertEquals(
+                mActivity.getString(R.string.autofill_delete_account_address_source_notice)
+                        .replace("$1", USER_EMAIL),
+                editorModel.getDeleteConfirmationText());
+    }
+
+    @Test
+    @SmallTest
     public void validateUIStrings_AccountAddressProfile() {
+        setUpAddressEditor(/*isMigrationToAccount=*/false);
         setUpAddressUiComponents(new ArrayList());
         mAddressEditor.setCustomDoneButtonText("Custom done");
         mAddressEditor.edit(new AutofillAddress(mActivity, sAccountProfile), unused -> { return; });
@@ -312,6 +340,7 @@ public class AddressEditorTest {
             ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HONORIFIC_PREFIXES})
     public void
     validateDefaultFields_NicknamesDisabled_HonorificDisabled() {
+        setUpAddressEditor(/*isMigrationToAccount=*/false);
         setUpAddressUiComponents(new ArrayList());
         mAddressEditor.edit(new AutofillAddress(mActivity, sLocalProfile), unused -> { return; });
 
@@ -349,6 +378,7 @@ public class AddressEditorTest {
     @Test
     @SmallTest
     public void validateDefaultFields() {
+        setUpAddressEditor(/*isMigrationToAccount=*/false);
         setUpAddressUiComponents(new ArrayList());
         mAddressEditor.edit(new AutofillAddress(mActivity, sLocalProfile), unused -> { return; });
 
@@ -369,6 +399,7 @@ public class AddressEditorTest {
     @Test
     @SmallTest
     public void validateShownFields_NewAddressProfile() {
+        setUpAddressEditor(/*isMigrationToAccount=*/false);
         AutofillProfile emptyProfile = new AutofillProfile();
         setUpAddressUiComponents(sSupportedAddressFields);
         mAddressEditor.edit(null, unused -> { return; });
@@ -405,9 +436,6 @@ public class AddressEditorTest {
         validateTextField(editorFields.get(4), emptyProfile.getLocality(),
                 EditorFieldModel.INPUT_TYPE_HINT_NONE, "locality label", false, true, false);
 
-        // Dependent locality is empty in address profile stored in account, this way it is still
-        // considered optional by the editor, although it is required for newly created address
-        // profiles. Dependenent locality field is forced to occupy full line.
         validateTextField(editorFields.get(5), emptyProfile.getDependentLocality(),
                 EditorFieldModel.INPUT_TYPE_HINT_NONE, "dependent locality label", false, true,
                 false);
@@ -429,6 +457,7 @@ public class AddressEditorTest {
     @Test
     @SmallTest
     public void validateShownFields_LocalOrSyncAddressProfile() {
+        setUpAddressEditor(/*isMigrationToAccount=*/false);
         setUpAddressUiComponents(sSupportedAddressFields);
         mAddressEditor.edit(new AutofillAddress(mActivity, sLocalProfile), unused -> { return; });
 
@@ -464,9 +493,6 @@ public class AddressEditorTest {
         validateTextField(editorFields.get(4), sLocalProfile.getLocality(),
                 EditorFieldModel.INPUT_TYPE_HINT_NONE, "locality label", false, true, false);
 
-        // Dependent locality is empty in address profile stored in account, this way it is still
-        // considered optional by the editor, although it is required for newly created address
-        // profiles. Dependenent locality field is forced to occupy full line.
         validateTextField(editorFields.get(5), sLocalProfile.getDependentLocality(),
                 EditorFieldModel.INPUT_TYPE_HINT_NONE, "dependent locality label", false, true,
                 false);
@@ -487,7 +513,68 @@ public class AddressEditorTest {
 
     @Test
     @SmallTest
-    public void validateShownFields() {
+    public void validateShownFields_LocalOrSyncAddressProfile_MigrationToAccount() {
+        setUpAddressEditor(/*isMigrationToAccount=*/true);
+        setUpAddressUiComponents(sSupportedAddressFields);
+        mAddressEditor.edit(new AutofillAddress(mActivity, sLocalProfile), unused -> { return; });
+
+        Assert.assertNotNull(mEditorModelCapture.getValue());
+        List<EditorFieldModel> editorFields = mEditorModelCapture.getValue().getFields();
+        // editorFields[0] - country dropdown.
+        // editorFields[1] - honorific field.
+        // editorFields[2] - full name field.
+        // editorFields[3] - admin area field.
+        // editorFields[4] - locality field.
+        // editorFields[5] - dependent locality field.
+        // editorFields[6] - organization field.
+        // editorFields[7] - sorting code field.
+        // editorFields[8] - postal code field.
+        // editorFields[9] - street address field.
+        // editorFields[10] - phone number field.
+        // editorFields[11] - email field.
+        // editorFields[12] - nickname field.
+        Assert.assertEquals(13, editorFields.size());
+
+        // Fields obtained from backend must be placed after the country dropdown.
+        // Note: honorific prefix always comes before the full name field.
+        validateTextField(editorFields.get(1), sLocalProfile.getHonorificPrefix(),
+                EditorFieldModel.INPUT_TYPE_HINT_NONE,
+                mActivity.getString(R.string.autofill_profile_editor_honorific_prefix), false, true,
+                false);
+        validateTextField(editorFields.get(2), sLocalProfile.getFullName(),
+                EditorFieldModel.INPUT_TYPE_HINT_PERSON_NAME, "full name label", true, true, false);
+        validateTextField(editorFields.get(3), sLocalProfile.getRegion(),
+                EditorFieldModel.INPUT_TYPE_HINT_NONE, "admin area label", false, true, false);
+        // Locality field is forced to occupy full line.
+        validateTextField(editorFields.get(4), sLocalProfile.getLocality(),
+                EditorFieldModel.INPUT_TYPE_HINT_NONE, "locality label", true, true, false);
+
+        // Dependent locality is empty and address profile is going to be stored in account,
+        // this way it is still considered optional by the editor, although it is required
+        // for newly created address profiles. Dependenent locality field is forced to occupy
+        // full line.
+        validateTextField(editorFields.get(5), sLocalProfile.getDependentLocality(),
+                EditorFieldModel.INPUT_TYPE_HINT_NONE, "dependent locality label", false, true,
+                false);
+
+        validateTextField(editorFields.get(6), sLocalProfile.getSortingCode(),
+                EditorFieldModel.INPUT_TYPE_HINT_NONE, "organization label", false, true, false);
+
+        validateTextField(editorFields.get(7), sLocalProfile.getCompanyName(),
+                EditorFieldModel.INPUT_TYPE_HINT_ALPHA_NUMERIC, "sorting code label", false, false,
+                false);
+        validateTextField(editorFields.get(8), sLocalProfile.getPostalCode(),
+                EditorFieldModel.INPUT_TYPE_HINT_ALPHA_NUMERIC, "postal code label", true, false,
+                false);
+        validateTextField(editorFields.get(9), sLocalProfile.getStreetAddress(),
+                EditorFieldModel.INPUT_TYPE_HINT_STREET_LINES, "street address label", true, true,
+                false);
+    }
+
+    @Test
+    @SmallTest
+    public void validateShownFields_AccountProfile() {
+        setUpAddressEditor(/*isMigrationToAccount=*/false);
         setUpAddressUiComponents(sSupportedAddressFields);
         mAddressEditor.edit(new AutofillAddress(mActivity, sAccountProfile), unused -> { return; });
 
@@ -522,7 +609,7 @@ public class AddressEditorTest {
         validateTextField(editorFields.get(4), sAccountProfile.getLocality(),
                 EditorFieldModel.INPUT_TYPE_HINT_NONE, "locality label", true, true, false);
 
-        // Dependent locality is empty in address profile stored in account, this way it is still
+        // Dependent locality is empty and address profile stored in account, this way it is still
         // considered optional by the editor, although it is required for newly created address
         // profiles. Dependenent locality field is forced to occupy full line.
         validateTextField(editorFields.get(5), sAccountProfile.getDependentLocality(),
@@ -546,6 +633,7 @@ public class AddressEditorTest {
     @Test
     @SmallTest
     public void edit_ChangeCountry_FieldsSetChanges() {
+        setUpAddressEditor(/*isMigrationToAccount=*/false);
         setUpAddressUiComponents(List.of(new AddressUiComponent(AddressField.SORTING_CODE,
                                          "sorting code label", false, true)),
                 "US");
@@ -593,6 +681,7 @@ public class AddressEditorTest {
     @Test
     @SmallTest
     public void edit_AlterProfile_Cancel() {
+        setUpAddressEditor(/*isMigrationToAccount=*/false);
         AutofillProfile toEdit = new AutofillProfile(sLocalProfile);
         setUpAddressUiComponents(sSupportedAddressFields);
         mAddressEditor.edit(new AutofillAddress(mActivity, toEdit), mDoneCallback);
@@ -620,6 +709,7 @@ public class AddressEditorTest {
     @Test
     @SmallTest
     public void edit_AlterProfile_CommitChanges() {
+        setUpAddressEditor(/*isMigrationToAccount=*/false);
         AutofillProfile toEdit = new AutofillProfile(sLocalProfile);
         setUpAddressUiComponents(sSupportedAddressFields);
         mAddressEditor.edit(new AutofillAddress(mActivity, toEdit), mDoneCallback);

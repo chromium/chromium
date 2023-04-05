@@ -193,7 +193,8 @@ class CompositorFrameReporterTest : public testing::Test {
   }
 
   std::unique_ptr<CompositorFrameReporter> CreatePipelineReporter() {
-    GlobalMetricsTrackers trackers{&dropped_frame_counter_, nullptr};
+    GlobalMetricsTrackers trackers{&dropped_frame_counter_, nullptr, nullptr,
+                                   nullptr, nullptr};
     auto reporter = std::make_unique<CompositorFrameReporter>(
         ActiveTrackers(), viz::BeginFrameArgs(),
         /*should_report_metrics=*/true,

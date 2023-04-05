@@ -61,23 +61,46 @@ void CopyEmojiToClipboard(const std::string& emoji_to_copy) {
   }
 }
 
-// Used to insert an emoji after WebUI handler is destroyed, before
-// self-destructing.
-class EmojiObserver : public ui::InputMethodObserver {
+std::string BuildGifHTML(const GURL& gif) {
+  // Referrer-Policy is used to prevent Tenor from getting information about
+  // where the GIFs are being used.
+  return base::StrCat(
+      {"<img src=\"", gif.spec(), "\" referrerpolicy=\"no-referrer\">"});
+}
+
+void CopyGifToClipboard(const GURL& gif_to_copy) {
+  if (!gif_to_copy.is_valid()) {
+    return;
+  }
+
+  // Overwrite the clipboard data with the GIF url.
+  auto clipboard = std::make_unique<ui::ScopedClipboardWriter>(
+      ui::ClipboardBuffer::kCopyPaste);
+
+  clipboard->WriteHTML(base::UTF8ToUTF16(BuildGifHTML(gif_to_copy)), "",
+                       ui::ClipboardContentType::kSanitized);
+
+  // Show a toast that says the GIF has been copied to the clipboard.
+  ToastManager::Get()->Show(ToastData(
+      kEmojiPickerToastId, ToastCatalogName::kCopyGifToClipboardAction,
+      l10n_util::GetStringUTF16(IDS_ASH_EMOJI_PICKER_COPY_GIF_TO_CLIPBOARD)));
+}
+
+// Used to insert a gif / emoji after WebUI handler is destroyed, before
+// self-constructing.
+class InsertObserver : public ui::InputMethodObserver {
  public:
-  explicit EmojiObserver(const std::string& emoji_to_insert,
-                         ui::InputMethod* ime)
-      : emoji_to_insert_(emoji_to_insert), ime_(ime) {
+  explicit InsertObserver(ui::InputMethod* ime) : ime_(ime) {
     delete_timer_.Start(
         FROM_HERE, base::Seconds(1),
-        base::BindOnce(&EmojiObserver::DestroySelf, base::Unretained(this)));
+        base::BindOnce(&InsertObserver::DestroySelf, base::Unretained(this)));
   }
-  ~EmojiObserver() override {
-    if (!inserted_) {
-      CopyEmojiToClipboard(emoji_to_insert_);
-    }
-    ime_->RemoveObserver(this);
-  }
+
+  ~InsertObserver() override { ime_->RemoveObserver(this); }
+
+  virtual void PerformInsert(ui::TextInputClient* input_client) = 0;
+
+  virtual void PerformCopy() = 0;
 
   void OnTextInputStateChanged(const ui::TextInputClient* client) override {
     focus_change_count_++;
@@ -108,10 +131,7 @@ class EmojiObserver : public ui::InputMethodObserver {
         return;
       }
 
-      input_client->InsertText(
-          base::UTF8ToUTF16(emoji_to_insert_),
-          ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-      inserted_ = true;
+      PerformInsert(input_client);
       DestroySelf();
       return;
     }
@@ -124,13 +144,61 @@ class EmojiObserver : public ui::InputMethodObserver {
   void OnCaretBoundsChanged(const ui::TextInputClient* client) override {}
   void OnInputMethodDestroyed(const ui::InputMethod* client) override {}
 
+ protected:
+  void MarkInserted() { this->inserted_ = true; }
+
  private:
-  void DestroySelf() { delete this; }
+  void DestroySelf() {
+    if (!inserted_) {
+      PerformCopy();
+    }
+    delete this;
+  }
   int focus_change_count_ = 0;
-  std::string emoji_to_insert_;
   base::OneShotTimer delete_timer_;
   ui::InputMethod* ime_;
   bool inserted_ = false;
+};
+
+// Used to insert an emoji after WebUI handler is destroyed, before
+// self-destructing.
+class EmojiObserver : public InsertObserver {
+ public:
+  explicit EmojiObserver(const std::string& emoji_to_insert,
+                         ui::InputMethod* ime)
+      : InsertObserver(ime), emoji_to_insert_(emoji_to_insert) {}
+
+  void PerformInsert(ui::TextInputClient* input_client) override {
+    input_client->InsertText(
+        base::UTF8ToUTF16(emoji_to_insert_),
+        ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+    MarkInserted();
+  }
+
+  void PerformCopy() override { CopyEmojiToClipboard(emoji_to_insert_); }
+
+ private:
+  std::string emoji_to_insert_;
+};
+
+// Used to insert a gif after WebUI handler is destroyed, before
+// self-destructing.
+class GifObserver : public InsertObserver {
+ public:
+  explicit GifObserver(const GURL& gif_to_insert, ui::InputMethod* ime)
+      : InsertObserver(ime), gif_to_insert_(gif_to_insert) {}
+
+  void PerformInsert(ui::TextInputClient* input_client) override {
+    if (input_client->CanInsertImage()) {
+      input_client->InsertImage(gif_to_insert_);
+      MarkInserted();
+    }
+  }
+
+  void PerformCopy() override { CopyGifToClipboard(gif_to_insert_); }
+
+ private:
+  GURL gif_to_insert_;
 };
 
 EmojiPageHandler::EmojiPageHandler(
@@ -239,31 +307,33 @@ void EmojiPageHandler::InsertEmoji(const std::string& emoji_to_insert,
   }
 }
 
-void EmojiPageHandler::CopyGifToClipboard(const GURL& gif) {
+void EmojiPageHandler::InsertGif(const GURL& gif) {
   if (!gif.is_valid()) {
     return;
   }
 
-  // Overwrite the clipboard data with the gif url.
-  auto clipboard = std::make_unique<ui::ScopedClipboardWriter>(
-      ui::ClipboardBuffer::kCopyPaste, nullptr);
-  // Referrer-Policy is used to prevent Tenor from getting information about
-  // where the GIFs are being used.
-  clipboard->WriteHTML(
-      base::UTF8ToUTF16(base::StrCat(
-          {"<img src=\"", gif.spec(), "\" referrerpolicy=\"no-referrer\">"})),
-      "", ui::ClipboardContentType::kSanitized);
+  ui::InputMethod* input_method =
+      IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
+
+  if (!input_method) {
+    DLOG(WARNING) << "no input_method found";
+    CopyGifToClipboard(gif);
+    return;
+  }
+
+  if (no_text_field_) {
+    CopyGifToClipboard(gif);
+    return;
+  }
+
+  // The GifObserver here will self-destroy.
+  input_method->AddObserver(new GifObserver(gif, input_method));
 
   // By hiding the emoji picker, we restore focus to the original text field.
   auto embedder = webui_controller_->embedder();
   if (embedder) {
     embedder->CloseUI();
   }
-
-  // Show a toast that says GIF has been copied to your clipboard.
-  ToastManager::Get()->Show(ToastData(
-      kEmojiPickerToastId, ToastCatalogName::kCopyGifToClipboardAction,
-      l10n_util::GetStringUTF16(IDS_ASH_EMOJI_PICKER_COPY_GIF_TO_CLIPBOARD)));
 }
 
 void EmojiPageHandler::OnUiFullyLoaded() {

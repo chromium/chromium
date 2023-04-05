@@ -20,8 +20,8 @@ import finalize_apk
 
 from util import build_utils
 from util import diff_utils
-from util import zipalign
 import action_helpers  # build_utils adds //build to sys.path.
+import zip_helpers
 
 
 # Taken from aapt's Package.cpp:
@@ -204,7 +204,7 @@ def _GetAssetsToAdd(path_tuples,
           os.path.splitext(src_path)[1] not in _NO_COMPRESS_EXTENSIONS)
 
       if target_compress == compress:
-        # AddToZipHermetic() uses this logic to avoid growing small files.
+        # add_to_zip_hermetic() uses this logic to avoid growing small files.
         # We need it here in order to set alignment correctly.
         if allow_reads and compress and os.path.getsize(src_path) < 16:
           compress = False
@@ -236,12 +236,11 @@ def _AddFiles(apk, details):
       raise Exception(
           'Multiple targets specified the asset path: %s' % apk_path)
     except KeyError:
-      zipalign.AddToZipHermetic(
-          apk,
-          apk_path,
-          src_path=src_path,
-          compress=compress,
-          alignment=alignment)
+      zip_helpers.add_to_zip_hermetic(apk,
+                                      apk_path,
+                                      src_path=src_path,
+                                      compress=compress,
+                                      alignment=alignment)
 
 
 def _GetNativeLibrariesToAdd(native_libs, android_abi, fast_align,
@@ -405,7 +404,7 @@ def main(args):
          zipfile.ZipFile(f, 'w') as out_apk:
 
       def add_to_zip(zip_path, data, compress=True, alignment=4):
-        zipalign.AddToZipHermetic(
+        zip_helpers.add_to_zip_hermetic(
             out_apk,
             zip_path,
             data=data,

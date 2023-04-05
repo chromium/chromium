@@ -28,14 +28,14 @@
     AnimationFrameTimingMonitor: {
       include_path: "third_party/blink/renderer/core/frame",
       probes: [
-        "CallFunction",
         "DidFinishSyncXHR",
         "DidRunJavaScriptDialog",
         "ExecuteScript",
+        "InvokeCallback",
+        "InvokeEventHandler",
         "RecalculateStyle",
         "UpdateLayout",
         "CompileAndRunScript",
-        "UserCallback",
         "WillHandlePromise",
       ]
     },

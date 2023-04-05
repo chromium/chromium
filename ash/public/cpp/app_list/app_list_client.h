@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -126,6 +127,9 @@ class ASH_PUBLIC_EXPORT AppListClient {
   // returns false if the tracker is not initialized yet.
   virtual std::unique_ptr<ScopedIphSession>
   CreateLauncherSearchIphSession() = 0;
+
+  // Opens the url in a browser for the search box IPH.
+  virtual void OpenSearchBoxIphUrl() = 0;
 
   // Invoked to load an icon of the app identified by `app_id`.
   virtual void LoadIcon(int profile_id, const std::string& app_id) = 0;

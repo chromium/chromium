@@ -2134,6 +2134,29 @@ TEST_P(AppPlatformMetricsServiceTest,
 }
 
 TEST_P(AppPlatformMetricsServiceTest,
+       ShouldClearUsageInfoFromPrefStoreWhenSyncDisabled) {
+  // Save usage entry with no usage data to the pref store.
+  {
+    const base::UnguessableToken& kInstanceId =
+        base::UnguessableToken::Create();
+    ScopedDictPrefUpdate usage_dict(GetPrefService(), kAppUsageTime);
+    AppPlatformMetrics::UsageTime usage_time;
+    usage_time.app_id = "TestApp";
+    usage_dict->SetByDottedPath(kInstanceId.ToString(),
+                                usage_time.ConvertToDict());
+  }
+
+  // Disable sync state.
+  sync_service()->SetDisableReasons(
+      syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
+
+  // Fast forward by two hours and verify usage info is cleared from the pref
+  // store.
+  task_environment_.FastForwardBy(base::Hours(2));
+  ASSERT_TRUE(GetPrefService()->GetDict(kAppUsageTime).empty());
+}
+
+TEST_P(AppPlatformMetricsServiceTest,
        ShouldNotClearUsageInfoFromPrefStoreIfReportingUsageSet) {
   // Create a new window for the app.
   auto window = std::make_unique<aura::Window>(nullptr);

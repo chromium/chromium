@@ -34,6 +34,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Contains the logic for the TouchToFillCreditCard component. It sets the state of the model and
@@ -156,11 +157,21 @@ class TouchToFillCreditCardMediator {
                         .Builder(TouchToFillCreditCardProperties.CreditCardProperties.ALL_KEYS)
                         .with(TouchToFillCreditCardProperties.CreditCardProperties.CARD_ICON_ID,
                                 card.getIssuerIconDrawableId())
+                        .with(TouchToFillCreditCardProperties.CreditCardProperties.NETWORK_NAME, "")
                         .with(TouchToFillCreditCardProperties.CreditCardProperties.CARD_NAME,
                                 card.getCardNameForAutofillDisplay())
                         .with(TouchToFillCreditCardProperties.CreditCardProperties.CARD_NUMBER,
                                 card.getObfuscatedLastFourDigits())
                         .with(ON_CLICK_ACTION, () -> this.onSelectedCreditCard(card));
+
+        // If a card has a nickname, the network name should also be announced, otherwise the name
+        // of the card will be the network name and it will be announced.
+        if (!card.getBasicCardIssuerNetwork().equals(
+                    card.getCardNameForAutofillDisplay().toLowerCase(Locale.getDefault()))) {
+            creditCardModelBuilder.with(
+                    TouchToFillCreditCardProperties.CreditCardProperties.NETWORK_NAME,
+                    card.getBasicCardIssuerNetwork());
+        }
 
         // For virtual cards, show the "Virtual card" label on the second line, and for non-virtual
         // cards, show the expiration date.

@@ -44,7 +44,7 @@ bool GetSystemPointingStickPrimaryButtonRight() {
 // Set "owner.pointing_stick.primary_right" preference.
 void SetOwnerPointingStickPrimaryRight(bool val) {
   g_browser_process->local_state()->SetBoolean(
-      ::prefs::kOwnerPrimaryPointingStickButtonRight, val);
+      prefs::kOwnerPrimaryPointingStickButtonRight, val);
 }
 
 // Gets current pointing_stick primary button right value.
@@ -57,7 +57,7 @@ bool GetSystemTouchpadTapToClick() {
 
 // Set "owner.touchpad.enable_tap_to_click" preference.
 void SetOwnerTouchpadEnableTapToClick(bool val) {
-  g_browser_process->local_state()->SetBoolean(::prefs::kOwnerTapToClickEnabled,
+  g_browser_process->local_state()->SetBoolean(prefs::kOwnerTapToClickEnabled,
                                                val);
 }
 
@@ -97,13 +97,13 @@ IN_PROC_BROWSER_TEST_F(LoginUIPrefControllerTest,
   SetDeviceLoginScreenPrimaryMouseButtonSwitch(true);
   RefreshDevicePolicy();
   WaitForPrefValue(g_browser_process->local_state(),
-                   ::prefs::kOwnerPrimaryMouseButtonRight, base::Value(true));
+                   prefs::kOwnerPrimaryMouseButtonRight, base::Value(true));
   EXPECT_TRUE(GetSystemMousePrimaryButtonRight());
 
   SetDeviceLoginScreenPrimaryMouseButtonSwitch(false);
   RefreshDevicePolicy();
   WaitForPrefValue(g_browser_process->local_state(),
-                   ::prefs::kOwnerPrimaryMouseButtonRight, base::Value(false));
+                   prefs::kOwnerPrimaryMouseButtonRight, base::Value(false));
   EXPECT_FALSE(GetSystemMousePrimaryButtonRight());
 }
 

@@ -113,13 +113,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest, NoCookiesBlocked) {
 
 // Test opening cookie controls bubble and clicking on "not working" link.
 // Check that accepting the bubble unblocks 3p cookies for this origin.
-// TODO(https://crbug.com/1309497): Flaky on win and mac.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#define MAYBE_NotWorkingClicked DISABLED_NotWorkingClicked
-#else
-#define MAYBE_NotWorkingClicked NotWorkingClicked
-#endif
-IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest, MAYBE_NotWorkingClicked) {
+IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest, NotWorkingClicked) {
   // Block 3p cookies.
   SetThirdPartyCookieBlocking(true);
   GURL origin = embedded_test_server()->GetURL("a.com", "/");
@@ -154,16 +148,14 @@ IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest, BlockingDisabled) {
 // ==================== Pixel tests ====================
 
 // Test opening cookie controls bubble.
-// TODO(https://crbug.com/1309905):  Flakily fails on multiple platforms
-IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest, DISABLED_InvokeUi_CookiesBlocked) {
+IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest, InvokeUi_CookiesBlocked) {
   SetThirdPartyCookieBlocking(true);
   ShowAndVerifyUi();
 }
 
 // Test opening cookie controls bubble and clicking on "not working" link.
-// TODO(https://crbug.com/1332525): Flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest,
-                       DISABLED_InvokeUi_NotWorkingClicked) {
+                       InvokeUi_NotWorkingClicked) {
   // Block 3p cookies.
   SetThirdPartyCookieBlocking(true);
 

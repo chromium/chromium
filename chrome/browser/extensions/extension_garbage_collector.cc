@@ -37,6 +37,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/file_util.h"
 
 namespace extensions {
@@ -208,6 +209,17 @@ void ExtensionGarbageCollector::GarbageCollectExtensions() {
                          service->install_directory(), extension_paths))) {
     NOTREACHED();
   }
+
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsZipFileInstalledInProfileDir)) {
+    return;
+  }
+  if (!GetExtensionFileTaskRunner()->PostTask(
+          FROM_HERE, base::BindOnce(&GarbageCollectExtensionsOnFileThread,
+                                    service->unpacked_install_directory(),
+                                    extension_paths))) {
+    NOTREACHED();
+  }
 }
 
 void ExtensionGarbageCollector::GarbageCollectIsolatedStorageIfNeeded() {
@@ -249,11 +261,13 @@ void ExtensionGarbageCollector::OnGarbageCollectIsolatedStorageFinished() {
 }
 
 void ExtensionGarbageCollector::OnBeginCrxInstall(
+    content::BrowserContext* context,
     const std::string& extension_id) {
   crx_installs_in_progress_++;
 }
 
 void ExtensionGarbageCollector::OnFinishCrxInstall(
+    content::BrowserContext* context,
     const std::string& extension_id,
     bool success) {
   crx_installs_in_progress_--;

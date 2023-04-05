@@ -146,11 +146,11 @@ class BaseTestCase(unittest.TestCase):
         # ports and real ports. Since only "test" ports are used in this class,
         # we can make the default port also a "test" port.
         self.original_port_factory_get = self.tool.port_factory.get
-        test_port = self.tool.port_factory.get('test')
+        self._test_port = self.tool.port_factory.get('test')
 
         def get_test_port(port_name=None, options=None, **kwargs):
             if not port_name:
-                return test_port
+                return self._test_port
             return self.original_port_factory_get(port_name, options, **kwargs)
 
         self._mocks = contextlib.ExitStack()
@@ -390,8 +390,6 @@ class TestRebaseline(BaseTestCase):
                     'dry_run': False,
                     'verbose': True,
                     'results_directory': None,
-                    'flag_specific': None,
-                    'resultDB': None
                 }, **kwargs))
 
     def test_rebaseline_test_passes_on_all_builders(self):
@@ -444,21 +442,6 @@ class TestRebaseline(BaseTestCase):
             '--verbose',
             'userscripts/first-test.html',
         ])
-
-    def test_rebaseline_reftest(self):
-        """Do not download the `actual_image` artifact for reftests."""
-        self._write('userscripts/first-test-expected.html', 'reference')
-        self._remove('userscripts/first-test-expected.txt')
-        self._remove('userscripts/first-test-expected.png')
-        self._remove('userscripts/first-test-expected.wav')
-        test_baseline_set = TestBaselineSet(self.tool.builders)
-        test_baseline_set.add('userscripts/first-test.html',
-                              Build('MOCK Win7'),
-                              'blink_web_tests (with patch)')
-        self.command.rebaseline(self.options(), test_baseline_set)
-
-        self._mock_copier.find_baselines_to_copy.assert_not_called()
-        self.tool.main.assert_not_called()
 
     def test_rebaseline_debug(self):
         test_baseline_set = TestBaselineSet(self.tool.builders)
@@ -523,6 +506,10 @@ class TestRebaseline(BaseTestCase):
         self.assertEqual(
             self._read('platform/test-mac-mac10.11/'
                        'userscripts/first-test-expected.png'), 'actual image')
+        self.assertEqual(self.command.baseline_cache_stats.hit_count, 1)
+        self.assertEqual(self.command.baseline_cache_stats.hit_bytes, 12)
+        self.assertEqual(self.command.baseline_cache_stats.total_count, 2)
+        self.assertEqual(self.command.baseline_cache_stats.total_bytes, 24)
 
     def test_no_optimize(self):
         test_baseline_set = TestBaselineSet(self.tool.builders)
@@ -630,8 +617,6 @@ class TestRebaselineUpdatesExpectationsFiles(BaseTestCase):
             'dry_run': False,
             'verbose': True,
             'results_directory': None,
-            'flag_specific': None,
-            'resultDB': None
         })
 
     # In the following test cases, we use a mock rebaseline-test-internal to
@@ -993,10 +978,7 @@ class TestRebaselineExecute(BaseTestCase):
             'optimize': False,
             'dry_run': False,
             'builders': None,
-            'suffixes': 'png,txt',
             'verbose': True,
-            'flag_specific': None,
-            'resultDB': None
         })
 
     def test_rebaseline(self):

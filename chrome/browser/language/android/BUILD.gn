@@ -117,6 +117,7 @@ android_resources("java_resources") {
 
 android_library("javatests") {
   testonly = true
+  resources_package = "org.chromium.chrome.browser.language"
 
   sources = [
     "java/src/org/chromium/chrome/browser/language/GlobalAppLocaleControllerTest.java",
@@ -151,8 +152,6 @@ android_library("javatests") {
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
-    "//third_party/androidx:androidx_test_monitor_java",
-    "//third_party/androidx:androidx_test_rules_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
@@ -165,6 +164,7 @@ android_library("javatests") {
 
 robolectric_library("junit") {
   testonly = true
+  resources_package = "org.chromium.chrome.browser.language"
 
   sources = [
     "java/src/org/chromium/chrome/browser/language/AppLanguagePromoDialogTest.java",
@@ -178,6 +178,7 @@ robolectric_library("junit") {
 
   deps = [
     ":base_module_java",
+    ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",

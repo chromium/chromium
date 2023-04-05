@@ -38,6 +38,9 @@ class CC_EXPORT ViewTransitionContentLayerImpl : public LayerImpl {
       const base::flat_set<viz::ViewTransitionElementResourceId>&
           known_resource_ids) override;
 
+  viz::ViewTransitionElementResourceId ViewTransitionResourceId()
+      const override;
+
  protected:
   ViewTransitionContentLayerImpl(
       LayerTreeImpl* tree_impl,

@@ -2101,6 +2101,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="GpuRasterization" label="GpuRasterization"/>
   <suffix name="Webgl" label="Webgl"/>
   <suffix name="Webgl2" label="Webgl2"/>
+  <suffix name="Webgpu" label="Webgpu"/>
   <affected-histogram name="GPU.BlocklistFeatureTestResults"/>
 </histogram_suffixes>
 
@@ -3087,6 +3088,8 @@ chromium-metrics-reviews@google.com.
   <suffix name="drive" label="Module ID for Google Drive module"/>
   <suffix name="dummy" label="Module ID for a dummy module"/>
   <suffix name="dummy2" label="Module ID for another dummy module"/>
+  <suffix name="history_clusters"
+      label="Module ID for History Clusters module"/>
   <suffix name="photos" label="Module ID for Google Photos module"/>
   <suffix name="recipe_tasks" label="Module ID for Recipe Tasks"/>
   <suffix name="shopping_tasks" label="Module ID for Shopping Tasks"/>
@@ -3216,7 +3219,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="OfflinePages.Background.TimeToSaved"/>
   <affected-histogram name="OfflinePages.Background.TimeToStart"/>
   <affected-histogram name="OfflinePages.Background.TimeToStart.Svelte"/>
-  <affected-histogram name="OfflinePages.MhtmlLoadResult"/>
   <affected-histogram name="OfflinePages.PageAccessInterval"/>
   <affected-histogram name="OfflinePages.PageLifetime"/>
   <affected-histogram name="OfflinePages.PageSize"/>
@@ -4906,19 +4908,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Media.Remoting.SessionStopTrigger"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="RendererScheduler_AfterNthMinuteInBackgroundSplit"
-    separator=".">
-  <suffix name="Background.AfterFifthMinute"
-      label="Time spent in tasks of a particular task type starting from the
-             sixth minute after backgrounding the renderer. The renderer is
-             expected to be mostly idle during this period."/>
-  <suffix name="Background.AfterTenthMinute"
-      label="Time spent in tasks of a particular task type starting from the
-             eleventh minute after backgrounding the renderer. The renderer
-             is expected to be mostly idle during this period."/>
-  <affected-histogram name="RendererScheduler.TaskDurationPerTaskType2"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="RendererScheduler_MainThreadLoadSplit" separator=".">
   <suffix name="Background"
       label="Main thread load when the renderer is backgrounded. This does
@@ -4948,21 +4937,6 @@ chromium-metrics-reviews@google.com.
              than one minute. Most of loading tasks are expected to complete
              by then. This does not include extension renderers."/>
   <affected-histogram name="RendererScheduler.RendererMainThreadLoad5"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="RendererScheduler_ProcessVisibilityStateSplit"
-    separator=".">
-  <suffix name="Background" label=""/>
-  <suffix name="Foreground" label=""/>
-  <affected-histogram name="RendererScheduler.TaskDurationPerTaskType2"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="RendererScheduler_TaskDurationPerTaskTypeSplit"
-    separator=".">
-  <suffix name="UseCaseInputHandling" label=""/>
-  <suffix name="UseCaseLoading" label=""/>
-  <suffix name="UseCaseNone" label=""/>
-  <affected-histogram name="RendererScheduler.TaskDurationPerTaskType2"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="RendererThreadType" separator=".">

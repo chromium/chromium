@@ -216,7 +216,8 @@ DCompSurfaceImageBacking::ProduceOverlay(SharedImageManager* manager,
                                                                   tracker);
 }
 
-std::unique_ptr<SkiaImageRepresentation> DCompSurfaceImageBacking::ProduceSkia(
+std::unique_ptr<SkiaImageRepresentation>
+DCompSurfaceImageBacking::ProduceSkiaGanesh(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
@@ -308,10 +309,7 @@ sk_sp<SkSurface> DCompSurfaceImageBacking::BeginDraw(
                                       final_msaa_count, 0, framebuffer_info);
   auto surface = SkSurface::MakeFromBackendRenderTarget(
       context_state->gr_context(), render_target, surface_origin(), color_type,
-      color_space().ToSkColorSpace(
-          // TODO(crbug/1385874): Read SDR white level from current frame
-          gfx::ColorSpace::kDefaultSDRWhiteLevel),
-      &surface_props);
+      color_space().ToSkColorSpace(), &surface_props);
   DCHECK(surface);
 
   return surface;

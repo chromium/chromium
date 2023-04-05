@@ -69,8 +69,7 @@ class TextFieldInputType : public InputType,
                 TextControlSetValueSelection) override;
   void UpdateView() override;
   void AdjustStyle(ComputedStyleBuilder&) override;
-  LayoutObject* CreateLayoutObject(const ComputedStyle&,
-                                   LegacyLayout) const override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&) const override;
   ControlPart AutoAppearance() const override;
 
   virtual bool NeedsContainer() const { return false; }

@@ -85,8 +85,9 @@ class TestRasterInterface : public gpu::raster::RasterInterface {
   void WritePixels(const gpu::Mailbox& dest_mailbox,
                    int dst_x_offset,
                    int dst_y_offset,
+                   int dst_plane_index,
                    GLenum texture_target,
-                   GLuint row_bytes,
+                   GLuint src_row_bytes,
                    const SkImageInfo& src_info,
                    const void* src_pixels) override {}
   void ConvertYUVAMailboxesToRGB(

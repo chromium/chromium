@@ -13,7 +13,7 @@ import android.os.Looper;
 import androidx.core.provider.FontRequest;
 import androidx.core.provider.FontsContractCompat;
 
-import org.chromium.content.R;
+import org.chromium.chrome.browser.content_creation.internal.R;
 
 import java.util.HashMap;
 import java.util.Map;

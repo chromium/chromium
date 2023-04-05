@@ -23,6 +23,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_paths.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -208,6 +209,90 @@ IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest, PrivateStore) {
   DCHECK_GT(private_store.GetUpdateCheckCountAndReset(), 0);
   DCHECK_EQ(0, fake_cws()->GetUpdateCheckCountAndReset());
   EXPECT_EQ(ManifestLocation::kExternalPolicy, GetInstalledAppLocation());
+}
+
+class KioskEnterpriseEphemeralTest
+    : public KioskEnterpriseTest,
+      public testing::WithParamInterface<std::tuple<
+          /* ephemeral_users_enabled */ bool,
+          /* kiosk_ephemeral_mode */ policy::DeviceLocalAccount::
+              EphemeralMode>> {
+ public:
+  KioskEnterpriseEphemeralTest(const KioskEnterpriseEphemeralTest&) = delete;
+  KioskEnterpriseEphemeralTest& operator=(const KioskEnterpriseEphemeralTest&) =
+      delete;
+
+ protected:
+  KioskEnterpriseEphemeralTest() = default;
+
+  bool GetEphemeralUsersEnabled() const { return std::get<0>(GetParam()); }
+
+  policy::DeviceLocalAccount::EphemeralMode GetKioskEphemeralMode() const {
+    return std::get<1>(GetParam());
+  }
+
+  bool GetExpectedEphemeralUser() const {
+    switch (GetKioskEphemeralMode()) {
+      case policy::DeviceLocalAccount::EphemeralMode::kUnset:
+      case policy::DeviceLocalAccount::EphemeralMode::kFollowDeviceWidePolicy:
+        return GetEphemeralUsersEnabled();
+      case policy::DeviceLocalAccount::EphemeralMode::kDisable:
+        return false;
+      case policy::DeviceLocalAccount::EphemeralMode::kEnable:
+        return true;
+    }
+  }
+
+  void ConfigureEphemeralPolicies(
+      const std::string& account_id,
+      const std::string& app_id,
+      const std::string& update_url,
+      policy::DeviceLocalAccount::EphemeralMode ephemeral_mode,
+      bool ephemeral_users_enabled) {
+    std::vector<policy::DeviceLocalAccount> accounts;
+    accounts.emplace_back(policy::DeviceLocalAccount::TYPE_KIOSK_APP,
+                          ephemeral_mode, account_id, app_id, update_url);
+    policy::SetDeviceLocalAccounts(owner_settings_service_.get(), accounts);
+    settings_helper_.SetBoolean(kAccountsPrefEphemeralUsersEnabled,
+                                ephemeral_users_enabled);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    KioskEnterpriseEphemeralTest,
+    testing::Combine(
+        testing::Values(false, true),
+        testing::Values(
+            policy::DeviceLocalAccount::EphemeralMode::kUnset,
+            policy::DeviceLocalAccount::EphemeralMode::kFollowDeviceWidePolicy,
+            policy::DeviceLocalAccount::EphemeralMode::kDisable,
+            policy::DeviceLocalAccount::EphemeralMode::kEnable)));
+
+IN_PROC_BROWSER_TEST_P(KioskEnterpriseEphemeralTest,
+                       EnterpriseKioskAppEphemeral) {
+  // Prepare Fake CWS to serve app crx.
+  set_test_app_id(kTestEnterpriseKioskApp);
+  set_test_app_version("1.0.0");
+  set_test_crx_file(test_app_id() + ".crx");
+  SetupTestAppUpdateCheck();
+
+  // Configure device policies.
+  ConfigureEphemeralPolicies(kTestEnterpriseAccountId, kTestEnterpriseKioskApp,
+                             "", GetKioskEphemeralMode(),
+                             GetEphemeralUsersEnabled());
+
+  EXPECT_TRUE(LaunchApp(kTestEnterpriseKioskApp));
+
+  KioskSessionInitializedWaiter().Wait();
+
+  // Check installer status.
+  EXPECT_EQ(KioskAppLaunchError::Error::kNone, KioskAppLaunchError::Get());
+  EXPECT_EQ(ManifestLocation::kExternalPolicy, GetInstalledAppLocation());
+
+  EXPECT_EQ(
+      GetExpectedEphemeralUser(),
+      FakeUserDataAuthClient::TestApi::Get()->IsCurrentSessionEphemeral());
 }
 
 }  // namespace ash

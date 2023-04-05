@@ -51,6 +51,7 @@ generate_grd("build_grd") {
       "cr_components/managed_dialog:build_grdp",
       "cr_components/managed_footnote:build_grdp",
       "cr_components/most_visited:build_grdp",
+      "cr_components/settings_prefs:build_grdp",
       "//third_party/polymer/v3_0:build_grdp",
     ]
     grdp_files += [
@@ -62,6 +63,7 @@ generate_grd("build_grd") {
       "$target_gen_dir/cr_components/managed_dialog/resources.grdp",
       "$target_gen_dir/cr_components/managed_footnote/resources.grdp",
       "$target_gen_dir/cr_components/most_visited/resources.grdp",
+      "$target_gen_dir/cr_components/settings_prefs/resources.grdp",
     ]
 
     if (use_nss_certs) {
@@ -91,18 +93,11 @@ generate_grd("build_grd") {
   }
 
   if (is_chromeos_ash) {
-    public_deps += [
-      ":build_cros_styles_grdp",
-      "//third_party/cros-components:cros_components_grdp",
-      "//third_party/material_web_components:build_lit_grdp",
-      "//third_party/material_web_components:build_mwc_grdp",
-    ]
-    grdp_files += [
-      "$root_gen_dir/third_party/material_web_components/lit_resources.grdp",
-      "$root_gen_dir/third_party/material_web_components/mwc_resources.grdp",
-      "$root_gen_dir/third_party/cros-components/resources.grdp",
-      "$target_gen_dir/cros_styles_resources.grdp",
-    ]
+    # NOTE: Do not add any new Ash-only grdp files below.
+    # TODO(crbug.com/1347740): Move remaining Ash-only shared resources to
+    # ash/webui/common/resources:build_grd
+    public_deps += [ ":build_cros_styles_grdp" ]
+    grdp_files += [ "$target_gen_dir/cros_styles_resources.grdp" ]
   }
 
   if (!is_android && !is_ios) {

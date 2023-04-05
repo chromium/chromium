@@ -31,6 +31,7 @@ import org.chromium.base.compat.ApiHelperForR;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LoaderErrors;
 import org.chromium.base.library_loader.ProcessInitException;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.IntentHandler;
@@ -845,13 +846,16 @@ public abstract class AsyncInitializationActivity
 
     @Override
     public boolean moveTaskToBack(boolean nonRoot) {
-        // On Android L moving the task to the background flakily stops the
-        // Activity from being finished, breaking tests. Trying to bring the
-        // task back to the foreground after also happens to be flaky, so just
-        // allow tests to prevent actually moving to the background.
+        // On Android (at least until N) moving the task to the background flakily stops the
+        // Activity from being finished, breaking tests. Trying to bring the task back to the
+        // foreground after also happens to be flaky, so just allow tests to prevent actually moving
+        // to the background.
         if (sInterceptMoveTaskToBackForTesting) {
             sBackInterceptedForTesting = true;
             return false;
+        } else if (BuildConfig.IS_FOR_TEST) {
+            assert false : "moveTaskToBack must be intercepted or it will create flaky tests. "
+                           + "See #interceptMoveTaskToBackForTesting";
         }
         return super.moveTaskToBack(nonRoot);
     }

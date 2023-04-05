@@ -44,6 +44,9 @@ class AmbientBackendControllerImpl : public AmbientBackendController {
       OnSettingsAndAlbumsFetchedCallback callback) override;
   void FetchWeather(FetchWeatherCallback callback) override;
   const std::array<const char*, 2>& GetBackupPhotoUrls() const override;
+  std::array<const char*, 2> GetTimeOfDayVideoPreviewImageUrls(
+      AmbientVideo video) const override;
+  const char* GetPromoBannerUrl() const override;
 
  private:
   using BackdropClientConfig = chromeos::ambient::BackdropClientConfig;

@@ -12,10 +12,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
-namespace message_center {
-class Notification;
-}  // namespace message_center
-
 namespace ash {
 
 // An interface for the delegate of the privacy indicators notification,
@@ -73,8 +69,12 @@ class ASH_EXPORT PrivacyIndicatorsNotificationDelegate
   absl::optional<int> launch_settings_button_index_;
 };
 
-// Updates privacy indicators, including the privacy indicators view and the
-// privacy indicator notification(s).
+// Updates privacy indicators, including:
+// * Updates camera and microphone access indicators for
+//   `PrivacyIndicatorsTrayItemView`(s) across all status area widgets.
+// * Adds, updates, or removes the privacy notification associated with the
+//   given `app_id`. The given scoped_refptr for `delegate` will be passed as a
+//   parameter for the function creating the privacy indicators notification.
 void ASH_EXPORT UpdatePrivacyIndicators(
     const std::string& app_id,
     absl::optional<std::u16string> app_name,
@@ -85,32 +85,6 @@ void ASH_EXPORT UpdatePrivacyIndicators(
 // Get the id of the privacy indicators notification associated with `app_id`.
 std::string ASH_EXPORT
 GetPrivacyIndicatorsNotificationId(const std::string& app_id);
-
-// Create a notification with the customized metadata for privacy indicators.
-// The given scoped_refptr for `delegate` will be passed as a parameter for
-// the function creating the notification. In case of adding/updating the
-// notification it can be provided as a nullptr if irrelevant.
-std::unique_ptr<message_center::Notification> ASH_EXPORT
-CreatePrivacyIndicatorsNotification(
-    const std::string& app_id,
-    absl::optional<std::u16string> app_name,
-    bool is_camera_used,
-    bool is_microphone_used,
-    scoped_refptr<PrivacyIndicatorsNotificationDelegate> delegate);
-
-// Add, update, or remove the privacy notification associated with the given
-// `app_id`.
-void ASH_EXPORT ModifyPrivacyIndicatorsNotification(
-    const std::string& app_id,
-    absl::optional<std::u16string> app_name,
-    bool is_camera_used,
-    bool is_microphone_used,
-    scoped_refptr<PrivacyIndicatorsNotificationDelegate> delegate);
-
-// Update the `PrivacyIndicatorsTrayItemView` across all status area widgets.
-void ASH_EXPORT UpdatePrivacyIndicatorsView(const std::string& app_id,
-                                            bool is_camera_used,
-                                            bool is_microphone_used);
 
 // Update `PrivacyIndicatorsTrayItemView` screen share status across all status
 // area widgets.

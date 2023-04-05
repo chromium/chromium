@@ -54,10 +54,12 @@ class ButtonContainer : public views::Button {
                   bool toggle_state,
                   const std::u16string& label_text,
                   const int accessible_name_id,
-                  const int preferred_width,
                   absl::optional<int> container_id,
                   const VcEffectId effect_id)
-      : callback_(callback), toggled_(toggle_state), effect_id_(effect_id) {
+      : callback_(callback),
+        toggled_(toggle_state),
+        effect_id_(effect_id),
+        vector_icon_(vector_icon) {
     SetCallback(base::BindRepeating(&ButtonContainer::OnButtonClicked,
                                     weak_ptr_factory_.GetWeakPtr()));
     SetID(video_conference::BubbleViewID::kToggleEffectsButton);
@@ -74,17 +76,15 @@ class ButtonContainer : public views::Button {
         views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
                                  views::MaximumFlexSizeRule::kUnbounded));
 
-    // `preferred_width` is assigned by the row this buttons resides in,
-    // `kButtonHeight` is from the spec.
-    SetPreferredSize(gfx::Size(preferred_width, kButtonHeight));
+    SetPreferredSize(gfx::Size(GetPreferredSize().width(), kButtonHeight));
 
     auto icon = std::make_unique<views::ImageView>();
     icon->SetImage(ui::ImageModel::FromVectorIcon(
-        *vector_icon, cros_tokens::kCrosSysOnSurface, kIconSize));
+        *vector_icon_, cros_tokens::kCrosSysOnSurface, kIconSize));
     icon_ = AddChildView(std::move(icon));
 
     // Label is below the button.
-    AddChildView(std::make_unique<views::Label>(label_text));
+    label_ = AddChildView(std::make_unique<views::Label>(label_text));
 
     SetTooltipText(l10n_util::GetStringUTF16(accessible_name_id));
     UpdateColorsAndBackground();
@@ -122,9 +122,15 @@ class ButtonContainer : public views::Button {
     ui::ColorId background_color_id =
         toggled_ ? cros_tokens::kCrosSysSystemPrimaryContainer
                  : cros_tokens::kCrosSysSystemOnBase;
-
     SetBackground(views::CreateThemedRoundedRectBackground(
         background_color_id, kButtonCornerRadius));
+
+    ui::ColorId foreground_color_id =
+        toggled_ ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                 : cros_tokens::kCrosSysOnSurface;
+    icon_->SetImage(ui::ImageModel::FromVectorIcon(
+        *vector_icon_, foreground_color_id, kIconSize));
+    label_->SetEnabledColorId(foreground_color_id);
   }
 
   views::Button::PressedCallback callback_;
@@ -137,6 +143,9 @@ class ButtonContainer : public views::Button {
 
   // Owned by the views hierarchy.
   views::ImageView* icon_ = nullptr;
+  views::Label* label_ = nullptr;
+
+  const gfx::VectorIcon* vector_icon_;
 
   base::WeakPtrFactory<ButtonContainer> weak_ptr_factory_{this};
 };
@@ -148,8 +157,8 @@ END_METADATA
 
 namespace video_conference {
 
-ToggleEffectsView::ToggleEffectsView(VideoConferenceTrayController* controller,
-                                     const int parent_width) {
+ToggleEffectsView::ToggleEffectsView(
+    VideoConferenceTrayController* controller) {
   SetID(BubbleViewID::kToggleEffectsView);
 
   // Layout for the entire toggle effects section.
@@ -174,13 +183,6 @@ ToggleEffectsView::ToggleEffectsView(VideoConferenceTrayController* controller,
             views::kMarginsKey,
             gfx::Insets::TLBR(0, kButtonSpacing / 2, 0, kButtonSpacing / 2));
 
-    // All buttons in a single row should have the same width i.e. fraction of
-    // the parent width.
-    // TODO(b/273806849): Remove the way we distribute size by using
-    // `SetPreferredSize`, since this is taking cared by the layout manager
-    // already.
-    const int button_width = (parent_width - kButtonSpacing) / row.size();
-
     // Add a button for each item in the row.
     for (auto* tile : row) {
       DCHECK_EQ(tile->type(), VcEffectType::kToggle);
@@ -200,7 +202,7 @@ ToggleEffectsView::ToggleEffectsView(VideoConferenceTrayController* controller,
       const VcEffectState* state = tile->GetState(/*index=*/0);
       row_view->AddChildView(std::make_unique<ButtonContainer>(
           state->button_callback(), state->icon(), toggle_state,
-          state->label_text(), state->accessible_name_id(), button_width,
+          state->label_text(), state->accessible_name_id(),
           tile->container_id(), tile->id()));
     }
 

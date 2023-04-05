@@ -7,6 +7,20 @@ import("//build/config/rust.gni")
 import("//build/config/sysroot.gni")
 import("//build/rust/rust_static_library.gni")
 
+_rustc_base_path = rust_sysroot
+
+# TODO(danakj): When we're using the Android prebuilt toolchain, there's no
+# bindgen present. bindgen is for the host platform so using the linux one will
+# work.
+if (!use_chromium_rust_toolchain) {
+  _rustc_base_path = "//third_party/rust-toolchain"
+}
+
+_bindgen_path = "${_rustc_base_path}/bin/bindgen"
+if (is_win) {
+  _bindgen_path = "${_bindgen_path}.exe"
+}
+
 # Template to build Rust/C bindings with bindgen.
 #
 # This template expands to a static_library containing the Rust side of the
@@ -30,60 +44,47 @@ import("//build/rust/rust_static_library.gni")
 template("rust_bindgen") {
   assert(defined(invoker.header),
          "Must specify the C header file to make bindings for.")
-  _target_name = target_name
-  _testonly = false
-  if (defined(invoker.testonly)) {
-    _testonly = invoker.testonly
-  }
-  if (defined(invoker.visibility)) {
-    _visibility = invoker.visibility
-  }
-  _deps = []
-  if (defined(invoker.deps)) {
-    _deps += invoker.deps
-  }
-
-  action(_target_name) {
-    testonly = _testonly
-    if (defined(_visibility)) {
-      visibility = _visibility
-    }
+  action(target_name) {
+    # bindgen relies on knowing the {{defines}} and {{include_dirs}} required
+    # to build the C++ headers which it's parsing. These are passed to the
+    # script's args and are populated using deps and configs.
+    forward_variables_from(invoker,
+                           TESTONLY_AND_VISIBILITY + [
+                                 "deps",
+                                 "configs",
+                               ])
 
     sources = [ invoker.header ]
 
+    if (!defined(configs)) {
+      configs = []
+    }
+
     # Several important compiler flags come from default_compiler_configs
-    configs = default_compiler_configs
-    if (defined(invoker.configs)) {
-      configs += invoker.configs
-    }
-
-    bindgen_target = "//third_party/rust/bindgen/v0_60:bindgen($host_toolchain)"
-
-    bindgen_obj_dir = get_label_info(bindgen_target, "root_out_dir")
-    bindgen_executable = "${bindgen_obj_dir}/bindgen"
-    if (is_win) {
-      bindgen_executable = "${bindgen_executable}.exe"
-    }
+    configs += default_compiler_configs
 
     output_dir = "$target_gen_dir"
     out_gen_rs = "$output_dir/${target_name}.rs"
 
     script = rebase_path("//build/rust/run_bindgen.py")
-    inputs = [ bindgen_executable ]
+    inputs = [ _bindgen_path ]
 
     depfile = "$target_out_dir/${target_name}.d"
     outputs = [ out_gen_rs ]
 
-    deps = [ bindgen_target ]
-
-    # bindgen relies on knowing the {{defines}} and {{include_dirs}} required
-    # to build the C++ headers which it's parsing. These are passed to the
-    # script's args and are populated using deps and configs.
-    deps += _deps
+    lib_path = ""
+    if (is_linux) {
+      # Linux clang, and clang libs, use a shared libstdc++, which we must
+      # point to.
+      clang_ld_path = rebase_path(clang_base_path + "/lib", root_build_dir)
+      lib_path += "${clang_ld_path}:"
+    }
+    rust_ld_path = rebase_path(_rustc_base_path + "/lib", root_build_dir)
+    lib_path += "${rust_ld_path}"
 
     args = [
       "--exe",
-      rebase_path(bindgen_executable),
+      rebase_path(_bindgen_path),
       "--header",
       rebase_path(invoker.header, root_build_dir),
       "--depfile",
@@ -91,7 +92,7 @@ template("rust_bindgen") {
       "--output",
       rebase_path(out_gen_rs, root_build_dir),
       "--ld-library-path",
-      rebase_path(clang_base_path + "/lib", root_build_dir),
+      lib_path,
     ]
 
     args += [
@@ -100,22 +101,51 @@ template("rust_bindgen") {
       "{{include_dirs}}",
       "{{cflags}}",
       "{{cflags_c}}",
-
-      # This path contains important C headers (e.g. stddef.h) and {{cflags}}
-      # does not include it. Normally this path is implicitly added by clang but
-      # it does not happen for libclang.
-      #
-      # Add it last so includes from deps and configs take precedence.
-      "-isystem" + rebase_path(
-              clang_base_path + "/lib/clang/" + clang_version + "/include",
-              root_build_dir),
-
-      # Passes C comments through as rustdoc attributes.
-      "-fparse-all-comments",
-
-      # Default configs include "-fvisibility=hidden", and for some reason this
-      # causes bindgen not to emit function bindings. Override it.
-      "-fvisibility=default",
     ]
+
+    # This path contains important C headers (e.g. stddef.h) and {{cflags}}
+    # does not include it. Normally this path is implicitly added by clang but
+    # it does not happen for libclang.
+    #
+    # Add it after cflags so includes from deps and configs take precedence.
+    clang_headers = rebase_path(
+            clang_base_path + "/lib/clang/" + clang_version + "/include",
+            root_build_dir)
+    if (is_win) {
+      args += [ "-imsvc" + clang_headers ]
+    } else {
+      args += [ "-isystem" + clang_headers ]
+    }
+
+    # Passes C comments through as rustdoc attributes.
+    if (is_win) {
+      args += [ "/clang:-fparse-all-comments" ]
+    } else {
+      args += [ "-fparse-all-comments" ]
+    }
+
+    # Default configs include "-fvisibility=hidden", and for some reason this
+    # causes bindgen not to emit function bindings. Override it.
+    if (!is_win) {
+      args += [ "-fvisibility=default" ]
+    }
+
+    if (is_win) {
+      # We pass MSVC style flags to clang on Windows, and libclang needs to be
+      # told explicitly to accept them.
+      args += [ "--driver-mode=cl" ]
+
+      # On Windows, libclang adds arguments that it then fails to understand.
+      # -fno-spell-checking
+      # -fallow-editor-placeholders
+      # These should not cause bindgen to fail.
+      args += [ "-Wno-unknown-argument" ]
+
+      # Replace these two arguments with a version that clang-cl can parse.
+      args += [
+        "/clang:-fno-spell-checking",
+        "/clang:-fallow-editor-placeholders",
+      ]
+    }
   }
 }

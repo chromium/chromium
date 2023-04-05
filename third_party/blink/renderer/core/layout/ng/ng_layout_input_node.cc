@@ -111,13 +111,7 @@ bool NGLayoutInputNode::IsPaginatedRoot() const {
   if (!IsBlock())
     return false;
   const auto* view = DynamicTo<LayoutNGView>(box_.Get());
-  if (!view || !view->IsFragmentationContextRoot())
-    return false;
-  if (const LayoutObject* child = view->FirstChild()) {
-    if (child->ForceLegacyLayout())
-      return false;
-  }
-  return true;
+  return view && view->IsFragmentationContextRoot();
 }
 
 NGBlockNode NGLayoutInputNode::ListMarkerBlockNodeIfListItem() const {
@@ -139,10 +133,14 @@ void NGLayoutInputNode::IntrinsicSize(
 
   To<LayoutReplaced>(box_.Get())
       ->ComputeIntrinsicSizingInfo(legacy_sizing_info);
-  if (!*computed_inline_size && legacy_sizing_info.has_width)
-    *computed_inline_size = LayoutUnit(legacy_sizing_info.size.width());
-  if (!*computed_block_size && legacy_sizing_info.has_height)
-    *computed_block_size = LayoutUnit(legacy_sizing_info.size.height());
+  if (!*computed_inline_size && legacy_sizing_info.has_width) {
+    *computed_inline_size =
+        LayoutUnit::FromFloatRound(legacy_sizing_info.size.width());
+  }
+  if (!*computed_block_size && legacy_sizing_info.has_height) {
+    *computed_block_size =
+        LayoutUnit::FromFloatRound(legacy_sizing_info.size.height());
+  }
 }
 
 NGLayoutInputNode NGLayoutInputNode::NextSibling() const {

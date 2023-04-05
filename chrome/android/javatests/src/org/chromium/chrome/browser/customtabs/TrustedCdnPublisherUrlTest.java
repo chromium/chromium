@@ -41,7 +41,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
@@ -54,6 +53,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.chrome.browser.test.ScreenShooter;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.offlinepages.SavePageResult;
 import org.chromium.components.url_formatter.SchemeDisplay;
@@ -140,7 +140,7 @@ public class TrustedCdnPublisherUrlTest {
     @DisabledTest(message = "Disabled for flakiness! See http://crbug.com/847341")
     public void testHttps() throws Exception {
         runTrustedCdnPublisherUrlTest("https://www.example.com/test", "com.example.test",
-                "example.com", org.chromium.chrome.R.drawable.omnibox_https_valid);
+                "example.com", R.drawable.omnibox_https_valid);
         mScreenShooter.shoot("trustedPublisherUrlHttps");
     }
 
@@ -151,7 +151,7 @@ public class TrustedCdnPublisherUrlTest {
     @DisabledTest(message = "Disabled for flakiness! See http://crbug.com/847341")
     public void testHttp() throws Exception {
         runTrustedCdnPublisherUrlTest("http://example.com/test", "com.example.test", "example.com",
-                org.chromium.chrome.R.drawable.omnibox_info);
+                R.drawable.omnibox_info);
         mScreenShooter.shoot("trustedPublisherUrlHttp");
     }
 
@@ -165,12 +165,12 @@ public class TrustedCdnPublisherUrlTest {
                 + "\u0629\u002d\u0627\u0644\u0623\u062a\u0635\u0627\u0644\u0627\u062a\u002e\u0645"
                 + "\u0635\u0631\u202c\u200e";
         runTrustedCdnPublisherUrlTest("http://xn--4gbrim.xn----rmckbbajlc6dj7bxne2c.xn--wgbh1c/",
-                "com.example.test", publisher, org.chromium.chrome.R.drawable.omnibox_info);
+                "com.example.test", publisher, R.drawable.omnibox_info);
         mScreenShooter.shoot("trustedPublisherUrlRtl");
     }
 
     private int getDefaultSecurityIcon() {
-        return org.chromium.chrome.R.drawable.omnibox_info;
+        return R.drawable.omnibox_info;
     }
 
     @Test
@@ -387,7 +387,7 @@ public class TrustedCdnPublisherUrlTest {
         if (expectedSecurityIcon == 0) {
             Assert.assertEquals(View.INVISIBLE, securityButton.getVisibility());
         } else {
-            Assert.assertEquals(org.chromium.chrome.R.drawable.omnibox_info, expectedSecurityIcon);
+            Assert.assertEquals(R.drawable.omnibox_info, expectedSecurityIcon);
             Assert.assertEquals(View.VISIBLE, securityButton.getVisibility());
 
             ColorStateList colorStateList =

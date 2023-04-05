@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/promos_manager/features.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/whats_new/constants.h"
 #import "ios/chrome/browser/ui/whats_new/feature_flags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -64,14 +65,6 @@ bool IsWhatsNewPromoRegistered() {
 }
 
 }  // namespace
-
-NSString* const kWhatsNewPromoRegistrationKey = @"whatsNewPromoRegistration";
-
-NSString* const kWhatsNewDaysAfterFre = @"whatsNewDaysAfterFre";
-
-NSString* const kWhatsNewLaunchesAfterFre = @"whatsNewLaunchesAfterFre";
-
-NSString* const kWhatsNewUsageEntryKey = @"userHasInteractedWithWhatsNew";
 
 bool WasWhatsNewUsed() {
   return

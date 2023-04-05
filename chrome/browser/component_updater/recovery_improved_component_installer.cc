@@ -103,6 +103,7 @@ void RecoveryComponentActionHandler::UnpackComplete(
 
 void RecoveryComponentActionHandler::RunCommand(
     const base::CommandLine& cmdline) {
+  PrepareFiles(unpack_path_);
   VLOG(1) << "run command: " << cmdline.GetCommandLineString();
   base::expected<base::Process, int> process_or_error =
       [&cmdline]() -> base::expected<base::Process, int> {

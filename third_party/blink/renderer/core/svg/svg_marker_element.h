@@ -80,7 +80,7 @@ class SVGMarkerElement final : public SVGElement, public SVGFitToViewBox {
   void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
   void ChildrenChanged(const ChildrenChange&) override;
 
-  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
   bool LayoutObjectIsNeeded(const DisplayStyle&) const override;
 
   bool SelfHasRelativeLengths() const override;

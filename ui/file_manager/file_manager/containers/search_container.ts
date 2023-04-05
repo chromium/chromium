@@ -7,7 +7,7 @@ import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.j
 import {queryRequiredElement} from '../common/js/dom_utils.js';
 import {str, util} from '../common/js/util.js';
 import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
-import {PropStatus, SearchData, SearchFileType, SearchLocation, SearchOptions, SearchRecency, State} from '../externs/ts/state.js';
+import {PropStatus, SearchData, SearchLocation, SearchOptions, SearchRecency, State} from '../externs/ts/state.js';
 import {VolumeManager} from '../externs/volume_manager.js';
 import {PathComponent} from '../foreground/js/path_component.js';
 import {SearchAutocompleteList} from '../foreground/js/ui/search_autocomplete_list.js';
@@ -442,23 +442,23 @@ export class SearchContainer extends EventTarget {
     ];
     element.getFileTypeSelector().options = [
       {
-        value: SearchFileType.ALL_TYPES,
+        value: chrome.fileManagerPrivate.FileCategory.ALL,
         text: str('SEARCH_OPTIONS_TYPES_ALL_TYPES'),
       },
       {
-        value: SearchFileType.AUDIO,
+        value: chrome.fileManagerPrivate.FileCategory.AUDIO,
         text: str('SEARCH_OPTIONS_TYPES_AUDIO'),
       },
       {
-        value: SearchFileType.DOCUMENTS,
+        value: chrome.fileManagerPrivate.FileCategory.DOCUMENT,
         text: str('SEARCH_OPTIONS_TYPES_DOCUMENTS'),
       },
       {
-        value: SearchFileType.IMAGES,
+        value: chrome.fileManagerPrivate.FileCategory.IMAGE,
         text: str('SEARCH_OPTIONS_TYPES_IMAGES'),
       },
       {
-        value: SearchFileType.VIDEOS,
+        value: chrome.fileManagerPrivate.FileCategory.VIDEO,
         text: str('SEARCH_OPTIONS_TYPES_VIDEOS'),
       },
     ];
@@ -489,7 +489,7 @@ export class SearchContainer extends EventTarget {
         break;
       }
       case OptionKind.FILE_TYPE: {
-        const type = value as unknown as SearchFileType;
+        const type = value as unknown as chrome.fileManagerPrivate.FileCategory;
         if (type !== this.currentOptions_.type) {
           this.currentOptions_.type = type;
           this.updateSearchOptions_();

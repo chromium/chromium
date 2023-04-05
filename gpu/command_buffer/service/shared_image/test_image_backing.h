@@ -67,9 +67,9 @@ class TestImageBacking : public SharedImageBacking {
   ProduceGLTexturePassthrough(SharedImageManager* manager,
                               MemoryTypeTracker* tracker) override;
 
-  // ProduceSkia creates a representation that is backed by |texture_|, which
-  // allows for the creation of SkImages from the representation.
-  std::unique_ptr<SkiaImageRepresentation> ProduceSkia(
+  // ProduceSkiaGanesh creates a representation that is backed by |texture_|,
+  // which allows for the creation of SkImages from the representation.
+  std::unique_ptr<SkiaImageRepresentation> ProduceSkiaGanesh(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;

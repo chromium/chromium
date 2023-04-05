@@ -7,8 +7,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/trace_event/trace_log.h"
 #include "net/base/net_export.h"
+#include "net/base/tracing.h"
 #include "net/log/net_log.h"
 
 namespace net {

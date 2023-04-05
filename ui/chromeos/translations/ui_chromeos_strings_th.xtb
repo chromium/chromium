@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">ดาวเคราะห์</translation>
 <translation id="2305020378527873881">นำ <ph name="VOLUME_NAME" /> ออกแล้ว</translation>
 <translation id="2307462900900812319">กำหนดค่าเครือข่าย</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{ไม่พบส่วนขยายที่มีรหัส <ph name="BEGIN_LIST" /><ph name="END_LIST" /> โปรดติดต่อผู้ดูแลระบบ}other{ไม่พบส่วนขยายที่มีรหัส <ph name="BEGIN_LIST" /><ph name="END_LIST" /> โปรดติดต่อผู้ดูแลระบบ}}</translation>
 <translation id="2325650632570794183">ไฟล์ประเภทนี้ไม่ได้รับการสนับสนุน โปรดไปที่ Chrome เว็บสโตร์เพื่อหาแอปพลิเคชันที่สามารถเปิดไฟล์ประเภทนี้</translation>
 <translation id="2326539130272988168">บัลแกเรีย</translation>
 <translation id="2337715497728194187">แชร์กับ Bruschetta</translation>

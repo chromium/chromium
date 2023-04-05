@@ -5,32 +5,26 @@
 package org.chromium.components.omnibox.action;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.chrome.browser.omnibox.action.OmniboxActionType;
-import org.chromium.chrome.browser.omnibox.action.OmniboxPedalType;
-import org.chromium.components.browser_ui.styles.R;
+import org.chromium.components.omnibox.R;
 
 /**
  * Omnibox Actions are additional actions associated with Omnibox Matches. For more information,
  * please check on OmniboxAction class definition on native side.
  */
 public class OmniboxPedal extends OmniboxAction {
+    @VisibleForTesting
+    static final ChipIcon DINO_GAME_ICON = new ChipIcon(R.drawable.action_dino_game, true);
     /** The type of the underlying pedal. */
     public final @OmniboxPedalType int pedalId;
 
     @CalledByNative
     public OmniboxPedal(@NonNull String hint, @OmniboxPedalType int pedalId) {
-        super(OmniboxActionType.PEDAL, hint);
+        super(OmniboxActionType.PEDAL, hint,
+                pedalId == OmniboxPedalType.PLAY_CHROME_DINO_GAME ? DINO_GAME_ICON : null);
         this.pedalId = pedalId;
-    }
-
-    @Override
-    public @NonNull ChipIcon getIcon() {
-        if (pedalId == OmniboxPedalType.PLAY_CHROME_DINO_GAME) {
-            return new ChipIcon(R.drawable.ic_dino, /*tintWithTextColor=*/true);
-        }
-        return new ChipIcon(R.drawable.fre_product_logo, /*tintWithTextColor=*/false);
     }
 
     /**

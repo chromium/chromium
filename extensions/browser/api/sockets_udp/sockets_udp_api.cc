@@ -169,7 +169,7 @@ ExtensionFunction::ResponseAction SocketsUdpSetPausedFunction::Work() {
 
   if (socket->paused() != params->paused) {
     socket->set_paused(params->paused);
-    if (socket->IsConnected() && !params->paused) {
+    if (socket->IsConnectedOrBound() && !params->paused) {
       socket_event_dispatcher->OnSocketResume(GetOriginId(), params->socket_id);
     }
   }

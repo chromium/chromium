@@ -13,5 +13,7 @@ include_rules = [
 specific_include_rules = {
   ".*unittest\.cc": [
     "+components/sync_preferences/testing_pref_service_syncable.h",
+    "+services/metrics/ukm_recorder_interface.h",
+    "+services/metrics/ukm_recorder_factory_impl.h",
   ]
 }

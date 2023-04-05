@@ -65,7 +65,7 @@ class BoundSessionRefreshCookieFetcherTest : public testing::Test {
   std::unique_ptr<BoundSessionRefreshCookieFetcher> fetcher_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
   TestSigninClient signin_client_{&prefs_};
-  BoundSessionTestCookieManager* cookie_manager_ = nullptr;
+  raw_ptr<BoundSessionTestCookieManager> cookie_manager_ = nullptr;
 };
 
 TEST_F(BoundSessionRefreshCookieFetcherTest, SetSIDTSCookie) {

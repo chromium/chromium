@@ -39,6 +39,15 @@ class DeviceInfoTracker {
     // GUID or this is the first browser startup), it will be updated later
     // during the initial merge.
     virtual void OnDeviceInfoChange() = 0;
+
+    // Called before the device info list is destroyed. Enables clients holding
+    // raw pointers to DeviceInfo/DeviceInfoTracker(s) to null them at the
+    // proper time, and not hold garbage pointers.
+    //
+    // TODO(crbug.com/1400663): Remove OnDeviceInfoShutdown() once proper
+    // DependsOn() relationship exists between KeyedServices.
+    virtual void OnDeviceInfoShutdown() {}
+
     virtual ~Observer() = default;
   };
 

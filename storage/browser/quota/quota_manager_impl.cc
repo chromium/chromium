@@ -1120,7 +1120,7 @@ void QuotaManagerImpl::CreateBucketForTesting(
                      std::move(callback)));
 }
 
-void QuotaManagerImpl::GetBucketForTesting(
+void QuotaManagerImpl::GetBucketByNameUnsafe(
     const StorageKey& storage_key,
     const std::string& bucket_name,
     blink::mojom::StorageType type,

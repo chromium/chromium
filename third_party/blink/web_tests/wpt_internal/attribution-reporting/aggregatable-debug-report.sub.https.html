@@ -6,19 +6,22 @@
 <script src="resources/helpers.js"></script>
 <script>
 attribution_reporting_promise_test(async t => {
-  const source_debug_key = '246';
-  const trigger_debug_key = '357';
-  await registerAttributionSrc(t, {
-    source: {
-      destination: `https://{{host}}`,
-      aggregation_keys: {
-        campaignCounts: "0x159",
-        geoValue: "0x5",
-      },
-      debug_key: source_debug_key,
+  const source = {
+    source_event_id: generateSourceEventId(),
+    destination: `https://{{host}}`,
+    aggregation_keys: {
+      campaignCounts: "0x159",
+      geoValue: "0x5",
     },
+    debug_key: '246',
+  };
+  await registerAttributionSrc(t, {
+    source,
     cookie: attributionDebugCookie,
   });
+  await waitForSourceToBeRegistered(source.source_event_id);
+
+  const trigger_debug_key = '357';
   await registerAttributionSrc(t, {
     trigger: {
       debug_key: trigger_debug_key,
@@ -43,7 +46,7 @@ attribution_reporting_promise_test(async t => {
   const payload = await pollAggregatableReports();
   assert_equals(payload.reports.length, 1);
   const report = JSON.parse(payload.reports[0].body);
-  assert_equals(report.source_debug_key, source_debug_key);
+  assert_equals(report.source_debug_key, source.debug_key);
   assert_equals(report.trigger_debug_key, trigger_debug_key);
   const shared_info = JSON.parse(report.shared_info);
   assert_own_property(shared_info, 'debug_mode');
@@ -54,7 +57,7 @@ attribution_reporting_promise_test(async t => {
   const debugPayload = await pollAggregatableDebugReports();
   assert_equals(debugPayload.reports.length, 1);
   const debugReport = JSON.parse(debugPayload.reports[0].body);
-  assert_equals(debugReport.source_debug_key, source_debug_key);
+  assert_equals(debugReport.source_debug_key, source.debug_key);
   assert_equals(debugReport.trigger_debug_key, trigger_debug_key);
   const debug_shared_info = JSON.parse(debugReport.shared_info);
   assert_own_property(debug_shared_info, 'debug_mode');

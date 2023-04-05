@@ -182,7 +182,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   CreateLister(ash::ZeroconfPrinterDetector::kIppsEverywhereServiceName, calls,
                &listers);
   // Creating an object of ZeroconfPrinterDetector to fuzz.
-  auto detector = ash::ZeroconfPrinterDetector::CreateForTesting(&listers);
+  auto detector = ash::ZeroconfPrinterDetector::CreateForTesting(
+      &listers, /*ipp_reject_list=*/{});
   for (auto& lf : listers) {
     static_cast<FuzzDeviceLister*>(lf.second.get())
         ->SetDelegate(detector.get());

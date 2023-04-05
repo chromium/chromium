@@ -140,6 +140,7 @@ struct WebBluetoothDataFilter {
 
 struct WebBluetoothRequestDeviceOptions {
   array<WebBluetoothLeScanFilter>? filters;
+  array<WebBluetoothLeScanFilter>? exclusion_filters;
   array<bluetooth.mojom.UUID> optional_services;
   array<uint16> optional_manufacturer_data;
   bool accept_all_devices;
@@ -214,9 +215,11 @@ interface WebBluetoothService {
   // Checks if Web Bluetooth is allowed and if a Bluetooth radio is available.
   GetAvailability() => (bool is_available);
 
-  // Requests access to a Bluetooth device which matches
-  // |options->filters->services|. Access is limited to the current origin, and
-  // to the union of |options->filters->services| and
+  // Requests access to a Bluetooth device. A chooser dialog is displayed with
+  // a list of nearby devices. If |options->accept_all_devices| is false, the
+  // list is filtered to contain only the ones that match |options->filters|
+  // and exclude |options->exclusion_filters|. Access is limited to the current
+  // origin, and to the union of |options->filters->services| and
   // |options->optional_services|. Multiple devices may be discoverable that
   // match and one must be selected via a chooser user interface.
   RequestDevice(WebBluetoothRequestDeviceOptions options)

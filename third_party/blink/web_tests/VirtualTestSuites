@@ -134,6 +134,19 @@
   },
 
   {
+    "prefix": "composite-scroll-after-paint",
+    "platforms": ["Linux"],
+    "bases": ["compositing/overflow",
+              "fast/scrolling",
+              "paint/invalidation/overflow",
+              "scrollbars",
+              "external/wpt/css/css-scroll-snap",
+              "external/wpt/scroll-animations",
+              "external/wpt/css/css-overflow"],
+    "args": ["--enable-features=CompositeScrollAfterPaint"],
+    "expires": "Sep 1, 2023"
+  },
+  {
     "prefix": "attribution-reporting-debug-mode",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/attribution-reporting"],
@@ -1412,18 +1425,6 @@
       "external/wpt/shared-storage"
     ],
     "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride,FencedFramesAPIChanges"],
-    "expires": "Jul 1, 2023"
-  },
-  {
-    "prefix": "shared-storage-fenced-frame-mparch-reportevent-limit",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "wpt_internal/shared_storage_reportevent_limit/"
-    ],
-    "exclusive_tests": [
-      "wpt_internal/shared_storage_reportevent_limit/"
-    ],
-    "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,FencedFramesAPIChanges,PrivacySandboxAdsAPIsOverride,SharedStorageReportEventLimit"],
     "expires": "Jul 1, 2023"
   },
   {

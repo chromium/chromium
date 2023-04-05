@@ -20,6 +20,7 @@
 #include "components/exo/surface.h"
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_data_exchange_delegate.h"
+#include "components/exo/test/shell_surface_builder.h"
 #include "components/exo/toast_surface_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/native_pixmap.h"
@@ -188,21 +189,24 @@ TEST_F(DisplayTest, CreateClientControlledShellSurface) {
 
 TEST_F(DisplayTest, GetClientControlledShellSurface) {
   Display display;
+  constexpr int kSessionId = 10001;
 
   // Create a external surface, bind with a window id.
-  std::unique_ptr<Surface> surface = display.CreateSurface();
-  ClientControlledShellSurface* external_shell_surface =
-      new ClientControlledShellSurface(
-          surface.get(),
-          /*can_minimize=*/true, ash::desks_util::GetActiveDeskContainerId(),
-          /*default_scale_cancellation=*/true);
+  auto external_shell_surface = test::ShellSurfaceBuilder({20, 20})
+                                    .SetOrigin({10, 10})
+                                    .BuildClientControlledShellSurface();
+  auto* external_shell_surface_observer = external_shell_surface.get();
+
+  // Set external shell surface focus.
+  external_shell_surface->GetWidget()->GetNativeWindow()->Focus();
+
   property_resolver()->PutClientControlledShellSurface(
-      /*window_session_id=*/10001, base::WrapUnique(external_shell_surface));
+      kSessionId, std::move(external_shell_surface));
 
   // Create surface with specific window id.
   std::unique_ptr<Surface> surface_with_id = display.CreateSurface();
   ASSERT_TRUE(surface_with_id);
-  surface_with_id->SetWindowSessionId(10001);
+  surface_with_id->SetWindowSessionId(kSessionId);
 
   // Get a remote shell surface by external source.
   std::unique_ptr<ClientControlledShellSurface> shell_surface =
@@ -210,8 +214,11 @@ TEST_F(DisplayTest, GetClientControlledShellSurface) {
           surface_with_id.get(), ash::desks_util::GetActiveDeskContainerId(),
           /*default_scale_factor=*/2.0,
           /*default_scale_cancellation=*/true);
-  ASSERT_TRUE(external_shell_surface);
-  EXPECT_EQ(shell_surface.get(), external_shell_surface);
+  EXPECT_EQ(shell_surface.get(), external_shell_surface_observer);
+  EXPECT_EQ(surface_with_id.get(), shell_surface->root_surface());
+
+  // Focus state transferred to new root surface.
+  EXPECT_TRUE(shell_surface->root_surface()->window()->HasFocus());
 }
 
 TEST_F(DisplayTest, CreateSubSurface) {

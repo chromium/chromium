@@ -4,7 +4,6 @@
 
 #include "ash/app_list/views/app_list_item_view.h"
 
-#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/model/app_list_test_model.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
@@ -22,28 +21,16 @@ class AppListItemViewTest : public AshTestBase {
   AppListItemViewTest() = default;
   ~AppListItemViewTest() override = default;
 
-  // testing::Test:
-  void SetUp() override {
-    AshTestBase::SetUp();
-
-    app_list_test_model_ = std::make_unique<test::AppListTestModel>();
-    search_model_ = std::make_unique<SearchModel>();
-    Shell::Get()->app_list_controller()->SetActiveModel(
-        /*profile_id=*/1, app_list_test_model_.get(), search_model_.get());
-  }
-
   static views::View* GetNewInstallDot(AppListItemView* view) {
     return view->new_install_dot_;
   }
 
   AppListItem* CreateAppListItem(const std::string& name) {
-    AppListItem* item = app_list_test_model_->CreateAndAddItem(name + "_id");
+    AppListItem* item =
+        GetAppListTestHelper()->model()->CreateAndAddItem(name + "_id");
     item->SetName(name);
     return item;
   }
-
-  std::unique_ptr<test::AppListTestModel> app_list_test_model_;
-  std::unique_ptr<SearchModel> search_model_;
 };
 
 TEST_F(AppListItemViewTest, NewInstallDot) {

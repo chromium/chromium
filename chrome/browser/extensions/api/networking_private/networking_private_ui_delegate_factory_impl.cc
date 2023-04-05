@@ -15,12 +15,6 @@
 
 namespace extensions {
 
-NetworkingPrivateUIDelegateFactoryImpl::
-    NetworkingPrivateUIDelegateFactoryImpl() {}
-
-NetworkingPrivateUIDelegateFactoryImpl::
-    ~NetworkingPrivateUIDelegateFactoryImpl() {}
-
 std::unique_ptr<NetworkingPrivateDelegate::UIDelegate>
 NetworkingPrivateUIDelegateFactoryImpl::CreateDelegate() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)

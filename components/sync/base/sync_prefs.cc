@@ -22,15 +22,6 @@
 
 namespace syncer {
 
-namespace {
-
-// Obsolete pref that used to store if sync should be prevented from
-// automatically starting up. This is now replaced by its inverse
-// kSyncRequested.
-const char kSyncSuppressStart[] = "sync.suppress_start";
-
-}  // namespace
-
 SyncPrefObserver::~SyncPrefObserver() = default;
 
 SyncPrefs::SyncPrefs(PrefService* pref_service) : pref_service_(pref_service) {
@@ -90,9 +81,6 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 0);
   registry->RegisterBooleanPref(prefs::kEnableLocalSyncBackend, false);
   registry->RegisterFilePathPref(prefs::kLocalSyncBackendDir, base::FilePath());
-
-  // Obsolete prefs.
-  registry->RegisterBooleanPref(kSyncSuppressStart, false);
 }
 
 void SyncPrefs::AddSyncPrefObserver(SyncPrefObserver* sync_pref_observer) {

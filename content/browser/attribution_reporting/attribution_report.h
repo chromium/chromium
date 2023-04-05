@@ -45,8 +45,7 @@ class CONTENT_EXPORT AttributionReport {
     EventLevelData(uint64_t trigger_data,
                    int64_t priority,
                    double randomized_trigger_rate,
-                   Id id,
-                   base::Time initial_report_time);
+                   Id id);
     EventLevelData(const EventLevelData&);
     EventLevelData& operator=(const EventLevelData&);
     EventLevelData(EventLevelData&&);
@@ -68,10 +67,6 @@ class CONTENT_EXPORT AttributionReport {
     // Id assigned by storage to uniquely identify a completed conversion.
     Id id;
 
-    // The initial report time scheduled by the browser.
-    // TODO(tquintanilla): Move to top level with aggregatable equivalent.
-    base::Time initial_report_time;
-
     // When adding new members, the corresponding `operator==()` definition in
     // `attribution_test_utils.h` should also be updated.
   };
@@ -83,7 +78,6 @@ class CONTENT_EXPORT AttributionReport {
     AggregatableAttributionData(
         std::vector<AggregatableHistogramContribution> contributions,
         Id id,
-        base::Time initial_report_time,
         ::aggregation_service::mojom::AggregationCoordinator
             aggregation_coordinator,
         absl::optional<std::string> attestation_token);
@@ -113,9 +107,6 @@ class CONTENT_EXPORT AttributionReport {
     // not been assembled yet.
     absl::optional<AggregatableReport> assembled_report;
 
-    // The initial report time scheduled by the browser.
-    base::Time initial_report_time;
-
     // A token that can be sent alongside the report to complete trigger
     // attestation.
     absl::optional<std::string> attestation_token;
@@ -141,6 +132,7 @@ class CONTENT_EXPORT AttributionReport {
   AttributionReport(
       AttributionInfo attribution_info,
       base::Time report_time,
+      base::Time initial_report_time,
       base::GUID external_report_id,
       int failed_send_attempts,
       absl::variant<EventLevelData, AggregatableAttributionData> data);
@@ -164,6 +156,8 @@ class CONTENT_EXPORT AttributionReport {
 
   base::Time report_time() const { return report_time_; }
 
+  base::Time initial_report_time() const { return initial_report_time_; }
+
   const base::GUID& external_report_id() const { return external_report_id_; }
 
   int failed_send_attempts() const { return failed_send_attempts_; }
@@ -183,14 +177,15 @@ class CONTENT_EXPORT AttributionReport {
 
   void SetExternalReportIdForTesting(base::GUID external_report_id);
 
-  base::Time OriginalReportTime() const;
-
  private:
   // The attribution info.
   AttributionInfo attribution_info_;
 
   // The time this conversion report should be sent.
   base::Time report_time_;
+
+  // The originally calculated time the report should be sent.
+  base::Time initial_report_time_;
 
   // External report ID for deduplicating reports received by the reporting
   // origin.

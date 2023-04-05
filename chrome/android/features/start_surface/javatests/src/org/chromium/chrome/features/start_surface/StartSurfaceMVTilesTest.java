@@ -41,7 +41,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.feed.FeedPlaceholderLayout;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -57,6 +56,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
@@ -264,8 +264,7 @@ public class StartSurfaceMVTilesTest {
     }
 
     private View getTileViewFor(SiteSuggestion suggestion) {
-        onViewWaiting(
-                allOf(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_layout), isDisplayed()));
+        onViewWaiting(allOf(withId(R.id.mv_tiles_layout), isDisplayed()));
         View tileView = getMvTilesLayout().findTileViewForTesting(suggestion);
         Assert.assertNotNull("Tile not found for suggestion " + suggestion.url, tileView);
 
@@ -273,9 +272,9 @@ public class StartSurfaceMVTilesTest {
     }
 
     private MostVisitedTilesCarouselLayout getMvTilesLayout() {
-        onViewWaiting(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_layout));
-        MostVisitedTilesCarouselLayout mvTilesLayout = mActivityTestRule.getActivity().findViewById(
-                org.chromium.chrome.tab_ui.R.id.mv_tiles_layout);
+        onViewWaiting(withId(R.id.mv_tiles_layout));
+        MostVisitedTilesCarouselLayout mvTilesLayout =
+                mActivityTestRule.getActivity().findViewById(R.id.mv_tiles_layout);
         Assert.assertNotNull("Unable to retrieve the MvTilesLayout.", mvTilesLayout);
         return mvTilesLayout;
     }

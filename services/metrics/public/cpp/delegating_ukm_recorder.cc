@@ -7,7 +7,7 @@
 
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
-#include "base/task/sequenced_task_runner.h"
+#include "services/metrics/public/cpp/ukm_recorder_client_interface_registry.h"
 
 namespace ukm {
 
@@ -27,15 +27,33 @@ DelegatingUkmRecorder* DelegatingUkmRecorder::Get() {
 }
 
 void DelegatingUkmRecorder::AddDelegate(base::WeakPtr<UkmRecorder> delegate) {
-  base::AutoLock auto_lock(lock_);
-  delegates_.insert(
-      {delegate.get(),
-       Delegate(base::SequencedTaskRunner::GetCurrentDefault(), delegate)});
+  bool multiple_delegates = false;
+  {
+    base::AutoLock auto_lock(lock_);
+    delegates_.insert(
+        {delegate.get(),
+         Delegate(base::SequencedTaskRunner::GetCurrentDefault(), delegate)});
+    multiple_delegates = delegates_.size() > 1;
+  }
+  // If multiple delegates are present, allow all clients to send an IPC to
+  // browser process for AddEntry. This is because delegates can have different
+  // parameters and be attached to different clients, and if an event being
+  // observed by any of the clients occurs, all the clients should be able to
+  // send UkmInterface::AddEntry IPC. Multiple Delegates should only be present
+  // in test environment.
+  if (multiple_delegates) {
+    metrics::UkmRecorderClientInterfaceRegistry::NotifyMultipleDelegates();
+  }
 }
 
 void DelegatingUkmRecorder::RemoveDelegate(UkmRecorder* delegate) {
   base::AutoLock auto_lock(lock_);
   delegates_.erase(delegate);
+}
+
+bool DelegatingUkmRecorder::HasMultipleDelegates() {
+  base::AutoLock lock(lock_);
+  return delegates_.size() > 1;
 }
 
 void DelegatingUkmRecorder::UpdateSourceURL(SourceId source_id,
@@ -109,7 +127,9 @@ DelegatingUkmRecorder::Delegate::~Delegate() = default;
 void DelegatingUkmRecorder::Delegate::UpdateSourceURL(ukm::SourceId source_id,
                                                       const GURL& url) {
   if (task_runner_->RunsTasksInCurrentSequence()) {
-    ptr_->UpdateSourceURL(source_id, url);
+    if (ptr_) {
+      ptr_->UpdateSourceURL(source_id, url);
+    }
     return;
   }
   task_runner_->PostTask(
@@ -121,7 +141,9 @@ void DelegatingUkmRecorder::Delegate::UpdateAppURL(ukm::SourceId source_id,
                                                    const GURL& url,
                                                    const AppType app_type) {
   if (task_runner_->RunsTasksInCurrentSequence()) {
-    ptr_->UpdateAppURL(source_id, url, app_type);
+    if (ptr_) {
+      ptr_->UpdateAppURL(source_id, url, app_type);
+    }
     return;
   }
   task_runner_->PostTask(
@@ -133,7 +155,9 @@ void DelegatingUkmRecorder::Delegate::RecordNavigation(
     ukm::SourceId source_id,
     const UkmSource::NavigationData& navigation_data) {
   if (task_runner_->RunsTasksInCurrentSequence()) {
-    ptr_->RecordNavigation(source_id, navigation_data);
+    if (ptr_) {
+      ptr_->RecordNavigation(source_id, navigation_data);
+    }
     return;
   }
   task_runner_->PostTask(
@@ -143,7 +167,9 @@ void DelegatingUkmRecorder::Delegate::RecordNavigation(
 
 void DelegatingUkmRecorder::Delegate::AddEntry(mojom::UkmEntryPtr entry) {
   if (task_runner_->RunsTasksInCurrentSequence()) {
-    ptr_->AddEntry(std::move(entry));
+    if (ptr_) {
+      ptr_->AddEntry(std::move(entry));
+    }
     return;
   }
   task_runner_->PostTask(FROM_HERE, base::BindOnce(&UkmRecorder::AddEntry, ptr_,
@@ -153,7 +179,9 @@ void DelegatingUkmRecorder::Delegate::AddEntry(mojom::UkmEntryPtr entry) {
 void DelegatingUkmRecorder::Delegate::MarkSourceForDeletion(
     ukm::SourceId source_id) {
   if (task_runner_->RunsTasksInCurrentSequence()) {
-    ptr_->MarkSourceForDeletion(source_id);
+    if (ptr_) {
+      ptr_->MarkSourceForDeletion(source_id);
+    }
     return;
   }
   task_runner_->PostTask(

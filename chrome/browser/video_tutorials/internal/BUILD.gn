@@ -145,6 +145,7 @@ if (is_android) {
   }
 
   robolectric_library("junit") {
+    resources_package = "org.chromium.chrome.browser.video_tutorials"
     sources = [
       "android/java/src/org/chromium/chrome/browser/video_tutorials/PlaybackStateObserverUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/languages/LanguagePickerMediatorUnitTest.java",
@@ -169,6 +170,7 @@ if (is_android) {
 
   android_library("unit_device_javatests") {
     testonly = true
+    resources_package = "org.chromium.chrome.browser.video_tutorials"
 
     sources = [
       "android/java/src/org/chromium/chrome/browser/video_tutorials/iph/VideoIPHTest.java",
@@ -190,7 +192,6 @@ if (is_android) {
       "//third_party/android_deps:espresso_java",
       "//third_party/androidx:androidx_recyclerview_recyclerview_java",
       "//third_party/androidx:androidx_test_monitor_java",
-      "//third_party/androidx:androidx_test_rules_java",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/gif_player:gif_player_java",
       "//third_party/hamcrest:hamcrest_core_java",

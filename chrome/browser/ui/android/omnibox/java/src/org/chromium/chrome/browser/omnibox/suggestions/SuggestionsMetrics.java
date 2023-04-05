@@ -9,9 +9,9 @@ import androidx.annotation.NonNull;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.TimingMetric;
-import org.chromium.chrome.browser.omnibox.action.OmniboxPedalType;
 import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.SuggestTileType;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.omnibox.action.OmniboxPedalType;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -26,6 +26,18 @@ public class SuggestionsMetrics {
      */
     private static final int MAX_SUGGEST_TILE_TYPE_POSITION = 15;
     public static final int MAX_AUTOCOMPLETE_POSITION = 30;
+    /**
+     * Duration between the request for suggestions and the time the first (synchronous) reply is
+     * converted to the UI model.
+     */
+    static final String HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_FIRST =
+            "Android.Omnibox.SuggestionList.RequestToUiModel.First";
+    /**
+     * Duration between the request for suggestions and the time the last (asynchronous) reply is
+     * converted to the UI model.
+     */
+    static final String HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_LAST =
+            "Android.Omnibox.SuggestionList.RequestToUiModel.Last";
 
     @IntDef({RefineActionUsage.NOT_USED, RefineActionUsage.SEARCH_WITH_ZERO_PREFIX,
             RefineActionUsage.SEARCH_WITH_PREFIX, RefineActionUsage.SEARCH_WITH_BOTH,
@@ -37,6 +49,16 @@ public class SuggestionsMetrics {
         int SEARCH_WITH_PREFIX = 2; // User interacted with Refine button in non-zero-prefix mode.
         int SEARCH_WITH_BOTH = 3; // User interacted with Refine button in both contexts.
         int COUNT = 4;
+    }
+
+    @IntDef({ActionInSuggestIntentResult.SUCCESS, ActionInSuggestIntentResult.BAD_URI_SYNTAX,
+            ActionInSuggestIntentResult.ACTIVITY_NOT_FOUND, ActionInSuggestIntentResult.COUNT})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ActionInSuggestIntentResult {
+        int SUCCESS = 0; // Intent started successfully.
+        int BAD_URI_SYNTAX = 1; // Unable to deserialize intent: invalid syntax.
+        int ACTIVITY_NOT_FOUND = 2; // Unable to start intent: no activity.
+        int COUNT = 3;
     }
 
     /**
@@ -208,6 +230,33 @@ public class SuggestionsMetrics {
         if (position < 0) return;
         RecordHistogram.recordEnumeratedHistogram("Omnibox.ResumeJourneyShown", position,
                 SuggestionsMetrics.MAX_AUTOCOMPLETE_POSITION);
+    }
+
+    /**
+     * Records the time elapsed between the two events:
+     * - the suggestions were requested (as a result of User input), and
+     * - the suggestions response was transformed to a UI model.
+     *
+     * @param isFirst specifies whether this is the first (synchronous), or the last (final)
+     *         asynchronous, suggestions response received from the AutocompleteController
+     * @param elapsedTimeMs specifies how much time has elapsed between the two events
+     */
+    public static void recordSuggestionRequestToModelTime(boolean isFirst, long elapsedTimeMs) {
+        RecordHistogram.recordCustomTimesHistogram(isFirst
+                        ? HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_FIRST
+                        : HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_LAST,
+                elapsedTimeMs, 1, 1000, 50);
+    }
+
+    /**
+     * Record the outcome of ActionInSuggest chip interaction.
+     *
+     * @param intentResult the {@link #ActionInSuggestIntentResult} to record
+     */
+    public static final void recordActionInSuggestIntentResult(
+            @ActionInSuggestIntentResult int intentResult) {
+        RecordHistogram.recordEnumeratedHistogram("Android.Omnibox.ActionInSuggest.IntentResult",
+                intentResult, ActionInSuggestIntentResult.COUNT);
     }
 
     /**

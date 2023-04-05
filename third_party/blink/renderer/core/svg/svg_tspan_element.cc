@@ -28,8 +28,7 @@ namespace blink {
 SVGTSpanElement::SVGTSpanElement(Document& document)
     : SVGTextPositioningElement(svg_names::kTSpanTag, document) {}
 
-LayoutObject* SVGTSpanElement::CreateLayoutObject(const ComputedStyle&,
-                                                  LegacyLayout) {
+LayoutObject* SVGTSpanElement::CreateLayoutObject(const ComputedStyle&) {
   return MakeGarbageCollected<LayoutSVGTSpan>(this);
 }
 

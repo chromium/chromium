@@ -95,6 +95,10 @@ struct BidderWorkletBid {
   // Offered bid value. Always greater than 0.
   double bid;
 
+  // Currency for the bid. Always either a 3-character uppercase ASCII string,
+  // or blink::kUnspecifiedAdCurrency.
+  string bid_currency;
+
   // 'adCost' returned by generateBid, if any.
   double? ad_cost;
 
@@ -110,6 +114,9 @@ struct BidderWorkletBid {
   // be null if the InterestGroup making this bid has a null `ad_components`
   // field.
   array<blink.mojom.AdDescriptor>? ad_component_descriptors;
+
+  // `modelingSignals` returned by generateBid, if any.
+  uint16? modeling_signals;
 
   // How long it took to run the generateBid() script.
   mojo_base.mojom.TimeDelta bid_duration;
@@ -264,6 +271,9 @@ interface GenerateBidFinalizer {
   //  publisher page and provided to all interest groups with the same owner
   //  as the one specified `interest_group`.
   //
+  // `expected_buyer_currency` Currency restriction specified for this buyer.
+  //  Either a currency code or blink::kUnspecifiedAdCurrency.
+  //
   // `per_buyer_timeout` Restrict the runtime of particular buyer's bidding
   //  scripts. Any timeout higher than 500 ms will be clamped to 500 ms before
   //  passing in as `per_buyer_timeout`. Null if not provided by the publisher
@@ -276,6 +286,7 @@ interface GenerateBidFinalizer {
       string? auction_signals_json,
       string? per_buyer_signals_json,
       mojo_base.mojom.TimeDelta? per_buyer_timeout,
+      string expected_buyer_currency,
       url.mojom.Url? direct_from_seller_per_buyer_signals,
       url.mojom.Url? direct_from_seller_auction_signals);
 };
@@ -431,6 +442,10 @@ interface BidderWorklet {
   // `browser_signal_ad_cost` The numeric value of the adCost associated with
   //  the winning bid, if specified by `generateBid()`.
   //
+  //  `browser_signal_modeling_signals` The masked and noised numeric value of
+  //  the modelingSignals associated with the winning bid, if specified by
+  //  `generateBid()`.
+  //
   // `browser_signal_seller_origin` The origin of the seller script running
   //  the auction. Typically a valid, non-opaque HTTPS origin.
   //
@@ -475,6 +490,9 @@ interface BidderWorklet {
       double browser_signal_highest_scoring_other_bid,
       bool browser_signal_made_highest_scoring_other_bid,
       double? browser_signal_ad_cost,
+      uint16? browser_signal_modeling_signals,
+      uint8 browser_signal_join_count,
+      uint8 browser_signal_recency,
       url.mojom.Origin browser_signal_seller_origin,
       url.mojom.Origin? browser_signal_top_level_seller_origin,
       uint32 bidding_signals_data_version,

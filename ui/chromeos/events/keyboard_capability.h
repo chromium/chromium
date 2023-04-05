@@ -206,6 +206,12 @@ class KeyboardCapability : public InputDeviceEventObserver {
   // Check if any of the connected keyboards has a six pack key.
   static bool HasSixPackOnAnyKeyboard();
 
+  // Check if the keycode is a function key.
+  static bool IsFunctionKey(ui::KeyboardCode code);
+
+  // Check if the keycode is a top-row action key.
+  static bool IsTopRowActionKey(ui::KeyboardCode code);
+
   // Returns the set of modifier keys present on the given keyboard.
   std::vector<mojom::ModifierKey> GetModifierKeys(const InputDevice& keyboard);
 
@@ -221,11 +227,10 @@ class KeyboardCapability : public InputDeviceEventObserver {
   void OnInputDeviceConfigurationChanged(uint8_t input_device_types) override;
 
   // Check if a specific key event exists on a given keyboard.
-  bool HasKeyEvent(const KeyboardCode& key_code,
-                   const InputDevice& keyboard) const;
+  bool HasKeyEvent(const KeyboardCode& key_code, const InputDevice& keyboard);
 
   // Check if any of the connected keyboards has a specific key event.
-  bool HasKeyEventOnAnyKeyboard(const KeyboardCode& key_code) const;
+  bool HasKeyEventOnAnyKeyboard(const KeyboardCode& key_code);
 
   const base::flat_map<int, KeyboardInfo>& keyboard_info_map() {
     return keyboard_info_map_;

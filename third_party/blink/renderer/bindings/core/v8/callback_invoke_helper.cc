@@ -7,6 +7,7 @@
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/callback_function_base.h"
 #include "third_party/blink/renderer/platform/bindings/callback_interface_base.h"
@@ -40,7 +41,9 @@ bool CallbackInvokeHelper<CallbackBase, mode, return_type_is_promise>::
     }
   }
 
-  if constexpr (std::is_same<CallbackBase, CallbackFunctionBase>::value) {
+  if constexpr (std::is_same<CallbackBase, CallbackFunctionBase>::value ||
+                std::is_same<CallbackBase,
+                             CallbackFunctionWithTaskAttributionBase>::value) {
     if constexpr (mode ==
                   CallbackInvokeHelperMode::kLegacyTreatNonObjectAsNull) {
       // step 4. If ! IsCallable(F) is false:
@@ -104,8 +107,12 @@ bool CallbackInvokeHelper<CallbackBase, mode, return_type_is_promise>::
       //   1) If there's a current running task, no need to create a new scope.
       //   2) If there is no current running task, set the parent to
       //   absl::nullopt, making the current callback a root task.
-      absl::optional<scheduler::TaskAttributionId> parent_id =
-          callback_->GetParentTaskId();
+      absl::optional<scheduler::TaskAttributionId> parent_id;
+      if constexpr (std::is_same<
+                        CallbackBase,
+                        CallbackFunctionWithTaskAttributionBase>::value) {
+        parent_id = callback_->GetParentTaskId();
+      }
       if (parent_id || !tracker->RunningTaskAttributionId(
                            callback_->CallbackRelevantScriptState())) {
         task_attribution_scope_ = tracker->CreateTaskScope(
@@ -123,21 +130,23 @@ template <class CallbackBase,
           CallbackReturnTypeIsPromise return_type_is_promise>
 bool CallbackInvokeHelper<CallbackBase, mode, return_type_is_promise>::
     CallInternal(int argc, v8::Local<v8::Value>* argv) {
+  ExecutionContext* execution_context =
+      ExecutionContext::From(callback_->CallbackRelevantScriptState());
+  probe::InvokeCallback probe_scope(execution_context, class_like_name_,
+                                    /*callback=*/nullptr, function_);
+
   if constexpr (mode == CallbackInvokeHelperMode::kConstructorCall) {
     // step 10. Let callResult be Construct(F, esArgs).
-    return V8ScriptRunner::CallAsConstructor(
-               callback_->GetIsolate(), function_,
-               ExecutionContext::From(callback_->CallbackRelevantScriptState()),
-               argc, argv)
+    return V8ScriptRunner::CallAsConstructor(callback_->GetIsolate(), function_,
+                                             execution_context, argc, argv)
         .ToLocal(&result_);
   } else {
     // step 12. Let callResult be Call(X, thisArg, esArgs).
     // or
     // step 11. Let callResult be Call(F, thisArg, esArgs).
-    return V8ScriptRunner::CallFunction(
-               function_,
-               ExecutionContext::From(callback_->CallbackRelevantScriptState()),
-               callback_this_, argc, argv, callback_->GetIsolate())
+    return V8ScriptRunner::CallFunction(function_, execution_context,
+                                        callback_this_, argc, argv,
+                                        callback_->GetIsolate())
         .ToLocal(&result_);
   }
 }
@@ -162,22 +171,43 @@ bool CallbackInvokeHelper<CallbackBase, mode, return_type_is_promise>::Call(
   return true;
 }
 
-template class CORE_TEMPLATE_EXPORT CallbackInvokeHelper<CallbackFunctionBase>;
 template class CORE_TEMPLATE_EXPORT
     CallbackInvokeHelper<CallbackFunctionBase,
-                         CallbackInvokeHelperMode::kConstructorCall>;
-template class CORE_TEMPLATE_EXPORT
-    CallbackInvokeHelper<CallbackFunctionBase,
-                         CallbackInvokeHelperMode::kLegacyTreatNonObjectAsNull>;
-template class CORE_TEMPLATE_EXPORT CallbackInvokeHelper<CallbackInterfaceBase>;
+                         CallbackInvokeHelperMode::kDefault>;
 template class CORE_TEMPLATE_EXPORT
     CallbackInvokeHelper<CallbackFunctionBase,
                          CallbackInvokeHelperMode::kDefault,
                          CallbackReturnTypeIsPromise::kYes>;
 template class CORE_TEMPLATE_EXPORT
     CallbackInvokeHelper<CallbackFunctionBase,
+                         CallbackInvokeHelperMode::kConstructorCall>;
+template class CORE_TEMPLATE_EXPORT
+    CallbackInvokeHelper<CallbackFunctionBase,
                          CallbackInvokeHelperMode::kConstructorCall,
                          CallbackReturnTypeIsPromise::kYes>;
+template class CORE_TEMPLATE_EXPORT
+    CallbackInvokeHelper<CallbackFunctionBase,
+                         CallbackInvokeHelperMode::kLegacyTreatNonObjectAsNull>;
+
+template class CORE_TEMPLATE_EXPORT
+    CallbackInvokeHelper<CallbackFunctionWithTaskAttributionBase,
+                         CallbackInvokeHelperMode::kDefault>;
+template class CORE_TEMPLATE_EXPORT
+    CallbackInvokeHelper<CallbackFunctionWithTaskAttributionBase,
+                         CallbackInvokeHelperMode::kDefault,
+                         CallbackReturnTypeIsPromise::kYes>;
+template class CORE_TEMPLATE_EXPORT
+    CallbackInvokeHelper<CallbackFunctionWithTaskAttributionBase,
+                         CallbackInvokeHelperMode::kConstructorCall>;
+template class CORE_TEMPLATE_EXPORT
+    CallbackInvokeHelper<CallbackFunctionWithTaskAttributionBase,
+                         CallbackInvokeHelperMode::kConstructorCall,
+                         CallbackReturnTypeIsPromise::kYes>;
+template class CORE_TEMPLATE_EXPORT
+    CallbackInvokeHelper<CallbackFunctionWithTaskAttributionBase,
+                         CallbackInvokeHelperMode::kLegacyTreatNonObjectAsNull>;
+
+template class CORE_TEMPLATE_EXPORT CallbackInvokeHelper<CallbackInterfaceBase>;
 
 }  // namespace bindings
 

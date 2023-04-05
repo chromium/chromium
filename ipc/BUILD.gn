@@ -259,7 +259,7 @@ static_library("test_sink") {
   ]
 }
 
-if (!is_ios) {
+if (use_blink) {
   source_set("run_all_unittests") {
     testonly = true
 

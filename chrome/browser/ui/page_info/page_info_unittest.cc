@@ -154,6 +154,12 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
   ~PageInfoTest() override = default;
 
   void SetUp() override {
+#if !BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/1344787): Fix tests and enable the feature.
+    scoped_feature_list_.InitAndDisableFeature(
+        page_info::kPageInfoCookiesSubpage);
+#endif
+
     ChromeRenderViewHostTestHarness::SetUp();
 
     // Setup stub security info.
@@ -329,6 +335,7 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
   std::vector<std::unique_ptr<PageInfoUI::ChosenObjectInfo>>
       last_chosen_object_info_;
   PermissionInfoList last_permission_info_list_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 bool PermissionInfoListContainsPermission(const PermissionInfoList& permissions,
@@ -535,8 +542,8 @@ TEST_F(PageInfoTest, OnPermissionsChanged) {
   EXPECT_CALL(*mock_ui(), SetIdentityInfo(_));
   EXPECT_CALL(*mock_ui(), SetCookieInfo(_));
 
-// SetPermissionInfo() is called once initially, and then again every time
-// OnSitePermissionChanged() is called.
+  // SetPermissionInfo() is called once initially, and then again every time
+  // OnSitePermissionChanged() is called.
   EXPECT_CALL(*mock_ui(), SetPermissionInfoStub()).Times(6);
 
   // Execute code under tests.
@@ -1825,7 +1832,7 @@ class PageInfoToggleStatesUnitTest : public ::testing::Test {
  public:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
-        permissions::features::kOneTimeGeolocationPermission);
+        permissions::features::kOneTimePermission);
     ::testing::Test::SetUp();
   }
 

@@ -23,6 +23,7 @@
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
+#include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size_utils.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-blink.h"
 #include "third_party/blink/public/mojom/parakeet/ad_request.mojom-blink.h"
@@ -134,6 +135,22 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
     const String seller_name_;
   };
 
+  class BuyerCurrenciesResolved : public ScriptFunction::Callable {
+   public:
+    BuyerCurrenciesResolved(
+        AuctionHandle* auction_handle,
+        mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
+        const String& seller_name);
+
+    ScriptValue Call(ScriptState* script_state, ScriptValue value) override;
+    void Trace(Visitor* visitor) const override;
+
+   private:
+    Member<AuctionHandle> auction_handle_;
+    const mojom::blink::AuctionAdConfigAuctionIdPtr auction_id_;
+    const String seller_name_;
+  };
+
   class DirectFromSellerSignalsResolved : public ScriptFunction::Callable {
    public:
     DirectFromSellerSignalsResolved(
@@ -210,6 +227,13 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
       mojom::blink::AuctionAdConfigBuyerTimeoutsPtr buyer_timeouts) {
     abortable_ad_auction_->ResolvedBuyerTimeoutsPromise(
         std::move(auction), field, std::move(buyer_timeouts));
+  }
+
+  void ResolvedBuyerCurrencies(
+      mojom::blink::AuctionAdConfigAuctionIdPtr auction,
+      mojom::blink::AuctionAdConfigBuyerCurrenciesPtr buyer_currencies) {
+    abortable_ad_auction_->ResolvedBuyerCurrenciesPromise(
+        std::move(auction), std::move(buyer_currencies));
   }
 
   void ResolvedDirectFromSellerSignalsPromise(
@@ -1460,6 +1484,88 @@ bool CopyPerBuyerCumulativeTimeoutsFromIdlToMojo(
   return false;
 }
 
+// Returns nullptr + sets exception on failure, or returns a concrete value.
+mojom::blink::AuctionAdConfigBuyerCurrenciesPtr
+ConvertNonPromisePerBuyerCurrenciesFromV8ToMojo(const ScriptState& script_state,
+                                                ExceptionState& exception_state,
+                                                const String& seller_name,
+                                                v8::Local<v8::Value> value) {
+  Vector<std::pair<String, String>> decoded =
+      NativeValueTraits<IDLRecord<IDLUSVString, IDLUSVString>>::NativeValue(
+          script_state.GetIsolate(), value, exception_state);
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
+
+  mojom::blink::AuctionAdConfigBuyerCurrenciesPtr buyer_currencies =
+      mojom::blink::AuctionAdConfigBuyerCurrencies::New();
+  buyer_currencies->per_buyer_currencies.emplace();
+  for (const auto& per_buyer_currency : decoded) {
+    if (!IsValidAdCurrencyCode(per_buyer_currency.second.Ascii())) {
+      exception_state.ThrowTypeError(ErrorInvalidAuctionConfigSeller(
+          seller_name, "perBuyerCurrencies currency", per_buyer_currency.second,
+          "must be a 3-letter uppercase currency code."));
+      return nullptr;
+    }
+
+    if (per_buyer_currency.first == "*") {
+      buyer_currencies->all_buyers_currency = per_buyer_currency.second;
+      continue;
+    }
+    scoped_refptr<const SecurityOrigin> buyer =
+        ParseOrigin(per_buyer_currency.first);
+    if (!buyer) {
+      exception_state.ThrowTypeError(ErrorInvalidAuctionConfigSeller(
+          seller_name, "perBuyerCurrencies buyer", per_buyer_currency.first,
+          "must be \"*\" (wildcard) or a valid https origin."));
+      return nullptr;
+    }
+    buyer_currencies->per_buyer_currencies->insert(buyer,
+                                                   per_buyer_currency.second);
+  }
+
+  return buyer_currencies;
+}
+
+bool CopyPerBuyerCurrenciesFromIdlToMojo(
+    NavigatorAuction::AuctionHandle* auction_handle,
+    const mojom::blink::AuctionAdConfigAuctionId* auction_id,
+    ScriptState& script_state,
+    ExceptionState& exception_state,
+    const AuctionAdConfig& input,
+    mojom::blink::AuctionAdConfig& output) {
+  if (!input.hasPerBuyerCurrencies()) {
+    output.auction_ad_config_non_shared_params->buyer_currencies =
+        mojom::blink::AuctionAdConfigMaybePromiseBuyerCurrencies::NewValue(
+            mojom::blink::AuctionAdConfigBuyerCurrencies::New());
+    return true;
+  }
+
+  v8::Local<v8::Value> value = input.perBuyerCurrencies().V8Value();
+  if (auction_handle && value->IsPromise()) {
+    ScriptPromise promise(&script_state, value);
+    auction_handle->AttachPromiseHandler(
+        script_state, promise,
+        MakeGarbageCollected<
+            NavigatorAuction::AuctionHandle::BuyerCurrenciesResolved>(
+            auction_handle, auction_id->Clone(), input.seller()));
+    output.auction_ad_config_non_shared_params->buyer_currencies =
+        mojom::blink::AuctionAdConfigMaybePromiseBuyerCurrencies::NewPromise(0);
+    return true;
+  }
+
+  mojom::blink::AuctionAdConfigBuyerCurrenciesPtr buyer_currencies =
+      ConvertNonPromisePerBuyerCurrenciesFromV8ToMojo(
+          script_state, exception_state, input.seller(), value);
+  if (buyer_currencies) {
+    output.auction_ad_config_non_shared_params->buyer_currencies =
+        mojom::blink::AuctionAdConfigMaybePromiseBuyerCurrencies::NewValue(
+            std::move(buyer_currencies));
+    return true;
+  }
+  return false;
+}
+
 bool CopyPerBuyerExperimentIdsFromIdlToMojo(
     const ScriptState& script_state,
     ExceptionState& exception_state,
@@ -1717,6 +1823,9 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
       !CopyPerBuyerCumulativeTimeoutsFromIdlToMojo(
           auction_handle, auction_id.get(), script_state, exception_state,
           config, *mojo_config) ||
+      !CopyPerBuyerCurrenciesFromIdlToMojo(auction_handle, auction_id.get(),
+                                           script_state, exception_state,
+                                           config, *mojo_config) ||
       !CopyPerBuyerExperimentIdsFromIdlToMojo(script_state, exception_state,
                                               config, *mojo_config) ||
       !CopyPerBuyerGroupLimitsFromIdlToMojo(script_state, exception_state,
@@ -1735,6 +1844,17 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
   if (config.hasSellerTimeout()) {
     mojo_config->auction_ad_config_non_shared_params->seller_timeout =
         base::Milliseconds(config.sellerTimeout());
+  }
+
+  if (config.hasSellerCurrency()) {
+    if (!IsValidAdCurrencyCode(config.sellerCurrency().Ascii())) {
+      exception_state.ThrowTypeError(ErrorInvalidAuctionConfigSeller(
+          config.seller(), "sellerCurrency", config.sellerCurrency(),
+          "must be a 3-letter uppercase currency code."));
+      return mojom::blink::AuctionAdConfigPtr();
+    }
+    mojo_config->auction_ad_config_non_shared_params->seller_currency =
+        config.sellerCurrency();
   }
 
   // Recursively handle component auctions, if there are any.
@@ -1970,6 +2090,50 @@ ScriptValue NavigatorAuction::AuctionHandle::BuyerTimeoutsResolved::Call(
 }
 
 void NavigatorAuction::AuctionHandle::BuyerTimeoutsResolved::Trace(
+    Visitor* visitor) const {
+  visitor->Trace(auction_handle_);
+  Callable::Trace(visitor);
+}
+
+NavigatorAuction::AuctionHandle::BuyerCurrenciesResolved::
+    BuyerCurrenciesResolved(
+        AuctionHandle* auction_handle,
+        mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
+        const String& seller_name)
+    : auction_handle_(auction_handle),
+      auction_id_(std::move(auction_id)),
+      seller_name_(seller_name) {}
+
+ScriptValue NavigatorAuction::AuctionHandle::BuyerCurrenciesResolved::Call(
+    ScriptState* script_state,
+    ScriptValue value) {
+  ExceptionState exception_state(script_state->GetIsolate(),
+                                 ExceptionState::kExecutionContext,
+                                 "NavigatorAuction", "runAdAuction");
+  mojom::blink::AuctionAdConfigBuyerCurrenciesPtr buyer_currencies;
+  if (!value.IsEmpty()) {
+    v8::Local<v8::Value> v8_value = value.V8Value();
+    if (!v8_value->IsUndefined() && !v8_value->IsNull()) {
+      buyer_currencies = ConvertNonPromisePerBuyerCurrenciesFromV8ToMojo(
+          *script_state, exception_state, seller_name_, v8_value);
+    }
+  }
+
+  if (!buyer_currencies) {
+    buyer_currencies = mojom::blink::AuctionAdConfigBuyerCurrencies::New();
+  }
+
+  if (!exception_state.HadException()) {
+    auction_handle_->ResolvedBuyerCurrencies(auction_id_->Clone(),
+                                             std::move(buyer_currencies));
+  } else {
+    auction_handle_->Abort();
+  }
+
+  return ScriptValue();
+}
+
+void NavigatorAuction::AuctionHandle::BuyerCurrenciesResolved::Trace(
     Visitor* visitor) const {
   visitor->Trace(auction_handle_);
   Callable::Trace(visitor);

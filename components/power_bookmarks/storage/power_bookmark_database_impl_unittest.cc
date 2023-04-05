@@ -261,7 +261,7 @@ TEST_F(PowerBookmarkDatabaseImplTest, UpdatePowerIfExist) {
   EXPECT_TRUE(pbdb->Init());
 
   auto power = MakePower(kGoogleUrl, kMockType);
-  power->set_guid(base::GUID::GenerateRandomV4());
+  power->set_guid(base::Uuid::GenerateRandomV4());
   auto power2 = power->Clone();
 
   EXPECT_TRUE(pbdb->CreatePower(std::move(power)));
@@ -378,7 +378,7 @@ TEST_F(PowerBookmarkDatabaseImplTest, ShouldNotCreatePowerIfExist) {
   EXPECT_TRUE(pbdb->Init());
 
   auto power = MakePower(kGoogleUrl, kMockType);
-  power->set_guid(base::GUID::GenerateRandomV4());
+  power->set_guid(base::Uuid::GenerateRandomV4());
   auto power2 = power->Clone();
 
   EXPECT_TRUE(pbdb->CreatePower(std::move(power)));

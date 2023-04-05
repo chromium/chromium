@@ -93,10 +93,9 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
 
   // Create Search Companion coordinator.
   if (base::FeatureList::IsEnabled(features::kSidePanelCompanion) &&
-      SearchCompanionSidePanelCoordinator::IsSupported(browser->profile())) {
-    SearchCompanionSidePanelCoordinator::GetOrCreateForBrowser(browser)
-        ->CreateAndRegisterEntriesForExistingWebContents(
-            browser->tab_strip_model());
+      SearchCompanionSidePanelCoordinator::IsSupported(
+          browser->profile(), /*include_dsp_check=*/false)) {
+    SearchCompanionSidePanelCoordinator::GetOrCreateForBrowser(browser);
   }
 
   // Add user notes.

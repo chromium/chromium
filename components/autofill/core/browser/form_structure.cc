@@ -627,18 +627,25 @@ void FormStructure::ProcessQueryResponse(
     std::map<FieldSignature, size_t> field_rank_map;
     for (auto& field : form->fields_) {
       // Get the field prediction for |form|'s signature and the |field|'s
-      // host_form_signature. The former takes precedence over the latter.
+      // host_form_signature. The precedence rule is the following:
+      // 1) Server overrides on main frame first, then iframe.
+      // 2) Server crowdsourcing on main frame first, then iframe.
       absl::optional<FieldSuggestion> current_field =
           GetPrediction(form->form_signature(), field->GetFieldSignature());
-      if (base::FeatureList::IsEnabled(features::kAutofillAcrossIframes) &&
-          field->host_form_signature &&
-          field->host_form_signature != form->form_signature()) {
+      auto is_override = [](absl::optional<FieldSuggestion> field_suggestion) {
+        return field_suggestion && !field_suggestion->predictions().empty() &&
+               field_suggestion->predictions()[0].override();
+      };
+      if (field->host_form_signature &&
+          field->host_form_signature != form->form_signature() &&
+          !is_override(current_field) &&
+          base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
         // Retrieves the alternative prediction even if it is not used so that
         // the alternative predictions are popped.
         absl::optional<FieldSuggestion> alternative_field = GetPrediction(
             field->host_form_signature, field->GetFieldSignature());
         if (alternative_field &&
-            (!current_field ||
+            (!current_field || is_override(alternative_field) ||
              base::ranges::all_of(current_field->predictions(),
                                   [](const auto& prediction) {
                                     return prediction.type() == NO_SERVER_DATA;

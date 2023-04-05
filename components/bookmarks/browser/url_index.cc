@@ -7,7 +7,7 @@
 #include <iterator>
 
 #include "base/containers/adapters.h"
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "components/bookmarks/browser/url_and_title.h"
 #include "components/bookmarks/common/url_load_stats.h"
 
@@ -123,7 +123,7 @@ void UrlIndex::GetNodesWithIconUrl(const GURL& icon_url,
 void UrlIndex::GetNodesByUrl(const GURL& url,
                              std::vector<const BookmarkNode*>* nodes) {
   base::AutoLock url_lock(url_lock_);
-  BookmarkNode tmp_node(/*id=*/0, base::GUID::GenerateRandomV4(), url);
+  BookmarkNode tmp_node(/*id=*/0, base::Uuid::GenerateRandomV4(), url);
   auto i = nodes_ordered_by_url_set_.find(&tmp_node);
   while (i != nodes_ordered_by_url_set_.end() && (*i)->url() == url) {
     nodes->push_back(*i);
@@ -192,7 +192,7 @@ UrlIndex::~UrlIndex() = default;
 
 bool UrlIndex::IsBookmarkedNoLock(const GURL& url) {
   url_lock_.AssertAcquired();
-  BookmarkNode tmp_node(/*id=*/0, base::GUID::GenerateRandomV4(), url);
+  BookmarkNode tmp_node(/*id=*/0, base::Uuid::GenerateRandomV4(), url);
   return (nodes_ordered_by_url_set_.find(&tmp_node) !=
           nodes_ordered_by_url_set_.end());
 }

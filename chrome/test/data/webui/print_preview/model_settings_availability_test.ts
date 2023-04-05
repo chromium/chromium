@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationOrigin, DuplexType, Margins, MarginsType, PrintPreviewModelElement, Size} from 'chrome://print/print_preview.js';
+import {Destination, DestinationOrigin, DuplexOption, DuplexType, Margins, MarginsType, MediaSizeOption, PrintPreviewModelElement, Size} from 'chrome://print/print_preview.js';
 // <if expr="is_chromeos">
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 // </if>
@@ -455,7 +455,7 @@ suite('ModelSettingsAvailabilityTest', function() {
           'height_microns': 76200,
           'is_default': true,
         },
-      ],
+      ] as MediaSizeOption[],
     };
     model.set('destination.capabilities', capabilities);
     model.set('settings.margins.value', MarginsType.DEFAULT);
@@ -465,14 +465,14 @@ suite('ModelSettingsAvailabilityTest', function() {
     assertTrue(model.settings.headerFooter.available);
 
     model.set(
-        'settings.mediaSize.value', capabilities.printer.media_size.option[0]);
+        'settings.mediaSize.value', capabilities.printer.media_size!.option[0]);
 
     // Header/footer should not be available for small label
     assertFalse(model.settings.headerFooter.available);
 
     // Reset to big label.
     model.set(
-        'settings.mediaSize.value', capabilities.printer.media_size.option[1]);
+        'settings.mediaSize.value', capabilities.printer.media_size!.option[1]);
     assertTrue(model.settings.headerFooter.available);
 
     // Header/footer is never available for PDFs.
@@ -529,7 +529,7 @@ suite('ModelSettingsAvailabilityTest', function() {
       option: [
         {type: DuplexType.NO_DUPLEX},
         {type: DuplexType.LONG_EDGE, is_default: true},
-      ],
+      ] as DuplexOption[],
     };
     model.set('destination.capabilities', capabilities);
     assertTrue(model.settings.duplex.available);

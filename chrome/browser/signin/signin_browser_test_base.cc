@@ -31,7 +31,7 @@ void SigninBrowserTestBase::SetUpOnMainThread() {
   base::FilePath profile_path =
       profile_manager->GenerateNextProfileDirectoryPath();
   profile_ = use_main_profile_ ? browser()->profile()
-                               : profiles::testing::CreateProfileSync(
+                               : &profiles::testing::CreateProfileSync(
                                      profile_manager, profile_path);
 
   DCHECK(GetProfile());

@@ -134,11 +134,11 @@ public class ImageDescriptionsDialogTest extends BlankUiTestActivityTestCase {
     }
 
     private void clickPositiveButton() {
-        onView(withId(org.chromium.chrome.R.id.positive_button)).perform(click());
+        onView(withId(R.id.positive_button)).perform(click());
     }
 
     private void clickNegativeButton() {
-        onView(withId(org.chromium.chrome.R.id.negative_button)).perform(click());
+        onView(withId(R.id.negative_button)).perform(click());
     }
 
     // Helper methods for assertions
@@ -173,16 +173,13 @@ public class ImageDescriptionsDialogTest extends BlankUiTestActivityTestCase {
     @SmallTest
     public void testHeaderAndButtonContent() {
         showDialog();
-        onView(allOf(isDescendantOfA(withId(org.chromium.chrome.R.id.title_container)),
-                       withId(org.chromium.chrome.R.id.title)))
+        onView(allOf(isDescendantOfA(withId(R.id.title_container)), withId(R.id.title)))
                 .check(matches(withText("Get image descriptions?")));
         onView(withId(R.id.image_descriptions_dialog_content))
                 .check(matches(
                         withText("Images are sent to Google to improve descriptions for you.")));
-        onView(withId(org.chromium.chrome.R.id.positive_button))
-                .check(matches(withText("Get descriptions")));
-        onView(withId(org.chromium.chrome.R.id.negative_button))
-                .check(matches(withText("No thanks")));
+        onView(withId(R.id.positive_button)).check(matches(withText("Get descriptions")));
+        onView(withId(R.id.negative_button)).check(matches(withText("No thanks")));
     }
 
     @Test

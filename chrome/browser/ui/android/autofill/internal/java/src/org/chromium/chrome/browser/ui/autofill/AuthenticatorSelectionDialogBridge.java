@@ -88,6 +88,7 @@ public class AuthenticatorSelectionDialogBridge implements AuthenticatorSelectio
                 break;
             case CardUnmaskChallengeOptionType.CVC:
                 break;
+            case CardUnmaskChallengeOptionType.EMAIL_OTP:
             case CardUnmaskChallengeOptionType.UNKNOWN_TYPE:
                 // This will never happen
                 assert false : "Attempted to offer CardUnmaskChallengeOption with Unknown type";

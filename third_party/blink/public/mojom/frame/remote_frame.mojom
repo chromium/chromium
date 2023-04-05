@@ -87,7 +87,10 @@ struct OpenURLParams {
   // The main URL to open.
   url.mojom.Url url;
   url.mojom.Origin initiator_origin;
-  url.mojom.Url initiator_base_url;
+  // While `initiator_origin` is always required, `initiator_base_url` should
+  // only be sent for about:blank and about:srcdoc navigations, and be nullopt
+  // otherwise.
+  url.mojom.Url? initiator_base_url;
 
   // The token of the RenderFrameHost that initiated the navigation. It might
   // refer to a RenderFrameHost that doesn't exist anymore when the IPC reaches

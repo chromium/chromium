@@ -179,11 +179,7 @@ public class SplitCompatApplication extends Application {
             CommandLineInitUtil.initCommandLine(
                     COMMAND_LINE_FILE, SplitCompatApplication::shouldUseDebugFlags);
 
-            // Enable ATrace on debug OS or app builds.
-            // Requires command-line flags.
-            TraceEvent.maybeEnableEarlyTracing(
-                    BuildInfo.isDebugAndroidOrApp() ? TraceEvent.ATRACE_TAG_APP : 0,
-                    /*readCommandLine=*/true);
+            TraceEvent.maybeEnableEarlyTracing(/*readCommandLine=*/true);
             TraceEvent.begin(ATTACH_BASE_CONTEXT_EVENT);
 
             // Register for activity lifecycle callbacks. Must be done before any activities are

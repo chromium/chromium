@@ -4067,6 +4067,21 @@
     "hash": "#x"
   },
   {
+    "input": "#x:y",
+    "base": "about:blank",
+    "href": "about:blank#x:y",
+    "origin": "null",
+    "protocol": "about:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "blank",
+    "search": "",
+    "hash": "#x:y"
+  },
+  {
     "input": "#",
     "base": "test:test?test",
     "href": "test:test?test#",

@@ -10,7 +10,6 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "components/viz/common/gpu/dawn_context_provider.h"
-#include "third_party/dawn/include/dawn/native/D3D12Backend.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/vsync_provider.h"
 #include "ui/gl/vsync_provider_win.h"
@@ -55,6 +54,15 @@ SkiaOutputDeviceDawn::SkiaOutputDeviceDawn(
   child_window_.Initialize();
   vsync_provider_ =
       std::make_unique<gl::VSyncProviderWin>(child_window_.window());
+
+  // Create the wgpu::Surface from our HWND.
+  wgpu::SurfaceDescriptorFromWindowsHWND hwnd_desc;
+  hwnd_desc.hwnd = child_window_.window();
+  hwnd_desc.hinstance = GetModuleHandle(nullptr);
+
+  wgpu::SurfaceDescriptor surface_desc;
+  surface_desc.nextInChain = &hwnd_desc;
+  surface_ = context_provider_->GetInstance().CreateSurface(&surface_desc);
 }
 
 SkiaOutputDeviceDawn::~SkiaOutputDeviceDawn() = default;
@@ -74,17 +82,16 @@ bool SkiaOutputDeviceDawn::Reshape(
   sk_color_space_ = characterization.refColorSpace();
   sample_count_ = characterization.sampleCount();
 
-  CreateSwapChainImplementation();
-  wgpu::SwapChainDescriptor desc;
-  desc.implementation = reinterpret_cast<int64_t>(&swap_chain_implementation_);
-  // TODO(rivr): Use a wgpu::Surface in this call once the Surface-based
-  // SwapChain API is ready.
-  swap_chain_ = context_provider_->GetDevice().CreateSwapChain(nullptr, &desc);
-  if (!swap_chain_)
-    return false;
-  swap_chain_.Configure(kSwapChainFormat, kUsage, size_.width(),
-                        size_.height());
-  return true;
+  wgpu::SwapChainDescriptor swap_chain_desc;
+  swap_chain_desc.format = kSwapChainFormat;
+  swap_chain_desc.usage = kUsage;
+  swap_chain_desc.width = size_.width();
+  swap_chain_desc.height = size_.height();
+  swap_chain_desc.presentMode = wgpu::PresentMode::Mailbox;
+  swap_chain_ = context_provider_->GetDevice().CreateSwapChain(
+      surface_, &swap_chain_desc);
+
+  return swap_chain_ != nullptr;
 }
 
 void SkiaOutputDeviceDawn::Present(const absl::optional<gfx::Rect>& update_rect,
@@ -137,11 +144,6 @@ void SkiaOutputDeviceDawn::EndPaint() {
   GrFlushInfo flush_info;
   sk_surface_->flush(SkSurface::BackendSurfaceAccess::kPresent, flush_info);
   sk_surface_.reset();
-}
-
-void SkiaOutputDeviceDawn::CreateSwapChainImplementation() {
-  swap_chain_implementation_ = dawn::native::d3d12::CreateNativeSwapChainImpl(
-      context_provider_->GetDevice().Get(), child_window_.window());
 }
 
 }  // namespace viz

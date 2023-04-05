@@ -450,7 +450,14 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Test when the popup is scrolled, the keyboard is dismissed
 // but the omnibox is still expanded and the suggestions are visible.
 // Test with flag kEnableSuggestionsScrollingOnIPad enabled.
-- (void)testScrollingDismissesKeyboard {
+// TODO(crbug.com/1430354): Test is failing on simulator. Re-enable the test.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testScrollingDismissesKeyboard \
+  DISABLED_testScrollingDismissesKeyboard
+#else
+#define MAYBE_testScrollingDismissesKeyboard testScrollingDismissesKeyboard
+#endif
+- (void)MAYBE_testScrollingDismissesKeyboard {
   [[AppLaunchManager sharedManager]
       ensureAppLaunchedWithFeaturesEnabled:{kEnableSuggestionsScrollingOnIPad}
                                   disabled:{}

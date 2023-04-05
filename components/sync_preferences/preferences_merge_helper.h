@@ -7,6 +7,8 @@
 
 #include "base/values.h"
 
+#include <utility>
+
 namespace sync_preferences {
 
 class PrefModelAssociatorClient;
@@ -32,6 +34,15 @@ base::Value MergePreference(const PrefModelAssociatorClient* client,
                             const std::string& pref_name,
                             const base::Value& local_value,
                             const base::Value& server_value);
+
+// This separates individual dictionary pref updates between the account store
+// and the local store, from the updated merged value `new_value`. Returns a
+// pair with the first item being the updated local value, followed by the
+// updated account value.
+std::pair<base::Value::Dict, base::Value::Dict> UnmergeDictionaryValues(
+    base::Value::Dict new_value,
+    const base::Value::Dict& original_local_value,
+    const base::Value::Dict& original_account_value);
 
 }  // namespace helper
 }  // namespace sync_preferences

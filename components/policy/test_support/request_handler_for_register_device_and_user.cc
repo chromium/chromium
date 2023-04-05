@@ -7,9 +7,9 @@
 #include <set>
 #include <string>
 
-#include "base/guid.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "base/uuid.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/policy/test_support/client_storage.h"
@@ -164,7 +164,7 @@ RequestHandlerForRegisterDeviceAndUser::RegisterDeviceAndSendResponse(
     const std::string& policy_user) {
   std::string device_id =
       KeyValueFromUrl(request.GetURL(), dm_protocol::kParamDeviceID);
-  std::string device_token = base::GUID::GenerateRandomV4().AsLowercaseString();
+  std::string device_token = base::Uuid::GenerateRandomV4().AsLowercaseString();
   std::string machine_name = base::StringPrintf(
       "%s - %s", register_request.machine_model().c_str(), device_id.c_str());
 

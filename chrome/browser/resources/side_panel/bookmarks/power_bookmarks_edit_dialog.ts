@@ -15,6 +15,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './power_bookmarks_edit_dialog.html.js';
+import {getFolderDescendants} from './power_bookmarks_service.js';
 
 export interface PowerBookmarksEditDialogElement {
   $: {
@@ -22,10 +23,6 @@ export interface PowerBookmarksEditDialogElement {
     nameInput: CrInputElement,
     urlInput: CrInputElement,
   };
-}
-
-function isFolder(node: chrome.bookmarks.BookmarkTreeNode) {
-  return !node.url;
 }
 
 export class PowerBookmarksEditDialogElement extends PolymerElement {
@@ -91,6 +88,20 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
     this.$.dialog.showModal();
   }
 
+  private isAvailableFolder_(node: chrome.bookmarks.BookmarkTreeNode): boolean {
+    if (node.url) {
+      return false;
+    }
+    for (const selectedBookmark of this.selectedBookmarks_) {
+      // Don't allow moving a folder to itself or any of its descendants.
+      const descendants = getFolderDescendants(selectedBookmark);
+      if (descendants.includes(node)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   private getDialogTitle_(): string {
     if (this.moveOnly_) {
       return loadTimeData.getString('editMoveFolderTo');
@@ -137,9 +148,9 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
   private getShownFolders_(): chrome.bookmarks.BookmarkTreeNode[] {
     const activeFolder = this.getActiveFolder_();
     if (activeFolder && activeFolder.children) {
-      return activeFolder.children!.filter(isFolder);
+      return activeFolder.children!.filter(this.isAvailableFolder_, this);
     } else if (!activeFolder && this.topLevelBookmarks_) {
-      return this.topLevelBookmarks_.filter(isFolder);
+      return this.topLevelBookmarks_.filter(this.isAvailableFolder_, this);
     }
     assertNotReached('No bookmarks to display in edit menu');
   }
@@ -160,8 +171,9 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
         'forwardButtonLabel', this.getFolderTitle_(folder));
   }
 
-  private hasChildFolders_(folder: chrome.bookmarks.BookmarkTreeNode): boolean {
-    return folder.children!.filter(isFolder).length > 0;
+  private hasAvailableChildFolders_(folder: chrome.bookmarks.BookmarkTreeNode):
+      boolean {
+    return folder.children!.filter(this.isAvailableFolder_, this).length > 0;
   }
 
   private validateUrl_(): boolean {

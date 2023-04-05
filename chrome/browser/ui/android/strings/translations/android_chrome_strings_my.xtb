@@ -456,6 +456,7 @@
 <translation id="3493531032208478708">အကြံပြုထားသည့် အကြောင်းအရာအကြောင်း <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">လက်မှတ်ထိုးဝင်ခြင်းဆိုင်ရာ အောက်ခြေအပိုဆောင်း စာမျက်နှာကို မြင်ကွင်းတစ်ဝက် ဖွင့်ထားသည်။</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="350276055892098337">အဟောင်းဆုံးဖြင့် စီရန်</translation>
 <translation id="3507132249039706973">'ပုံမှန် ကာကွယ်မှု' ကို ဖွင့်ထားသည်</translation>
 <translation id="3509330069915219067">အော့ဖ်လိုင်း။ Chrome က အပ်ဒိတ်များကို စစ်ဆေး၍မရပါ။</translation>
 <translation id="3513704683820682405">လွန်ကဲပကတိအသွင်</translation>
@@ -576,6 +577,7 @@
 <translation id="4177222230309051052">သင့်လိပ်စာအားလုံး ရယူခြင်း</translation>
 <translation id="4177501066905053472">ကြော်ငြာအကြောင်းအရာများ</translation>
 <translation id="4181841719683918333">ဘာသာစကားများ</translation>
+<translation id="4188221736490993796">Z မှ A သို့ စီရန်</translation>
 <translation id="4195643157523330669">တဘ်အသစ်တွင် ဖွင့်ရန်</translation>
 <translation id="4196597275619698563">ကတ်ပြုလုပ်ရန်</translation>
 <translation id="4198423547019359126">ဒေါင်းလုဒ်တည်နေရာ မရှိပါ</translation>
@@ -641,6 +643,7 @@
 <translation id="4565377596337484307">စကားဝှက်ကို ဖျောက်ရန်</translation>
 <translation id="4572422548854449519">စီမံခန့်ခွဲထားသည့်အကောင့်သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="4576892426230499203">စိစစ်ရေးနည်းလမ်း နောက်တစ်ခု သုံးပါ</translation>
+<translation id="4577115723294378384">A မှ Z သို့ စီရန်</translation>
 <translation id="4578289292431526768">စကြစို့</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{လွန်ခဲ့သည့် # မိနစ်က}other{ လွန်ခဲ့သည့် # မိနစ်က}}</translation>
 <translation id="4587589328781138893">ဝဘ်ဆိုက်များ</translation>
@@ -664,6 +667,7 @@
 <translation id="4689792375321623175">Google ဖြင့် ပုံရှာရန် <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ခု}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ခု}}</translation>
 <translation id="4699172675775169585">ကက်ရှ်လုပ်ထားသည့် ပုံများနှင့် ဖိုင်များ</translation>
+<translation id="4710167854527459075">အသစ်ဆုံးဖြင့် စီရန်</translation>
 <translation id="4719927025381752090">ဘာသာပြန်ရန် ပေးအပ်ချက်</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> တွင်ဖွင့်မည်</translation>
 <translation id="47217992755561375">သင်၏ ထိပ်တန်းဝဘ်ဆိုက်များကို ကြည့်ရန်</translation>
@@ -737,6 +741,7 @@
 <translation id="5001388021414335527">ဤဝဘ်ဆိုက်ကို ဤနေရာတွင် လိုက်ကြည့်နိုင်သည်</translation>
 <translation id="5004416275253351869">Google လုပ်ဆောင်ချက် ထိန်းချုပ်မှုများ</translation>
 <translation id="5005498671520578047">စကားဝှက်ကို ကူးယူပါ</translation>
+<translation id="5010886807652684893">ရုပ်မြင်ပြသခြင်း</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> သည် ချိတ်ဆက်လိုပါသည်</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">ပြီးခဲ့သော ၁၅ မိနစ်</translation>
@@ -832,6 +837,7 @@
 <translation id="5561162485081632007">အန္တရာယ်ရှိသည့် ဖြစ်ရပ်များ ဖြစ်ပွားလာသည့်အခါ သိရှိပြီး သင့်အား သတိပေးသည်</translation>
 <translation id="5561549206367097665">ကွန်ရက်ကို စောင့်နေသည်…</translation>
 <translation id="5568069709869097550">လက်မှတ်ထိုးဝင်၍ မရပါ။</translation>
+<translation id="557018954714092179">ဖိုင်တွဲအသစ်ကို လုပ်ရန်</translation>
 <translation id="5578795271662203820"><ph name="SEARCH_ENGINE" /> က ဒီပုံအတွက် ရှာဖွေနေ</translation>
 <translation id="5581519193887989363">စင့်ခ်လုပ်မည့်အရာကို <ph name="BEGIN_LINK1" />ဆက်တင်များ<ph name="END_LINK1" />တွင် အချိန်မရွေး ရွေးချယ်နိုင်သည်။</translation>
 <translation id="5590372121997663538">ဤကွန်ပျူတာကို မှတ်ထားရန်</translation>
@@ -936,6 +942,7 @@
 <translation id="6138832295072039549">သင့်ဝဘ်ဆိုက်ဆက်တင်များကို ဤနေရာတွင် ပြောင်းပါ</translation>
 <translation id="6140709049082532940">အရည်အသွေးမြှင့်တင်ထားသည့် ကာကွယ်မှု -</translation>
 <translation id="6140912465461743537">နိုင်ငံ/ဒေသ</translation>
+<translation id="6148266338772765473">လင့်ခ် ဖယ်ထုတ်ရန်</translation>
 <translation id="6150320133806434356">လိပ်စာ သိမ်းထားသည်</translation>
 <translation id="6154478581116148741">ဤစက်မှ သင့်စကားဝှက်များ တင်ပို့ရန် ဆက်တင်များတွင် မျက်နှာပြင်လော့ခ် ဖွင့်ပါ</translation>
 <translation id="6159729262978459665">စင့်ခ်လုပ်ထားသော စက်အားလုံးမှ မှတ်တမ်းကို ရှင်းထုတ်သည်။</translation>
@@ -1026,6 +1033,7 @@
 <translation id="6590680911007613645">သင်သိမ်းနေသည့်စကားဝှက်သည် <ph name="SITE" /> အတွက် သင့်စကားဝှက်နှင့် တူညီမှုရှိ/မရှိ စစ်ဆေးပါ</translation>
 <translation id="6593061639179217415">ဒက်စ်တော့ဝဘ်ဆိုက်</translation>
 <translation id="6594121454516132231">Chrome ကအများသုံးဝဘ်၏ လည်ပတ်မှုကို ထိန်းသိမ်းပေးပြီး ဝဘ်ဆိုက်အမျိုးမျိုးတွင် ခြေရာခံခြင်းမှ သင့်ကိုကာကွယ်ပေးရန် ၎င်း၏စီမံပုံကို ကြည့်ပါ</translation>
+<translation id="6594347733515723558">ရွေးစရာများ စီပြီးကြည့်ရန်</translation>
 <translation id="6595046016124923392">သင့်အတွက် ရှင်းလင်းချက်များပိုကောင်းမွန်စေရန် ပုံများကို Google သို့ ပို့သည်။</translation>
 <translation id="6600954340915313787">Chrome သို့ ကူးယူပြီး၏</translation>
 <translation id="661266467055912436">သင်နှင့် ဝဘ်ပေါ်ရှိ လူအားလုံးအတွက် လုံခြုံရေးကို တိုးမြှင့်ထားသည်။</translation>
@@ -1191,6 +1199,7 @@
 <translation id="7454641608352164238">နေရာအလုံအလောက် မရှိပါ</translation>
 <translation id="7455988709578031708">သင်၏ကြည့်ရှုမှုမှတ်တမ်းကို အခြေခံထားသည်။ ဤဆက်တင်ကို ဖွင့်ထားသည်။</translation>
 <translation id="7456774706094330779">တိုးချဲ့ထားသော ကြိုဖွင့်မှု</translation>
+<translation id="7466431077154602932">ကျစ်ကျစ်လျစ်လျစ်ပြသခြင်း</translation>
 <translation id="7474822150871987353">စာမျက်နှာမှမထွက်ဘဲ ဝဘ်ဆိုက်များရှိ အကြောင်းအရာများအကြောင်း လေ့လာနိုင်သည်။ စာမျက်နှာရှိ စကားလုံးတစ်လုံးနှင့်အထက်ကို ရှာဖွေရန် ရွေးနိုင်သည်။</translation>
 <translation id="7475192538862203634">သင်သည် ဒါကို မကြာခဏ မြင်နေရလျှင်၊ <ph name="BEGIN_LINK" />အကြံပြုချက်များ<ph name="END_LINK" />ကို စမ်းကြည့်ပါ။</translation>
 <translation id="7475688122056506577">SD ကတ် မတွေ့ပါ။ သင့်ဖိုင်အချို့ ပျောက်နေနိုင်ပါသည်။</translation>

@@ -4,7 +4,6 @@
   "android-cfi-builder-perf-fyi": {
     "additional_compile_targets": [
       "android_tools",
-      "cc_perftests",
       "chrome_public_apk",
       "chromium_builder_perf",
       "push_apps_to_background_apk",
@@ -118,7 +117,6 @@
   "android_arm64-cfi-builder-perf-fyi": {
     "additional_compile_targets": [
       "android_tools",
-      "cc_perftests",
       "chrome_public_apk",
       "chromium_builder_perf",
       "push_apps_to_background_apk",

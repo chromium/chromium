@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.test.util.UiRestriction;
@@ -132,7 +133,7 @@ public class TabSwitcherThumbnailTest {
         for (int i = tabCounts - 1; i >= 0; i--) {
             onViewWaiting(allOf(withParent(withId(TabUiTestHelper.getTabSwitcherParentId(
                                         mActivityTestRule.getActivity()))),
-                                  withId(org.chromium.chrome.tab_ui.R.id.tab_list_view)))
+                                  withId(R.id.tab_list_view)))
                     .perform(scrollToPosition(i))
                     .check(ThumbnailHeightAssertion.notZeroAt(i))
                     .check(ThumbnailAspectRatioAssertion.havingAspectRatioAt(ratio, i));
@@ -160,8 +161,7 @@ public class TabSwitcherThumbnailTest {
             if (viewHolder != null) {
                 ViewLookupCachingFrameLayout tabView =
                         (ViewLookupCachingFrameLayout) viewHolder.itemView;
-                ImageView thumbnail = (ImageView) tabView.fastFindViewById(
-                        org.chromium.chrome.tab_ui.R.id.tab_thumbnail);
+                ImageView thumbnail = (ImageView) tabView.fastFindViewById(R.id.tab_thumbnail);
                 float thumbnailRatio = thumbnail.getWidth() * 1.f / thumbnail.getHeight();
                 assertEquals(mExpectedRatio, thumbnailRatio, 0.01);
             }
@@ -187,8 +187,7 @@ public class TabSwitcherThumbnailTest {
             if (viewHolder != null) {
                 ViewLookupCachingFrameLayout tabView =
                         (ViewLookupCachingFrameLayout) viewHolder.itemView;
-                ImageView thumbnail = (ImageView) tabView.fastFindViewById(
-                        org.chromium.chrome.tab_ui.R.id.tab_thumbnail);
+                ImageView thumbnail = (ImageView) tabView.fastFindViewById(R.id.tab_thumbnail);
                 assertNotEquals("Thumbnail's height should not be zero", 0, thumbnail.getHeight());
             }
         }

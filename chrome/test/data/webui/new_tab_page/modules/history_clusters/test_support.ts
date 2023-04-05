@@ -29,6 +29,8 @@ export function createVisit(
   };
 }
 
+export const GOOGLE_SEARCH_BASE_URL = 'https://www.google.com/search';
+
 // Use Layout 1 as default for tests that do not care which layout.
 export function createSampleVisits(
     numVisits: number = LAYOUT_1_MIN_VISITS,
@@ -37,7 +39,8 @@ export function createSampleVisits(
 
   // Create SRP visit.
   result.push(createVisit(
-      BigInt(0), 'https://www.google.com/', 'www.google.com', 'SRP', false));
+      BigInt(0), `${GOOGLE_SEARCH_BASE_URL}?q=foo`, 'www.google.com', 'SRP',
+      false));
 
   // Create general visits.
   for (let i = 1; i <= numVisits; i++) {
@@ -56,8 +59,7 @@ export function createRelatedSearches(num: number = MIN_RELATED_SEARCHES):
     result.push({
       query: `Test Query ${i}`,
       url: {
-        url:
-            `https://www.google.com/search?q=${encodeURIComponent(`test${i}`)}`,
+        url: `${GOOGLE_SEARCH_BASE_URL}?q=${encodeURIComponent(`test${i}`)}`,
       },
     });
   }

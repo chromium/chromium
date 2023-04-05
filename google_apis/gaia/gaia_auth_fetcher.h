@@ -51,7 +51,6 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaSource {
     kChromeOS,
     kAccountReconcilorDice,
     kAccountReconcilorMirror,
-    kOAuth2LoginVerifier,
     kPrimaryAccountManager
   };
 
@@ -105,21 +104,30 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthFetcher {
 
   // Start a request to exchange the authorization code for an OAuthLogin-scoped
   // oauth2 token.
+  // If `binding_registration_token` is not empty, also registers binding key
+  // information to create a bound refresh token. This doesn't guarantee that
+  // the server actually binds the refresh token to a key.
   //
   // Either OnClientOAuthSuccess or OnClientOAuthFailure will be
   // called on the consumer on the original thread.
-  void StartAuthCodeForOAuth2TokenExchange(const std::string& auth_code);
+  void StartAuthCodeForOAuth2TokenExchange(
+      const std::string& auth_code,
+      const std::string& binding_registration_token = std::string());
 
   // Start a request to exchange the authorization code for an OAuthLogin-scoped
   // oauth2 token.
-  // Resulting refresh token is annotated on the server with |device_id|. Format
+  // Resulting refresh token is annotated on the server with `device_id`. Format
   // of device_id on the server is at most 64 unicode characters.
+  // If `binding_registration_token` is not empty, also registers binding key
+  // information to create a bound refresh token. This doesn't guarantee that
+  // the server actually binds the refresh token to a key.
   //
   // Either OnClientOAuthSuccess or OnClientOAuthFailure will be
   // called on the consumer on the original thread.
   void StartAuthCodeForOAuth2TokenExchangeWithDeviceId(
       const std::string& auth_code,
-      const std::string& device_id);
+      const std::string& device_id,
+      const std::string& binding_registration_token = std::string());
 
   // Start a MergeSession request to pre-login the user with the given
   // credentials.
@@ -230,8 +238,10 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthFetcher {
  private:
   // The format of the POST body to get OAuth2 token pair from auth code.
   static const char kOAuth2CodeToTokenPairBodyFormat[];
-  // Additional param for the POST body to get OAuth2 token pair from auth code.
+  // Additional params for the POST body to get OAuth2 token pair from auth
+  // code.
   static const char kOAuth2CodeToTokenPairDeviceIdParam[];
+  static const char kOAuth2CodeToTokenPairBindingRegistrationTokenParam[];
   // The format of the POST body to revoke an OAuth2 token.
   static const char kOAuth2RevokeTokenBodyFormat[];
   // The format of the POST body for MergeSession.
@@ -289,10 +299,12 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthFetcher {
                                    std::string* error,
                                    std::string* error_url);
 
-  // Given auth code and device ID (optional), create body to get OAuth2 token
-  // pair.
-  static std::string MakeGetTokenPairBody(const std::string& auth_code,
-                                          const std::string& device_id);
+  // Given auth code, device ID (optional), and registration token for token
+  // binding (optional) create body to get OAuth2 token pair.
+  static std::string MakeGetTokenPairBody(
+      const std::string& auth_code,
+      const std::string& device_id,
+      const std::string& binding_registration_token);
   // Given an OAuth2 token, create body to revoke the token.
   std::string MakeRevokeTokenBody(const std::string& auth_token);
 

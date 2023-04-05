@@ -29,6 +29,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/dot_indicator.h"
 #include "ash/style/style_util.h"
+#include "ash/style/typography.h"
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -37,6 +38,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "cc/paint/paint_flags.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -140,7 +142,10 @@ class ClippedFolderIconImageSource : public gfx::CanvasImageSource {
 // Draws a dot with no shadow.
 class DotView : public views::View {
  public:
-  DotView() {
+  DotView()
+      : color_id_(chromeos::features::IsJellyEnabled()
+                      ? static_cast<ui::ColorId>(cros_tokens::kCrosSysTertiary)
+                      : kColorAshIconColorProminent) {
     // The dot is not clickable.
     SetCanProcessEventsWithinSubtree(false);
   }
@@ -157,8 +162,7 @@ class DotView : public views::View {
     center.Scale(scale);
 
     cc::PaintFlags flags;
-    flags.setColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kIconColorProminent));
+    flags.setColor(GetColorProvider()->GetColor(color_id_));
     flags.setAntiAlias(true);
     canvas->DrawCircle(center, scale * radius, flags);
   }
@@ -167,6 +171,9 @@ class DotView : public views::View {
     views::View::OnThemeChanged();
     SchedulePaint();
   }
+
+ private:
+  const ui::ColorId color_id_;
 };
 
 // Returns whether the `index` is considered on the left edge of a grid with
@@ -205,7 +212,10 @@ class AppListItemView::FolderIconView : public views::View,
   FolderIconView(AppListFolderItem* folder_item,
                  const AppListConfig* config,
                  float icon_scale)
-      : folder_item_(folder_item), config_(config), icon_scale_(icon_scale) {
+      : folder_item_(folder_item),
+        jelly_style_(chromeos::features::IsJellyEnabled()),
+        config_(config),
+        icon_scale_(icon_scale) {
     DCHECK(features::IsAppCollectionFolderRefreshEnabled());
     folder_item_->item_list()->AddObserver(this);
   }
@@ -260,8 +270,11 @@ class AppListItemView::FolderIconView : public views::View,
     // Draw the background circle of the icon.
     SkCanvas canvas(bitmap);
     SkPaint background_circle;
-    background_circle.setColor(
-        GetColorProvider()->GetColor(kColorAshControlBackgroundColorInactive));
+    const ui::ColorId color_id =
+        jelly_style_
+            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemOnBase)
+            : kColorAshControlBackgroundColorInactive;
+    background_circle.setColor(GetColorProvider()->GetColor(color_id));
     background_circle.setStyle(SkPaint::kFill_Style);
     background_circle.setAntiAlias(true);
 
@@ -316,8 +329,9 @@ class AppListItemView::FolderIconView : public views::View,
     cc::PaintFlags flags;
     flags.setStyle(cc::PaintFlags::kFill_Style);
     flags.setAntiAlias(true);
-    flags.setColor(
-        GetColorProvider()->GetColor(kColorAshFolderItemCountBackgroundColor));
+    flags.setColor(GetColorProvider()->GetColor(
+        jelly_style_ ? static_cast<ui::ColorId>(cros_tokens::kCrosSysPrimary)
+                     : kColorAshFolderItemCountBackgroundColor));
     canvas->DrawCircle(draw_center, counter_radius, flags);
 
     // Paint the number of apps that are not showing in the folder icon.
@@ -325,8 +339,11 @@ class AppListItemView::FolderIconView : public views::View,
     gfx::FontList font_list = config_->item_counter_in_folder_icon_font();
     canvas->DrawStringRectWithFlags(
         text, font_list,
-        GetColorProvider()->GetColor(kColorAshInvertedTextColorPrimary), bounds,
-        gfx::Canvas::TEXT_ALIGN_CENTER);
+        GetColorProvider()->GetColor(
+            jelly_style_
+                ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnPrimary)
+                : kColorAshInvertedTextColorPrimary),
+        bounds, gfx::Canvas::TEXT_ALIGN_CENTER);
   }
 
   void OnPaint(gfx::Canvas* canvas) override {
@@ -399,6 +416,9 @@ class AppListItemView::FolderIconView : public views::View,
   // The folder item this icon view paints.
   AppListFolderItem* folder_item_;
 
+  // Whether Jelly style feature is enabled.
+  const bool jelly_style_;
+
   const AppListConfig* config_;
 
   // The scaling factor used for cardified states in tablet mode.
@@ -432,18 +452,26 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
   set_suppress_default_focus_handling();
   GetViewAccessibility().OverrideIsLeaf(true);
 
-  StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
-                                   /*highlight_on_hover=*/false,
-                                   /*highlight_on_focus=*/false,
-                                   /*background_color=*/gfx::kPlaceholderColor);
+  const bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
+  StyleUtil::SetUpInkDropForButton(
+      this, gfx::Insets(),
+      /*highlight_on_hover=*/false,
+      /*highlight_on_focus=*/false,
+      is_jelly_enabled
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysRippleNeutralOnSubtle)
+          : gfx::kPlaceholderColor);
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
 
   SetHideInkDropWhenShowingContextMenu(false);
   SetShowInkDropWhenHotTracked(false);
   SetHasInkDropActionOnClick(false);
 
-  StyleUtil::SetUpFocusRingForView(this);
-  views::FocusRing::Get(this)->SetHasFocusPredicate([&](View* view) -> bool {
+  views::FocusRing::Install(this);
+  views::FocusRing* const focus_ring = views::FocusRing::Get(this);
+  focus_ring->SetColorId(is_jelly_enabled ? static_cast<ui::ColorId>(
+                                                cros_tokens::kCrosSysFocusRing)
+                                          : ui::kColorAshFocusRing);
+  focus_ring->SetHasFocusPredicate([&](View* view) -> bool {
     // With a `view_delegate_` present, focus ring should only show when
     // button is focused and keyboard traversal is engaged.
     if (view_delegate_ && !view_delegate_->KeyboardTraversalEngaged()) {
@@ -467,9 +495,18 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
   auto title = std::make_unique<views::Label>();
   title->SetBackgroundColor(SK_ColorTRANSPARENT);
   title->SetHandlesTooltips(false);
-  title->SetFontList(app_list_config_->app_title_font());
   title->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  title->SetEnabledColorId(kColorAshTextColorPrimary);
+  if (is_jelly_enabled) {
+    TypographyProvider::Get()->StyleLabel(
+        app_list_config_->type() == AppListConfigType::kDense
+            ? TypographyToken::kCrosAnnotation1
+            : TypographyToken::kCrosButton2,
+        *title);
+    title->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  } else {
+    title->SetFontList(app_list_config_->app_title_font());
+    title->SetEnabledColorId(kColorAshTextColorPrimary);
+  }
 
   if (use_item_icon_) {
     // If the item icon is used, set the icon in ImageView and paint the view.
@@ -1327,8 +1364,8 @@ void AppListItemView::OnThemeChanged() {
                    : item_weak_->GetNotificationBadgeColor();
     notification_indicator_->SetColor(notification_indicator_color);
     if (icon_background_layer_.OwnsLayer()) {
-      icon_background_layer_.layer()->SetColor(GetColorProvider()->GetColor(
-          kColorAshControlBackgroundColorInactive));
+      icon_background_layer_.layer()->SetColor(
+          GetColorProvider()->GetColor(GetBackgroundLayerColorId()));
     }
   }
   SchedulePaint();
@@ -1660,12 +1697,20 @@ void AppListItemView::SetBackgroundExtendedState(bool extend_icon,
     const int corner_radius =
         extend_icon ? app_list_config_->icon_extended_background_radius()
                     : width / 2;
+    const base::TimeDelta duration =
+        animate ? base::Milliseconds(125) : base::TimeDelta();
     builder.GetCurrentSequence()
-        .SetDuration(base::Milliseconds(animate ? 125 : 0))
+        .SetDuration(duration)
         .SetClipRect(background_layer, clip_rect, animation_tween_type)
         .SetRoundedCorners(background_layer,
                            gfx::RoundedCornersF(corner_radius * icon_scale_),
                            animation_tween_type);
+    if (chromeos::features::IsJellyEnabled() && GetWidget()) {
+      builder.GetCurrentSequence().SetColor(
+          background_layer,
+          GetColorProvider()->GetColor(GetBackgroundLayerColorId()),
+          animation_tween_type);
+    }
     return;
   }
 
@@ -1694,7 +1739,7 @@ void AppListItemView::SetBackgroundExtendedState(bool extend_icon,
   if (extend_icon) {
     background_layer->SetBounds(background_target_bounds);
     background_layer->SetColor(
-        GetColorProvider()->GetColor(kColorAshControlBackgroundColorInactive));
+        GetColorProvider()->GetColor(GetBackgroundLayerColorId()));
     background_target_bounds.Outset(
         app_list_config_->folder_dropping_circle_radius() * icon_scale_);
   }
@@ -1721,9 +1766,25 @@ void AppListItemView::EnsureIconBackgroundLayer() {
   background_layer->SetName("icon_background_layer");
   if (GetColorProvider()) {
     background_layer->SetColor(
-        GetColorProvider()->GetColor(kColorAshControlBackgroundColorInactive));
+        GetColorProvider()->GetColor(GetBackgroundLayerColorId()));
   }
   GetIconView()->AddLayerToRegion(background_layer, views::LayerRegion::kBelow);
+}
+
+ui::ColorId AppListItemView::GetBackgroundLayerColorId() const {
+  if (!chromeos::features::IsJellyEnabled()) {
+    return kColorAshControlBackgroundColorInactive;
+  }
+
+  if (is_icon_extended_) {
+    return cros_tokens::kCrosSysRippleNeutralOnSubtle;
+  }
+
+  if (is_folder_) {
+    return cros_tokens::kCrosSysSystemOnBase;
+  }
+
+  return cros_tokens::kCrosSysRippleNeutralOnSubtle;
 }
 
 void AppListItemView::OnExtendingAnimationEnded(bool extend_icon) {

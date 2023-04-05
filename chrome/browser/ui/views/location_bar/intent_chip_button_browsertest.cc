@@ -535,30 +535,4 @@ IN_PROC_BROWSER_TEST_F(IntentChipWithInfoBarBrowserTest,
       infobars::InfoBarDelegate::SUPPORTED_LINKS_INFOBAR_DELEGATE_CHROMEOS);
 }
 
-// Test fixture class which automatically displays the intent picker bubble when
-// a link is clicked to a page with an installed app.
-class IntentChipWithAutoDisplayBrowserTest
-    : public IntentChipButtonBrowserTest {
- private:
-  base::test::ScopedFeatureList feature_list_{
-      apps::features::kLinkCapturingAutoDisplayIntentPicker};
-};
-
-IN_PROC_BROWSER_TEST_F(IntentChipWithAutoDisplayBrowserTest,
-                       ShowsIntentPickerOnNavigation) {
-  const GURL in_scope_url =
-      https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
-
-  NavigateToLaunchingPage(browser());
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       IntentPickerBubbleView::kViewClassName);
-
-  ClickLinkAndWait(web_contents, in_scope_url, LinkTarget::SELF, "");
-
-  waiter.WaitIfNeededAndGet();
-  ASSERT_TRUE(IntentPickerBubbleView::intent_picker_bubble());
-}
 #endif  // BUILDFLAG(IS_CHROMEOS)

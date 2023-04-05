@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/metrics/field_trial.h"
 #include "base/path_service.h"
+#include "base/process/launch.h"
 #include "base/ranges/ranges.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -116,6 +117,8 @@ class VariationsSafeModeEndToEndBrowserTest : public ::testing::Test {
     sub_test.AppendSwitch(::switches::kRunManualTestsFlag);
     sub_test.AppendSwitch(::switches::kSingleProcessTests);
     sub_test.AppendSwitchPath(::switches::kUserDataDir, user_data_dir());
+    sub_test.AppendSwitch("alsologtostdout");
+    sub_test.AppendSwitch("alsologtostderr");
 
     // Assign the test environment to be on the Canary channel. This ensures
     // compatibility with the crashing study in the seed.
@@ -210,6 +213,9 @@ class VariationsSafeModeEndToEndBrowserTest : public ::testing::Test {
 // TODO(crbug.com/1344852): test is flaky on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_ExtendedSafeSeedEndToEnd DISABLED_ExtendedSafeSeedEndToEnd
+// TODO(crbug.com/1400987): times out waiting for output on Win-Official.
+#elif BUILDFLAG(IS_WIN) && defined(OFFICIAL_BUILD)
+#define MAYBE_ExtendedSafeSeedEndToEnd DISABLED_ExtendedSafeSeedEndToEnd
 #else
 #define MAYBE_ExtendedSafeSeedEndToEnd ExtendedSafeSeedEndToEnd
 #endif
@@ -248,6 +254,9 @@ TEST_F(VariationsSafeModeEndToEndBrowserTest, MAYBE_ExtendedSafeSeedEndToEnd) {
 
 // TODO(crbug.com/1344852): test is flaky on Mac.
 #if BUILDFLAG(IS_MAC)
+#define MAYBE_ExtendedNullSeedEndToEnd DISABLED_ExtendedNullSeedEndToEnd
+// TODO(crbug.com/1400987): times out waiting for output on Win-Official.
+#elif BUILDFLAG(IS_WIN) && defined(OFFICIAL_BUILD)
 #define MAYBE_ExtendedNullSeedEndToEnd DISABLED_ExtendedNullSeedEndToEnd
 #else
 #define MAYBE_ExtendedNullSeedEndToEnd ExtendedNullSeedEndToEnd

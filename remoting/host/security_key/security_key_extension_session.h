@@ -13,7 +13,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
+#include "build/build_config.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "remoting/host/host_extension_session.h"
+#include "remoting/host/mojom/remote_security_key.mojom.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -46,6 +49,11 @@ class SecurityKeyExtensionSession : public HostExtensionSession {
   bool OnExtensionMessage(ClientSessionDetails* client_session_details,
                           protocol::ClientStub* client_stub,
                           const protocol::ExtensionMessage& message) override;
+
+#if BUILDFLAG(IS_WIN)
+  void BindSecurityKeyForwarder(
+      mojo::PendingReceiver<mojom::SecurityKeyForwarder> receiver);
+#endif  // BUILDFLAG(IS_WIN)
 
   // Allows overriding SecurityKeyAuthHandler for unit testing.
   void SetSecurityKeyAuthHandlerForTesting(

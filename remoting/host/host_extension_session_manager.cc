@@ -36,6 +36,15 @@ std::string HostExtensionSessionManager::GetCapabilities() const {
   return capabilities;
 }
 
+HostExtensionSession* HostExtensionSessionManager::FindExtensionSession(
+    const std::string& capability) {
+  auto iter = extension_sessions_.find(capability);
+  if (iter == extension_sessions_.end()) {
+    return nullptr;
+  }
+  return iter->second.get();
+}
+
 void HostExtensionSessionManager::OnNegotiatedCapabilities(
     protocol::ClientStub* client_stub,
     const std::string& capabilities) {
@@ -57,13 +66,14 @@ void HostExtensionSessionManager::OnNegotiatedCapabilities(
                                           client_stub_);
     DCHECK(extension_session);
 
-    extension_sessions_.push_back(std::move(extension_session));
+    extension_sessions_.emplace(extension->capability(),
+                                std::move(extension_session));
   }
 }
 
 bool HostExtensionSessionManager::OnExtensionMessage(
     const protocol::ExtensionMessage& message) {
-  for (const auto& session : extension_sessions_) {
+  for (const auto& [capability, session] : extension_sessions_) {
     if (session->OnExtensionMessage(client_session_details_, client_stub_,
                                     message)) {
       return true;

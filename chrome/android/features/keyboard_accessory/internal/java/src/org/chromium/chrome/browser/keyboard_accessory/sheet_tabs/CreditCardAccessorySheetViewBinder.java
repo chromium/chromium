@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
@@ -100,27 +101,32 @@ class CreditCardAccessorySheetViewBinder {
         }
 
         private static @DrawableRes int getDrawableForOrigin(String origin) {
+            boolean use_new_data = ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES);
+
             switch (origin) {
                 case "americanExpressCC":
-                    return R.drawable.amex_card;
+                    return use_new_data ? R.drawable.amex_metadata_card : R.drawable.amex_card;
                 case "dinersCC":
-                    return R.drawable.diners_card;
+                    return use_new_data ? R.drawable.diners_metadata_card : R.drawable.diners_card;
                 case "discoverCC":
-                    return R.drawable.discover_card;
+                    return use_new_data ? R.drawable.discover_metadata_card
+                                        : R.drawable.discover_card;
                 case "eloCC":
-                    return R.drawable.elo_card;
+                    return use_new_data ? R.drawable.elo_metadata_card : R.drawable.elo_card;
                 case "jcbCC":
-                    return R.drawable.jcb_card;
+                    return use_new_data ? R.drawable.jcb_metadata_card : R.drawable.jcb_card;
                 case "masterCardCC":
-                    return R.drawable.mc_card;
+                    return use_new_data ? R.drawable.mc_metadata_card : R.drawable.mc_card;
                 case "mirCC":
-                    return R.drawable.mir_card;
+                    return use_new_data ? R.drawable.mir_metadata_card : R.drawable.mir_card;
                 case "troyCC":
-                    return R.drawable.troy_card;
+                    return use_new_data ? R.drawable.troy_metadata_card : R.drawable.troy_card;
                 case "unionPayCC":
-                    return R.drawable.unionpay_card;
+                    return use_new_data ? R.drawable.unionpay_metadata_card
+                                        : R.drawable.unionpay_card;
                 case "visaCC":
-                    return R.drawable.visa_card;
+                    return use_new_data ? R.drawable.visa_metadata_card : R.drawable.visa_card;
             }
             return R.drawable.infobar_autofill_cc;
         }

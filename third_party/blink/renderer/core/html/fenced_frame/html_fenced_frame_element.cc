@@ -627,9 +627,7 @@ bool HTMLFencedFrameElement::LayoutObjectIsNeeded(
          HTMLFrameOwnerElement::LayoutObjectIsNeeded(style);
 }
 
-LayoutObject* HTMLFencedFrameElement::CreateLayoutObject(
-    const ComputedStyle& style,
-    LegacyLayout legacy_layout) {
+LayoutObject* HTMLFencedFrameElement::CreateLayoutObject(const ComputedStyle&) {
   return MakeGarbageCollected<LayoutIFrame>(this);
 }
 

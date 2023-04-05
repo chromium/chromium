@@ -517,8 +517,7 @@ void SVGSVGElement::AttachLayoutTree(AttachContext& context) {
     To<LayoutSVGRoot>(GetLayoutObject())->IntrinsicSizingInfoChanged();
 }
 
-LayoutObject* SVGSVGElement::CreateLayoutObject(const ComputedStyle&,
-                                                LegacyLayout) {
+LayoutObject* SVGSVGElement::CreateLayoutObject(const ComputedStyle&) {
   if (IsOutermostSVGSVGElement())
     return MakeGarbageCollected<LayoutSVGRoot>(this);
 

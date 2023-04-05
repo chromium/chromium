@@ -307,9 +307,10 @@ error::Error RasterDecoderImpl::HandleWritePixelsINTERNALImmediate(
           cmd_data);
   GLint x_offset = static_cast<GLint>(c.x_offset);
   GLint y_offset = static_cast<GLint>(c.y_offset);
+  GLint plane_index = static_cast<GLint>(c.plane_index);
   GLuint src_width = static_cast<GLuint>(c.src_width);
   GLuint src_height = static_cast<GLuint>(c.src_height);
-  GLuint row_bytes = static_cast<GLuint>(c.row_bytes);
+  GLuint src_row_bytes = static_cast<GLuint>(c.src_row_bytes);
   GLuint src_sk_color_type = static_cast<GLuint>(c.src_sk_color_type);
   GLuint src_sk_alpha_type = static_cast<GLuint>(c.src_sk_alpha_type);
   GLint shm_id = static_cast<GLint>(c.shm_id);
@@ -328,9 +329,9 @@ error::Error RasterDecoderImpl::HandleWritePixelsINTERNALImmediate(
   if (mailbox == nullptr) {
     return error::kOutOfBounds;
   }
-  DoWritePixelsINTERNAL(x_offset, y_offset, src_width, src_height, row_bytes,
-                        src_sk_color_type, src_sk_alpha_type, shm_id,
-                        shm_offset, pixels_offset, mailbox);
+  DoWritePixelsINTERNAL(x_offset, y_offset, plane_index, src_width, src_height,
+                        src_row_bytes, src_sk_color_type, src_sk_alpha_type,
+                        shm_id, shm_offset, pixels_offset, mailbox);
   return error::kNoError;
 }
 

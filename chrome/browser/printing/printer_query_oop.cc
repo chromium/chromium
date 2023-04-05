@@ -65,17 +65,7 @@ void PrinterQueryOop::OnDidAskUserForSettings(
     mojom::PrintSettingsResultPtr print_settings) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   mojom::ResultCode result;
-  if (print_settings->is_result_code()) {
-    result = print_settings->get_result_code();
-    DCHECK_NE(result, mojom::ResultCode::kSuccess);
-    if (result != mojom::ResultCode::kCanceled) {
-      PRINTER_LOG(ERROR) << "Error getting settings from user via service: "
-                         << result;
-    }
-
-    // TODO(crbug.com/809738)  Fill in support for handling of access-denied
-    // result code.  Blocked on crbug.com/1243873 for Windows.
-  } else {
+  if (print_settings->is_settings()) {
     VLOG(1) << "Ask user for settings from service complete";
     result = mojom::ResultCode::kSuccess;
     printing_context()->ApplyPrintSettings(print_settings->get_settings());
@@ -86,6 +76,16 @@ void PrinterQueryOop::OnDidAskUserForSettings(
         PrintBackendServiceManager::GetInstance()
             .RegisterPrintDocumentClientReusingClientRemote(
                 *query_with_ui_client_id_);
+  } else {
+    result = print_settings->get_result_code();
+    DCHECK_NE(result, mojom::ResultCode::kSuccess);
+    if (result != mojom::ResultCode::kCanceled) {
+      PRINTER_LOG(ERROR) << "Error getting settings from user via service: "
+                         << result;
+    }
+
+    // TODO(crbug.com/809738)  Fill in support for handling of access-denied
+    // result code.  Blocked on crbug.com/1243873 for Windows.
   }
 
   InvokeSettingsCallback(std::move(callback), result);

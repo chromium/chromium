@@ -214,4 +214,39 @@ suite('appTestSuite', function() {
         .then(() => assertFalse(isVisible(getCautionBanner())));
   });
 
+  test('IsJellyEnabledForDiagnosticsApp', async () => {
+    // Setup test for jelly disabled.
+    loadTimeData.overrideValues({
+      isJellyEnabledForDiagnosticsApp: false,
+    });
+    /*@type {HTMLLinkElement}*/
+    const link = document.createElement('link');
+    const disabledUrl = 'chrome://resources/chromeos/colors/cros_styles.css';
+    link.href = disabledUrl;
+    document.head.appendChild(link);
+    await initializeDiagnosticsApp(
+        fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
+        fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage);
+
+    dx_utils.assertTextContains(link.href, disabledUrl);
+
+    // Reset diagnostics app element
+    document.body.innerHTML = '';
+    page.remove();
+    page = null;
+
+    // Setup test for jelly enabled.
+    loadTimeData.overrideValues({
+      isJellyEnabledForDiagnosticsApp: true,
+    });
+    await initializeDiagnosticsApp(
+        fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
+        fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage);
+
+    const enabledUrl = 'chrome://theme/colors.css?sets=legacy';
+    dx_utils.assertTextContains(link.href, enabledUrl);
+
+    // Clean up test specific element.
+    document.head.removeChild(link);
+  });
 });

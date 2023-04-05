@@ -79,7 +79,7 @@ bool ChromeOmniboxClientIOS::IsDefaultSearchProviderEnabled() const {
   return true;
 }
 
-const SessionID& ChromeOmniboxClientIOS::GetSessionID() const {
+SessionID ChromeOmniboxClientIOS::GetSessionID() const {
   return IOSChromeSessionTabHelper::FromWebState(
              edit_model_delegate_->GetWebState())
       ->session_id();

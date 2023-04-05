@@ -224,7 +224,8 @@ public class AutofillProfilesFragment
     }
 
     private void editAddress(EditorDialog dialog, AutofillAddress autofillAddress) {
-        AddressEditor addressEditor = new AddressEditor(/*saveToDisk=*/true);
+        AddressEditor addressEditor =
+                new AddressEditor(/*saveToDisk=*/true, /*isMigrationToAccount=*/false);
         addressEditor.setEditorDialog(dialog);
 
         /*

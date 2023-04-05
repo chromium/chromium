@@ -16,13 +16,13 @@
 #import "components/reading_list/core/reading_list_model.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/signin/ios/browser/active_state_manager.h"
-#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_abuse_detector.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/commerce/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/credential_provider_promo/features.h"
+#import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/download/download_directory_util.h"
 #import "ios/chrome/browser/download/external_app_util.h"
 #import "ios/chrome/browser/download/pass_kit_tab_helper.h"
@@ -78,7 +78,6 @@
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/signin/account_consistency_browser_agent.h"
 #import "ios/chrome/browser/signin/account_consistency_service_factory.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/store_kit/store_kit_coordinator.h"
 #import "ios/chrome/browser/sync/sync_error_browser_agent.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
@@ -107,6 +106,7 @@
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_coordinator.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/default_promo/default_promo_non_modal_presentation_delegate.h"
+#import "ios/chrome/browser/ui/default_promo/promo_handler/default_browser_promo_manager.h"
 #import "ios/chrome/browser/ui/default_promo/tailored_promo_coordinator.h"
 #import "ios/chrome/browser/ui/download/ar_quick_look_coordinator.h"
 #import "ios/chrome/browser/ui/download/download_manager_coordinator.h"
@@ -133,6 +133,7 @@
 #import "ios/chrome/browser/ui/overlays/overlay_container_coordinator.h"
 #import "ios/chrome/browser/ui/page_info/page_info_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/account_storage_notice/passwords_account_storage_notice_coordinator.h"
+#import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/password_breach_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/password_protection_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/password_suggestion_coordinator.h"
@@ -285,6 +286,10 @@ enum class ToolbarKind {
 // Presents a QLPreviewController in order to display USDZ format 3D models.
 @property(nonatomic, strong) ARQuickLookCoordinator* ARQuickLookCoordinator;
 
+// Coordinator in charge of the presenting autofill options in a bottom sheet.
+@property(nonatomic, strong) PasswordSuggestionBottomSheetCoordinator*
+    passwordSuggestionBottomSheetCoordinator;
+
 // Coordinator-ish provider for context menus.
 @property(nonatomic, strong)
     ContextMenuConfigurationProvider* contextMenuProvider;
@@ -418,6 +423,10 @@ enum class ToolbarKind {
 
 // The coordinator used for What's New feature.
 @property(nonatomic, strong) WhatsNewCoordinator* whatsNewCoordinator;
+
+// The manager used to display a default browser promo.
+@property(nonatomic, strong)
+    DefaultBrowserPromoManager* defaultBrowserPromoManager;
 
 @end
 
@@ -556,6 +565,9 @@ enum class ToolbarKind {
 
   [self.passwordProtectionCoordinator stop];
   self.passwordProtectionCoordinator = nil;
+
+  [self.passwordSuggestionBottomSheetCoordinator stop];
+  self.passwordSuggestionBottomSheetCoordinator = nil;
 
   [self.passwordSuggestionCoordinator stop];
   self.passwordSuggestionCoordinator = nil;
@@ -867,9 +879,6 @@ enum class ToolbarKind {
   _viewControllerDependencies.readingModel =
       ReadingListModelFactory::GetForBrowserState(
           self.browser->GetBrowserState());
-  _viewControllerDependencies.identityManager =
-      IdentityManagerFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
   _viewControllerDependencies.voiceSearchController = _voiceSearchController;
   _viewControllerDependencies.secondaryToolbarContainerCoordinator =
       [[ToolbarContainerCoordinator alloc]
@@ -935,7 +944,6 @@ enum class ToolbarKind {
   _viewControllerDependencies.loadQueryCommandsHandler = nil;
   _viewControllerDependencies.omniboxCommandsHandler = nil;
   _viewControllerDependencies.readingModel = nil;
-  _viewControllerDependencies.identityManager = nil;
   _viewControllerDependencies.voiceSearchController = nil;
   _viewControllerDependencies.secondaryToolbarContainerCoordinator = nil;
   _viewControllerDependencies.safeAreaProvider = nil;
@@ -1026,6 +1034,9 @@ enum class ToolbarKind {
   /* passwordProtectionCoordinator is created and started by a BrowserCommand */
 
   /* passwordSettingsCoordinator is created and started by a delegate method */
+
+  /* passwordSuggestionBottomSheetCoordinator is created and started by a
+   * BrowserCommand */
 
   /* passwordSuggestionCoordinator is created and started by a BrowserCommand */
 
@@ -1156,6 +1167,9 @@ enum class ToolbarKind {
   [self.passwordProtectionCoordinator stop];
   self.passwordProtectionCoordinator = nil;
 
+  [self.passwordSuggestionBottomSheetCoordinator stop];
+  self.passwordSuggestionBottomSheetCoordinator = nil;
+
   [self.passwordSuggestionCoordinator stop];
   self.passwordSuggestionCoordinator = nil;
 
@@ -1240,6 +1254,9 @@ enum class ToolbarKind {
     [self.openInCoordinator stop];
     self.openInCoordinator = nil;
   }
+
+  [self.defaultBrowserPromoManager stop];
+  self.defaultBrowserPromoManager = nil;
 }
 
 // Starts independent mediators owned by this coordinator.
@@ -1383,8 +1400,13 @@ enum class ToolbarKind {
 #pragma mark - PasswordBottomSheetCommands
 
 - (void)showPasswordBottomSheet:(const autofill::FormActivityParams&)params {
-  // TODO(crbug.com/1422362): This will be implemented as soon as the
-  // Password Bottom Sheet's coordinator class lands.
+  self.passwordSuggestionBottomSheetCoordinator =
+      [[PasswordSuggestionBottomSheetCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser
+                              params:params
+                            delegate:self.viewController];
+  [self.passwordSuggestionBottomSheetCoordinator start];
 }
 
 #pragma mark - BrowserCoordinatorCommands
@@ -1629,6 +1651,10 @@ enum class ToolbarKind {
   self.defaultBrowserPromoCoordinator = nil;
   [self.tailoredPromoCoordinator stop];
   self.tailoredPromoCoordinator = nil;
+  if (IsDefaultBrowserInPromoManagerEnabled()) {
+    [self.defaultBrowserPromoManager stop];
+    self.defaultBrowserPromoManager = nil;
+  }
 }
 
 #pragma mark - FeedCommands
@@ -1834,6 +1860,19 @@ enum class ToolbarKind {
   [self showWhatsNew];
   self.whatsNewCoordinator.promosUIHandler = self.promosManagerCoordinator;
   self.whatsNewCoordinator.shouldShowBubblePromoOnDismiss = YES;
+}
+
+- (void)maybeDisplayDefaultBrowserPromo {
+  if (!IsDefaultBrowserInPromoManagerEnabled()) {
+    return;
+  }
+
+  self.defaultBrowserPromoManager = [[DefaultBrowserPromoManager alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  self.defaultBrowserPromoManager.promosUIHandler =
+      self.promosManagerCoordinator;
+  [self.defaultBrowserPromoManager start];
 }
 
 #pragma mark - PageInfoCommands

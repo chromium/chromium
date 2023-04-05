@@ -275,11 +275,17 @@ void Portal::Navigate(const GURL& url,
   // this call.
   const blink::LocalFrameToken frame_token =
       owner_render_frame_host_->GetFrameToken();
+  absl::optional<GURL> initiator_base_url;
+  if (!owner_render_frame_host_->GetInheritedBaseUrl().is_empty() &&
+      (out_validated_url.IsAboutBlank() || out_validated_url.IsAboutSrcdoc())) {
+    // Note: GetInheritedBaseUrl() will only be non-empty when
+    // blink::features::IsNewBaseUrlInheritanceBehaviour is true.
+    initiator_base_url = owner_render_frame_host_->GetInheritedBaseUrl();
+  }
   portal_root->navigator().NavigateFromFrameProxy(
       portal_frame, out_validated_url, &frame_token,
       owner_render_frame_host_->GetProcess()->GetID(),
-      owner_render_frame_host_->GetLastCommittedOrigin(),
-      owner_render_frame_host_->GetInheritedBaseUrl(),
+      owner_render_frame_host_->GetLastCommittedOrigin(), initiator_base_url,
       owner_render_frame_host_->GetSiteInstance(),
       mojo::ConvertTo<Referrer>(referrer), ui::PAGE_TRANSITION_LINK,
       should_replace_entry, download_policy, "GET", nullptr, "", nullptr,

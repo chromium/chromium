@@ -91,7 +91,6 @@ void IceTransportChannel::Connect(const std::string& name,
   channel_ = std::make_unique<cricket::P2PTransportChannel>(
       std::string(), 0, port_allocator_.get());
   std::string ice_password = rtc::CreateRandomString(cricket::ICE_PWD_LENGTH);
-  channel_->SetIceProtocolType(cricket::ICEPROTO_RFC5245);
   channel_->SetIceRole((transport_context_->role() == TransportRole::CLIENT)
                            ? cricket::ICEROLE_CONTROLLING
                            : cricket::ICEROLE_CONTROLLED);

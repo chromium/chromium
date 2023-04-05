@@ -22,7 +22,7 @@
 #include "services/device/public/mojom/power_monitor.mojom.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
-#include "services/metrics/ukm_recorder_interface.h"
+#include "services/metrics/ukm_recorder_factory_impl.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "content/browser/sandbox_support_mac_impl.h"
@@ -112,9 +112,9 @@ void BrowserChildProcessHostImpl::BindHostReceiver(
     return;
   }
 
-  if (auto r = receiver.As<ukm::mojom::UkmRecorderInterface>()) {
-    metrics::UkmRecorderInterface::Create(ukm::UkmRecorder::Get(),
-                                          std::move(r));
+  if (auto r = receiver.As<ukm::mojom::UkmRecorderFactory>()) {
+    metrics::UkmRecorderFactoryImpl::Create(ukm::UkmRecorder::Get(),
+                                            std::move(r));
     return;
   }
 

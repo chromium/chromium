@@ -131,6 +131,8 @@ void PageTimelineMonitor::CollectSlice() {
       is_connected_to_device =
           page_live_state_data->IsConnectedToUSBDevice() ||
           page_live_state_data->IsConnectedToBluetoothDevice();
+      // TODO(crbug.com/1426484): PageDiscardingHelper now gets this from
+      // SiteDataRecorder. The UKM should use the same data source.
       updated_title_or_favicon_in_background =
           page_live_state_data->UpdatedTitleOrFaviconInBackground();
     }

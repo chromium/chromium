@@ -11,8 +11,9 @@
 namespace views::switches {
 
 // Please keep alphabetized.
+VIEWS_EXPORT extern const char
+    kDisableInputEventActivationProtectionForTesting[];
 VIEWS_EXPORT extern const char kDrawViewBoundsRects[];
-
 VIEWS_EXPORT extern const char kViewStackTraces[];
 
 }  // namespace views::switches

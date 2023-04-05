@@ -351,6 +351,17 @@ class AX_EXPORT AXTree {
       const AXTreeData* new_tree_data,
       const AXNodeData& new_data);
 
+  // Notify the delegate that |node| has changed its data attributes, including
+  // its ignored state. Only for |kAccessibilityUnserializeOptimizations| flag.
+  void NotifyNodeAttributesHaveBeenChangedOptimized(
+      AXNode* node,
+      AXTreeUpdateState& update_state,
+      AXTreeObserver& observer,
+      const AXTreeData* optional_old_tree_data,
+      const AXNodeData& old_data,
+      const AXTreeData* new_tree_data,
+      const AXNodeData& new_data);
+
   void UpdateReverseRelations(AXNode* node, const AXNodeData& new_data);
 
   // Sets a flag indicating whether the tree is currently being updated or not.

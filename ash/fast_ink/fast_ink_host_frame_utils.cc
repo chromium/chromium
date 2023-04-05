@@ -40,13 +40,13 @@ std::unique_ptr<UiResource> AcquireUiResource(
     gfx::GpuMemoryBuffer* gpu_memory_buffer,
     UiResourceManager* resource_manager) {
   viz::ResourceId reusable_resource_id = resource_manager->FindResourceToReuse(
-      size, kFastInkResourceFormat, kFastInkUiSourceId);
+      size, kFastInkSharedImageFormat, kFastInkUiSourceId);
   std::unique_ptr<UiResource> resource;
   if (reusable_resource_id != viz::kInvalidResourceId) {
     resource = resource_manager->ReleaseAvailableResource(reusable_resource_id);
   } else {
     resource =
-        CreateUiResource(size, kFastInkResourceFormat, kFastInkUiSourceId,
+        CreateUiResource(size, kFastInkSharedImageFormat, kFastInkUiSourceId,
                          is_overlay_candidate, gpu_memory_buffer);
   }
 
@@ -117,7 +117,7 @@ std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuBuffer(
 
 std::unique_ptr<UiResource> CreateUiResource(
     const gfx::Size& size,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     UiSourceId ui_source_id,
     bool is_overlay_candidate,
     gfx::GpuMemoryBuffer* gpu_memory_buffer) {

@@ -27,7 +27,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -41,6 +40,7 @@ import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
@@ -82,8 +82,7 @@ public class StatusBarColorControllerTest {
 
     @Before
     public void setUp() {
-        mScrimColor = sActivityTestRule.getActivity().getColor(
-                org.chromium.chrome.R.color.default_scrim_color);
+        mScrimColor = sActivityTestRule.getActivity().getColor(R.color.default_scrim_color);
         mOmniboxUtils = new OmniboxTestUtils(sActivityTestRule.getActivity());
     }
 

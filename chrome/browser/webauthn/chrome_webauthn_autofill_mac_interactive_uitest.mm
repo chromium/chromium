@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -132,8 +133,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnMacAutofillIntegrationTest, SelectAccount) {
   ASSERT_LT(suggestion_index, suggestions.size()) << "WebAuthn entry not found";
   EXPECT_EQ(webauthn_entry.main_text.value, u"flandre");
   EXPECT_EQ(webauthn_entry.labels.at(0).at(0).value,
-            l10n_util::GetStringUTF16(
-                password_manager::GetPlatformAuthenticatorLabel()));
+            l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_TOUCH_ID));
   EXPECT_EQ(webauthn_entry.icon, "globeIcon");
 
   // Click the credential.

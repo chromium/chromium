@@ -62,7 +62,7 @@
         const imageBitmap = offscreenCanvas.transferToImageBitmap();
 
         webGpuUtils.uploadToGPUTextureTest(gpuDevice, gpuContext, imageBitmap,
-                                           {useImport: false, isWebGLCanvas: false});
+                                           {isWebGLCanvas: false});
 
         waitForFinish();
       };

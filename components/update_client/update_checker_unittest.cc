@@ -304,7 +304,11 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
   ASSERT_TRUE(request->FindString("@updater"));
   EXPECT_EQ("fake_prodid", *request->FindString("@updater"));
   ASSERT_TRUE(request->FindString("acceptformat"));
+#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
+  EXPECT_EQ("crx3,puff", *request->FindString("acceptformat"));
+#else
   EXPECT_EQ("crx3", *request->FindString("acceptformat"));
+#endif
   EXPECT_TRUE(request->contains("arch"));
   ASSERT_TRUE(request->FindString("dedup"));
   EXPECT_EQ("cr", *request->FindString("dedup"));

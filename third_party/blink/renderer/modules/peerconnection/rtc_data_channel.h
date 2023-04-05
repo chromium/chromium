@@ -173,10 +173,11 @@ class MODULES_EXPORT RTCDataChannel final
   // initialized.
   void CreateFeatureHandleForScheduler();
 
-  webrtc::DataChannelInterface::DataState state_;
+  webrtc::DataChannelInterface::DataState state_ =
+      webrtc::DataChannelInterface::kConnecting;
 
   enum BinaryType { kBinaryTypeBlob, kBinaryTypeArrayBuffer };
-  BinaryType binary_type_;
+  BinaryType binary_type_ = kBinaryTypeArrayBuffer;
 
   HeapTaskRunnerTimer<RTCDataChannel> scheduled_event_timer_;
   HeapVector<Member<Event>> scheduled_events_;
@@ -191,10 +192,14 @@ class MODULES_EXPORT RTCDataChannel final
   FrameScheduler::SchedulingAffectingFeatureHandle
       feature_handle_for_scheduler_;
 
-  unsigned buffered_amount_low_threshold_;
-  unsigned buffered_amount_;
-  bool stopped_;
-  bool closed_from_owner_;
+  // Once an id has been assigned, we'll set this value and use it instead
+  // of querying the channel (which requires thread hop). This is a cached
+  // value to optimize a const getter, and therefore `mutable`.
+  mutable absl::optional<uint16_t> id_;
+  unsigned buffered_amount_low_threshold_ = 0u;
+  unsigned buffered_amount_ = 0u;
+  bool stopped_ = false;
+  bool closed_from_owner_ = false;
   scoped_refptr<Observer> observer_;
   scoped_refptr<base::SingleThreadTaskRunner> signaling_thread_;
   THREAD_CHECKER(thread_checker_);

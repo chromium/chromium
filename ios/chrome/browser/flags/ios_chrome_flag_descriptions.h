@@ -134,10 +134,6 @@ extern const char kBreakpadNoDelayInitialUploadDescription[];
 extern const char kBringYourOwnTabsIOSName[];
 extern const char kBringYourOwnTabsIOSDescription[];
 
-// Title and description for the flag to enable experience kit calendar events.
-extern const char kCalendarExperienceKitName[];
-extern const char kCalendarExperienceKitDescription[];
-
 // Title and description for the flag to enable the the sign-in-only flow
 // when no device level account is detected.
 extern const char kConsistencyNewAccountInterfaceName[];
@@ -269,6 +265,11 @@ extern const char kEnableFeedImageCachingDescription[];
 // Title and description for the flag to enable Feed synthetic capabilities.
 extern const char kEnableFeedSyntheticCapabilitiesName[];
 extern const char kEnableFeedSyntheticCapabilitiesDescription[];
+
+// Title and description for the flag to enable follow IPH experiment
+// parameters.
+extern const char kEnableFollowIPHExpParamsName[];
+extern const char kEnableFollowIPHExpParamsDescription[];
 
 // Title and description for the flag to enable follow management page instant
 // reload when opening.
@@ -592,6 +593,16 @@ extern const char kOmniboxFuzzyUrlSuggestionsDescription[];
 extern const char kOmniboxHttpsUpgradesName[];
 extern const char kOmniboxHttpsUpgradesDescription[];
 
+// Title and description for the flag to enable Omnibox Grouping implementation
+// for ZPS.
+extern const char kOmniboxGroupingFrameworkForZPSName[];
+extern const char kOmniboxGroupingFrameworkForZPSDescription[];
+
+// Title and description for the flag to enable Omnibox Grouping implementation
+// for Typed Suggestions.
+extern const char kOmniboxGroupingFrameworkForTypedSuggestionsName[];
+extern const char kOmniboxGroupingFrameworkForTypedSuggestionsDescription[];
+
 // Title and description for the flag to enable paste button in the omnibox's
 // keyboard accessory.
 extern const char kOmniboxKeyboardPasteButtonName[];
@@ -870,6 +881,11 @@ extern const char kEnableLensContextMenuAltTextDescription[];
 // copied images in the omnibox.
 extern const char kEnableLensInOmniboxCopiedImageName[];
 extern const char kEnableLensInOmniboxCopiedImageDescription[];
+
+// Title and description for the flag to enable session serialization
+// optimizations (go/bling-session-restoration).
+extern const char kEnableSessionSerializationOptimizationsName[];
+extern const char kEnableSessionSerializationOptimizationsDescription[];
 
 // Title and description for the flag to enable the follow up of the SF Symbols.
 extern const char kSFSymbolsFollowUpName[];

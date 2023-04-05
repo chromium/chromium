@@ -15,6 +15,7 @@ import compile_java
 import javac_output_processor
 from util import build_utils
 import action_helpers  # build_utils adds //build to sys.path.
+import zip_helpers
 
 
 def ProcessJavacOutput(output, target_name):
@@ -143,9 +144,9 @@ def main(argv):
     logging.info('Header compilation took %ss', end)
     if options.kotlin_jar_path:
       with zipfile.ZipFile(output_jar.name, 'a') as out_zip:
-        build_utils.MergeZips(out_zip, [options.kotlin_jar_path],
-                              path_transform=lambda p: p
-                              if p.endswith('.class') else None)
+        path_transform = lambda p: p if p.endswith('.class') else None
+        zip_helpers.merge_zips(out_zip, [options.kotlin_jar_path],
+                               path_transform=path_transform)
 
   if options.depfile:
     # GN already knows of the java files, so avoid listing individual java files

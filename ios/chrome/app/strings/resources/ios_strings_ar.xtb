@@ -209,7 +209,7 @@
 <translation id="2430198251915534025">{COUNT,plural, =1{كلمة مرور واحدة محتمَل تعرّضها للاختراق ({COUNT})}zero{‫{COUNT} كلمة مرور محتمَل تعرّضها للاختراق}two{كلِمتا مرور محتمَل تعرّضهما للاختراق ({COUNT})}few{‫{COUNT} كلمات مرور محتمَل تعرّضها للاختراق}many{‫{COUNT} كلمة مرور محتمَل تعرّضها للاختراق}other{‫{COUNT} كلمة مرور محتمَل تعرّضها للاختراق}}</translation>
 <translation id="2434405374328098816">سبق أن حفظت كلمة مرور لاسم المستخدم "<ph name="USERNAME" />" على <ph name="WEBSITE" />.</translation>
 <translation id="2435457462613246316">عرض كلمة المرور</translation>
-<translation id="2451654228769116489">‏Pin Tab (تثبيت علامة تبويب)</translation>
+<translation id="2451654228769116489">تثبيت علامة تبويب</translation>
 <translation id="2461070143328828326">إعدادات كلمة المرور</translation>
 <translation id="2469960372084740698">هل تريد إيقاف "التصفُّح الآمن"؟</translation>
 <translation id="2473876017985765807">سبق أن حفظت كلمة مرور للموقع الإلكتروني <ph name="WEBSITE" />.</translation>
@@ -889,6 +889,7 @@
 <translation id="6831043979455480757">ترجمة</translation>
 <translation id="6842136130964845393">لضمان إمكانية الوصول دائمًا إلى كلمات المرور المحفوظة، عليك إثبات هويتك.</translation>
 <translation id="6851516051005285358">طلب موقع سطح المكتب</translation>
+<translation id="6852222216891664518">إغلاق علامة التبويب المثبَّتة</translation>
 <translation id="6858855187367714033">تم مسحه ضوئيًا.</translation>
 <translation id="6859944681507688231">لمسح رمز الاستجابة السريعة أو بطاقة ائتمان ضوئيًا، يمكنك تفعيل الكاميرا من الإعدادات.</translation>
 <translation id="6867369562105931222">كلمة المرور</translation>
@@ -953,6 +954,7 @@
 <translation id="7346909386216857016">حسنًا</translation>
 <translation id="734758817008927353">خيارات حفظ البطاقة</translation>
 <translation id="7351537303876921605">انقر على "إنشاء رابط" في قائمة السياقات.</translation>
+<translation id="7352651011704765696">حدث خطأ ما</translation>
 <translation id="7353432112255316844">إثبات هويّتك</translation>
 <translation id="7383797227493018512">قائمة القراءة</translation>
 <translation id="7398893703713203428">إنشاء رابط</translation>
@@ -1180,6 +1182,7 @@
 <translation id="891658175948553296">ميِّز النص على موقع إلكتروني.</translation>
 <translation id="8917490105272468696">نعم، أنا موافق</translation>
 <translation id="8928133177108699615">الإصدار المخصّص لأجهزة الكمبيوتر</translation>
+<translation id="8934982071228289624">لحفظ كلمة المرور هذه في حسابك، يجب أولاً ضبط رمز مرور على جهازك.</translation>
 <translation id="894191600409472540">إنشاء كلمات مرور قوية</translation>
 <translation id="8952559610785099500">إضافة كلمة مرور</translation>
 <translation id="8953046091948372197">ستظهر كلمات المرور هنا</translation>

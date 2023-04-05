@@ -114,6 +114,13 @@ InProgressCluster::InProgressCluster() = default;
 InProgressCluster::~InProgressCluster() = default;
 InProgressCluster::InProgressCluster(const InProgressCluster&) = default;
 
+CachedEngagementScore::CachedEngagementScore(float score,
+                                             base::Time expiry_time)
+    : score(score), expiry_time(expiry_time) {}
+CachedEngagementScore::~CachedEngagementScore() = default;
+CachedEngagementScore::CachedEngagementScore(const CachedEngagementScore&) =
+    default;
+
 ContextClustererHistoryServiceObserver::ContextClustererHistoryServiceObserver(
     history::HistoryService* history_service,
     TemplateURLService* template_url_service,
@@ -122,6 +129,7 @@ ContextClustererHistoryServiceObserver::ContextClustererHistoryServiceObserver(
     : history_service_(history_service),
       template_url_service_(template_url_service),
       optimization_guide_decider_(optimization_guide_decider),
+      engagement_score_cache_(GetConfig().engagement_score_cache_size),
       engagement_score_provider_(engagement_score_provider),
       clock_(base::DefaultClock::GetInstance()) {
   if (history_service_) {
@@ -279,19 +287,21 @@ void ContextClustererHistoryServiceObserver::OnURLVisited(
       return;
     }
 
-    // As `in_progress_cluster` does not have a persisted cluster ID yet, add
-    // the ClusterVisit to the vector of visits that needs to get persisted.
-    in_progress_cluster.unpersisted_visits.push_back(std::move(cluster_visit));
-
     if (is_new_cluster) {
       // Cluster creation is async. Reserve next cluster ID and wait to persist
       // items until it comes back in `OnPersistedClusterIdReceived()`.
-      history_service->ReserveNextClusterId(
+      history_service->ReserveNextClusterIdWithVisit(
+          std::move(cluster_visit),
           base::BindOnce(&ContextClustererHistoryServiceObserver::
                              OnPersistedClusterIdReceived,
                          weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(),
                          *cluster_id),
           &task_tracker_);
+    } else {
+      // As `in_progress_cluster` does not have a persisted cluster ID yet, add
+      // the ClusterVisit to the vector of visits that needs to get persisted.
+      in_progress_cluster.unpersisted_visits.push_back(
+          std::move(cluster_visit));
     }
   }
 }
@@ -396,9 +406,9 @@ void ContextClustererHistoryServiceObserver::FinalizeCluster(
 
   // Only delete the cluster if the persisted cluster ID is not needed because
   // clusters are not being persisted or the persisted cluster ID has been
-  // received.
+  // received and there are unpersisted visits.
   if (!ShouldUseNavigationContextClustersFromPersistence() ||
-      cluster.persisted_cluster_id != 0) {
+      cluster.unpersisted_visits.empty()) {
     in_progress_clusters_.erase(cluster_id);
   } else {
     cluster.cleaned_up = true;
@@ -413,9 +423,10 @@ void ContextClustererHistoryServiceObserver::OnPersistedClusterIdReceived(
                         start_time);
 
   auto cluster_it = in_progress_clusters_.find(cluster_id);
-  // This is expected to always emit false, but keeping this histogram here to
-  // ensure that there are no additional cases for why a cluster would be
-  // cleaned up before it is ready to be persisted.
+  // This is expected to emit an entry if a cluster was cleaned up  (i.e. erased
+  // from `in_progress_clusters_` instead of flagged as `cleaned_up = true`)
+  // when it had no unpersisted visits left and the first visit of a cluster was
+  // already sent for persistence AND persistence is taking a long time.
   base::UmaHistogramBoolean(
       "History.Clusters.ContextClusterer.ClusterCleanedUpBeforePersistence",
       cluster_it == in_progress_clusters_.end());
@@ -424,18 +435,26 @@ void ContextClustererHistoryServiceObserver::OnPersistedClusterIdReceived(
   }
 
   cluster_it->second.persisted_cluster_id = persisted_cluster_id;
-  // Persist all visits we've seen so far.
-  history_service_->AddVisitsToCluster(
-      persisted_cluster_id, cluster_it->second.unpersisted_visits,
-      base::BindOnce(&LogDbLatencyHistogram,
-                     ContextClustererDbLatencyType::kAddVisitsToCluster,
-                     base::TimeTicks::Now()),
-      &task_tracker_);
 
-  // Clear these out since the visits have now been requested to be persisted.
-  // This is safe to clear here as the vector should have already been copied to
-  // the history DB thread in `AddVisitsToCluster()`.
-  cluster_it->second.unpersisted_visits.clear();
+  if (!cluster_it->second.unpersisted_visits.empty()) {
+    base::UmaHistogramCounts100(
+        "History.Clusters.ContextClusterer."
+        "NumUnpersistedVisitsBeforeClusterPersisted",
+        cluster_it->second.unpersisted_visits.size());
+
+    // Persist all visits we've seen so far.
+    history_service_->AddVisitsToCluster(
+        persisted_cluster_id, cluster_it->second.unpersisted_visits,
+        base::BindOnce(&LogDbLatencyHistogram,
+                       ContextClustererDbLatencyType::kAddVisitsToCluster,
+                       base::TimeTicks::Now()),
+        &task_tracker_);
+
+    // Clear these out since the visits have now been requested to be persisted.
+    // This is safe to clear here as the vector should have already been copied
+    // to the history DB thread in `AddVisitsToCluster()`.
+    cluster_it->second.unpersisted_visits.clear();
+  }
 
   if (cluster_it->second.cleaned_up) {
     FinalizeCluster(cluster_id);
@@ -458,9 +477,31 @@ ContextClustererHistoryServiceObserver::CreateClusterVisit(
       ComputeURLForDisplay(cluster_visit.normalized_url);
   if (engagement_score_provider_) {
     cluster_visit.engagement_score =
-        engagement_score_provider_->GetScore(cluster_visit.normalized_url);
+        GetEngagementScore(cluster_visit.normalized_url);
   }
   return cluster_visit;
+}
+
+float ContextClustererHistoryServiceObserver::GetEngagementScore(
+    const GURL& normalized_url) {
+  if (!GetConfig().use_engagement_score_cache) {
+    return engagement_score_provider_->GetScore(normalized_url);
+  }
+
+  std::string visit_host = normalized_url.host();
+  auto it = engagement_score_cache_.Peek(visit_host);
+  if (it != engagement_score_cache_.end() &&
+      it->second.expiry_time > clock_->Now()) {
+    return it->second.score;
+  }
+
+  float score = engagement_score_provider_->GetScore(normalized_url);
+  engagement_score_cache_.Put(
+      visit_host,
+      CachedEngagementScore(
+          score,
+          clock_->Now() + GetConfig().engagement_score_cache_refresh_duration));
+  return score;
 }
 
 void ContextClustererHistoryServiceObserver::OverrideClockForTesting(

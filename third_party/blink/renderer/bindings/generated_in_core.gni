@@ -496,6 +496,8 @@ generated_enumeration_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_mojo_scope.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_native_scroll_behavior.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_native_scroll_behavior.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_navigation_commit_behavior.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_navigation_commit_behavior.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_navigation_focus_reset.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_navigation_focus_reset.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_navigation_history_behavior.cc",
@@ -1862,13 +1864,13 @@ generated_callback_function_sources_for_testing_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_test_receiver_object_callback.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_test_sequence_callback.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_test_sequence_callback.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_ukm_entry_added_callback.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_ukm_entry_added_callback.h",
 ]
 
 generated_dictionary_sources_for_testing_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_internal_cookie.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_internal_cookie.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_internal_cookie_same_site.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_internal_cookie_same_site.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_internal_dictionary.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_internal_dictionary.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_internal_dictionary_derived.cc",
@@ -1882,6 +1884,8 @@ generated_dictionary_sources_for_testing_in_core = [
 generated_enumeration_sources_for_testing_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_food_enum.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_food_enum.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_internal_cookie_same_site.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_internal_cookie_same_site.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_internal_enum.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_internal_enum.h",
 ]

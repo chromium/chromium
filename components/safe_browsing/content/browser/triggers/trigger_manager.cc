@@ -12,6 +12,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/safe_browsing/content/browser/threat_details.h"
+#include "components/safe_browsing/content/browser/web_contents_key.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
@@ -172,7 +173,8 @@ bool TriggerManager::StartCollectingThreatDetailsWithReason(
 
   // Ensure we're not already collecting ThreatDetails on this tab. Create an
   // entry in the map for this |web_contents| if it's not there already.
-  DataCollectorsContainer* collectors = &data_collectors_map_[web_contents];
+  DataCollectorsContainer* collectors =
+      &data_collectors_map_[GetWebContentsKey(web_contents)];
   if (collectors->threat_details != nullptr)
     return false;
 
@@ -187,7 +189,7 @@ bool TriggerManager::StartCollectingThreatDetailsWithReason(
 
 bool TriggerManager::FinishCollectingThreatDetails(
     const TriggerType trigger_type,
-    content::WebContents* web_contents,
+    WebContentsKey web_contents_key,
     const base::TimeDelta& delay,
     bool did_proceed,
     int num_visits,
@@ -196,7 +198,7 @@ bool TriggerManager::FinishCollectingThreatDetails(
   // Determine whether a report should be sent.
   bool should_send_report = CanSendReport(error_display_options, trigger_type);
   bool has_threat_details_in_map =
-      base::Contains(data_collectors_map_, web_contents);
+      base::Contains(data_collectors_map_, web_contents_key);
 
   if (should_send_report) {
     base::UmaHistogramBoolean(
@@ -207,7 +209,7 @@ bool TriggerManager::FinishCollectingThreatDetails(
   // Make sure there's a ThreatDetails collector running on this tab.
   if (!has_threat_details_in_map)
     return false;
-  DataCollectorsContainer* collectors = &data_collectors_map_[web_contents];
+  DataCollectorsContainer* collectors = &data_collectors_map_[web_contents_key];
   if (collectors->threat_details == nullptr)
     return false;
 
@@ -227,27 +229,30 @@ bool TriggerManager::FinishCollectingThreatDetails(
   } else {
     // We aren't telling ThreatDetails to finish the report so we should clean
     // up our map ourselves.
-    ThreatDetailsDone(web_contents);
+    ThreatDetailsDone(web_contents_key);
   }
 
   return should_send_report;
 }
 
-void TriggerManager::ThreatDetailsDone(content::WebContents* web_contents) {
+void TriggerManager::ThreatDetailsDone(WebContentsKey web_contents_key) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   // Clean up the ThreatDetailsdata collector on the specified tab.
-  if (!base::Contains(data_collectors_map_, web_contents))
+  if (!base::Contains(data_collectors_map_, web_contents_key)) {
     return;
+  }
 
-  DataCollectorsContainer* collectors = &data_collectors_map_[web_contents];
+  DataCollectorsContainer* collectors = &data_collectors_map_[web_contents_key];
   collectors->threat_details = nullptr;
 }
 
 void TriggerManager::WebContentsDestroyed(content::WebContents* web_contents) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  if (!base::Contains(data_collectors_map_, web_contents))
+  WebContentsKey key = GetWebContentsKey(web_contents);
+  if (!base::Contains(data_collectors_map_, key)) {
     return;
-  data_collectors_map_.erase(web_contents);
+  }
+  data_collectors_map_.erase(key);
 }
 
 TriggerManagerWebContentsHelper::TriggerManagerWebContentsHelper(

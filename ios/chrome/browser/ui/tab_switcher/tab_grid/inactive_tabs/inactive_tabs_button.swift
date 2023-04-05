@@ -14,7 +14,7 @@ struct InactiveTabsButton: View {
   }
   class State: ObservableObject {
     @Published var action: (() -> Void)?
-    @Published var inactivityThresholdDisplayString: String?
+    @Published var daysThreshold: Int?
     @Published var count: Int?
   }
   @ObservedObject var state: State
@@ -81,11 +81,11 @@ struct InactiveTabsButton: View {
   /// Displays the button subtitle.
   @ViewBuilder
   private func subtitle() -> some View {
-    if let inactivityThresholdDisplayString = state.inactivityThresholdDisplayString {
+    if let daysThreshold = state.daysThreshold {
       Text(
         L10NUtils.formatString(
           forMessageId: IDS_IOS_INACTIVE_TABS_BUTTON_SUBTITLE,
-          argument: inactivityThresholdDisplayString)
+          argument: String(daysThreshold))
       )
       .font(.caption2)
       .foregroundColor(.textSecondary)
@@ -108,16 +108,14 @@ struct InactiveTabsButton: View {
   @ViewBuilder
   private func disclosure() -> some View {
     if #available(iOS 16.0, *) {
-      Image(systemName: "chevron.right")
+      Image(systemName: kChevronForwardSymbol)
         .foregroundColor(.textTertiary)
         .fontWeight(.semibold)
-        .flipsForRightToLeftLayoutDirection(true)
     } else {
       // fontWeight is not available on Image. Wrap it in a Text.
-      Text(Image(systemName: "chevron.right"))
+      Text(Image(systemName: kChevronForwardSymbol))
         .foregroundColor(.textTertiary)
         .fontWeight(.semibold)
-        .flipsForRightToLeftLayoutDirection(true)
     }
   }
 

@@ -76,16 +76,6 @@ struct COMPONENT_EXPORT(GOOGLE_APIS) CoreAccountId {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   // ---------------------------------------- ---------------------------------
 
-#if defined(UNIT_TEST)
-  // The following constructors are only used for testing. The reason for this
-  // is that they are currently being removed, but they are extensively used by
-  // the testing code.
-  //
-  // TODO(crbug.com/1028578): Update the tests to use one of FromEmail(),
-  // FromGaia() or FromString() methods above.
-  explicit CoreAccountId(const char* id) : id_(id) {}
-#endif  // defined(UNIT_TEST)
-
  private:
   std::string id_;
 };

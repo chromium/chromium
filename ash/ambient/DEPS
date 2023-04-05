@@ -5,6 +5,7 @@ include_rules = [
 specific_include_rules = {
   "ambient_backend_controller_impl\.*": [
     "+chromeos/assistant/internal/ambient/backdrop_client_config.h",
+    "+chromeos/assistant/internal/ambient/utils.h",
     "+chromeos/assistant/internal/proto/backdrop",
   ],
   "ambient_controller.*": [

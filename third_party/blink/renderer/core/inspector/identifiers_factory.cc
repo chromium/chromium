@@ -40,6 +40,8 @@
 
 namespace blink {
 
+DEFINE_WEAK_IDENTIFIER_MAP(CSSStyleSheet)
+
 // static
 String IdentifiersFactory::CreateIdentifier() {
   static base::AtomicSequenceNumber last_used_identifier;
@@ -125,6 +127,26 @@ String IdentifiersFactory::AddProcessIdPrefixTo(uint64_t id) {
 
   builder.AppendNumber(process_id);
   builder.Append('.');
+  builder.AppendNumber(id);
+
+  return builder.ToString();
+}
+
+// static
+String IdentifiersFactory::IdForCSSStyleSheet(
+    const CSSStyleSheet* style_sheet) {
+  if (style_sheet == nullptr) {
+    return "ua-style-sheet";
+  }
+  const int id = WeakIdentifierMap<CSSStyleSheet>::Identifier(
+      const_cast<CSSStyleSheet*>(style_sheet));
+  const auto process_id = base::GetUniqueIdForProcess().GetUnsafeValue();
+
+  StringBuilder builder;
+
+  builder.Append("style-sheet-");
+  builder.AppendNumber(process_id);
+  builder.Append('-');
   builder.AppendNumber(id);
 
   return builder.ToString();

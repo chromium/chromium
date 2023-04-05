@@ -10,12 +10,15 @@
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/services/unzip/public/cpp/unzip.h"
 #include "components/services/unzip/public/mojom/unzipper.mojom.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/error_utils.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -28,6 +31,11 @@ namespace {
 
 constexpr char kExtensionHandlerTempDirError[] =
     "Could not create temporary directory for zipped extension.";
+constexpr char kExtensionHandlerUnpackedDirCreationError[] =
+    "Failed to create root unpacked directory * for "
+    "zip file: *. Encountered error: *.";
+constexpr char kExtensionHandlerZippedDirError[] =
+    "Could not create directory * for zipped extension.";
 constexpr char kExtensionHandlerFileUnzipError[] =
     "Could not unzip extension for install.";
 
@@ -37,8 +45,11 @@ constexpr const base::FilePath::CharType* kAllowedThemeFiletypes[] = {
     FILE_PATH_LITERAL(".json"), FILE_PATH_LITERAL(".png"),
     FILE_PATH_LITERAL(".webp")};
 
-absl::optional<base::FilePath> PrepareAndGetUnzipDir(
-    const base::FilePath& zip_file) {
+// Creates a directory in an OS temporary location based on `zip_file`.
+// Directory format is (`zip_file` == "myzip.zip"):
+//   <`root_unzip_dir`>/myzip_XXXXXX
+// XXXXXX is populated with mkdtemp() logic.
+ZipResultVariant PrepareAndGetTempUnzipDir(const base::FilePath& zip_file) {
   base::FilePath dir_temp;
   base::PathService::Get(base::DIR_TEMP, &dir_temp);
 
@@ -46,10 +57,45 @@ absl::optional<base::FilePath> PrepareAndGetUnzipDir(
       zip_file.RemoveExtension().BaseName().value() + FILE_PATH_LITERAL("_");
 
   base::FilePath unzip_dir;
-  if (!base::CreateTemporaryDirInDir(dir_temp, dir_name, &unzip_dir))
-    return absl::optional<base::FilePath>();
+  ZipResultVariant unzip_dir_or_error;
+  if (!base::CreateTemporaryDirInDir(dir_temp, dir_name, &unzip_dir)) {
+    return ZipResultVariant{kExtensionHandlerTempDirError};
+  }
 
-  return unzip_dir;
+  return ZipResultVariant{unzip_dir};
+}
+
+// Creates a unique directory based on `zip_file` inside `root_unzip_dir`.
+// Directory format is (`zip_file` == "myzip.zip"):
+//   <`root_unzip_dir`>/myzip_XXXXXX
+// XXXXXX is populated with mkdtemp() logic.
+ZipResultVariant PrepareAndGetUnzipDir(const base::FilePath& zip_file,
+                                       const base::FilePath& root_unzip_dir) {
+  // Create `root_unzip_dir`. This should only occur once per profile as
+  // CreateDirectoryAndGetError check for `root_unzip_dir` to exist first.
+  base::File::Error root_unzip_dir_creation_error;
+  if (!base::CreateDirectoryAndGetError(root_unzip_dir,
+                                        &root_unzip_dir_creation_error)) {
+    return ZipResultVariant{ErrorUtils::FormatErrorMessage(
+        kExtensionHandlerUnpackedDirCreationError,
+        base::UTF16ToUTF8(root_unzip_dir.LossyDisplayName()),
+        base::UTF16ToUTF8(zip_file.LossyDisplayName()),
+        base::File::ErrorToString(root_unzip_dir_creation_error))};
+  }
+
+  // Create the root of the unique directory for the .zip file.
+  base::FilePath::StringType dir_name =
+      zip_file.RemoveExtension().BaseName().value() + FILE_PATH_LITERAL("_");
+
+  // Creates the full unique directory path as unzip_dir.
+  base::FilePath unzip_dir;
+  if (!base::CreateTemporaryDirInDir(root_unzip_dir, dir_name, &unzip_dir)) {
+    return ZipResultVariant{ErrorUtils::FormatErrorMessage(
+        kExtensionHandlerZippedDirError,
+        base::UTF16ToUTF8(unzip_dir.LossyDisplayName()))};
+  }
+
+  return ZipResultVariant{unzip_dir};
 }
 
 absl::optional<std::string> ReadFileContent(const base::FilePath& path) {
@@ -69,9 +115,18 @@ scoped_refptr<ZipFileInstaller> ZipFileInstaller::Create(
       new ZipFileInstaller(io_task_runner, std::move(done_callback)));
 }
 
-void ZipFileInstaller::LoadFromZipFile(const base::FilePath& zip_file) {
+void ZipFileInstaller::InstallZipFileToTempDir(const base::FilePath& zip_file) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  LoadFromZipFileImpl(zip_file, base::FilePath());
+  LoadFromZipFileImpl(zip_file, base::FilePath(), /*create_unzip_dir=*/true);
+}
+
+void ZipFileInstaller::InstallZipFileToUnpackedExtensionsDir(
+    const base::FilePath& zip_file,
+    const base::FilePath& unpacked_extensions_dir) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!unpacked_extensions_dir.empty());
+  LoadFromZipFileImpl(zip_file, unpacked_extensions_dir,
+                      /*create_unzip_dir=*/true);
 }
 
 void ZipFileInstaller::LoadFromZipFileInDir(const base::FilePath& zip_file,
@@ -82,20 +137,33 @@ void ZipFileInstaller::LoadFromZipFileInDir(const base::FilePath& zip_file,
 }
 
 void ZipFileInstaller::LoadFromZipFileImpl(const base::FilePath& zip_file,
-                                           const base::FilePath& unzip_dir) {
+                                           const base::FilePath& unzip_dir,
+                                           bool create_unzip_dir) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!zip_file.empty());
 
   zip_file_ = zip_file;
 
-  if (!unzip_dir.empty()) {
-    Unzip(unzip_dir);
+  if (create_unzip_dir) {
+    if (base::FeatureList::IsEnabled(
+            extensions_features::kExtensionsZipFileInstalledInProfileDir)) {
+      io_task_runner_->PostTaskAndReplyWithResult(
+          FROM_HERE,
+          base::BindOnce(&PrepareAndGetUnzipDir, zip_file, unzip_dir),
+          base::BindOnce(&ZipFileInstaller::Unzip, this));
+    } else {
+      // `unzip_dir` unneeded since the temp dir gets created in
+      // PrepareAndGetTempUnzipDir.
+      io_task_runner_->PostTaskAndReplyWithResult(
+          FROM_HERE, base::BindOnce(&PrepareAndGetTempUnzipDir, zip_file),
+          base::BindOnce(&ZipFileInstaller::Unzip, this));
+    }
     return;
   }
 
-  io_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&PrepareAndGetUnzipDir, zip_file),
-      base::BindOnce(&ZipFileInstaller::Unzip, this));
+  // Unzip dir should exist so unzip directly there.
+  // ZipResultVariant result = ZipResultVariant{unzip_dir};
+  Unzip(ZipResultVariant{unzip_dir});
 }
 
 ZipFileInstaller::ZipFileInstaller(
@@ -106,24 +174,28 @@ ZipFileInstaller::ZipFileInstaller(
 
 ZipFileInstaller::~ZipFileInstaller() = default;
 
-void ZipFileInstaller::Unzip(absl::optional<base::FilePath> unzip_dir) {
+void ZipFileInstaller::Unzip(ZipResultVariant unzip_dir_or_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!unzip_dir) {
-    ReportFailure(std::string(kExtensionHandlerTempDirError));
+  if (absl::holds_alternative<std::string>(unzip_dir_or_error)) {
+    ReportFailure(absl::get<std::string>(unzip_dir_or_error));
     return;
   }
 
+  base::FilePath unzip_dir = absl::get<base::FilePath>(unzip_dir_or_error);
   unzip::UnzipWithFilter(
-      unzip::LaunchUnzipper(), zip_file_, *unzip_dir,
+      unzip::LaunchUnzipper(), zip_file_, unzip_dir,
       base::BindRepeating(&ZipFileInstaller::IsManifestFile),
-      base::BindOnce(&ZipFileInstaller::ManifestUnzipped, this, *unzip_dir));
+      base::BindOnce(&ZipFileInstaller::ManifestUnzipped, this, unzip_dir));
 }
 
 void ZipFileInstaller::ManifestUnzipped(const base::FilePath& unzip_dir,
                                         bool success) {
   if (!success) {
-    ReportFailure(kExtensionHandlerFileUnzipError);
+    base::FeatureList::IsEnabled(
+        extensions_features::kExtensionsZipFileInstalledInProfileDir)
+        ? ReportFailure(kExtensionHandlerTempDirError)
+        : ReportFailure(kExtensionHandlerFileUnzipError);
     return;
   }
 

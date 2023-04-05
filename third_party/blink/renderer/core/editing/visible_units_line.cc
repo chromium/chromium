@@ -34,8 +34,6 @@
 #include "third_party/blink/renderer/core/editing/inline_box_position.h"
 #include "third_party/blink/renderer/core/editing/ng_flat_tree_shorthands.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
-#include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
-#include "third_party/blink/renderer/core/layout/line/root_inline_box.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_caret_position.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
@@ -112,42 +110,15 @@ static PositionWithAffinityTemplate<Strategy> EndPositionForLine(
         AdjustForSoftLineWrap(line_box.Current(), end_position));
   }
 
-  const InlineBox* inline_box =
-      adjusted.IsNotNull() ? ComputeInlineBoxPosition(c).inline_box : nullptr;
-  if (!inline_box) {
-    // There are VisiblePositions at offset 0 in blocks without
-    // RootInlineBoxes, like empty editable blocks and bordered blocks.
-    const PositionTemplate<Strategy> p = c.GetPosition();
-    if (p.AnchorNode()->GetLayoutObject() &&
-        p.AnchorNode()->GetLayoutObject()->IsLayoutBlock() &&
-        !p.ComputeEditingOffset())
-      return c;
-    return PositionWithAffinityTemplate<Strategy>();
+  // There are VisiblePositions at offset 0 in blocks without line boxes, like
+  // empty editable blocks and bordered blocks.
+  const PositionTemplate<Strategy> p = c.GetPosition();
+  if (p.AnchorNode()->GetLayoutObject() &&
+      p.AnchorNode()->GetLayoutObject()->IsLayoutBlock() &&
+      !p.ComputeEditingOffset()) {
+    return c;
   }
-
-  const RootInlineBox& root_box = inline_box->Root();
-  const InlineBox* const end_box = Ordering::EndNonPseudoBoxOf(root_box);
-  if (!end_box)
-    return PositionWithAffinityTemplate<Strategy>();
-
-  const Node* const end_node = end_box->GetLineLayoutItem().NonPseudoNode();
-  DCHECK(end_node);
-  if (IsA<HTMLBRElement>(*end_node)) {
-    return Ordering::AdjustForSoftLineWrap(
-        PositionTemplate<Strategy>::BeforeNode(*end_node), c);
-  }
-
-  auto* end_text_node = DynamicTo<Text>(end_node);
-  if (end_box->IsInlineTextBox() && end_text_node) {
-    const auto* end_text_box = To<InlineTextBox>(end_box);
-    int end_offset = end_text_box->Start();
-    if (!end_text_box->IsLineBreak())
-      end_offset += end_text_box->Len();
-    return Ordering::AdjustForSoftLineWrap(
-        PositionTemplate<Strategy>(end_text_node, end_offset), c);
-  }
-  return Ordering::AdjustForSoftLineWrap(
-      PositionTemplate<Strategy>::AfterNode(*end_node), c);
+  return PositionWithAffinityTemplate<Strategy>();
 }
 
 template <typename Strategy, typename Ordering>
@@ -177,48 +148,21 @@ PositionWithAffinityTemplate<Strategy> StartPositionForLine(
     return FromPositionInDOMTree<Strategy>(line_box.PositionForStartOfLine());
   }
 
-  const InlineBox* inline_box =
-      adjusted.IsNotNull()
-          ? ComputeInlineBoxPositionForInlineAdjustedPosition(adjusted)
-                .inline_box
-          : nullptr;
-  if (!inline_box) {
-    // There are VisiblePositions at offset 0 in blocks without
-    // RootInlineBoxes, like empty editable blocks and bordered blocks.
-    PositionTemplate<Strategy> p = c.GetPosition();
-    if (p.AnchorNode()->GetLayoutObject() &&
-        p.AnchorNode()->GetLayoutObject()->IsLayoutBlock() &&
-        !p.ComputeEditingOffset())
-      return c;
-
-    return PositionWithAffinityTemplate<Strategy>();
+  // There are VisiblePositions at offset 0 in blocks without line boxes, like
+  // empty editable blocks and bordered blocks.
+  PositionTemplate<Strategy> p = c.GetPosition();
+  if (p.AnchorNode()->GetLayoutObject() &&
+      p.AnchorNode()->GetLayoutObject()->IsLayoutBlock() &&
+      !p.ComputeEditingOffset()) {
+    return c;
   }
 
-  const RootInlineBox& root_box = inline_box->Root();
-  const InlineBox* const start_box = Ordering::StartNonPseudoBoxOf(root_box);
-  if (!start_box)
-    return PositionWithAffinityTemplate<Strategy>();
-
-  const Node* const start_node = start_box->GetLineLayoutItem().NonPseudoNode();
-  auto* text_start_node = DynamicTo<Text>(start_node);
-  return PositionWithAffinityTemplate<Strategy>(
-      text_start_node
-          ? PositionTemplate<Strategy>(text_start_node,
-                                       To<InlineTextBox>(start_box)->Start())
-          : PositionTemplate<Strategy>::BeforeNode(*start_node));
+  return PositionWithAffinityTemplate<Strategy>();
 }
 
 // Provides start and end of line in logical order for implementing Home and End
 // keys.
 struct LogicalOrdering {
-  static const InlineBox* StartNonPseudoBoxOf(const RootInlineBox& root_box) {
-    return root_box.GetLogicalStartNonPseudoBox();
-  }
-
-  static const InlineBox* EndNonPseudoBoxOf(const RootInlineBox& root_box) {
-    return root_box.GetLogicalEndNonPseudoBox();
-  }
-
   // Make sure the end of line is at the same line as the given input
   // position. For a wrapping line, the logical end position for the
   // not-last-2-lines might incorrectly hand back the logical beginning of the
@@ -244,34 +188,6 @@ struct LogicalOrdering {
 // Provides start end end of line in visual order for implementing expanding
 // selection in line granularity.
 struct VisualOrdering {
-  static const InlineBox* StartNonPseudoBoxOf(const RootInlineBox& root_box) {
-    // Generated content (e.g. list markers and CSS :before and :after
-    // pseudoelements) have no corresponding DOM element, and so cannot be
-    // represented by a VisiblePosition. Use whatever follows instead.
-    // TODO(editing-dev): We should consider text-direction of line to
-    // find non-pseudo node.
-    for (InlineBox* inline_box = root_box.FirstLeafChild(); inline_box;
-         inline_box = inline_box->NextLeafChild()) {
-      if (inline_box->GetLineLayoutItem().NonPseudoNode())
-        return inline_box;
-    }
-    return nullptr;
-  }
-
-  static const InlineBox* EndNonPseudoBoxOf(const RootInlineBox& root_box) {
-    // Generated content (e.g. list markers and CSS :before and :after
-    // pseudo elements) have no corresponding DOM element, and so cannot be
-    // represented by a VisiblePosition. Use whatever precedes instead.
-    // TODO(editing-dev): We should consider text-direction of line to
-    // find non-pseudo node.
-    for (InlineBox* inline_box = root_box.LastLeafChild(); inline_box;
-         inline_box = inline_box->PrevLeafChild()) {
-      if (inline_box->GetLineLayoutItem().NonPseudoNode())
-        return inline_box;
-    }
-    return nullptr;
-  }
-
   // Make sure the end of line is at the same line as the given input
   // position. Else use the previous position to obtain end of line. This
   // condition happens when the input position is before the space character

@@ -115,7 +115,7 @@ using OnDidCreatePrintJobCallback =
 namespace {
 
 constexpr int kTestPrinterCapabilitiesMaxCopies = 99;
-constexpr int kDefaultDocumentCookie = 1234;
+const int kDefaultDocumentCookie = PrintSettings::NewCookie();
 
 const PrinterSemanticCapsAndDefaults::Paper kTestPaper{
     /*display_name=*/"Letter", /*vendor_id=*/"45",

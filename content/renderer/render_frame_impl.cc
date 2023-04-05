@@ -524,9 +524,10 @@ void FillNavigationParamsRequest(
   // Note: It's possible for initiator_base_url to be empty if this is an
   // error srcdoc page. See test
   // NavigationRequestBrowserTest.OriginForSrcdocErrorPageInSubframe.
-  if (blink::features::IsNewBaseUrlInheritanceBehaviorEnabled() &&
-      common_params.initiator_base_url &&
-      (common_params.url.IsAboutSrcdoc() || common_params.url.IsAboutBlank())) {
+  if (common_params.initiator_base_url) {
+    CHECK(blink::features::IsNewBaseUrlInheritanceBehaviorEnabled() &&
+          (common_params.url.IsAboutSrcdoc() ||
+           common_params.url.IsAboutBlank()));
     navigation_params->fallback_base_url =
         common_params.initiator_base_url.value();
   } else {
@@ -584,8 +585,9 @@ blink::mojom::CommonNavigationParamsPtr MakeCommonNavigationParams(
       has_download_sandbox_flag, from_ad);
 
   absl::optional<GURL> initiator_base_url;
-  if (info->requestor_base_url.IsValid())
+  if (info->requestor_base_url.IsValid()) {
     initiator_base_url = info->requestor_base_url;
+  }
   return blink::mojom::CommonNavigationParams::New(
       info->url_request.Url(), info->url_request.RequestorOrigin(),
       initiator_base_url, std::move(referrer),
@@ -3089,8 +3091,9 @@ void RenderFrameImpl::CommitSameDocumentNavigation(
         is_browser_initiated, soft_navigation_heuristics_task_id);
 
     // If `commit_status` is Ok, RunCommitSameDocumentNavigationCallback() was
-    // called in DidCommitNavigationInternal(), and no further work is needed
-    // here.
+    // called in DidCommitNavigationInternal() or the NavigationApi deferred the
+    // commit and will call DidCommitNavigationInternal() when the commit is
+    // undeferred. Either way, no further work is needed here.
     if (commit_status == blink::mojom::CommitResult::Ok) {
       return;
     }
@@ -3986,6 +3989,21 @@ void RenderFrameImpl::DidFinishSameDocumentNavigation(
   document_state->clear_navigation_state();
 }
 
+void RenderFrameImpl::DidFailAsyncSameDocumentCommit() {
+  // This is called when the Navigation API deferred a same-document commit,
+  // then fails the navigation without committing, so that we can run the
+  // callback if this commit was browser-initiated. If the commit is aborted
+  // due to frame detach or another navigation preempting it, NavigationState's
+  // destructor will run the callback instead.
+  DocumentState* document_state =
+      DocumentState::FromDocumentLoader(frame_->GetDocumentLoader());
+  if (NavigationState* navigation_state = document_state->navigation_state()) {
+    navigation_state->RunCommitSameDocumentNavigationCallback(
+        blink::mojom::CommitResult::Aborted);
+    document_state->clear_navigation_state();
+  }
+}
+
 void RenderFrameImpl::WillFreezePage() {
   // Make sure browser has the latest info before the page is frozen. If the
   // page goes into the back-forward cache it could be evicted and some of the
@@ -4332,17 +4350,9 @@ void RenderFrameImpl::DidObserveLoadingBehavior(
 }
 
 void RenderFrameImpl::DidObserveSubresourceLoad(
-    uint32_t number_of_subresources_loaded,
-    uint32_t number_of_subresource_loads_handled_by_service_worker,
-    bool pervasive_payload_requested,
-    int64_t pervasive_bytes_fetched,
-    int64_t total_bytes_fetched) {
+    const blink::SubresourceLoadMetrics& subresource_load_metrics) {
   for (auto& observer : observers_)
-    observer.DidObserveSubresourceLoad(
-        number_of_subresources_loaded,
-        number_of_subresource_loads_handled_by_service_worker,
-        pervasive_payload_requested, pervasive_bytes_fetched,
-        total_bytes_fetched);
+    observer.DidObserveSubresourceLoad(subresource_load_metrics);
 }
 
 void RenderFrameImpl::DidObserveNewFeatureUsage(

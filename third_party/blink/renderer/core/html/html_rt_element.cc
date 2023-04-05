@@ -14,11 +14,10 @@ namespace blink {
 HTMLRTElement::HTMLRTElement(Document& document)
     : HTMLElement(html_names::kRtTag, document) {}
 
-LayoutObject* HTMLRTElement::CreateLayoutObject(const ComputedStyle& style,
-                                                LegacyLayout legacy) {
+LayoutObject* HTMLRTElement::CreateLayoutObject(const ComputedStyle& style) {
   if (style.Display() == EDisplay::kBlock)
     return MakeGarbageCollected<LayoutNGRubyText>(this);
-  return LayoutObject::CreateObject(this, style, legacy);
+  return LayoutObject::CreateObject(this, style);
 }
 
 }  // namespace blink

@@ -237,6 +237,10 @@ struct MessageService::OpenChannelParams {
 
   OpenChannelParams(const OpenChannelParams&) = delete;
   OpenChannelParams& operator=(const OpenChannelParams&) = delete;
+
+  bool is_onetime_channel() const {
+    return channel_name == "chrome.runtime.sendMessage";
+  }
 };
 
 MessageService::MessageService(BrowserContext* context)
@@ -515,7 +519,7 @@ void MessageService::OpenChannelToNativeApp(
 
   // Keep the opener alive until the channel is closed.
   channel->opener->set_should_have_strong_keepalive(true);
-  channel->opener->IncrementLazyKeepaliveCount();
+  channel->opener->IncrementLazyKeepaliveCount(Activity::MESSAGE_PORT);
 
   AddChannel(std::move(channel), receiver_port_id);
 #else   // !(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
@@ -642,12 +646,16 @@ void MessageService::OpenChannelImpl(BrowserContext* browser_context,
   const PortContext& port_context = source.port_context();
   params->opener_port->OpenPort(source.render_process_id(), port_context);
   params->opener_port->RevalidatePort();
+  // TODO(richardzh) Move this property setting to port creation, or params
+  // creation, to have cleaner code here.
+  params->opener_port->set_is_for_onetime_channel(params->is_onetime_channel());
 
   params->receiver->RemoveCommonFrames(*params->opener_port);
   if (!params->receiver->IsValidPort()) {
     params->opener_port->DispatchOnDisconnect(kReceivingEndDoesntExistError);
     return;
   }
+  params->receiver->set_is_for_onetime_channel(params->is_onetime_channel());
 
   std::unique_ptr<MessageChannel> channel_ptr =
       std::make_unique<MessageChannel>();
@@ -727,8 +735,8 @@ void MessageService::OpenChannelImpl(BrowserContext* browser_context,
   }
 
   // Keep both ends of the channel alive until the channel is closed.
-  channel->opener->IncrementLazyKeepaliveCount();
-  channel->receiver->IncrementLazyKeepaliveCount();
+  channel->opener->IncrementLazyKeepaliveCount(Activity::MESSAGE_PORT);
+  channel->receiver->IncrementLazyKeepaliveCount(Activity::MESSAGE_PORT);
 }
 
 void MessageService::AddChannel(std::unique_ptr<MessageChannel> channel,
@@ -830,8 +838,8 @@ void MessageService::CloseChannelImpl(MessageChannelMap::iterator channel_iter,
   }
 
   // Balance the IncrementLazyKeepaliveCount() in OpenChannelImpl.
-  channel->opener->DecrementLazyKeepaliveCount();
-  channel->receiver->DecrementLazyKeepaliveCount();
+  channel->opener->DecrementLazyKeepaliveCount(Activity::MESSAGE_PORT);
+  channel->receiver->DecrementLazyKeepaliveCount(Activity::MESSAGE_PORT);
 }
 
 void MessageService::PostMessage(const PortId& source_port_id,

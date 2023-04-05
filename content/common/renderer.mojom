@@ -121,8 +121,7 @@ interface Renderer {
   UpdateScrollbarTheme(UpdateScrollbarThemeParams params);
 
   // Notification that the OS X Aqua color preferences changed.
-  OnSystemColorsChanged(int32 aqua_color_variant, string highlight_text_color,
-                        string highlight_color);
+  OnSystemColorsChanged(int32 aqua_color_variant);
 
   // Tells the renderer process the new system color info.
   UpdateSystemColorInfo(UpdateSystemColorInfoParams params);

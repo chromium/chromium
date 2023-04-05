@@ -61,7 +61,7 @@ class TextTrackContainer final : public HTMLDivElement {
   bool IsTextTrackContainer() const override { return true; }
   void ObserveSizeChanges(Element&);
 
-  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
 
   Member<HTMLMediaElement> media_element_;
   Member<ResizeObserver> video_size_observer_;

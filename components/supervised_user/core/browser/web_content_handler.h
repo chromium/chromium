@@ -51,6 +51,9 @@ class WebContentHandler {
   // interstitial, frame_id will be moved from into WebContentHandler.
   // WebContentHandler.
   virtual bool IsMainFrame(int frame_id) = 0;
+  // Shows the feedback page to the user.
+  // TODO(b/276428131): Remove when local we approvals if fully launched.
+  virtual void ShowFeedback(GURL url, std::u16string reason) = 0;
 
   // Removes all the infobars which are attached to web_contents_
   // and for which ShouldExpire() returns true, if the navigation frame_id

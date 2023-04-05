@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom.h"
 #include "ash/webui/firmware_update_ui/url_constants.h"
 #include "ash/webui/grit/ash_firmware_update_app_resources.h"
@@ -19,7 +20,9 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/resources/grit/webui_resources.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom-forward.h"
 
 namespace ash {
 
@@ -34,6 +37,8 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
   source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
   source->AddResourcePath("test_loader_util.js",
                           IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
+  source->AddBoolean("isJellyEnabledForFirmwareUpdate",
+                     ash::features::IsJellyEnabledForFirmwareUpdate());
 }
 
 void AddFirmwareUpdateAppStrings(content::WebUIDataSource* source) {
@@ -93,6 +98,12 @@ FirmwareUpdateAppUI::~FirmwareUpdateAppUI() = default;
 void FirmwareUpdateAppUI::BindInterface(
     mojo::PendingReceiver<firmware_update::mojom::UpdateProvider> receiver) {
   FirmwareUpdateManager::Get()->BindInterface(std::move(receiver));
+}
+
+void FirmwareUpdateAppUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(FirmwareUpdateAppUI)

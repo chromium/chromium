@@ -19,10 +19,19 @@ OmniboxAction::LabelStrings::LabelStrings(int id_hint,
                                           int id_suggestion_contents,
                                           int id_accessibility_suffix,
                                           int id_accessibility_hint)
-    : hint(l10n_util::GetStringUTF16(id_hint)),
-      suggestion_contents(l10n_util::GetStringUTF16(id_suggestion_contents)),
-      accessibility_suffix(l10n_util::GetStringUTF16(id_accessibility_suffix)),
-      accessibility_hint(l10n_util::GetStringUTF16(id_accessibility_hint)) {}
+    : LabelStrings(l10n_util::GetStringUTF16(id_hint),
+                   l10n_util::GetStringUTF16(id_suggestion_contents),
+                   l10n_util::GetStringUTF16(id_accessibility_suffix),
+                   l10n_util::GetStringUTF16(id_accessibility_hint)) {}
+
+OmniboxAction::LabelStrings::LabelStrings(std::u16string hint,
+                                          std::u16string suggestion_contents,
+                                          std::u16string accessibility_suffix,
+                                          std::u16string accessibility_hint)
+    : hint{std::move(hint)},
+      suggestion_contents{std::move(suggestion_contents)},
+      accessibility_suffix{std::move(accessibility_suffix)},
+      accessibility_hint{std::move(accessibility_hint)} {}
 
 OmniboxAction::LabelStrings::LabelStrings() = default;
 

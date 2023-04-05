@@ -66,7 +66,7 @@ std::unique_ptr<Power> EmptyPowerBookmarkDatabase::UpdatePower(
   return nullptr;
 }
 
-bool EmptyPowerBookmarkDatabase::DeletePower(const base::GUID& guid) {
+bool EmptyPowerBookmarkDatabase::DeletePower(const base::Uuid& guid) {
   return false;
 }
 

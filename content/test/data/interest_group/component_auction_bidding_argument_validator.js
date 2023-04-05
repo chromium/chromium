@@ -17,6 +17,7 @@ function generateBid(
   return {
       'ad': ad,
       'bid': 2,
+      'bidCurrency': 'USD',
       'adCost': 3,
       'render': ad.renderUrl,
       'adComponents': [interestGroup.adComponents[0].renderUrl],
@@ -165,7 +166,7 @@ function validateBrowserSignals(browserSignals, isGenerateBid) {
     if (browserSignals.prevWins.length !== 0)
       throw 'Wrong prevWins ' + JSON.stringify(browserSignals.prevWins);
   } else {
-    if (Object.keys(browserSignals).length !== 10) {
+    if (Object.keys(browserSignals).length !== 12) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }

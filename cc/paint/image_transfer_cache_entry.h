@@ -20,6 +20,7 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/private/SkGainmapInfo.h"
 
 class GrDirectContext;
 class SkColorSpace;
@@ -80,6 +81,12 @@ class CC_PAINT_EXPORT ClientImageTransferCacheEntry final
       const Image& image,
       bool needs_mips,
       absl::optional<TargetColorParams> target_color_params);
+  ClientImageTransferCacheEntry(
+      const Image& image,
+      const Image& gainmap_image,
+      const SkGainmapInfo& gainmap_info,
+      bool needs_mips,
+      absl::optional<TargetColorParams> target_color_params);
   ~ClientImageTransferCacheEntry() final;
 
   uint32_t Id() const final;
@@ -95,6 +102,8 @@ class CC_PAINT_EXPORT ClientImageTransferCacheEntry final
   bool IsValid() const { return size_ > 0; }
 
  private:
+  void ComputeSize();
+
   const bool needs_mips_ = false;
   absl::optional<TargetColorParams> target_color_params_;
   const uint32_t id_;
@@ -102,6 +111,11 @@ class CC_PAINT_EXPORT ClientImageTransferCacheEntry final
   static base::AtomicSequenceNumber s_next_id_;
 
   Image image_;
+
+  // The gainmap image and parameters. Either both or neither of these must
+  // be specified.
+  absl::optional<Image> gainmap_image_;
+  absl::optional<SkGainmapInfo> gainmap_info_;
 };
 
 class CC_PAINT_EXPORT ServiceImageTransferCacheEntry final

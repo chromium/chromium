@@ -12,6 +12,7 @@
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/components/arc/test/fake_arc_session.h"
+#include "ash/components/arc/test/fake_compatibility_mode_instance.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
@@ -161,6 +162,17 @@ void ArcAppTest::SetUp(Profile* profile) {
     // expect waiting in ArcAppTest setup.
     if (wait_default_apps_)
       WaitForInstanceReady(arc_service_manager_->arc_bridge_service()->app());
+
+    // Some test doesn't need to wait for compatibility_mode connection.
+    if (wait_compatibility_mode_) {
+      compatibility_mode_instance_ =
+          std::make_unique<arc::FakeCompatibilityModeInstance>();
+      arc_service_manager_->arc_bridge_service()
+          ->compatibility_mode()
+          ->SetInstance(compatibility_mode_instance_.get());
+      WaitForInstanceReady(
+          arc_service_manager_->arc_bridge_service()->compatibility_mode());
+    }
   }
 
   if (start_app_service_publisher_) {
@@ -282,6 +294,9 @@ void ArcAppTest::CreateFakeAppsAndPackages() {
 void ArcAppTest::TearDown() {
   if (start_app_service_publisher_)
     apps::ArcAppsFactory::GetInstance()->ShutDownForTesting(profile_);
+  if (compatibility_mode_instance_) {
+    compatibility_mode_instance_.reset();
+  }
   if (intent_helper_instance_) {
     arc_service_manager_->arc_bridge_service()->intent_helper()->CloseInstance(
         intent_helper_instance_.get());

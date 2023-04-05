@@ -51,7 +51,10 @@ bool FakeExtension::Session::OnExtensionMessage(
 
 FakeExtension::FakeExtension(const std::string& message_type,
                              const std::string& capability)
-    : message_type_(message_type), capability_(capability) {}
+    : capability_(capability),
+      session_(std::make_unique<Session>(this, message_type)) {
+  session_ptr_ = session_.get();
+}
 
 FakeExtension::~FakeExtension() = default;
 
@@ -63,8 +66,15 @@ std::unique_ptr<HostExtensionSession> FakeExtension::CreateExtensionSession(
     ClientSessionDetails* client_session_details,
     protocol::ClientStub* client_stub) {
   DCHECK(!was_instantiated());
+  DCHECK(session_);
   was_instantiated_ = true;
-  return std::make_unique<Session>(this, message_type_);
+  return std::move(session_);
+}
+
+// This can't be inlined in the class definition since it doesn't know that
+// FakeExtension::Session is a subclass of HostExtensionSession yet.
+HostExtensionSession* FakeExtension::extension_session() {
+  return session_ptr_;
 }
 
 }  // namespace remoting

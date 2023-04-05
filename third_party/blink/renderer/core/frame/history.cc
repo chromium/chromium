@@ -60,7 +60,7 @@ void ReportURLChange(LocalDOMWindow* window,
   if (window->GetFrame()->IsMainFrame() && window->Url() != url) {
     SoftNavigationHeuristics* heuristics =
         SoftNavigationHeuristics::From(*window);
-    heuristics->SawURLChange(script_state, url);
+    heuristics->SameDocumentNavigationStarted(script_state);
   }
 }
 }  // namespace

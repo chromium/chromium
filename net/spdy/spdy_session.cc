@@ -29,11 +29,11 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_usage_estimator.h"
-#include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "net/base/features.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
+#include "net/base/tracing.h"
 #include "net/base/url_util.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/cert_verify_result.h"
@@ -224,6 +224,7 @@ bool IsSpdySettingAtDefaultInitialValue(spdy::SpdySettingsId setting_id,
   }
 }
 
+// This method always returns false.  TODO(https://crbug.com/1426477): Remove.
 bool IsPushEnabled(const spdy::SettingsMap& initial_settings) {
   const auto it = initial_settings.find(spdy::SETTINGS_ENABLE_PUSH);
 

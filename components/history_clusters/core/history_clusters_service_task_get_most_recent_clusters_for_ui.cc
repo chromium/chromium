@@ -46,7 +46,11 @@ HistoryClustersServiceTaskGetMostRecentClustersForUI::
 }
 
 HistoryClustersServiceTaskGetMostRecentClustersForUI::
-    ~HistoryClustersServiceTaskGetMostRecentClustersForUI() = default;
+    ~HistoryClustersServiceTaskGetMostRecentClustersForUI() {
+  if (!done_) {
+    std::move(callback_).Run({}, continuation_params_);
+  }
+}
 
 void HistoryClustersServiceTaskGetMostRecentClustersForUI::Start(
     QueryClustersFilterParams filter_params) {

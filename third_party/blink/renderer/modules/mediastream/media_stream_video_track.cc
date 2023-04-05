@@ -921,19 +921,24 @@ void MediaStreamVideoTrack::GetSettings(
     settings.aspect_ratio = static_cast<double>(width_) / height_;
   }
 
-  if (frame_rate_.has_value()) {
-    settings.frame_rate = *frame_rate_;
-  }
-
-  absl::optional<media::VideoCaptureFormat> format =
-      source_->GetCurrentFormat();
-  if (format) {
-    if (!frame_rate_.has_value()) {
-      settings.frame_rate = format->frame_rate;
-    }
+  if (absl::optional<media::VideoCaptureFormat> format =
+          source_->GetCurrentFormat()) {
+    // For local capture-based tracks, the frame rate returned by
+    // MediaStreamTrack.getSettings() must be the configured frame rate. In case
+    // of frame rate decimation, the configured frame rate is the decimated
+    // frame rate (i.e., the adapter frame rate). If there is no decimation, the
+    // configured frame rate is the frame rate reported by the device.
+    // Decimation occurs only when the adapter frame rate is lower than the
+    // device frame rate.
+    absl::optional<double> adapter_frame_rate =
+        adapter_settings_.max_frame_rate();
+    settings.frame_rate =
+        (!adapter_frame_rate || *adapter_frame_rate > format->frame_rate)
+            ? format->frame_rate
+            : *adapter_frame_rate;
   } else {
-    // Format is only set for local tracks. For other tracks, use the frame rate
-    // reported through settings callback SetSizeAndComputedFrameRate().
+    // For other tracks, use the computed frame rate reported via
+    // SetSizeAndComputedFrameRate().
     if (computed_frame_rate_)
       settings.frame_rate = *computed_frame_rate_;
   }

@@ -531,6 +531,13 @@ treating "x64" the same as "x86_64".
 For more information, see the
 [protocol document](protocol_3_1.md#update-checks-body-update-check-response-objects-update-check-response-3).
 
+### MSI installers
+
+MSI installers are currently built only for legacy Omaha 3. The updater handles
+handoffs from legacy Omaha 3 pertaining to offline and MSI installers. MSI
+installers package an offline installer, and otherwise function just like the
+offline installer.
+
 ### Enterprise Enrollment
 The updater may be enrolled with a particular enterprise. Enrollment is
 coordinated with a device management server by means of an enrollment token and
@@ -866,6 +873,12 @@ update.
 See
 [chrome/updater/update_service.h](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/update_service.h)
 for the `UpdateService` RPC interface definition.
+
+For the Google implementation, the updater must write its version under
+`HKEY_LOCAL_MACHINE\SOFTWARE\Google\Update` or
+`HKEY_CURRENT_USER\SOFTWARE\Google\Update` as a string value named `version`.
+The on-demand update client in Google Chrome depends on this value being
+present for backward compatibility reasons with older versions of Omaha.
 
 ### App Registration
 The updater exposes an RPC interface for users to register an application with

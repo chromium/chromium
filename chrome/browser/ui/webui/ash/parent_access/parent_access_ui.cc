@@ -128,14 +128,11 @@ void ParentAccessUI::SetUpResources() {
        IDS_PARENT_ACCESS_EXTENSION_APPROVALS_DISABLED_TITLE},
       {"extensionApprovalsDisabledSubtitle",
        IDS_PARENT_ACCESS_EXTENSION_APPROVALS_DISABLED_SUBTITLE},
-      {"extensionApprovalsAddExtensionBeforeTitle",
-       IDS_PARENT_ACCESS_EXTENSION_APPROVALS_ADD_EXTENSION_BEFORE_TITLE},
-      {"extensionApprovalsAddExtensionBeforeSubtitle",
-       IDS_PARENT_ACCESS_EXTENSION_APPROVALS_ADD_EXTENSION_BEFORE_SUBTITLE},
-      {"extensionApprovalsEnableExtensionBeforeTitle",
-       IDS_PARENT_ACCESS_EXTENSION_APPROVALS_ENABLE_EXTENSION_BEFORE_TITLE},
-      {"extensionApprovalsEnableExtensionBeforeSubtitle",
-       IDS_PARENT_ACCESS_EXTENSION_APPROVALS_ENABLE_EXTENSION_BEFORE_SUBTITLE}};
+      {"extensionApprovalsBeforeTitle",
+       IDS_PARENT_ACCESS_EXTENSION_APPROVALS_BEFORE_TITLE},
+      {"extensionApprovalsBeforeSubtitle",
+       IDS_PARENT_ACCESS_EXTENSION_APPROVALS_BEFORE_SUBTITLE}};
+
   source->AddLocalizedStrings(kLocalizedStrings);
 
   // Enables use of test_loader.html

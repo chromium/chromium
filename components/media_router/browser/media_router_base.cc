@@ -8,7 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "content/public/browser/browser_thread.h"
 
 using blink::mojom::PresentationConnectionState;
@@ -38,7 +38,7 @@ MediaRouterBase::MediaRouterBase() = default;
 
 // static
 std::string MediaRouterBase::CreatePresentationId() {
-  return "mr_" + base::GenerateGUID();
+  return "mr_" + base::GenerateUuid();
 }
 
 void MediaRouterBase::NotifyPresentationConnectionStateChange(

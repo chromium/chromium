@@ -107,6 +107,7 @@
       <page-toolbar
           title="[[title]]"
           is-narrow="[[!showNav]]"
+          has-search="[[hasSearch]]"
           exportparts="title">
         <slot slot="toolbar-main" name="toolbar-main"></slot>
       </page-toolbar>
@@ -133,7 +134,7 @@
     </div>
   </cr-drawer>
   <template is="dom-if" if="[[showNav]]">
-    <div id="sideNav">
+    <div id="sideNav" part="side-nav">
       <div id="navigationSelector" class="left-aligned">
         <div part="nav-spacer"></div>
         <navigation-selector selector-items={{selectorItems_}}
@@ -144,5 +145,5 @@
     </div>
   </template>
 
-  <div id="navigationBody" class="right-aligned"></div>
+  <div id="navigationBody" class="right-aligned" part="nav-body"></div>
 </div>

@@ -43,6 +43,7 @@ class LocalCredentialManagementTest : public testing::Test {
 TEST_F(LocalCredentialManagementTest, NoCredentials) {
   device::test::TestCallbackReceiver<bool> callback;
   local_cred_man_.HasCredentials(callback.callback());
+  EXPECT_FALSE(callback.was_called());
   callback.WaitForCallback();
   EXPECT_FALSE(std::get<0>(callback.TakeResult()));
 
@@ -50,6 +51,7 @@ TEST_F(LocalCredentialManagementTest, NoCredentials) {
       absl::optional<std::vector<device::DiscoverableCredentialMetadata>>>
       enumerate_callback;
   local_cred_man_.Enumerate(enumerate_callback.callback());
+  EXPECT_FALSE(enumerate_callback.was_called());
   enumerate_callback.WaitForCallback();
   auto result = std::get<0>(enumerate_callback.TakeResult());
   ASSERT_TRUE(result.has_value());
@@ -62,6 +64,7 @@ TEST_F(LocalCredentialManagementTest, OneCredential) {
       kRpId, kUser, device::fido::mac::TouchIdCredentialStore::kDiscoverable);
   EXPECT_TRUE(credential);
   local_cred_man_.HasCredentials(callback.callback());
+  EXPECT_FALSE(callback.was_called());
   callback.WaitForCallback();
   EXPECT_TRUE(std::get<0>(callback.TakeResult()));
 
@@ -69,6 +72,7 @@ TEST_F(LocalCredentialManagementTest, OneCredential) {
       absl::optional<std::vector<device::DiscoverableCredentialMetadata>>>
       enumerate_callback;
   local_cred_man_.Enumerate(enumerate_callback.callback());
+  EXPECT_FALSE(enumerate_callback.was_called());
   enumerate_callback.WaitForCallback();
   const absl::optional<std::vector<device::DiscoverableCredentialMetadata>>
       result = std::get<0>(enumerate_callback.TakeResult());
@@ -78,23 +82,31 @@ TEST_F(LocalCredentialManagementTest, OneCredential) {
 }
 
 TEST_F(LocalCredentialManagementTest, DeleteCredential) {
-  device::test::TestCallbackReceiver<bool> callback;
   auto credential = store_.CreateCredential(
       kRpId, kUser, device::fido::mac::TouchIdCredentialStore::kDiscoverable);
   ASSERT_TRUE(credential);
   auto credentials = store_.FindResidentCredentials(kRpId);
   ASSERT_TRUE(credentials);
   EXPECT_EQ(credentials->size(), 1u);
-  local_cred_man_.Delete(credential->first.credential_id, callback.callback());
-  callback.WaitForCallback();
-  EXPECT_TRUE(std::get<0>(callback.TakeResult()));
+  {
+    device::test::TestCallbackReceiver<bool> callback;
+    local_cred_man_.Delete(credential->first.credential_id,
+                           callback.callback());
+    EXPECT_FALSE(callback.was_called());
+    callback.WaitForCallback();
+    EXPECT_TRUE(std::get<0>(callback.TakeResult()));
+  }
   credentials = store_.FindResidentCredentials(kRpId);
   ASSERT_TRUE(credentials);
   EXPECT_EQ(store_.FindResidentCredentials(kRpId)->size(), 0u);
 
-  local_cred_man_.Delete(std::vector<uint8_t>{8}, callback.callback());
-  callback.WaitForCallback();
-  EXPECT_FALSE(std::get<0>(callback.TakeResult()));
+  {
+    device::test::TestCallbackReceiver<bool> callback;
+    local_cred_man_.Delete(std::vector<uint8_t>{8}, callback.callback());
+    EXPECT_FALSE(callback.was_called());
+    callback.WaitForCallback();
+    EXPECT_FALSE(std::get<0>(callback.TakeResult()));
+  }
 }
 
 TEST_F(LocalCredentialManagementTest, EditCredential) {
@@ -108,6 +120,7 @@ TEST_F(LocalCredentialManagementTest, EditCredential) {
   EXPECT_EQ(credentials.size(), 1u);
   local_cred_man_.Edit(credential->first.credential_id, "new-username",
                        callback.callback());
+  EXPECT_FALSE(callback.was_called());
   callback.WaitForCallback();
   EXPECT_TRUE(std::get<0>(callback.TakeResult()));
 
@@ -131,6 +144,7 @@ TEST_F(LocalCredentialManagementTest, EditLongCredential) {
       credential->first.credential_id,
       "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
       callback.callback());
+  EXPECT_FALSE(callback.was_called());
   callback.WaitForCallback();
   EXPECT_TRUE(std::get<0>(callback.TakeResult()));
 
@@ -154,6 +168,7 @@ TEST_F(LocalCredentialManagementTest, EditUnknownCredential) {
   EXPECT_EQ(credentials.size(), 1u);
   uint8_t credential_id[] = {0xa};
   local_cred_man_.Edit(credential_id, "new-username", callback.callback());
+  EXPECT_FALSE(callback.was_called());
   callback.WaitForCallback();
   EXPECT_FALSE(std::get<0>(callback.TakeResult()));
 }
@@ -184,6 +199,7 @@ TEST_F(MockKeychainLocalCredentialManagementTest, KeychainError) {
       .WillOnce(testing::Return(errSecInternalComponent));
   device::test::TestCallbackReceiver<bool> callback;
   local_cred_man_.HasCredentials(callback.callback());
+  EXPECT_FALSE(callback.was_called());
   callback.WaitForCallback();
   EXPECT_FALSE(std::get<0>(callback.TakeResult()));
   testing::Mock::VerifyAndClearExpectations(&mock_keychain_);
@@ -194,6 +210,7 @@ TEST_F(MockKeychainLocalCredentialManagementTest, KeychainError) {
       absl::optional<std::vector<device::DiscoverableCredentialMetadata>>>
       enumerate_callback;
   local_cred_man_.Enumerate(enumerate_callback.callback());
+  EXPECT_FALSE(enumerate_callback.was_called());
   enumerate_callback.WaitForCallback();
   auto result = std::get<0>(enumerate_callback.TakeResult());
   EXPECT_FALSE(result.has_value());

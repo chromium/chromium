@@ -67,14 +67,13 @@ class MockRealtimeCrashReportingClient : public RealtimeReportingClient {
   MockRealtimeCrashReportingClient& operator=(
       const MockRealtimeCrashReportingClient&) = delete;
 
-  absl::optional<enterprise_connectors::ReportingSettings>
-  GetReportingSettings() override {
-    return enterprise_connectors::ReportingSettings();
+  absl::optional<ReportingSettings> GetReportingSettings() override {
+    return ReportingSettings();
   }
 
   MOCK_METHOD4(ReportPastEvent,
                void(const std::string&,
-                    const enterprise_connectors::ReportingSettings& settings,
+                    const ReportingSettings& settings,
                     base::Value::Dict event,
                     const base::Time& time));
 };
@@ -112,20 +111,17 @@ TEST_F(CrashReportingContextTest, GetNewReportsFromDB) {
 
 TEST_F(CrashReportingContextTest, GetAndSetLatestCrashReportingTime) {
   TestingPrefServiceSimple pref_service;
-  pref_service.registry()->RegisterInt64Pref(
-      enterprise_connectors::kLatestCrashReportCreationTime, 0);
+  pref_service.registry()->RegisterInt64Pref(kLatestCrashReportCreationTime, 0);
   time_t timestamp = base::Time::Now().ToTimeT();
 
-  enterprise_connectors::SetLatestCrashReportTime(&pref_service, timestamp);
-  ASSERT_EQ(timestamp,
-            enterprise_connectors::GetLatestCrashReportTime(&pref_service));
+  SetLatestCrashReportTime(&pref_service, timestamp);
+  ASSERT_EQ(timestamp, GetLatestCrashReportTime(&pref_service));
 }
 
 TEST_F(CrashReportingContextTest, UploadToReportingServer) {
   TestingPrefServiceSimple pref_service;
-  pref_service.registry()->RegisterInt64Pref(
-      enterprise_connectors::kLatestCrashReportCreationTime, 0);
-  EXPECT_EQ(0u, enterprise_connectors::GetLatestCrashReportTime(&pref_service));
+  pref_service.registry()->RegisterInt64Pref(kLatestCrashReportCreationTime, 0);
+  EXPECT_EQ(0u, GetLatestCrashReportTime(&pref_service));
 
   time_t timestamp = base::Time::Now().ToTimeT();
   std::vector<crashpad::CrashReportDatabase::Report> reports;
@@ -148,8 +144,7 @@ TEST_F(CrashReportingContextTest, UploadToReportingServer) {
                               _, base::Time::FromTimeT(timestamp)))
       .Times(1);
   UploadToReportingServer(reporting_client, &pref_service, reports);
-  EXPECT_EQ(timestamp,
-            enterprise_connectors::GetLatestCrashReportTime(&pref_service));
+  EXPECT_EQ(timestamp, GetLatestCrashReportTime(&pref_service));
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

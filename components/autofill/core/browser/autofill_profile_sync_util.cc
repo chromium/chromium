@@ -4,7 +4,7 @@
 
 #include "components/autofill/core/browser/autofill_profile_sync_util.h"
 
-#include "base/guid.h"
+#include "base/uuid.h"
 // TODO(crbug.com/904390): Remove when the investigation is over.
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
@@ -75,7 +75,7 @@ ConvertProfileToSpecificsVerificationStatus(VerificationStatus profile_status) {
 
 bool IsAutofillProfileSpecificsValid(
     const AutofillProfileSpecifics& specifics) {
-  return base::IsValidGUID(specifics.guid());
+  return base::IsValidUuid(specifics.guid());
 }
 
 }  // namespace
@@ -83,7 +83,7 @@ bool IsAutofillProfileSpecificsValid(
 std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
     const AutofillProfile& entry) {
   // Validity of the guid is guaranteed by the database layer.
-  DCHECK(base::IsValidGUID(entry.guid()));
+  DCHECK(base::IsValidUuid(entry.guid()));
 
   // Profiles fall into two categories, kLocalOrSyncable and kAccount.
   // kLocalOrSyncable profiles are synced through the AutofillProfileSyncBridge,
@@ -488,7 +488,7 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
 
 std::string GetStorageKeyFromAutofillProfile(const AutofillProfile& entry) {
   // Validity of the guid is guaranteed by the database layer.
-  DCHECK(base::IsValidGUID(entry.guid()));
+  DCHECK(base::IsValidUuid(entry.guid()));
   return entry.guid();
 }
 

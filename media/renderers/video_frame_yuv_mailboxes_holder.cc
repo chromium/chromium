@@ -162,7 +162,8 @@ void VideoFrameYUVMailboxesHolder::VideoFrameToMailboxes(
         SkYUVAPixmaps::DataType::kUnorm8, num_channels);
     SkImageInfo info = SkImageInfo::Make(plane_sizes_[plane], color_type,
                                          kUnknown_SkAlphaType);
-    ri->WritePixels(holders_[plane].mailbox, 0, 0, GL_TEXTURE_2D,
+    ri->WritePixels(holders_[plane].mailbox, /*dst_x_offset=*/0,
+                    /*dst_y_offset=*/0, /*dst_plane_index=*/0, GL_TEXTURE_2D,
                     video_frame->stride(plane), info, video_frame->data(plane));
     mailboxes[plane] = holders_[plane].mailbox;
   }

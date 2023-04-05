@@ -180,9 +180,10 @@ bool PendingLayer::Matches(const PendingLayer& old_pending_layer) const {
 static constexpr float kMergeSparsityAreaTolerance = 10000;
 
 bool PendingLayer::Merge(const PendingLayer& guest,
-                         LCDTextPreference lcd_text_preference) {
+                         LCDTextPreference lcd_text_preference,
+                         IsCompositedScrollFunction is_composited_scroll) {
   absl::optional<PropertyTreeState> merged_state =
-      CanUpcastWith(guest, guest.GetPropertyTreeState());
+      CanUpcastWith(guest, guest.GetPropertyTreeState(), is_composited_scroll);
   if (!merged_state) {
     return false;
   }
@@ -296,7 +297,8 @@ bool PendingLayer::Merge(const PendingLayer& guest,
 
 absl::optional<PropertyTreeState> PendingLayer::CanUpcastWith(
     const PendingLayer& guest,
-    const PropertyTreeState& guest_state) const {
+    const PropertyTreeState& guest_state,
+    IsCompositedScrollFunction is_composited_scroll) const {
   DCHECK_EQ(&Chunks().GetPaintArtifact(), &guest.Chunks().GetPaintArtifact());
   if (ChunkRequiresOwnLayer() || guest.ChunkRequiresOwnLayer()) {
     return absl::nullopt;
@@ -304,13 +306,15 @@ absl::optional<PropertyTreeState> PendingLayer::CanUpcastWith(
   if (&GetPropertyTreeState().Effect() != &guest_state.Effect()) {
     return absl::nullopt;
   }
-  return GetPropertyTreeState().CanUpcastWith(guest_state);
+  return GetPropertyTreeState().CanUpcastWith(guest_state,
+                                              is_composited_scroll);
 }
 
 bool PendingLayer::CanMergeWithDecompositedBlendMode(
     const PendingLayer& guest,
-    const PropertyTreeState& upcast_state) const {
-  return CanUpcastWith(guest, upcast_state).has_value();
+    const PropertyTreeState& upcast_state,
+    IsCompositedScrollFunction is_composited_scroll) const {
+  return CanUpcastWith(guest, upcast_state, is_composited_scroll).has_value();
 }
 
 const TransformPaintPropertyNode&

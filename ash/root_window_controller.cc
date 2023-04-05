@@ -1291,7 +1291,7 @@ void RootWindowController::CreateContainers() {
 
   aura::Window* power_menu_container =
       CreateContainer(kShellWindowId_PowerMenuContainer, "PowerMenuContainer",
-                      lock_screen_related_containers);
+                      GetPowerMenuContainerParent(GetRootWindow()));
   power_menu_container->SetProperty(::wm::kUsesScreenCoordinatesKey, true);
 
   aura::Window* settings_bubble_container =

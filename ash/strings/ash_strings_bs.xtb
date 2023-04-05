@@ -220,7 +220,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Zdravo, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Unos teksta</translation>
-<translation id="1980808257969311265">Pridruži se događaju:<ph name="EVENT_SUMMARY" /></translation>
+<translation id="1980808257969311265">Pridružite se događaju <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Prikaži prethodnu sedmicu</translation>
 <translation id="1989113344093894667">Nije moguće snimanje sadržaja</translation>
 <translation id="1990046457226896323">Fajlovi govora su preuzeti</translation>
@@ -575,6 +575,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3659814201068740063">Preostalo je oko <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Povežite uređaj na napajanje.</translation>
 <translation id="366222428570480733">Korisnik kojim upravlja <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="3666266999138159418">Prevucite da sakrijete plutajući prozor</translation>
 <translation id="367531336287639526">Odaberite prvu ikonu s lijeve strane trake za adresu</translation>
 <translation id="3679827876008292680">Odlazak na posljednju karticu u prozoru</translation>
 <translation id="36813544980941320">WiFi mreže će se dijeliti između vašeg telefona i uređaja <ph name="DEVICE_NAME" /></translation>

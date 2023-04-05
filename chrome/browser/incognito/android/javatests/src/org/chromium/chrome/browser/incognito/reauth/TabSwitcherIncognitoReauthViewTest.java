@@ -131,18 +131,14 @@ public class TabSwitcherIncognitoReauthViewTest {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         openIncognitoReauth(cta);
 
-        onView(withId(org.chromium.chrome.R.id.tab_switcher_toolbar)).check(matches(isDisplayed()));
+        onView(withId(R.id.tab_switcher_toolbar)).check(matches(isDisplayed()));
 
         if (!cta.isTablet()) {
-            onView(withId(org.chromium.chrome.browser.toolbar.R.id.new_tab_button))
-                    .check(matches(not(isEnabled())));
+            onView(withId(R.id.new_tab_button)).check(matches(not(isEnabled())));
         } else {
-            onView(withId(org.chromium.chrome.browser.toolbar.R.id.new_tab_view))
-                    .check(matches(not(isEnabled())));
-            onView(withId(org.chromium.chrome.browser.toolbar.R.id.new_tab_view_button))
-                    .check(matches(not(isEnabled())));
-            onView(withId(org.chromium.chrome.browser.toolbar.R.id.new_tab_view_desc))
-                    .check(matches(not(isEnabled())));
+            onView(withId(R.id.new_tab_view)).check(matches(not(isEnabled())));
+            onView(withId(R.id.new_tab_view_button)).check(matches(not(isEnabled())));
+            onView(withId(R.id.new_tab_view_desc)).check(matches(not(isEnabled())));
         }
 
         onView(withId(R.id.incognito_reauth_menu_button)).check(matches(not(isDisplayed())));
@@ -155,7 +151,7 @@ public class TabSwitcherIncognitoReauthViewTest {
         onView(withText(R.string.incognito_reauth_page_see_other_tabs_label))
                 .check(matches(not(isDisplayed())));
 
-        mRenderTestRule.render(cta.findViewById(org.chromium.chrome.R.id.action_bar_root),
-                "incognito_reauth_view_tab_switcher");
+        mRenderTestRule.render(
+                cta.findViewById(R.id.action_bar_root), "incognito_reauth_view_tab_switcher");
     }
 }

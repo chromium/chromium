@@ -51,7 +51,7 @@ void TopSitesGetFunction::OnMostVisitedURLsAvailable(
     }
   }
 
-  Respond(OneArgument(base::Value(std::move(pages_value))));
+  Respond(WithArguments(std::move(pages_value)));
 }
 
 }  // namespace extensions

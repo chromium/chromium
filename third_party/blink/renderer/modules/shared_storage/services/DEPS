@@ -9,7 +9,7 @@ include_rules = [
 
 specific_include_rules = {
     ".*_(unit)?test\.cc": [
-        "+base/task/bind_post_task.h",
+        "+gin",
         "+services/network/test/test_url_loader_factory.h",
     ],
 }

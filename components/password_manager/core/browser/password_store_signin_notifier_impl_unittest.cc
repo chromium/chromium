@@ -83,7 +83,7 @@ TEST_F(PasswordStoreSigninNotifierImplTest, SignOutContentArea) {
   // processed in this testing context.
   identity_test_env()->EnableRemovalOfExtendedAccountInfo();
   identity_manager->GetAccountsMutator()->RemoveAccount(
-      CoreAccountId("secondary_account_id"),
+      CoreAccountId::FromGaiaId("secondary_account_id"),
       signin_metrics::SourceForRefreshTokenOperation::kUserMenu_RemoveAccount);
   testing::Mock::VerifyAndClearExpectations(&reuse_manager_);
 

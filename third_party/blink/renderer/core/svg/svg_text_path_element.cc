@@ -111,8 +111,7 @@ void SVGTextPathElement::SvgAttributeChanged(
   SVGTextContentElement::SvgAttributeChanged(params);
 }
 
-LayoutObject* SVGTextPathElement::CreateLayoutObject(const ComputedStyle&,
-                                                     LegacyLayout) {
+LayoutObject* SVGTextPathElement::CreateLayoutObject(const ComputedStyle&) {
   return MakeGarbageCollected<LayoutSVGTextPath>(this);
 }
 

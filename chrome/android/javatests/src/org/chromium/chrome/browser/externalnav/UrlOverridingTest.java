@@ -84,6 +84,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelImpl;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.external_intents.ExternalIntentsFeatures;
@@ -1321,11 +1322,14 @@ public class UrlOverridingTest {
                 filter, new Instrumentation.ActivityResult(Activity.RESULT_OK, null), true);
         mTestContext.setIntentFilterForHost("example.com", filter);
 
+        AsyncInitializationActivity.interceptMoveTaskToBackForTesting();
         mCustomTabActivityRule.launchActivity(getCustomTabFromChromeIntent(initialUrl, true));
 
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(monitor.getHits(), Matchers.is(1));
         }, 10000L, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        CriteriaHelper.pollUiThread(
+                () -> AsyncInitializationActivity.wasMoveTaskToBackInterceptedForTesting());
     }
 
     @Test
@@ -1354,8 +1358,8 @@ public class UrlOverridingTest {
                 OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION, result.getResultType());
         assertMessagePresent();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TextView button = mActivityTestRule.getActivity().findViewById(
-                    org.chromium.components.messages.R.id.message_primary_button);
+            TextView button =
+                    mActivityTestRule.getActivity().findViewById(R.id.message_primary_button);
             button.performClick();
         });
         CriteriaHelper.pollUiThread(() -> {

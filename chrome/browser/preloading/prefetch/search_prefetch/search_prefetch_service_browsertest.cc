@@ -19,6 +19,7 @@
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_browser_test_base.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
+#include "chrome/browser/preloading/prefetch/search_prefetch/streaming_search_prefetch_url_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
@@ -87,6 +88,26 @@ enum class BlockOnHeaders {
 
 const kBlockOnHeadersCases[] = {BlockOnHeaders::kBlockOnHeaders,
                                 BlockOnHeaders::kDirectBeforeHeaders};
+
+// Since the result can be set upon Mojo disconnection, we have to wait until
+// it to be reported.
+void CheckCorrectForwardingResultMetric(
+    base::HistogramTester& histogram_tester,
+    StreamingSearchPrefetchURLLoader::ForwardingResult result,
+    int count) {
+  while (true) {
+    int num = histogram_tester.GetBucketCount(
+        "Omnibox.SearchPreload.ForwardingResult.NotServedToPrerender", result);
+    if (num >= count) {
+      break;
+    }
+    base::RunLoop run_loop;
+    run_loop.RunUntilIdle();
+  }
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPreload.ForwardingResult.NotServedToPrerender", result,
+      count);
+}
 
 }  // namespace
 
@@ -259,7 +280,8 @@ class SearchPrefetchWithoutPrefetchingBrowserTest
     : public SearchPrefetchBaseBrowserTest {
  public:
   SearchPrefetchWithoutPrefetchingBrowserTest() {
-    feature_list_.InitWithFeatures({}, {kSearchPrefetchServicePrefetching});
+    feature_list_.InitWithFeatures(
+        {}, {kSearchPrefetchServicePrefetching, features::kPreloadingConfig});
   }
 
   void SetUpOnMainThread() override {
@@ -323,7 +345,7 @@ class SearchPrefetchHoldbackBrowserTest : public SearchPrefetchBaseBrowserTest {
   SearchPrefetchHoldbackBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{kSearchPrefetchServicePrefetching, {{"prefetch_holdback", "true"}}}},
-        {/* disabled_features */});
+        {/* disabled_features */ features::kPreloadingConfig});
   }
 
   void SetUpOnMainThread() override {
@@ -415,7 +437,8 @@ class SearchPrefetchServiceEnabledBrowserTest
          {{"max_attempts_per_caching_duration", "3"},
           {"cache_size", "1"},
           {"device_memory_threshold_MB", "0"}}}};
-    std::vector<base::test::FeatureRef> disabled_features = {};
+    std::vector<base::test::FeatureRef> disabled_features = {
+        features::kPreloadingConfig};
     if (BlockOnHeadersEnabled()) {
       enabled_features.push_back({kSearchPrefetchBlockBeforeHeaders, {}});
     } else {
@@ -1227,7 +1250,9 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
       "Omnibox.SearchPrefetch.ClickToNavigationIntercepted", 1);
   histogram_tester.ExpectTotalCount(
       "Omnibox.SearchPrefetch.NavigationInterceptedToForwardingComplete", 1);
-
+  CheckCorrectForwardingResultMetric(
+      histogram_tester,
+      StreamingSearchPrefetchURLLoader::ForwardingResult::kCompleted, 1);
   {
     ukm::SourceId ukm_source_id =
         GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
@@ -1289,6 +1314,9 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
       "Omnibox.SearchPrefetch.ClickToNavigationIntercepted", 1);
   histogram_tester.ExpectTotalCount(
       "Omnibox.SearchPrefetch.NavigationInterceptedToForwardingComplete", 1);
+  CheckCorrectForwardingResultMetric(
+      histogram_tester,
+      StreamingSearchPrefetchURLLoader::ForwardingResult::kCompleted, 1);
 
   search_terms = "prefetch_content_2";
   auto [prefetch_url_2, search_url_2] =
@@ -1387,6 +1415,9 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
       "Omnibox.SearchPrefetch.ClickToNavigationIntercepted", 1);
   histogram_tester.ExpectTotalCount(
       "Omnibox.SearchPrefetch.NavigationInterceptedToForwardingComplete", 1);
+  CheckCorrectForwardingResultMetric(
+      histogram_tester,
+      StreamingSearchPrefetchURLLoader::ForwardingResult::kCompleted, 1);
 
   search_terms = "prefetch_content_2";
   auto [prefetch_url_2, search_url_2] =
@@ -3139,7 +3170,7 @@ class SearchPrefetchServiceHeadStartTooLongTest
            {"device_memory_threshold_MB", "0"}}},
          {kSearchPrefetchBlockBeforeHeaders,
           {{"block_head_start_ms", "100000"}}}},
-        {});
+        {features::kPreloadingConfig});
   }
 
  private:
@@ -3200,7 +3231,7 @@ class SearchPrefetchServiceHeadStartTest
            {"cache_size", "1"},
            {"device_memory_threshold_MB", "0"}}},
          {kSearchPrefetchBlockBeforeHeaders, {{"block_head_start_ms", "10"}}}},
-        {});
+        {features::kPreloadingConfig});
   }
 
  private:
@@ -3551,7 +3582,8 @@ class SearchPrefetchServiceNavigationPrefetchBrowserTest
           {"cache_size", "1"},
           {"device_memory_threshold_MB", "0"}}},
         {kSearchNavigationPrefetch, {}}};
-    std::vector<base::test::FeatureRef> disabled_features = {};
+    std::vector<base::test::FeatureRef> disabled_features = {
+        features::kPreloadingConfig};
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
@@ -3915,7 +3947,8 @@ class SearchNavigationPrefetchHoldbackBrowserTest
           {"device_memory_threshold_MB", "0"},
           {"prefetch_holdback", "true"}}},
         {kSearchNavigationPrefetch, {{}}}};
-    std::vector<base::test::FeatureRef> disabled_features = {};
+    std::vector<base::test::FeatureRef> disabled_features = {
+        features::kPreloadingConfig};
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);

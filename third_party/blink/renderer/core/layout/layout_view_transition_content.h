@@ -23,8 +23,8 @@ class CORE_EXPORT LayoutViewTransitionContent : public LayoutReplaced {
     NOT_DESTROYED();
     return "LayoutViewTransitionContent";
   }
-  void OnIntrinsicSizeUpdated(const gfx::RectF& ink_overflow_rect,
-                              const gfx::RectF& captured_subrect);
+  void OnIntrinsicSizeUpdated(const gfx::RectF& captured_rect,
+                              const gfx::RectF& border_box_rect);
 
   bool IsViewTransitionContent() const override {
     NOT_DESTROYED();
@@ -41,8 +41,8 @@ class CORE_EXPORT LayoutViewTransitionContent : public LayoutReplaced {
   PhysicalRect ReplacedContentRectForCapturedContent() const;
 
   scoped_refptr<cc::ViewTransitionContentLayer> layer_;
-  gfx::RectF ink_overflow_rect_;
-  gfx::RectF captured_subrect_;
+  gfx::RectF captured_rect_;
+  gfx::RectF border_box_rect_;
 };
 
 template <>

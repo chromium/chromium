@@ -168,10 +168,20 @@ void SidePanelToolbarContainer::CreatePinnedEntryButtons() {
   auto* search_companion_coordinator =
       SearchCompanionSidePanelCoordinator::GetOrCreateForBrowser(
           browser_view_->browser());
-  auto button = std::make_unique<PinnedSidePanelToolbarButton>(
-      browser_view_, SidePanelEntry::Id::kSearchCompanion,
-      search_companion_coordinator->name(),
-      search_companion_coordinator->icon());
+  AddPinnedEntryButtonFor(SidePanelEntry::Id::kSearchCompanion,
+                          search_companion_coordinator->name(),
+                          search_companion_coordinator->icon());
+}
+
+void SidePanelToolbarContainer::AddPinnedEntryButtonFor(
+    SidePanelEntry::Id id,
+    std::u16string name,
+    const gfx::VectorIcon& icon) {
+  if (HasPinnedEntryButtonFor(id)) {
+    return;
+  }
+  auto button = std::make_unique<PinnedSidePanelToolbarButton>(browser_view_,
+                                                               id, name, icon);
   ObserveButton(button.get());
   pinned_button_visibility_change_subscription_ =
       button->AddVisibleChangedCallback(base::BindRepeating(
@@ -183,9 +193,29 @@ void SidePanelToolbarContainer::CreatePinnedEntryButtons() {
   UpdatePinnedButtonsVisibility();
 }
 
+void SidePanelToolbarContainer::RemovePinnedEntryButtonFor(
+    SidePanelEntry::Id id) {
+  if (!HasPinnedEntryButtonFor(id)) {
+    return;
+  }
+  const auto iter = base::ranges::find(
+      pinned_entry_buttons_, id, [](auto* button) { return button->id(); });
+  DCHECK(iter != pinned_entry_buttons_.end());
+  RemoveChildView(*iter);
+  pinned_entry_buttons_.erase(iter);
+  pinned_button_visibility_change_subscription_ =
+      base::CallbackListSubscription();
+}
+
+bool SidePanelToolbarContainer::HasPinnedEntryButtonFor(SidePanelEntry::Id id) {
+  const auto iter = base::ranges::find(
+      pinned_entry_buttons_, id, [](auto* button) { return button->id(); });
+  return iter != pinned_entry_buttons_.end();
+}
+
 void SidePanelToolbarContainer::UpdateSidePanelContainerButtonsState() {
-  bool side_panel_button_highlighted =
-      browser_view_->unified_side_panel()->GetVisible();
+  bool side_panel_visible = browser_view_->unified_side_panel()->GetVisible();
+  bool side_panel_button_highlighted = side_panel_visible;
   absl::optional<SidePanelEntry::Id> current_active_id =
       browser_view_->side_panel_coordinator()->GetCurrentEntryId();
   for (PinnedSidePanelToolbarButton* pinned_button : pinned_entry_buttons_) {
@@ -202,8 +232,8 @@ void SidePanelToolbarContainer::UpdateSidePanelContainerButtonsState() {
   // once provided by UX.
   GetSidePanelButton()->SetHighlighted(side_panel_button_highlighted);
   GetSidePanelButton()->SetTooltipText(l10n_util::GetStringUTF16(
-      side_panel_button_highlighted ? IDS_TOOLTIP_SIDE_PANEL_HIDE
-                                    : IDS_TOOLTIP_SIDE_PANEL_SHOW));
+      side_panel_visible ? IDS_TOOLTIP_SIDE_PANEL_HIDE
+                         : IDS_TOOLTIP_SIDE_PANEL_SHOW));
 }
 
 void SidePanelToolbarContainer::ReorderViews() {

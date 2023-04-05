@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import androidx.core.widget.TextViewCompat;
 
-import org.chromium.components.browser_ui.modaldialog.R;
 import org.chromium.ui.LayoutInflaterUtils;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modaldialog.ModalDialogProperties;

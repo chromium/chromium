@@ -269,6 +269,11 @@ void RemoteSuggestionsService::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void RemoteSuggestionsService::set_url_loader_factory_for_testing(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  url_loader_factory_ = std::move(url_loader_factory);
+}
+
 void RemoteSuggestionsService::OnURLLoadComplete(
     const base::UnguessableToken& request_id,
     CompletionCallback completion_callback,

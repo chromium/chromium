@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationOrigin, DuplexMode, makeRecentDestination, MarginsType, PrinterType, PrintPreviewModelElement, PrintTicket, RecentDestination, ScalingType, Size} from 'chrome://print/print_preview.js';
+import {ColorOption, Destination, DestinationOrigin, DpiOption, DuplexMode, DuplexOption, makeRecentDestination, MarginsType, PrinterType, PrintPreviewModelElement, PrintTicket, RecentDestination, ScalingType, Size} from 'chrome://print/print_preview.js';
 // <if expr="is_chromeos">
 import {GooglePromotedDestinationId, PrinterStatusReason} from 'chrome://print/print_preview.js';
 // </if>
@@ -493,7 +493,7 @@ suite(model_test.suiteName, function() {
       option: [
         {type: 'STANDARD_COLOR'},
         {type: 'STANDARD_MONOCHROME', is_default: true},
-      ],
+      ] as ColorOption[],
     };
 
     const testDestination2 =
@@ -555,18 +555,18 @@ suite(model_test.suiteName, function() {
     testDestination3.capabilities!.printer!.color = {
       option: [
         {type: 'STANDARD_MONOCHROME', is_default: true},
-      ],
+      ] as ColorOption[],
     };
     testDestination3.capabilities!.printer!.duplex = {
       option: [
         {type: 'NO_DUPLEX', is_default: true},
-      ],
+      ] as DuplexOption[],
     };
     testDestination3.capabilities!.printer!.dpi = {
       option: [
         {horizontal_dpi: 400, vertical_dpi: 400, is_default: true},
         {horizontal_dpi: 800, vertical_dpi: 800},
-      ],
+      ] as DpiOption[],
     };
 
     model.destination = testDestination3;

@@ -14,6 +14,8 @@
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
+class Profile;
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -41,6 +43,7 @@ class WebContentHandlerImpl : public supervised_user::WebContentHandler {
                             ApprovalRequestInitiatedCallback callback) override;
   bool IsMainFrame(int frame_id) override;
   void CleanUpInfoBarOnMainFrame(int frame_id) override;
+  void ShowFeedback(GURL url, std::u16string reason) override;
 
  private:
   void OnLocalApprovalRequestCompleted(
@@ -61,6 +64,7 @@ class WebContentHandlerImpl : public supervised_user::WebContentHandler {
 
   const raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<SupervisedUserFaviconRequestHandler> favicon_handler_;
+  const raw_ref<Profile> profile_;
   base::WeakPtrFactory<WebContentHandlerImpl> weak_ptr_factory_{this};
 };
 

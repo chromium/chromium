@@ -19,6 +19,7 @@ preprocess_gen_manifest = "preprocessed_gen_manifest.json"
 web_component_files = [
   "contact_object.js",
   "contact_tab.js",
+  "cross_device_internals.js",
   "http_message_object.js",
   "http_tab.js",
   "log_object.js",
@@ -71,6 +72,7 @@ preprocess_if_expr("preprocess") {
                "nearby_contact_browser_proxy.js",
                "nearby_http_browser_proxy.js",
                "nearby_logs_browser_proxy.js",
+               "nearby_presence_browser_proxy.js",
                "nearby_prefs_browser_proxy.js",
                "nearby_ui_trigger_browser_proxy.js",
                "types.js",
@@ -110,6 +112,7 @@ js_type_check("closure_compile") {
   deps = [
     ":contact_object",
     ":contact_tab",
+    ":cross_device_internals",
     ":http_message_object",
     ":http_tab",
     ":log_object",
@@ -119,10 +122,18 @@ js_type_check("closure_compile") {
     ":nearby_internals",
     ":nearby_logs_browser_proxy",
     ":nearby_prefs_browser_proxy",
+    ":nearby_presence_browser_proxy",
     ":nearby_ui_trigger_browser_proxy",
     ":types",
     ":ui_trigger_list_object",
     ":ui_trigger_tab",
+  ]
+}
+
+js_library("cross_device_internals") {
+  deps = [
+    ":nearby_presence_browser_proxy",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
@@ -216,6 +227,7 @@ js_library("nearby_ui_trigger_browser_proxy") {
 
 js_library("ui_trigger_tab") {
   deps = [
+    ":cross_device_internals",
     ":nearby_ui_trigger_browser_proxy",
     ":types",
     ":ui_trigger_list_object",
@@ -255,6 +267,13 @@ js_library("nearby_contact_browser_proxy") {
   deps = [
     ":types",
     "//ash/webui/common/resources:cr.m",
+    "//ash/webui/common/resources:cr_deprecated",
+  ]
+}
+
+js_library("nearby_presence_browser_proxy") {
+  deps = [
+    ":types",
     "//ash/webui/common/resources:cr_deprecated",
   ]
 }

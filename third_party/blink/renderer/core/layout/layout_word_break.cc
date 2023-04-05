@@ -31,10 +31,8 @@
 
 namespace blink {
 
-LayoutWordBreak::LayoutWordBreak(Node* node)
-    : LayoutText(node, StringImpl::empty_) {
-  DCHECK(IsA<HTMLWBRElement>(node)) << node;
-}
+LayoutWordBreak::LayoutWordBreak(HTMLWBRElement& node)
+    : LayoutNGText(&node, StringImpl::empty_) {}
 
 bool LayoutWordBreak::IsWordBreak() const {
   NOT_DESTROYED();

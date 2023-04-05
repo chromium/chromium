@@ -45,7 +45,6 @@ namespace blink {
 
 class EffectPaintPropertyNode;
 class Element;
-class InlineTextBox;
 class LayoutBlock;
 class LayoutText;
 class LocalFrame;
@@ -315,8 +314,6 @@ class CORE_EXPORT FrameSelection final
       const NGInlineCursor& cursor) const;
   SelectionState ComputePaintingSelectionStateForCursor(
       const NGInlineCursorPosition& position) const;
-  SelectionState ComputeLayoutSelectionStateForInlineTextBox(
-      const InlineTextBox& text_box) const;
 
   void Trace(Visitor*) const override;
 

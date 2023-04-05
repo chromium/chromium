@@ -68,6 +68,10 @@ class SourceUrlRecorderWebContentsObserver;
 // This feature controls whether UkmService should be created.
 METRICS_EXPORT BASE_DECLARE_FEATURE(kUkmFeature);
 
+// This feature controls whether MojoUkmRecorder gets to decide whether to send
+// an IPC for AddEntry.
+METRICS_EXPORT BASE_DECLARE_FEATURE(kUkmReduceAddEntryIPC);
+
 // Interface for recording UKM
 class METRICS_EXPORT UkmRecorder {
  public:

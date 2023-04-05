@@ -260,6 +260,7 @@ class BASE_EXPORT Histogram : public HistogramBase {
  private:
   // Allow tests to corrupt our innards for testing purposes.
   friend class HistogramTest;
+  friend class HistogramThreadsafeTest;
   FRIEND_TEST_ALL_PREFIXES(HistogramTest, BoundsTest);
   FRIEND_TEST_ALL_PREFIXES(HistogramTest, BucketPlacementTest);
   FRIEND_TEST_ALL_PREFIXES(HistogramTest, CorruptSampleCounts);

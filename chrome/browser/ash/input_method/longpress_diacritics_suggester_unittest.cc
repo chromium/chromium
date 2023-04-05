@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "ash/constants/notifier_catalogs.h"
+#include "ash/test/ash_test_base.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -30,8 +32,9 @@ struct DiacriticsTestCase {
   std::vector<std::u16string> candidates;
 };
 
-using LongpressDiacriticsSuggesterTest =
-    ::testing::TestWithParam<DiacriticsTestCase>;
+class LongpressDiacriticsSuggesterTest
+    : public AshTestBase,
+      public testing::WithParamInterface<DiacriticsTestCase> {};
 
 using AssistiveWindowButton = ui::ime::AssistiveWindowButton;
 
@@ -128,6 +131,7 @@ TEST_P(LongpressDiacriticsSuggesterTest, DoesNotSuggestForInvalidEngineId) {
 
 TEST_P(LongpressDiacriticsSuggesterTest, DoesNotSuggestForInvalidKeyChar) {
   FakeSuggestionHandler suggestion_handler;
+  base::HistogramTester histogram_tester;
   LongpressDiacriticsSuggester suggester =
       LongpressDiacriticsSuggester(&suggestion_handler);
   suggester.SetEngineId(kUSEngineId);
@@ -137,6 +141,8 @@ TEST_P(LongpressDiacriticsSuggesterTest, DoesNotSuggestForInvalidKeyChar) {
 
   EXPECT_FALSE(suggestion_handler.GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler.GetSuggestionText(), u"");
+  histogram_tester.ExpectUniqueSample("Ash.NotifierFramework.Nudge.ShownCount",
+                                      NudgeCatalogName::kDisableDiacritics, 1);
 }
 
 TEST_P(LongpressDiacriticsSuggesterTest, DoesNotSuggestAfterBlur) {
@@ -917,8 +923,7 @@ INSTANTIATE_TEST_SUITE_P(
           u"SOUFLE",
           u"SOUFLES",
           {u"É", u"È", u"Ê", u"Ë", u"Ē"}}}),
-    [](const testing::TestParamInfo<
-        LongpressDiacriticsSuggesterTest::ParamType>& info) {
+    [](const testing::TestParamInfo<DiacriticsTestCase>& info) {
       return std::string(1, info.param.longpress_char);
     });
 

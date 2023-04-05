@@ -59,7 +59,7 @@ class ASH_EXPORT ViewTreeHostRootViewFrameFactory {
   // a transferable resource. Note: This method is also used in unittests.
   static std::unique_ptr<ViewTreeHostUiResource> CreateUiResource(
       const gfx::Size& size,
-      viz::ResourceFormat format,
+      viz::SharedImageFormat format,
       UiSourceId ui_source_id,
       bool is_overlay_candidate);
 

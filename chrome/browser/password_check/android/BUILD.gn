@@ -81,6 +81,7 @@ android_library("public_ui_java") {
 
 robolectric_binary("password_check_junit_tests") {
   testonly = true
+  resources_package = "org.chromium.chrome.browser.password_check"
 
   sources = [ "junit/src/org/chromium/chrome/browser/password_check/PasswordCheckControllerTest.java" ]
 
@@ -113,6 +114,7 @@ robolectric_binary("password_check_junit_tests") {
 
 android_library("test_java") {
   testonly = true
+  resources_package = "org.chromium.chrome.browser.password_check"
 
   sources = [
     "javatests/src/org/chromium/chrome/browser/password_check/PasswordCheckIntegrationTest.java",
@@ -124,7 +126,9 @@ android_library("test_java") {
     ":public_ui_java",
     "internal:internal_java",
     "internal:internal_ui_factory_java",
+    "internal:java_resources",
     "//base:base_java_test_support",
+    "//chrome/android:chrome_app_java_resources",
     "//chrome/android:chrome_java",
     "//chrome/android:chrome_test_java",
     "//chrome/android:chrome_test_util_java",

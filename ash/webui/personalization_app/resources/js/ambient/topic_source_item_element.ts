@@ -44,6 +44,12 @@ export class TopicSourceItem extends WithPersonalizationStore {
         observer: 'onCheckedChanged_',
       },
 
+      disabled: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
       topicSource: TopicSource,
 
       hasGooglePhotosAlbums: {
@@ -60,6 +66,7 @@ export class TopicSourceItem extends WithPersonalizationStore {
   }
 
   checked: boolean;
+  disabled: boolean;
   topicSource: TopicSource;
   hasGooglePhotosAlbums: boolean|null;
   override ariaLabel: string;
@@ -103,6 +110,8 @@ export class TopicSourceItem extends WithPersonalizationStore {
       }
     } else if (this.topicSource === TopicSource.kArtGallery) {
       return this.i18n('ambientModeTopicSourceArtGalleryDescription');
+    } else if (this.topicSource === TopicSource.kVideo) {
+      return this.i18n('ambientModeTopicSourceVideoDescription');
     } else {
       return '';
     }

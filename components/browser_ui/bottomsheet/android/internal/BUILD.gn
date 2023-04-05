@@ -30,7 +30,7 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_java",
   ]
-  resources_package = "org.chromium.components.browser_ui.bottomsheet.internal"
+  resources_package = "org.chromium.components.browser_ui.bottomsheet"
 }
 
 robolectric_library("junit_tests") {

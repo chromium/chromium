@@ -299,8 +299,7 @@ void TextFieldInputType::AdjustStyle(ComputedStyleBuilder& builder) {
 }
 
 LayoutObject* TextFieldInputType::CreateLayoutObject(
-    const ComputedStyle& style,
-    LegacyLayout legacy) const {
+    const ComputedStyle&) const {
   return MakeGarbageCollected<LayoutNGTextControlSingleLine>(&GetElement());
 }
 

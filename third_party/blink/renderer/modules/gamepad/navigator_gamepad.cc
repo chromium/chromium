@@ -236,6 +236,31 @@ GamepadHapticActuator* NavigatorGamepad::GetVibrationActuatorForGamepad(
   return vibration_actuators_[pad_index].Get();
 }
 
+void NavigatorGamepad::SetTouchEvents(const Gamepad& gamepad,
+                                      GamepadTouchVector& touch_events,
+                                      unsigned count,
+                                      const device::GamepadTouch* data) {
+  int pad_index = gamepad.index();
+  DCHECK_GE(pad_index, 0);
+
+  auto& id = next_touch_id_[pad_index];
+  auto& id_map = touch_id_map_[pad_index];
+
+  uint32_t the_id = 0u;
+  TouchIdMap the_id_map{};
+  for (unsigned i = 0u; i < count; ++i) {
+    if (auto search = id_map.find(data[i].touch_id); search != id_map.end()) {
+      the_id = search->value;
+    } else {
+      the_id = id++;
+    }
+    the_id_map.Set(data[i].touch_id, the_id);
+    touch_events[i]->UpdateValuesFrom(data[i], the_id);
+  }
+
+  id_map = std::move(the_id_map);
+}
+
 void NavigatorGamepad::Trace(Visitor* visitor) const {
   visitor->Trace(gamepads_);
   visitor->Trace(gamepads_back_);

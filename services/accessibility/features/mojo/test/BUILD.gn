@@ -1,0 +1,52 @@
+# Copyright 2023 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom_js_api") {
+  testonly = true
+  sources = [ "test_api.test-mojom" ]
+  public_deps = [ "//mojo/public/mojom/base" ]
+  webui_module_path = "/"
+}
+
+group("test_support_data") {
+  testonly = true
+  data = [ "$target_gen_dir/mojom_test_support.js" ]
+  deps = [ ":test_support_js" ]
+}
+
+# Based on mojo/public/js/build.gn, this concatinates Javascript files.
+template("concatenate_files") {
+  action(target_name) {
+    script = "//mojo/public/tools/bindings/concatenate_and_replace_closure_exports.py"
+    inputs = invoker.inputs
+    output = "$target_gen_dir/${invoker.output}"
+    outputs = [ output ]
+    args = rebase_path(inputs, root_build_dir) +
+           [ rebase_path(output, root_build_dir) ]
+    if (defined(invoker.deps)) {
+      deps = invoker.deps
+    }
+  }
+}
+
+# Concatinates the mojom JS bindings and generated mojo from test_api.test-mojom into
+# one file as we haven't yet implemented module loading.
+# TODO(b:262637071): Implement module loading.
+concatenate_files("test_support_js") {
+  inputs = [
+    "shim.js",
+    "$root_gen_dir/mojo/public/js/mojo_bindings_lite.js",
+    "$root_gen_dir/services/accessibility/features/mojo/test/test_api.test-mojom-lite.js",
+  ]
+
+  deps = [
+    "//mojo/public/js:bindings_lite",
+    "//services/accessibility/features/mojo/test:mojom_js_api_js__generator",
+  ]
+
+  output = "mojom_test_support.js"
+}

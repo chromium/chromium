@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesViewBinder.ViewHolder;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.R;
 import org.chromium.components.browser_ui.widget.tile.TileView;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -51,7 +52,7 @@ public final class MostVisitedTilesViewBinderUnitTest extends BlankUiTestActivit
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mMvTilesLayout = new MostVisitedTilesCarouselLayout(getActivity(), null);
-            mMvTilesLayout.setId(org.chromium.chrome.R.id.mv_tiles_layout);
+            mMvTilesLayout.setId(R.id.mv_tiles_layout);
             mFirstChildView = new TileView(getActivity(), null);
             mSecondChildView = new TileView(getActivity(), null);
             mThirdChildView = new TileView(getActivity(), null);
@@ -60,10 +61,10 @@ public final class MostVisitedTilesViewBinderUnitTest extends BlankUiTestActivit
             mMvTilesLayout.addView(mThirdChildView);
 
             mNoMvPlaceholder = new View(getActivity());
-            mNoMvPlaceholder.setId(org.chromium.chrome.R.id.tile_grid_placeholder);
+            mNoMvPlaceholder.setId(R.id.tile_grid_placeholder);
             mNoMvPlaceholderStub = new ViewStub(getActivity());
-            mNoMvPlaceholderStub.setId(org.chromium.chrome.R.id.tile_grid_placeholder_stub);
-            mNoMvPlaceholderStub.setInflatedId(org.chromium.chrome.R.id.tile_grid_placeholder);
+            mNoMvPlaceholderStub.setId(R.id.tile_grid_placeholder_stub);
+            mNoMvPlaceholderStub.setInflatedId(R.id.tile_grid_placeholder);
 
             mMvTilesContainerLayout = new LinearLayout(getActivity());
             mMvTilesContainerLayout.addView(mMvTilesLayout);

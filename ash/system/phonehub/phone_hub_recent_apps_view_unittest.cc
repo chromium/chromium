@@ -31,6 +31,10 @@ using RecentAppsViewUiState = phone_hub_metrics::RecentAppsViewUiState;
 
 constexpr char kRecentAppsStateOnBubbleOpenedHistogramName[] =
     "PhoneHub.RecentApps.State.OnBubbleOpened";
+constexpr char kRecentAppsTransitionToFailedLatencyHistogramName[] =
+    "PhoneHub.RecentApps.TransitionToFailed.Latency";
+constexpr char kRecentAppsTransitionToSuccessLatencyHistogramName[] =
+    "PhoneHub.RecentApps.TransitionToSuccess.Latency";
 
 const char16_t kAppName[] = u"Test App";
 const char kPackageName[] = "com.google.testapp";
@@ -83,6 +87,7 @@ class RecentAppButtonsViewTest : public AshTestBase {
 
   void SimulateBubbleCloseAndOpen() {
     phone_hub_recent_apps_view_.reset();
+    phone_hub_recent_apps_view_.release();
     phone_hub_recent_apps_view_ = std::make_unique<PhoneHubRecentAppsView>(
         &fake_recent_apps_interaction_handler_, &fake_phone_hub_manager_,
         connected_view_);
@@ -356,6 +361,47 @@ TEST_F(RecentAppButtonsViewTest, LogRecentAppsStateOnBubbleOpened) {
   histogram_tester.ExpectBucketCount(
       kRecentAppsStateOnBubbleOpenedHistogramName, RecentAppsViewUiState::kApps,
       1);
+}
+
+TEST_F(RecentAppButtonsViewTest, LogRecentAppsTransitionToFailedLatency) {
+  base::HistogramTester histogram_tester;
+
+  NotifyRecentAppAddedOrUpdated();
+  FeatureStateChanged(FeatureState::kEnabledByUser);
+
+  SetRecentAppsHandlerUiState(RecentAppsUiState::LOADING);
+  SimulateBubbleCloseAndOpen();
+  SetRecentAppsHandlerUiState(RecentAppsUiState::CONNECTION_FAILED);
+  recent_apps_view()->Update();
+
+  histogram_tester.ExpectTimeBucketCount(
+      kRecentAppsTransitionToFailedLatencyHistogramName, base::Milliseconds(0),
+      1);
+}
+
+TEST_F(RecentAppButtonsViewTest, LogRecentAppsTransitionToSuccessLatency) {
+  base::HistogramTester histogram_tester;
+
+  NotifyRecentAppAddedOrUpdated();
+  FeatureStateChanged(FeatureState::kEnabledByUser);
+
+  SetRecentAppsHandlerUiState(RecentAppsUiState::LOADING);
+  SimulateBubbleCloseAndOpen();
+  SetRecentAppsHandlerUiState(RecentAppsUiState::ITEMS_VISIBLE);
+  recent_apps_view()->Update();
+
+  histogram_tester.ExpectTimeBucketCount(
+      kRecentAppsTransitionToSuccessLatencyHistogramName, base::Milliseconds(0),
+      1);
+
+  SetRecentAppsHandlerUiState(RecentAppsUiState::CONNECTION_FAILED);
+  SimulateBubbleCloseAndOpen();
+  SetRecentAppsHandlerUiState(RecentAppsUiState::ITEMS_VISIBLE);
+  recent_apps_view()->Update();
+
+  histogram_tester.ExpectTimeBucketCount(
+      kRecentAppsTransitionToSuccessLatencyHistogramName, base::Milliseconds(0),
+      2);
 }
 
 }  // namespace ash

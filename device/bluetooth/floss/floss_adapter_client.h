@@ -82,6 +82,12 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
     kRemoteDeviceTimestamp = 0xFF,
   };
 
+  enum class BtDiscoverableMode : uint32_t {
+    kNonDiscoverable = 0,
+    kLimitedDiscoverable = 1,
+    kGeneralDiscoverable = 2,
+  };
+
   class Observer : public base::CheckedObserver {
    public:
     Observer(const Observer&) = delete;
@@ -163,6 +169,11 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   // Set whether adapter is discoverable.
   virtual void SetDiscoverable(ResponseCallback<Void> callback,
                                bool discoverable);
+
+  // Set adapter discoverability mode.
+  virtual void SetDiscoverable(ResponseCallback<Void> callback,
+                               BtDiscoverableMode mode,
+                               uint32_t duration);
 
   // Get the discoverable timeout for the adapter. Updates whenever the
   // discoverable state changes.

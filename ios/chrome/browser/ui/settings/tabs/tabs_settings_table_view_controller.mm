@@ -136,7 +136,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (!_inactiveTabsDetailItem) {
     return;
   }
-  if (_inactiveDaysThreshold == -1) {
+  if (_inactiveDaysThreshold == kInactiveTabsDisabledByUser) {
     _inactiveTabsDetailItem.detailText =
         l10n_util::GetNSString(IDS_IOS_OPTIONS_INACTIVE_TABS_DISABLED);
   } else {

@@ -52,7 +52,7 @@ class MockRealtimeReportingClient : public RealtimeReportingClient {
 
   MOCK_METHOD3(ReportRealtimeEvent,
                void(const std::string&,
-                    const enterprise_connectors::ReportingSettings& settings,
+                    const ReportingSettings& settings,
                     base::Value::Dict event));
   MOCK_METHOD(std::string, GetProfileUserName, (), (const, override));
 };

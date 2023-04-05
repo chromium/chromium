@@ -50,12 +50,8 @@ void GatherInlineContainerFragmentsFromItems(
     if (!box)
       continue;
 
-    // The key for the inline is the continuation root if it exists.
-    const LayoutObject* key = box->GetLayoutObject();
-    if (key->IsLayoutInline() && key->GetNode())
-      key = key->ContinuationRoot();
-
     // See if we need the containing block information for this inline.
+    const LayoutObject* key = box->GetLayoutObject();
     auto it = inline_containing_block_map->find(key);
     if (it == inline_containing_block_map->end())
       continue;
@@ -118,12 +114,6 @@ void InlineContainingBlockUtils::ComputeInlineContainerGeometry(
   DCHECK_GE(container_builder->InlineSize(), LayoutUnit());
   DCHECK_GE(container_builder->FragmentBlockSize(), LayoutUnit());
 
-#if DCHECK_IS_ON()
-  // Make sure all entries are a continuation root.
-  for (const auto& entry : *inline_containing_block_map)
-    DCHECK_EQ(entry.key, entry.key->ContinuationRoot());
-#endif
-
   HeapHashMap<Member<const LayoutObject>, LineBoxPair> containing_linebox_map;
 
   if (container_builder->ItemsBuilder()) {
@@ -173,11 +163,6 @@ void InlineContainingBlockUtils::ComputeInlineContainerGeometryForFragmentainer(
     InlineContainingBlockMap* inline_containing_block_map) {
   if (inline_containing_block_map->empty())
     return;
-#if DCHECK_IS_ON()
-  // Make sure all entries are a continuation root.
-  for (const auto& entry : *inline_containing_block_map)
-    DCHECK_EQ(entry.key, entry.key->ContinuationRoot());
-#endif
 
   WritingDirectionMode writing_direction =
       box->StyleRef().GetWritingDirection();

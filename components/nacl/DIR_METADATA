@@ -1,4 +1,7 @@
-monorail {
-  component: "Platform>NaCl"
+buganizer_public {
+  component_id: 1258585  # ChromeOS Public Tracker > Enterprise & Edu > NaCl
+}
+buganizer {
+  component_id: 1258533
 }
 team_email: "chromium-reviews@chromium.org"

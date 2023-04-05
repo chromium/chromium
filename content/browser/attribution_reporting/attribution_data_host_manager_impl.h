@@ -155,21 +155,18 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
 
   void ParseSource(base::flat_set<SourceRegistrations>::iterator,
                    attribution_reporting::SuitableOrigin reporting_origin,
-                   const RegistrarAndHeader&);
-  void OnSourceParsed(
-      SourceRegistrationsId,
-      base::FunctionRef<void(const SourceRegistrations&)> handle_result);
-  void OnWebSourceParsed(
-      SourceRegistrationsId,
-      const attribution_reporting::SuitableOrigin& reporting_origin,
-      const std::string& header_value,
-      data_decoder::DataDecoder::ValueOrError result);
+                   RegistrarAndHeader);
+  void HandleNextWebDecode(const SourceRegistrations&);
+  void OnWebSourceParsed(SourceRegistrationsId,
+                         data_decoder::DataDecoder::ValueOrError result);
 
 #if BUILDFLAG(IS_ANDROID)
+  void HandleNextOsDecode(const SourceRegistrations&);
+
   using OsParseResult =
       base::expected<net::structured_headers::ParameterizedItem, std::string>;
   void OnOsSourceParsed(SourceRegistrationsId, OsParseResult);
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
   void MaybeOnRegistrationsFinished(
       base::flat_set<SourceRegistrations>::const_iterator);
@@ -203,6 +200,8 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   size_t data_hosts_in_source_mode_ = 0;
   base::OneShotTimer trigger_timer_;
   base::circular_deque<DelayedTrigger> delayed_triggers_;
+
+  data_decoder::DataDecoder data_decoder_;
 
   base::WeakPtrFactory<AttributionDataHostManagerImpl> weak_factory_{this};
 };

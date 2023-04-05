@@ -173,6 +173,62 @@ INSTANTIATE_TEST_SUITE_P(OutOfProcess,
                          ChromeNetworkServiceBrowserTest,
                          ::testing::Values(false));
 
+#if BUILDFLAG(IS_WIN)
+class ChromeNetworkServiceBrowserCookieLockTest
+    : public InProcessBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kLockProfileCookieDatabase, ShouldBeLocked());
+
+    InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+ protected:
+  const bool& ShouldBeLocked() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// This test verifies that if the kLockProfileCookieDatabase feature is enabled,
+// then the cookie store cannot be opened once sqlite has an exclusive lock on
+// the file.
+IN_PROC_BROWSER_TEST_P(ChromeNetworkServiceBrowserCookieLockTest,
+                       CookiesAreLocked) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+  base::FilePath cookie_filename = browser()
+                                       ->profile()
+                                       ->GetPath()
+                                       .Append(chrome::kNetworkDataDirname)
+                                       .Append(chrome::kCookieFilename);
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+
+    ASSERT_TRUE(base::PathExists(cookie_filename));
+    base::File cookie_file(
+        cookie_filename,
+        base::File::Flags::FLAG_OPEN_ALWAYS | base::File::Flags::FLAG_READ);
+    EXPECT_EQ(ShouldBeLocked(), !cookie_file.IsValid());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ChromeNetworkServiceBrowserCookieLockTest,
+                         ::testing::Bool(),
+                         [](const auto& info) {
+                           return info.param ? "Locked" : "NotLocked";
+                         });
+
+#endif  // BUILDFLAG(IS_WIN)
+
 // See `NetworkServiceBrowserTest` for content's version of tests. This test
 // merely tests that chrome's feature is wired up correctly to the migration
 // code that exists in content.

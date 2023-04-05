@@ -192,24 +192,25 @@ class AutofillClient : public RiskDataLoader {
     kUndefined,
     // No prompt is shown and no decision is needed to proceed with the process.
     kUserNotAsked,
-    // The user accepted the save/update flow from the initial prompt.
+    // The user accepted the save/update/migration flow from the initial prompt.
     kAccepted,
-    // The user declined the save/update flow from the initial prompt.
+    // The user declined the save/update/migration flow from the initial prompt.
     kDeclined,
-    // The user accepted the save/update flow from the edit dialog.
+    // The user accepted the save/update/migration flow from the edit dialog.
     kEditAccepted,
-    // The user declined the save/update flow from the edit dialog.
+    // The user declined the save/update/migration flow from the edit dialog.
     kEditDeclined,
-    // The user selected to never save a new profile on a given domain or update
-    // a specific profile (currently not supported).
+    // The user selected to never migrate a `kLocalOrSyncable` profile to the
+    // account storage.
+    // Currently unused for new profile and update prompts.
     kNever,
     // The user ignored the prompt.
     kIgnored,
-    // The save/update message timed out before the user interacted. This is
-    // only relevant on mobile.
+    // The save/update/migration message timed out before the user interacted.
+    // This is only relevant on mobile.
     kMessageTimeout,
-    // The user swipes away the save/update Message. This is only relevant on
-    // mobile.
+    // The user swipes away the save/update/migration message. This is only
+    // relevant on mobile.
     kMessageDeclined,
     // The prompt is suppressed most likely because there is already another
     // prompt shown on the same tab.

@@ -1,0 +1,18 @@
+<!--
+  TODO(b/276319002): The <cross-device-internals> element will eventually
+  replace the <nearby-internals> object as main page. However
+  cross-device-internals needs to be built out first which is low priority.
+  Until it is complete, cross-device-internals will be used as a part of the
+  ui-triggers-tab.
+-->
+<style include="shared-style">
+  cr-button {
+    height: 35px;
+    padding: 5px;
+    width: 150px;
+  }
+</style>
+
+<cr-button class="internals-button" on-click="onStartScanClicked">
+  Start scan
+</cr-button>

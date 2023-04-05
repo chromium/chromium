@@ -20,5 +20,6 @@
   readonly attribute any info;
 
   [RaisesException] void intercept(optional NavigationInterceptOptions options = {});
+  [RaisesException, RuntimeEnabled=NavigateEventCommitBehavior] void commit();
   [RaisesException] void scroll();
 };

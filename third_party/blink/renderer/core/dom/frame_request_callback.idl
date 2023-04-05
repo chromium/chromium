@@ -30,4 +30,5 @@
 
 // https://html.spec.whatwg.org/C/#framerequestcallback
 
+[SupportsTaskAttribution]
 callback FrameRequestCallback = void(DOMHighResTimeStamp highResTime);

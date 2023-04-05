@@ -542,8 +542,7 @@ public class TouchToFillViewTest {
     }
 
     private RecyclerView getCredentials() {
-        return mTouchToFillView.getContentView().findViewById(
-                org.chromium.chrome.browser.touch_to_fill.common.R.id.sheet_item_list);
+        return mTouchToFillView.getContentView().findViewById(R.id.sheet_item_list);
     }
 
     private TextView getCredentialNameAt(int index) {
@@ -599,8 +598,7 @@ public class TouchToFillViewTest {
                 new PropertyModel.Builder(FooterProperties.ALL_KEYS)
                         .with(MANAGE_BUTTON_TEXT,
                                 mActivityTestRule.getActivity().getString(
-                                        org.chromium.chrome.browser.touch_to_fill.R.string
-                                                .manage_passwords_and_passkeys))
+                                        R.string.manage_passwords_and_passkeys))
                         .with(ON_CLICK_MANAGE, () -> mManageButtonClicked.set(true))
                         .build());
     }

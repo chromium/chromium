@@ -38,6 +38,18 @@ std::string GetManagedBookmarksDomain(ChromeBrowserState* browser_state) {
           ->GetCachedHostedDomainForIdentity(identity));
 }
 
+std::unique_ptr<KeyedService> BuildManagedBookmarkModel(
+    web::BrowserState* context) {
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
+  // base::Unretained is safe because ManagedBookmarkService will
+  // be destroyed before the browser_state it is attached to.
+  return std::make_unique<bookmarks::ManagedBookmarkService>(
+      browser_state->GetPrefs(),
+      base::BindRepeating(&GetManagedBookmarksDomain,
+                          base::Unretained(browser_state)));
+}
+
 }  // namespace
 
 // static
@@ -54,6 +66,12 @@ ManagedBookmarkServiceFactory* ManagedBookmarkServiceFactory::GetInstance() {
   return instance.get();
 }
 
+// static
+ManagedBookmarkServiceFactory::TestingFactory
+ManagedBookmarkServiceFactory::GetDefaultFactory() {
+  return base::BindRepeating(&BuildManagedBookmarkModel);
+}
+
 ManagedBookmarkServiceFactory::ManagedBookmarkServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "ManagedBookmarkService",
@@ -64,14 +82,7 @@ ManagedBookmarkServiceFactory::~ManagedBookmarkServiceFactory() {}
 std::unique_ptr<KeyedService>
 ManagedBookmarkServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  // base::Unretained is safe because ManagedBookmarkService will
-  // be destroyed before the browser_state it is attached to.
-  return std::make_unique<bookmarks::ManagedBookmarkService>(
-      browser_state->GetPrefs(),
-      base::BindRepeating(&GetManagedBookmarksDomain,
-                          base::Unretained(browser_state)));
+  return BuildManagedBookmarkModel(context);
 }
 
 bool ManagedBookmarkServiceFactory::ServiceIsNULLWhileTesting() const {

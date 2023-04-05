@@ -11,6 +11,7 @@
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/hotspot_capabilities_provider.h"
+#include "chromeos/ash/components/network/hotspot_enabled_state_notifier.h"
 #include "chromeos/ash/components/network/hotspot_state_handler.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -54,6 +55,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
             HotspotStateHandler* hotspot_state_handler,
             HotspotController* hotspot_controller,
             HotspotConfigurationHandler* hotspot_configuration_handler,
+            HotspotEnabledStateNotifier* hotspot_enabled_state_notifier,
             NetworkStateHandler* network_state_handler);
 
   void set_is_enterprise_managed(bool is_enterprise_managed) {
@@ -227,6 +229,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
   HotspotCapabilitiesProvider* hotspot_capabilities_provider_ = nullptr;
   HotspotStateHandler* hotspot_state_handler_ = nullptr;
   HotspotConfigurationHandler* hotspot_configuration_handler_ = nullptr;
+  HotspotEnabledStateNotifier* hotspot_enabled_state_notifier_ = nullptr;
   NetworkStateHandler* network_state_handler_ = nullptr;
 
   // A timer to wait for user connecting to their upstream cellular network
@@ -251,7 +254,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
   mojo::Receiver<hotspot_config::mojom::HotspotEnabledStateObserver>
       hotspot_state_enabled_state_observer_receiver_{this};
   mojo::Receiver<hotspot_config::mojom::HotspotEnabledStateObserver>
-      hotspot_controller_enabled_state_observer_receiver_{this};
+      hotspot_enabled_state_notifier_receiver_{this};
 };
 
 }  // namespace ash

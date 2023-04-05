@@ -1079,6 +1079,14 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_accessibilityID(kToolsMenuPasswordsId);
 }
 
++ (id<GREYMatcher>)priceNotificationsDestinationButton {
+  return grey_anyOf(
+      grey_accessibilityID(kToolsMenuPriceNotifications),
+      grey_accessibilityID([NSString
+          stringWithFormat:@"%@-newBadge", kToolsMenuPriceNotifications]),
+      nullptr);
+}
+
 + (id<GREYMatcher>)readingListDestinationButton {
   return grey_accessibilityID(kToolsMenuReadingListId);
 }
@@ -1104,6 +1112,10 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)siteInfoDestinationButton {
   return grey_accessibilityID(kToolsMenuSiteInformation);
+}
+
++ (id<GREYMatcher>)whatsNewDestinationButton {
+  return grey_accessibilityID(kToolsMenuWhatsNewId);
 }
 
 #pragma mark - Overflow Menu Actions

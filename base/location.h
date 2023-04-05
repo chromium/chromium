@@ -72,13 +72,9 @@ class BASE_EXPORT Location {
   // Write a representation of this object into a trace.
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
-#if BUILDFLAG(ENABLE_LOCATION_SOURCE)
   static Location Current(const char* function_name = __builtin_FUNCTION(),
                           const char* file_name = __builtin_FILE(),
                           int line_number = __builtin_LINE());
-#else
-  static Location Current(const char* file_name = __builtin_FILE());
-#endif  // BUILDFLAG(ENABLE_LOCATION_SOURCE)
 
  private:
   // Only initializes the file name and program counter, the source information

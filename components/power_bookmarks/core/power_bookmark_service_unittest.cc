@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/guid.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
@@ -13,6 +12,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/power_bookmarks/common/power.h"
@@ -414,7 +414,7 @@ TEST_F(PowerBookmarkServiceTest, DeletePower) {
   base::MockCallback<SuccessCallback> success_cb;
   EXPECT_CALL(success_cb, Run(IsTrue()));
 
-  base::GUID guid = base::GUID::GenerateRandomV4();
+  base::Uuid guid = base::Uuid::GenerateRandomV4();
   auto power = MakePower(GURL("https://google.com"),
                          sync_pb::PowerBookmarkSpecifics::POWER_TYPE_MOCK);
   power->set_guid(guid);
@@ -498,7 +498,7 @@ TEST_F(PowerBookmarkServiceTest, ObserverCalled) {
   base::MockCallback<SuccessCallback> success_cb;
   EXPECT_CALL(success_cb, Run(IsTrue()));
 
-  base::GUID guid = base::GUID::GenerateRandomV4();
+  base::Uuid guid = base::Uuid::GenerateRandomV4();
   auto power = MakePower(GURL("https://google.com"),
                          sync_pb::PowerBookmarkSpecifics::POWER_TYPE_MOCK);
   power->set_guid(guid);

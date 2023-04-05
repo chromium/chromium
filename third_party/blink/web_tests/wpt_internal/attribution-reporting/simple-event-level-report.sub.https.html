@@ -14,12 +14,17 @@ const reportingOrigin = getDefaultReportingOrigin();
 
 attribution_reporting_promise_test(async t => {
   const source = {
-    source_event_id: '9153495207648170476',
+    source_event_id: generateSourceEventId(),
     destination: `https://{{host}}`,
   };
-  const trigger = {event_trigger_data: [{trigger_data: '2'}]};
+  await registerAttributionSrc(t, {
+    source,
+    cookie: 'foo=bar;Secure;HttpOnly;Path=/',
+    reportingOrigin,
+  });
+  await waitForSourceToBeRegistered(source.source_event_id);
 
-  await registerAttributionSrc(t, {source, cookie: 'foo=bar;Secure;HttpOnly;Path=/', reportingOrigin});
+  const trigger = {event_trigger_data: [{trigger_data: '2'}]};
   await registerAttributionSrc(t, {trigger, reportingOrigin});
 
   const payload = await pollEventLevelReports(reportingOrigin);

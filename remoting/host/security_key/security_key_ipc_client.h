@@ -11,31 +11,23 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
-#include "ipc/ipc_listener.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
-#include "mojo/public/cpp/platform/named_platform_channel.h"
-#include "mojo/public/cpp/platform/platform_channel_endpoint.h"
-#include "mojo/public/cpp/system/isolated_connection.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "remoting/host/chromoting_host_services_provider.h"
 #include "remoting/host/mojom/remote_security_key.mojom.h"
-
-namespace IPC {
-class Channel;
-class Message;
-}  // namespace IPC
 
 namespace remoting {
 
 // Responsible for handing the client end of the IPC channel between the
 // the network process (server) and remote_security_key process (client).
 // The public methods are virtual to allow for using fake objects for testing.
-class SecurityKeyIpcClient : public IPC::Listener {
+class SecurityKeyIpcClient {
  public:
   SecurityKeyIpcClient();
 
   SecurityKeyIpcClient(const SecurityKeyIpcClient&) = delete;
   SecurityKeyIpcClient& operator=(const SecurityKeyIpcClient&) = delete;
 
-  ~SecurityKeyIpcClient() override;
+  virtual ~SecurityKeyIpcClient();
 
   // Used to send security key extension messages to the client.
   using ResponseCallback =
@@ -65,39 +57,21 @@ class SecurityKeyIpcClient : public IPC::Listener {
   // Closes the IPC channel if connected.
   virtual void CloseIpcConnection();
 
-  // Allows tests to override the IPC channel.
-  void SetIpcChannelHandleForTest(
-      const mojo::NamedPlatformChannel::ServerName& server_name);
-  void SetIpcChannelPipeForTest(mojo::ScopedMessagePipeHandle pipe);
+ protected:
+  friend class SecurityKeyIpcClientTest;
 
-  // Allows tests to override the expected session ID.
-  void SetExpectedIpcServerSessionIdForTest(uint32_t expected_session_id);
+  explicit SecurityKeyIpcClient(
+      std::unique_ptr<ChromotingHostServicesProvider> service_provider);
 
  private:
-  // IPC::Listener implementation.
-  bool OnMessageReceived(const IPC::Message& message) override;
-  void OnChannelConnected(int32_t peer_pid) override;
-  void OnChannelError() override;
+  void OnQueryVersionResult(uint32_t unused_version);
+  void OnChannelError();
 
   // Handles security key response IPC messages.
   void OnSecurityKeyResponse(const std::string& request_data);
 
   // Establishes a connection to the specified IPC Server channel.
   void ConnectToIpcChannel();
-
-  // Used to validate the IPC Server process is running in the correct session.
-  // '0' (default) corresponds to the session the network process runs in.
-  uint32_t expected_ipc_server_session_id_ = 0;
-
-  // Name of the initial IPC channel used to retrieve connection info.
-  mojo::NamedPlatformChannel::ServerName named_channel_handle_;
-
-  // A message pipe to use for the IPC channel in tests; this is used in lieu of
-  // any named server connection.
-  mojo::ScopedMessagePipeHandle test_ipc_channel_pipe_;
-
-  // A handle for the IPC channel used for exchanging security key messages.
-  mojo::PlatformChannelEndpoint channel_handle_;
 
   // Signaled when the IPC connection is ready for security key requests.
   ConnectedCallback connected_callback_;
@@ -108,12 +82,10 @@ class SecurityKeyIpcClient : public IPC::Listener {
   // Signaled when a security key response has been received.
   ResponseCallback response_callback_;
 
-  // Used for sending/receiving security key messages between processes.
-  mojo::IsolatedConnection mojo_connection_;
-  std::unique_ptr<IPC::Channel> ipc_channel_;
+  std::unique_ptr<ChromotingHostServicesProvider> service_provider_;
 
   // Used for forwarding security key requests to the remote client.
-  mojo::AssociatedRemote<mojom::SecurityKeyForwarder> security_key_forwarder_;
+  mojo::Remote<mojom::SecurityKeyForwarder> security_key_forwarder_;
 
   base::ThreadChecker thread_checker_;
 

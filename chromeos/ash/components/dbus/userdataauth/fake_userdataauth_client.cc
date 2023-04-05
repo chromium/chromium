@@ -581,6 +581,13 @@ std::string FakeUserDataAuthClient::TestApi::AddSession(
   return auth_session_id;
 }
 
+bool FakeUserDataAuthClient::TestApi::IsCurrentSessionEphemeral() {
+  CHECK_EQ(FakeUserDataAuthClient::Get()->auth_sessions_.size(), 1u);
+  return FakeUserDataAuthClient::Get()
+      ->auth_sessions_.begin()
+      ->second.ephemeral;
+}
+
 void FakeUserDataAuthClient::TestApi::DestroySessions() {
   g_instance->auth_sessions_.clear();
 }

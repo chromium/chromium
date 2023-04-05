@@ -78,6 +78,7 @@ void AmbientManagedPhotoController::UpdateImageFilePaths(
 
 void AmbientManagedPhotoController::StopScreenUpdate() {
   state_ = State::kStopped;
+  images_file_paths_.clear();
   ambient_backend_model_.Clear();
   weak_factory_.InvalidateWeakPtrs();
   current_image_index_ = 0;

@@ -16,6 +16,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
 
 namespace ash::smb_dialog {
 namespace {
@@ -135,8 +136,16 @@ void SmbCredentialsDialogUI::OnUpdateCredentials(const std::string& username,
   }
 }
 
+void SmbCredentialsDialogUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(receiver));
+}
+
 bool SmbCredentialsDialog::ShouldShowCloseButton() const {
   return false;
 }
+
+WEB_UI_CONTROLLER_TYPE_IMPL(SmbCredentialsDialogUI)
 
 }  // namespace ash::smb_dialog

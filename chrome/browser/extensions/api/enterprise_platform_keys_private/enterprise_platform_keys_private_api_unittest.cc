@@ -10,7 +10,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/attestation/mock_tpm_challenge_key.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -18,15 +17,17 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "extensions/browser/api_test_utils.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::NiceMock;
 
-namespace utils = extension_function_test_utils;
-
 namespace extensions {
+
+namespace utils = api_test_utils;
+
 namespace {
 
 const char kUserEmail[] = "test@google.com";
@@ -98,7 +99,8 @@ TEST_F(EPKPChallengeMachineKeyTest, ExtensionNotAllowlisted) {
 
   EXPECT_EQ(
       ash::attestation::TpmChallengeKeyResult::kExtensionNotAllowedErrorMsg,
-      utils::RunFunctionAndReturnError(func_.get(), kFuncArgs, browser()));
+      utils::RunFunctionAndReturnError(func_.get(), kFuncArgs,
+                                       browser()->profile()));
 }
 
 TEST_F(EPKPChallengeMachineKeyTest, Success) {
@@ -108,8 +110,9 @@ TEST_F(EPKPChallengeMachineKeyTest, Success) {
   allowlist.Append(extension_->id());
   prefs_->SetList(prefs::kAttestationExtensionAllowlist, std::move(allowlist));
 
-  std::unique_ptr<base::Value> value(utils::RunFunctionAndReturnSingleResult(
-      func_.get(), kFuncArgs, browser(), extensions::api_test_utils::NONE));
+  absl::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
+      func_.get(), kFuncArgs, browser()->profile(),
+      extensions::api_test_utils::FunctionMode::kNone);
 
   ASSERT_TRUE(value->is_string());
   EXPECT_EQ("cmVzcG9uc2U=" /* Base64 encoding of 'response' */,
@@ -138,7 +141,8 @@ TEST_F(EPKPChallengeUserKeyTest, ExtensionNotAllowlisted) {
 
   EXPECT_EQ(
       ash::attestation::TpmChallengeKeyResult::kExtensionNotAllowedErrorMsg,
-      utils::RunFunctionAndReturnError(func_.get(), kFuncArgs, browser()));
+      utils::RunFunctionAndReturnError(func_.get(), kFuncArgs,
+                                       browser()->profile()));
 }
 
 TEST_F(EPKPChallengeUserKeyTest, Success) {
@@ -148,8 +152,9 @@ TEST_F(EPKPChallengeUserKeyTest, Success) {
   allowlist.Append(extension_->id());
   prefs_->SetList(prefs::kAttestationExtensionAllowlist, std::move(allowlist));
 
-  std::unique_ptr<base::Value> value(utils::RunFunctionAndReturnSingleResult(
-      func_.get(), kFuncArgs, browser(), extensions::api_test_utils::NONE));
+  absl::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
+      func_.get(), kFuncArgs, browser()->profile(),
+      extensions::api_test_utils::FunctionMode::kNone);
 
   ASSERT_TRUE(value->is_string());
   EXPECT_EQ("cmVzcG9uc2U=" /* Base64 encoding of 'response' */,

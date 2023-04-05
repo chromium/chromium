@@ -188,8 +188,6 @@ void CustomScrollbar::UpdateScrollbarParts() {
         Location(), gfx::Size(is_horizontal ? Width() : new_thickness,
                               is_horizontal ? new_thickness : Height())));
     if (LayoutBox* box = GetScrollableArea()->GetLayoutBox()) {
-      if (auto* layout_block = DynamicTo<LayoutBlock>(box))
-        layout_block->NotifyScrollbarThicknessChanged();
       box->SetChildNeedsLayout();
       // LayoutNG may attempt to reuse line-box fragments. It will do this even
       // if the |LayoutObject::ChildNeedsLayout| is true (set above).

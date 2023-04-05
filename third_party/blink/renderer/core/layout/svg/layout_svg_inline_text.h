@@ -22,11 +22,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_LAYOUT_SVG_INLINE_TEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_LAYOUT_SVG_INLINE_TEXT_H_
 
-#include "third_party/blink/renderer/core/layout/layout_text.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text.h"
 
 namespace blink {
 
-class LayoutSVGInlineText final : public LayoutText {
+class LayoutSVGInlineText final : public LayoutNGText {
  public:
   LayoutSVGInlineText(Node*, String);
 

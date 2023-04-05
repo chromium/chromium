@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.password_edit_dialog;
 
 import static org.chromium.base.test.util.ApplicationTestUtils.finishActivity;
-import static org.chromium.chrome.R.style.Theme_BrowserUI_DayNight;
+import static org.chromium.chrome.browser.password_edit_dialog.R.style.Theme_BrowserUI_DayNight;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
 import androidx.test.filters.MediumTest;

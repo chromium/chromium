@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/frame/browser_controls.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/root_frame_viewport.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
@@ -402,9 +403,20 @@ bool ScrollManager::LogicalScroll(mojom::blink::ScrollDirection direction,
         [](WeakPersistent<ScrollableArea> area,
            ScrollableArea::ScrollCompletionMode completion_mode) {
           if (area) {
-            area->OnScrollFinished(
-                /*enqueue_scrollend=*/completion_mode ==
-                ScrollableArea::ScrollCompletionMode::kFinished);
+            bool enqueue_scrollend =
+                completion_mode ==
+                ScrollableArea::ScrollCompletionMode::kFinished;
+
+            // Viewport scrolls should only fire scrollend if the
+            // LayoutViewport was scrolled.
+            if (enqueue_scrollend && IsA<RootFrameViewport>(area.Get())) {
+              auto* root_frame_viewport = To<RootFrameViewport>(area.Get());
+              if (!root_frame_viewport->ScrollAffectsLayoutViewport()) {
+                enqueue_scrollend = false;
+              }
+            }
+
+            area->OnScrollFinished(enqueue_scrollend);
           }
         },
         WrapWeakPersistent(scrollable_area)));

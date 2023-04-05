@@ -146,7 +146,7 @@ SkiaGLImageRepresentationDXGISwapChain::BeginWriteAccess(
           end_semaphores, end_state);
 
   if (!surfaces.empty()) {
-    static_cast<DXGISwapChainImageBacking*>(backing())->AddSwapRect(
+    static_cast<DXGISwapChainImageBacking*>(backing())->DidBeginWriteAccess(
         update_rect);
   }
 

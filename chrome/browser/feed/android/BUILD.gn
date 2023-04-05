@@ -232,6 +232,7 @@ generate_jni("jni_headers") {
 
 android_library("javatests") {
   testonly = true
+  resources_package = "org.chromium.chrome.browser.feed.test"
 
   sources = [
     "java/src/org/chromium/chrome/browser/feed/FeedProcessScopeDependencyProviderNativeTest.java",
@@ -239,6 +240,7 @@ android_library("javatests") {
   ]
 
   deps = [
+    ":feed_java_resources",
     ":java",
     "//base:base_java_test_support",
     "//chrome/browser/feature_engagement:java",
@@ -268,7 +270,6 @@ android_library("javatests") {
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_preference_preference_java",
-    "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit",
@@ -362,7 +363,6 @@ robolectric_library("junit") {
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_ext_junit_java",
-    "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/gif_player:gif_player_java",
     "//third_party/hamcrest:hamcrest_core_java",

@@ -93,7 +93,8 @@ class TestDelegate : public SelectToSpeakEventHandlerDelegate {
     last_mouse_location_ = event.location();
     last_mouse_root_location_ = event.root_location();
   }
-  void DispatchKeyEvent(const ui::KeyEvent& event) override {
+  void DispatchKeysCurrentlyDown(
+      const std::set<ui::KeyboardCode>& pressed_keys) override {
     // Unused for now.
   }
 

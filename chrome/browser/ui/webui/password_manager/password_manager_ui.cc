@@ -91,6 +91,8 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
     {"blockedSitesTitle", IDS_PASSWORD_MANAGER_UI_BLOCKED_SITES_TITLE},
     {"cancel", IDS_CANCEL},
     {"changePassword", IDS_PASSWORD_MANAGER_UI_CHANGE_PASSWORD_BUTTON},
+    {"changePasswordAriaDescription",
+     IDS_PASSWORD_MANAGER_UI_CHANGE_PASSWORD_BUTTON_ARIA_DESCRIPTION},
     {"changePasswordInApp", IDS_PASSWORD_MANAGER_UI_CHANGE_PASSWORD_IN_APP},
     {"checkup", IDS_PASSWORD_MANAGER_UI_CHECKUP},
     {"checkupCanceled", IDS_PASSWORD_MANAGER_UI_CHECKUP_CANCELED},
@@ -166,6 +168,8 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
     {"menu", IDS_MENU},
     {"missingTLD", IDS_PASSWORD_MANAGER_UI_MISSING_TLD},
     {"moreActions", IDS_PASSWORD_MANAGER_UI_MORE_ACTIONS},
+    {"moreActionsAriaDescription",
+     IDS_PASSWORD_MANAGER_UI_MORE_ACTIONS_ARIA_DESCRIPTION},
     {"muteCompromisedPassword", IDS_PASSWORD_MANAGER_UI_MUTE_ISSUE},
     {"mutedCompromisedCredentials",
      IDS_PASSWORD_MANAGER_UI_MUTED_COMPROMISED_PASSWORDS},
@@ -248,11 +252,6 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       l10n_util::GetStringFUTF16(
           IDS_PASSWORD_MANAGER_UI_PASSWORDS_DESCRIPTION,
           base::ASCIIToUTF16(chrome::kPasswordManagerLearnMoreURL)));
-
-  source->AddBoolean("isPasswordManagerShortcutInstalled",
-                     web_app::FindInstalledAppWithUrlInScope(
-                         profile, web_ui->GetWebContents()->GetURL())
-                         .has_value());
 
   source->AddString(
       "checkupUrl",

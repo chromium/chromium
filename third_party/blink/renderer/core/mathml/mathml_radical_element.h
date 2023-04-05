@@ -19,8 +19,7 @@ class CORE_EXPORT MathMLRadicalElement : public MathMLRowElement {
   bool HasIndex() const;
 
  private:
-  LayoutObject* CreateLayoutObject(const ComputedStyle&,
-                                   LegacyLayout legacy) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
 
   bool IsGroupingElement() const final { return false; }
 };

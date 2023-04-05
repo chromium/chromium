@@ -5,8 +5,11 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_OVERLAY_PROPOSED_CANDIDATE_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_OVERLAY_PROPOSED_CANDIDATE_H_
 
+#include <array>
+
 #include "components/viz/common/display/overlay_strategy.h"
 #include "components/viz/common/quads/quad_list.h"
+#include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/service/display/overlay_candidate.h"
 #include "components/viz/service/viz_service_export.h"
 
@@ -35,6 +38,14 @@ struct ProposedCandidateKeyHasher {
 // using a specific `OverlayProcessorStrategy`.
 class VIZ_SERVICE_EXPORT OverlayProposedCandidate {
  public:
+  // Returns the bounds of rounded display masks in target space that are
+  // associated with the `proposed_candidate`.
+  static std::array<
+      gfx::Rect,
+      TextureDrawQuad::RoundedDisplayMasksInfo::kMaxRoundedDisplayMasksCount>
+  GetRoundedDisplayMasksBounds(
+      const OverlayProposedCandidate& proposed_candidate);
+
   OverlayProposedCandidate(QuadList::Iterator it,
                            OverlayCandidate overlay_candidate,
                            OverlayProcessorStrategy* overlay_strategy)

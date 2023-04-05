@@ -6,6 +6,7 @@ import("//build/android/resource_sizes.gni")
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//build/config/android/system_image.gni")
+import("//build/config/cronet/config.gni")
 import("//build/config/python.gni")
 import("//build/util/process_version.gni")
 import("//chrome/android/chrome_common_shared_library.gni")
@@ -42,6 +43,8 @@ import("channel.gni")
 import("java_sources.gni")
 import("static_initializers.gni")
 import("trichrome.gni")
+
+assert(!is_cronet_build)
 
 if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
   assert(current_toolchain != android_secondary_abi_toolchain)
@@ -359,6 +362,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/version:java",
       "//chrome/browser/video_tutorials:factory_java",
       "//chrome/browser/video_tutorials:java",
+      "//chrome/browser/video_tutorials:java_resources",
       "//chrome/browser/webapps/android:java",
       "//chrome/browser/webauthn/android:java",
       "//chrome/browser/xsurface:java",
@@ -820,7 +824,6 @@ if (current_toolchain == default_toolchain) {
       "//base:base_java_test_support",
       "//base:base_junit_test_support",
       "//base/test:test_support_java",
-      "//build/config/android/test/classpath_order:junit_tests",
       "//cc:cc_java",
       "//cc/mojom:mojom_java",
       "//chrome/android:update_proto_java",
@@ -1090,9 +1093,6 @@ if (current_toolchain == default_toolchain) {
       "//third_party/androidx:androidx_swiperefreshlayout_swiperefreshlayout_java",
       "//third_party/androidx:androidx_test_core_java",
       "//third_party/androidx:androidx_test_ext_junit_java",
-      "//third_party/androidx:androidx_test_monitor_java",
-      "//third_party/androidx:androidx_test_rules_java",
-      "//third_party/androidx:androidx_test_runner_java",
       "//third_party/blink/public:blink_headers_java",
       "//third_party/blink/public/mojom:android_mojo_bindings_java",
       "//third_party/blink/public/mojom:mojom_core_java",
@@ -1127,6 +1127,7 @@ if (current_toolchain == default_toolchain) {
   # Files used by chrome integration and unit javatests.
   android_library("chrome_unit_test_util_java") {
     testonly = true
+    resources_package = "org.chromium.chrome"
 
     sources = [
       "javatests/src/org/chromium/chrome/browser/compositor/bottombar/OverlayPanelManagerWrapper.java",
@@ -1149,7 +1150,6 @@ if (current_toolchain == default_toolchain) {
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_browser_browser_java",
       "//third_party/androidx:androidx_test_monitor_java",
-      "//third_party/androidx:androidx_test_runner_java",
       "//third_party/junit:junit",
       "//url:gurl_java",
     ]
@@ -1158,6 +1158,7 @@ if (current_toolchain == default_toolchain) {
   # Files used for both chrome tests and VR/AR tests
   android_library("chrome_test_util_java") {
     testonly = true
+    resources_package = "org.chromium.chrome"
 
     sources = [
       "javatests/src/org/chromium/chrome/browser/FederatedIdentityTestUtils.java",
@@ -1174,6 +1175,7 @@ if (current_toolchain == default_toolchain) {
 
     deps = [
       ":browser_java_test_support",
+      ":chrome_app_java_resources",
       "//base:base_java",
       "//base:base_java_test_support",
       "//base:jni_java",
@@ -1188,6 +1190,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/test/android:chrome_java_integration_test_support",
       "//components/autofill/android:prefeditor_autofill_java",
       "//components/payments/content/android:java",
+      "//components/payments/content/android:java_resources",
       "//components/payments/content/android:service_java",
       "//components/payments/mojom:mojom_java",
       "//content/public/android:content_java",
@@ -1198,7 +1201,6 @@ if (current_toolchain == default_toolchain) {
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_browser_browser_java",
       "//third_party/androidx:androidx_test_monitor_java",
-      "//third_party/androidx:androidx_test_runner_java",
       "//third_party/blink/public/mojom:android_mojo_bindings_java",
       "//third_party/hamcrest:hamcrest_java",
       "//third_party/junit:junit",
@@ -1216,7 +1218,7 @@ if (current_toolchain == default_toolchain) {
 
   android_library("chrome_unit_test_java") {
     testonly = true
-    resources_package = "org.chromium.chrome.test"
+    resources_package = "org.chromium.chrome"
     sources = [
       "javatests/src/org/chromium/chrome/browser/IntentFilterUnitTest.java",
       "javatests/src/org/chromium/chrome/browser/IntentHandlerUnitTest.java",
@@ -1344,7 +1346,6 @@ if (current_toolchain == default_toolchain) {
       "//third_party/androidx:androidx_browser_browser_java",
       "//third_party/androidx:androidx_core_core_java",
       "//third_party/androidx:androidx_test_monitor_java",
-      "//third_party/androidx:androidx_test_rules_java",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/blink/public:blink_headers_java",
       "//third_party/hamcrest:hamcrest_core_java",
@@ -1502,6 +1503,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/tabpersistence:java",
       "//chrome/browser/thumbnail:java",
       "//chrome/browser/thumbnail:javatests",
+      "//chrome/browser/touch_to_fill/payments/android/internal:java_resources",
       "//chrome/browser/ui/android/appmenu:java",
       "//chrome/browser/ui/android/appmenu/test:test_support_java",
       "//chrome/browser/ui/android/favicon:java",
@@ -1542,6 +1544,7 @@ if (current_toolchain == default_toolchain) {
       "//components/browser_ui/display_cutout/android:java",
       "//components/browser_ui/media/android:java",
       "//components/browser_ui/modaldialog/android:java",
+      "//components/browser_ui/modaldialog/android:java_test_resources",
       "//components/browser_ui/modaldialog/android:test_support_java",
       "//components/browser_ui/notifications/android:java",
       "//components/browser_ui/notifications/android:test_support_java",
@@ -1551,6 +1554,7 @@ if (current_toolchain == default_toolchain) {
       "//components/browser_ui/share/android:javatests",
       "//components/browser_ui/site_settings/android:constants_java",
       "//components/browser_ui/site_settings/android:java",
+      "//components/browser_ui/site_settings/android:java_resources",
       "//components/browser_ui/site_settings/android:javatests",
       "//components/browser_ui/sms/android:java",
       "//components/browser_ui/styles/android:java",
@@ -1595,6 +1599,7 @@ if (current_toolchain == default_toolchain) {
       "//components/media_router/browser/android:test_support_java",
       "//components/messages/android:java",
       "//components/messages/android/internal:java",
+      "//components/messages/android/internal:java_resources",
       "//components/messages/android/test:test_support_java",
       "//components/metrics:metrics_java",
       "//components/minidump_uploader:minidump_uploader_java",
@@ -1632,6 +1637,7 @@ if (current_toolchain == default_toolchain) {
       "//components/signin/core/browser:signin_enums_java",
       "//components/signin/public/android:java",
       "//components/signin/public/android:signin_java_test_support",
+      "//components/signin/public/android:signin_test_resources",
       "//components/site_engagement/content/android:java",
       "//components/sync/android:sync_java",
       "//components/sync/protocol:protocol_java",
@@ -1832,6 +1838,7 @@ if (current_toolchain == default_toolchain) {
       # All files necessary for VR instrumentation tests
       android_library("chrome_test_vr_java") {
         testonly = true
+        resources_package = "org.chromium.chrome.vr"
 
         sources = [
           "javatests/src/org/chromium/chrome/browser/vr/EmulatedVrController.java",
@@ -1862,6 +1869,7 @@ if (current_toolchain == default_toolchain) {
         deps = chrome_test_xr_java_deps + [
                  ":chrome_test_util_java",
                  "//chrome/android:chrome_test_xr_java",
+                 "//chrome/android/features/vr:java_resources",
                  "//chrome/browser/profiles/android:java",
                  "//chrome/browser/settings:java",
                  "//chrome/browser/tabmodel:java",
@@ -2899,10 +2907,12 @@ if (current_toolchain == default_toolchain) {
     testonly = true
     sources =
         [ "javatests/src/org/chromium/chrome/test/smoke/ChromeSmokeTest.java" ]
+    data = [ "javatests/src/org/chromium/chrome/test/smoke/test.html" ]
     deps = [
       "//base:base_java_test_support",
       "//chrome/test/android:chrome_java_test_pagecontroller",
       "//content/public/test/android:content_java_test_support",
+      "//net/android:net_java_test_support",
       "//third_party/androidx:androidx_test_monitor_java",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/androidx:androidx_test_uiautomator_uiautomator_java",
@@ -2922,6 +2932,7 @@ if (current_toolchain == default_toolchain) {
   instrumentation_test_runner("chrome_public_smoke_test") {
     apk_under_test = ":chrome_public_apk"
     android_test_apk = ":chrome_smoke_test_apk"
+    additional_apks = [ "//net/android:net_test_support_apk" ]
     if (!is_java_debug) {
       proguard_mapping_path = "$root_build_dir/apks/ChromePublic.apk.mapping"
     }
@@ -2946,6 +2957,7 @@ if (current_toolchain == default_toolchain) {
       }
     }
     android_test_apk = ":chrome_smoke_test_apk"
+    additional_apks = [ "//net/android:net_test_support_apk" ]
     never_incremental = true
     extra_args = _common_smoke_test_args
   }
@@ -3412,7 +3424,6 @@ generate_jni("chrome_jni_headers") {
   sources = [
     # Files under a feature's public/ dir are included in chrome_java's source
     # files, so include these files in chrome_jni_headers.
-    "java/src/org/chromium/chrome/browser/AppHooks.java",
     "java/src/org/chromium/chrome/browser/ApplicationLifetime.java",
     "java/src/org/chromium/chrome/browser/ChromeBackupAgentImpl.java",
     "java/src/org/chromium/chrome/browser/ChromeBackupWatcher.java",

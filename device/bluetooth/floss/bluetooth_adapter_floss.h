@@ -53,6 +53,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
       public floss::FlossAdapterClient::Observer,
       public floss::FlossBatteryManagerClient::
           FlossBatteryManagerClientObserver,
+      public floss::FlossGattManagerClient::FlossGattServerObserver,
 #if BUILDFLAG(IS_CHROMEOS)
       public FlossAdminClientObserver,
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -132,16 +133,18 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
       const std::string& identifier) const override;
 
   // Register a GATT service. The service must belong to this adapter.
-  void RegisterGattService(
-      BluetoothLocalGattServiceFloss* service,
-      base::OnceClosure callback,
-      device::BluetoothGattService::ErrorCallback error_callback);
+  void RegisterGattService(BluetoothLocalGattServiceFloss* service);
+
+  // Gatt service added dbus hook.
+  void OnGattServiceAdded(BluetoothLocalGattServiceFloss* service,
+                          DBusResult<Void> ret);
 
   // Unregister a GATT service. The service must already be registered.
-  void UnregisterGattService(
-      BluetoothLocalGattServiceFloss* service,
-      base::OnceClosure callback,
-      device::BluetoothGattService::ErrorCallback error_callback);
+  void UnregisterGattService(BluetoothLocalGattServiceFloss* service);
+
+  // Gatt service removed dbus hook.
+  void OnGattServiceRemoved(BluetoothLocalGattServiceFloss* service,
+                            DBusResult<Void> ret);
 
   void AddLocalGattService(
       std::unique_ptr<BluetoothLocalGattServiceFloss> service);
@@ -156,6 +159,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
   // this method will return false.
   bool SendValueChanged(BluetoothLocalGattCharacteristicFloss* characteristic,
                         const std::vector<uint8_t>& value);
+
+  // FlossGattServerObserver overrides
+  void GattServerNotificationSent(std::string address,
+                                  GattStatus status) override;
 
 #if BUILDFLAG(IS_CHROMEOS)
   void SetServiceAllowList(const UUIDList& uuids,

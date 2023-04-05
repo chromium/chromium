@@ -64,6 +64,10 @@ class WaylandTestBase {
   }
 
  protected:
+  // Sets the test server `config_` to use the zaura_output_manager global. This
+  // must be called before WaylandTestBase::SetUp().
+  void SetUseAuraOutputManager(bool use_aura_output_manager);
+
   // Disables client-server sync during the teardown.  Used by tests that
   // intentionally spoil the client-server communication.
   void DisableSyncOnTearDown();
@@ -130,7 +134,7 @@ class WaylandTestBase {
   std::unique_ptr<KeyboardLayoutEngine> keyboard_layout_engine_;
   base::test::ScopedFeatureList feature_list_;
 
-  const wl::ServerConfig config_;
+  wl::ServerConfig config_;
 };
 
 // Version of WaylandTestBase that uses parametrised tests (TEST_P).

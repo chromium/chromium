@@ -9,11 +9,10 @@
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/host/security_key/security_key_extension_session.h"
 
-namespace {
-const char kCapability[] = "securityKey";
-}
-
 namespace remoting {
+
+// static
+const char SecurityKeyExtension::kCapability[] = "securityKey";
 
 SecurityKeyExtension::SecurityKeyExtension(
     scoped_refptr<base::SingleThreadTaskRunner> file_task_runner)

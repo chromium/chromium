@@ -104,6 +104,14 @@ std::vector<GURL> Configurator::PingUrl() const {
   return UpdateUrl();
 }
 
+GURL Configurator::CrashUploadURL() const {
+  return external_constants_->CrashUploadURL();
+}
+
+GURL Configurator::DeviceManagementURL() const {
+  return external_constants_->DeviceManagementURL();
+}
+
 std::string Configurator::GetProdId() const {
   return "updater";
 }

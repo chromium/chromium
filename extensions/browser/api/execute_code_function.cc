@@ -254,7 +254,7 @@ void ExecuteCodeFunction::OnExecuteCodeFinished(
       result_list.Append(std::move(result.value));
   }
 
-  Respond(OneArgument(base::Value(std::move(result_list))));
+  Respond(WithArguments(std::move(result_list)));
 }
 
 }  // namespace extensions

@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">Pláneta</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> hefur verið aftengt.</translation>
 <translation id="2307462900900812319">Stilla net</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Viðbót með auðkennið <ph name="BEGIN_LIST" /><ph name="END_LIST" /> finnst ekki. Hafðu samband við stjórnandann þinn.}one{Viðbætur með auðkennin <ph name="BEGIN_LIST" /><ph name="END_LIST" /> finnast ekki. Hafðu samband við stjórnandann þinn.}other{Viðbætur með auðkennin <ph name="BEGIN_LIST" /><ph name="END_LIST" /> finnast ekki. Hafðu samband við stjórnandann þinn.}}</translation>
 <translation id="2325650632570794183">Þessi skráargerð er ekki studd. Farðu í vefverslun Chrome til að finna forrit sem getur opnað þessa skráargerð.</translation>
 <translation id="2326539130272988168">Búlgarska</translation>
 <translation id="2337715497728194187">Deila með Bruschetta</translation>

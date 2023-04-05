@@ -136,6 +136,7 @@ extern NSString* const kDocSymbol;
 extern NSString* const kOpenInDownloadsSymbol;
 extern NSString* const kOpenInDownloadsiOS14Symbol;
 extern NSString* const kExternalLinkSymbol;
+extern NSString* const kChevronDownSymbol;
 extern NSString* const kChevronForwardSymbol;
 extern NSString* const kGlobeAmericasSymbol;
 extern NSString* const kGlobeSymbol;
@@ -146,6 +147,8 @@ extern NSString* const kSunFillSymbol;
 extern NSString* const kCalendarSymbol;
 extern NSString* const kTabsSymbol;
 extern NSString* const kHighlighterSymbol;
+extern NSString* const kSquareOnSquareDashedSymbol;
+extern NSString* const kDocPlaintext;
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

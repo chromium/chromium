@@ -29,9 +29,10 @@ struct ComponentAuctionModifiedBidParams {
   // BidderWorkletBid::ad.
   string ad;
 
-  // Bid value to sent to the top-level seller seller in place of
+  // Bid value and currency to send to the top-level seller seller in place of
   // BidderWorkletBid::bid. Only valid if `has_bid` is true.
   double bid;
+  string bid_currency; // currency code or blink::kUnspecifiedAdCurrency.
 
   // True to indicate that `bid` has been populated.
   // TODO(https://crbug.com/657632): Update when optional doubles are supported.
@@ -144,7 +145,10 @@ interface SellerWorklet {
   // `ad_metadata_json` JSON representation of the `ad` value returned by the
   //  BidderWorklet that offered the bid.
   //
-  // `bid` The numeric value of the bid offered by the BidWorklet.
+  // `bid` The numeric value of the bid offered by the BidderWorklet.
+  //
+  // `bid_currency` Currency of the bid offered by the BidderWorklet.
+  //  Either a currency code or blink::kUnspecifiedAdCurrency.
   //
   // `auction_ad_config_non_shared_params` Values in an AuctionConfig that can
   //  vary between auctions that can share a SellerWorklet.
@@ -168,6 +172,10 @@ interface SellerWorklet {
   //  top-level seller. If this is a top-level seller scoring a bid from a
   //  component auction, it's the seller in the component auction.
   //  Null if this is the top-level seller scoring its own bids.
+  //
+  // `component_expect_bid_currency` If this is a component auction, specifies
+  //  what currency the top-level auction expects it to provide. Otherwise,
+  //  it's nullopt.
   //
   // `browser_signal_interest_group_owner` The owner of the interest group
   //  that offered the bid.
@@ -194,11 +202,13 @@ interface SellerWorklet {
   // OnScoreAdComplete() method will be invoked with the results.
   ScoreAd(string ad_metadata_json,
           double bid,
+          string bid_currency,
           blink.mojom.AuctionAdConfigNonSharedParams
               auction_ad_config_non_shared_params,
           url.mojom.Url? direct_from_seller_seller_signals,
           url.mojom.Url? direct_from_seller_auction_signals,
           ComponentAuctionOtherSeller? browser_signals_other_seller,
+          string? component_expect_bid_currency,
           url.mojom.Origin browser_signal_interest_group_owner,
           url.mojom.Url browser_signal_render_url,
           array<url.mojom.Url> browser_signal_ad_component_render_urls,

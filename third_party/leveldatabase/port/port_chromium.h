@@ -71,6 +71,20 @@ bool Snappy_GetUncompressedLength(const char* input, size_t length,
 bool Snappy_Uncompress(const char* input_data, size_t input_length,
                        char* output);
 
+inline bool Zstd_Compress(const char* input, size_t length,
+                          std::string* output) {
+  return false;
+}
+
+inline bool Zstd_GetUncompressedLength(const char* input, size_t length,
+                                       size_t* result) {
+  return false;
+}
+
+inline bool Zstd_Uncompress(const char* input, size_t length, char* output) {
+  return false;
+}
+
 inline bool GetHeapProfile(void (*func)(void*, const char*, int), void* arg) {
   return false;
 }

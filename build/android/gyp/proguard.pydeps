@@ -3,10 +3,10 @@
 ../../action_helpers.py
 ../../gn_helpers.py
 ../../print_python_deps.py
+../../zip_helpers.py
 dex.py
 proguard.py
 util/__init__.py
 util/build_utils.py
 util/diff_utils.py
 util/md5_check.py
-util/zipalign.py

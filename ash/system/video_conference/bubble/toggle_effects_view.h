@@ -24,8 +24,7 @@ class ToggleEffectsView : public views::View {
  public:
   METADATA_HEADER(ToggleEffectsView);
 
-  ToggleEffectsView(VideoConferenceTrayController* controller,
-                    const int parent_width);
+  explicit ToggleEffectsView(VideoConferenceTrayController* controller);
   ToggleEffectsView(const ToggleEffectsView&) = delete;
   ToggleEffectsView& operator=(const ToggleEffectsView&) = delete;
   ~ToggleEffectsView() override = default;

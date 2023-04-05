@@ -117,48 +117,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="BackgroundMode.BackgroundApplicationsCount" units="units"
-    expires_after="2021-09-12">
-  <obsolete>
-    Code removed 2022/12.
-  </obsolete>
-  <owner>atwilson@chromium.org</owner>
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <summary>
-    The number of background applications (extensions) for a profile that were
-    loaded after the profile was registered with the BackgroundModeManager.
-  </summary>
-</histogram>
-
-<histogram name="BackgroundMode.BackgroundModeEnabledPrefChanged"
-    enum="BooleanEnabled" expires_after="2020-09-01">
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Logged if BackgroundModeManager is running and listening for pref changes,
-    and the pref does indeed change. The new value is logged.
-  </summary>
-</histogram>
-
-<histogram name="BackgroundMode.MenuItemClick" enum="BackgroundModeMenuItem"
-    expires_after="2020-09-01">
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Logged when an item in the system tray icon menu is clicked.
-  </summary>
-</histogram>
-
-<histogram name="BackgroundMode.OnStartup.AutoLaunchState"
-    enum="AutoLaunchState" expires_after="2021-10-04">
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <summary>
-    Logged during BackgroundModeManager's initialization. Indicates the
-    AutoLaunchState the current browser process was launched in.
-  </summary>
-</histogram>
-
 <histogram name="BackgroundMode.OnStartup.IsBackgroundModePrefEnabled"
     enum="BooleanEnabled" expires_after="2022-04-17">
   <owner>mvanouwerkerk@chromium.org</owner>

@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -1427,6 +1428,25 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
                     POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                     base::Value(container.metrics_enabled()), nullptr);
     }
+  }
+
+  if (policy.has_device_login_screen_geolocation_access_level() &&
+      policy.device_login_screen_geolocation_access_level()
+          .has_geolocation_access_level()) {
+    std::unique_ptr<base::Value> value(
+        DecodeIntegerValue(policy.device_login_screen_geolocation_access_level()
+                               .geolocation_access_level()));
+    policies->Set(key::kDeviceLoginScreenGeolocationAccessLevel,
+                  POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                  POLICY_SOURCE_CLOUD, std::move(*value), nullptr);
+  } else {
+    // Set policy default to kAllowed if the policy is unset.
+    policies->Set(
+        key::kDeviceLoginScreenGeolocationAccessLevel, POLICY_LEVEL_MANDATORY,
+        POLICY_SCOPE_MACHINE, POLICY_SOURCE_ENTERPRISE_DEFAULT,
+        base::Value(enterprise_management::
+                        DeviceLoginScreenGeolocationAccessLevelProto::ALLOWED),
+        nullptr);
   }
 
   if (policy.has_system_timezone()) {

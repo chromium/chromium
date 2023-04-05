@@ -96,11 +96,13 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
   void ScoreAd(
       const std::string& ad_metadata_json,
       double bid,
+      const std::string& bid_currency,
       const blink::AuctionConfig::NonSharedParams&
           auction_ad_config_non_shared_params,
       const absl::optional<GURL>& direct_from_seller_seller_signals,
       const absl::optional<GURL>& direct_from_seller_auction_signals,
       mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
+      const absl::optional<std::string>& component_expect_bid_currency,
       const url::Origin& browser_signal_interest_group_owner,
       const GURL& browser_signal_render_url,
       const std::vector<GURL>& browser_signal_ad_components,
@@ -146,8 +148,10 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     // safe to access after that happens.
     std::string ad_metadata_json;
     double bid;
+    std::string bid_currency;
     blink::AuctionConfig::NonSharedParams auction_ad_config_non_shared_params;
     mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller;
+    absl::optional<std::string> component_expect_bid_currency;
     url::Origin browser_signal_interest_group_owner;
     GURL browser_signal_render_url;
     // While these are URLs, it's more concenient to store these as strings
@@ -278,6 +282,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     void ScoreAd(
         const std::string& ad_metadata_json,
         double bid,
+        const std::string& bid_currency,
         const blink::AuctionConfig::NonSharedParams&
             auction_ad_config_non_shared_params,
         DirectFromSellerSignalsRequester::Result
@@ -286,6 +291,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
             direct_from_seller_result_auction_signals,
         scoped_refptr<TrustedSignals::Result> trusted_scoring_signals,
         mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
+        const absl::optional<std::string>& component_expect_bid_currency,
         const url::Origin& browser_signal_interest_group_owner,
         const GURL& browser_signal_render_url,
         const std::vector<std::string>& browser_signal_ad_components,

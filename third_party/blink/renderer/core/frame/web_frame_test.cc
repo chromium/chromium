@@ -164,6 +164,7 @@
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/inspector/dev_tools_emulator.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
+#include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
@@ -6308,8 +6309,8 @@ TEST_F(WebFrameTest, SmartClipData) {
       "font-family: myahem; font-size: 8px; font-style: normal; "
       "font-variant-ligatures: normal; font-variant-caps: normal; font-weight: "
       "400; letter-spacing: normal; orphans: 2; text-align: start; "
-      "text-indent: 0px; text-transform: none; white-space: normal; widows: 2; "
-      "word-spacing: 0px; -webkit-text-stroke-width: 0px; "
+      "text-indent: 0px; text-transform: none; widows: 2; "
+      "word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; "
       "text-decoration-thickness: initial; text-decoration-style: initial; "
       "text-decoration-color: initial;\">Air conditioner</div><div id=\"div5\" "
       "style=\"padding: 10px; margin: 10px; border: 2px solid skyblue; float: "
@@ -6317,8 +6318,9 @@ TEST_F(WebFrameTest, SmartClipData) {
       "myahem; font-size: 8px; font-style: normal; font-variant-ligatures: "
       "normal; font-variant-caps: normal; font-weight: 400; letter-spacing: "
       "normal; orphans: 2; text-align: start; text-indent: 0px; "
-      "text-transform: none; white-space: normal; widows: 2; word-spacing: "
-      "0px; -webkit-text-stroke-width: 0px; text-decoration-thickness: "
+      "text-transform: none; widows: 2; word-spacing: 0px; "
+      "-webkit-text-stroke-width: 0px; white-space: normal; "
+      "text-decoration-thickness: "
       "initial; text-decoration-style: initial; text-decoration-color: "
       "initial;\">Price 10,000,000won</div>";
   String clip_text;
@@ -6334,8 +6336,8 @@ TEST_F(WebFrameTest, SmartClipData) {
   gfx::Rect crop_rect(300, 125, 152, 50);
   frame->GetFrame()->ExtractSmartClipDataInternal(crop_rect, clip_text,
                                                   clip_html, clip_rect);
-  EXPECT_EQ(kExpectedClipText, clip_text);
-  EXPECT_EQ(kExpectedClipHtml, clip_html);
+  EXPECT_EQ(String(kExpectedClipText), clip_text);
+  EXPECT_EQ(String(kExpectedClipHtml), clip_html);
 }
 
 TEST_F(WebFrameTest, SmartClipDataWithPinchZoom) {
@@ -6346,8 +6348,8 @@ TEST_F(WebFrameTest, SmartClipDataWithPinchZoom) {
       "font-family: myahem; font-size: 8px; font-style: normal; "
       "font-variant-ligatures: normal; font-variant-caps: normal; font-weight: "
       "400; letter-spacing: normal; orphans: 2; text-align: start; "
-      "text-indent: 0px; text-transform: none; white-space: normal; widows: 2; "
-      "word-spacing: 0px; -webkit-text-stroke-width: 0px; "
+      "text-indent: 0px; text-transform: none; widows: 2; "
+      "word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; "
       "text-decoration-thickness: initial; text-decoration-style: initial; "
       "text-decoration-color: initial;\">Air conditioner</div><div id=\"div5\" "
       "style=\"padding: 10px; margin: 10px; border: 2px solid skyblue; float: "
@@ -6355,8 +6357,9 @@ TEST_F(WebFrameTest, SmartClipDataWithPinchZoom) {
       "myahem; font-size: 8px; font-style: normal; font-variant-ligatures: "
       "normal; font-variant-caps: normal; font-weight: 400; letter-spacing: "
       "normal; orphans: 2; text-align: start; text-indent: 0px; "
-      "text-transform: none; white-space: normal; widows: 2; word-spacing: "
-      "0px; -webkit-text-stroke-width: 0px; text-decoration-thickness: "
+      "text-transform: none; widows: 2; word-spacing: 0px; "
+      "-webkit-text-stroke-width: 0px; white-space: normal; "
+      "text-decoration-thickness: "
       "initial; text-decoration-style: initial; text-decoration-color: "
       "initial;\">Price 10,000,000won</div>";
   String clip_text;
@@ -6374,8 +6377,8 @@ TEST_F(WebFrameTest, SmartClipDataWithPinchZoom) {
   gfx::Rect crop_rect(200, 38, 228, 75);
   frame->GetFrame()->ExtractSmartClipDataInternal(crop_rect, clip_text,
                                                   clip_html, clip_rect);
-  EXPECT_EQ(kExpectedClipText, clip_text);
-  EXPECT_EQ(kExpectedClipHtml, clip_html);
+  EXPECT_EQ(String(kExpectedClipText), clip_text);
+  EXPECT_EQ(String(kExpectedClipHtml), clip_html);
 }
 
 TEST_F(WebFrameTest, SmartClipReturnsEmptyStringsWhenUserSelectIsNone) {
@@ -8925,44 +8928,6 @@ TEST_F(WebFrameTest, FullscreenFrameSet) {
   auto* fullscreen_layout_object = To<LayoutBox>(frameset->GetLayoutObject());
   ASSERT_TRUE(fullscreen_layout_object);
   EXPECT_EQ(fullscreen_layout_object->Parent(), document->GetLayoutView());
-}
-
-TEST_F(WebFrameTest, LayoutBlockPercentHeightDescendants) {
-  RegisterMockedHttpURLLoad("percent-height-descendants.html");
-  frame_test_helpers::WebViewHelper web_view_helper;
-  web_view_helper.InitializeAndLoad(base_url_ +
-                                    "percent-height-descendants.html");
-
-  WebViewImpl* web_view = web_view_helper.GetWebView();
-  web_view_helper.Resize(gfx::Size(800, 800));
-  UpdateAllLifecyclePhases(web_view);
-
-  Document* document = web_view->MainFrameImpl()->GetFrame()->GetDocument();
-  LayoutBlock* container =
-      To<LayoutBlock>(document->getElementById("container")->GetLayoutObject());
-  auto* percent_height_in_anonymous =
-      To<LayoutBox>(document->getElementById("percent-height-in-anonymous")
-                        ->GetLayoutObject());
-  auto* percent_height_direct_child =
-      To<LayoutBox>(document->getElementById("percent-height-direct-child")
-                        ->GetLayoutObject());
-
-  EXPECT_TRUE(
-      container->HasPercentHeightDescendant(percent_height_in_anonymous));
-  EXPECT_TRUE(
-      container->HasPercentHeightDescendant(percent_height_direct_child));
-
-  ASSERT_TRUE(container->PercentHeightDescendants());
-  ASSERT_TRUE(container->HasPercentHeightDescendants());
-  EXPECT_EQ(2U, container->PercentHeightDescendants()->size());
-  EXPECT_TRUE(container->PercentHeightDescendants()->Contains(
-      percent_height_in_anonymous));
-  EXPECT_TRUE(container->PercentHeightDescendants()->Contains(
-      percent_height_direct_child));
-
-  LayoutBlock* anonymous_block = percent_height_in_anonymous->ContainingBlock();
-  EXPECT_TRUE(anonymous_block->IsAnonymous());
-  EXPECT_FALSE(anonymous_block->HasPercentHeightDescendants());
 }
 
 TEST_F(WebFrameTest, HasVisibleContentOnVisibleFrames) {
@@ -14128,6 +14093,7 @@ class TestFocusedElementChangedLocalFrameHost : public FakeLocalFrameHost {
 
   // FakeLocalFrameHost:
   void FocusedElementChanged(bool is_editable_element,
+                             bool is_richly_editable_element,
                              const gfx::Rect& bounds_in_frame_widget,
                              blink::mojom::FocusType focus_type) override {
     did_notify_ = true;

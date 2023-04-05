@@ -106,18 +106,17 @@ void SendOpenUrlToAppController(const GURL& url) {
   [NSApp.delegate application:NSApp openURLs:@[ net::NSURLWithGURL(url) ]];
 }
 
-Profile* CreateAndWaitForProfile(const base::FilePath& profile_dir) {
-  Profile* profile = profiles::testing::CreateProfileSync(
+Profile& CreateAndWaitForProfile(const base::FilePath& profile_dir) {
+  Profile& profile = profiles::testing::CreateProfileSync(
       g_browser_process->profile_manager(), profile_dir);
-  EXPECT_TRUE(profile);
   return profile;
 }
 
-Profile* CreateAndWaitForSystemProfile() {
-  return CreateAndWaitForProfile(ProfileManager::GetSystemProfilePath());
+void CreateAndWaitForSystemProfile() {
+  CreateAndWaitForProfile(ProfileManager::GetSystemProfilePath());
 }
 
-Profile* CreateAndWaitForGuestProfile() {
+Profile& CreateAndWaitForGuestProfile() {
   return CreateAndWaitForProfile(ProfileManager::GetGuestProfilePath());
 }
 
@@ -127,18 +126,18 @@ void SetGuestProfileAsLastProfile() {
   ASSERT_TRUE(ac);
 
   // Create the guest profile, and set it as the last used profile.
-  Profile* guest_profile = CreateAndWaitForGuestProfile();
-  [ac setLastProfile:guest_profile];
+  Profile& guest_profile = CreateAndWaitForGuestProfile();
+  [ac setLastProfile:&guest_profile];
 
   Profile* profile = [ac lastProfileIfLoaded];
   ASSERT_TRUE(profile);
-  EXPECT_EQ(guest_profile->GetPath(), profile->GetPath());
+  EXPECT_EQ(guest_profile.GetPath(), profile->GetPath());
   EXPECT_TRUE(profile->IsGuestSession());
 
   // Also set the last used profile path preference. If the profile does need to
   // be read from disk for some reason this acts as a backstop.
   g_browser_process->local_state()->SetString(
-      prefs::kProfileLastUsed, guest_profile->GetPath().BaseName().value());
+      prefs::kProfileLastUsed, guest_profile.GetPath().BaseName().value());
 }
 
 // Key for ProfileDestroyedData user data.
@@ -280,16 +279,16 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
   EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
 
   // Create a new profile and activate it.
-  Profile* profile2 = CreateAndWaitForProfile(
+  Profile& profile2 = CreateAndWaitForProfile(
       profile_manager->user_data_dir().AppendASCII("Profile 2"));
-  Browser* browser2 = CreateBrowser(profile2);
+  Browser* browser2 = CreateBrowser(&profile2);
   // This should not crash.
   [[NSNotificationCenter defaultCenter]
       postNotificationName:NSWindowDidBecomeMainNotification
                     object:browser2->window()
                                ->GetNativeWindow()
                                .GetNativeNSWindow()];
-  ASSERT_EQ(profile2, [ac lastProfileIfLoaded]);
+  ASSERT_EQ(&profile2, [ac lastProfileIfLoaded]);
 }
 
 class AppControllerKeepAliveBrowserTest : public InProcessBrowserTest {
@@ -868,9 +867,8 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
   // Create profile 2.
   base::FilePath profile2_path =
       profile_manager->GenerateNextProfileDirectoryPath();
-  Profile* profile2 =
+  Profile& profile2 =
       profiles::testing::CreateProfileSync(profile_manager, profile2_path);
-  ASSERT_TRUE(profile2);
 
   // Load profile1's History Service backend so it will be assigned to the
   // HistoryMenuBridge when setLastProfile is called, or else this test will
@@ -890,27 +888,25 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
   // Load profile2's History Service backend so it will be assigned to the
   // HistoryMenuBridge when setLastProfile is called, or else this test will
   // fail flaky.
-  ui_test_utils::WaitForHistoryToLoad(
-      HistoryServiceFactory::GetForProfile(profile2,
-                                           ServiceAccessType::EXPLICIT_ACCESS));
+  ui_test_utils::WaitForHistoryToLoad(HistoryServiceFactory::GetForProfile(
+      &profile2, ServiceAccessType::EXPLICIT_ACCESS));
   // Switch the controller to profile2.
-  [ac setLastProfile:profile2];
+  [ac setLastProfile:&profile2];
   base::RunLoop().RunUntilIdle();
 
   // Verify the controller's History Menu has changed.
   EXPECT_TRUE([ac historyMenuBridge]->service());
   EXPECT_EQ([ac historyMenuBridge]->service(),
-      HistoryServiceFactory::GetForProfile(profile2,
-                                           ServiceAccessType::EXPLICIT_ACCESS));
-  EXPECT_NE(
-      HistoryServiceFactory::GetForProfile(profile1,
-                                           ServiceAccessType::EXPLICIT_ACCESS),
-      HistoryServiceFactory::GetForProfile(profile2,
-                                           ServiceAccessType::EXPLICIT_ACCESS));
+            HistoryServiceFactory::GetForProfile(
+                &profile2, ServiceAccessType::EXPLICIT_ACCESS));
+  EXPECT_NE(HistoryServiceFactory::GetForProfile(
+                profile1, ServiceAccessType::EXPLICIT_ACCESS),
+            HistoryServiceFactory::GetForProfile(
+                &profile2, ServiceAccessType::EXPLICIT_ACCESS));
 
   // Delete profile2.
   profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
-      profile2->GetPath(), base::DoNothing(),
+      profile2.GetPath(), base::DoNothing(),
       ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
   content::RunAllTasksUntilIdle();
 

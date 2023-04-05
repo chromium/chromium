@@ -20,6 +20,7 @@
 #import "base/task/single_thread_task_runner.h"
 #import "base/test/gmock_callback_support.h"
 #import "base/test/ios/wait_util.h"
+#import "components/sessions/core/session_id.h"
 #import "ios/net/protocol_handler_util.h"
 #import "ios/testing/embedded_test_server_handlers.h"
 #import "ios/web/common/features.h"
@@ -85,6 +86,7 @@ const char kTestSessionStoragePageText[] = "pony";
 CRWSessionStorage* GetTestSessionStorage(const GURL& testUrl) {
   CRWSessionStorage* result = [[CRWSessionStorage alloc] init];
   result.stableIdentifier = [[NSUUID UUID] UUIDString];
+  result.uniqueIdentifier = SessionID::NewUnique();
   result.lastCommittedItemIndex = 0;
   CRWNavigationItemStorage* item = [[CRWNavigationItemStorage alloc] init];
   [item setURL:testUrl];

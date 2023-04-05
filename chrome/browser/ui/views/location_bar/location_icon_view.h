@@ -127,6 +127,9 @@ class LocationIconView : public IconLabelBubbleView {
   // Updates Icon based on the current state and theme.
   void UpdateIcon();
 
+  // Updates background based on the current state and theme.
+  void UpdateBackground();
+
   // Handles the arrival of an asynchronously fetched icon.
   void OnIconFetched(const gfx::Image& image);
 

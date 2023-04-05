@@ -92,11 +92,15 @@ void SecurityContext::SetSecurityOrigin(
         is_worker_transition_to_opaque);
   security_origin_ = std::move(security_origin);
 
-  if (!security_origin_->IsPotentiallyTrustworthy()) {
+  if (!security_origin_->IsPotentiallyTrustworthy() &&
+      !is_worker_loaded_from_data_url_) {
     secure_context_mode_ = SecureContextMode::kInsecureContext;
     secure_context_explanation_ = SecureContextModeExplanation::kInsecureScheme;
   } else if (SchemeRegistry::SchemeShouldBypassSecureContextCheck(
                  security_origin_->Protocol())) {
+    // data: URL has opaque origin so security_origin's protocol will be empty
+    // and should never be bypassed.
+    CHECK(!is_worker_loaded_from_data_url_);
     secure_context_mode_ = SecureContextMode::kSecureContext;
     secure_context_explanation_ = SecureContextModeExplanation::kSecure;
   } else if (execution_context_) {

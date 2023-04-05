@@ -13,6 +13,7 @@ import zipfile
 
 from util import build_utils
 import action_helpers  # build_utils adds //build to sys.path.
+import zip_helpers
 
 
 def _ParsePackageName(data):
@@ -57,7 +58,7 @@ def main(args):
         zip_path = posixpath.join(
             package_name.replace('.', '/'),
             os.path.splitext(os.path.basename(template))[0]) + '.java'
-        build_utils.AddToZipHermetic(z, zip_path, data=data)
+        zip_helpers.add_to_zip_hermetic(z, zip_path, data=data)
 
 
 if __name__ == '__main__':

@@ -1,0 +1,31 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/build_webui.gni")
+
+build_webui("build") {
+  grd_prefix = "settings_prefs"
+
+  non_web_component_files = [
+    "prefs_mixin.ts",
+    "prefs.ts",
+    "prefs_types.ts",
+    "pref_util.ts",
+  ]
+
+  ts_definitions = [ "//tools/typescript/definitions/settings_private.d.ts" ]
+  ts_composite = true
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
+  ]
+
+  ts_tsconfig_base = "tsconfig_base.json"
+  ts_out_dir =
+      "$root_gen_dir/ui/webui/resources/tsc/cr_components/settings_prefs"
+
+  generate_grdp = true
+  grd_resource_path_prefix = rebase_path(".", "//ui/webui/resources")
+}

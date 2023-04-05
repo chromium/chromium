@@ -45,8 +45,6 @@ import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
 import org.chromium.chrome.browser.history.HistoryActivity;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersCoordinator;
-import org.chromium.chrome.browser.omnibox.action.OmniboxActionType;
-import org.chromium.chrome.browser.omnibox.action.OmniboxPedalType;
 import org.chromium.chrome.browser.omnibox.suggestions.ActionChipsDelegate;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
@@ -56,7 +54,9 @@ import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.action.HistoryClustersAction;
 import org.chromium.components.omnibox.action.OmniboxAction;
+import org.chromium.components.omnibox.action.OmniboxActionType;
 import org.chromium.components.omnibox.action.OmniboxPedal;
+import org.chromium.components.omnibox.action.OmniboxPedalType;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.Set;
@@ -250,7 +250,7 @@ public class ActionChipsDelegateImplUnitTest {
 
         var intent = mShadowActivity.getNextStartedActivity();
         assertEquals(Intent.ACTION_VIEW, intent.getAction());
-        assertEquals(UrlConstants.CHROME_DINO_URL + "/", intent.getDataString());
+        assertEquals(UrlConstants.CHROME_DINO_URL, intent.getDataString());
         assertTrue(
                 intent.getBooleanExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, false));
 

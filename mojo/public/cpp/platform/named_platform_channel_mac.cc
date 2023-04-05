@@ -5,14 +5,20 @@
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 
 #include <mach/port.h>
-#include <servers/bootstrap.h>
 
 #include "base/mac/foundation_util.h"
 #include "base/mac/mach_logging.h"
 #include "base/mac/scoped_mach_port.h"
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
+#include "build/blink_buildflags.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
+
+#if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK)
+#include "base/ios/sim_header_shims.h"
+#else
+#include <servers/bootstrap.h>
+#endif  // BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK)
 
 namespace mojo {
 

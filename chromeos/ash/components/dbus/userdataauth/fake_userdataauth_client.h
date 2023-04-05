@@ -134,6 +134,10 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     std::string AddSession(const cryptohome::AccountIdentifier& account_id,
                            bool authenticated);
 
+    // Checks that there is one active auth session and returns whether session
+    // is ephemeral.
+    bool IsCurrentSessionEphemeral();
+
     void DestroySessions();
 
     void SendLegacyFPAuthSignal(user_data_auth::FingerprintScanResult result);

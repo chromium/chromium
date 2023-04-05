@@ -33,7 +33,8 @@ class GLTextureImageBacking : public ClearTrackingSharedImageBacking {
       const std::vector<GLCommonImageBackingFactory::FormatInfo>& format_info,
       base::span<const uint8_t> pixel_data,
       gl::ProgressReporter* progress_reporter,
-      bool framebuffer_attachment_angle);
+      bool framebuffer_attachment_angle,
+      const bool disable_tex_storage);
 
  private:
   // SharedImageBacking:
@@ -52,7 +53,7 @@ class GLTextureImageBacking : public ClearTrackingSharedImageBacking {
       WGPUDevice device,
       WGPUBackendType backend_type,
       std::vector<WGPUTextureFormat> view_formats) final;
-  std::unique_ptr<SkiaImageRepresentation> ProduceSkia(
+  std::unique_ptr<SkiaImageRepresentation> ProduceSkiaGanesh(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;

@@ -101,24 +101,6 @@ String ViewTransitionStyleBuilder::AddKeyframes(
   return keyframe_name;
 }
 
-void ViewTransitionStyleBuilder::AddIncomingObjectViewBox(const String& tag,
-                                                          const String& value) {
-  AddObjectViewBox(kNewImageTagName, tag, value);
-}
-
-void ViewTransitionStyleBuilder::AddOutgoingObjectViewBox(const String& tag,
-                                                          const String& value) {
-  AddObjectViewBox(kOldImageTagName, tag, value);
-}
-
-void ViewTransitionStyleBuilder::AddObjectViewBox(const String& selector,
-                                                  const String& tag,
-                                                  const String& value) {
-  StringBuilder rule_builder;
-  rule_builder.AppendFormat("object-view-box: %s", value.Utf8().c_str());
-  AddRules(selector, tag, rule_builder.ReleaseString());
-}
-
 void ViewTransitionStyleBuilder::AddContainerStyles(const String& tag,
                                                     const String& rules) {
   AddRules(kGroupTagName, tag, rules);

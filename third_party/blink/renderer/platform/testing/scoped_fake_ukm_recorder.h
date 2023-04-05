@@ -17,7 +17,8 @@ namespace blink {
 // TestUkmRecorder instance it owns and make it available for validation.
 // Consumers of this class should make sure to instantiate it before any other
 // instance takes a dependency on that mojo interface.
-class ScopedFakeUkmRecorder : public ukm::mojom::UkmRecorderInterface {
+class ScopedFakeUkmRecorder : public ukm::mojom::UkmRecorderInterface,
+                              public ukm::mojom::UkmRecorderFactory {
  public:
   explicit ScopedFakeUkmRecorder();
   ~ScopedFakeUkmRecorder() override;
@@ -26,13 +27,21 @@ class ScopedFakeUkmRecorder : public ukm::mojom::UkmRecorderInterface {
   void AddEntry(ukm::mojom::UkmEntryPtr entry) override;
   void UpdateSourceURL(int64_t source_id, const std::string& url) override;
 
+  // ukm::mojom::UkmRecorderFactory:
+  void CreateUkmRecorder(
+      mojo::PendingReceiver<ukm::mojom::UkmRecorderInterface> receiver,
+      mojo::PendingRemote<ukm::mojom::UkmRecorderClientInterface> client_remote)
+      override;
+
   void ResetRecorder();
   void SetHandle(mojo::ScopedMessagePipeHandle handle);
 
   ukm::TestUkmRecorder* recorder() { return recorder_.get(); }
 
  private:
-  std::unique_ptr<mojo::Receiver<ukm::mojom::UkmRecorderInterface>> receiver_;
+  std::unique_ptr<mojo::Receiver<ukm::mojom::UkmRecorderFactory>> receiver_;
+  std::unique_ptr<mojo::Receiver<ukm::mojom::UkmRecorderInterface>>
+      interface_receiver_;
   std::unique_ptr<ukm::TestUkmRecorder> recorder_;
 };
 

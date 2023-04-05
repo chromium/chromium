@@ -30,8 +30,6 @@ namespace {
 
 const base::Time kTestMhtmlCreationTime =
     base::Time::FromJsTime(1522339419011L);
-const char kLoadResultUmaNameAsync[] =
-    "OfflinePages.MhtmlLoadResult.async_loading";
 
 const char kTestHeader[] = "reason=download";
 
@@ -246,12 +244,9 @@ TEST_F(OfflinePageTabHelperTest,
 TEST_F(OfflinePageTabHelperTest, TestNotifyMhtmlPageLoadAttempted_Success) {
   GURL mhtml_url("https://www.example.com");
 
-  // Simulate navigation and check UMA reporting.
-  base::HistogramTester histogram_tester;
+  // Simulate navigation
   SimulateOfflinePageLoad(mhtml_url, kTestMhtmlCreationTime,
                           MHTMLLoadResult::kSuccess);
-  histogram_tester.ExpectUniqueSample(kLoadResultUmaNameAsync,
-                                      MHTMLLoadResult::kSuccess, 1);
 
   EXPECT_EQ(OfflinePageTrustedState::TRUSTED_AS_IN_INTERNAL_DIR,
             tab_helper()->trusted_state());
@@ -272,8 +267,6 @@ TEST_F(OfflinePageTabHelperTest,
   base::HistogramTester histogram_tester;
   SimulateOfflinePageLoad(mhtml_url, kTestMhtmlCreationTime,
                           MHTMLLoadResult::kUrlSchemeNotAllowed);
-  histogram_tester.ExpectUniqueSample(kLoadResultUmaNameAsync,
-                                      MHTMLLoadResult::kUrlSchemeNotAllowed, 1);
 
   EXPECT_EQ(OfflinePageTrustedState::TRUSTED_AS_IN_INTERNAL_DIR,
             tab_helper()->trusted_state());
@@ -286,45 +279,8 @@ TEST_F(OfflinePageTabHelperTest,
   EXPECT_EQ(kTestMhtmlCreationTime, offline_page->creation_time);
 }
 
-TEST_F(OfflinePageTabHelperTest,
-       TestNotifyMhtmlPageLoadAttempted_MhtmlEmptyFile) {
-  // Test empty file. For now, there's no need to actually load an empty file
-  // since we're calling NotifyMhtmlPageLoadAttempted directly with
-  // MHTMLLoadResult::kEmptyFile.
-  GURL mhtml_url("https://www.example.com");
-
-  base::HistogramTester histogram_tester;
-  SimulateOfflinePageLoad(mhtml_url, kTestMhtmlCreationTime,
-                          MHTMLLoadResult::kEmptyFile);
-  histogram_tester.ExpectUniqueSample(kLoadResultUmaNameAsync,
-                                      MHTMLLoadResult::kEmptyFile, 1);
-}
-
-TEST_F(OfflinePageTabHelperTest,
-       TestNotifyMhtmlPageLoadAttempted_MhtmlInvalidArchive) {
-  GURL mhtml_url("https://www.example.com");
-
-  base::HistogramTester histogram_tester;
-  SimulateOfflinePageLoad(mhtml_url, kTestMhtmlCreationTime,
-                          MHTMLLoadResult::kInvalidArchive);
-  histogram_tester.ExpectUniqueSample(kLoadResultUmaNameAsync,
-                                      MHTMLLoadResult::kInvalidArchive, 1);
-}
-
-TEST_F(OfflinePageTabHelperTest,
-       TestNotifyMhtmlPageLoadAttempted_MhtmlMissingMainResource) {
-  GURL mhtml_url("https://www.example.com");
-
-  base::HistogramTester histogram_tester;
-  SimulateOfflinePageLoad(mhtml_url, kTestMhtmlCreationTime,
-                          MHTMLLoadResult::kMissingMainResource);
-  histogram_tester.ExpectUniqueSample(kLoadResultUmaNameAsync,
-                                      MHTMLLoadResult::kMissingMainResource, 1);
-}
-
 TEST_F(OfflinePageTabHelperTest, TestNotifyMhtmlPageLoadAttempted_Untrusted) {
   GURL mhtml_url("https://www.example.com");
-  base::HistogramTester histogram_tester;
 
   tab_helper()->SetCurrentTargetFrameForTest(
       web_contents()->GetPrimaryMainFrame());
@@ -345,10 +301,6 @@ TEST_F(OfflinePageTabHelperTest, TestNotifyMhtmlPageLoadAttempted_Untrusted) {
   tab_helper()->NotifyMhtmlPageLoadAttempted(MHTMLLoadResult::kSuccess,
                                              mhtml_url, kTestMhtmlCreationTime);
   navigation_simulator()->Commit();
-
-  // Check histogram
-  histogram_tester.ExpectUniqueSample("OfflinePages.MhtmlLoadResultUntrusted",
-                                      MHTMLLoadResult::kSuccess, 1);
 }
 
 TEST_F(OfflinePageTabHelperTest, AbortedNavigationDoesNotResetOfflineInfo) {

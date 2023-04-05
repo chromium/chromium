@@ -294,11 +294,6 @@ class PLATFORM_EXPORT Color {
   // Access the color as though it were created using the hwb() syntax.
   void GetHWB(double& h, double& w, double& b) const;
 
-  // Transform to an SkColor. This will clamp to sRGB gamut and 8 bit precision.
-  // TODO(crbug.com/1308932): Remove this function, and replace its use with
-  // toSkColor4f.
-  SkColor ToSkColorDeprecated() const;
-
   Color Light() const;
   Color Dark() const;
 

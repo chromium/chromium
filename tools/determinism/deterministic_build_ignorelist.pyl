@@ -199,7 +199,7 @@
     'previous_version_mini_installer.exe',
 
     # These probably have mtimes in the zip headers and the scripts creating
-    # them probably should use build_utils.ZipDir() instead.
+    # them probably should use zip_helpers.zip_directory() instead.
     'mini_installer_tests.zip',
   ],
 }

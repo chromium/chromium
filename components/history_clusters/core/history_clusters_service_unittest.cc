@@ -136,7 +136,13 @@ class HistoryClustersServiceTestBase : public testing::Test {
  public:
   HistoryClustersServiceTestBase()
       : task_environment_(
-            base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME) {}
+            base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME) {
+    Config config;
+    // TODO(b/276488340): Update this test when non context clusterer code gets
+    //   cleaned up.
+    config.use_navigation_context_clusters = false;
+    SetConfigForTesting(config);
+  }
 
   void SetUp() override {
     CHECK(history_dir_.CreateUniqueTempDir());
@@ -444,6 +450,9 @@ class HistoryClustersServiceTest : public HistoryClustersServiceTestBase,
     scoped_feature_list_.InitAndEnableFeature(internal::kJourneys);
     Config config;
     config.persist_clusters_in_history_db = true;
+    // TODO(b/276488340): Update this test when non context clusterer code gets
+    //   cleaned up.
+    config.use_navigation_context_clusters = false;
     config.include_synced_visits = ExpectSyncedVisits();
     SetConfigForTesting(config);
   }
@@ -1425,6 +1434,9 @@ class HistoryClustersServiceMaxKeywordsTest
     // Set the max keyword phrases to 5.
     config_.is_journeys_enabled_no_locale_check = true;
     config_.max_keyword_phrases = 5;
+    // TODO(b/276488340): Update this test when non context clusterer code gets
+    //   cleaned up.
+    config_.use_navigation_context_clusters = false;
     SetConfigForTesting(config_);
   }
 
@@ -1508,6 +1520,9 @@ TEST_F(HistoryClustersServiceTestBase, UpdateClusters_Sparse) {
   // `persist_clusters_recluster_window_days`; i.e. no reclustering occurs.
   Config config;
   config.persist_clusters_in_history_db = true;
+  // TODO(b/276488340): Update this test when non context clusterer code gets
+  //   cleaned up.
+  config.use_navigation_context_clusters = false;
   config.max_persisted_clusters_to_fetch = 10;
   config.max_persisted_cluster_visits_to_fetch_soft_cap = 5;
   config.persist_clusters_recluster_window_days = 2;
@@ -1578,6 +1593,9 @@ TEST_F(HistoryClustersServiceTestBase, UpdateClusters_Reclustering) {
   // `persist_clusters_recluster_window_days`; i.e. reclustering occurs.
   Config config;
   config.persist_clusters_in_history_db = true;
+  // TODO(b/276488340): Update this test when non context clusterer code gets
+  //   cleaned up.
+  config.use_navigation_context_clusters = false;
   config.max_persisted_clusters_to_fetch = 10;
   config.max_persisted_cluster_visits_to_fetch_soft_cap = 5;
   config.persist_clusters_recluster_window_days = 1;
@@ -1725,6 +1743,9 @@ TEST_F(HistoryClustersServiceTestBase,
   // batch.
   Config config;
   config.persist_clusters_in_history_db = true;
+  // TODO(b/276488340): Update this test when non context clusterer code gets
+  //   cleaned up.
+  config.use_navigation_context_clusters = false;
   config.max_visits_to_cluster = 5;
   config.max_persisted_clusters_to_fetch = 100;
   config.max_persisted_cluster_visits_to_fetch_soft_cap = 100;
@@ -1790,6 +1811,9 @@ TEST_F(HistoryClustersServiceTestBase, UpdateClusters_PopularDay) {
   // Test the case there are more visits than `max_visits_to_cluster` in a day.
   Config config;
   config.persist_clusters_in_history_db = true;
+  // TODO(b/276488340): Update this test when non context clusterer code gets
+  //   cleaned up.
+  config.use_navigation_context_clusters = false;
   config.max_visits_to_cluster = 3;
   config.persist_clusters_recluster_window_days = 1;
   SetConfigForTesting(config);

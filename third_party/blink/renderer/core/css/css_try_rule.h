@@ -52,6 +52,13 @@ class CSSTryRule final : public CSSRule {
   mutable Member<StyleRuleCSSStyleDeclaration> properties_cssom_wrapper_;
 };
 
+template <>
+struct DowncastTraits<CSSTryRule> {
+  static bool AllowFrom(const CSSRule& rule) {
+    return rule.GetType() == CSSRule::kTryRule;
+  }
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_TRY_RULE_H_

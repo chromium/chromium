@@ -88,13 +88,6 @@ void CheckDuplicateOngoingDownloads(
           std::move(callback).Run(
               OfflinePageUtils::DuplicateCheckResult::NOT_FOUND);
         } else {
-          // Using CUSTOM_COUNTS instead of time-oriented histogram to record
-          // samples in seconds rather than milliseconds.
-          UMA_HISTOGRAM_CUSTOM_COUNTS(
-              "OfflinePages.DownloadRequestTimeSinceDuplicateRequested",
-              (OfflineTimeNow() - latest_request_time).InSeconds(),
-              base::Seconds(1).InSeconds(), base::Days(7).InSeconds(), 50);
-
           std::move(callback).Run(
               OfflinePageUtils::DuplicateCheckResult::DUPLICATE_REQUEST_FOUND);
         }
@@ -279,13 +272,6 @@ void OfflinePageUtils::CheckDuplicateDownloads(
       // Then check for ongoing downloads, that is, requests.
       CheckDuplicateOngoingDownloads(browser_context, url, std::move(callback));
     } else {
-      // Using CUSTOM_COUNTS instead of time-oriented histogram to record
-      // samples in seconds rather than milliseconds.
-      UMA_HISTOGRAM_CUSTOM_COUNTS(
-          "OfflinePages.DownloadRequestTimeSinceDuplicateSaved",
-          (OfflineTimeNow() - latest_saved_time).InSeconds(),
-          base::Seconds(1).InSeconds(), base::Days(7).InSeconds(), 50);
-
       std::move(callback).Run(DuplicateCheckResult::DUPLICATE_PAGE_FOUND);
     }
   };

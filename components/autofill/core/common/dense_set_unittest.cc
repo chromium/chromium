@@ -10,6 +10,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::testing::ElementsAre;
+
 namespace autofill {
 
 // Every DenseSet test other than the sizeof test should be run for both packed
@@ -26,27 +28,17 @@ TYPED_TEST_SUITE(DenseSetTest_PackedOrUnpacked, PackedAndNotPacked);
 
 TYPED_TEST(DenseSetTest_PackedOrUnpacked, size_of) {
   constexpr bool packed = TestFixture::packed;
-  // Non-packed bitmasks use std::bitset, whose size is unspecified but seems to
-  // be commonly a multiple of 64 bit.
-  EXPECT_EQ(sizeof(DenseSet<size_t, 0, packed>),
-            packed ? 1u : sizeof(std::bitset<1>));
-  EXPECT_EQ(sizeof(DenseSet<size_t, 7, packed>),
-            packed ? 1u : sizeof(std::bitset<8>));
-  EXPECT_EQ(sizeof(DenseSet<size_t, 8, packed>),
-            packed ? 2u : sizeof(std::bitset<9>));
-  EXPECT_EQ(sizeof(DenseSet<size_t, 15, packed>),
-            packed ? 2u : sizeof(std::bitset<16>));
-  EXPECT_EQ(sizeof(DenseSet<size_t, 16, packed>),
-            packed ? 4u : sizeof(std::bitset<17>));
-  EXPECT_EQ(sizeof(DenseSet<size_t, 31, packed>),
-            packed ? 4u : sizeof(std::bitset<32>));
-  EXPECT_EQ(sizeof(DenseSet<size_t, 32, packed>),
-            packed ? 8u : sizeof(std::bitset<33>));
-  EXPECT_EQ(sizeof(DenseSet<size_t, 63, packed>),
-            packed ? 8u : sizeof(std::bitset<64>));
-  EXPECT_EQ(sizeof(DenseSet<size_t, 64, packed>), sizeof(std::bitset<65>));
-  EXPECT_EQ(sizeof(DenseSet<size_t, 127, packed>), sizeof(std::bitset<128>));
-  EXPECT_EQ(sizeof(DenseSet<size_t, 255, packed>), sizeof(std::bitset<256>));
+  EXPECT_EQ(sizeof(DenseSet<size_t, 1, packed>), 1u);
+  EXPECT_EQ(sizeof(DenseSet<size_t, 7, packed>), 1u);
+  EXPECT_EQ(sizeof(DenseSet<size_t, 8, packed>), 2u);
+  EXPECT_EQ(sizeof(DenseSet<size_t, 15, packed>), 2u);
+  EXPECT_EQ(sizeof(DenseSet<size_t, 16, packed>), packed ? 3u : 4u);
+  EXPECT_EQ(sizeof(DenseSet<size_t, 31, packed>), 4u);
+  EXPECT_EQ(sizeof(DenseSet<size_t, 32, packed>), packed ? 5u : 8u);
+  EXPECT_EQ(sizeof(DenseSet<size_t, 63, packed>), packed ? 8u : 8u);
+  EXPECT_EQ(sizeof(DenseSet<size_t, 64, packed>), packed ? 9u : 16u);
+  EXPECT_EQ(sizeof(DenseSet<size_t, 127, packed>), packed ? 16u : 16u);
+  EXPECT_EQ(sizeof(DenseSet<size_t, 255, packed>), 32u);
 }
 
 TYPED_TEST(DenseSetTest_PackedOrUnpacked, initialization) {
@@ -123,17 +115,46 @@ TYPED_TEST(DenseSetTest_PackedOrUnpacked, initializer_list) {
   }
 }
 
-TYPED_TEST(DenseSetTest_PackedOrUnpacked, to_uint64) {
+TYPED_TEST(DenseSetTest_PackedOrUnpacked, data) {
   constexpr bool packed = TestFixture::packed;
   {
+    constexpr DenseSet<size_t, 23, packed> set{0, 1, 2, 3, 4, 20, 23};
+    if (packed) {
+      EXPECT_THAT(set.data(),
+                  ElementsAre((1ULL << 0) | (1ULL << 1) | (1ULL << 2) |
+                                  (1ULL << 3) | (1ULL << 4),
+                              0ULL, (1ULL << (20 - 16)) | (1ULL << (23 - 16))));
+    } else {
+      EXPECT_THAT(
+          set.data(),
+          ElementsAre((1ULL << 0) | (1ULL << 1) | (1ULL << 2) | (1ULL << 3) |
+                      (1ULL << 4) | (1ULL << 20) | (1ULL << 23)));
+    }
+  }
+  {
     constexpr DenseSet<size_t, 31, packed> set{0, 1, 2, 3, 4, 20, 31};
-    EXPECT_EQ(set.to_uint64(), (1ULL << 0) | (1ULL << 1) | (1ULL << 2) |
-                                   (1ULL << 3) | (1ULL << 4) | (1ULL << 20) |
-                                   (1ULL << 31));
+    if (packed) {
+      EXPECT_THAT(set.data(),
+                  ElementsAre((1ULL << 0) | (1ULL << 1) | (1ULL << 2) |
+                                  (1ULL << 3) | (1ULL << 4),
+                              0ULL, (1ULL << (20 - 16)), (1ULL << (31 - 24))));
+    } else {
+      EXPECT_THAT(
+          set.data(),
+          ElementsAre((1ULL << 0) | (1ULL << 1) | (1ULL << 2) | (1ULL << 3) |
+                      (1ULL << 4) | (1ULL << 20) | (1ULL << 31)));
+    }
   }
   {
     constexpr DenseSet<size_t, 63, packed> set{0, 1, 63};
-    EXPECT_EQ(set.to_uint64(), (1ULL << 0) | (1ULL << 1) | (1ULL << 63));
+    if (packed) {
+      EXPECT_THAT(set.data(),
+                  ElementsAre((1ULL << 0) | (1ULL << 1), 0ULL, 0ULL, 0ULL, 0ULL,
+                              0ULL, 0ULL, (1ULL << (63 - 56))));
+    } else {
+      EXPECT_THAT(set.data(),
+                  ElementsAre((1ULL << 0) | (1ULL << 1) | (1ULL << 63)));
+    }
   }
 }
 

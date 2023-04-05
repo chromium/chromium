@@ -128,9 +128,9 @@ TEST_F(PermissionMessagesUnittest, HistoryHidesTabsMessage) {
       base::Value::List());
 
   ASSERT_EQ(1U, required_permissions().size());
-  EXPECT_EQ(
-      l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WARNING_HISTORY_WRITE),
-      required_permissions()[0]);
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_EXTENSION_PROMPT_WARNING_HISTORY_WRITE_ON_ALL_DEVICES),
+            required_permissions()[0]);
 
   ASSERT_EQ(0U, optional_permissions().size());
 }
@@ -148,9 +148,9 @@ TEST_F(PermissionMessagesUnittest, MixedPermissionMessagesCoalesceOnceGranted) {
       required_permissions()[0]);
 
   ASSERT_EQ(1U, optional_permissions().size());
-  EXPECT_EQ(
-      l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WARNING_HISTORY_WRITE),
-      optional_permissions()[0]);
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_EXTENSION_PROMPT_WARNING_HISTORY_WRITE_ON_ALL_DEVICES),
+            optional_permissions()[0]);
 
   ASSERT_EQ(1U, active_permissions().size());
   EXPECT_EQ(
@@ -158,16 +158,16 @@ TEST_F(PermissionMessagesUnittest, MixedPermissionMessagesCoalesceOnceGranted) {
       active_permissions()[0]);
 
   ASSERT_EQ(1U, GetOptionalPermissionMessages().size());
-  EXPECT_EQ(
-      l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WARNING_HISTORY_WRITE),
-      GetOptionalPermissionMessages()[0]);
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_EXTENSION_PROMPT_WARNING_HISTORY_WRITE_ON_ALL_DEVICES),
+            GetOptionalPermissionMessages()[0]);
 
   GrantOptionalPermissions();
 
   ASSERT_EQ(1U, active_permissions().size());
-  EXPECT_EQ(
-      l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WARNING_HISTORY_WRITE),
-      active_permissions()[0]);
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_EXTENSION_PROMPT_WARNING_HISTORY_WRITE_ON_ALL_DEVICES),
+            active_permissions()[0]);
 }
 
 // AntiTest: This behavior should be changed and improved.
@@ -182,9 +182,9 @@ TEST_F(PermissionMessagesUnittest,
       ListBuilder().Append("tabs").Build());
 
   ASSERT_EQ(1U, required_permissions().size());
-  EXPECT_EQ(
-      l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WARNING_HISTORY_WRITE),
-      required_permissions()[0]);
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_EXTENSION_PROMPT_WARNING_HISTORY_WRITE_ON_ALL_DEVICES),
+            required_permissions()[0]);
 
   ASSERT_EQ(1U, optional_permissions().size());
   EXPECT_EQ(
@@ -192,9 +192,9 @@ TEST_F(PermissionMessagesUnittest,
       optional_permissions()[0]);
 
   ASSERT_EQ(1U, active_permissions().size());
-  EXPECT_EQ(
-      l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WARNING_HISTORY_WRITE),
-      active_permissions()[0]);
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_EXTENSION_PROMPT_WARNING_HISTORY_WRITE_ON_ALL_DEVICES),
+            active_permissions()[0]);
 
   // TODO(sashab): This prompt should display no permissions, since READ is a
   // subset permission of WRITE.
@@ -206,9 +206,9 @@ TEST_F(PermissionMessagesUnittest,
   GrantOptionalPermissions();
 
   ASSERT_EQ(1U, active_permissions().size());
-  EXPECT_EQ(
-      l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WARNING_HISTORY_WRITE),
-      active_permissions()[0]);
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_EXTENSION_PROMPT_WARNING_HISTORY_WRITE_ON_ALL_DEVICES),
+            active_permissions()[0]);
 }
 
 // AntiTest: This behavior should be changed and improved.
@@ -242,7 +242,7 @@ TEST_F(PermissionMessagesUnittest,
 
   ASSERT_EQ(1U, active_permissions().size());
   EXPECT_EQ(l10n_util::GetStringUTF16(
-                IDS_EXTENSION_PROMPT_WARNING_HISTORY_READ_AND_SESSIONS),
+                IDS_EXTENSION_PROMPT_WARNING_HISTORY_READ_ON_ALL_DEVICES),
             active_permissions()[0]);
 }
 

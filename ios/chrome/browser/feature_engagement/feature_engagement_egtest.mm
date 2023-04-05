@@ -49,7 +49,7 @@ const char kFrenchPageURLPath[] = "/french";
 // Matcher for the Reading List Text Badge.
 id<GREYMatcher> ReadingListTextBadge() {
   NSString* new_overflow_menu_accessibility_id =
-      [NSString stringWithFormat:@"%@-badge", kToolsMenuReadingListId];
+      [NSString stringWithFormat:@"%@-promoBadge", kToolsMenuReadingListId];
   return [ChromeEarlGrey isNewOverflowMenuEnabled]
              ? grey_accessibilityID(new_overflow_menu_accessibility_id)
              : grey_allOf(grey_accessibilityID(

@@ -58,14 +58,17 @@ base::flat_set<AppId> GetLaunchedPreinstalledAppIds(
   return app_ids;
 }
 
-void SetSupportedLinksPreferenceForPreinstalledApps(
+std::vector<AppId> SetSupportedLinksPreferenceForPreinstalledApps(
     WebAppRegistrar& registrar,
     apps::AppServiceProxy& proxy) {
+  std::vector<AppId> apps_affected;
   for (const WebApp& web_app : registrar.GetApps()) {
     if (web_app.IsPreinstalledApp()) {
       proxy.SetSupportedLinksPreference(web_app.app_id());
+      apps_affected.push_back(web_app.app_id());
     }
   }
+  return apps_affected;
 }
 
 void SetUserDisplayModeOverridesForPreinstalledAppsOnRegistrar(
@@ -239,7 +242,9 @@ void PreinstalledWebAppWindowExperiment::SetFirstTimePrefsThenMaybeStart() {
         profile_));
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
     DCHECK(proxy);
-    SetSupportedLinksPreferenceForPreinstalledApps(registrar_unsafe(), *proxy);
+    apps_that_experiment_setup_set_supported_links_ =
+        SetSupportedLinksPreferenceForPreinstalledApps(registrar_unsafe(),
+                                                       *proxy);
   }
 
   StartOverridesAndObservations();
@@ -322,6 +327,16 @@ void PreinstalledWebAppWindowExperiment::OnPreferredAppChanged(
     bool is_preferred_app) {
   auto* app = registrar_unsafe().GetAppById(app_id);
   if (!app || !app->IsPreinstalledApp()) {
+    return;
+  }
+
+  // Ignore the first observation for each app that may result from the
+  // experiment setup's call to `SetSupportedLinksPreference`.
+  // Note: this allows for `SetSupportedLinksPreference` to be async (or not)
+  // and for `OnPreferredAppChanged` to be called only for a subset of apps that
+  // changed state.
+  if (apps_that_experiment_setup_set_supported_links_.erase(app_id) &&
+      is_preferred_app) {
     return;
   }
 

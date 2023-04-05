@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_helpers.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,7 +21,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/user_education/common/feature_promo_specification.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/style/platform_style.h"
@@ -79,7 +79,7 @@ ui::ImageModel IntentChipButton::GetIconImageModel() const {
 }
 
 const gfx::VectorIcon& IntentChipButton::GetIcon() const {
-  return vector_icons::kOpenInNewIcon;
+  return kOpenInNewIcon;
 }
 
 bool IntentChipButton::GetShowChip() const {

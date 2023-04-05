@@ -37,7 +37,6 @@ namespace blink {
 
 class ComputedStyle;
 class LayoutObject;
-enum class LegacyLayout;
 class PseudoElement;
 class TreeScope;
 
@@ -53,8 +52,7 @@ class ContentData : public GarbageCollected<ContentData> {
   virtual bool IsNone() const { return false; }
 
   virtual LayoutObject* CreateLayoutObject(PseudoElement&,
-                                           const ComputedStyle&,
-                                           LegacyLayout) const = 0;
+                                           const ComputedStyle&) const = 0;
 
   virtual ContentData* Clone() const;
 
@@ -92,8 +90,7 @@ class ImageContentData final : public ContentData {
 
   bool IsImage() const override { return true; }
   LayoutObject* CreateLayoutObject(PseudoElement&,
-                                   const ComputedStyle&,
-                                   LegacyLayout) const override;
+                                   const ComputedStyle&) const override;
 
   bool Equals(const ContentData& data) const override {
     if (!data.IsImage()) {
@@ -132,8 +129,7 @@ class TextContentData final : public ContentData {
 
   bool IsText() const override { return true; }
   LayoutObject* CreateLayoutObject(PseudoElement&,
-                                   const ComputedStyle&,
-                                   LegacyLayout) const override;
+                                   const ComputedStyle&) const override;
 
   bool Equals(const ContentData& data) const override {
     if (!data.IsText()) {
@@ -166,8 +162,7 @@ class AltTextContentData final : public ContentData {
 
   bool IsAltText() const override { return true; }
   LayoutObject* CreateLayoutObject(PseudoElement&,
-                                   const ComputedStyle&,
-                                   LegacyLayout) const override;
+                                   const ComputedStyle&) const override;
 
   bool Equals(const ContentData& data) const override {
     if (!data.IsAltText()) {
@@ -205,8 +200,7 @@ class CounterContentData final : public ContentData {
 
   bool IsCounter() const override { return true; }
   LayoutObject* CreateLayoutObject(PseudoElement&,
-                                   const ComputedStyle&,
-                                   LegacyLayout) const override;
+                                   const ComputedStyle&) const override;
 
   const AtomicString& Identifier() const { return identifier_; }
   const AtomicString& ListStyle() const { return list_style_; }
@@ -257,8 +251,7 @@ class QuoteContentData final : public ContentData {
 
   bool IsQuote() const override { return true; }
   LayoutObject* CreateLayoutObject(PseudoElement&,
-                                   const ComputedStyle&,
-                                   LegacyLayout) const override;
+                                   const ComputedStyle&) const override;
 
   bool Equals(const ContentData& data) const override {
     if (!data.IsQuote()) {
@@ -290,8 +283,7 @@ class NoneContentData final : public ContentData {
 
   bool IsNone() const override { return true; }
   LayoutObject* CreateLayoutObject(PseudoElement&,
-                                   const ComputedStyle&,
-                                   LegacyLayout) const override;
+                                   const ComputedStyle&) const override;
 
   bool Equals(const ContentData& data) const override { return data.IsNone(); }
 

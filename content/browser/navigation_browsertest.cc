@@ -6099,6 +6099,9 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   SiteInstanceImpl* site_instance = current_frame_host()->GetSiteInstance();
   EXPECT_FALSE(site_instance->HasSite());
 
+  // The process should be considered unused at this point.
+  EXPECT_TRUE(site_instance->GetProcess()->IsUnused());
+
   // Inject a srcdoc iframe into the blank document.  This shouldn't really be
   // possible on the open web, since an about:blank page with an unassigned
   // SiteInstance shouldn't be scriptable by other pages, but it could still
@@ -6135,6 +6138,9 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
     // an opaque ID).
     EXPECT_EQ("about:", site_instance->GetSiteInfo().site_url());
   }
+
+  // Ensure that the process was marked as used as part of setting the site.
+  EXPECT_FALSE(site_instance->GetProcess()->IsUnused());
 }
 
 class CacheTransparencyNavigationBrowserTest : public ContentBrowserTest {

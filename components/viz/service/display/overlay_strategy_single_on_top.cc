@@ -6,11 +6,56 @@
 
 #include <vector>
 
+#include "base/check_op.h"
+#include "components/viz/common/display/overlay_strategy.h"
+#include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/service/display/overlay_candidate_factory.h"
+#include "components/viz/service/display/overlay_proposed_candidate.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace viz {
+namespace {
+
+using OverlayProposedCandidateIndex =
+    std::vector<OverlayProposedCandidate>::size_type;
+
+// Returns true if `rounded_corner_candidate` occludes any SingleOnTop
+// candidates in the list between `single_on_top_candidates_start` (inclusively)
+// and `single_on_top_candidates_end` (exclusively).
+bool OccludesAnyOtherSingleOnTopOverlayCandidate(
+    const OverlayProposedCandidate& rounded_corner_candidate,
+    const std::vector<OverlayProposedCandidate>* candidates,
+    OverlayProposedCandidateIndex single_on_top_candidates_begin,
+    OverlayProposedCandidateIndex single_on_top_candidates_end) {
+  DCHECK(rounded_corner_candidate.candidate.has_rounded_display_masks);
+
+  auto mask_bounds = OverlayProposedCandidate::GetRoundedDisplayMasksBounds(
+      rounded_corner_candidate);
+  for (OverlayProposedCandidateIndex i = single_on_top_candidates_begin;
+       i < single_on_top_candidates_end; i++) {
+    const auto& overlap_candidate = candidates->at(i);
+
+    // The rects are rounded as they're snapped by the compositor to pixel
+    // unless it is AA'ed, in which case, it won't be overlaid.
+    gfx::Rect overlap_rect =
+        gfx::ToRoundedRect(OverlayCandidate::DisplayRectInTargetSpace(
+            overlap_candidate.candidate));
+
+    // Check that no candidate overlaps with any of painted masks. Quads
+    // that have rounded-display masks, are all transparent except for the drawn
+    // masks.
+    for (const gfx::Rect& mask_bound : mask_bounds) {
+      if (mask_bound.Intersects(overlap_rect)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+}  // namespace
 
 OverlayStrategySingleOnTop::OverlayStrategySingleOnTop(
     OverlayProcessorUsingStrategy* capability_checker)
@@ -18,7 +63,7 @@ OverlayStrategySingleOnTop::OverlayStrategySingleOnTop(
   DCHECK(capability_checker);
 }
 
-OverlayStrategySingleOnTop::~OverlayStrategySingleOnTop() {}
+OverlayStrategySingleOnTop::~OverlayStrategySingleOnTop() = default;
 
 void OverlayStrategySingleOnTop::Propose(
     const SkM44& output_color_matrix,
@@ -35,15 +80,59 @@ void OverlayStrategySingleOnTop::Propose(
   // Build a list of candidates with the associated quad.
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
       render_pass, resource_provider, surface_damage_rect_list,
-      &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane));
+      &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane),
+      /*is_delegated_context=*/false, /*supports_clip_rect=*/false,
+      /*supports_arbitrary_transform=*/false,
+      /*supports_rounded_display_masks=*/true);
 
-  for (auto it = quad_list->begin(); it != quad_list->end(); ++it) {
+  std::vector<OverlayProposedCandidate> candidates_with_masks;
+
+  QuadList::Iterator quads_with_masks_iter = quad_list->begin();
+  while (quads_with_masks_iter != quad_list->end()) {
     OverlayCandidate candidate;
+
+    // Quads with rounded-display masks are only considered as SingleOnTop
+    // candidates if they are the top most candidates.
+    if (candidate_factory.FromDrawQuad(*quads_with_masks_iter, candidate) ==
+            OverlayCandidate::CandidateStatus::kSuccess &&
+        !candidate.has_mask_filter && candidate.has_rounded_display_masks) {
+      candidates_with_masks.emplace_back(quads_with_masks_iter, candidate,
+                                         this);
+      quads_with_masks_iter++;
+    } else {
+      break;
+    }
+  }
+
+  OverlayProposedCandidateIndex single_on_top_candidates_begin =
+      candidates->size();
+
+  QuadList::Iterator& quads_without_masks_begin = quads_with_masks_iter;
+  for (auto it = quads_without_masks_begin; it != quad_list->end(); ++it) {
+    OverlayCandidate candidate;
+
+    // We exclude quads with rounded-display masks from the occlusion
+    // calculation because they are drawn on top and will be promoted to
+    // overlays if they occlude any SingleOnTop candidates.
     if (candidate_factory.FromDrawQuad(*it, candidate) ==
             OverlayCandidate::CandidateStatus::kSuccess &&
         !candidate.has_mask_filter &&
-        !OverlayCandidate::IsOccluded(candidate, quad_list->cbegin(), it)) {
-      candidates->push_back({it, candidate, this});
+        !candidate_factory.IsOccluded(candidate, quads_without_masks_begin,
+                                      it)) {
+      DCHECK(!candidate.has_rounded_display_masks);
+      candidates->emplace_back(it, candidate, this);
+    }
+  }
+
+  DCHECK_LE(candidates_with_masks.size(), 2u);
+
+  // To save power we can skip promoting candidates with rounded display mask
+  // rects if they do not occlude any other SingleOnTop candidate.
+  for (auto& mask_candidate : candidates_with_masks) {
+    if (OccludesAnyOtherSingleOnTopOverlayCandidate(
+            mask_candidate, candidates, single_on_top_candidates_begin,
+            candidates->size())) {
+      candidates->push_back(mask_candidate);
     }
   }
 }

@@ -158,6 +158,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry, bool for_test) {
   WallpaperPrefManager::RegisterLocalStatePrefs(registry);
   DetachableBaseHandler::RegisterPrefs(registry);
   PowerPrefs::RegisterLocalStatePrefs(registry);
+  PrivacyHubController::RegisterLocalStatePrefs(registry);
   DisplayPrefs::RegisterLocalStatePrefs(registry);
   LoginExpandedPublicAccountView::RegisterLocalStatePrefs(registry);
   LockStateController::RegisterPrefs(registry);

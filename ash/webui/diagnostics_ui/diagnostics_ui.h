@@ -17,10 +17,15 @@
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
+#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
 namespace base {
 class FilePath;
 }  // namespace base
+
+namespace ui {
+class ColorChangeHandler;
+}  // namespace ui
 
 namespace ash {
 
@@ -63,6 +68,10 @@ class DiagnosticsDialogUI : public ui::MojoWebDialogUI {
   void BindInterface(
       mojo::PendingReceiver<diagnostics::mojom::InputDataProvider> receiver);
 
+  void BindInterface(
+      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+          receiver);
+
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
 
@@ -74,6 +83,9 @@ class DiagnosticsDialogUI : public ui::MojoWebDialogUI {
   std::unique_ptr<diagnostics::metrics::DiagnosticsMetrics>
       diagnostics_metrics_;
   std::unique_ptr<diagnostics::InputDataProvider> input_data_provider_;
+  // The color change handler notifies the WebUI when the color provider
+  // changes.
+  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 };
 
 }  // namespace ash

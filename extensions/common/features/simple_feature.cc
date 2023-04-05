@@ -125,6 +125,8 @@ std::string GetDisplayName(Feature::Context context) {
       return "lock screen app";
     case Feature::OFFSCREEN_EXTENSION_CONTEXT:
       return "offscreen document";
+    case Feature::USER_SCRIPT_CONTEXT:
+      return "user script";
   }
   NOTREACHED();
   return "";

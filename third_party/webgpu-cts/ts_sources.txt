@@ -112,6 +112,9 @@ src/unittests/async_expectations.spec.ts
 src/unittests/basic.spec.ts
 src/unittests/check_contents.spec.ts
 src/unittests/conversion.spec.ts
+src/webgpu/shader/execution/expression/case_cache.ts
+src/webgpu/util/compare.ts
+src/webgpu/shader/execution/expression/expression.ts
 src/webgpu/util/floating_point.ts
 src/webgpu/util/f32_interval.ts
 src/unittests/f32_interval.spec.ts
@@ -125,9 +128,6 @@ src/unittests/params_builder_toplevel.spec.ts
 src/unittests/preprocessor.spec.ts
 src/unittests/query_compare.spec.ts
 src/unittests/query_string.spec.ts
-src/webgpu/shader/execution/expression/expression.ts
-src/webgpu/util/compare.ts
-src/webgpu/shader/execution/expression/case_cache.ts
 src/unittests/serialization.spec.ts
 src/unittests/test_group.spec.ts
 src/unittests/test_query.spec.ts

@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "chrome/browser/ash/borealis/borealis_security_delegate.h"
 #include "chrome/browser/ash/crostini/crostini_security_delegate.h"
 #include "chrome/browser/ash/guest_os/guest_os_security_delegate.h"
@@ -18,6 +19,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/dbus/vm_launch/launch.pb.h"
+#include "chromeos/ash/components/dbus/vm_wl/wl.pb.h"
+#include "components/exo/server/wayland_server_controller.h"
+#include "components/exo/server/wayland_server_handle.h"
 
 namespace guest_os {
 
@@ -120,6 +124,13 @@ GuestOsWaylandServer::ServerDetails::~ServerDetails() {
   GuestOsSecurityDelegate::MaybeRemoveServer(security_delegate_, server_path_);
 }
 
+GuestOsWaylandServer::ScopedServer::ScopedServer(
+    std::unique_ptr<exo::WaylandServerHandle> handle,
+    base::WeakPtr<GuestOsSecurityDelegate> security_delegate)
+    : handle_(std::move(handle)), security_delegate_(security_delegate) {}
+
+GuestOsWaylandServer::ScopedServer::~ScopedServer() = default;
+
 // static
 void GuestOsWaylandServer::StartServer(
     const vm_tools::launch::StartWaylandServerRequest& request,
@@ -142,14 +153,30 @@ void GuestOsWaylandServer::ListenOnSocket(
     const vm_tools::wl::ListenOnSocketRequest& request,
     base::ScopedFD socket_fd,
     base::OnceCallback<void(absl::optional<std::string>)> response_callback) {
-  std::move(response_callback).Run({"ListenOnSocket not implemented."});
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  if (!profile || ash::ProfileHelper::GetUserIdHashFromProfile(profile) !=
+                      request.desc().owner_id()) {
+    std::move(response_callback).Run({"Invalid owner_id"});
+    return;
+  }
+  GuestOsService::GetForProfile(profile)->WaylandServer()->Listen(
+      std::move(socket_fd), request.desc().type(), request.desc().name(),
+      std::move(response_callback));
 }
 
 // static
 void GuestOsWaylandServer::CloseSocket(
     const vm_tools::wl::CloseSocketRequest& request,
     base::OnceCallback<void(absl::optional<std::string>)> response_callback) {
-  std::move(response_callback).Run({"CloseSocket not implemented."});
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  if (!profile || ash::ProfileHelper::GetUserIdHashFromProfile(profile) !=
+                      request.desc().owner_id()) {
+    std::move(response_callback).Run({"Invalid owner_id"});
+    return;
+  }
+  GuestOsService::GetForProfile(profile)->WaylandServer()->Close(
+      request.desc().type(), request.desc().name(),
+      std::move(response_callback));
 }
 
 GuestOsWaylandServer::GuestOsWaylandServer(Profile* profile)
@@ -174,6 +201,22 @@ void GuestOsWaylandServer::Get(vm_tools::launch::VmType vm_type,
   holder_iter->second->Get(std::move(callback));
 }
 
+// Returns a weak handle to the security delegate for the VM with the given
+// |name| and |type|, if one exists, and nullptr otherwise.
+base::WeakPtr<GuestOsSecurityDelegate> GuestOsWaylandServer::GetDelegate(
+    vm_tools::apps::VmType type,
+    const std::string& name) const {
+  auto type_iter = servers_.find(type);
+  if (type_iter == servers_.end()) {
+    return nullptr;
+  }
+  auto name_iter = type_iter->second.find(name);
+  if (name_iter == type_iter->second.end()) {
+    return nullptr;
+  }
+  return name_iter->second->security_delegate();
+}
+
 void GuestOsWaylandServer::SetCapabilityFactoryForTesting(
     vm_tools::launch::VmType vm_type,
     DelegateHolder::CapabilityFactory factory) {
@@ -186,6 +229,80 @@ void GuestOsWaylandServer::OverrideServerForTesting(
     base::FilePath path) {
   delegate_holders_[vm_type]->CacheForTesting(  // IN-TEST
       std::make_unique<ServerDetails>(security_delegate, std::move(path)));
+}
+
+void GuestOsWaylandServer::Listen(base::ScopedFD fd,
+                                  vm_tools::apps::VmType type,
+                                  const std::string& name,
+                                  ResponseCallback callback) {
+  if (servers_[type].erase(name) > 0) {
+    LOG(WARNING) << "Re-binding wayland server for " << name << "(type=" << type
+                 << ") while in-use";
+  }
+  switch (type) {
+    case vm_tools::apps::TERMINA:
+      crostini::CrostiniSecurityDelegate::Build(
+          profile_,
+          base::BindOnce(&GuestOsWaylandServer::OnSecurityDelegateCreated,
+                         weak_factory_.GetWeakPtr(), std::move(fd), type, name,
+                         std::move(callback)));
+      return;
+    case vm_tools::apps::BOREALIS:
+      borealis::BorealisSecurityDelegate::Build(
+          profile_,
+          base::BindOnce(&GuestOsWaylandServer::OnSecurityDelegateCreated,
+                         weak_factory_.GetWeakPtr(), std::move(fd), type, name,
+                         std::move(callback)));
+      return;
+    default:
+      // For all other VMs, provide the minimal capability-set.
+      OnSecurityDelegateCreated(std::move(fd), type, name, std::move(callback),
+                                std::make_unique<GuestOsSecurityDelegate>());
+      return;
+  }
+}
+
+void GuestOsWaylandServer::Close(vm_tools::apps::VmType type,
+                                 const std::string& name,
+                                 ResponseCallback callback) {
+  if (servers_[type].erase(name) == 0) {
+    LOG(WARNING) << "Trying to close non-existent server for " << name
+                 << "(type=" << type << ")";
+  }
+  std::move(callback).Run(absl::nullopt);
+}
+
+void GuestOsWaylandServer::OnSecurityDelegateCreated(
+    base::ScopedFD fd,
+    vm_tools::apps::VmType type,
+    std::string name,
+    ResponseCallback callback,
+    std::unique_ptr<GuestOsSecurityDelegate> delegate) {
+  if (!delegate) {
+    std::move(callback).Run({"Failed to get security privileges"});
+    return;
+  }
+  GuestOsSecurityDelegate::MakeServerWithFd(
+      std::move(delegate), std::move(fd),
+      base::BindOnce(&GuestOsWaylandServer::OnServerCreated,
+                     weak_factory_.GetWeakPtr(), type, std::move(name),
+                     std::move(callback)));
+}
+
+void GuestOsWaylandServer::OnServerCreated(
+    vm_tools::apps::VmType type,
+    std::string name,
+    ResponseCallback callback,
+    base::WeakPtr<GuestOsSecurityDelegate> delegate,
+    std::unique_ptr<exo::WaylandServerHandle> handle) {
+  if (!handle) {
+    std::move(callback).Run({"Failed to create wayland server"});
+    return;
+  }
+  servers_[type].insert_or_assign(
+      std::move(name),
+      std::make_unique<ScopedServer>(std::move(handle), delegate));
+  std::move(callback).Run(absl::nullopt);
 }
 
 }  // namespace guest_os

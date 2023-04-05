@@ -278,15 +278,12 @@ INSTANTIATE_TEST_SUITE_P(ExecuteScriptApiTest,
                          ::testing::Range(0,
                                           kDestructiveScriptTestBucketCount));
 
-class ExecuteScriptApiFencedFrameTest
-    : public ExecuteScriptApiTestBase,
-      public testing::WithParamInterface<bool /* shadow_dom_fenced_frame */> {
+class ExecuteScriptApiFencedFrameTest : public ExecuteScriptApiTestBase {
  protected:
   ExecuteScriptApiFencedFrameTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{blink::features::kFencedFrames,
-                               {{"implementation_type",
-                                 GetParam() ? "shadow_dom" : "mparch"}}},
+        /*enabled_features=*/{{blink::features::kFencedFrames, {}},
+                              {blink::features::kFencedFramesAPIChanges, {}},
                               {features::kPrivacySandboxAdsAPIsOverride, {}}},
         /*disabled_features=*/{features::kSpareRendererForSitePerProcess});
     // Fenced frames are only allowed in secure contexts.
@@ -298,12 +295,8 @@ class ExecuteScriptApiFencedFrameTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(ExecuteScriptApiFencedFrameTest, Load) {
+IN_PROC_BROWSER_TEST_F(ExecuteScriptApiFencedFrameTest, Load) {
   ASSERT_TRUE(RunExtensionTest("executescript/fenced_frames")) << message_;
 }
-
-INSTANTIATE_TEST_SUITE_P(ExecuteScriptApiFencedFrameTest,
-                         ExecuteScriptApiFencedFrameTest,
-                         testing::Bool());
 
 }  // namespace extensions

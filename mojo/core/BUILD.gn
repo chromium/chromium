@@ -352,7 +352,7 @@ source_set("test_sources") {
     "trap_unittest.cc",
   ]
 
-  if (!is_ios) {
+  if (use_blink) {
     sources += [
       "data_pipe_unittest.cc",
       "invitation_unittest.cc",

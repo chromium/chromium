@@ -17,7 +17,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/guid.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/timezone.h"
 #include "base/logging.h"
@@ -28,6 +27,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
@@ -799,11 +799,6 @@ AutofillProfile* PersonalDataManager::GetProfileByGUID(
 }
 
 bool PersonalDataManager::IsEligibleForAddressAccountStorage() const {
-  if (base::FeatureList::IsEnabled(
-          autofill::features::test::
-              kAutofillCreateAccountProfilesFromSettings)) {
-    return true;
-  }
   // The CONTACT_INFO data type is only running for eligible users. See
   // ContactInfoModelTypeController.
   return sync_service_ &&
@@ -811,16 +806,6 @@ bool PersonalDataManager::IsEligibleForAddressAccountStorage() const {
          base::FeatureList::IsEnabled(
              features::kAutofillAccountProfilesUnionView) &&
          base::FeatureList::IsEnabled(features::kAutofillAccountProfileStorage);
-}
-
-void PersonalDataManager::MigrateProfileToAccount(
-    const AutofillProfile& profile) {
-  DCHECK_EQ(profile.source(), AutofillProfile::Source::kLocalOrSyncable);
-  AutofillProfile account_profile = profile.ConvertToAccountProfile();
-  DCHECK_NE(profile.guid(), account_profile.guid());
-  // Update the database (and this way indirectly Sync).
-  RemoveByGUID(profile.guid());
-  AddProfile(account_profile);
 }
 
 std::string PersonalDataManager::AddIBAN(const IBAN& iban) {
@@ -1794,6 +1779,14 @@ void PersonalDataManager::AddStrikeToBlockProfileMigration(
     return;
   }
   GetProfileMigrationStrikeDatabase()->AddStrike(guid);
+}
+
+void PersonalDataManager::AddMaxStrikesToBlockProfileMigration(
+    const std::string& guid) {
+  if (AutofillProfileMigrationStrikeDatabase* db =
+          GetProfileMigrationStrikeDatabase()) {
+    db->AddStrikes(db->GetMaxStrikesLimit() - db->GetStrikes(guid), guid);
+  }
 }
 
 void PersonalDataManager::RemoveStrikesToBlockProfileMigration(

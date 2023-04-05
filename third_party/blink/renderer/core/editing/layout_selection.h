@@ -32,7 +32,6 @@ class Rect;
 
 namespace blink {
 
-class InlineTextBox;
 class LayoutObject;
 class LayoutText;
 class NGInlineCursor;
@@ -64,14 +63,6 @@ class LayoutSelection final : public GarbageCollected<LayoutSelection> {
   // used at paint time to determine the edges of the layout selection.
   SelectionState ComputePaintingSelectionStateForCursor(
       const NGInlineCursorPosition&) const;
-
-  // Compute the layout selection state relative to the InlineTextBox.
-  // E.g. a state of kStart means that the selection starts within the line
-  // (and ends elsewhere), where kStartAndEnd means the selection both starts
-  // and ends within the line. This information is used at paint time to
-  // determine the edges of the layout selection.
-  SelectionState ComputeSelectionStateForInlineTextBox(
-      const InlineTextBox&) const;
 
   static bool IsSelected(const LayoutObject&);
 

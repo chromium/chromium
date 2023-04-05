@@ -87,7 +87,6 @@ constexpr const char* const kDeletablePaths[] = {
     "coupon_db",
     "crash",
     "Download Service",
-    "GCache",
     "GPUCache",
     "heavy_ad_intervention_opt_out.db",
     "merchant_signal_db",

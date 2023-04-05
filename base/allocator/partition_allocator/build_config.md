@@ -62,21 +62,6 @@ Does nothing special when value is `false`. Enables
   with `use_partition_alloc` (see above).
 ***
 
-## Note: Component Builds
-
-When working on PartitionAlloc, know that `is_debug` defaults to
-implying `is_component_build`, which interferes with the allocator
-shim. A typical set of GN args should include
-
-```none
-is_debug = true
-is_component_build = false
-```
-
-Conversely, build configurations that have `is_component_build = true`
-without explicitly specifying PA-specific args will not build with PA-E
-enabled.
-
 ## Notable Macros
 
 There is an ongoing effort

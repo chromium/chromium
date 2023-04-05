@@ -8,8 +8,8 @@
 #import "ios/chrome/browser/overlays/public/infobar_modal/save_address_profile_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/public/overlay_response.h"
-#import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/infobar_edit_address_profile_table_view_controller.h"
 #import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/infobar_save_address_profile_table_view_controller.h"
+#import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/legacy_infobar_edit_address_profile_table_view_controller.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/autofill_address_profile/save_address_profile_infobar_modal_overlay_mediator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/autofill_address_profile/save_address_profile_infobar_modal_overlay_mediator_delegate.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/infobar_modal_overlay_coordinator+modal_configuration.h"
@@ -66,10 +66,9 @@ using autofill_address_profile_infobar_overlays::
   SaveAddressProfileInfobarModalOverlayMediator* modalMediator =
       static_cast<SaveAddressProfileInfobarModalOverlayMediator*>(
           self.modalMediator);
-  InfobarEditAddressProfileTableViewController* editModalViewController =
-      [[InfobarEditAddressProfileTableViewController alloc]
+  LegacyInfobarEditAddressProfileTableViewController* editModalViewController =
+      [[LegacyInfobarEditAddressProfileTableViewController alloc]
           initWithModalDelegate:modalMediator];
-
   modalMediator.editAddressConsumer = editModalViewController;
   self.modalMediator = modalMediator;
   self.modalViewController = editModalViewController;

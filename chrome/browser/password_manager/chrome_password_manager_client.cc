@@ -36,9 +36,6 @@
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
-#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
-#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_factory.h"
-#include "chrome/browser/safe_browsing/extension_telemetry/password_reuse_signal.h"
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -88,7 +85,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/sessions/content/content_record_password_state.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -96,7 +92,6 @@
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/translate/core/browser/translate_manager.h"
-#include "components/url_formatter/url_formatter.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
@@ -120,14 +115,12 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
-#include "ui/base/clipboard/clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "url/url_constants.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
-#include "third_party/blink/public/mojom/clipboard/clipboard.mojom.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -151,7 +144,6 @@
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "components/policy/core/common/features.h"
-#include "ui/events/keycodes/keyboard_codes.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -161,12 +153,6 @@
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #include "chrome/browser/ui/browser.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/cpp/scoped_allow_sync_call.h"
-#include "chromeos/crosapi/mojom/clipboard.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -185,8 +171,6 @@ using password_manager::PasswordManagerMetricsRecorder;
 using password_manager::PasswordManagerSetting;
 using password_manager::metrics_util::PasswordType;
 using sessions::SerializedNavigationEntry;
-using PasswordReuseEvent =
-    safe_browsing::LoginReputationClientRequest::PasswordReuseEvent;
 
 // Shorten the name to spare line breaks. The code provides enough context
 // already.
@@ -196,7 +180,6 @@ namespace {
 
 #if !BUILDFLAG(IS_ANDROID)
 static const char kPasswordBreachEntryTrigger[] = "PASSWORD_ENTRY";
-constexpr char kExtensionScheme[] = "chrome-extension";
 #endif
 
 const syncer::SyncService* GetSyncServiceForProfile(Profile* profile) {
@@ -204,43 +187,6 @@ const syncer::SyncService* GetSyncServiceForProfile(Profile* profile) {
     return SyncServiceFactory::GetForProfile(profile);
   return nullptr;
 }
-
-// Adds |observer| to the input observers of |widget_host|.
-void AddToWidgetInputEventObservers(
-    content::RenderWidgetHost* widget_host,
-    content::RenderWidgetHost::InputEventObserver* observer) {
-  // Since Widget API doesn't allow to check whether the observer is already
-  // added, the observer is removed and added again, to ensure that it is added
-  // only once.
-#if BUILDFLAG(IS_ANDROID)
-  widget_host->RemoveImeInputEventObserver(observer);
-  widget_host->AddImeInputEventObserver(observer);
-#endif
-  widget_host->RemoveInputEventObserver(observer);
-  widget_host->AddInputEventObserver(observer);
-}
-
-#if !BUILDFLAG(IS_ANDROID)
-// Retrieves and formats the saved passwords domains from signon_realms.
-std::vector<std::string> GetMatchingDomains(
-    const std::vector<password_manager::MatchingReusedCredential>&
-        matching_reused_credentials) {
-  base::flat_set<std::string> matching_domains;
-  for (const auto& credential : matching_reused_credentials) {
-    // TODO(zackhan): Avoid converting signon_realm to URL, ideally use
-    // PasswordForm::url.
-    std::string domain = base::UTF16ToUTF8(url_formatter::FormatUrl(
-        GURL(credential.signon_realm),
-        url_formatter::kFormatUrlOmitDefaults |
-            url_formatter::kFormatUrlOmitHTTPS |
-            url_formatter::kFormatUrlOmitTrivialSubdomains |
-            url_formatter::kFormatUrlTrimAfterHost,
-        base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
-    matching_domains.insert(std::move(domain));
-  }
-  return std::move(matching_domains).extract();
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -477,11 +423,6 @@ void ChromePasswordManagerClient::ShowTouchToFill(
       std::make_unique<TouchToFillControllerAutofillDelegate>(
           this, GetDeviceAuthenticator(), driver->AsWeakPtr(),
           submission_readiness));
-}
-
-void ChromePasswordManagerClient::OnPasswordSelected(
-    const std::u16string& text) {
-  password_reuse_detection_manager_.OnPaste(text);
 }
 #endif
 
@@ -901,68 +842,6 @@ void ChromePasswordManagerClient::CheckSafeBrowsingReputation(
 }
 #endif  // defined(ON_FOCUS_PING_ENABLED)
 
-void ChromePasswordManagerClient::CheckProtectedPasswordEntry(
-    PasswordType password_type,
-    const std::string& username,
-    const std::vector<password_manager::MatchingReusedCredential>&
-        matching_reused_credentials,
-    bool password_field_exists,
-    uint64_t reused_password_hash,
-    const std::string& domain) {
-  safe_browsing::PasswordProtectionService* pps =
-      GetPasswordProtectionService();
-  if (!pps)
-    return;
-
-  pps->MaybeStartProtectedPasswordEntryRequest(
-      web_contents(), web_contents()->GetLastCommittedURL(), username,
-      password_type, matching_reused_credentials, password_field_exists);
-
-#if !BUILDFLAG(IS_ANDROID)
-  // If the webpage is not an extension page, do nothing.
-  if (!GURL(domain).SchemeIs(kExtensionScheme)) {
-    return;
-  }
-  content::BrowserContext* browser_context =
-      web_contents()->GetBrowserContext();
-  auto* telemetry_service =
-      safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(browser_context));
-  if (!telemetry_service || !telemetry_service->enabled() ||
-      !base::FeatureList::IsEnabled(
-          safe_browsing::kExtensionTelemetryPotentialPasswordTheft)) {
-    return;
-  }
-  // Construct password reuse info.
-  safe_browsing::PasswordReuseInfo password_reuse_info;
-  password_reuse_info.matches_signin_password =
-      password_type == PasswordType::PRIMARY_ACCOUNT_PASSWORD;
-  password_reuse_info.matching_domains =
-      GetMatchingDomains(matching_reused_credentials);
-  password_reuse_info.reused_password_account_type =
-      pps->GetPasswordProtectionReusedPasswordAccountType(password_type,
-                                                          username);
-  password_reuse_info.count = 1;
-  password_reuse_info.reused_password_hash = reused_password_hash;
-
-  // Extract the host part of an extension domain, which will be the extension
-  // ID.
-  std::string host = GURL(domain).host();
-  auto password_reuse_signal =
-      std::make_unique<safe_browsing::PasswordReuseSignal>(host,
-                                                           password_reuse_info);
-  telemetry_service->AddSignal(std::move(password_reuse_signal));
-#endif  // !BUILDFLAG(IS_ANDROID)
-}
-
-void ChromePasswordManagerClient::LogPasswordReuseDetectedEvent() {
-  safe_browsing::PasswordProtectionService* pps =
-      GetPasswordProtectionService();
-  if (pps) {
-    pps->MaybeLogPasswordReuseDetectedEvent(web_contents());
-  }
-}
-
 #if !BUILDFLAG(IS_ANDROID)
 void ChromePasswordManagerClient::MaybeReportEnterpriseLoginEvent(
     const GURL& url,
@@ -1277,25 +1156,6 @@ void ChromePasswordManagerClient::GenerationElementLostFocus() {
     popup_controller_->GenerationElementLostFocus();
 }
 
-#if BUILDFLAG(IS_ANDROID)
-void ChromePasswordManagerClient::OnImeTextCommittedEvent(
-    const std::u16string& text_str) {
-  password_reuse_detection_manager_.OnKeyPressedCommitted(text_str);
-}
-
-void ChromePasswordManagerClient::OnImeSetComposingTextEvent(
-    const std::u16string& text_str) {
-  last_composing_text_ = text_str;
-  password_reuse_detection_manager_.OnKeyPressedUncommitted(
-      last_composing_text_);
-}
-
-void ChromePasswordManagerClient::OnImeFinishComposingTextEvent() {
-  password_reuse_detection_manager_.OnKeyPressedCommitted(last_composing_text_);
-  last_composing_text_.clear();
-}
-#endif  // BUILDFLAG(IS_ANDROID)
-
 void ChromePasswordManagerClient::SetTestObserver(
     PasswordGenerationPopupObserver* observer) {
   observer_ = observer;
@@ -1389,7 +1249,6 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
                                 g_browser_process->local_state(),
                                 SyncServiceFactory::GetForProfile(profile_)),
       httpauth_manager_(this),
-      password_reuse_detection_manager_(this),
       driver_factory_(nullptr),
       content_credential_manager_(this),
       password_generation_driver_receivers_(web_contents, this),
@@ -1444,11 +1303,6 @@ void ChromePasswordManagerClient::PrimaryPageChanged(content::Page& page) {
   // requests.
   content_credential_manager_.DisconnectBinding();
 
-  password_reuse_detection_manager_.DidNavigateMainFrame(GetLastCommittedURL());
-
-  AddToWidgetInputEventObservers(page.GetMainDocument().GetRenderWidgetHost(),
-                                 this);
-
 #if BUILDFLAG(IS_ANDROID)
   // This unblocklisted info is only used after form submission to determine
   // whether to record PasswordManager.SaveUIDismissalReasonAfterUnblacklisting.
@@ -1477,83 +1331,6 @@ void ChromePasswordManagerClient::WebContentsDestroyed() {
             messages::DismissReason::TAB_DESTROYED);
   }
 #endif
-}
-
-void ChromePasswordManagerClient::OnPaste() {
-  std::u16string text;
-  bool used_crosapi_workaround = false;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On Lacros, the ozone/wayland clipboard implementation is asynchronous by
-  // default and runs a nested message loop to fake synchroncity. This in turn
-  // causes crashes. See https://crbug.com/1155662 for details. In the short
-  // term, we skip ozone/wayland entirely and use a synchronous crosapi to get
-  // clipboard text.
-  // TODO(https://crbug.com/913422): This logic can be removed once all
-  // clipboard APIs are async.
-  auto* service = chromeos::LacrosService::Get();
-  if (service->IsAvailable<crosapi::mojom::Clipboard>()) {
-    used_crosapi_workaround = true;
-    std::string text_utf8;
-    {
-      crosapi::ScopedAllowSyncCall allow_sync_call;
-      service->GetRemote<crosapi::mojom::Clipboard>()->GetCopyPasteText(
-          &text_utf8);
-    }
-    text = base::UTF8ToUTF16(text_utf8);
-  }
-#endif
-
-  if (!used_crosapi_workaround) {
-    ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-    // Given that this clipboard data read happens in the background and not
-    // initiated by a user gesture, then the user shouldn't see a notification
-    // if the clipboard is restricted by the rules of data leak prevention
-    // policy.
-    ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
-        ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
-    clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, &data_dst, &text);
-  }
-
-  was_on_paste_called_ = true;
-  password_reuse_detection_manager_.OnPaste(std::move(text));
-}
-
-void ChromePasswordManagerClient::RenderFrameCreated(
-    content::RenderFrameHost* render_frame_host) {
-  // TODO(https://crbug.com/1315689): In context of Phishguard, we should handle
-  // input events on subframes separately, so that we can accurately report that
-  // the password was reused on a subframe. Currently any password reuse for
-  // this WebContents will report password reuse on the main frame URL.
-  AddToWidgetInputEventObservers(render_frame_host->GetRenderWidgetHost(),
-                                 this);
-}
-
-void ChromePasswordManagerClient::OnInputEvent(
-    const blink::WebInputEvent& event) {
-#if BUILDFLAG(IS_ANDROID)
-
-  // On Android, key down events are triggered if a user types in through a
-  // number bar on Android keyboard. If text is typed in through other parts of
-  // Android keyboard, ImeTextCommittedEvent is triggered instead.
-  if (event.GetType() != blink::WebInputEvent::Type::kKeyDown)
-    return;
-  const blink::WebKeyboardEvent& key_event =
-      static_cast<const blink::WebKeyboardEvent&>(event);
-  password_reuse_detection_manager_.OnKeyPressedCommitted(key_event.text);
-
-#else   // !BUILDFLAG(IS_ANDROID)
-  if (event.GetType() != blink::WebInputEvent::Type::kChar)
-    return;
-  const blink::WebKeyboardEvent& key_event =
-      static_cast<const blink::WebKeyboardEvent&>(event);
-  // Key & 0x1f corresponds to the value of the key when either the control or
-  // command key is pressed. This detects CTRL+V, COMMAND+V, and CTRL+SHIFT+V.
-  if (key_event.windows_key_code == (ui::VKEY_V & 0x1f)) {
-    OnPaste();
-  } else {
-    password_reuse_detection_manager_.OnKeyPressedCommitted(key_event.text);
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 gfx::RectF ChromePasswordManagerClient::GetBoundsInScreenSpace(

@@ -21,6 +21,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/chrome_zipfile_installer.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/common/chrome_paths.h"
@@ -34,6 +35,7 @@
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -82,10 +84,12 @@ struct MockExtensionRegistryObserver : public ExtensionRegistryObserver {
                             const Extension* extension,
                             bool is_update) override {
     last_extension_installed = extension->id();
+    last_extension_installed_path = extension->path();
     std::move(quit_closure).Run();
   }
 
   std::string last_extension_installed;
+  base::FilePath last_extension_installed_path;
   base::OnceClosure quit_closure;
 };
 
@@ -96,57 +100,44 @@ struct UnzipFileFilterTestCase {
 
 }  // namespace
 
-class ZipFileInstallerTest : public testing::Test {
+// Assists with testing the non-installation location behavior of the installer.
+class ZipFileInstallerTest : public ExtensionServiceTestBase {
  public:
-  ZipFileInstallerTest()
-      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
-
   void SetUp() override {
+    ExtensionServiceTestBase::SetUp();
+    InitializeEmptyExtensionService();
     extensions::LoadErrorReporter::Init(/*enable_noisy_errors=*/false);
-
     in_process_utility_thread_helper_ =
         std::make_unique<content::InProcessUtilityThreadHelper>();
     unzip::SetUnzipperLaunchOverrideForTesting(
         base::BindRepeating(&unzip::LaunchInProcessUnzipper));
-
-    // Create profile for extension service.
-    profile_ = std::make_unique<TestingProfile>();
-    TestExtensionSystem* system =
-        static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile_.get()));
-    extension_service_ = system->CreateExtensionService(
-        base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
-    ExtensionRegistry* registry(ExtensionRegistry::Get(profile_.get()));
-    registry->AddObserver(&observer_);
+    registry()->AddObserver(&observer_);
   }
 
   void TearDown() override {
+    registry()->RemoveObserver(&observer_);
+    ExtensionServiceTestBase::TearDown();
     // Need to destruct ZipFileInstaller before the message loop since
     // it posts a task to it.
     zipfile_installer_.reset();
-    ExtensionRegistry* registry(ExtensionRegistry::Get(profile_.get()));
-    registry->RemoveObserver(&observer_);
-    profile_.reset();
     unzip::SetUnzipperLaunchOverrideForTesting(base::NullCallback());
     base::RunLoop().RunUntilIdle();
   }
 
-  void RunInstaller(const std::string& zip_name, bool expect_error) {
-    base::FilePath original_path;
-    ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &original_path));
-    original_path = original_path.AppendASCII("extensions")
-                        .AppendASCII("zipfile_installer")
-                        .AppendASCII(zip_name);
-    ASSERT_TRUE(base::PathExists(original_path)) << original_path.value();
-    zipfile_installer_ = ZipFileInstaller::Create(
-        GetExtensionFileTaskRunner(),
-        MakeRegisterInExtensionServiceCallback(extension_service_));
+ protected:
+  scoped_refptr<ZipFileInstaller> zipfile_installer_;
 
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&ZipFileInstaller::LoadFromZipFile,
-                                  zipfile_installer_, original_path));
-    observer_.WaitForInstall(expect_error);
-  }
+  std::unique_ptr<content::InProcessUtilityThreadHelper>
+      in_process_utility_thread_helper_;
+  MockExtensionRegistryObserver observer_;
 
+ private:
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
+};
+
+// Assists with testing the zip file filtering behavior of ZipFileInstaller.
+class ZipFileInstallerFilterTest : public ZipFileInstallerTest {
+ protected:
   void RunZipFileFilterTest(
       const std::vector<UnzipFileFilterTestCase>& cases,
       base::RepeatingCallback<bool(const base::FilePath&)>& filter) {
@@ -157,44 +148,9 @@ class ZipFileInstallerTest : public testing::Test {
           << "i: " << i << ", input: " << input.value();
     }
   }
-
- protected:
-  scoped_refptr<ZipFileInstaller> zipfile_installer_;
-
-  std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<ExtensionService> extension_service_;
-
-  content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<content::InProcessUtilityThreadHelper>
-      in_process_utility_thread_helper_;
-  MockExtensionRegistryObserver observer_;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  // ChromeOS needs a user manager to instantiate an extension service.
-  ash::ScopedTestUserManager test_user_manager_;
-#endif
-
- private:
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
-TEST_F(ZipFileInstallerTest, GoodZip) {
-  RunInstaller("good.zip", /*expect_error=*/false);
-}
-
-TEST_F(ZipFileInstallerTest, BadZip) {
-  // Manifestless archive.
-  RunInstaller("bad.zip", /*expect_error=*/true);
-}
-
-TEST_F(ZipFileInstallerTest, ZipWithPublicKey) {
-  RunInstaller("public_key.zip", /*expect_error=*/false);
-  const char kIdForPublicKey[] = "ikppjpenhoddphklkpdfdfdabbakkpal";
-  EXPECT_EQ(observer_.last_extension_installed, kIdForPublicKey);
-}
-
-TEST_F(ZipFileInstallerTest, NonTheme_FileExtractionFilter) {
+TEST_F(ZipFileInstallerFilterTest, NonTheme_FileExtractionFilter) {
   const std::vector<UnzipFileFilterTestCase> cases = {
       {FILE_PATH_LITERAL("foo"), true},
       {FILE_PATH_LITERAL("foo.nexe"), true},
@@ -209,7 +165,7 @@ TEST_F(ZipFileInstallerTest, NonTheme_FileExtractionFilter) {
   RunZipFileFilterTest(cases, filter);
 }
 
-TEST_F(ZipFileInstallerTest, Theme_FileExtractionFilter) {
+TEST_F(ZipFileInstallerFilterTest, Theme_FileExtractionFilter) {
   const std::vector<UnzipFileFilterTestCase> cases = {
       {FILE_PATH_LITERAL("image.jpg"), true},
       {FILE_PATH_LITERAL("IMAGE.JPEG"), true},
@@ -226,7 +182,7 @@ TEST_F(ZipFileInstallerTest, Theme_FileExtractionFilter) {
   RunZipFileFilterTest(cases, filter);
 }
 
-TEST_F(ZipFileInstallerTest, ManifestExtractionFilter) {
+TEST_F(ZipFileInstallerFilterTest, ManifestExtractionFilter) {
   const std::vector<UnzipFileFilterTestCase> cases = {
       {FILE_PATH_LITERAL("manifest.json"), true},
       {FILE_PATH_LITERAL("MANIFEST.JSON"), true},
@@ -237,6 +193,163 @@ TEST_F(ZipFileInstallerTest, ManifestExtractionFilter) {
   base::RepeatingCallback<bool(const base::FilePath&)> filter =
       base::BindRepeating(&ZipFileInstaller::IsManifestFile);
   RunZipFileFilterTest(cases, filter);
+}
+
+class ZipFileInstallerLocationTest : public ZipFileInstallerTest,
+                                     public testing::WithParamInterface<bool> {
+ public:
+  void SetUp() override {
+    ZipFileInstallerTest::SetUp();
+    const bool kFeatureEnabled = GetParam();
+    feature_list_.InitWithFeatureState(
+        extensions_features::kExtensionsZipFileInstalledInProfileDir,
+        kFeatureEnabled);
+    if (kFeatureEnabled) {
+      expected_extension_install_directory_ =
+          service()->unpacked_install_directory();
+    } else {
+      base::FilePath dir_temp;
+      ASSERT_TRUE(base::PathService::Get(base::DIR_TEMP, &dir_temp));
+      expected_extension_install_directory_ = dir_temp;
+    }
+  }
+
+  // Install the .zip in the test directory with `zip_name` and `expect_error`
+  // if it should fail. The method installs the .zip differently based on
+  // whether `extensions_features::kExtensionsZipFileInstalledInProfileDir` is
+  // enabled. `unzip_dir_root` allows passing a custom installation path when
+  // that feature is enabled.
+  void RunInstaller(const std::string& zip_name,
+                    bool expect_error,
+                    base::FilePath unzip_dir_root = base::FilePath());
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::FilePath expected_extension_install_directory_;
+};
+
+void ZipFileInstallerLocationTest::RunInstaller(const std::string& zip_name,
+                                                bool expect_error,
+                                                base::FilePath unzip_dir_root) {
+  base::FilePath original_zip_path;
+  ASSERT_TRUE(
+      base::PathService::Get(chrome::DIR_TEST_DATA, &original_zip_path));
+  original_zip_path = original_zip_path.AppendASCII("extensions")
+                          .AppendASCII("zipfile_installer")
+                          .AppendASCII(zip_name);
+  ASSERT_TRUE(base::PathExists(original_zip_path)) << original_zip_path.value();
+  zipfile_installer_ = ZipFileInstaller::Create(
+      GetExtensionFileTaskRunner(),
+      MakeRegisterInExtensionServiceCallback(service()));
+
+  if (GetParam()) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ZipFileInstaller::InstallZipFileToUnpackedExtensionsDir,
+                       zipfile_installer_, original_zip_path,
+                       unzip_dir_root.empty()
+                           ? service()->unpacked_install_directory()
+                           : unzip_dir_root));
+  } else {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&ZipFileInstaller::InstallZipFileToTempDir,
+                                  zipfile_installer_, original_zip_path));
+  }
+  observer_.WaitForInstall(expect_error);
+  task_environment()->RunUntilIdle();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ZipFileInstallerLocationTest,
+    // extensions_features::kExtensionsZipFileInstalledInProfileDir enabled.
+    testing::Bool(),
+    [](const testing::TestParamInfo<ZipFileInstallerLocationTest::ParamType>&
+           info) { return info.param ? "ProfileDir" : "TempDir"; });
+
+// Tests that a normal .zip is installed into the expected install path.
+TEST_P(ZipFileInstallerLocationTest, GoodZip) {
+  RunInstaller(/*zip_name=*/"good.zip",
+               /*expect_error=*/false);
+
+  // Expect extension install directory to be immediate subdir of expected
+  // temp install directory. E.g. /a/b/c/d == /a/b/c + /d.
+  EXPECT_EQ(observer_.last_extension_installed_path,
+            expected_extension_install_directory_.Append(
+                observer_.last_extension_installed_path.BaseName()));
+}
+
+TEST_P(ZipFileInstallerLocationTest, BadZip) {
+  // Manifestless archive.
+  RunInstaller(/*zip_name=*/"bad.zip",
+               /*expect_error=*/true);
+}
+
+// Tests installing the same .zip twice results in two separate install
+// directories.
+TEST_P(ZipFileInstallerLocationTest, MultipleSameZipInstallSeparately) {
+  RunInstaller(/*zip_name=*/"good.zip",
+               /*expect_error=*/false);
+
+  base::FilePath dir_temp;
+  base::PathService::Get(base::DIR_TEMP, &dir_temp);
+  base::FilePath first_install_path = observer_.last_extension_installed_path;
+  // Expect extension install directory to be immediate subdir of expected
+  // unpacked install directory. E.g. /a/b/c/d == /a/b/c + /d.
+  EXPECT_EQ(observer_.last_extension_installed_path,
+            expected_extension_install_directory_.Append(
+                observer_.last_extension_installed_path.BaseName()));
+
+  RunInstaller(/*zip_name=*/"good.zip",
+               /*expect_error=*/false);
+
+  base::FilePath second_install_path = observer_.last_extension_installed_path;
+  // Expect extension install directory to be immediate subdir of expected
+  // unpacked install directory. E.g. /a/b/c/d == /a/b/c + /d.
+  EXPECT_EQ(observer_.last_extension_installed_path,
+            expected_extension_install_directory_.Append(
+                observer_.last_extension_installed_path.BaseName()));
+
+  // Confirm that the two extensions are installed in two separate
+  // directories.
+  EXPECT_NE(first_install_path, second_install_path);
+}
+
+// Tests that we error when we cannot create the parent directory of where to
+// install the .zips to.
+TEST_P(ZipFileInstallerLocationTest, CannotCreateContainingDirectoryZip) {
+  // This test is only relevant to the new feature.
+  if (!GetParam()) {
+    return;
+  }
+
+  // TODO(crbug.com/1378775): Have this expect a specific error rather than just
+  // an error since other things can cause an error.
+  RunInstaller(
+      /*zip_name=*/"good.zip", /*expect_error=*/true, /*unzip_dir_root=*/
+#if !BUILDFLAG(IS_WIN)
+      base::FilePath(
+          FILE_PATH_LITERAL("/NonExistentDirectory/UnpackedExtensions"))
+#else
+      // Windows will create unexpected paths so we use explicitly disallowed
+      // characters in the Windows filesystem to ensure creating this directory
+      // fails.
+      base::FilePath(
+          FILE_PATH_LITERAL("|<IllegalWinDirName>|/UnpackedExtensions"))
+#endif  // !BUILDFLAG(IS_WIN)
+  );
+}
+
+// Tests that a .zip with a public key installs with the expected extension ID
+// and to the correct path.
+TEST_P(ZipFileInstallerLocationTest, ZipWithPublicKey) {
+  RunInstaller(/*zip_name=*/"public_key.zip",
+               /*expect_error=*/false);
+  const char kIdForPublicKey[] = "ikppjpenhoddphklkpdfdfdabbakkpal";
+  EXPECT_EQ(observer_.last_extension_installed, kIdForPublicKey);
+  EXPECT_EQ(observer_.last_extension_installed_path,
+            expected_extension_install_directory_.Append(
+                observer_.last_extension_installed_path.BaseName()));
 }
 
 }  // namespace extensions

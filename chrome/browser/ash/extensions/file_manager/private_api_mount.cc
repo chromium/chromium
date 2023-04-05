@@ -171,7 +171,7 @@ FileManagerPrivateCancelMountingFunction::Run() {
 void FileManagerPrivateCancelMountingFunction::OnCancelled(
     ash::MountError error) {
   if (error == ash::MountError::kSuccess) {
-    Respond(WithArguments());
+    Respond(NoArguments());
   } else {
     Respond(Error(file_manager_private::ToString(
         file_manager::MountErrorToMountCompletedStatus(error))));
@@ -223,7 +223,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateRemoveMountFunction::Run() {
                                    volume->file_system_id())) {
         return RespondNow(Error("Unmount failed"));
       }
-      return RespondNow(WithArguments());
+      return RespondNow(NoArguments());
     }
 
     case file_manager::VOLUME_TYPE_CROSTINI:
@@ -236,7 +236,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateRemoveMountFunction::Run() {
     case file_manager::VOLUME_TYPE_SMB:
       ash::smb_client::SmbServiceFactory::Get(profile)->UnmountSmbFs(
           volume->mount_path());
-      return RespondNow(WithArguments());
+      return RespondNow(NoArguments());
 
     case file_manager::VOLUME_TYPE_TESTING:
       file_manager::VolumeManager::Get(profile)
@@ -245,7 +245,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateRemoveMountFunction::Run() {
               volume->is_read_only(), volume->storage_device_path(),
               volume->drive_label(), volume->file_system_type());
 
-      return RespondNow(WithArguments());
+      return RespondNow(NoArguments());
 
     case file_manager::VOLUME_TYPE_GUEST_OS:
       // TODO(crbug/1293229): Figure out if we need to support unmounting. I'm
@@ -261,7 +261,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateRemoveMountFunction::Run() {
 
 void FileManagerPrivateRemoveMountFunction::OnSshFsUnmounted(bool ok) {
   if (ok) {
-    Respond(WithArguments());
+    Respond(NoArguments());
   } else {
     Respond(Error(file_manager_private::ToString(
         api::file_manager_private::MOUNT_ERROR_UNKNOWN_ERROR)));
@@ -271,7 +271,7 @@ void FileManagerPrivateRemoveMountFunction::OnSshFsUnmounted(bool ok) {
 void FileManagerPrivateRemoveMountFunction::OnDiskUnmounted(
     ash::MountError error) {
   if (error == ash::MountError::kSuccess) {
-    Respond(WithArguments());
+    Respond(NoArguments());
   } else {
     Respond(Error(file_manager_private::ToString(
         file_manager::MountErrorToMountCompletedStatus(error))));

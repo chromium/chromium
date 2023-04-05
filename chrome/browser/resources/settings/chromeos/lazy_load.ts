@@ -56,6 +56,7 @@ import './guest_os/guest_os_container_select.js';
 import './guest_os/guest_os_shared_usb_devices.js';
 import './guest_os/guest_os_shared_usb_devices_add_dialog.js';
 import './guest_os/guest_os_shared_paths.js';
+import './keyboard_shortcut_banner/keyboard_shortcut_banner.js';
 import './os_a11y_page/manage_a11y_page.js';
 import './os_a11y_page/text_to_speech_page.js';
 import './os_a11y_page/display_and_magnification_page.js';
@@ -108,6 +109,7 @@ export {CROSTINI_TYPE, GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsShar
 export {TetherConnectionDialogElement} from './internet_page/tether_connection_dialog.js';
 export {KeyboardShortcutBanner} from './keyboard_shortcut_banner/keyboard_shortcut_banner.js';
 export {SettingsAudioAndCaptionsPageElement} from './os_a11y_page/audio_and_captions_page.js';
+export {SettingsKeyboardAndTextInputPageElement} from './os_a11y_page/keyboard_and_text_input_page.js';
 export {SettingsTextToSpeechPageElement} from './os_a11y_page/text_to_speech_page.js';
 export {SettingsTtsSubpageElement} from './os_a11y_page/tts_subpage.js';
 export {SettingsGoogleDriveSubpageElement} from './os_files_page/google_drive_subpage.js';
@@ -127,6 +129,7 @@ export {CupsPrintersEntryManager} from './os_printing_page/cups_printers_entry_m
 export {OsSettingsPrintingPageElement} from './os_printing_page/os_printing_page.js';
 export {MediaDevicesProxy} from './os_privacy_page/media_devices_proxy.js';
 export {PrivacyHubBrowserProxy, PrivacyHubBrowserProxyImpl} from './os_privacy_page/privacy_hub_browser_proxy.js';
+export {SettingsSmartPrivacySubpage} from './os_privacy_page/smart_privacy_subpage.js';
 export {OsResetBrowserProxyImpl} from './os_reset_page/os_reset_browser_proxy.js';
 export {GoogleAssistantBrowserProxyImpl} from './os_search_page/google_assistant_browser_proxy.js';
 export {ConsentStatus, DspHotwordState} from './os_search_page/google_assistant_subpage.js';

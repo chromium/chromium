@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 29
+// Next MinVersion: 30
 
 module arc.mojom;
 
@@ -191,6 +191,9 @@ struct ArcNotificationData {
   // True if rendering should be done on the Chrome side
   [MinVersion=28]
   bool render_on_chrome;
+  [MinVersion=29]
+  // Identifier of the group to which the notification is assigned
+  string? group_key;
 };
 
 struct ArcDoNotDisturbStatus {

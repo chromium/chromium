@@ -156,6 +156,49 @@ suite('PasswordManagerSideBarTest', function() {
     // The three passwords with types of one of LEAKED or PHISHED should be
     // reflected in the sidebar. The others should not.
     assertTrue(isVisible(sidebar.$.compromisedPasswords));
-    assertEquals('3', sidebar.$.compromisedPasswords.textContent);
+    assertEquals('3', sidebar.$.compromisedPasswords.innerText);
+  });
+
+  test('more than 100 compromised passwords shows 99+', async function() {
+    passwordManager.data.insecureCredentials = [];
+    for (let i = 0; i < 100; i++) {
+      passwordManager.data.insecureCredentials.push(
+          makeInsecureCredential({
+            types: [
+              CompromiseType.LEAKED,
+            ],
+          }),
+      );
+    }
+
+    assertTrue(!!passwordManager.listeners.insecureCredentialsListener);
+    passwordManager.listeners.insecureCredentialsListener(
+        passwordManager.data.insecureCredentials);
+    await flushTasks();
+    // There are three digits of compromised passwords, which should
+    // overflow and show '99+'.
+    assertTrue(isVisible(sidebar.$.compromisedPasswords));
+    assertEquals('99+', sidebar.$.compromisedPasswords.innerText);
+  });
+
+  test('exactly 99 compromised passwords', async function() {
+    passwordManager.data.insecureCredentials = [];
+    for (let i = 0; i < 99; i++) {
+      passwordManager.data.insecureCredentials.push(
+          makeInsecureCredential({
+            types: [
+              CompromiseType.LEAKED,
+            ],
+          }),
+      );
+    }
+
+    assertTrue(!!passwordManager.listeners.insecureCredentialsListener);
+    passwordManager.listeners.insecureCredentialsListener(
+        passwordManager.data.insecureCredentials);
+    await flushTasks();
+    // Verify that the overflow starts at 100, and is not off-by-one.
+    assertTrue(isVisible(sidebar.$.compromisedPasswords));
+    assertEquals('99', sidebar.$.compromisedPasswords.innerText);
   });
 });

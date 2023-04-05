@@ -19,7 +19,9 @@
 #include <limits>
 #include <string>
 #include <utility>
+#include <vector>
 
+#include "base/check.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
@@ -381,35 +383,43 @@ bool IsPathSafeToSetAclOn(const FilePath& path) {
     return true;
   }
 #endif  // BUILDFLAG(CLANG_PROFILING)
-  std::vector<int> valid_paths({base::DIR_TEMP});
-  // Admin users create temporary files in Program Files, see
-  // `CreateNewTempDirectory` below.
-  if (::IsUserAnAdmin()) {
-    valid_paths.push_back(base::DIR_PROGRAM_FILES);
-  }
+  std::vector<int> valid_path_keys({DIR_TEMP});
   if (g_extra_allowed_path_for_no_execute) {
-    valid_paths.push_back(g_extra_allowed_path_for_no_execute);
+    valid_path_keys.push_back(g_extra_allowed_path_for_no_execute);
   }
 
   // MakeLongFilePath is needed here because temp files can have an 8.3 path
   // under certain conditions. See comments in base::MakeLongFilePath.
-  base::FilePath long_path = base::MakeLongFilePath(path);
+  FilePath long_path = MakeLongFilePath(path);
   DCHECK(!long_path.empty()) << "Cannot get long path for " << path;
 
-  for (const auto path_type : valid_paths) {
-    base::FilePath valid_path;
-    if (!base::PathService::Get(path_type, &valid_path)) {
-      DLOG(FATAL) << "Cannot get path for pathservice key " << path_type;
+  std::vector<FilePath> valid_paths;
+  for (const auto path_key : valid_path_keys) {
+    FilePath valid_path;
+    if (!PathService::Get(path_key, &valid_path)) {
+      DLOG(FATAL) << "Cannot get path for pathservice key " << path_key;
       continue;
     }
+    valid_paths.push_back(valid_path);
+  }
+
+  // Admin users create temporary files in `GetSecureSystemTemp`, see
+  // `CreateNewTempDirectory` below.
+  FilePath secure_system_temp;
+  if (::IsUserAnAdmin() && GetSecureSystemTemp(&secure_system_temp)) {
+    valid_paths.push_back(secure_system_temp);
+  }
+
+  for (const auto& valid_path : valid_paths) {
     // Temp files can sometimes have an 8.3 path. See comments in
-    // base::MakeLongFilePath.
-    base::FilePath full_path = base::MakeLongFilePath(valid_path);
+    // `MakeLongFilePath`.
+    FilePath full_path = MakeLongFilePath(valid_path);
     DCHECK(!full_path.empty()) << "Cannot get long path for " << valid_path;
     if (full_path.IsParent(long_path)) {
       return true;
     }
   }
+
   return false;
 }
 
@@ -676,15 +686,39 @@ bool CreateTemporaryDirInDir(const FilePath& base_dir,
   return false;
 }
 
-// The directory is created under %ProgramFiles% for security reasons if the
-// caller is admin. Since only admin can write to %ProgramFiles%, this avoids
-// attacks from lower privilege processes.
+bool GetSecureSystemTemp(FilePath* temp) {
+  ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
+
+  CHECK(temp);
+
+  for (const auto key : {DIR_WINDOWS, DIR_PROGRAM_FILES}) {
+    FilePath secure_system_temp;
+    if (!PathService::Get(key, &secure_system_temp)) {
+      continue;
+    }
+
+    if (key == DIR_WINDOWS) {
+      secure_system_temp = secure_system_temp.AppendASCII("SystemTemp");
+    }
+
+    if (PathExists(secure_system_temp) && PathIsWritable(secure_system_temp)) {
+      *temp = secure_system_temp;
+      return true;
+    }
+  }
+
+  return false;
+}
+
+// The directory is created under `GetSecureSystemTemp` for security reasons if
+// the caller is admin to avoid attacks from lower privilege processes.
 //
-// If unable to create a dir under %ProgramFiles%, the dir is created under
-// %TEMP%. The reasons for not being able to create a dir under %ProgramFiles%
-// could be because we are unable to resolve `DIR_PROGRAM_FILES`, say due to
-// registry redirection, or unable to create a directory due to %ProgramFiles%
-// being read-only or having atypical ACLs.
+// If unable to create a dir under `GetSecureSystemTemp`, the dir is created
+// under %TEMP%. The reasons for not being able to create a dir under
+// `GetSecureSystemTemp` could be because `%systemroot%\SystemTemp` does not
+// exist, or unable to resolve `DIR_WINDOWS` or `DIR_PROGRAM_FILES`, say due to
+// registry redirection, or unable to create a directory due to
+// `GetSecureSystemTemp` being read-only or having atypical ACLs.
 bool CreateNewTempDirectory(const FilePath::StringType& prefix,
                             FilePath* new_temp_path) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
@@ -692,7 +726,7 @@ bool CreateNewTempDirectory(const FilePath::StringType& prefix,
   DCHECK(new_temp_path);
 
   FilePath parent_dir;
-  if (::IsUserAnAdmin() && PathService::Get(DIR_PROGRAM_FILES, &parent_dir) &&
+  if (::IsUserAnAdmin() && GetSecureSystemTemp(&parent_dir) &&
       CreateTemporaryDirInDir(parent_dir,
                               prefix.empty() ? kDefaultTempDirPrefix : prefix,
                               new_temp_path)) {

@@ -15,7 +15,8 @@
 
 namespace {
 
-void RecordListContactPeopleResultMetrics(NearbyShareHttpResult result) {
+void RecordListContactPeopleResultMetrics(
+    ash::nearby::NearbyHttpResult result) {
   base::UmaHistogramEnumeration("Nearby.Share.Contacts.HttpResult", result);
 }
 
@@ -176,7 +177,7 @@ void NearbyShareContactDownloaderImpl::OnListContactPeopleSuccess(
           ? absl::nullopt
           : absl::make_optional<std::string>(response.next_page_token());
   client_.reset();
-  RecordListContactPeopleResultMetrics(NearbyShareHttpResult::kSuccess);
+  RecordListContactPeopleResultMetrics(ash::nearby::NearbyHttpResult::kSuccess);
 
   if (next_page_token) {
     CallListContactPeople(next_page_token);
@@ -223,10 +224,11 @@ void NearbyShareContactDownloaderImpl::OnListContactPeopleSuccess(
 }
 
 void NearbyShareContactDownloaderImpl::OnListContactPeopleFailure(
-    NearbyShareHttpError error) {
+    ash::nearby::NearbyHttpError error) {
   timer_.Stop();
   client_.reset();
-  RecordListContactPeopleResultMetrics(NearbyShareHttpErrorToResult(error));
+  RecordListContactPeopleResultMetrics(
+      ash::nearby::NearbyHttpErrorToResult(error));
   RecordContactDownloadResultMetrics(/*success=*/false, current_page_number_,
                                      start_timestamp_);
 
@@ -237,7 +239,7 @@ void NearbyShareContactDownloaderImpl::OnListContactPeopleFailure(
 
 void NearbyShareContactDownloaderImpl::OnListContactPeopleTimeout() {
   client_.reset();
-  RecordListContactPeopleResultMetrics(NearbyShareHttpResult::kTimeout);
+  RecordListContactPeopleResultMetrics(ash::nearby::NearbyHttpResult::kTimeout);
   RecordContactDownloadResultMetrics(/*success=*/false, current_page_number_,
                                      start_timestamp_);
 

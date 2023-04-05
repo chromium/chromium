@@ -6,10 +6,10 @@
 
 #include <string>
 
-#include "base/guid.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/uuid.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/grit/components_resources.h"
 #include "crypto/sha2.h"
@@ -36,7 +36,7 @@ std::string SHA256InHex(base::StringPiece str) {
 
 const GURL GetDistillerViewUrlFromEntryId(const std::string& scheme,
                                           const std::string& entry_id) {
-  GURL url(scheme + "://" + base::GenerateGUID());
+  GURL url(scheme + "://" + base::GenerateUuid());
   return net::AppendOrReplaceQueryParameter(url, kEntryIdKey, entry_id);
 }
 
@@ -44,7 +44,7 @@ const GURL GetDistillerViewUrlFromUrl(const std::string& scheme,
                                       const GURL& url,
                                       const std::string& title,
                                       int64_t start_time_ms) {
-  GURL view_url(scheme + "://" + base::GenerateGUID() + kSeparator +
+  GURL view_url(scheme + "://" + base::GenerateUuid() + kSeparator +
                 SHA256InHex(url.spec()));
   view_url = net::AppendOrReplaceQueryParameter(view_url, kTitleKey, title);
   if (start_time_ms > 0) {

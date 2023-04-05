@@ -59,36 +59,6 @@ static void JNI_TraceEvent_RegisterEnabledObserver(JNIEnv* env) {
       std::make_unique<TraceEnabledObserver>());
 }
 
-static void JNI_TraceEvent_StartATrace(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& category_filter) {
-  // ATrace not supported for robolectric.
-#if BUILDFLAG(IS_ANDROID)
-  std::string category_filter_utf8 =
-      ConvertJavaStringToUTF8(env, category_filter);
-  base::trace_event::TraceLog::GetInstance()->StartATrace(category_filter_utf8);
-#endif
-}
-
-static void JNI_TraceEvent_StopATrace(JNIEnv* env) {
-  // ATrace not supported for robolectric.
-#if BUILDFLAG(IS_ANDROID)
-  base::trace_event::TraceLog::GetInstance()->StopATrace();
-#endif
-}
-
-static void JNI_TraceEvent_SetupATraceStartupTrace(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& category_filter) {
-  // ATrace not supported for robolectric.
-#if BUILDFLAG(IS_ANDROID)
-  std::string category_filter_utf8 =
-      ConvertJavaStringToUTF8(env, category_filter);
-  base::trace_event::TraceLog::GetInstance()->SetupATraceStartupTrace(
-      category_filter_utf8);
-#endif
-}
-
 static jboolean JNI_TraceEvent_ViewHierarchyDumpEnabled(JNIEnv* env) {
   static const unsigned char* enabled =
       TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
@@ -151,12 +121,6 @@ static void JNI_TraceEvent_RegisterEnabledObserver(JNIEnv* env) {
   // setEventNameFilteringEnabled to avoid "unused function" warning.
   base::android::Java_TraceEvent_setEventNameFilteringEnabled(env, false);
 }
-static void JNI_TraceEvent_StartATrace(JNIEnv* env,
-                                       const JavaParamRef<jstring>&) {}
-static void JNI_TraceEvent_StopATrace(JNIEnv* env) {}
-static void JNI_TraceEvent_SetupATraceStartupTrace(
-    JNIEnv* env,
-    const JavaParamRef<jstring>&) {}
 static jboolean JNI_TraceEvent_ViewHierarchyDumpEnabled(JNIEnv* env) {
   return false;
 }

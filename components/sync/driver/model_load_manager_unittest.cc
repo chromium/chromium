@@ -405,7 +405,8 @@ TEST_F(SyncModelLoadManagerTest, ClearsMetadataForNotPreferredDataType) {
   EXPECT_EQ(1, GetController(APPS)->model()->clear_metadata_call_count());
 }
 
-TEST_F(SyncModelLoadManagerTest, SwitchFromOnDiskToInMemoryRestartsTypes) {
+TEST_F(SyncModelLoadManagerTest,
+       SwitchFromFullSyncToTransportModeRestartsTypes) {
   // Initialize the manager with two data types.
   controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(
       BOOKMARKS, /*enable_transport_only_model=*/true);
@@ -414,7 +415,6 @@ TEST_F(SyncModelLoadManagerTest, SwitchFromOnDiskToInMemoryRestartsTypes) {
 
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
   ModelTypeSet preferred_types(BOOKMARKS, APPS);
-  ModelTypeSet desired_types = preferred_types;
 
   ConfigureContext configure_context;
   configure_context.sync_mode = SyncMode::kFull;
@@ -422,7 +422,7 @@ TEST_F(SyncModelLoadManagerTest, SwitchFromOnDiskToInMemoryRestartsTypes) {
 
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
 
-  model_load_manager.Initialize(desired_types, preferred_types,
+  model_load_manager.Initialize(preferred_types, preferred_types,
                                 configure_context);
 
   ASSERT_EQ(GetController(BOOKMARKS)->state(),
@@ -430,9 +430,10 @@ TEST_F(SyncModelLoadManagerTest, SwitchFromOnDiskToInMemoryRestartsTypes) {
   ASSERT_EQ(GetController(APPS)->state(), DataTypeController::MODEL_LOADED);
   testing::Mock::VerifyAndClearExpectations(&delegate_);
 
-  // Switch to in-memory storage.
+  // Switch to transport mode.
   configure_context.sync_mode = SyncMode::kTransportOnly;
-  desired_types.Remove(APPS);
+  // For this test, assume that APPS is not supported in transport mode, but
+  // BOOKMARKS is.
   preferred_types.Remove(APPS);
 
   // Data types should get restarted.
@@ -440,15 +441,14 @@ TEST_F(SyncModelLoadManagerTest, SwitchFromOnDiskToInMemoryRestartsTypes) {
   EXPECT_CALL(delegate_, OnSingleDataTypeWillStop(BOOKMARKS, _));
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
 
-  model_load_manager.Initialize(desired_types, preferred_types,
+  model_load_manager.Initialize(preferred_types, preferred_types,
                                 configure_context);
 
   ASSERT_EQ(GetController(BOOKMARKS)->state(),
             DataTypeController::MODEL_LOADED);
   ASSERT_EQ(GetController(APPS)->state(), DataTypeController::NOT_RUNNING);
-  // Since we switched to in-memory storage, the metadata for the now-disabled
-  // type should NOT get cleared.
-  EXPECT_EQ(0, GetController(APPS)->model()->clear_metadata_call_count());
+  // When switching modes, the metadata should get cleared.
+  EXPECT_EQ(1, GetController(APPS)->model()->clear_metadata_call_count());
 }
 
 TEST_F(SyncModelLoadManagerTest,

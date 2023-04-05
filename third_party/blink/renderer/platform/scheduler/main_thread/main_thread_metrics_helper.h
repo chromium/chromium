@@ -65,10 +65,6 @@ class PLATFORM_EXPORT MainThreadMetricsHelper : public MetricsHelper {
   void ResetForTest(base::TimeTicks now);
 
  private:
-  using TaskDurationPerQueueTypeMetricReporter =
-      scheduling_metrics::TaskDurationMetricReporter<
-          MainThreadTaskQueue::QueueType>;
-
   void ReportLowThreadLoadForPageAlmostIdleSignal(int load_percentage);
 
   MainThreadSchedulerImpl* main_thread_scheduler_;  // NOT OWNED
@@ -83,20 +79,6 @@ class PLATFORM_EXPORT MainThreadMetricsHelper : public MetricsHelper {
   ThreadLoadTracker main_thread_load_tracker_;
   ThreadLoadTracker background_main_thread_load_tracker_;
   ThreadLoadTracker foreground_main_thread_load_tracker_;
-
-  using TaskDurationPerTaskTypeMetricReporter =
-      scheduling_metrics::TaskDurationMetricReporter<TaskType>;
-
-  // The next three reporters are used to report the duration per task type
-  // split by renderer scheduler use case (check use_case.h for reference):
-  // None, Loading, and User Input (aggregation of multiple input-handling
-  // related use cases).
-  TaskDurationPerTaskTypeMetricReporter
-      no_use_case_per_task_type_duration_reporter_;
-  TaskDurationPerTaskTypeMetricReporter
-      loading_per_task_type_duration_reporter_;
-  TaskDurationPerTaskTypeMetricReporter
-      input_handling_per_task_type_duration_reporter_;
 
   // When adding a new renderer priority, initialize an entry in the constructor
   // and update histograms.xml.

@@ -185,6 +185,14 @@ export class CheckupListItemElement extends CheckupListItemElementBase {
       },
     }));
   }
+
+  private getChangeButtonAriaLabel_(): string {
+    return this.i18n('changePasswordAriaDescription', this.group.name);
+  }
+
+  private getMoreButtonAriaLabel_(): string {
+    return this.i18n('moreActionsAriaDescription', this.group.name);
+  }
 }
 
 declare global {

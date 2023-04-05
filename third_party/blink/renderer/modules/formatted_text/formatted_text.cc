@@ -40,8 +40,7 @@ FormattedText::FormattedText(ExecutionContext* execution_context) {
   ComputedStyleBuilder builder =
       document->GetStyleResolver().CreateComputedStyleBuilder();
   builder.SetDisplay(EDisplay::kBlock);
-  block_ = LayoutBlockFlow::CreateAnonymous(document, builder.TakeStyle(),
-                                            LegacyLayout::kAuto);
+  block_ = LayoutBlockFlow::CreateAnonymous(document, builder.TakeStyle());
   block_->SetIsLayoutNGObjectForFormattedText(true);
 }
 

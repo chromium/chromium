@@ -31,6 +31,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -139,10 +140,19 @@ class SplitViewDragIndicators::RotatedImageLabelView
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
 
+    SetBackground(views::CreateThemedRoundedRectBackground(
+        cros_tokens::kCrosSysBaseElevated, kSplitviewLabelRoundRectRadiusDp));
+
+    SetBorder(std::make_unique<views::HighlightBorder>(
+        /*corner_radius=*/kSplitviewLabelRoundRectRadiusDp,
+        views::HighlightBorder::Type::kHighlightBorder1,
+        /*use_light_colors=*/false));
+
     label_ = AddChildView(std::make_unique<views::Label>(
         std::u16string(), views::style::CONTEXT_LABEL));
     label_->SetFontList(views::Label::GetDefaultFontList().Derive(
         2, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::NORMAL));
+    label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
   }
 
   RotatedImageLabelView(const RotatedImageLabelView&) = delete;
@@ -196,33 +206,6 @@ class SplitViewDragIndicators::RotatedImageLabelView
         SplitViewController::SnapPosition::kNone) {
       DoSplitviewOpacityAnimation(layer(), SPLITVIEW_ANIMATION_TEXT_FADE_IN);
       return;
-    }
-  }
-
-  // views:View:
-  void OnThemeChanged() override {
-    views::View::OnThemeChanged();
-
-    SetBackground(views::CreateRoundedRectBackground(
-        AshColorProvider::Get()->GetBaseLayerColor(
-            AshColorProvider::BaseLayerType::kTransparent80),
-        kSplitviewLabelRoundRectRadiusDp));
-
-    // TODO(crbug/1258983): Add blur background. This requires fixing a bug
-    // that `SetRoundedCornerRadius()` does not work with transform or find a
-    // solution to work around.
-    label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary));
-    label_->SetBackgroundColor(AshColorProvider::Get()->GetBaseLayerColor(
-        AshColorProvider::BaseLayerType::kTransparent80));
-    label_->SetFontList(views::Label::GetDefaultFontList().Derive(
-        2, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::NORMAL));
-
-    if (chromeos::features::IsDarkLightModeEnabled()) {
-      SetBorder(std::make_unique<views::HighlightBorder>(
-          /*corner_radius=*/kSplitviewLabelRoundRectRadiusDp,
-          views::HighlightBorder::Type::kHighlightBorder1,
-          /*use_light_colors=*/false));
     }
   }
 

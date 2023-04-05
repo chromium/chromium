@@ -366,6 +366,7 @@ All changes to this list should go through Blink's feature review process: http:
     text-transform
     text-underline-offset
     text-underline-position
+    text-wrap
     top
     touch-action
     transform
@@ -383,7 +384,7 @@ All changes to this list should go through Blink's feature review process: http:
     vertical-align
     view-transition-name
     visibility
-    white-space
+    white-space-collapse
     widows
     width
     will-change
@@ -746,6 +747,9 @@ All changes to this list should go through Blink's feature review process: http:
         transition-duration
         transition-property
         transition-timing-function
+    white-space
+        text-wrap
+        white-space-collapse
 
 [ALIASES]
     -epub-caption-side

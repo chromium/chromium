@@ -52,7 +52,7 @@ BASE_FEATURE(kAppDeduplicationServiceFondue,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 BASE_FEATURE(kAppPreloadService,
              "AppPreloadService",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_MAC)
@@ -599,6 +599,10 @@ BASE_FEATURE(kHappinessTrackingGeneralCamera,
 // Enables the Happiness Tracking System for Privacy Hub baseline survey.
 BASE_FEATURE(kHappinessTrackingPrivacyHubBaseline,
              "HappinessTrackingPrivacyHubBaseline",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// Enables the Happiness Tracking System for OS Settings Search survey.
+BASE_FEATURE(kHappinessTrackingOsSettingsSearch,
+             "HappinessTrackingOsSettingsSearch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 

@@ -40,6 +40,11 @@ int64_t MockWaylandPlatformWindowDelegate::OnStateUpdate(
     bool origin_changed = old.bounds_dip.origin() != latest.bounds_dip.origin();
     OnBoundsChanged({origin_changed});
   }
+
+  if (!latest.ProducesFrameOnUpdateFrom(old)) {
+    return -1;
+  }
+
   return ++viz_seq_;
 }
 

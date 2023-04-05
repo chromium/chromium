@@ -893,23 +893,13 @@ Channel::~Channel() {
 // static
 scoped_refptr<Channel> Channel::CreateForIpczDriver(
     Delegate* delegate,
-    Endpoint endpoint,
+    PlatformChannelEndpoint endpoint,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner) {
 #if BUILDFLAG(IS_NACL)
   return nullptr;
 #else
-  ConnectionParams params =
-      absl::visit(base::Overloaded{
-                      [](PlatformChannelEndpoint& endpoint) {
-                        return ConnectionParams(std::move(endpoint));
-                      },
-                      [](PlatformChannelServerEndpoint& endpoint) {
-                        return ConnectionParams(std::move(endpoint));
-                      },
-                  },
-                  endpoint);
-  return Create(delegate, std::move(params), HandlePolicy::kAcceptHandles,
-                std::move(io_task_runner));
+  return Create(delegate, ConnectionParams{std::move(endpoint)},
+                HandlePolicy::kAcceptHandles, std::move(io_task_runner));
 #endif
 }
 

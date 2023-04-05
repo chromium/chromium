@@ -56,6 +56,7 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/session_manager/core/session_manager.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/display/types/display_constants.h"
 
 namespace {
@@ -66,6 +67,8 @@ AppListClientImpl* g_app_list_client_instance = nullptr;
 constexpr base::TimeDelta kTimeMetricsMin = base::Seconds(1);
 constexpr base::TimeDelta kTimeMetricsMax = base::Days(7);
 constexpr int kTimeMetricsBucketCount = 100;
+
+constexpr char kSearchBoxIphUrlPlaceholder[] = "https://www.google.com/";
 
 bool IsTabletMode() {
   return ash::TabletMode::IsInTabletMode();
@@ -719,6 +722,12 @@ AppListClientImpl::CreateLauncherSearchIphSession() {
   // return `ScopedIphSessionImpl`.
   return std::make_unique<ScopedIphSessionImpl>(
       tracker, feature_engagement::kIPHLauncherSearchHelpUiFeature);
+}
+
+void AppListClientImpl::OpenSearchBoxIphUrl() {
+  OpenURL(profile_, GURL(kSearchBoxIphUrlPlaceholder),
+          ui::PageTransition::PAGE_TRANSITION_LINK,
+          WindowOpenDisposition::NEW_FOREGROUND_TAB);
 }
 
 void AppListClientImpl::LoadIcon(int profile_id, const std::string& app_id) {

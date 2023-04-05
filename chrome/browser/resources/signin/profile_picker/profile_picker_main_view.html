@@ -1,18 +1,7 @@
 <style include="profile-picker-shared cr-hidden-style cr-shared-style">
   :host {
-    --banner-img-height: 400px;
-    --banner-img-width: 169px;
     --profile-item-border-width: 1px;
     --profile-item-margin: 4px;
-  }
-
-  .banner {
-    height: var(--banner-img-height);
-    overflow: hidden;
-    position: absolute;
-    top: 0;
-    width: var(--banner-img-width);
-    z-index: -1;
   }
 
   .flex-container {
@@ -20,16 +9,6 @@
     flex-flow: column;
     height: calc(100% - var(--cr-button-height) - 2 * var(--footer-spacing));
     justify-content: space-evenly;
-  }
-
-  #leftBanner {
-    background: url(images/left_banner_image.svg);
-    left: 0;
-  }
-
-  #rightBanner {
-    background: url(images/right_banner_image.svg);
-    right: 0;
   }
 
   .title-container {
@@ -112,6 +91,10 @@
     top: 0;
   }
 
+  :host-context([chrome-refresh-2023]) #addProfileButtonLabel {
+    left: 0;
+  }
+
   iron-icon[icon='profiles:add'] {
     --iron-icon-height: var(--profile-card-avatar-icon-size);
     --iron-icon-width: var(--profile-card-avatar-icon-size);
@@ -121,10 +104,13 @@
 
   #browseAsGuestButton {
     margin-inline-start: var(--footer-spacing);
+    padding: 8px 16px;
   }
 
   #browseAsGuestButton > iron-icon {
-    margin-inline-end: 8px;
+    margin-inline-end: 0;
+    --iron-icon-height: 24px;
+    --iron-icon-width: 24px;
   }
 
   cr-checkbox {
@@ -138,14 +124,6 @@
   }
 
   @media (prefers-color-scheme: dark) {
-    #leftBanner {
-      background: url(images/dark_mode_left_banner_image.svg);
-    }
-
-    #rightBanner {
-      background: url(images/dark_mode_right_banner_image.svg);
-    }
-
     .profile-item,
     #addProfile.profile-item {
       border-color: var(--google-grey-700);
@@ -159,8 +137,6 @@
 </style>
 
 <div class="flex-container">
-  <div id="leftBanner" class="banner" hidden="[[isTangibleSyncEnabled_]]"></div>
-  <img id="tangible-sync-style-left-banner" hidden="[[!isTangibleSyncEnabled_]]">
   <div class$="title-container [[getTangibleSyncStyleClass_()]]">
     <img id="product-logo" on-click="onProductLogoTap_"
         srcset="chrome://theme/current-channel-logo@1x 1x,
@@ -188,13 +164,11 @@
       </cr-button>
     </div>
   </div>
-  <div id="rightBanner" class="banner" hidden="[[isTangibleSyncEnabled_]]"></div>
-  <img id="tangible-sync-style-right-banner" hidden="[[!isTangibleSyncEnabled_]]">
 </div>
 <div class="footer">
   <cr-button id="browseAsGuestButton" on-click="onLaunchGuestProfileClick_">
-    <iron-icon icon="profiles:account-circle"></iron-icon>
-    <div>$i18n{browseAsGuestButton}</div>
+    <iron-icon icon="profiles:account-circle" slot="prefix-icon"></iron-icon>
+    $i18n{browseAsGuestButton}
   </cr-button>
   <cr-checkbox id="askOnStartup" checked="{{askOnStartup_}}"
       on-change="onAskOnStartupChangedByUser_" hidden$="[[hideAskOnStartup_]]">

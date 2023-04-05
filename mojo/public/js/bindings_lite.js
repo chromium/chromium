@@ -1410,9 +1410,13 @@ mojo.internal.Map = function(keyType, valueType, valueNullable) {
         const values =
             (value.constructor.name == 'Map') ? Array.from(value.values())
                                               : keys.map(k => value[k]);
-
+        // Size of map is equal to kMapDataSize + 8-byte aligned array for keys
+        // + (not necessarily 8-byte aligned) array for values.
         const size = mojo.internal.kMapDataSize +
-            mojo.internal.computeTotalArraySize({elementType: keyType}, keys) +
+            mojo.internal.align(
+                mojo.internal.computeTotalArraySize(
+                    {elementType: keyType}, keys),
+              8) +
             mojo.internal.computeTotalArraySize(
                 {
                   elementType: valueType,

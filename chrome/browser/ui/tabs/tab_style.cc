@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/tab_style.h"
 
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/layout/layout_provider.h"
 
 namespace {
@@ -18,13 +19,12 @@ int GetSeparatorHeight() {
   return ui::TouchUiController::Get()->touch_ui() ? 24 : 20;
 }
 
+class GM2TabStyle : public TabStyle {};
+class ChromeRefresh2023TabStyle : public GM2TabStyle {};
+
 }  // namespace
 
 TabStyle::~TabStyle() = default;
-
-float TabStyle::GetSelectedTabOpacity() const {
-  return kDefaultSelectedTabOpacity;
-}
 
 // static
 int TabStyle::GetStandardWidth() {
@@ -51,11 +51,6 @@ int TabStyle::GetDragHandleExtension(int height) {
 }
 
 // static
-gfx::Insets TabStyle::GetTabInternalPadding() {
-  return gfx::Insets::VH(0, GetCornerRadius());
-}
-
-// static
 gfx::Size TabStyle::GetSeparatorSize() {
   return gfx::Size(kSeparatorThickness, GetSeparatorHeight());
 }
@@ -76,4 +71,12 @@ int TabStyle::GetCornerRadius() {
 // static
 int TabStyle::GetContentsHorizontalInsetSize() {
   return GetCornerRadius() * 2;
+}
+
+std::unique_ptr<const TabStyle> TabStyle::Create() {
+  // If refresh is turned on use ChromeRefresh23 styling.
+  if (features::IsChromeRefresh2023()) {
+    return std::make_unique<ChromeRefresh2023TabStyle>();
+  }
+  return std::make_unique<GM2TabStyle>();
 }

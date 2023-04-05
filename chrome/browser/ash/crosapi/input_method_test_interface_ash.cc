@@ -40,7 +40,8 @@ void OverrideTextInputMethod(ash::TextInputMethod* text_input_method) {
 }
 
 bool HasCapability(const base::StringPiece capability) {
-  return capability == kInputMethodTestCapabilitySendKeyModifiers;
+  return capability == kInputMethodTestCapabilitySendKeyModifiers ||
+         capability == kInputMethodTestCapabilityConfirmComposition;
 }
 
 }  // namespace
@@ -200,6 +201,12 @@ void InputMethodTestInterfaceAsh::HasCapabilities(
     }
   }
   std::move(callback).Run(true);
+}
+
+void InputMethodTestInterfaceAsh::ConfirmComposition(
+    ConfirmCompositionCallback callback) {
+  text_input_target_->ConfirmComposition(/*reset_engine=*/false);
+  std::move(callback).Run();
 }
 
 void InputMethodTestInterfaceAsh::OnFocus() {

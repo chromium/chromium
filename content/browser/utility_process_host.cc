@@ -9,10 +9,12 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/base_i18n_switches.h"
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread.h"
@@ -29,6 +31,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_descriptor_keys.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/process_type.h"
@@ -56,11 +59,48 @@
 #include "content/browser/v8_snapshot_files.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "base/files/file_util.h"
+#include "base/files/scoped_file.h"
+#include "base/pickle.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "media/capture/capture_switches.h"
 #endif
 
 namespace content {
+
+namespace {
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+base::ScopedFD PassNetworkContextParentDirs(
+    std::vector<base::FilePath> network_context_parent_dirs) {
+  base::Pickle pickle;
+  for (const base::FilePath& dir : network_context_parent_dirs) {
+    pickle.WriteString(dir.value());
+  }
+
+  base::ScopedFD read_fd;
+  base::ScopedFD write_fd;
+  if (!base::CreatePipe(&read_fd, &write_fd)) {
+    PLOG(ERROR) << "Failed to create thepipe necessary to properly sandbox the "
+                   "network service.";
+    return base::ScopedFD();
+  }
+  if (!base::WriteFileDescriptor(
+          write_fd.get(),
+          base::make_span(reinterpret_cast<const uint8_t*>(pickle.data()),
+                          pickle.size()))) {
+    PLOG(ERROR) << "Failed to write to the pipe which is necessary to properly "
+                   "sandbox the network service.";
+    return base::ScopedFD();
+  }
+
+  return read_fd;
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+}  // namespace
 
 UtilityMainThreadFactoryFunction g_utility_main_thread_factory = nullptr;
 
@@ -354,6 +394,17 @@ bool UtilityProcessHost::StartProcess() {
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
     file_data_->files_to_preload.merge(GetV8SnapshotFilesToPreload());
 #endif  // BUILDFLAG(IS_POSIX)
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    // The network service should have access to the parent directories
+    // necessary for its usage.
+    if (sandbox_type_ == sandbox::mojom::Sandbox::kNetwork) {
+      std::vector<base::FilePath> network_context_parent_dirs =
+          GetContentClient()->browser()->GetNetworkContextsParentDirectory();
+      file_data_->files_to_preload[kNetworkContextParentDirsDescriptor] =
+          PassNetworkContextParentDirs(std::move(network_context_parent_dirs));
+    }
+#endif  // BUILDFLAG(IS_LINUX)
 
     std::unique_ptr<UtilitySandboxedProcessLauncherDelegate> delegate =
         std::make_unique<UtilitySandboxedProcessLauncherDelegate>(

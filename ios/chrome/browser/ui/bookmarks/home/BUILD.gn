@@ -24,6 +24,7 @@ source_set("home") {
     "//ios/chrome/browser/default_browser:utils",
     "//ios/chrome/browser/drag_and_drop",
     "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/metrics:metrics_internal",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/shared/coordinator/alert",
@@ -79,6 +80,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/ui/bookmarks/home",
     "//third_party/ocmock:ocmock",
   ]

@@ -32,6 +32,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/scheduled_action.h"
+#include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
@@ -179,12 +180,12 @@ void DOMTimer::Fired() {
                                 context, timeout_id_);
   const bool is_interval = !RepeatInterval().is_zero();
 
-  // If this is needed in the future by workers etc., the interface name can be
-  // extracted from the ScriptWrappable.
-  const char* interface_name = context->IsWindow() ? "Window" : nullptr;
-  probe::UserCallback probe(context, interface_name,
-                            is_interval ? "setInterval" : "setTimeout",
+  probe::UserCallback probe(context, is_interval ? "setInterval" : "setTimeout",
                             g_null_atom, true);
+  probe::InvokeCallback invoke_probe(
+      context,
+      is_interval ? "TimerHandler:setInterval" : "TimerHandler:setTimeout",
+      action_->CallbackFunction());
   probe::AsyncTask async_task(context, &async_task_context_,
                               is_interval ? "fired" : nullptr);
 

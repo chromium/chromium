@@ -47,8 +47,8 @@ void ViewportData::SetViewportDescription(
       return;
     viewport_description_ = viewport_description;
 
-    // The UA-defined min-width is considered specifically by Android WebView
-    // quirks mode.
+    // Store the UA specified width to be used as the default "fallback" width.
+    // i.e. the width to use if the author doesn't specify a layout width.
     if (!viewport_description.IsSpecifiedByAuthor())
       viewport_default_min_width_ = viewport_description.min_width;
   }

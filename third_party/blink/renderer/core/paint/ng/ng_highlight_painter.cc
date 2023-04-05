@@ -21,7 +21,6 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/paint/document_marker_painter.h"
 #include "third_party/blink/renderer/core/paint/highlight_painting_utils.h"
-#include "third_party/blink/renderer/core/paint/inline_text_box_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_highlight_overlay.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_text_decoration_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_text_painter.h"
@@ -411,7 +410,6 @@ NGHighlightPainter::SelectionPaintState::RectInWritingModeSpace() {
   return selection_rect_->rotated;
 }
 
-// Logic is copied from InlineTextBoxPainter::PaintSelection.
 // |selection_start| and |selection_end| should be between
 // [text_fragment.StartOffset(), text_fragment.EndOffset()].
 void NGHighlightPainter::SelectionPaintState::PaintSelectionBackground(

@@ -1322,8 +1322,6 @@ TEST_P(PaintLayerTest, FloatLayerAndAbsoluteUnderInlineLayer) {
 
   EXPECT_EQ(PhysicalOffset(150, 150),
             floating->LocationWithoutPositionOffset());
-  EXPECT_EQ(PhysicalOffset(0, 0),
-            floating->GetLayoutObject().OffsetForInFlowPosition());
   EXPECT_EQ(PhysicalOffset(150, 150), floating->VisualOffsetFromAncestor(span));
   EXPECT_EQ(PhysicalOffset(183, 183),
             floating->VisualOffsetFromAncestor(container));
@@ -1331,8 +1329,6 @@ TEST_P(PaintLayerTest, FloatLayerAndAbsoluteUnderInlineLayer) {
   EXPECT_EQ(PhysicalOffset(20, 20), container->LocationWithoutPositionOffset());
 
   EXPECT_EQ(PhysicalOffset(33, 33), span->LocationWithoutPositionOffset());
-  EXPECT_EQ(PhysicalOffset(0, 0),
-            span->GetLayoutObject().OffsetForInFlowPosition());
 
   EXPECT_EQ(PhysicalOffset(150, 150),
             absolute->LocationWithoutPositionOffset());
@@ -1364,14 +1360,10 @@ TEST_P(PaintLayerTest, FloatLayerUnderInlineLayerScrolled) {
   EXPECT_EQ(container, span->Parent());
   EXPECT_EQ(container, span->ContainingLayer());
   EXPECT_EQ(PhysicalOffset(0, 0), span->LocationWithoutPositionOffset());
-  EXPECT_EQ(PhysicalOffset(0, 0),
-            span->GetLayoutObject().OffsetForInFlowPosition());
   EXPECT_EQ(gfx::Vector2d(0, 400),
             span->ContainingLayer()->PixelSnappedScrolledContentOffset());
   EXPECT_EQ(PhysicalOffset(150, 150),
             floating->LocationWithoutPositionOffset());
-  EXPECT_EQ(PhysicalOffset(0, 0),
-            floating->GetLayoutObject().OffsetForInFlowPosition());
   EXPECT_EQ(PhysicalOffset(150, 150), floating->VisualOffsetFromAncestor(span));
   EXPECT_EQ(PhysicalOffset(150, -250),
             floating->VisualOffsetFromAncestor(container));
@@ -1396,11 +1388,7 @@ TEST_P(PaintLayerTest, FloatLayerUnderBlockUnderInlineLayer) {
   EXPECT_EQ(span, floating->ContainingLayer());
   EXPECT_EQ(PhysicalOffset(183, 183),
             floating->LocationWithoutPositionOffset());
-  EXPECT_EQ(PhysicalOffset(0, 0),
-            floating->GetLayoutObject().OffsetForInFlowPosition());
   EXPECT_EQ(PhysicalOffset(0, 0), span->LocationWithoutPositionOffset());
-  EXPECT_EQ(PhysicalOffset(0, 0),
-            span->GetLayoutObject().OffsetForInFlowPosition());
   EXPECT_EQ(PhysicalOffset(183, 183), floating->VisualOffsetFromAncestor(span));
   EXPECT_EQ(PhysicalOffset(183, 183),
             floating->VisualOffsetFromAncestor(
@@ -1425,12 +1413,8 @@ TEST_P(PaintLayerTest, FloatLayerUnderFloatUnderInlineLayer) {
   EXPECT_EQ(span, floating->Parent());
   EXPECT_EQ(span, floating->ContainingLayer());
   EXPECT_EQ(PhysicalOffset(0, 0), span->LocationWithoutPositionOffset());
-  EXPECT_EQ(PhysicalOffset(0, 0),
-            span->GetLayoutObject().OffsetForInFlowPosition());
   EXPECT_EQ(PhysicalOffset(183, 183),
             floating->LocationWithoutPositionOffset());
-  EXPECT_EQ(PhysicalOffset(0, 0),
-            floating->GetLayoutObject().OffsetForInFlowPosition());
   EXPECT_EQ(PhysicalOffset(183, 183), floating->VisualOffsetFromAncestor(span));
   EXPECT_EQ(PhysicalOffset(183, 183),
             floating->VisualOffsetFromAncestor(
@@ -1459,15 +1443,9 @@ TEST_P(PaintLayerTest, FloatLayerUnderFloatLayerUnderInlineLayer) {
   EXPECT_EQ(span, floating_parent->Parent());
   EXPECT_EQ(span, floating_parent->ContainingLayer());
   EXPECT_EQ(PhysicalOffset(50, 50), floating->LocationWithoutPositionOffset());
-  EXPECT_EQ(PhysicalOffset(0, 0),
-            floating->GetLayoutObject().OffsetForInFlowPosition());
   EXPECT_EQ(PhysicalOffset(133, 133),
             floating_parent->LocationWithoutPositionOffset());
   EXPECT_EQ(PhysicalOffset(0, 0), span->LocationWithoutPositionOffset());
-  EXPECT_EQ(PhysicalOffset(0, 0),
-            span->GetLayoutObject().OffsetForInFlowPosition());
-  EXPECT_EQ(PhysicalOffset(0, 0),
-            span->GetLayoutObject().OffsetForInFlowPosition());
   EXPECT_EQ(PhysicalOffset(183, 183), floating->VisualOffsetFromAncestor(span));
   EXPECT_EQ(PhysicalOffset(133, 133),
             floating_parent->VisualOffsetFromAncestor(span));
@@ -1496,10 +1474,6 @@ TEST_P(PaintLayerTest, LayerUnderFloatUnderInlineLayer) {
   EXPECT_EQ(span, child->ContainingLayer());
   EXPECT_EQ(PhysicalOffset(0, 0), span->LocationWithoutPositionOffset());
   EXPECT_EQ(PhysicalOffset(183, 183), child->LocationWithoutPositionOffset());
-  EXPECT_EQ(PhysicalOffset(0, 0),
-            child->GetLayoutObject().OffsetForInFlowPosition());
-  EXPECT_EQ(PhysicalOffset(0, 0),
-            span->GetLayoutObject().OffsetForInFlowPosition());
   EXPECT_EQ(PhysicalOffset(183, 183), child->VisualOffsetFromAncestor(span));
   EXPECT_EQ(
       PhysicalOffset(183, 183),
@@ -1553,12 +1527,8 @@ TEST_P(PaintLayerTest, ColumnSpanLayerUnderExtraLayerScrolled) {
   EXPECT_EQ(columns, extra_layer->Parent());
   EXPECT_EQ(columns, extra_layer->ContainingLayer());
   EXPECT_EQ(PhysicalOffset(50, 50), spanner->LocationWithoutPositionOffset());
-  EXPECT_EQ(PhysicalOffset(0, 0),
-            spanner->GetLayoutObject().OffsetForInFlowPosition());
   EXPECT_EQ(PhysicalOffset(100, 100),
             extra_layer->LocationWithoutPositionOffset());
-  EXPECT_EQ(PhysicalOffset(0, 0),
-            extra_layer->GetLayoutObject().OffsetForInFlowPosition());
   EXPECT_EQ(PhysicalOffset(-100, 100),
             extra_layer->VisualOffsetFromAncestor(columns));
   EXPECT_EQ(gfx::Vector2d(200, 0),

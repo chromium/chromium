@@ -185,7 +185,7 @@ const BookmarkNode* GetBookmarkNodeByID(const BookmarkModel* model, int64_t id);
 
 // Returns the node with |guid|, or NULL if there is no node with |guid|.
 const BookmarkNode* GetBookmarkNodeByGUID(const BookmarkModel* model,
-                                          const base::GUID& guid);
+                                          const base::Uuid& guid);
 
 // Returns true if |node| is a descendant of |root|.
 bool IsDescendantOf(const BookmarkNode* node, const BookmarkNode* root);

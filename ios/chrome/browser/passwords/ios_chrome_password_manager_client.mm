@@ -78,7 +78,6 @@ IOSChromePasswordManagerClient::IOSChromePasswordManagerClient(
           GetPrefs(),
           GetLocalStatePrefs(),
           GetSyncServiceForBrowserState(bridge_.browserState)),
-      password_reuse_detection_manager_(this),
       credentials_filter_(this,
                           base::BindRepeating(&GetSyncServiceForBrowserState,
                                               bridge_.browserState)),
@@ -89,12 +88,6 @@ IOSChromePasswordManagerClient::IOSChromePasswordManagerClient(
       ios::PasswordManagerLogRouterFactory::GetForBrowserState(
           bridge_.browserState),
       base::RepeatingClosure());
-
-  if (IsPasswordReuseDetectionEnabled()) {
-    web_state_observation_.Observe(bridge_.webState);
-    input_event_observation_.Observe(
-        PasswordProtectionJavaScriptFeature::GetInstance());
-  }
 }
 
 IOSChromePasswordManagerClient::~IOSChromePasswordManagerClient() = default;
@@ -344,63 +337,4 @@ safe_browsing::PasswordProtectionService*
 IOSChromePasswordManagerClient::GetPasswordProtectionService() const {
   return ChromePasswordProtectionServiceFactory::GetForBrowserState(
       bridge_.browserState);
-}
-
-void IOSChromePasswordManagerClient::CheckProtectedPasswordEntry(
-    PasswordType password_type,
-    const std::string& username,
-    const std::vector<password_manager::MatchingReusedCredential>&
-        matching_reused_credentials,
-    bool password_field_exists,
-    uint64_t reused_password_hash,
-    const std::string& domain) {
-  safe_browsing::PasswordProtectionService* service =
-      GetPasswordProtectionService();
-  if (service) {
-    auto show_warning_callback = base::BindOnce(
-        &IOSChromePasswordManagerClient::NotifyUserPasswordProtectionWarning,
-        weak_factory_.GetWeakPtr());
-    service->MaybeStartProtectedPasswordEntryRequest(
-        bridge_.webState, bridge_.webState->GetLastCommittedURL(), username,
-        password_type, matching_reused_credentials, password_field_exists,
-        std::move(show_warning_callback));
-  }
-}
-
-void IOSChromePasswordManagerClient::LogPasswordReuseDetectedEvent() {
-  safe_browsing::PasswordProtectionService* service =
-      GetPasswordProtectionService();
-  if (service) {
-    service->MaybeLogPasswordReuseDetectedEvent(bridge_.webState);
-  }
-}
-
-void IOSChromePasswordManagerClient::NotifyUserPasswordProtectionWarning(
-    const std::u16string& warning_text,
-    base::OnceCallback<void(safe_browsing::WarningAction)> callback) {
-  __block auto block_callback = std::move(callback);
-  [bridge_
-      showPasswordProtectionWarning:base::SysUTF16ToNSString(warning_text)
-                         completion:^(safe_browsing::WarningAction action) {
-                           std::move(block_callback).Run(action);
-                         }];
-}
-
-void IOSChromePasswordManagerClient::DidFinishNavigation(
-    web::WebState* web_state,
-    web::NavigationContext* navigation_context) {
-  password_reuse_detection_manager_.DidNavigateMainFrame(GetLastCommittedURL());
-}
-
-void IOSChromePasswordManagerClient::OnKeyPressed(std::string text) {
-  password_reuse_detection_manager_.OnKeyPressedCommitted(
-      base::UTF8ToUTF16(text));
-}
-
-void IOSChromePasswordManagerClient::OnPaste(std::string text) {
-  password_reuse_detection_manager_.OnPaste(base::UTF8ToUTF16(text));
-}
-
-web::WebState* IOSChromePasswordManagerClient::web_state() const {
-  return bridge_.webState;
 }

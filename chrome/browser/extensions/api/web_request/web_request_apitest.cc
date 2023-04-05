@@ -402,15 +402,15 @@ class ExtensionWebRequestApiTest : public ExtensionApiTest {
         "webRequest"
       ]
     })";
-    auto dir = std::make_unique<TestExtensionDir>();
-    dir->WriteManifest(base::StringPrintf(kManifest, name.c_str()));
-    LoadExtension(dir->UnpackedPath());
+    TestExtensionDir dir;
+    dir.WriteManifest(base::StringPrintf(kManifest, name.c_str()));
+    LoadExtension(dir.UnpackedPath());
     test_dirs_.push_back(std::move(dir));
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  std::vector<std::unique_ptr<TestExtensionDir>> test_dirs_;
+  std::vector<TestExtensionDir> test_dirs_;
   std::unique_ptr<NavigateTabMessageHandler> navigationHandler_;
 };
 
@@ -5384,7 +5384,8 @@ class ExtensionWebRequestApiFencedFrameTest
  protected:
   ExtensionWebRequestApiFencedFrameTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kFencedFrames, {{}}},
+        {{blink::features::kFencedFrames, {}},
+         {blink::features::kFencedFramesAPIChanges, {}},
          {features::kPrivacySandboxAdsAPIsOverride, {}}},
         {/* disabled_features */});
     // Fenced frames are only allowed in secure contexts.

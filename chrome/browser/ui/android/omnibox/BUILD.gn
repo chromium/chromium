@@ -354,6 +354,7 @@ proto_java_library("partner_location_descriptor_proto_java") {
 }
 
 android_library("unit_device_javatests") {
+  resources_package = "org.chromium.chrome.browser.omnibox"
   testonly = true
   sources = [
     "java/src/org/chromium/chrome/browser/omnibox/UrlBarUiUnitTest.java",
@@ -364,6 +365,7 @@ android_library("unit_device_javatests") {
     ":java",
     ":java_resources",
     "//base:base_java_test_support",
+    "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/ui/android/toolbar:java",
     "//chrome/test/android:chrome_java_test_support_common",
     "//components/browser_ui/site_settings/android:java",
@@ -445,11 +447,13 @@ robolectric_library("junit") {
   ]
   deps = [
     ":java",
+    ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//build/android:build_java",
     "//chrome/android:base_module_java",
+    "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/commerce/merchant_viewer/android:java",
     "//chrome/browser/device:java",
     "//chrome/browser/flags:java",
@@ -493,11 +497,11 @@ robolectric_library("junit") {
     "//testing/android/junit:junit_test_support",
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_ext_junit_java",
-    "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/hamcrest:hamcrest_library_java",

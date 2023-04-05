@@ -98,6 +98,11 @@ IN_PROC_BROWSER_TEST_P(CrosComponentsBrowserTest, NoRuntimeErrors) {
 
   static constexpr const char kWaitElementToBeDefined[] = R"(
 (async () => {
+  const errors = []
+  globalThis.onerror = (e) => {
+    errors.push(e);
+  };
+
   let injectScript = new Promise((resolve, reject) => {
     const staticUrlPolicy = trustedTypes.createPolicy(
       'script-js-static',
@@ -112,6 +117,11 @@ IN_PROC_BROWSER_TEST_P(CrosComponentsBrowserTest, NoRuntimeErrors) {
   });
 
   await injectScript;
+
+  if (errors.length != 0) {
+    return errors;
+  }
+
   await customElements.whenDefined('%s');
 
   return true;
@@ -129,11 +139,28 @@ IN_PROC_BROWSER_TEST_P(CrosComponentsBrowserTest, NoRuntimeErrors) {
                           << log_watcher.last_url();
 }
 
-static constexpr const ComponentTestData kComponentsTestData[] = {{
-    .script_src = "chrome://resources/cros_components/button/button.js",
-    .component_name = "cros-button",
-    .gtest_name = "CrosButton",
-}};
+static constexpr const ComponentTestData kComponentsTestData[] = {
+    {
+        .script_src = "chrome://resources/cros_components/button/button.js",
+        .component_name = "cros-button",
+        .gtest_name = "CrosButton",
+    },
+    {
+        .script_src = "chrome://resources/cros_components/checkbox/checkbox.js",
+        .component_name = "cros-checkbox",
+        .gtest_name = "CrosCheckbox",
+    },
+    {
+        .script_src = "chrome://resources/cros_components/radio/radio.js",
+        .component_name = "cros-radio",
+        .gtest_name = "CrosRadio",
+    },
+    {
+        .script_src = "chrome://resources/cros_components/switch/switch.js",
+        .component_name = "cros-switch",
+        .gtest_name = "CrosSwitch",
+    },
+};
 
 INSTANTIATE_TEST_SUITE_P(All,
                          CrosComponentsBrowserTest,

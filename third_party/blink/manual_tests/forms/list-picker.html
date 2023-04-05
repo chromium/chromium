@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8>
+<title>&lt;select&gt;</title>
+<style>
+  body {
+    background-color: #eeffff;
+  }
+  iframe {
+    z-index: 2147483647;
+    width: 65px;
+    height: 25px;
+    border: 0;
+    overflow: hidden;
+  }
+</style>
+</head>
+<body>
+
+<h3>This is a testbed for &lt;select&gt;</h3>
+
+<h3>Regular popup &lt;select&gt;
+  <select>
+    <option value="one">One</option>
+    <!-- comment -->
+    <option value="two">Two</option>
+    <optgroup label="Group">
+      <option value="three">Three</option>
+      <option value="four">Four</option>
+    </optgroup>
+    <option value="five">Five</option>
+    <option value="six">Six</option>
+  </select>
+</h3>
+
+<h3>Multiple &lt;select&gt;
+  <select multiple>
+    <option value="one">One</option>
+    <option value="two">Two</option>
+    <optgroup label="Group">
+      <option value="three">Three</option>
+      <option value="four">Four</option>
+    </optgroup>
+    <option value="five">Five</option>
+    <option value="six">Six</option>
+  </select>
+</h3>
+
+<h3>Inline iframe &lt;select&gt;</h3>
+<div id=iframecontainer></div>
+
+<ol id="console" style="font-family:monospace;"></ol>
+
+<script>
+function log(str) {
+  var entry = document.createElement('li');
+  entry.innerText = str;
+  document.getElementById('console').appendChild(entry);
+}
+
+window.onload = () => {
+  const frame = document.createElement('iframe');
+  iframecontainer.appendChild(frame);
+  const doc = frame.contentDocument;
+
+  // The following code sets up a select element inside an iframe as similarly
+  // as possible to InternalPopupMenu::WriteDocument.
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/html/forms/internal_popup_menu.cc;l=277;drc=0dfd772a334cdfbd806a3edb46abde2f4101c4c1
+
+  doc.documentElement.innerHTML = `
+    <head>
+      <meta charset='UTF-8'>
+      <link rel=stylesheet href="../../renderer/core/html/forms/resources/picker_common.css">
+      <link rel=stylesheet href="../../renderer/core/html/forms/resources/list_picker.css">
+    </head>
+    <body>
+      <div id=main>Loading...</div>
+    </body>
+  `;
+
+  frame.contentWindow.dialogArguments = {
+    selectedIndex: 0,
+    baseStyle: {
+      backgroundColor: "rgb(255, 255, 255)",
+      color: "rgb(0, 0, 0)",
+      textTransform: "none",
+      textAlign: "start",
+      fontSize: 13,
+      fontStyle: "normal",
+      fontVariant: "",
+      fontFamily: "Arial",
+    },
+    children: [
+      {
+        label: "One",
+        value: 0,
+        style: {
+        },
+      }, {
+        label: "Two",
+        value: 1,
+        style: {
+        },
+      }, {
+        type: "optgroup",
+        label: "Group",
+        style: {
+        }, children: [
+          {
+            label: "Three",
+            value: 2,
+            style: {
+            },
+          }, {
+            label: "Four",
+            value: 3,
+            style: {
+            },
+          },],
+      }, {
+        label: "Five",
+        value: 4,
+        style: {
+        },
+      }, {
+        label: "Six",
+        value: 5,
+        style: {
+        },
+      },
+    ],
+    anchorRectInScreen: {
+      x: 0,
+      y: 0,
+      width: 59,
+      height: 19,
+    },
+    zoomFactor: 1,
+    scaleFactor: 1,
+    isRTL: false,
+    paddingStart: 4,
+  };
+
+  const pickerCommonJs = doc.createElement('script');
+  pickerCommonJs.src = "../../renderer/core/html/forms/resources/picker_common.js";
+  doc.body.appendChild(pickerCommonJs);
+
+  const listPickerJS = doc.createElement('script');
+  listPickerJS.src = "../../renderer/core/html/forms/resources/list_picker.js";
+  doc.body.appendChild(listPickerJS);
+
+  const pagePopupController = frame.contentWindow.pagePopupController = {
+    setValueAndClosePopup: function(numValue, stringValue) {
+      window.log('index="' + stringValue + '"' + ', value="' +
+       frame.contentWindow.dialogArguments.children[stringValue].label + '"');
+    },
+    setValue: function(value) {
+      window.log('index="' + value + '"' + ', value="' + 
+      frame.contentWindow.dialogArguments.children[value].label + '"');
+    },
+    closePopup: function() { },
+    setMenuListOptionsBoundsInAXTree: function(optionsBounds) { }
+  };
+
+  setTimeout(() => {
+    doc.querySelectorAll("option").forEach(option => {
+    option.append(option.label);
+  })}, 100);
+}
+
+</script>
+</body>
+</html>

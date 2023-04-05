@@ -56,8 +56,6 @@
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
-#include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
-#include "third_party/blink/renderer/core/layout/line/root_inline_box.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -1641,7 +1639,6 @@ NodeListsNodeData& ContainerNode::EnsureNodeLists() {
 Element* ContainerNode::GetAutofocusDelegate() const {
   Element* element = ElementTraversal::Next(*this, this);
   while (element) {
-    // TODO(jarhar): Add this to the HTML spec as a followup to the popover PR
     if (auto* html_element = DynamicTo<HTMLElement>(element)) {
       if (DynamicTo<HTMLDialogElement>(html_element) ||
           html_element->HasPopoverAttribute()) {

@@ -59,7 +59,7 @@ bool TestOmniboxClient::IsPasteAndGoEnabled() const {
   return true;
 }
 
-const SessionID& TestOmniboxClient::GetSessionID() const {
+SessionID TestOmniboxClient::GetSessionID() const {
   return session_id_;
 }
 

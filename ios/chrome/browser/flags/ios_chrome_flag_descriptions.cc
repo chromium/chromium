@@ -161,11 +161,6 @@ const char kBringYourOwnTabsIOSDescription[] =
     "a half-sheet modal by default, or a bottom sticker if specified in the "
     "dropdown option.";
 
-extern const char kCalendarExperienceKitName[] = "Experience Kit Calendar";
-extern const char kCalendarExperienceKitDescription[] =
-    "When enabled, long pressing on dates will trigger Experience Kit Calendar "
-    "event handling.";
-
 extern const char kAppleCalendarExperienceKitName[] =
     "Experience Kit Apple Calendar";
 extern const char kAppleCalendarExperienceKitDescription[] =
@@ -358,6 +353,11 @@ const char kEnableFeedSyntheticCapabilitiesDescription[] =
 const char kEnableFullscreenAPIName[] = "Enable Fullscreen API";
 const char kEnableFullscreenAPIDescription[] =
     "Enable the Fullscreen API for web content (iOS 16.0+).";
+
+const char kEnableFollowIPHExpParamsName[] =
+    "Enable Follow IPH Experiment Parameters";
+const char kEnableFollowIPHExpParamsDescription[] =
+    "Enable follow IPH experiment parameters.";
 
 const char kEnableFollowManagementInstantReloadName[] =
     "Enable Follow Management Instant Reload";
@@ -652,6 +652,18 @@ const char kNTPViewHierarchyRepairDescription[] =
 const char kOmniboxFuzzyUrlSuggestionsName[] = "Omnibox Fuzzy URL Suggestions";
 const char kOmniboxFuzzyUrlSuggestionsDescription[] =
     "Enables URL suggestions for inputs that may contain typos.";
+
+const char kOmniboxGroupingFrameworkForZPSName[] =
+    "Omnibox Grouping Framework for ZPS";
+const char kOmniboxGroupingFrameworkForZPSDescription[] =
+    "Enables an alternative grouping implementation for omnibox "
+    "autocompletion.";
+
+const char kOmniboxGroupingFrameworkForTypedSuggestionsName[] =
+    "Omnibox Grouping Framework for Typed Suggestions";
+const char kOmniboxGroupingFrameworkForTypedSuggestionsDescription[] =
+    "Enables an alternative grouping implementation for omnibox "
+    "autocompletion.";
 
 const char kOmniboxHttpsUpgradesName[] = "Omnibox HTTPS upgrades";
 const char kOmniboxHttpsUpgradesDescription[] =
@@ -1001,6 +1013,13 @@ const char kEnableLensInOmniboxCopiedImageDescription[] =
     "When enabled, use Lens to search images from your device clipboard "
     "when Google is the selected search engine, accessible from the omnibox or "
     "popup menu.";
+
+const char kEnableSessionSerializationOptimizationsName[] =
+    "Session Serialization Optimization";
+const char kEnableSessionSerializationOptimizationsDescription[] =
+    "Enables the use of multiple separate files to save the session state "
+    "and the ability to load only the minimum amount of data when restoring "
+    "the session from disk.";
 
 const char kSFSymbolsFollowUpName[] = "SF Symbol follow up";
 const char kSFSymbolsFollowUpDescription[] = "Change the + button.";

@@ -53,17 +53,20 @@ android_resources("java_resources") {
 
 robolectric_library("junit") {
   testonly = true
+  resources_package = "org.chromium.chrome.browser.touch_to_fill.payments"
 
   sources = [ "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillCreditCardControllerRobolectricTest.java" ]
 
   deps = [
     ":java",
+    ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/browser/autofill/android:java",
     "//chrome/browser/autofill/test:test_support_java",
     "//chrome/browser/touch_to_fill/common/android:java",
+    "//chrome/browser/touch_to_fill/common/android:java_resources",
     "//chrome/browser/touch_to_fill/payments/android:public_java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/autofill/android:autofill_features_java",
@@ -78,6 +81,7 @@ robolectric_library("junit") {
 
 android_library("javatests") {
   testonly = true
+  resources_package = "org.chromium.chrome.browser.touch_to_fill.payments"
 
   sources = [
     "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillCreditCardRenderTest.java",
@@ -86,6 +90,7 @@ android_library("javatests") {
 
   deps = [
     ":java",
+    ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
     "//chrome/android:chrome_java",
@@ -93,14 +98,18 @@ android_library("javatests") {
     "//chrome/browser/autofill/test:test_support_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/touch_to_fill/common/android:java",
+    "//chrome/browser/touch_to_fill/common/android:java_resources",
     "//chrome/browser/touch_to_fill/payments/android:public_java",
     "//chrome/browser/ui/android/night_mode:night_mode_java_test_support",
     "//chrome/browser/util:java",
     "//chrome/test/android:chrome_java_integration_test_support",
+    "//components/autofill/android:autofill_java_resources",
     "//components/autofill/android:autofill_payments_java_resources",
     "//components/autofill/android:main_autofill_java",
     "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/bottomsheet/android:java_resources",
     "//components/browser_ui/bottomsheet/android/test:java",
+    "//components/strings:components_strings_grd",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",

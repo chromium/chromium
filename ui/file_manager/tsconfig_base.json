@@ -4,6 +4,7 @@
     "lib": ["dom", "ES2015.Generator", "ES2015.Iterable", "ESNext"],
 
     "importsNotUsedAsValues": "preserve",
+    "ignoreDeprecations": "5.0",
     "typeRoots": [
       "../../third_party/node/node_modules/@types"
     ],

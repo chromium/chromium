@@ -23,8 +23,6 @@ source_set("content_relationship_verification") {
   ]
   if (is_android) {
     sources += [
-      "browser_url_loader_throttle.cc",
-      "browser_url_loader_throttle.h",
       "origin_verifier.cc",
       "origin_verifier.h",
     ]

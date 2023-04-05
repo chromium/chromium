@@ -209,6 +209,12 @@ void WallpaperControllerClientImpl::InitForTesting(
   InitController();
 }
 
+void WallpaperControllerClientImpl::SetWallpaperFetcherDelegateForTesting(
+    std::unique_ptr<wallpaper_handlers::WallpaperFetcherDelegate>
+        wallpaper_fetcher_delegate) {
+  wallpaper_fetcher_delegate_.swap(wallpaper_fetcher_delegate);
+}
+
 void WallpaperControllerClientImpl::SetInitialWallpaper() {
   // Apply device customization.
   namespace customization_util = ash::customization_wallpaper_util;

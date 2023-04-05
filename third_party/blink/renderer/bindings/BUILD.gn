@@ -248,6 +248,7 @@ action_with_pydeps("check_generated_file_list") {
   outputs = [ result_file ]
 
   file_list = []
+  file_list += [ "--for_prod" ]
   file_list += [
     "--kind",
     "callback_function",
@@ -312,6 +313,34 @@ action_with_pydeps("check_generated_file_list") {
   ]
   file_list +=
       generated_union_sources_in_core + generated_union_sources_in_modules
+  file_list += [ "--for_testing" ]
+  file_list += [
+    "--kind",
+    "callback_function",
+  ]
+  file_list += generated_callback_function_sources_for_testing_in_core
+  file_list += [
+    "--kind",
+    "dictionary",
+  ]
+  file_list += generated_dictionary_sources_for_testing_in_core
+  file_list += [
+    "--kind",
+    "enumeration",
+  ]
+  file_list += generated_enumeration_sources_for_testing_in_core
+  file_list += [
+    "--kind",
+    "interface",
+  ]
+  file_list += generated_interface_sources_for_testing_in_core +
+               generated_interface_sources_for_testing_in_modules -
+               generated_interface_extra_sources_for_testing_in_modules
+  file_list += [
+    "--kind",
+    "union",
+  ]
+  file_list += generated_union_sources_for_testing_in_core
 
   response_file_contents = []
   foreach(token, file_list) {

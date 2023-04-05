@@ -13,7 +13,6 @@
 namespace blink {
 
 class FillLayer;
-class InlineFlowBox;
 class LayoutBoxModelObject;
 struct PaintInfo;
 struct PhysicalRect;
@@ -24,8 +23,7 @@ class BoxModelObjectPainter : public BoxPainterBase {
   STACK_ALLOCATED();
 
  public:
-  BoxModelObjectPainter(const LayoutBoxModelObject&,
-                        const InlineFlowBox* = nullptr);
+  explicit BoxModelObjectPainter(const LayoutBoxModelObject&);
 
  protected:
   LayoutRectOutsets ComputeBorders() const override;
@@ -47,7 +45,6 @@ class BoxModelObjectPainter : public BoxPainterBase {
 
  private:
   const LayoutBoxModelObject& box_model_;
-  const InlineFlowBox* flow_box_;
 };
 
 }  // namespace blink

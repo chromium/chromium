@@ -29,6 +29,7 @@
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/safe_browsing/content/browser/threat_details_cache.h"
 #include "components/safe_browsing/content/browser/threat_details_history.h"
+#include "components/safe_browsing/content/browser/web_contents_key.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
@@ -876,7 +877,7 @@ void ThreatDetails::AllDone() {
   is_all_done_ = true;
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(done_callback_),
-                                base::Unretained(web_contents_)));
+                                GetWebContentsKey(web_contents_)));
 }
 
 base::WeakPtr<ThreatDetails> ThreatDetails::GetWeakPtr() {

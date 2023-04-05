@@ -67,14 +67,6 @@ struct WebApprovalsParams {
 
 // Parameters for the local extension approvals V2 feature.
 struct ExtensionApprovalsParams {
-  enum ExtensionApprovalType {
-    kAdd, // Adding a new extension
-    kEnable, // Enabling an existing extension
-  };
-
-  // The type of approval being requested.
-  ExtensionApprovalType approval_type;
-
   // Display name for the extension.
   mojo_base.mojom.String16 extension_name;
 

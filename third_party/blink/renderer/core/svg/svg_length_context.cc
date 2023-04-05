@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -40,24 +41,24 @@ namespace blink {
 
 namespace {
 
-const ComputedStyle* ComputedStyleForLengthResolving(
+const ComputedStyle& ComputedStyleForLengthResolving(
     const SVGElement& context) {
   const ContainerNode* current_context = &context;
   do {
     if (current_context->GetLayoutObject()) {
-      return current_context->GetLayoutObject()->Style();
+      return current_context->GetLayoutObject()->StyleRef();
     }
     current_context = current_context->parentNode();
   } while (current_context);
 
   // We can end up here if trying to resolve values for elements in an
   // inactive document.
-  return nullptr;
+  return context.GetDocument().GetStyleResolver().InitialStyle();
 }
 
 const ComputedStyle* ComputedStyleForLengthResolving(
     const SVGElement* context) {
-  return context ? ComputedStyleForLengthResolving(*context) : nullptr;
+  return context ? &ComputedStyleForLengthResolving(*context) : nullptr;
 }
 
 const ComputedStyle* RootElementStyle(const Element& element) {
@@ -262,11 +263,8 @@ double SVGLengthContext::ConvertValueToUserUnitsUnclamped(
   }
   // For remaining units, just instantiate a CSSToLengthConversionData object
   // and use that for resolving.
-  const ComputedStyle* style = ComputedStyleForLengthResolving(*context_);
-  if (!style) {
-    return 0;
-  }
-  const SVGLengthConversionData conversion_data(*context_, *style);
+  const ComputedStyle& style = ComputedStyleForLengthResolving(*context_);
+  const SVGLengthConversionData conversion_data(*context_, style);
   return conversion_data.ZoomedComputedPixels(value, from_unit);
 }
 
@@ -322,11 +320,8 @@ float SVGLengthContext::ConvertValueFromUserUnits(
   }
   // For remaining units, just instantiate a CSSToLengthConversionData object
   // and use that for resolving.
-  const ComputedStyle* style = ComputedStyleForLengthResolving(*context_);
-  if (!style) {
-    return 0;
-  }
-  const SVGLengthConversionData conversion_data(*context_, *style);
+  const ComputedStyle& style = ComputedStyleForLengthResolving(*context_);
+  const SVGLengthConversionData conversion_data(*context_, style);
   const double reference = conversion_data.ZoomedComputedPixels(1, to_unit);
   if (!reference) {
     return 0;

@@ -79,20 +79,21 @@ public class TouchToFillCreditCardRenderTest {
     @Mock
     private BottomSheetFocusHelper mBottomSheetFocusHelper;
 
-    private static final CreditCard VISA = createCreditCard("Visa", "4111111111111111", "5",
-            AutofillTestHelper.nextYear(), true, "Visa", "• • • • 1111", R.drawable.visa_card);
+    private static final CreditCard VISA =
+            createCreditCard("Visa", "4111111111111111", "5", AutofillTestHelper.nextYear(), true,
+                    "Visa", "• • • • 1111", R.drawable.visa_card, "visa");
     private static final CreditCard MASTER_CARD =
             createCreditCard("MasterCard", "5555555555554444", "8", AutofillTestHelper.nextYear(),
-                    true, "Mastercard", "• • • • 4444", R.drawable.mc_card);
-    private static final CreditCard SERVER_MASTER_CARD = createCreditCard("MasterCard-GPay",
-            "5454545454545454", "11", AutofillTestHelper.nextYear(), false, "MasterCard-GPay",
-            "• • • • 5454", R.drawable.mc_card);
+                    true, "Mastercard", "• • • • 4444", R.drawable.mc_card, "mastercard");
+    private static final CreditCard SERVER_MASTER_CARD =
+            createCreditCard("MasterCard", "5454545454545454", "11", AutofillTestHelper.nextYear(),
+                    false, "MasterCard-GPay", "• • • • 5454", R.drawable.mc_card, "mastercard");
     private static final CreditCard DISCOVER =
             createCreditCard("Discover", "6011111111111117", "9", AutofillTestHelper.nextYear(),
-                    true, "Discover", "• • • • 1117", R.drawable.discover_card);
+                    true, "Discover", "• • • • 1117", R.drawable.discover_card, "discover");
     private static final CreditCard AMERICAN_EXPRESS = createCreditCard("American Express",
             "378282246310005", "10", AutofillTestHelper.nextYear(), true, "American Express",
-            "• • • • 0005", R.drawable.amex_card);
+            "• • • • 0005", R.drawable.amex_card, "american express");
     private static final CreditCard MASTERCARD_VIRTUAL_CARD = createVirtualCreditCard(
             /* name= */ "MasterCard-GPay", /* number= */ "5454545454545454", /* month= */ "11",
             /* year= */ AutofillTestHelper.nextYear(), /* network= */ "Mastercard",

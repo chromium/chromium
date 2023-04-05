@@ -233,7 +233,8 @@ class CAPTURE_EXPORT CameraHalDelegate final
   std::unique_ptr<VendorTagOpsDelegate> vendor_tag_ops_delegate_;
 
   // A map from camera id to corresponding delegate instance.
-  std::unique_ptr<VideoCaptureDeviceDelegateMap> vcd_delegate_map_;
+  std::unique_ptr<VideoCaptureDeviceDelegateMap> vcd_delegate_map_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   std::vector<std::unique_ptr<CameraClientObserver>> local_client_observers_;
 

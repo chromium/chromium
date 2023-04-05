@@ -214,8 +214,14 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   } else {
     // With back/forward cache, we will swap browsing instance for same-site
     // navigations, not reusing the previous SiteInstance.
-    EXPECT_FALSE(unassigned_si->HasSite());
     EXPECT_FALSE(unassigned_si->IsRelatedSiteInstance(initial_si.get()));
+
+    // Because this was a renderer-initiated navigation, and the unassigned URL
+    // is about:blank, the committed document inherits its origin from the
+    // initiator which is `regular_url()` (https://crbug.com/585649).  Hence,
+    // the new SiteInstance should not stay unassigned, but rather it will have
+    // a site that reflects the initiator.  See https://crbug.com/1426928.
+    EXPECT_TRUE(unassigned_si->HasSite());
   }
 }
 

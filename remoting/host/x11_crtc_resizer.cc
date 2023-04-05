@@ -352,23 +352,29 @@ bool X11CrtcResizer::LayoutIsVertical() const {
 
 void X11CrtcResizer::PackVertically(const webrtc::DesktopSize& new_size,
                                     x11::RandR::Crtc resized_crtc) {
-  // Before applying the new size, test if right-alignment should be
-  // preserved.
+  // Before applying the new size, test for any current alignments to
+  // decide which alignment should be preserved, if any.
   DCHECK(!active_crtcs_.empty());
   bool is_left_aligned = true;
+  bool is_middle_aligned = true;
   bool is_right_aligned = true;
   auto first_crtc_left = active_crtcs_.front().x;
+  auto first_crtc_middle = first_crtc_left + active_crtcs_.front().width / 2;
   auto first_crtc_right = first_crtc_left + active_crtcs_.front().width;
   for (const auto& crtc_info : active_crtcs_) {
-    if (crtc_info.x != first_crtc_left) {
+    auto crtc_left = crtc_info.x;
+    auto crtc_middle = crtc_info.x + crtc_info.width / 2;
+    auto crtc_right = crtc_info.x + crtc_info.width;
+    if (crtc_left != first_crtc_left) {
       is_left_aligned = false;
     }
-    if (crtc_info.x + crtc_info.width != first_crtc_right) {
+    if (abs(crtc_middle - first_crtc_middle) > 1) {
+      is_middle_aligned = false;
+    }
+    if (crtc_right != first_crtc_right) {
       is_right_aligned = false;
     }
   }
-
-  bool keep_right_alignment = is_right_aligned && !is_left_aligned;
 
   // Apply the new size.
   for (auto& crtc_info : active_crtcs_) {
@@ -389,13 +395,31 @@ void X11CrtcResizer::PackVertically(const webrtc::DesktopSize& new_size,
     crtc_info.y = current_y;
     current_y += crtc_info.height;
 
-    // Place all monitors left-aligned or right-aligned.
+    // Place all monitors, respecting any alignment preference. If there are
+    // multiple possible alignments, prioritize left, then right, then middle.
     // TODO(crbug.com/1326339): Implement a more sophisticated algorithm that
     // tries to preserve pairwise alignment. It is not enough to leave the
     // x-offsets unchanged here - this tends to result in the monitors being
     // arranged roughly diagonally, wasting lots of space. Some amount of
     // horizontal compression is needed to prevent this from happening.
-    crtc_info.x = keep_right_alignment ? -crtc_info.width : 0;
+    if (is_left_aligned) {
+      crtc_info.x = 0;
+    } else if (is_right_aligned) {
+      crtc_info.x = -crtc_info.width;
+    } else if (is_middle_aligned) {
+      crtc_info.x = -crtc_info.width / 2;
+    } else {
+      // The current implementation left-aligns the CRTCs if no other
+      // alignment is detected.
+      // TODO(crbug.com/1326339): A future enhancement may be to detect and
+      // report one of {left, middle, right, none}. The "none" case (for
+      // vertical and horizontal layouts) could be treated as a
+      // client-controlled layout, where the host does not attempt any
+      // repositioning. In this case, the host could still support
+      // resize-to-fit, but in a simplified way - resize would be allowed
+      // whenever it creates no overlaps.
+      crtc_info.x = 0;
+    }
   }
 }
 

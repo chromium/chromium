@@ -89,6 +89,9 @@ class Configurator : public update_client::Configurator {
   absl::optional<base::FilePath> GetCrxCachePath() const override;
 #endif
 
+  virtual GURL CrashUploadURL() const;
+  virtual GURL DeviceManagementURL() const;
+
   base::TimeDelta ServerKeepAliveTime() const;
   scoped_refptr<PolicyService> GetPolicyService() const;
   crx_file::VerifierFormat GetCrxVerifierFormat() const;

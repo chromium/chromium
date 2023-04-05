@@ -10,7 +10,7 @@
       "is_debug": true,
       "symbol_level": 1,
       "target_os": "android",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "gen-chromiumos-try": {
@@ -23,7 +23,7 @@
       "is_debug": true,
       "symbol_level": 1,
       "target_os": "chromeos",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "gen-fuchsia-try": {
@@ -36,7 +36,7 @@
       "is_component_build": false,
       "is_debug": false,
       "target_os": "fuchsia",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "gen-ios-try": {
@@ -49,7 +49,7 @@
       "is_debug": true,
       "symbol_level": 1,
       "target_os": "ios",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "gen-lacros-try": {
@@ -63,7 +63,7 @@
       "is_debug": true,
       "symbol_level": 1,
       "target_os": "chromeos",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "gen-linux-try": {
@@ -75,7 +75,7 @@
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "gen-mac-try": {
@@ -88,7 +88,7 @@
       "is_debug": true,
       "symbol_level": 1,
       "target_os": "mac",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "gen-webview-try": {
@@ -102,7 +102,7 @@
       "is_debug": true,
       "symbol_level": 1,
       "target_os": "android",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "gen-win-try": {
@@ -114,7 +114,7 @@
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
-      "use_goma": true
+      "use_remoteexec": true
     }
   }
 }

@@ -19,16 +19,18 @@ public class BrowserUiUtils {
      */
     @IntDef({ModuleTypeOnStartAndNTP.MOST_VISITED_TILES, ModuleTypeOnStartAndNTP.OMNIBOX,
             ModuleTypeOnStartAndNTP.SINGLE_TAB_CARD, ModuleTypeOnStartAndNTP.FEED,
-            ModuleTypeOnStartAndNTP.TAB_SWITCHER_BUTTON, ModuleTypeOnStartAndNTP.NUM_ENTRIES})
+            ModuleTypeOnStartAndNTP.TAB_SWITCHER_BUTTON, ModuleTypeOnStartAndNTP.HOME_BUTTON,
+            ModuleTypeOnStartAndNTP.NUM_ENTRIES})
     public @interface ModuleTypeOnStartAndNTP {
         int MOST_VISITED_TILES = 0;
         int OMNIBOX = 1;
         int SINGLE_TAB_CARD = 2;
         int FEED = 3;
         int TAB_SWITCHER_BUTTON = 4;
+        int HOME_BUTTON = 5;
 
         // Be sure to also update enums.xml when updating these values.
-        int NUM_ENTRIES = 5;
+        int NUM_ENTRIES = 6;
     }
 
     /**
@@ -73,6 +75,18 @@ public class BrowserUiUtils {
     public static void recordModuleClickHistogram(
             @HostSurface int hostSurface, @ModuleTypeOnStartAndNTP int sample) {
         RecordHistogram.recordEnumeratedHistogram(getHostName(hostSurface) + ".Module.Click",
+                sample, ModuleTypeOnStartAndNTP.NUM_ENTRIES);
+    }
+
+    /**
+     * Records user perform long clicking on different modules in New tab page or Start surface.
+     * @param hostSurface The corresponding item of the host name in {@link HostSurface}
+     *                    which indicates the page where the recording action happened.
+     * @param sample Sample to be recorded in the enumerated histogram.
+     */
+    public static void recordModuleLongClickHistogram(
+            @HostSurface int hostSurface, @ModuleTypeOnStartAndNTP int sample) {
+        RecordHistogram.recordEnumeratedHistogram(getHostName(hostSurface) + ".Module.LongClick",
                 sample, ModuleTypeOnStartAndNTP.NUM_ENTRIES);
     }
 }

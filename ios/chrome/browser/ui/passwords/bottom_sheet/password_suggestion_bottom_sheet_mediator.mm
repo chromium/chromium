@@ -6,12 +6,14 @@
 
 #import "base/memory/raw_ptr.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
+#import "ios/chrome/browser/autofill/bottom_sheet/bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/autofill/form_suggestion_tab_helper.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 
@@ -39,6 +41,9 @@
   // Whether the field that triggered the bottom sheet will need to refocus when
   // the bottom sheet is dismissed. Default is true.
   bool _needsRefocus;
+
+  // Web Frame associated with this bottom sheet.
+  std::string _frameId;
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
@@ -46,6 +51,8 @@
                                   (const autofill::FormActivityParams&)params {
   if (self = [super init]) {
     _needsRefocus = true;
+    _frameId = params.frame_id;
+
     _webStateList = webStateList;
     web::WebState* activeWebState = _webStateList->GetActiveWebState();
 
@@ -103,6 +110,15 @@
   _needsRefocus = false;
   FormSuggestion* suggestion = [self.suggestions objectAtIndex:row];
   [self.suggestionsProvider didSelectSuggestion:suggestion];
+}
+
+- (void)refocus {
+  if (_needsRefocus && _webStateList) {
+    web::WebState* activeWebState = _webStateList->GetActiveWebState();
+    web::WebFrame* frame = web::GetWebFrameWithId(activeWebState, _frameId);
+    BottomSheetTabHelper::FromWebState(activeWebState)
+        ->DetachListenersAndRefocus(frame);
+  }
 }
 
 #pragma mark - WebStateListObserver

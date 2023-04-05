@@ -1,13 +1,13 @@
+#!/usr/bin/env vpython3
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
 """Script to query optimal shards for swarmed test suites.
 
 This script queries bigquery for recent test suite runtimes. For suites running
 over the desired max runtime, it'll suggest optimal shard counts to bring the
 duration below the desired max runtime.
 """
-#!/usr/bin/env vpython3
-# Copyright 2023 The Chromium Authors
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
 
 import argparse
 import datetime
@@ -218,11 +218,21 @@ QUERY = """
     FROM
       optimal_shard_counts
 """
-_BQ_ERROR_MESSAGE = """
+
+_BQ_SETUP_INSTRUCTION = """
 ** NOTE: this script is only for Googlers to use. **
 
 bq script isn't found on your machine. To run this script, you need to be able
 to run bigquery in your terminal.
+If this is the first time you run the script, do the following steps:
+
+1) Follow the steps at https://cloud.google.com/sdk/docs/ to download and
+   unpack google-cloud-sdk in your home directory.
+2) Run `gcloud auth login`
+3) Run `gcloud config set project chrome-trooper-analytics`
+   3a) If 'chrome-trooper-analytics' does not show up, contact
+       chrome-browser-infra@ to be added as a user of the table
+4) Run this script!
 """
 
 

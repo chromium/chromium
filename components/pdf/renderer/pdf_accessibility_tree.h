@@ -141,6 +141,8 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
   // request to the Screen AI library. The number of remaining OCR requests
   // will decrement by one in `OnOcrDataReceived()`.
   void IncrementNumberOfRemainingOcrRequests();
+
+  const ui::AXTree& tree_for_testing() const { return tree_; }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
   bool ShowContextMenu();

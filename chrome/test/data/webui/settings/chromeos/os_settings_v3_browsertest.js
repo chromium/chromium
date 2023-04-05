@@ -356,6 +356,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'internet_page/internet_detail_subpage_tests.js',
    {enabled: ['ash::features::kApnRevamp']}
  ],
+ ['InternetPageNetworkSummary', 'internet_page/network_summary_test.js'],
  [
    'InternetPageNetworkSummaryItem',
    'internet_page/network_summary_item_test.js'
@@ -368,10 +369,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['InternetSubpageMenu', 'internet_subpage_menu_test.js'],
  ['KerberosAccounts', 'kerberos_accounts_test.js'],
  ['KerberosPage', 'kerberos_page_test.js'],
- [
-   'KeyboardAndTextInputPage',
-   'keyboard_and_text_input_page_tests.js',
- ],
  [
    'KeyboardShortcutBanner',
    'keyboard_shortcut_banner/keyboard_shortcut_banner_test.js'
@@ -417,12 +414,15 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ],
  ['NetworkAlwaysOnVpn', 'network_always_on_vpn_test.js'],
  ['NetworkProxySection', 'network_proxy_section_test.js'],
- ['NetworkSummary', 'network_summary_test.js'],
  ['NetworkDeviceInfoDialog', 'network_device_info_dialog_test.js'],
  ['OncMojoTest', 'onc_mojo_test.js'],
  [
    'OsA11yPageAudioAndCaptionsPage',
    'os_a11y_page/audio_and_captions_page_tests.js',
+ ],
+ [
+   'OsA11yPageKeyboardAndTextInputPage',
+   'os_a11y_page/keyboard_and_text_input_page_tests.js',
  ],
  [
    'OsA11yPageTextToSpeechPage',
@@ -471,7 +471,12 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['OsPairedBluetoothListItem', 'os_paired_bluetooth_list_item_tests.js'],
  ['OsPeoplePageAddUserDialog', 'os_people_page/add_user_dialog_tests.js'],
  ['OsPrintingPage', 'os_printing_page/os_printing_page_tests.js'],
+ [
+   'OsPrivacyPageSmartPrivacySubpage',
+   'os_privacy_page/smart_privacy_subpage_tests.js'
+ ],
  ['OsSearchPageSearchSubpage', 'os_search_page/search_subpage_test.js'],
+ ['OsSettingsHatsUi', 'os_settings_ui/os_settings_hats_ui_test.js'],
  ['OsSettingsPage', 'os_settings_page_test.js'],
  ['OsSettingsUi', 'os_settings_ui/os_settings_ui_test.js'],
  ['OsSettingsUiAboutPage', 'os_settings_ui/os_settings_ui_about_page_test.js'],
@@ -521,7 +526,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ],
  ['SettingsTrafficCounters', 'settings_traffic_counters_test.js'],
  ['SmbPage', 'smb_shares_page_tests.js'],
- ['SmartPrivacySubpage', 'smart_privacy_subpage_tests.js'],
  [
    'SwitchAccessActionAssignmentDialog',
    'switch_access_action_assignment_dialog_test.js',

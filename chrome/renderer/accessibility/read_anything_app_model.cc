@@ -398,3 +398,7 @@ std::map<ui::AXTreeID, std::unique_ptr<ui::AXSerializableTree>>*
 ReadAnythingAppModel::GetTreesForTesting() {
   return &trees_;
 }
+
+void ReadAnythingAppModel::EraseTreeForTesting(ui::AXTreeID tree_id) {
+  EraseTree(tree_id);
+}

@@ -16,6 +16,9 @@ export const MetaKey = InputDeviceSettingsTypes.MetaKey;
 export type ModifierKey = ModifierKeyTypes.ModifierKey;
 export const ModifierKey = ModifierKeyTypes.ModifierKey;
 
+export type PolicyStatus = InputDeviceSettingsTypes.PolicyStatus;
+export const PolicyStatus = InputDeviceSettingsTypes.PolicyStatus;
+
 export type Keyboard = InputDeviceSettingsTypes.Keyboard;
 export type Touchpad = InputDeviceSettingsTypes.Touchpad&
                        Partial<{isExternal: boolean, isHaptic: boolean}>;
@@ -32,6 +35,10 @@ export type PointingStickSettings =
 export type DeviceSettings =
     KeyboardSettings|TouchpadSettings|MouseSettings|PointingStickSettings;
 
+export type InputDeviceSettingsPolicy =
+    InputDeviceSettingsTypes.InputDeviceSettingsPolicy;
+export type KeyboardPolicies = InputDeviceSettingsTypes.KeyboardPolicies;
+
 export interface KeyboardObserverInterface {
   // Fired when the keyboard list is updated.
   onKeyboardListUpdated(keyboards: Keyboard[]): void;
@@ -46,7 +53,6 @@ export interface MouseObserverInterface {
   // Fired when the mouse list updated.
   onMouseListUpdated(mice: Mouse[]): void;
 }
-
 
 export interface PointingStickObserverInterface {
   // Fired when the pointing stick list is updated.

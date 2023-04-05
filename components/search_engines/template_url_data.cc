@@ -5,13 +5,13 @@
 #include "components/search_engines/template_url_data.h"
 
 #include "base/check.h"
-#include "base/guid.h"
 #include "base/i18n/case_conversion.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
+#include "base/uuid.h"
 #include "base/values.h"
 
 namespace {
@@ -31,10 +31,10 @@ std::string GenerateGUID(int prepopulate_id, int starter_pack_id) {
     guid = base::StringPrintf("ec205736-edd7-4022-a9a3-b431fc%06d",
                               starter_pack_id);
   } else {
-    guid = base::GenerateGUID();
+    guid = base::GenerateUuid();
   }
 
-  DCHECK(base::IsValidGUID(guid));
+  DCHECK(base::IsValidUuid(guid));
   return guid;
 }
 
@@ -50,7 +50,7 @@ TemplateURLData::TemplateURLData()
       created_from_play_api(false),
       usage_count(0),
       prepopulate_id(0),
-      sync_guid(base::GenerateGUID()),
+      sync_guid(base::GenerateUuid()),
       keyword_(u"dummy"),
       url_("x") {}
 

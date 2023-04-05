@@ -12,6 +12,7 @@ start_surface_test_java_sources = [
   "//chrome/android/features/start_surface/javatests/src/org/chromium/chrome/features/start_surface/StartSurfaceBackButtonTest.java",
   "//chrome/android/features/start_surface/javatests/src/org/chromium/chrome/features/start_surface/StartSurfaceMVTilesTest.java",
   "//chrome/android/features/start_surface/javatests/src/org/chromium/chrome/features/start_surface/StartSurfaceNoTabsTest.java",
+  "//chrome/android/features/start_surface/javatests/src/org/chromium/chrome/features/start_surface/StartSurfaceOnTabletTest.java",
   "//chrome/android/features/start_surface/javatests/src/org/chromium/chrome/features/start_surface/StartSurfaceTabSwitcherTest.java",
   "//chrome/android/features/start_surface/javatests/src/org/chromium/chrome/features/start_surface/StartSurfaceTest.java",
   "//chrome/android/features/start_surface/javatests/src/org/chromium/chrome/features/start_surface/StartSurfaceTestUtils.java",

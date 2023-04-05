@@ -98,6 +98,7 @@ NSView* GetNSTitlebarContainerViewFromWindow(NSWindow* window) {
 @interface ImmersiveModeTitlebarViewController
     : NSTitlebarAccessoryViewController {
   base::OnceClosure _view_will_appear_callback;
+  base::scoped_nsobject<NSView> _blank_separator_view;
 }
 @end
 
@@ -107,6 +108,7 @@ NSView* GetNSTitlebarContainerViewFromWindow(NSWindow* window) {
     (base::OnceClosure)view_will_appear_callback {
   if ((self = [super init])) {
     _view_will_appear_callback = std::move(view_will_appear_callback);
+    _blank_separator_view.reset([[NSView alloc] init]);
   }
   return self;
 }
@@ -134,6 +136,13 @@ NSView* GetNSTitlebarContainerViewFromWindow(NSWindow* window) {
     self.hidden = YES;
     self.hidden = NO;
   }
+}
+
+// This is a private API method that will be used on macOS 11+.
+// Remove a small 1px blur between the overlay view and tabbed overlay view by
+// returning a blank NSView.
+- (NSView*)separatorView {
+  return _blank_separator_view;
 }
 
 @end
@@ -376,16 +385,41 @@ void ImmersiveModeController::UpdateToolbarVisibility(
     case mojom::ToolbarVisibilityStyle::kAutohide:
       immersive_mode_titlebar_view_controller_.get().hidden = NO;
 
+      // TODO(https://crbug.com/1369643): Remove the thin controller.
       // The thin titlebar controller keeps a tiny portion of the AppKit
       // fullscreen NSWindow on screen as a workaround for
-      // https://crbug.com/1369643.
+      // https://crbug.com/1369643. Toggle to clear any artifacts from a
+      // previous state.
+      thin_titlebar_view_controller_.get().hidden = YES;
       thin_titlebar_view_controller_.get().hidden = NO;
 
       immersive_mode_titlebar_view_controller_.get().fullScreenMinHeight = 0;
       browser_window_.styleMask |= NSWindowStyleMaskFullSizeContentView;
       break;
     case mojom::ToolbarVisibilityStyle::kNone:
-      thin_titlebar_view_controller_.get().hidden = YES;
+      // TODO(https://crbug.com/1369643): Remove the thin controller.
+      // Needed when eventually exiting from content fullscreen and returning
+      // to mojom::ToolbarVisibilityStyle::kAlways. This is a workaround for
+      // https://crbug.com/1369643.
+      //
+      // We hit this situation when a window enters browser fullscreen, then
+      // enters content fullscreen. Exiting content fullscreen will drop the
+      // window back into browser fullscreen.
+      //
+      // We don't know what state we will be returning to when exiting content
+      // fullscreen, but `kAlways` is one of the options. Because of this we
+      // need to keep the thin controller visible during content fullscreen,
+      // otherwise we will trip https://crbug.com/1369643.
+      //
+      // Exiting content fullscreen and returning to `kAutohide` does not
+      // trigger https://crbug.com/1369643, but to keep things simple we keep
+      // the mitigation in place for all transitions out of content fullscreen.
+
+      // In short, when transitioning to `kNone` we need to take steps to
+      // mitigate https://crbug.com/1369643 which is triggered when we
+      // eventually transition out of `kNone`.
+      thin_titlebar_view_controller_.get().hidden = NO;
+
       immersive_mode_titlebar_view_controller_.get().hidden = YES;
       break;
   }
@@ -509,10 +543,8 @@ void ImmersiveModeController::RevealUnlock() {
     immersive_mode_titlebar_view_controller_.get().fullScreenMinHeight = 0;
   }
 
-  // Account for last_used_style_ changing to kAlways while a reveal lock was
-  // active.
-  if (reveal_lock_count_ < 1 &&
-      last_used_style_ == mojom::ToolbarVisibilityStyle::kAlways) {
+  // Account for last_used_style_ changing while a reveal lock was active.
+  if (reveal_lock_count_ < 1) {
     UpdateToolbarVisibility(last_used_style_);
   }
   DCHECK(reveal_lock_count_ >= 0);

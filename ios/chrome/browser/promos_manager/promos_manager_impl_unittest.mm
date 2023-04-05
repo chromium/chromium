@@ -111,7 +111,7 @@ void PromosManagerImplTest::CreatePromosManager() {
   CreatePrefs();
   mock_tracker_ = std::make_unique<feature_engagement::test::MockTracker>();
   promos_manager_ = std::make_unique<PromosManagerImpl>(
-      local_state_.get(), &test_clock_, mock_tracker_.get());
+      local_state_.get(), &test_clock_, mock_tracker_.get(), nullptr);
   promos_manager_->Init();
 }
 
@@ -333,13 +333,14 @@ TEST_F(PromosManagerImplTest, DecidesCannotShowPromo) {
   int today = TodaysDay();
 
   const std::vector<promos_manager::Impression> impressions = {
-      promos_manager::Impression(promos_manager::Promo::Test, today),
+      promos_manager::Impression(promos_manager::Promo::Test, today, false),
       promos_manager::Impression(promos_manager::Promo::DefaultBrowser,
-                                 today - 7),
+                                 today - 7, false),
       promos_manager::Impression(promos_manager::Promo::AppStoreRating,
-                                 today - 14),
+                                 today - 14, false),
       promos_manager::Impression(
-          promos_manager::Promo::CredentialProviderExtension, today - 180),
+          promos_manager::Promo::CredentialProviderExtension, today - 180,
+          false),
   };
 
   // False because triggers no more than 1 impression per month global
@@ -377,13 +378,14 @@ TEST_F(PromosManagerImplTest, SortPromos) {
   int today = TodaysDay();
 
   promos_manager_->impression_history_ = {
-      promos_manager::Impression(promos_manager::Promo::Test, today),
+      promos_manager::Impression(promos_manager::Promo::Test, today, false),
       promos_manager::Impression(promos_manager::Promo::DefaultBrowser,
-                                 today - 7),
+                                 today - 7, false),
       promos_manager::Impression(promos_manager::Promo::AppStoreRating,
-                                 today - 14),
+                                 today - 14, false),
       promos_manager::Impression(
-          promos_manager::Promo::CredentialProviderExtension, today - 180),
+          promos_manager::Promo::CredentialProviderExtension, today - 180,
+          false),
   };
 
   std::vector<promos_manager::Promo> expected = {
@@ -410,13 +412,14 @@ TEST_F(PromosManagerImplTest, SortPromosWithSomeInactivePromos) {
   int today = TodaysDay();
 
   const std::vector<promos_manager::Impression> impressions = {
-      promos_manager::Impression(promos_manager::Promo::Test, today),
+      promos_manager::Impression(promos_manager::Promo::Test, today, false),
       promos_manager::Impression(promos_manager::Promo::DefaultBrowser,
-                                 today - 7),
+                                 today - 7, false),
       promos_manager::Impression(promos_manager::Promo::AppStoreRating,
-                                 today - 14),
+                                 today - 14, false),
       promos_manager::Impression(
-          promos_manager::Promo::CredentialProviderExtension, today - 180),
+          promos_manager::Promo::CredentialProviderExtension, today - 180,
+          false),
   };
 
   const std::vector<promos_manager::Promo> expected = {
@@ -443,11 +446,13 @@ TEST_F(PromosManagerImplTest, ReturnsSortPromosBreakingTies) {
   int today = TodaysDay();
 
   const std::vector<promos_manager::Impression> impressions = {
-      promos_manager::Impression(promos_manager::Promo::Test, today),
-      promos_manager::Impression(promos_manager::Promo::DefaultBrowser, today),
-      promos_manager::Impression(promos_manager::Promo::AppStoreRating, today),
+      promos_manager::Impression(promos_manager::Promo::Test, today, false),
+      promos_manager::Impression(promos_manager::Promo::DefaultBrowser, today,
+                                 false),
+      promos_manager::Impression(promos_manager::Promo::AppStoreRating, today,
+                                 false),
       promos_manager::Impression(
-          promos_manager::Promo::CredentialProviderExtension, today),
+          promos_manager::Promo::CredentialProviderExtension, today, false),
   };
 
   promos_manager_->impression_history_ = impressions;
@@ -468,13 +473,14 @@ TEST_F(PromosManagerImplTest, ReturnsSortPromosWithOnlyOnePromoActive) {
   int today = TodaysDay();
 
   const std::vector<promos_manager::Impression> impressions = {
-      promos_manager::Impression(promos_manager::Promo::Test, today),
+      promos_manager::Impression(promos_manager::Promo::Test, today, false),
       promos_manager::Impression(promos_manager::Promo::DefaultBrowser,
-                                 today - 7),
+                                 today - 7, false),
       promos_manager::Impression(promos_manager::Promo::AppStoreRating,
-                                 today - 14),
+                                 today - 14, false),
       promos_manager::Impression(
-          promos_manager::Promo::CredentialProviderExtension, today - 180),
+          promos_manager::Promo::CredentialProviderExtension, today - 180,
+          false),
   };
 
   const std::vector<promos_manager::Promo> expected = {
@@ -494,13 +500,14 @@ TEST_F(PromosManagerImplTest,
   int today = TodaysDay();
 
   const std::vector<promos_manager::Impression> impressions = {
-      promos_manager::Impression(promos_manager::Promo::Test, today),
+      promos_manager::Impression(promos_manager::Promo::Test, today, false),
       promos_manager::Impression(promos_manager::Promo::DefaultBrowser,
-                                 today - 7),
+                                 today - 7, false),
       promos_manager::Impression(promos_manager::Promo::AppStoreRating,
-                                 today - 14),
+                                 today - 14, false),
       promos_manager::Impression(
-          promos_manager::Promo::CredentialProviderExtension, today - 180),
+          promos_manager::Promo::CredentialProviderExtension, today - 180,
+          false),
   };
 
   const std::vector<promos_manager::Promo> expected;
@@ -537,9 +544,9 @@ TEST_F(PromosManagerImplTest,
   int today = TodaysDay();
 
   const std::vector<promos_manager::Impression> impressions = {
-      promos_manager::Impression(promos_manager::Promo::Test, today),
+      promos_manager::Impression(promos_manager::Promo::Test, today, false),
       promos_manager::Impression(promos_manager::Promo::DefaultBrowser,
-                                 today - 7),
+                                 today - 7, false),
   };
 
   const std::vector<promos_manager::Promo> expected = {
@@ -567,13 +574,13 @@ TEST_F(PromosManagerImplTest, SortsPromosPreferCertainTypes) {
 
   const std::vector<promos_manager::Impression> impressions = {
       promos_manager::Impression(
-          promos_manager::Promo::PostRestoreSignInFullscreen, today - 1),
+          promos_manager::Promo::PostRestoreSignInFullscreen, today - 1, false),
       promos_manager::Impression(promos_manager::Promo::PostRestoreSignInAlert,
-                                 today - 2),
+                                 today - 2, false),
       promos_manager::Impression(promos_manager::Promo::DefaultBrowser,
-                                 today - 7),
+                                 today - 7, false),
 
-      promos_manager::Impression(promos_manager::Promo::Test, today - 8),
+      promos_manager::Impression(promos_manager::Promo::Test, today - 8, false),
   };
 
   promos_manager_->impression_history_ = impressions;
@@ -601,11 +608,11 @@ TEST_F(PromosManagerImplTest, SortsPromosPreferPendingToNonPending) {
   int today = TodaysDay();
 
   const std::vector<promos_manager::Impression> impressions = {
-      promos_manager::Impression(promos_manager::Promo::Test, today - 1),
+      promos_manager::Impression(promos_manager::Promo::Test, today - 1, false),
       promos_manager::Impression(promos_manager::Promo::AppStoreRating,
-                                 today - 2),
+                                 today - 2, false),
       promos_manager::Impression(promos_manager::Promo::DefaultBrowser,
-                                 today - 7),
+                                 today - 7, false),
   };
 
   promos_manager_->impression_history_ = impressions;
@@ -642,9 +649,10 @@ TEST_F(PromosManagerImplTest, ReturnsImpressionHistory) {
   impressions.Append(second_impression.Clone());
 
   std::vector<promos_manager::Impression> expected = {
-      promos_manager::Impression(promos_manager::Promo::DefaultBrowser, today),
+      promos_manager::Impression(promos_manager::Promo::DefaultBrowser, today,
+                                 false),
       promos_manager::Impression(promos_manager::Promo::AppStoreRating,
-                                 today - 7),
+                                 today - 7, false),
   };
 
   std::vector<promos_manager::Impression> result =
@@ -692,7 +700,8 @@ TEST_F(PromosManagerImplTest,
   impressions.Append(second_impression.Clone());
 
   std::vector<promos_manager::Impression> expected = {
-      promos_manager::Impression(promos_manager::Promo::DefaultBrowser, today),
+      promos_manager::Impression(promos_manager::Promo::DefaultBrowser, today,
+                                 false),
   };
 
   std::vector<promos_manager::Impression> result =
@@ -1559,7 +1568,7 @@ TEST_F(PromosManagerImplTest,
 
   int today = TodaysDay();
   const std::vector<promos_manager::Impression> impressions = {
-      promos_manager::Impression(promos_manager::Promo::Test, today),
+      promos_manager::Impression(promos_manager::Promo::Test, today, false),
   };
   promos_manager_->impression_history_ = impressions;
 

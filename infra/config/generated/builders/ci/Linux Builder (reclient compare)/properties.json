@@ -41,11 +41,13 @@
     }
   },
   "$build/reclient": {
+    "bootstrap_env": {
+      "RBE_clang_depscan_archive": "true"
+    },
     "ensure_verified": true,
     "instance": "rbe-chromium-trusted-test",
     "metrics_project": "chromium-reclient-metrics",
     "rewrapper_env": {
-      "RBE_clang_depscan_archive": "true",
       "RBE_compare": "true"
     }
   },

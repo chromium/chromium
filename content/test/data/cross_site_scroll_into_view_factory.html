@@ -281,7 +281,11 @@ function main() {
   // Construct the child frame.
   var elementType = hasAttribute(Attributes.FencedFrame) ? 'fencedframe' : 'iframe';
   var frame = document.createElement(elementType);
-  frame.src = url;
+  if (elementType == "fencedframe") {
+    frame.config = new FencedFrameConfig(url);
+  } else {
+    frame.src = url;
+  }
   frame.id = "childframe";
 
   // Add the child frame to the document.

@@ -158,6 +158,8 @@ source_set("renderer") {
     "injection_host.h",
     "ipc_message_sender.cc",
     "ipc_message_sender.h",
+    "isolated_world_manager.cc",
+    "isolated_world_manager.h",
     "lazy_background_page_native_handler.cc",
     "lazy_background_page_native_handler.h",
     "logging_native_handler.cc",

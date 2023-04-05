@@ -37,10 +37,37 @@ ui::InputMethod* GetInputMethod(aura::Window* window) {
   return window->GetHost()->GetInputMethod();
 }
 
+bool ShouldUseNullInputType(bool surrounding_text_supported) {
+  // TODO(b/273674108): We should be able to tell the IME that the client does
+  // not support surrounding text. Instead, we currently disable all IME
+  // features by setting input type to null in cases where the IME will not
+  // function correctly without surrounding text.
+  // Some basic IMEs (incl. EN, DE, FR) are known to be buggy when auto-correct
+  // is on and surrounding text is not provided.
+  // Complex IMEs (e.g. JA, KO) are not known to be buggy when surrounding text
+  // is not provided.
+
+  if (surrounding_text_supported) {
+    return false;
+  }
+
+  auto* manager = ash::input_method::InputMethodManager::Get();
+  scoped_refptr<ash::input_method::InputMethodManager::State> state =
+      manager->GetActiveIMEState();
+  if (!state) {
+    return false;
+  }
+
+  return state->GetCurrentInputMethod().id().find("xkb:") != std::string::npos;
+}
+
 }  // namespace
 
 TextInput::TextInput(std::unique_ptr<Delegate> delegate)
-    : delegate_(std::move(delegate)) {}
+    : delegate_(std::move(delegate)) {
+  input_method_manager_observation_.Observe(
+      ash::input_method::InputMethodManager::Get());
+}
 
 TextInput::~TextInput() {
   Deactivate();
@@ -135,18 +162,22 @@ void TextInput::SetTypeModeFlags(ui::TextInputType type,
                                  ui::TextInputMode mode,
                                  int flags,
                                  bool should_do_learning,
-                                 bool can_compose_inline) {
+                                 bool can_compose_inline,
+                                 bool surrounding_text_supported) {
   if (!input_method_)
     return;
   bool changed = (input_type_ != type) || (input_mode_ != mode) ||
                  (flags_ != flags) ||
                  (should_do_learning_ != should_do_learning) ||
-                 (can_compose_inline_ != can_compose_inline);
+                 (can_compose_inline_ != can_compose_inline) ||
+                 (surrounding_text_supported_ != surrounding_text_supported);
   input_type_ = type;
   input_mode_ = mode;
   flags_ = flags;
   should_do_learning_ = should_do_learning;
   can_compose_inline_ = can_compose_inline;
+  surrounding_text_supported_ = surrounding_text_supported;
+  use_null_input_type_ = ShouldUseNullInputType(surrounding_text_supported_);
   if (changed)
     input_method_->OnTextInputTypeChanged(this);
 }
@@ -258,7 +289,7 @@ void TextInput::InsertChar(const ui::KeyEvent& event) {
 }
 
 ui::TextInputType TextInput::GetTextInputType() const {
-  return input_type_;
+  return use_null_input_type_ ? ui::TEXT_INPUT_TYPE_NULL : input_type_;
 }
 
 ui::TextInputMode TextInput::GetTextInputMode() const {
@@ -358,6 +389,12 @@ bool TextInput::GetTextFromRange(const gfx::Range& range,
 }
 
 void TextInput::OnInputMethodChanged() {
+  // This observer method does not signify anything meaningful. When the user
+  // switches input method, |InputMethodChanged()| is triggered instead of
+  // this, and the ui::InputMethod we are attached to is a singleton.
+
+  // TODO(timloh): This is dead code, remove it.
+
   DCHECK_EQ(surface_, seat_->GetFocusedSurface());
   ui::InputMethod* input_method = GetInputMethod(surface_->window());
   if (input_method == input_method_)
@@ -505,6 +542,18 @@ void TextInput::OnKeyboardHidden() {
   }
   delegate_->OnVirtualKeyboardOccludedBoundsChanged({});
   delegate_->OnVirtualKeyboardVisibilityChanged(false);
+}
+
+// This is called when the user switches input method.
+void TextInput::InputMethodChanged(
+    ash::input_method::InputMethodManager* manager,
+    Profile* profile,
+    bool show_message) {
+  ui::TextInputType old_input_type = GetTextInputType();
+  use_null_input_type_ = ShouldUseNullInputType(surrounding_text_supported_);
+  if (input_method_ && GetTextInputType() != old_input_type) {
+    input_method_->OnTextInputTypeChanged(this);
+  }
 }
 
 void TextInput::OnSurfaceFocused(Surface* gained_focus,

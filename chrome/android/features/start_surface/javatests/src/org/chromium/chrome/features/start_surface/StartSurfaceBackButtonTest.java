@@ -24,7 +24,6 @@ import android.view.View;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.MediumTest;
-import androidx.test.runner.lifecycle.Stage;
 
 import org.junit.Assert;
 import org.junit.Assume;
@@ -37,7 +36,6 @@ import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
-import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -46,7 +44,6 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UserActionTester;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -59,6 +56,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
@@ -171,9 +169,8 @@ public class StartSurfaceBackButtonTest {
         StartSurfaceTestUtils.waitForStartSurfaceVisible(
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
         onViewWaiting(withId(R.id.primary_tasks_surface_view));
-        StartSurfaceTestUtils.pressBack(mActivityTestRule);
+        StartSurfaceTestUtils.pressBackAndVerifyChromeToBackground(mActivityTestRule);
         TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
-        ApplicationTestUtils.waitForActivityState(cta, Stage.STOPPED);
     }
 
     @Test
@@ -213,7 +210,7 @@ public class StartSurfaceBackButtonTest {
         StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount = */ 1);
         StartSurfaceTestUtils.pressHomePageButton(cta);
         onViewWaiting(withId(R.id.primary_tasks_surface_view));
-        onView(allOf(withId(org.chromium.chrome.tab_ui.R.id.tab_list_view), isDisplayed()));
+        onView(allOf(withId(R.id.tab_list_view), isDisplayed()));
 
         // Launches the new tab from the carousel tab switcher, and press back button.
         StartSurfaceTestUtils.clickTabInCarousel(/* position = */ 1);
@@ -255,8 +252,7 @@ public class StartSurfaceBackButtonTest {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForStartSurfaceVisible(
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
-        onViewWaiting(
-                allOf(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_container), isDisplayed()));
+        onViewWaiting(allOf(withId(R.id.mv_tiles_container), isDisplayed()));
 
         // Launches the first site in mv tiles.
         StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount = */ 1);
@@ -268,12 +264,12 @@ public class StartSurfaceBackButtonTest {
         }
 
         // Enters the tab switcher, and choose the new tab. After the tab is opening, press back.
-        waitForView(withId(org.chromium.chrome.tab_ui.R.id.tab_switcher_button));
+        waitForView(withId(R.id.tab_switcher_button));
         TabUiTestHelper.enterTabSwitcher(cta);
         StartSurfaceTestUtils.waitForTabSwitcherVisible(cta);
-        waitForView(withId(org.chromium.chrome.tab_ui.R.id.tab_list_view));
+        waitForView(withId(R.id.tab_list_view));
         onView(allOf(withParent(withId(TabUiTestHelper.getTabSwitcherParentId(cta))),
-                       withId(org.chromium.chrome.tab_ui.R.id.tab_list_view)))
+                       withId(R.id.tab_list_view)))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(1, click()));
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
         Assert.assertEquals(TabLaunchType.FROM_START_SURFACE,
@@ -305,8 +301,8 @@ public class StartSurfaceBackButtonTest {
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
 
         // Taps on the "Recent tabs" menu item.
-        MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(), cta,
-                org.chromium.chrome.R.id.recent_tabs_menu_id);
+        MenuUtils.invokeCustomMenuActionSync(
+                InstrumentationRegistry.getInstrumentation(), cta, R.id.recent_tabs_menu_id);
         CriteriaHelper.pollUiThread(() -> cta.getActivityTabProvider().get() != null);
         Assert.assertEquals("The launched tab should have the launch type FROM_START_SURFACE",
                 TabLaunchType.FROM_START_SURFACE,
@@ -411,8 +407,8 @@ public class StartSurfaceBackButtonTest {
         onViewWaiting(withId(R.id.logo));
 
         // Open an incognito tab from Start.
-        MostVisitedTilesCarouselLayout mvTilesLayout = mActivityTestRule.getActivity().findViewById(
-                org.chromium.chrome.tab_ui.R.id.mv_tiles_layout);
+        MostVisitedTilesCarouselLayout mvTilesLayout =
+                mActivityTestRule.getActivity().findViewById(R.id.mv_tiles_layout);
         View tileView =
                 mvTilesLayout.findTileViewForTesting(mMostVisitedSites.getCurrentSites().get(1));
         openMvTileInAnIncognitoTab(cta, tileView, 1);
@@ -423,8 +419,7 @@ public class StartSurfaceBackButtonTest {
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
 
         // Open an incognito tab from Start again.
-        mvTilesLayout = mActivityTestRule.getActivity().findViewById(
-                org.chromium.chrome.tab_ui.R.id.mv_tiles_layout);
+        mvTilesLayout = mActivityTestRule.getActivity().findViewById(R.id.mv_tiles_layout);
         tileView = mvTilesLayout.findTileViewForTesting(mMostVisitedSites.getCurrentSites().get(1));
         openMvTileInAnIncognitoTab(cta, tileView, 2);
 
@@ -433,8 +428,7 @@ public class StartSurfaceBackButtonTest {
         StartSurfaceTestUtils.waitForStartSurfaceVisible(
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 1);
-        onViewWaiting(
-                allOf(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_layout), isDisplayed()));
+        onViewWaiting(allOf(withId(R.id.mv_tiles_layout), isDisplayed()));
     }
 
     private void openMvTileInAnIncognitoTab(

@@ -283,6 +283,12 @@ class ASH_EXPORT CaptureModeController
   // projector-initiated capture mode session.
   void MaybeRestoreCachedCaptureConfigurations();
 
+  // Called when the "Share to YouTube" button is pressed to
+  // open the YouTube share video page.
+  // TODO(b/276982457): Hook this function with the "Share to YouTube" button to
+  // be shown in the notification area once implemented.
+  void OnShareToYouTubeButtonPressed();
+
   CaptureModeDelegate* delegate_for_testing() const { return delegate_.get(); }
   VideoRecordingWatcher* video_recording_watcher_for_testing() const {
     return video_recording_watcher_.get();

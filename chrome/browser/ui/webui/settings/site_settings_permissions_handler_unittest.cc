@@ -69,7 +69,10 @@ class SiteSettingsPermissionsHandlerTest : public testing::Test {
              base::Value::List(std::move(permission_type_list)));
     const content_settings::ContentSettingConstraints constraint{
         .expiration =
-            clock()->Now() + permissions::kRevocationCleanUpThreshold};
+            clock()->Now() +
+            content_settings::features::
+                kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold
+                    .Get()};
 
     hcsm()->SetWebsiteSettingDefaultScope(
         GURL(kUnusedTestSite), GURL(kUnusedTestSite),
@@ -126,7 +129,10 @@ class SiteSettingsPermissionsHandlerTest : public testing::Test {
 TEST_F(SiteSettingsPermissionsHandlerTest, PopulateUnusedSitePermissionsData) {
   // Add GEOLOCATION setting for url but do not add to revoked list.
   const content_settings::ContentSettingConstraints constraint{
-      .expiration = clock()->Now() + permissions::kRevocationCleanUpThreshold,
+      .expiration =
+          clock()->Now() +
+          content_settings::features::
+              kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold.Get(),
       .track_last_visit_for_autoexpiration = true};
   hcsm()->SetContentSettingDefaultScope(
       GURL(kUsedTestSite), GURL(kUsedTestSite),

@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
@@ -206,6 +207,36 @@ bool KeyboardCapability::HasSixPackOnAnyKeyboard() {
   return false;
 }
 
+// static
+bool KeyboardCapability::IsFunctionKey(ui::KeyboardCode code) {
+  return ui::KeyboardCode::VKEY_F1 <= code &&
+         code <= ui::KeyboardCode::VKEY_F24;
+}
+
+bool KeyboardCapability::IsTopRowActionKey(ui::KeyboardCode code) {
+  // TODO(jimmyxgong): This is based off of the Layout1, Layout2, Wilco/Drallion
+  // mappings with some additional keys. This is not a complete list.
+  static constexpr auto kTopRowKeys = base::MakeFixedFlatSet<ui::KeyboardCode>({
+      ui::KeyboardCode::VKEY_BROWSER_BACK,
+      ui::KeyboardCode::VKEY_BROWSER_FORWARD,
+      ui::KeyboardCode::VKEY_BROWSER_REFRESH,
+      ui::KeyboardCode::VKEY_ZOOM,
+      ui::KeyboardCode::VKEY_MEDIA_LAUNCH_APP1,
+      ui::KeyboardCode::VKEY_BRIGHTNESS_DOWN,
+      ui::KeyboardCode::VKEY_BRIGHTNESS_UP,
+      ui::KeyboardCode::VKEY_VOLUME_MUTE,
+      ui::KeyboardCode::VKEY_VOLUME_UP,
+      ui::KeyboardCode::VKEY_VOLUME_DOWN,
+      ui::KeyboardCode::VKEY_MICROPHONE_MUTE_TOGGLE,
+      ui::KeyboardCode::VKEY_PRIVACY_SCREEN_TOGGLE,
+      ui::KeyboardCode::VKEY_SNAPSHOT,
+      ui::KeyboardCode::VKEY_MEDIA_PLAY_PAUSE,
+      ui::KeyboardCode::VKEY_KBD_BRIGHTNESS_DOWN,
+      ui::KeyboardCode::VKEY_KBD_BRIGHTNESS_UP,
+  });
+  return base::Contains(kTopRowKeys, code);
+}
+
 std::vector<mojom::ModifierKey> KeyboardCapability::GetModifierKeys(
     const InputDevice& keyboard) {
   // This set of modifier keys is available on every keyboard.
@@ -319,7 +350,7 @@ void KeyboardCapability::TrimKeyboardInfoMap() {
 }
 
 bool KeyboardCapability::HasKeyEvent(const KeyboardCode& key_code,
-                                     const InputDevice& keyboard) const {
+                                     const InputDevice& keyboard) {
   // Handle top row keys.
   if (IsTopRowKey(key_code)) {
     KeyboardTopRowLayout layout =
@@ -343,12 +374,19 @@ bool KeyboardCapability::HasKeyEvent(const KeyboardCode& key_code,
     return HasSixPackKey(keyboard);
   }
 
+  // Handle assistant key.
+  if (key_code == KeyboardCode::VKEY_ASSISTANT) {
+    const KeyboardInfo* keyboard_info = GetKeyboardInfo(keyboard);
+    return keyboard_info &&
+           keyboard_info->event_device_info->HasKeyEvent(KEY_ASSISTANT);
+  }
+
   // TODO(zhangwenyu): check other specific keys, e.g. assistant key.
   return true;
 }
 
 bool KeyboardCapability::HasKeyEventOnAnyKeyboard(
-    const KeyboardCode& key_code) const {
+    const KeyboardCode& key_code) {
   for (const ui::InputDevice& keyboard :
        ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
     if (HasKeyEvent(key_code, keyboard)) {

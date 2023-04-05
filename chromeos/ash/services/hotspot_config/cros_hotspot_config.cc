@@ -14,17 +14,20 @@ CrosHotspotConfig::CrosHotspotConfig()
           NetworkHandler::Get()->hotspot_capabilities_provider(),
           NetworkHandler::Get()->hotspot_state_handler(),
           NetworkHandler::Get()->hotspot_controller(),
-          NetworkHandler::Get()->hotspot_configuration_handler()) {}
+          NetworkHandler::Get()->hotspot_configuration_handler(),
+          NetworkHandler::Get()->hotspot_enabled_state_notifier()) {}
 
 CrosHotspotConfig::CrosHotspotConfig(
     ash::HotspotCapabilitiesProvider* hotspot_capabilities_provider,
     ash::HotspotStateHandler* hotspot_state_handler,
     ash::HotspotController* hotspot_controller,
-    ash::HotspotConfigurationHandler* hotspot_configuration_handler)
+    ash::HotspotConfigurationHandler* hotspot_configuration_handler,
+    ash::HotspotEnabledStateNotifier* hotspot_enabled_state_notifier)
     : hotspot_capabilities_provider_(hotspot_capabilities_provider),
       hotspot_state_handler_(hotspot_state_handler),
       hotspot_controller_(hotspot_controller),
-      hotspot_configuration_handler_(hotspot_configuration_handler) {}
+      hotspot_configuration_handler_(hotspot_configuration_handler),
+      hotspot_enabled_state_notifier_(hotspot_enabled_state_notifier) {}
 
 CrosHotspotConfig::~CrosHotspotConfig() {
   if (hotspot_capabilities_provider_ &&
@@ -116,7 +119,8 @@ void CrosHotspotConfig::OnHotspotConfigurationChanged() {
 
 void CrosHotspotConfig::ObserveEnabledStateChanges(
     mojo::PendingRemote<mojom::HotspotEnabledStateObserver> observer) {
-  hotspot_controller_->ObserveEnabledStateChanges(std::move(observer));
+  hotspot_enabled_state_notifier_->ObserveEnabledStateChanges(
+      std::move(observer));
 }
 
 }  // namespace ash::hotspot_config

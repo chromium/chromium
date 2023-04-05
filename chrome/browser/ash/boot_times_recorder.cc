@@ -42,15 +42,13 @@ using ::content::RenderWidgetHost;
 using ::content::RenderWidgetHostView;
 using ::content::WebContents;
 
-RenderWidgetHost* GetRenderWidgetHost(NavigationController* tab) {
-  WebContents* web_contents = tab->DeprecatedGetWebContents();
-  if (web_contents) {
-    RenderWidgetHostView* render_widget_host_view =
-        web_contents->GetRenderWidgetHostView();
-    if (render_widget_host_view)
-      return render_widget_host_view->GetRenderWidgetHost();
+RenderWidgetHost* GetRenderWidgetHost(WebContents* web_contents) {
+  RenderWidgetHostView* render_widget_host_view =
+      web_contents->GetRenderWidgetHostView();
+  if (!render_widget_host_view) {
+    return nullptr;
   }
-  return nullptr;
+  return render_widget_host_view->GetRenderWidgetHost();
 }
 
 const std::string GetTabUrl(RenderWidgetHost* rwh) {
@@ -105,16 +103,21 @@ static base::LazyInstance<BootTimesRecorder>::DestructorAtExit
     g_boot_times_recorder = LAZY_INSTANCE_INITIALIZER;
 
 BootTimesRecorder::BootTimesRecorder()
-    : have_registered_(false),
-      login_done_(false),
-      restart_requested_(false) {
-}
+    : login_done_(false), restart_requested_(false) {}
 
 BootTimesRecorder::~BootTimesRecorder() {
 }
 
 // static
 BootTimesRecorder* BootTimesRecorder::Get() {
+  return g_boot_times_recorder.Pointer();
+}
+
+// static
+BootTimesRecorder* BootTimesRecorder::GetIfCreated() {
+  if (!g_boot_times_recorder.IsCreated()) {
+    return nullptr;
+  }
   return g_boot_times_recorder.Pointer();
 }
 
@@ -126,15 +129,6 @@ void BootTimesRecorder::LoginDone(bool is_user_new) {
   login_done_ = true;
   AddLoginTimeMarker("LoginDone", false);
   RecordCurrentStats(kChromeFirstRender);
-  if (have_registered_) {
-    registrar_.Remove(this,
-                      content::NOTIFICATION_LOAD_START,
-                      content::NotificationService::AllSources());
-    registrar_.Remove(this,
-                      content::NOTIFICATION_LOAD_STOP,
-                      content::NotificationService::AllSources());
-    render_widget_host_observations_.RemoveAllObservations();
-  }
   LoginEventRecorder::Get()->ScheduleWriteLoginTimes(
       kLoginTimes, (is_user_new ? kUmaLoginNewUser : kUmaLogin),
       kUmaLoginPrefix);
@@ -223,13 +217,6 @@ void BootTimesRecorder::RecordLoginAttempted() {
 
   LoginEventRecorder::Get()->ClearLoginTimeMarkers();
   AddLoginTimeMarker("LoginStarted", false);
-  if (!have_registered_) {
-    have_registered_ = true;
-    registrar_.Add(this, content::NOTIFICATION_LOAD_START,
-                   content::NotificationService::AllSources());
-    registrar_.Add(this, content::NOTIFICATION_LOAD_STOP,
-                   content::NotificationService::AllSources());
-  }
 }
 
 void BootTimesRecorder::AddLoginTimeMarker(const char* marker_name,
@@ -242,37 +229,45 @@ void BootTimesRecorder::AddLogoutTimeMarker(const char* marker_name,
   LoginEventRecorder::Get()->AddLogoutTimeMarker(marker_name, send_to_uma);
 }
 
-void BootTimesRecorder::Observe(int type,
-                                const content::NotificationSource& source,
-                                const content::NotificationDetails& details) {
-  switch (type) {
-    case content::NOTIFICATION_LOAD_START: {
-      NavigationController* tab =
-          content::Source<NavigationController>(source).ptr();
-      RenderWidgetHost* rwh = GetRenderWidgetHost(tab);
-      DCHECK(rwh);
-      AddLoginTimeMarkerWithURL("TabLoad-Start", GetTabUrl(rwh));
-      if (!render_widget_host_observations_.IsObservingSource(rwh))
-        render_widget_host_observations_.AddObservation(rwh);
-      break;
-    }
-    case content::NOTIFICATION_LOAD_STOP: {
-      NavigationController* tab =
-          content::Source<NavigationController>(source).ptr();
-      RenderWidgetHost* rwh = GetRenderWidgetHost(tab);
-      if (render_widget_host_observations_.IsObservingSource(rwh)) {
-        AddLoginTimeMarkerWithURL("TabLoad-End", GetTabUrl(rwh));
-      }
-      break;
-    }
-    default:
-      break;
+void BootTimesRecorder::TabLoadStart(WebContents* web_contents) {
+  if (login_done_) {
+    return;
   }
+
+  RenderWidgetHost* rwh = GetRenderWidgetHost(web_contents);
+  if (!rwh) {
+    return;
+  }
+
+  AddLoginTimeMarkerWithURL("TabLoad-Start",
+                            web_contents->GetLastCommittedURL().spec());
+
+  if (render_widget_host_observations_.IsObservingSource(rwh)) {
+    return;
+  }
+  render_widget_host_observations_.AddObservation(rwh);
+}
+
+void BootTimesRecorder::TabLoadEnd(WebContents* web_contents) {
+  if (login_done_) {
+    return;
+  }
+
+  RenderWidgetHost* rwh = GetRenderWidgetHost(web_contents);
+  if (!rwh) {
+    return;
+  }
+
+  if (!render_widget_host_observations_.IsObservingSource(rwh)) {
+    return;
+  }
+
+  AddLoginTimeMarkerWithURL("TabLoad-End",
+                            web_contents->GetLastCommittedURL().spec());
 }
 
 void BootTimesRecorder::RenderWidgetHostDidUpdateVisualProperties(
     content::RenderWidgetHost* widget_host) {
-  DCHECK(have_registered_);
   AddLoginTimeMarkerWithURL("TabPaint", GetTabUrl(widget_host));
   LoginDone(user_manager::UserManager::Get()->IsCurrentUserNew());
 }

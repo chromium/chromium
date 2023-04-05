@@ -13,6 +13,7 @@ import zipfile
 
 from util import build_utils
 import action_helpers  # build_utils adds //build to sys.path.
+import zip_helpers
 
 
 def main(args):
@@ -48,11 +49,10 @@ def main(args):
       depfile_deps = None
       if options.input_files:
         files = action_helpers.parse_gn_list(options.input_files)
-        build_utils.DoZip(
-            files,
-            out_zip,
-            base_dir=options.input_files_base_dir,
-            compress_fn=lambda _: options.compress)
+        zip_helpers.add_files_to_zip(files,
+                                     out_zip,
+                                     base_dir=options.input_files_base_dir,
+                                     compress=options.compress)
 
       if options.input_zips:
         files = action_helpers.parse_gn_list(options.input_zips)
@@ -63,11 +63,10 @@ def main(args):
               options.input_zips_excluded_globs)
           path_transform = (
               lambda p: None if build_utils.MatchesGlob(p, globs) else p)
-        build_utils.MergeZips(
-            out_zip,
-            files,
-            path_transform=path_transform,
-            compress=options.compress)
+        zip_helpers.merge_zips(out_zip,
+                               files,
+                               path_transform=path_transform,
+                               compress=options.compress)
 
       if options.comment_json:
         out_zip.comment = json.dumps(dict(options.comment_json),

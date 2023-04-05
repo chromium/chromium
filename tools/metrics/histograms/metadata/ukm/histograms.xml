@@ -58,7 +58,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UKM.ConsentObserver.AppSyncConsentChanged" enum="Boolean"
-    expires_after="2023-07-30">
+    expires_after="2023-10-01">
   <owner>andrewbregger@google.com</owner>
   <owner>ukm-team@google.com</owner>
   <summary>

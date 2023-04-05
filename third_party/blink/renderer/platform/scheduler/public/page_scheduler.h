@@ -36,9 +36,6 @@ class PLATFORM_EXPORT PageScheduler {
     // compositor.
     virtual bool RequestBeginMainFrameNotExpected(bool new_state) = 0;
     virtual void OnSetPageFrozen(bool is_frozen) = 0;
-    // Returns true iff the network is idle for the local main frame.
-    // Always returns false if the main frame is remote.
-    virtual bool LocalMainFrameNetworkIsAlmostIdle() const { return true; }
   };
 
   virtual ~PageScheduler() = default;

@@ -279,7 +279,8 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxAutoScrollHandlerTest', 'RecyclerViewByCharacter',
+    // TODO(crbug.com/1419811): Test is flaky.
+    'ChromeVoxAutoScrollHandlerTest', 'DISABLED_RecyclerViewByCharacter',
     async function() {
       const mockFeedback = this.createMockFeedback();
       const root = await this.runWithFakeArcRecyclerView();

@@ -4,6 +4,10 @@
 * found in the LICENSE file.
 -->
 <body>
-  <fencedframe src="/fencedframe/fencedframe_inner.html"></fencedframe>
+  <fencedframe></fencedframe>
+  <script>
+    const url = new URL("/fencedframe/fencedframe_inner.html", location.href);
+    document.querySelector("fencedframe").config = new FencedFrameConfig(url);
+  </script>
   <p>outer end</p>
 </body>

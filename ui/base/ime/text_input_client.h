@@ -112,6 +112,13 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient
   // even if the current text input type is TEXT_INPUT_TYPE_NONE.
   virtual void InsertChar(const ui::KeyEvent& event) = 0;
 
+  // Returns whether the current insertion point supports images.
+  virtual bool CanInsertImage();
+
+  // Inserts a given image at the insertion point. It should be only called when
+  // CanInsertImage returns true.
+  virtual void InsertImage(const GURL& src) {}
+
   // Input context information -------------------------------------------------
 
   // Returns current text input type. It could be changed and even becomes

@@ -85,8 +85,8 @@ void SVGLinearGradientElement::SvgAttributeChanged(
   SVGGradientElement::SvgAttributeChanged(params);
 }
 
-LayoutObject* SVGLinearGradientElement::CreateLayoutObject(const ComputedStyle&,
-                                                           LegacyLayout) {
+LayoutObject* SVGLinearGradientElement::CreateLayoutObject(
+    const ComputedStyle&) {
   return MakeGarbageCollected<LayoutSVGResourceLinearGradient>(this);
 }
 

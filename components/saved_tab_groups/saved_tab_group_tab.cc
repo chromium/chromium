@@ -10,9 +10,9 @@
 SavedTabGroupTab::SavedTabGroupTab(
     const GURL& url,
     const std::u16string& title,
-    const base::GUID& group_guid,
+    const base::Uuid& group_guid,
     SavedTabGroup* group,
-    absl::optional<base::GUID> saved_tab_guid,
+    absl::optional<base::Uuid> saved_tab_guid,
     absl::optional<base::Token> local_tab_id,
     absl::optional<int> position,
     absl::optional<base::Time> creation_time_windows_epoch_micros,
@@ -20,7 +20,7 @@ SavedTabGroupTab::SavedTabGroupTab(
     absl::optional<gfx::Image> favicon)
     : saved_tab_guid_(saved_tab_guid.has_value()
                           ? saved_tab_guid.value()
-                          : base::GUID::GenerateRandomV4()),
+                          : base::Uuid::GenerateRandomV4()),
       saved_group_guid_(group_guid),
       local_tab_id_(local_tab_id),
       position_(position.value_or(kUnsetPosition)),
@@ -64,13 +64,13 @@ std::unique_ptr<sync_pb::SavedTabGroupSpecifics> SavedTabGroupTab::MergeTab(
 // static
 SavedTabGroupTab SavedTabGroupTab::FromSpecifics(
     const sync_pb::SavedTabGroupSpecifics& specific) {
-  const base::GUID& group_guid =
-      base::GUID::ParseLowercase(specific.tab().group_guid());
+  const base::Uuid& group_guid =
+      base::Uuid::ParseLowercase(specific.tab().group_guid());
   const GURL& url = GURL(specific.tab().url());
   const std::u16string title = base::UTF8ToUTF16(specific.tab().title());
   int position = specific.tab().position();
 
-  base::GUID guid = base::GUID::ParseLowercase(specific.guid());
+  base::Uuid guid = base::Uuid::ParseLowercase(specific.guid());
   base::Time creation_time = base::Time::FromDeltaSinceWindowsEpoch(
       base::Microseconds(specific.creation_time_windows_epoch_micros()));
   base::Time update_time = base::Time::FromDeltaSinceWindowsEpoch(

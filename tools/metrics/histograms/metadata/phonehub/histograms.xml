@@ -507,6 +507,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PhoneHub.RecentApps.TransitionToFailed.Latency" units="ms"
+    expires_after="2023-08-13">
+  <owner>crisrael@google.com</owner>
+  <owner>jonmann@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The time it takes to transition between showing the Loading state to the
+    Failed state. Emitted when the Failed state is shown.
+  </summary>
+</histogram>
+
+<histogram name="PhoneHub.RecentApps.TransitionToSuccess.Latency" units="ms"
+    expires_after="2023-08-13">
+  <owner>crisrael@google.com</owner>
+  <owner>jonmann@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The time it takes to transition between showing the Loading state to the app
+    icons state. Emitted when the app icons are shown.
+  </summary>
+</histogram>
+
 <histogram name="PhoneHub.ScreenOnSettingsButtonClicked" enum="PhoneHubScreen"
     expires_after="2023-06-11">
   <owner>jonmann@chromium.org</owner>

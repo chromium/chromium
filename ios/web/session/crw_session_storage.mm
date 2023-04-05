@@ -28,6 +28,7 @@ NSString* const kHasOpenerKey = @"openedByDOM";
 NSString* const kLastCommittedItemIndexKey = @"lastCommittedItemIndex";
 NSString* const kUserAgentKey = @"userAgentKey";
 NSString* const kStableIdentifierKey = @"stableIdentifier";
+NSString* const kUniqueIdentifierKey = @"uniqueIdentifier";
 NSString* const kSerializedUserDataKey = @"serializedUserData";
 NSString* const kLastActiveTimeKey = @"lastActiveTime";
 NSString* const kCreationTimeKey = @"creationTime";
@@ -44,7 +45,11 @@ NSString* const kLastCommittedItemIndexDeprecatedKey =
 NSString* const kTabIdKey = @"TabId";
 }
 
-@implementation CRWSessionStorage
+@implementation CRWSessionStorage {
+  // The unique identifier, stored as the underlying type since SessionID
+  // has not public default constructor, thus cannot be an ivar/property.
+  SessionID::id_type _uniqueIdentifier;
+}
 
 #pragma mark - NSCoding
 
@@ -134,6 +139,14 @@ NSString* const kTabIdKey = @"TabId";
       _stableIdentifier = [[NSUUID UUID] UUIDString];
     }
 
+    // If no unique identifier was read, or it was invalid, generate a
+    // new one.
+    static_assert(sizeof(_uniqueIdentifier) == sizeof(int32_t));
+    _uniqueIdentifier = [decoder decodeInt32ForKey:kUniqueIdentifierKey];
+    if (!SessionID::IsValidValue(_uniqueIdentifier)) {
+      _uniqueIdentifier = SessionID::NewUnique().id();
+    }
+
     // Force conversion to NSString if `_stableIdentifier` happens to be a
     // NSMutableString (to prevent this value from being mutated).
     _stableIdentifier = [_stableIdentifier copy];
@@ -183,6 +196,23 @@ NSString* const kTabIdKey = @"TabId";
     [coder encodeInt64:_creationTime.ToDeltaSinceWindowsEpoch().InMicroseconds()
                 forKey:kCreationTimeKey];
   }
+
+  if (SessionID::IsValidValue(_uniqueIdentifier)) {
+    static_assert(sizeof(_uniqueIdentifier) == sizeof(int32_t));
+    [coder encodeInt32:_uniqueIdentifier forKey:kUniqueIdentifierKey];
+  }
+}
+
+#pragma mark - Properties
+
+- (SessionID)uniqueIdentifier {
+  DCHECK(SessionID::IsValidValue(_uniqueIdentifier));
+  return SessionID::FromSerializedValue(_uniqueIdentifier);
+}
+
+- (void)setUniqueIdentifier:(SessionID)uniqueIdentifier {
+  DCHECK(uniqueIdentifier.is_valid());
+  _uniqueIdentifier = uniqueIdentifier.id();
 }
 
 @end

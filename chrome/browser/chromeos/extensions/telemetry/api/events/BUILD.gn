@@ -29,6 +29,37 @@ source_set("events") {
   }
 }
 
+source_set("event_router") {
+  sources = [
+    "event_observation_crosapi.cc",
+    "event_observation_crosapi.h",
+    "event_router.cc",
+    "event_router.h",
+    "remote_event_service_strategy.cc",
+    "remote_event_service_strategy.h",
+  ]
+
+  deps = [
+    ":event_converters",
+    "//base",
+    "//chrome/common/chromeos/extensions/api",
+    "//chromeos/crosapi/mojom",
+    "//content/public/browser",
+    "//extensions/common",
+    "//mojo/public/cpp/bindings",
+  ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//chrome/browser/ash/telemetry_extension" ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/lacros" ]
+  }
+
+  public_deps = [ "//extensions/browser" ]
+}
+
 source_set("event_manager") {
   sources = [
     "event_manager.cc",
@@ -95,6 +126,26 @@ source_set("unit_tests") {
     ":event_converters",
     "//chrome/common/chromeos/extensions/api",
     "//chromeos/crosapi/mojom",
+    "//testing/gtest",
+  ]
+}
+
+source_set("extensions_unittests") {
+  testonly = true
+  sources = [
+    "event_observation_crosapi_unittest.cc",
+    "event_router_unittest.cc",
+  ]
+
+  deps = [
+    ":event_router",
+    "//base/test:test_support",
+    "//chrome/common/chromeos/extensions/api",
+    "//chromeos/crosapi/mojom",
+    "//content/test:test_support",
+    "//extensions:test_support",
+    "//extensions/common",
+    "//mojo/public/cpp/bindings",
     "//testing/gtest",
   ]
 }

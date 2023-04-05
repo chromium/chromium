@@ -59,6 +59,7 @@ android_resources("java_resources") {
 
 android_library("unit_device_javatests") {
   testonly = true
+  resources_package = "org.chromium.chrome.browser.image_descriptions"
 
   sources = [
     "android/java/src/org/chromium/chrome/browser/image_descriptions/ImageDescriptionsControllerTest.java",
@@ -67,6 +68,7 @@ android_library("unit_device_javatests") {
 
   deps = [
     ":java",
+    ":java_resources",
     "//base:base_java_test_support",
     "//chrome/browser/device:java",
     "//chrome/browser/flags:java",
@@ -74,6 +76,7 @@ android_library("unit_device_javatests") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:test_support_java",
     "//components/browser_ui/modaldialog/android:java",
+    "//components/browser_ui/modaldialog/android:java_resources",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/prefs/android:java",
@@ -94,11 +97,13 @@ android_library("unit_device_javatests") {
 
 android_library("javatests") {
   testonly = true
+  resources_package = "org.chromium.chrome.browser.image_descriptions"
 
   sources = [ "android/java/src/org/chromium/chrome/browser/image_descriptions/ImageDescriptionsSettingsTest.java" ]
 
   deps = [
     ":java",
+    ":java_resources",
     "//base:base_java_test_support",
     "//chrome/browser/device:java",
     "//chrome/browser/flags:java",

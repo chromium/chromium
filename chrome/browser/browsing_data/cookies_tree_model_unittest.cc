@@ -112,17 +112,19 @@ class CookiesTreeModelTest : public testing::Test {
   }
 
   void TearDown() override {
-    mock_browsing_data_service_worker_helper_ = nullptr;
-    mock_browsing_data_shared_worker_helper_ = nullptr;
     mock_browsing_data_cache_storage_helper_ = nullptr;
+    mock_browsing_data_shared_worker_helper_ = nullptr;
+    mock_browsing_data_service_worker_helper_ = nullptr;
     mock_browsing_data_quota_helper_ = nullptr;
     mock_browsing_data_file_system_helper_ = nullptr;
     mock_browsing_data_indexed_db_helper_ = nullptr;
     mock_browsing_data_session_storage_helper_ = nullptr;
     mock_browsing_data_local_storage_helper_ = nullptr;
     mock_browsing_data_database_helper_ = nullptr;
+    mock_browsing_data_cookie_helper_ = nullptr;
     base::RunLoop().RunUntilIdle();
   }
+
   std::unique_ptr<CookiesTreeModel> CreateCookiesTreeModelWithInitialSample() {
     auto container = std::make_unique<LocalDataContainer>(
         mock_browsing_data_cookie_helper_, mock_browsing_data_database_helper_,

@@ -20,6 +20,9 @@ import sys
 import zipfile
 
 from util import build_utils
+import action_helpers
+import zip_helpers
+
 
 # This should be same as recipe side token. See bit.ly/3STSPcE.
 INSTRUMENT_ALL_JACOCO_OVERRIDE_TOKEN = 'INSTRUMENT_ALL_JACOCO'
@@ -182,7 +185,8 @@ def _InstrumentClassFiles(instrument_cmd,
       f.extractall(instrumented_dir, unaffected_members)
 
   # Zip all files to output_path
-  build_utils.ZipDir(output_path, instrumented_dir)
+  with action_helpers.atomic_output(output_path) as f:
+    zip_helpers.zip_directory(f, instrumented_dir)
 
 
 def _RunInstrumentCommand(parser):
@@ -212,7 +216,12 @@ def _RunInstrumentCommand(parser):
       # Check if coverage recipe decided to instrument everything by overriding
       # the try builder default setting(selective instrumentation). This can
       # happen in cases like a DEPS roll of jacoco library
-      if INSTRUMENT_ALL_JACOCO_OVERRIDE_TOKEN in affected_files:
+
+      # Note: This token is preceded by ../../ because the paths to be
+      # instrumented are expected to be relative to the build directory.
+      # See _rebase_paths() at https://bit.ly/40oiixX
+      token = '../../' + INSTRUMENT_ALL_JACOCO_OVERRIDE_TOKEN
+      if token in affected_files:
         affected_source_files = None
       else:
         source_set = set(source_files)

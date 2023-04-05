@@ -191,8 +191,8 @@ void ScriptedIdleTaskController::RunCallback(
 
   probe::AsyncTask async_task(GetExecutionContext(),
                               idle_task->async_task_context());
-  probe::UserCallback probe(GetExecutionContext(), "Window",
-                            "requestIdleCallback", AtomicString(), true);
+  probe::UserCallback probe(GetExecutionContext(), "requestIdleCallback",
+                            AtomicString(), true);
 
   bool cross_origin_isolated_capability =
       GetExecutionContext()

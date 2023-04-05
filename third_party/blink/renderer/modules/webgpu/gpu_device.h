@@ -19,7 +19,6 @@ namespace blink {
 
 class ExecutionContext;
 class ExternalTextureCache;
-class HTMLCanvasElement;
 class GPUAdapter;
 class GPUBuffer;
 class GPUBufferDescriptor;
@@ -90,9 +89,6 @@ class GPUDevice final : public EventTargetWithInlineData,
                           ExceptionState& exception_state);
   GPUTexture* createTexture(const GPUTextureDescriptor* descriptor,
                             ExceptionState& exception_state);
-  GPUTexture* experimentalImportTexture(HTMLCanvasElement* canvas,
-                                        unsigned int usage_flags,
-                                        ExceptionState& exception_state);
   GPUSampler* createSampler(const GPUSamplerDescriptor* descriptor);
 
   GPUExternalTexture* importExternalTexture(

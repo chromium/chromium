@@ -547,7 +547,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   [self.UIHandler close];
   [self.jsNavigationHandler close];
   [self.requestController close];
-  [self.requestController close];
   [self.webViewNavigationObserver close];
 
   // Mark the destruction sequence has started, in case someone else holds a
@@ -878,7 +877,8 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 
 - (void)closeMediaPresentations {
   if (@available(iOS 16, *)) {
-    if (self.webView.fullscreenState == WKFullscreenStateInFullscreen) {
+    if (self.webView.fullscreenState == WKFullscreenStateInFullscreen ||
+        self.webView.fullscreenState == WKFullscreenStateEnteringFullscreen) {
       [self.webView closeAllMediaPresentationsWithCompletionHandler:^{
       }];
       return;

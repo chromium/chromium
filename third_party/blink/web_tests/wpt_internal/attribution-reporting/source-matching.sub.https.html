@@ -9,12 +9,15 @@
 
 const source_matching_promise_test = (testCase) => {
   attribution_reporting_promise_test(async t => {
+    const source = {
+      source_event_id: generateSourceEventId(),
+      destination: testCase.sourceDestination,
+    };
     await registerAttributionSrc(t, {
-      source: {
-        destination: testCase.sourceDestination,
-      },
+      source,
       reportingOrigin: testCase.sourceReportingOrigin,
     });
+    await waitForSourceToBeRegistered(source.source_event_id);
 
     await registerAttributionSrc(t, {
       trigger: {

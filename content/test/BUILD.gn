@@ -93,6 +93,8 @@ static_library("test_support") {
     "../browser/file_system_access/mock_file_system_access_permission_grant.h",
     "../browser/font_access/font_access_test_utils.cc",
     "../browser/font_access/font_access_test_utils.h",
+    "../browser/interest_group/test_interest_group_observer.cc",
+    "../browser/interest_group/test_interest_group_observer.h",
     "../browser/media/session/mock_media_session_player_observer.cc",
     "../browser/media/session/mock_media_session_player_observer.h",
     "../browser/media/session/mock_media_session_service_impl.cc",
@@ -1356,7 +1358,6 @@ test("content_browsertests") {
     "../browser/loader/reload_cache_control_browsertest.cc",
     "../browser/loader/resource_cache_browsertest.cc",
     "../browser/loader/resource_scheduler_browsertest.cc",
-    "../browser/loader/web_transport_browsertest.cc",
     "../browser/locks/lock_manager_browsertest.cc",
     "../browser/manifest/manifest_browsertest.cc",
     "../browser/media/encrypted_media_browsertest.cc",
@@ -1677,6 +1678,7 @@ test("content_browsertests") {
     "//services/device/public/mojom:generic_sensor",
     "//services/image_annotation/public/cpp:cpp",
     "//services/image_annotation/public/mojom:mojom",
+    "//services/metrics",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network:test_support",
     "//services/network/public/mojom",
@@ -2504,6 +2506,7 @@ test("content_unittests") {
     "../browser/renderer_host/navigation_policy_container_builder_unittest.cc",
     "../browser/renderer_host/navigation_request_unittest.cc",
     "../browser/renderer_host/navigation_throttle_runner_unittest.cc",
+    "../browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache_unittest.cc",
     "../browser/renderer_host/navigator_unittest.cc",
     "../browser/renderer_host/overscroll_controller_unittest.cc",
     "../browser/renderer_host/pending_beacon_host_unittest.cc",
@@ -3160,7 +3163,8 @@ test("content_unittests") {
   }
 
   if (is_chromeos) {
-    sources += [ "../browser/smart_card/smart_card_reader_tracker_unittest.cc" ]
+    sources +=
+        [ "../browser/smart_card/smart_card_reader_tracker_impl_unittest.cc" ]
   }
 
   if (use_aura) {

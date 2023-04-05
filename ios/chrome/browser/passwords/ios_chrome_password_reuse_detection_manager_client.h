@@ -12,8 +12,8 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/password_manager/ios/password_reuse_detection_manager_client_bridge.h"
+#include "components/safe_browsing/core/browser/password_protection/password_reuse_detection_manager.h"
 #include "components/safe_browsing/core/browser/password_protection/password_reuse_detection_manager_client.h"
-#include "components/safe_browsing/core/browser/password_protection/password_reuse_detection_manager_sb.h"
 #import "ios/chrome/browser/safe_browsing/input_event_observer.h"
 #import "ios/chrome/browser/safe_browsing/password_protection_java_script_feature.h"
 #import "ios/web/public/web_state.h"
@@ -97,7 +97,7 @@ class IOSChromePasswordReuseDetectionManagerClient
 
   __weak id<IOSChromePasswordReuseDetectionManagerClientBridge> bridge_;
 
-  safe_browsing::PasswordReuseDetectionManagerSB
+  safe_browsing::PasswordReuseDetectionManager
       password_reuse_detection_manager_;
 
   std::unique_ptr<autofill::LogManager> log_manager_;

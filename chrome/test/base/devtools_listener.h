@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_agent_host_client.h"
@@ -77,7 +78,14 @@ class DevToolsListener : public content::DevToolsAgentHostClient {
   // Called if host was shut down (closed).
   void AgentHostClosed(content::DevToolsAgentHost* host) override;
 
- private:
+  // Repeatedly verify all the script IDs from the coverage entries are
+  // available and call `finished_callback` on completion (either retries
+  // exhausted or all scripts are available).
+  void VerifyAllScriptsAreParsedRepeatedly(
+      const base::Value::List* coverage_entries,
+      base::OnceClosure done_callback,
+      int retries);
+
   std::vector<base::Value::Dict> scripts_;
   base::Value::Dict script_coverage_;
   std::map<std::string, std::string> script_hash_map_;
@@ -90,6 +98,10 @@ class DevToolsListener : public content::DevToolsAgentHostClient {
   const std::string uuid_;
   bool navigated_ = false;
   bool attached_ = true;
+
+  bool all_scripts_parsed_ = false;
+
+  base::WeakPtrFactory<DevToolsListener> weak_ptr_factory_{this};
 };
 
 }  // namespace coverage

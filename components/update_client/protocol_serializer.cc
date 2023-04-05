@@ -12,12 +12,12 @@
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/cpu.h"
-#include "base/guid.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -116,7 +116,7 @@ protocol_request::Request MakeProtocolRequest(
   CHECK(base::StartsWith(session_id, "{", base::CompareCase::SENSITIVE));
   CHECK(base::EndsWith(session_id, "}", base::CompareCase::SENSITIVE));
   request.session_id = session_id;
-  request.request_id = base::StrCat({"{", base::GenerateGUID(), "}"});
+  request.request_id = base::StrCat({"{", base::GenerateUuid(), "}"});
 
   request.updatername = prod_id;
   request.updaterversion = browser_version;

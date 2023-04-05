@@ -108,7 +108,7 @@ class DriveBackendSyncTest : public testing::Test,
 
     std::unique_ptr<drive::FakeDriveService> drive_service(
         new drive::FakeDriveService);
-    drive_service->Initialize(CoreAccountId("account_id"));
+    drive_service->Initialize(CoreAccountId::FromGaiaId("account_id"));
     ASSERT_TRUE(drive::test_util::SetUpTestEntries(drive_service.get()));
 
     std::unique_ptr<drive::DriveUploaderInterface> uploader(

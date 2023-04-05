@@ -6,7 +6,6 @@
 
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
-#include "third_party/blink/renderer/core/layout/line/root_inline_box.h"
 #include "third_party/blink/renderer/core/paint/background_image_geometry.h"
 #include "third_party/blink/renderer/core/paint/box_decoration_data.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
@@ -29,31 +28,11 @@ Node* GetNode(const LayoutBoxModelObject& box_model) {
   return node;
 }
 
-LayoutSize LogicalOffsetOnLine(const InlineFlowBox& flow_box) {
-  // Compute the offset of the passed flow box when seen as part of an
-  // unbroken continuous strip (c.f box-decoration-break: slice.)
-  LayoutUnit logical_offset_on_line;
-  if (flow_box.IsLeftToRightDirection()) {
-    for (const InlineFlowBox* curr = flow_box.PrevForSameLayoutObject(); curr;
-         curr = curr->PrevForSameLayoutObject())
-      logical_offset_on_line += curr->LogicalWidth();
-  } else {
-    for (const InlineFlowBox* curr = flow_box.NextForSameLayoutObject(); curr;
-         curr = curr->NextForSameLayoutObject())
-      logical_offset_on_line += curr->LogicalWidth();
-  }
-  LayoutSize logical_offset(logical_offset_on_line, LayoutUnit());
-  return flow_box.IsHorizontal() ? logical_offset
-                                 : logical_offset.TransposedSize();
-}
-
 }  // anonymous namespace
 
-BoxModelObjectPainter::BoxModelObjectPainter(const LayoutBoxModelObject& box,
-                                             const InlineFlowBox* flow_box)
+BoxModelObjectPainter::BoxModelObjectPainter(const LayoutBoxModelObject& box)
     : BoxPainterBase(&box.GetDocument(), box.StyleRef(), GetNode(box)),
-      box_model_(box),
-      flow_box_(flow_box) {}
+      box_model_(box) {}
 
 void BoxModelObjectPainter::PaintTextClipMask(
     const PaintInfo& paint_info,
@@ -63,20 +42,7 @@ void BoxModelObjectPainter::PaintTextClipMask(
   PaintInfo mask_paint_info(paint_info.context, CullRect(mask_rect),
                             PaintPhase::kTextClip);
   mask_paint_info.SetFragmentID(paint_info.FragmentID());
-  if (flow_box_) {
-    LayoutSize local_offset = ToLayoutSize(flow_box_->Location());
-    if (object_has_multiple_boxes &&
-        box_model_.StyleRef().BoxDecorationBreak() ==
-            EBoxDecorationBreak::kSlice) {
-      local_offset -= LogicalOffsetOnLine(*flow_box_);
-    }
-    // TODO(layout-ng): This looks incorrect in flipped writing mode.
-    PhysicalOffset physical_local_offset(local_offset.Width(),
-                                         local_offset.Height());
-    const RootInlineBox& root = flow_box_->Root();
-    flow_box_->Paint(mask_paint_info, paint_offset - physical_local_offset,
-                     root.LineTop(), root.LineBottom());
-  } else if (auto* layout_block = DynamicTo<LayoutBlock>(box_model_)) {
+  if (auto* layout_block = DynamicTo<LayoutBlock>(box_model_)) {
     layout_block->PaintObject(mask_paint_info, paint_offset);
   } else {
     // We should go through the above path for LayoutInlines.
@@ -128,8 +94,6 @@ BoxPainterBase::FillLayerInfo BoxModelObjectPainter::GetFillLayerInfo(
     BackgroundBleedAvoidance bleed_avoidance,
     bool is_painting_background_in_contents_space) const {
   PhysicalBoxSides sides_to_include;
-  if (flow_box_)
-    sides_to_include = flow_box_->SidesToInclude();
   RespectImageOrientationEnum respect_orientation =
       LayoutObject::ShouldRespectImageOrientation(&box_model_);
   if (auto* style_image = bg_layer.GetImage()) {

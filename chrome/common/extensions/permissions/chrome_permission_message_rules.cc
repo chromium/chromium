@@ -458,25 +458,19 @@ ChromePermissionMessageRule::GetAllRules() {
       // History-related permission messages.
       // History already allows reading favicons, tab access and accessing the
       // list of most frequently visited sites.
-      {IDS_EXTENSION_PROMPT_WARNING_HISTORY_WRITE_AND_SESSIONS,
-       {APIPermissionID::kHistory, APIPermissionID::kSessions},
-       {APIPermissionID::kDeclarativeNetRequestFeedback,
-        APIPermissionID::kFavicon, APIPermissionID::kProcesses,
-        APIPermissionID::kTab, APIPermissionID::kTopSites,
-        APIPermissionID::kWebNavigation}},
-      {IDS_EXTENSION_PROMPT_WARNING_HISTORY_READ_AND_SESSIONS,
-       {APIPermissionID::kTab, APIPermissionID::kSessions},
-       {APIPermissionID::kDeclarativeNetRequestFeedback,
-        APIPermissionID::kFavicon, APIPermissionID::kProcesses,
-        APIPermissionID::kTopSites, APIPermissionID::kWebNavigation}},
-      {IDS_EXTENSION_PROMPT_WARNING_HISTORY_WRITE,
+      {IDS_EXTENSION_PROMPT_WARNING_HISTORY_WRITE_ON_ALL_DEVICES,
        {APIPermissionID::kHistory},
        {APIPermissionID::kDeclarativeNetRequestFeedback,
         APIPermissionID::kFavicon, APIPermissionID::kProcesses,
         APIPermissionID::kTab, APIPermissionID::kTopSites,
         APIPermissionID::kWebNavigation}},
+      {IDS_EXTENSION_PROMPT_WARNING_HISTORY_READ_ON_ALL_DEVICES,
+       {APIPermissionID::kTab, APIPermissionID::kSessions},
+       {APIPermissionID::kDeclarativeNetRequestFeedback,
+        APIPermissionID::kFavicon, APIPermissionID::kProcesses,
+        APIPermissionID::kTopSites, APIPermissionID::kWebNavigation}},
       // Note: kSessions allows reading history from other devices only if kTab
-      // is also present. Therefore, there are no _AND_SESSIONS versions of
+      // is also present. Therefore, there are no _ON_ALL_DEVICES versions of
       // the other rules that generate the HISTORY_READ warning.
       {IDS_EXTENSION_PROMPT_WARNING_HISTORY_READ,
        {APIPermissionID::kTab},

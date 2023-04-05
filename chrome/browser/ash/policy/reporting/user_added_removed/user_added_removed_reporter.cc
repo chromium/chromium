@@ -40,6 +40,19 @@ UserAddedRemovedReporter::CreateForTesting(
 
 UserAddedRemovedReporter::~UserAddedRemovedReporter() = default;
 
+void UserAddedRemovedReporter::ProcessRemovedUser(
+    base::StringPiece user_email,
+    user_manager::UserRemovalReason reason) {
+  auto record = std::make_unique<UserAddedRemovedRecord>();
+  record->set_event_timestamp_sec(base::Time::Now().ToTimeT());
+  record->mutable_user_removed_event()->set_reason(UserRemovalReason(reason));
+  if (!user_email.empty()) {
+    record->mutable_affiliated_user()->set_user_email(std::string(user_email));
+  }
+
+  helper_->ReportEvent(std::move(record), ::reporting::Priority::IMMEDIATE);
+}
+
 void UserAddedRemovedReporter::OnLogin(Profile* profile) {
   if (!helper_->ReportingEnabled(ash::kReportDeviceLoginLogout)) {
     return;
@@ -79,33 +92,27 @@ void UserAddedRemovedReporter::OnUserToBeRemoved(const AccountId& account_id) {
   }
 
   const std::string email = account_id.GetUserEmail();
-  users_to_be_deleted_.insert_or_assign(account_id,
+  users_to_be_removed_.insert_or_assign(account_id,
                                         helper_->ShouldReportUser(email));
 }
 
 void UserAddedRemovedReporter::OnUserRemoved(
     const AccountId& account_id,
     user_manager::UserRemovalReason reason) {
-  if (!helper_->ReportingEnabled(ash::kReportDeviceLoginLogout)) {
-    return;
-  }
-  auto it = users_to_be_deleted_.find(account_id);
-  if (it == users_to_be_deleted_.end()) {
+  auto it = users_to_be_removed_.find(account_id);
+  if (it == users_to_be_removed_.end()) {
     return;
   }
 
   bool is_affiliated_user = it->second;
-  users_to_be_deleted_.erase(it);
+  users_to_be_removed_.erase(it);
 
-  auto record = std::make_unique<UserAddedRemovedRecord>();
-  record->mutable_user_removed_event()->set_reason(UserRemovalReason(reason));
-  if (is_affiliated_user) {
-    record->mutable_affiliated_user()->set_user_email(
-        account_id.GetUserEmail());
+  // Check the pref, after we update the tracking map.
+  if (!helper_->ReportingEnabled(ash::kReportDeviceLoginLogout)) {
+    return;
   }
-  record->set_event_timestamp_sec(base::Time::Now().ToTimeT());
-
-  helper_->ReportEvent(std::move(record), ::reporting::Priority::IMMEDIATE);
+  ProcessRemovedUser(is_affiliated_user ? account_id.GetUserEmail() : "",
+                     reason);
 }
 
 void UserAddedRemovedReporter::ProcessRemoveUserCache() {
@@ -113,15 +120,7 @@ void UserAddedRemovedReporter::ProcessRemoveUserCache() {
   auto users = user_manager->GetRemovedUserCache();
 
   for (const auto& user : users) {
-    auto record = std::make_unique<UserAddedRemovedRecord>();
-    record->set_event_timestamp_sec(base::Time::Now().ToTimeT());
-    record->mutable_user_removed_event()->set_reason(
-        UserRemovalReason(user.second));
-    if (user.first != "") {
-      record->mutable_affiliated_user()->set_user_email(user.first);
-    }
-
-    helper_->ReportEvent(std::move(record), ::reporting::Priority::IMMEDIATE);
+    ProcessRemovedUser(user.first, user.second);
   }
 
   user_manager->MarkReporterInitialized();

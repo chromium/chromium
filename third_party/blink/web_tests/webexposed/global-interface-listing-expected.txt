@@ -2961,7 +2961,6 @@ interface GPUDevice : EventTarget
     method createShaderModule
     method createTexture
     method destroy
-    method experimentalImportTexture
     method importExternalTexture
     method popErrorScope
     method pushErrorScope
@@ -3163,6 +3162,7 @@ interface Gamepad
     getter index
     getter mapping
     getter timestamp
+    getter touchEvents
     getter vibrationActuator
     method constructor
 interface GamepadAxisEvent : GamepadEvent
@@ -3192,6 +3192,13 @@ interface GamepadHapticActuator
     method constructor
     method playEffect
     method reset
+interface GamepadTouch
+    attribute @@toStringTag
+    getter position
+    getter surfaceDimensions
+    getter surfaceId
+    getter touchId
+    method constructor
 interface Geolocation
     attribute @@toStringTag
     method clearWatch
@@ -5786,6 +5793,7 @@ interface MediaDevices : EventTarget
     getter ondevicechange
     method constructor
     method enumerateDevices
+    method getAllScreensMedia
     method getDisplayMedia
     method getDisplayMediaSet
     method getSupportedConstraints
@@ -6234,6 +6242,7 @@ interface NavigateEvent : Event
     getter navigationType
     getter signal
     getter userInitiated
+    method commit
     method constructor
     method intercept
     method scroll

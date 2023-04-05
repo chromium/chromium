@@ -125,6 +125,15 @@ class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
         browser()->tab_strip_model()->GetActiveWebContents());
   }
 
+  void OpenNewTab() {
+    int tab_count = browser()->tab_strip_model()->count();
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), GURL("http://example.com"),
+        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
+    ASSERT_EQ(tab_count + 1, browser()->tab_strip_model()->count());
+  }
+
   // Calls chrome.sidePanel.setOptions() for the given `extension`, `path` and
   // `enabled` and returns when the API call is complete.
   void RunSetOptions(const Extension& extension,
@@ -364,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, SetOptions_Enabled) {
 
   // Load an extension without a default side panel path.
   scoped_refptr<const extensions::Extension> extension = LoadExtension(
-      test_data_dir_.AppendASCII("api_test/side_panel/setoptions_default_tab"));
+      test_data_dir_.AppendASCII("api_test/side_panel/setoptions"));
   ASSERT_TRUE(extension);
   SidePanelEntry::Key extension_key = GetKey(extension->id());
   EXPECT_FALSE(global_registry()->GetEntryForKey(extension_key));
@@ -631,11 +640,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, HideGlobalPanelForTab) {
   // available again since it's not disabled for the new tab.
   {
     ExtensionSidePanelRegistryWaiter waiter(global_registry(), extension->id());
-    ui_test_utils::NavigateToURLWithDisposition(
-        browser(), GURL("http://example.com"),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
-    ASSERT_EQ(2, browser()->tab_strip_model()->count());
+    OpenNewTab();
     ASSERT_TRUE(browser()->tab_strip_model()->IsTabSelected(1));
 
     waiter.WaitForRegistration();
@@ -711,11 +716,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
   // available again since it's not disabled for the new tab.
   {
     ExtensionSidePanelRegistryWaiter waiter(global_registry(), extension->id());
-    ui_test_utils::NavigateToURLWithDisposition(
-        browser(), GURL("http://example.com"),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
-    ASSERT_EQ(2, browser()->tab_strip_model()->count());
+    OpenNewTab();
     ASSERT_TRUE(browser()->tab_strip_model()->IsTabSelected(1));
 
     waiter.WaitForRegistration();
@@ -731,11 +732,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
 // worthwhile.
 IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, ReEnabledPanelNotShown) {
   // Open a second tab and switch back to the first tab.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("http://example.com"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  OpenNewTab();
   ASSERT_TRUE(browser()->tab_strip_model()->IsTabSelected(1));
 
   int second_tab_id = GetCurrentTabId();

@@ -419,7 +419,7 @@ TEST_F(ArcPolicyBridgeTest, EmptyPolicyTest) {
                              kMountPhysicalMediaDisabledPolicySetting + "}");
 }
 
-TEST_F(ArcPolicyBridgeTest, DISABLED_ArcPolicyTest) {
+TEST_F(ArcPolicyBridgeTest, ArcPolicyTest) {
   policy_map().Set(
       policy::key::kArcPolicy, policy::POLICY_LEVEL_MANDATORY,
       policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
@@ -433,9 +433,35 @@ TEST_F(ArcPolicyBridgeTest, DISABLED_ArcPolicyTest) {
                   "}"),
       nullptr);
   GetPoliciesAndVerifyResult(
-      "\"apkCacheEnabled\":true,"
-      "{\"applications\":"
+      "{\"apkCacheEnabled\":true,"
+      "\"applications\":"
       "[{\"installType\":\"REQUIRED\","
+      "\"lockTaskAllowed\":false,"
+      "\"packageName\":\"com.google.android.apps.youtube.kids\","
+      "\"permissionGrants\":[]"
+      "}],"
+      "\"defaultPermissionPolicy\":\"GRANT\","
+      "\"guid\":\"" +
+      instance_guid() + "\"," + kMountPhysicalMediaDisabledPolicySetting + "}");
+}
+
+TEST_F(ArcPolicyBridgeTest, InstallTypeOptionalMigrationTest) {
+  policy_map().Set(
+      policy::key::kArcPolicy, policy::POLICY_LEVEL_MANDATORY,
+      policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+      base::Value("{\"applications\":"
+                  "[{\"packageName\":\"com.google.android.apps.youtube.kids\","
+                  "\"installType\":\"OPTIONAL\","
+                  "\"lockTaskAllowed\":false,"
+                  "\"permissionGrants\":[]"
+                  "}],"
+                  "\"defaultPermissionPolicy\":\"GRANT\""
+                  "}"),
+      nullptr);
+  GetPoliciesAndVerifyResult(
+      "{\"apkCacheEnabled\":true,"
+      "\"applications\":"
+      "[{\"installType\":\"AVAILABLE\","
       "\"lockTaskAllowed\":false,"
       "\"packageName\":\"com.google.android.apps.youtube.kids\","
       "\"permissionGrants\":[]"

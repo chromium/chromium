@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/screen.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_ad_sizes.h"
+#include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_config.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
@@ -175,9 +176,8 @@ TEST_F(HTMLFencedFrameElementTest, HistogramTestInsecureContext) {
       SecurityOrigin::CreateFromString("http://insecure_top_level.test"));
 
   auto* fenced_frame = MakeGarbageCollected<HTMLFencedFrameElement>(doc);
-  fenced_frame->setAttribute(html_names::kSrcAttr,
-                             String("https://example.com/"),
-                             ASSERT_NO_EXCEPTION);
+  fenced_frame->setConfig(
+      FencedFrameConfig::Create(String("https://example.com/")));
   doc.body()->AppendChild(fenced_frame);
 
   histogram_tester_.ExpectUniqueSample(
@@ -189,8 +189,8 @@ TEST_F(HTMLFencedFrameElementTest, HistogramTestIncompatibleUrlHTTPDefault) {
   Document& doc = GetDocument();
 
   auto* fenced_frame = MakeGarbageCollected<HTMLFencedFrameElement>(doc);
-  fenced_frame->setAttribute(
-      html_names::kSrcAttr, String("http://example.com/"), ASSERT_NO_EXCEPTION);
+  fenced_frame->setConfig(
+      FencedFrameConfig::Create(String("http://example.com/")));
   doc.body()->AppendChild(fenced_frame);
   histogram_tester_.ExpectUniqueSample(
       kFencedFrameCreationOrNavigationOutcomeHistogram,
@@ -201,8 +201,8 @@ TEST_F(HTMLFencedFrameElementTest, HistogramTestIncompatibleUrlOpaque) {
   Document& doc = GetDocument();
 
   auto* fenced_frame = MakeGarbageCollected<HTMLFencedFrameElement>(doc);
-  fenced_frame->setAttribute(
-      html_names::kSrcAttr, String("http://example.com/"), ASSERT_NO_EXCEPTION);
+  fenced_frame->setConfig(
+      FencedFrameConfig::Create(String("http://example.com")));
   doc.body()->AppendChild(fenced_frame);
   histogram_tester_.ExpectUniqueSample(
       kFencedFrameCreationOrNavigationOutcomeHistogram,

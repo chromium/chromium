@@ -56,6 +56,13 @@ suite('SidePanelPowerBookmarksEditDialogTest', () => {
             },
           ],
         },
+        {
+          id: '6',
+          parentId: '2',
+          title: 'Child folder 2',
+          dateAdded: 1,
+          children: [],
+        },
       ],
     },
   ];
@@ -94,7 +101,7 @@ suite('SidePanelPowerBookmarksEditDialogTest', () => {
     const ironList =
         powerBookmarksEditDialog.shadowRoot!.querySelector('iron-list');
     const rows = ironList!.items!;
-
+    // Shows folders apart from itself/descendants
     assertEquals(rows.length, 1);
   });
 
@@ -137,7 +144,7 @@ suite('SidePanelPowerBookmarksEditDialogTest', () => {
     powerBookmarksEditDialog.showDialog(
         [],
         topLevelBookmarks,
-        [topLevelBookmarks[2]!],
+        [topLevelBookmarks[3]!],
         false,
     );
 

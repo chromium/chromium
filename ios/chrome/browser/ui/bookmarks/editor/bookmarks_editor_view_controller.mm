@@ -347,6 +347,11 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 }
 
 - (void)updateSync {
+  if (!self.tableViewModel) {
+    // If the view is not yet loaded, tableViewModel is nil, and we should no
+    // update. Sync can occur before the view is loaded. See crbug.com/1429435
+    return;
+  }
   self.folderItem.shouldDisplayCloudSlashIcon =
       [self.mutator shouldDisplayCloudSlashSymbolForParentFolder];
   NSIndexPath* indexPath =

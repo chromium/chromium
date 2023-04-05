@@ -34,7 +34,22 @@ class GeolocationHandler;
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
     SimpleGeolocationProvider {
  public:
+  class Delegate {
+   public:
+    Delegate() = default;
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
+    virtual ~Delegate() = default;
+
+    // Determines if the precise geolocation resolution is allowed, based on the
+    // existing enterprise policies, device preferences and user preferences.
+    virtual bool IsPreciseGeolocationAllowed() const = 0;
+  };
+
   SimpleGeolocationProvider(
+      const Delegate* delegate,
       scoped_refptr<network::SharedURLLoaderFactory> factory,
       const GURL& url);
 
@@ -72,6 +87,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
   void set_geolocation_handler(GeolocationHandler* geolocation_handler) {
     geolocation_handler_ = geolocation_handler;
   }
+
+  const Delegate* const delegate_;
 
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
 

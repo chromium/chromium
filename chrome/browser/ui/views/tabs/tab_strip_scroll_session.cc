@@ -133,18 +133,18 @@ double TabStripScrollSessionWithTimer::GetRatioInScrollableRegion() {
 
   switch (scroll_direction_) {
     case TabStripScrollSession::TabScrollDirection::kScrollTowardsTrailingTabs:
-      scrollable_start = visible_rect_drag_context_coord.right() -
-                         kScrollableOffsetFromScrollView;
+      scrollable_start =
+          visible_rect_drag_context_coord.right() - GetScrollableOffset();
       ratio =
           (dragged_tabs_rect_drag_context_coord.right() - scrollable_start) /
-          kScrollableOffsetFromScrollView;
+          GetScrollableOffset();
       return ratio;
     case TabStripScrollSession::TabScrollDirection::kScrollTowardsLeadingTabs:
-      scrollable_start = visible_rect_drag_context_coord.origin().x() +
-                         kScrollableOffsetFromScrollView;
+      scrollable_start =
+          visible_rect_drag_context_coord.origin().x() + GetScrollableOffset();
       ratio = (scrollable_start -
                dragged_tabs_rect_drag_context_coord.origin().x()) /
-              kScrollableOffsetFromScrollView;
+              GetScrollableOffset();
       return ratio;
     default:
       return ratio;
@@ -166,13 +166,11 @@ TabStripScrollSessionWithTimer::GetTabScrollDirection() {
 
   const bool maybe_scroll_towards_trailing_tabs =
       dragged_tabs_rect_drag_context_coord.right() >=
-      (visible_rect_drag_context_coord.right() -
-       kScrollableOffsetFromScrollView);
+      (visible_rect_drag_context_coord.right() - GetScrollableOffset());
 
   const bool maybe_scroll_towards_leading_tabs =
       dragged_tabs_rect_drag_context_coord.origin().x() <=
-      (visible_rect_drag_context_coord.origin().x() +
-       kScrollableOffsetFromScrollView);
+      (visible_rect_drag_context_coord.origin().x() + GetScrollableOffset());
 
   // TODO(crbug.com/1378683): Add case for both maybe scroll left and right.
   // This would happen when many tabs are selected.
@@ -184,4 +182,8 @@ TabStripScrollSessionWithTimer::GetTabScrollDirection() {
   } else {
     return TabStripScrollSession::TabScrollDirection::kNoScroll;
   }
+}
+
+int TabStripScrollSession::GetScrollableOffset() const {
+  return TabStyleViews::Create()->GetMinimumInactiveWidth() / 5;
 }

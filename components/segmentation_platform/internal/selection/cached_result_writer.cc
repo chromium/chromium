@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "components/segmentation_platform/internal/post_processor/post_processor.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
@@ -41,20 +42,20 @@ bool CachedResultWriter::IsPrefUpdateRequiredForClient(
   proto::PredictionResult pred_result = client_result->client_result();
   base::TimeDelta ttl_to_use =
       post_processor.GetTTLForPredictedResult(pred_result);
-
-  bool force_refresh_results = platform_options.force_refresh_results;
-  bool has_expired_results =
+  base::Time expiration_time =
       base::Time::FromDeltaSinceWindowsEpoch(
           base::Microseconds(client_result->timestamp_us())) +
-          ttl_to_use <=
-      clock_->Now();
+      ttl_to_use;
+
+  bool force_refresh_results = platform_options.force_refresh_results;
+  bool has_expired_results = expiration_time <= clock_->Now();
 
   if (!force_refresh_results && !has_expired_results) {
     stats::RecordSegmentSelectionFailure(
         *config,
         stats::SegmentationSelectionFailureReason::kSelectionTtlNotExpired);
     VLOG(1) << __func__ << ": previous client_result"
-            << " has not yet expired.";
+            << " has not yet expired. Expiration: " << expiration_time;
     return false;
   }
   return true;

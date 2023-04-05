@@ -12,6 +12,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/system/input_device_settings/input_device_notifier.h"
+#include "ash/system/input_device_settings/input_device_settings_metrics_manager.h"
 #include "ash/system/input_device_settings/input_device_settings_policy_handler.h"
 #include "ash/system/input_device_settings/pref_handlers/keyboard_pref_handler.h"
 #include "ash/system/input_device_settings/pref_handlers/mouse_pref_handler.h"
@@ -56,6 +57,7 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   const mojom::TouchpadSettings* GetTouchpadSettings(DeviceId id) override;
   const mojom::PointingStickSettings* GetPointingStickSettings(
       DeviceId id) override;
+  const mojom::KeyboardPolicies& GetKeyboardPolicies() override;
   void SetKeyboardSettings(DeviceId id,
                            mojom::KeyboardSettingsPtr settings) override;
   void SetTouchpadSettings(DeviceId id,
@@ -83,6 +85,7 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
  private:
   void Init();
 
+  void ScheduleDeviceSettingsRefresh();
   void RefreshAllDeviceSettings();
 
   void DispatchKeyboardConnected(DeviceId id);
@@ -125,6 +128,7 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   std::unique_ptr<InputDeviceNotifier<mojom::MousePtr>> mouse_notifier_;
   std::unique_ptr<InputDeviceNotifier<mojom::PointingStickPtr>>
       pointing_stick_notifier_;
+  std::unique_ptr<InputDeviceSettingsMetricsManager> metrics_manager_;
 
   raw_ptr<PrefService> active_pref_service_ = nullptr;  // Not owned.
 

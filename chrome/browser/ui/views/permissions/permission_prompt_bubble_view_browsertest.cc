@@ -967,7 +967,7 @@ class OneTimePermissionPromptBubbleViewBrowserTest
  public:
   OneTimePermissionPromptBubbleViewBrowserTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        permissions::features::kOneTimeGeolocationPermission,
+        permissions::features::kOneTimePermission,
         {{"OkButtonBehavesAsAllowAlways", GetParam() ? "true" : "false"}});
   }
 

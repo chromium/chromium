@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.permissions;
 
 import android.Manifest;
+import android.os.Build;
 
 import androidx.test.filters.MediumTest;
 
@@ -14,7 +15,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.download.DownloadItem;
 import org.chromium.chrome.browser.download.DownloadManagerService;
@@ -24,8 +27,8 @@ import org.chromium.chrome.browser.permissions.RuntimePermissionTestUtils.Runtim
 import org.chromium.chrome.browser.permissions.RuntimePermissionTestUtils.TestAndroidPermissionDelegate;
 import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.R;
 import org.chromium.components.offline_items_collection.ContentId;
-import org.chromium.components.permissions.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 
@@ -36,6 +39,7 @@ import java.util.List;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class RuntimePermissionTest {
     @Rule
     public PermissionTestRule mPermissionTestRule = new PermissionTestRule();
@@ -149,7 +153,10 @@ public class RuntimePermissionTest {
     @Test
     @MediumTest
     @Feature({"RuntimePermissions", "Downloads"})
-    public void testDenyRuntimeDownload() throws Exception {
+    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.Q,
+            message = "WRITE_EXTERNAL_STORAGE is not supported starting in Android R")
+    public void
+    testDenyRuntimeDownload() throws Exception {
         DownloadObserver observer = new DownloadObserver() {
             @Override
             public void onAllDownloadsRetrieved(
@@ -178,7 +185,7 @@ public class RuntimePermissionTest {
                 DOWNLOAD_TEST, false /* expectPermissionAllowed */,
                 null /* permissionPromptAllow */, true /* waitForMissingPermissionPrompt */,
                 false /* waitForUpdater */, "document.getElementsByTagName('a')[0].click();",
-                org.chromium.chrome.R.string.missing_storage_permission_download_education_text);
+                R.string.missing_storage_permission_download_education_text);
     }
 
     @Test

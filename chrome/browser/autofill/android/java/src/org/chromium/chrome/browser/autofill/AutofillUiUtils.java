@@ -9,9 +9,14 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.ColorFilter;
+import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
@@ -540,5 +545,34 @@ public class AutofillUiUtils {
             return R.dimen.settings_page_card_icon_height_new;
         }
         return R.dimen.settings_page_card_icon_height;
+    }
+
+    /**
+     * If {@code roundBitmapCorners} is true, add a corner radius to bitmap corners.
+     * @param bitmap to be updated.
+     * @param roundBitmapCorners If true, the bitmap corners are rounded, else the input bitmap is
+     *         returned as it is.
+     * @return {@link Bitmap} with the corners rounded.
+     */
+    public static Bitmap getRoundedBitmap(Bitmap bitmap, boolean roundBitmapCorners) {
+        if (!roundBitmapCorners) {
+            return bitmap;
+        }
+
+        float cornerRadius = ContextUtils.getApplicationContext().getResources().getDimension(
+                R.dimen.card_art_corner_radius);
+
+        Bitmap roundedBitmap =
+                Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(roundedBitmap);
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+        RectF rectF = new RectF(rect);
+        canvas.drawRoundRect(rectF, cornerRadius, cornerRadius, paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+
+        return roundedBitmap;
     }
 }

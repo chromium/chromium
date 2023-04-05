@@ -7,6 +7,7 @@
 #include <iterator>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -24,6 +25,8 @@
 #include "chrome/browser/ui/webauthn/authenticator_request_dialog.h"
 #include "chrome/browser/webauthn/webauthn_metrics_util.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/password_manager/core/browser/passkey_credential.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
@@ -124,6 +127,18 @@ constexpr const gfx::VectorIcon& GetTransportIcon(
       NOTREACHED();
       return gfx::kNoneIcon;
   }
+}
+
+// Returns the resource identifier for the label describing the platform
+// authenticator, e.g. "Use TouchID".
+int GetPlatformAuthenticatorLabel() {
+#if BUILDFLAG(IS_WIN)
+  return IDS_PASSWORD_MANAGER_USE_WINDOWS_HELLO;
+#elif BUILDFLAG(IS_MAC)
+  return IDS_PASSWORD_MANAGER_USE_TOUCH_ID;
+#else
+  return IDS_PASSWORD_MANAGER_USE_GENERIC_DEVICE;
+#endif
 }
 
 // Whether to show Step::kCreatePasskey, which prompts the user before platform
@@ -1037,10 +1052,22 @@ void AuthenticatorRequestDialogModel::StartConditionalMediationRequest() {
   auto* render_frame_host = content::RenderFrameHost::FromID(frame_host_id_);
   auto* web_contents = GetWebContents();
   if (web_contents && render_frame_host) {
-    ReportConditionalUiPasskeyCount(ephemeral_state_.creds_.size());
+    std::vector<password_manager::PasskeyCredential> credentials;
+    base::ranges::transform(
+        ephemeral_state_.creds_, std::back_inserter(credentials),
+        [](const auto& credential) {
+          return password_manager::PasskeyCredential(
+              password_manager::PasskeyCredential::Username(
+                  credential.user.name),
+              password_manager::PasskeyCredential::DeviceName(
+                  l10n_util::GetStringUTF16(GetPlatformAuthenticatorLabel())),
+              password_manager::PasskeyCredential::BackendId(
+                  base::Base64Encode(credential.cred_id)));
+        });
+    ReportConditionalUiPasskeyCount(credentials.size());
     ChromeWebAuthnCredentialsDelegateFactory::GetFactory(web_contents)
         ->GetDelegateForFrame(render_frame_host)
-        ->OnCredentialsReceived(ephemeral_state_.creds_);
+        ->OnCredentialsReceived(std::move(credentials));
   }
 
   SetCurrentStep(Step::kConditionalMediation);

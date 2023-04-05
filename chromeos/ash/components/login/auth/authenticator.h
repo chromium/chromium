@@ -57,17 +57,23 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) Authenticator
   // Initiates login into kiosk mode account identified by |app_account_id|.
   // The |app_account_id| is a generated account id for the account.
   // So called Public mount is used to mount cryptohome.
-  virtual void LoginAsKioskAccount(const AccountId& app_account_id) = 0;
+  // |ephemeral| controls whether cryptohome is ephemeral or persistent.
+  virtual void LoginAsKioskAccount(const AccountId& app_account_id,
+                                   bool ephemeral) = 0;
 
   // Initiates login into ARC kiosk mode account identified by |app_account_id|.
   // The |app_account_id| is a generated account id for the account.
   // ARC kiosk mode mounts a public cryptohome.
-  virtual void LoginAsArcKioskAccount(const AccountId& app_account_id) = 0;
+  // |ephemeral| controls whether cryptohome is ephemeral or persistent.
+  virtual void LoginAsArcKioskAccount(const AccountId& app_account_id,
+                                      bool ephemeral) = 0;
 
   // Initiates login into web kiosk mode account identified by |app_account_id|.
   // The |app_account_id| is a generated account id for the account.
   // Web kiosk mode mounts a public cryptohome.
-  virtual void LoginAsWebKioskAccount(const AccountId& app_account_id) = 0;
+  // |ephemeral| controls whether cryptohome is ephemeral or persistent.
+  virtual void LoginAsWebKioskAccount(const AccountId& app_account_id,
+                                      bool ephemeral) = 0;
 
   // Continues the login of persistent user that is already authenticated via
   // |auth_session|. This method can be used as a part of the recovery flow, or

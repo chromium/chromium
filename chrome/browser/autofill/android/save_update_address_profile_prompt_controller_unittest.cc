@@ -34,7 +34,8 @@ class MockSaveUpdateAddressProfilePromptView
               Show,
               (SaveUpdateAddressProfilePromptController * controller,
                const AutofillProfile& autofill_profile,
-               bool is_update),
+               bool is_update,
+               bool is_migration_to_account),
               (override));
 };
 
@@ -115,26 +116,33 @@ void SaveUpdateAddressProfilePromptControllerTest::SetUpController(
       std::move(prompt_view), profile_,
       is_update ? &original_profile_ : nullptr, is_migration_to_account(),
       decision_callback_.Get(), dismissal_callback_.Get());
-  ON_CALL(*prompt_view_, Show(controller_.get(), profile_, is_update))
+  ON_CALL(*prompt_view_, Show(controller_.get(), profile_, is_update,
+                              is_migration_to_account()))
       .WillByDefault(testing::Return(true));
 }
 
 TEST_P(SaveUpdateAddressProfilePromptControllerTest,
        ShouldShowViewOnDisplayPromptWhenSave) {
-  EXPECT_CALL(*prompt_view_, Show(controller_.get(), profile_, false));
+  EXPECT_CALL(*prompt_view_,
+              Show(controller_.get(), profile_, /*is_update=*/false,
+                   is_migration_to_account()));
   controller_->DisplayPrompt();
 }
 
 TEST_P(SaveUpdateAddressProfilePromptControllerTest,
        ShouldShowViewOnDisplayPromptWhenUpdate) {
   SetUpController(/*is_update=*/true);
-  EXPECT_CALL(*prompt_view_, Show(controller_.get(), profile_, true));
+  EXPECT_CALL(*prompt_view_,
+              Show(controller_.get(), profile_, /*is_update=*/true,
+                   is_migration_to_account()));
   controller_->DisplayPrompt();
 }
 
 TEST_P(SaveUpdateAddressProfilePromptControllerTest,
        ShouldInvokeDismissalCallbackWhenShowReturnsFalse) {
-  EXPECT_CALL(*prompt_view_, Show(controller_.get(), profile_, false))
+  EXPECT_CALL(*prompt_view_,
+              Show(controller_.get(), profile_, /*is_update=*/false,
+                   is_migration_to_account()))
       .WillOnce(testing::Return(false));
 
   EXPECT_CALL(dismissal_callback_, Run());

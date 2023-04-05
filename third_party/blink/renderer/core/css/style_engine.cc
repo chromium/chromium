@@ -3237,14 +3237,9 @@ void StyleEngine::ReattachContainerSubtree(Element& container) {
   // cannot re-attach the fieldset itself in this case since we are in the
   // process of laying it out. Instead we re-attach all children, which should
   // be sufficient.
-  //
-  // The other case where the query container is marked for re-attachment is
-  // when one of the descendants requires a legacy box tree and the container is
-  // the closest formatting context.
 
   DCHECK(container.NeedsReattachLayoutTree());
-  DCHECK(DynamicTo<HTMLFieldSetElement>(container) ||
-         container.ShouldForceLegacyLayout());
+  DCHECK(DynamicTo<HTMLFieldSetElement>(container));
 
   base::AutoReset<bool> rebuild_scope(&in_layout_tree_rebuild_, true);
   container.ReattachLayoutTreeChildren(base::PassKey<StyleEngine>());
@@ -3826,13 +3821,6 @@ void StyleEngine::MarkForLayoutTreeChangesAfterDetach() {
   auto* layout_object = parent_for_detached_subtree_.Get();
   if (auto* layout_object_element =
           DynamicTo<Element>(layout_object->GetNode())) {
-    // Use the LayoutObject pointed to by the element. There may be multiple
-    // LayoutObjects associated with an element for continuations. The
-    // LayoutObject pointed to by the element is the one that is checked for the
-    // flag during style recalc.
-    if (layout_object->IsInline()) {
-      layout_object = layout_object->ContinuationRoot();
-    }
     DCHECK_EQ(layout_object, layout_object_element->GetLayoutObject());
 
     // Mark the parent of a detached subtree for doing a whitespace or list item

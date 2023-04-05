@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.app.tabmodel;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
@@ -21,6 +22,7 @@ public abstract class TabModelOrchestrator {
     protected TabModelSelectorBase mTabModelSelector;
     protected TabPersistencePolicy mTabPersistencePolicy;
     private boolean mTabModelsInitialized;
+    private Callback<String> mOnStandardActiveIndexRead;
 
     /**
      * @return Whether the tab models have been fully initialized.
@@ -83,8 +85,12 @@ public abstract class TabModelOrchestrator {
      * Load the saved tab state. This should be called before any new tabs are created. The saved
      * tabs shall not be restored until {@link #restoreTabs} is called.
      * @param ignoreIncognitoFiles Whether to skip loading incognito tabs.
+     * @param onStandardActiveIndexRead The callback to be called when the active non-incognito Tab
+     *                                  is found.
      */
-    public void loadState(boolean ignoreIncognitoFiles) {
+    public void loadState(
+            boolean ignoreIncognitoFiles, Callback<String> onStandardActiveIndexRead) {
+        mOnStandardActiveIndexRead = onStandardActiveIndexRead;
         mTabPersistentStore.loadState(ignoreIncognitoFiles);
     }
 
@@ -149,6 +155,21 @@ public abstract class TabModelOrchestrator {
                     @Override
                     public void onStateLoaded() {
                         mTabModelSelector.markTabStateInitialized();
+                    }
+
+                    @Override
+                    public void onDetailsRead(int index, int id, String url,
+                            boolean isStandardActiveIndex, boolean isIncognitoActiveIndex,
+                            Boolean isIncognito) {
+                        if (mOnStandardActiveIndexRead != null && isStandardActiveIndex) {
+                            mOnStandardActiveIndexRead.onResult(url);
+                        }
+                    }
+
+                    @Override
+                    public void onInitialized(int tabCountAtStartup) {
+                        // Resets the callback once the read of the Tab state file is completed.
+                        mOnStandardActiveIndexRead = null;
                     }
                 };
         mTabPersistentStore.addObserver(persistentStoreObserver);

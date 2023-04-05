@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">Pianeta</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> è stato espulso.</translation>
 <translation id="2307462900900812319">Configura rete</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Impossibile trovare un'estensione con ID <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Contatta l'amministratore.}other{Impossibile trovare estensioni con ID <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Contatta l'amministratore.}}</translation>
 <translation id="2325650632570794183">Questo tipo di file non è supportato. Visita il Chrome Web Store per trovare un'applicazione in grado di aprire questo tipo di file.</translation>
 <translation id="2326539130272988168">Bulgaro</translation>
 <translation id="2337715497728194187">Condividi con Bruschetta</translation>
@@ -473,6 +474,7 @@
 <translation id="4843566743023903107">I Chromebase</translation>
 <translation id="4850886885716139402">Visualizza</translation>
 <translation id="485316830061041779">Tedesco</translation>
+<translation id="4862885579661885411">Impostazioni file</translation>
 <translation id="4867079195717347957">Fai clic per ordinare la colonna in ordine decrescente.</translation>
 <translation id="4867297348137739678">Settimana scorsa</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> byte</translation>

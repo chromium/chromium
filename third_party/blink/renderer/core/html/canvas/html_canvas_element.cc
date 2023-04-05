@@ -224,8 +224,8 @@ void HTMLCanvasElement::ParseAttribute(
   HTMLElement::ParseAttribute(params);
 }
 
-LayoutObject* HTMLCanvasElement::CreateLayoutObject(const ComputedStyle& style,
-                                                    LegacyLayout legacy) {
+LayoutObject* HTMLCanvasElement::CreateLayoutObject(
+    const ComputedStyle& style) {
   if (GetExecutionContext() &&
       GetExecutionContext()->CanExecuteScripts(kNotAboutToExecuteScript)) {
     // Allocation of a layout object indicates that the canvas doesn't
@@ -235,7 +235,7 @@ LayoutObject* HTMLCanvasElement::CreateLayoutObject(const ComputedStyle& style,
     }
     return MakeGarbageCollected<LayoutHTMLCanvas>(this);
   }
-  return HTMLElement::CreateLayoutObject(style, legacy);
+  return HTMLElement::CreateLayoutObject(style);
 }
 
 Node::InsertionNotificationRequest HTMLCanvasElement::InsertedInto(

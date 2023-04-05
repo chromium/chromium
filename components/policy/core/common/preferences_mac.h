@@ -20,15 +20,6 @@
 //  AppValueIsForced()
 class POLICY_EXPORT MacPreferences {
  public:
-  // Wraps Apple's private `CFPrefsManagedSource` API to determine the scope of
-  // a policy.
-  class PolicyScope {
-   public:
-    virtual ~PolicyScope() = default;
-    virtual void Init(CFStringRef application_id) = 0;
-    virtual Boolean IsManagedPolicyAvailable(CFStringRef key) = 0;
-  };
-
   MacPreferences();
   MacPreferences(const MacPreferences&) = delete;
   MacPreferences& operator=(const MacPreferences&) = delete;
@@ -50,6 +41,7 @@ class POLICY_EXPORT MacPreferences {
   virtual Boolean IsManagedPolicyAvailableForMachineScope(CFStringRef key);
 
  private:
+  class PolicyScope;
   std::unique_ptr<PolicyScope> policy_scope_;
 };
 

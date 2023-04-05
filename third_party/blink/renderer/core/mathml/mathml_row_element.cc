@@ -20,11 +20,11 @@ MathMLRowElement::MathMLRowElement(const QualifiedName& tagName,
   }
 }
 
-LayoutObject* MathMLRowElement::CreateLayoutObject(const ComputedStyle& style,
-                                                   LegacyLayout legacy) {
+LayoutObject* MathMLRowElement::CreateLayoutObject(const ComputedStyle& style) {
   if (!RuntimeEnabledFeatures::MathMLCoreEnabled() ||
-      !style.IsDisplayMathType() || legacy == LegacyLayout::kForce)
-    return MathMLElement::CreateLayoutObject(style, legacy);
+      !style.IsDisplayMathType()) {
+    return MathMLElement::CreateLayoutObject(style);
+  }
   return MakeGarbageCollected<LayoutNGMathMLBlock>(this);
 }
 

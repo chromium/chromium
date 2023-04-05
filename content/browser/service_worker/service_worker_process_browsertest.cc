@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerProcessBrowserTest,
   url::AddEmptyDocumentScheme("siteless");
 
   GURL empty_site_url = GURL("siteless://test");
-  EXPECT_FALSE(SiteInstanceImpl::ShouldAssignSiteForURL(empty_site_url));
+  EXPECT_FALSE(SiteInstance::ShouldAssignSiteForURL(empty_site_url));
 
   // Register the service worker.
   RegisterServiceWorker();

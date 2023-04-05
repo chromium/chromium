@@ -826,6 +826,8 @@ public class TabPersistentStore {
             boolean wasIncognitoTabModelSelected = mTabModelSelector.isIncognitoSelected();
             int selectedModelTabCount = mTabModelSelector.getCurrentModel().getCount();
 
+            // TODO(https://crbug.com/1428552): Don't use static function
+            // StartSurfaceUserData#getUnusedTabRestoredAtStartup().
             TabModelUtils.setIndex(model, TabModelUtils.getTabIndexById(model, tabId),
                     mPersistencePolicy.allowSkipLoadingTab()
                             && StartSurfaceUserData.getInstance().getUnusedTabRestoredAtStartup());

@@ -273,11 +273,14 @@ struct BASE_EXPORT LaunchOptions {
   // the child process. If |paths_to_clone| is empty then the process will
   // receive either a full copy of the parent's namespace, or an empty one,
   // depending on whether FDIO_SPAWN_CLONE_NAMESPACE is set.
+  // Process launch will fail if `paths_to_clone` and `paths_to_transfer`
+  // together contain conflicting paths (e.g. overlaps or duplicates).
   std::vector<FilePath> paths_to_clone;
 
   // Specifies handles which will be installed as files or directories in the
-  // child process' namespace. Paths installed by |paths_to_clone| will be
-  // overridden by these entries.
+  // child process' namespace.
+  // Process launch will fail if `paths_to_clone` and `paths_to_transfer`
+  // together contain conflicting paths (e.g. overlaps or duplicates).
   std::vector<PathToTransfer> paths_to_transfer;
 
   // Suffix that will be added to the process name. When specified process name

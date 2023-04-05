@@ -30,6 +30,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "url/origin.h"
@@ -432,8 +433,9 @@ void MediaStreamDispatcherHost::GenerateStreams(
           blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET &&
       (!base::FeatureList::IsEnabled(features::kGetDisplayMediaSet) ||
        !base::FeatureList::IsEnabled(
-           features::kGetDisplayMediaSetAutoSelectAllScreens))) {
-    mojo::ReportBadMessage("The GetDisplayMediaSet API has not been enabled");
+           features::kGetDisplayMediaSetAutoSelectAllScreens)) &&
+      (!base::FeatureList::IsEnabled(blink::features::kGetAllScreensMedia))) {
+    mojo::ReportBadMessage("This API has not been enabled");
     return;
   }
 

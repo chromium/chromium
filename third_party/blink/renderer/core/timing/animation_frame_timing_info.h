@@ -36,11 +36,6 @@ class ScriptTimingInfo : public GarbageCollected<ScriptTimingInfo> {
     WTF::String function_name;
     unsigned int line_number = 0;
     unsigned int column_number = 0;
-    static ScriptSourceLocation FromSourceLocation(SourceLocation& location) {
-      return ScriptSourceLocation{location.Url(), location.Function(),
-                                  location.LineNumber(),
-                                  location.ColumnNumber()};
-    }
   };
 
   ScriptTimingInfo(ExecutionContext* context,

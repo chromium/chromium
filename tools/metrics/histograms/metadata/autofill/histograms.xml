@@ -63,10 +63,10 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="Autofill.CreditCardIssuerId">
-  <variant name="Amex" summary="Card issued by American Express."/>
-  <variant name="CapitalOne" summary="Card issued by Capital One."/>
-  <variant name="Chase" summary="Card issued by Chase."/>
-  <variant name="Marqeta" summary="Card issued by Marqeta."/>
+  <variant name="Amex" summary="card issued by American Express"/>
+  <variant name="CapitalOne" summary="card issued by Capital One"/>
+  <variant name="Chase" summary="card issued by Chase"/>
+  <variant name="Marqeta" summary="card issued by Marqeta"/>
 </variants>
 
 <variants name="Autofill.DialogError">
@@ -662,7 +662,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.BetterAuth.CardUnmaskDuration.Fido" units="ms"
-    expires_after="2023-09-24">
+    expires_after="2023-10-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
@@ -985,6 +985,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.CardUnmask.ScreenLockCheckBox.InitialState"
+    enum="CheckBoxStatus" expires_after="2024-03-01">
+  <owner>jsaul@google.com</owner>
+  <owner>siashah@chromium.org</owner>
+  <owner>longsheng@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the initial state of the ScreenLockCheckBox. The ScreenLockCheckBox
+    is the checkbox shown to the user as part of the CardUnmaskPrompt. This
+    histogram will be logged only when the CardUnmaskPrompt is initialized. This
+    is only available on Android.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.CardUnmask.ScreenLockCheckBox.UserChecked"
+    enum="Boolean" expires_after="2024-03-01">
+  <owner>jsaul@google.com</owner>
+  <owner>siashah@chromium.org</owner>
+  <owner>longsheng@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the check/uncheck action from users on the ScreenLockCheckBox. The
+    ScreenLockCheckBox is the checkbox shown to the user as part of the
+    CardUnmaskPrompt. This histogram will be updated whenever the user
+    clicks/unclicks the checkbox. This is only available on Android.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.CardUnmaskAuthenticationSelectionDialog.Result"
     enum="AutofillCardUnmaskAuthenticationSelectionDialogResult"
     expires_after="2023-08-20">
@@ -1192,6 +1220,19 @@ chromium-metrics-reviews@google.com.
     in general.
   </summary>
   <token key="CardMetadataVisible" variants="Autofill.CardMetadataVisible"/>
+</histogram>
+
+<histogram name="Autofill.CreditCard.{CardIssuer}.ShownWithMetadata"
+    enum="Boolean" expires_after="2024-03-01">
+  <owner>vishwasuppoor@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Emits true if a {CardIssuer} was shown with metadata in Autofill
+    suggestions. Emits false if every {CardIssuer} was shown without metadata in
+    Autofill suggestions. Only cards with issuer ids are considered. It is
+    emitted every time Autofill suggestions are shown.
+  </summary>
+  <token key="CardIssuer" variants="Autofill.CreditCardIssuerId"/>
 </histogram>
 
 <histogram name="Autofill.CreditCardFillingInfoBar"
@@ -2192,6 +2233,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.Iban.Suggestions" enum="IbanSuggestionsEvent"
+    expires_after="2024-03-01">
+  <owner>qihuizhao@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    These metrics are relevant to the IBAN suggestions popup, such as when it is
+    shown or when a suggestion is selected. The IBAN-based suggestions popup
+    gets displayed when a form's field that can be autofilled with an IBAN is
+    selected, and the user has at least one IBAN saved. The metric is recorded
+    upon each action, such as IBAN suggestions being shown or selected.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Iframes.NumberOfFramesWithAutofilledCreditCardFields"
     units="frames" expires_after="2023-01-01">
   <obsolete>
@@ -2826,7 +2881,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.Offer.StoredOfferRelatedCardCount" units="cards"
-    expires_after="2023-08-01">
+    expires_after="2023-10-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -2873,7 +2928,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.Offer.SuggestedCardsHaveOffer"
-    enum="AutofillCreditCardOfferSuggestion" expires_after="2023-08-01">
+    enum="AutofillCreditCardOfferSuggestion" expires_after="2023-10-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -2956,7 +3011,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.Offer.SyncedOfferDataBeingValid" units="offers"
-    expires_after="2023-08-01">
+    expires_after="2023-10-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -3218,7 +3273,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.ProfileImport.InaccessibleFieldsRemoved.ByFieldType"
-    enum="AutofillSettingsVisibleTypes" expires_after="2023-07-30">
+    enum="AutofillSettingsVisibleTypes" expires_after="2023-10-01">
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
@@ -3228,7 +3283,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.ProfileImport.InaccessibleFieldsRemoved.Total"
-    enum="Boolean" expires_after="2023-07-30">
+    enum="Boolean" expires_after="2023-10-01">
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
@@ -4492,7 +4547,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.UnmaskPrompt.GetRealPanDuration" units="ms"
-    expires_after="2023-09-24">
+    expires_after="2023-10-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <summary>

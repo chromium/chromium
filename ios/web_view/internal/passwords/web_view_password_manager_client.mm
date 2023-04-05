@@ -323,19 +323,4 @@ WebViewPasswordManagerClient::GetPasswordProtectionService() const {
   return nullptr;
 }
 
-void WebViewPasswordManagerClient::CheckProtectedPasswordEntry(
-    password_manager::metrics_util::PasswordType password_type,
-    const std::string& username,
-    const std::vector<password_manager::MatchingReusedCredential>&
-        matching_reused_credentials,
-    bool password_field_exists,
-    uint64_t reused_password_hash,
-    const std::string& domain) {
-  // TODO(crbug.com/1147967): Enable PhishGuard in web_view.
-}
-
-void WebViewPasswordManagerClient::LogPasswordReuseDetectedEvent() {
-  // TODO(crbug.com/1147967): Enable PhishGuard in web_view.
-}
-
 }  // namespace ios_web_view

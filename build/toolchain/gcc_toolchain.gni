@@ -240,7 +240,7 @@ template("single_gcc_toolchain") {
       # number of jobs, but this results in too low a value on
       # Chrome OS builders. So we pass in an explicit value.
       link_prefix =
-          "$python_path " +
+          "\"$python_path\" " +
           rebase_path("//tools/clang/scripts/remote_ld.py", root_build_dir) +
           " --wrapper ${goma_path} --jobs 200 -- "
     } else {
@@ -291,7 +291,7 @@ template("single_gcc_toolchain") {
             rebase_path(toolchain_coverage_instrumentation_input_file,
                         root_build_dir)
       }
-      compiler_prefix = "$python_path ${_coverage_wrapper} " + compiler_prefix
+      compiler_prefix = "\"$python_path\" ${_coverage_wrapper} " + compiler_prefix
     }
 
     cc = compiler_prefix + invoker.cc
@@ -423,7 +423,7 @@ template("single_gcc_toolchain") {
       if (host_os == "win") {
         tool_wrapper_path =
             rebase_path("//build/toolchain/win/tool_wrapper.py", root_build_dir)
-        command = "cmd /c $python_path $tool_wrapper_path delete-file {{output}} && $command"
+        command = "cmd /s /c \"\"$python_path\" $tool_wrapper_path delete-file {{output}} && $command\""
       } else {
         command = "rm -f {{output}} && $command"
       }
@@ -494,7 +494,7 @@ template("single_gcc_toolchain") {
         # (skipped on Aix)
         solink_extra_flags = "--partitioned-library"
       }
-      command = "$python_path \"$solink_wrapper\" --readelf=\"$readelf\" --nm=\"$nm\" $strip_switch$dwp_switch --sofile=\"$unstripped_sofile\" --tocfile=\"$tocfile\"$map_switch --output=\"$sofile\" -- $link_command $solink_extra_flags"
+      command = "\"$python_path\" \"$solink_wrapper\" --readelf=\"$readelf\" --nm=\"$nm\" $strip_switch$dwp_switch --sofile=\"$unstripped_sofile\" --tocfile=\"$tocfile\"$map_switch --output=\"$sofile\" -- $link_command $solink_extra_flags"
 
       if (target_cpu == "mipsel" && is_component_build && is_android) {
         rspfile_content = "-Wl,--start-group -Wl,--whole-archive {{inputs}} {{solibs}} -Wl,--no-whole-archive {{libs}} -Wl,--end-group"
@@ -654,7 +654,7 @@ template("single_gcc_toolchain") {
 
       link_wrapper =
           rebase_path("//build/toolchain/gcc_link_wrapper.py", root_build_dir)
-      command = "$python_path \"$link_wrapper\" --output=\"$outfile\"$strip_switch$map_switch$dwp_switch -- $link_command"
+      command = "\"$python_path\" \"$link_wrapper\" --output=\"$outfile\"$strip_switch$map_switch$dwp_switch -- $link_command"
 
       description = "LINK $outfile"
 
@@ -717,7 +717,7 @@ template("single_gcc_toolchain") {
         depfile = "{{output}}.d"
         rspfile = "$rust_outfile.rsp"
         rspfile_content = "{{rustdeps}} {{externs}}"
-        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- -Clinker=\"${invoker.cxx}\" $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS RUSTENV {{rustenv}}"
+        command = "\"$python_path\" \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- -Clinker=\"${invoker.cxx}\" $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS RUSTENV {{rustenv}}"
         description = "RUST $rust_outfile"
         rust_sysroot = rust_sysroot_relative_to_out
         outputs = [ rust_outfile ]
@@ -730,7 +730,7 @@ template("single_gcc_toolchain") {
         # Do not use rsp files in this (common) case because they occupy the
         # ninja main thread, and {{rlibs}} have shorter command lines than
         # fully linked targets.
-        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile -- -Clinker=\"${invoker.cxx}\" $rustc_common_args {{rustdeps}} {{externs}} --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS RUSTENV {{rustenv}}"
+        command = "\"$python_path\" \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile -- -Clinker=\"${invoker.cxx}\" $rustc_common_args {{rustdeps}} {{externs}} --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS RUSTENV {{rustenv}}"
         description = "RUST $rust_outfile"
         rust_sysroot = rust_sysroot_relative_to_out
         outputs = [ rust_outfile ]
@@ -741,7 +741,7 @@ template("single_gcc_toolchain") {
         depfile = "{{output}}.d"
         rspfile = "$rust_outfile.rsp"
         rspfile_content = "{{rustdeps}} {{externs}}"
-        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- -Clinker=\"${invoker.cxx}\" $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} ${extra_ldflags} RUSTENV {{rustenv}}"
+        command = "\"$python_path\" \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- -Clinker=\"${invoker.cxx}\" $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} ${extra_ldflags} RUSTENV {{rustenv}}"
         description = "RUST $rust_outfile"
         rust_sysroot = rust_sysroot_relative_to_out
         outputs = [ rust_outfile ]
@@ -764,7 +764,7 @@ template("single_gcc_toolchain") {
         depfile = "{{output}}.d"
         rspfile = "$rust_outfile.rsp"
         rspfile_content = "{{rustdeps}} {{externs}}"
-        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- -Clinker=\"${invoker.cxx}\" $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} ${extra_ldflags} ${dummy_libgcc} RUSTENV {{rustenv}}"
+        command = "\"$python_path\" \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- -Clinker=\"${invoker.cxx}\" $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} ${extra_ldflags} ${dummy_libgcc} RUSTENV {{rustenv}}"
         description = "RUST $rust_outfile"
         rust_sysroot = rust_sysroot_relative_to_out
         outputs = [ rust_outfile ]
@@ -775,7 +775,7 @@ template("single_gcc_toolchain") {
         depfile = "{{output}}.d"
         rspfile = "$rust_outfile.rsp"
         rspfile_content = "{{rustdeps}} {{externs}}"
-        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- -Clinker=\"${invoker.cxx}\" $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} ${extra_ldflags} RUSTENV {{rustenv}}"
+        command = "\"$python_path\" \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- -Clinker=\"${invoker.cxx}\" $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} ${extra_ldflags} RUSTENV {{rustenv}}"
         description = "RUST $rust_outfile"
         rust_sysroot = rust_sysroot_relative_to_out
         outputs = [ rust_outfile ]

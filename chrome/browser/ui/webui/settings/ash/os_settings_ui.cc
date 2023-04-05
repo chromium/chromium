@@ -28,6 +28,8 @@
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/device_storage_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/os_apps_page/app_notification_handler.h"
+#include "chrome/browser/ui/webui/settings/ash/os_settings_hats_manager.h"
+#include "chrome/browser/ui/webui/settings/ash/os_settings_hats_manager_factory.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_manager.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_manager_factory.h"
 #include "chrome/browser/ui/webui/settings/ash/pref_names.h"
@@ -111,6 +113,19 @@ OSSettingsUI::~OSSettingsUI() {
                                 /*min=*/base::Microseconds(500),
                                 /*max=*/base::Hours(1),
                                 /*buckets=*/50);
+
+  // Sends request for OsSettingsHats notification upon shutting down the app.
+  OsSettingsHatsManager* settingsHatsManager =
+      OsSettingsHatsManagerFactory::GetInstance()->GetForProfile(
+          Profile::FromWebUI(web_ui()));
+  settingsHatsManager->MaybeSendSettingsHats();
+
+  // OsSettingsHatsManager records whether the user used the Search
+  // functionality per each session that Settings app has opened up. When the
+  // Settings app is closed, OsSettingsHatsManager will remain alive in the
+  // background and the state remains stored in the manager, so we will reset
+  // that knowledge.
+  settingsHatsManager->SetSettingsUsedSearch(false);
 }
 
 void OSSettingsUI::BindInterface(

@@ -14,8 +14,8 @@
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "borealis_features_util.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
+#include "chrome/browser/ash/borealis/borealis_token_hardware_checker.h"
 #include "chrome/browser/ash/guest_os/infra/cached_callback.h"
 #include "chrome/browser/ash/guest_os/virtual_machines/virtual_machines_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -33,112 +33,7 @@ using AllowStatus = borealis::BorealisFeatures::AllowStatus;
 
 namespace borealis {
 
-namespace {
-
-constexpr uint64_t kGibi = 1024ull * 1024 * 1024;
-
-// Used to make it difficult to tell what someone's token is based on their
-// prefs.
 constexpr char kSaltForPrefStorage[] = "/!RoFN8,nDxiVgTI6CvU";
-
-// Regex used for CPU checks on intel processors, this means "any 11th
-// generation or greater i5/i7 processor".
-constexpr char kBorealisCapableIntelCpuRegex[] = "[1-9][1-9].. Gen.*i[357]-";
-
-// Checks the current hardware+token configuration to determine if the user
-// should be able to run borealis.
-//
-// If you are supposed to know the correct token, then you will be able to
-// find it ~if you go to the place we all know and love~.
-class FullChecker : public TokenHardwareChecker {
- public:
-  explicit FullChecker(Data data) : TokenHardwareChecker(std::move(data)) {}
-
-  AllowStatus Check() const {
-    // Tokens provide more fine-grained control over whether borealis can be run
-    // on a specific device. The different kinds of token are:
-    //  * "Super" token: Allows borealis on any device.
-    //  * "Test" token: Allows borealis on any device with sufficient hardware
-    //    (where *-borealis boards are always considered sufficient).
-    //  * /board token: Similar to the super token, but only works for a subset
-    //  of boards.
-    //
-    // All tokens will only function if borealis is already available on that
-    // board based on its use flags.
-
-    // The "super" token.
-    if (TokenHashMatches("i9n6HT3+3Bo:C1p^_qk!\\",
-                         "X1391g+2yiuBQrceA3gRGrT7+DQcaYGR/GkmFscyOfQ=")) {
-      LOG(WARNING) << "Super-token provided, bypassing hardware checks.";
-      return AllowStatus::kAllowed;
-    }
-
-    // The "test" token.
-    if (TokenHashMatches("MpOI9+d58she4,97rI",
-                         "Eec1m+UrIkLUu3L6mV+5zTYZId6HJ+vz+50MseJJaGw=")) {
-      LOG(WARNING) << "Test-token provided, bypassing hardware checks.";
-      return AllowStatus::kAllowed;
-    }
-
-    // The board-specific tokens.
-    if (BoardIn({"hatch-borealis", "puff-borealis", "zork-borealis",
-                 "volteer-borealis", "aurora-borealis"})) {
-      if (TokenHashMatches("MXlY+SFZ!2,P_k^02]hK",
-                           "FbxB2mxNa/uqskX4X+NqHhAE6ebHeWC0u+Y+UlGEB/4=")) {
-        LOG(WARNING) << "Dogfooder token provided, bypassing hardware checks.";
-        return AllowStatus::kAllowed;
-      }
-      return AllowStatus::kIncorrectToken;
-    } else if (IsBoard("volteer")) {
-      if (TokenHashMatches("w/8GMLXyB.EOkFaP/-AA",
-                           "waiTIRjxZCFjFIRkuUVlnAbiDOMBSzyp3iSJl5x3YwA=")) {
-        LOG(WARNING) << "Vendor token provided, bypassing hardware checks.";
-        return AllowStatus::kAllowed;
-      }
-      // Volteer is released, so it is allowed as long as the device has an 11th
-      // gen i5-i7 with 8G memory and is the correct model.
-      if (!ModelIn({"delbin", "voxel", "volta", "lindar", "elemi", "volet",
-                    "drobit", "lillipup", "delbing", "eldrid", "chronicler"})) {
-        return AllowStatus::kUnsupportedModel;
-      }
-      return ReleasedBoardChecks(kBorealisCapableIntelCpuRegex);
-    } else if (BoardIn({"brya", "adlrvp", "brask"})) {
-      if (TokenHashMatches("tPl24iMxXNR,w$h6,g",
-                           "LWULWUcemqmo6Xvdu2LalOYOyo/V4/CkljTmAneXF+U=")) {
-        LOG(WARNING) << "Vendor token provided, bypassing hardware checks.";
-        return AllowStatus::kAllowed;
-      }
-      return ReleasedBoardChecks(kBorealisCapableIntelCpuRegex);
-    } else if (BoardIn({"guybrush", "majolica"})) {
-      if (TokenHashMatches("^_GkTVWDP.FQo5KclS",
-                           "ftqv2wT3qeJKajioXqd+VrEW34CciMsigH3MGfMiMsU=")) {
-        LOG(WARNING) << "Vendor token provided, bypassing hardware checks.";
-        return AllowStatus::kAllowed;
-      }
-      return ReleasedBoardChecks("Ryzen [357]");
-    } else if (IsBoard("draco")) {
-      return AllowStatus::kAllowed;
-    }
-    return AllowStatus::kIncorrectToken;
-  }
-
-  // Similar to the above, but also constructs the checker.
-  static AllowStatus BuildAndCheck(Data data) {
-    return FullChecker(std::move(data)).Check();
-  }
-
- private:
-  // Returns the allow status for a standard released board.
-  AllowStatus ReleasedBoardChecks(const std::string& cpu_regex) const {
-    if (!HasMemory(7 * kGibi)) {
-      return AllowStatus::kHardwareChecksFailed;
-    }
-    return CpuRegexMatches(cpu_regex) ? AllowStatus::kAllowed
-                                      : AllowStatus::kHardwareChecksFailed;
-  }
-};
-
-}  // namespace
 
 class AsyncAllowChecker : public guest_os::CachedCallback<AllowStatus, bool> {
  public:
@@ -170,7 +65,8 @@ class AsyncAllowChecker : public guest_os::CachedCallback<AllowStatus, bool> {
             [](RealCallback callback, TokenHardwareChecker::Data data) {
               base::ThreadPool::PostTaskAndReplyWithResult(
                   FROM_HERE, base::MayBlock(),
-                  base::BindOnce(&FullChecker::BuildAndCheck, std::move(data)),
+                  base::BindOnce(&BorealisTokenHardwareChecker::BuildAndCheck,
+                                 std::move(data)),
                   base::BindOnce(
                       [](RealCallback callback, AllowStatus status) {
                         // "Success" here means we successfully determined the

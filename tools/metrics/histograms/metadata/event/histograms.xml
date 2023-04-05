@@ -101,14 +101,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.GestureCreated" enum="UIEventType"
-    expires_after="2020-03-01">
+    expires_after="2024-04-01">
   <owner>kuscher@google.com</owner>
+  <owner>input-dev@chromium.org</owner>
   <summary>
     The gesture-events recognized and dispatched by the browser gesture
     recognizer. This replaces Ash.GestureCreated, which did not record events on
     Android and Windows.
 
-    Team: input-dev@chromium.org.
+    Note: this metric was expired from 2020-03-01 to 2023-04-04.
   </summary>
 </histogram>
 
@@ -251,6 +252,36 @@ chromium-metrics-reviews@google.com.
     Thus the ratio of the two represents the average amount of time scrolling is
     janky.
   </summary>
+</histogram>
+
+<histogram
+    name="Event.Jank.ScrollUpdate.{ScrollSpeed}.{VsyncStatus}.FrameAboveJankyThreshold"
+    units="ratio * 100" expires_after="2024-03-20">
+  <owner>mekk@google.com</owner>
+  <owner>woa-performance@google.com</owner>
+  <summary>
+    This metric is the ratio between a larger screen displacement divided by a
+    following small screen displacement {ScrollSpeed}. If the larger screen
+    displacement was deemed janky given the predictor performance, and is only
+    emitted if there is {VsyncStatus}. This metric is used to asses the
+    scrolling prediction performance as the scroll predictor should smooth out
+    those irregular jumps.
+
+    For more details about this metric, please check
+    http://doc/1Y0u0Tq5eUZff75nYUzQVw6JxmbZAW9m64pJidmnGWsY.
+  </summary>
+  <token key="VsyncStatus">
+    <variant name="MissedVsync" summary="a missed vsync"/>
+    <variant name="NoMissedVsync" summary="no missed vsync"/>
+  </token>
+  <token key="ScrollSpeed">
+    <variant name="FastScroll"
+        summary="offset by 1.2, the jank threshold for fast scrolls.
+                 |d_large/d_small - 1.2|"/>
+    <variant name="SlowScroll"
+        summary="offset by 1.4, the jank threshold for slow scrolls.
+                 |d_large/d_small - 1.4|"/>
+  </token>
 </histogram>
 
 <histogram name="Event.Latency.EndToEnd.KeyPress" units="microseconds"
@@ -486,7 +517,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.ScrollBegin.Wheel.TimeToScrollUpdateSwapBegin4"
-    units="microseconds" expires_after="2023-07-30">
+    units="microseconds" expires_after="2023-10-01">
   <owner>flackr@chromium.org</owner>
   <summary>
     NOTE: This metric is deprecated in favor of
@@ -556,7 +587,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.JankyDurationPercentage" units="%"
-    expires_after="2023-07-30">
+    expires_after="2023-10-01">
   <owner>ddrone@google.com</owner>
   <owner>chrometto-team@google.com</owner>
   <summary>
@@ -572,6 +603,22 @@ chromium-metrics-reviews@google.com.
   <summary>
     Count of LatencyInfo::GestureScrollUpdate events that are detected as janky
     during a particular scroll.
+  </summary>
+</histogram>
+
+<histogram name="Event.Latency.ScrollUpdate.JankyFramePercentage" units="%"
+    expires_after="2024-03-20">
+  <owner>mekk@google.com</owner>
+  <owner>woa-performance@google.com</owner>
+  <summary>
+    A frame is deemed janky if an irregular jump in screen displacement occured
+    in consecutive frames, this metric is the percentage of those janky frames
+    per 50 produced frames and is only emitted if a scroll has more than 50
+    frames in sa sequence. This metric is used to asses the scrolling prediction
+    performance as the scroll predictor should smooth out those irregular jumps.
+
+    For more details about this metric, please check
+    http://doc/1Y0u0Tq5eUZff75nYUzQVw6JxmbZAW9m64pJidmnGWsY.
   </summary>
 </histogram>
 
@@ -774,7 +821,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.Wheel.TimeToScrollUpdateSwapBegin4"
-    units="microseconds" expires_after="2023-07-30">
+    units="microseconds" expires_after="2023-10-01">
   <owner>flackr@chromium.org</owner>
   <summary>
     NOTE: This metric is deprecated in favor of

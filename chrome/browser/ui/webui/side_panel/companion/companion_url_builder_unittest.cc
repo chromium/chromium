@@ -24,6 +24,7 @@ namespace companion {
 namespace {
 
 constexpr char kValidUrl[] = "https://foo.com/";
+constexpr char kTextQuery[] = "Apples";
 constexpr char kOrigin[] = "chrome-untrusted://companion-side-panel.top-chrome";
 
 class MockSigninDelegate : public SigninDelegate {
@@ -61,7 +62,7 @@ class CompanionUrlBuilderTest : public testing::Test {
     GURL companion_url = url_builder_->BuildCompanionURL(page_url);
 
     // Deserialize the query param into protobuf.
-    companion::proto::QueryParams proto =
+    companion::proto::CompanionUrlParams proto =
         DeserializeCompanionRequest(companion_url);
 
     if (expect_was_sent) {
@@ -72,11 +73,12 @@ class CompanionUrlBuilderTest : public testing::Test {
 
     EXPECT_TRUE(proto.has_msbb_enabled());
   }
-  // Deserialize the query param into proto::QueryParams.
-  proto::QueryParams DeserializeCompanionRequest(GURL companion_url) {
-    companion::proto::QueryParams proto;
+  // Deserialize the query param into proto::CompanionUrlParams.
+  proto::CompanionUrlParams DeserializeCompanionRequest(GURL companion_url) {
+    companion::proto::CompanionUrlParams proto;
     std::string url_param;
-    EXPECT_TRUE(net::GetValueForKeyInQuery(companion_url, "query", &url_param));
+    EXPECT_TRUE(net::GetValueForKeyInQuery(companion_url, "companion_query",
+                                           &url_param));
     auto base64_decoded = base::Base64Decode(url_param);
     auto serialized_proto = std::string(base64_decoded.value().begin(),
                                         base64_decoded.value().end());
@@ -106,7 +108,7 @@ TEST_F(CompanionUrlBuilderTest, MsbbOff) {
   EXPECT_EQ(value, kOrigin);
 
   // Deserialize the query param into protobuf.
-  companion::proto::QueryParams proto =
+  companion::proto::CompanionUrlParams proto =
       DeserializeCompanionRequest(companion_url);
 
   // URL shouldn't be sent when MSBB is off.
@@ -129,7 +131,7 @@ TEST_F(CompanionUrlBuilderTest, MsbbOn) {
   EXPECT_EQ(value, kOrigin);
 
   // Deserialize the query param into protobuf.
-  companion::proto::QueryParams proto =
+  companion::proto::CompanionUrlParams proto =
       DeserializeCompanionRequest(companion_url);
 
   // Verify fields inside protobuf.
@@ -162,4 +164,43 @@ TEST_F(CompanionUrlBuilderTest, ValidPageUrls) {
   VerifyPageUrlSent(GURL("https://192.168.0.1"), false);
   VerifyPageUrlSent(GURL("https://localhost:8888"), false);
 }
+
+TEST_F(CompanionUrlBuilderTest, WithTextQuery) {
+  GURL page_url(kValidUrl);
+  GURL companion_url = url_builder_->BuildCompanionURL(page_url, kTextQuery);
+
+  std::string value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(companion_url, "url", &value));
+  EXPECT_EQ(value, page_url.spec());
+
+  EXPECT_TRUE(net::GetValueForKeyInQuery(companion_url, "origin", &value));
+  EXPECT_EQ(value, kOrigin);
+
+  // Deserialize the query param into protobuf.
+  companion::proto::CompanionUrlParams proto =
+      DeserializeCompanionRequest(companion_url);
+
+  EXPECT_EQ(proto.page_url(), page_url.spec());
+  EXPECT_EQ(proto.search_query(), kTextQuery);
+}
+
+TEST_F(CompanionUrlBuilderTest, WithoutTextQuery) {
+  GURL page_url(kValidUrl);
+  GURL companion_url = url_builder_->BuildCompanionURL(page_url);
+
+  std::string value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(companion_url, "url", &value));
+  EXPECT_EQ(value, page_url.spec());
+
+  EXPECT_TRUE(net::GetValueForKeyInQuery(companion_url, "origin", &value));
+  EXPECT_EQ(value, kOrigin);
+
+  // Deserialize the query param into protobuf.
+  companion::proto::CompanionUrlParams proto =
+      DeserializeCompanionRequest(companion_url);
+
+  EXPECT_EQ(proto.page_url(), page_url.spec());
+  EXPECT_EQ(proto.search_query(), std::string());
+}
+
 }  // namespace companion

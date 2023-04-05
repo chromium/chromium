@@ -15,22 +15,27 @@ LayoutViewTransitionContent::LayoutViewTransitionContent(
       layer_(cc::ViewTransitionContentLayer::Create(
           element->resource_id(),
           element->is_live_content_element())),
-      ink_overflow_rect_(element->ink_overflow_rect()),
-      captured_subrect_(element->captured_subrect()) {
-  SetIntrinsicSize(LayoutSize(LayoutUnit(ink_overflow_rect_.width()),
-                              LayoutUnit(ink_overflow_rect_.height())));
+      captured_rect_(element->captured_rect()),
+      border_box_rect_(element->border_box_rect()) {
+  SetIntrinsicSize(LayoutSize(LayoutUnit(border_box_rect_.width()),
+                              LayoutUnit(border_box_rect_.height())));
 }
 
 LayoutViewTransitionContent::~LayoutViewTransitionContent() = default;
 
 void LayoutViewTransitionContent::OnIntrinsicSizeUpdated(
-    const gfx::RectF& ink_overflow_rect,
-    const gfx::RectF& captured_subrect) {
+    const gfx::RectF& captured_rect,
+    const gfx::RectF& border_box_rect) {
   NOT_DESTROYED();
-  SetIntrinsicSize(LayoutSize(LayoutUnit(ink_overflow_rect.width()),
-                              LayoutUnit(ink_overflow_rect.height())));
-  ink_overflow_rect_ = ink_overflow_rect;
-  captured_subrect_ = captured_subrect;
+  SetIntrinsicSize(LayoutSize(LayoutUnit(border_box_rect.width()),
+                              LayoutUnit(border_box_rect.height())));
+  if (captured_rect_ != captured_rect) {
+    SetShouldDoFullPaintInvalidationWithoutLayoutChange(
+        PaintInvalidationReason::kImage);
+  }
+
+  captured_rect_ = captured_rect;
+  border_box_rect_ = border_box_rect;
 
   SetIntrinsicLogicalWidthsDirty();
   SetNeedsLayout(layout_invalidation_reason::kSizeChanged);
@@ -45,7 +50,7 @@ PhysicalRect
 LayoutViewTransitionContent::ReplacedContentRectForCapturedContent() const {
   gfx::RectF paint_rect = gfx::RectF(ReplacedContentRect());
   gfx::RectF clipped_paint_rect =
-      gfx::MapRect(captured_subrect_, ink_overflow_rect_, paint_rect);
+      gfx::MapRect(captured_rect_, border_box_rect_, paint_rect);
   return PhysicalRect::EnclosingRect(clipped_paint_rect);
 }
 

@@ -9,6 +9,8 @@
 #include <memory>
 #include <string>
 
+#include "build/build_config.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/ip_endpoint.h"
 #include "remoting/host/action_executor.h"
 #include "remoting/host/audio_capturer.h"
@@ -27,6 +29,7 @@
 #include "remoting/host/input_injector.h"
 #include "remoting/host/keyboard_layout_monitor.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
+#include "remoting/host/mojom/remote_security_key.mojom.h"
 #include "remoting/host/remote_open_url/url_forwarder_configurator.h"
 #include "remoting/host/security_key/security_key_auth_handler.h"
 #include "remoting/host/webauthn/remote_webauthn_state_change_notifier.h"
@@ -263,6 +266,12 @@ class MockSecurityKeyAuthHandler : public SecurityKeyAuthHandler {
   MOCK_METHOD(void, SendErrorAndCloseConnection, (int), (override));
   MOCK_METHOD(size_t, GetActiveConnectionCountForTest, (), (const, override));
   MOCK_METHOD(void, SetRequestTimeoutForTest, (base::TimeDelta), (override));
+#if BUILDFLAG(IS_WIN)
+  MOCK_METHOD(void,
+              BindSecurityKeyForwarder,
+              (mojo::PendingReceiver<mojom::SecurityKeyForwarder>),
+              (override));
+#endif
 
   void SetSendMessageCallback(
       const SecurityKeyAuthHandler::SendMessageCallback& callback) override;
@@ -323,6 +332,12 @@ class MockChromotingSessionServices : public mojom::ChromotingSessionServices {
               BindWebAuthnProxy,
               (mojo::PendingReceiver<mojom::WebAuthnProxy> receiver),
               (override));
+#if BUILDFLAG(IS_WIN)
+  MOCK_METHOD(void,
+              BindSecurityKeyForwarder,
+              (mojo::PendingReceiver<mojom::SecurityKeyForwarder> receiver),
+              (override));
+#endif
 };
 
 class MockChromotingHostServicesProvider

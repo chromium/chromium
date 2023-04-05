@@ -87,6 +87,7 @@ def LoadCppTypemapConfig(path):
             'traits_headers': config.get('traits_private_headers', []),
             'copyable_pass_by_value': entry.get('copyable_pass_by_value',
                                                 False),
+            'default_constructible': entry.get('default_constructible', True),
             'force_serialize': entry.get('force_serialize', False),
             'hashable': entry.get('hashable', False),
             'move_only': entry.get('move_only', False),

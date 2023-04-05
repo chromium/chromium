@@ -10,6 +10,8 @@ import './peripheral_updates_list.js';
 import './strings.m.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
@@ -34,6 +36,18 @@ export class FirmwareUpdateAppElement extends FirmwareUpdateAppElementBase {
 
   static get template() {
     return html`{__html_template__}`;
+  }
+
+  /** @override */
+  connectedCallback() {
+    super.connectedCallback();
+    if (loadTimeData.getBoolean('isJellyEnabledForFirmwareUpdate')) {
+      // TODO(b/276493795): After the Jelly experiment is launched, replace
+      // `cros_styles.css` with `theme/colors.css` directly in `index.html`.
+      document.querySelector('link[href*=\'cros_styles.css\']')
+          ?.setAttribute('href', 'chrome://theme/colors.css?sets=legacy,sys');
+      startColorChangeUpdater();
+    }
   }
 }
 

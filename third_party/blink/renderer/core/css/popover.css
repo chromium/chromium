@@ -9,12 +9,7 @@
 
 @namespace "http://www.w3.org/1999/xhtml";
 
-[popover]:closed:not(dialog[open]) {
-  display:none;
-}
-dialog[popover]:not(:closed) {
-  display:block;
-}
+/* TODO(crbug.com/1428094) This file should be merged into html.css. */
 
 [popover] {
   position: fixed;
@@ -29,22 +24,37 @@ dialog[popover]:not(:closed) {
   background-color: Canvas;
 }
 
-[popover][anchor] {
+/* This ensures that popovers get display:none when they are not open, and we
+   need to be careful not to affect `<dialog popover>` when open as a dialog. */
+[popover]:not(:popover-open):not(dialog[open]) {
+  display:none;
+}
+
+/* The UA stylesheet has a rule like dialog{display:none}, so <dialog popover>
+   needs this to be visible when it is open as a popover. */
+dialog:popover-open {
+  display:block;
+}
+
+/* Popovers using anchor positioning get their inset and anchor-scroll properties
+   reset, to make it easier to position them. */
+[anchor]:popover-open {
   inset:auto;
   anchor-scroll: implicit;
 }
 
-[popover]:open:not(dialog), dialog:open:not([open]) {
+/* This rule matches popovers (dialog or not) that are currently open as a
+   popover. */
+:popover-open:not(dialog), dialog:popover-open:not([open]) {
   overlay: auto !important;
 }
 
-[popover]:open::backdrop {
+:popover-open::backdrop {
   /* From the (modified) fullscreen spec: https://fullscreen.spec.whatwg.org/#user-agent-level-style-sheet-defaults: */
   position: fixed;
   inset: 0;
   /* Specific to [popover]: */
   pointer-events: none !important;
-  /* https://github.com/openui/open-ui/issues/561#issuecomment-1242297093 */
   background-color: transparent;
   overlay: auto !important;
 }

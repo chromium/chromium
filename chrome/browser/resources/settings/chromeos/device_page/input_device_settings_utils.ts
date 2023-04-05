@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DeviceSettings} from './input_device_settings_types';
+import {DeviceSettings, InputDeviceSettingsPolicy, PolicyStatus} from './input_device_settings_types.js';
 
 function objectsAreEqual(
     obj1: {[key: string]: any}, obj2: {[key: string]: any}): boolean {
@@ -32,4 +32,20 @@ function objectsAreEqual(
 export function settingsAreEqual(
     settings1: DeviceSettings, settings2: DeviceSettings): boolean {
   return objectsAreEqual(settings1, settings2);
+}
+
+interface PrefPolicyFields {
+  enforcement?: chrome.settingsPrivate.Enforcement;
+  recommendedValue?: boolean;
+}
+
+export function getPrefPolicyFields(policy?: InputDeviceSettingsPolicy):
+    PrefPolicyFields {
+  if (policy) {
+    const enforcement = policy.policyStatus === PolicyStatus.kManaged ?
+        chrome.settingsPrivate.Enforcement.ENFORCED :
+        chrome.settingsPrivate.Enforcement.RECOMMENDED;
+    return {enforcement, recommendedValue: policy.value};
+  }
+  return {enforcement: undefined, recommendedValue: undefined};
 }

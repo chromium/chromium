@@ -200,6 +200,10 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
 
   void CancelUploadByPath(const base::FilePath& path) override;
 
+  void SetDocsOfflineEnabled(
+      bool enabled,
+      drivefs::mojom::DriveFs::SetDocsOfflineEnabledCallback callback) override;
+
   const base::FilePath mount_path_;
   int64_t next_stable_id_ = 1;
 

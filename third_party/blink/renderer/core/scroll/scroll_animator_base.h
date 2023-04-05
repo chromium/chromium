@@ -79,6 +79,8 @@ class CORE_EXPORT ScrollAnimatorBase
 
   virtual void AdjustAnimation(const gfx::Vector2d& adjustment) {}
 
+  virtual bool HasRunningAnimation() const { return false; }
+
   // ScrollAnimatorCompositorCoordinator implementation.
   ScrollableArea* GetScrollableArea() const override {
     return scrollable_area_;

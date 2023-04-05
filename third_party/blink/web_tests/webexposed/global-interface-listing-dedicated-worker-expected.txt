@@ -740,7 +740,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method createShaderModule
 [Worker]     method createTexture
 [Worker]     method destroy
-[Worker]     method experimentalImportTexture
 [Worker]     method importExternalTexture
 [Worker]     method popErrorScope
 [Worker]     method pushErrorScope
@@ -1155,7 +1154,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker] interface MLContext
 [Worker]     attribute @@toStringTag
-[Worker]     method compute
 [Worker]     method computeSync
 [Worker]     method constructor
 [Worker] interface MLGraph
@@ -1165,7 +1163,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute @@toStringTag
 [Worker]     method add
 [Worker]     method averagePool2d
-[Worker]     method build
 [Worker]     method buildSync
 [Worker]     method clamp
 [Worker]     method concat

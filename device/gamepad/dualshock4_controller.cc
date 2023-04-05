@@ -4,6 +4,7 @@
 
 #include "device/gamepad/dualshock4_controller.h"
 
+#include <algorithm>
 #include <array>
 
 #include "base/metrics/crc32.h"
@@ -11,6 +12,7 @@
 #include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/gamepad_id_list.h"
 #include "device/gamepad/hid_writer.h"
+#include "device/gamepad/public/cpp/gamepad_features.h"
 
 namespace device {
 
@@ -20,15 +22,19 @@ const uint16_t kDualshock4VersionUsb = 0x0100;
 const uint16_t kDualshock4VersionBluetooth = 0;
 
 // Report IDs.
-const uint8_t kReportId05 = 0x05;
-const uint8_t kReportId11 = 0x11;
+constexpr uint8_t kReportId01 = 0x01;
+constexpr uint8_t kReportId05 = 0x05;
+constexpr uint8_t kReportId11 = 0x11;
 
 // Maximum in-range values for HID report fields.
 const uint8_t kRumbleMagnitudeMax = 0xff;
 const float kAxisMax = 255.0f;
 const float kDpadMax = 7.0f;
 
-#pragma pack(push, 1)
+// Dualshock 4 touchpad absolute dimension.
+constexpr uint16_t kTouchDimensionX = 1920;
+constexpr uint16_t kTouchDimensionY = 942;
+
 struct ControllerData {
   uint8_t axis_left_x;
   uint8_t axis_left_y;
@@ -64,26 +70,38 @@ struct ControllerData {
   uint8_t battery_info : 5;
   uint8_t padding2 : 2;
   bool extension_detection : 1;
-};
-#pragma pack(pop)
+} ABSL_ATTRIBUTE_PACKED;
+
 static_assert(sizeof(ControllerData) == 30,
               "ControllerData has incorrect size");
 
-#pragma pack(push, 1)
+struct TouchData {
+  uint8_t id : 7;
+  bool is_invalid : 1;
+  uint8_t data[3];
+};
+
+static_assert(sizeof(TouchData) == 4, "TouchPadData has incorrect size");
+
 struct TouchPadData {
   uint8_t touch_data_timestamp;
-  uint8_t touch0_id : 7;
-  bool touch0_is_invalid : 1;
-  uint8_t touch0_data[3];
-  uint8_t touch1_id : 7;
-  bool touch1_is_invalid : 1;
-  uint8_t touch1_data[3];
+  TouchData touch[2];
 };
-#pragma pack(pop)
+
 static_assert(sizeof(TouchPadData) == 9, "TouchPadData has incorrect size");
 
-#pragma pack(push, 1)
-struct Dualshock4InputReport11 {
+struct Dualshock4InputReportUsb {
+  ControllerData controller_data;
+  uint8_t padding1[2];
+  uint8_t touches_count;
+  TouchPadData touches[3];
+  uint8_t padding2[4];
+};
+
+static_assert(sizeof(Dualshock4InputReportUsb) == 64,
+              "Dualshock4InputReportUsb has incorrect size");
+
+struct Dualshock4InputReportBluetooth {
   uint8_t padding1[2];
   ControllerData controller_data;
   uint8_t padding2[2];
@@ -91,10 +109,10 @@ struct Dualshock4InputReport11 {
   TouchPadData touches[4];
   uint8_t padding3[2];
   uint32_t crc32;
-};
-#pragma pack(pop)
-static_assert(sizeof(Dualshock4InputReport11) == 77,
-              "Dualshock4InputReport11 has incorrect size");
+} ABSL_ATTRIBUTE_PACKED;
+
+static_assert(sizeof(Dualshock4InputReportBluetooth) == 77,
+              "Dualshock4InputReportBluetooth has incorrect size");
 
 // Returns the CRC32 checksum for a Dualshock4 Bluetooth output report.
 // |report_data| is the report data excluding the bytes where the checksum will
@@ -121,7 +139,114 @@ static float NormalizeDpad(uint8_t value) {
   return (2.0f * value / kDpadMax) - 1.0f;
 }
 
+// Scales the Dualshock4 touch absolute coordinates to a float in within the
+// range [-1.0,+1.0].
+float NormalizeTouch(uint32_t value, uint32_t min, uint32_t max) {
+  DCHECK_LT(min, max);
+
+  uint32_t clamped_value = std::min(max, std::max(min, value));
+  return (2.0f * (clamped_value - min) / static_cast<float>(max - min)) - 1.0f;
+}
+
+// Reads the 12 bits coordinates given by `ds4_touch_data` into `touch`
+// position.
+void ReadTouchCoordinates(base::span<const uint8_t> ds4_touch_data_span,
+                          GamepadTouch& touch) {
+  uint16_t touch_data_x_axis =
+      ((ds4_touch_data_span[1] & 0x0f) << 8) | ds4_touch_data_span[0];
+  uint16_t touch_data_y_axis =
+      (ds4_touch_data_span[2] << 4) | ((ds4_touch_data_span[1] & 0xf0) >> 4);
+
+  touch.x = NormalizeTouch(touch_data_x_axis, 0, (kTouchDimensionX - 1));
+  touch.y = NormalizeTouch(touch_data_y_axis, 0, (kTouchDimensionY - 1));
+  touch.surface_width = kTouchDimensionX;
+  touch.surface_height = kTouchDimensionY;
+  touch.has_surface_dimensions = true;
+}
+
+// Reads the touchpad information given by `touchpad_data` and `touches_count`
+// into `pad`.
+// TODO(crbug.com/1143942): Make a member of Dualshock4Controller
+template <typename Transform>
+void ProcessTouchData(base::span<const TouchPadData> touchpad_data,
+                      Transform& id_transform,
+                      absl::optional<uint32_t>& initial_touch_id,
+                      Gamepad* pad) {
+  pad->touch_events_length = 0;
+  GamepadTouch* touches = pad->touch_events;
+
+  for (const auto& touchpad_data_entry : touchpad_data) {
+    auto [touch_id_0, touch_id_1] = id_transform(
+        touchpad_data_entry.touch[0].id, touchpad_data_entry.touch[1].id);
+    // 2 touches per touch pad data entry
+    for (auto j = 0u; j < 2; ++j) {
+      auto& raw_touch = touchpad_data_entry.touch[j];
+
+      if (!raw_touch.is_invalid) {
+        if (!initial_touch_id.has_value()) {
+          initial_touch_id = j == 0 ? touch_id_0 : touch_id_1;
+        }
+        auto& touch = touches[pad->touch_events_length++];
+        touch.touch_id =
+            (j == 0 ? touch_id_0 : touch_id_1) - initial_touch_id.value();
+        touch.surface_id = 0;
+        // x and y coordinates stored in 3 bytes (12bits each)
+        ReadTouchCoordinates(base::make_span(raw_touch.data, 3u), touch);
+      }
+    }
+  }
+}
+
+// Reads the Axis and button information given by |controller_data| into
+// |pad|.
+void ProcessAxisButtonData(const ControllerData& controller_data,
+                           Gamepad* pad) {
+  // Button and axis indices must match the ordering expected by the
+  // Dualshock4 mapping function.
+  pad->axes[0] = NormalizeAxis(controller_data.axis_left_x);
+  pad->axes[1] = NormalizeAxis(controller_data.axis_left_y);
+  pad->axes[2] = NormalizeAxis(controller_data.axis_right_x);
+  pad->axes[3] = NormalizeAxis(controller_data.axis_left_2);
+  pad->axes[4] = NormalizeAxis(controller_data.axis_right_2);
+  pad->axes[5] = NormalizeAxis(controller_data.axis_right_y);
+  pad->axes[9] = NormalizeDpad(controller_data.axis_dpad);
+  const bool button_values[] = {
+      controller_data.button_square, controller_data.button_cross,
+      controller_data.button_circle, controller_data.button_triangle,
+      controller_data.button_left_1, controller_data.button_right_1,
+      controller_data.button_left_2, controller_data.button_right_2,
+      controller_data.button_share,  controller_data.button_options,
+      controller_data.button_left_3, controller_data.button_right_3,
+      controller_data.button_ps,     controller_data.button_touch,
+  };
+  for (size_t i = 0; i < std::size(button_values); ++i) {
+    pad->buttons[i].pressed = button_values[i];
+    pad->buttons[i].touched = button_values[i];
+    pad->buttons[i].value = button_values[i] ? 1.0 : 0.0;
+  }
+}
+
 }  // namespace
+
+template <typename ExtendedType, typename BaseType>
+ExtendedType
+Dualshock4Controller::ExtendedCounter<ExtendedType, BaseType>::operator()(
+    BaseType num,
+    ExtendedCounter const* other) {
+  if (other && prefix < other->prefix && last != num) {
+    last = kLastMax;
+    ++prefix;
+  }
+
+  auto pre = prefix;
+  if (num == last && num == 127) {
+    pre -= 1;
+  } else if (num == 127) {
+    ++prefix;
+  }
+  last = num;
+  return (pre << 7) | num;
+}
 
 Dualshock4Controller::Dualshock4Controller(GamepadId gamepad_id,
                                            GamepadBusType bus_type,
@@ -156,65 +281,65 @@ void Dualshock4Controller::DoShutdown() {
   writer_.reset();
 }
 
+#include <bitset>
+#include <tuple>
+
 bool Dualshock4Controller::ProcessInputReport(uint8_t report_id,
                                               base::span<const uint8_t> report,
-                                              Gamepad* pad) {
+                                              Gamepad* pad,
+                                              bool ignore_button_axis,
+                                              bool is_multitouch_enabled) {
   DCHECK(pad);
 
-  // Input report 0x11 is the full-feature mode input report. It includes
-  // gamepad button and axis state, touch inputs, motion inputs, battery level
-  // and temperature. Dualshock4 starts sending this report after it has
-  // received an output report with ID 0x11. Prior to receiving the output
-  // report, input report 0x01 is sent which includes button and axis state.
-  //
-  // Here we only handle the full-feature report. Input report 0x01 is handled
-  // by the platform's HID data fetcher.
-  if (report_id != kReportId11 ||
-      report.size_bytes() < sizeof(Dualshock4InputReport11)) {
+  const ControllerData* controller_data = nullptr;
+  const TouchPadData* touches = nullptr;
+  uint8_t touches_count = 0;
+
+  auto set_controller_and_touch_data =
+      [&controller_data, &touches, &touches_count,
+       is_multitouch_enabled](const auto& data) {
+        controller_data = &data->controller_data;
+        if (is_multitouch_enabled) {
+          touches = data->touches;
+          touches_count = data->touches_count;
+        }
+      };
+
+  if (bus_type_ == GAMEPAD_BUS_USB &&
+      report_id == kReportId01 /*USB feature report*/ &&
+      report.size_bytes() >= sizeof(Dualshock4InputReportUsb) &&
+      is_multitouch_enabled) {
+    const auto* data =
+        reinterpret_cast<const Dualshock4InputReportUsb*>(report.data());
+    set_controller_and_touch_data(data);
+  } else if (report_id == kReportId11 /*Bluetooth feature report*/ &&
+             report.size_bytes() >= sizeof(Dualshock4InputReportBluetooth)) {
+    const auto* data =
+        reinterpret_cast<const Dualshock4InputReportBluetooth*>(report.data());
+    set_controller_and_touch_data(data);
+  } else {
     return false;
   }
 
-  const auto* data =
-      reinterpret_cast<const Dualshock4InputReport11*>(report.data());
-
-  // Button and axis indices must match the ordering expected by the Dualshock4
-  // mapping function.
-  pad->axes[0] = NormalizeAxis(data->controller_data.axis_left_x);
-  pad->axes[1] = NormalizeAxis(data->controller_data.axis_left_y);
-  pad->axes[2] = NormalizeAxis(data->controller_data.axis_right_x);
-  pad->axes[3] = NormalizeAxis(data->controller_data.axis_left_2);
-  pad->axes[4] = NormalizeAxis(data->controller_data.axis_right_2);
-  pad->axes[5] = NormalizeAxis(data->controller_data.axis_right_y);
-  pad->axes[9] = NormalizeDpad(data->controller_data.axis_dpad);
-  const bool button_values[] = {
-      data->controller_data.button_square,
-      data->controller_data.button_cross,
-      data->controller_data.button_circle,
-      data->controller_data.button_triangle,
-      data->controller_data.button_left_1,
-      data->controller_data.button_right_1,
-      data->controller_data.button_left_2,
-      data->controller_data.button_right_2,
-      data->controller_data.button_share,
-      data->controller_data.button_options,
-      data->controller_data.button_left_3,
-      data->controller_data.button_right_3,
-      data->controller_data.button_ps,
-      data->controller_data.button_touch,
-  };
-  for (size_t i = 0; i < std::size(button_values); ++i) {
-    pad->buttons[i].pressed = button_values[i];
-    pad->buttons[i].touched = button_values[i];
-    pad->buttons[i].value = button_values[i] ? 1.0 : 0.0;
+  if (!ignore_button_axis) {
+    ProcessAxisButtonData(*controller_data, pad);
   }
+
+  if (is_multitouch_enabled) {
+    pad->supports_touch_events_ = true;
+    ProcessTouchData(base::make_span(touches, touches_count),
+                     transform_touch_id_, initial_touch_id_, pad);
+  }
+
   pad->timestamp = GamepadDataFetcher::CurrentTimeInMicroseconds();
   return true;
 }
 
 void Dualshock4Controller::SetVibration(
     mojom::GamepadEffectParametersPtr params) {
-  // Genuine DualShock 4 gamepads use an alternate output report when connected
-  // over Bluetooth. Always send USB-mode reports to SCUF Vantage gamepads.
+  // Genuine DualShock 4 gamepads use an alternate output report when
+  // connected over Bluetooth. Always send USB-mode reports to SCUF Vantage
+  // gamepads.
   if (bus_type_ == GAMEPAD_BUS_BLUETOOTH &&
       gamepad_id_ != GamepadId::kScufProduct7725) {
     SetVibrationBluetooth(params->strong_magnitude, params->weak_magnitude);
@@ -245,9 +370,9 @@ void Dualshock4Controller::SetVibrationUsb(double strong_magnitude,
 void Dualshock4Controller::SetVibrationBluetooth(double strong_magnitude,
                                                  double weak_magnitude) {
   DCHECK(writer_);
-  // Construct a Bluetooth output report with report ID 0x11. In Bluetooth mode,
-  // the 0x11 report is used to control vibration, LEDs, and audio volume.
-  // https://www.psdevwiki.com/ps4/DS4-BT#0x11_2
+  // Construct a Bluetooth output report with report ID 0x11. In Bluetooth
+  // mode, the 0x11 report is used to control vibration, LEDs, and audio
+  // volume. https://www.psdevwiki.com/ps4/DS4-BT#0x11_2
   std::array<uint8_t, 78> control_report;
   control_report.fill(0);
   control_report[0] = kReportId11;

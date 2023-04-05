@@ -363,12 +363,6 @@ void BrowserChildProcessHostImpl::LaunchWithoutExtraCommandLineSwitches(
     OnProcessConnected();
 }
 
-void BrowserChildProcessHostImpl::HistogramBadMessageTerminated(
-    ProcessType process_type) {
-  UMA_HISTOGRAM_ENUMERATION("ChildProcess.BadMessgeTerminated", process_type,
-                            PROCESS_TYPE_MAX);
-}
-
 #if !BUILDFLAG(IS_ANDROID)
 void BrowserChildProcessHostImpl::SetProcessBackgrounded(bool is_background) {
   DCHECK(child_process_);
@@ -548,16 +542,6 @@ void BrowserChildProcessHostImpl::OnChildDisconnected() {
       }
     }
 #endif  // BUILDFLAG(IS_ANDROID)
-    UMA_HISTOGRAM_ENUMERATION("ChildProcess.Disconnected2",
-                              static_cast<ProcessType>(data_.process_type),
-                              PROCESS_TYPE_MAX);
-#if BUILDFLAG(IS_CHROMEOS)
-    if (info.status == base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM) {
-      UMA_HISTOGRAM_ENUMERATION("ChildProcess.Killed2.OOM",
-                                static_cast<ProcessType>(data_.process_type),
-                                PROCESS_TYPE_MAX);
-    }
-#endif
   }
   delete delegate_;  // Will delete us
 }
@@ -782,8 +766,6 @@ void BrowserChildProcessHostImpl::TerminateProcessForBadMessage(
     const std::string& error) {
   if (!process)
     return;
-  HistogramBadMessageTerminated(
-      static_cast<ProcessType>(process->data_.process_type));
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableKillAfterBadIPC)) {
     return;

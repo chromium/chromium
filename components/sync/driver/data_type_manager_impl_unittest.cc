@@ -1439,7 +1439,7 @@ TEST_F(SyncDataTypeManagerImplTest, StopWithDisableSync) {
   EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
 }
 
-TEST_F(SyncDataTypeManagerImplTest, PurgeDataOnStartingPersistent) {
+TEST_F(SyncDataTypeManagerImplTest, PurgeDataOnStarting) {
   AddController(BOOKMARKS);
   AddController(AUTOFILL_WALLET_DATA, /*enable_transport_mode=*/true);
 
@@ -1477,50 +1477,11 @@ TEST_F(SyncDataTypeManagerImplTest, PurgeDataOnStartingPersistent) {
   // Stop(CLEAR_METADATA) has *not* been called on the controller though; that
   // happens only when stopping or reconfiguring, not when (re)starting without
   // the type.
+  // TODO(crbug.com/897628): Metadata *should* probably be cleared here.
   EXPECT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
 }
 
-TEST_F(SyncDataTypeManagerImplTest, DontPurgeDataOnStartingEphemeral) {
-  AddController(BOOKMARKS);
-  controllers_[AUTOFILL_WALLET_DATA] = std::make_unique<FakeDataTypeController>(
-      AUTOFILL_WALLET_DATA,
-      /*enable_transport_only_model=*/true);
-
-  // Configure as usual.
-  SetConfigureStartExpectation();
-  SetConfigureDoneExpectation(DataTypeManager::OK, DataTypeStatusTable());
-
-  Configure(ModelTypeSet(BOOKMARKS, AUTOFILL_WALLET_DATA), SyncMode::kFull);
-  ASSERT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
-
-  FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
-  FinishDownload(ModelTypeSet(BOOKMARKS, AUTOFILL_WALLET_DATA), ModelTypeSet());
-  ASSERT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
-  ASSERT_EQ(2U, configurer_.connected_types().Size());
-
-  // The user temporarily turns off Sync.
-  dtm_->Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
-  ASSERT_EQ(DataTypeManager::STOPPED, dtm_->state());
-  ASSERT_TRUE(configurer_.connected_types().Empty());
-  ASSERT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
-
-  // Now we restart in ephemeral mode, with a reduced set of data types.
-  SetConfigureStartExpectation();
-  SetConfigureDoneExpectation(DataTypeManager::OK, DataTypeStatusTable());
-  Configure(ModelTypeSet(AUTOFILL_WALLET_DATA), SyncMode::kTransportOnly);
-  ASSERT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
-
-  FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
-  FinishDownload(ModelTypeSet(AUTOFILL_WALLET_DATA), ModelTypeSet());
-  ASSERT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
-  ASSERT_EQ(1U, configurer_.connected_types().Size());
-
-  // This should *not* have purged the data for the excluded type.
-  EXPECT_TRUE(last_configure_params().to_purge.Empty());
-  EXPECT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
-}
-
-TEST_F(SyncDataTypeManagerImplTest, PurgeDataOnReconfiguringPersistent) {
+TEST_F(SyncDataTypeManagerImplTest, PurgeDataOnReconfiguring) {
   AddController(BOOKMARKS);
   controllers_[AUTOFILL_WALLET_DATA] = std::make_unique<FakeDataTypeController>(
       AUTOFILL_WALLET_DATA,
@@ -1554,40 +1515,6 @@ TEST_F(SyncDataTypeManagerImplTest, PurgeDataOnReconfiguringPersistent) {
   // Also Stop(CLEAR_METADATA) has been called on the controller since the type
   // is no longer enabled.
   EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
-}
-
-TEST_F(SyncDataTypeManagerImplTest, DontPurgeDataOnReconfiguringEphemeral) {
-  AddController(BOOKMARKS);
-  controllers_[AUTOFILL_WALLET_DATA] = std::make_unique<FakeDataTypeController>(
-      AUTOFILL_WALLET_DATA,
-      /*enable_transport_only_model=*/true);
-
-  // Configure as usual.
-  SetConfigureStartExpectation();
-  SetConfigureDoneExpectation(DataTypeManager::OK, DataTypeStatusTable());
-
-  Configure(ModelTypeSet(BOOKMARKS, AUTOFILL_WALLET_DATA), SyncMode::kFull);
-  ASSERT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
-
-  FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
-  FinishDownload(ModelTypeSet(BOOKMARKS, AUTOFILL_WALLET_DATA), ModelTypeSet());
-  ASSERT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
-  ASSERT_EQ(2U, configurer_.connected_types().Size());
-
-  // Now we reconfigure into ephemeral mode, with a reduced set of data types.
-  SetConfigureStartExpectation();
-  SetConfigureDoneExpectation(DataTypeManager::OK, DataTypeStatusTable());
-  Configure(ModelTypeSet(AUTOFILL_WALLET_DATA), SyncMode::kTransportOnly);
-  ASSERT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
-
-  FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
-  FinishDownload(ModelTypeSet(AUTOFILL_WALLET_DATA), ModelTypeSet());
-  ASSERT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
-  ASSERT_EQ(1U, configurer_.connected_types().Size());
-
-  // This should *not* have cleared the data for the excluded type.
-  EXPECT_TRUE(last_configure_params().to_purge.Empty());
-  EXPECT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
 }
 
 TEST_F(SyncDataTypeManagerImplTest, ShouldRecordInitialConfigureTimeHistogram) {

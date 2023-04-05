@@ -537,6 +537,7 @@ void LanguagesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"moveToTop", IDS_SETTINGS_LANGUAGES_LANGUAGES_LIST_MOVE_TO_TOP},
       {"removeLanguage", IDS_SETTINGS_LANGUAGES_LANGUAGES_LIST_REMOVE},
       {"addLanguages", IDS_SETTINGS_LANGUAGES_LANGUAGES_ADD},
+      {"noLanguagesAdded", IDS_SETTINGS_LANGUAGES_NO_LANGUAGES_ADDED},
       {"moveUp", IDS_SETTINGS_LANGUAGES_LANGUAGES_LIST_MOVE_UP},
       {"noSearchResults", IDS_SEARCH_NO_RESULTS},
   };
@@ -643,8 +644,6 @@ void LanguagesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterNestedSetting(mojom::Setting::kShowPKAutoCorrection,
                                    mojom::Subpage::kInputMethodOptions);
   generator->RegisterNestedSetting(mojom::Setting::kShowVKAutoCorrection,
-                                   mojom::Subpage::kInputMethodOptions);
-  generator->RegisterNestedSetting(mojom::Setting::kShowDiacritic,
                                    mojom::Subpage::kInputMethodOptions);
 
   // Smart inputs.

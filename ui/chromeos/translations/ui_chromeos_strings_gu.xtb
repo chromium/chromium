@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">ગ્રહ</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> બહાર કાઢવામાં આવ્યું છે.</translation>
 <translation id="2307462900900812319">નેટવર્ક ગોઠવો</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{ID ધરાવતા એક્સ્ટેંશનને <ph name="BEGIN_LIST" /><ph name="END_LIST" /> શોધી શકાતું નથી. તમારા ઍડમિનિસ્ટ્રેટરનો સંપર્ક કરો.}one{ID ધરાવતા એક્સ્ટેંશનને <ph name="BEGIN_LIST" /><ph name="END_LIST" /> શોધી શકાતું નથી. તમારા ઍડમિનિસ્ટ્રેટરનો સંપર્ક કરો.}other{IDs ધરાવતા એક્સ્ટેંશનને <ph name="BEGIN_LIST" /><ph name="END_LIST" /> શોધી શકાતા નથી. તમારા ઍડમિનિસ્ટ્રેટરનો સંપર્ક કરો.}}</translation>
 <translation id="2325650632570794183">આ ફાઇલ પ્રકાર સમર્થિત નથી. આ પ્રકારની ફાઇલ ખોલી શકે તે એપ્લિકેશનને શોધવા માટે કૃપા કરીને Chrome વેબ દુકાનની મુલાકાત લો.</translation>
 <translation id="2326539130272988168">બલ્ગેરિયન</translation>
 <translation id="2337715497728194187">Bruschetta સાથે શેર કરો</translation>

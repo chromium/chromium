@@ -38,6 +38,7 @@ CompositorFrameReportingController::CompositorFrameReportingController(
     : should_report_histograms_(should_report_histograms),
       layer_tree_host_id_(layer_tree_host_id),
       latency_ukm_reporter_(std::make_unique<LatencyUkmReporter>()),
+      predictor_jank_tracker_(std::make_unique<PredictorJankTracker>()),
       previous_latency_predictions_main_(base::Microseconds(-1)),
       previous_latency_predictions_impl_(base::Microseconds(-1)),
       event_latency_predictions_(
@@ -48,6 +49,7 @@ CompositorFrameReportingController::CompositorFrameReportingController(
     // set on `global_trackers_`.
     global_trackers_.latency_ukm_reporter = latency_ukm_reporter_.get();
   }
+  global_trackers_.predictor_jank_tracker = predictor_jank_tracker_.get();
 }
 
 CompositorFrameReportingController::~CompositorFrameReportingController() {

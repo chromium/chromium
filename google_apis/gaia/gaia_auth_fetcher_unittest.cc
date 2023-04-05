@@ -49,6 +49,16 @@ const char kGetTokenPairValidResponse[] =
         "id_token": "it1"
      })";
 
+const char kGetTokenPairValidBoundKeyResponse[] =
+    R"({
+        "refresh_token": "rt1",
+        "access_token": "at1",
+        "expires_in": 3600,
+        "token_type": "Bearer",
+        "id_token": "it1",
+        "refresh_token_type": "BOUND_TO_KEY"
+     })";
+
 std::string GetRequestBodyAsString(const network::ResourceRequest* request) {
   if (!request->request_body || !request->request_body->elements() ||
       !request->request_body->elements()->size()) {
@@ -244,13 +254,14 @@ TEST_F(GaiaAuthFetcherTest, ServiceUnavailableShortError) {
   EXPECT_EQ(error.state(), GoogleServiceAuthError::SERVICE_UNAVAILABLE);
 }
 
-TEST_F(GaiaAuthFetcherTest, StartAuthCodeForOAuth2TokenExchange_Success) {
+TEST_F(GaiaAuthFetcherTest, StartAuthCodeForOAuth2TokenExchangeSuccess) {
   MockGaiaConsumer consumer;
   EXPECT_CALL(consumer, OnClientOAuthCode("test-code")).Times(0);
-  EXPECT_CALL(consumer,
-              OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
-                  "rt1", "at1", 3600, false /* is_child_account */,
-                  false /* is_advanced_protection */)))
+  EXPECT_CALL(
+      consumer,
+      OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
+          "rt1", "at1", 3600, /*is_child_account=*/false,
+          /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/false)))
       .Times(1);
 
   TestGaiaAuthFetcher auth(&consumer, GetURLLoaderFactory());
@@ -267,7 +278,7 @@ TEST_F(GaiaAuthFetcherTest, StartAuthCodeForOAuth2TokenExchange_Success) {
   EXPECT_FALSE(auth.HasPendingFetch());
 }
 
-TEST_F(GaiaAuthFetcherTest, StartAuthCodeForOAuth2TokenExchange_DeviceId) {
+TEST_F(GaiaAuthFetcherTest, StartAuthCodeForOAuth2TokenExchangeDeviceId) {
   MockGaiaConsumer consumer;
   GaiaAuthFetcher auth(&consumer, gaia::GaiaSource::kChrome,
                        GetURLLoaderFactory());
@@ -282,7 +293,31 @@ TEST_F(GaiaAuthFetcherTest, StartAuthCodeForOAuth2TokenExchange_DeviceId) {
   EXPECT_NE(std::string::npos, body.find("device_id=device_ABCDE_1"));
 }
 
-TEST_F(GaiaAuthFetcherTest, StartAuthCodeForOAuth2TokenExchange_Failure) {
+TEST_F(GaiaAuthFetcherTest,
+       StartAuthCodeForOAuth2TokenExchangeBindingRegistrationToken) {
+  MockGaiaConsumer consumer;
+  EXPECT_CALL(
+      consumer,
+      OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
+          "rt1", "at1", 3600, /*is_child_account=*/false,
+          /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/true)));
+
+  TestGaiaAuthFetcher auth(&consumer, GetURLLoaderFactory());
+  auth.StartAuthCodeForOAuth2TokenExchange("auth_code", "registration_jwt");
+  ASSERT_EQ(received_requests_.size(), 1U);
+  EXPECT_EQ(google_apis::GetOmitCredentialsModeForGaiaRequests(),
+            received_requests_.at(0).credentials_mode);
+  std::string body = GetRequestBodyAsString(&received_requests_.at(0));
+  EXPECT_NE(std::string::npos,
+            body.find("bound_token_registration_jwt=registration_jwt"));
+  EXPECT_TRUE(auth.HasPendingFetch());
+
+  auth.TestOnURLLoadCompleteInternal(net::OK, net::HTTP_OK,
+                                     kGetTokenPairValidBoundKeyResponse);
+  EXPECT_FALSE(auth.HasPendingFetch());
+}
+
+TEST_F(GaiaAuthFetcherTest, StartAuthCodeForOAuth2TokenExchangeFailure) {
   MockGaiaConsumer consumer;
   EXPECT_CALL(consumer, OnClientOAuthFailure(_)).Times(1);
 
@@ -293,7 +328,6 @@ TEST_F(GaiaAuthFetcherTest, StartAuthCodeForOAuth2TokenExchange_Failure) {
   auth.TestOnURLLoadCompleteInternal(net::OK, net::HTTP_FORBIDDEN);
   EXPECT_FALSE(auth.HasPendingFetch());
 }
-
 
 TEST_F(GaiaAuthFetcherTest, MergeSessionSuccess) {
   MockGaiaConsumer consumer;

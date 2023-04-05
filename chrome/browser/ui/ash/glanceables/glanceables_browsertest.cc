@@ -72,7 +72,7 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
     auto* session_manager = session_manager::SessionManager::Get();
     session_manager->CreateSession(account_id, kTestUserName, false);
 
-    profile_ = profiles::testing::CreateProfileSync(
+    profile_ = &profiles::testing::CreateProfileSync(
         g_browser_process->profile_manager(),
         ash::ProfileHelper::GetProfilePathByUserIdHash(
             user_manager::UserManager::Get()

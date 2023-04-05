@@ -86,9 +86,6 @@ TEST_F(NGInlineLayoutTest, BlockWithTextAndAtomicInline) {
   auto first_child = To<NGInlineNode>(node.FirstChild());
   EXPECT_EQ(expected_text.ToString(),
             StringView(first_child.ItemsData(false).text_content, 0, 8));
-
-  // Delete the line box tree to avoid leaks in the test.
-  block_flow->DeleteLineBoxTree();
 }
 
 }  // namespace blink

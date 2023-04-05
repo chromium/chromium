@@ -16,9 +16,12 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 inline constexpr int kBlockSizeBytes = 16;
+constexpr int kNonceSizeBytes = 8;
 
 namespace ash {
 namespace quick_pair {
+
+constexpr int kHmacAdditionalDataPacketSizeBytes = 8;
 
 // Holds a secret key for a device and has methods to encrypt bytes, decrypt
 // response and decrypt passkey.
@@ -41,6 +44,13 @@ class FastPairDataEncryptor {
       const std::vector<uint8_t>& encrypted_passkey_bytes,
       base::OnceCallback<void(const absl::optional<DecryptedPasskey>&)>
           callback) = 0;
+
+  // Creates data packet to write to GATT Additional Data Characteristic
+  // according to the Fast Pair spec:
+  // https://developers.google.com/nearby/fast-pair/specifications/characteristics#AdditionalData
+  virtual std::vector<uint8_t> CreateAdditionalDataPacket(
+      std::array<uint8_t, kNonceSizeBytes> nonce,
+      const std::vector<uint8_t>& additional_data) = 0;
 
   virtual ~FastPairDataEncryptor() = default;
 };

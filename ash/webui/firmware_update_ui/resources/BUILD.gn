@@ -100,6 +100,7 @@ js_library("firmware_update_app") {
     ":firmware_update_dialog",
     ":peripheral_updates_list",
     "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/common/resources:load_time_data.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }

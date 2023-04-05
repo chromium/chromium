@@ -29,7 +29,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
-import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
@@ -48,6 +47,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
+import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -104,6 +104,11 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     private boolean mClearFocusAfterNavigation;
     private boolean mClearFocusAfterNavigationAsynchronously;
     private boolean mUrlHasFocus;
+    // When set, specifies the system time of the most recent suggestion list request.
+    private Long mLastSuggestionRequestTime;
+    // When set, specifies the time when the suggestion list was shown the first time.
+    // Suggestions are refreshed several times per keystroke.
+    private Long mFirstSuggestionListModelCreatedTime;
 
     // TODO(crbug.com/1373795): Remove interface SuggestionVisibilityState and
     // mSuggestionVisibilityState after feature OmniboxRemoveExcessiveRecycledViewClearCalls is
@@ -346,6 +351,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
                 onTextChanged(text, text);
             }
         } else {
+            stopMeasuringSuggestionRequestToUiModelTime();
             mJankTracker.finishTrackingScenario(JankScenario.OMNIBOX_FOCUS);
             cancelAutocompleteRequests();
             SuggestionsMetrics.recordOmniboxFocusResultedInNavigation(
@@ -724,6 +730,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
                 String currentUrl = mDataProvider.getCurrentUrl();
 
                 postAutocompleteRequest(() -> {
+                    startMeasuringSuggestionRequestToUiModelTime();
                     mAutocomplete.start(currentUrl, pageClassification, textWithoutAutocomplete,
                             cursorPosition, preventAutocomplete);
                 }, OMNIBOX_SUGGESTION_START_DELAY_MS);
@@ -771,6 +778,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
         }
 
         mListPropertyModel.set(SuggestionListProperties.LIST_IS_FINAL, isFinal);
+        measureSuggestionRequestToUiModelTime(isFinal);
     }
 
     /**
@@ -926,6 +934,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
         // now count as a new session.
         mEditSessionState = EditSessionState.INACTIVE;
         mNewOmniboxEditSessionTimestamp = -1;
+        startMeasuringSuggestionRequestToUiModelTime();
         assert mNativeInitialized
             : "startZeroSuggest should be scheduled using postAutocompleteRequest";
 
@@ -1129,6 +1138,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
      */
     private void cancelAutocompleteRequests() {
         mShouldCacheSuggestions = false;
+        stopMeasuringSuggestionRequestToUiModelTime();
         if (mCurrentAutocompleteRequest != null) {
             mHandler.removeCallbacks(mCurrentAutocompleteRequest);
             mCurrentAutocompleteRequest = null;
@@ -1151,5 +1161,53 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             // These requests are not executed until Native libraries are loaded.
             mHandler.postAtFrontOfQueue(mCurrentAutocompleteRequest);
         }
+    }
+
+    /**
+     * Start measuring time between
+     * - the request for suggestions and
+     * - the suggestions UI model being built.
+     * This should be invoked right before we issue a request for suggestions.
+     */
+    private void startMeasuringSuggestionRequestToUiModelTime() {
+        mLastSuggestionRequestTime = SystemClock.uptimeMillis();
+        mFirstSuggestionListModelCreatedTime = null;
+    }
+
+    /**
+     * Measure the time it took to build Suggestions UI model.
+     * The time is measured since the moment suggestions were requested.
+     * Two histograms are recorded by this method:
+     * - Omnibox.SuggestionList.RequestToUiModel.First for the first reply associated with the
+     *   request and
+     * - Omnibox.SuggestionList.RequestToUiModel.Last for the final reply associated with the
+     *   request.
+     * Any other replies that happen meantime are ignored and are accounted for by the last/final
+     * measurement.
+     *
+     * @param isFinal whether the measurement is for the final suggestions repsponse
+     */
+    private void measureSuggestionRequestToUiModelTime(boolean isFinal) {
+        if (mLastSuggestionRequestTime == null) return;
+
+        if (mFirstSuggestionListModelCreatedTime == null) {
+            mFirstSuggestionListModelCreatedTime = SystemClock.uptimeMillis();
+            SuggestionsMetrics.recordSuggestionRequestToModelTime(/*isFirst=*/true,
+                    mFirstSuggestionListModelCreatedTime - mLastSuggestionRequestTime);
+        }
+
+        if (isFinal) {
+            SuggestionsMetrics.recordSuggestionRequestToModelTime(
+                    /*isFirst=*/false, SystemClock.uptimeMillis() - mLastSuggestionRequestTime);
+            stopMeasuringSuggestionRequestToUiModelTime();
+        }
+    }
+
+    /**
+     * Cancel any measurements related to the time it takes to build Suggestions UI model.
+     */
+    private void stopMeasuringSuggestionRequestToUiModelTime() {
+        mLastSuggestionRequestTime = null;
+        mFirstSuggestionListModelCreatedTime = null;
     }
 }

@@ -16,6 +16,7 @@
 #include "chromeos/ash/components/network/hotspot_capabilities_provider.h"
 #include "chromeos/ash/components/network/hotspot_configuration_handler.h"
 #include "chromeos/ash/components/network/hotspot_controller.h"
+#include "chromeos/ash/components/network/hotspot_enabled_state_notifier.h"
 #include "chromeos/ash/components/network/hotspot_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
@@ -58,10 +59,14 @@ class HotspotMetricsHelperTest : public testing::Test {
     hotspot_configuration_handler_ =
         std::make_unique<HotspotConfigurationHandler>();
     hotspot_configuration_handler_->Init(hotspot_controller_.get());
+    hotspot_enabled_state_notifier_ =
+        std::make_unique<HotspotEnabledStateNotifier>();
+    hotspot_enabled_state_notifier_->Init(hotspot_controller_.get());
     hotspot_metrics_helper_ = std::make_unique<HotspotMetricsHelper>();
     hotspot_metrics_helper_->Init(
         hotspot_capabilities_provider_.get(), hotspot_state_handler_.get(),
         hotspot_controller_.get(), hotspot_configuration_handler_.get(),
+        hotspot_enabled_state_notifier_.get(),
         network_state_test_helper_.network_state_handler());
 
     base::RunLoop().RunUntilIdle();
@@ -95,6 +100,7 @@ class HotspotMetricsHelperTest : public testing::Test {
   void TearDown() override {
     network_state_test_helper_.ClearDevices();
     network_state_test_helper_.ClearServices();
+    hotspot_enabled_state_notifier_.reset();
     hotspot_metrics_helper_.reset();
     hotspot_configuration_handler_.reset();
     hotspot_controller_.reset();
@@ -115,6 +121,7 @@ class HotspotMetricsHelperTest : public testing::Test {
   std::unique_ptr<TechnologyStateController> technology_state_controller_;
   std::unique_ptr<HotspotController> hotspot_controller_;
   std::unique_ptr<HotspotConfigurationHandler> hotspot_configuration_handler_;
+  std::unique_ptr<HotspotEnabledStateNotifier> hotspot_enabled_state_notifier_;
   std::unique_ptr<HotspotMetricsHelper> hotspot_metrics_helper_;
 };
 

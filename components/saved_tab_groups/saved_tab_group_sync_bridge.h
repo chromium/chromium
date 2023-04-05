@@ -58,11 +58,11 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
   void GetAllDataForDebugging(DataCallback callback) override;
 
   // SavedTabGroupModelObserver
-  void SavedTabGroupAddedLocally(const base::GUID& guid) override;
+  void SavedTabGroupAddedLocally(const base::Uuid& guid) override;
   void SavedTabGroupRemovedLocally(const SavedTabGroup* removed_group) override;
   void SavedTabGroupUpdatedLocally(
-      const base::GUID& group_guid,
-      const absl::optional<base::GUID>& tab_guid = absl::nullopt) override;
+      const base::Uuid& group_guid,
+      const absl::optional<base::Uuid>& tab_guid = absl::nullopt) override;
   void SavedTabGroupReorderedLocally() override;
 
  private:
@@ -72,7 +72,7 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
       syncer::ModelTypeStore::WriteBatch* write_batch);
 
   // Removes the specifics pointed to by `guid` from the ModelTypeStore.
-  void RemoveEntitySpecific(const base::GUID& guid,
+  void RemoveEntitySpecific(const base::Uuid& guid,
                             syncer::ModelTypeStore::WriteBatch* write_batch);
 
   // Adds `specifics` into local storage (SavedTabGroupModel, and
@@ -94,7 +94,7 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
   // and ModelTypeStore). If this guid represents a group, all tabs will be
   // removed in addition to the group.
   void DeleteDataFromLocalStorage(
-      const base::GUID& guid,
+      const base::Uuid& guid,
       syncer::ModelTypeStore::WriteBatch* write_batch);
 
   // Attempts to add the tabs found in `tabs_missing_groups_` to local storage.

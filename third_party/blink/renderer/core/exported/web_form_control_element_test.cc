@@ -6,8 +6,10 @@
 
 #include <vector>
 
+#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/web_autofill_state.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -51,6 +53,12 @@ class FakeEventListener final : public NativeEventListener {
 class WebFormControlElementTest
     : public PageTestBase,
       public testing::WithParamInterface<const char*> {
+ public:
+  WebFormControlElementTest() {
+    feature_list_.InitAndEnableFeature(
+        blink::features::kAutofillSendUnidentifiedKeyAfterFill);
+  }
+
  protected:
   void InsertHTML() {
     GetDocument().documentElement()->setInnerHTML(GetParam());
@@ -62,6 +70,9 @@ class WebFormControlElementTest
     DCHECK(control_element);
     return WebFormControlElement(control_element);
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_P(WebFormControlElementTest, SetAutofillValue) {

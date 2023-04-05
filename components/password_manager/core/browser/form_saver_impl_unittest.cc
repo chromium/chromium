@@ -14,6 +14,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
@@ -332,7 +333,9 @@ TEST_F(FormSaverImplTest, Blocklist) {
   observed.username_element = u"user";
   observed.password_value = u"12345";
   observed.password_element = u"password";
-  observed.all_possible_usernames = {{u"user2", u"field"}};
+  observed.all_possible_usernames = {{AlternativeElement::Value(u"user2"),
+                                      autofill::FieldRendererId(1),
+                                      AlternativeElement::Name(u"field")}};
   observed.url = GURL("https://www.example.com/foobar");
 
   PasswordForm blocklisted =

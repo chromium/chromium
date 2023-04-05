@@ -29,7 +29,7 @@ class NATIVE_THEME_EXPORT NativeThemeAura : public NativeThemeBase {
   static NativeThemeAura* web_instance();
 
   // Overridden from NativeTheme:
-  SkColor FocusRingColorForBaseColor(SkColor base_color) const override;
+  SkColor4f FocusRingColorForBaseColor(SkColor4f base_color) const override;
 
   // NativeThemeBase:
   void PaintMenuPopupBackground(

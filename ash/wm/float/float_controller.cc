@@ -19,6 +19,7 @@
 #include "ash/wm/float/scoped_window_tucker.h"
 #include "ash/wm/float/tablet_mode_tuck_education.h"
 #include "ash/wm/mru_window_tracker.h"
+#include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_state.h"
 #include "ash/wm/window_state.h"
@@ -749,6 +750,22 @@ void FloatController::OnRootWindowAdded(aura::Window* root_window) {
           root_window->GetChildById(kShellWindowId_FloatContainer));
   root_window->GetChildById(kShellWindowId_FloatContainer)
       ->SetLayoutManager(std::make_unique<FloatLayoutManager>());
+}
+
+void FloatController::OnPinnedStateChanged(aura::Window* pinned_window) {
+  if (aura::Window* floated_window =
+          window_util::GetFloatedWindowForActiveDesk()) {
+    // Note that the `pinned_window` will still not be null when unpinning.
+    // Check the screen pinning controller for the to be pinned window.
+    if (aura::Window* to_be_pinned_window =
+            Shell::Get()->screen_pinning_controller()->pinned_window()) {
+      if (to_be_pinned_window != floated_window) {
+        HideFloatedWindow(floated_window);
+      }
+    } else {
+      ShowFloatedWindow(floated_window);
+    }
+  }
 }
 
 void FloatController::ToggleFloat(aura::Window* window) {

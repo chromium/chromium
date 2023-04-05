@@ -12,18 +12,10 @@
 namespace blink {
 
 class ComputedStyle;
-class CounterContentData;
-class Document;
-class HTMLElement;
 class LayoutBlock;
 class LayoutBlockFlow;
 class LayoutObject;
-enum class LegacyLayout;
-class LayoutProgress;
-class LayoutText;
-class LayoutTextFragment;
 class Node;
-class PseudoElement;
 
 // Helper class for creation of certain LayoutObject-derived objects that may
 // need to be of different types, depending on whether or not LayoutNG is to be
@@ -37,29 +29,7 @@ class LayoutObjectFactory {
   // LayoutObject. Otherwise it will be assumed to be a Document node, in which
   // case the LayoutObject created will be anonymous. The |style| reference
   // passed will only be used to determine which object type to create.
-  static LayoutBlockFlow* CreateBlockFlow(Node&,
-                                          const ComputedStyle&,
-                                          LegacyLayout);
-  static LayoutObject* CreateListMarker(Node&,
-                                        const ComputedStyle&,
-                                        LegacyLayout);
-  static LayoutObject* CreateCounter(PseudoElement& pseduo,
-                                     const CounterContentData& counter,
-                                     LegacyLayout legacy);
-
-  static LayoutText* CreateText(Node*, String, LegacyLayout);
-  static LayoutText* CreateTextCombine(Node*, String, LegacyLayout);
-  static LayoutTextFragment* CreateTextFragment(Node*,
-                                                const String&,
-                                                int start_offset,
-                                                int length,
-                                                LegacyLayout);
-  static LayoutProgress* CreateProgress(Node* node,
-                                        const ComputedStyle& style,
-                                        LegacyLayout legacy);
-
-  static LayoutObject* CreateBR(Node*, LegacyLayout);
-  static LayoutObject* CreateWordBreak(HTMLElement*, LegacyLayout);
+  static LayoutBlockFlow* CreateBlockFlow(Node&, const ComputedStyle&);
 };
 
 }  // namespace blink

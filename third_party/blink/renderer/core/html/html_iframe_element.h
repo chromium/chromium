@@ -77,7 +77,7 @@ class CORE_EXPORT HTMLIFrameElement : public HTMLFrameElementBase,
   void RemovedFrom(ContainerNode&) override;
 
   bool LayoutObjectIsNeeded(const DisplayStyle&) const override;
-  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
 
   bool IsInteractiveContent() const override;
 

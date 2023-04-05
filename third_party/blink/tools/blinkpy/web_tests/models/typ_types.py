@@ -9,13 +9,14 @@ path_finder.add_typ_dir_to_sys_path()
 from typ import host, json_results, expectations_parser, artifacts, result_sink
 from typ.fakes import host_fake
 
-# Adds classes from typ that are used in blinkpy
+# Adds symbols from typ that are used in blinkpy
 Result = json_results.Result
 ResultType = json_results.ResultType
 Expectation = expectations_parser.Expectation
 TestExpectations = expectations_parser.TestExpectations
 Artifacts = artifacts.Artifacts
 ResultSinkReporter = result_sink.ResultSinkReporter
+RESULT_TAGS = expectations_parser.RESULT_TAGS
 # This type has a different name to avoid naming clashes with
 # `blinkpy.common.host.Host` when imported.
 

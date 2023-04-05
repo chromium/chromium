@@ -70,6 +70,11 @@ class COMPONENT_EXPORT(UI_BASE) ComboboxModel {
   virtual absl::optional<ui::ColorId> GetDropdownBackgroundColorIdAt(
       size_t index) const;
 
+  // The hover / selected color for the dropdown. If not overridden, this
+  // returns absl::nullopt and the default color will be used.
+  virtual absl::optional<ui::ColorId> GetDropdownSelectedBackgroundColorIdAt(
+      size_t index) const;
+
  protected:
   base::ObserverList<ui::ComboboxModelObserver>& observers() {
     return observers_;

@@ -3,6 +3,5 @@
 per-file ukm_features.*=file://tools/metrics/ukm/PRIVACY_OWNERS
 per-file ukm_features.*=set noparent
 per-file webdev_metrics_ukm_features.*=file://tools/metrics/ukm/PRIVACY_OWNERS
-per-file webdev_metrics_ukm_features.*=schenney@chromium.org
 per-file webdev_metrics_ukm_features.*=dgrogan@chromium.org
 per-file webdev_metrics_ukm_features.*=set noparent

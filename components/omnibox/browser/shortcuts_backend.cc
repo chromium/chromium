@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/i18n/break_iterator.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_macros.h"
@@ -24,6 +23,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/uuid.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -346,7 +346,7 @@ void ShortcutsBackend::AddOrUpdateShortcut(const std::u16string& text,
                           base::UTF8ToUTF16(match.destination_url.host()))
           : text;
   AddShortcut(ShortcutsDatabase::Shortcut(
-      base::GenerateGUID(), expanded_text,
+      base::GenerateUuid(), expanded_text,
       MatchToMatchCore(match, template_url_service_, search_terms_data_.get()),
       now, 1));
 }

@@ -380,6 +380,10 @@ class IntegrationTest : public ::testing::Test {
 
   void SetupFakeLegacyUpdater() { test_commands_->SetupFakeLegacyUpdater(); }
 
+#if BUILDFLAG(IS_WIN)
+  void RunFakeLegacyUpdater() { test_commands_->RunFakeLegacyUpdater(); }
+#endif  // BUILDFLAG(IS_WIN)
+
   void ExpectLegacyUpdaterMigrated() {
     test_commands_->ExpectLegacyUpdaterMigrated();
   }
@@ -1084,6 +1088,9 @@ TEST_F(IntegrationTest, InstallDataIndex) {
 
 TEST_F(IntegrationTest, MigrateLegacyUpdater) {
   ASSERT_NO_FATAL_FAILURE(SetupFakeLegacyUpdater());
+#if BUILDFLAG(IS_WIN)
+  ASSERT_NO_FATAL_FAILURE(RunFakeLegacyUpdater());
+#endif  // BUILDFLAG(IS_WIN)
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());

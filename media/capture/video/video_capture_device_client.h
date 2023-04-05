@@ -67,7 +67,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
 
   // VideoCaptureDevice::Client implementation.
   void OnCaptureConfigurationChanged() override;
-  // TODO(crbug.com/978143): remove |frame_feedback_id| default value.
   void OnIncomingCapturedData(const uint8_t* data,
                               int length,
                               const VideoCaptureFormat& frame_format,
@@ -76,14 +75,13 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
                               bool flip_y,
                               base::TimeTicks reference_time,
                               base::TimeDelta timestamp,
-                              int frame_feedback_id = 0) override;
-  // TODO(crbug.com/978143): remove |frame_feedback_id| default value.
+                              int frame_feedback_id) override;
   void OnIncomingCapturedGfxBuffer(gfx::GpuMemoryBuffer* buffer,
                                    const VideoCaptureFormat& frame_format,
                                    int clockwise_rotation,
                                    base::TimeTicks reference_time,
                                    base::TimeDelta timestamp,
-                                   int frame_feedback_id = 0) override;
+                                   int frame_feedback_id) override;
   void OnIncomingCapturedExternalBuffer(
       CapturedExternalVideoBuffer buffer,
       std::vector<CapturedExternalVideoBuffer> scaled_buffers,

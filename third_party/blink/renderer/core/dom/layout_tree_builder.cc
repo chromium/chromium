@@ -47,9 +47,8 @@ namespace blink {
 LayoutTreeBuilderForElement::LayoutTreeBuilderForElement(
     Element& element,
     Node::AttachContext& context,
-    const ComputedStyle* style,
-    LegacyLayout legacy)
-    : LayoutTreeBuilder(element, context, style), legacy_(legacy) {
+    const ComputedStyle* style)
+    : LayoutTreeBuilder(element, context, style) {
   DCHECK(style_);
   DCHECK(!style_->IsEnsuredInDisplayNone());
 }
@@ -111,7 +110,7 @@ void LayoutTreeBuilderForElement::CreateLayoutObject() {
   if (!node_->LayoutObjectIsNeeded(*style_))
     return;
 
-  LayoutObject* new_layout_object = node_->CreateLayoutObject(*style_, legacy_);
+  LayoutObject* new_layout_object = node_->CreateLayoutObject(*style_);
   if (!new_layout_object)
     return;
 
@@ -190,12 +189,7 @@ void LayoutTreeBuilderForText::CreateLayoutObject() {
   if (nullable_wrapper_style)
     style = nullable_wrapper_style.get();
 
-  LegacyLayout legacy_layout =
-      layout_object_parent->ForceLegacyLayoutForChildren()
-          ? LegacyLayout::kForce
-          : LegacyLayout::kAuto;
-  LayoutText* new_layout_object =
-      node_->CreateTextLayoutObject(*style, legacy_layout);
+  LayoutText* new_layout_object = node_->CreateTextLayoutObject();
   if (!layout_object_parent->IsChildAllowed(new_layout_object, *style)) {
     new_layout_object->Destroy();
     return;

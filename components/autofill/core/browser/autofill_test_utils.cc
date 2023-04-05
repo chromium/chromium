@@ -8,7 +8,6 @@
 #include <iterator>
 #include <string>
 
-#include "base/guid.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -16,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -455,7 +455,7 @@ inline void check_and_set(
 }
 
 AutofillProfile GetFullValidProfileForCanada() {
-  AutofillProfile profile(base::GenerateGUID(), kEmptyOrigin);
+  AutofillProfile profile(base::GenerateUuid(), kEmptyOrigin);
   SetProfileInfo(&profile, "Alice", "", "Wonderland", "alice@wonderland.ca",
                  "Fiction", "666 Notre-Dame Ouest", "Apt 8", "Montreal", "QC",
                  "H3B 2T9", "CA", "15141112233");
@@ -463,7 +463,7 @@ AutofillProfile GetFullValidProfileForCanada() {
 }
 
 AutofillProfile GetFullProfile() {
-  AutofillProfile profile(base::GenerateGUID(), kEmptyOrigin);
+  AutofillProfile profile(base::GenerateUuid(), kEmptyOrigin);
   SetProfileInfo(&profile, "John", "H.", "Doe", "johndoe@hades.com",
                  "Underworld", "666 Erebus St.", "Apt 8", "Elysium", "CA",
                  "91111", "US", "16502111111");
@@ -471,7 +471,7 @@ AutofillProfile GetFullProfile() {
 }
 
 AutofillProfile GetFullProfile2() {
-  AutofillProfile profile(base::GenerateGUID(), kEmptyOrigin);
+  AutofillProfile profile(base::GenerateUuid(), kEmptyOrigin);
   SetProfileInfo(&profile, "Jane", "A.", "Smith", "jsmith@example.com", "ACME",
                  "123 Main Street", "Unit 1", "Greensdale", "MI", "48838", "US",
                  "13105557889");
@@ -479,7 +479,7 @@ AutofillProfile GetFullProfile2() {
 }
 
 AutofillProfile GetFullCanadianProfile() {
-  AutofillProfile profile(base::GenerateGUID(), kEmptyOrigin);
+  AutofillProfile profile(base::GenerateUuid(), kEmptyOrigin);
   SetProfileInfo(&profile, "Wayne", "", "Gretzky", "wayne@hockey.com", "NHL",
                  "123 Hockey rd.", "Apt 8", "Moncton", "New Brunswick",
                  "E1A 0A6", "CA", "15068531212");
@@ -487,7 +487,7 @@ AutofillProfile GetFullCanadianProfile() {
 }
 
 AutofillProfile GetIncompleteProfile1() {
-  AutofillProfile profile(base::GenerateGUID(), kEmptyOrigin);
+  AutofillProfile profile(base::GenerateUuid(), kEmptyOrigin);
   SetProfileInfo(&profile, "John", "H.", "Doe", "jsmith@example.com", "ACME",
                  "123 Main Street", "Unit 1", "Greensdale", "MI", "48838", "US",
                  "");
@@ -495,7 +495,7 @@ AutofillProfile GetIncompleteProfile1() {
 }
 
 AutofillProfile GetIncompleteProfile2() {
-  AutofillProfile profile(base::GenerateGUID(), kEmptyOrigin);
+  AutofillProfile profile(base::GenerateUuid(), kEmptyOrigin);
   SetProfileInfo(&profile, "", "", "", "jsmith@example.com", "", "", "", "", "",
                  "", "", "");
   return profile;
@@ -570,35 +570,35 @@ void SetProfileCategory(
 }
 
 IBAN GetIBAN() {
-  IBAN iban(base::GenerateGUID());
+  IBAN iban(base::GenerateUuid());
   iban.set_value(u"DE91 1000 0000 0123 4567 89");
   iban.set_nickname(u"Nickname for Iban");
   return iban;
 }
 
 CreditCard GetCreditCard() {
-  CreditCard credit_card(base::GenerateGUID(), kEmptyOrigin);
+  CreditCard credit_card(base::GenerateUuid(), kEmptyOrigin);
   SetCreditCardInfo(&credit_card, "Test User", "4111111111111111" /* Visa */,
                     NextMonth().c_str(), NextYear().c_str(), "1");
   return credit_card;
 }
 
 CreditCard GetCreditCard2() {
-  CreditCard credit_card(base::GenerateGUID(), kEmptyOrigin);
+  CreditCard credit_card(base::GenerateUuid(), kEmptyOrigin);
   SetCreditCardInfo(&credit_card, "Someone Else", "378282246310005" /* AmEx */,
                     NextMonth().c_str(), TenYearsFromNow().c_str(), "1");
   return credit_card;
 }
 
 CreditCard GetExpiredCreditCard() {
-  CreditCard credit_card(base::GenerateGUID(), kEmptyOrigin);
+  CreditCard credit_card(base::GenerateUuid(), kEmptyOrigin);
   SetCreditCardInfo(&credit_card, "Test User", "4111111111111111" /* Visa */,
                     NextMonth().c_str(), LastYear().c_str(), "1");
   return credit_card;
 }
 
 CreditCard GetIncompleteCreditCard() {
-  CreditCard credit_card(base::GenerateGUID(), kEmptyOrigin);
+  CreditCard credit_card(base::GenerateUuid(), kEmptyOrigin);
   SetCreditCardInfo(&credit_card, "", "4111111111111111" /* Visa */,
                     NextMonth().c_str(), NextYear().c_str(), "1");
   return credit_card;
@@ -715,8 +715,8 @@ CreditCard GetRandomCreditCard(CreditCard::RecordType record_type) {
 
   CreditCard credit_card =
       (record_type == CreditCard::LOCAL_CARD)
-          ? CreditCard(base::GenerateGUID(), kEmptyOrigin)
-          : CreditCard(record_type, base::GenerateGUID().substr(24));
+          ? CreditCard(base::GenerateUuid(), kEmptyOrigin)
+          : CreditCard(record_type, base::GenerateUuid().substr(24));
   test::SetCreditCardInfo(
       &credit_card, "Justin Thyme", GetRandomCardNumber().c_str(),
       base::StringPrintf("%d", base::RandInt(1, 12)).c_str(),
@@ -1152,9 +1152,13 @@ FieldPrediction CreateFieldPrediction(ServerFieldType type,
   return field_prediction;
 }
 
-FieldPrediction CreateFieldPrediction(ServerFieldType type) {
-  if (type == NO_SERVER_DATA)
+FieldPrediction CreateFieldPrediction(ServerFieldType type, bool is_override) {
+  if (is_override) {
+    return CreateFieldPrediction(type, FieldPrediction::SOURCE_OVERRIDE);
+  }
+  if (type == NO_SERVER_DATA) {
     return CreateFieldPrediction(type, FieldPrediction::SOURCE_UNSPECIFIED);
+  }
   return CreateFieldPrediction(
       type, GroupTypeOfServerFieldType(type) == FieldTypeGroup::kPasswordField
                 ? FieldPrediction::SOURCE_PASSWORDS_DEFAULT
@@ -1164,11 +1168,13 @@ FieldPrediction CreateFieldPrediction(ServerFieldType type) {
 void AddFieldPredictionToForm(
     const FormFieldData& field_data,
     ServerFieldType field_type,
-    AutofillQueryResponse_FormSuggestion* form_suggestion) {
+    AutofillQueryResponse_FormSuggestion* form_suggestion,
+    bool is_override) {
   auto* field_suggestion = form_suggestion->add_field_suggestions();
   field_suggestion->set_field_signature(
       CalculateFieldSignatureForField(field_data).value());
-  *field_suggestion->add_predictions() = CreateFieldPrediction(field_type);
+  *field_suggestion->add_predictions() =
+      CreateFieldPrediction(field_type, is_override);
 }
 
 void AddFieldPredictionsToForm(

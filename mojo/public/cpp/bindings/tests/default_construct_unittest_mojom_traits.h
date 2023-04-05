@@ -5,7 +5,7 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_TESTS_DEFAULT_CONSTRUCT_UNITTEST_MOJOM_TRAITS_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_TESTS_DEFAULT_CONSTRUCT_UNITTEST_MOJOM_TRAITS_H_
 
-#include "mojo/public/cpp/bindings/default_construct_traits.h"
+#include "mojo/public/cpp/bindings/default_construct_tag.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 
 namespace mojo {
@@ -23,11 +23,9 @@ class TestStruct {
 
   int value() const { return value_; }
 
+  explicit TestStruct(DefaultConstruct::Tag) {}
+
  private:
-  friend mojo::DefaultConstructTraits;
-
-  TestStruct() = default;
-
   int value_ = 0;
 };
 

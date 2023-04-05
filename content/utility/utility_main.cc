@@ -32,9 +32,16 @@
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "base/file_descriptor_store.h"
+#include "base/files/file_util.h"
+#include "base/pickle.h"
+#include "content/public/common/content_descriptor_keys.h"
 #include "content/utility/speech/speech_recognition_sandbox_hook_linux.h"
 #include "gpu/config/gpu_info_collector.h"
 #include "media/gpu/sandbox/hardware_video_encoding_sandbox_hook_linux.h"
+#include "sandbox/policy/linux/sandbox_linux.h"
+#include "services/audio/audio_sandbox_hook_linux.h"
+#include "services/network/network_sandbox_hook_linux.h"
 // gn check is not smart enough to realize that this include only applies to
 // Linux/ChromeOS and the BUILD.gn dependencies correctly account for that.
 #include "third_party/angle/src/gpu_info_util/SystemInfo.h"  //nogncheck
@@ -42,9 +49,6 @@
 #if BUILDFLAG(ENABLE_PRINTING)
 #include "printing/sandbox/print_backend_sandbox_hook_linux.h"
 #endif
-#include "sandbox/policy/linux/sandbox_linux.h"
-#include "services/audio/audio_sandbox_hook_linux.h"
-#include "services/network/network_sandbox_hook_linux.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
@@ -84,6 +88,31 @@ namespace content {
 namespace {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+std::vector<std::string> GetNetworkContextsParentDirectories() {
+  base::MemoryMappedFile::Region region;
+  base::ScopedFD read_pipe_fd = base::FileDescriptorStore::GetInstance().TakeFD(
+      kNetworkContextParentDirsDescriptor, &region);
+  DCHECK(region == base::MemoryMappedFile::Region::kWholeFile);
+
+  std::string dirs_str;
+  if (!base::ReadStreamToString(fdopen(read_pipe_fd.get(), "r"), &dirs_str)) {
+    LOG(FATAL) << "Failed to read network context parents dirs from pipe.";
+  }
+
+  base::Pickle dirs_pickle(dirs_str.data(), dirs_str.length());
+  base::PickleIterator dirs_pickle_iter(dirs_pickle);
+
+  std::vector<std::string> dirs;
+  std::string dir;
+  while (dirs_pickle_iter.ReadString(&dir)) {
+    dirs.push_back(dir);
+  }
+
+  CHECK(dirs_pickle_iter.ReachedEnd());
+
+  return dirs;
+}
+
 bool ShouldUseAmdGpuPolicy(sandbox::mojom::Sandbox sandbox_type) {
   const bool obtain_gpu_info =
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
@@ -177,7 +206,8 @@ int UtilityMain(MainFunctionParams parameters) {
   sandbox::policy::SandboxLinux::PreSandboxHook pre_sandbox_hook;
   switch (sandbox_type) {
     case sandbox::mojom::Sandbox::kNetwork:
-      pre_sandbox_hook = base::BindOnce(&network::NetworkPreSandboxHook);
+      pre_sandbox_hook = base::BindOnce(&network::NetworkPreSandboxHook,
+                                        GetNetworkContextsParentDirectories());
       break;
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
     case sandbox::mojom::Sandbox::kPrintBackend:

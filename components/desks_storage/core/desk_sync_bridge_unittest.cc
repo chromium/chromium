@@ -13,7 +13,6 @@
 
 #include "ash/public/cpp/desk_template.h"
 #include "base/containers/fixed_flat_set.h"
-#include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
@@ -24,6 +23,7 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/types/strong_alias.h"
+#include "base/uuid.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
@@ -136,13 +136,13 @@ constexpr auto kTabGroupColors = base::MakeFixedFlatSet<SyncTabGroupColor>(
      SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_CYAN,
      SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_ORANGE});
 
-base::GUID MakeTestUuid(TestUuidId uuid_id) {
-  return base::GUID::ParseCaseInsensitive(
+base::Uuid MakeTestUuid(TestUuidId uuid_id) {
+  return base::Uuid::ParseCaseInsensitive(
       base::StringPrintf(kUuidFormat, uuid_id.value()));
 }
 
-base::GUID MakeAdminTestUuid(TestUuidId uuid_id) {
-  return base::GUID::ParseCaseInsensitive(base::StringPrintf(
+base::Uuid MakeAdminTestUuid(TestUuidId uuid_id) {
+  return base::Uuid::ParseCaseInsensitive(base::StringPrintf(
       "59dbe2b8-671f-4fd0-92ec-11111111100%d", uuid_id.value()));
 }
 
@@ -525,7 +525,7 @@ class MockDeskModelObserver : public DeskModelObserver {
   MOCK_METHOD0(DeskModelLoaded, void());
   MOCK_METHOD1(EntriesAddedOrUpdatedRemotely,
                void(const std::vector<const DeskTemplate*>&));
-  MOCK_METHOD1(EntriesRemovedRemotely, void(const std::vector<base::GUID>&));
+  MOCK_METHOD1(EntriesRemovedRemotely, void(const std::vector<base::Uuid>&));
 };
 
 MATCHER_P(UuidIs, e, "") {
@@ -1145,14 +1145,14 @@ TEST_F(DeskSyncBridgeTest, InitializationWithLocalDataAndMetadata) {
   EXPECT_EQ(template1.SerializeAsString(),
             desk_template_conversion::ToSyncProto(
                 bridge()->GetUserEntryByUUID(
-                    base::GUID::ParseCaseInsensitive(template1.uuid())),
+                    base::Uuid::ParseCaseInsensitive(template1.uuid())),
                 app_cache())
                 .SerializeAsString());
 
   EXPECT_EQ(template2.SerializeAsString(),
             desk_template_conversion::ToSyncProto(
                 bridge()->GetUserEntryByUUID(
-                    base::GUID::ParseCaseInsensitive(template2.uuid())),
+                    base::Uuid::ParseCaseInsensitive(template2.uuid())),
                 app_cache())
                 .SerializeAsString());
 }
@@ -1404,8 +1404,8 @@ TEST_F(DeskSyncBridgeTest, GetEntryByUUIDShouldFailWhenUuidIsNotFound) {
 
   EXPECT_EQ(2ul, bridge()->GetAllEntryUuids().size());
 
-  const base::GUID nonExistingUuid =
-      base::GUID::ParseCaseInsensitive(base::StringPrintf(kUuidFormat, 5));
+  const base::Uuid nonExistingUuid =
+      base::Uuid::ParseCaseInsensitive(base::StringPrintf(kUuidFormat, 5));
 
   base::RunLoop loop;
   auto result = bridge()->GetEntryByUUID(nonExistingUuid);
@@ -1416,7 +1416,7 @@ TEST_F(DeskSyncBridgeTest, GetEntryByUUIDShouldFailWhenUuidIsNotFound) {
 TEST_F(DeskSyncBridgeTest, GetEntryByUUIDShouldFailWhenUuidIsInvalid) {
   InitializeBridge();
 
-  auto result = bridge()->GetEntryByUUID(base::GUID());
+  auto result = bridge()->GetEntryByUUID(base::Uuid());
   EXPECT_EQ(result.status, DeskModel::GetEntryByUuidStatus::kInvalidUuid);
   EXPECT_FALSE(result.entry);
 }
@@ -1586,13 +1586,13 @@ TEST_F(DeskSyncBridgeTest, ApplySyncChangesWithOneUpdate) {
   EXPECT_EQ(updated_template1.SerializeAsString(),
             desk_template_conversion::ToSyncProto(
                 bridge()->GetUserEntryByUUID(
-                    base::GUID::ParseCaseInsensitive(template1.uuid())),
+                    base::Uuid::ParseCaseInsensitive(template1.uuid())),
                 app_cache())
                 .SerializeAsString());
   EXPECT_EQ(template2.SerializeAsString(),
             desk_template_conversion::ToSyncProto(
                 bridge()->GetUserEntryByUUID(
-                    base::GUID::ParseCaseInsensitive(template2.uuid())),
+                    base::Uuid::ParseCaseInsensitive(template2.uuid())),
                 app_cache())
                 .SerializeAsString());
 }
@@ -1624,7 +1624,7 @@ TEST_F(DeskSyncBridgeTest, ApplySyncChangesWithOneDeletion) {
   EXPECT_EQ(template2.SerializeAsString(),
             desk_template_conversion::ToSyncProto(
                 bridge()->GetUserEntryByUUID(
-                    base::GUID::ParseCaseInsensitive(template2.uuid())),
+                    base::Uuid::ParseCaseInsensitive(template2.uuid())),
                 app_cache())
                 .SerializeAsString());
 }

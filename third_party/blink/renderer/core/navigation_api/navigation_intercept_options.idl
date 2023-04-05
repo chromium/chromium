@@ -9,6 +9,7 @@ dictionary NavigationInterceptOptions {
   NavigationInterceptHandler handler;
   NavigationFocusReset focusReset;
   NavigationScrollBehavior scroll;
+  NavigationCommitBehavior commit;
 };
 
 enum NavigationFocusReset {
@@ -19,4 +20,9 @@ enum NavigationFocusReset {
 enum NavigationScrollBehavior {
   "after-transition",
   "manual"
+};
+
+enum NavigationCommitBehavior {
+  "after-transition",
+  "immediate"
 };

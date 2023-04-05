@@ -218,7 +218,9 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest, CanUseInImmersiveMode) {
 }
 
 // Test fixture with additional logic for drag/drop.
-class WebUITabStripDragInteractiveTest : public InteractiveBrowserTest {
+class WebUITabStripDragInteractiveTest
+    : public InteractiveBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
   WebUITabStripDragInteractiveTest() = default;
   ~WebUITabStripDragInteractiveTest() override = default;
@@ -226,6 +228,17 @@ class WebUITabStripDragInteractiveTest : public InteractiveBrowserTest {
  private:
   WebUITabStripTestHelper helper_;
 };
+
+// Touch mode parameter, only supported by the test framework on Ash.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         WebUITabStripDragInteractiveTest,
+                         testing::Bool());
+#else
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         WebUITabStripDragInteractiveTest,
+                         testing::Values(false));
+#endif
 
 // Regression test for crbug.com/1286203.
 //
@@ -258,7 +271,7 @@ class WebUITabStripDragInteractiveTest : public InteractiveBrowserTest {
 // detail is provided in the actual test sequence.
 //
 // Note: if this test flakes, please reopen https://crbug.com/1399655.
-IN_PROC_BROWSER_TEST_F(WebUITabStripDragInteractiveTest,
+IN_PROC_BROWSER_TEST_P(WebUITabStripDragInteractiveTest,
                        CloseTabDuringDragDoesNotCrash) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabElementId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebUiTabStripElementId);
@@ -305,6 +318,8 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripDragInteractiveTest,
       });
 
   RunTestSequence(
+      // Toggle touch mode to send either mouse or touch events.
+      Check([this]() { return mouse_util().SetTouchMode(GetParam()); }),
       AddInstrumentedTab(kSecondTabElementId, GURL("about:blank")),
       // Click the counter button and then wait for the WebUI tabstrip to
       // appear.

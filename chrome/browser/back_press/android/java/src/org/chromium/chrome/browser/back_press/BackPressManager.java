@@ -75,9 +75,7 @@ public class BackPressManager implements Destroyable {
     private final BackPressHandler[] mHandlers = new BackPressHandler[Type.NUM_TYPES];
 
     private final Callback<Boolean>[] mObserverCallbacks = new Callback[Type.NUM_TYPES];
-    private final boolean[] mStates = new boolean[Type.NUM_TYPES];
     private Runnable mFallbackOnBackPressed;
-    private int mEnabledCount;
     private int mLastCalledHandlerForTesting = -1;
 
     /**
@@ -92,6 +90,13 @@ public class BackPressManager implements Destroyable {
      */
     public static boolean isSecondaryActivityEnabled() {
         return ChromeFeatureList.sBackGestureRefactorActivityAndroid.isEnabled();
+    }
+
+    /**
+     * @return True if ActivityTabProvider should replace ChromeTabActivity#getActivityTab
+     */
+    public static boolean shouldUseActivityTabProvider() {
+        return ChromeFeatureList.sBackGestureActivityTabProvider.isEnabled();
     }
 
     /**
@@ -120,8 +125,9 @@ public class BackPressManager implements Destroyable {
     public void addHandler(BackPressHandler handler, @Type int type) {
         assert mHandlers[type] == null : "Each type can have at most one handler";
         mHandlers[type] = handler;
-        mObserverCallbacks[type] = (t) -> backPressStateChanged(type);
+        mObserverCallbacks[type] = (t) -> backPressStateChanged();
         handler.getHandleBackPressChangedSupplier().addObserver(mObserverCallbacks[type]);
+        backPressStateChanged();
     }
 
     /**
@@ -143,15 +149,10 @@ public class BackPressManager implements Destroyable {
      */
     public void removeHandler(@Type int type) {
         BackPressHandler handler = mHandlers[type];
-        Boolean enabled = mHandlers[type].getHandleBackPressChangedSupplier().get();
-        if (enabled != null && enabled) {
-            mEnabledCount--;
-            mStates[type] = false;
-            mCallback.setEnabled(mEnabledCount != 0);
-        }
         handler.getHandleBackPressChangedSupplier().removeObserver(mObserverCallbacks[type]);
         mObserverCallbacks[type] = null;
         mHandlers[type] = null;
+        backPressStateChanged();
     }
 
     /**
@@ -177,16 +178,8 @@ public class BackPressManager implements Destroyable {
         mFallbackOnBackPressed = runnable;
     }
 
-    private void backPressStateChanged(@Type int type) {
-        Boolean enabled = mHandlers[type].getHandleBackPressChangedSupplier().get();
-        if (enabled == null || enabled == mStates[type]) return;
-        if (enabled) {
-            mEnabledCount++;
-        } else {
-            mEnabledCount--;
-        }
-        mStates[type] = enabled;
-        mCallback.setEnabled(mEnabledCount != 0);
+    private void backPressStateChanged() {
+        mCallback.setEnabled(shouldInterceptBackPress());
     }
 
     private void handleBackPress() {
@@ -223,6 +216,15 @@ public class BackPressManager implements Destroyable {
         // All handlers have been removed, so no handler will consume the back event. As a result,
         // the callback should be disabled so that the OS can handle the back press.
         assert !mCallback.isEnabled();
+    }
+
+    private boolean shouldInterceptBackPress() {
+        for (BackPressHandler handler : mHandlers) {
+            if (handler == null) continue;
+            if (!Boolean.TRUE.equals(handler.getHandleBackPressChangedSupplier().get())) continue;
+            return true;
+        }
+        return false;
     }
 
     private void assertListOfFailedHandlers(List<String> failed, int succeed) {

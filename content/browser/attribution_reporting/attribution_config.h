@@ -64,6 +64,18 @@ struct CONTENT_EXPORT AttributionConfig {
     int max_attributions_per_navigation_source = 3;
     int max_attributions_per_event_source = 1;
 
+    // Default constants for report window deadlines.
+    static constexpr base::TimeDelta kDefaultFirstReportWindowDeadline =
+        base::Days(2);
+    static constexpr base::TimeDelta kDefaultSecondReportWindowDeadline =
+        base::Days(7);
+
+    // Controls the report window deadlines for scheduling report times.
+    base::TimeDelta first_report_window_deadline =
+        kDefaultFirstReportWindowDeadline;
+    base::TimeDelta second_report_window_deadline =
+        kDefaultSecondReportWindowDeadline;
+
     // When adding new members, the corresponding `Validate()` definition and
     // `operator==()` definition in `attribution_interop_parser_unittest.cc`
     // should also be updated.

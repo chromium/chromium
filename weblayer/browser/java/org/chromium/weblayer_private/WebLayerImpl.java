@@ -290,11 +290,7 @@ public final class WebLayerImpl extends IWebLayer.Stub {
             }
         }
 
-        // Enable ATRace on debug OS or app builds. Requires commandline initialization.
-        // Requires command-line flags.
-        TraceEvent.maybeEnableEarlyTracing(
-                BuildInfo.isDebugAndroidOrApp() ? TraceEvent.ATRACE_TAG_APP : 0,
-                /*readCommandLine=*/true);
+        TraceEvent.maybeEnableEarlyTracing(/*readCommandLine=*/true);
         TraceEvent.begin("WebLayer init");
 
         WebApkValidator.init(
@@ -689,7 +685,7 @@ public final class WebLayerImpl extends IWebLayer.Stub {
 
         // TODO: The call to onResourcesLoaded() can be slow, we may need to parallelize this with
         // other expensive startup tasks.
-        org.chromium.base.R.onResourcesLoaded(lightPackageId);
+        R.onResourcesLoaded(lightPackageId);
 
         // Wrap the app context so that it can be used to load WebLayer implementation classes.
         appContext = ClassLoaderContextWrapperFactory.get(appContext);

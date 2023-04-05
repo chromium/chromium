@@ -41,6 +41,7 @@
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
+#include "third_party/blink/public/web/web_custom_element.h"
 #include "third_party/blink/public/web/web_security_policy.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -106,6 +107,10 @@ void ChromeExtensionsDispatcherDelegate::RegisterNativeHandlers(
       "lazy_background_page",
       std::unique_ptr<NativeHandler>(
           new extensions::LazyBackgroundPageNativeHandler(context)));
+}
+
+void ChromeExtensionsDispatcherDelegate::EnableCustomElementAllowlist() {
+  blink::WebCustomElement::AddEmbedderCustomElementName("controlledframe");
 }
 
 void ChromeExtensionsDispatcherDelegate::PopulateSourceMap(
@@ -211,15 +216,24 @@ void ChromeExtensionsDispatcherDelegate::PopulateSourceMap(
                              IDR_WEBRTC_LOGGING_PRIVATE_CUSTOM_BINDINGS_JS);
 
   // Platform app sources that are not API-specific..
+  source_map->RegisterSource("chromeWebViewElement",
+                             IDR_CHROME_WEB_VIEW_ELEMENT_JS);
   source_map->RegisterSource("chromeWebViewInternal",
                              IDR_CHROME_WEB_VIEW_INTERNAL_CUSTOM_BINDINGS_JS);
   source_map->RegisterSource("chromeWebView", IDR_CHROME_WEB_VIEW_JS);
+
+  // Controlled Frame API sources
+  source_map->RegisterSource("controlledFrame", IDR_CONTROLLED_FRAME_JS);
 }
 
 void ChromeExtensionsDispatcherDelegate::RequireWebViewModules(
     extensions::ScriptContext* context) {
   DCHECK(context->GetAvailability("webViewInternal").is_available());
-  context->module_system()->Require("chromeWebView");
+  if (context->GetAvailability("controlledFrameInternal").is_available()) {
+    context->module_system()->Require("controlledFrame");
+  } else {
+    context->module_system()->Require("chromeWebViewElement");
+  }
 }
 
 void ChromeExtensionsDispatcherDelegate::OnActiveExtensionsUpdated(

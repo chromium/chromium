@@ -43,13 +43,12 @@ PaletteTray* LaserPointerControllerTestApi::GetPaletteTrayOnDisplay(
   return Shelf::ForWindow(window)->GetStatusAreaWidget()->palette_tray();
 }
 
-const fast_ink::FastInkPoints& LaserPointerControllerTestApi::laser_points()
-    const {
+const FastInkPoints& LaserPointerControllerTestApi::laser_points() const {
   return instance_->GetLaserPointerView()->laser_points_;
 }
 
-const fast_ink::FastInkPoints&
-LaserPointerControllerTestApi::predicted_laser_points() const {
+const FastInkPoints& LaserPointerControllerTestApi::predicted_laser_points()
+    const {
   return instance_->GetLaserPointerView()->predicted_laser_points_;
 }
 

@@ -40,9 +40,9 @@ std::string ToPrefixedString(absl::optional<std::u16string> val,
   return prefix + ": " + base::UTF16ToASCII(val.value_or(u""));
 }
 
-std::string ToPrefixedString(base::GUID val, const std::string& prefix) {
+std::string ToPrefixedString(base::Uuid val, const std::string& prefix) {
   return prefix + ": " +
-         (val.is_valid() ? val : base::GUID()).AsLowercaseString();
+         (val.is_valid() ? val : base::Uuid()).AsLowercaseString();
 }
 
 }  // namespace

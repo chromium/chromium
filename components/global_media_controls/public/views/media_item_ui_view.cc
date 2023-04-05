@@ -100,8 +100,12 @@ MediaItemUIView::MediaItemUIView(
       l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_BACK_TO_TAB));
 
 #if BUILDFLAG(IS_CHROMEOS)
+  // The updated UI requires notification theme to be set while the toolbar
+  // media button does not provide it, so we need to verify the source display
+  // page is from the quick settings.
   bool use_cros_updated_ui =
-      base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI);
+      base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI) &&
+      media_display_page.has_value();
 #else
   bool use_cros_updated_ui = false;
 #endif
@@ -147,7 +151,6 @@ MediaItemUIView::MediaItemUIView(
   std::unique_ptr<media_message_center::MediaNotificationView> view;
   if (use_cros_updated_ui) {
     DCHECK(theme.has_value());
-    DCHECK(media_display_page.has_value());
     view = std::make_unique<media_message_center::MediaNotificationViewAshImpl>(
         this, std::move(item), std::move(dismiss_button_placeholder),
         theme.value(), media_display_page.value());

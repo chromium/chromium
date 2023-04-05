@@ -15,7 +15,6 @@
 #include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -27,6 +26,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/memory_usage_estimator.h"
+#include "base/uuid.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/features.h"
@@ -992,7 +992,9 @@ void ModelTypeWorker::DeduplicatePendingUpdatesBasedOnOriginatorClientItemId() {
     // without deduplication, which is the case for all datatypes except
     // bookmarks, as well as bookmarks created before 2015, when the item ID was
     // not globally unique across clients.
-    if (!base::IsValidGUID(candidate.entity.originator_client_item_id)) {
+    if (!base::GUID::ParseCaseInsensitive(
+             candidate.entity.originator_client_item_id)
+             .is_valid()) {
       pending_updates_.push_back(std::move(candidate));
       continue;
     }

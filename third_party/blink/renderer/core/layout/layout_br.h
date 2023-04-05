@@ -21,15 +21,17 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_BR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_BR_H_
 
-#include "third_party/blink/renderer/core/layout/layout_text.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text.h"
 
 // The whole class here is a hack to get <br> working, as long as we don't have
 // support for CSS2 :before and :after pseudo elements.
 namespace blink {
 
-class LayoutBR : public LayoutText {
+class HTMLBRElement;
+
+class LayoutBR : public LayoutNGText {
  public:
-  explicit LayoutBR(Node*);
+  explicit LayoutBR(HTMLBRElement& node);
   ~LayoutBR() override;
 
   const char* GetName() const override {

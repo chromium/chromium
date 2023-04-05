@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/public/cpp/accessibility_controller.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/event_handler_common.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "content/public/browser/browser_thread.h"
@@ -33,19 +34,16 @@ SelectToSpeakEventHandlerDelegateImpl::
     controller->SetSelectToSpeakEventHandlerDelegate(nullptr);
 }
 
-void SelectToSpeakEventHandlerDelegateImpl::DispatchKeyEvent(
-    const ui::KeyEvent& event) {
+void SelectToSpeakEventHandlerDelegateImpl::DispatchKeysCurrentlyDown(
+    const std::set<ui::KeyboardCode>& pressed_keys) {
   // We can only call the STS extension on the UI thread, make sure we
   // don't ever try to run this code on some other thread.
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
-  extensions::ExtensionHost* host =
-      GetAccessibilityExtensionHost(extension_misc::kSelectToSpeakExtensionId);
-  if (!host)
-    return;
-
-  const ui::KeyEvent* key_event = event.AsKeyEvent();
-  ForwardKeyToExtension(*key_event, host);
+  auto* accessibility_manager = AccessibilityManager::Get();
+  if (accessibility_manager) {
+    accessibility_manager->SendKeysCurrentlyDownToSelectToSpeak(pressed_keys);
+  }
 }
 
 void SelectToSpeakEventHandlerDelegateImpl::DispatchMouseEvent(
@@ -54,20 +52,14 @@ void SelectToSpeakEventHandlerDelegateImpl::DispatchMouseEvent(
   // don't ever try to run this code on some other thread.
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
-  // MouseWheel not handled by ui::MakeWebMouseEvent.
-  if (event.type() == ui::EventType::ET_MOUSEWHEEL)
-    return;
-
-  extensions::ExtensionHost* host =
-      GetAccessibilityExtensionHost(extension_misc::kSelectToSpeakExtensionId);
-  if (!host)
-    return;
-
-  content::RenderFrameHost* main_frame = host->main_frame_host();
-  DCHECK(main_frame);
-
-  main_frame->GetRenderWidgetHost()->ForwardMouseEvent(
-      ui::MakeWebMouseEvent(event));
+  const gfx::PointF screen_point =
+      event.target() ? event.target()->GetScreenLocationF(event)
+                     : event.root_location_f();
+  auto* accessibility_manager = AccessibilityManager::Get();
+  if (accessibility_manager) {
+    accessibility_manager->SendMouseEventToSelectToSpeak(event.type(),
+                                                         screen_point);
+  }
 }
 
 }  // namespace ash

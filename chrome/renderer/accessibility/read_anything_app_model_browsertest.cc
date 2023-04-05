@@ -118,7 +118,7 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
 
   bool HasTree(ui::AXTreeID tree_id) { return model_->ContainsTree(tree_id); }
 
-  void EraseTree(ui::AXTreeID tree_id) { model_->EraseTree(tree_id); }
+  void EraseTree(ui::AXTreeID tree_id) { model_->EraseTreeForTesting(tree_id); }
 
   void AddTree(ui::AXTreeID tree_id,
                std::unique_ptr<ui::AXSerializableTree> tree) {
@@ -132,6 +132,21 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
   void Reset(const std::vector<ui::AXNodeID>& content_node_ids) {
     model_->Reset(content_node_ids);
   }
+
+  bool DisplayNodeIdsContains(ui::AXNodeID ax_node_id) {
+    return base::Contains(model_->display_node_ids(), ax_node_id);
+  }
+
+  bool SelectionNodeIdsContains(ui::AXNodeID ax_node_id) {
+    return base::Contains(model_->selection_node_ids(), ax_node_id);
+  }
+
+  void ProcessDisplayNodes(const std::vector<ui::AXNodeID>& content_node_ids) {
+    Reset(content_node_ids);
+    model_->ComputeDisplayNodeIdsForDistilledTree();
+  }
+
+  void ProcessSelection() { model_->PostProcessSelection(); }
 
   ui::AXTreeID tree_id_;
 
@@ -516,4 +531,57 @@ TEST_F(ReadAnythingAppModelTest, ChangeActiveTreeWithPendingUpdates_UnknownID) {
 
   // Switch to a new active tree. Should not crash.
   SetActiveTreeId(ui::AXTreeIDUnknown());
+}
+
+TEST_F(ReadAnythingAppModelTest, DisplayNodeIdsContains_ContentNodes) {
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.nodes.resize(3);
+  update.nodes[0].id = 4;
+  update.nodes[0].child_ids = {5, 6};
+  update.nodes[1].id = 5;
+  update.nodes[2].id = 6;
+  // This update changes the structure of the tree. When the controller receives
+  // it in AccessibilityEventReceived, it will re-distill the tree.
+  AccessibilityEventReceived({update});
+  ProcessDisplayNodes({3, 4});
+  EXPECT_TRUE(DisplayNodeIdsContains(1));
+  EXPECT_FALSE(DisplayNodeIdsContains(2));
+  EXPECT_TRUE(DisplayNodeIdsContains(3));
+  EXPECT_TRUE(DisplayNodeIdsContains(4));
+  EXPECT_TRUE(DisplayNodeIdsContains(5));
+  EXPECT_TRUE(DisplayNodeIdsContains(6));
+}
+
+TEST_F(ReadAnythingAppModelTest, SelectionNodeIdsContains_Selection) {
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.tree_data.sel_anchor_object_id = 2;
+  update.tree_data.sel_focus_object_id = 3;
+  update.tree_data.sel_anchor_offset = 0;
+  update.tree_data.sel_focus_offset = 0;
+  update.tree_data.sel_is_backward = false;
+
+  AccessibilityEventReceived({update});
+  ProcessSelection();
+  EXPECT_TRUE(SelectionNodeIdsContains(1));
+  EXPECT_TRUE(SelectionNodeIdsContains(2));
+  EXPECT_TRUE(SelectionNodeIdsContains(3));
+  EXPECT_FALSE(SelectionNodeIdsContains(4));
+}
+
+TEST_F(ReadAnythingAppModelTest, SelectionNodeIdsContains_BackwardSelection) {
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.tree_data.sel_anchor_object_id = 3;
+  update.tree_data.sel_focus_object_id = 2;
+  update.tree_data.sel_anchor_offset = 0;
+  update.tree_data.sel_focus_offset = 0;
+  update.tree_data.sel_is_backward = true;
+  AccessibilityEventReceived({update});
+  ProcessSelection();
+  EXPECT_TRUE(SelectionNodeIdsContains(1));
+  EXPECT_TRUE(SelectionNodeIdsContains(2));
+  EXPECT_TRUE(SelectionNodeIdsContains(3));
+  EXPECT_FALSE(SelectionNodeIdsContains(4));
 }

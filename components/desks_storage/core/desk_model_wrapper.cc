@@ -5,8 +5,8 @@
 #include "components/desks_storage/core/desk_model_wrapper.h"
 
 #include "ash/public/cpp/desk_template.h"
-#include "base/guid.h"
 #include "base/logging.h"
+#include "base/uuid.h"
 #include "components/account_id/account_id.h"
 #include "components/desks_storage/core/desk_model.h"
 #include "desk_sync_bridge.h"
@@ -48,7 +48,7 @@ DeskModel::GetAllEntriesResult DeskModelWrapper::GetAllEntries() {
 }
 
 DeskModel::GetEntryByUuidResult DeskModelWrapper::GetEntryByUUID(
-    const base::GUID& uuid) {
+    const base::Uuid& uuid) {
   // Check if this is an admin template uuid first.
   std::unique_ptr<ash::DeskTemplate> policy_entry =
       GetAdminDeskTemplateByUUID(uuid);
@@ -86,7 +86,7 @@ void DeskModelWrapper::AddOrUpdateEntry(
   }
 }
 
-void DeskModelWrapper::DeleteEntry(const base::GUID& uuid,
+void DeskModelWrapper::DeleteEntry(const base::Uuid& uuid,
                                    DeskModel::DeleteEntryCallback callback) {
   auto status = std::make_unique<DeskModel::DeleteEntryStatus>();
   if (GetDeskTemplateModel()->HasUuid(uuid)) {
@@ -133,8 +133,8 @@ size_t DeskModelWrapper::GetMaxDeskTemplateEntryCount() const {
          policy_entries_.size();
 }
 
-std::vector<base::GUID> DeskModelWrapper::GetAllEntryUuids() const {
-  std::vector<base::GUID> keys;
+std::vector<base::Uuid> DeskModelWrapper::GetAllEntryUuids() const {
+  std::vector<base::Uuid> keys;
 
   for (const auto& it : policy_entries_)
     keys.push_back(it.get()->uuid());
@@ -163,7 +163,7 @@ bool DeskModelWrapper::IsSyncing() const {
 ash::DeskTemplate* DeskModelWrapper::FindOtherEntryWithName(
     const std::u16string& name,
     ash::DeskTemplateType type,
-    const base::GUID& uuid) const {
+    const base::Uuid& uuid) const {
   switch (type) {
     case ash::DeskTemplateType::kTemplate:
     case ash::DeskTemplateType::kFloatingWorkspace:

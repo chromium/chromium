@@ -45,7 +45,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UserActionTester;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
@@ -66,6 +65,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.FullscreenTestUtils;
 import org.chromium.chrome.test.util.MenuUtils;
@@ -185,7 +185,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         assertNoWebContents();
         assertLoadedNoUrl();
 
-        tapPeekingBarToExpandAndAssert();
+        expandPanelAndAssert();
         assertWebContentsCreated();
         assertLoadedNormalPriorityUrl();
         Assert.assertEquals(1, mFakeServer.getLoadedUrlCount());
@@ -552,8 +552,8 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         simulateResolveSearch("search");
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> mPanel.onSearchTermResolved("search", null, "tel:555-555-5555",
-                                QuickActionCategory.PHONE, CardTag.CT_CONTACT,
+                        -> mPanel.onSearchTermResolved("search", null, "geo:47.6,-122.3",
+                                QuickActionCategory.ADDRESS, CardTag.CT_LOCATION,
                                 null /* relatedSearchesInBar */));
 
         ContextualSearchBarControl barControl = mPanel.getSearchBarControl();
@@ -563,9 +563,11 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         // Check that the peeking bar is showing the quick action data.
         Assert.assertTrue(quickActionControl.hasQuickAction());
         Assert.assertTrue(barControl.getCaptionVisible());
-        Assert.assertEquals(sActivityTestRule.getActivity().getResources().getString(
-                                    R.string.contextual_search_quick_action_caption_phone),
-                barControl.getCaptionText());
+        // There may be different Map apps on different devices, so we just check that we got an
+        // open intent of some kind.
+        final String expectedCaptionStart = "Open in ";
+        Assert.assertEquals(expectedCaptionStart,
+                barControl.getCaptionText().subSequence(0, expectedCaptionStart.length()));
         Assert.assertEquals(1.f, imageControl.getCustomImageVisibilityPercentage(), 0);
 
         // Expand the bar.
@@ -580,9 +582,8 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
 
         // Assert that the quick action data is showing.
         Assert.assertTrue(barControl.getCaptionVisible());
-        Assert.assertEquals(sActivityTestRule.getActivity().getResources().getString(
-                                    R.string.contextual_search_quick_action_caption_phone),
-                barControl.getCaptionText());
+        Assert.assertEquals(expectedCaptionStart,
+                barControl.getCaptionText().subSequence(0, expectedCaptionStart.length()));
         // TODO(donnd): figure out why we get ~0.65 on Oreo rather than 1. https://crbug.com/818515.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             Assert.assertEquals(1.f, imageControl.getCustomImageVisibilityPercentage(), 0);
@@ -604,7 +605,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     public void testQuickActionIntent(@EnabledFeature int enabledFeature) throws Exception {
         // Add a new filter to the activity monitor that matches the intent that should be fired.
         IntentFilter quickActionFilter = new IntentFilter(Intent.ACTION_VIEW);
-        quickActionFilter.addDataScheme("tel");
+        quickActionFilter.addDataScheme("geo");
 
         // Note that we don't reuse mActivityMonitor here or we would leak the one already added
         // (unless we removed it here first). When ActivityMonitors leak, Instrumentation silently
@@ -617,30 +618,29 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         simulateResolveSearch("search");
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> mPanel.onSearchTermResolved("search", null, "tel:555-555-5555",
-                                QuickActionCategory.PHONE, CardTag.CT_CONTACT,
+                        -> mPanel.onSearchTermResolved("search", null, "geo:47.6,-122.3",
+                                QuickActionCategory.ADDRESS, CardTag.CT_LOCATION,
                                 null /* relatedSearchesInBar */));
 
         sActivityTestRule.getActivity().onUserInteraction();
-        retryPanelBarInteractions(() -> {
-            // Tap on the portion of the bar that should trigger the quick action intent to be
-            // fired.
-            clickPanelBar();
+        // Expand the panel to trigger the quick action intent to be fired.
+        expandPanelAndAssert();
 
-            // Assert that an intent was fired.
-            Assert.assertEquals(1, activityMonitor.getHits());
-        }, false);
+        CriteriaHelper.pollUiThread(() -> {
+            int intentHits = activityMonitor.getHits();
+            Criteria.checkThat(intentHits, Matchers.is(1));
+        });
+
+        // Assert that an intent was fired.
+        Assert.assertEquals(1, activityMonitor.getHits());
         InstrumentationRegistry.getInstrumentation().removeMonitor(activityMonitor);
     }
 
-    /**
-     * Tests that the current tab is navigated to the quick action URI for
-     * QuickActionCategory#WEBSITE.
-     */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
+    // TODO(donnd): reenable - recent fixes as of 3/31/2023
     @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.O, message = "crbug.com/1075895")
     // Previously disabled: https://crbug.com/1127796
     public void testQuickActionUrl(@EnabledFeature int enabledFeature) throws Exception {
@@ -653,14 +653,17 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
                         -> mPanel.onSearchTermResolved("search", null, testUrl,
                                 QuickActionCategory.WEBSITE, CardTag.CT_URL,
                                 null /* relatedSearchesInBar */));
-        retryPanelBarInteractions(() -> {
-            // Tap on the portion of the bar that should trigger the quick action.
-            clickPanelBar();
 
-            // Assert that the URL was loaded.
-            ChromeTabUtils.waitForTabPageLoaded(
-                    sActivityTestRule.getActivity().getActivityTab(), testUrl);
-        }, false);
+        sActivityTestRule.getActivity().onUserInteraction();
+        // Expand the bar which should trigger the quick action.
+        expandPanel();
+
+        // Wait for that URL to be loaded.
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(ChromeTabUtils.getUrlStringOnUiThread(
+                                       sActivityTestRule.getActivity().getActivityTab()),
+                    Matchers.is(testUrl));
+        });
     }
 
     private void runDictionaryCardTest(@CardTag int cardTag) throws Exception {

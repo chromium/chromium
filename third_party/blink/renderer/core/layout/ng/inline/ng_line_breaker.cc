@@ -242,8 +242,7 @@ LayoutUnit ComputeFloatAncestorInlineEndSize(
     const NGInlineItem& item = *cur;
 
     if (item.Type() == NGInlineItem::kCloseTag) {
-      if (item.HasEndEdge())
-        inline_end_size += ComputeInlineEndSize(space, item.Style());
+      inline_end_size += ComputeInlineEndSize(space, item.Style());
       continue;
     }
 
@@ -968,7 +967,7 @@ void NGLineBreaker::HandleText(const NGInlineItem& item,
   // Most cases such spaces are handled as trailing spaces of the previous line,
   // but there are some cases doing so is too complex.
   if (trailing_whitespace_ == WhitespaceState::kLeading) {
-    if (item.Style()->CollapseWhiteSpace() &&
+    if (item.Style()->ShouldCollapseWhiteSpaces() &&
         Text()[offset_] == kSpaceCharacter) {
       // Skipping one whitespace removes all collapsible spaces because
       // collapsible spaces are collapsed to single space in
@@ -1062,7 +1061,7 @@ void NGLineBreaker::HandleText(const NGInlineItem& item,
     // Hanging trailing spaces may resolve the overflow.
     if (item_result->has_only_trailing_spaces) {
       state_ = LineBreakState::kTrailing;
-      if (!item_result->item->Style()->CollapseWhiteSpace() &&
+      if (item_result->item->Style()->ShouldPreserveWhiteSpaces() &&
           IsBreakableSpace(Text()[item_result->EndOffset() - 1])) {
         unsigned end_index = base::checked_cast<unsigned>(
             item_result - line_info->Results().begin());
@@ -1649,7 +1648,7 @@ void NGLineBreaker::HandleTrailingSpaces(const NGInlineItem& item,
   }
   DCHECK(!is_text_combine_);
 
-  if (style.CollapseWhiteSpace() &&
+  if (style.ShouldCollapseWhiteSpaces() &&
       !Character::IsOtherSpaceSeparator(text[offset_])) {
     if (text[offset_] != kSpaceCharacter) {
       if (offset_ > 0 && IsBreakableSpace(text[offset_ - 1]))
@@ -1670,7 +1669,7 @@ void NGLineBreaker::HandleTrailingSpaces(const NGInlineItem& item,
   } else if (!style.ShouldBreakSpaces()) {
     // Find the end of the run of space characters in this item.
     // Other white space characters (e.g., tab) are not included in this item.
-    DCHECK(style.BreakOnlyAfterWhiteSpace() ||
+    DCHECK(style.ShouldBreakOnlyAfterWhiteSpace() ||
            Character::IsOtherSpaceSeparator(text[offset_]));
     unsigned end = offset_;
     while (end < item.EndOffset() &&
@@ -1824,7 +1823,7 @@ void NGLineBreaker::ComputeTrailingCollapsibleSpace(NGLineInfo* line_info) {
       DCHECK(item.Style());
       if (!IsBreakableSpace(text[item_result.EndOffset() - 1]))
         break;
-      if (!item.Style()->CollapseWhiteSpace()) {
+      if (item.Style()->ShouldPreserveWhiteSpaces()) {
         trailing_whitespace_ = WhitespaceState::kPreserved;
         break;
       }
@@ -2433,19 +2432,15 @@ bool NGLineBreaker::ComputeOpenTagResult(
   DCHECK_EQ(item.Type(), NGInlineItem::kOpenTag);
   DCHECK(item.Style());
   const ComputedStyle& style = *item.Style();
-  item_result->has_edge = item.HasStartEdge();
   if (!is_in_svg_text && item.ShouldCreateBoxFragment() &&
-      (style.HasBorder() || style.MayHavePadding() ||
-       (style.MayHaveMargin() && item_result->has_edge))) {
+      (style.HasBorder() || style.MayHavePadding() || style.MayHaveMargin())) {
     item_result->borders = ComputeLineBorders(style);
     item_result->padding = ComputeLinePadding(constraint_space, style);
-    if (item_result->has_edge) {
-      item_result->margins = ComputeLineMarginsForSelf(constraint_space, style);
-      item_result->inline_size = item_result->margins.inline_start +
-                                 item_result->borders.inline_start +
-                                 item_result->padding.inline_start;
-      return true;
-    }
+    item_result->margins = ComputeLineMarginsForSelf(constraint_space, style);
+    item_result->inline_size = item_result->margins.inline_start +
+                               item_result->borders.inline_start +
+                               item_result->padding.inline_start;
+    return true;
   }
   return false;
 }
@@ -2505,8 +2500,7 @@ void NGLineBreaker::HandleCloseTag(const NGInlineItem& item,
                                    NGLineInfo* line_info) {
   NGInlineItemResult* item_result = AddItem(item, line_info);
 
-  item_result->has_edge = item.HasEndEdge();
-  if (item_result->has_edge && !is_svg_text_) {
+  if (!is_svg_text_) {
     DCHECK(item.Style());
     const ComputedStyle& style = *item.Style();
     item_result->inline_size = ComputeInlineEndSize(constraint_space_, &style);
@@ -2558,7 +2552,7 @@ void NGLineBreaker::HandleCloseTag(const NGInlineItem& item,
           IsBreakableSpace(Text()[item_result->EndOffset() - 1]);
       item_result->can_break_after =
           IsBreakableSpace(Text()[item_result->EndOffset()]) &&
-          (!current_style_->BreakOnlyAfterWhiteSpace() ||
+          (!current_style_->ShouldBreakOnlyAfterWhiteSpace() ||
            preceded_by_breakable_space);
       return;
     }

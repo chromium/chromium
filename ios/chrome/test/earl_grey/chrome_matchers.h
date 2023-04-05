@@ -673,6 +673,10 @@ id<GREYMatcher> ReadingListDestinationButton();
 // Returns a matcher for the passwords destination button in the overflow menu.
 id<GREYMatcher> PasswordsDestinationButton();
 
+// Returns a matchwer for the price notifications destination button in the
+// overflow menu.
+id<GREYMatcher> PriceNotificationsDestinationButton();
+
 // Returns a matcher for the downloads destination button in the overflow menu.
 id<GREYMatcher> DownloadsDestinationButton();
 
@@ -685,6 +689,9 @@ id<GREYMatcher> SiteInfoDestinationButton();
 
 // Returns a matcher for the settings destination button in the overflow menu.
 id<GREYMatcher> SettingsDestinationButton();
+
+// Returns a matcher for the What's New destination button in the overflow menu.
+id<GREYMatcher> WhatsNewDestinationButton();
 
 #pragma mark - Overflow Menu Actions
 

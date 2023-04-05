@@ -17,7 +17,9 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -1314,6 +1316,27 @@ void RenderWidgetHostViewAura::InsertChar(const ui::KeyEvent& event) {
         NativeWebKeyboardEvent(event, event.GetCharacter()), *event.latency(),
         nullptr);
   }
+}
+
+bool RenderWidgetHostViewAura::CanInsertImage() {
+  RenderFrameHostImpl* render_frame_host = GetFocusedFrame();
+
+  if (!render_frame_host) {
+    return false;
+  }
+
+  return render_frame_host->has_focused_richly_editable_element();
+}
+
+void RenderWidgetHostViewAura::InsertImage(const GURL& src) {
+  auto* input_handler = GetFrameWidgetInputHandlerForFocusedWidget();
+
+  if (!input_handler) {
+    return;
+  }
+
+  input_handler->ExecuteEditCommand("PasteFromImageURL",
+                                    base::UTF8ToUTF16(src.spec()));
 }
 
 ui::TextInputType RenderWidgetHostViewAura::GetTextInputType() const {

@@ -23,8 +23,9 @@
 namespace ash {
 namespace {
 
-constexpr viz::ResourceFormat kTestResourceFormat =
-    SK_B32_SHIFT ? viz::RGBA_8888 : viz::BGRA_8888;
+constexpr viz::SharedImageFormat kTestSharedImageFormat =
+    SK_B32_SHIFT ? viz::SinglePlaneFormat::kRGBA_8888
+                 : viz::SinglePlaneFormat::kBGRA_8888;
 constexpr UiSourceId kTestSourceId = 1u;
 constexpr gfx::Rect kTestContentRect = gfx::Rect(0, 0, 200, 100);
 constexpr gfx::Rect kTestTotalDamageRect = gfx::Rect(0, 0, 50, 25);
@@ -231,7 +232,7 @@ TEST_F(ViewTreeHostRootViewFrameFactoryTest,
   for (const auto& size : kResourceSizes) {
     resource_manager_.OfferResource(
         ViewTreeHostRootViewFrameFactory::CreateUiResource(
-            size, kTestResourceFormat, kTestSourceId,
+            size, kTestSharedImageFormat, kTestSourceId,
             /*is_overlay_candidate=*/false));
   }
 

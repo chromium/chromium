@@ -591,10 +591,6 @@ void CompositorImpl::SetNeedsComposite() {
   host_->SetNeedsAnimate();
 }
 
-void CompositorImpl::MaybeCompositeNow() {
-  host_->MaybeCompositeNow();
-}
-
 void CompositorImpl::SetNeedsRedraw() {
   host_->SetNeedsRedraw();
 }

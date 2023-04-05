@@ -92,14 +92,6 @@ export class AcceleratorRowElement extends PolymerElement {
     }
   }
 
-  override ready(): void {
-    super.ready();
-    const numberOfAccelerators = this.layoutStyle == LayoutStyle.kDefault ?
-        this.acceleratorInfos.length :
-        1;
-    this.updateStyles({'--accelerator-row-num-accels': numberOfAccelerators});
-  }
-
   protected onSourceChanged(): void {
     this.shortcutInterfaceProvider.isMutable(this.source)
         .then(({isMutable}) => {

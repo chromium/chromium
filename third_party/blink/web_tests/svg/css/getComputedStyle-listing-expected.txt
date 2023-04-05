@@ -373,7 +373,7 @@ view-timeline-inset: 0px
 view-timeline-name: none
 view-transition-name: none
 visibility: visible
-white-space: normal
+white-space-collapse: collapse
 widows: 2
 width: 100px
 will-change: auto

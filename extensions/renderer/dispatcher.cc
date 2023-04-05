@@ -72,6 +72,7 @@
 #include "extensions/renderer/guest_view/guest_view_internal_custom_bindings.h"
 #include "extensions/renderer/id_generator_custom_bindings.h"
 #include "extensions/renderer/ipc_message_sender.h"
+#include "extensions/renderer/isolated_world_manager.h"
 #include "extensions/renderer/logging_native_handler.h"
 #include "extensions/renderer/module_system.h"
 #include "extensions/renderer/native_extension_bindings_system.h"
@@ -82,7 +83,6 @@
 #include "extensions/renderer/safe_builtins.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
-#include "extensions/renderer/script_injection.h"
 #include "extensions/renderer/script_injection_manager.h"
 #include "extensions/renderer/service_worker_natives.h"
 #include "extensions/renderer/set_icon_natives.h"
@@ -443,9 +443,12 @@ void Dispatcher::DidCreateScriptContext(
           "Extensions.DidCreateScriptContext_LockScreenExtension", elapsed);
       break;
     case Feature::OFFSCREEN_EXTENSION_CONTEXT:
-      // We don't really care about offscreen extension context initialization
-      // time at the moment - it's a strict subset (and very similar to)
-      // blessed extension context time.
+    case Feature::USER_SCRIPT_CONTEXT:
+      // We don't really care about offscreen extension context or user script
+      // context initialization time at the moment. Offscreen extension context
+      // initialization is a strict subset (and very similar to) blessed
+      // extension context time, while user script context initialization is
+      // very similar to content script initialization.
       break;
   }
 
@@ -1146,7 +1149,7 @@ void Dispatcher::UnloadExtension(const std::string& extension_id) {
   // If the extension is later reloaded with a different set of permissions,
   // we'd like it to get a new isolated world ID, so that it can pick up the
   // changed origin allowlist.
-  ScriptInjection::RemoveIsolatedWorld(extension_id);
+  IsolatedWorldManager::GetInstance().RemoveIsolatedWorlds(extension_id);
 
   // Inform the bindings system that the contexts will be removed to allow time
   // to clear out context-specific data, and then remove the contexts
@@ -1466,6 +1469,7 @@ void Dispatcher::EnableCustomElementAllowlist() {
   blink::WebCustomElement::AddEmbedderCustomElementName("appview");
   blink::WebCustomElement::AddEmbedderCustomElementName("extensionoptions");
   blink::WebCustomElement::AddEmbedderCustomElementName("webview");
+  delegate_->EnableCustomElementAllowlist();
 }
 
 void Dispatcher::UpdateAllBindings() {

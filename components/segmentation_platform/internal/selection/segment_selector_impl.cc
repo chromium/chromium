@@ -360,7 +360,6 @@ void SegmentSelectorImpl::UpdateSelectedSegment(SegmentId new_selection,
     RecordFieldTrials();
   }
 
-  // TODO(ssid): Migrate to pref writer when implemented.
   for (const auto& segment : config_->segments) {
     training_data_collector_->OnDecisionTime(
         segment.first, nullptr,

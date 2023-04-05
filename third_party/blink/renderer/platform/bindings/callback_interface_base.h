@@ -83,10 +83,6 @@ class PLATFORM_EXPORT CallbackInterfaceBase
 
   DOMWrapperWorld& GetWorld() const { return incumbent_script_state_->World(); }
 
-  absl::optional<scheduler::TaskAttributionId> GetParentTaskId() const {
-    return absl::nullopt;
-  }
-
  protected:
   explicit CallbackInterfaceBase(v8::Local<v8::Object> callback_object,
                                  SingleOperationOrNot);

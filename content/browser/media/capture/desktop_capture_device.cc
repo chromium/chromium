@@ -119,6 +119,17 @@ void LogDesktopCaptureZeroHzIsActive(DesktopMediaID::Type capturer_type,
   }
 }
 
+void LogDesktopCaptureFrameIsRefresh(DesktopMediaID::Type capturer_type,
+                                     bool is_refresh_frame) {
+  if (capturer_type == DesktopMediaID::TYPE_SCREEN) {
+    UMA_HISTOGRAM_BOOLEAN("WebRTC.DesktopCapture.FrameIsRefresh.Screen",
+                          is_refresh_frame);
+  } else {
+    UMA_HISTOGRAM_BOOLEAN("WebRTC.DesktopCapture.FrameIsRefresh.Window",
+                          is_refresh_frame);
+  }
+}
+
 }  // namespace
 
 class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
@@ -156,7 +167,7 @@ class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
   // Sends the last received frame (stored in |output_frame_|) to the client
   // using the colorspace in |last_frame_color_space_|.
   // Does not schedule the next frame.
-  void SendLastReceivedFrameToClient();
+  void SendLastReceivedFrameToClient(bool is_refresh_frame);
 
   // Method that is scheduled on |task_runner_| to be called on regular interval
   // to capture a frame.
@@ -318,7 +329,7 @@ void DesktopCaptureDevice::Core::RequestRefreshFrame() {
   // Simply send the last received frame, if we ever received one. Don't
   // schedule a new frame.
   if (output_frame_) {
-    SendLastReceivedFrameToClient();
+    SendLastReceivedFrameToClient(/*is_refresh_frame=*/true);
   }
 }
 
@@ -506,13 +517,15 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
   }
 
   // Immediately send the new frame to the client and ask for a new frame.
-  SendLastReceivedFrameToClient();
+  SendLastReceivedFrameToClient(/*is_refresh_frame=*/false);
   ScheduleNextCaptureFrame();
 }
 
-void DesktopCaptureDevice::Core::SendLastReceivedFrameToClient() {
+void DesktopCaptureDevice::Core::SendLastReceivedFrameToClient(
+    bool is_refresh_frame) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   TRACE_EVENT0("webrtc", __func__);
+  LogDesktopCaptureFrameIsRefresh(capturer_type_, is_refresh_frame);
 
   size_t output_bytes = output_frame_->size().width() *
                         output_frame_->size().height() *
@@ -598,11 +611,23 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
 
 #if BUILDFLAG(IS_WIN)
   options.set_allow_cropping_window_capturer(true);
+
+  // We prefer to allow the WGC and DXGI capturers to embed the cursor when
+  // possible. The DXGI implementation uses this switch in combination with
+  // internal checks for support of if it is possible to embed the cursor.
+  // Note that, very few graphical adapters support embedding the cursor into
+  // the captured frame in combination with DXGI; hence most cursors will be
+  // added separately by a desktop and cursor composer even if this option is
+  // set to true. GDI does not use this option.
+  // TODO(crbug.com/1421656): Possibly remove this flag. Keeping for now to
+  // force non embedded cursor for all capture APIs on Windows.
+  static BASE_FEATURE(kAllowWinCursorEmbedded, "AllowWinCursorEmbedded",
+                      base::FEATURE_ENABLED_BY_DEFAULT);
+  if (base::FeatureList::IsEnabled(kAllowWinCursorEmbedded)) {
+    options.set_prefer_cursor_embedded(true);
+  }
   if (base::FeatureList::IsEnabled(features::kWebRtcAllowWgcDesktopCapturer)) {
     options.set_allow_wgc_capturer(true);
-
-    // We prefer to allow the WGC capturer to embed the cursor when possible.
-    options.set_prefer_cursor_embedded(true);
 
     // 0Hz support is by default disabled for WGC but it can be enabled using
     // the `kWebRtcAllowWgcZeroHz` feature flag. When enabled, the WGC capturer

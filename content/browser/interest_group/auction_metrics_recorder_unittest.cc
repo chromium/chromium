@@ -166,6 +166,61 @@ TEST_F(AuctionMetricsRecorderTest, NumBidderWorklets) {
   EXPECT_EQ(GetMetricValue(UkmEntry::kNumBidderWorkletsName), 25);
 }
 
+TEST_F(AuctionMetricsRecorderTest, NumBidsAbortedByBuyerCumulativeTimeout) {
+  recorder().RecordBidsAbortedByBuyerCumulativeTimeout(42);
+  recorder().RecordBidsAbortedByBuyerCumulativeTimeout(30);
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 72 becomes 67 because of bucketing
+  EXPECT_EQ(
+      GetMetricValue(UkmEntry::kNumBidsAbortedByBuyerCumulativeTimeoutName),
+      67);
+}
+
+TEST_F(AuctionMetricsRecorderTest, NumBidsAbortedByBidderWorkletFatalError) {
+  for (size_t i = 0; i < 21; ++i) {
+    recorder().RecordBidAbortedByBidderWorkletFatalError();
+  }
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 21 becomes 19 because of bucketing
+  EXPECT_EQ(
+      GetMetricValue(UkmEntry::kNumBidsAbortedByBidderWorkletFatalErrorName),
+      19);
+}
+
+TEST_F(AuctionMetricsRecorderTest, NumBidsFilteredDuringInterestGroupLoad) {
+  for (size_t i = 0; i < 23; ++i) {
+    recorder().RecordBidFilteredDuringInterestGroupLoad();
+  }
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 23 becomes 22 because of bucketing
+  EXPECT_EQ(
+      GetMetricValue(UkmEntry::kNumBidsFilteredDuringInterestGroupLoadName),
+      22);
+}
+
+TEST_F(AuctionMetricsRecorderTest, NumBidsFilteredDuringReprioritization) {
+  for (size_t i = 0; i < 27; ++i) {
+    recorder().RecordBidFilteredDuringReprioritization();
+  }
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 27 becomes 25 because of bucketing
+  EXPECT_EQ(
+      GetMetricValue(UkmEntry::kNumBidsFilteredDuringReprioritizationName), 25);
+}
+
+TEST_F(AuctionMetricsRecorderTest, NumBidsFilteredByPerBuyerLimits) {
+  recorder().RecordBidsFilteredByPerBuyerLimits(23);
+  recorder().RecordBidsFilteredByPerBuyerLimits(37);
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 60 becomes 58 because of bucketing
+  EXPECT_EQ(GetMetricValue(UkmEntry::kNumBidsFilteredByPerBuyerLimitsName), 58);
+}
+
 TEST_F(AuctionMetricsRecorderTest, KAnonymityBidMode) {
   recorder().SetKAnonymityBidMode(
       auction_worklet::mojom::KAnonymityBidMode::kEnforce);
@@ -183,8 +238,7 @@ TEST_F(AuctionMetricsRecorderTest, NumInterestGroupsWithNoBids) {
   recorder().OnAuctionEnd(AuctionResult::kSuccess);
 
   // 14 becomes 13 because of bucketing
-  EXPECT_THAT(GetMetricValue(UkmEntry::kNumInterestGroupsWithNoBidsName),
-              testing::Eq(13));
+  EXPECT_EQ(GetMetricValue(UkmEntry::kNumInterestGroupsWithNoBidsName), 13);
 }
 
 TEST_F(AuctionMetricsRecorderTest, NumInterestGroupsWithOnlyNonKAnonBid) {
@@ -194,9 +248,8 @@ TEST_F(AuctionMetricsRecorderTest, NumInterestGroupsWithOnlyNonKAnonBid) {
   recorder().OnAuctionEnd(AuctionResult::kSuccess);
 
   // 16 becomes 15 because of bucketing
-  EXPECT_THAT(
-      GetMetricValue(UkmEntry::kNumInterestGroupsWithOnlyNonKAnonBidName),
-      testing::Eq(15));
+  EXPECT_EQ(GetMetricValue(UkmEntry::kNumInterestGroupsWithOnlyNonKAnonBidName),
+            15);
 }
 
 TEST_F(AuctionMetricsRecorderTest,
@@ -207,10 +260,9 @@ TEST_F(AuctionMetricsRecorderTest,
   recorder().OnAuctionEnd(AuctionResult::kSuccess);
 
   // 20 becomes 19 because of bucketing
-  EXPECT_THAT(
-      GetMetricValue(
-          UkmEntry::kNumInterestGroupsWithSameBidForKAnonAndNonKAnonName),
-      testing::Eq(19));
+  EXPECT_EQ(GetMetricValue(
+                UkmEntry::kNumInterestGroupsWithSameBidForKAnonAndNonKAnonName),
+            19);
 }
 
 TEST_F(AuctionMetricsRecorderTest,
@@ -221,10 +273,10 @@ TEST_F(AuctionMetricsRecorderTest,
   recorder().OnAuctionEnd(AuctionResult::kSuccess);
 
   // 18 becomes 17 because of bucketing
-  EXPECT_THAT(
+  EXPECT_EQ(
       GetMetricValue(
           UkmEntry::kNumInterestGroupsWithSeparateBidsForKAnonAndNonKAnonName),
-      testing::Eq(17));
+      17);
 }
 
 }  // namespace

@@ -26,9 +26,9 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.touch_to_fill.common.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
@@ -206,8 +206,8 @@ public class PasswordSavingIntegrationTest {
 
     private void clickSaveUpdateButtonOnMessage() {
         runOnUiThreadBlocking(() -> {
-            TextView button = mActivityTestRule.getActivity().findViewById(
-                    org.chromium.components.messages.R.id.message_primary_button);
+            TextView button =
+                    mActivityTestRule.getActivity().findViewById(R.id.message_primary_button);
             button.performClick();
         });
     }

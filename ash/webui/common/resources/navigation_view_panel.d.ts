@@ -26,6 +26,7 @@ interface NavigationViewPanelElement extends LegacyElementMixin, HTMLElement {
   removeSelectorById(id: string): void;
   selectedItemChanged_(): void;
   notifyEvent(functionName: string, params?: object): void;
+  selectPageById(id: string): void;
   getPage_(item: SelectorItem): void;
   showPage_(pageComponent: HTMLElement): void;
   onMenuButtonTap_(): void;

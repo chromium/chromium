@@ -1,0 +1,11 @@
+CONSOLE WARNING: The "after-transition" value for intercept()'s commit option will override the previously-passed value of "immediate".
+CONSOLE WARNING: The "immediate" value for intercept()'s commit option will override the previously-passed value of "after-transition".
+This is a testharness.js-based test.
+PASS (not provided) + immediate
+PASS (not provided) + after-transition
+PASS immediate + after-transition
+PASS immediate + (not provided)
+PASS after-transition + immediate
+PASS after-transition + (not provided)
+Harness: the test ran to completion.
+

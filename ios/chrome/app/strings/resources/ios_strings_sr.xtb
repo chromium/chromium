@@ -177,6 +177,7 @@
 <translation id="2218443599109088993">Умањите</translation>
 <translation id="2230173723195178503">Веб-страница је учитана</translation>
 <translation id="2239626343334228536">Бришу се подаци прегледања...</translation>
+<translation id="22508856139286506">Одбачена упозорења (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Мени → Историја</translation>
 <translation id="2256933947031277845">Организација вам дозвољава да се пријавите само помоћу одређених налога.</translation>
 <translation id="225943865679747347">Кôд грешке: <ph name="ERROR_CODE" /></translation>
@@ -952,6 +953,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7346909386216857016">Важи</translation>
 <translation id="734758817008927353">Опције за чување картице</translation>
 <translation id="7351537303876921605">Додирните Направи линк у контекстуалном менију</translation>
+<translation id="7352651011704765696">Нешто није у реду</translation>
 <translation id="7353432112255316844">Потврдите свој идентитет</translation>
 <translation id="7383797227493018512">Листа за читање</translation>
 <translation id="7398893703713203428">Create Link (Направи линк)</translation>

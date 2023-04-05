@@ -29,12 +29,12 @@ TEST(IdentityExtensionTokenKeyTest, Ordering) {
   std::vector<CoreAccountInfo> user_infos;
 
   CoreAccountInfo user_1;
-  user_1.account_id = CoreAccountId("user_id_1");
+  user_1.account_id = CoreAccountId::FromGaiaId("user_id_1");
   user_1.gaia = "user_id_1";
   user_1.email = "user_email_1";
 
   CoreAccountInfo user_2;
-  user_2.account_id = CoreAccountId("user_id_2");
+  user_2.account_id = CoreAccountId::FromGaiaId("user_id_2");
   user_2.gaia = "user_id_2";
   user_2.email = "user_email_2";
 

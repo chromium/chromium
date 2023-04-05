@@ -438,23 +438,6 @@ class PixelTestPages():
         video_frame_query_params = '?sourceType=sw_decoder'
 
       return [
-          PixelTestPage('pixel_webgpu_import_webgl_canvas.html',
-                        base_name + '_WebGPUImportWebGLCanvas',
-                        test_rect=[0, 0, 400, 200],
-                        browser_args=webgpu_args),
-          PixelTestPage('pixel_webgpu_import_2d_canvas.html',
-                        base_name + '_WebGPUImport2DCanvas',
-                        test_rect=[0, 0, 400, 200],
-                        browser_args=webgpu_args),
-          PixelTestPage('pixel_webgpu_import_2d_canvas.html',
-                        base_name + '_WebGPUImportUnaccelerated2DCanvas',
-                        test_rect=[0, 0, 400, 200],
-                        browser_args=webgpu_args +
-                        [cba.DISABLE_ACCELERATED_2D_CANVAS]),
-          PixelTestPage('pixel_webgpu_import_webgpu_canvas.html',
-                        base_name + '_WebGPUImportWebGPUCanvas',
-                        test_rect=[0, 0, 400, 200],
-                        browser_args=webgpu_args),
           PixelTestPage('pixel_webgpu_import_video_frame.html' +
                         video_frame_query_params,
                         base_name + '_WebGPUImportVideoFrame',
@@ -630,6 +613,10 @@ class PixelTestPages():
         cba.DISABLE_ACCELERATED_2D_CANVAS,
         cba.DISABLE_GPU_COMPOSITING,
     ]
+    unaccelerated_canvas_accelerated_compositing_args = [
+        cba.DISABLE_ACCELERATED_2D_CANVAS,
+        cba.DISABLE_SOFTWARE_COMPOSITING_FALLBACK,
+    ]
 
     return [
         PixelTestPage('pixel_offscreenCanvas_transfer_after_style_resize.html',
@@ -692,16 +679,18 @@ class PixelTestPages():
                       base_name + '_OffscreenCanvasUnaccelerated2DWorker',
                       test_rect=[0, 0, 360, 200],
                       browser_args=browser_args + unaccelerated_args),
-        PixelTestPage(
-            'pixel_offscreenCanvas_2d_commit_main.html',
-            base_name + '_OffscreenCanvasUnaccelerated2DGPUCompositing',
-            test_rect=[0, 0, 360, 200],
-            browser_args=browser_args + [cba.DISABLE_ACCELERATED_2D_CANVAS]),
-        PixelTestPage(
-            'pixel_offscreenCanvas_2d_commit_worker.html',
-            base_name + '_OffscreenCanvasUnaccelerated2DGPUCompositingWorker',
-            test_rect=[0, 0, 360, 200],
-            browser_args=browser_args + [cba.DISABLE_ACCELERATED_2D_CANVAS]),
+        PixelTestPage('pixel_offscreenCanvas_2d_commit_main.html',
+                      base_name +
+                      '_OffscreenCanvasUnaccelerated2DGPUCompositing',
+                      test_rect=[0, 0, 360, 200],
+                      browser_args=browser_args +
+                      unaccelerated_canvas_accelerated_compositing_args),
+        PixelTestPage('pixel_offscreenCanvas_2d_commit_worker.html',
+                      base_name +
+                      '_OffscreenCanvasUnaccelerated2DGPUCompositingWorker',
+                      test_rect=[0, 0, 360, 200],
+                      browser_args=browser_args +
+                      unaccelerated_canvas_accelerated_compositing_args),
         PixelTestPage('pixel_offscreenCanvas_2d_resize_on_worker.html',
                       base_name + '_OffscreenCanvas2DResizeOnWorker',
                       test_rect=[0, 0, 200, 200],

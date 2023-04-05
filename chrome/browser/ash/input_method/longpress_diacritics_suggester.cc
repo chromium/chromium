@@ -6,13 +6,22 @@
 
 #include <string>
 
+#include "ash/constants/notifier_catalogs.h"
+#include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/system/tray/system_nudge.h"
+#include "ash/system/tray/system_nudge_controller.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/input_method/native_input_method_engine_observer.h"
 #include "chrome/browser/ash/input_method/suggestion_handler_interface.h"
-#include "chrome/browser/ash/input_method/ui/assistive_delegate.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
+#include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -23,9 +32,54 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
+namespace content {
+class WebContents;
+}
 namespace ash::input_method {
 
 namespace {
+// The size of the clipboard icon in px.
+constexpr int kIconSize = 20;
+
+// The minimum width of the label in px.
+constexpr int kMinLabelWidth = 200;
+
+// The spacing between the icon and label in the nudge view in px.
+constexpr int kIconLabelSpacing = 16;
+
+// The padding which separates the nudge's border with its inner contents in px.
+constexpr int kNudgePadding = 16;
+
+class DiacriticsNudge : public ash::SystemNudge {
+ public:
+  DiacriticsNudge()
+      : SystemNudge("DiacriticsNudge",
+                    ash::NudgeCatalogName::kDisableDiacritics,
+                    kIconSize,
+                    kIconLabelSpacing,
+                    kNudgePadding) {}
+  DiacriticsNudge(const DiacriticsNudge&) = delete;
+  DiacriticsNudge& operator=(const DiacriticsNudge&) = delete;
+  ~DiacriticsNudge() override = default;
+
+ protected:
+  // SystemNudge:
+  std::unique_ptr<SystemNudgeLabel> CreateLabelView() const override {
+    // TODO(b/274349603): convert to final copy + internationalise.
+    std::u16string label_text =
+        u"Looking for key-repeat? Turn off \"accent mark\" in Keyboard "
+        u"Settings.";
+    // Set the label's text.
+    auto label = std::make_unique<SystemNudgeLabel>(label_text, kMinLabelWidth);
+    label->set_font_size_delta(2);
+
+    return label;
+  }
+  const gfx::VectorIcon& GetIcon() const override {
+    return kNotificationKeyboardIcon;
+  }
+  std::u16string GetAccessibilityText() const override { return u""; }
+};
 
 using AssistiveWindowButton = ui::ime::AssistiveWindowButton;
 
@@ -114,6 +168,10 @@ void RecordAcceptanceCharCodeMetric(const std::u16string diacritic) {
 
 }  // namespace
 
+std::unique_ptr<SystemNudge> DiacriticsNudgeController::CreateSystemNudge() {
+  return std::make_unique<DiacriticsNudge>();
+}
+
 LongpressDiacriticsSuggester::LongpressDiacriticsSuggester(
     SuggestionHandlerInterface* suggestion_handler)
     : LongpressSuggester(suggestion_handler) {}
@@ -127,26 +185,28 @@ bool LongpressDiacriticsSuggester::TrySuggestOnLongpress(char key_character) {
   }
   std::vector<std::u16string> diacritics_candidates =
       GetDiacriticsFor(key_character, engine_id_);
-  if (!diacritics_candidates.empty()) {
-    AssistiveWindowProperties properties;
-    properties.type =
-        ash::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion;
-    properties.visible = true;
-    properties.candidates = diacritics_candidates;
-    properties.announce_string =
-        l10n_util::GetStringUTF16(IDS_SUGGESTION_DIACRITICS_OPEN);
-    properties.show_setting_link = true;
-
-    std::string error;
-    suggestion_handler_->SetAssistiveWindowProperties(
-        focused_context_id_.value(), properties, &error);
-    if (error.empty()) {
-      displayed_window_base_character_ = key_character;
-      RecordActionMetric(IMEPKLongpressDiacriticAction::kShowWindow);
-      return true;
-    }
-    LOG(ERROR) << "Unable to suggest diacritics on longpress: " << error;
+  if (diacritics_candidates.empty()) {
+    nudge_controller_.ShowNudge();
+    return false;
   }
+  AssistiveWindowProperties properties;
+  properties.type =
+      ash::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion;
+  properties.visible = true;
+  properties.candidates = diacritics_candidates;
+  properties.announce_string =
+      l10n_util::GetStringUTF16(IDS_SUGGESTION_DIACRITICS_OPEN);
+  properties.show_setting_link = true;
+
+  std::string error;
+  suggestion_handler_->SetAssistiveWindowProperties(focused_context_id_.value(),
+                                                    properties, &error);
+  if (error.empty()) {
+    displayed_window_base_character_ = key_character;
+    RecordActionMetric(IMEPKLongpressDiacriticAction::kShowWindow);
+    return true;
+  }
+  LOG(ERROR) << "Unable to suggest diacritics on longpress: " << error;
   return false;
 }
 

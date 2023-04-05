@@ -4,12 +4,17 @@
 
 #include "ash/ambient/ambient_managed_slideshow_ui_launcher.h"
 
+#include <vector>
+
 #include "ash/ambient/ambient_managed_photo_controller.h"
 #include "ash/ambient/ambient_view_delegate_impl.h"
 #include "ash/ambient/model/ambient_slideshow_photo_config.h"
 #include "ash/ambient/ui/photo_view.h"
+#include "ash/public/cpp/ambient/ambient_managed_photo_source.h"
 #include "base/check.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 
 namespace ash {
 
@@ -20,13 +25,34 @@ AmbientManagedSlideshowUiLauncher::AmbientManagedSlideshowUiLauncher(
       delegate_(view_delegate) {
   ambient_backend_model_observer_.Observe(
       photo_controller_.ambient_backend_model());
+  CHECK(AmbientManagedPhotoSource::Get());
+  AmbientManagedPhotoSource::Get()->SetScreensaverImagesUpdatedCallback(
+      base::BindRepeating(
+          &AmbientManagedSlideshowUiLauncher::UpdateImageFilePaths,
+          weak_factory_.GetWeakPtr()));
 }
 AmbientManagedSlideshowUiLauncher::~AmbientManagedSlideshowUiLauncher() =
     default;
 
 void AmbientManagedSlideshowUiLauncher::Initialize(base::OnceClosure on_done) {
   initialization_callback_ = std::move(on_done);
+  if (!AmbientManagedPhotoSource::Get()) {
+    LOG(WARNING) << "AmbientManagedPhotoSource not present. Probably "
+                    "AmbientManagedPhotoController screen update is being "
+                    "started during a shutdown";
+    // TODO(fahadmansoor): Start calling this callback with a boolean to handle
+    // the error case.
+    initialization_callback_.Reset();
+    return;
+  }
+  photo_controller_.UpdateImageFilePaths(
+      AmbientManagedPhotoSource::Get()->GetScreensaverImages());
   photo_controller_.StartScreenUpdate();
+}
+
+void AmbientManagedSlideshowUiLauncher::UpdateImageFilePaths(
+    const std::vector<base::FilePath>& path_to_images) {
+  photo_controller_.UpdateImageFilePaths(path_to_images);
 }
 
 std::unique_ptr<views::View> AmbientManagedSlideshowUiLauncher::CreateView() {

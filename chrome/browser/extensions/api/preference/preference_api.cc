@@ -662,7 +662,7 @@ ExtensionFunction::ResponseAction GetPreferenceFunction::Run() {
   ProduceGetResult(&result, pref->GetValue(), level_of_control, browser_pref,
                    incognito);
 
-  return RespondNow(OneArgument(base::Value(std::move(result))));
+  return RespondNow(WithArguments(std::move(result)));
 }
 
 void GetPreferenceFunction::ProduceGetResult(
@@ -725,7 +725,7 @@ void GetPreferenceFunction::OnLacrosGetSuccess(
   ProduceGetResult(&result, pref_value, level_of_control, cached_browser_pref_,
                    incognito);
 
-  Respond(OneArgument(base::Value(std::move(result))));
+  Respond(WithArguments(std::move(result)));
 }
 #endif
 

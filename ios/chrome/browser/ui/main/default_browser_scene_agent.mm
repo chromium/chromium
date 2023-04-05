@@ -9,6 +9,7 @@
 #import "base/version.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/default_browser/utils.h"
+#import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -42,6 +43,17 @@
     return;
   }
 
+  // Register default browser promo manager to the promo manager.
+  if (IsDefaultBrowserInPromoManagerEnabled()) {
+    if (level == SceneActivationLevelForegroundActive &&
+        ShouldRegisterPromoWithPromoManager()) {
+      DCHECK(self.promosManager);
+      self.promosManager->RegisterPromoForSingleDisplay(
+          promos_manager::Promo::DefaultBrowser);
+    }
+    return;
+  }
+
   AppState* appState = self.sceneState.appState;
   // Can only present UI when activation level is
   // SceneActivationLevelForegroundActive. Show the UI if user has met the
@@ -50,7 +62,6 @@
       appState.shouldShowDefaultBrowserPromo && !appState.currentUIBlocker) {
     id<DefaultPromoCommands> defaultPromoHandler =
         HandlerForProtocol(self.dispatcher, DefaultPromoCommands);
-
     switch (appState.defaultBrowserPromoTypeToShow) {
       case DefaultPromoTypeGeneral:
         [defaultPromoHandler showDefaultBrowserFullscreenPromo];

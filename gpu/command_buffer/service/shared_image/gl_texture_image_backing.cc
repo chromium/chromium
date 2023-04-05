@@ -248,7 +248,8 @@ std::unique_ptr<DawnImageRepresentation> GLTextureImageBacking::ProduceDawn(
       std::move(view_formats), this, IsPassthrough());
 }
 
-std::unique_ptr<SkiaImageRepresentation> GLTextureImageBacking::ProduceSkia(
+std::unique_ptr<SkiaImageRepresentation>
+GLTextureImageBacking::ProduceSkiaGanesh(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
@@ -268,7 +269,8 @@ void GLTextureImageBacking::InitializeGLTexture(
     const std::vector<GLCommonImageBackingFactory::FormatInfo>& format_info,
     base::span<const uint8_t> pixel_data,
     gl::ProgressReporter* progress_reporter,
-    bool framebuffer_attachment_angle) {
+    bool framebuffer_attachment_angle,
+    const bool disable_tex_storage) {
   std::string debug_label;
   if (gl::g_current_gl_driver->ext.b_GL_KHR_debug) {
     debug_label =
@@ -282,8 +284,8 @@ void GLTextureImageBacking::InitializeGLTexture(
                            format().GetPlaneSize(plane, size()),
                            is_passthrough_, progress_reporter);
     textures_[plane].Initialize(format_info[plane],
-                                framebuffer_attachment_angle, pixel_data,
-                                debug_label);
+                                framebuffer_attachment_angle,
+                                disable_tex_storage, pixel_data, debug_label);
   }
 
   if (!pixel_data.empty()) {

@@ -15,7 +15,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
-namespace fast_ink {
+namespace ash {
 namespace {
 
 // The amount of time used to estimate time from VSYNC event to when
@@ -26,7 +26,7 @@ const int kPresentationDelayMs = 18;
 
 FastInkPointerController::FastInkPointerController()
     : presentation_delay_(base::Milliseconds(kPresentationDelayMs)) {
-  auto* local_state = ash::Shell::Get()->local_state();
+  auto* local_state = Shell::Get()->local_state();
   // |local_state| could be null in tests.
   if (!local_state)
     return;
@@ -34,7 +34,7 @@ FastInkPointerController::FastInkPointerController()
   pref_change_registrar_local_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_local_->Init(local_state);
   pref_change_registrar_local_->Add(
-      ash::prefs::kHasSeenStylus,
+      prefs::kHasSeenStylus,
       base::BindRepeating(&FastInkPointerController::OnHasSeenStylusPrefChanged,
                           base::Unretained(this)));
 
@@ -192,7 +192,7 @@ void FastInkPointerController::OnMouseEvent(ui::MouseEvent* event) {
 void FastInkPointerController::OnHasSeenStylusPrefChanged() {
   auto* local_state = pref_change_registrar_local_->prefs();
   has_seen_stylus_ =
-      local_state && local_state->GetBoolean(ash::prefs::kHasSeenStylus);
+      local_state && local_state->GetBoolean(prefs::kHasSeenStylus);
 }
 
-}  // namespace fast_ink
+}  // namespace ash

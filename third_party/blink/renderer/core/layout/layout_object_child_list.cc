@@ -113,10 +113,6 @@ LayoutObject* LayoutObjectChildList::RemoveChildNode(
     InvalidatePaintOnRemoval(*old_child);
   }
 
-  // If we have a line box wrapper, delete it.
-  if (old_child->IsBox())
-    To<LayoutBox>(old_child)->DeleteLineBoxWrapper();
-
   if (!owner->DocumentBeingDestroyed()) {
     if (notify_layout_object) {
       LayoutCounter::LayoutObjectSubtreeWillBeDetached(old_child);
@@ -231,12 +227,6 @@ void LayoutObjectChildList::InsertChildNode(LayoutObject* owner,
   // child nodes.
   if (owner->HasSubtreeChangeListenerRegistered())
     new_child->RegisterSubtreeChangeListenerOnDescendants(true);
-
-  if (UNLIKELY(!new_child->IsLayoutNGObject())) {
-    if (owner->ForceLegacyLayoutForChildren()) {
-      new_child->SetForceLegacyLayout();
-    }
-  }
 
   // Mark the ancestor chain for paint invalidation checking.
   owner->SetShouldCheckForPaintInvalidation();

@@ -161,4 +161,9 @@ aura::Window::Windows GetContainersForAllRootWindows(
   return containers;
 }
 
+aura::Window* GetPowerMenuContainerParent(aura::Window* root_window) {
+  return root_window->GetChildById(
+      kShellWindowId_LockScreenRelatedContainersContainer);
+}
+
 }  // namespace ash

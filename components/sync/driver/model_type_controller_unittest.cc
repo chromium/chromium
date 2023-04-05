@@ -87,7 +87,7 @@ class TestModelTypeController : public ModelTypeController {
 
 ConfigureContext MakeConfigureContext() {
   ConfigureContext context;
-  context.authenticated_account_id = CoreAccountId(kAccountId);
+  context.authenticated_account_id = CoreAccountId::FromGaiaId(kAccountId);
   context.cache_guid = kCacheGuid;
   return context;
 }
@@ -522,7 +522,7 @@ TEST(ModelTypeControllerWithMultiDelegateTest, ToggleSyncMode) {
           &delegate_for_transport_mode));
 
   ConfigureContext context;
-  context.authenticated_account_id = CoreAccountId(kAccountId);
+  context.authenticated_account_id = CoreAccountId::FromGaiaId(kAccountId);
   context.cache_guid = kCacheGuid;
 
   ModelTypeControllerDelegate::StartCallback start_callback;

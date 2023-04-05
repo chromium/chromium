@@ -237,7 +237,7 @@ BASE_FEATURE(kSamePartyAttributeEnabled,
 
 BASE_FEATURE(kPartitionedCookies,
              "PartitionedCookies",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNoncedPartitionedCookies,
              "NoncedPartitionedCookies",
@@ -342,5 +342,19 @@ const base::FeatureParam<std::string> kIpPrivacyProxyServer{
 const base::FeatureParam<std::string> kIpPrivacyProxyAllowlist{
     &kEnableIpProtectionProxy, /*name=*/"IpPrivacyProxyAllowlist",
     /*default_value=*/""};
+
+// Network-change migration requires NetworkHandle support, which are currently
+// only supported on Android (see
+// NetworkChangeNotifier::AreNetworkHandlesSupported).
+#if BUILDFLAG(IS_ANDROID)
+inline constexpr auto kMigrateSessionsOnNetworkChangeV2Default =
+    base::FEATURE_ENABLED_BY_DEFAULT;
+#else   // !BUILDFLAG(IS_ANDROID)
+inline constexpr auto kMigrateSessionsOnNetworkChangeV2Default =
+    base::FEATURE_DISABLED_BY_DEFAULT;
+#endif  // BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kMigrateSessionsOnNetworkChangeV2,
+             "MigrateSessionsOnNetworkChangeV2",
+             kMigrateSessionsOnNetworkChangeV2Default);
 
 }  // namespace net::features

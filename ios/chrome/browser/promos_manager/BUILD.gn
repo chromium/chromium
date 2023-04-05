@@ -6,6 +6,8 @@ source_set("promos_manager") {
   sources = [
     "promos_manager.h",
     "promos_manager.mm",
+    "promos_manager_event_exporter.h",
+    "promos_manager_event_exporter.mm",
   ]
   frameworks = [ "Foundation.framework" ]
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -32,6 +34,8 @@ source_set("factory") {
   frameworks = [ "Foundation.framework" ]
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
+    ":event_exporter_factory",
+    ":features",
     ":internal",
     ":promos_manager",
     "//components/keyed_service/core",
@@ -39,6 +43,23 @@ source_set("factory") {
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/feature_engagement",
+  ]
+}
+
+source_set("event_exporter_factory") {
+  sources = [
+    "promos_manager_event_exporter_factory.h",
+    "promos_manager_event_exporter_factory.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  deps = [
+    ":features",
+    ":promos_manager",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//ios/chrome/browser/application_context",
+    "//ios/chrome/browser/browser_state",
   ]
 }
 

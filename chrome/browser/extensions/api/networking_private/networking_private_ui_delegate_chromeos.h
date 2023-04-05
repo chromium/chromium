@@ -7,27 +7,24 @@
 
 #include "extensions/browser/api/networking_private/networking_private_delegate.h"
 
-namespace chromeos {
-namespace extensions {
+namespace chromeos::extensions {
 
 // Chrome OS implementation of NetworkingPrivateDelegate::UIDelegate.
 class NetworkingPrivateUIDelegateChromeOS
     : public ::extensions::NetworkingPrivateDelegate::UIDelegate {
  public:
-  NetworkingPrivateUIDelegateChromeOS();
+  NetworkingPrivateUIDelegateChromeOS() = default;
+  ~NetworkingPrivateUIDelegateChromeOS() override = default;
 
   NetworkingPrivateUIDelegateChromeOS(
       const NetworkingPrivateUIDelegateChromeOS&) = delete;
   NetworkingPrivateUIDelegateChromeOS& operator=(
       const NetworkingPrivateUIDelegateChromeOS&) = delete;
 
-  ~NetworkingPrivateUIDelegateChromeOS() override;
-
   // NetworkingPrivateDelegate::UIDelegate
   void ShowAccountDetails(const std::string& guid) const override;
 };
 
-}  // namespace extensions
-}  // namespace chromeos
+}  // namespace chromeos::extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_NETWORKING_PRIVATE_NETWORKING_PRIVATE_UI_DELEGATE_CHROMEOS_H_

@@ -387,9 +387,15 @@ void CameraEffectsController::SetEffectsConfigToPref(
 
 bool CameraEffectsController::IsEffectControlAvailable(
     cros::mojom::CameraEffect effect /* = cros::mojom::CameraEffect::kNone*/) {
-  // UI is not ready to serve the BackgroundReplace effect.
-  return features::IsVideoConferenceEnabled() &&
-         effect != cros::mojom::CameraEffect::kBackgroundReplace;
+  switch (effect) {
+    case cros::mojom::CameraEffect::kNone:
+    case cros::mojom::CameraEffect::kBackgroundBlur:
+      return features::IsVideoConferenceEnabled();
+    case cros::mojom::CameraEffect::kPortraitRelight:
+      return features::IsVcPortraitRelightEnabled();
+    case cros::mojom::CameraEffect::kBackgroundReplace:
+      return features::IsVcBackgroundReplaceEnabled();
+  }
 }
 
 void CameraEffectsController::InitializeEffectControls() {

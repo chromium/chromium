@@ -4,6 +4,8 @@
 
 #include "components/webxr/android/cardboard_device_provider.h"
 
+#include "components/webxr/android/xr_session_coordinator.h"
+#include "components/webxr/mailbox_to_surface_bridge_impl.h"
 #include "device/vr/android/cardboard/cardboard_device.h"
 #include "device/vr/android/cardboard/cardboard_sdk_impl.h"
 
@@ -22,7 +24,10 @@ void CardboardDeviceProvider::Initialize(
   DVLOG(2) << __func__ << ": Cardboard is supported, creating device";
 
   cardboard_device_ = std::make_unique<device::CardboardDevice>(
-      std::make_unique<device::CardboardSdkImpl>());
+      std::make_unique<device::CardboardSdkImpl>(),
+      std::make_unique<webxr::MailboxToSurfaceBridgeFactoryImpl>(),
+      std::make_unique<webxr::XrSessionCoordinator>(),
+      std::move(compositor_delegate_provider_));
 
   client->AddRuntime(cardboard_device_->GetId(),
                      cardboard_device_->GetDeviceData(),

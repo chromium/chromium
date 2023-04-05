@@ -10,7 +10,44 @@ struct UkmEntry {
   map<uint64,int64> metrics;
 };
 
+struct UkmRecorderParameters {
+  // Informs whether UKM recording is enabled or disabled.
+  bool is_enabled;
+  // List of event hashes for all observers which need to be notified of a new
+  // UKM event even when UKM recording is disabled.
+  array<uint64> event_hash_bypass_list;
+};
+
+// Interface used for sending information from browser process to clients, i.e.,
+// UkmRecorderInterface to MojoUkmRecorder. Disconnecting this interface is
+// equivalent to calling UkmRecorderInterface::AddEntry for every UKM event seen
+// by MojoUkmRecorder.
+interface UkmRecorderClientInterface {
+  // Sends UkmRecorderParameters to clients from browser process. These
+  // parameters are then used by MojoUkmRecorder's to call
+  // UkmRecorderInterface::AddEntry when a UKM event is seen, if any of the
+  // following conditions is true:
+  // 1. If UKM recording is enabled.
+  // 2. If UKM event's event_hash is in
+  // UkmRecorderParameters.event_hash_bypass_list.
+  // There can be at most 1 client for MojoUkmRecorder instances. In case of
+  // multiple clients(this happens only in testing), UkmRecorderClientInterface
+  // is disconnected.
+  SetParameters(UkmRecorderParameters params);
+};
+
 interface UkmRecorderInterface {
   AddEntry(UkmEntry entry);
   UpdateSourceURL(int64 source_id, string url);
+};
+
+// This interface is used for building bidirectional communication between
+// browser & renderer/GPU process, i.e., between UkmRecorder <-> MojoUkmRecorder.
+interface UkmRecorderFactory{
+  // MojoUkmRecorder calls this method when it's first initialized. |client_remote|
+  // is optional, since it is null when feature |ukm::kUkmReduceAddEntryIPC| is
+  // disabled as we don't allow any updates in UkmRecorderParameters coming from
+  // browser process to reach MojoUkmRecorders.
+  CreateUkmRecorder(pending_receiver<UkmRecorderInterface> receiver,
+                    pending_remote<UkmRecorderClientInterface>? client_remote);
 };

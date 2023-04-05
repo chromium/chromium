@@ -196,45 +196,34 @@ fn main(@location(0) fragUV : vec2<f32>) -> @location(0) vec4<f32> {
 
       let texture;
 
-      if (options.useImport) {
-        texture = device.experimentalImportTexture(
-          canvasImageSource,
-          GPUTextureUsage.TEXTURE_BINDING
-        );
+      texture = device.createTexture({
+        size: [canvasImageSource.width, canvasImageSource.height],
+        format: 'rgba8unorm',
+        usage: GPUTextureUsage.COPY_DST |
+               GPUTextureUsage.RENDER_ATTACHMENT |
+               GPUTextureUsage.TEXTURE_BINDING
+      });
+
+      // TODO(crbug.com/1257856): This test use the temporary origin
+      // config to fix flip issue. It should be removed when we change
+      // the default behaviour.
+      let imageCopyExternalImage;
+      if (options.isWebGLCanvas) {
+        imageCopyExternalImage = { source: canvasImageSource,
+                                   origin: {x: 0, y: 0},
+                                   temporaryOriginBottomLeftIfWebGL: false
+                                 };
       } else {
-        texture = device.createTexture({
-          size: [canvasImageSource.width, canvasImageSource.height],
-          format: 'rgba8unorm',
-          usage: GPUTextureUsage.COPY_DST |
-                 GPUTextureUsage.RENDER_ATTACHMENT |
-                 GPUTextureUsage.TEXTURE_BINDING
-        });
+        imageCopyExternalImage = { source: canvasImageSource,
+                                   origin: {x: 0, y: 0}
+                                 };
       }
 
-      // Use copyExternalImageToTexture()
-      if (!options.useImport) {
-        let imageCopyExternalImage;
-
-        // TODO(crbug.com/1257856): This test use the temporary origin
-        // config to fix flip issue. It should be removed when we change
-        // the default behaviour.
-        if (options.isWebGLCanvas) {
-          imageCopyExternalImage = { source: canvasImageSource,
-                                     origin: {x: 0, y: 0},
-                                     temporaryOriginBottomLeftIfWebGL: false
-                                   };
-        } else {
-          imageCopyExternalImage = { source: canvasImageSource,
-                                     origin: {x: 0, y: 0}
-                                   };
-        }
-
-        device.queue.copyExternalImageToTexture(
-          imageCopyExternalImage,
-          {texture},
-          [canvasImageSource.width, canvasImageSource.height]
-        );
-      }
+      device.queue.copyExternalImageToTexture(
+        imageCopyExternalImage,
+        {texture},
+        [canvasImageSource.width, canvasImageSource.height]
+      );
 
       const bindGroup = device.createBindGroup({
         layout: blitPipeline.getBindGroupLayout(0),

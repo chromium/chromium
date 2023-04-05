@@ -20,6 +20,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/common/extension_features.h"
 #include "ppapi/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -45,6 +46,8 @@ class ExtensionGarbageCollectorUnitTest : public ExtensionServiceTestBase {
     // Wait for GarbageCollectExtensions task to complete.
     content::RunAllTasksUntilIdle();
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test that partially deleted extensions are cleaned up during startup.
@@ -77,6 +80,41 @@ TEST_F(ExtensionGarbageCollectorUnitTest, CleanupOnStartup) {
   base::FilePath extension_dir =
       extensions_install_dir().AppendASCII(kExtensionId);
   ASSERT_FALSE(base::PathExists(extension_dir));
+}
+
+// Test that partially deleted unpacked extensions are cleaned up during
+// startup. This test is only relevant when unpacked extensions are installed in
+// the profile directory.
+TEST_F(ExtensionGarbageCollectorUnitTest, CleanupUnpackedOnStartup) {
+  feature_list_.InitAndEnableFeature(
+      extensions_features::kExtensionsZipFileInstalledInProfileDir);
+  const std::string kExtensionId = "lckcjklfapeiadkadngidmocpbkemckm";
+
+  InitPluginService();
+  InitializeGoodInstalledExtensionService(/*unpacked=*/true);
+
+  // Simulate that the extensions was partially deleted by clearing its pref.
+  {
+    // TODO(crbug.com/1378775): The preferences don't seem to get loaded
+    // appropriately so this seems to be a no-op.
+    ScopedDictPrefUpdate update(profile_->GetPrefs(), pref_names::kExtensions);
+    update->Remove(kExtensionId);
+  }
+
+  service_->Init();
+  GarbageCollectExtensions();
+
+  base::FileEnumerator dirs(unpacked_install_dir(),
+                            false,  // not recursive
+                            base::FileEnumerator::DIRECTORIES);
+
+  // We should have have zero extensions now.
+  EXPECT_TRUE(dirs.Next().empty());
+
+  // And unpacked extension dir should now be toast.
+  base::FilePath zipped_extension_dir =
+      unpacked_install_dir().AppendASCII("good_juKvIh");
+  ASSERT_FALSE(base::PathExists(zipped_extension_dir));
 }
 
 // Test that garbage collection doesn't delete anything while a crx is being

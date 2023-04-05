@@ -44,7 +44,7 @@ RestoreData::RestoreData(base::Value restore_data_value) {
   if (auto* removing_desk_guid_string =
           dict->FindString(kRemovingDeskGuidKey)) {
     removing_desk_guid_ =
-        base::GUID::ParseLowercase(*removing_desk_guid_string);
+        base::Uuid::ParseLowercase(*removing_desk_guid_string);
   }
 
   for (auto iter : *dict) {

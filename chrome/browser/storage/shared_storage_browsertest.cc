@@ -2455,25 +2455,23 @@ INSTANTIATE_TEST_SUITE_P(All,
                          describe_param);
 
 class SharedStorageFencedFrameChromeBrowserTest
-    : public base::test::WithFeatureOverride,
-      public SharedStorageChromeBrowserTestBase {
+    : public SharedStorageChromeBrowserTestBase {
  public:
-  SharedStorageFencedFrameChromeBrowserTest()
-      : base::test::WithFeatureOverride(
-            blink::features::kFencedFramesAPIChanges) {
+  SharedStorageFencedFrameChromeBrowserTest() {
     base::test::TaskEnvironment task_environment;
 
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{blink::features::kSharedStorageAPI,
           {{"SharedStorageBitBudget", base::NumberToString(kBudgetAllowed)}}},
-         {blink::features::kFencedFrames, {}}},
+         {blink::features::kFencedFrames, {}},
+         {blink::features::kFencedFramesAPIChanges, {}}},
         /*disabled_features=*/{});
   }
 
   ~SharedStorageFencedFrameChromeBrowserTest() override = default;
 
-  bool ResolveSelectURLToConfig() override { return IsParamFeatureEnabled(); }
+  bool ResolveSelectURLToConfig() override { return true; }
 
   content::RenderFrameHost* SelectURLAndCreateFencedFrame(
       content::RenderFrameHost* render_frame_host,
@@ -2565,7 +2563,7 @@ class SharedStorageFencedFrameChromeBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameChromeBrowserTest,
+IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameChromeBrowserTest,
                        FencedFrameNavigateTop_BudgetWithdrawal) {
   GURL main_url = https_server()->GetURL(kSimpleTestHost, kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(GetActiveWebContents(), main_url));
@@ -2613,7 +2611,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameChromeBrowserTest,
   EXPECT_EQ(2, histogram_tester_.GetTotalSum(kWorkletNumPerPageHistogram));
 }
 
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     SharedStorageFencedFrameChromeBrowserTest,
     TwoFencedFrames_DifferentURNs_EachNavigateOnce_BudgetWithdrawalTwice) {
   GURL main_url = https_server()->GetURL(kSimpleTestHost, kSimplePagePath);
@@ -2684,10 +2682,5 @@ IN_PROC_BROWSER_TEST_P(
   histogram_tester_.ExpectBucketCount(kWorkletNumPerPageHistogram, 1, 3);
   EXPECT_EQ(3, histogram_tester_.GetTotalSum(kWorkletNumPerPageHistogram));
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         SharedStorageFencedFrameChromeBrowserTest,
-                         testing::Bool(),
-                         describe_param);
 
 }  // namespace storage

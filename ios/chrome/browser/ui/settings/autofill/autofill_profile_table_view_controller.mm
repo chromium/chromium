@@ -519,6 +519,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     [self setEditing:NO animated:NO];
   }
 
+  [self setSyncingUserEmail];
   [self updateUIForEditState];
   [self reloadData];
 }

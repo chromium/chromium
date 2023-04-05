@@ -46,6 +46,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
@@ -53,6 +54,7 @@ import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler;
 import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler.RequestMetadata;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
 import org.chromium.chrome.browser.translate.TranslateIntentHandler;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 import org.chromium.chrome.test.util.browser.Features;
@@ -62,6 +64,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.content_public.common.Referrer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -767,5 +770,32 @@ public class IntentHandlerUnitTest {
                     RecordHistogram.getHistogramValueCountForTesting(
                             IntentHandler.SHARE_INTENT_HISTOGRAM, (int) shareCase[2]));
         }
+    }
+
+    @Test
+    @SmallTest
+    public void testNewIntentInitiatorFromNewTabUrl() {
+        int tabId = 1;
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(GOOGLE_URL));
+        InOrder inOrder = Mockito.inOrder(mDelegate);
+        intent.setPackage(ContextUtils.getApplicationContext().getPackageName());
+        IntentUtils.addTrustedIntentExtras(intent);
+        IntentHandler.setTabId(intent, tabId);
+
+        // Setup the tab's LoadUrlParams.
+        Referrer urlReferrer = new Referrer(GOOGLE_URL, 0);
+        LoadUrlParams loadUrlParams = new LoadUrlParams(GOOGLE_URL);
+        loadUrlParams.setReferrer(urlReferrer);
+        AsyncTabParamsManagerSingleton.getInstance().add(
+                tabId, new AsyncTabCreationParams(loadUrlParams));
+
+        mIntentHandler.onNewIntent(intent);
+        inOrder.verify(mDelegate).processUrlViewIntent(
+                mLoadUrlParamsCaptor.capture(), anyInt(), any(), anyInt(), eq(intent));
+        Assert.assertEquals(
+                "LoadUrlParams should match.", loadUrlParams, mLoadUrlParamsCaptor.getValue());
+        Assert.assertNotNull(
+                "The referrer should be non-null.", mLoadUrlParamsCaptor.getValue().getReferrer());
     }
 }

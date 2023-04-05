@@ -80,8 +80,7 @@ ControlPart BaseButtonInputType::AutoAppearance() const {
 }
 
 LayoutObject* BaseButtonInputType::CreateLayoutObject(
-    const ComputedStyle& style,
-    LegacyLayout legacy) const {
+    const ComputedStyle&) const {
   return MakeGarbageCollected<LayoutNGButton>(&GetElement());
 }
 

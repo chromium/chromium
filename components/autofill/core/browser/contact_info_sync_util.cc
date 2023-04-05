@@ -4,10 +4,10 @@
 
 #include "components/autofill/core/browser/contact_info_sync_util.h"
 
-#include "base/guid.h"
 #include "base/memory/raw_ref.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/autofill/core/browser/field_types.h"
 
 namespace autofill {
@@ -216,7 +216,7 @@ CreateContactInfoEntityDataFromAutofillProfile(
   // kLocalOrSyncable profiles are synced through the AutofillProfileSyncBridge,
   // while kAccount profiles are synced through the ContactInfoSyncBridge. Make
   // sure that syncing a profile through the wrong sync bridge fails early.
-  if (!base::IsValidGUID(profile.guid()) ||
+  if (!base::IsValidUuid(profile.guid()) ||
       profile.source() != AutofillProfile::Source::kAccount) {
     return nullptr;
   }
@@ -309,7 +309,7 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
 
 bool AreContactInfoSpecificsValid(
     const sync_pb::ContactInfoSpecifics& specifics) {
-  return base::GUID::ParseLowercase(specifics.guid()).is_valid();
+  return base::Uuid::ParseLowercase(specifics.guid()).is_valid();
 }
 
 sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(

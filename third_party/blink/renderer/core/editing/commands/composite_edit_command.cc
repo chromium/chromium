@@ -80,11 +80,10 @@
 #include "third_party/blink/renderer/core/html/html_quote_element.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
-#include "third_party/blink/renderer/core/layout/layout_block.h"
-#include "third_party/blink/renderer/core/layout/layout_list_item.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
-#include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/document_resource_coordinator.h"
 
@@ -701,8 +700,9 @@ bool CompositeEditCommand::CanRebalance(const Position& position) const {
     return false;
 
   LayoutText* layout_text = text_node->GetLayoutObject();
-  if (layout_text && !layout_text->Style()->CollapseWhiteSpace())
+  if (layout_text && layout_text->Style()->ShouldPreserveWhiteSpaces()) {
     return false;
+  }
 
   return true;
 }
@@ -790,8 +790,9 @@ void CompositeEditCommand::PrepareWhitespaceAtPositionForSplit(
   if (text_node->length() == 0)
     return;
   LayoutText* layout_text = text_node->GetLayoutObject();
-  if (layout_text && !layout_text->Style()->CollapseWhiteSpace())
+  if (layout_text && layout_text->Style()->ShouldPreserveWhiteSpaces()) {
     return;
+  }
 
   // Delete collapsed whitespace so that inserting nbsps doesn't uncollapse it.
   Position upstream_pos = MostBackwardCaretPosition(position);
@@ -863,79 +864,15 @@ void CompositeEditCommand::DeleteInsignificantText(Text* text_node,
   if (start >= length || end > length)
     return;
 
-  if (text_layout_object->IsInLayoutNGInlineFormattingContext()) {
-    const String string = PlainText(
-        EphemeralRange(Position(*text_node, start), Position(*text_node, end)),
-        TextIteratorBehavior::Builder().SetEmitsOriginalText(true).Build());
-    if (string.empty())
-      return DeleteTextFromNode(text_node, start, end - start);
-    // Replace the text between start and end with collapsed version.
-    return ReplaceTextInNode(text_node, start, end - start, string);
+  CHECK(text_layout_object->IsInLayoutNGInlineFormattingContext());
+  const String string = PlainText(
+      EphemeralRange(Position(*text_node, start), Position(*text_node, end)),
+      TextIteratorBehavior::Builder().SetEmitsOriginalText(true).Build());
+  if (string.empty()) {
+    return DeleteTextFromNode(text_node, start, end - start);
   }
-
-  HeapVector<Member<InlineTextBox>> sorted_text_boxes;
-  ClearCollectionScope<HeapVector<Member<InlineTextBox>>> scope(
-      &sorted_text_boxes);
-  wtf_size_t sorted_text_boxes_position = 0;
-
-  for (InlineTextBox* text_box : text_layout_object->TextBoxes())
-    sorted_text_boxes.push_back(text_box);
-
-  // If there is mixed directionality text, the boxes can be out of order,
-  // (like Arabic with embedded LTR), so sort them first.
-  if (text_layout_object->ContainsReversedText())
-    std::sort(sorted_text_boxes.begin(), sorted_text_boxes.end(),
-              InlineTextBox::CompareByStart);
-  InlineTextBox* box = sorted_text_boxes.empty()
-                           ? nullptr
-                           : sorted_text_boxes[sorted_text_boxes_position];
-
-  unsigned removed = 0;
-  InlineTextBox* prev_box = nullptr;
-  String str;
-
-  // This loop structure works to process all gaps preceding a box,
-  // and also will look at the gap after the last box.
-  while (prev_box || box) {
-    unsigned gap_start = prev_box ? prev_box->Start() + prev_box->Len() : 0;
-    if (end < gap_start) {
-      // No more chance for any intersections
-      break;
-    }
-
-    unsigned gap_end = box ? box->Start() : length;
-    bool indices_intersect = start <= gap_end && end >= gap_start;
-    int gap_len = gap_end - gap_start;
-    if (indices_intersect && gap_len > 0) {
-      gap_start = std::max(gap_start, start);
-      if (str.IsNull())
-        str = text_node->data().Substring(start, end - start);
-      // remove text in the gap
-      str.Remove(gap_start - start - removed, gap_len);
-      removed += gap_len;
-    }
-
-    prev_box = box;
-    if (box) {
-      if (++sorted_text_boxes_position < sorted_text_boxes.size())
-        box = sorted_text_boxes[sorted_text_boxes_position];
-      else
-        box = nullptr;
-    }
-  }
-
-  if (!str.IsNull()) {
-    // Replace the text between start and end with our pruned version.
-    if (!str.empty()) {
-      ReplaceTextInNode(text_node, start, end - start, str);
-    } else {
-      // Assert that we are not going to delete all of the text in the node.
-      // If we were, that should have been done above with the call to
-      // removeNode and return.
-      DCHECK(start > 0 || end - start < text_node->length());
-      DeleteTextFromNode(text_node, start, end - start);
-    }
-  }
+  // Replace the text between start and end with collapsed version.
+  return ReplaceTextInNode(text_node, start, end - start, string);
 }
 
 void CompositeEditCommand::DeleteInsignificantText(const Position& start,
@@ -1017,8 +954,6 @@ HTMLBRElement* CompositeEditCommand::InsertBlockPlaceholder(
 static bool IsEmptyListItem(const LayoutBlockFlow& block_flow) {
   if (block_flow.IsLayoutNGListItem())
     return !block_flow.FirstChild();
-  if (block_flow.IsListItem())
-    return To<LayoutListItem>(block_flow).IsEmpty();
   return false;
 }
 
@@ -1882,10 +1817,11 @@ bool CompositeEditCommand::BreakOutOfEmptyMailBlockquotedParagraph(
 
   Position caret_pos(MostForwardCaretPosition(caret.DeepEquivalent()));
   // A line break is either a br or a preserved newline.
-  DCHECK(
-      IsA<HTMLBRElement>(caret_pos.AnchorNode()) ||
-      (caret_pos.AnchorNode()->IsTextNode() &&
-       caret_pos.AnchorNode()->GetLayoutObject()->Style()->PreserveNewline()))
+  DCHECK(IsA<HTMLBRElement>(caret_pos.AnchorNode()) ||
+         (caret_pos.AnchorNode()->IsTextNode() && caret_pos.AnchorNode()
+                                                      ->GetLayoutObject()
+                                                      ->Style()
+                                                      ->ShouldPreserveBreaks()))
       << caret_pos;
 
   if (IsA<HTMLBRElement>(*caret_pos.AnchorNode())) {

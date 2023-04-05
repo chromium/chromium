@@ -92,9 +92,25 @@ void fct() {
   }
 
   {
-    // Expected rewrite: std::vector<raw_ptr<S>>::iterator it;
+    // Expected rewrite: std::vector<raw_ptr<S>>::iterator
     std::vector<raw_ptr<S>>::iterator it = o.member.begin();
-    (void)it;
+    // Expected rewrite: std::vector<raw_ptr<S>>::reverse_iterator
+    std::vector<raw_ptr<S>>::reverse_iterator it2 = o.member.rbegin();
+    // Expected rewrite: std::vector<raw_ptr<S>>::const_iterator
+    std::vector<raw_ptr<S>>::const_iterator it3 = o.member.cbegin();
+    // Expected rewrite: std::vector<raw_ptr<S>>::const_reverse_iterator
+    std::vector<raw_ptr<S>>::const_reverse_iterator it4 = o.member.crbegin();
+  }
+
+  {
+    // Expected rewrite: std::vector<raw_ptr<S>>::iterator
+    std::vector<raw_ptr<S>>::iterator it = o.member.end();
+    // Expected rewrite: std::vector<raw_ptr<S>>::reverse_iterator
+    std::vector<raw_ptr<S>>::reverse_iterator it2 = o.member.rend();
+    // Expected rewrite: std::vector<raw_ptr<S>>::const_iterator
+    std::vector<raw_ptr<S>>::const_iterator it3 = o.member.cend();
+    // Expected rewrite: std::vector<raw_ptr<S>>::const_reverse_iterator
+    std::vector<raw_ptr<S>>::const_reverse_iterator it4 = o.member.crend();
   }
 
   {
@@ -104,5 +120,12 @@ void fct() {
     std::vector<raw_ptr<S>> b;
     // Expected rewrite: b = (a.size() > 0) ? a : std::vector<raw_ptr<S>>();
     b = (a.size() > 0) ? a : std::vector<raw_ptr<S>>();
+  }
+
+  {
+    // Expected rewrite: std::vector<raw_ptr<S>> a = o.member;
+    std::vector<raw_ptr<S>> a = o.member;
+    // This tests whether the implicit lambda field is rewritten.
+    auto fct = [&a]() { a.push_back(nullptr); };
   }
 }

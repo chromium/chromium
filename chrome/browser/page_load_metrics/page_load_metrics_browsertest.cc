@@ -3740,22 +3740,6 @@ class PageLoadMetricsBrowserTestWithFencedFrames
   content::test::FencedFrameTestHelper helper_;
 };
 
-// Checks if updating fencedframe's src attribute works. This is a regression
-// test to ensure PageLoadMetrics doesn't crash on such navigations.
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithFencedFrames,
-                       FencedFrameSrcAttributeNavigation) {
-  ASSERT_TRUE(https_server().Start());
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      https_server().GetURL("c.test", "/fenced_frames/basic_title.html")));
-
-  content::TestNavigationObserver observer(web_contents());
-  EXPECT_TRUE(content::ExecuteScript(
-      web_contents(),
-      "document.querySelector('fencedframe').src = './title2.html';"));
-  observer.WaitForNavigationFinished();
-}
-
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithFencedFrames,
                        PageLoadPrivacySandboxAdsFencedFramesMetrics) {
   ASSERT_TRUE(https_server().Start());

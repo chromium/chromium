@@ -287,11 +287,11 @@ using bookmarks::BookmarkNode;
   switch (sectionID) {
     case SectionIdentifierProfileBookmarks:
       header.text =
-          l10n_util::GetNSString(IDS_IOS_BOOKMARKS_ACCOUNT_SECTION_TITLE);
+          l10n_util::GetNSString(IDS_IOS_BOOKMARKS_PROFILE_SECTION_TITLE);
       break;
     case SectionIdentifierAccountBookmarks:
       header.text =
-          l10n_util::GetNSString(IDS_IOS_BOOKMARKS_PROFILE_SECTION_TITLE);
+          l10n_util::GetNSString(IDS_IOS_BOOKMARKS_ACCOUNT_SECTION_TITLE);
       break;
   }
   return header;

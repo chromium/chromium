@@ -5,7 +5,6 @@
 #include "components/desks_storage/core/desk_template_conversion.h"
 
 #include "base/containers/fixed_flat_set.h"
-#include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
 #include "base/notreached.h"
@@ -13,6 +12,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
@@ -1954,7 +1954,7 @@ std::unique_ptr<ash::DeskTemplate> ParseDeskTemplateFromSource(
     return nullptr;
   }
 
-  base::GUID uuid = base::GUID::ParseCaseInsensitive(uuid_str);
+  base::Uuid uuid = base::Uuid::ParseCaseInsensitive(uuid_str);
   if (!uuid.is_valid())
     return nullptr;
 
@@ -1998,7 +1998,7 @@ base::Value SerializeDeskTemplateAsPolicy(const ash::DeskTemplate* desk,
 
 std::unique_ptr<DeskTemplate> FromSyncProto(
     const sync_pb::WorkspaceDeskSpecifics& pb_entry) {
-  base::GUID uuid = base::GUID::ParseCaseInsensitive(pb_entry.uuid());
+  base::Uuid uuid = base::Uuid::ParseCaseInsensitive(pb_entry.uuid());
   if (!uuid.is_valid())
     return nullptr;
 

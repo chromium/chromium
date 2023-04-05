@@ -9,12 +9,12 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/guid.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/active_devices_invalidation_info.h"
@@ -42,7 +42,7 @@ std::unique_ptr<DeviceInfo> CreateFakeDeviceInfo(
     const ModelTypeSet& interested_data_types,
     base::Time last_updated_timestamp) {
   return std::make_unique<syncer::DeviceInfo>(
-      base::GUID::GenerateRandomV4().AsLowercaseString(), name,
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), name,
       "chrome_version", "user_agent", sync_pb::SyncEnums::TYPE_UNSET,
       syncer::DeviceInfo::OsType::kUnknown,
       syncer::DeviceInfo::FormFactor::kUnknown, "device_id",

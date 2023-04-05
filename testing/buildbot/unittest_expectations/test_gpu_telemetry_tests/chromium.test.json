@@ -24,7 +24,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3"
+              "gpu": "10de:1cb3",
+              "os": "Linux"
             }
           ],
           "idempotent": false

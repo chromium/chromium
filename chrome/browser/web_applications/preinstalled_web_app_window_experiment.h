@@ -87,6 +87,10 @@ class PreinstalledWebAppWindowExperiment
 
   WebAppRegistrar& registrar_unsafe() const;
 
+  // Set of apps for which the experiment called `SetSupportedLinksPreference`
+  // and hasn't yet observed a resulting `OnPreferredAppChanged`.
+  base::flat_set<AppId> apps_that_experiment_setup_set_supported_links_;
+
   const raw_ptr<Profile> profile_;
   base::OneShotEvent preinstalled_apps_installed_;
 

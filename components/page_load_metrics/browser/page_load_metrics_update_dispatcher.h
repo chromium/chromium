@@ -178,7 +178,8 @@ class PageLoadMetricsUpdateDispatcher {
                      mojom::FrameRenderDataUpdatePtr render_data,
                      mojom::CpuTimingPtr new_cpu_timing,
                      mojom::InputTimingPtr input_timing_delta,
-                     mojom::SubresourceLoadMetricsPtr subresource_load_metrics,
+                     const absl::optional<blink::SubresourceLoadMetrics>&
+                         subresource_load_metrics,
                      uint32_t soft_navigation_count,
                      internal::PageLoadTrackerPageType page_type);
 
@@ -229,7 +230,7 @@ class PageLoadMetricsUpdateDispatcher {
   const mojom::InputTiming& page_input_timing() const {
     return *page_input_timing_;
   }
-  const absl::optional<mojom::SubresourceLoadMetrics>&
+  const absl::optional<blink::SubresourceLoadMetrics>&
   subresource_load_metrics() const {
     return subresource_load_metrics_;
   }
@@ -262,7 +263,7 @@ class PageLoadMetricsUpdateDispatcher {
                               mojom::FrameMetadataPtr subframe_metadata);
 
   void UpdateMainFrameSubresourceLoadMetrics(
-      const mojom::SubresourceLoadMetrics& subresource_load_metrics);
+      const blink::SubresourceLoadMetrics& subresource_load_metrics);
 
   void UpdateSoftNavigationCount(uint32_t soft_navigation_count);
 
@@ -319,7 +320,7 @@ class PageLoadMetricsUpdateDispatcher {
   mojom::InputTimingPtr page_input_timing_;
 
   // SubresourceLoadMetrics for the main frame.
-  absl::optional<mojom::SubresourceLoadMetrics> subresource_load_metrics_;
+  absl::optional<blink::SubresourceLoadMetrics> subresource_load_metrics_;
 
   // True if this page load started in prerender.
   const bool is_prerendered_page_load_;

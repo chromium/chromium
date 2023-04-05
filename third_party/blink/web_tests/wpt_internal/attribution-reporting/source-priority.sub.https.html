@@ -6,23 +6,23 @@
 <script src="resources/helpers.js"></script>
 <script>
 attribution_reporting_promise_test(async t => {
-  await Promise.all([
-    registerAttributionSrc(t, {source: {
-      source_event_id: '1',
+  const sources = [{
+      source_event_id: generateSourceEventId(),
       destination: `https://{{host}}`,
       priority: '11',
-    }}),
-    registerAttributionSrc(t, {source: {
-      source_event_id: '2',
+    },
+    {
+      source_event_id: generateSourceEventId(),
       destination: `https://{{host}}`,
       priority: '13',
-    }}),
-    registerAttributionSrc(t, {source: {
-      source_event_id: '3',
+    },
+    {
+      source_event_id: generateSourceEventId(),
       destination: `https://{{host}}`,
       priority: '12',
-    }}),
-  ]);
+    }]
+  await Promise.all(sources.map(source => registerAttributionSrc(t, {source})));
+  await Promise.all(sources.map(source => waitForSourceToBeRegistered(source.source_event_id)));
 
   await registerAttributionSrc(t, {trigger: {
     event_trigger_data: [{}],
@@ -31,6 +31,6 @@ attribution_reporting_promise_test(async t => {
   const payload = await pollEventLevelReports();
   assert_equals(payload.reports.length, 1);
   const report = JSON.parse(payload.reports[0].body);
-  assert_equals(report.source_event_id, '2');
+  assert_equals(report.source_event_id, sources[1].source_event_id);
 }, 'Trigger is attributed to highest priority source.');
 </script>

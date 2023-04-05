@@ -46,12 +46,23 @@ void WaylandOutputManager::AddWaylandOutput(WaylandOutput::Id output_id,
   // initialized, which results in setting up a wl_listener and getting the
   // geometry and the scaling factor from the Wayland Compositor.
   wayland_output->Initialize(this);
-  if (connection_->xdg_output_manager_v1())
-    wayland_output->InitializeXdgOutput(connection_->xdg_output_manager_v1());
-  if (connection_->zaura_shell()) {
-    wayland_output->InitializeZAuraOutput(
-        connection_->zaura_shell()->wl_object());
+
+  // If supported, the zaura_output_manager will have have been bound by this
+  // client before the any wl_output objects. zaura_output_manager subsumes the
+  // responsibilities of xdg_output and aura_output, so avoid unnecessarily
+  // creating the output extensions if present.
+  if (!connection_->zaura_output_manager()) {
+    if (connection_->xdg_output_manager_v1()) {
+      wayland_output->InitializeXdgOutput(connection_->xdg_output_manager_v1());
+    }
+    if (connection_->zaura_shell()) {
+      wayland_output->InitializeZAuraOutput(
+          connection_->zaura_shell()->wl_object());
+    }
   }
+
+  // TODO(tluk): Update zaura_output_manager to support the capabilities of
+  // zcr_color_management_output.
   if (connection_->zcr_color_manager()) {
     wayland_output->InitializeColorManagementOutput(
         connection_->zcr_color_manager());

@@ -37,7 +37,6 @@
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
@@ -77,20 +76,17 @@ bool CanBeHitTestTargetPseudoNodeStyle(const ComputedStyle& style) {
 struct SameSizeAsLayoutInline : public LayoutBoxModelObject {
   ~SameSizeAsLayoutInline() override = default;
   LayoutObjectChildList children_;
-  LineBoxList line_boxes_;
   wtf_size_t first_fragment_item_index_;
 };
 
 ASSERT_SIZE(LayoutInline, SameSizeAsLayoutInline);
 
-LayoutInline::LayoutInline(Element* element)
-    : LayoutBoxModelObject(element), line_boxes_() {
+LayoutInline::LayoutInline(Element* element) : LayoutBoxModelObject(element) {
   SetChildrenInline(true);
 }
 
 void LayoutInline::Trace(Visitor* visitor) const {
   visitor->Trace(children_);
-  visitor->Trace(line_boxes_);
   LayoutBoxModelObject::Trace(visitor);
 }
 
@@ -112,40 +108,16 @@ void LayoutInline::WillBeDestroyed() {
     text_autosizer->Destroy(this);
 
   if (!DocumentBeingDestroyed()) {
-    if (FirstLineBox()) {
-      // If line boxes are contained inside a root, that means we're an inline.
-      // In that case, we need to remove all the line boxes so that the parent
-      // lines aren't pointing to deleted children. If the first line box does
-      // not have a parent that means they are either already disconnected or
-      // root lines that can just be destroyed without disconnecting.
-      if (FirstLineBox()->Parent()) {
-        for (InlineFlowBox* box : *LineBoxes())
-          box->Remove();
-      }
-    } else {
-      if (Parent())
-        Parent()->DirtyLinesFromChangedChild(this);
-      if (FirstInlineFragmentItemIndex()) {
-        NGFragmentItems::LayoutObjectWillBeDestroyed(*this);
-        ClearFirstInlineFragmentItemIndex();
-      }
+    if (Parent()) {
+      Parent()->DirtyLinesFromChangedChild(this);
+    }
+    if (FirstInlineFragmentItemIndex()) {
+      NGFragmentItems::LayoutObjectWillBeDestroyed(*this);
+      ClearFirstInlineFragmentItemIndex();
     }
   }
 
-  DeleteLineBoxes();
-
   LayoutBoxModelObject::WillBeDestroyed();
-
-#if DCHECK_IS_ON()
-  if (!IsInLayoutNGInlineFormattingContext())
-    line_boxes_.AssertIsEmpty();
-#endif
-}
-
-void LayoutInline::DeleteLineBoxes() {
-  NOT_DESTROYED();
-  if (!IsInLayoutNGInlineFormattingContext())
-    MutableLineBoxes()->DeleteLineBoxes();
 }
 
 void LayoutInline::ClearFirstInlineFragmentItemIndex() {
@@ -163,21 +135,13 @@ void LayoutInline::SetFirstInlineFragmentItemIndex(wtf_size_t index) {
 
 bool LayoutInline::HasInlineFragments() const {
   NOT_DESTROYED();
-  if (IsInLayoutNGInlineFormattingContext())
-    return first_fragment_item_index_;
-  return FirstLineBox();
+  return first_fragment_item_index_;
 }
 
 void LayoutInline::InLayoutNGInlineFormattingContextWillChange(bool new_value) {
   NOT_DESTROYED();
   if (IsInLayoutNGInlineFormattingContext())
     ClearFirstInlineFragmentItemIndex();
-  else
-    DeleteLineBoxes();
-
-  // Because |first_fragment_item_index_| and |line_boxes_| are union, when one
-  // is deleted, the other should be initialized to nullptr.
-  DCHECK(new_value ? !first_fragment_item_index_ : !line_boxes_.First());
 }
 
 void LayoutInline::UpdateFromStyle() {
@@ -206,7 +170,6 @@ void LayoutInline::StyleDidChange(StyleDifference diff,
           new_style.MayHavePadding() || new_style.MayHaveMargin() ||
           new_style.HasOutline();
       if (old_style && always_create_line_boxes_new) {
-        DirtyLineBoxes(false);
         SetNeedsLayoutAndFullPaintInvalidation(
             layout_invalidation_reason::kStyleChange);
       }
@@ -260,8 +223,6 @@ void LayoutInline::UpdateAlwaysCreateLineBoxes(bool full_layout) {
   }
 
   if (always_create_line_boxes_new) {
-    if (!full_layout)
-      DirtyLineBoxes(false);
     SetAlwaysCreateLineBoxes();
   }
 }
@@ -332,7 +293,6 @@ void LayoutInline::UpdateShouldCreateBoxFragment() {
 }
 
 LayoutRect LayoutInline::LocalCaretRect(
-    const InlineBox* inline_box,
     int,
     LayoutUnit* extra_width_to_end_of_line) const {
   NOT_DESTROYED();
@@ -346,17 +306,13 @@ LayoutRect LayoutInline::LocalCaretRect(
     return LayoutRect();
   }
 
-  DCHECK(!inline_box);
-
   if (extra_width_to_end_of_line)
     *extra_width_to_end_of_line = LayoutUnit();
 
   LayoutRect caret_rect =
       LocalCaretRectForEmptyElement(BorderAndPaddingWidth(), LayoutUnit());
 
-  if (InlineBox* first_box = FirstLineBox()) {
-    caret_rect.MoveBy(first_box->Location());
-  } else if (IsInLayoutNGInlineFormattingContext()) {
+  if (IsInLayoutNGInlineFormattingContext()) {
     NGInlineCursor cursor;
     cursor.MoveTo(*this);
     if (cursor) {
@@ -402,7 +358,6 @@ void LayoutInline::AddChildIgnoringContinuation(LayoutObject* new_child,
   // |before_child| to the anonymous block. The anonymous block may need to be
   // split if |before_child| is not the first child.
   if (before_child && before_child->Parent() != this) {
-    DCHECK(!ForceLegacyLayout());
     DCHECK(before_child->Parent()->IsBlockInInline());
     DCHECK(IsA<LayoutBlockFlow>(before_child->Parent()));
     DCHECK_EQ(before_child->Parent()->Parent(), this);
@@ -417,7 +372,6 @@ void LayoutInline::AddChildIgnoringContinuation(LayoutObject* new_child,
 
 void LayoutInline::AddChildAsBlockInInline(LayoutObject* new_child,
                                            LayoutObject* before_child) {
-  DCHECK(!ForceLegacyLayout());
   DCHECK(!new_child->IsInline());
   LayoutBlockFlow* anonymous_box;
   if (!before_child) {
@@ -468,12 +422,8 @@ LayoutBlockFlow* LayoutInline::CreateAnonymousContainerForBlockChildren()
   // for continuations.
   new_style_builder.SetDirection(containing_block->StyleRef().Direction());
 
-  LegacyLayout legacy = containing_block->ForceLegacyLayout()
-                            ? LegacyLayout::kForce
-                            : LegacyLayout::kAuto;
-
-  return LayoutBlockFlow::CreateAnonymous(
-      &GetDocument(), new_style_builder.TakeStyle(), legacy);
+  return LayoutBlockFlow::CreateAnonymous(&GetDocument(),
+                                          new_style_builder.TakeStyle());
 }
 
 LayoutBox* LayoutInline::CreateAnonymousBoxToSplit(
@@ -481,7 +431,6 @@ LayoutBox* LayoutInline::CreateAnonymousBoxToSplit(
   NOT_DESTROYED();
   DCHECK(box_to_split->IsBlockInInline());
   DCHECK(IsA<LayoutBlockFlow>(box_to_split));
-  DCHECK(!ForceLegacyLayout());
   return CreateAnonymousContainerForBlockChildren();
 }
 
@@ -494,139 +443,11 @@ template <typename PhysicalRectCollector>
 void LayoutInline::CollectLineBoxRects(
     const PhysicalRectCollector& yield) const {
   NOT_DESTROYED();
-  if (IsInLayoutNGInlineFormattingContext()) {
-    NGInlineCursor cursor;
-    cursor.MoveToIncludingCulledInline(*this);
-    for (; cursor; cursor.MoveToNextForSameLayoutObject())
-      yield(cursor.CurrentRectInBlockFlow());
-    return;
-  }
-  if (!AlwaysCreateLineBoxes()) {
-    CollectCulledLineBoxRects(yield);
-  } else {
-    const LayoutBlock* block_for_flipping =
-        UNLIKELY(HasFlippedBlocksWritingMode()) ? ContainingBlock() : nullptr;
-    for (InlineFlowBox* curr : *LineBoxes()) {
-      yield(FlipForWritingMode(LayoutRect(curr->Location(), curr->Size()),
-                               block_for_flipping));
-    }
-  }
-}
-
-template <typename PhysicalRectCollector>
-void LayoutInline::CollectCulledLineBoxRects(
-    const PhysicalRectCollector& yield) const {
-  NOT_DESTROYED();
-  DCHECK(!IsInLayoutNGInlineFormattingContext());
-  const LayoutBlock* block_for_flipping =
-      UNLIKELY(HasFlippedBlocksWritingMode()) ? ContainingBlock() : nullptr;
-  CollectCulledLineBoxRectsInFlippedBlocksDirection(
-      [this, block_for_flipping, &yield](const LayoutRect& r) {
-        PhysicalRect rect = FlipForWritingMode(r, block_for_flipping);
-        yield(rect);
-      },
-      this);
-}
-
-static inline void ComputeItemTopHeight(const LayoutInline* container,
-                                        const RootInlineBox& root_box,
-                                        LayoutUnit* top,
-                                        LayoutUnit* height) {
-  bool first_line = root_box.IsFirstLineStyle();
-  const SimpleFontData* font_data =
-      root_box.GetLineLayoutItem().Style(first_line)->GetFont().PrimaryFont();
-  const SimpleFontData* container_font_data =
-      container->Style(first_line)->GetFont().PrimaryFont();
-  DCHECK(font_data);
-  DCHECK(container_font_data);
-  if (!font_data || !container_font_data) {
-    *top = LayoutUnit();
-    *height = LayoutUnit();
-    return;
-  }
-  auto metrics = font_data->GetFontMetrics();
-  auto container_metrics = container_font_data->GetFontMetrics();
-  *top =
-      root_box.LogicalTop() + (metrics.Ascent() - container_metrics.Ascent());
-  *height = LayoutUnit(container_metrics.Height());
-}
-
-template <typename FlippedRectCollector>
-void LayoutInline::CollectCulledLineBoxRectsInFlippedBlocksDirection(
-    const FlippedRectCollector& yield,
-    const LayoutInline* container) const {
-  NOT_DESTROYED();
-  if (!CulledInlineFirstLineBox())
-    return;
-
-  bool is_horizontal = StyleRef().IsHorizontalWritingMode();
-
-  LayoutUnit logical_top, logical_height;
-  for (LayoutObject* curr = FirstChild(); curr; curr = curr->NextSibling()) {
-    if (curr->IsFloatingOrOutOfFlowPositioned())
-      continue;
-
-    // We want to get the margin box in the inline direction, and then use our
-    // font ascent/descent in the block direction (aligned to the root box's
-    // baseline).
-    if (curr->IsBox()) {
-      auto* curr_box = To<LayoutBox>(curr);
-      if (curr_box->InlineBoxWrapper()) {
-        RootInlineBox& root_box = curr_box->InlineBoxWrapper()->Root();
-        ComputeItemTopHeight(container, root_box, &logical_top,
-                             &logical_height);
-        if (is_horizontal) {
-          yield(LayoutRect(
-              curr_box->InlineBoxWrapper()->X() - curr_box->MarginLeft(),
-              logical_top, curr_box->Size().Width() + curr_box->MarginWidth(),
-              logical_height));
-        } else {
-          yield(LayoutRect(
-              logical_top,
-              curr_box->InlineBoxWrapper()->Y() - curr_box->MarginTop(),
-              logical_height,
-              curr_box->Size().Height() + curr_box->MarginHeight()));
-        }
-      }
-    } else if (curr->IsLayoutInline()) {
-      // If the child doesn't need line boxes either, then we can recur.
-      auto* curr_inline = To<LayoutInline>(curr);
-      if (!curr_inline->AlwaysCreateLineBoxes()) {
-        curr_inline->CollectCulledLineBoxRectsInFlippedBlocksDirection(
-            yield, container);
-      } else {
-        for (InlineFlowBox* child_line : *curr_inline->LineBoxes()) {
-          RootInlineBox& root_box = child_line->Root();
-          ComputeItemTopHeight(container, root_box, &logical_top,
-                               &logical_height);
-          LayoutUnit logical_width =
-              child_line->LogicalWidth() + child_line->MarginLogicalWidth();
-          if (is_horizontal) {
-            yield(LayoutRect(
-                LayoutUnit(child_line->X() - child_line->MarginLogicalLeft()),
-                logical_top, logical_width, logical_height));
-          } else {
-            yield(LayoutRect(
-                logical_top,
-                LayoutUnit(child_line->Y() - child_line->MarginLogicalLeft()),
-                logical_height, logical_width));
-          }
-        }
-      }
-    } else if (curr->IsText()) {
-      auto* curr_text = To<LayoutText>(curr);
-      for (InlineTextBox* child_text : curr_text->TextBoxes()) {
-        RootInlineBox& root_box = child_text->Root();
-        ComputeItemTopHeight(container, root_box, &logical_top,
-                             &logical_height);
-        if (is_horizontal)
-          yield(LayoutRect(child_text->X(), logical_top,
-                           child_text->LogicalWidth(), logical_height));
-        else
-          yield(LayoutRect(logical_top, child_text->Y(), logical_height,
-                           child_text->LogicalWidth()));
-      }
-    }
+  DCHECK(IsInLayoutNGInlineFormattingContext());
+  NGInlineCursor cursor;
+  cursor.MoveToIncludingCulledInline(*this);
+  for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
+    yield(cursor.CurrentRectInBlockFlow());
   }
 }
 
@@ -643,12 +464,8 @@ bool LayoutInline::AbsoluteTransformDependsOnPoint(
   return false;
 }
 
-void LayoutInline::LocalQuadsForSelf(Vector<gfx::QuadF>& quads) const {
-  QuadsForSelfInternal(quads, 0, false);
-}
-
-void LayoutInline::AbsoluteQuadsForSelf(Vector<gfx::QuadF>& quads,
-                                        MapCoordinatesFlags mode) const {
+void LayoutInline::AbsoluteQuads(Vector<gfx::QuadF>& quads,
+                                 MapCoordinatesFlags mode) const {
   QuadsForSelfInternal(quads, mode, true);
 }
 
@@ -703,14 +520,6 @@ absl::optional<PhysicalOffset> LayoutInline::FirstLineBoxTopLeftInternal()
     if (!cursor)
       return absl::nullopt;
     return cursor.CurrentOffsetInBlockFlow();
-  }
-  if (const InlineBox* first_box = FirstLineBoxIncludingCulling()) {
-    LayoutPoint location = first_box->Location();
-    if (UNLIKELY(HasFlippedBlocksWritingMode())) {
-      location.Move(first_box->Width(), LayoutUnit());
-      return ContainingBlock()->FlipForWritingMode(location);
-    }
-    return PhysicalOffset(location);
   }
   return absl::nullopt;
 }
@@ -856,8 +665,7 @@ bool LayoutInline::NodeAtPoint(HitTestResult& result,
     return false;
   }
 
-  return LineBoxes()->HitTest(LineLayoutBoxModel(this), result,
-                              hit_test_location, accumulated_offset, phase);
+  NOTREACHED_NORETURN();
 }
 
 bool LayoutInline::HitTestCulledInline(HitTestResult& result,
@@ -903,7 +711,6 @@ bool LayoutInline::HitTestCulledInline(HitTestResult& result,
     }
   } else {
     DCHECK(!IsInLayoutNGInlineFormattingContext());
-    CollectCulledLineBoxRects(yield);
   }
 
   if (intersected) {
@@ -923,15 +730,6 @@ PositionWithAffinity LayoutInline::PositionForPoint(
   if (const LayoutBlockFlow* ng_block_flow = FragmentItemsContainer())
     return ng_block_flow->PositionForPoint(point);
 
-  DCHECK(CanUseInlineBox(*this));
-
-  if (FirstLineBoxIncludingCulling()) {
-    // This inline actually has a line box.  We must have clicked in the
-    // border/padding of one of these boxes.  We
-    // should try to find a result by asking our containing block.
-    return ContainingBlock()->PositionForPoint(point);
-  }
-
   return LayoutBoxModelObject::PositionForPoint(point);
 }
 
@@ -948,7 +746,6 @@ PhysicalRect LayoutInline::PhysicalLinesBoundingBox() const {
   }
 
   if (!AlwaysCreateLineBoxes()) {
-    DCHECK(!FirstLineBox());
     PhysicalRect bounding_box;
     CollectLineBoxRects([&bounding_box](const PhysicalRect& rect) {
       bounding_box.UniteIfNonZero(rect);
@@ -957,121 +754,21 @@ PhysicalRect LayoutInline::PhysicalLinesBoundingBox() const {
   }
 
   LayoutRect result;
-
-  // See <rdar://problem/5289721>, for an unknown reason the linked list here is
-  // sometimes inconsistent, first is non-zero and last is zero.  We have been
-  // unable to reproduce this at all (and consequently unable to figure ot why
-  // this is happening).  The assert will hopefully catch the problem in debug
-  // builds and help us someday figure out why.  We also put in a redundant
-  // check of lastLineBox() to avoid the crash for now.
-  DCHECK_EQ(!FirstLineBox(),
-            !LastLineBox());  // Either both are null or both exist.
-  if (FirstLineBox() && LastLineBox()) {
-    // Return the width of the minimal left side and the maximal right side.
-    LayoutUnit logical_left_side;
-    LayoutUnit logical_right_side;
-    for (InlineFlowBox* curr : *LineBoxes()) {
-      if (curr == FirstLineBox() || curr->LogicalLeft() < logical_left_side)
-        logical_left_side = curr->LogicalLeft();
-      if (curr == FirstLineBox() || curr->LogicalRight() > logical_right_side)
-        logical_right_side = curr->LogicalRight();
-    }
-
-    bool is_horizontal = StyleRef().IsHorizontalWritingMode();
-
-    LayoutUnit x = is_horizontal ? logical_left_side : FirstLineBox()->X();
-    LayoutUnit y = is_horizontal ? FirstLineBox()->Y() : logical_left_side;
-    LayoutUnit width = is_horizontal ? logical_right_side - logical_left_side
-                                     : LastLineBox()->LogicalBottom() - x;
-    LayoutUnit height = is_horizontal ? LastLineBox()->LogicalBottom() - y
-                                      : logical_right_side - logical_left_side;
-    result = LayoutRect(x, y, width, height);
-  }
-
   return FlipForWritingMode(result);
-}
-
-InlineBox* LayoutInline::CulledInlineFirstLineBox() const {
-  NOT_DESTROYED();
-  for (LayoutObject* curr = FirstChild(); curr; curr = curr->NextSibling()) {
-    if (curr->IsFloatingOrOutOfFlowPositioned())
-      continue;
-
-    // We want to get the margin box in the inline direction, and then use our
-    // font ascent/descent in the block direction (aligned to the root box's
-    // baseline).
-    if (curr->IsBox())
-      return To<LayoutBox>(curr)->InlineBoxWrapper();
-    if (curr->IsLayoutInline()) {
-      auto* curr_inline = To<LayoutInline>(curr);
-      InlineBox* result = curr_inline->FirstLineBoxIncludingCulling();
-      if (result)
-        return result;
-    } else if (curr->IsText()) {
-      auto* curr_text = To<LayoutText>(curr);
-      if (curr_text->FirstTextBox())
-        return curr_text->FirstTextBox();
-    }
-  }
-  return nullptr;
-}
-
-InlineBox* LayoutInline::CulledInlineLastLineBox() const {
-  NOT_DESTROYED();
-  for (LayoutObject* curr = LastChild(); curr; curr = curr->PreviousSibling()) {
-    if (curr->IsFloatingOrOutOfFlowPositioned())
-      continue;
-
-    // We want to get the margin box in the inline direction, and then use our
-    // font ascent/descent in the block direction (aligned to the root box's
-    // baseline).
-    if (curr->IsBox())
-      return To<LayoutBox>(curr)->InlineBoxWrapper();
-    if (curr->IsLayoutInline()) {
-      auto* curr_inline = To<LayoutInline>(curr);
-      InlineBox* result = curr_inline->LastLineBoxIncludingCulling();
-      if (result)
-        return result;
-    } else if (curr->IsText()) {
-      auto* curr_text = To<LayoutText>(curr);
-      if (curr_text->LastTextBox())
-        return curr_text->LastTextBox();
-    }
-  }
-  return nullptr;
 }
 
 PhysicalRect LayoutInline::CulledInlineVisualOverflowBoundingBox() const {
   NOT_DESTROYED();
   PhysicalRect result;
-  CollectCulledLineBoxRects(
-      [&result](const PhysicalRect& r) { result.UniteIfNonZero(r); });
   if (!FirstChild())
     return result;
 
-  bool is_horizontal = StyleRef().IsHorizontalWritingMode();
-  const LayoutBlock* block_for_flipping =
-      UNLIKELY(HasFlippedBlocksWritingMode()) ? ContainingBlock() : nullptr;
   for (LayoutObject* curr = FirstChild(); curr; curr = curr->NextSibling()) {
     if (curr->IsFloatingOrOutOfFlowPositioned())
       continue;
 
     // For overflow we just have to propagate by hand and recompute it all.
-    if (curr->IsBox()) {
-      auto* curr_box = To<LayoutBox>(curr);
-      if (!curr_box->HasSelfPaintingLayer() && curr_box->InlineBoxWrapper()) {
-        LayoutRect logical_rect =
-            curr_box->LogicalVisualOverflowRectForPropagation();
-        if (is_horizontal) {
-          logical_rect.MoveBy(curr_box->Location());
-          result.UniteIfNonZero(PhysicalRect(logical_rect));
-        } else {
-          logical_rect.MoveBy(curr_box->Location());
-          result.UniteIfNonZero(FlipForWritingMode(
-              logical_rect.TransposedRect(), block_for_flipping));
-        }
-      }
-    } else if (curr->IsLayoutInline()) {
+    if (curr->IsLayoutInline()) {
       // If the child doesn't need line boxes either, then we can recur.
       auto* curr_inline = To<LayoutInline>(curr);
       if (!curr_inline->AlwaysCreateLineBoxes()) {
@@ -1105,34 +802,7 @@ PhysicalRect LayoutInline::LinesVisualOverflowBoundingBox() const {
   if (!AlwaysCreateLineBoxes())
     return CulledInlineVisualOverflowBoundingBox();
 
-  if (!FirstLineBox() || !LastLineBox())
-    return PhysicalRect();
-
-  // Return the width of the minimal left side and the maximal right side.
-  LayoutUnit logical_left_side = LayoutUnit::Max();
-  LayoutUnit logical_right_side = LayoutUnit::Min();
-  for (InlineFlowBox* curr : *LineBoxes()) {
-    logical_left_side =
-        std::min(logical_left_side, curr->LogicalLeftVisualOverflow());
-    logical_right_side =
-        std::max(logical_right_side, curr->LogicalRightVisualOverflow());
-  }
-
-  RootInlineBox& first_root_box = FirstLineBox()->Root();
-  RootInlineBox& last_root_box = LastLineBox()->Root();
-
-  LayoutUnit logical_top =
-      FirstLineBox()->LogicalTopVisualOverflow(first_root_box.LineTop());
-  LayoutUnit logical_width = logical_right_side - logical_left_side;
-  LayoutUnit logical_height =
-      LastLineBox()->LogicalBottomVisualOverflow(last_root_box.LineBottom()) -
-      logical_top;
-
-  LayoutRect rect(logical_left_side, logical_top, logical_width,
-                  logical_height);
-  if (!StyleRef().IsHorizontalWritingMode())
-    rect = rect.TransposedRect();
-  return FlipForWritingMode(rect);
+  return PhysicalRect();
 }
 
 PhysicalRect LayoutInline::VisualRectInDocument(VisualRectFlags flags) const {
@@ -1203,8 +873,6 @@ PhysicalRect LayoutInline::ReferenceBoxForClipPath() const {
     if (cursor)
       return cursor.Current().RectInContainerFragment();
   }
-  if (const InlineFlowBox* flow_box = FirstLineBox())
-    return FlipForWritingMode(flow_box->FrameRect());
   return PhysicalRect();
 }
 
@@ -1227,14 +895,8 @@ bool LayoutInline::MapToVisualRectInAncestorSpaceInternal(
       preserve3d ? TransformState::kAccumulateTransform
                  : TransformState::kFlattenTransform;
 
-  if (StyleRef().HasInFlowPosition() && Layer()) {
-    // Apply the in-flow position offset when invalidating a rectangle. The
-    // layer is translated, but the layout box isn't, so we need to do this to
-    // get the right dirty rect. Since this is called from LayoutObject::
-    // setStyle, the relative position flag on the LayoutObject has been
-    // cleared, so use the one on the style().
-    transform_state.Move(Layer()->GetLayoutObject().OffsetForInFlowPosition(),
-                         accumulation);
+  if (IsStickyPositioned()) {
+    transform_state.Move(StickyPositionOffset(), accumulation);
   }
 
   LayoutBox* container_box = DynamicTo<LayoutBox>(container);
@@ -1254,8 +916,9 @@ PhysicalOffset LayoutInline::OffsetFromContainerInternal(
   DCHECK_EQ(container, Container());
 
   PhysicalOffset offset;
-  if (IsInFlowPositioned())
-    offset += OffsetForInFlowPosition();
+  if (IsStickyPositioned()) {
+    offset += StickyPositionOffset();
+  }
 
   if (container->IsScrollContainer())
     offset += OffsetFromScrollableContainer(container, ignore_scroll_offset);
@@ -1265,7 +928,7 @@ PhysicalOffset LayoutInline::OffsetFromContainerInternal(
 
 PaintLayerType LayoutInline::LayerTypeRequired() const {
   NOT_DESTROYED();
-  return IsInFlowPositioned() || CreatesGroup() ||
+  return IsRelPositioned() || IsStickyPositioned() || CreatesGroup() ||
                  StyleRef().ShouldCompositeForCurrentAnimations() ||
                  ShouldApplyPaintContainment()
              ? kNormalPaintLayer
@@ -1291,70 +954,10 @@ void LayoutInline::UpdateHitTestResult(HitTestResult& result,
   if (result.InnerNode())
     return;
 
-  Node* n = GetNode();
   PhysicalOffset local_point = point;
-  if (n) {
-    if (IsInlineElementContinuation()) {
-      // We're in the continuation of a split inline. Adjust our local point to
-      // be in the coordinate space of the principal layoutObject's containing
-      // block. This will end up being the innerNode.
-      LayoutBlock* first_block = n->GetLayoutObject()->ContainingBlock();
-
-      // Get our containing block.
-      LayoutBox* block = ContainingBlock();
-      local_point += block->PhysicalLocation();
-      local_point -= first_block->PhysicalLocation();
-    }
-
+  if (Node* n = GetNode()) {
     result.SetNodeAndPosition(n, local_point);
   }
-}
-
-void LayoutInline::DirtyLineBoxes(bool full_layout) {
-  NOT_DESTROYED();
-  if (full_layout) {
-    DeleteLineBoxes();
-    return;
-  }
-
-  if (!AlwaysCreateLineBoxes()) {
-    // We have to grovel into our children in order to dirty the appropriate
-    // lines.
-    for (LayoutObject* curr = FirstChild(); curr; curr = curr->NextSibling()) {
-      if (curr->IsFloatingOrOutOfFlowPositioned())
-        continue;
-      if (curr->IsBox() && !curr->NeedsLayout()) {
-        auto* curr_box = To<LayoutBox>(curr);
-        if (curr_box->InlineBoxWrapper())
-          curr_box->InlineBoxWrapper()->Root().MarkDirty();
-      } else if (!curr->SelfNeedsLayout()) {
-        if (curr->IsLayoutInline()) {
-          auto* curr_inline = To<LayoutInline>(curr);
-          for (InlineFlowBox* child_line : *curr_inline->LineBoxes())
-            child_line->Root().MarkDirty();
-        } else if (curr->IsText()) {
-          auto* curr_text = To<LayoutText>(curr);
-          for (InlineTextBox* child_text : curr_text->TextBoxes())
-            child_text->Root().MarkDirty();
-        }
-      }
-    }
-  } else {
-    MutableLineBoxes()->DirtyLineBoxes();
-  }
-}
-
-InlineFlowBox* LayoutInline::CreateInlineFlowBox() {
-  NOT_DESTROYED();
-  return MakeGarbageCollected<InlineFlowBox>(LineLayoutItem(this));
-}
-
-InlineFlowBox* LayoutInline::CreateAndAppendInlineFlowBox() {
-  NOT_DESTROYED();
-  SetAlwaysCreateLineBoxes();
-  InlineFlowBox* flow_box = CreateInlineFlowBox();
-  MutableLineBoxes()->AppendLineBox(flow_box);
-  return flow_box;
 }
 
 void LayoutInline::DirtyLinesFromChangedChild(
@@ -1364,11 +967,7 @@ void LayoutInline::DirtyLinesFromChangedChild(
   if (IsInLayoutNGInlineFormattingContext()) {
     if (const LayoutBlockFlow* container = FragmentItemsContainer())
       NGFragmentItems::DirtyLinesFromChangedChild(*child, *container);
-    return;
   }
-  MutableLineBoxes()->DirtyLinesFromChangedChild(
-      LineLayoutItem(this), LineLayoutItem(child),
-      marking_behavior == kMarkContainerChain);
 }
 
 LayoutUnit LayoutInline::LineHeight(
@@ -1401,54 +1000,6 @@ LayoutUnit LayoutInline::BaselinePosition(
                       font_metrics.Height()) /
                          2)
                         .ToInt());
-}
-
-PhysicalOffset LayoutInline::OffsetForInFlowPositionedInline(
-    const LayoutBox& child) const {
-  NOT_DESTROYED();
-  // TODO(layout-dev): This function isn't right with mixed writing modes,
-  // but LayoutNG has fixed the issue. This function seems to always return
-  // zero in LayoutNG. We should probably remove this function for LayoutNG.
-
-  DCHECK(IsInFlowPositioned() || StyleRef().HasNonInitialFilter() ||
-         StyleRef().HasNonInitialBackdropFilter());
-  if (!IsInFlowPositioned() && !StyleRef().HasNonInitialFilter() &&
-      !StyleRef().HasNonInitialBackdropFilter()) {
-    DCHECK(CreatesGroup())
-        << "Inlines with filters or backdrop-filters should create a group";
-    return PhysicalOffset();
-  }
-
-  // When we have an enclosing relpositioned inline, we need to add in the
-  // offset of the first line box from the rest of the content, but only in the
-  // cases where we know we're positioned relative to the inline itself.
-
-  LayoutSize logical_offset;
-  LayoutUnit inline_position;
-  LayoutUnit block_position;
-  if (FirstLineBox()) {
-    inline_position = FirstLineBox()->LogicalLeft();
-    block_position = FirstLineBox()->LogicalTop();
-  } else {
-    DCHECK(Layer());
-    inline_position = Layer()->StaticInlinePosition();
-    block_position = Layer()->StaticBlockPosition();
-  }
-
-  // Per http://www.w3.org/TR/CSS2/visudet.html#abs-non-replaced-width an
-  // absolute positioned box with a static position should locate itself as
-  // though it is a normal flow box in relation to its containing block.
-  if (!child.StyleRef().HasStaticInlinePosition(
-          StyleRef().IsHorizontalWritingMode()))
-    logical_offset.SetWidth(inline_position);
-
-  if (!child.StyleRef().HasStaticBlockPosition(
-          StyleRef().IsHorizontalWritingMode()))
-    logical_offset.SetHeight(block_position);
-
-  return PhysicalOffset(StyleRef().IsHorizontalWritingMode()
-                            ? logical_offset
-                            : logical_offset.TransposedSize());
 }
 
 void LayoutInline::ImageChanged(WrappedImagePtr, CanDeferInvalidation) {
@@ -1485,6 +1036,23 @@ void LayoutInline::AddOutlineRects(
   if (info) {
     *info = OutlineInfo::GetFromStyle(StyleRef());
   }
+}
+
+gfx::RectF LayoutInline::LocalBoundingBoxRectF() const {
+  NOT_DESTROYED();
+  Vector<gfx::QuadF> quads;
+  QuadsForSelfInternal(quads, 0, false);
+
+  wtf_size_t n = quads.size();
+  if (n == 0) {
+    return gfx::RectF();
+  }
+
+  gfx::RectF result = quads[0].BoundingBox();
+  for (wtf_size_t i = 1; i < n; ++i) {
+    result.Union(quads[i].BoundingBox());
+  }
+  return result;
 }
 
 gfx::RectF LayoutInline::LocalBoundingBoxRectForAccessibility() const {
@@ -1538,9 +1106,6 @@ void LayoutInline::InvalidateDisplayItemClients(
   }
 
   paint_invalidator.InvalidateDisplayItemClient(*this, invalidation_reason);
-
-  for (InlineFlowBox* box : *LineBoxes())
-    paint_invalidator.InvalidateDisplayItemClient(*box, invalidation_reason);
 }
 
 PhysicalRect LayoutInline::DebugRect() const {

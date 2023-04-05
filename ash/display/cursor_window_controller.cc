@@ -515,7 +515,7 @@ void CursorWindowController::UpdateCursorImage() {
   delegate_->SetCursorImage(resized.size(), resized);
 
   if (cursor_view_widget_) {
-    static_cast<cursor::CursorView*>(cursor_view_widget_->GetContentsView())
+    static_cast<CursorView*>(cursor_view_widget_->GetContentsView())
         ->SetCursorImage(delegate_->cursor_image(), delegate_->size(),
                          hot_point_);
   }
@@ -543,9 +543,9 @@ void CursorWindowController::UpdateCursorVisibility() {
 }
 
 void CursorWindowController::UpdateCursorView() {
-  cursor_view_widget_ = cursor::CursorView::Create(
-      aura::Env::GetInstance()->last_mouse_location(),
-      is_cursor_motion_blur_enabled_, container_);
+  cursor_view_widget_ =
+      CursorView::Create(aura::Env::GetInstance()->last_mouse_location(),
+                         is_cursor_motion_blur_enabled_, container_);
   UpdateCursorImage();
 }
 

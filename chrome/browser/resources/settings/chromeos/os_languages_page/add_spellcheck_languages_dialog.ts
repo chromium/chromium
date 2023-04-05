@@ -9,9 +9,9 @@
 
 import './add_items_dialog.js';
 
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 
 import {Item} from './add_items_dialog.js';

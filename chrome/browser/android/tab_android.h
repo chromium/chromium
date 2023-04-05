@@ -79,7 +79,7 @@ class TabAndroid : public base::SupportsUserData {
   scoped_refptr<cc::slim::Layer> GetContentLayer() const;
 
   // Return specific id information regarding this TabAndroid.
-  const SessionID& window_id() const { return session_window_id_; }
+  SessionID window_id() const { return session_window_id_; }
 
   int GetAndroidId() const;
   bool IsNativePage() const;

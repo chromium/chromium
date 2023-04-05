@@ -60,6 +60,31 @@ VideoCaptureDevice::Client::Buffer::~Buffer() = default;
 VideoCaptureDevice::Client::Buffer& VideoCaptureDevice::Client::Buffer::
 operator=(VideoCaptureDevice::Client::Buffer&& other) = default;
 
+void VideoCaptureDevice::Client::OnIncomingCapturedData(
+    const uint8_t* data,
+    int length,
+    const VideoCaptureFormat& frame_format,
+    const gfx::ColorSpace& color_space,
+    int clockwise_rotation,
+    bool flip_y,
+    base::TimeTicks reference_time,
+    base::TimeDelta timestamp) {
+  OnIncomingCapturedData(data, length, frame_format, color_space,
+                         clockwise_rotation, flip_y, reference_time, timestamp,
+                         /*frame_feedback_id=*/0);
+}
+
+void VideoCaptureDevice::Client::OnIncomingCapturedGfxBuffer(
+    gfx::GpuMemoryBuffer* buffer,
+    const VideoCaptureFormat& frame_format,
+    int clockwise_rotation,
+    base::TimeTicks reference_time,
+    base::TimeDelta timestamp) {
+  OnIncomingCapturedGfxBuffer(buffer, frame_format, clockwise_rotation,
+                              reference_time, timestamp,
+                              /*frame_feedback_id=*/0);
+}
+
 VideoCaptureDevice::~VideoCaptureDevice() = default;
 
 void VideoCaptureDevice::Crop(

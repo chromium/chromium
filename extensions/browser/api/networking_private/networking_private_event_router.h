@@ -31,7 +31,7 @@ class NetworkingPrivateEventRouter : public KeyedService,
       content::BrowserContext* browser_context);
 
  protected:
-  NetworkingPrivateEventRouter() {}
+  NetworkingPrivateEventRouter() = default;
 };
 
 }  // namespace extensions

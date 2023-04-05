@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 409 tests; 257 PASS, 152 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 409 tests; 251 PASS, 158 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL idl_test setup promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'buildSync' on 'MLGraphBuilder': The input layout nchw is not supported."
 PASS idl_test validation
 PASS Partial interface MLContext: original interface defined
@@ -159,14 +159,14 @@ PASS MLContext interface: existence and properties of interface prototype object
 PASS MLContext interface: existence and properties of interface prototype object's "constructor" property
 PASS MLContext interface: existence and properties of interface prototype object's @@unscopables property
 PASS MLContext interface: operation computeSync(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews)
-PASS MLContext interface: operation compute(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews)
+FAIL MLContext interface: operation compute(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews) assert_own_property: interface prototype object missing non-static operation expected property "compute" missing
 FAIL MLContext interface: operation createCommandEncoder() assert_own_property: interface prototype object missing non-static operation expected property "createCommandEncoder" missing
 PASS MLContext must be primary interface of context
 PASS Stringification of context
 PASS MLContext interface: context must inherit property "computeSync(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews)" with the proper type
 PASS MLContext interface: calling computeSync(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews) on context with too few arguments must throw TypeError
-PASS MLContext interface: context must inherit property "compute(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews)" with the proper type
-PASS MLContext interface: calling compute(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews) on context with too few arguments must throw TypeError
+FAIL MLContext interface: context must inherit property "compute(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews)" with the proper type assert_inherits: property "compute" not found in prototype chain
+FAIL MLContext interface: calling compute(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews) on context with too few arguments must throw TypeError assert_inherits: property "compute" not found in prototype chain
 FAIL MLContext interface: context must inherit property "createCommandEncoder()" with the proper type assert_inherits: property "createCommandEncoder" not found in prototype chain
 FAIL MLCommandEncoder interface: existence and properties of interface object assert_own_property: self does not have own property "MLCommandEncoder" expected property "MLCommandEncoder" missing
 FAIL MLCommandEncoder interface object length assert_own_property: self does not have own property "MLCommandEncoder" expected property "MLCommandEncoder" missing
@@ -186,7 +186,7 @@ PASS MLGraphBuilder interface: existence and properties of interface prototype o
 PASS MLGraphBuilder interface: operation input(DOMString, MLOperandDescriptor)
 FAIL MLGraphBuilder interface: operation constant(MLOperandDescriptor, MLBufferView) assert_equals: property has wrong .length expected 1 but got 2
 FAIL MLGraphBuilder interface: operation constant(double, optional MLOperandType) assert_equals: property has wrong .length expected 1 but got 2
-PASS MLGraphBuilder interface: operation build(MLNamedOperands)
+FAIL MLGraphBuilder interface: operation build(MLNamedOperands) assert_own_property: interface prototype object missing non-static operation expected property "build" missing
 PASS MLGraphBuilder interface: operation buildSync(MLNamedOperands)
 FAIL MLGraphBuilder interface: operation batchNormalization(MLOperand, MLOperand, MLOperand, optional MLBatchNormalizationOptions) assert_own_property: interface prototype object missing non-static operation expected property "batchNormalization" missing
 PASS MLGraphBuilder interface: operation clamp(MLOperand, optional MLClampOptions)
@@ -267,8 +267,8 @@ PASS MLGraphBuilder interface: builder must inherit property "constant(MLOperand
 PASS MLGraphBuilder interface: calling constant(MLOperandDescriptor, MLBufferView) on builder with too few arguments must throw TypeError
 PASS MLGraphBuilder interface: builder must inherit property "constant(double, optional MLOperandType)" with the proper type
 PASS MLGraphBuilder interface: calling constant(double, optional MLOperandType) on builder with too few arguments must throw TypeError
-PASS MLGraphBuilder interface: builder must inherit property "build(MLNamedOperands)" with the proper type
-PASS MLGraphBuilder interface: calling build(MLNamedOperands) on builder with too few arguments must throw TypeError
+FAIL MLGraphBuilder interface: builder must inherit property "build(MLNamedOperands)" with the proper type assert_inherits: property "build" not found in prototype chain
+FAIL MLGraphBuilder interface: calling build(MLNamedOperands) on builder with too few arguments must throw TypeError assert_inherits: property "build" not found in prototype chain
 PASS MLGraphBuilder interface: builder must inherit property "buildSync(MLNamedOperands)" with the proper type
 PASS MLGraphBuilder interface: calling buildSync(MLNamedOperands) on builder with too few arguments must throw TypeError
 FAIL MLGraphBuilder interface: builder must inherit property "batchNormalization(MLOperand, MLOperand, MLOperand, optional MLBatchNormalizationOptions)" with the proper type assert_inherits: property "batchNormalization" not found in prototype chain

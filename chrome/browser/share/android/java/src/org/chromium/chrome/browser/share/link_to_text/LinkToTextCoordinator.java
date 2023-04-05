@@ -101,7 +101,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     }
 
     @VisibleForTesting
-    void onSelectorReady(String selector) {
+    public void onSelectorReady(String selector) {
         mShareLinkParams = selector.isEmpty()
                 ? null
                 : new ShareParams

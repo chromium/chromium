@@ -19,6 +19,7 @@
 ../../action_helpers.py
 ../../gn_helpers.py
 ../../print_python_deps.py
+../../zip_helpers.py
 ../list_java_targets.py
 ../pylib/__init__.py
 ../pylib/constants/__init__.py

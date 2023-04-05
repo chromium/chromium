@@ -117,7 +117,7 @@ class ExtensionActionRunnerBrowserTest : public ExtensionBrowserTest {
                             RequiresConsent requires_consent);
 
  private:
-  std::vector<std::unique_ptr<TestExtensionDir>> test_extension_dirs_;
+  std::vector<TestExtensionDir> test_extension_dirs_;
   std::vector<const Extension*> extensions_;
 };
 
@@ -164,18 +164,18 @@ const Extension* ExtensionActionRunnerBrowserTest::CreateExtension(
          })",
       name.c_str(), permissions.c_str(), scripts.c_str());
 
-  std::unique_ptr<TestExtensionDir> dir(new TestExtensionDir);
-  dir->WriteManifest(manifest);
-  dir->WriteFile(FILE_PATH_LITERAL("script.js"),
-                 injection_type == CONTENT_SCRIPT ? kContentScriptSource
-                                                  : kBackgroundScriptSource);
+  TestExtensionDir dir;
+  dir.WriteManifest(manifest);
+  dir.WriteFile(FILE_PATH_LITERAL("script.js"), injection_type == CONTENT_SCRIPT
+                                                    ? kContentScriptSource
+                                                    : kBackgroundScriptSource);
 
   const Extension* extension = nullptr;
   if (injection_type == CONTENT_SCRIPT) {
-    extension = LoadExtension(dir->UnpackedPath());
+    extension = LoadExtension(dir.UnpackedPath());
   } else {
     ExtensionTestMessageListener listener("ready");
-    extension = LoadExtension(dir->UnpackedPath());
+    extension = LoadExtension(dir.UnpackedPath());
     EXPECT_TRUE(listener.WaitUntilSatisfied());
   }
 

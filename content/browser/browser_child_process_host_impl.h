@@ -126,8 +126,6 @@ class BrowserChildProcessHostImpl
       std::unique_ptr<ChildProcessLauncherFileData> file_data,
       bool terminate_on_shutdown);
 
-  static void HistogramBadMessageTerminated(ProcessType process_type);
-
 #if !BUILDFLAG(IS_ANDROID)
   void SetProcessBackgrounded(bool is_background);
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -36,7 +36,6 @@ class ProximityAuthSystem;
 }  // namespace proximity_auth
 
 class Profile;
-class PrefRegistrySimple;
 
 namespace ash {
 
@@ -61,14 +60,6 @@ class EasyUnlockService : public KeyedService,
 
   // Registers Easy Unlock profile preferences.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-
-  // Registers Easy Unlock local state entries.
-  // TODO(b/227674947): Delete this method and deprecate hardlock pref.
-  static void RegisterPrefs(PrefRegistrySimple* registry);
-
-  // Removes the hardlock state for the given user.
-  // TODO(b/227674947): Delete this method and deprecate hardlock pref.
-  static void ResetLocalStateForUser(const AccountId& account_id);
 
   // Returns the ProximityAuthPrefManager, responsible for managing all
   // EasyUnlock preferences.

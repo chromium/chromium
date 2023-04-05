@@ -16,6 +16,7 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/test_password_store.h"
+#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/safe_browsing/core/common/features.h"
@@ -166,9 +167,8 @@ class SafetyCheckMediatorTest : public PlatformTest {
     [defaults removeObjectForKey:kIOSChromeUpgradeURLKey];
   }
 
-  // Creates and adds a saved password form. If `is_leaked` is true it marks the
-  // credential as leaked.
-  void AddSavedForm(bool is_leaked = false) {
+  // Creates a form.
+  std::unique_ptr<password_manager::PasswordForm> CreateForm() {
     auto form = std::make_unique<password_manager::PasswordForm>();
     form->url = GURL("http://www.example.com/accounts/LoginAuth");
     form->action = GURL("http://www.example.com/accounts/Login");
@@ -180,12 +180,23 @@ class SafetyCheckMediatorTest : public PlatformTest {
     form->signon_realm = "http://www.example.com/";
     form->scheme = password_manager::PasswordForm::Scheme::kHtml;
     form->blocked_by_user = false;
-    if (is_leaked) {
-      form->password_issues = {
-          {InsecureType::kLeaked,
-           password_manager::InsecurityMetadata(
-               base::Time::Now(), password_manager::IsMuted(false))}};
-    }
+    return form;
+  }
+
+  // Creates and adds a saved password form. If `is_leaked` is true it marks the
+  // credential as leaked.
+  void AddSavedForm() {
+    auto form = CreateForm();
+    AddPasswordForm(std::move(form));
+  }
+
+  // Creates and adds a saved insecure password form.
+  void AddSavedInsecureForm(InsecureType insecure_type, bool is_muted = false) {
+    auto form = CreateForm();
+    form->password_issues = {
+        {insecure_type,
+         password_manager::InsecurityMetadata(
+             base::Time::Now(), password_manager::IsMuted(is_muted))}};
     AddPasswordForm(std::move(form));
   }
 
@@ -208,7 +219,8 @@ class SafetyCheckMediatorTest : public PlatformTest {
   PrefBackedBoolean* safe_browsing_preference_;
 };
 
-// Check start button tests.
+#pragma mark - Check start button tests
+
 TEST_F(SafetyCheckMediatorTest, StartingCheckPutsChecksInRunningState) {
   TableViewItem* start =
       [[TableViewItem alloc] initWithType:CheckStartItemType];
@@ -253,10 +265,12 @@ TEST_F(SafetyCheckMediatorTest, CheckStartButtonCancelUI) {
               GetNSString(IDS_IOS_CANCEL_PASSWORD_CHECK_BUTTON));
 }
 
-// Timestamp test.
+#pragma mark - Timestamp tests
+
 TEST_F(SafetyCheckMediatorTest, TimestampSetIfIssueFound) {
   mediator_.checkDidRun = true;
-  mediator_.passwordCheckRowState = PasswordCheckRowStateUnSafe;
+  mediator_.passwordCheckRowState =
+      PasswordCheckRowStateUnmutedCompromisedPasswords;
   [mediator_ resetsCheckStartItemIfNeeded];
 
   base::Time lastCompletedCheck =
@@ -270,7 +284,8 @@ TEST_F(SafetyCheckMediatorTest, TimestampSetIfIssueFound) {
 
 TEST_F(SafetyCheckMediatorTest, TimestampResetIfNoIssuesInCheck) {
   mediator_.checkDidRun = true;
-  mediator_.passwordCheckRowState = PasswordCheckRowStateUnSafe;
+  mediator_.passwordCheckRowState =
+      PasswordCheckRowStateUnmutedCompromisedPasswords;
   [mediator_ resetsCheckStartItemIfNeeded];
 
   base::Time lastCompletedCheck =
@@ -291,7 +306,8 @@ TEST_F(SafetyCheckMediatorTest, TimestampResetIfNoIssuesInCheck) {
   resetNSUserDefaultsForTesting();
 }
 
-// Safe Browsing check tests.
+#pragma mark - Safe Browsing check tests
+
 TEST_F(SafetyCheckMediatorTest, SafeBrowsingEnabledReturnsSafeState) {
   mediator_.safeBrowsingPreference.value = true;
   RunUntilIdle();
@@ -379,7 +395,9 @@ TEST_F(SafetyCheckMediatorTest, SafeBrowsingManagedUI) {
   EXPECT_FALSE(mediator_.safeBrowsingCheckItem.infoButtonHidden);
 }
 
-// Password check tests.
+#pragma mark - Password check tests
+
+// Tests that only having a safe password results in a safe password row state.
 TEST_F(SafetyCheckMediatorTest, PasswordCheckSafeCheck) {
   AddSavedForm();
   mediator_.currentPasswordCheckState = PasswordCheckState::kRunning;
@@ -387,7 +405,14 @@ TEST_F(SafetyCheckMediatorTest, PasswordCheckSafeCheck) {
   EXPECT_EQ(mediator_.passwordCheckRowState, PasswordCheckRowStateSafe);
 }
 
-TEST_F(SafetyCheckMediatorTest, PasswordCheckSafeUI) {
+// Tests that the content of the `passwordCheckItem` is as expected when in safe
+// state and when the kIOSPasswordCheckup feature is disabled.
+TEST_F(SafetyCheckMediatorTest, PasswordCheckSafeUIWithoutKIOSPasswordCheckup) {
+  // Disable Password Checkup feature.
+  base::test::ScopedFeatureList featureList;
+  featureList.InitAndDisableFeature(
+      password_manager::features::kIOSPasswordCheckup);
+
   mediator_.passwordCheckRowState = PasswordCheckRowStateSafe;
   [mediator_ reconfigurePasswordCheckItem];
   EXPECT_NSEQ(mediator_.passwordCheckItem.detailText,
@@ -396,16 +421,39 @@ TEST_F(SafetyCheckMediatorTest, PasswordCheckSafeUI) {
   EXPECT_EQ(mediator_.passwordCheckItem.trailingImage, SafeImage());
 }
 
-TEST_F(SafetyCheckMediatorTest, PasswordCheckUnSafeCheck) {
-  AddSavedForm(/*is_leaked=*/true);
-  mediator_.currentPasswordCheckState = PasswordCheckState::kRunning;
-  [mediator_ passwordCheckStateDidChange:PasswordCheckState::kIdle];
-  EXPECT_EQ(mediator_.passwordCheckRowState, PasswordCheckRowStateUnSafe);
+// Tests that the content of the `passwordCheckItem` is as expected when in safe
+// state and when the kIOSPasswordCheckup feature is enabled.
+TEST_F(SafetyCheckMediatorTest, PasswordCheckSafeUIWithKIOSPasswordCheckup) {
+  // Enable Password Checkup feature.
+  base::test::ScopedFeatureList featureList;
+  featureList.InitAndEnableFeature(
+      password_manager::features::kIOSPasswordCheckup);
+
+  // TODO(crbug.com/1406540): Implement test.
 }
 
-TEST_F(SafetyCheckMediatorTest, PasswordCheckUnSafeUI) {
-  AddSavedForm(/*is_leaked=*/true);
-  mediator_.passwordCheckRowState = PasswordCheckRowStateUnSafe;
+// Tests that only having a leaked password results in an umuted compromised
+// password row state.
+TEST_F(SafetyCheckMediatorTest, PasswordCheckUnmutedCompromisedPasswordsCheck) {
+  AddSavedInsecureForm(InsecureType::kLeaked);
+  mediator_.currentPasswordCheckState = PasswordCheckState::kRunning;
+  [mediator_ passwordCheckStateDidChange:PasswordCheckState::kIdle];
+  EXPECT_EQ(mediator_.passwordCheckRowState,
+            PasswordCheckRowStateUnmutedCompromisedPasswords);
+}
+
+// Tests that the content of the `passwordCheckItem` is as expected when in
+// compromised state and when the kIOSPasswordCheckup feature is disabled.
+TEST_F(SafetyCheckMediatorTest,
+       PasswordCheckUnmutedCompromisedPasswordsUIWithoutKIOSPasswordCheckup) {
+  // Disable Password Checkup feature.
+  base::test::ScopedFeatureList featureList;
+  featureList.InitAndDisableFeature(
+      password_manager::features::kIOSPasswordCheckup);
+
+  AddSavedInsecureForm(InsecureType::kLeaked);
+  mediator_.passwordCheckRowState =
+      PasswordCheckRowStateUnmutedCompromisedPasswords;
   [mediator_ reconfigurePasswordCheckItem];
   EXPECT_NSEQ(mediator_.passwordCheckItem.detailText,
               base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
@@ -413,6 +461,99 @@ TEST_F(SafetyCheckMediatorTest, PasswordCheckUnSafeUI) {
   EXPECT_EQ(mediator_.passwordCheckItem.trailingImage, UnsafeImage());
 }
 
+// Tests that the content of the `passwordCheckItem` is as expected when in
+// compromised state and when the kIOSPasswordCheckup feature is enabled.
+TEST_F(SafetyCheckMediatorTest,
+       PasswordCheckUnmutedCompromisedPasswordsUIWithKIOSPasswordCheckup) {
+  // Enable Password Checkup feature.
+  base::test::ScopedFeatureList featureList;
+  featureList.InitAndEnableFeature(
+      password_manager::features::kIOSPasswordCheckup);
+
+  // TODO(crbug.com/1406540): Implement test.
+}
+
+// Tests that only having a reused password results in a reused password row
+// state. kIOSPasswordCheckup feature needs to be enabled for this test.
+TEST_F(SafetyCheckMediatorTest, PasswordCheckReusedPasswordsCheck) {
+  // Enable Password Checkup feature.
+  base::test::ScopedFeatureList featureList;
+  featureList.InitAndEnableFeature(
+      password_manager::features::kIOSPasswordCheckup);
+
+  AddSavedInsecureForm(InsecureType::kReused);
+  mediator_.currentPasswordCheckState = PasswordCheckState::kRunning;
+  [mediator_ passwordCheckStateDidChange:PasswordCheckState::kIdle];
+  EXPECT_EQ(mediator_.passwordCheckRowState,
+            PasswordCheckRowStateReusedPasswords);
+}
+
+// Tests that the content of the `passwordCheckItem` is as expected when in
+// reused state. kIOSPasswordCheckup feature needs to be enabled for this test.
+TEST_F(SafetyCheckMediatorTest, PasswordCheckReusedPasswordsUI) {
+  // Enable Password Checkup feature.
+  base::test::ScopedFeatureList featureList;
+  featureList.InitAndEnableFeature(
+      password_manager::features::kIOSPasswordCheckup);
+
+  // TODO(crbug.com/1406540): Implement test.
+}
+
+// Tests that only having a weak password results in a weak password row state.
+// kIOSPasswordCheckup feature needs to be enabled for this test.
+TEST_F(SafetyCheckMediatorTest, PasswordCheckWeakPasswordsCheck) {
+  // Enable Password Checkup feature.
+  base::test::ScopedFeatureList featureList;
+  featureList.InitAndEnableFeature(
+      password_manager::features::kIOSPasswordCheckup);
+
+  AddSavedInsecureForm(InsecureType::kWeak);
+  mediator_.currentPasswordCheckState = PasswordCheckState::kRunning;
+  [mediator_ passwordCheckStateDidChange:PasswordCheckState::kIdle];
+  EXPECT_EQ(mediator_.passwordCheckRowState,
+            PasswordCheckRowStateWeakPasswords);
+}
+
+// Tests that the content of the `passwordCheckItem` is as expected when in weak
+// state. kIOSPasswordCheckup feature needs to be enabled for this test.
+TEST_F(SafetyCheckMediatorTest, PasswordCheckWeakPasswordsUI) {
+  // Enable Password Checkup feature.
+  base::test::ScopedFeatureList featureList;
+  featureList.InitAndEnableFeature(
+      password_manager::features::kIOSPasswordCheckup);
+
+  // TODO(crbug.com/1406540): Implement test.
+}
+
+// Tests that only having a dismissed compromsied warning results in a dismissed
+// warning row state. kIOSPasswordCheckup feature needs to be enabled for this
+// test.
+TEST_F(SafetyCheckMediatorTest, PasswordCheckDismissedWarningsCheck) {
+  // Enable Password Checkup feature.
+  base::test::ScopedFeatureList featureList;
+  featureList.InitAndEnableFeature(
+      password_manager::features::kIOSPasswordCheckup);
+
+  AddSavedInsecureForm(InsecureType::kLeaked, /*is_muted=*/true);
+  mediator_.currentPasswordCheckState = PasswordCheckState::kRunning;
+  [mediator_ passwordCheckStateDidChange:PasswordCheckState::kIdle];
+  EXPECT_EQ(mediator_.passwordCheckRowState,
+            PasswordCheckRowStateDismissedWarnings);
+}
+
+// Tests that the content of the `passwordCheckItem` is as expected when in
+// dismissed warning state. kIOSPasswordCheckup feature needs to be enabled for
+// this test.
+TEST_F(SafetyCheckMediatorTest, PasswordCheckDismissedWarningsUI) {
+  // Enable Password Checkup feature.
+  base::test::ScopedFeatureList featureList;
+  featureList.InitAndEnableFeature(
+      password_manager::features::kIOSPasswordCheckup);
+
+  // TODO(crbug.com/1406540): Implement test.
+}
+
+// Tests that exceeding the quota limit results in an error row state.
 TEST_F(SafetyCheckMediatorTest, PasswordCheckErrorCheck) {
   AddSavedForm();
   mediator_.currentPasswordCheckState = PasswordCheckState::kRunning;
@@ -420,6 +561,8 @@ TEST_F(SafetyCheckMediatorTest, PasswordCheckErrorCheck) {
   EXPECT_EQ(mediator_.passwordCheckRowState, PasswordCheckRowStateError);
 }
 
+// Tests that the content of the `passwordCheckItem` is as expected when in
+// error state.
 TEST_F(SafetyCheckMediatorTest, PasswordCheckErrorUI) {
   mediator_.passwordCheckRowState = PasswordCheckRowStateError;
   [mediator_ reconfigurePasswordCheckItem];
@@ -428,7 +571,8 @@ TEST_F(SafetyCheckMediatorTest, PasswordCheckErrorUI) {
   EXPECT_FALSE(mediator_.passwordCheckItem.infoButtonHidden);
 }
 
-// Update check tests.
+#pragma mark - Update check tests
+
 TEST_F(SafetyCheckMediatorTest, OmahaRespondsUpToDate) {
   mediator_.updateCheckRowState = UpdateCheckRowStateRunning;
   UpgradeRecommendedDetails details;
@@ -517,7 +661,8 @@ TEST_F(SafetyCheckMediatorTest, UpdateCheckChannelUI) {
   EXPECT_TRUE(mediator_.updateCheckItem.infoButtonHidden);
 }
 
-// Clickable tests.
+#pragma mark - Clickable tests
+
 TEST_F(SafetyCheckMediatorTest, UpdateClickableOutOfDate) {
   mediator_.updateCheckRowState = UpdateCheckRowStateOutOfDate;
   [mediator_ reconfigureUpdateCheckItem];
@@ -535,7 +680,8 @@ TEST_F(SafetyCheckMediatorTest, UpdateNonclickableUpToDate) {
 }
 
 TEST_F(SafetyCheckMediatorTest, PasswordClickableUnsafe) {
-  mediator_.passwordCheckRowState = PasswordCheckRowStateUnSafe;
+  mediator_.passwordCheckRowState =
+      PasswordCheckRowStateUnmutedCompromisedPasswords;
   [mediator_ reconfigurePasswordCheckItem];
   TableViewItem* passwordItem = [[TableViewItem alloc]
       initWithType:SafetyCheckItemType::PasswordItemType];

@@ -35,7 +35,6 @@
 #include "third_party/blink/renderer/core/html/html_olist_element.h"
 #include "third_party/blink/renderer/core/html/list_item_ordinal.h"
 #include "third_party/blink/renderer/core/layout/counter_node.h"
-#include "third_party/blink/renderer/core/layout/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -498,7 +497,7 @@ String GenerateCounterText(const CounterStyle* counter_style, int value) {
 
 LayoutCounter::LayoutCounter(PseudoElement& pseudo,
                              const CounterContentData& counter)
-    : LayoutText(nullptr, StringImpl::empty_),
+    : LayoutNGText(nullptr, StringImpl::empty_),
       counter_(counter),
       counter_node_(nullptr),
       next_for_same_counter_(nullptr) {
@@ -512,7 +511,7 @@ void LayoutCounter::Trace(Visitor* visitor) const {
   visitor->Trace(counter_);
   visitor->Trace(counter_node_);
   visitor->Trace(next_for_same_counter_);
-  LayoutText::Trace(visitor);
+  LayoutNGText::Trace(visitor);
 }
 
 void LayoutCounter::WillBeDestroyed() {
@@ -523,7 +522,7 @@ void LayoutCounter::WillBeDestroyed() {
   }
   if (View())
     View()->RemoveLayoutCounter();
-  LayoutText::WillBeDestroyed();
+  LayoutNGText::WillBeDestroyed();
 }
 
 String LayoutCounter::OriginalText() const {

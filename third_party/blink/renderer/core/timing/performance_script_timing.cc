@@ -35,9 +35,9 @@ AtomicString GetScriptName(ScriptTimingInfo* info,
     case ScriptTimingInfo::Type::kEventHandler:
     case ScriptTimingInfo::Type::kUserCallback: {
       WTF::StringBuilder builder;
-      builder.Append(info->ClassLikeName());
-      builder.Append(".");
       if (info->GetType() == ScriptTimingInfo::Type::kEventHandler) {
+        builder.Append(info->ClassLikeName());
+        builder.Append(".");
         builder.Append("on");
       }
       builder.Append(info->PropertyLikeName());

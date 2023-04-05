@@ -14,6 +14,7 @@ import '../settings_shared.css.js';
 import './passwords_shared.css.js';
 
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -140,39 +141,26 @@ class SettingsCreditCardListEntryElement extends
   }
 
   /**
-   * Returns a string of combination of expiration date and virtual card info if
-   * the card is eligible for enrollment or has already enrolled, or cardholder
-   * name otherwise.
-   * E.g., 11/2023 | Virtual card turned on
+   * Returns virtual card metadata if the card is eligible for enrollment or has
+   * already enrolled, or expiration date (MM/YY) otherwise.
+   * E.g., 11/23, or Virtual card turned on
    */
   private getSummarySublabel_(): string {
-    let expirationDateString = '';
-    if (!!this.creditCard.expirationMonth && !!this.creditCard.expirationYear) {
-      expirationDateString = this.creditCard.expirationMonth.toString() + '/' +
-          this.creditCard.expirationYear.toString();
+    if (this.isVirtualCardEnrolled_()) {
+      return this.i18n('virtualCardTurnedOn');
     }
 
-    const secondarySubLabel = this.getSecondarySublabel_();
-    const verticalBar =
-        !!expirationDateString && !!secondarySubLabel ? '\u00a0|\u00a0' : '';
-
-    return expirationDateString + verticalBar + secondarySubLabel;
+    assert(this.creditCard.expirationMonth);
+    assert(this.creditCard.expirationYear);
+    // Convert string (e.g. '06') to number (e.g. 6).
+    return this.creditCard.expirationMonth + '/' +
+        this.creditCard.expirationYear.toString().substring(2);
   }
 
   private shouldShowVirtualCardSecondarySublabel_(): boolean {
     return this.creditCard.metadata!.summarySublabel!.trim() !== '' ||
         this.isVirtualCardEnrolled_() ||
         this.isVirtualCardEnrollmentEligible_();
-  }
-
-  private getSecondarySublabel_(): string {
-    if (this.isVirtualCardEnrolled_()) {
-      return this.i18n('virtualCardTurnedOn');
-    }
-    if (this.isVirtualCardEnrollmentEligible_()) {
-      return this.i18n('virtualCardAvailable');
-    }
-    return this.creditCard.metadata!.summarySublabel!;
   }
 
   private shouldShowPaymentsLabel_(): boolean {

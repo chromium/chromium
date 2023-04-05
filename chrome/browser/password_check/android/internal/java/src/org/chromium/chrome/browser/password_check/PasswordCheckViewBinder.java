@@ -42,7 +42,6 @@ import androidx.core.graphics.drawable.DrawableCompat;
 
 import org.chromium.chrome.browser.password_check.PasswordCheckProperties.ItemType;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckIconHelper;
-import org.chromium.chrome.browser.password_check.internal.R;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
@@ -178,8 +177,7 @@ class PasswordCheckViewBinder {
             imageView.setImageDrawable(FaviconUtils.getIconDrawableWithoutFilter(data.mIcon,
                     data.mUrlOrAppName, PasswordCheckIconHelper.getIconColor(data, context),
                     FaviconUtils.createCircularIconGenerator(context), resources,
-                    resources.getDimensionPixelSize(
-                            org.chromium.chrome.browser.ui.favicon.R.dimen.default_favicon_size)));
+                    resources.getDimensionPixelSize(R.dimen.default_favicon_size)));
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }

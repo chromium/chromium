@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
+#include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -443,6 +444,13 @@ void ChromeManagementAPIDelegate::LaunchAppFunctionDelegate(
   apps::LaunchContainer launch_container =
       GetLaunchContainer(extensions::ExtensionPrefs::Get(context), extension);
   Profile* profile = Profile::FromBrowserContext(context);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_FUCHSIA)
+  if (extensions::IsExtensionUnsupportedDeprecatedApp(profile,
+                                                      extension->id())) {
+    return;
+  }
+#endif
   if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
     // If the profile doesn't have an App Service Proxy available, that means
     // this extension has been explicitly permitted to run in an incognito

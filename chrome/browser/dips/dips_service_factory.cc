@@ -8,6 +8,7 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_service.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 
 /* static */
 DIPSService* DIPSServiceFactory::GetForBrowserContext(
@@ -32,6 +33,7 @@ ProfileSelections DIPSServiceFactory::CreateProfileSelections() {
 DIPSServiceFactory::DIPSServiceFactory()
     : ProfileKeyedServiceFactory("DIPSService", CreateProfileSelections()) {
   DependsOn(CookieSettingsFactory::GetInstance());
+  DependsOn(IdentityManagerFactory::GetInstance());
 }
 
 DIPSServiceFactory::~DIPSServiceFactory() = default;

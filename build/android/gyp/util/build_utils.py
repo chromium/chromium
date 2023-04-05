@@ -45,12 +45,6 @@ KOTLINC_PATH = os.path.join(KOTLIN_HOME, 'bin', 'kotlinc')
 JAVA_11_HOME_DEPRECATED = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'jdk11',
                                        'current')
 
-try:
-  string_types = basestring
-except NameError:
-  string_types = (str, bytes)
-
-
 def JavaCmd(xmx='1G'):
   ret = [os.path.join(JAVA_HOME, 'bin', 'java')]
   # Limit heap to avoid Java not GC'ing when it should, and causing
@@ -98,35 +92,6 @@ def FindInDirectory(directory, filename_filter='*'):
   return files
 
 
-def ParseGnList(value):
-  """Converts a "GN-list" command-line parameter into a list.
-
-  Conversions handled:
-    * None -> []
-    * '' -> []
-    * 'asdf' -> ['asdf']
-    * '["a", "b"]' -> ['a', 'b']
-    * ['["a", "b"]', 'c'] -> ['a', 'b', 'c']  (flattened list)
-
-  The common use for this behavior is in the Android build where things can
-  take lists of @FileArg references that are expanded via ExpandFileArgs.
-  """
-  # Convert None to [].
-  if not value:
-    return []
-  # Convert a list of GN lists to a flattened list.
-  if isinstance(value, list):
-    ret = []
-    for arg in value:
-      ret.extend(ParseGnList(arg))
-    return ret
-  # Convert normal GN list.
-  if value.startswith('['):
-    return gn_helpers.GNValueParser(value).ParseList()
-  # Convert a single string value to a list.
-  return [value]
-
-
 def CheckOptions(options, parser, required=None):
   if not required:
     return
@@ -149,24 +114,7 @@ def WriteJson(obj, path, only_if_changed=False):
 
 
 @contextlib.contextmanager
-def AtomicOutput(path, only_if_changed=True, mode='w+b'):
-  """Helper to prevent half-written outputs.
-
-  Args:
-    path: Path to the final output file, which will be written atomically.
-    only_if_changed: If True (the default), do not touch the filesystem
-      if the content has not changed.
-    mode: The mode to open the file in (str).
-  Returns:
-    A python context manager that yelds a NamedTemporaryFile instance
-    that must be used by clients to write the data to. On exit, the
-    manager will try to replace the final output file with the
-    temporary one if necessary. The temporary file is always destroyed
-    on exit.
-  Example:
-    with build_utils.AtomicOutput(output_path) as tmp_file:
-      subprocess.check_call(['prog', '--output', tmp_file.name])
-  """
+def _AtomicOutput(path, only_if_changed=True, mode='w+b'):
   # Create in same directory to ensure same filesystem when moving.
   dirname = os.path.dirname(path)
   if not os.path.exists(dirname):
@@ -198,9 +146,14 @@ class CalledProcessError(Exception):
 
   def __str__(self):
     # A user should be able to simply copy and paste the command that failed
-    # into their shell.
+    # into their shell (unless it is more than 200 chars).
+    # User can set PRINT_FULL_COMMAND=1 to always print the full command.
+    print_full = os.environ.get('PRINT_FULL_COMMAND', '0') != '0'
+    full_cmd = shlex.join(self.args)
+    short_cmd = textwrap.shorten(full_cmd, width=200)
+    printed_cmd = full_cmd if print_full else short_cmd
     copyable_command = '( cd {}; {} )'.format(os.path.abspath(self.cwd),
-        ' '.join(map(pipes.quote, self.args)))
+                                              printed_cmd)
     return 'Command failed: {}\n{}'.format(copyable_command, self.output)
 
 
@@ -376,181 +329,6 @@ def ExtractAll(zip_path, path=None, no_clobber=True, pattern=None,
   return extracted
 
 
-def HermeticDateTime(timestamp=None):
-  """Returns a constant ZipInfo.date_time tuple.
-
-  Args:
-    timestamp: Unix timestamp to use for files in the archive.
-
-  Returns:
-    A ZipInfo.date_time tuple for Jan 1, 2001, or the given timestamp.
-  """
-  if not timestamp:
-    return (2001, 1, 1, 0, 0, 0)
-  utc_time = time.gmtime(timestamp)
-  return (utc_time.tm_year, utc_time.tm_mon, utc_time.tm_mday, utc_time.tm_hour,
-          utc_time.tm_min, utc_time.tm_sec)
-
-
-def HermeticZipInfo(*args, **kwargs):
-  """Creates a zipfile.ZipInfo with a constant timestamp and external_attr.
-
-  If a date_time value is not provided in the positional or keyword arguments,
-  the default value from HermeticDateTime is used.
-
-  Args:
-    See zipfile.ZipInfo.
-
-  Returns:
-    A zipfile.ZipInfo.
-  """
-  # The caller may have provided a date_time either as a positional parameter
-  # (args[1]) or as a keyword parameter. Use the default hermetic date_time if
-  # none was provided. Note that even if date_time is set, it can be None.
-  date_time = kwargs.get('date_time')
-  if len(args) >= 2:
-    date_time = args[1]
-  if not date_time:
-    kwargs['date_time'] = HermeticDateTime()
-  ret = zipfile.ZipInfo(*args, **kwargs)
-  ret.external_attr = (0o644 << 16)
-  return ret
-
-
-def AddToZipHermetic(zip_file,
-                     zip_path,
-                     src_path=None,
-                     data=None,
-                     compress=None,
-                     date_time=None):
-  """Adds a file to the given ZipFile with a hard-coded modified time.
-
-  Args:
-    zip_file: ZipFile instance to add the file to.
-    zip_path: Destination path within the zip file (or ZipInfo instance).
-    src_path: Path of the source file. Mutually exclusive with |data|.
-    data: File data as a string.
-    compress: Whether to enable compression. Default is taken from ZipFile
-        constructor.
-    date_time: The last modification date and time for the archive member.
-  """
-  assert (src_path is None) != (data is None), (
-      '|src_path| and |data| are mutually exclusive.')
-  if isinstance(zip_path, zipfile.ZipInfo):
-    zipinfo = zip_path
-    zip_path = zipinfo.filename
-  else:
-    zipinfo = HermeticZipInfo(filename=zip_path, date_time=date_time)
-
-  _CheckZipPath(zip_path)
-
-  if src_path and os.path.islink(src_path):
-    zipinfo.filename = zip_path
-    zipinfo.external_attr |= stat.S_IFLNK << 16  # mark as a symlink
-    zip_file.writestr(zipinfo, os.readlink(src_path))
-    return
-
-  # zipfile.write() does
-  #     external_attr = (os.stat(src_path)[0] & 0xFFFF) << 16
-  # but we want to use _HERMETIC_FILE_ATTR, so manually set
-  # the few attr bits we care about.
-  if src_path:
-    st = os.stat(src_path)
-    for mode in (stat.S_IXUSR, stat.S_IXGRP, stat.S_IXOTH):
-      if st.st_mode & mode:
-        zipinfo.external_attr |= mode << 16
-
-  if src_path:
-    with open(src_path, 'rb') as f:
-      data = f.read()
-
-  # zipfile will deflate even when it makes the file bigger. To avoid
-  # growing files, disable compression at an arbitrary cut off point.
-  if len(data) < 16:
-    compress = False
-
-  # None converts to ZIP_STORED, when passed explicitly rather than the
-  # default passed to the ZipFile constructor.
-  compress_type = zip_file.compression
-  if compress is not None:
-    compress_type = zipfile.ZIP_DEFLATED if compress else zipfile.ZIP_STORED
-  zip_file.writestr(zipinfo, data, compress_type)
-
-
-def DoZip(inputs,
-          output,
-          base_dir=None,
-          compress_fn=None,
-          zip_prefix_path=None,
-          timestamp=None):
-  """Creates a zip file from a list of files.
-
-  Args:
-    inputs: A list of paths to zip, or a list of (zip_path, fs_path) tuples.
-    output: Path, fileobj, or ZipFile instance to add files to.
-    base_dir: Prefix to strip from inputs.
-    compress_fn: Applied to each input to determine whether or not to compress.
-        By default, items will be |zipfile.ZIP_STORED|.
-    zip_prefix_path: Path prepended to file path in zip file.
-    timestamp: Unix timestamp to use for files in the archive.
-  """
-  if base_dir is None:
-    base_dir = '.'
-  input_tuples = []
-  for tup in inputs:
-    if isinstance(tup, string_types):
-      tup = (os.path.relpath(tup, base_dir), tup)
-      if tup[0].startswith('..'):
-        raise Exception('Invalid zip_path: ' + tup[0])
-    input_tuples.append(tup)
-
-  # Sort by zip path to ensure stable zip ordering.
-  input_tuples.sort(key=lambda tup: tup[0])
-
-  out_zip = output
-  if not isinstance(output, zipfile.ZipFile):
-    out_zip = zipfile.ZipFile(output, 'w')
-
-  date_time = HermeticDateTime(timestamp)
-  try:
-    for zip_path, fs_path in input_tuples:
-      if zip_prefix_path:
-        zip_path = os.path.join(zip_prefix_path, zip_path)
-      compress = compress_fn(zip_path) if compress_fn else None
-      AddToZipHermetic(out_zip,
-                       zip_path,
-                       src_path=fs_path,
-                       compress=compress,
-                       date_time=date_time)
-  finally:
-    if output is not out_zip:
-      out_zip.close()
-
-
-def ZipDir(output, base_dir, compress_fn=None, zip_prefix_path=None):
-  """Creates a zip file from a directory."""
-  inputs = []
-  for root, _, files in os.walk(base_dir):
-    for f in files:
-      inputs.append(os.path.join(root, f))
-
-  if isinstance(output, zipfile.ZipFile):
-    DoZip(
-        inputs,
-        output,
-        base_dir,
-        compress_fn=compress_fn,
-        zip_prefix_path=zip_prefix_path)
-  else:
-    with AtomicOutput(output) as f:
-      DoZip(
-          inputs,
-          f,
-          base_dir,
-          compress_fn=compress_fn,
-          zip_prefix_path=zip_prefix_path)
-
-
 def MatchesGlob(path, filters):
   """Returns whether the given path matches any of the given glob patterns."""
   return filters and any(fnmatch.fnmatch(path, f) for f in filters)
@@ -646,29 +424,6 @@ def InitLogging(enabling_env):
   atexit.register(log_exit)
 
 
-def AddDepfileOption(parser):
-  # TODO(agrieve): Get rid of this once we've moved to argparse.
-  if hasattr(parser, 'add_option'):
-    func = parser.add_option
-  else:
-    func = parser.add_argument
-  func('--depfile',
-       help='Path to depfile (refer to `gn help depfile`)')
-
-
-def WriteDepfile(depfile_path, first_gn_output, inputs=None):
-  assert depfile_path != first_gn_output  # http://crbug.com/646165
-  assert not isinstance(inputs, string_types)  # Easy mistake to make
-  inputs = inputs or []
-  MakeDirectory(os.path.dirname(depfile_path))
-  # Ninja does not support multiple outputs in depfiles.
-  with open(depfile_path, 'w') as depfile:
-    depfile.write(first_gn_output.replace(' ', '\\ '))
-    depfile.write(': \\\n ')
-    depfile.write(' \\\n '.join(i.replace(' ', '\\ ') for i in inputs))
-    depfile.write('\n')
-
-
 def ExpandFileArgs(args):
   """Replaces file-arg placeholders in args.
 
@@ -713,7 +468,7 @@ def ExpandFileArgs(args):
           raise Exception('Expected single item list but got %s' % expansion)
         expansion = expansion[0]
 
-    # This should match ParseGnList. The output is either a GN-formatted list
+    # This should match parse_gn_list. The output is either a GN-formatted list
     # or a literal (with no quotes).
     if isinstance(expansion, list):
       new_args[i] = (arg[:match.start()] + gn_helpers.ToGNString(expansion) +

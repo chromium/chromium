@@ -177,6 +177,10 @@ namespace internal {
 // DO NOT USE THESE CLASSES DIRECTLY YOURSELF.
 
 struct RawPtrNoOpImpl {
+  static constexpr bool kMustZeroOnInit = false;
+  static constexpr bool kMustZeroOnMove = false;
+  static constexpr bool kMustZeroOnDestruct = false;
+
   // Wraps a pointer.
   template <typename T>
   PA_ALWAYS_INLINE static constexpr T* WrapRawPtr(T* ptr) {
@@ -288,6 +292,10 @@ struct RawPtrCountingImplWrapperForTest
                                 RawPtrTraits::kUseCountingWrapperForTest));
 
   using SuperImpl = typename raw_ptr_traits::TraitsToImpl<Traits>::Impl;
+
+  static constexpr bool kMustZeroOnInit = SuperImpl::kMustZeroOnInit;
+  static constexpr bool kMustZeroOnMove = SuperImpl::kMustZeroOnMove;
+  static constexpr bool kMustZeroOnDestruct = SuperImpl::kMustZeroOnDestruct;
 
   template <typename T>
   PA_ALWAYS_INLINE static constexpr T* WrapRawPtr(T* ptr) {
@@ -531,17 +539,37 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   static_assert(raw_ptr_traits::IsSupportedType<T>::value,
                 "raw_ptr<T> doesn't work with this kind of pointee type T");
 
+  // TODO(bartekn): Turn on zeroing as much as possible, to reduce
+  // pointer-related UBs. In the current implementation we do it only when the
+  // underlying implementation needs it for correctness, for performance
+  // reasons. There are two secnarios where it's important:
+  // 1. When rewriting renderer, we don't want extra overhead get in the way of
+  //    our perf evaluation.
+  // 2. The same applies to rewriting 3rd party libraries, but also we want
+  //    RawPtrNoOpImpl to be a true no-op, in case the library is linked with
+  //    a product other than Chromium (this can be mitigated using
+  //    `build_with_chromium` GN variable).
+  static constexpr bool kZeroOnInit = Impl::kMustZeroOnInit;
+  static constexpr bool kZeroOnMove = Impl::kMustZeroOnMove;
+  static constexpr bool kZeroOnDestruct = Impl::kMustZeroOnDestruct;
+
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
     BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR)
   // BackupRefPtr requires a non-trivial default constructor, destructor, etc.
-  PA_ALWAYS_INLINE constexpr raw_ptr() noexcept : wrapped_ptr_(nullptr) {}
+  PA_ALWAYS_INLINE constexpr raw_ptr() noexcept {
+    if constexpr (kZeroOnInit) {
+      wrapped_ptr_ = nullptr;
+    }
+  }
 
   PA_ALWAYS_INLINE constexpr raw_ptr(const raw_ptr& p) noexcept
       : wrapped_ptr_(Impl::Duplicate(p.wrapped_ptr_)) {}
 
   PA_ALWAYS_INLINE constexpr raw_ptr(raw_ptr&& p) noexcept {
     wrapped_ptr_ = p.wrapped_ptr_;
-    p.wrapped_ptr_ = nullptr;
+    if constexpr (kZeroOnMove) {
+      p.wrapped_ptr_ = nullptr;
+    }
   }
 
   PA_ALWAYS_INLINE constexpr raw_ptr& operator=(const raw_ptr& p) noexcept {
@@ -564,7 +592,9 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     if (PA_LIKELY(this != &p)) {
       Impl::ReleaseWrappedPtr(wrapped_ptr_);
       wrapped_ptr_ = p.wrapped_ptr_;
-      p.wrapped_ptr_ = nullptr;
+      if constexpr (kZeroOnMove) {
+        p.wrapped_ptr_ = nullptr;
+      }
     }
     return *this;
   }
@@ -578,17 +608,16 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
 #endif
     Impl::ReleaseWrappedPtr(wrapped_ptr_);
     // Work around external issues where raw_ptr is used after destruction.
-    wrapped_ptr_ = nullptr;
+    if constexpr (kZeroOnDestruct) {
+      wrapped_ptr_ = nullptr;
+    }
   }
 
 #else  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
        // BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR)
 
   // raw_ptr can be trivially default constructed (leaving |wrapped_ptr_|
-  // uninitialized).  This is needed for compatibility with raw pointers.
-  //
-  // TODO(lukasza): Always initialize |wrapped_ptr_|.  Fix resulting build
-  // errors.  Analyze performance impact.
+  // uninitialized).
   PA_ALWAYS_INLINE constexpr raw_ptr() noexcept = default;
 
   // In addition to nullptr_t ctor above, raw_ptr needs to have these
@@ -603,6 +632,11 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
 
   PA_ALWAYS_INLINE ~raw_ptr() noexcept = default;
 
+  // With default constructor, destructor and move operations, we don't have an
+  // opportunity to zero the underlying pointer, so ensure this isn't expected.
+  static_assert(!kZeroOnInit);
+  static_assert(!kZeroOnMove);
+  static_assert(!kZeroOnDestruct);
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
         // BUILDFLAG(USE_ASAN_UNOWNED_PTR)
 
@@ -646,7 +680,8 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   }
 
   // Deliberately implicit, because raw_ptr is supposed to resemble raw ptr.
-  // NOLINTNEXTLINE(google-explicit-constructor)
+  // Ignore kZeroOnInit, because here the caller explicitly wishes to initialize
+  // with nullptr. NOLINTNEXTLINE(google-explicit-constructor)
   PA_ALWAYS_INLINE constexpr raw_ptr(std::nullptr_t) noexcept
       : wrapped_ptr_(nullptr) {}
 
@@ -672,9 +707,9 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   // NOLINTNEXTLINE(google-explicit-constructor)
   PA_ALWAYS_INLINE constexpr raw_ptr(raw_ptr<U, Traits>&& ptr) noexcept
       : wrapped_ptr_(Impl::template Upcast<T, U>(ptr.wrapped_ptr_)) {
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-    ptr.wrapped_ptr_ = nullptr;
-#endif
+    if constexpr (kZeroOnMove) {
+      ptr.wrapped_ptr_ = nullptr;
+    }
   }
 
   PA_ALWAYS_INLINE constexpr raw_ptr& operator=(std::nullptr_t) noexcept {
@@ -724,9 +759,9 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
 #endif
     Impl::ReleaseWrappedPtr(wrapped_ptr_);
     wrapped_ptr_ = Impl::template Upcast<T, U>(ptr.wrapped_ptr_);
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-    ptr.wrapped_ptr_ = nullptr;
-#endif
+    if constexpr (kZeroOnMove) {
+      ptr.wrapped_ptr_ = nullptr;
+    }
     return *this;
   }
 

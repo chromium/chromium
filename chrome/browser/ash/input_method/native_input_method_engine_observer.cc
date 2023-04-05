@@ -760,7 +760,6 @@ void NativeInputMethodEngineObserver::OnJapaneseDecoderConnected(bool bound) {
 }
 
 void NativeInputMethodEngineObserver::ConnectToImeService(
-    mojom::ConnectionTarget connection_target,
     const std::string& engine_id) {
   if (!remote_manager_.is_bound()) {
     auto* ime_manager = InputMethodManager::Get();
@@ -779,7 +778,7 @@ void NativeInputMethodEngineObserver::ConnectToImeService(
   host_receiver_.reset();
 
   remote_manager_->InitializeConnectionFactory(
-      connection_factory_.BindNewPipeAndPassReceiver(), connection_target,
+      connection_factory_.BindNewPipeAndPassReceiver(),
       base::BindOnce(&NativeInputMethodEngineObserver::OnConnectionFactoryBound,
                      weak_ptr_factory_.GetWeakPtr()));
 
@@ -866,18 +865,14 @@ void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
   if (ShouldRouteToFirstPartyVietnameseInput(engine_id)) {
     // TODO(b/251679480): Make this part of ShouldRouteToNativeMojoEngine logic
     // once flag is baked in.
-    ConnectToImeService(mojom::ConnectionTarget::kImeServiceLib, engine_id);
+    ConnectToImeService(engine_id);
   } else if (ShouldRouteToRuleBasedEngine(engine_id)) {
     const auto new_engine_id = NormalizeRuleBasedEngineId(engine_id);
-    ConnectToImeService(
-        base::FeatureList::IsEnabled(features::kMigrateRuleBasedInputMethods)
-            ? mojom::ConnectionTarget::kImeServiceLib
-            : mojom::ConnectionTarget::kRulebasedEngine,
-        new_engine_id);
+    ConnectToImeService(new_engine_id);
     // Notify the virtual keyboard extension that the IME has changed.
     ime_base_observer_->OnActivate(engine_id);
   } else if (ShouldRouteToNativeMojoEngine(engine_id)) {
-    ConnectToImeService(mojom::ConnectionTarget::kImeServiceLib, engine_id);
+    ConnectToImeService(engine_id);
   } else {
     // Release the IME service.
     // TODO(b/147709499): A better way to cleanup all.
@@ -1164,7 +1159,7 @@ void NativeInputMethodEngineObserver::OnAssistiveWindowButtonClicked(
         chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
             ProfileManager::GetActiveUserProfile(),
             SettingToQueryString(
-                chromeos::settings::mojom::kInputMethodOptionsSubpagePath,
+                chromeos::settings::mojom::kKeyboardSubpagePath,
                 chromeos::settings::mojom::Setting::kShowDiacritic));
       }
       if (button.window_type == ash::ime::AssistiveWindowType::kLearnMore) {

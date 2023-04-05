@@ -122,7 +122,6 @@ void SpdyProxyClientSocket::Disconnect() {
 
   write_buffer_len_ = 0;
   write_callback_.Reset();
-  write_callback_weak_factory_.InvalidateWeakPtrs();
 
   next_state_ = STATE_DISCONNECTED;
 
@@ -277,9 +276,16 @@ int SpdyProxyClientSocket::GetLocalAddress(IPEndPoint* address) const {
   return spdy_stream_->GetLocalAddress(address);
 }
 
-void SpdyProxyClientSocket::RunWriteCallback(CompletionOnceCallback callback,
-                                             int result) const {
-  std::move(callback).Run(result);
+void SpdyProxyClientSocket::RunWriteCallback(int result) {
+  CHECK(write_callback_);
+
+  base::WeakPtr<SpdyProxyClientSocket> weak_ptr = weak_factory_.GetWeakPtr();
+  std::move(write_callback_).Run(result);
+  if (!weak_ptr) {
+    // `this` was already destroyed while running `write_callback_`. Must
+    // return immediately without touching any field member.
+    return;
+  }
 
   if (end_stream_state_ == EndStreamState::kEndStreamReceived) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -516,8 +522,7 @@ void SpdyProxyClientSocket::OnDataSent() {
   // stream's write callback chain to unwind (see crbug.com/355511).
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&SpdyProxyClientSocket::RunWriteCallback,
-                                write_callback_weak_factory_.GetWeakPtr(),
-                                std::move(write_callback_), rv));
+                                weak_factory_.GetWeakPtr(), rv));
 }
 
 void SpdyProxyClientSocket::OnTrailers(const spdy::Http2HeaderBlock& trailers) {

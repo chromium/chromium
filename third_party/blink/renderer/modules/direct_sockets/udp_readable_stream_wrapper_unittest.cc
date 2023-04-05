@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/modules/direct_sockets/udp_writable_stream_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
@@ -34,9 +35,12 @@
 namespace blink {
 namespace {
 
-class FakeRestrictedUDPSocket
-    : public network::mojom::blink::RestrictedUDPSocket {
+class FakeRestrictedUDPSocket final
+    : public GarbageCollected<FakeRestrictedUDPSocket>,
+      public network::mojom::blink::RestrictedUDPSocket {
  public:
+  explicit FakeRestrictedUDPSocket(ContextLifecycleNotifier* notifier)
+      : remote_(notifier) {}
   void Send(base::span<const uint8_t> data, SendCallback callback) override {
     NOTREACHED();
   }
@@ -63,35 +67,42 @@ class FakeRestrictedUDPSocket
   }
 
   void Bind(mojo::PendingRemote<network::mojom::blink::UDPSocketListener>
-                pending_remote) {
-    remote_.Bind(std::move(pending_remote));
+                pending_remote,
+            scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    remote_.Bind(std::move(pending_remote), task_runner);
   }
 
   const String& GetTestingDatagram() const { return datagram_; }
   void SetTestingDatagram(String datagram) { datagram_ = std::move(datagram); }
 
+  void Trace(Visitor* visitor) const { visitor->Trace(remote_); }
+
  private:
-  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
-  mojo::Remote<network::mojom::blink::UDPSocketListener> remote_;
+  HeapMojoRemote<network::mojom::blink::UDPSocketListener> remote_;
   uint32_t num_requested_datagrams = 0;
   String datagram_{"abcde"};
 };
 
 class StreamCreator : public GarbageCollected<StreamCreator> {
  public:
-  StreamCreator() : receiver_{&fake_udp_socket_} {}
+  explicit StreamCreator(const V8TestingScope& scope)
+      : fake_udp_socket_(MakeGarbageCollected<FakeRestrictedUDPSocket>(
+            scope.GetExecutionContext())),
+        receiver_(fake_udp_socket_.Get(), scope.GetExecutionContext()) {}
 
   ~StreamCreator() = default;
 
   UDPReadableStreamWrapper* Create(const V8TestingScope& scope) {
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+        scope.GetExecutionContext()->GetTaskRunner(TaskType::kNetworking);
     auto* udp_socket =
         MakeGarbageCollected<UDPSocketMojoRemote>(scope.GetExecutionContext());
-    udp_socket->get().Bind(
-        receiver_.BindNewPipeAndPassRemote(),
-        scope.GetExecutionContext()->GetTaskRunner(TaskType::kNetworking));
+    udp_socket->get().Bind(receiver_.BindNewPipeAndPassRemote(task_runner),
+                           task_runner);
 
     mojo::PendingReceiver<network::mojom::blink::UDPSocketListener> receiver;
-    fake_udp_socket_.Bind(receiver.InitWithNewPipeAndPassRemote());
+    fake_udp_socket_->Bind(receiver.InitWithNewPipeAndPassRemote(),
+                           task_runner);
 
     auto* script_state = scope.GetScriptState();
     stream_wrapper_ = MakeGarbageCollected<UDPReadableStreamWrapper>(
@@ -99,18 +110,23 @@ class StreamCreator : public GarbageCollected<StreamCreator> {
     return stream_wrapper_;
   }
 
-  void Trace(Visitor* visitor) const { visitor->Trace(stream_wrapper_); }
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(fake_udp_socket_);
+    visitor->Trace(stream_wrapper_);
+    visitor->Trace(receiver_);
+  }
 
-  FakeRestrictedUDPSocket& fake_udp_socket() { return fake_udp_socket_; }
+  FakeRestrictedUDPSocket& fake_udp_socket() { return *fake_udp_socket_; }
 
   void Cleanup() { receiver_.reset(); }
 
  private:
-  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
-  mojo::Receiver<network::mojom::blink::RestrictedUDPSocket> receiver_;
-
-  FakeRestrictedUDPSocket fake_udp_socket_;
+  Member<FakeRestrictedUDPSocket> fake_udp_socket_;
   Member<UDPReadableStreamWrapper> stream_wrapper_;
+
+  HeapMojoReceiver<network::mojom::blink::RestrictedUDPSocket,
+                   FakeRestrictedUDPSocket>
+      receiver_;
 };
 
 class ScopedStreamCreator {
@@ -155,7 +171,8 @@ String UDPMessageDataToString(const UDPMessage* message) {
 TEST(UDPReadableStreamWrapperTest, Create) {
   V8TestingScope scope;
 
-  ScopedStreamCreator stream_creator(MakeGarbageCollected<StreamCreator>());
+  ScopedStreamCreator stream_creator(
+      MakeGarbageCollected<StreamCreator>(scope));
   auto* udp_readable_stream_wrapper = stream_creator->Create(scope);
 
   EXPECT_TRUE(udp_readable_stream_wrapper->Readable());
@@ -164,10 +181,11 @@ TEST(UDPReadableStreamWrapperTest, Create) {
 TEST(UDPReadableStreamWrapperTest, ReadUdpMessage) {
   V8TestingScope scope;
 
-  ScopedStreamCreator stream_creator(MakeGarbageCollected<StreamCreator>());
+  ScopedStreamCreator stream_creator(
+      MakeGarbageCollected<StreamCreator>(scope));
 
-  auto& fake_udp_socket = stream_creator->fake_udp_socket();
   auto* udp_readable_stream_wrapper = stream_creator->Create(scope);
+  auto& fake_udp_socket = stream_creator->fake_udp_socket();
 
   // Ensure that udp_socket_->ReceiveMore(...) call from
   // UDPReadableStreamWrapper constructor lands before calling
@@ -196,7 +214,8 @@ TEST(UDPReadableStreamWrapperTest, ReadUdpMessage) {
 TEST(UDPReadableStreamWrapperTest, ReadDelayedUdpMessage) {
   V8TestingScope scope;
 
-  ScopedStreamCreator stream_creator(MakeGarbageCollected<StreamCreator>());
+  ScopedStreamCreator stream_creator(
+      MakeGarbageCollected<StreamCreator>(scope));
   auto* udp_readable_stream_wrapper = stream_creator->Create(scope);
 
   auto& fake_udp_socket = stream_creator->fake_udp_socket();
@@ -228,7 +247,8 @@ TEST(UDPReadableStreamWrapperTest, ReadDelayedUdpMessage) {
 TEST(UDPReadableStreamWrapperTest, ReadEmptyUdpMessage) {
   V8TestingScope scope;
 
-  ScopedStreamCreator stream_creator(MakeGarbageCollected<StreamCreator>());
+  ScopedStreamCreator stream_creator(
+      MakeGarbageCollected<StreamCreator>(scope));
   auto* udp_readable_stream_wrapper = stream_creator->Create(scope);
 
   auto& fake_udp_socket = stream_creator->fake_udp_socket();
@@ -261,7 +281,8 @@ TEST(UDPReadableStreamWrapperTest, ReadEmptyUdpMessage) {
 TEST(UDPReadableStreamWrapperTest, CancelStreamFromReader) {
   V8TestingScope scope;
 
-  ScopedStreamCreator stream_creator(MakeGarbageCollected<StreamCreator>());
+  ScopedStreamCreator stream_creator(
+      MakeGarbageCollected<StreamCreator>(scope));
   auto* udp_readable_stream_wrapper = stream_creator->Create(scope);
 
   // Ensure that udp_socket_->ReceiveMore(...) call from
@@ -294,7 +315,8 @@ TEST(UDPReadableStreamWrapperTest, CancelStreamFromReader) {
 TEST(UDPReadableStreamWrapperTest, ReadRejectsOnError) {
   V8TestingScope scope;
 
-  ScopedStreamCreator stream_creator(MakeGarbageCollected<StreamCreator>());
+  ScopedStreamCreator stream_creator(
+      MakeGarbageCollected<StreamCreator>(scope));
   auto* udp_readable_stream_wrapper = stream_creator->Create(scope);
 
   // Ensure that udp_socket_->ReceiveMore(...) call from

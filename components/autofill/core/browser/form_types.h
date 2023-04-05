@@ -20,9 +20,6 @@ enum class FormType : int {
   kMaxValue = kPasswordForm
 };
 
-// TODO(crbug/1428897): Move it to AutofillField class.
-bool FieldHasExpirationDateType(const AutofillField* field);
-
 // Returns true if the form contains fields that represent the card number and
 // the card expiration date.
 bool FormHasAllEmtyCreditCardFields(const FormStructure& form_structure);

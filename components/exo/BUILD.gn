@@ -165,6 +165,7 @@ static_library("exo") {
     "//ui/base/dragdrop:types",
     "//ui/base/dragdrop/mojom",
     "//ui/base/ime",
+    "//ui/base/ime/ash",
     "//ui/compositor",
     "//ui/compositor_extra",
     "//ui/display/manager",

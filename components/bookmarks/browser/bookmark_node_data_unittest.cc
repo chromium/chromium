@@ -311,7 +311,7 @@ TEST_F(BookmarkNodeDataTest, MAYBE_MultipleNodes) {
   EXPECT_TRUE(read_data.GetFirstNode(model(), GetProfilePath()) == nullptr);
 }
 
-TEST_F(BookmarkNodeDataTest, DISABLED_WriteToClipboardURL) {
+TEST_F(BookmarkNodeDataTest, WriteToClipboardURL) {
   BookmarkNodeData data;
   GURL url(GURL("http://foo.com"));
   const std::u16string title(u"blah");
@@ -414,9 +414,13 @@ TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardFolderWithChildren) {
   EXPECT_EQ(u"g1", clipboard_result);
 }
 
-// TODO(https://crbug.com/1010415): This test is flaky on various platforms, fix
-// and re-enable it.
-TEST_F(BookmarkNodeDataTest, DISABLED_WriteToClipboardFolderAndURL) {
+// TODO(https://crbug.com/1010415): This test is failing on mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_WriteToClipboardFolderAndURL DISABLED_WriteToClipboardFolderAndURL
+#else
+#define MAYBE_WriteToClipboardFolderAndURL WriteToClipboardFolderAndURL
+#endif
+TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardFolderAndURL) {
   BookmarkNodeData data;
   GURL url(GURL("http://foo.com"));
   const std::u16string title(u"blah");

@@ -701,7 +701,7 @@ DeclarativeNetRequestGetAvailableStaticRuleCountFunction::Run() {
   DCHECK_LE(available_static_rule_count,
             static_cast<size_t>(std::numeric_limits<int>::max()));
   return RespondNow(
-      OneArgument(base::Value(static_cast<int>(available_static_rule_count))));
+      WithArguments(static_cast<int>(available_static_rule_count)));
 }
 
 DeclarativeNetRequestTestMatchOutcomeFunction::

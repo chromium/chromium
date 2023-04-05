@@ -56,6 +56,18 @@ export function editingDisabledByPolicy(
   return false;
 }
 
+// Return an array that includes folder and all its descendants.
+export function getFolderDescendants(folder: chrome.bookmarks.BookmarkTreeNode):
+    chrome.bookmarks.BookmarkTreeNode[] {
+  let expanded: chrome.bookmarks.BookmarkTreeNode[] = [folder];
+  if (folder.children) {
+    folder.children.forEach((child: chrome.bookmarks.BookmarkTreeNode) => {
+      expanded = expanded.concat(getFolderDescendants(child));
+    });
+  }
+  return expanded;
+}
+
 export class PowerBookmarksService {
   private delegate_: PowerBookmarksDelegate;
   private bookmarksApi_: BookmarksApiProxy =
@@ -425,18 +437,6 @@ export class PowerBookmarksService {
     return emptyUrl;
   }
 
-  // Return an array that includes folder and all its descendants.
-  private expandFolder_(folder: chrome.bookmarks.BookmarkTreeNode):
-      chrome.bookmarks.BookmarkTreeNode[] {
-    let expanded: chrome.bookmarks.BookmarkTreeNode[] = [folder];
-    if (folder.children) {
-      folder.children.forEach((child: chrome.bookmarks.BookmarkTreeNode) => {
-        expanded = expanded.concat(this.expandFolder_(child));
-      });
-    }
-    return expanded;
-  }
-
   private applySearchQueryAndLabels_(
       labels: Label[], searchQuery: string|undefined,
       shownBookmarks: chrome.bookmarks.BookmarkTreeNode[]) {
@@ -444,7 +444,7 @@ export class PowerBookmarksService {
     // Search space should include all descendants of the shown bookmarks, in
     // addition to the shown bookmarks themselves.
     shownBookmarks.forEach((bookmark: chrome.bookmarks.BookmarkTreeNode) => {
-      searchSpace = searchSpace.concat(this.expandFolder_(bookmark));
+      searchSpace = searchSpace.concat(getFolderDescendants(bookmark));
     });
     return searchSpace.filter(
         (bookmark: chrome.bookmarks.BookmarkTreeNode) =>

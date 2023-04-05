@@ -41,7 +41,7 @@
         c2d.fillRect(100, 0, 100, 100);
 
         webGpuUtils.uploadToGPUTextureTest(gpuDevice, gpuContext, canvas2d,
-                                           {useImport: false, isWebGLCanvas: false});
+                                           {isWebGLCanvas: false});
 
         waitForFinish();
       };

@@ -249,7 +249,8 @@ struct SameSizeAsDocumentLoader
   bool replaces_current_history_item;
   bool data_received;
   bool is_error_page_for_failed_navigation;
-  mojo::Remote<mojom::blink::ContentSecurityNotifier> content_security_notifier;
+  HeapMojoRemote<mojom::blink::ContentSecurityNotifier>
+      content_security_notifier_;
   scoped_refptr<SecurityOrigin> origin_to_commit;
   AtomicString origin_calculation_debug_info;
   BlinkStorageKey storage_key;
@@ -469,6 +470,7 @@ DocumentLoader::DocumentLoader(
       is_error_page_for_failed_navigation_(
           SchemeRegistry::ShouldTreatURLSchemeAsError(
               response_.ResponseUrl().Protocol())),
+      content_security_notifier_(nullptr),
       origin_to_commit_(params_->origin_to_commit.IsNull()
                             ? nullptr
                             : params_->origin_to_commit.Get()->IsolatedCopy()),
@@ -685,6 +687,7 @@ void DocumentLoader::Trace(Visitor* visitor) const {
   visitor->Trace(history_item_);
   visitor->Trace(parser_);
   visitor->Trace(subresource_filter_);
+  visitor->Trace(content_security_notifier_);
   visitor->Trace(document_load_timing_);
   visitor->Trace(prefetched_signed_exchange_manager_);
   visitor->Trace(use_counter_);
@@ -824,14 +827,6 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
         soft_navigation_heuristics_task_id) {
   DCHECK_EQ(IsBackForwardLoadType(type), !!history_item);
 
-  if (frame_->IsMainFrame() && type == WebFrameLoadType::kBackForward) {
-    if (ScriptState* script_state = ToScriptStateForMainWorld(frame_)) {
-      DCHECK(frame_->DomWindow());
-      SoftNavigationHeuristics* heuristics =
-          SoftNavigationHeuristics::From(*frame_->DomWindow());
-      heuristics->SetAsyncSoftNavigationURL(script_state, new_url);
-    }
-  }
   SinglePageAppNavigationType single_page_app_navigation_type =
       CategorizeSinglePageAppNavigation(same_document_navigation_type, type);
   UMA_HISTOGRAM_ENUMERATION(
@@ -905,8 +900,8 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
       FrameScheduler::NavigationType::kSameDocument);
 
   GetLocalFrameClient().DidFinishSameDocumentNavigation(
-      history_item_.Get(), commit_type, is_synchronously_committed,
-      same_document_navigation_type, is_client_redirect_, is_browser_initiated);
+      commit_type, is_synchronously_committed, same_document_navigation_type,
+      is_client_redirect_, is_browser_initiated);
   probe::DidNavigateWithinDocument(frame_);
 
   // If intercept() was called during this same-document navigation's
@@ -931,7 +926,27 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
   if (!frame_)
     return;
 
-  // Aything except a history.pushState/replaceState is considered a new
+  std::unique_ptr<SoftNavigationEventScope> soft_navigation_event_scope;
+  SoftNavigationHeuristics* heuristics = nullptr;
+  ScriptState* script_state = nullptr;
+  if (frame_->IsMainFrame()) {
+    script_state = ToScriptStateForMainWorld(frame_);
+    if (script_state) {
+      CHECK(frame_->DomWindow());
+      heuristics = SoftNavigationHeuristics::From(*frame_->DomWindow());
+      if (is_browser_initiated) {
+        // For browser-initiated navigations, we never started the soft
+        // navigation (as this is the first we hear of it in the renderer). We
+        // need to do that now.
+        soft_navigation_event_scope =
+            std::make_unique<SoftNavigationEventScope>(heuristics,
+                                                       script_state);
+        heuristics->SameDocumentNavigationStarted(script_state);
+      }
+    }
+  }
+
+  // Anything except a history.pushState/replaceState is considered a new
   // navigation that resets whether the user has scrolled and fires popstate.
   if (same_document_navigation_type !=
       mojom::blink::SameDocumentNavigationType::kHistoryApi) {
@@ -948,6 +963,10 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
       frame_->DomWindow()->DispatchPopstateEvent(
           std::move(state_object), soft_navigation_heuristics_task_id);
     }
+  }
+  if (heuristics) {
+    CHECK(script_state);
+    heuristics->SameDocumentNavigationCommitted(script_state, new_url);
   }
 }
 
@@ -2332,6 +2351,10 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
     // above.
     DCHECK(did_have_policy_container || WillLoadUrlAsEmpty(Url()));
   }
+  content_security_notifier_ =
+      HeapMojoRemote<mojom::blink::ContentSecurityNotifier>(
+          frame_->DomWindow());
+
   base::UmaHistogramBoolean("API.StorageAccess.DocumentLoadedWithStorageAccess",
                             frame_->DomWindow()->HasStorageAccess());
   base::UmaHistogramBoolean("API.StorageAccess.DocumentInheritedStorageAccess",
@@ -3060,11 +3083,14 @@ DocumentLoader::RemainingTimeToRenderBlockingFontMaxBlockingTime() const {
 
 mojom::blink::ContentSecurityNotifier&
 DocumentLoader::GetContentSecurityNotifier() {
+  CHECK(frame_);
+
   if (!content_security_notifier_.is_bound()) {
     GetFrame()->Client()->GetBrowserInterfaceBroker().GetInterface(
-        content_security_notifier_.BindNewPipeAndPassReceiver());
+        content_security_notifier_.BindNewPipeAndPassReceiver(
+            frame_->GetTaskRunner(TaskType::kInternalLoading)));
   }
-  return *content_security_notifier_;
+  return *content_security_notifier_.get();
 }
 
 bool DocumentLoader::ConsumeTextFragmentToken() {
@@ -3290,16 +3316,8 @@ void DocumentLoader::DisableCodeCacheForTesting() {
 }
 
 void DocumentLoader::UpdateSubresourceLoadMetrics(
-    uint32_t number_of_subresources_loaded,
-    uint32_t number_of_subresource_loads_handled_by_service_worker,
-    bool pervasive_payload_requested,
-    int64_t pervasive_bytes_fetched,
-    int64_t total_bytes_fetched) {
-  GetLocalFrameClient().DidObserveSubresourceLoad(
-      number_of_subresources_loaded,
-      number_of_subresource_loads_handled_by_service_worker,
-      pervasive_payload_requested, pervasive_bytes_fetched,
-      total_bytes_fetched);
+    const SubresourceLoadMetrics& subresource_load_metrics) {
+  GetLocalFrameClient().DidObserveSubresourceLoad(subresource_load_metrics);
 }
 
 DEFINE_WEAK_IDENTIFIER_MAP(DocumentLoader)

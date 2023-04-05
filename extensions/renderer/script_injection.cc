@@ -26,12 +26,11 @@
 #include "extensions/renderer/dom_activity_logger.h"
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/extensions_renderer_client.h"
+#include "extensions/renderer/isolated_world_manager.h"
 #include "extensions/renderer/scripts_run_info.h"
 #include "extensions/renderer/trace_util.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/platform/web_isolated_world_info.h"
-#include "third_party/blink/public/platform/web_security_origin.h"
-#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_script_execution_callback.h"
@@ -44,53 +43,10 @@ namespace extensions {
 
 namespace {
 
-using IsolatedWorldMap = std::map<std::string, int>;
-base::LazyInstance<IsolatedWorldMap>::DestructorAtExit g_isolated_worlds =
-    LAZY_INSTANCE_INITIALIZER;
-
 const int64_t kInvalidRequestId = -1;
 
 // The id of the next pending injection.
 int64_t g_next_pending_id = 0;
-
-// Gets the isolated world ID to use for the given |injection_host|. If no
-// isolated world has been created for that |injection_host| one will be created
-// and initialized.
-int GetIsolatedWorldIdForInstance(const InjectionHost* injection_host) {
-  static int g_next_isolated_world_id =
-      ExtensionsRendererClient::Get()->GetLowestIsolatedWorldId();
-
-  IsolatedWorldMap& isolated_worlds = g_isolated_worlds.Get();
-
-  int id = 0;
-  const std::string& key = injection_host->id().id;
-  auto iter = isolated_worlds.find(key);
-  if (iter != isolated_worlds.end()) {
-    id = iter->second;
-  } else {
-    id = g_next_isolated_world_id++;
-    // This map will tend to pile up over time, but realistically, you're never
-    // going to have enough injection hosts for it to matter.
-    isolated_worlds[key] = id;
-  }
-
-  blink::WebIsolatedWorldInfo info;
-  info.security_origin =
-      blink::WebSecurityOrigin::Create(injection_host->url());
-  info.human_readable_name = blink::WebString::FromUTF8(injection_host->name());
-  info.stable_id = blink::WebString::FromUTF8(key);
-
-  const std::string* csp = injection_host->GetContentSecurityPolicy();
-  if (csp)
-    info.content_security_policy = blink::WebString::FromUTF8(*csp);
-
-  // Even though there may be an existing world for this |injection_host|'s key,
-  // the properties may have changed (e.g. due to an extension update).
-  // Overwrite any existing entries.
-  blink::SetIsolatedWorldInfo(id, info);
-
-  return id;
-}
 
 }  // namespace
 
@@ -114,22 +70,6 @@ class ScriptInjection::FrameWatcher : public content::RenderFrameObserver {
 
   ScriptInjection* injection_;
 };
-
-// static
-std::string ScriptInjection::GetHostIdForIsolatedWorld(int isolated_world_id) {
-  const IsolatedWorldMap& isolated_worlds = g_isolated_worlds.Get();
-
-  for (const auto& iter : isolated_worlds) {
-    if (iter.second == isolated_world_id)
-      return iter.first;
-  }
-  return std::string();
-}
-
-// static
-void ScriptInjection::RemoveIsolatedWorld(const std::string& host_id) {
-  g_isolated_worlds.Get().erase(host_id);
-}
 
 ScriptInjection::ScriptInjection(
     std::unique_ptr<ScriptInjector> injector,
@@ -314,9 +254,13 @@ void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
           : blink::mojom::EvaluationTiming::kSynchronous;
 
   int32_t world_id = blink::kMainDOMWorldId;
-  switch (injector_->GetExecutionWorld()) {
+  const mojom::ExecutionWorld execution_world = injector_->GetExecutionWorld();
+  switch (execution_world) {
     case mojom::ExecutionWorld::kIsolated:
-      world_id = GetIsolatedWorldIdForInstance(injection_host_.get());
+    case mojom::ExecutionWorld::kUserScript:
+      world_id =
+          IsolatedWorldManager::GetInstance().GetOrCreateIsolatedWorldForHost(
+              *injection_host_, execution_world);
       if (injection_host_->id().type == mojom::HostID::HostType::kExtensions &&
           log_activity_) {
         DOMActivityLogger::AttachToWorld(world_id, injection_host_->id().id);

@@ -43,9 +43,7 @@ bool ExtractV8CanvasStyle(v8::Isolate* isolate,
   if (V8CSSColorValue::HasInstance(isolate, value)) {
     style.type = V8CanvasStyleType::kCSSColorValue;
     style.css_color_value =
-        V8CSSColorValue::ToWrappableUnsafe(value.As<v8::Object>())
-            ->ToColor()
-            .Rgb();
+        V8CSSColorValue::ToWrappableUnsafe(value.As<v8::Object>())->ToColor();
     return true;
   }
 

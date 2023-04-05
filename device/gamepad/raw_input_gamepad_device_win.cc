@@ -21,6 +21,7 @@ extern "C" {
 #include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/hid_haptic_gamepad.h"
 #include "device/gamepad/hid_writer_win.h"
+#include "device/gamepad/public/cpp/gamepad_features.h"
 
 namespace device {
 
@@ -138,11 +139,28 @@ void RawInputGamepadDeviceWin::UpdateGamepad(RAWINPUT* input) {
     auto report = base::make_span(input->data.hid.bRawData + 1,
                                   input->data.hid.dwSizeHid);
     Gamepad pad;
-    if (dualshock4_->ProcessInputReport(report_id, report, &pad)) {
+    bool is_multitouch_enabled = features::IsGamepadMultitouchEnabled();
+    if (dualshock4_->ProcessInputReport(report_id, report, &pad, false,
+                                        is_multitouch_enabled)) {
       for (size_t i = 0; i < Gamepad::kAxesLengthCap; ++i)
         axes_[i].value = pad.axes[i];
       for (size_t i = 0; i < Gamepad::kButtonsLengthCap; ++i)
         buttons_[i] = pad.buttons[i].pressed;
+
+      if (is_multitouch_enabled) {
+        const GamepadTouch* touches = pad.touch_events;
+        for (size_t i = 0; i < Gamepad::kTouchEventsLengthCap; ++i) {
+          touches_[i].touch_id = touches[i].touch_id;
+          touches_[i].surface_id = touches[i].surface_id;
+          touches_[i].x = touches[i].x;
+          touches_[i].y = touches[i].y;
+          touches_[i].surface_width = touches[i].surface_width;
+          touches_[i].surface_height = touches[i].surface_height;
+        }
+        touches_length_ = pad.touch_events_length;
+        supports_touch_events_ = pad.supports_touch_events_;
+      }
+
       last_update_timestamp_ = GamepadDataFetcher::CurrentTimeInMicroseconds();
       return;
     }
@@ -205,14 +223,28 @@ void RawInputGamepadDeviceWin::ReadPadState(Gamepad* pad) const {
   pad->axes_length = axes_length_;
   pad->axes_used = axes_used_;
 
-  for (unsigned int i = 0; i < buttons_length_; i++) {
+  for (uint32_t i = 0u; i < buttons_length_; i++) {
     pad->buttons[i].used = button_indices_used_[i];
     pad->buttons[i].pressed = buttons_[i];
     pad->buttons[i].value = buttons_[i] ? 1.0 : 0.0;
   }
 
-  for (unsigned int i = 0; i < axes_length_; i++)
+  for (uint32_t i = 0u; i < axes_length_; i++) {
     pad->axes[i] = axes_[i].value;
+  }
+
+  if (features::IsGamepadMultitouchEnabled()) {
+    pad->supports_touch_events_ = supports_touch_events_;
+    pad->touch_events_length = touches_length_;
+    for (uint32_t i = 0u; i < touches_length_; i++) {
+      pad->touch_events[i].touch_id = touches_[i].touch_id;
+      pad->touch_events[i].surface_id = touches_[i].surface_id;
+      pad->touch_events[i].x = touches_[i].x;
+      pad->touch_events[i].y = touches_[i].y;
+      pad->touch_events[i].surface_width = touches_[i].surface_width;
+      pad->touch_events[i].surface_height = touches_[i].surface_height;
+    }
+  }
 }
 
 bool RawInputGamepadDeviceWin::SupportsVibration() const {

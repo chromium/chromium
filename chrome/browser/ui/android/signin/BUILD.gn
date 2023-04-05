@@ -131,6 +131,7 @@ android_resources("java_resources") {
 }
 
 robolectric_library("junit") {
+  resources_package = "org.chromium.chrome.browser.ui.signin"
   sources = [
     "junit/src/org/chromium/chrome/browser/ui/signin/ConfirmSyncDataStateMachineTest.java",
     "junit/src/org/chromium/chrome/browser/ui/signin/FullScreenSyncPromoTest.java",
@@ -169,6 +170,7 @@ robolectric_library("junit") {
 
 android_library("javatests") {
   testonly = true
+  resources_package = "org.chromium.chrome.browser.ui.signin"
   sources = [
     "java/src/org/chromium/chrome/browser/ui/signin/SyncPromoControllerUITest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerBottomSheetRenderTest.java",
@@ -183,6 +185,7 @@ android_library("javatests") {
     "//chrome/browser/preferences:java",
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/ui/android/night_mode:night_mode_java_test_support",
+    "//chrome/browser/ui/android/signin:java_resources",
     "//chrome/test/android:chrome_java_integration_test_support",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/signin/core/browser:signin_enums_java",
@@ -202,6 +205,7 @@ android_library("javatests") {
 
 android_library("unit_device_javatests") {
   testonly = true
+  resources_package = "org.chromium.chrome.browser.ui.signin"
   sources = [
     "java/src/org/chromium/chrome/browser/ui/signin/ConfirmImportSyncDataDialogTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/ConfirmManagedSyncDataDialogTest.java",
@@ -221,6 +225,7 @@ android_library("unit_device_javatests") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/ui/android/night_mode:night_mode_java_test_support",
+    "//chrome/browser/ui/android/signin:java_resources",
     "//chrome/test/android:chrome_java_integration_test_support",
     "//components/browser_ui/modaldialog/android:java",
     "//components/browser_ui/styles/android:java",

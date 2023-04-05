@@ -113,3 +113,8 @@ absl::optional<ui::ColorId> ComboboxMenuModel::GetSubmenuBackgroundColorId(
     size_t index) {
   return model_->GetDropdownBackgroundColorIdAt(index);
 }
+
+absl::optional<ui::ColorId> ComboboxMenuModel::GetSelectedBackgroundColorId(
+    size_t index) {
+  return model_->GetDropdownSelectedBackgroundColorIdAt(index);
+}

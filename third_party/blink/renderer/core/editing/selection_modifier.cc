@@ -40,7 +40,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
-#include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_caret_position.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_fragment.h"
@@ -181,10 +180,6 @@ absl::optional<TextDirection> DirectionAt(
     return absl::nullopt;
   }
 
-  if (const InlineBox* box =
-          ComputeInlineBoxPositionForInlineAdjustedPosition(adjusted)
-              .inline_box)
-    return box->Direction();
   return absl::nullopt;
 }
 
@@ -206,11 +201,6 @@ absl::optional<TextDirection> LineDirectionAt(
     return line.Current().BaseDirection();
   }
 
-  if (const InlineBox* box =
-          ComputeInlineBoxPositionForInlineAdjustedPosition(adjusted)
-              .inline_box) {
-    return ParagraphDirectionOf(*box);
-  }
   return absl::nullopt;
 }
 

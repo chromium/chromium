@@ -686,9 +686,9 @@ TEST_F(TouchToFillControllerAutofillTest, ShowWebAuthnCredential) {
   MockTouchToFillView* weak_view = mock_view.get();
   touch_to_fill_controller().set_view(std::move(mock_view));
 
-  PasskeyCredential credential(
-      PasskeyCredential::Username(u"alice@example.com"),
-      PasskeyCredential::BackendId("12345"));
+  PasskeyCredential credential(PasskeyCredential::Username("alice@example.com"),
+                               PasskeyCredential::DeviceName(u"Pixel 7"),
+                               PasskeyCredential::BackendId("12345"));
   std::vector<PasskeyCredential> credentials({credential});
 
   EXPECT_CALL(*weak_view,
@@ -702,8 +702,7 @@ TEST_F(TouchToFillControllerAutofillTest, ShowWebAuthnCredential) {
       MakeTouchToFillControllerDelegate(
           autofill::mojom::SubmissionReadinessState::kNoInformation));
 
-  EXPECT_CALL(*webauthn_credentials_delegate(),
-              SelectPasskey(credential.id().value()));
+  EXPECT_CALL(*webauthn_credentials_delegate(), SelectPasskey(credential.id()));
   EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(false)));
   touch_to_fill_controller().OnPasskeyCredentialSelected(credentials[0]);
   histogram_tester().ExpectUniqueSample(

@@ -325,7 +325,8 @@ TEST(PermissionsDataTest, GetPermissionMessages_ManyAPIPermissions) {
   expected_messages.push_back("Read and change your data on api.flickr.com");
   expected_messages.push_back("Read and change your bookmarks");
   expected_messages.push_back("Detect your physical location");
-  expected_messages.push_back("Read and change your browsing history");
+  expected_messages.push_back(
+      "Read and change your browsing history on all your signed-in devices");
   expected_messages.push_back("Manage your apps, extensions, and themes");
   EXPECT_TRUE(VerifyPermissionMessages(extension->permissions_data(),
                                        expected_messages, false));

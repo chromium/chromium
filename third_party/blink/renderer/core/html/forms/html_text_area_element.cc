@@ -283,9 +283,7 @@ void HTMLTextAreaElement::ParseAttribute(
   }
 }
 
-LayoutObject* HTMLTextAreaElement::CreateLayoutObject(
-    const ComputedStyle& style,
-    LegacyLayout legacy) {
+LayoutObject* HTMLTextAreaElement::CreateLayoutObject(const ComputedStyle&) {
   return MakeGarbageCollected<LayoutNGTextControlMultiLine>(this);
 }
 

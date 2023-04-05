@@ -50,6 +50,10 @@ mojom_component("mojom") {
         nullable_is_same_type = true
       },
       {
+        mojom = "device.mojom.GamepadTouch"
+        cpp = "::device::GamepadTouch"
+      },
+      {
         mojom = "device.mojom.GamepadVector"
         cpp = "::device::GamepadVector"
         nullable_is_same_type = true

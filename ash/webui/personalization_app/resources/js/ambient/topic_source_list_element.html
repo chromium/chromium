@@ -9,7 +9,7 @@
   }
 
   iron-list > :focus {
-    background-color: var(--cr-focused-item-color);
+    background-color: var(--cros-sys-hover_on_subtle, --cr-focused-item-color);
   }
 </style>
 
@@ -21,6 +21,7 @@
     aria-describedby="topicSourceTitle" role="radiogroup">
   <template>
     <topic-source-item topic-source="[[item]]"
+        disabled="[[isTopicSourceDisabled_(item, selectedAnimationTheme)]]"
         role="radio"
         tabindex$="[[tabIndex]]"
         has-google-photos-albums="[[hasGooglePhotosAlbums]]"

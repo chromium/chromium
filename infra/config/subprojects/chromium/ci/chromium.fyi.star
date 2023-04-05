@@ -1673,12 +1673,14 @@ ci.builder(
         short_name = "re",
     ),
     execution_timeout = 14 * time.hour,
+    reclient_bootstrap_env = {
+        "RBE_clang_depscan_archive": "true",
+    },
     reclient_ensure_verified = True,
     reclient_instance = reclient.instance.TEST_TRUSTED,
     reclient_jobs = None,
     reclient_rewrapper_env = {
         "RBE_compare": "true",
-        "RBE_clang_depscan_archive": "true",
     },
 )
 
@@ -1707,9 +1709,6 @@ ci.builder(
         category = "win",
         short_name = "re",
     ),
-    reclient_bootstrap_env = {
-        "RBE_compression_threshold": "4000000",
-    },
     reclient_instance = reclient.instance.TEST_TRUSTED,
     reclient_jobs = None,
 )
@@ -1799,9 +1798,6 @@ fyi_mac_builder(
         short_name = "cmp",
     ),
     execution_timeout = 14 * time.hour,
-    reclient_bootstrap_env = {
-        "RBE_compression_threshold": "4000000",
-    },
     reclient_ensure_verified = True,
     reclient_instance = reclient.instance.TEST_TRUSTED,
     reclient_jobs = None,

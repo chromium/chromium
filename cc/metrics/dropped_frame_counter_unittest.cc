@@ -310,7 +310,7 @@ class DroppedFrameCounterTest : public testing::Test {
     for (int i = 0; i < repeat; i++) {
       for (auto is_dropped : frame_states) {
         viz::BeginFrameArgs args_ = SimulateBeginFrameArgs();
-        dropped_frame_counter_.OnBeginFrame(args_, /*is_scroll_active=*/false);
+        dropped_frame_counter_.OnBeginFrame(args_);
         dropped_frame_counter_.OnEndFrame(args_,
                                           CreateStubFrameInfo(is_dropped));
         sequence_number_++;
@@ -333,7 +333,7 @@ class DroppedFrameCounterTest : public testing::Test {
     std::vector<viz::BeginFrameArgs> args(repeat);
     for (int i = 0; i < repeat; i++) {
       args[i] = SimulateBeginFrameArgs();
-      dropped_frame_counter_.OnBeginFrame(args[i], /*is_scroll_active=*/false);
+      dropped_frame_counter_.OnBeginFrame(args[i]);
       sequence_number_++;
       frame_time_ += interval_;
     }
@@ -343,8 +343,8 @@ class DroppedFrameCounterTest : public testing::Test {
   // Simulate a main and impl thread update on the same frame.
   void SimulateForkedFrame(bool main_dropped, bool impl_dropped) {
     viz::BeginFrameArgs args_ = SimulateBeginFrameArgs();
-    dropped_frame_counter_.OnBeginFrame(args_, /*is_scroll_active=*/false);
-    dropped_frame_counter_.OnBeginFrame(args_, /*is_scroll_active=*/false);
+    dropped_frame_counter_.OnBeginFrame(args_);
+    dropped_frame_counter_.OnBeginFrame(args_);
 
     // End the 'main thread' arm of the fork.
     auto main_info = CreateStubFrameInfo(main_dropped);

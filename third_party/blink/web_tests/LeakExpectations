@@ -62,6 +62,9 @@ crbug.com/1385278 [ Linux ] external/wpt/resource-timing/iframe-failed-commit.ht
 # Tests frequently cause ci builder step failure
 crbug.com/1393081 [ Linux ] virtual/view-transition/external/wpt/css/css-view-transitions/input-blocked-when-rendering-suppressed.html [ Failure ]
 
+# Sheriff 2023-04-04
+crbug.com/1430360 [ Linux ] external/wpt/custom-elements/form-associated/label-delegatesFocus.html [ Failure Pass ]
+
 ###########################################################################
 # WARNING: Memory leaks must be fixed asap. Sheriff is expected to revert #
 # culprit CLs instead of suppressing the leaks. If you have any question, #

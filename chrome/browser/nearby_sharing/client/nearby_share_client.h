@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/nearby_sharing/common/nearby_share_http_result.h"
+#include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
 
 namespace nearbyshare {
 namespace proto {
@@ -28,7 +28,7 @@ class UpdateDeviceResponse;
 // instance for each request you make. DO NOT REUSE.
 class NearbyShareClient {
  public:
-  using ErrorCallback = base::OnceCallback<void(NearbyShareHttpError)>;
+  using ErrorCallback = base::OnceCallback<void(ash::nearby::NearbyHttpError)>;
   using ListContactPeopleCallback = base::OnceCallback<void(
       const nearbyshare::proto::ListContactPeopleResponse&)>;
   using ListPublicCertificatesCallback = base::OnceCallback<void(

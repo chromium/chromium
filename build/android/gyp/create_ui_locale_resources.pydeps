@@ -24,6 +24,7 @@
 ../../../third_party/markupsafe/_native.py
 ../../action_helpers.py
 ../../gn_helpers.py
+../../zip_helpers.py
 create_ui_locale_resources.py
 util/__init__.py
 util/build_utils.py

@@ -77,6 +77,14 @@ interface AcceleratorConfigurationProvider {
   GetAcceleratorLayoutInfos()
       => (array<ash.mojom.AcceleratorLayoutInfo> layout_infos);
 
+  // Adds an accelerator to `action_id`. If there is a conflict when attempting
+  // to add the accelerator, this will return the conflict accelerator's
+  // name. The browser process implementor will handle validation of the
+  // requested accelerator.
+  AddAccelerator(ash.mojom.AcceleratorSource source, uint32 action_id,
+                 SimpleAccelerator accelerator)
+      => (AcceleratorResultData result);
+
   // Remove an accelerator from `action`. If permitted, this deletes
   // user-defined accelerators or disables default accelerators.
   // Removing an accelerator cannot result in a conflict.

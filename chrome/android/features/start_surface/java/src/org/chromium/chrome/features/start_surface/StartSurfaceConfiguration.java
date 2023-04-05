@@ -94,6 +94,13 @@ public class StartSurfaceConfiguration {
     }
 
     /**
+     * Returns whether showing a NTP as the home surface is enabled in the given context.
+     */
+    public static boolean isNtpAsHomeSurfaceEnabled(boolean isTablet) {
+        return isTablet && ChromeFeatureList.sStartSurfaceOnTablet.isEnabled();
+    }
+
+    /**
      * Records histograms of showing the StartSurface. Nothing will be recorded if timeDurationMs
      * isn't valid.
      */

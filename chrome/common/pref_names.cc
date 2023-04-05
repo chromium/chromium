@@ -442,9 +442,6 @@ const char kEnableSyncConsent[] = "sync_consent.enabled";
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Copy of the primary pointing stick buttons option to use on login screen.
-const char kOwnerPrimaryPointingStickButtonRight[] =
-    "owner.pointing_stick.primary_right";
 
 // A boolean pref set to true if time should be displayed in 24-hour clock.
 const char kUse24HourClock[] = "settings.clock.use_24hour_clock";
@@ -1105,6 +1102,16 @@ const char kEduCoexistenceArcMigrationCompleted[] =
 
 // Dictionary pref for shared extension storage for device pin.
 const char kSharedStorage[] = "shared_storage";
+
+// An int64 pref. This is the timestamp, microseconds after epoch, that
+// indicates the end of the most recent OS Settings Search survey cycle.
+const char kHatsOsSettingsSearchSurveyCycleEndTs[] =
+    "hats_os_settings_search_cycle_end_timestamp";
+
+// A boolean pref. Indicates if the device is selected for the OS Settings
+// Search survey.
+const char kHatsOsSettingsSearchSurveyIsSelected[] =
+    "hats_os_settings_search_is_selected";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -2424,12 +2431,6 @@ const char kAppActivityTimes[] = "device_status.app_activity_times";
 // server.
 const char kUserActivityTimes[] = "consumer_device_status.activity_times";
 
-// Copy of owner swap mouse buttons option to use on login screen.
-const char kOwnerPrimaryMouseButtonRight[] = "owner.mouse.primary_right";
-
-// Copy of owner tap-to-click option to use on login screen.
-const char kOwnerTapToClickEnabled[] = "owner.touchpad.enable_tap_to_click";
-
 // The length of device uptime after which an automatic reboot is scheduled,
 // expressed in seconds.
 const char kUptimeLimit[] = "automatic_reboot.uptime_limit";
@@ -2915,9 +2916,6 @@ const char kCryptAuthDeviceId[] = "easy_unlock.device_id";
 // rotate because CryptAuth assumes the Instance ID is static.
 const char kCryptAuthInstanceId[] = "cryptauth.instance_id";
 const char kCryptAuthInstanceIdToken[] = "cryptauth.instance_id_token";
-
-// A dictionary that maps user id to hardlock state.
-const char kEasyUnlockHardlockState[] = "easy_unlock.hardlock_state";
 
 // Boolean that indicates whether elevation is needed to recover Chrome upgrade.
 const char kRecoveryComponentNeedsElevation[] =

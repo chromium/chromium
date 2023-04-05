@@ -11,8 +11,9 @@ import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {mojoString16ToString} from '../mojo_utils.js';
+import {Router} from '../router.js';
 import {LayoutStyle, MojoAcceleratorInfo, MojoSearchResult, StandardAcceleratorInfo, TextAcceleratorInfo, TextAcceleratorPart} from '../shortcut_types.js';
-import {getModifiersForAcceleratorInfo, isStandardAcceleratorInfo, isTextAcceleratorInfo} from '../shortcut_utils.js';
+import {getModifiersForAcceleratorInfo, getURLForSearchResult, isStandardAcceleratorInfo, isTextAcceleratorInfo} from '../shortcut_utils.js';
 import {TextAcceleratorElement} from '../text_accelerator.js';
 
 import {getTemplate} from './search_result_row.html.js';
@@ -111,6 +112,26 @@ export class SearchResultRowElement extends SearchResultRowElementBase {
   private shouldShowTextDivider(indexOfAcceleratorInfo: number): boolean {
     return indexOfAcceleratorInfo !==
         this.searchResult.acceleratorInfos.length - 1;
+  }
+
+  /**
+   * Only relevant when the focus-row-control is focus()ed. This keypress
+   * handler specifies that pressing 'Enter' should cause a route change.
+   */
+  private onKeyPress(e: KeyboardEvent): void {
+    if (e.key === 'Enter') {
+      e.stopPropagation();
+      this.onSearchResultSelected();
+    }
+  }
+
+  /**
+   * Navigate to a search result route based on the search result.
+   */
+  onSearchResultSelected(): void {
+    Router.getInstance().navigateTo(getURLForSearchResult(this.searchResult));
+    this.dispatchEvent(new CustomEvent(
+        'navigated-to-result-route', {bubbles: true, composed: true}));
   }
 }
 

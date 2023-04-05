@@ -7,19 +7,13 @@ package org.chromium.components.omnibox.action;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
-import com.google.common.collect.ImmutableMap;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.omnibox.action.OmniboxActionType;
-import org.chromium.chrome.browser.omnibox.action.OmniboxPedalType;
-import org.chromium.components.browser_ui.styles.R;
-import org.chromium.components.omnibox.action.OmniboxAction.ChipIcon;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  * Tests for {@link OmniboxPedal}s.
@@ -27,23 +21,33 @@ import java.util.Map;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class OmniboxPedalUnitTest {
-    @Test
-    public void verifyDecorations() {
-        ChipIcon defaultIcon = new ChipIcon(R.drawable.fre_product_logo, false);
-        Map<Integer, ChipIcon> customResourceMap = ImmutableMap.of(
-                OmniboxPedalType.PLAY_CHROME_DINO_GAME, new ChipIcon(R.drawable.ic_dino, true));
+    private static List<Integer> sPedalsWithCustomIcons =
+            List.of(OmniboxPedalType.PLAY_CHROME_DINO_GAME);
 
+    @Test
+    public void creation_usesExpectedCustomIconForDinoGame() {
+        assertEquals(OmniboxPedal.DINO_GAME_ICON,
+                new OmniboxPedal("hint", OmniboxPedalType.PLAY_CHROME_DINO_GAME).icon);
+    }
+
+    @Test
+    public void creation_usesDefaultIconForAllNonCustomizedCases() {
         for (int type = OmniboxPedalType.NONE; type < OmniboxPedalType.TOTAL_COUNT; type++) {
-            var icon = new OmniboxPedal("", type).getIcon();
-            var expectedIcon = customResourceMap.getOrDefault(type, defaultIcon);
-            assertEquals(
-                    String.format(
-                            "Incorrect resource spec while evaluating OmniboxPedalType = %d", type),
-                    expectedIcon.iconRes, icon.iconRes);
-            assertEquals(String.format("Incorrect tint spec while evaluating OmniboxPedalType = %d",
-                                 type),
-                    expectedIcon.tintWithTextColor, icon.tintWithTextColor);
+            if (sPedalsWithCustomIcons.contains(type)) continue;
+            assertEquals(OmniboxAction.DEFAULT_ICON, new OmniboxPedal("hint", type).icon);
         }
+    }
+
+    @Test
+    public void creation_failsWithNullHint() {
+        assertThrows(AssertionError.class,
+                () -> new OmniboxPedal(null, OmniboxPedalType.CLEAR_BROWSING_DATA));
+    }
+
+    @Test
+    public void creation_failsWithEmptyHint() {
+        assertThrows(AssertionError.class,
+                () -> new OmniboxPedal("", OmniboxPedalType.CLEAR_BROWSING_DATA));
     }
 
     @Test
@@ -54,16 +58,11 @@ public class OmniboxPedalUnitTest {
     @Test
     public void safeCasting_assertsWithWrongClassType() {
         assertThrows(AssertionError.class,
-                () -> OmniboxPedal.from(new OmniboxAction(OmniboxActionType.PEDAL, "") {
-                    @Override
-                    public ChipIcon getIcon() {
-                        return null;
-                    }
-                }));
+                () -> OmniboxPedal.from(new OmniboxAction(OmniboxActionType.PEDAL, "", null)));
     }
 
     @Test
     public void safeCasting_successWithPedal() {
-        OmniboxPedal.from(new OmniboxPedal("", OmniboxPedalType.NONE));
+        OmniboxPedal.from(new OmniboxPedal("hint", OmniboxPedalType.NONE));
     }
 }

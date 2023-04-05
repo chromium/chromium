@@ -69,8 +69,8 @@ public class VideoIPHTest {
             viewStub.setLayoutResource(R.layout.video_tutorial_iph_card);
             parentView.addView(viewStub);
 
-            Bitmap testImage = BitmapFactory.decodeResource(mActivity.getResources(),
-                    org.chromium.chrome.browser.video_tutorials.R.drawable.btn_close);
+            Bitmap testImage =
+                    BitmapFactory.decodeResource(mActivity.getResources(), R.drawable.btn_close);
             TestImageFetcher imageFetcher = new TestImageFetcher(testImage);
             mCoordinator = new VideoIPHCoordinatorImpl(
                     viewStub, imageFetcher, mOnClickListener, mOnDismissListener);

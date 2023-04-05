@@ -113,6 +113,11 @@ UnexportableKeyServiceImpl::UnexportableKeyServiceImpl(
 
 UnexportableKeyServiceImpl::~UnexportableKeyServiceImpl() = default;
 
+// static
+bool UnexportableKeyServiceImpl::IsUnexportableKeyProviderSupported() {
+  return crypto::GetUnexportableKeyProvider() != nullptr;
+}
+
 void UnexportableKeyServiceImpl::GenerateSigningKeySlowlyAsync(
     base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
         acceptable_algorithms,

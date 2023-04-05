@@ -143,12 +143,14 @@ void ResolvedFrameData::UpdateForActiveFrame(
         // that exists and is drawn before the current render pass.
         auto quad_render_pass_id =
             CompositorRenderPassDrawQuad::MaterialCast(quad)->render_pass_id;
-        if (!base::Contains(render_pass_id_map_, quad_render_pass_id)) {
+        auto iter = render_pass_id_map_.find(quad_render_pass_id);
+        if (iter == render_pass_id_map_.end()) {
           DLOG(ERROR) << "CompositorRenderPassDrawQuad with invalid id";
           SetInvalid();
           return;
         }
 
+        ++iter->second->fixed_.embed_count;
         fixed.prewalk_quads.push_back(quad);
       } else if (quad->material == DrawQuad::Material::kSurfaceContent) {
         fixed.prewalk_quads.push_back(quad);

@@ -171,7 +171,7 @@ logged in via an OAuth provider, or encountered a Cross-Origin-Opener-Policy
 ### No Site Isolation
 
 _Used on: Low-memory Chrome for Android (<2 GB RAM), Android WebView, Chrome for
-iOS, Chrome Apps `<webview>`._
+iOS._
 
 On some platforms, Site Isolation is not available, due to implementation or
 resource constraints.
@@ -185,8 +185,6 @@ resource constraints.
   out-of-process iframes.
 * Chrome for iOS uses WebKit, which does not currently have support for
   out-of-process iframes or Site Isolation.
-* The `<webview>` tag in Chrome Apps does not yet support Site Isolation.  See
-  bug [1267977](https://crbug.com/1267977).
 
 
 ### Origin Isolation
@@ -422,11 +420,10 @@ affect invariants or how features are designed.
     This implementation currently relies on hosted apps.
 * **GuestView**: The Chrome Apps `<webview>` tag and similar cases like
     MimeHandlerView and ExtensionOptionsGuest embed one WebContents within
-    another. These may use a different process model, such as `<webview>` not
-    yet supporting Site Isolation. (See bug
-    [1267977](https://crbug.com/1267977).) Note that Chrome Apps allow
-    `<webview>` tags to load normal web pages and the app's own `data:` or
-    `chrome-extension://` URLs, but not URLs from other extensions or apps.
+    another. All of these cases use strict site isolation for content they
+    embed. Note that Chrome Apps allow `<webview>` tags to load normal web pages
+    and the app's own `data:` or `chrome-extension://` URLs, but not URLs from
+    other extensions or apps.
 * **Sandboxed iframes**: Documents with the sandbox attribute and without
     `allow-same-origin` (either iframes or popups) may be same-site with their
     parent or opener but use an opaque origin. Chromium currently keeps these

@@ -4,7 +4,6 @@
 
 #include <vector>
 
-#include "base/guid.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -12,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -179,7 +179,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
   all_card_ptrs.reserve(kNumCards);
   for (size_t i = 0; i < kNumCards; ++i) {
     constexpr base::TimeDelta k30Days = base::Days(30);
-    all_card_data.emplace_back(base::GenerateGUID(), "https://example.com");
+    all_card_data.emplace_back(base::GenerateUuid(), "https://example.com");
     if (i < 5) {
       all_card_data.back().set_use_date(kNow - (i + i + 1) * k30Days);
       test::SetCreditCardInfo(&all_card_data.back(), "Clyde Barrow",
@@ -614,7 +614,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetIBANSuggestions) {
 
   auto MakeIBAN = [](const std::u16string& value,
                      const std::u16string& nickname) {
-    IBAN iban(base::GenerateGUID());
+    IBAN iban(base::GenerateUuid());
     iban.set_value(value);
     if (!nickname.empty())
       iban.set_nickname(nickname);
@@ -1207,6 +1207,7 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
   {
     // Create one server card with no metadata.
     CreditCard server_card = CreateServerCard();
+    server_card.set_issuer_id("amex");
     if (card_has_linked_virtual_card()) {
       server_card.set_virtual_card_enrollment_state(
           CreditCard::VirtualCardEnrollmentState::ENROLLED);
@@ -1224,6 +1225,13 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
     EXPECT_FALSE(metadata_logging_context.card_metadata_available);
     EXPECT_FALSE(metadata_logging_context.card_product_description_shown);
     EXPECT_FALSE(metadata_logging_context.card_art_image_shown);
+
+    // Verify that a record is added that an American Express card suggestion
+    // was generated, and it did not have metadata.
+    base::flat_map<std::string, bool> expected_issuer_to_metadata_availability =
+        {{"amex", false}};
+    EXPECT_EQ(metadata_logging_context.issuer_to_metadata_availability,
+              expected_issuer_to_metadata_availability);
   }
 
   personal_data()->ClearCreditCards();
@@ -1231,6 +1239,7 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
   {
     // Create a server card with card product description & card art image.
     CreditCard server_card_with_metadata = CreateServerCard();
+    server_card_with_metadata.set_issuer_id("amex");
     server_card_with_metadata.set_product_description(u"product_description");
     server_card_with_metadata.set_card_art_url(
         GURL("https://www.example.com/card-art.png"));
@@ -1253,6 +1262,13 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
               card_product_description_enabled());
     EXPECT_EQ(metadata_logging_context.card_art_image_shown,
               card_art_image_enabled() || card_has_linked_virtual_card());
+
+    // Verify that a record is added that an American Express card suggestion
+    // was generated, and it had metadata.
+    base::flat_map<std::string, bool> expected_issuer_to_metadata_availability =
+        {{"amex", true}};
+    EXPECT_EQ(metadata_logging_context.issuer_to_metadata_availability,
+              expected_issuer_to_metadata_availability);
   }
 }
 

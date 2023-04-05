@@ -15,9 +15,12 @@
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
+#include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "services/accessibility/features/bindings_isolate_holder.h"
+#include "services/accessibility/features/interface_binder.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-local-handle.h"
+#include "v8/include/v8-value.h"
 
 namespace v8 {
 class Isolate;
@@ -46,6 +49,9 @@ class V8Manager : public BindingsIsolateHolder,
   // Creates a new V8Manager with its own isolate and context.
   static scoped_refptr<V8Manager> Create();
 
+  // Gets a pointer to the V8 manager that belongs to this `context`.
+  static V8Manager* GetFromContext(v8::Local<v8::Context> context);
+
   V8Manager(const V8Manager&) = delete;
   V8Manager& operator=(const V8Manager&) = delete;
 
@@ -65,8 +71,16 @@ class V8Manager : public BindingsIsolateHolder,
   v8::Isolate* GetIsolate() const override;
   v8::Local<v8::Context> GetContext() const override;
 
+  // Called from the V8 thread by Mojo when ready to bind an interface.
+  void BindInterface(const std::string& interface_name,
+                     mojo::GenericPendingReceiver pending_receiver);
+
+  // Sets the InterfaceBinder used for when trying to bind
+  // axtest.mojom.TestBindingInterface. Used for testing.
+  void SetTestMojoInterface(std::unique_ptr<InterfaceBinder> test_interface);
+
  private:
-  // Allows RefCountedDeleteOnSequence able access to the destructor.
+  // Allows RefCountedDeleteOnSequence access to the destructor.
   friend class base::RefCountedDeleteOnSequence<V8Manager>;
   friend class base::DeleteHelper<V8Manager>;
 
@@ -93,6 +107,10 @@ class V8Manager : public BindingsIsolateHolder,
   // Bindings wrappers for V8 APIs.
   // TODO(crbug.com/1355633): Add more APIs including TTS, SST, etc.
   std::unique_ptr<AutomationInternalBindings> automation_bindings_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Bindings wrappers for test.
+  std::unique_ptr<InterfaceBinder> test_mojo_interface_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Holders for isolate and context.

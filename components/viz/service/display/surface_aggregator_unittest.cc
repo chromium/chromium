@@ -9301,6 +9301,206 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   EXPECT_FALSE(new_aggregated_frame.delegated_ink_metadata);
 }
 
+TEST_F(SurfaceAggregatorValidSurfaceTest, HasUnembeddedRenderPass) {
+  constexpr gfx::Rect unembedded_rect(50, 50);
+  constexpr gfx::Rect root_rect(kSurfaceSize);
+
+  {
+    CompositorFrame frame =
+        CompositorFrameBuilder()
+            // This render pass isn't embedded by the root so it doesn't need to
+            // be drawn to draw the root render pass.
+            .AddRenderPass(
+                RenderPassBuilder(CompositorRenderPassId{1}, unembedded_rect)
+                    .AddSolidColorQuad(root_rect, SkColors::kGreen)
+                    .Build())
+            .AddRenderPass(
+                RenderPassBuilder(CompositorRenderPassId{2}, root_rect)
+                    .AddSolidColorQuad(root_rect, SkColors::kBlue)
+                    .Build())
+            .Build();
+
+    root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
+                                      std::move(frame));
+  }
+
+  auto aggregated_frame = AggregateFrame(root_surface_id_);
+  auto& render_pass_list = aggregated_frame.render_pass_list;
+  ASSERT_EQ(2u, render_pass_list.size());
+
+  // The unembedded render pass is included in the AggegatedFrame despite not
+  // reachable from the root render pass. Both of them have damage from
+  // contributing content since this is the first aggregation.
+  auto& unembedded_pass = render_pass_list[0];
+  EXPECT_THAT(unembedded_pass->quad_list,
+              ElementsAre(IsSolidColorQuad(SkColors::kGreen)));
+  EXPECT_EQ(unembedded_pass->output_rect, unembedded_rect);
+  EXPECT_TRUE(unembedded_pass->has_damage_from_contributing_content);
+
+  auto& root_pass = render_pass_list[1];
+  EXPECT_THAT(root_pass->quad_list,
+              ElementsAre(IsSolidColorQuad(SkColors::kBlue)));
+  EXPECT_EQ(root_pass->output_rect, root_rect);
+  EXPECT_TRUE(root_pass->has_damage_from_contributing_content);
+}
+
+TEST_F(SurfaceAggregatorValidSurfaceTest,
+       HasDamageFromContributingPropagatedForUnembeddedRenderPass) {
+  constexpr gfx::Rect unembedded_rect(50, 50);
+  constexpr gfx::Rect root_rect(kSurfaceSize);
+  TestSurfaceIdAllocator child_surface_id(child_sink_->frame_sink_id());
+
+  {
+    CompositorFrame frame =
+        CompositorFrameBuilder()
+            // This render pass isn't embedded by the root so it doesn't need to
+            // be drawn to draw the root render pass.
+            .AddRenderPass(
+                RenderPassBuilder(CompositorRenderPassId{1}, unembedded_rect)
+                    .AddSurfaceQuad(unembedded_rect,
+                                    SurfaceRange(child_surface_id))
+                    .Build())
+            .AddRenderPass(
+                RenderPassBuilder(CompositorRenderPassId{2}, root_rect)
+                    .AddSolidColorQuad(root_rect, SkColors::kBlue)
+                    .Build())
+            .Build();
+
+    root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
+                                      std::move(frame));
+  }
+
+  {
+    // This child frame is not reachable from root surface root render pass.
+    CompositorFrame frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(
+                RenderPassBuilder(CompositorRenderPassId{1}, unembedded_rect)
+                    .AddSolidColorQuad(unembedded_rect, SkColors::kGreen)
+                    .Build())
+            .Build();
+
+    child_sink_->SubmitCompositorFrame(child_surface_id.local_surface_id(),
+                                       std::move(frame));
+  }
+
+  {
+    auto aggregated_frame = AggregateFrame(root_surface_id_);
+    auto& render_pass_list = aggregated_frame.render_pass_list;
+    ASSERT_EQ(2u, render_pass_list.size());
+
+    // The child surface is merged into the non-embedded render pass so it has
+    // a green draw quad. The root render pass has only the expected blue draw
+    // quad. Both of them have damage from contributing content since this is
+    // the first aggregation.
+    auto& unembedded_pass = render_pass_list[0];
+    EXPECT_THAT(unembedded_pass->quad_list,
+                ElementsAre(IsSolidColorQuad(SkColors::kGreen)));
+    EXPECT_EQ(unembedded_pass->output_rect, unembedded_rect);
+    EXPECT_TRUE(unembedded_pass->has_damage_from_contributing_content);
+
+    auto& root_pass = render_pass_list[1];
+    EXPECT_THAT(root_pass->quad_list,
+                ElementsAre(IsSolidColorQuad(SkColors::kBlue)));
+    EXPECT_EQ(root_pass->output_rect, root_rect);
+    EXPECT_TRUE(root_pass->has_damage_from_contributing_content);
+  }
+
+  {
+    // Perform a second aggregation where nothing has changed. There is no
+    // damage from either surface so both render passes will have no damage from
+    // contributing content.
+    auto aggregated_frame = AggregateFrame(root_surface_id_);
+    auto& render_pass_list = aggregated_frame.render_pass_list;
+    ASSERT_EQ(2u, render_pass_list.size());
+
+    EXPECT_FALSE(render_pass_list[0]->has_damage_from_contributing_content);
+    EXPECT_FALSE(render_pass_list[1]->has_damage_from_contributing_content);
+  }
+
+  {
+    // Submit a new frame so child surface has damage and redo aggregation.
+    CompositorFrame frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(
+                RenderPassBuilder(CompositorRenderPassId{1}, unembedded_rect)
+                    .AddSolidColorQuad(unembedded_rect, SkColors::kGreen)
+                    .Build())
+            .Build();
+
+    child_sink_->SubmitCompositorFrame(child_surface_id.local_surface_id(),
+                                       std::move(frame));
+    auto aggregated_frame = AggregateFrame(root_surface_id_);
+    auto& render_pass_list = aggregated_frame.render_pass_list;
+    ASSERT_EQ(2u, render_pass_list.size());
+
+    // The root surface has no damage since it didn't submit a new frame so the
+    // root render pass has no damage from contributing content. The unembedded
+    // render pass from root surface embeds the child surface, so it should
+    // have damage from unembedded passes.
+    EXPECT_TRUE(render_pass_list[0]->has_damage_from_contributing_content);
+    EXPECT_FALSE(render_pass_list[1]->has_damage_from_contributing_content);
+  }
+}
+
+// Tests that a CopyOutputRequest on a render pass that's not embedded from the
+// root pass is recognized when copying secure texture content.
+TEST_F(SurfaceAggregatorValidSurfaceTest,
+       CopyRequestWithSecureOutputForUnembeddedRenderPass) {
+  aggregator_.set_output_is_secure(true);
+
+  {
+    constexpr gfx::Rect rect(kSurfaceSize);
+    CompositorFrame frame =
+        CompositorFrameBuilder()
+            // This render pass has TextureDrawQuad with secure_output_only true
+            // that needs to be removed if there is a CopyOutputRequest.
+            .AddRenderPass(RenderPassBuilder(CompositorRenderPassId{1}, rect)
+                               .AddTextureQuad(rect, ResourceId(1),
+                                               {.secure_output_only = true})
+                               .Build())
+            // This render pass isn't embedded by the root but it embeds the
+            // render pass with TextureDrawQuad.
+            .AddRenderPass(
+                RenderPassBuilder(CompositorRenderPassId{2}, rect)
+                    .AddRenderPassQuad(rect, CompositorRenderPassId{1})
+                    .AddStubCopyOutputRequest()
+                    .Build())
+            .AddRenderPass(RenderPassBuilder(CompositorRenderPassId{3}, rect)
+                               .AddSolidColorQuad(rect, SkColors::kGreen)
+                               .Build())
+            .PopulateResources()
+            .Build();
+
+    root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
+                                      std::move(frame));
+  }
+
+  auto aggregated_frame = AggregateFrame(root_surface_id_);
+  EXPECT_TRUE(aggregated_frame.has_copy_requests);
+
+  auto& render_pass_list = aggregated_frame.render_pass_list;
+  ASSERT_EQ(3u, render_pass_list.size());
+
+  // The first render pass had a TextureDrawQuad that contains secure output.
+  // This render pass is embedded by the second render pass which has a copy
+  // request. The TextureDrawQuad should be replaced by a black
+  // SolidColorDrawQuad since it's included in a copy request.
+  EXPECT_THAT(render_pass_list[0]->quad_list,
+              ElementsAre(IsSolidColorQuad(SkColors::kBlack)));
+
+  // The second render pass should have a single quad to embed the first and a
+  // copy output request.
+  EXPECT_EQ(render_pass_list[1]->copy_requests.size(), 1u);
+  EXPECT_THAT(render_pass_list[1]->quad_list,
+              ElementsAre(IsAggregatedRenderPassQuad()));
+
+  // The root pass does not embed either of the first two passes and should just
+  // contain a single SolidColorDrawQuad since the TextureDrawQuad was replaced.
+  EXPECT_THAT(render_pass_list[2]->quad_list,
+              ElementsAre(IsSolidColorQuad(SkColors::kGreen)));
+}
+
 // Tests that changing the color usage results in full-frame damage.
 TEST_F(SurfaceAggregatorValidSurfaceTest, ColorUsageChangeFullFrameDamage) {
   constexpr float device_scale_factor = 1.0f;

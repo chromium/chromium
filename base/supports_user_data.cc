@@ -41,6 +41,25 @@ SupportsUserData::Data* SupportsUserData::GetUserData(const void* key) const {
       user_data_);
 }
 
+std::unique_ptr<SupportsUserData::Data> SupportsUserData::TakeUserData(
+    const void* key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Null keys are too vulnerable to collision.
+  CHECK(key);
+  return absl::visit(
+      [key](auto& map) -> std::unique_ptr<SupportsUserData::Data> {
+        auto found = map.find(key);
+        if (found != map.end()) {
+          std::unique_ptr<SupportsUserData::Data> deowned;
+          deowned.swap(found->second);
+          map.erase(key);
+          return deowned;
+        }
+        return nullptr;
+      },
+      user_data_);
+}
+
 void SupportsUserData::SetUserData(const void* key,
                                    std::unique_ptr<Data> data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

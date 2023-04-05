@@ -336,16 +336,10 @@ ConflictResolution SyncableServiceBasedBridge::ResolveConflict(
   return ConflictResolution::kUseLocal;
 }
 
-void SyncableServiceBasedBridge::ApplyStopSyncChanges(
+void SyncableServiceBasedBridge::ApplyDisableSyncChanges(
     std::unique_ptr<MetadataChangeList> delete_metadata_change_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(store_);
-
-  // If Sync is being stopped only temporarily (i.e. we want to keep tracking
-  // metadata), then there's nothing to do here.
-  if (!delete_metadata_change_list) {
-    return;
-  }
 
   in_memory_store_.clear();
   store_->DeleteAllDataAndMetadata(base::DoNothing());

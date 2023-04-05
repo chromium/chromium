@@ -75,6 +75,10 @@ constexpr float kItemMinOpacity = 0.4f;
 // item bounds on the desks bar.
 constexpr float kScaleFactorForMinimumSideLength = 0.5f;
 
+// The minimum vertical overlapped length between the overview item and new desk
+// button in order to activate the new desk button.
+constexpr int kVerticalOverlappedLengthToActivateNewDeskButton = 15;
+
 // Amount of time we wait to unpause the occlusion tracker after a overview item
 // is finished dragging. Waits a bit longer than the overview item animation.
 constexpr base::TimeDelta kOcclusionPauseDurationForDrag =
@@ -587,12 +591,19 @@ void OverviewWindowDragController::ContinueNormalDrag(
     // being to prevent jumps from happening while shrinking. Investigate if we
     // can satisfy all cases.
     centerpoint = location_in_screen;
-    // To make the dragged window contents appear centered around the drag
-    // location, we need to take into account the margins applied on the
-    // target bounds, and offset up the centerpoint by half that amount, so
-    // that the transformed bounds of the window contents move up to be
-    // centered around the cursor.
-    centerpoint.Offset(0, (-kWindowMargin - kHeaderHeightDp) / 2);
+
+    const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
+
+    // When `Jellyroll` is enabled, the header is shown for the item being
+    // dragged, thus no need to adjust the centerpoint in this case.
+    if (!is_jellyroll_enabled) {
+      // To make the dragged window contents appear centered around the drag
+      // location, we need to take into account the margins applied on the
+      // target bounds, and offset up the centerpoint by half that amount, so
+      // that the transformed bounds of the window contents move up to be
+      // centered around the cursor.
+      centerpoint.Offset(0, (-kWindowMargin - kHeaderHeightDp) / 2);
+    }
 
     const auto iter = per_grid_desks_bar_data_.find(overview_grid);
     DCHECK(iter != per_grid_desks_bar_data_.end());
@@ -662,12 +673,19 @@ void OverviewWindowDragController::ContinueNormalDrag(
   if (chromeos::features::IsJellyrollEnabled()) {
     auto* new_desk_button = overview_grid->desks_bar_view()->new_desk_button();
 
-    // Since the header of window is not shown during dragging, we need to use
-    // the window's content bounds to check if the window is hovered on the
-    // new desk button.
+    // When `Jellyroll` is enabled, the header of window is shown during
+    // dragging. Overview item should be hovered on the new desk button with
+    // `kVerticalOverlappedLengthToActivateNewDeskButton` overlapped vertical
+    // area in order to activate the new desk button. There could be a lot of
+    // mistriggers with header shown if the new desk button is activated when
+    // the overview item intersects with it.
+    gfx::Rect effective_hovered_bounds(gfx::ToEnclosedRect(bounds));
+    effective_hovered_bounds.Inset(gfx::Insets::TLBR(
+        kVerticalOverlappedLengthToActivateNewDeskButton, 0, 0, 0));
     const bool is_hovered_on_new_desk_button =
         new_desk_button->GetBoundsInScreen().Intersects(
-            gfx::ToRoundedRect(item_->GetWindowTargetBoundsWithInsets()));
+            effective_hovered_bounds);
+
     if (!is_hovered_on_new_desk_button) {
       new_desk_button_scale_up_timer_.Stop();
     } else if (!new_desk_button_scale_up_timer_.IsRunning() &&

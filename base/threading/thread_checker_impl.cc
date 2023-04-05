@@ -24,7 +24,7 @@ void ThreadCheckerImpl::EnableStackLogging() {
 
 ThreadCheckerImpl::ThreadCheckerImpl() {
   AutoLock auto_lock(lock_);
-  EnsureAssignedLockRequired();
+  EnsureAssigned();
 }
 
 ThreadCheckerImpl::~ThreadCheckerImpl() = default;
@@ -73,11 +73,17 @@ bool ThreadCheckerImpl::CalledOnValidThread(
   const bool has_thread_been_destroyed = ThreadLocalStorage::HasBeenDestroyed();
 
   AutoLock auto_lock(lock_);
+  return CalledOnValidThreadInternal(out_bound_at, has_thread_been_destroyed);
+}
+
+bool ThreadCheckerImpl::CalledOnValidThreadInternal(
+    std::unique_ptr<debug::StackTrace>* out_bound_at,
+    bool has_thread_been_destroyed) const {
   // TaskToken/SequenceToken access thread-local storage. During destruction
   // the state of thread-local storage is not guaranteed to be in a consistent
   // state. Further, task-runner only installs the tokens when running a task.
   if (!has_thread_been_destroyed) {
-    EnsureAssignedLockRequired();
+    EnsureAssigned();
 
     // Always return true when called from the task from which this
     // ThreadCheckerImpl was assigned to a thread.
@@ -125,13 +131,12 @@ void ThreadCheckerImpl::DetachFromThread() {
 }
 
 std::unique_ptr<debug::StackTrace> ThreadCheckerImpl::GetBoundAt() const {
-  AutoLock auto_lock(lock_);
   if (!bound_at_)
     return nullptr;
   return std::make_unique<debug::StackTrace>(*bound_at_);
 }
 
-void ThreadCheckerImpl::EnsureAssignedLockRequired() const {
+void ThreadCheckerImpl::EnsureAssigned() const {
   if (!thread_id_.is_null())
     return;
   if (g_log_thread_and_sequence_checker_binding)

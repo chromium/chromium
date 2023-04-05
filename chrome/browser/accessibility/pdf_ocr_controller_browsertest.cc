@@ -63,7 +63,7 @@ Profile* CreateProfile(const base::FilePath& basename) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   base::FilePath profile_path =
       profile_manager->user_data_dir().Append(basename);
-  return profiles::testing::CreateProfileSync(profile_manager, profile_path);
+  return &profiles::testing::CreateProfileSync(profile_manager, profile_path);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 

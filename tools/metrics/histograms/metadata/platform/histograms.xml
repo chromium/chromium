@@ -193,7 +193,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Chaps.TokenManager.UnloadToken"
-    enum="TokenManagerStatus" expires_after="2023-07-30">
+    enum="TokenManagerStatus" expires_after="2023-10-01">
   <owner>chenyian@google.com</owner>
   <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>
@@ -473,7 +473,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.DlcService.InstallResult"
-    enum="DlcService.InstallResult" expires_after="2023-07-30">
+    enum="DlcService.InstallResult" expires_after="2023-10-01">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -483,7 +483,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.DlcService.UninstallResult"
-    enum="DlcService.UninstallResult" expires_after="2023-07-30">
+    enum="DlcService.UninstallResult" expires_after="2023-10-01">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -514,6 +514,17 @@ chromium-metrics-reviews@google.com.
     Emitted once every 30 seconds. If this is too large (over 100,000), we will
     silently lose metrics. Additionally, 100,000 is the largest number we'll
     ever record here: we stop counting when we hit 100,000.
+  </summary>
+</histogram>
+
+<histogram name="Platform.Featured.BootAttemptsSinceLastSafeSeed"
+    units="number of boot attempts" expires_after="2023-10-06">
+  <owner>kendraketsui@google.com</owner>
+  <owner>mutexlox@google.com</owner>
+  <owner>cros-telemetry@google.com</owner>
+  <summary>
+    Records number of boot attempts on a device since receiving a variations
+    safe seed from Chrome. This value is reported every time a device boots.
   </summary>
 </histogram>
 
@@ -1111,7 +1122,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.Memory.ARC" units="MiB" expires_after="2023-07-30">
+<histogram name="Platform.Memory.ARC" units="MiB" expires_after="2023-10-01">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryType" -->
 
   <owner>bgeffon@chromium.org</owner>
@@ -1409,7 +1420,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Modemfwd.DlcUninstallResult"
-    enum="ModemfwdDlcUninstallResult" expires_after="2023-07-30">
+    enum="ModemfwdDlcUninstallResult" expires_after="2023-10-01">
   <owner>andrewlassalle@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -1883,7 +1894,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.TPM.FirmwareUpdate.Result"
-    enum="TPMFirmwareUpdateResult" expires_after="2023-07-30">
+    enum="TPMFirmwareUpdateResult" expires_after="2023-10-01">
   <owner>mnissler@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>Status of a complete TPM firmware update attempt.</summary>
@@ -2028,7 +2039,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Trunks.RecoverableWriteErrorNo" enum="PopularOSErrno"
-    expires_after="2023-08-01">
+    expires_after="2023-10-01">
   <owner>cylai@google.com</owner>
   <owner>chingkang@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
@@ -2060,7 +2071,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Trunks.UnrecoverableWriteErrorNo"
-    enum="PopularOSErrno" expires_after="2023-08-01">
+    enum="PopularOSErrno" expires_after="2023-10-01">
   <owner>cylai@google.com</owner>
   <owner>chingkang@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>

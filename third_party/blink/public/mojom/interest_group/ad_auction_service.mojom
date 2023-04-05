@@ -63,6 +63,12 @@ interface AbortableAdAuction {
       AuctionAdConfigBuyerTimeoutField field,
       AuctionAdConfigBuyerTimeouts buyer_timeouts);
 
+  // Used to provide result of resolving a promise specifying the
+  // `per_buyer_currencies` field of an AuctionConfig.
+  ResolvedBuyerCurrenciesPromise(
+      AuctionAdConfigAuctionId auction,
+      AuctionAdConfigBuyerCurrencies per_buyer_currencies);
+
   // Used to provide result of resolving a promise specifying
   // `direct_from_seller_signals` field of an AuctionConfig.
   ResolvedDirectFromSellerSignalsPromise(

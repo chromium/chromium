@@ -85,20 +85,19 @@ StyleRuleFontPaletteValues::GetOverrideColorsAsVector() const {
   // TODO(yosin): Should we use ` ThreadState::NoAllocationScope` for main
   // thread? Font threads hit `DCHECK` because they don't have `ThreadState'.
 
-  auto ConvertToSkColor = [](const CSSValuePair& override_pair) -> SkColor {
+  auto ConvertToSkColor4f = [](const CSSValuePair& override_pair) -> SkColor4f {
     if (override_pair.Second().IsIdentifierValue()) {
       const CSSIdentifierValue& color_identifier =
           To<CSSIdentifierValue>(override_pair.Second());
       // The value won't be a system color according to parsing, so we can pass
       // a fixed color scheme here.
-      return static_cast<SkColor>(
-          StyleColor::ColorFromKeyword(color_identifier.GetValueID(),
-                                       mojom::blink::ColorScheme::kLight)
-              .Rgb());
+      return StyleColor::ColorFromKeyword(color_identifier.GetValueID(),
+                                          mojom::blink::ColorScheme::kLight)
+          .toSkColor4f();
     }
     const cssvalue::CSSColor& css_color =
         To<cssvalue::CSSColor>(override_pair.Second());
-    return css_color.Value().ToSkColorDeprecated();
+    return css_color.Value().toSkColor4f();
   };
 
   Vector<FontPalette::FontPaletteOverride> return_overrides;
@@ -110,10 +109,10 @@ StyleRuleFontPaletteValues::GetOverrideColorsAsVector() const {
         To<CSSPrimitiveValue>(override_pair.First());
     DCHECK(palette_index.IsInteger());
 
-    const SkColor override_color = ConvertToSkColor(override_pair);
+    const SkColor4f override_color = ConvertToSkColor4f(override_pair);
 
     FontPalette::FontPaletteOverride palette_override{
-        palette_index.GetIntValue(), override_color};
+        palette_index.GetIntValue(), override_color.toSkColor()};
     return_overrides.push_back(palette_override);
   }
 

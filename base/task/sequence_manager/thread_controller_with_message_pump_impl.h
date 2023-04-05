@@ -125,6 +125,8 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
     // Number of tasks processed in a single DoWork invocation.
     int work_batch_size = 1;
 
+    bool can_change_batch_size = true;
+
     // While Now() is less than |yield_to_native_after_batch| we will request a
     // yield to the MessagePump after |work_batch_size| work items.
     base::TimeTicks yield_to_native_after_batch = base::TimeTicks();

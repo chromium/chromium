@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/callback_list.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -92,7 +93,7 @@ class ClientSidePhishingModelOptimizationGuide
   // Notifies all the callbacks of a change in model.
   void NotifyCallbacksOfUpdateForTesting();
 
-  const google::protobuf::RepeatedPtrField<TfLiteModelMetadata::Threshold>&
+  const base::flat_map<std::string, TfLiteModelMetadata::Threshold>&
   GetVisualTfLiteModelThresholds() const;
 
   // This function is used to override internal model for testing in
@@ -136,8 +137,7 @@ class ClientSidePhishingModelOptimizationGuide
 
   // Thresholds in visual TFLite model file to be used for comparison after
   // visual classification
-  google::protobuf::RepeatedPtrField<TfLiteModelMetadata::Threshold>
-      thresholds_;
+  base::flat_map<std::string, TfLiteModelMetadata::Threshold> thresholds_;
 
   // Model type as inferred by feature flag. Guarded by sequence_checker_.
   CSDModelTypeOptimizationGuide model_type_ GUARDED_BY_CONTEXT(

@@ -2200,12 +2200,12 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Metrics, /* metrics.js */
     FilesAppBrowserTest,
     ::testing::Values(TestCase("metricsRecordEnum"),
-                      TestCase("metricsOpenSwa"),
 // TODO(https://crbug.com/1303472): Fix flakes and re-enable.
 #if !BUILDFLAG(IS_CHROMEOS)
                       TestCase("metricsRecordDirectoryListLoad"),
+                      TestCase("metricsRecordUpdateAvailableApps"),
 #endif
-                      TestCase("metricsRecordUpdateAvailableApps")));
+                      TestCase("metricsOpenSwa")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Breadcrumbs, /* breadcrumbs.js */

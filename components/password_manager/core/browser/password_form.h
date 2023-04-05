@@ -13,6 +13,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
+#include "base/types/strong_alias.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/gaia_id_hash.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
@@ -25,11 +26,41 @@ namespace password_manager {
 // PasswordForm primary key which is used in the database.
 using FormPrimaryKey = base::StrongAlias<class FormPrimaryKeyTag, int>;
 
-// Pair of a value and the name of the element that contained this value.
-using ValueElementPair = std::pair<std::u16string, std::u16string>;
+// Represents a value, field renderer id, and the name of the element that
+// contained the value. Used to determine whether another element must be
+// selected as the right username or password field.
+struct AlternativeElement {
+  using Value =
+      base::StrongAlias<class AlternativeElementValueTag, std::u16string>;
+  using Name =
+      base::StrongAlias<class AlternativeElementNameTag, std::u16string>;
 
-// Vector of possible username values and corresponding field names.
-using ValueElementVector = std::vector<ValueElementPair>;
+  AlternativeElement(const Value& value,
+               autofill::FieldRendererId field_renderer_id,
+               const Name& name);
+  AlternativeElement(const AlternativeElement& rhs);
+  AlternativeElement(AlternativeElement&& rhs);
+  AlternativeElement& operator=(const AlternativeElement& rhs);
+  AlternativeElement& operator=(AlternativeElement&& rhs);
+  ~AlternativeElement();
+
+  bool operator==(const AlternativeElement&) const;
+  std::strong_ordering operator<=>(const AlternativeElement&) const;
+
+  // The value of the field.
+  std::u16string value;
+  // The renderer id of the field.
+  autofill::FieldRendererId field_renderer_id;
+  // The name attribute of the field.
+  std::u16string name;
+};
+
+#if defined(UNIT_TEST)
+std::ostream& operator<<(std::ostream& os, const AlternativeElement& form);
+#endif
+
+// Vector of possible username or password values and corresponding field data.
+using AlternativeElementVector = std::vector<AlternativeElement>;
 
 using IsMuted = base::StrongAlias<class IsMutedTag, bool>;
 
@@ -240,12 +271,12 @@ struct PasswordForm {
   // This member is populated in cases where we there are multiple input
   // elements that could possibly be the username. Used when our heuristics for
   // determining the username are incorrect. Optional.
-  ValueElementVector all_possible_usernames;
+  AlternativeElementVector all_possible_usernames;
 
   // This member is populated in cases where we there are multiple possible
   // password values. Used in pending password state, to populate a dropdown
   // for possible passwords. Contains all possible passwords. Optional.
-  ValueElementVector all_possible_passwords;
+  AlternativeElementVector all_possible_passwords;
 
   // True if |all_possible_passwords| have autofilled value or its part.
   bool form_has_autofilled_value = false;

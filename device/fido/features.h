@@ -75,6 +75,10 @@ BASE_DECLARE_FEATURE(kWebAuthnPhoneConfirmationSheet);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnNewPrioritiesImpl);
 
+// Use the Android 14 Credential Manager API.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnAndroidCredMan);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

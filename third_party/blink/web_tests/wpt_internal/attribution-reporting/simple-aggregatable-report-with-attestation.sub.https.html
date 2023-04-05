@@ -9,6 +9,7 @@ attribution_reporting_promise_test(async (t) => {
   // 1. Register a source as we want the trigger to match a source for the
   //    report to then be sent.
   const source = {
+    source_event_id: generateSourceEventId(),
     destination: `https://{{host}}`,
     aggregation_keys: {
       campaignCounts: "0x159",
@@ -19,6 +20,7 @@ attribution_reporting_promise_test(async (t) => {
     source,
     cookie: "foo=bar;Secure;HttpOnly;Path=/",
   });
+  await waitForSourceToBeRegistered(source.source_event_id);
 
   // 2. Register a trigger. We call a custom python script that acts as\
   //    reporting origin registered as a private state issuer. ie. It will

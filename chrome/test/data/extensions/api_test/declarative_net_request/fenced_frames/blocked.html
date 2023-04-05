@@ -1,1 +1,5 @@
-<fencedframe src="blocked_fenced_frame.html"></fencedframe>
+<fencedframe></fencedframe>
+<script>
+  const url = new URL("blocked_fenced_frame.html", location.href);
+  document.querySelector("fencedframe").config = new FencedFrameConfig(url);
+</script>

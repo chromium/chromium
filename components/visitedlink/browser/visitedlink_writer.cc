@@ -57,6 +57,8 @@ const size_t VisitedLinkWriter::kFileHeaderSize =
 // table in NewTableSizeForCount (prime number).
 const unsigned VisitedLinkWriter::kDefaultTableSize = 16381;
 
+bool VisitedLinkWriter::fail_table_creation_for_testing_ = false;
+
 namespace {
 
 // Fills the given salt structure with some quasi-random values
@@ -844,7 +846,8 @@ bool VisitedLinkWriter::GetDatabaseFileName(base::FilePath* filename) {
 // in so that it can be written to the shared memory
 bool VisitedLinkWriter::CreateURLTable(int32_t num_entries) {
   base::MappedReadOnlyRegion table_memory;
-  if (CreateApartURLTable(num_entries, salt_, &table_memory)) {
+  if (!VisitedLinkWriter::fail_table_creation_for_testing_ &&
+      CreateApartURLTable(num_entries, salt_, &table_memory)) {
     mapped_table_memory_ = std::move(table_memory);
     hash_table_ = GetHashTableFromMapping(mapped_table_memory_.mapping);
     table_length_ = num_entries;
@@ -878,24 +881,6 @@ bool VisitedLinkWriter::CreateApartURLTable(
   SharedHeader* header = static_cast<SharedHeader*>(memory->mapping.memory());
   header->length = num_entries;
   memcpy(header->salt, salt, LINK_SALT_LENGTH);
-
-  return true;
-}
-
-bool VisitedLinkWriter::BeginReplaceURLTable(int32_t num_entries) {
-  base::MappedReadOnlyRegion old_memory = std::move(mapped_table_memory_);
-  int32_t old_table_length = table_length_;
-  if (!CreateURLTable(num_entries)) {
-    // Try to put back the old state.
-    mapped_table_memory_ = std::move(old_memory);
-    hash_table_ = GetHashTableFromMapping(mapped_table_memory_.mapping);
-    table_length_ = old_table_length;
-    return false;
-  }
-
-#ifndef NDEBUG
-  DebugValidate();
-#endif
 
   return true;
 }
@@ -938,7 +923,6 @@ bool VisitedLinkWriter::ResizeTableIfNecessary() {
 void VisitedLinkWriter::ResizeTable(int32_t new_size) {
   DCHECK(mapped_table_memory_.region.IsValid() &&
          mapped_table_memory_.mapping.IsValid());
-  shared_memory_serial_++;
 
 #ifndef NDEBUG
   DebugValidate();
@@ -946,11 +930,14 @@ void VisitedLinkWriter::ResizeTable(int32_t new_size) {
 
   auto old_hash_table_mapping = std::move(mapped_table_memory_.mapping);
   int32_t old_table_length = table_length_;
-  if (!BeginReplaceURLTable(new_size)) {
+  if (!CreateURLTable(new_size)) {
+    // Restore modified members.
     mapped_table_memory_.mapping = std::move(old_hash_table_mapping);
-    hash_table_ = GetHashTableFromMapping(mapped_table_memory_.mapping);
     return;
   }
+
+  shared_memory_serial_++;
+
   {
     Fingerprint* old_hash_table =
         GetHashTableFromMapping(old_hash_table_mapping);
@@ -1035,7 +1022,7 @@ void VisitedLinkWriter::OnTableRebuildComplete(
 
     int new_table_size = NewTableSizeForCount(
         static_cast<int>(fingerprints.size() + added_since_rebuild_.size()));
-    if (BeginReplaceURLTable(new_table_size)) {
+    if (CreateURLTable(new_table_size)) {
       // Add the stored fingerprints to the hash table.
       for (const auto& fingerprint : fingerprints)
         AddFingerprint(fingerprint, false);

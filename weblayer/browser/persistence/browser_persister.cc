@@ -168,8 +168,8 @@ void BrowserPersister::OnDataChanged(
 }
 
 void BrowserPersister::SetTabUserAgentOverride(
-    const SessionID& window_id,
-    const SessionID& tab_id,
+    SessionID window_id,
+    SessionID tab_id,
     const sessions::SerializedUserAgentOverride& user_agent_override) {
   if (rebuild_on_next_save_)
     return;
@@ -178,8 +178,8 @@ void BrowserPersister::SetTabUserAgentOverride(
       tab_id, user_agent_override));
 }
 
-void BrowserPersister::SetSelectedNavigationIndex(const SessionID& window_id,
-                                                  const SessionID& tab_id,
+void BrowserPersister::SetSelectedNavigationIndex(SessionID window_id,
+                                                  SessionID tab_id,
                                                   int index) {
   if (rebuild_on_next_save_)
     return;
@@ -198,8 +198,8 @@ void BrowserPersister::SetSelectedNavigationIndex(const SessionID& window_id,
 }
 
 void BrowserPersister::UpdateTabNavigation(
-    const SessionID& window_id,
-    const SessionID& tab_id,
+    SessionID window_id,
+    SessionID tab_id,
     const SerializedNavigationEntry& navigation) {
   if (rebuild_on_next_save_)
     return;
@@ -212,8 +212,8 @@ void BrowserPersister::UpdateTabNavigation(
   ScheduleCommand(CreateUpdateTabNavigationCommand(tab_id, navigation));
 }
 
-void BrowserPersister::TabNavigationPathPruned(const SessionID& window_id,
-                                               const SessionID& tab_id,
+void BrowserPersister::TabNavigationPathPruned(SessionID window_id,
+                                               SessionID tab_id,
                                                int index,
                                                int count) {
   if (rebuild_on_next_save_)
@@ -249,9 +249,8 @@ void BrowserPersister::TabNavigationPathPruned(const SessionID& window_id,
       sessions::CreateTabNavigationPathPrunedCommand(tab_id, index, count));
 }
 
-void BrowserPersister::TabNavigationPathEntriesDeleted(
-    const SessionID& window_id,
-    const SessionID& tab_id) {
+void BrowserPersister::TabNavigationPathEntriesDeleted(SessionID window_id,
+                                                       SessionID tab_id) {
   if (rebuild_on_next_save_)
     return;
 
@@ -282,7 +281,7 @@ void BrowserPersister::BuildCommandsForTab(TabImpl* tab, int index_in_browser) {
       BuildCommandsForTabConfiguration(browser_session_id_, tab,
                                        index_in_browser));
 
-  const SessionID& session_id = GetSessionIDForTab(tab);
+  const SessionID session_id = GetSessionIDForTab(tab);
   content::NavigationController& controller =
       tab->web_contents()->GetController();
   // Ensure that we don't try to persist initial NavigationEntry, as it is

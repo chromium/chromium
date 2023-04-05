@@ -33,6 +33,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/preloading_test_util.h"
@@ -251,6 +252,8 @@ class PrefetchURLLoaderInterceptorTest : public RenderViewHostTestHarness {
 
     scoped_test_timer_ =
         std::make_unique<base::ScopedMockElapsedTimersForTest>();
+
+    scoped_feature_list_.InitAndDisableFeature(::features::kPreloadingConfig);
   }
 
   void TearDown() override {
@@ -406,6 +409,7 @@ class PrefetchURLLoaderInterceptorTest : public RenderViewHostTestHarness {
       attempt_entry_builder_;
 
   std::unique_ptr<base::ScopedMockElapsedTimersForTest> scoped_test_timer_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(PrefetchURLLoaderInterceptorTest,

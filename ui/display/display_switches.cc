@@ -58,6 +58,13 @@ const char kScreenConfig[] = "screen-config";
 const char kUseFirstDisplayAsInternal[] = "use-first-display-as-internal";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Additional display properties are provided through this switch that are
+// beyond what is available via EDID encoded as JSON. Please see
+// `https://chromium.googlesource.com/chromiumos/platform2/+/dd10a5ae3618bb9dc5fb47ac415ebef6e9a3827d/chromeos-config/README.md#displays`
+// for the data format.
+const char kDisplayProperties[] = "display-properties";
+
 // Enables unified desktop mode.
 const char kEnableUnifiedDesktop[] = "ash-enable-unified-desktop";
 

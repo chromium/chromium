@@ -26,8 +26,11 @@ namespace {
 // Command line param to override the collections base URL, e.g. for testing.
 constexpr char kCollectionsBaseUrlCmdlineSwitch[] = "collections-base-url";
 
-// The default base URL to download collections.
+// The default base URL to download prod collections.
 constexpr char kCollectionsBaseUrl[] = "https://clients3.google.com";
+
+// The default base URL to download alpha collections.
+constexpr char kAlphaCollectionsBaseUrl[] = "https://clients5.google.com";
 
 // The MIME type of the POST data sent to the server.
 constexpr char kProtoMimeType[] = "application/x-protobuf";
@@ -59,6 +62,9 @@ GURL GetUrl(base::StringPiece path) {
                   kCollectionsBaseUrlCmdlineSwitch)
                   ? base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
                         kCollectionsBaseUrlCmdlineSwitch)
+              : base::FeatureList::IsEnabled(
+                    ntp_features::kNtpAlphaBackgroundCollections)
+                  ? kAlphaCollectionsBaseUrl
                   : kCollectionsBaseUrl)
       .Resolve(path);
 }

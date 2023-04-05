@@ -63,6 +63,7 @@
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/extensions/api/accessibility_private.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -103,6 +104,7 @@
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 #include "url/gurl.h"
@@ -2209,6 +2211,84 @@ void AccessibilityManager::OnSelectToSpeakPanelAction(
       extensions::api::accessibility_private::OnSelectToSpeakPanelAction::
           kEventName,
       std::move(event_args));
+  event_router->DispatchEventWithLazyListener(
+      extension_misc::kSelectToSpeakExtensionId, std::move(event));
+}
+
+void AccessibilityManager::SendKeysCurrentlyDownToSelectToSpeak(
+    const std::set<ui::KeyboardCode>& pressed_keys) {
+  if (!profile_) {
+    return;
+  }
+
+  extensions::EventRouter* event_router =
+      extensions::EventRouter::Get(profile_);
+
+  std::vector<int> key_codes;
+  for (auto& key : pressed_keys) {
+    key_codes.emplace_back(key);
+  }
+  auto event_args(extensions::api::accessibility_private::
+                      OnSelectToSpeakKeysPressedChanged::Create(key_codes));
+
+  auto event = std::make_unique<extensions::Event>(
+      extensions::events::
+          ACCESSIBILITY_PRIVATE_ON_SELECT_TO_SPEAK_KEYS_PRESSED_CHANGED,
+      extensions::api::accessibility_private::
+          OnSelectToSpeakKeysPressedChanged::kEventName,
+      std::move(event_args));
+
+  event_router->DispatchEventWithLazyListener(
+      extension_misc::kSelectToSpeakExtensionId, std::move(event));
+}
+
+void AccessibilityManager::SendMouseEventToSelectToSpeak(
+    ui::EventType type,
+    const gfx::PointF& position) {
+  if (!profile_) {
+    return;
+  }
+
+  // Compare to ui::blink::MakeWebMouseEventFromUiEvent.
+  extensions::api::accessibility_private::SyntheticMouseEventType event_type;
+  switch (type) {
+    case ui::EventType::ET_MOUSE_PRESSED:
+      event_type = extensions::api::accessibility_private::
+          SyntheticMouseEventType::SYNTHETIC_MOUSE_EVENT_TYPE_PRESS;
+      break;
+    case ui::EventType::ET_MOUSE_RELEASED:
+      event_type = extensions::api::accessibility_private::
+          SyntheticMouseEventType::SYNTHETIC_MOUSE_EVENT_TYPE_RELEASE;
+      break;
+    case ui::EventType::ET_MOUSE_MOVED:
+    case ui::EventType::ET_MOUSE_ENTERED:
+    case ui::EventType::ET_MOUSE_EXITED:
+    case ui::EventType::ET_MOUSE_DRAGGED:
+      event_type = extensions::api::accessibility_private::
+          SyntheticMouseEventType::SYNTHETIC_MOUSE_EVENT_TYPE_MOVE;
+      break;
+    case ui::EventType::ET_MOUSEWHEEL:
+      // Mouse wheel not handled.
+      return;
+    default:
+      NOTIMPLEMENTED() << "Received unexpected event: " << type;
+      break;
+  }
+
+  extensions::EventRouter* event_router =
+      extensions::EventRouter::Get(profile_);
+
+  auto event_args(
+      extensions::api::accessibility_private::OnSelectToSpeakMouseChanged::
+          Create(event_type, position.x(), position.y()));
+
+  auto event = std::make_unique<extensions::Event>(
+      extensions::events::
+          ACCESSIBILITY_PRIVATE_ON_SELECT_TO_SPEAK_MOUSE_CHANGED,
+      extensions::api::accessibility_private::OnSelectToSpeakMouseChanged::
+          kEventName,
+      std::move(event_args));
+
   event_router->DispatchEventWithLazyListener(
       extension_misc::kSelectToSpeakExtensionId, std::move(event));
 }

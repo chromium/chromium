@@ -73,6 +73,17 @@ try_.builder(
 )
 
 try_.builder(
+    name = "mac-intel-on-arm64-rel",
+    mirrors = [
+        "ci/mac-intel-on-arm64-rel",
+    ],
+    builderless = False,
+    os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
     name = "mac-fieldtrial-tester",
     mirrors = [
         "ci/mac-arm64-rel",
@@ -121,8 +132,6 @@ try_.orchestrator_builder(
     coverage_test_types = ["overall", "unit"],
     experiments = {
         "chromium_rts.inverted_rts": 100,
-        # go/nplus1shardsproposal
-        "chromium.add_one_test_shard": 5,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -331,6 +340,20 @@ try_.builder(
 )
 
 try_.builder(
+    name = "mac_upload_rust",
+    executable = "recipe:chromium_upload_rust",
+    builderless = False,
+    execution_timeout = 8 * time.hour,
+)
+
+try_.builder(
+    name = "mac_upload_rust_arm",
+    executable = "recipe:chromium_upload_rust",
+    builderless = False,
+    execution_timeout = 8 * time.hour,
+)
+
+try_.builder(
     name = "mac-code-coverage",
     mirrors = ["ci/mac-code-coverage"],
     execution_timeout = 20 * time.hour,
@@ -404,10 +427,6 @@ try_.orchestrator_builder(
     compilator = "ios-simulator-compilator",
     coverage_exclude_sources = "ios_test_files_and_test_utils",
     coverage_test_types = ["overall", "unit"],
-    experiments = {
-        # go/nplus1shardsproposal
-        "chromium.add_one_test_shard": 5,
-    },
     main_list_view = "try",
     tryjob = try_.job(),
     use_clang_coverage = True,

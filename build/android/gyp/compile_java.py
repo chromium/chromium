@@ -22,6 +22,7 @@ from util import md5_check
 from util import jar_info_utils
 from util import server_utils
 import action_helpers  # build_utils adds //build to sys.path.
+import zip_helpers
 
 _JAVAC_EXTRACTOR = os.path.join(build_utils.DIR_SOURCE_ROOT, 'third_party',
                                 'android_prebuilts', 'build_tools', 'common',
@@ -255,22 +256,22 @@ def CreateJarFile(jar_path,
   logging.info('Start creating jar file: %s', jar_path)
   with action_helpers.atomic_output(jar_path) as f:
     with zipfile.ZipFile(f.name, 'w') as z:
-      build_utils.ZipDir(z, classes_dir)
+      zip_helpers.zip_directory(z, classes_dir)
       if service_provider_configuration_dir:
         config_files = build_utils.FindInDirectory(
             service_provider_configuration_dir)
         for config_file in config_files:
           zip_path = os.path.relpath(config_file,
                                      service_provider_configuration_dir)
-          build_utils.AddToZipHermetic(z, zip_path, src_path=config_file)
+          zip_helpers.add_to_zip_hermetic(z, zip_path, src_path=config_file)
 
       if additional_jar_files:
         for src_path, zip_path in additional_jar_files:
-          build_utils.AddToZipHermetic(z, zip_path, src_path=src_path)
+          zip_helpers.add_to_zip_hermetic(z, zip_path, src_path=src_path)
       if extra_classes_jar:
-        build_utils.MergeZips(
-            z, [extra_classes_jar],
-            path_transform=lambda p: p if p.endswith('.class') else None)
+        path_transform = lambda p: p if p.endswith('.class') else None
+        zip_helpers.merge_zips(z, [extra_classes_jar],
+                               path_transform=path_transform)
   logging.info('Completed jar file: %s', jar_path)
 
 

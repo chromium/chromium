@@ -809,8 +809,7 @@ bool HTMLMediaElement::LayoutObjectIsNeeded(const DisplayStyle& style) const {
   return ShouldShowControls() && HTMLElement::LayoutObjectIsNeeded(style);
 }
 
-LayoutObject* HTMLMediaElement::CreateLayoutObject(const ComputedStyle&,
-                                                   LegacyLayout) {
+LayoutObject* HTMLMediaElement::CreateLayoutObject(const ComputedStyle&) {
   return MakeGarbageCollected<LayoutMedia>(this);
 }
 

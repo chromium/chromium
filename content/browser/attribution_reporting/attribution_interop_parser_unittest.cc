@@ -73,7 +73,9 @@ bool operator==(AttributionConfig::EventLevelLimit a,
                            config.event_source_randomized_response_rate,
                            config.max_reports_per_destination,
                            config.max_attributions_per_navigation_source,
-                           config.max_attributions_per_event_source);
+                           config.max_attributions_per_event_source,
+                           config.first_report_window_deadline,
+                           config.second_report_window_deadline);
   };
   return tie(a) == tie(b);
 }

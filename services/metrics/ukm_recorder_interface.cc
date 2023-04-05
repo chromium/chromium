@@ -7,7 +7,8 @@
 #include "base/atomic_sequence_num.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/metrics/public/cpp/ukm_recorder_client_interface_registry.h"
+
 #include "url/gurl.h"
 
 namespace metrics {

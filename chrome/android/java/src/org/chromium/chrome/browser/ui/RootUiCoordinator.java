@@ -1407,9 +1407,7 @@ public class RootUiCoordinator
         // TODO(1093999): Componentize SnackbarManager so BottomSheetController can own this.
         Callback<View> sheetInitializedCallback = (view) -> {
             mBottomSheetSnackbarManager = new SnackbarManager(mActivity,
-                    view.findViewById(org.chromium.components.browser_ui.bottomsheet.R.id
-                                              .bottom_sheet_snackbar_container),
-                    mWindowAndroid);
+                    view.findViewById(R.id.bottom_sheet_snackbar_container), mWindowAndroid);
         };
 
         Supplier<OverlayPanelManager> panelManagerSupplier = ()

@@ -143,12 +143,10 @@ public class OmniboxSuggestionsDropdownUnitTest {
     public void
     testBackgroundColor_withOmniboxModernizeVisualUpdateFlags() {
         assertEquals(mDropdown.getStandardBgColor(),
-                ChromeColors.getSurfaceColor(mContext,
-                        org.chromium.chrome.browser.omnibox.R.dimen
-                                .omnibox_suggestion_dropdown_bg_elevation));
+                ChromeColors.getSurfaceColor(
+                        mContext, R.dimen.omnibox_suggestion_dropdown_bg_elevation));
         assertEquals(mDropdown.getIncognitoBgColor(),
-                mContext.getColor(
-                        org.chromium.chrome.browser.omnibox.R.color.omnibox_dropdown_bg_incognito));
+                mContext.getColor(R.color.omnibox_dropdown_bg_incognito));
     }
 
     @Test

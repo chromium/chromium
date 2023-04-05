@@ -78,7 +78,7 @@ public class AdaptiveToolbarPreferenceFragmentTest {
     public void testSelectShortcuts() {
         FragmentScenario<AdaptiveToolbarPreferenceFragment> scenario =
                 FragmentScenario.launchInContainer(AdaptiveToolbarPreferenceFragment.class,
-                        Bundle.EMPTY, org.chromium.chrome.R.style.Theme_Chromium_Settings);
+                        Bundle.EMPTY, R.style.Theme_Chromium_Settings);
         scenario.onFragment(fragment -> {
             mSwitchPreference = (ChromeSwitchPreference) fragment.findPreference(
                     AdaptiveToolbarPreferenceFragment.PREF_TOOLBAR_SHORTCUT_SWITCH);
@@ -157,7 +157,7 @@ public class AdaptiveToolbarPreferenceFragmentTest {
     public void testTranslateOption_Enabled() {
         FragmentScenario<AdaptiveToolbarPreferenceFragment> scenario =
                 FragmentScenario.launchInContainer(AdaptiveToolbarPreferenceFragment.class,
-                        Bundle.EMPTY, org.chromium.chrome.R.style.Theme_Chromium_Settings);
+                        Bundle.EMPTY, R.style.Theme_Chromium_Settings);
         scenario.onFragment(fragment -> {
             mRadioPreference = (RadioButtonGroupAdaptiveToolbarPreference) fragment.findPreference(
                     AdaptiveToolbarPreferenceFragment.PREF_ADAPTIVE_RADIO_GROUP);
@@ -184,7 +184,7 @@ public class AdaptiveToolbarPreferenceFragmentTest {
                 ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS, AdaptiveToolbarButtonVariant.TRANSLATE);
         FragmentScenario<AdaptiveToolbarPreferenceFragment> scenario =
                 FragmentScenario.launchInContainer(AdaptiveToolbarPreferenceFragment.class,
-                        Bundle.EMPTY, org.chromium.chrome.R.style.Theme_Chromium_Settings);
+                        Bundle.EMPTY, R.style.Theme_Chromium_Settings);
         scenario.onFragment(fragment -> {
             mRadioPreference = (RadioButtonGroupAdaptiveToolbarPreference) fragment.findPreference(
                     AdaptiveToolbarPreferenceFragment.PREF_ADAPTIVE_RADIO_GROUP);
@@ -208,7 +208,7 @@ public class AdaptiveToolbarPreferenceFragmentTest {
     public void testAddToBookmarksOption_Enabled() {
         FragmentScenario<AdaptiveToolbarPreferenceFragment> scenario =
                 FragmentScenario.launchInContainer(AdaptiveToolbarPreferenceFragment.class,
-                        Bundle.EMPTY, org.chromium.chrome.R.style.Theme_Chromium_Settings);
+                        Bundle.EMPTY, R.style.Theme_Chromium_Settings);
         scenario.onFragment(fragment -> {
             mRadioPreference = (RadioButtonGroupAdaptiveToolbarPreference) fragment.findPreference(
                     AdaptiveToolbarPreferenceFragment.PREF_ADAPTIVE_RADIO_GROUP);
@@ -236,7 +236,7 @@ public class AdaptiveToolbarPreferenceFragmentTest {
                 AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS);
         FragmentScenario<AdaptiveToolbarPreferenceFragment> scenario =
                 FragmentScenario.launchInContainer(AdaptiveToolbarPreferenceFragment.class,
-                        Bundle.EMPTY, org.chromium.chrome.R.style.Theme_Chromium_Settings);
+                        Bundle.EMPTY, R.style.Theme_Chromium_Settings);
         scenario.onFragment(fragment -> {
             mRadioPreference = (RadioButtonGroupAdaptiveToolbarPreference) fragment.findPreference(
                     AdaptiveToolbarPreferenceFragment.PREF_ADAPTIVE_RADIO_GROUP);

@@ -67,8 +67,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
   // `user_recorder` is used during user creation of the user when
   // challenge-response authentication is used, so that
   // CryptohomeKeyDelegateServiceProvider would work correctly.
-  // `is_ephemeral_mount_enforced` forces usage of ephemeral mounts for all
-  // user types (including regular users and kiosks).
+  // `is_ephemeral_mount_enforced` forces usage of ephemeral mounts for regular
+  // users. Should not be used for kiosks users.
   // `local_state` used to persist login-related state across reboots via
   // `UserDirectoryIntegrityManager`
   AuthSessionAuthenticator(
@@ -85,9 +85,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
   void AuthenticateToUnlock(std::unique_ptr<UserContext> user_context) override;
   void LoginOffTheRecord() override;
   void LoginAsPublicSession(const UserContext& user_context) override;
-  void LoginAsKioskAccount(const AccountId& app_account_id) override;
-  void LoginAsArcKioskAccount(const AccountId& app_account_id) override;
-  void LoginAsWebKioskAccount(const AccountId& app_account_id) override;
+  void LoginAsKioskAccount(const AccountId& app_account_id,
+                           bool ephemeral) override;
+  void LoginAsArcKioskAccount(const AccountId& app_account_id,
+                              bool ephemeral) override;
+  void LoginAsWebKioskAccount(const AccountId& app_account_id,
+                              bool ephemeral) override;
   void LoginAuthenticated(std::unique_ptr<UserContext> user_context) override;
   void OnAuthSuccess() override;
   void OnAuthFailure(const AuthFailure& error) override;
@@ -111,7 +114,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
   void DoLoginAsPublicSession(bool user_exists,
                               std::unique_ptr<UserContext> context,
                               absl::optional<AuthenticationError> error);
-  void DoLoginAsKiosk(bool user_exists,
+  void DoLoginAsKiosk(bool ephemeral,
+                      bool user_exists,
                       std::unique_ptr<UserContext> context,
                       absl::optional<AuthenticationError> error);
   void DoLoginAsExistingUser(bool user_exists,
@@ -129,7 +133,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
   void CompleteLoginImpl(std::unique_ptr<UserContext> user_context);
   void LoginAsKioskImpl(const AccountId& app_account_id,
                         user_manager::UserType user_type,
-                        bool force_dircrypto);
+                        bool force_dircrypto,
+                        bool ephemeral);
 
   // Helpers for starting the auth session and cleaning stale data during that.
   void StartAuthSessionForLogin(std::unique_ptr<UserContext> context,
@@ -223,6 +228,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
   void SaveKnownUser(std::unique_ptr<UserContext> context,
                      AuthOperationCallback callback);
 
+  // TODO(b/275689019): remove this field and instead pass `ephemeral_mount` as
+  // `Login*` functions parameter.
+  //
+  // Don't use this field to determine ephemeral mount for kiosk users.
   const bool is_ephemeral_mount_enforced_;
   base::RepeatingCallback<void(const AccountId&)> user_recorder_;
   std::unique_ptr<SafeModeDelegate> safe_mode_delegate_;

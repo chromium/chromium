@@ -606,10 +606,8 @@ export class FileTransferController {
    * @return {string} Either "copy" or "move".
    */
   executePaste(pastePlan) {
-    const sourceURLs = pastePlan.sourceURLs;
     const toMove = pastePlan.isMove;
     const destinationEntry = pastePlan.destinationEntry;
-
 
     // Execute the IOTask in asynchronously.
     (async () => {
@@ -629,24 +627,8 @@ export class FileTransferController {
 
           const taskType = toMove ? chrome.fileManagerPrivate.IOTaskType.MOVE :
                                     chrome.fileManagerPrivate.IOTaskType.COPY;
-          // TODO(crbug/1290197): Start tracking the copy/move operation
-          // starting here.
-          const item = new ProgressCenterItem();
-          item.type = /** @type {!ProgressItemType} */ (taskType);
-          // Default to PENDING. It will be updated as matching IOTask events
-          // are handled in FileOperationHandler::onIOTaskProgressStatus_.
-          item.state = ProgressItemState.PENDING;
-          item.itemCount = entries.length;
-          item.remainingTime = 0;
-          item.cancelCallback = () => {
-            chrome.fileManagerPrivate.cancelIOTask(Number(item.id));
-          };
-          item.isDestinationDrive =
-              this.volumeManager_.getVolumeInfo(destinationEntry).volumeType ===
-              VolumeManagerCommon.VolumeType.DRIVE;
-          item.id = String(await startIOTask(
-              taskType, entries, {destinationFolder: destinationEntry}));
-          this.progressCenter_.updateItem(item);
+          await startIOTask(
+              taskType, entries, {destinationFolder: destinationEntry});
         }
       } catch (error) {
         console.warn(error.stack ? error.stack : error);

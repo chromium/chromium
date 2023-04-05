@@ -21,8 +21,10 @@
 #include "ash/system/tray/tri_view.h"
 #include "base/check.h"
 #include "base/containers/adapters.h"
+#include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "third_party/skia/include/core/SkDrawLooper.h"
+#include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -384,7 +386,15 @@ TrayDetailedView::TrayDetailedView(DetailedViewDelegate* delegate)
   }
 }
 
-TrayDetailedView::~TrayDetailedView() = default;
+TrayDetailedView::~TrayDetailedView() {
+  // TDV_D stands for `TrayDetailedView`'s destructor. Here using the
+  // short version since the log method has a character count limit of 40.
+  SCOPED_CRASH_KEY_BOOL("TDV_D", "title_label_", !!title_label_);
+  SCOPED_CRASH_KEY_BOOL("TDV_D", "sub_header_label_", !!sub_header_label_);
+  SCOPED_CRASH_KEY_BOOL("TDV_D", "sub_header_image_view_",
+                        !!sub_header_image_view_);
+  SCOPED_CRASH_KEY_BOOL("TDV_D", "title_separator_", !!title_separator_);
+}
 
 void TrayDetailedView::OnViewClicked(views::View* sender) {
   DCHECK(sender);
@@ -674,8 +684,27 @@ const char* TrayDetailedView::GetClassName() const {
 }
 
 void TrayDetailedView::OnThemeChanged() {
-  views::View::OnThemeChanged();
+  // TDV_OTC stands for `TrayDetailedView::OnThemeChanged`. Here using the
+  // short version since the log method has a character count limit of 40.
+  SCOPED_CRASH_KEY_BOOL("TDV_OTC", "color_provider", !!AshColorProvider::Get());
+  SCOPED_CRASH_KEY_BOOL("TDV_OTC", "title_label_", !!title_label_);
+  SCOPED_CRASH_KEY_BOOL("TDV_OTC", "sub_header_label_", !!sub_header_label_);
+  SCOPED_CRASH_KEY_BOOL("TDV_OTC", "sub_header_image_view_",
+                        !!sub_header_image_view_);
+  SCOPED_CRASH_KEY_BOOL("TDV_OTC", "title_separator_", !!title_separator_);
+  SCOPED_CRASH_KEY_BOOL("TDV_OTC", "widget", !!GetWidget());
+  if (GetWidget()) {
+    SCOPED_CRASH_KEY_BOOL("TDV_OTC", "native_window",
+                          !!GetWidget()->GetNativeWindow());
+    if (GetWidget()->GetNativeWindow()) {
+      SCOPED_CRASH_KEY_BOOL("TDV_OTC", "native_window_is_destroying",
+                            GetWidget()->GetNativeWindow()->is_destroying());
+    }
+  }
 
+  SCOPED_CRASH_KEY_STRING32("TDV_OTC", "class_name", GetClassName());
+
+  views::View::OnThemeChanged();
   auto* color_provider = AshColorProvider::Get();
   if (title_label_) {
     title_label_->SetEnabledColor(color_provider->GetContentLayerColor(

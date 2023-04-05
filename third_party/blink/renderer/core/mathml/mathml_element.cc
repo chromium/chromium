@@ -188,14 +188,13 @@ absl::optional<Length> MathMLElement::AddMathLengthToComputedStyle(
   return absl::nullopt;
 }
 
-LayoutObject* MathMLElement::CreateLayoutObject(const ComputedStyle& style,
-                                                LegacyLayout legacy) {
+LayoutObject* MathMLElement::CreateLayoutObject(const ComputedStyle& style) {
   if (RuntimeEnabledFeatures::MathMLCoreEnabled() &&
-      legacy != LegacyLayout::kForce &&
       Node::HasTagName(mathml_names::kMtdTag) &&
-      style.Display() == EDisplay::kTableCell)
+      style.Display() == EDisplay::kTableCell) {
     return MakeGarbageCollected<LayoutNGTableCellWithAnonymousMrow>(this);
-  return Element::CreateLayoutObject(style, legacy);
+  }
+  return Element::CreateLayoutObject(style);
 }
 
 }  // namespace blink

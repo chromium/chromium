@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+PASS reshape float32 tensor to a new shape (reorder all dimensions) / sync
+PASS reshape float32 tensor to a new shape (reduce dimensions) / sync
+PASS reshape float32 tensor to a new shape (extend dimensions) / sync
+PASS reshape float32 tensor to a new shape (one dimension being the special value of null) / sync
+PASS reshape float32 tensor to 1D tensor / sync
+PASS reshape float32 tensor to 1D tensor newShape=[null] / sync
+FAIL reshape float32 tensor to a new shape (reorder all dimensions) / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL reshape float32 tensor to a new shape (reduce dimensions) / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL reshape float32 tensor to a new shape (extend dimensions) / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL reshape float32 tensor to a new shape (one dimension being the special value of null) / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL reshape float32 tensor to 1D tensor / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL reshape float32 tensor to 1D tensor newShape=[null] / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+Harness: the test ran to completion.
+

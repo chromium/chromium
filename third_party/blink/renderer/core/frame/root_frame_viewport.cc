@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/layout/scroll_anchor.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
+#include "third_party/blink/renderer/core/scroll/scroll_animator.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
@@ -432,8 +433,10 @@ void RootFrameViewport::DistributeScrollBetweenViewports(
   ScrollOffset delta = offset - old_offset;
 
   if (delta.IsZero()) {
-    if (on_finish)
-      std::move(on_finish).Run(ScrollableArea::ScrollCompletionMode::kFinished);
+    if (on_finish) {
+      std::move(on_finish).Run(
+          ScrollableArea::ScrollCompletionMode::kZeroDelta);
+    }
     return;
   }
 
@@ -571,12 +574,31 @@ ScrollResult RootFrameViewport::UserScroll(
       LayoutViewport().UserInputScrollable(kVerticalScrollbar)
           ? layout_delta.y()
           : 0);
+  ScrollOffset layout_consumed_delta =
+      LayoutViewport().GetScrollAnimator().ComputeDeltaToConsume(
+          scrollable_axis_delta);
+
+  if (ScrollAnimatorEnabled()) {
+    bool visual_viewport_has_running_animation =
+        GetVisualViewport().GetScrollAnimator().HasRunningAnimation();
+    bool layout_viewport_has_running_animation =
+        LayoutViewport().GetScrollAnimator().HasRunningAnimation();
+    // We reset |user_scroll_sequence_affects_layout_viewport_| only if this
+    // UserScroll is not a continuation of a longer sequence because an earlier
+    // UserScroll in the sequence may have already affected the layout
+    // viewport.
+    if (!visual_viewport_has_running_animation &&
+        !layout_viewport_has_running_animation) {
+      user_scroll_sequence_affects_layout_viewport_ = false;
+    }
+  }
 
   // If there won't be any scrolling, bail early so we don't produce any side
   // effects like cancelling existing animations.
-  if (visual_consumed_delta.IsZero() && scrollable_axis_delta.IsZero()) {
+  if (visual_consumed_delta.IsZero() && layout_consumed_delta.IsZero()) {
     if (on_finish) {
-      std::move(on_finish).Run(ScrollableArea::ScrollCompletionMode::kFinished);
+      std::move(on_finish).Run(
+          ScrollableArea::ScrollCompletionMode::kZeroDelta);
     }
     return ScrollResult(false, false, pixel_delta.x(), pixel_delta.y());
   }
@@ -592,6 +614,17 @@ ScrollResult RootFrameViewport::UserScroll(
         GetVisualViewport().GetScrollAnimator().UserScroll(
             granularity, visual_consumed_delta, std::move(on_finish));
     return visual_result;
+  }
+
+  if (!layout_consumed_delta.IsZero()) {
+    user_scroll_sequence_affects_layout_viewport_ = true;
+  }
+
+  if (layout_consumed_delta == pixel_delta) {
+    ScrollResult layout_result =
+        LayoutViewport().GetScrollAnimator().UserScroll(
+            granularity, scrollable_axis_delta, std::move(on_finish));
+    return layout_result;
   }
 
   auto all_done = MakeViewportScrollCompletion(std::move(on_finish));

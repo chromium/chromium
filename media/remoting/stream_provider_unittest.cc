@@ -62,6 +62,10 @@ class StreamProviderTest : public testing::Test {
   }
 
   void TearDown() override {
+    // Drop unowned references before `stream_provider_` destroys them.
+    audio_stream_ = nullptr;
+    video_stream_ = nullptr;
+
     stream_provider_.reset();
     task_environment_.RunUntilIdle();
   }

@@ -164,6 +164,16 @@ FakeAmbientBackendControllerImpl::GetBackupPhotoUrls() const {
   return kFakeBackupPhotoUrls;
 }
 
+std::array<const char*, 2>
+FakeAmbientBackendControllerImpl::GetTimeOfDayVideoPreviewImageUrls(
+    AmbientVideo video) const {
+  return kFakeBackupPhotoUrls;
+}
+
+const char* FakeAmbientBackendControllerImpl::GetPromoBannerUrl() const {
+  return kFakeUrl;
+}
+
 void FakeAmbientBackendControllerImpl::ReplyFetchSettingsAndAlbums(
     bool success,
     const absl::optional<AmbientSettings>& settings) {

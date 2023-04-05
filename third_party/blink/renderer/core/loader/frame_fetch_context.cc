@@ -890,16 +890,8 @@ CoreProbeSink* FrameFetchContext::Probe() const {
 }
 
 void FrameFetchContext::UpdateSubresourceLoadMetrics(
-    uint32_t number_of_subresources_loaded,
-    uint32_t number_of_subresource_loads_handled_by_service_worker,
-    bool pervasive_payload_requested,
-    int64_t pervasive_bytes_fetched,
-    int64_t total_bytes_fetched) {
-  document_loader_->UpdateSubresourceLoadMetrics(
-      number_of_subresources_loaded,
-      number_of_subresource_loads_handled_by_service_worker,
-      pervasive_payload_requested, pervasive_bytes_fetched,
-      total_bytes_fetched);
+    const SubresourceLoadMetrics& subresource_load_metrics) {
+  document_loader_->UpdateSubresourceLoadMetrics(subresource_load_metrics);
 }
 
 }  // namespace blink

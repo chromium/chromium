@@ -29,6 +29,10 @@ void TestRegistrationObserver::WaitForRegistrationStored() {
   stored_run_loop_.Run();
 }
 
+void TestRegistrationObserver::WaitForWorkerStart() {
+  started_run_loop_.Run();
+}
+
 int TestRegistrationObserver::GetCompletedCount(const GURL& scope) const {
   const auto it = registrations_completed_map_.find(scope);
   return it == registrations_completed_map_.end() ? 0 : it->second;
@@ -43,6 +47,13 @@ void TestRegistrationObserver::OnRegistrationStored(int64_t registration_id,
   if (scope.SchemeIs(kExtensionScheme)) {
     stored_run_loop_.Quit();
   }
+}
+
+void TestRegistrationObserver::OnVersionStartedRunning(
+    int64_t version_id,
+    const content::ServiceWorkerRunningInfo& running_info) {
+  running_version_id_ = version_id;
+  started_run_loop_.Quit();
 }
 
 void TestRegistrationObserver::OnDestruct(

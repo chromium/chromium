@@ -17,9 +17,9 @@
 namespace companion {
 namespace {
 
-// TODO(b/274714162): Update server side code soon after this change.
-// Query parameter for the companion url.
-inline constexpr char kQueryStringKey[] = "query";
+// URL query string param name that contains the request params for companion
+// page in protobuf format.
+inline constexpr char kCompanionRequestQueryParameterKey[] = "companion_query";
 
 // Query parameter for the url of the main web content.
 inline constexpr char kUrlQueryParameterKey[] = "url";
@@ -63,8 +63,13 @@ CompanionUrlBuilder::CompanionUrlBuilder(PrefService* pref_service,
 CompanionUrlBuilder::~CompanionUrlBuilder() = default;
 
 GURL CompanionUrlBuilder::BuildCompanionURL(GURL page_url) {
+  return BuildCompanionURL(page_url, /*text_query=*/"");
+}
+
+GURL CompanionUrlBuilder::BuildCompanionURL(GURL page_url,
+                                            const std::string& text_query) {
   // Fill the protobuf with the required query params.
-  companion::proto::QueryParams url_params;
+  companion::proto::CompanionUrlParams url_params;
   bool is_msbb_enabled =
       IsUserPermittedToSharePageInfoWithCompanion(pref_service_);
   if (is_msbb_enabled && IsValidPageURLForCompanion(page_url)) {
@@ -73,6 +78,9 @@ GURL CompanionUrlBuilder::BuildCompanionURL(GURL page_url) {
 
   url_params.set_has_msbb_enabled(is_msbb_enabled);
   url_params.set_signin_allowed_and_required(signin_delegate_->AllowedSignin());
+  if (!text_query.empty()) {
+    url_params.set_search_query(text_query);
+  }
 
   companion::proto::PromoState* promo_state = url_params.mutable_promo_state();
   promo_state->set_signin_promo_denial_count(
@@ -86,7 +94,8 @@ GURL CompanionUrlBuilder::BuildCompanionURL(GURL page_url) {
   std::string base64_encoded_proto;
   base::Base64Encode(url_params.SerializeAsString(), &base64_encoded_proto);
   url_with_query_params = net::AppendOrReplaceQueryParameter(
-      url_with_query_params, kQueryStringKey, base64_encoded_proto);
+      url_with_query_params, kCompanionRequestQueryParameterKey,
+      base64_encoded_proto);
 
   // Add origin as a param allowing the page to be iframed.
   url_with_query_params = net::AppendOrReplaceQueryParameter(

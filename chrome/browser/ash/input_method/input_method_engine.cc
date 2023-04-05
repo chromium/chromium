@@ -8,7 +8,10 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "ash/system/tray/system_nudge_controller.h"
 #include "base/check.h"
 #include "base/i18n/char_iterator.h"
 #include "base/logging.h"
@@ -117,15 +120,28 @@ void InputMethodEngine::Initialize(
     profile_observation_.Observe(profile);
     input_method_settings_snapshot_ =
         profile->GetPrefs()
-            ->GetDict(prefs::kLanguageInputMethodSpecificSettings)
+            ->GetDict(::prefs::kLanguageInputMethodSpecificSettings)
             .Clone();
 
     pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
     pref_change_registrar_->Init(profile->GetPrefs());
     pref_change_registrar_->Add(
-        prefs::kLanguageInputMethodSpecificSettings,
+        ::prefs::kLanguageInputMethodSpecificSettings,
         base::BindRepeating(&InputMethodEngine::OnInputMethodOptionsChanged,
                             base::Unretained(this)));
+    pref_change_registrar_->Add(
+        ash::prefs::kLongPressDiacriticsEnabled,
+        base::BindRepeating(&InputMethodEngine::DiacriticsSettingsChanged,
+                            base::Unretained(this)));
+  }
+}
+
+void InputMethodEngine::DiacriticsSettingsChanged() {
+  const bool new_value =
+      profile_->GetPrefs()->GetBoolean(ash::prefs::kLongPressDiacriticsEnabled);
+  if (!new_value) {
+    SystemNudgeController::RecordNudgeAction(
+        NudgeCatalogName::kDisableDiacritics);
   }
 }
 
@@ -998,7 +1014,7 @@ void InputMethodEngine::HideInputView() {
 
 void InputMethodEngine::OnInputMethodOptionsChanged() {
   const base::Value::Dict& new_settings = profile_->GetPrefs()->GetDict(
-      prefs::kLanguageInputMethodSpecificSettings);
+      ::prefs::kLanguageInputMethodSpecificSettings);
   const base::Value::Dict& old_settings = input_method_settings_snapshot_;
   for (const auto&& [path, value] : new_settings) {
     if (const base::Value* old_value = old_settings.Find(path)) {

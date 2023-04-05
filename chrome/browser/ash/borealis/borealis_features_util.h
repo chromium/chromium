@@ -12,8 +12,6 @@
 
 namespace borealis {
 
-struct HardwareStatsA {};
-
 // A helper class that makes verifying tokens/hardware easier. Users can extend
 // this class and write a method like Check() that calls all the helpers.
 class TokenHardwareChecker {

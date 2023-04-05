@@ -80,7 +80,7 @@ class BoundSessionCookieObserverTest : public testing::Test {
   sync_preferences::TestingPrefServiceSyncable prefs_;
   TestSigninClient signin_client_;
 
-  BoundSessionTestCookieManager* cookie_manager_;
+  raw_ptr<BoundSessionTestCookieManager> cookie_manager_;
   std::unique_ptr<BoundSessionCookieObserver> bound_session_cookie_observer_;
   size_t update_expiration_date_call_count_ = 0;
   base::Time cookie_expiration_date_;

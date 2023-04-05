@@ -60,10 +60,10 @@ class NGGridSubtree {
  protected:
   NGGridSubtree() = default;
 
-  NGGridSubtree(GridTreePtr grid_tree)
-      : grid_tree_(std::move(grid_tree)), subtree_root_(0) {
+  explicit NGGridSubtree(GridTreePtr grid_tree, wtf_size_t subtree_root = 0)
+      : grid_tree_(std::move(grid_tree)), subtree_root_(subtree_root) {
     DCHECK(grid_tree_);
-    parent_end_index_ = grid_tree_->Size();
+    parent_end_index_ = NextSiblingIndex();
   }
 
   NGGridSubtree(GridTreePtr grid_tree,

@@ -9,8 +9,8 @@
 
 namespace updater {
 
-bool UpdateUsageStatsTask::UsageStatsAllowed(
-    const std::vector<std::string>& app_ids) const {
+bool OtherAppUsageStatsAllowed(const std::vector<std::string>& app_ids,
+                               UpdaterScope scope) {
   // TODO(crbug.com/1296311): Implement.
   return false;
 }

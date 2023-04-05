@@ -1933,15 +1933,6 @@ void RenderWidgetHostViewAndroid::OnDidUpdateVisualPropertiesComplete(
     delegated_frame_host_->SetTopControlsVisibleHeight(
         metadata.top_controls_height * metadata.top_controls_shown_ratio);
   }
-
-  if (using_browser_compositor_) {
-    ui::WindowAndroidCompositor* compositor =
-        view_.GetWindowAndroid()->GetCompositor();
-    if (!compositor) {
-      return;
-    }
-    static_cast<CompositorImpl*>(compositor)->MaybeCompositeNow();
-  }
 }
 
 void RenderWidgetHostViewAndroid::OnFinishGetContentBitmap(

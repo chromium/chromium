@@ -1379,8 +1379,7 @@ TEST_P(WaylandBufferManagerTest, TestCommitBufferConditionsAckConfigured) {
           auto* xdg_surface = mock_surface->xdg_surface();
           testing::Mock::VerifyAndClearExpectations(mock_surface);
 
-          EXPECT_CALL(*xdg_surface, SetWindowGeometry(gfx::Rect(800, 600)))
-              .Times(1);
+          EXPECT_CALL(*xdg_surface, SetWindowGeometry(_)).Times(0);
           EXPECT_CALL(*xdg_surface, AckConfigure(_)).Times(1);
           EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(1);
           EXPECT_CALL(*mock_surface, Frame(_)).Times(1);

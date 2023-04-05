@@ -55,6 +55,7 @@ android_resources("java_resources") {
 
 android_library("javatests") {
   testonly = true
+  resources_package = "org.chromium.chrome.browser.paint_preview"
 
   sources = [
     "javatests/src/org/chromium/chrome/browser/paint_preview/DemoPaintPreviewTest.java",
@@ -68,6 +69,7 @@ android_library("javatests") {
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//chrome/android:chrome_app_java_resources",
     "//chrome/android:chrome_java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/flags:java",
@@ -83,7 +85,6 @@ android_library("javatests") {
     "//net/android:net_java_test_support",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_monitor_java",
-    "//third_party/androidx:androidx_test_rules_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/androidx:androidx_test_uiautomator_uiautomator_java",
     "//third_party/junit",

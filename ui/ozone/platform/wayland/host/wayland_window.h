@@ -490,10 +490,8 @@ class WaylandWindow : public PlatformWindow,
 
   // Latches the given request. This must be called after the frame
   // corresponding to the request is received. This acks the request and updates
-  // any window state that should be based on the currently latched state. If
-  // |force| is true, wayland messages will be sent even if there is no change
-  // from the previous state. This is used for sending the initial state.
-  void LatchStateRequest(const StateRequest& req, bool force);
+  // any window state that should be based on the currently latched state.
+  void LatchStateRequest(const StateRequest& req);
 
   raw_ptr<PlatformWindowDelegate> delegate_;
   raw_ptr<WaylandConnection> connection_;

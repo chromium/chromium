@@ -1585,59 +1585,14 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   //
   // The issue normally occurs when a heading is directly followed by an ignored
   // empty object, itself followed by an unignored empty object.
-  //
-  // ++1 kRootWebArea
-  // ++++2 kHeading
-  // ++++++3 kStaticText
-  // ++++++++4 kInlineTextBox
-  // ++++5 kGenericContainer ignored
-  // ++++6 kButton
-  ui::AXNodeData root_1;
-  ui::AXNodeData heading_2;
-  ui::AXNodeData static_text_3;
-  ui::AXNodeData inline_box_4;
-  ui::AXNodeData generic_container_5;
-  ui::AXNodeData button_6;
-
-  root_1.id = 1;
-  heading_2.id = 2;
-  static_text_3.id = 3;
-  inline_box_4.id = 4;
-  generic_container_5.id = 5;
-  button_6.id = 6;
-
-  root_1.role = ax::mojom::Role::kRootWebArea;
-  root_1.child_ids = {heading_2.id, generic_container_5.id, button_6.id};
-
-  heading_2.role = ax::mojom::Role::kHeading;
-  heading_2.child_ids = {static_text_3.id};
-
-  static_text_3.role = ax::mojom::Role::kStaticText;
-  static_text_3.child_ids = {inline_box_4.id};
-  static_text_3.SetName("3.14");
-
-  inline_box_4.role = ax::mojom::Role::kInlineTextBox;
-  inline_box_4.SetName("3.14");
-
-  generic_container_5.role = ax::mojom::Role::kGenericContainer;
-  generic_container_5.AddBoolAttribute(
-      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
-  generic_container_5.AddState(ax::mojom::State::kIgnored);
-
-  button_6.role = ax::mojom::Role::kButton;
-
-  ui::AXTreeUpdate update;
-  ui::AXTreeData tree_data;
-  tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
-  update.tree_data = tree_data;
-  update.has_tree_data = true;
-  update.root_id = root_1.id;
-  update.nodes.push_back(root_1);
-  update.nodes.push_back(heading_2);
-  update.nodes.push_back(static_text_3);
-  update.nodes.push_back(inline_box_4);
-  update.nodes.push_back(generic_container_5);
-  update.nodes.push_back(button_6);
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kHeading
+    ++++++3 kStaticText name="3.14"
+    ++++++++4 kInlineTextBox name="3.14"
+    ++++5 kGenericContainer state=kIgnored boolAttribute=kIsLineBreakingObject,true
+    ++++6 kButton
+  )HTML"));
 
   Init(update);
 
@@ -1702,78 +1657,17 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
 TEST_F(AXPlatformNodeTextRangeProviderTest,
        TestITextRangeProviderIgnoredForTextNavigation) {
-  // ++1 kRootWebArea
-  // ++++2 kStaticText
-  // ++++++3 kInlineTextBox foo
-  // ++++4 kSplitter
-  // ++++5 kStaticText
-  // ++++++6 kInlineTextBox bar
-  // ++++7 genericContainer
-  // ++++8 kStaticText
-  // ++++++9 kInlineTextBox baz
-  ui::AXNodeData root_1;
-  ui::AXNodeData static_text_2;
-  ui::AXNodeData inline_box_3;
-  ui::AXNodeData splitter_4;
-  ui::AXNodeData static_text_5;
-  ui::AXNodeData inline_box_6;
-  ui::AXNodeData generic_container_7;
-  ui::AXNodeData static_text_8;
-  ui::AXNodeData inline_box_9;
-
-  root_1.id = 1;
-  static_text_2.id = 2;
-  inline_box_3.id = 3;
-  splitter_4.id = 4;
-  static_text_5.id = 5;
-  inline_box_6.id = 6;
-  generic_container_7.id = 7;
-  static_text_8.id = 8;
-  inline_box_9.id = 9;
-
-  root_1.role = ax::mojom::Role::kRootWebArea;
-  root_1.child_ids = {static_text_2.id, splitter_4.id, static_text_5.id,
-                      generic_container_7.id, static_text_8.id};
-
-  static_text_2.role = ax::mojom::Role::kStaticText;
-  static_text_2.child_ids = {inline_box_3.id};
-  static_text_2.SetName("foo");
-
-  inline_box_3.role = ax::mojom::Role::kInlineTextBox;
-  inline_box_3.SetName("foo");
-
-  splitter_4.role = ax::mojom::Role::kSplitter;
-  splitter_4.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
-                              true);
-
-  static_text_5.role = ax::mojom::Role::kStaticText;
-  static_text_5.child_ids = {inline_box_6.id};
-  static_text_5.SetName("bar");
-
-  inline_box_6.role = ax::mojom::Role::kInlineTextBox;
-  inline_box_6.SetName("bar");
-
-  generic_container_7.role = ax::mojom::Role::kGenericContainer;
-  generic_container_7.AddBoolAttribute(
-      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
-
-  static_text_8.role = ax::mojom::Role::kStaticText;
-  static_text_8.child_ids = {inline_box_9.id};
-  static_text_8.SetName("bar");
-
-  inline_box_9.role = ax::mojom::Role::kInlineTextBox;
-  inline_box_9.SetName("baz");
-
-  ui::AXTreeUpdate update;
-  ui::AXTreeData tree_data;
-  tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
-  update.tree_data = tree_data;
-  update.has_tree_data = true;
-  update.root_id = root_1.id;
-  update.nodes = {
-      root_1,        static_text_2, inline_box_3,        splitter_4,
-      static_text_5, inline_box_6,  generic_container_7, static_text_8,
-      inline_box_9};
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kStaticText
+    ++++++3 kInlineTextBox name="foo"
+    ++++4 kSplitter boolAttribute=kIsLineBreakingObject,true
+    ++++5 kStaticText
+    ++++++6 kInlineTextBox name="bar"
+    ++++7 kGenericContainer boolAttribute=kIsLineBreakingObject,true
+    ++++8 kStaticText
+    ++++++9 kInlineTextBox name="baz"
+  )HTML"));
 
   Init(update);
 
@@ -6169,95 +6063,25 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, ElementNotAvailable) {
 
 TEST_F(AXPlatformNodeTextRangeProviderTest,
        TestITextRangeProviderIgnoredNodes) {
-  // Parent Tree
-  // 1
-  // |
-  // 2(i)
-  // |________________________________
-  // |   |   |    |      |           |
-  // 3   4   5    6      7(i)        8(i)
-  //              |      |________
-  //              |      |       |
-  //              9(i)   10(i)   11
-  //              |      |____
-  //              |      |   |
-  //              12    13   14
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kGenericContainer states=kIgnored,kEditable,kRichlyEditable boolAttribute=kNonAtomicTextFieldRoot,true
+    ++++++3 kStaticText name=".3."
+    ++++++4 kStaticText name=".4."
+    ++++++5 kStaticText name=".5."
+    ++++++6 kButton
+    ++++++++9 kGenericContainer state=kIgnored
+    ++++++++++12 kStaticText name=".12." state=kIgnored
+    ++++++7 kGenericContainer state=kIgnored
+    ++++++++10 kGenericContainer state=kIgnored
+    ++++++++++13 kStaticText name=".13."
+    ++++++++++14 kStaticText name=".14."
+    ++++++++11 kStaticText name=".11."
+    ++++++8 kStaticText name=".8."
+  )HTML"));
 
-  ui::AXTreeUpdate tree_update;
-  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
-  tree_update.tree_data.tree_id = tree_id;
-  tree_update.has_tree_data = true;
-  tree_update.root_id = 1;
-  tree_update.nodes.resize(14);
-  tree_update.nodes[0].id = 1;
-  tree_update.nodes[0].child_ids = {2};
-  tree_update.nodes[0].role = ax::mojom::Role::kRootWebArea;
-
-  tree_update.nodes[1].id = 2;
-  tree_update.nodes[1].child_ids = {3, 4, 5, 6, 7, 8};
-  // According to the existing Blink code, editable roots are never ignored.
-  // However, we can still create this tree structure only for test purposes.
-  tree_update.nodes[1].AddState(ax::mojom::State::kIgnored);
-  tree_update.nodes[1].AddState(ax::mojom::State::kEditable);
-  tree_update.nodes[1].AddState(ax::mojom::State::kRichlyEditable);
-  tree_update.nodes[1].AddBoolAttribute(
-      ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot, true);
-  tree_update.nodes[1].role = ax::mojom::Role::kGenericContainer;
-
-  tree_update.nodes[2].id = 3;
-  tree_update.nodes[2].role = ax::mojom::Role::kStaticText;
-  tree_update.nodes[2].SetName(".3.");
-
-  tree_update.nodes[3].id = 4;
-  tree_update.nodes[3].role = ax::mojom::Role::kStaticText;
-  tree_update.nodes[3].SetName(".4.");
-
-  tree_update.nodes[4].id = 5;
-  tree_update.nodes[4].role = ax::mojom::Role::kStaticText;
-  tree_update.nodes[4].SetName(".5.");
-
-  tree_update.nodes[5].id = 6;
-  tree_update.nodes[5].role = ax::mojom::Role::kButton;
-  tree_update.nodes[5].child_ids = {9};
-
-  tree_update.nodes[6].id = 7;
-  tree_update.nodes[6].child_ids = {10, 11};
-  tree_update.nodes[6].AddState(ax::mojom::State::kIgnored);
-  tree_update.nodes[6].role = ax::mojom::Role::kGenericContainer;
-
-  tree_update.nodes[7].id = 8;
-  tree_update.nodes[7].AddState(ax::mojom::State::kIgnored);
-  tree_update.nodes[7].role = ax::mojom::Role::kStaticText;
-  tree_update.nodes[7].SetName(".8.");
-
-  tree_update.nodes[8].id = 9;
-  tree_update.nodes[8].child_ids = {12};
-  tree_update.nodes[8].AddState(ax::mojom::State::kIgnored);
-  tree_update.nodes[8].role = ax::mojom::Role::kGenericContainer;
-
-  tree_update.nodes[9].id = 10;
-  tree_update.nodes[9].child_ids = {13, 14};
-  tree_update.nodes[9].AddState(ax::mojom::State::kIgnored);
-  tree_update.nodes[8].role = ax::mojom::Role::kGenericContainer;
-
-  tree_update.nodes[10].id = 11;
-  tree_update.nodes[10].role = ax::mojom::Role::kStaticText;
-  tree_update.nodes[10].SetName(".11.");
-
-  tree_update.nodes[11].id = 12;
-  tree_update.nodes[11].role = ax::mojom::Role::kStaticText;
-  tree_update.nodes[11].AddState(ax::mojom::State::kIgnored);
-  tree_update.nodes[11].SetName(".12.");
-
-  tree_update.nodes[12].id = 13;
-  tree_update.nodes[12].role = ax::mojom::Role::kStaticText;
-  tree_update.nodes[12].SetName(".13.");
-
-  tree_update.nodes[13].id = 14;
-  tree_update.nodes[13].role = ax::mojom::Role::kStaticText;
-  tree_update.nodes[13].SetName(".14.");
-
-  Init(tree_update);
+  AXTreeID tree_id = update.tree_data.tree_id;
+  Init(update);
   EXPECT_ENCLOSING_ELEMENT(GetNodeFromTree(tree_id, 1),
                            GetNodeFromTree(tree_id, 1));
   EXPECT_ENCLOSING_ELEMENT(GetNodeFromTree(tree_id, 3),
@@ -6523,53 +6347,22 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
 TEST_F(AXPlatformNodeTextRangeProviderTest,
        TestNormalizeTextRangeSpanIgnoredNodes) {
-  ui::AXNodeData root_data;
-  root_data.id = 1;
-  root_data.role = ax::mojom::Role::kRootWebArea;
-
-  ui::AXNodeData before_text;
-  before_text.id = 2;
-  before_text.role = ax::mojom::Role::kStaticText;
-  before_text.SetName("before");
-  root_data.child_ids.push_back(before_text.id);
-
-  ui::AXNodeData ignored_text1;
-  ignored_text1.id = 3;
-  ignored_text1.role = ax::mojom::Role::kStaticText;
-  ignored_text1.AddState(ax::mojom::State::kIgnored);
-  ignored_text1.SetName("ignored1");
-  root_data.child_ids.push_back(ignored_text1.id);
-
-  ui::AXNodeData ignored_text2;
-  ignored_text2.id = 4;
-  ignored_text2.role = ax::mojom::Role::kStaticText;
-  ignored_text2.AddState(ax::mojom::State::kIgnored);
-  ignored_text2.SetName("ignored2");
-  root_data.child_ids.push_back(ignored_text2.id);
-
-  ui::AXNodeData after_text;
-  after_text.id = 5;
-  after_text.role = ax::mojom::Role::kStaticText;
-  after_text.SetName("after");
-  root_data.child_ids.push_back(after_text.id);
-
-  ui::AXTreeUpdate update;
-  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
-  update.root_id = root_data.id;
-  update.tree_data.tree_id = tree_id;
-  update.has_tree_data = true;
-  update.nodes = {root_data, before_text, ignored_text1, ignored_text2,
-                  after_text};
-
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kStaticText name="before"
+    ++++3 kStaticText name="ignored1" state=kIgnored
+    ++++4 kStaticText name="ignored2" state=kIgnored
+    ++++5 kStaticText name="after"
+  )HTML"));
   const AXTree* tree = Init(update);
 
-  const AXNode* before_text_node = tree->GetFromId(before_text.id);
-  const AXNode* after_text_node = tree->GetFromId(after_text.id);
+  const AXNode* before_text_node = tree->GetFromId(2);
+  const AXNode* after_text_node = tree->GetFromId(5);
 
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire tree.
   AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetNodeFromTree(tree_id, 1)));
+      AXPlatformNodeFromNode(GetNodeFromTree(tree->GetAXTreeID(), 1)));
 
   // Original range before NormalizeTextRange()
   // |before<>||ignored1||ignored2||<a>fter|
@@ -7663,46 +7456,20 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // ignored for text navigation, but since it's the last node in the tree, it
   // should successfully move the endpoint to that node and keep the units_moved
   // value in sync.
-  // ++1 kRootWebArea
-  // ++++2 kStaticText name="abc"
-  // ++++++3 kInlineTextBox name="abc"
-  // ++++4 kGenericContainer
-  AXNodeData root_1;
-  AXNodeData static_text_2;
-  AXNodeData inline_text_3;
-  AXNodeData generic_container_4;
-
-  root_1.id = 1;
-  static_text_2.id = 2;
-  inline_text_3.id = 3;
-  generic_container_4.id = 4;
-
-  root_1.role = ax::mojom::Role::kRootWebArea;
-  root_1.child_ids = {static_text_2.id, generic_container_4.id};
-
-  static_text_2.role = ax::mojom::Role::kStaticText;
-  static_text_2.SetName("abc");
-  static_text_2.child_ids = {inline_text_3.id};
-
-  inline_text_3.role = ax::mojom::Role::kInlineTextBox;
-  inline_text_3.SetName("abc");
-
-  generic_container_4.role = ax::mojom::Role::kGenericContainer;
-
-  ui::AXTreeUpdate update;
-  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
-  update.root_id = root_1.id;
-  update.tree_data.tree_id = tree_id;
-  update.has_tree_data = true;
-  update.nodes = {root_1, static_text_2, inline_text_3, generic_container_4};
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kStaticText name="abc"
+    ++++++3 kInlineTextBox name="abc"
+    ++++4 kGenericContainer
+  )HTML"));
 
   const AXTree* tree = Init(update);
-  const AXNode* inline_text_3_node = tree->GetFromId(inline_text_3.id);
+  const AXNode* inline_text_3_node = tree->GetFromId(3);
 
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire tree.
   AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetNodeFromTree(tree_id, 1)));
+      AXPlatformNodeFromNode(GetNodeFromTree(tree->GetAXTreeID(), 1)));
 
   ComPtr<AXPlatformNodeTextRangeProviderWin> range;
   base::win::ScopedVariant expected_variant;

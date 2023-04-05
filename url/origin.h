@@ -16,11 +16,11 @@
 #include "base/gtest_prod_util.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
+#include "base/trace_event/base_tracing_forward.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "url/scheme_host_port.h"
 
 #if BUILDFLAG(IS_ANDROID)

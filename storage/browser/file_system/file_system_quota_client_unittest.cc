@@ -136,8 +136,9 @@ class FileSystemQuotaClientTest : public testing::Test {
                             int64_t file_size,
                             const std::string& origin_url,
                             FileSystemType type) {
-    if (file_path.empty())
+    if (file_path.empty()) {
       return false;
+    }
 
     FileSystemURL url = file_system_context_->CreateCrackedFileSystemURL(
         blink::StorageKey::CreateFromStringForTesting(origin_url), type,
@@ -145,8 +146,9 @@ class FileSystemQuotaClientTest : public testing::Test {
 
     base::File::Error result =
         AsyncFileTestHelper::CreateFile(file_system_context_.get(), url);
-    if (result != base::File::FILE_OK)
+    if (result != base::File::FILE_OK) {
       return false;
+    }
 
     result = AsyncFileTestHelper::TruncateFile(file_system_context_.get(), url,
                                                file_size);
@@ -223,7 +225,7 @@ class FileSystemQuotaClientTest : public testing::Test {
                           const std::string& name,
                           StorageType type) {
     base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
-    quota_manager_->GetBucketForTesting(
+    quota_manager_->GetBucketByNameUnsafe(
         blink::StorageKey::CreateFromStringForTesting(origin), name, type,
         future.GetCallback());
     auto bucket = future.Take();

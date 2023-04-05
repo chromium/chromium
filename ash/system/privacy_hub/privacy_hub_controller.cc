@@ -14,6 +14,14 @@ PrivacyHubController::PrivacyHubController() = default;
 PrivacyHubController::~PrivacyHubController() = default;
 
 // static
+void PrivacyHubController::RegisterLocalStatePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterIntegerPref(
+      prefs::kDeviceGeolocationAllowed,
+      static_cast<int>(PrivacyHubController::AccessLevel::kDisallowed));
+}
+
+// static
 void PrivacyHubController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kUserCameraAllowed, true);
   registry->RegisterBooleanPref(prefs::kUserMicrophoneAllowed, true);

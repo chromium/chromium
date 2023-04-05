@@ -87,10 +87,10 @@ absl::optional<base::TimeDelta> GetMaxThrottlingDelay() {
 }
 
 std::unique_ptr<ukm::MojoUkmRecorder> CreateMojoUkmRecorder() {
-  mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> recorder;
+  mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
   Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
-      recorder.InitWithNewPipeAndPassReceiver());
-  return std::make_unique<ukm::MojoUkmRecorder>(std::move(recorder));
+      factory.BindNewPipeAndPassReceiver());
+  return ukm::MojoUkmRecorder::Create(*factory);
 }
 
 }  // namespace

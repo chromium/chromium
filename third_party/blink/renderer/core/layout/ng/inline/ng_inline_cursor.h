@@ -36,6 +36,7 @@ class NGPhysicalBoxFragment;
 class Node;
 class ShapeResultView;
 enum class NGStyleVariant;
+struct LayoutSelectionStatus;
 struct PhysicalOffset;
 struct PhysicalRect;
 struct PhysicalSize;

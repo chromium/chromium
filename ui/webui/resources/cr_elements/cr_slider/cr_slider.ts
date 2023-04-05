@@ -94,7 +94,6 @@ export class CrSliderElement extends CrSliderElementBase {
         type: Boolean,
         value: false,
         notify: true,
-        reflectToAttribute: true,
       },
 
       updatingFromKey: {

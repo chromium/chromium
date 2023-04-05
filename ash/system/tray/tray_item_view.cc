@@ -70,10 +70,7 @@ void IconizedLabel::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 TrayItemView::TrayItemView(Shelf* shelf)
-    : views::AnimationDelegateViews(this),
-      shelf_(shelf),
-      label_(NULL),
-      image_view_(NULL) {
+    : views::AnimationDelegateViews(this), shelf_(shelf) {
   DCHECK(shelf_);
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
@@ -133,21 +130,19 @@ bool TrayItemView::IsAnimating() {
 }
 
 void TrayItemView::SetVisible(bool visible) {
+  // Do not invoke animation when the current visibility is already at the
+  // target visibility.
+  if (visible == target_visible_) {
+    return;
+  }
+  target_visible_ = visible;
+  views::View::SetVisible(visible);
+
   if (!GetWidget() ||
       ui::ScopedAnimationDurationScaleMode::duration_multiplier() ==
           ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
-    views::View::SetVisible(visible);
     return;
   }
-
-  // Do not invoke animation when visibility is not changing. An in-progress
-  // animation may change the visibility, so also ensure there are no
-  // in-progress animations.
-  if (visible == GetVisible() && !IsAnimating()) {
-    return;
-  }
-
-  views::View::SetVisible(visible);
   PerformVisibilityAnimation(visible);
 }
 
@@ -159,8 +154,6 @@ void TrayItemView::PerformVisibilityAnimation(bool visible) {
   // Set the view visible to show both show/hide animation.
   views::View::SetVisible(true);
 
-  target_visible_ = visible;
-
   if (!animation_) {
     animation_ = std::make_unique<gfx::SlideAnimation>(this);
     animation_->SetTweenType(gfx::Tween::LINEAR);
@@ -169,10 +162,8 @@ void TrayItemView::PerformVisibilityAnimation(bool visible) {
 
   // Immediately progress to the end of the animation if animation is disabled.
   if (!IsAnimationEnabled()) {
-    animation_->Reset(target_visible_ ? 1.0 : 0.0);
-    layer()->SetTransform(gfx::Transform());
-    layer()->SetOpacity(target_visible_ ? 1.0 : 0.0);
-    views::View::SetVisible(target_visible_);
+    animation_->SetSlideDuration(base::TimeDelta());
+    target_visible_ ? animation_->Show() : animation_->Hide();
     return;
   }
 
@@ -183,7 +174,6 @@ void TrayItemView::PerformVisibilityAnimation(bool visible) {
     animation_->SetSlideDuration(base::Milliseconds(400));
     animation_->Show();
     AnimationProgressed(animation_.get());
-    layer()->SetOpacity(0.f);
   } else {
     SetupThroughputTrackerForAnimationSmoothness(
         GetWidget(), throughput_tracker_,
@@ -232,6 +222,10 @@ void TrayItemView::ChildPreferredSizeChanged(views::View* child) {
 void TrayItemView::AnimationProgressed(const gfx::Animation* animation) {
   // Should not animate during resize stage.
   if (InResizeAnimation(animation->GetCurrentValue())) {
+    // Ensure we are not visible during resize stage.
+    if (layer()->opacity() > 0.0) {
+      layer()->SetOpacity(0.0);
+    }
     PreferredSizeChanged();
     return;
   }
@@ -261,8 +255,8 @@ void TrayItemView::AnimationProgressed(const gfx::Animation* animation) {
 }
 
 void TrayItemView::AnimationEnded(const gfx::Animation* animation) {
-  if (animation->GetCurrentValue() < 0.1)
-    views::View::SetVisible(false);
+  views::View::SetVisible(target_visible_);
+  layer()->SetOpacity(target_visible_ ? 1.0 : 0.0);
 
   if (throughput_tracker_) {
     // Reset `throughput_tracker_` to reset animation metrics recording.

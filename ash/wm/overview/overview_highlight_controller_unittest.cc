@@ -43,7 +43,6 @@ namespace {
 
 struct OverviewHighlightControllerTestParams {
   bool desk_templates_enabled = false;
-  bool save_and_recall_enabled = false;
 };
 
 }  // namespace
@@ -77,10 +76,6 @@ class OverviewHighlightControllerTest
     return GetParam().desk_templates_enabled;
   }
 
-  bool IsDeskSaveAndRecallEnabled() const {
-    return GetParam().save_and_recall_enabled;
-  }
-
   // OverviewTestBase:
   void SetUp() override {
     std::vector<base::test::FeatureRef> enabled_features, disabled_features;
@@ -89,10 +84,6 @@ class OverviewHighlightControllerTest
     } else {
       disabled_features.push_back(features::kDesksTemplates);
     }
-    if (IsDeskSaveAndRecallEnabled())
-      enabled_features.push_back(features::kEnableSavedDesks);
-    else
-      disabled_features.push_back(features::kEnableSavedDesks);
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
     OverviewTestBase::SetUp();
@@ -477,12 +468,12 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingBasic) {
     EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskAsTemplateButton(),
               GetHighlightedView());
   }
-  if (IsDeskSaveAndRecallEnabled()) {
-    SendKey(ui::VKEY_TAB);
-    EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskForLaterButton(),
-              GetHighlightedView());
-  }
 
+  // Tests that after the save desk as template button (if the feature was
+  // enabled), wo get the save desk for later button.
+  SendKey(ui::VKEY_TAB);
+  EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskForLaterButton(),
+            GetHighlightedView());
   // Tests that after tabbing through the overview items, we go back to the
   // first overview item.
   SendKey(ui::VKEY_TAB);
@@ -501,14 +492,14 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingReverse) {
       GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
   EXPECT_EQ(2u, desk_bar_view->mini_views().size());
 
-  // Tests that the first two highlighted items when reversing are the save desk
-  // for later button and save desk as template button, if the feature is
-  // enabled.
-  if (IsDeskSaveAndRecallEnabled()) {
-    SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-    EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskForLaterButton(),
-              GetHighlightedView());
-  }
+  // Tests that the first highlighted item when reversing is the save desk for
+  // later button.
+  SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskForLaterButton(),
+            GetHighlightedView());
+
+  // Tests that after the save desk for later button, we get the save desk as
+  // template button, if the feature is enabled.
   if (AreDeskTemplatesEnabled()) {
     SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
     EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskAsTemplateButton(),
@@ -543,15 +534,15 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingReverse) {
   auto* item1 = GetOverviewItemForWindow(window1.get());
   EXPECT_EQ(item1->overview_item_view(), GetHighlightedView());
 
-  // Tests that we return to the save desk for later button and save desk as
-  // template button after reverse tabbing through the overview items if the
-  // feature was enabled.
+  // Tests that the next highlighted item when reversing is the save desk for
+  // later button.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  if (IsDeskSaveAndRecallEnabled()) {
-    SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-    EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskForLaterButton(),
-              GetHighlightedView());
-  }
+  SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskForLaterButton(),
+            GetHighlightedView());
+
+  // Tests that we return to the save desk as template button after reverse
+  // tabbing through the save desk for later button if the feature is enabled.
   if (AreDeskTemplatesEnabled()) {
     SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
     EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskAsTemplateButton(),
@@ -647,11 +638,9 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
     EXPECT_EQ(desk_bar_view1->overview_grid()->GetSaveDeskAsTemplateButton(),
               GetHighlightedView());
   }
-  if (IsDeskSaveAndRecallEnabled()) {
-    SendKey(ui::VKEY_TAB);
-    EXPECT_EQ(desk_bar_view1->overview_grid()->GetSaveDeskForLaterButton(),
-              GetHighlightedView());
-  }
+  SendKey(ui::VKEY_TAB);
+  EXPECT_EQ(desk_bar_view1->overview_grid()->GetSaveDeskForLaterButton(),
+            GetHighlightedView());
 
   // Tests that the next tab will bring us to the first overview item on the
   // second display.
@@ -676,11 +665,9 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
     EXPECT_EQ(desk_bar_view2->overview_grid()->GetSaveDeskAsTemplateButton(),
               GetHighlightedView());
   }
-  if (IsDeskSaveAndRecallEnabled()) {
-    SendKey(ui::VKEY_TAB);
-    EXPECT_EQ(desk_bar_view2->overview_grid()->GetSaveDeskForLaterButton(),
-              GetHighlightedView());
-  }
+  SendKey(ui::VKEY_TAB);
+  EXPECT_EQ(desk_bar_view2->overview_grid()->GetSaveDeskForLaterButton(),
+            GetHighlightedView());
 
   // Tests that after tabbing through the items on the second display, the
   // next tab will bring us to the first overview item on the third display.
@@ -705,11 +692,9 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
     EXPECT_EQ(desk_bar_view3->overview_grid()->GetSaveDeskAsTemplateButton(),
               GetHighlightedView());
   }
-  if (IsDeskSaveAndRecallEnabled()) {
-    SendKey(ui::VKEY_TAB);
-    EXPECT_EQ(desk_bar_view3->overview_grid()->GetSaveDeskForLaterButton(),
-              GetHighlightedView());
-  }
+  SendKey(ui::VKEY_TAB);
+  EXPECT_EQ(desk_bar_view3->overview_grid()->GetSaveDeskForLaterButton(),
+            GetHighlightedView());
 
   // Tests that after tabbing through the items on the third display, the next
   // tab will bring us to the first overview item on the first display.
@@ -999,16 +984,12 @@ TEST_P(DesksOverviewHighlightControllerTest, SwitchingToZeroStateWhileTabbing) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     OverviewHighlightControllerTest,
-    testing::Values(OverviewHighlightControllerTestParams{true, true},
-                    OverviewHighlightControllerTestParams{true, false},
-                    OverviewHighlightControllerTestParams{false, true},
-                    OverviewHighlightControllerTestParams{false, false}));
+    testing::Values(OverviewHighlightControllerTestParams{true},
+                    OverviewHighlightControllerTestParams{false}));
 INSTANTIATE_TEST_SUITE_P(
     All,
     DesksOverviewHighlightControllerTest,
-    testing::Values(OverviewHighlightControllerTestParams{true, true},
-                    OverviewHighlightControllerTestParams{true, false},
-                    OverviewHighlightControllerTestParams{false, true},
-                    OverviewHighlightControllerTestParams{false, false}));
+    testing::Values(OverviewHighlightControllerTestParams{true},
+                    OverviewHighlightControllerTestParams{false}));
 
 }  // namespace ash

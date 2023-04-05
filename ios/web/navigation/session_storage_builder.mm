@@ -8,6 +8,7 @@
 
 #import "base/check_op.h"
 #import "base/mac/foundation_util.h"
+#import "components/sessions/core/session_id.h"
 #import "ios/web/common/features.h"
 #import "ios/web/navigation/navigation_item_impl.h"
 #import "ios/web/navigation/navigation_item_storage_builder.h"
@@ -38,6 +39,7 @@ CRWSessionStorage* SessionStorageBuilder::BuildStorage(
   session_storage.lastActiveTime = web_state.GetLastActiveTime();
   session_storage.creationTime = web_state.GetCreationTime();
   session_storage.stableIdentifier = web_state.GetStableIdentifier();
+  session_storage.uniqueIdentifier = web_state.GetUniqueIdentifier();
   session_storage.hasOpener = web_state.HasOpener();
   session_storage.lastCommittedItemIndex =
       navigation_manager.GetLastCommittedItemIndex();

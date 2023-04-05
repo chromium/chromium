@@ -103,7 +103,6 @@ class WebUIMainFrameObserverTest : public RenderViewHostTestHarness {
     // Since we just created the web_contents() pointer with
     // TestWebContents::Create, the static_casts are safe.
     web_ui_ = std::make_unique<WebUIImpl>(
-        static_cast<TestWebContents*>(web_contents()),
         static_cast<TestWebContents*>(web_contents())->GetPrimaryMainFrame());
     web_ui_->SetController(
         std::make_unique<MockWebUIController>(web_ui_.get()));

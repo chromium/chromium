@@ -59,12 +59,11 @@ const char kCellularName[] = "cellular";
 
 class NetworkingPrivateApiTest : public ApiUnitTest {
  public:
-  NetworkingPrivateApiTest() {}
+  NetworkingPrivateApiTest() = default;
+  ~NetworkingPrivateApiTest() override = default;
 
   NetworkingPrivateApiTest(const NetworkingPrivateApiTest&) = delete;
   NetworkingPrivateApiTest& operator=(const NetworkingPrivateApiTest&) = delete;
-
-  ~NetworkingPrivateApiTest() override {}
 
   void SetUp() override {
     ApiUnitTest::SetUp();
@@ -433,8 +432,8 @@ TEST_F(NetworkingPrivateApiTest, SetNetworkRestrictedProperties) {
   EXPECT_EQ("Error.PropertiesNotAllowed: [ProxySettings]",
             RunFunctionAndReturnError(
                 new NetworkingPrivateSetPropertiesFunction(),
-                base::StringPrintf(
-                    R"(["%s", %s])", kPrivateWifiGuid, kProxySettings)));
+                base::StringPrintf(R"(["%s", %s])", kPrivateWifiGuid,
+                                   kProxySettings)));
 
   const char kStaticIpConfig[] =
       R"({
@@ -448,8 +447,8 @@ TEST_F(NetworkingPrivateApiTest, SetNetworkRestrictedProperties) {
   EXPECT_EQ("Error.PropertiesNotAllowed: [StaticIPConfig]",
             RunFunctionAndReturnError(
                 new NetworkingPrivateSetPropertiesFunction(),
-                base::StringPrintf(
-                    R"(["%s", %s])", kPrivateWifiGuid, kStaticIpConfig)));
+                base::StringPrintf(R"(["%s", %s])", kPrivateWifiGuid,
+                                   kStaticIpConfig)));
 
   const char kCombinedSettings[] =
       R"({
@@ -474,8 +473,8 @@ TEST_F(NetworkingPrivateApiTest, SetNetworkRestrictedProperties) {
   EXPECT_EQ("Error.PropertiesNotAllowed: [ProxySettings, StaticIPConfig]",
             RunFunctionAndReturnError(
                 new NetworkingPrivateSetPropertiesFunction(),
-                base::StringPrintf(
-                    R"(["%s", %s])", kPrivateWifiGuid, kCombinedSettings)));
+                base::StringPrintf(R"(["%s", %s])", kPrivateWifiGuid,
+                                   kCombinedSettings)));
 
   EXPECT_FALSE(
       GetUserSettingStringData(kPrivateWifiGuid, "ProxySettings.Type"));
@@ -507,9 +506,9 @@ TEST_F(NetworkingPrivateApiTest, SetNetworkRestrictedPropertiesFromWebUI) {
              "Type": "IPv4"
            }
          })";
-  RunFunction(set_properties.get(),
-              base::StringPrintf(
-                  R"(["%s", %s])", kPrivateWifiGuid, kCombinedSettings));
+  RunFunction(
+      set_properties.get(),
+      base::StringPrintf(R"(["%s", %s])", kPrivateWifiGuid, kCombinedSettings));
   EXPECT_EQ(ExtensionFunction::SUCCEEDED, *set_properties->response_type());
 
   EXPECT_TRUE(GetUserSettingStringData(kPrivateWifiGuid, "ProxySettings.Type"));
@@ -718,8 +717,7 @@ TEST_F(NetworkingPrivateApiTest, CreateL2TPVpnFromWebUi) {
   set_properties->set_source_url(GURL("chrome://os-settings/networkDetail"));
   result = RunFunctionAndReturnValue(
       set_properties.get(),
-      base::StringPrintf(
-          R"(["%s", %s])", guid.c_str(), kL2tpCredentials));
+      base::StringPrintf(R"(["%s", %s])", guid.c_str(), kL2tpCredentials));
 
   std::string username;
   EXPECT_TRUE(GetUserSettingStringData(guid, "VPN.L2TP.Username", &username));
@@ -766,8 +764,8 @@ TEST_F(NetworkingPrivateApiTest, CreateOpenVpnFromWebUiAndSetProperties) {
   EXPECT_EQ("Error.PropertiesNotAllowed: [VPN.OpenVPN]",
             RunFunctionAndReturnError(
                 new NetworkingPrivateSetPropertiesFunction(),
-                base::StringPrintf(
-                    R"(["%s", %s])", guid.c_str(), kOpenVpnCredentials)));
+                base::StringPrintf(R"(["%s", %s])", guid.c_str(),
+                                   kOpenVpnCredentials)));
 
   EXPECT_FALSE(GetUserSettingStringData(guid, "VPN.OpenVPN.Username"));
 
@@ -778,8 +776,7 @@ TEST_F(NetworkingPrivateApiTest, CreateOpenVpnFromWebUiAndSetProperties) {
   set_properties->set_source_url(GURL("chrome://os-settings/networkDetail"));
   result = RunFunctionAndReturnValue(
       set_properties.get(),
-      base::StringPrintf(
-          R"(["%s", %s])", guid.c_str(), kOpenVpnCredentials));
+      base::StringPrintf(R"(["%s", %s])", guid.c_str(), kOpenVpnCredentials));
 
   std::string username;
   EXPECT_TRUE(

@@ -22,6 +22,7 @@
 #define BASE_STRINGS_STRING_PIECE_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <algorithm>
 #include <iosfwd>

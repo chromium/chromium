@@ -472,7 +472,8 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
       // SkBitmap.cpp doesn't yet have an interface for SkColor4fs
       // https://bugs.chromium.org/p/skia/issues/detail?id=13329
       bitmap.eraseColor(raster_source->background_color().toSkColor());
-      ri->WritePixels(*mailbox, 0, 0, mailbox_texture_target,
+      ri->WritePixels(*mailbox, /*dst_x_offset=*/0, /*dst_y_offset=*/0,
+                      /*dst_plane_index=*/0, mailbox_texture_target,
                       clear_bytes_per_row, dst_info, bitmap.getPixels());
     }
   }

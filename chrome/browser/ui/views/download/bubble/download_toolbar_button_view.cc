@@ -135,7 +135,10 @@ DownloadToolbarButtonView::DownloadToolbarButtonView(BrowserView* browser_view)
       browser_(browser_view->browser()) {
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
-  SetVectorIcons(kDownloadToolbarButtonIcon, kDownloadToolbarButtonIcon);
+  SetVectorIcons(features::IsChromeRefresh2023()
+                     ? kDownloadToolbarButtonChromeRefreshIcon
+                     : kDownloadToolbarButtonIcon,
+                 kDownloadToolbarButtonIcon);
   GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kDialog);
   SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_DOWNLOAD_ICON));
   SetVisible(false);
@@ -330,7 +333,9 @@ void DownloadToolbarButtonView::UpdateIcon() {
                              : &kDownloadInProgressIcon;
   } else {
     new_icon = is_touch_mode ? &kDownloadToolbarButtonTouchIcon
-                             : &kDownloadToolbarButtonIcon;
+               : features::IsChromeRefresh2023()
+                   ? &kDownloadToolbarButtonChromeRefreshIcon
+                   : &kDownloadToolbarButtonIcon;
   }
 
   SetImageModel(ButtonState::STATE_NORMAL,

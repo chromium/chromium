@@ -106,6 +106,7 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // LauncherSearchIphView::Delegate:
   void RunLauncherSearchQuery(const std::u16string& query) override;
   void OpenAssistantPage() override;
+  void OpenSearchBoxIphUrl() override;
 
   // Updates the search box's background corner radius and color based on the
   // state of AppListModel.

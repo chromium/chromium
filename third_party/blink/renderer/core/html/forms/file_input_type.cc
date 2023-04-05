@@ -216,8 +216,7 @@ void FileInputType::AdjustStyle(ComputedStyleBuilder& builder) {
   builder.SetShouldIgnoreOverflowPropertyForInlineBlockBaseline();
 }
 
-LayoutObject* FileInputType::CreateLayoutObject(const ComputedStyle& style,
-                                                LegacyLayout legacy) const {
+LayoutObject* FileInputType::CreateLayoutObject(const ComputedStyle&) const {
   return MakeGarbageCollected<LayoutNGBlockFlow>(&GetElement());
 }
 

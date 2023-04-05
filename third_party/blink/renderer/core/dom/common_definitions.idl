@@ -9,7 +9,7 @@ typedef unsigned long long DOMTimeStamp;
 
 
 // https://webidl.spec.whatwg.org/#Function
-
+[SupportsTaskAttribution]
 callback Function = any (any... arguments);
 
 

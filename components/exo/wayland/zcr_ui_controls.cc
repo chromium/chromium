@@ -25,10 +25,12 @@
 namespace exo::wayland {
 
 struct UiControls::UiControlsState {
-  explicit UiControlsState(const Seat* seat) : seat_(seat) {}
+  explicit UiControlsState(Server* server, const Seat* seat)
+      : server_(server), seat_(seat) {}
   UiControlsState(const UiControlsState&) = delete;
   UiControlsState& operator=(const UiControlsState&) = delete;
 
+  Server* server_;
   const Seat* const seat_;
 
   // Keeps track of the IDs of pending requests for that we still need to emit
@@ -41,7 +43,7 @@ namespace {
 
 using UiControlsState = UiControls::UiControlsState;
 
-constexpr uint32_t kUiControlsVersion = 1;
+constexpr uint32_t kUiControlsVersion = 2;
 
 base::OnceClosure UpdateStateAndBindEmitProcessed(struct wl_resource* resource,
                                                   uint32_t id) {
@@ -55,6 +57,13 @@ base::OnceClosure UpdateStateAndBindEmitProcessed(struct wl_resource* resource,
     if (base::Contains(state->pending_request_ids_, resource)) {
       zcr_ui_controls_v1_send_request_processed(resource, id);
       state->pending_request_ids_[resource].erase(id);
+
+      // It can sometimes happen that the request_processed event gets stuck in
+      // libwayland's queue without ever being sent, because the client is
+      // waiting for the event and there is nothing else generating events. To
+      // ensure the client actually receives the event, we need to flush
+      // manually.
+      state->server_->Flush();
     }
   });
 }
@@ -193,7 +202,8 @@ void bind_ui_controls(wl_client* client,
 }  // namespace
 
 UiControls::UiControls(Server* server)
-    : state_(std::make_unique<UiControlsState>(server->GetDisplay()->seat())) {
+    : state_(std::make_unique<UiControlsState>(server,
+                                               server->GetDisplay()->seat())) {
   wl_global_create(server->GetWaylandDisplay(), &zcr_ui_controls_v1_interface,
                    kUiControlsVersion, state_.get(), bind_ui_controls);
 }

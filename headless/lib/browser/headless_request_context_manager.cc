@@ -121,7 +121,13 @@ class HeadlessProxyConfigMonitor
   void AddToNetworkContextParams(
       ::network::mojom::NetworkContextParams* network_context_params) {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
-    DCHECK(!proxy_config_client_);
+    if (proxy_config_client_) {
+      // This may be called in the course of re-connecting to a new instance
+      // of network service following a restart, so the config client / poller
+      // interfaces may have been previously bound.
+      proxy_config_client_.reset();
+      poller_receiver_.reset();
+    }
     network_context_params->proxy_config_client_receiver =
         proxy_config_client_.BindNewPipeAndPassReceiver();
     poller_receiver_.Bind(network_context_params->proxy_config_poller_client

@@ -665,12 +665,14 @@ void CloudOpenTask::FilesAppWindowCreated(
   if (result != platform_util::OpenOperationResult::OPEN_SUCCEEDED) {
     // We keep going even if we failed to launch files app. The dialog
     // just won't be modal in this case.
+    dialog->set_modal_type(ui::MODAL_TYPE_NONE);
     dialog->ShowSystemDialog();
     return;
   }
   Browser* browser =
       FindSystemWebAppBrowser(profile_, SystemWebAppType::FILE_MANAGER);
   if (!browser) {
+    dialog->set_modal_type(ui::MODAL_TYPE_NONE);
     dialog->ShowSystemDialog();
     return;
   }
@@ -870,7 +872,7 @@ CloudUploadDialog::CloudUploadDialog(mojom::DialogArgsPtr args,
 CloudUploadDialog::~CloudUploadDialog() = default;
 
 ui::ModalType CloudUploadDialog::GetDialogModalType() const {
-  return ui::MODAL_TYPE_WINDOW;
+  return modal_type_;
 }
 
 bool CloudUploadDialog::ShouldCloseDialogOnEscape() const {
@@ -888,7 +890,7 @@ const int kDialogWidthForOneDriveSetup = 512;
 const int kDialogHeightForOneDriveSetup = 556;
 
 const int kDialogWidthForFileHandlerDialog = 512;
-const int kDialogHeightForFileHandlerDialog = 475;
+const int kDialogHeightForFileHandlerDialog = 375;
 const int kDialogHeightForFileHandlerDialogNoLocalApp = 311;
 
 const int kDialogWidthForMoveConfirmation = 512;

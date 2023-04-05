@@ -719,7 +719,7 @@
           "--platform",
           "iPad Air (3rd generation)",
           "--version",
-          "14.5",
+          "16.2",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -731,7 +731,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_remoting_unittests iPad Air (3rd generation) 14.5",
+        "name": "ios_remoting_unittests iPad Air (3rd generation) 16.2",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -757,21 +757,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_14_5",
-              "path": "Runtime-ios-14.5"
+              "name": "runtime_ios_16_2",
+              "path": "Runtime-ios-16.2"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://remoting/ios:ios_remoting_unittests/",
-        "variant_id": "iPad Air (3rd generation) 14.5"
+        "variant_id": "iPad Air (3rd generation) 16.2"
       },
       {
         "args": [
           "--platform",
           "iPhone X",
           "--version",
-          "14.5",
+          "16.2",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -783,7 +783,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_remoting_unittests iPhone X 14.5",
+        "name": "ios_remoting_unittests iPhone X 16.2",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -809,14 +809,14 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_14_5",
-              "path": "Runtime-ios-14.5"
+              "name": "runtime_ios_16_2",
+              "path": "Runtime-ios-16.2"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://remoting/ios:ios_remoting_unittests/",
-        "variant_id": "iPhone X 14.5"
+        "variant_id": "iPhone X 16.2"
       }
     ]
   }

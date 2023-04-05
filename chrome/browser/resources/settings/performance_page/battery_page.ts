@@ -9,13 +9,13 @@ import '../controls/settings_radio_group.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
 
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ControlledRadioButtonElement} from '../controls/controlled_radio_button.js';
 import {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
-import {PrefsMixin} from '../prefs/prefs_mixin.js';
 
 import {getTemplate} from './battery_page.html.js';
 import {BatterySaverModeState, PerformanceMetricsProxy, PerformanceMetricsProxyImpl} from './performance_metrics_proxy.js';

@@ -284,19 +284,25 @@ bool SessionSyncBridge::IsEntityDataValid(
   return SessionStore::AreValidSpecifics(entity_data.specifics.session());
 }
 
-void SessionSyncBridge::ApplyStopSyncChanges(
+void SessionSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<MetadataChangeList> delete_metadata_change_list) {
   DCHECK(store_);
-  local_session_event_router_->Stop();
-  if (delete_metadata_change_list) {
-    store_->DeleteAllDataAndMetadata();
 
-    // Ensure that we clear on-demand favicons that were downloaded using user
-    // synced history data, especially by HistoryUiFaviconRequestHandler. We do
-    // it upon disabling of sessions sync to have symmetry with the condition
-    // checked inside that layer to allow downloads (sessions sync enabled).
-    sessions_client_->ClearAllOnDemandFavicons();
-  }
+  local_session_event_router_->Stop();
+  store_->DeleteAllDataAndMetadata();
+
+  // Ensure that we clear on-demand favicons that were downloaded using user
+  // synced history data, especially by HistoryUiFaviconRequestHandler. We do
+  // it upon disabling of sessions sync to have symmetry with the condition
+  // checked inside that layer to allow downloads (sessions sync enabled).
+  sessions_client_->ClearAllOnDemandFavicons();
+
+  syncing_.reset();
+}
+
+void SessionSyncBridge::OnSyncPaused() {
+  DCHECK(store_);
+  local_session_event_router_->Stop();
   syncing_.reset();
 }
 

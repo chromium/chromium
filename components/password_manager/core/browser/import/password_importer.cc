@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/barrier_closure.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -26,6 +27,12 @@
 
 using password_manager::ImportEntry;
 namespace password_manager {
+
+ImportedPasswords::ImportedPasswords() = default;
+ImportedPasswords::~ImportedPasswords() = default;
+ImportedPasswords::ImportedPasswords(ImportedPasswords&& other) = default;
+ImportedPasswords& ImportedPasswords::operator=(ImportedPasswords&& other) =
+    default;
 
 namespace {
 
@@ -150,71 +157,8 @@ CSVPasswordToCredentialUIEntry(const CSVPassword& csv_password,
     return MakeError(ImportEntry::Status::LONG_NOTE);
   }
 
-  DCHECK(url.has_value());
+  CHECK(url.has_value());
   return password_manager::CredentialUIEntry(csv_password, store);
-}
-
-void AddCredentialsCallback(
-    const base::Time& start_time,
-    password_manager::ImportResults import_results,
-    password_manager::PasswordImporter::ImportResultsCallback
-        import_results_callback) {
-  size_t conflicts_count = 0;   // Number of conflict per imported file.
-  // Number of rows with missing password, but username and URL are non-empty.
-  size_t missing_only_password_rows = 0;
-  // Number of rows with missing password and username, but URL is non-empty.
-  size_t missing_password_and_username_rows = 0;
-  // Number of rows with all login fields (URL, username, password) empty.
-  size_t empty_all_login_fields = 0;
-
-  UMA_HISTOGRAM_COUNTS_1M("PasswordManager.ImportedPasswordsPerUserInCSV",
-                          import_results.number_imported);
-  for (const ImportEntry& entry : import_results.displayed_entries) {
-    conflicts_count += entry.status == ImportEntry::CONFLICT_ACCOUNT ||
-                       entry.status == ImportEntry::CONFLICT_PROFILE;
-
-    missing_only_password_rows += IsPasswordMissing(entry) &&
-                                  !IsUsernameMissing(entry) &&
-                                  !IsURLMissing(entry);
-    missing_password_and_username_rows += IsPasswordMissing(entry) &&
-                                          IsUsernameMissing(entry) &&
-                                          !IsURLMissing(entry);
-    empty_all_login_fields += IsPasswordMissing(entry) &&
-                              IsUsernameMissing(entry) && IsURLMissing(entry);
-
-    base::UmaHistogramEnumeration("PasswordManager.ImportEntryStatus",
-                                  entry.status);
-  }
-
-  base::UmaHistogramLongTimes("PasswordManager.ImportDuration",
-                              base::Time::Now() - start_time);
-
-  const size_t all_errors_count = import_results.displayed_entries.size();
-
-  base::UmaHistogramCounts1M("PasswordManager.Import.PerFile.AnyErrors",
-                             all_errors_count);
-  base::UmaHistogramCounts1M("PasswordManager.Import.PerFile.Conflicts",
-                             conflicts_count);
-  base::UmaHistogramCounts1M(
-      "PasswordManager.Import.PerFile.OnlyPasswordMissing",
-      missing_only_password_rows);
-  base::UmaHistogramCounts1M(
-      "PasswordManager.Import.PerFile.PasswordAndUsernameMissing",
-      missing_password_and_username_rows);
-  base::UmaHistogramCounts1M(
-      "PasswordManager.Import.PerFile.AllLoginFieldsEmtpy",
-      empty_all_login_fields);
-
-  if (all_errors_count > 0) {
-    base::UmaHistogramBoolean("PasswordManager.Import.OnlyConflicts",
-                              all_errors_count == conflicts_count);
-    base::UmaHistogramBoolean("PasswordManager.Import.OnlyMissingPasswords",
-                              all_errors_count == missing_only_password_rows);
-  }
-
-  import_results.status = password_manager::ImportResults::Status::SUCCESS;
-
-  std::move(import_results_callback).Run(std::move(import_results));
 }
 
 bool HasConflicts(
@@ -243,17 +187,157 @@ bool HasConflicts(
 
 std::vector<PasswordForm> GetMatchingPasswordForms(
     SavedPasswordsPresenter* presenter,
-    const CredentialUIEntry& credential) {
+    const CredentialUIEntry& credential,
+    PasswordForm::Store store) {
   // Returns matching local forms for a given `credential`, excluding grouped
   // forms with different `signon_realm`.
   CHECK(presenter);
   std::vector<PasswordForm> results;
   base::ranges::copy_if(
       presenter->GetCorrespondingPasswordForms(credential),
-      std::back_inserter(results), [&credential](const PasswordForm& form) {
-        return form.signon_realm == credential.GetFirstSignonRealm();
+      std::back_inserter(results), [&](const PasswordForm& form) {
+        return form.signon_realm == credential.GetFirstSignonRealm() &&
+               store == form.in_store;
       });
   return results;
+}
+
+std::u16string ComputeNotesConcatenation(const std::u16string& local_note,
+                                         const std::u16string& imported_note,
+                                         NotesImportMetrics& metrics) {
+  CHECK(base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup));
+  CHECK_LE(imported_note.size(), PasswordImporter::MAX_NOTE_LENGTH);
+
+  if (imported_note.empty()) {
+    return local_note;
+  }
+
+  if (local_note.empty()) {
+    return imported_note;
+  }
+
+  if (local_note == imported_note) {
+    metrics.notes_duplicates_per_file_count++;
+    return local_note;
+  }
+
+  if (local_note.find(imported_note) != std::u16string::npos) {
+    metrics.notes_substrings_per_file_count++;
+    return local_note;
+  }
+
+  return base::JoinString(/*parts=*/{local_note, imported_note}, u"\n");
+}
+
+void MergeNotesOrReportError(const std::vector<PasswordForm>& local_forms,
+                             const CredentialUIEntry& imported_credential,
+                             ImportResults& results,
+                             std::vector<PasswordForm>& edit_forms,
+                             NotesImportMetrics& metrics) {
+  // Attempts to concatenate the note of `imported_credential` with
+  // `local_forms`.
+  // If notes concatenation is possible and required, `local_forms` will be
+  // updated and added to `edit_forms`.
+  // If concatenation exceeds MAX_NOTE_LENGTH, the error entry will be added to
+  // the `results`.
+  // `metrics` is used to track different outcomes.
+  const std::u16string local_note = CredentialUIEntry(local_forms).note;
+  const std::u16string& imported_note = imported_credential.note;
+  const std::u16string concatenation =
+      ComputeNotesConcatenation(local_note, imported_note, metrics);
+
+  if (concatenation.size() > PasswordImporter::MAX_NOTE_LENGTH) {
+    // Notes concatenation size should not exceed 1000 characters.
+    results.displayed_entries.push_back(CreateFailedImportEntry(
+        imported_credential, ImportEntry::Status::LONG_CONCATENATED_NOTE));
+    return;
+  }
+
+  if (concatenation != local_note) {
+    // Local credential needs to be updated with concatenation.
+    for (PasswordForm form : local_forms) {
+      form.SetNoteWithEmptyUniqueDisplayName(concatenation);
+      edit_forms.emplace_back(std::move(form));
+    }
+    metrics.notes_concatenations_per_file_count++;
+  }
+
+  results.number_imported++;
+}
+
+void ReportNotesMetrics(const NotesImportMetrics& metrics) {
+  base::UmaHistogramCounts1000(
+      "PasswordManager.Import.PerFile.Notes.TotalCount",
+      metrics.notes_per_file_count);
+  base::UmaHistogramCounts1000(
+      "PasswordManager.Import.PerFile.Notes.Concatenations",
+      metrics.notes_concatenations_per_file_count);
+  base::UmaHistogramCounts1000(
+      "PasswordManager.Import.PerFile.Notes.Duplicates",
+      metrics.notes_duplicates_per_file_count);
+  base::UmaHistogramCounts1000(
+      "PasswordManager.Import.PerFile.Notes.Substrings",
+      metrics.notes_substrings_per_file_count);
+}
+
+void ReportImportResultsMetrics(const ImportResults& results,
+                                base::Time start_time) {
+  // Number of conflict per imported file.
+  size_t conflicts_count = 0;
+  // Number of rows with missing password, but username and URL are non-empty.
+  size_t missing_only_password_rows = 0;
+  // Number of rows with missing password and username, but URL is non-empty.
+  size_t missing_password_and_username_rows = 0;
+  // Number of rows with all login fields (URL, username, password) empty.
+  size_t empty_all_login_fields = 0;
+
+  UMA_HISTOGRAM_COUNTS_1M("PasswordManager.ImportedPasswordsPerUserInCSV",
+                          results.number_imported);
+  for (const ImportEntry& entry : results.displayed_entries) {
+    conflicts_count += entry.status == ImportEntry::CONFLICT_ACCOUNT ||
+                       entry.status == ImportEntry::CONFLICT_PROFILE;
+    missing_only_password_rows += IsPasswordMissing(entry) &&
+                                  !IsUsernameMissing(entry) &&
+                                  !IsURLMissing(entry);
+    missing_password_and_username_rows += IsPasswordMissing(entry) &&
+                                          IsUsernameMissing(entry) &&
+                                          !IsURLMissing(entry);
+    empty_all_login_fields += IsPasswordMissing(entry) &&
+                              IsUsernameMissing(entry) && IsURLMissing(entry);
+
+    base::UmaHistogramEnumeration("PasswordManager.ImportEntryStatus",
+                                  entry.status);
+  }
+
+  // TODO(crbug/1417650): In case of conflicts, with `kPasswordsImportM2`
+  // enabled, `PasswordManager.ImportDuration` will be affected. Because, the
+  // flow is interrupted and the user needs to select the next action in the UI.
+  // Reporting or the histogram description needs to be updated accordingly.
+  base::UmaHistogramLongTimes("PasswordManager.ImportDuration",
+                              base::Time::Now() - start_time);
+
+  const size_t all_errors_count = results.displayed_entries.size();
+
+  base::UmaHistogramCounts1M("PasswordManager.Import.PerFile.AnyErrors",
+                             all_errors_count);
+  base::UmaHistogramCounts1M("PasswordManager.Import.PerFile.Conflicts",
+                             conflicts_count);
+  base::UmaHistogramCounts1M(
+      "PasswordManager.Import.PerFile.OnlyPasswordMissing",
+      missing_only_password_rows);
+  base::UmaHistogramCounts1M(
+      "PasswordManager.Import.PerFile.PasswordAndUsernameMissing",
+      missing_password_and_username_rows);
+  base::UmaHistogramCounts1M(
+      "PasswordManager.Import.PerFile.AllLoginFieldsEmtpy",
+      empty_all_login_fields);
+
+  if (all_errors_count > 0) {
+    base::UmaHistogramBoolean("PasswordManager.Import.OnlyConflicts",
+                              all_errors_count == conflicts_count);
+    base::UmaHistogramBoolean("PasswordManager.Import.OnlyMissingPasswords",
+                              all_errors_count == missing_only_password_rows);
+  }
 }
 
 }  // namespace
@@ -272,14 +356,20 @@ const mojo::Remote<mojom::CSVPasswordParser>& PasswordImporter::GetParser() {
 }
 
 void PasswordImporter::ParseCSVPasswordsInSandbox(
-    PasswordImporter::CompletionCallback completion,
+    PasswordForm::Store to_store,
+    ImportResultsCallback results_callback,
     base::expected<std::string, ImportResults::Status> result) {
   // Currently, CSV is the only supported format.
   if (!result.has_value()) {
-    this->status_ = result.error();
-    std::move(completion).Run(nullptr);
+    ImportResults results;
+    results.status = result.error();
+    std::move(results_callback).Run(std::move(results));
   } else {
-    GetParser()->ParseCSV(std::move(result.value()), std::move(completion));
+    GetParser()->ParseCSV(
+        std::move(result.value()),
+        base::BindOnce(&PasswordImporter::ConsumePasswords,
+                       weak_ptr_factory_.GetWeakPtr(), to_store,
+                       std::move(results_callback)));
   }
 }
 
@@ -287,147 +377,87 @@ void PasswordImporter::Import(const base::FilePath& path,
                               password_manager::PasswordForm::Store to_store,
                               ImportResultsCallback results_callback,
                               base::OnceClosure cleanup_callback) {
-  results_callback_ =
-      std::move(results_callback).Then(std::move(cleanup_callback));
+  import_started_ = true;
+  file_path_ = path;
 
   // Posting with USER_VISIBLE priority, because the result of the import is
   // visible to the user in the password settings page.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(&ReadFileToString, path),
-      base::BindOnce(&PasswordImporter::ParseCSVPasswordsInSandbox,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     base::BindOnce(&PasswordImporter::ConsumePasswords,
-                                    weak_ptr_factory_.GetWeakPtr(),
-                                    path.BaseName().AsUTF8Unsafe(), to_store)));
+      base::BindOnce(
+          &PasswordImporter::ParseCSVPasswordsInSandbox,
+          weak_ptr_factory_.GetWeakPtr(), to_store,
+          std::move(results_callback).Then(std::move(cleanup_callback))));
 }
 
 void PasswordImporter::ConsumePasswords(
-    std::string file_name,
-    password_manager::PasswordForm::Store store,
+    PasswordForm::Store to_store,
+    ImportResultsCallback results_callback,
     password_manager::mojom::CSVPasswordSequencePtr seq) {
+  // Used to aggregate final results of the current import.
   ImportResults results;
-  results.file_name = std::move(file_name);
-  results.status = status_;
-
-  DCHECK_EQ(results.number_imported, 0u);
+  results.file_name = file_path_.BaseName().AsUTF8Unsafe();
+  CHECK_EQ(results.number_imported, 0u);
 
   if (!seq) {
     // A nullptr returned by the parser means a bad format.
-    if (results.status == ImportResults::Status::NONE) {
-      results.status = password_manager::ImportResults::Status::BAD_FORMAT;
-    }
-
-    std::move(results_callback_).Run(std::move(results));
+    results.status = password_manager::ImportResults::Status::BAD_FORMAT;
+    std::move(results_callback).Run(std::move(results));
     return;
   }
   if (seq->csv_passwords.size() > MAX_PASSWORDS_PER_IMPORT) {
     results.status =
         password_manager::ImportResults::Status::NUM_PASSWORDS_EXCEEDED;
-    std::move(results_callback_).Run(results);
+    std::move(results_callback).Run(results);
     return;
   }
 
-  size_t notes_per_file_count = 0;
-  size_t notes_duplicates_per_file_count = 0;
-  size_t notes_substrings_per_file_count = 0;
-  size_t notes_concatenations_per_file_count = 0;
-
   // TODO(crbug/1325290): Either move to earlier point or update histogram.
   base::Time start_time = base::Time::Now();
-  std::vector<password_manager::CredentialUIEntry> add_credentials;
-  add_credentials.reserve(seq->csv_passwords.size());
-
   // Used to compute conflicts and duplicates.
   std::map<std::u16string, std::vector<CredentialUIEntry>>
       credentials_by_username;
   for (const CredentialUIEntry& credential : presenter_->GetSavedPasswords()) {
     // Don't consider credentials from a store other than the target store.
-    if (credential.stored_in.contains(store)) {
-      credentials_by_username[credential.username].emplace_back(
-          std::move(credential));
+    if (credential.stored_in.contains(to_store)) {
+      credentials_by_username[credential.username].push_back(credential);
     }
   }
 
-  auto ResolveConflictingNotes = [&](const CredentialUIEntry& local_credential,
-                                     const CredentialUIEntry&
-                                         imported_credential) {
-    // If there is conflict between local and imported note and:
-    // - concatenation is possible – local credential should be updated.
-    // - concatenation is not possible - error will be reported to the user.
-    // Returns `false` if concatenation is not possible and produces an error.
-    // Otherwise returns `true`.
-    DCHECK(base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup));
-
-    const auto& imported_note = imported_credential.note;
-    DCHECK(imported_note.size() <= MAX_NOTE_LENGTH);
-
-    if (imported_note.empty()) {
-      // Nothing to resolve.
-      return true;
-    }
-
-    notes_per_file_count++;
-
-    if (local_credential.note == imported_note) {
-      notes_duplicates_per_file_count++;
-      return true;
-    }
-
-    if (local_credential.note.find(imported_note) != std::u16string::npos) {
-      notes_substrings_per_file_count++;
-      return true;
-    }
-
-    if (imported_note.size() + 1u + local_credential.note.size() >=
-        MAX_NOTE_LENGTH) {
-      // Notes concatenation size should not exceed 1000 characters.
-      results.displayed_entries.push_back(CreateFailedImportEntry(
-          imported_credential, ImportEntry::Status::LONG_CONCATENATED_NOTE));
-      return false;
-    }
-
-    std::u16string concatenation =
-        local_credential.note.empty()
-            ? imported_note
-            : local_credential.note + u"\n" + imported_note;
-    CHECK_LE(concatenation.size(), MAX_NOTE_LENGTH);
-    CredentialUIEntry updated_credential = local_credential;
-    updated_credential.note = concatenation;
-    // TODO(crbug.com/1407114): This is supposed to be a very rare operation.
-    // Otherwise, accumulate credentials that need to be edited and ideally do
-    // updates as a bulk operation.
-    presenter_->EditSavedCredentials(local_credential, updated_credential);
-    notes_concatenations_per_file_count++;
-    // Matching local credentials were updated with notes concatenation.
-    // Imported credential doesn't require further processing.
-    return true;
-  };
-
+  NotesImportMetrics notes_metrics;
   size_t duplicates_count = 0;  // Number of duplicates per imported file.
+
+  // Aggregate all passwords that might need to be added or updated.
+  ImportedPasswords imported_passwords;
 
   // Go over all canonically parsed passwords:
   // 1) aggregate all valid ones in `credentials` to be passed over to the
-  // presenter. 2) aggregate all parsing errors in the results.
+  // presenter. 2) aggregate all parsing errors in the `results`.
   for (const password_manager::CSVPassword& csv_password : seq->csv_passwords) {
     base::expected<password_manager::CredentialUIEntry, ImportEntry>
-        credential = CSVPasswordToCredentialUIEntry(csv_password, store);
+        credential = CSVPasswordToCredentialUIEntry(csv_password, to_store);
 
     if (!credential.has_value()) {
       results.displayed_entries.emplace_back(std::move(credential.error()));
       continue;
     }
 
-    const CredentialUIEntry& current_credential = credential.value();
+    CredentialUIEntry current_credential = credential.value();
+
+    if (!current_credential.note.empty()) {
+      notes_metrics.notes_per_file_count++;
+    }
 
     if (HasConflicts(credentials_by_username, current_credential)) {
-      results.displayed_entries.emplace_back(
-          CreateFailedImportEntry(current_credential, GetConflictType(store)));
+      results.displayed_entries.emplace_back(CreateFailedImportEntry(
+          current_credential, GetConflictType(to_store)));
       continue;
     }
 
     // Check for duplicates.
-    auto forms = GetMatchingPasswordForms(presenter_, current_credential);
+    std::vector<PasswordForm> forms =
+        GetMatchingPasswordForms(presenter_, current_credential, to_store);
     if (!forms.empty()) {
       duplicates_count++;
 
@@ -437,53 +467,63 @@ void PasswordImporter::ConsumePasswords(
         continue;
       }
 
-      // Same credentials with different notes might need to be updated.
-      if (ResolveConflictingNotes(CredentialUIEntry(forms),
-                                  current_credential)) {
+      if (current_credential.note.empty()) {
+        // Duplicates are reported as successfully imported credentials.
         results.number_imported++;
+        continue;
       }
+
+      MergeNotesOrReportError(
+          /*local_forms=*/forms, /*imported_credential=*/current_credential,
+          /*results=*/results, /*edit_forms=*/imported_passwords.edit_forms,
+          /*metrics=*/notes_metrics);
       continue;
     }
 
     if (!base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
-      add_credentials.emplace_back(std::move(current_credential));
-      add_credentials.back().note.clear();
-      continue;
-    }
-
-    if (!current_credential.note.empty()) {
-      notes_per_file_count++;
+      current_credential.note.clear();
     }
 
     // Valid credential with no conflicts and no duplicates.
-    add_credentials.emplace_back(std::move(current_credential));
+    imported_passwords.add_credentials.emplace_back(
+        std::move(current_credential));
   }
 
-  results.number_imported += add_credentials.size();
+  results.number_imported += imported_passwords.add_credentials.size();
 
-  base::UmaHistogramCounts1000(
-      "PasswordManager.Import.PerFile.Notes.TotalCount", notes_per_file_count);
-  base::UmaHistogramCounts1000(
-      "PasswordManager.Import.PerFile.Notes.Concatenations",
-      notes_concatenations_per_file_count);
-  base::UmaHistogramCounts1000(
-      "PasswordManager.Import.PerFile.Notes.Duplicates",
-      notes_duplicates_per_file_count);
-  base::UmaHistogramCounts1000(
-      "PasswordManager.Import.PerFile.Notes.Substrings",
-      notes_substrings_per_file_count);
-
+  ReportNotesMetrics(notes_metrics);
   base::UmaHistogramCounts1M("PasswordManager.Import.PerFile.Duplicates",
                              duplicates_count);
 
-  // Pass `credentials` along with import results `results` to the callback
-  // too since they are necessary to report which imports did actually fail.
-  // (e.g. which url, username ...etc). Pass the import results (`results`)
-  // to the callback to aggregate other errors.
-  presenter_->AddCredentials(
-      add_credentials, password_manager::PasswordForm::Type::kImported,
-      base::BindOnce(&AddCredentialsCallback, start_time, std::move(results),
-                     std::move(results_callback_)));
+  ExecuteImport(std::move(results_callback), std::move(results), start_time,
+                std::move(imported_passwords));
+}
+
+void PasswordImporter::ExecuteImport(ImportResultsCallback results_callback,
+                                     ImportResults results,
+                                     base::Time start_time,
+                                     ImportedPasswords imported_passwords) {
+  // Run `results_callback` when both `AddCredentials` and
+  // `UpdatePasswordForms` have finished running.
+  auto barrier_done_callback = base::BarrierClosure(
+      2, base::BindOnce(base::BindOnce(
+             &PasswordImporter::ImportFinished, weak_ptr_factory_.GetWeakPtr(),
+             std::move(results_callback), std::move(results), start_time)));
+
+  presenter_->AddCredentials(imported_passwords.add_credentials,
+                             password_manager::PasswordForm::Type::kImported,
+                             barrier_done_callback);
+  presenter_->UpdatePasswordForms(imported_passwords.edit_forms,
+                                  barrier_done_callback);
+}
+
+void PasswordImporter::ImportFinished(ImportResultsCallback results_callback,
+                                      ImportResults results,
+                                      base::Time start_time) {
+  ReportImportResultsMetrics(results, start_time);
+
+  results.status = password_manager::ImportResults::Status::SUCCESS;
+  std::move(results_callback).Run(std::move(results));
 }
 
 void PasswordImporter::SetServiceForTesting(

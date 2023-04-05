@@ -569,7 +569,7 @@ TEST_F(GCMStoreImplTest, AccountMapping) {
 
   // Add account mappings.
   AccountMapping account_mapping1;
-  account_mapping1.account_id = CoreAccountId("account_id_1");
+  account_mapping1.account_id = CoreAccountId::FromGaiaId("account_id_1");
   account_mapping1.email = "account_id_1@gmail.com";
   account_mapping1.access_token = "account_token1";
   account_mapping1.status = AccountMapping::ADDING;
@@ -577,7 +577,7 @@ TEST_F(GCMStoreImplTest, AccountMapping) {
   account_mapping1.last_message_id = "message_1";
 
   AccountMapping account_mapping2;
-  account_mapping2.account_id = CoreAccountId("account_id_2");
+  account_mapping2.account_id = CoreAccountId::FromGaiaId("account_id_2");
   account_mapping2.email = "account_id_2@gmail.com";
   account_mapping2.access_token = "account_token1";
   account_mapping2.status = AccountMapping::REMOVING;

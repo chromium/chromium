@@ -17,6 +17,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
@@ -221,14 +222,16 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     /**
      * Creates an instance of the {@link StripLayoutHelperManager}.
      * @param context The current Android {@link Context}.
+     * @param managerHost The parent {@link LayoutManagerHost}.
      * @param updateHost The parent {@link LayoutUpdateHost}.
      * @param renderHost The {@link LayoutRenderHost}.
      * @param layerTitleCacheSupplier A supplier of the cache that holds the title textures.
      * @param lifecycleDispatcher The {@link ActivityLifecycleDispatcher} for registering this class
      *         to lifecycle events.
      */
-    public StripLayoutHelperManager(Context context, LayoutUpdateHost updateHost,
-            LayoutRenderHost renderHost, Supplier<LayerTitleCache> layerTitleCacheSupplier,
+    public StripLayoutHelperManager(Context context, LayoutManagerHost managerHost,
+            LayoutUpdateHost updateHost, LayoutRenderHost renderHost,
+            Supplier<LayerTitleCache> layerTitleCacheSupplier,
             ActivityLifecycleDispatcher lifecycleDispatcher) {
         mUpdateHost = updateHost;
         mLayerTitleCacheSupplier = layerTitleCacheSupplier;
@@ -309,10 +312,10 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
 
         mBrowserScrimShowing = false;
 
-        mNormalHelper =
-                new StripLayoutHelper(context, updateHost, renderHost, false, mModelSelectorButton);
-        mIncognitoHelper =
-                new StripLayoutHelper(context, updateHost, renderHost, true, mModelSelectorButton);
+        mNormalHelper = new StripLayoutHelper(
+                context, managerHost, updateHost, renderHost, false, mModelSelectorButton);
+        mIncognitoHelper = new StripLayoutHelper(
+                context, managerHost, updateHost, renderHost, true, mModelSelectorButton);
 
         onContextChanged(context);
     }

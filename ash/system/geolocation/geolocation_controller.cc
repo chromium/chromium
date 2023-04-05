@@ -6,12 +6,17 @@
 
 #include <algorithm>
 
+#include "ash/constants/ash_pref_names.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/time/time_of_day.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/time/clock.h"
 #include "chromeos/ash/components/geolocation/geoposition.h"
+#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "components/prefs/pref_service.h"
 #include "third_party/icu/source/i18n/astro.h"
 
 namespace ash {
@@ -39,7 +44,8 @@ constexpr int kDefaultSunriseTimeOffsetMinutes = 6 * 60;
 GeolocationController::GeolocationController(
     scoped_refptr<network::SharedURLLoaderFactory> factory)
     : factory_(factory.get()),
-      provider_(std::move(factory),
+      provider_(this,
+                std::move(factory),
                 SimpleGeolocationProvider::DefaultGeolocationProviderURL()),
       backoff_delay_(kMinimumDelayAfterFailure),
       timer_(std::make_unique<base::OneShotTimer>()) {
@@ -90,6 +96,24 @@ void GeolocationController::TimezoneChanged(const icu::TimeZone& timezone) {
 void GeolocationController::SuspendDone(base::TimeDelta sleep_duration) {
   if (sleep_duration >= kNextRequestDelayAfterSuccess)
     ScheduleNextRequest(base::Seconds(0));
+}
+
+bool GeolocationController::IsPreciseGeolocationAllowed() const {
+  // TODO(b/276715041): Refactor the `SimpleGeolocationProvider` class to
+  // eliminate the `Shell`-dependency of this class.
+  Shell* const shell = Shell::Get();
+  const PrefService* primary_user_prefs =
+      shell->session_controller()->GetPrimaryUserPrefService();
+
+  // Follow device preference on log-in screen.
+  if (!primary_user_prefs) {
+    return shell->local_state()->GetInteger(
+               ash::prefs::kDeviceGeolocationAllowed) ==
+           static_cast<int>(PrivacyHubController::AccessLevel::kAllowed);
+  }
+
+  // Inside user session check geolocation user preference.
+  return primary_user_prefs->GetBoolean(ash::prefs::kUserGeolocationAllowed);
 }
 
 // static

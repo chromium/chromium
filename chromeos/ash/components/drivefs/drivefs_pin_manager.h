@@ -65,6 +65,7 @@ enum class Stage {
   kCannotGetFreeSpace,
   kCannotListFiles,
   kNotEnoughSpace,
+  kCannotEnableDocsOffline,
 };
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)
@@ -143,6 +144,9 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) Progress {
 
   // Returns whether required_space + some margin is less than free_space.
   bool HasEnoughFreeSpace() const;
+
+  // Returns whether the stage is a stopped or error stage.
+  bool IsError() const;
 };
 
 // Manages bulk pinning of items via DriveFS. This class handles the following:
@@ -313,6 +317,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // Invoked on retrieval of free space at the beginning of the setup process.
   void OnFreeSpaceRetrieved1(int64_t free_space);
 
+  // Invoked once Docs offline has been enabled.
+  void OnDocsOfflineEnabled(drive::FileError error);
+
   // Periodically check for free space.
   void CheckFreeSpace();
 
@@ -335,6 +342,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
                       Query query,
                       drive::FileError error,
                       base::span<const drivefs::mojom::QueryItemPtr> items);
+
+  // Handles one query item retrieved by a search query.
+  void HandleQueryItem(Id dir_id,
+                       const Path& dir_path,
+                       const drivefs::mojom::QueryItem& item);
 
   // When the pinning has finished, this ensures appropriate cleanup happens on
   // the underlying search query mojo connection.
@@ -451,6 +463,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, PinSomeFiles);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, CheckStalledFiles);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, NotifyProgress);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnSearchResult);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, HandleQueryItem);
 };
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)

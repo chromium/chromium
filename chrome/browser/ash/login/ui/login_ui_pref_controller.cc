@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/ui/login_ui_pref_controller.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"

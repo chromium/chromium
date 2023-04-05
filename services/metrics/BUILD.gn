@@ -4,6 +4,8 @@
 
 source_set("metrics") {
   sources = [
+    "ukm_recorder_factory_impl.cc",
+    "ukm_recorder_factory_impl.h",
     "ukm_recorder_interface.cc",
     "ukm_recorder_interface.h",
   ]

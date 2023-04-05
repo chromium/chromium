@@ -215,7 +215,7 @@ ExtensionFunction::ResponseAction SocketsTcpSetKeepAliveFunction::Work() {
 
 void SocketsTcpSetKeepAliveFunction::OnCompleted(bool success) {
   if (success) {
-    Respond(OneArgument(base::Value(net::OK)));
+    Respond(WithArguments(net::OK));
   } else {
     Respond(
         ErrorWithCode(net::ERR_FAILED, net::ErrorToString(net::ERR_FAILED)));
@@ -243,7 +243,7 @@ ExtensionFunction::ResponseAction SocketsTcpSetNoDelayFunction::Work() {
 
 void SocketsTcpSetNoDelayFunction::OnCompleted(bool success) {
   if (success) {
-    Respond(OneArgument(base::Value(net::OK)));
+    Respond(WithArguments(net::OK));
   } else {
     Respond(
         ErrorWithCode(net::ERR_FAILED, net::ErrorToString(net::ERR_FAILED)));
@@ -325,7 +325,7 @@ void SocketsTcpConnectFunction::OnCompleted(int net_result) {
   }
 
   if (net_result == net::OK) {
-    Respond(OneArgument(base::Value(net_result)));
+    Respond(WithArguments(net_result));
   } else {
     Respond(ErrorWithCode(net_result, net::ErrorToString(net_result)));
   }
@@ -520,7 +520,7 @@ void SocketsTcpSecureFunction::TlsConnectDone(
   socket->set_persistent(persistent_);
   socket->set_paused(paused_);
   ReplaceSocket(params_->socket_id, socket.release());
-  Respond(OneArgument(base::Value(result)));
+  Respond(WithArguments(result));
 }
 
 }  // namespace api

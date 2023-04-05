@@ -99,9 +99,6 @@ struct CORE_EXPORT NGInlineItemResult {
   NGLineBoxStrut borders;
   NGLineBoxStrut padding;
 
-  // Has start/end edge for open/close tags.
-  bool has_edge = false;
-
   // Inside of this may be breakable. False means there are no break
   // opportunities, or has CSS properties that prohibit breaking.
   // Used only during line breaking.

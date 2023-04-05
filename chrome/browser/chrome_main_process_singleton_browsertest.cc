@@ -46,7 +46,7 @@ class ChromeMainTest : public InProcessBrowserTest {
     ProfileManager* profile_manager = g_browser_process->profile_manager();
     base::FilePath profile_path =
         profile_manager->user_data_dir().Append(basename);
-    return profiles::testing::CreateProfileSync(profile_manager, profile_path);
+    return &profiles::testing::CreateProfileSync(profile_manager, profile_path);
   }
 
   // Gets the relaunch command line with the kProfileEmail switch.

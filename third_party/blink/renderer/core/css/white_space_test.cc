@@ -35,7 +35,7 @@ TEST_P(WhiteSpaceValuesTest, CSSValue) {
 
 TEST(WhiteSpaceTest, Normal) {
   const EWhiteSpace normal = EWhiteSpace::kNormal;
-  EXPECT_FALSE(ShouldPreserveSpacesAndTabs(ToWhiteSpaceCollapse(normal)));
+  EXPECT_FALSE(ShouldPreserveWhiteSpaces(ToWhiteSpaceCollapse(normal)));
   EXPECT_FALSE(ShouldPreserveBreaks(ToWhiteSpaceCollapse(normal)));
   EXPECT_FALSE(ShouldBreakSpaces(ToWhiteSpaceCollapse(normal)));
   EXPECT_TRUE(ShouldWrapLine(ToTextWrap(normal)));
@@ -43,7 +43,7 @@ TEST(WhiteSpaceTest, Normal) {
 
 TEST(WhiteSpaceTest, Nowrap) {
   const EWhiteSpace nowrap = EWhiteSpace::kNowrap;
-  EXPECT_FALSE(ShouldPreserveSpacesAndTabs(ToWhiteSpaceCollapse(nowrap)));
+  EXPECT_FALSE(ShouldPreserveWhiteSpaces(ToWhiteSpaceCollapse(nowrap)));
   EXPECT_FALSE(ShouldPreserveBreaks(ToWhiteSpaceCollapse(nowrap)));
   EXPECT_FALSE(ShouldBreakSpaces(ToWhiteSpaceCollapse(nowrap)));
   EXPECT_FALSE(ShouldWrapLine(ToTextWrap(nowrap)));
@@ -51,7 +51,7 @@ TEST(WhiteSpaceTest, Nowrap) {
 
 TEST(WhiteSpaceTest, Pre) {
   const EWhiteSpace pre = EWhiteSpace::kPre;
-  EXPECT_TRUE(ShouldPreserveSpacesAndTabs(ToWhiteSpaceCollapse(pre)));
+  EXPECT_TRUE(ShouldPreserveWhiteSpaces(ToWhiteSpaceCollapse(pre)));
   EXPECT_TRUE(ShouldPreserveBreaks(ToWhiteSpaceCollapse(pre)));
   EXPECT_FALSE(ShouldBreakSpaces(ToWhiteSpaceCollapse(pre)));
   EXPECT_FALSE(ShouldWrapLine(ToTextWrap(pre)));
@@ -59,7 +59,7 @@ TEST(WhiteSpaceTest, Pre) {
 
 TEST(WhiteSpaceTest, PreLine) {
   const EWhiteSpace pre_line = EWhiteSpace::kPreLine;
-  EXPECT_FALSE(ShouldPreserveSpacesAndTabs(ToWhiteSpaceCollapse(pre_line)));
+  EXPECT_FALSE(ShouldPreserveWhiteSpaces(ToWhiteSpaceCollapse(pre_line)));
   EXPECT_TRUE(ShouldPreserveBreaks(ToWhiteSpaceCollapse(pre_line)));
   EXPECT_FALSE(ShouldBreakSpaces(ToWhiteSpaceCollapse(pre_line)));
   EXPECT_TRUE(ShouldWrapLine(ToTextWrap(pre_line)));
@@ -67,7 +67,7 @@ TEST(WhiteSpaceTest, PreLine) {
 
 TEST(WhiteSpaceTest, PreWrap) {
   const EWhiteSpace pre_wrap = EWhiteSpace::kPreWrap;
-  EXPECT_TRUE(ShouldPreserveSpacesAndTabs(ToWhiteSpaceCollapse(pre_wrap)));
+  EXPECT_TRUE(ShouldPreserveWhiteSpaces(ToWhiteSpaceCollapse(pre_wrap)));
   EXPECT_TRUE(ShouldPreserveBreaks(ToWhiteSpaceCollapse(pre_wrap)));
   EXPECT_FALSE(ShouldBreakSpaces(ToWhiteSpaceCollapse(pre_wrap)));
   EXPECT_TRUE(ShouldWrapLine(ToTextWrap(pre_wrap)));
@@ -75,7 +75,7 @@ TEST(WhiteSpaceTest, PreWrap) {
 
 TEST(WhiteSpaceTest, BreakSpaces) {
   const EWhiteSpace break_spaces = EWhiteSpace::kBreakSpaces;
-  EXPECT_TRUE(ShouldPreserveSpacesAndTabs(ToWhiteSpaceCollapse(break_spaces)));
+  EXPECT_TRUE(ShouldPreserveWhiteSpaces(ToWhiteSpaceCollapse(break_spaces)));
   EXPECT_TRUE(ShouldPreserveBreaks(ToWhiteSpaceCollapse(break_spaces)));
   EXPECT_TRUE(ShouldBreakSpaces(ToWhiteSpaceCollapse(break_spaces)));
   EXPECT_TRUE(ShouldWrapLine(ToTextWrap(break_spaces)));

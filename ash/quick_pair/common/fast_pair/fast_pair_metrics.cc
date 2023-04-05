@@ -12,6 +12,7 @@
 #include "base/metrics/sparse_histogram.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/metrics/structured/structured_events.h"
+#include "components/metrics/structured/structured_metrics_features.h"
 
 namespace {
 
@@ -1585,6 +1586,10 @@ int GetTxPower(const device::BluetoothDevice* bt_device) {
 void RecordStructuredDiscoveryNotificationShown(
     const Device& device,
     const device::BluetoothDevice* bt_device) {
+  if (!base::FeatureList::IsEnabled(metrics::structured::kFastPairMetrics)) {
+    return;
+  }
+
   QP_LOG(INFO) << __func__;
   int model_id;
   if (!base::HexStringToInt(device.metadata_id(), &model_id)) {
@@ -1606,6 +1611,10 @@ void RecordStructuredDiscoveryNotificationShown(
 
 void RecordStructuredPairingStarted(const Device& device,
                                     const device::BluetoothDevice* bt_device) {
+  if (!base::FeatureList::IsEnabled(metrics::structured::kFastPairMetrics)) {
+    return;
+  }
+
   QP_LOG(INFO) << __func__;
   int model_id;
   if (!base::HexStringToInt(device.metadata_id(), &model_id)) {
@@ -1627,6 +1636,10 @@ void RecordStructuredPairingStarted(const Device& device,
 
 void RecordStructuredPairingComplete(const Device& device,
                                      const device::BluetoothDevice* bt_device) {
+  if (!base::FeatureList::IsEnabled(metrics::structured::kFastPairMetrics)) {
+    return;
+  }
+
   QP_LOG(INFO) << __func__;
   int model_id;
   if (!base::HexStringToInt(device.metadata_id(), &model_id)) {
@@ -1647,6 +1660,10 @@ void RecordStructuredPairingComplete(const Device& device,
 }
 
 void RecordStructuredPairFailure(const Device& device, PairFailure failure) {
+  if (!base::FeatureList::IsEnabled(metrics::structured::kFastPairMetrics)) {
+    return;
+  }
+
   QP_LOG(INFO) << __func__;
   int model_id;
   if (!base::HexStringToInt(device.metadata_id(), &model_id)) {

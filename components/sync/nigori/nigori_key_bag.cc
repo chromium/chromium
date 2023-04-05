@@ -14,17 +14,11 @@
 namespace syncer {
 namespace {
 
-std::string ComputeNigoriName(const Nigori& nigori) {
-  std::string key_name;
-  nigori.GetKeyName(&key_name);
-  return key_name;
-}
-
 // Note that |key_name| is redundant but computing the name from |nigori| can be
 // expensive.
 sync_pb::NigoriKey NigoriToProto(const Nigori& nigori,
                                  const std::string& key_name) {
-  DCHECK_EQ(key_name, ComputeNigoriName(nigori));
+  DCHECK_EQ(key_name, nigori.GetKeyName());
 
   sync_pb::NigoriKey proto;
   proto.set_deprecated_name(key_name);
@@ -108,7 +102,7 @@ sync_pb::NigoriKey NigoriKeyBag::ExportKey(const std::string& key_name) const {
 
 std::string NigoriKeyBag::AddKey(std::unique_ptr<Nigori> nigori) {
   DCHECK(nigori);
-  const std::string key_name = ComputeNigoriName(*nigori);
+  const std::string key_name = nigori->GetKeyName();
   if (key_name.empty()) {
     NOTREACHED();
     return key_name;
@@ -124,7 +118,7 @@ std::string NigoriKeyBag::AddKeyFromProto(const sync_pb::NigoriKey& key) {
     return std::string();
   }
 
-  const std::string key_name = ComputeNigoriName(*nigori);
+  const std::string key_name = nigori->GetKeyName();
   if (key_name.empty()) {
     return std::string();
   }

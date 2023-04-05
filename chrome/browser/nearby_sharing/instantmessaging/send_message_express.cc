@@ -8,11 +8,11 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/nearby_sharing/common/nearby_share_http_result.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/constants.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/proto/instantmessaging.pb.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/token_fetcher.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
+#include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -63,7 +63,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           })");
 
 void LogSendResult(bool success,
-                   const NearbyShareHttpStatus& http_status,
+                   const ash::nearby::NearbyHttpStatus& http_status,
                    const std::string& request_id) {
   std::stringstream ss;
   ss << "Instant messaging send express " << (success ? "succeeded" : "failed")
@@ -147,8 +147,8 @@ void SendMessageExpress::OnSendMessageResponse(
     std::unique_ptr<network::SimpleURLLoader> url_loader,
     SuccessCallback callback,
     std::unique_ptr<std::string> response_body) {
-  NearbyShareHttpStatus http_status(url_loader->NetError(),
-                                    url_loader->ResponseInfo());
+  ash::nearby::NearbyHttpStatus http_status(url_loader->NetError(),
+                                            url_loader->ResponseInfo());
   bool success =
       http_status.IsSuccess() && response_body && !response_body->empty();
   LogSendResult(success, http_status, request_id);

@@ -20,10 +20,13 @@ specific_include_rules = {
   "media_stream_focus_delegate.cc": [
     "+modules/desktop_capture/desktop_capture_options.h",
   ],
-  "get_display_media_set_browsertest\.cc": [
+  "get_all_screen_media_browsertest\.cc": [
     "+ash/shell.h",
   ],
   ".*_unittest\.cc": [
     "+ash/test/ash_test_base.h",
+  ],
+  "get_all_screen_media_browsertest\.cc": [
+    "+ash/shell.h",
   ]
 }

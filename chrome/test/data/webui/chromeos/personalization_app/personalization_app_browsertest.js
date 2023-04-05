@@ -14,43 +14,7 @@ GEN('#include "chromeos/constants/chromeos_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 const ROOT_PAGE = 'chrome://personalization/';
-const WALLPAPER_SUBPAGE = 'chrome://personalization/wallpaper';
-
 const DEFAULT_WALLPAPER_NAME = 'Default Wallpaper';
-
-class PersonalizationAppBrowserTest extends testing.Test {
-  /** @override */
-  get browsePreload() {
-    return ROOT_PAGE;
-  }
-
-  /** @override */
-  get extraLibraries() {
-    return [
-      '//third_party/mocha/mocha.js',
-      '//chrome/test/data/webui/mocha_adapter.js',
-    ];
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: [
-        'chromeos::features::kDarkLightMode',
-      ],
-    };
-  }
-
-  /** @override */
-  get isAsync() {
-    return true;
-  }
-
-  /** @override */
-  get typedefCppFixture() {
-    return 'ash::personalization_app::PersonalizationAppBrowserTestFixture';
-  }
-}
 
 /**
  * Wait until `func` returns a truthy value.
@@ -74,7 +38,7 @@ async function waitUntil(func, message, intervalMs = 50, timeoutMs = 1001) {
   return new Promise((resolve, reject) => {
     rejectTimer = window.setTimeout(() => {
       cleanup();
-      reject(message);
+      reject(new Error(message));
     }, timeoutMs);
 
     pollTimer = window.setInterval(() => {
@@ -86,6 +50,47 @@ async function waitUntil(func, message, intervalMs = 50, timeoutMs = 1001) {
     }, intervalMs);
   });
 }
+
+function getRouter() {
+  return document.querySelector('personalization-router');
+}
+
+class PersonalizationAppBrowserTest extends testing.Test {
+  /** @override */
+  get browsePreload() {
+    return ROOT_PAGE;
+  }
+
+  /** @override */
+  get extraLibraries() {
+    return [
+      '//third_party/mocha/mocha.js',
+      '//chrome/test/data/webui/mocha_adapter.js',
+    ];
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled: [
+        'chromeos::features::kDarkLightMode',
+        'ash::features::kWallpaperGooglePhotosSharedAlbums',
+      ],
+    };
+  }
+
+  /** @override */
+  get isAsync() {
+    return true;
+  }
+
+  /** @override */
+  get typedefCppFixture() {
+    return 'ash::personalization_app::PersonalizationAppBrowserTestFixture';
+  }
+}
+
+
 
 // TODO(crbug/1262025) revisit this workaround for js2gtest requiring "var"
 // declarations.
@@ -100,11 +105,11 @@ TEST_F(PersonalizationAppBrowserTest.name, 'All', async () => {
   suite('main page', () => {
     test('has root page content', () => {
       assertEquals(document.location.href, ROOT_PAGE);
-      const userPreview = document.querySelector('personalization-router')
+      const userPreview = getRouter()
                               .shadowRoot.querySelector('personalization-main')
                               .shadowRoot.querySelector('user-preview');
       const wallpaperPreview =
-          document.querySelector('personalization-router')
+          getRouter()
               .shadowRoot.querySelector('personalization-main')
               .shadowRoot.querySelector('wallpaper-preview');
       assertTrue(!!userPreview);
@@ -112,7 +117,7 @@ TEST_F(PersonalizationAppBrowserTest.name, 'All', async () => {
     });
 
     test('shows theme buttons', async () => {
-      const theme = document.querySelector('personalization-router')
+      const theme = getRouter()
                         .shadowRoot.querySelector('personalization-main')
                         .shadowRoot.querySelector('personalization-theme');
       await waitUntil(
@@ -127,7 +132,7 @@ TEST_F(PersonalizationAppBrowserTest.name, 'All', async () => {
     });
 
     test('shows user info', async () => {
-      const preview = document.querySelector('personalization-router')
+      const preview = getRouter()
                           .shadowRoot.querySelector('personalization-main')
                           .shadowRoot.querySelector('user-preview');
 
@@ -164,7 +169,7 @@ TEST_F(
       suite('ambient mode allowed', () => {
         test('shows ambient preview', () => {
           const preview =
-              document.querySelector('personalization-router')
+              getRouter()
                   .shadowRoot.querySelector('personalization-main')
                   .shadowRoot.querySelector('ambient-preview-large');
           assertTrue(!!preview);
@@ -172,7 +177,7 @@ TEST_F(
 
         test('shows ambient subpage link', () => {
           const ambientSubpageLink =
-              document.querySelector('personalization-router')
+              getRouter()
                   .shadowRoot.querySelector('personalization-main')
                   .shadowRoot.querySelector('ambient-preview-large')
                   .shadowRoot.querySelector('#ambientSubpageLink');
@@ -202,7 +207,7 @@ TEST_F(
 
       suite('ambient mode disallowed', () => {
         test('does not show ambient preview', () => {
-          const preview = document.querySelector('personalization-router')
+          const preview = getRouter()
                               .shadowRoot.querySelector('personalization-main')
                               .shadowRoot.querySelector('ambient-preview');
           assertFalse(!!preview);
@@ -210,7 +215,7 @@ TEST_F(
 
         test('does not show ambient subpage link', () => {
           const ambientSubpageLink =
-              document.querySelector('personalization-router')
+              getRouter()
                   .shadowRoot.querySelector('personalization-main')
                   .shadowRoot.getElementById('ambientSubpageLink');
           assertFalse(!!ambientSubpageLink);
@@ -221,12 +226,7 @@ TEST_F(
     });
 
 class PersonalizationAppWallpaperSubpageBrowserTest extends
-    PersonalizationAppBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return WALLPAPER_SUBPAGE;
-  }
-}
+    PersonalizationAppBrowserTest {}
 
 this[PersonalizationAppWallpaperSubpageBrowserTest.name] =
     PersonalizationAppWallpaperSubpageBrowserTest;
@@ -234,26 +234,57 @@ this[PersonalizationAppWallpaperSubpageBrowserTest.name] =
 TEST_F(PersonalizationAppWallpaperSubpageBrowserTest.name, 'All', async () => {
   await import('chrome://webui-test/mojo_webui_test_support.js');
 
-  suite('wallpaper subpage browser test', () => {
+  function clickWallpaperPreviewLink() {
+    assertEquals(
+        ROOT_PAGE, window.location.href,
+        'wallpaper preview link only present on root page');
+    getRouter()
+        .shadowRoot.querySelector('personalization-main')
+        .shadowRoot.querySelector('wallpaper-preview')
+        .shadowRoot.getElementById('wallpaperButton')
+        .click();
+    assertEquals(
+        ROOT_PAGE + 'wallpaper', window.location.href,
+        'should have navigated to wallpaper');
+  }
+
+  function getWallpaperSubpage() {
+    const router = getRouter();
+    assertTrue(!!router, 'personalization-router should be top level element');
+
+    const wallpaperSubpage =
+        router.shadowRoot.querySelector('wallpaper-subpage');
+    assertTrue(
+        !!wallpaperSubpage,
+        'wallpaper-subpage should be found under personalization-router');
+
+    return wallpaperSubpage;
+  }
+
+  function getWallpaperSelected() {
+    const subpage = getWallpaperSubpage();
+    const wallpaperSelected =
+        subpage.shadowRoot.querySelector('wallpaper-selected');
+    assertTrue(!!wallpaperSelected, 'wallpaper-selected should exist');
+    return wallpaperSelected;
+  }
+
+  setup(async () => {
+    // Reset to default state before each test to reduce order dependencies.
+    await window.personalizationTestApi.reset();
+    clickWallpaperPreviewLink();
+  });
+
+  suite('wallpaper subpage', () => {
     // Tests that chrome://personalization/wallpaper runs js file and that it
     // goes somewhere instead of 404ing or crashing.
     test('has wallpaper subpage url', () => {
-      assertEquals(document.location.href, WALLPAPER_SUBPAGE);
-
       const title = document.querySelector('head > title');
       assertEquals('Wallpaper', title.innerText);
     });
 
     test('loads collections grid', () => {
-      const router = document.querySelector('personalization-router');
-      assertTrue(
-          !!router, 'personalization-router should be top level element');
-
-      const wallpaperSubpage =
-          router.shadowRoot.querySelector('wallpaper-subpage');
-      assertTrue(
-          !!wallpaperSubpage,
-          'wallpaper-subpage should be found under personalization-router');
+      const wallpaperSubpage = getWallpaperSubpage();
 
       const collections =
           wallpaperSubpage.shadowRoot.querySelector('wallpaper-collections');
@@ -270,13 +301,11 @@ TEST_F(PersonalizationAppWallpaperSubpageBrowserTest.name, 'All', async () => {
           collections.offsetHeight, 0,
           'wallpaper-collections grid should have visible height');
     });
+  });
 
+  suite('backdrop', function() {
     test('selects wallpaper', async () => {
-      const subpage = document.querySelector('personalization-router')
-                          .shadowRoot.querySelector('wallpaper-subpage');
-
-      const wallpaperSelected =
-          subpage.shadowRoot.querySelector('wallpaper-selected');
+      const wallpaperSelected = getWallpaperSelected();
       const textContainer =
           wallpaperSelected.shadowRoot.getElementById('textContainer');
       assertEquals(
@@ -284,14 +313,19 @@ TEST_F(PersonalizationAppWallpaperSubpageBrowserTest.name, 'All', async () => {
           textContainer.querySelector('#imageTitle').textContent.trim(),
           'default wallpaper is shown at first');
 
-      // Select the last `online` wallpaper collection tile.
-      Array
-          .from(
-              subpage.shadowRoot.querySelector('wallpaper-collections')
-                  .shadowRoot.querySelectorAll(
+      const subpage = getWallpaperSubpage();
+      const collections =
+          subpage.shadowRoot.querySelector('wallpaper-collections');
+
+      const onlineTileToClick = await waitUntil(
+          () =>
+              Array
+                  .from(collections.shadowRoot.querySelectorAll(
                       `wallpaper-grid-item[aria-disabled='false'][data-online]`))
-          .at(-1)
-          .click();
+                  .find(tile => tile.primaryText === 'Test Collection 2'),
+          'waiting for online tile with title Test Collection 2 to load');
+
+      onlineTileToClick.click();
 
       const wallpaperImages = await waitUntil(
           () => subpage.shadowRoot.querySelector('wallpaper-images'),
@@ -324,6 +358,111 @@ TEST_F(PersonalizationAppWallpaperSubpageBrowserTest.name, 'All', async () => {
           textContainer.querySelector('span:last-of-type').textContent.trim());
 
       assertTrue(gridItem.selected, 'wallpaper tile is selected after click');
+    });
+  });
+
+  suite('google photos', () => {
+    async function openGooglePhotos() {
+      const subpage = getWallpaperSubpage();
+
+      const googlePhotosTile = await waitUntil(
+          () => subpage.shadowRoot.querySelector('wallpaper-collections')
+                    .shadowRoot.querySelector(
+                        `wallpaper-grid-item[aria-disabled='false']` +
+                        `[data-google-photos]`),
+          'failed waiting for google photos tile to load');
+      googlePhotosTile.click();
+
+      return await waitUntil(
+          () => subpage.shadowRoot.querySelector('google-photos-collection'),
+          'failed to find google photos collection');
+    }
+
+    async function openGooglePhotosAlbums() {
+      const googlePhotosCollection = await openGooglePhotos();
+      const albumsTabButton = await waitUntil(
+          () => googlePhotosCollection.shadowRoot.getElementById('albumsTab'),
+          'failed to find google photos album tab');
+
+      albumsTabButton.click();
+
+      return await waitUntil(
+          () => googlePhotosCollection.shadowRoot.querySelector(
+              'google-photos-albums'),
+          'failed to find albums');
+    }
+
+    async function openGooglePhotosSharedAlbumById(
+        albumId, googlePhotosAlbumsPromise = openGooglePhotosAlbums()) {
+      const googlePhotosAlbums = await googlePhotosAlbumsPromise;
+
+      const ariaLabel = `${albumId} Shared`;
+
+      const sharedAlbumToClick = await waitUntil(
+          () => googlePhotosAlbums.shadowRoot.querySelector(
+              `wallpaper-grid-item[aria-disabled='false'][aria-label='${
+                  ariaLabel}']`),
+          'failed to get shared album');
+      sharedAlbumToClick.click();
+    }
+
+    // Returns null when the dialog is not open.
+    function getSharedAlbumDialog() {
+      const wallpaperSelected = getWallpaperSelected();
+      return wallpaperSelected.shadowRoot.querySelector(
+          'google-photos-shared-album-dialog');
+    }
+
+    test('shared album sets correct query parameters', async () => {
+      const googlePhotosAlbums = await openGooglePhotosAlbums();
+
+      assertEquals(
+          '', location.search,
+          'location.search should be empty before selecting shared album');
+
+      const sharedAlbumId = 'fake_google_photos_shared_album_id_1';
+
+      await openGooglePhotosSharedAlbumById(sharedAlbumId, googlePhotosAlbums);
+
+      assertDeepEquals(
+          new Map([
+            ['googlePhotosAlbumId', sharedAlbumId],
+            ['googlePhotosAlbumIsShared', 'true']
+          ]),
+          new Map(new URLSearchParams(location.search).entries()),
+          'album id and is shared param should appear in location.search');
+    });
+
+    test('select shared album as daily refresh', async () => {
+      const sharedAlbumId = 'fake_google_photos_shared_album_id_2';
+      await openGooglePhotosSharedAlbumById(sharedAlbumId);
+
+      const wallpaperSelected = getWallpaperSelected();
+      const imageTitle =
+          wallpaperSelected.shadowRoot.getElementById('imageTitle');
+      assertEquals(
+          DEFAULT_WALLPAPER_NAME, imageTitle.textContent.trim(),
+          'default wallpaper is shown at first');
+
+      wallpaperSelected.shadowRoot.getElementById('dailyRefresh').click();
+
+      const sharedAlbumDialog = await waitUntil(
+          () => getSharedAlbumDialog(),
+          'failed to select google photos shared album dialog');
+
+      const sharedAlbumDialogAcceptButton =
+          sharedAlbumDialog.shadowRoot.getElementById('accept');
+      sharedAlbumDialogAcceptButton.click();
+
+      const dailyRefreshRegex =
+          /^Daily Refresh\: fake_google_photos_photo_id_\d$/;
+      await waitUntil(
+          () => dailyRefreshRegex.test(imageTitle.textContent.trim()),
+          'Daily refresh set to a google photos image');
+
+      assertEquals(
+          null, getSharedAlbumDialog(),
+          'google photos shared album dialog is gone');
     });
   });
 

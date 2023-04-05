@@ -137,7 +137,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
 
   // The result of a function call.
   //
-  // Use NoArguments(), OneArgument(), ArgumentList(), or Error()
+  // Use NoArguments(), WithArguments(), ArgumentList(), or Error()
   // rather than this class directly.
   class ResponseValue {
    public:
@@ -227,9 +227,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   //
   // Typical return values might be:
   //   * RespondNow(NoArguments())
-  //   * RespondNow(OneArgument(42))
   //   * RespondNow(ArgumentList(my_result.ToValue()))
-  //   * RespondNow(WithArguments())
   //   * RespondNow(WithArguments(42))
   //   * RespondNow(WithArguments(42, "value", false))
   //   * RespondNow(Error("Warp core breach"))
@@ -411,20 +409,14 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   //
   // Success, no arguments to pass to caller.
   ResponseValue NoArguments();
-  // Success, a single argument |arg| to pass to caller.
-  ResponseValue OneArgument(base::Value arg);
-  // Success, two arguments |arg1| and |arg2| to pass to caller.
-  // Note that use of this function may imply you
-  // should be using the generated Result struct and ArgumentList.
-  ResponseValue TwoArguments(base::Value arg1, base::Value arg2);
   // Success, a list of arguments |results| to pass to caller.
   ResponseValue ArgumentList(base::Value::List results);
 
   // Success, a variadic list of arguments to pass to the caller.
   template <typename... Args>
   ResponseValue WithArguments(Args&&... args) {
-    if constexpr (sizeof...(Args) == 0u)
-      return ArgumentList(base::Value::List());
+    static_assert(sizeof...(Args) > 0,
+                  "Use NoArguments(), as there are no arguments in this call.");
 
     base::Value::List params;
     params.reserve(sizeof...(Args));

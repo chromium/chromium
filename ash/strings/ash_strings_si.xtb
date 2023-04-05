@@ -220,6 +220,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">ආයුබෝවන්, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">පාඨ ආදානය</translation>
+<translation id="1980808257969311265"><ph name="EVENT_SUMMARY" /> වෙත එක් වන්න</translation>
 <translation id="1982717156487272186">පෙර සතිය පෙන්වන්න</translation>
 <translation id="1989113344093894667">අන්තර්ගතය ග්‍රහණය කළ නොහැකිය</translation>
 <translation id="1990046457226896323">කථන ගොනු බාගන්නා ලදී</translation>
@@ -574,6 +575,7 @@
 <translation id="3659814201068740063"><ph name="TIME_LEFT" /> පමණ ඉතිරිව ඇත (<ph name="PERCENTAGE" />%).
 ඔබගේ උපාංගය බලයට සම්බන්ධ කරන්න.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> කළමනා කරන පරිශීලකයා</translation>
+<translation id="3666266999138159418">ඔබේ පාවෙන කවුළුව සැඟවීමට ස්වයිප් කරන්න</translation>
 <translation id="367531336287639526">ලිපින තීරුවේ වම් පස පළමු නිරූපකය තෝරන්න</translation>
 <translation id="3679827876008292680">කවුළුවේ අවසාන පටිත්ත වෙත යන්න</translation>
 <translation id="36813544980941320">Wi-Fi ජාල ඔබගේ දුරකථනය සහ <ph name="DEVICE_NAME" /> අතර බෙදා ගනු ඇත</translation>

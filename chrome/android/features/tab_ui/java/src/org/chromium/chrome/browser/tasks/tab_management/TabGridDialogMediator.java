@@ -176,6 +176,8 @@ public class TabGridDialogMediator
                 if (type == TabSelectionType.FROM_USER) {
                     // Cancel the zooming into tab grid card animation.
                     hideDialog(false);
+                } else if (getRelatedTabs(mCurrentTabId).contains(tab)) {
+                    mCurrentTabId = tab.getId();
                 }
             }
 

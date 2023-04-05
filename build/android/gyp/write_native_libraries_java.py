@@ -13,6 +13,7 @@ import zipfile
 
 from util import build_utils
 import action_helpers  # build_utils adds //build to sys.path.
+import zip_helpers
 
 
 _NATIVE_LIBRARIES_TEMPLATE = """\
@@ -107,7 +108,7 @@ def main():
   }
   with action_helpers.atomic_output(options.output) as f:
     with zipfile.ZipFile(f.name, 'w') as srcjar_file:
-      build_utils.AddToZipHermetic(
+      zip_helpers.add_to_zip_hermetic(
           zip_file=srcjar_file,
           zip_path='org/chromium/build/NativeLibraries.java',
           data=_NATIVE_LIBRARIES_TEMPLATE.format(**format_dict))

@@ -6,7 +6,6 @@
 
 #import "base/notreached.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -17,6 +16,7 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/policy/user_policy_util.h"
+#import "ios/chrome/browser/ui/promos_manager/promos_manager_ui_handler.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -32,16 +32,11 @@
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
 
-  if (IsUserPolicyNotificationNeeded(authService, prefService) ||
-      ![self isPotentiallyIndicatedUser]) {
-    // Don't show the default browser promo when either (1) the user is going
-    // through the First Run screens, (2) the user MUST see the User Policy
-    // notification, OR (3) it was determined that the user isn't potentially
-    // interested in that promo.
-    //
+  if (IsUserPolicyNotificationNeeded(authService, prefService)) {
     // Showing the User Policy notification has priority over showing the
     // default browser promo. Both dialogs are competing for the same time slot
     // which is after the browser startup and the browser UI is initialized.
+    [self stop];
     return;
   }
 
@@ -49,6 +44,7 @@
   // blue dot experiment.
   // TODO(crbug.com/1410229) clean-up experiment code when fully launched.
   if (!AreDefaultBrowserPromosEnabled()) {
+    [self stop];
     return;
   }
 
@@ -80,7 +76,7 @@
       !HasUserInteractedWithTailoredFullscreenPromoBefore() &&
       (isMadeForIOSPromoEligible || isAllTabsPromoEligible ||
        isStaySafePromoEligible);
-  if (isTailoredPromoEligibleUser && !UserInPromoCooldown()) {
+  if (isTailoredPromoEligibleUser) {
     switch (MostRecentInterestDefaultPromoType(!isSignedIn)) {
       case DefaultPromoTypeGeneral:
         NOTREACHED();
@@ -101,12 +97,18 @@
   BOOL isGeneralPromoEligibleUser =
       !HasUserInteractedWithFullscreenPromoBefore() &&
       (IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeGeneral) ||
-       isSignedIn) &&
-      !UserInPromoCooldown();
+       isSignedIn);
   if (isGeneralPromoEligibleUser ||
       ShouldShowRemindMeLaterDefaultBrowserFullscreenPromo()) {
     [defaultPromoHandler showDefaultBrowserFullscreenPromo];
+    return;
   }
+  [self stop];
+}
+
+- (void)stop {
+  [self.promosUIHandler promoWasDismissed];
+  [super stop];
 }
 
 - (BOOL)isSignedIn {
@@ -116,14 +118,6 @@
   DCHECK(authService);
   DCHECK(authService->initialized());
   return authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
-}
-
-- (BOOL)isPotentiallyIndicatedUser {
-  // If skipping first run, not in Safe Mode, no post opening action and the
-  // launch is not after a crash, consider showing the default browser promo.
-  return GetApplicationContext()->WasLastShutdownClean() &&
-         !IsChromeLikelyDefaultBrowser() &&
-         !HasUserOpenedSettingsFromFirstRunPromo();
 }
 
 @end

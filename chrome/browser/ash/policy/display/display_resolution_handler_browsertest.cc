@@ -324,7 +324,8 @@ class DisplayResolutionBootTest
   DeviceDisplayCrosTestHelper helper_;
 };
 
-IN_PROC_BROWSER_TEST_P(DisplayResolutionBootTest, PRE_Reboot) {
+// b/276667320 Disable flaky test
+IN_PROC_BROWSER_TEST_P(DisplayResolutionBootTest, DISABLED_PRE_Reboot) {
   const PolicyValue policy_value = GetParam();
 
   // Set policy.
@@ -356,7 +357,8 @@ IN_PROC_BROWSER_TEST_P(DisplayResolutionBootTest, PRE_Reboot) {
       << "Initial primary display scale after policy set";
 }
 
-IN_PROC_BROWSER_TEST_P(DisplayResolutionBootTest, Reboot) {
+// b/276667320 Disable flaky test
+IN_PROC_BROWSER_TEST_P(DisplayResolutionBootTest, DISABLED_Reboot) {
   const PolicyValue policy_value = GetParam();
 
   AddExternalDisplay(display_helper()->GetDisplayManager());

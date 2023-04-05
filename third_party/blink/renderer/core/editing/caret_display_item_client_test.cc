@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/paint/paint_and_raster_invalidation_test.h"
@@ -639,12 +638,11 @@ TEST_P(CaretDisplayItemClientTest, FullDocumentPaintingWithCaret) {
   GetDocument().GetPage()->GetFocusController().SetFocused(true);
   auto& div = *To<Element>(GetDocument().body()->firstChild());
   auto& layout_text = *To<Text>(div.firstChild())->GetLayoutObject();
-  const DisplayItemClient* text_inline_box = layout_text.FirstTextBox();
-  if (layout_text.IsInLayoutNGInlineFormattingContext()) {
-    NGInlineCursor cursor;
-    cursor.MoveTo(layout_text);
-    text_inline_box = cursor.Current().GetDisplayItemClient();
-  }
+  DCHECK(layout_text.IsInLayoutNGInlineFormattingContext());
+  NGInlineCursor cursor;
+  cursor.MoveTo(layout_text);
+  const DisplayItemClient* text_inline_box =
+      cursor.Current().GetDisplayItemClient();
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
                           IsSameId(text_inline_box->Id(), kForegroundType)));

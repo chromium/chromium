@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert_ts.js';
+
 import {AmbientModeAlbum, AmbientProviderInterface, AnimationTheme, TemperatureUnit, TopicSource} from '../../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
 
 import {setAlbumSelectedAction, setAmbientModeEnabledAction, setAnimationThemeAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
+import {isValidTopicSourceAndTheme} from './utils.js';
 
 /**
  * @fileoverview contains all of the functions to interact with ambient mode
@@ -37,6 +40,10 @@ export function setAnimationTheme(
 export function setTopicSource(
     topicSource: TopicSource, provider: AmbientProviderInterface,
     store: PersonalizationStore): void {
+  assert(
+      isValidTopicSourceAndTheme(
+          topicSource, store.data.ambient.animationTheme),
+      'invalid topic source and animation theme combination');
   provider.setTopicSource(topicSource);
 
   // Dispatch action to select topic source.

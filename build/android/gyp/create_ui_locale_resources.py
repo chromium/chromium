@@ -28,6 +28,8 @@ sys.path.insert(
 from util import build_utils
 from util import resource_utils
 import action_helpers  # build_utils adds //build to sys.path.
+import zip_helpers
+
 
 # A small string template for the content of each strings.xml file.
 # NOTE: The name is chosen to avoid any conflicts with other string defined
@@ -53,8 +55,10 @@ def _AddLocaleResourceFileToZip(out_zip, android_locale, locale):
     zip_path = 'values-%s/strings.xml' % android_locale
   else:
     zip_path = 'values/strings.xml'
-  build_utils.AddToZipHermetic(
-      out_zip, zip_path, data=locale_data, compress=False)
+  zip_helpers.add_to_zip_hermetic(out_zip,
+                                  zip_path,
+                                  data=locale_data,
+                                  compress=False)
 
 
 def main():

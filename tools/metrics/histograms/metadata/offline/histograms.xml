@@ -497,30 +497,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OfflinePages.DownloadRequestTimeSinceDuplicateRequested"
-    units="seconds" expires_after="2021-11-07">
-  <owner>dewittj@chromium.org</owner>
-  <owner>fgorski@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    If at request time there is another request with the same URL, this tracks
-    this amount of time between creation of the most recent request and the
-    current request.
-  </summary>
-</histogram>
-
-<histogram name="OfflinePages.DownloadRequestTimeSinceDuplicateSaved"
-    units="seconds" expires_after="2021-06-25">
-  <owner>dewittj@chromium.org</owner>
-  <owner>fgorski@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    If at request time there is another downloaded page with the same URL, this
-    tracks this amount of time between creation of the most recent existing page
-    and the current request.
-  </summary>
-</histogram>
-
 <histogram name="OfflinePages.DownloadUI.PrefetchedItemHasThumbnail"
     enum="BooleanAvailable" expires_after="2021-06-25">
   <owner>harringtond@chromium.org</owner>
@@ -541,28 +517,6 @@ chromium-metrics-reviews@google.com.
     has been previously saved in the same session (no navigation happened). This
     metric will assist in determining if there is the need to better track
     actual content changes in pages saved more than once by last_n.
-  </summary>
-</histogram>
-
-<histogram base="true" name="OfflinePages.MhtmlLoadResult"
-    enum="MhtmlLoadResult" expires_after="2021-05-31">
-  <owner>sclittle@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Result of an attempt to load an MHTML archive to display a trusted offline
-    page, recorded per offline namespace by OfflinePageTabHelper after renderer
-    attempts to load the archive.
-  </summary>
-</histogram>
-
-<histogram name="OfflinePages.MhtmlLoadResultUntrusted" enum="MhtmlLoadResult"
-    expires_after="2021-05-31">
-  <owner>sclittle@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Result of an attempt to load an MHTML archive to display an untrusted
-    offline page, recorded by OfflinePageTabHelper after the renderer attempts
-    to load the archive.
   </summary>
 </histogram>
 

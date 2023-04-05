@@ -26,6 +26,9 @@
 // Display WhatsNew as a promo.
 - (void)showWhatsNewPromo;
 
+// Display default browser promo.
+- (void)maybeDisplayDefaultBrowserPromo;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_PROMOS_MANAGER_COMMANDS_H_

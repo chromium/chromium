@@ -56,6 +56,9 @@ class TestCompositorHostOzone::StubPlatformWindowDelegate
   }
   void OnActivationChanged(bool active) override {}
   void OnMouseEnter() override {}
+  int64_t OnStateUpdate(const State& old, const State& latest) override {
+    return -1;
+  }
 
  private:
   gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;

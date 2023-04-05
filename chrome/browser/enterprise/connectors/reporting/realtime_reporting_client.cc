@@ -103,8 +103,7 @@ std::string RealtimeReportingClient::GetBaseName(const std::string& filename) {
 // static
 bool RealtimeReportingClient::ShouldInitRealtimeReportingClient() {
   if (profiles::IsPublicSession() &&
-      !base::FeatureList::IsEnabled(
-          enterprise_connectors::kEnterpriseConnectorsEnabledOnMGS)) {
+      !base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabledOnMGS)) {
     DVLOG(2) << "Safe browsing real-time reporting is not enabled in Managed "
                 "Guest Sessions.";
     return false;
@@ -139,7 +138,7 @@ void RealtimeReportingClient::SetIdentityManagerForTesting(
 }
 
 void RealtimeReportingClient::InitRealtimeReportingClient(
-    const enterprise_connectors::ReportingSettings& settings) {
+    const ReportingSettings& settings) {
   // If the corresponding client is already initialized, do nothing.
   if ((settings.per_profile &&
        IsClientValid(settings.dm_token, profile_client_)) ||
@@ -222,7 +221,7 @@ RealtimeReportingClient::InitBrowserReportingClient(
     client_id = reporting::GetUserClientId(profile).value_or("");
   }
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  Profile* main_profile = enterprise_connectors::GetMainProfileLacros();
+  Profile* main_profile = GetMainProfileLacros();
   if (main_profile) {
     // Prefer the user client id if available.
     client_id = reporting::GetUserClientId(main_profile).value_or(client_id);
@@ -316,32 +315,33 @@ void RealtimeReportingClient::OnCloudPolicyClientAvailable(
   VLOG(1) << "Ready for safe browsing real-time event reporting.";
 }
 
-absl::optional<enterprise_connectors::ReportingSettings>
+absl::optional<ReportingSettings>
 RealtimeReportingClient::GetReportingSettings() {
-  return enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
-             context_)
-      ->GetReportingSettings(
-          enterprise_connectors::ReportingConnector::SECURITY_EVENT);
+  auto* service = ConnectorsServiceFactory::GetForBrowserContext(context_);
+  if (!service) {
+    return absl::nullopt;
+  }
+
+  return service->GetReportingSettings(ReportingConnector::SECURITY_EVENT);
 }
 
 void RealtimeReportingClient::ReportRealtimeEvent(
     const std::string& name,
-    const enterprise_connectors::ReportingSettings& settings,
+    const ReportingSettings& settings,
     base::Value::Dict event) {
   ReportEventWithTimestamp(name, settings, std::move(event), base::Time::Now());
 }
 
-void RealtimeReportingClient::ReportPastEvent(
-    const std::string& name,
-    const enterprise_connectors::ReportingSettings& settings,
-    base::Value::Dict event,
-    const base::Time& time) {
+void RealtimeReportingClient::ReportPastEvent(const std::string& name,
+                                              const ReportingSettings& settings,
+                                              base::Value::Dict event,
+                                              const base::Time& time) {
   ReportEventWithTimestamp(name, settings, std::move(event), time);
 }
 
 void RealtimeReportingClient::ReportEventWithTimestamp(
     const std::string& name,
-    const enterprise_connectors::ReportingSettings& settings,
+    const ReportingSettings& settings,
     base::Value::Dict event,
     const base::Time& time) {
   if (rejected_dm_token_timers_.contains(settings.dm_token)) {
@@ -351,8 +351,7 @@ void RealtimeReportingClient::ReportEventWithTimestamp(
 #ifndef NDEBUG
   // Make sure the event is included in the kAllReportingEvents array.
   bool found = false;
-  for (const char* event_name :
-       enterprise_connectors::ReportingServiceSettings::kAllReportingEvents) {
+  for (const char* event_name : ReportingServiceSettings::kAllReportingEvents) {
     if (event_name == name) {
       found = true;
       break;
@@ -405,8 +404,7 @@ void RealtimeReportingClient::ReportEventWithTimestamp(
   Profile* profile = Profile::FromBrowserContext(context_);
 
   client->UploadSecurityEventReport(
-      context_,
-      enterprise_connectors::IncludeDeviceInfo(profile, settings.per_profile),
+      context_, IncludeDeviceInfo(profile, settings.per_profile),
       policy::RealtimeReportingJobConfiguration::BuildReport(
           std::move(event_list),
           reporting::GetContext(Profile::FromBrowserContext(context_))),

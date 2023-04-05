@@ -37,25 +37,33 @@ const char kUnmaskCardRequestFormatWithOtp[] =
 constexpr size_t kDefaultOtpLength = 6U;
 constexpr size_t kDefaultCvcLength = 3U;
 
-// Parses the `defined_challenge_option` as an SMS OTP challenge option, and
-// sets the appropriate fields in `parsed_challenge_option`.
-void ParseAsSmsOtpChallengeOption(
+// Parses the `defined_challenge_option` as an  OTP challenge option, and sets
+// the appropriate fields in `parsed_challenge_option`.
+void ParseAsOtpChallengeOption(
     const base::Value::Dict* defined_challenge_option,
-    CardUnmaskChallengeOption* parsed_challenge_option) {
-  parsed_challenge_option->type = CardUnmaskChallengeOptionType::kSmsOtp;
+    CardUnmaskChallengeOption* parsed_challenge_option,
+    CardUnmaskChallengeOptionType otp_challenge_option_type) {
+  parsed_challenge_option->type = otp_challenge_option_type;
   const auto* challenge_id =
       defined_challenge_option->FindString("challenge_id");
   DCHECK(challenge_id);
   parsed_challenge_option->id =
       CardUnmaskChallengeOption::ChallengeOptionId(*challenge_id);
 
-  // For SMS OTP challenge, masked phone number is the challenge_info for
-  // display.
-  const auto* masked_phone_number =
-      defined_challenge_option->FindString("masked_phone_number");
-  DCHECK(masked_phone_number);
-  parsed_challenge_option->challenge_info =
-      base::UTF8ToUTF16(*masked_phone_number);
+  const std::string* challenge_info;
+  if (otp_challenge_option_type == CardUnmaskChallengeOptionType::kSmsOtp) {
+    // For SMS OTP challenge, masked phone number is the `challenge_info` for
+    // display.
+    challenge_info =
+        defined_challenge_option->FindString("masked_phone_number");
+  } else {
+    CHECK_EQ(otp_challenge_option_type,
+             CardUnmaskChallengeOptionType::kEmailOtp);
+    challenge_info =
+        defined_challenge_option->FindString("masked_email_address");
+  }
+  DCHECK(challenge_info);
+  parsed_challenge_option->challenge_info = base::UTF8ToUTF16(*challenge_info);
 
   // Get the OTP length for this challenge. This will be displayed to the user
   // in the OTP input dialog so that the user knows how many digits the OTP
@@ -136,8 +144,20 @@ CardUnmaskChallengeOption ParseCardUnmaskChallengeOption(
   // challenge option, and return it.
   if ((defined_challenge_option =
            challenge_option.FindDict("sms_otp_challenge_option"))) {
-    ParseAsSmsOtpChallengeOption(defined_challenge_option,
-                                 &parsed_challenge_option);
+    ParseAsOtpChallengeOption(defined_challenge_option,
+                              &parsed_challenge_option,
+                              CardUnmaskChallengeOptionType::kSmsOtp);
+  }
+  // Check if it's an email OTP challenge option, and if it is, set
+  // `defined_challenge_option` to the defined challenge option found, parse the
+  // challenge option, and return it.
+  else if (base::FeatureList::IsEnabled(
+               features::kAutofillEnableEmailOtpForVcnYellowPath) &&
+           (defined_challenge_option =
+                challenge_option.FindDict("email_otp_challenge_option"))) {
+    ParseAsOtpChallengeOption(defined_challenge_option,
+                              &parsed_challenge_option,
+                              CardUnmaskChallengeOptionType::kEmailOtp);
   }
   // Check if it's a CVC challenge option, and if it is, set
   // `defined_challenge_option` to the defined challenge option found, parse the

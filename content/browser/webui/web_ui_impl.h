@@ -22,15 +22,13 @@
 namespace content {
 class RenderFrameHost;
 class RenderFrameHostImpl;
-class WebContentsImpl;
 class WebUIMainFrameObserver;
 
 class CONTENT_EXPORT WebUIImpl : public WebUI,
                                  public mojom::WebUIHost,
                                  public base::SupportsWeakPtr<WebUIImpl> {
  public:
-  explicit WebUIImpl(WebContentsImpl* contents,
-                     RenderFrameHostImpl* frame_host);
+  explicit WebUIImpl(RenderFrameHostImpl* frame_host);
   ~WebUIImpl() override;
   WebUIImpl(const WebUIImpl&) = delete;
   WebUIImpl& operator=(const WebUIImpl&) = delete;

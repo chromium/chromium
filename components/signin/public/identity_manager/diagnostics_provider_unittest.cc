@@ -10,9 +10,11 @@
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/load_credentials_state.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-const char kAccountId[] = "user@gmail.com";
+constexpr char kAccountEmail[] = "user @gmail.com ";
+constexpr char kAccountGaiaId[] = "user_gaia_id";
 
 namespace {
 
@@ -60,7 +62,7 @@ TEST_F(DiagnosticsProviderTest, GetDelayBeforeMakingAccessTokenRequests) {
   EXPECT_EQ(diagnostics_provider()->GetDelayBeforeMakingAccessTokenRequests(),
             zero);
   CoreAccountId account_id =
-      identity_test_env()->MakeAccountAvailable(kAccountId).account_id;
+      identity_test_env()->MakeAccountAvailable(kAccountEmail).account_id;
   identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
       account_id, GoogleServiceAuthError(
                       GoogleServiceAuthError::State::SERVICE_UNAVAILABLE));
@@ -73,8 +75,8 @@ TEST_F(DiagnosticsProviderTest, GetDelayBeforeMakingCookieRequests) {
   identity_test_env()
       ->identity_manager()
       ->GetAccountsCookieMutator()
-      ->AddAccountToCookie(CoreAccountId(kAccountId), gaia::GaiaSource::kChrome,
-                           base::DoNothing());
+      ->AddAccountToCookie(CoreAccountId::FromGaiaId(kAccountGaiaId),
+                           gaia::GaiaSource::kChrome, base::DoNothing());
   EXPECT_EQ(diagnostics_provider()->GetDelayBeforeMakingCookieRequests(), zero);
 
   identity_test_env()->SimulateMergeSessionFailure(

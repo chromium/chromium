@@ -14,14 +14,13 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
+namespace ash {
 namespace {
 
 constexpr SkColor kDefaultPointColor = SkColorSetRGB(0x42, 0x85, 0xF4);
 constexpr int kDefaultOpacity = 0xCC;
 
 }  // namespace
-
-namespace fast_ink {
 
 const SkColor FastInkPoints::kDefaultColor =
     SkColorSetA(kDefaultPointColor, kDefaultOpacity);
@@ -241,4 +240,4 @@ void FastInkPoints::Predict(const FastInkPoints& real_points,
   }
 }
 
-}  // namespace fast_ink
+}  // namespace ash

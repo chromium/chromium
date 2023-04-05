@@ -159,3 +159,29 @@ var CrComponentsAppManagementUninstallButtonTest =
 TEST_F('CrComponentsAppManagementUninstallButtonTest', 'All', function() {
   mocha.run();
 });
+
+/**
+ * This is tested from chrome://settings/ so that the test has access to the
+ * chrome.settingsPrivate permission.
+ */
+var CrComponentsSettingsPrefsTest = class extends CrComponentsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=cr_components/settings_prefs_tests.js';  //  presubmit: ignore-long-line
+  }
+};
+
+TEST_F('CrComponentsSettingsPrefsTest', 'All', function() {
+  mocha.run();
+});
+
+var CrComponentsSettingsPrefUtilsTest = class extends CrComponentsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=cr_components/settings_pref_util_tests.js';  //  presubmit: ignore-long-line
+  }
+};
+
+TEST_F('CrComponentsSettingsPrefUtilsTest', 'All', function() {
+  mocha.run();
+});

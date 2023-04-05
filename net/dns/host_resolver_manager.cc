@@ -57,7 +57,6 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
-#include "base/trace_event/trace_event.h"
 #include "base/types/optional_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -74,6 +73,7 @@
 #include "net/base/prioritized_dispatcher.h"
 #include "net/base/request_priority.h"
 #include "net/base/trace_constants.h"
+#include "net/base/tracing.h"
 #include "net/base/url_util.h"
 #include "net/dns/address_sorter.h"
 #include "net/dns/dns_alias_utility.h"
@@ -1151,7 +1151,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     // object).
     transaction_info_it->transaction->Start(base::BindOnce(
         &DnsTask::OnDnsTransactionComplete, base::Unretained(this),
-        tick_clock_->NowTicks(), transaction_info_it, request_port));
+        transaction_info_it, request_port));
   }
 
   void OnTimeout() {
@@ -1192,7 +1192,6 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
   // of all work for the individual transaction in this task (see
   // `OnTransactionsFinished()`).
   void OnDnsTransactionComplete(
-      const base::TimeTicks& start_time,
       std::set<TransactionInfo>::iterator transaction_info_it,
       uint16_t request_port,
       int net_error,

@@ -318,6 +318,19 @@ class BookmarkButton : public BookmarkButtonBase {
       base::UmaHistogramEnumeration("Prerender.Experimental.BookmarkMetrics",
                                     PreloadBookmarkMetricsEvent::kMouseDown);
     }
+    // Record duration if the event happens before PressedCallback invocation.
+    if (!mouse_has_been_pressed_ && mouse_entered_time_.has_value()) {
+      mouse_has_been_pressed_ = true;
+      base::TimeDelta duration = base::TimeTicks::Now() - *mouse_entered_time_;
+      base::UmaHistogramTimes(
+          "Prerender.Experimental.BookmarkBar.EnterToPressDuration", duration);
+      if (event.IsOnlyLeftMouseButton()) {
+        base::UmaHistogramTimes(
+            "Prerender.Experimental.BookmarkBar.EnterToPressDuration."
+            "LeftButton",
+            duration);
+      }
+    }
     return result;
   }
 
@@ -328,7 +341,10 @@ class BookmarkButton : public BookmarkButtonBase {
   mutable std::u16string tooltip_text_;
   PressedCallback callback_;
   const raw_ref<const GURL> url_;
+
+  // Information for metrics.
   absl::optional<base::TimeTicks> mouse_entered_time_;
+  bool mouse_has_been_pressed_ = false;
 };
 
 BEGIN_METADATA(BookmarkButton, BookmarkButtonBase)
@@ -1514,9 +1530,16 @@ std::unique_ptr<MenuButton> BookmarkBarView::CreateOtherBookmarksButton() {
     // Title is set in Loaded.
     button = std::make_unique<BookmarkFolderButton>(base::BindRepeating(
         [](BookmarkBarView* bar, const ui::Event& event) {
-          bar->browser_view_->side_panel_coordinator()->Show(
-              SidePanelEntry::Id::kBookmarks,
-              SidePanelUtil::SidePanelOpenTrigger::kBookmarkBar);
+          SidePanelCoordinator* side_panel_coordinator =
+              bar->browser_view_->side_panel_coordinator();
+          if (side_panel_coordinator->GetCurrentEntryId() ==
+              SidePanelEntry::Id::kBookmarks) {
+            side_panel_coordinator->Close();
+          } else {
+            side_panel_coordinator->Show(
+                SidePanelEntry::Id::kBookmarks,
+                SidePanelUtil::SidePanelOpenTrigger::kBookmarkBar);
+          }
         },
         base::Unretained(this)));
   } else {

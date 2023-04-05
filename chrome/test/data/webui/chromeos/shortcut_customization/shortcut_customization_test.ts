@@ -20,13 +20,23 @@ import {setShortcutProviderForTesting, setUseFakeProviderForTesting} from 'chrom
 import {FakeShortcutSearchHandler} from 'chrome://shortcut-customization/js/search/fake_shortcut_search_handler.js';
 import {setShortcutSearchHandlerForTesting} from 'chrome://shortcut-customization/js/search/shortcut_search_handler.js';
 import {ShortcutCustomizationAppElement} from 'chrome://shortcut-customization/js/shortcut_customization_app.js';
-import {AcceleratorCategory, AcceleratorState, AcceleratorSubcategory, LayoutInfo, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
-import {getCategoryNameStringId, getSubcategoryNameStringId} from 'chrome://shortcut-customization/js/shortcut_utils.js';
+import {AcceleratorCategory, AcceleratorConfigResult, AcceleratorState, AcceleratorSubcategory, LayoutInfo, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {getSubcategoryNameStringId} from 'chrome://shortcut-customization/js/shortcut_utils.js';
+import {AcceleratorResultData} from 'chrome://shortcut-customization/mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {createUserAcceleratorInfo} from './shortcut_customization_test_util.js';
+
+// Converts a JS string to mojo_base::mojom::String16 object.
+function strToMojoString16(str: string): {data: number[]} {
+  const arr = [];
+  for (let i = 0; i < str.length; i++) {
+    arr[i] = str.charCodeAt(i);
+  }
+  return {data: arr};
+}
 
 function initShortcutCustomizationAppElement():
     ShortcutCustomizationAppElement {
@@ -99,8 +109,7 @@ suite('shortcutCustomizationAppTest', function() {
     const navPanel =
         getPage().shadowRoot!.querySelector('navigation-view-panel');
     const navBody = navPanel!!.shadowRoot!.querySelector('#navigationBody');
-    const categoryNameStringId = getCategoryNameStringId(category);
-    const subPageId = `${categoryNameStringId}-page-id`;
+    const subPageId = `category-${category}`;
     const subPage = navBody!.querySelector(`#${subPageId}`);
     assertTrue(!!subPage, `Expected subpage with id ${subPageId} to exist.`);
     return subPage!.shadowRoot!.querySelectorAll('accelerator-subsection');
@@ -244,7 +253,9 @@ suite('shortcutCustomizationAppTest', function() {
     assertFalse(dialog.open);
   });
 
-  test('ReplaceAccelerator', async () => {
+  // TODO(jimmyxgong): Re-enable this test when ReplaceAccelerator api is
+  // used.
+  test.skip('ReplaceAccelerator', async () => {
     page = initShortcutCustomizationAppElement();
     await flushTasks();
 
@@ -344,7 +355,7 @@ suite('shortcutCustomizationAppTest', function() {
     assertTrue(!!editDialog);
 
     // Grab the first accelerator from second subsection.
-    let dialogAccels =
+    const dialogAccels =
         editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
             'accelerator-edit-view');
     // Expect only 1 accelerator initially.
@@ -367,7 +378,14 @@ suite('shortcutCustomizationAppTest', function() {
     const viewElement =
         editElement!.shadowRoot!.querySelector('#acceleratorItem');
 
-    // Alt + ']' is a conflict, expect the error message to appear.
+    // Set the fake mojo return call.
+    const fakeResult: AcceleratorResultData = {
+      result: AcceleratorConfigResult.kConflictCanOverride,
+      shortcutName: strToMojoString16('TestConflictName'),
+    };
+    provider.setFakeAddAcceleratorResult(fakeResult);
+
+    // Dispatch an add event, this should fail as it has a failure state.
     viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
       key: ']',
       keyCode: 221,
@@ -381,9 +399,22 @@ suite('shortcutCustomizationAppTest', function() {
     await flushTasks();
 
     assertTrue(editElement.hasError);
+    const expected_error_message =
+        'Shortcut is used by TestConflictName. Press a new shortcut or press ' +
+        'the same one again to use it for this action instead.';
 
-    // Press the shortcut again, this time it will add and remove the preexsting
-    // accelerator.
+    assertEquals(
+        expected_error_message,
+        editElement!.shadowRoot!.querySelector('#acceleratorInfoText')!
+            .textContent!.trim());
+
+    // Press the shortcut again, this time with another error state.
+    const fakeResult2: AcceleratorResultData = {
+      result: AcceleratorConfigResult.kConflict,
+      shortcutName: strToMojoString16('TestConflictName'),
+    };
+    provider.setFakeAddAcceleratorResult(fakeResult2);
+
     viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
       key: ']',
       keyCode: 221,
@@ -396,23 +427,36 @@ suite('shortcutCustomizationAppTest', function() {
 
     await flushTasks();
 
-    // Requery all accelerators.
-    dialogAccels =
-        editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
-            'accelerator-edit-view');
-    // Expect 2 accelerators now.
-    assertEquals(2, dialogAccels!.length);
-    const newAccel = dialogAccels[1];
+    const expected_error_message2 =
+        'Shortcut is used by TestConflictName. Press a new shortcut to ' +
+        'replace.';
 
-    const acceleratorInfo = (newAccel!.shadowRoot!.querySelector(
-                                 '#acceleratorItem') as AcceleratorViewElement)
-                                .acceleratorInfo;
-    const actualAccelerator =
-        acceleratorInfo.layoutProperties.standardAccelerator.accelerator;
-    assertEquals(Modifier.ALT, actualAccelerator.modifiers);
-    assertEquals(221, actualAccelerator.keyCode);
     assertEquals(
-        ']', acceleratorInfo.layoutProperties.standardAccelerator.keyDisplay);
+        expected_error_message2,
+        editElement!.shadowRoot!.querySelector('#acceleratorInfoText')!
+            .textContent!.trim());
+    assertTrue(editElement.hasError);
+
+    // Press the shortcut again, this time with another success state.
+    const fakeResult3: AcceleratorResultData = {
+      result: AcceleratorConfigResult.kSuccess,
+      shortcutName: undefined,
+    };
+    provider.setFakeAddAcceleratorResult(fakeResult3);
+
+    viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
+      key: ']',
+      keyCode: 221,
+      code: 'Key]',
+      ctrlKey: false,
+      altKey: true,
+      shiftKey: false,
+      metaKey: false,
+    }));
+
+    await flushTasks();
+
+    assertFalse(editElement.hasError);
   });
 
   test('DisableDefaultAccelerator', async () => {
@@ -523,5 +567,52 @@ suite('shortcutCustomizationAppTest', function() {
                               '#restoreAllButton') as CrButtonElement;
     await flushTasks();
     assertFalse(isVisible(restoreButton));
+  });
+
+  test('CurrentPageChangesWhenURLIsUpdated', async () => {
+    loadTimeData.overrideValues({isCustomizationEnabled: false});
+    page = initShortcutCustomizationAppElement();
+    waitAfterNextRender(getPage());
+    await flushTasks();
+
+    // At first, the selected page should be the first page.
+    // For the fake data, Windows & Desks is the first page.
+    assertEquals(
+        `category-${AcceleratorCategory.kWindowsAndDesks}`,
+        page.$.navigationPanel.selectedItem.id);
+
+    // Notify the app that the route has changed, and the selected page should
+    // change too.
+    let url = new URL('chrome://shortcut-customization');
+    url.searchParams.append('action', '0');
+    url.searchParams.append(
+        'category', AcceleratorCategory.kBrowser.toString());
+    page.onRouteChanged(url);
+    await flushTasks();
+    assertEquals(
+        `category-${AcceleratorCategory.kBrowser}`,
+        page.$.navigationPanel.selectedItem.id);
+
+    // If we notify with a URL that doesn't contain the correct params, the
+    // selected page should not change.
+    url = new URL('chrome://shortcut-customization');
+    page.onRouteChanged(url);
+    await flushTasks();
+    assertEquals(
+        `category-${AcceleratorCategory.kBrowser}`,
+        page.$.navigationPanel.selectedItem.id);
+
+    // If we notify with a URL that contains extra params, the selected page
+    // should change.
+    url = new URL('chrome://shortcut-customization');
+    url.searchParams.append('action', '0');
+    url.searchParams.append(
+        'category', AcceleratorCategory.kWindowsAndDesks.toString());
+    url.searchParams.append('fake-param', 'fake-value');
+    page.onRouteChanged(url);
+    await flushTasks();
+    assertEquals(
+        `category-${AcceleratorCategory.kWindowsAndDesks}`,
+        page.$.navigationPanel.selectedItem.id);
   });
 });

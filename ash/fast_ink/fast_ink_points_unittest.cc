@@ -7,7 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/event_generator.h"
 
-namespace fast_ink {
+namespace ash {
 namespace {
 
 const int kTestPointsLifetimeSeconds = 5;
@@ -301,4 +301,4 @@ TEST_F(FastInkPointsTest, UndoLastStroke) {
   EXPECT_TRUE(points_.GetNewest().gap_after);
 }
 
-}  // namespace fast_ink
+}  // namespace ash

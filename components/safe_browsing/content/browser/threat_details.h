@@ -20,6 +20,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "components/safe_browsing/content/browser/web_contents_key.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
@@ -72,8 +73,7 @@ using FrameTreeIdToChildIdsMap =
 
 // Callback used to notify a caller that ThreatDetails has finished creating and
 // sending a report.
-using ThreatDetailsDoneCallback =
-    base::OnceCallback<void(content::WebContents*)>;
+using ThreatDetailsDoneCallback = base::OnceCallback<void(WebContentsKey)>;
 
 class ThreatDetails {
  public:

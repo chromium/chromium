@@ -22,6 +22,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAnonymousIframeOriginTrial);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAttributionReportingCrossAppWeb);
 BLINK_COMMON_EXPORT
 BASE_DECLARE_FEATURE(kAutofillDetectRemovedFormControls);
+BLINK_COMMON_EXPORT
+BASE_DECLARE_FEATURE(kAutofillSendUnidentifiedKeyAfterFill);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAutomaticLazyFrameLoadingToAds);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kTimeoutMillisForLazyAds;
@@ -75,6 +77,7 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFencedFrames);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFullUserAgent);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPath2DPaintCache);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrivacySandboxAdsAPIs);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDefaultViewportIsDeviceWidth);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrivateAggregationApi);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
@@ -167,17 +170,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 // enabled.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kSharedStorageSelectURLBitBudgetPerOriginPerPageLoad;
-
-// If enabled, limits the maximum bits of entropy per pageload that
-// `fence.reportEvent()` is allowed to leak when called with
-// `FencedFrame::ReportingDestination::kSharedStorageSelectUrl`.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedStorageReportEventLimit);
-// Maximum number of bits of entropy per pageload that are allowed to leak via
-// calls to `fence.reportEvent()` with
-// `FencedFrame::ReportingDestination::kSharedStorageSelectUrl`, if
-// `kSharedStorageReportEventLimit` is enabled.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kSharedStorageReportEventBitBudgetPerPageLoad;
 
 // Enables the multiple prerendering in a sequential way:
 // https://crbug.com/1355151
@@ -588,6 +580,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kReportFCPOnlyOnSuccessfulCommit);
 // If enabled, the `CropTarget.fromElement()` method will allow for the use
 // of additional element tag tyeps, instead of just <div> and <iframe>.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRegionCaptureExperimentalSubtypes);
+
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kRegisterJSSourceLocationBlockingBFCache);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebSQLAccess);
 

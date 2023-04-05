@@ -277,6 +277,7 @@ class ChromeUserManagerImpl
   base::CallbackListSubscription family_link_accounts_subscription_;
   base::CallbackListSubscription owner_subscription_;
 
+  base::CallbackListSubscription ephemeral_users_enabled_subscription_;
   base::CallbackListSubscription local_accounts_subscription_;
 
   std::unique_ptr<MultiProfileUserController> multi_profile_user_controller_;

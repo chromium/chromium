@@ -6,6 +6,9 @@
 # For the schema of this file, see Metadata message:
 #   https://source.chromium.org/chromium/infra/infra/+/main:go/src/infra/tools/dirmd/proto/dir_metadata.proto
 
-monorail {
-  component: "Platform>NaCl"
+buganizer_public {
+  component_id: 1258585  # ChromeOS Public Tracker > Enterprise & Edu > NaCl
+}
+buganizer {
+  component_id: 1258533
 }

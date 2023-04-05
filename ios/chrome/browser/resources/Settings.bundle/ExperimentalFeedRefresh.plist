@@ -135,6 +135,26 @@
 			<string>NumberPad</string>
 		</dict>
 		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Use Foreground bool overrides</string>
+			<key>Key</key>
+			<string>FeedOverrideForegroundDefaultsEnabled</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Enable use interactivity invalidation</string>
+			<key>Key</key>
+			<string>FeedUseInteractivityInvalidationForForegroundRefreshesEnabled</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
 			<key>Title</key>
 			<string>Background Refresh</string>
 			<key>Type</key>

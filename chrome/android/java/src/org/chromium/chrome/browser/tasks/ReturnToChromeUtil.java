@@ -41,7 +41,10 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.segmentation_platform.SegmentationPlatformServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.ActiveTabState;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
@@ -51,6 +54,7 @@ import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.segmentation_platform.SegmentSelectionResult;
 import org.chromium.components.segmentation_platform.SegmentationPlatformService;
@@ -441,6 +445,12 @@ public final class ReturnToChromeUtil {
         // If Start surface isn't enabled, return false.
         if (!ReturnToChromeUtil.isStartSurfaceEnabled(context)) return false;
 
+        return shouldShowHomeSurfaceAtStartupImpl(
+                false /* isTablet */, intent, tabModelSelector, inactivityTracker);
+    }
+
+    private static boolean shouldShowHomeSurfaceAtStartupImpl(boolean isTablet, Intent intent,
+            TabModelSelector tabModelSelector, ChromeInactivityTracker inactivityTracker) {
         // All of the following checks are based on Start surface is enabled.
         // If there's no tab existing, handle the initial tab creation.
         // Note: if user has a customized homepage, we don't show Start even there isn't any tab.
@@ -464,14 +474,22 @@ public final class ReturnToChromeUtil {
         // Checks whether to show the Start surface due to feature flag TAB_SWITCHER_ON_RETURN_MS.
         long lastVisibleTimeMs = inactivityTracker.getLastVisibleTimeMs();
         long lastBackgroundTimeMs = inactivityTracker.getLastBackgroundedTimeMs();
-        boolean tabSwitcherOnReturn = IntentUtils.isMainIntentFromLauncher(intent)
+        return IntentUtils.isMainIntentFromLauncher(intent)
                 && ReturnToChromeUtil.shouldShowTabSwitcher(
                         Math.max(lastBackgroundTimeMs, lastVisibleTimeMs));
+    }
 
-        // If the overview page won't be shown on startup, stops here.
-        if (!tabSwitcherOnReturn) return false;
+    /**
+     * Returns whether should show a NTP as the home surface at startup. This feature is only
+     * enabled on Tablet.
+     */
+    public static boolean shouldShowNtpAsHomeSurfaceAtStartup(boolean isTablet, Intent intent,
+            TabModelSelector tabModelSelector, ChromeInactivityTracker inactivityTracker) {
+        // If "Start surface on tablet" isn't enabled, return false.
+        if (!StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(isTablet)) return false;
 
-        return true;
+        return shouldShowHomeSurfaceAtStartupImpl(
+                true /* isTablet */, intent, tabModelSelector, inactivityTracker);
     }
 
     /**
@@ -483,6 +501,39 @@ public final class ReturnToChromeUtil {
         final @TabLaunchType int type = currentTab.getLaunchType();
         return type == TabLaunchType.FROM_START_SURFACE
                 || StartSurfaceUserData.isOpenedFromStart(currentTab);
+    }
+
+    /**
+     * Creates a new Tab.
+     * @param tabCreator The {@link TabCreator} object.
+     */
+    public static Tab createNewTab(TabCreator tabCreator) {
+        // Creates a new Tab if doesn't find an existing to reuse.
+        return tabCreator.createNewTab(
+                new LoadUrlParams(UrlConstants.NTP_URL), TabLaunchType.FROM_STARTUP, null);
+    }
+
+    /**
+     * Shows a NTP on warm startup on tablets if return time arrives. Only create a new NTP if there
+     * isn't any existing NTP to reuse.
+     * @param isIncognito Whether the incognito mode is selected.
+     * @param shouldShowNtpHomeSurfaceOnStartup Whether to show a NTP as home surface on startup.
+     * @param currentTabModel The object of the current {@link  TabModel}.
+     * @param tabCreator The {@link TabCreator} object.
+     */
+    public static void setInitialOverviewStateOnResumeOnTablet(boolean isIncognito,
+            boolean shouldShowNtpHomeSurfaceOnStartup, TabModel currentTabModel,
+            TabCreator tabCreator) {
+        if (isIncognito || !shouldShowNtpHomeSurfaceOnStartup) {
+            return;
+        }
+
+        int indexOfFirstNtp = TabModelUtils.getTabIndexByUrl(currentTabModel, UrlConstants.NTP_URL);
+        if (indexOfFirstNtp != TabModel.INVALID_TAB_INDEX) {
+            TabModelUtils.setIndex(currentTabModel, indexOfFirstNtp, false);
+        } else {
+            createNewTab(tabCreator);
+        }
     }
 
     /*

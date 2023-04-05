@@ -11,5 +11,5 @@ import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
  * signed assertion from an authenticator.
  */
 public interface GetAssertionResponseCallback {
-    public void onSignResponse(Integer status, GetAssertionAuthenticatorResponse response);
+    public void onSignResponse(int status, GetAssertionAuthenticatorResponse response);
 }

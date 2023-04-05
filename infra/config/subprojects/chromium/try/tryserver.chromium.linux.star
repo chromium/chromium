@@ -237,8 +237,6 @@ try_.orchestrator_builder(
     coverage_test_types = ["unit", "overall"],
     experiments = {
         "chromium_rts.inverted_rts": 100,
-        # go/nplus1shardsproposal
-        "chromium.add_one_test_shard": 5,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -592,6 +590,19 @@ try_.builder(
     builderless = True,
     cores = 32,
     # This builder produces the clang binaries used on all builders. Since it
+    # uses the system's sysroot when compiling, the builder needs to run on the
+    # OS version that's the oldest used on any bot.
+    os = os.LINUX_BIONIC,
+    execution_timeout = 5 * time.hour,
+    notifies = ["chrome-rust-toolchain"],
+)
+
+try_.builder(
+    name = "linux_upload_rust",
+    executable = "recipe:chromium_upload_rust",
+    builderless = True,
+    cores = 32,
+    # This builder produces the rustc binaries used on all builders. Since it
     # uses the system's sysroot when compiling, the builder needs to run on the
     # OS version that's the oldest used on any bot.
     os = os.LINUX_BIONIC,

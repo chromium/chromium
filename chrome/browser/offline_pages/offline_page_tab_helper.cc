@@ -51,16 +51,6 @@ bool SchemeIsForUntrustedOfflinePages(const GURL& url) {
 #endif
   return url.SchemeIsFile();
 }
-
-void ReportMhtmlLoadResult(const std::string& name_space,
-                           MHTMLLoadResult load_result) {
-  if (name_space.empty())
-    return;
-
-  base::UmaHistogramEnumeration(model_utils::AddHistogramSuffix(
-                                    name_space, "OfflinePages.MhtmlLoadResult"),
-                                load_result);
-}
 }  // namespace
 
 OfflinePageTabHelper::LoadedOfflinePageInfo::LoadedOfflinePageInfo()
@@ -150,17 +140,10 @@ void OfflinePageTabHelper::NotifyMhtmlPageLoadAttempted(
         provisional_offline_info_.offline_page &&
         !provisional_offline_info_.offline_page->client_id.name_space.empty());
 
-    ReportMhtmlLoadResult(
-        provisional_offline_info_.offline_page->client_id.name_space,
-        load_result);
-
     // If we're here, we have valid offline info, so since the page is trusted,
     // we should not use the renderer's information.
     return;
   }
-
-  UMA_HISTOGRAM_ENUMERATION("OfflinePages.MhtmlLoadResultUntrusted",
-                            load_result);
 
   // Sanity checking the input URL.
   if (!main_frame_url.is_valid() || !main_frame_url.SchemeIsHTTPOrHTTPS())

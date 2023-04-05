@@ -320,20 +320,10 @@ Polymer({
           requestPendingProfilesResponse);
     }
     this.pendingProfiles_ = await getPendingESimProfiles(euicc);
-    switch (this.pendingProfiles_.length) {
-      case 0:
-        this.state_ = ESimUiState.ACTIVATION_CODE_ENTRY;
-        break;
-      case 1:
-        this.selectedProfile_ = this.pendingProfiles_[0];
-        // Assume installing the profile doesn't require a confirmation
-        // code, send an empty string.
-        this.selectedProfile_.installProfile('').then(
-            this.handleProfileInstallResponse_.bind(this));
-        break;
-      default:
-        this.state_ = ESimUiState.PROFILE_SELECTION;
-        break;
+    if (this.pendingProfiles_.length === 0) {
+      this.state_ = ESimUiState.ACTIVATION_CODE_ENTRY;
+    } else {
+      this.state_ = ESimUiState.PROFILE_SELECTION;
     }
   },
 
@@ -417,7 +407,7 @@ Polymer({
       enableForwardBtn, cancelButtonStateIfEnabled, isInstalling) {
     this.forwardButtonLabel = this.i18n('next');
     let backBtnState = ButtonState.HIDDEN;
-    if (this.pendingProfiles_.length > 1) {
+    if (this.pendingProfiles_.length > 0) {
       backBtnState = isInstalling ? ButtonState.DISABLED : ButtonState.ENABLED;
     }
     return {
@@ -437,14 +427,8 @@ Polymer({
   generateButtonStateForConfirmationPage_(
       enableForwardBtn, cancelButtonStateIfEnabled, isInstalling) {
     this.forwardButtonLabel = this.i18n('confirm');
-    let backBtnState = ButtonState.ENABLED;
-    if (this.pendingProfiles_.length === 1) {
-      backBtnState = ButtonState.HIDDEN;
-    } else if (isInstalling) {
-      backBtnState = ButtonState.DISABLED;
-    }
     return {
-      backward: backBtnState,
+      backward: isInstalling ? ButtonState.DISABLED : ButtonState.ENABLED,
       cancel: cancelButtonStateIfEnabled,
       forward: enableForwardBtn ? ButtonState.ENABLED : ButtonState.DISABLED,
     };
@@ -633,7 +617,7 @@ Polymer({
   navigateBackward() {
     if ((this.state_ === ESimUiState.ACTIVATION_CODE_ENTRY ||
          this.state_ === ESimUiState.ACTIVATION_CODE_ENTRY_READY) &&
-        this.pendingProfiles_.length > 1) {
+        this.pendingProfiles_.length > 0) {
       this.state_ = ESimUiState.PROFILE_SELECTION;
       return;
     }
@@ -643,7 +627,7 @@ Polymer({
       if (this.activationCode_) {
         this.state_ = ESimUiState.ACTIVATION_CODE_ENTRY_READY;
         return;
-      } else if (this.pendingProfiles_.length > 1) {
+      } else if (this.pendingProfiles_.length > 0) {
         this.state_ = ESimUiState.PROFILE_SELECTION;
         return;
       }

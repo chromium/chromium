@@ -253,7 +253,7 @@ void ExpectPickerWelcomeScreenTypeAndProceed(
 void CompleteLacrosFirstRun(
     LoginUIService::SyncConfirmationUIClosedResult result) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  Profile* profile = profiles::testing::CreateProfileSync(
+  Profile& profile = profiles::testing::CreateProfileSync(
       profile_manager, profile_manager->GetPrimaryUserProfilePath());
 
   WaitForPickerWidgetCreated();
@@ -276,7 +276,7 @@ void CompleteLacrosFirstRun(
     // open.
     ProfilePicker::Hide();
   } else {
-    LoginUIServiceFactory::GetForProfile(profile)->SyncConfirmationUIClosed(
+    LoginUIServiceFactory::GetForProfile(&profile)->SyncConfirmationUIClosed(
         result);
   }
 }

@@ -47,6 +47,9 @@
                   [[item.metadata.summarySublabel]]
                 </span>
               </span>
+              <iron-icon icon="cr20:cloud-off"
+                  hidden$="[[isInAccountOrSyncable_(item, accountInfo_)]]">
+              </iron-icon>
             </div>
             <cr-icon-button class="icon-more-vert address-menu"
                 on-click="onAddressMenuTap_"

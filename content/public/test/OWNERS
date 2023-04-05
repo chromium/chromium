@@ -37,3 +37,6 @@ per-file *file_system*=file://content/browser/file_system_access/OWNERS
 # For security presubmit checks, though test mojom really don't need review.
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
+
+## For fenced frames changes.
+per-file fenced_frame*=file://third_party/blink/renderer/core/html/fenced_frame/OWNERS

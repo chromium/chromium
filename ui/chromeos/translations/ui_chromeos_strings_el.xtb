@@ -161,6 +161,7 @@
 <translation id="2304820083631266885">Πλανήτης</translation>
 <translation id="2305020378527873881">Το στοιχείο <ph name="VOLUME_NAME" /> καταργήθηκε.</translation>
 <translation id="2307462900900812319">Διαμόρφωση δικτύου</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Δεν είναι δυνατός ο εντοπισμός μιας επέκτασης με το αναγνωριστικό <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Επικοινωνήστε με τον διαχειριστή σας.}other{Δεν είναι δυνατός ο εντοπισμός των επεκτάσεων με τα αναγνωριστικά <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Επικοινωνήστε με τον διαχειριστή σας.}}</translation>
 <translation id="2325650632570794183">Αυτός ο τύπος αρχείου δεν υποστηρίζεται. Επισκεφτείτε το Chrome Web Store για να εντοπίσετε μια εφαρμογή που να μπορεί να ανοίξει αυτόν τον τύπο αρχείου.</translation>
 <translation id="2326539130272988168">Βουλγαρικά</translation>
 <translation id="2337715497728194187">Κοινοποίηση στο Bruschetta</translation>
@@ -279,6 +280,7 @@
 <translation id="3290356915286466215">Μη ασφαλές</translation>
 <translation id="3291218047831493686">Συνδεθείτε σε αυτό το δίκτυο για να αλλάξετε τη ρύθμιση κλειδώματος SIM</translation>
 <translation id="3293023191599135697">Δεν υποστηρίζονται δίκτυα WEP</translation>
+<translation id="3295006446256079333">Αυτός ο τόμος</translation>
 <translation id="3295357220137379386">Η συσκευή εργάζεται</translation>
 <translation id="3296763833017966289">Γεωργιανά
 </translation>

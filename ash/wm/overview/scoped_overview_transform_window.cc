@@ -59,6 +59,10 @@ bool immediate_close_for_tests = false;
 // Delay closing window to allow it to shrink and fade out.
 constexpr int kCloseWindowDelayInMilliseconds = 150;
 
+// The maximum difference of the side length between backdrop view and
+// transformed window in order to apply the corner radius on the window.
+constexpr int kLengthDiffToApplyCornerRadiusOnWindow = 12;
+
 // Layer animation observer that is attached to a clip animation. Removes the
 // clip and then self destructs after the animation is finished.
 class RemoveClipObserver : public ui::ImplicitAnimationObserver,
@@ -564,13 +568,18 @@ void ScopedOverviewTransformWindow::UpdateRoundedCorners(bool show) {
     return;
   }
 
-  gfx::RoundedCornersF radii;
-  // Corner radius is applied to the preview view only if the
-  // `backdrop_view_` is not visible.
+  gfx::RoundedCornersF radii(0);
+  // Corner radius is applied to the preview view if the
+  // `backdrop_view_` is not visible or if `backdrop_view_` is visible but
+  // couldn't cover the window with applied corner radius.
   auto* backdrop_view = overview_item_->overview_item_view()->backdrop_view();
-  if (backdrop_view && backdrop_view->GetVisible()) {
-    radii = gfx::RoundedCornersF();
-  } else {
+  const bool is_backdrop_view_visible =
+      backdrop_view && backdrop_view->GetVisible();
+  if (!is_backdrop_view_visible ||
+      (backdrop_view->height() - GetTransformedBounds().height() <
+           kLengthDiffToApplyCornerRadiusOnWindow &&
+       backdrop_view->width() - GetTransformedBounds().width() <
+           kLengthDiffToApplyCornerRadiusOnWindow)) {
     radii = gfx::RoundedCornersF(0, 0, kOverviewItemCornerRadius / scale,
                                  kOverviewItemCornerRadius / scale);
   }

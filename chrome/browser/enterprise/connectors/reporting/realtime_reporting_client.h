@@ -81,8 +81,7 @@ class RealtimeReportingClient : public KeyedService,
   // Obtain settings to apply to a reporting event from ConnectorsService.
   // absl::nullopt represents that reporting should not be done.
   // Declared virtual for tests.
-  absl::optional<
-      enterprise_connectors::ReportingSettings> virtual GetReportingSettings();
+  absl::optional<ReportingSettings> virtual GetReportingSettings();
 
   // Returns the Gaia email address of the account signed in to the profile or
   // an empty string if the profile is not signed in (declared virtual for
@@ -91,33 +90,29 @@ class RealtimeReportingClient : public KeyedService,
 
   // Report safe browsing event through real-time reporting channel, if enabled.
   // Declared as virtual for tests.
-  virtual void ReportRealtimeEvent(
-      const std::string&,
-      const enterprise_connectors::ReportingSettings& settings,
-      base::Value::Dict event);
+  virtual void ReportRealtimeEvent(const std::string&,
+                                   const ReportingSettings& settings,
+                                   base::Value::Dict event);
 
   // Report safe browsing events that have occurred in the past but has not yet
   // been reported. This is currently used for browser crash events, which are
   // polled at a fixed time interval. Declared as virtual for tests.
-  virtual void ReportPastEvent(
-      const std::string&,
-      const enterprise_connectors::ReportingSettings& settings,
-      base::Value::Dict event,
-      const base::Time& time);
+  virtual void ReportPastEvent(const std::string&,
+                               const ReportingSettings& settings,
+                               base::Value::Dict event,
+                               const base::Time& time);
 
  private:
   // Initialize a real-time report client if needed.  This client is used only
   // if real-time reporting is enabled, the machine is properly reigistered
   // with CBCM and the appropriate policies are enabled.
-  void InitRealtimeReportingClient(
-      const enterprise_connectors::ReportingSettings& settings);
+  void InitRealtimeReportingClient(const ReportingSettings& settings);
 
   // Helper function that uploads security events, parametrized with the time.
-  void ReportEventWithTimestamp(
-      const std::string& name,
-      const enterprise_connectors::ReportingSettings& settings,
-      base::Value::Dict event,
-      const base::Time& time);
+  void ReportEventWithTimestamp(const std::string& name,
+                                const ReportingSettings& settings,
+                                base::Value::Dict event,
+                                const base::Time& time);
 
   // Returns the profile identifier which is the path to the current profile on
   // managed browsers or the globally unique profile identifier otherwise.

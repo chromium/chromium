@@ -24,6 +24,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -227,8 +228,10 @@ auto HasPrimaryKeyAndEquals(PasswordForm expected_form) {
 }  // namespace
 
 // Serialization routines for vectors implemented in login_database.cc.
-base::Pickle SerializeValueElementPairs(const ValueElementVector& vec);
-ValueElementVector DeserializeValueElementPairs(const base::Pickle& pickle);
+base::Pickle SerializeAlternativeElementVector(
+    const AlternativeElementVector& vector);
+AlternativeElementVector DeserializeAlternativeElementVector(
+    const base::Pickle& pickle);
 base::Pickle SerializeGaiaIdHashVector(const std::vector<GaiaIdHash>& hashes);
 std::vector<GaiaIdHash> DeserializeGaiaIdHashVector(const base::Pickle& p);
 
@@ -1077,19 +1080,38 @@ TEST_F(LoginDatabaseTest, BlocklistedLogins) {
 
 TEST_F(LoginDatabaseTest, VectorSerialization) {
   // Empty vector.
-  ValueElementVector vec;
-  base::Pickle temp = SerializeValueElementPairs(vec);
-  ValueElementVector output = DeserializeValueElementPairs(temp);
+  AlternativeElementVector vec;
+  base::Pickle temp = SerializeAlternativeElementVector(vec);
+  AlternativeElementVector output = DeserializeAlternativeElementVector(temp);
   EXPECT_THAT(output, Eq(vec));
 
   // Normal data.
-  vec.push_back({u"first", u"id1"});
-  vec.push_back({u"second", u"id2"});
-  vec.push_back({u"third", u"id3"});
+  vec.emplace_back(AlternativeElement::Value(u"first"),
+                   autofill::FieldRendererId(1),
+                   AlternativeElement::Name(u"id1"));
+  vec.emplace_back(AlternativeElement::Value(u"second"),
+                   autofill::FieldRendererId(2),
+                   AlternativeElement::Name(u"id2"));
+  vec.emplace_back(AlternativeElement::Value(u"third"),
+                   autofill::FieldRendererId(3),
+                   AlternativeElement::Name(u"id3"));
 
-  temp = SerializeValueElementPairs(vec);
-  output = DeserializeValueElementPairs(temp);
-  EXPECT_THAT(output, Eq(vec));
+  // Field renderer id is a transient field for login database and we
+  // expect it will be erased during serialisation+deserialisation process.
+  AlternativeElementVector expected;
+  expected.emplace_back(AlternativeElement::Value(u"first"),
+                        autofill::FieldRendererId(),
+                        AlternativeElement::Name(u"id1"));
+  expected.emplace_back(AlternativeElement::Value(u"second"),
+                        autofill::FieldRendererId(),
+                        AlternativeElement::Name(u"id2"));
+  expected.emplace_back(AlternativeElement::Value(u"third"),
+                        autofill::FieldRendererId(),
+                        AlternativeElement::Name(u"id3"));
+
+  temp = SerializeAlternativeElementVector(vec);
+  output = DeserializeAlternativeElementVector(temp);
+  EXPECT_THAT(output, Eq(expected));
 }
 
 TEST_F(LoginDatabaseTest, GaiaIdHashVectorSerialization) {
@@ -1359,8 +1381,10 @@ TEST_F(LoginDatabaseTest, UpdateLogin) {
 
   form.action = GURL("http://accounts.google.com/login");
   form.password_value = u"my_new_password";
-  form.all_possible_usernames.push_back(
-      ValueElementPair(u"my_new_username", u"new_username_id"));
+  form.all_possible_usernames.emplace_back(
+      AlternativeElement::Value(u"my_new_username"),
+      autofill::FieldRendererId(),
+      AlternativeElement::Name(u"new_username_id"));
   form.times_used_in_html_form = 20;
   form.submit_element = u"submit_element";
   form.date_created = base::Time::Now() - base::Days(3);
@@ -1402,8 +1426,10 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithoutPassword) {
   EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
 
   form.action = GURL("http://accounts.google.com/login");
-  form.all_possible_usernames.push_back(
-      ValueElementPair(u"my_new_username", u"new_username_id"));
+  form.all_possible_usernames.emplace_back(
+      AlternativeElement::Value(u"my_new_username"),
+      autofill::FieldRendererId(),
+      AlternativeElement::Name(u"new_username_id"));
   form.times_used_in_html_form = 20;
   form.submit_element = u"submit_element";
   form.date_created = base::Time::Now() - base::Days(3);

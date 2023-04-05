@@ -25,6 +25,7 @@
 #include "components/query_parser/query_parser.h"
 #include "components/query_parser/snippet.h"
 #include "components/sessions/core/session_id.h"
+#include "components/sync_device_info/device_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -456,6 +457,17 @@ struct TopSitesDelta {
 // Map from origins to a count of matching URLs and the last visited time to any
 // URL under that origin.
 typedef std::map<GURL, std::pair<int, base::Time>> OriginCountAndLastVisitMap;
+
+// Segments -------------------------------------------------------------------
+
+// Contains device information (i.e. OS Type, Form Factor) for all syncing
+// devices (including the local device). Devices are identified by their
+// Originator Cache GUID. Has the following shape:
+//
+// originator_cache_guid : { OsType, FormFactor }
+using SyncDeviceInfoMap = std::map<
+    std::string,
+    std::pair<syncer::DeviceInfo::OsType, syncer::DeviceInfo::FormFactor>>;
 
 // Statistics -----------------------------------------------------------------
 

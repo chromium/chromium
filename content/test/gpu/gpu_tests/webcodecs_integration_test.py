@@ -149,14 +149,17 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                    }])
 
     for codec in video_codecs:
-      for layers in [2, 3]:
-        args = (codec, layers)
-        yield ('WebCodecs_SVC_%s_layers_%d' % args, 'svc.html', [{
-            'codec':
-            codec,
-            'layers':
-            layers
-        }])
+      for acc in accelerations:
+        for layers in [2, 3]:
+          args = (codec, acc, layers)
+          yield ('WebCodecs_SVC_%s_%s_layers_%d' % args, 'svc.html', [{
+              'codec':
+              codec,
+              'acceleration':
+              acc,
+              'layers':
+              layers
+          }])
 
     for codec in video_codecs:
       for acc in accelerations:

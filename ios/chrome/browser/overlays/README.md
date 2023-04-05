@@ -15,7 +15,7 @@ requested UI.
 ##### OverlayResponse
 
 OverlayResponses are provided to each OverlayRequest to describe the user's
-interaction with the overlay UI.  Clients should create OverlayResponses with 
+interaction with the overlay UI.  Clients should create OverlayResponses with
 OverlayUserData subclasses with the overlay UI user interaction information
 necessary to execute the callback for that overlay.
 
@@ -109,12 +109,12 @@ An OverlayRequest for the alert can be created using:
 A callback can be added to the request to use the response info:
 
     OverlayCompletionCallback callback =
-        base::BindOnce(base::RetainBlock(^(OverlayResponse* response) {
+        base::BindOnce(^(OverlayResponse* response) {
       if (!response)
         return;
       AlertInfo* info = response->GetInfo<AlertInfo>();
       /* Handle button tap at info->tapped_button_index() */
-    }));
+    });
     request->GetCallbackManager()->AddCompletionCallback(std::move(callback));
 
 Clients can then supply this request to the OverlayRequestQueue corresponding
@@ -203,5 +203,3 @@ response.
     }
 
     @end
-
-

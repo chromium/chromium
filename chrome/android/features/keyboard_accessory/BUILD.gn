@@ -30,9 +30,11 @@ generate_jni("jni_headers") {
 
 android_library("unit_device_javatests") {
   testonly = true
+  resources_package = "org.chromium.chrome.browser.keyboard_accessory"
 
   sources = [ "javatests/src/org/chromium/chrome/browser/keyboard_accessory/tab_layout_component/KeyboardAccessoryTabLayoutViewTest.java" ]
   deps = [
+    ":test_resources",
     "internal:internal_java",
     "public:public_java",
     "//base:base_java",

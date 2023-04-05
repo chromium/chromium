@@ -102,6 +102,8 @@ suite('SidePanelPowerBookmarksListTest', () => {
     loadTimeData.overrideValues({
       sortOrder: SortOrder.kNewest,
       viewType: ViewType.kCompact,
+      emptyTitle: 'empty title base',
+      emptyTitleSearch: 'empty title search',
     });
 
     powerBookmarksList = document.createElement('power-bookmarks-list');
@@ -320,5 +322,23 @@ suite('SidePanelPowerBookmarksListTest', () => {
             'cr-url-list-item');
     assertTrue(!!otherBookmarksUrlListItemElement);
     assertNotEquals(0, otherBookmarksUrlListItemElement.imageUrls.length);
+  });
+
+  test('ShowsCorrectEmptyState', () => {
+    const emptyStateElement =
+        powerBookmarksList.shadowRoot!.querySelector('sp-empty-state');
+    assertTrue(!!emptyStateElement);
+
+    assertEquals(
+        loadTimeData.getString('emptyTitle'), emptyStateElement.heading);
+
+    const searchField =
+        powerBookmarksList.shadowRoot!.querySelector('cr-toolbar-search-field');
+    assertTrue(!!searchField);
+    searchField.$.searchInput.value = 'abcdef';
+    searchField.onSearchTermSearch();
+    flush();
+    assertEquals(
+        loadTimeData.getString('emptyTitleSearch'), emptyStateElement.heading);
   });
 });

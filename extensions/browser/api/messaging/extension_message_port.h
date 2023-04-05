@@ -92,8 +92,8 @@ class ExtensionMessagePort : public MessagePort {
                          absl::optional<url::Origin> source_origin) override;
   void DispatchOnDisconnect(const std::string& error_message) override;
   void DispatchOnMessage(const Message& message) override;
-  void IncrementLazyKeepaliveCount() override;
-  void DecrementLazyKeepaliveCount() override;
+  void IncrementLazyKeepaliveCount(Activity::Type activity_type) override;
+  void DecrementLazyKeepaliveCount(Activity::Type activity_type) override;
   void OpenPort(int process_id, const PortContext& port_context) override;
   void ClosePort(int process_id, int routing_id, int worker_thread_id) override;
   void NotifyResponsePending() override;
@@ -147,6 +147,10 @@ class ExtensionMessagePort : public MessagePort {
       const IPCTarget& target);
   std::unique_ptr<IPC::Message> BuildDeliverMessageIPC(const Message& message,
                                                        const IPCTarget& target);
+
+  // Check if this activity of this type on this port would keep servicer worker
+  // alive.
+  bool IsServiceWorkerActivity(Activity::Type activity_type);
 
   base::WeakPtr<ChannelDelegate> weak_channel_delegate_;
 

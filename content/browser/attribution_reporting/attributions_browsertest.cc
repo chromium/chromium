@@ -1681,7 +1681,8 @@ class AttributionsFencedFrameBrowserTest : public AttributionsBrowserTest {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/{{blink::features::kFencedFrames, {}},
                               {features::kPrivacySandboxAdsAPIsOverride, {}},
-                              {kAttributionFencedFrameReportingBeacon, {}}},
+                              {kAttributionFencedFrameReportingBeacon, {}},
+                              {blink::features::kFencedFramesAPIChanges, {}}},
         /*disabled_features=*/{});
   }
 
@@ -1713,7 +1714,8 @@ class AttributionsFencedFrameBrowserTest : public AttributionsBrowserTest {
         fenced_frame_root_node->current_frame_host());
 
     // Navigate the fenced frame.
-    EXPECT_TRUE(ExecJs(root, JsReplace("f.src = $1;", urn_uuid)));
+    EXPECT_TRUE(ExecJs(
+        root, JsReplace("f.config = new FencedFrameConfig($1);", urn_uuid)));
 
     observer.WaitForCommit();
 

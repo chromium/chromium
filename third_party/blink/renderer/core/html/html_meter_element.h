@@ -71,7 +71,7 @@ class CORE_EXPORT HTMLMeterElement final : public HTMLElement {
 
   bool IsLabelable() const override { return true; }
 
-  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
   void ParseAttribute(const AttributeModificationParams&) override;
 
   void DidElementStateChange();

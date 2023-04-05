@@ -108,6 +108,7 @@ class DriveIntegrationService : public KeyedService,
                                 public drivefs::DriveFsHost::MountObserver {
  public:
   class PreferenceWatcher;
+  class BulkPinningPrefUpdater;
   using DriveFsMojoListenerFactory = base::RepeatingCallback<
       std::unique_ptr<drivefs::DriveFsBootstrapListener>()>;
   using GetQuickAccessItemsCallback =
@@ -435,6 +436,7 @@ class DriveIntegrationService : public KeyedService,
   std::unique_ptr<DriveFsHolder> drivefs_holder_;
   std::unique_ptr<PreferenceWatcher> preference_watcher_;
   std::unique_ptr<drivefs::pinning::PinManager> pin_manager_;
+  std::unique_ptr<BulkPinningPrefUpdater> bulk_pinning_pref_updater_;
   int drivefs_total_failures_count_ = 0;
   int drivefs_consecutive_failures_count_ = 0;
   bool remount_when_online_ = false;

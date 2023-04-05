@@ -412,20 +412,24 @@ base::CommandLine BuildCommandLineForShimLaunch() {
   return command_line;
 }
 
-// Wrapper around base::mac::LaunchApplication that attempts to retry the launch
-// once, if the initial launch fails.
-void LaunchApplicationWithRetry(const base::FilePath& app_bundle_path,
-                                const base::CommandLine& command_line,
-                                const std::vector<std::string>& url_specs,
-                                base::mac::LaunchApplicationOptions options,
-                                base::mac::LaunchApplicationCallback callback) {
+// Wrapper around base::mac::LaunchApplication. This works around a OS bug
+// where sometimes LaunchApplication returns an error even though the launch did
+// actually succeed, by double checking if any running applications match the
+// application we were trying to launch. If one is found, that one is returned
+// rather than an error.
+void LaunchApplicationWithWorkaround(
+    const base::FilePath& app_bundle_path,
+    const base::CommandLine& command_line,
+    const std::vector<std::string>& url_specs,
+    base::mac::LaunchApplicationOptions options,
+    const std::string& bundle_id,
+    base::mac::LaunchApplicationCallback callback) {
   base::mac::LaunchApplication(
       app_bundle_path, command_line, url_specs, options,
       base::BindOnce(
           [](const base::FilePath& app_bundle_path,
-             const base::CommandLine& command_line,
-             const std::vector<std::string>& url_specs,
              base::mac::LaunchApplicationOptions options,
+             const std::string& bundle_id,
              base::mac::LaunchApplicationCallback callback,
              base::expected<NSRunningApplication*, NSError*> result) {
             if (result.has_value()) {
@@ -434,21 +438,30 @@ void LaunchApplicationWithRetry(const base::FilePath& app_bundle_path,
             }
 
             LOG(ERROR) << "Failed to open application with path: "
-                       << app_bundle_path << ", retrying in 100ms";
-            internals::GetShortcutIOTaskRunner()->PostDelayedTask(
-                FROM_HERE,
-                base::BindOnce(&base::mac::LaunchApplication, app_bundle_path,
-                               command_line, url_specs, options,
-                               std::move(callback)),
-                base::Milliseconds(100));
+                       << app_bundle_path;
+            if (!options.create_new_instance) {
+              NSArray<NSRunningApplication*>* apps =
+                  [NSRunningApplication runningApplicationsWithBundleIdentifier:
+                                            base::SysUTF8ToNSString(bundle_id)];
+              for (NSRunningApplication* app in apps) {
+                if (base::mac::NSURLToFilePath(app.bundleURL) ==
+                    app_bundle_path) {
+                  LOG(ERROR) << "But found a running application anyway.";
+                  std::move(callback).Run(app);
+                  return;
+                }
+              }
+            }
+
+            std::move(callback).Run(result);
           },
-          app_bundle_path, command_line, url_specs, options,
-          std::move(callback)));
+          app_bundle_path, options, bundle_id, std::move(callback)));
 }
 
 void LaunchTheFirstShimThatWorksOnFileThread(
     std::vector<base::FilePath> shim_paths,
     bool launched_after_rebuild,
+    const std::string& bundle_id,
     ShimLaunchedCallback launched_callback,
     ShimTerminatedCallback terminated_callback) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
@@ -475,12 +488,12 @@ void LaunchTheFirstShimThatWorksOnFileThread(
     command_line.AppendSwitch(app_mode::kLaunchedAfterRebuild);
   }
 
-  LaunchApplicationWithRetry(
-      shim_path, command_line, /*url_specs=*/{}, {.activate = false},
+  LaunchApplicationWithWorkaround(
+      shim_path, command_line, /*url_specs=*/{}, {.activate = false}, bundle_id,
       base::BindOnce(
           [](base::FilePath shim_path,
              std::vector<base::FilePath> remaining_shim_paths,
-             bool launched_after_rebuild,
+             bool launched_after_rebuild, const std::string& bundle_id,
              ShimLaunchedCallback launched_callback,
              ShimTerminatedCallback terminated_callback,
              base::expected<NSRunningApplication*, NSError*> result) {
@@ -497,10 +510,10 @@ void LaunchTheFirstShimThatWorksOnFileThread(
                 FROM_HERE,
                 base::BindOnce(&LaunchTheFirstShimThatWorksOnFileThread,
                                remaining_shim_paths, launched_after_rebuild,
-                               std::move(launched_callback),
+                               bundle_id, std::move(launched_callback),
                                std::move(terminated_callback)));
           },
-          shim_path, shim_paths, launched_after_rebuild,
+          shim_path, shim_paths, launched_after_rebuild, bundle_id,
           std::move(launched_callback), std::move(terminated_callback)));
 }
 
@@ -539,9 +552,9 @@ void LaunchShimOnFileThread(LaunchShimUpdateBehavior update_behavior,
   }
   LOG_IF(ERROR, !shortcuts_updated) << "Could not write shortcut for app shim.";
 
-  LaunchTheFirstShimThatWorksOnFileThread(shim_paths, launched_after_rebuild,
-                                          std::move(launched_callback),
-                                          std::move(terminated_callback));
+  LaunchTheFirstShimThatWorksOnFileThread(
+      shim_paths, launched_after_rebuild, shortcut_creator.GetAppBundleId(),
+      std::move(launched_callback), std::move(terminated_callback));
 }
 
 base::FilePath GetLocalizableAppShortcutsSubdirName() {
@@ -1556,6 +1569,11 @@ std::vector<base::FilePath> WebAppShortcutCreator::GetAppBundlesById() const {
   return paths;
 }
 
+std::string WebAppShortcutCreator::GetAppBundleId() const {
+  return GetBundleIdentifier(
+      info_->app_id, IsMultiProfile() ? base::FilePath() : info_->profile_path);
+}
+
 bool WebAppShortcutCreator::IsMultiProfile() const {
   return info_->is_multi_profile;
 }
@@ -1620,7 +1638,7 @@ void LaunchShimForTesting(const base::FilePath& shim_path,  // IN-TEST
     url_specs.push_back(url.spec());
   }
 
-  LaunchApplicationWithRetry(
+  base::mac::LaunchApplication(
       shim_path, command_line, url_specs, {.activate = false},
       base::BindOnce(
           [](const base::FilePath& shim_path,

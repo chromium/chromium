@@ -865,7 +865,7 @@ class VectorRawPtrRewriter {
     // connected to other nodes)
     auto field_decl =
         fieldDecl(hasExplicitFieldDecl(lhs_type_loc),
-                  unless(allOf(field_exclusions, isRawPtrExclusionAnnotated())))
+                  unless(anyOf(field_exclusions, isRawPtrExclusionAnnotated())))
             .bind("field_decl");
     match_finder_.addMatcher(field_decl, &potentail_nodes_);
 
@@ -892,11 +892,17 @@ class VectorRawPtrRewriter {
 
     // TODO: check vector<S*> it = get()[0];
     auto rhs_iterator_call = cxxMemberCallExpr(
-        callee(functionDecl(anyOf(hasName("begin"), hasName("end")))),
+        callee(functionDecl(anyOf(hasName("begin"), hasName("cbegin"),
+                                  hasName("rbegin"), hasName("crbegin"),
+                                  hasName("end"), hasName("cend"),
+                                  hasName("rend"), hasName("crend")))),
         has(memberExpr(has(rhs_expr))));
 
     auto lhs_iterator_call = cxxMemberCallExpr(
-        callee(functionDecl(anyOf(hasName("begin"), hasName("end")))),
+        callee(functionDecl(anyOf(hasName("begin"), hasName("cbegin"),
+                                  hasName("rbegin"), hasName("crbegin"),
+                                  hasName("end"), hasName("cend"),
+                                  hasName("rend"), hasName("crend")))),
         has(memberExpr(has(lhs_expr))));
 
     auto rhs_cxx_temp_expr = cxxTemporaryObjectExpr(rhs_type_loc);
@@ -1075,7 +1081,9 @@ class VectorRawPtrRewriter {
     // Handles: std::swap(member, temp); std::swap(temp, member);
     auto std_swap_call =
         traverse(clang::TK_IgnoreUnlessSpelledInSource,
-                 callExpr(callee(functionDecl(hasName("std::swap"))),
+                 callExpr(anyOf(callee(functionDecl(hasName("std::swap"))),
+                                isExpandedFromMacro("EXPECT_EQ"),
+                                isExpandedFromMacro("ASSERT_EQ")),
                           hasArgument(0, lhs_expr_variations),
                           hasArgument(1, rhs_expr_variations),
                           unless(isExpansionInSystemHeader())));

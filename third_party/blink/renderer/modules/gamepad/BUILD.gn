@@ -25,6 +25,8 @@ blink_modules_sources("gamepad") {
     "gamepad_listener.h",
     "gamepad_shared_memory_reader.cc",
     "gamepad_shared_memory_reader.h",
+    "gamepad_touch.cc",
+    "gamepad_touch.h",
     "navigator_gamepad.cc",
     "navigator_gamepad.h",
   ]

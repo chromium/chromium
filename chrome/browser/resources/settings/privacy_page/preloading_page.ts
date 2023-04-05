@@ -5,16 +5,16 @@
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import './collapse_radio_button.js';
 import '../controls/settings_radio_group.js';
-import '../prefs/prefs.js';
+import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import '../settings_shared.css.js';
 import './privacy_guide/privacy_guide_fragment_shared.css.js';
 
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import {CrSettingsPrefs} from 'chrome://resources/cr_components/settings_prefs/prefs_types.js';
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
-import {PrefsMixin} from '../prefs/prefs_mixin.js';
-import {CrSettingsPrefs} from '../prefs/prefs_types.js';
 
 import {SettingsCollapseRadioButtonElement} from './collapse_radio_button.js';
 import {NetworkPredictionOptions} from './cookies_page.js';

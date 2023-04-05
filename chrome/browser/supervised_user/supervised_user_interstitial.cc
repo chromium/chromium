@@ -17,11 +17,9 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/browser/web_content_handler.h"
 #include "components/supervised_user/core/common/features.h"
@@ -33,9 +31,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/supervised_user/child_accounts/child_account_feedback_reporter_android.h"
-#else
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -222,19 +218,7 @@ void SupervisedUserInterstitial::ShowFeedback() {
 
   std::u16string reason = l10n_util::GetStringUTF16(
       supervised_user::GetBlockMessageID(reason_, second_custodian.empty()));
-  std::string message = l10n_util::GetStringFUTF8(
-      IDS_BLOCK_INTERSTITIAL_DEFAULT_FEEDBACK_TEXT, reason);
-#if BUILDFLAG(IS_ANDROID)
-  ReportChildAccountFeedback(web_contents_, message, url_);
-#else
-  // TODO(b/273692421): This profile reference will be moved to the
-  // web_content_handler.
-  chrome::ShowFeedbackPage(
-      url_, Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
-      chrome::kFeedbackSourceSupervisedUserInterstitial, message,
-      std::string() /* description_placeholder_text */,
-      std::string() /* category_tag */, std::string() /* extra_diagnostics */);
-#endif
+  web_content_handler_->ShowFeedback(url_, reason);
   return;
 }
 

@@ -19,10 +19,6 @@ class BlockFlowPaintInvalidator {
   BlockFlowPaintInvalidator(const LayoutBlockFlow& block_flow)
       : block_flow_(block_flow) {}
 
-  void InvalidatePaintForOverhangingFloats() {
-    InvalidatePaintForOverhangingFloatsInternal(kInvalidateDescendants);
-  }
-
   void InvalidateDisplayItemClients(PaintInvalidationReason);
 
  private:
@@ -30,7 +26,6 @@ class BlockFlowPaintInvalidator {
     kDontInvalidateDescendants,
     kInvalidateDescendants
   };
-  void InvalidatePaintForOverhangingFloatsInternal(InvalidateDescendantMode);
 
   const LayoutBlockFlow& block_flow_;
 };

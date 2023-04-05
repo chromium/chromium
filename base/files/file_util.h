@@ -399,6 +399,17 @@ BASE_EXPORT ScopedFILE CreateAndOpenTemporaryStream(FilePath* path);
 BASE_EXPORT ScopedFILE CreateAndOpenTemporaryStreamInDir(const FilePath& dir,
                                                          FilePath* path);
 
+#if BUILDFLAG(IS_WIN)
+// Retrieves the path `%systemroot%\SystemTemp`, if available, else retrieves
+// `%programfiles%`.
+// Returns the path in `temp` and `true` if the path is writable by the caller,
+// which is usually only when the caller is running as admin or system.
+// Returns `false` otherwise.
+// Both paths are only accessible to admin and system processes, and are
+// therefore secure.
+BASE_EXPORT bool GetSecureSystemTemp(FilePath* temp);
+#endif  // BUILDFLAG(IS_WIN)
+
 // Do NOT USE in new code. Use ScopedTempDir instead.
 // TODO(crbug.com/561597) Remove existing usage and make this an implementation
 // detail inside ScopedTempDir.
@@ -408,11 +419,11 @@ BASE_EXPORT ScopedFILE CreateAndOpenTemporaryStreamInDir(const FilePath& dir,
 // NOTE: prefix is ignored in the POSIX implementation.
 // If success, return true and output the full path of the directory created.
 //
-// For Windows, this directory is usually created in a secure location under
-// %ProgramFiles% if the caller is admin. This is because the default %TEMP%
-// folder for Windows is insecure, since low privilege users can get the path of
-// folders under %TEMP% after creation and are able to create subfolders and
-// files within these folders which can lead to privilege escalation.
+// For Windows, this directory is usually created in a secure location if the
+// caller is admin. This is because the default %TEMP% folder for Windows is
+// insecure, since low privilege users can get the path of folders under %TEMP%
+// after creation and are able to create subfolders and files within these
+// folders which can lead to privilege escalation.
 BASE_EXPORT bool CreateNewTempDirectory(const FilePath::StringType& prefix,
                                         FilePath* new_temp_path);
 

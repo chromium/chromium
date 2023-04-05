@@ -162,7 +162,7 @@ TEST_F(SBRendererUrlLoaderThrottleTest,
   auto response_head = network::mojom::URLResponseHead::New();
   throttle_->WillProcessResponse(url, response_head.get(), &defer);
 
-  histograms.ExpectUniqueTimeSample("SafeBrowsing.RendererThrottle.TotalDelay2",
+  histograms.ExpectUniqueTimeSample("SafeBrowsing.RendererThrottle.TotalDelay3",
                                     base::Milliseconds(0), 1);
   histograms.ExpectUniqueTimeSample(
       "SafeBrowsing.RendererThrottle.TotalDelay2.FromNetwork",
@@ -188,7 +188,7 @@ TEST_F(SBRendererUrlLoaderThrottleTest,
   response_head->network_accessed = false;
   throttle_->WillProcessResponse(url, response_head.get(), &defer);
 
-  histograms.ExpectUniqueTimeSample("SafeBrowsing.RendererThrottle.TotalDelay2",
+  histograms.ExpectUniqueTimeSample("SafeBrowsing.RendererThrottle.TotalDelay3",
                                     base::Milliseconds(0), 1);
   histograms.ExpectUniqueTimeSample(
       "SafeBrowsing.RendererThrottle.TotalDelay2.FromCache",
@@ -214,7 +214,7 @@ TEST_F(SBRendererUrlLoaderThrottleTest, VerifyTotalDelayHistograms_Defer) {
   safe_browsing_.RestartDelayedCallback();
   message_loop_.RunUntilIdle();
 
-  histograms.ExpectUniqueTimeSample("SafeBrowsing.RendererThrottle.TotalDelay2",
+  histograms.ExpectUniqueTimeSample("SafeBrowsing.RendererThrottle.TotalDelay3",
                                     base::Milliseconds(200), 1);
   histograms.ExpectUniqueTimeSample(
       "SafeBrowsing.RendererThrottle.TotalDelay2.FromNetwork",
@@ -244,13 +244,37 @@ TEST_F(SBRendererUrlLoaderThrottleTest,
   safe_browsing_.RestartDelayedCallback();
   message_loop_.RunUntilIdle();
 
-  histograms.ExpectUniqueTimeSample("SafeBrowsing.RendererThrottle.TotalDelay2",
+  histograms.ExpectUniqueTimeSample("SafeBrowsing.RendererThrottle.TotalDelay3",
                                     base::Milliseconds(200), 1);
   histograms.ExpectUniqueTimeSample(
       "SafeBrowsing.RendererThrottle.TotalDelay2.FromCache",
       base::Milliseconds(200), 1);
   histograms.ExpectTotalCount(
       "SafeBrowsing.RendererThrottle.TotalDelay2.FromNetwork", 0);
+}
+
+TEST_F(SBRendererUrlLoaderThrottleTest,
+       VerifyTotalDelayHistograms_SkipChromeUrl) {
+  base::HistogramTester histograms;
+  GURL url("chrome://settings/");
+  bool defer = false;
+  network::ResourceRequest request =
+      GetResourceRequest(url, network::mojom::RequestDestination::kScript);
+  throttle_->WillStartRequest(&request, &defer);
+  histograms.ExpectUniqueTimeSample("SafeBrowsing.RendererThrottle.TotalDelay3",
+                                    base::Milliseconds(0), 1);
+}
+
+TEST_F(SBRendererUrlLoaderThrottleTest,
+       VerifyTotalDelayHistograms_SkipImageUrl) {
+  base::HistogramTester histograms;
+  GURL url("https://example.com/");
+  bool defer = false;
+  network::ResourceRequest request =
+      GetResourceRequest(url, network::mojom::RequestDestination::kImage);
+  throttle_->WillStartRequest(&request, &defer);
+  histograms.ExpectUniqueTimeSample("SafeBrowsing.RendererThrottle.TotalDelay3",
+                                    base::Milliseconds(0), 1);
 }
 
 class SBRendererUrlLoaderThrottleDisableSkipImageCssFontTest

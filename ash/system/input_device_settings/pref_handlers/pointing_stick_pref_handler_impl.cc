@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_defaults.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
+#include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "ash/system/input_device_settings/input_device_tracker.h"
 #include "base/check.h"
 #include "components/prefs/pref_service.h"
@@ -87,15 +88,6 @@ mojom::PointingStickSettingsPtr RetrievePointingStickSettings(
   return settings;
 }
 
-bool ExistingSettingsHasValue(base::StringPiece setting_key,
-                              const base::Value::Dict* existing_settings_dict) {
-  if (!existing_settings_dict) {
-    return false;
-  }
-
-  return existing_settings_dict->Find(setting_key) != nullptr;
-}
-
 void UpdatePointingStickSettingsImpl(
     PrefService* pref_service,
     const mojom::PointingStick& pointing_stick,
@@ -108,37 +100,29 @@ void UpdatePointingStickSettingsImpl(
       devices_dict.FindDict(pointing_stick.device_key);
   const mojom::PointingStickSettings& settings = *pointing_stick.settings;
 
-  // Settings should only be persisted if one or more of the following is true:
-  // - Setting was previously persisted to storage
-  // - `force_persistence` requires the setting to be persisted, this means this
-  //   device is being transitioned from the old global settings to per-device
-  //   settings and the user specified the specific value for this setting.
-  // - Setting is different than the default, which means the user manually
-  //   changed the value.
-
   // Populate `settings_dict` with all settings in `settings`.
   base::Value::Dict settings_dict;
 
-  if (ExistingSettingsHasValue(prefs::kPointingStickSettingSwapRight,
-                               existing_settings_dict) ||
-      force_persistence.swap_right ||
-      settings.swap_right != kDefaultSwapRight) {
+  if (ShouldPersistSetting(prefs::kPointingStickSettingSwapRight,
+                           settings.swap_right, kDefaultSwapRight,
+                           force_persistence.swap_right,
+                           existing_settings_dict)) {
     settings_dict.Set(prefs::kPointingStickSettingSwapRight,
                       settings.swap_right);
   }
 
-  if (ExistingSettingsHasValue(prefs::kPointingStickSettingSensitivity,
-                               existing_settings_dict) ||
-      force_persistence.sensitivity ||
-      settings.sensitivity != kDefaultSensitivity) {
+  if (ShouldPersistSetting(prefs::kPointingStickSettingSensitivity,
+                           static_cast<int>(settings.sensitivity),
+                           kDefaultSensitivity, force_persistence.sensitivity,
+                           existing_settings_dict)) {
     settings_dict.Set(prefs::kPointingStickSettingSensitivity,
                       settings.sensitivity);
   }
 
-  if (ExistingSettingsHasValue(prefs::kPointingStickSettingAcceleration,
-                               existing_settings_dict) ||
-      force_persistence.acceleration_enabled ||
-      settings.acceleration_enabled != kDefaultAccelerationEnabled) {
+  if (ShouldPersistSetting(
+          prefs::kPointingStickSettingAcceleration,
+          settings.acceleration_enabled, kDefaultAccelerationEnabled,
+          force_persistence.acceleration_enabled, existing_settings_dict)) {
     settings_dict.Set(prefs::kPointingStickSettingAcceleration,
                       settings.acceleration_enabled);
   }

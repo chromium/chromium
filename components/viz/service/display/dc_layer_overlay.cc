@@ -58,7 +58,8 @@ enum DCLayerResult {
   DC_LAYER_FAILED_YUV_VIDEO_QUAD_MOVED = 16,
   DC_LAYER_FAILED_HDR_TONE_MAPPING = 17,
   DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_HDR_METADATA = 18,
-  kMaxValue = DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_HDR_METADATA,
+  DC_LAYER_FAILED_YUV_VIDEO_QUAD_HLG = 19,
+  kMaxValue = DC_LAYER_FAILED_YUV_VIDEO_QUAD_HLG,
 };
 
 gfx::RectF GetExpandedRectWithPixelMovingFilter(
@@ -79,8 +80,7 @@ DCLayerResult ValidateYUVQuad(
     bool has_overlay_support,
     int allowed_yuv_overlay_count,
     int processed_yuv_overlay_count,
-    DisplayResourceProvider* resource_provider,
-    bool is_page_fullscreen_mode) {
+    DisplayResourceProvider* resource_provider) {
   // Note: Do not override this value based on base::Feature values. It is the
   // result after the GPU blocklist has been consulted.
   if (!has_overlay_support)
@@ -105,14 +105,6 @@ DCLayerResult ValidateYUVQuad(
     return DC_LAYER_FAILED_COMPLEX_TRANSFORM;
   }
 
-  // TODO(crbug.com/1425907): Remove this restriction after fixing overlay 180
-  // deg rotation in full screen mode in DirectComposition.
-  if (is_page_fullscreen_mode &&
-      !quad->shared_quad_state->quad_to_target_transform
-           .IsPositiveScaleOrTranslation()) {
-    return DC_LAYER_FAILED_COMPLEX_TRANSFORM;
-  }
-
   if (processed_yuv_overlay_count >= allowed_yuv_overlay_count)
     return DC_LAYER_FAILED_TOO_MANY_OVERLAYS;
 
@@ -122,9 +114,15 @@ DCLayerResult ValidateYUVQuad(
       return DC_LAYER_FAILED_BACKDROP_FILTERS;
   }
 
-  // HLG doesn't have the hdr metadata, but we don't want to promote it to
+  // HLG shouldn't have the hdr metadata, but we don't want to promote it to
   // overlay, as VideoProcessor doesn't support HLG tone mapping well between
   // different gpu vendors, see: https://crbug.com/1144260#c6.
+  // Some HLG streams may carry hdr metadata, see: https://crbug.com/1429172.
+  if (quad->video_color_space.GetTransferID() ==
+      gfx::ColorSpace::TransferID::HLG) {
+    return DC_LAYER_FAILED_YUV_VIDEO_QUAD_HLG;
+  }
+
   // Otherwise, it could be a parser bug like https://crbug.com/1362288 if the
   // hdr metadata is still missing. We shouldn't promote too for that case.
   if (quad->video_color_space.IsHDR() && !quad->hdr_metadata.has_value()) {
@@ -724,11 +722,10 @@ void DCLayerOverlayProcessor::Process(
     DCLayerResult result;
     switch (it->material) {
       case DrawQuad::Material::kYuvVideoContent:
-        result = ValidateYUVQuad(YUVVideoDrawQuad::MaterialCast(*it),
-                                 backdrop_filter_rects, has_overlay_support_,
-                                 allowed_yuv_overlay_count_,
-                                 processed_yuv_overlay_count_,
-                                 resource_provider, is_page_fullscreen_mode);
+        result = ValidateYUVQuad(
+            YUVVideoDrawQuad::MaterialCast(*it), backdrop_filter_rects,
+            has_overlay_support_, allowed_yuv_overlay_count_,
+            processed_yuv_overlay_count_, resource_provider);
         yuv_quads_in_quad_list++;
 
         if (no_undamaged_overlay_promotion_) {

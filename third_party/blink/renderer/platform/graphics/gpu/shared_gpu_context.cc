@@ -51,10 +51,26 @@ SharedGpuContext::ContextProviderWrapper() {
   return this_ptr->context_provider_wrapper_->GetWeakPtr();
 }
 
+gpu::GpuMemoryBufferManager* SharedGpuContext::GetGpuMemoryBufferManager() {
+  SharedGpuContext* this_ptr = GetInstanceForCurrentThread();
+  if (!this_ptr->gpu_memory_buffer_manager_) {
+    this_ptr->CreateContextProviderIfNeeded(/*only_if_gpu_compositing =*/true);
+  }
+  return this_ptr->gpu_memory_buffer_manager_;
+}
+
+void SharedGpuContext::SetGpuMemoryBufferManagerForTesting(
+    gpu::GpuMemoryBufferManager* mgr) {
+  SharedGpuContext* this_ptr = GetInstanceForCurrentThread();
+  DCHECK(!!this_ptr->gpu_memory_buffer_manager_ == !mgr);
+  this_ptr->gpu_memory_buffer_manager_ = mgr;
+}
+
 static void CreateContextProviderOnMainThread(
     bool only_if_gpu_compositing,
     bool* gpu_compositing_disabled,
     std::unique_ptr<WebGraphicsContext3DProviderWrapper>* wrapper,
+    gpu::GpuMemoryBufferManager** gpu_memory_buffer_manager,
     base::WaitableEvent* waitable_event) {
   DCHECK(IsMainThread());
 
@@ -80,6 +96,11 @@ static void CreateContextProviderOnMainThread(
     *wrapper = std::make_unique<WebGraphicsContext3DProviderWrapper>(
         std::move(context_provider));
   }
+
+  // A reference to the GpuMemoryBufferManager can only be obtained on the main
+  // thread, but it is safe to use on other threads.
+  *gpu_memory_buffer_manager = Platform::Current()->GetGpuMemoryBufferManager();
+
   waitable_event->Signal();
 }
 
@@ -124,6 +145,8 @@ void SharedGpuContext::CreateContextProviderIfNeeded(
           std::make_unique<WebGraphicsContext3DProviderWrapper>(
               std::move(context_provider));
     }
+    gpu_memory_buffer_manager_ =
+        Platform::Current()->GetGpuMemoryBufferManager();
   } else {
     // This synchronous round-trip to the main thread is the reason why
     // SharedGpuContext encasulates the context provider: so we only have to do
@@ -137,6 +160,7 @@ void SharedGpuContext::CreateContextProviderIfNeeded(
             &CreateContextProviderOnMainThread, only_if_gpu_compositing,
             CrossThreadUnretained(&is_gpu_compositing_disabled_),
             CrossThreadUnretained(&context_provider_wrapper_),
+            CrossThreadUnretained(&gpu_memory_buffer_manager_),
             CrossThreadUnretained(&waitable_event)));
     waitable_event.Wait();
     if (context_provider_wrapper_ &&

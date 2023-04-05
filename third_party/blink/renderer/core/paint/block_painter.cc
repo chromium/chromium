@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/core/paint/line_box_list_painter.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/scoped_paint_state.h"
@@ -174,22 +173,6 @@ void BlockPainter::PaintAllChildPhasesAtomically(const LayoutBox& child,
     ObjectPainter(child).PaintAllPhasesAtomically(paint_info);
 }
 
-void BlockPainter::PaintInlineBox(const InlineBox& inline_box,
-                                  const PaintInfo& paint_info) {
-  if (paint_info.phase != PaintPhase::kForeground &&
-      paint_info.phase != PaintPhase::kForcedColorsModeBackplate &&
-      paint_info.phase != PaintPhase::kSelectionDragImage)
-    return;
-
-  // Text clips are painted only for the direct inline children of the object
-  // that has a text clip style on it, not block children.
-  DCHECK(paint_info.phase != PaintPhase::kTextClip);
-
-  ObjectPainter(
-      *LineLayoutAPIShim::ConstLayoutObjectFrom(inline_box.GetLineLayoutItem()))
-      .PaintAllPhasesAtomically(paint_info);
-}
-
 DISABLE_CFI_PERF
 void BlockPainter::PaintObject(const PaintInfo& paint_info,
                                const PhysicalOffset& paint_offset) {
@@ -227,13 +210,7 @@ void BlockPainter::PaintObject(const PaintInfo& paint_info,
   if (ShouldPaintSelfBlockBackground(paint_phase))
     layout_block_.PaintBoxDecorationBackground(paint_info, paint_offset);
 
-  // Draw a backplate behind all text if in forced colors mode.
-  if (paint_phase == PaintPhase::kForcedColorsModeBackplate &&
-      layout_block_.GetFrame()->GetDocument()->InForcedColorsMode() &&
-      layout_block_.ChildrenInline()) {
-    LineBoxListPainter(To<LayoutBlockFlow>(layout_block_).LineBoxes())
-        .PaintBackplate(layout_block_, paint_info, paint_offset);
-  }
+  DCHECK(!layout_block_.ChildrenInline());
 
   // If we're in any phase except *just* the self (outline or background) or a
   // mask, paint children now. This is step #5, 7, 8, and 9 of the CSS spec (see
@@ -273,43 +250,7 @@ void BlockPainter::PaintBlockFlowContents(const PaintInfo& paint_info,
   } else if (ShouldPaintDescendantOutlines(paint_info.phase)) {
     ObjectPainter(layout_block_).PaintInlineChildrenOutlines(paint_info);
   } else {
-    LineBoxListPainter(To<LayoutBlockFlow>(layout_block_).LineBoxes())
-        .Paint(layout_block_, paint_info, paint_offset);
-  }
-
-  // If we don't have any floats to paint, or we're in the wrong paint phase,
-  // then we're done for now.
-  auto* floating_objects =
-      To<LayoutBlockFlow>(layout_block_).GetFloatingObjects();
-  const PaintPhase paint_phase = paint_info.phase;
-  if (!floating_objects || !(paint_phase == PaintPhase::kFloat ||
-                             paint_phase == PaintPhase::kSelectionDragImage ||
-                             paint_phase == PaintPhase::kTextClip)) {
-    return;
-  }
-
-  // LayoutNG paints floats in regular tree order, and doesn't use the
-  // FloatingObjects list.
-  if (layout_block_.IsLayoutNGObject())
-    return;
-
-  // If we're painting floats (not selections or textclips), change
-  // the paint phase to foreground.
-  PaintInfo float_paint_info(paint_info);
-  if (paint_info.phase == PaintPhase::kFloat)
-    float_paint_info.phase = PaintPhase::kForeground;
-
-  // Paint all floats.
-  for (const auto& floating_object : floating_objects->Set()) {
-    if (!floating_object->ShouldPaint())
-      continue;
-    const LayoutBox* floating_layout_object =
-        floating_object->GetLayoutObject();
-    // TODO(wangxianzhu): Should this be a DCHECK?
-    if (floating_layout_object->HasSelfPaintingLayer())
-      continue;
-    ObjectPainter(*floating_layout_object)
-        .PaintAllPhasesAtomically(float_paint_info);
+    NOTREACHED();
   }
 }
 

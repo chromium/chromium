@@ -10,12 +10,12 @@
 #include <string>
 #include <vector>
 
-#include "base/guid.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/titled_url_match.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
@@ -453,7 +453,7 @@ TEST_F(BookmarkProviderTest, InlineAutocompletion) {
                             TestSchemeClassifier());
     const std::u16string fixed_up_input(
         provider_->FixupUserInput(input).second);
-    BookmarkNode node(/*id=*/0, base::GUID::GenerateRandomV4(),
+    BookmarkNode node(/*id=*/0, base::Uuid::GenerateRandomV4(),
                       GURL(query_data[i].url));
     node.SetTitle(base::ASCIIToUTF16(query_data[i].url));
     TitledUrlMatch bookmark_match;

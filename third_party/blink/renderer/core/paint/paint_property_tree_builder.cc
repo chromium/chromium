@@ -2651,27 +2651,12 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
     const auto& box_model_object = To<LayoutBoxModelObject>(object_);
     switch (box_model_object.StyleRef().GetPosition()) {
       case EPosition::kStatic:
-        break;
       case EPosition::kRelative:
-        context_.current.paint_offset +=
-            box_model_object.OffsetForInFlowPosition();
         break;
       case EPosition::kAbsolute: {
         DCHECK_EQ(full_context_.container_for_absolute_position,
                   box_model_object.Container());
         SwitchToOOFContext(context_.absolute_position);
-
-        // Absolutely positioned content in an inline should be positioned
-        // relative to the inline.
-        const LayoutObject* container =
-            full_context_.container_for_absolute_position;
-        if (container && container->IsLayoutInline()) {
-          DCHECK(container->CanContainAbsolutePositionObjects());
-          DCHECK(box_model_object.IsBox());
-          context_.current.paint_offset +=
-              To<LayoutInline>(container)->OffsetForInFlowPositionedInline(
-                  To<LayoutBox>(box_model_object));
-        }
         break;
       }
       case EPosition::kSticky:
@@ -2679,23 +2664,13 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
       case EPosition::kFixed: {
         DCHECK_EQ(full_context_.container_for_fixed_position,
                   box_model_object.Container());
-
         SwitchToOOFContext(context_.fixed_position);
+
         // Fixed-position elements that are fixed to the viewport have a
         // transform above the scroll of the LayoutView. Child content is
         // relative to that transform, and hence the fixed-position element.
         if (context_.fixed_position.fixed_position_children_fixed_to_root)
           context_.current.paint_offset_root = &box_model_object;
-
-        const LayoutObject* container =
-            full_context_.container_for_fixed_position;
-        if (container && container->IsLayoutInline()) {
-          DCHECK(container->CanContainFixedPositionObjects());
-          DCHECK(box_model_object.IsBox());
-          context_.current.paint_offset +=
-              To<LayoutInline>(container)->OffsetForInFlowPositionedInline(
-                  To<LayoutBox>(box_model_object));
-        }
         break;
       }
       default:

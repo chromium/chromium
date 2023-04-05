@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
+#include "components/segmentation_platform/internal/execution/processing/processing_utils.h"
 #include "components/segmentation_platform/internal/execution/processing/query_processor.h"
 #include "components/segmentation_platform/public/input_delegate.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
@@ -357,6 +358,33 @@ TEST_F(CustomInputProcessorTest, MultipleFillTypesCustomInputs) {
   // Process the custom inputs and verify using expected result.
   ExpectProcessedCustomInput(std::move(data), /*expected_error=*/false,
                              expected_result);
+}
+
+TEST_F(CustomInputProcessorTest, ProcessOsVersionString) {
+  EXPECT_EQ(6, processing::ProcessOsVersionString("5.0.99"));
+  EXPECT_EQ(6, processing::ProcessOsVersionString("6"));
+
+  EXPECT_EQ(7, processing::ProcessOsVersionString("6.0.99"));
+  EXPECT_EQ(7, processing::ProcessOsVersionString("7"));
+  EXPECT_EQ(6, processing::ProcessOsVersionString("6.0.34"));
+
+  EXPECT_EQ(8, processing::ProcessOsVersionString("7.0.99"));
+  EXPECT_EQ(8, processing::ProcessOsVersionString("8"));
+
+  EXPECT_EQ(9, processing::ProcessOsVersionString("8.0.99"));
+  EXPECT_EQ(9, processing::ProcessOsVersionString("9"));
+
+  EXPECT_EQ(10, processing::ProcessOsVersionString("9.0.99"));
+  EXPECT_EQ(10, processing::ProcessOsVersionString("10"));
+  EXPECT_EQ(10, processing::ProcessOsVersionString("10.0.34"));
+
+  EXPECT_EQ(11, processing::ProcessOsVersionString("10.0.99"));
+  EXPECT_EQ(11, processing::ProcessOsVersionString("11"));
+
+  EXPECT_EQ(12, processing::ProcessOsVersionString("12"));
+  EXPECT_EQ(13, processing::ProcessOsVersionString("13"));
+
+  EXPECT_EQ(4, processing::ProcessOsVersionString("4"));
 }
 
 }  // namespace segmentation_platform::processing

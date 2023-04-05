@@ -402,10 +402,16 @@ inline CSSValueID PlatformEnumToCSSValueID(EWhiteSpace v) {
       return CSSValueID::kPreWrap;
     case EWhiteSpace::kBreakSpaces:
       return CSSValueID::kBreakSpaces;
-    default:
-      NOTREACHED();
-      return CSSValueID::kNone;
   }
+  if (ToTextWrap(v) == TextWrap::kBalance &&
+      !RuntimeEnabledFeatures::CSSWhiteSpaceShorthandEnabled()) {
+    // If `text-wrap: balance` but the shorthandifying `white-space` is off,
+    // pretend as if `text-wrap: wrap`.
+    return PlatformEnumToCSSValueID(
+        ToWhiteSpace(ToWhiteSpaceCollapse(v), TextWrap::kWrap));
+  }
+  NOTREACHED();
+  return CSSValueID::kNone;
 }
 
 template <>

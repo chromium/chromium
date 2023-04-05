@@ -39,15 +39,8 @@ TEST(IdleActionTest, ClearBrowsingDataIsSingleAction) {
        ActionType::kClearCachedImagesAndFiles, ActionType::kClearPasswordSignin,
        ActionType::kClearAutofill, ActionType::kClearSiteSettings,
        ActionType::kClearHostedAppData});
-#if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(1u, queue.size());
   EXPECT_EQ(2, queue.top()->priority());  // ClearBrowsingDataAction
-#else
-  EXPECT_EQ(2u, queue.size());
-  EXPECT_EQ(-1, queue.top()->priority());  // ShowDialogAction
-  queue.pop();
-  EXPECT_EQ(2, queue.top()->priority());  // ClearBrowsingDataAction
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace enterprise_idle

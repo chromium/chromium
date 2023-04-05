@@ -23,7 +23,7 @@ class MockRequest : public extensions::IdentityMintRequestQueue::Request {
 std::unique_ptr<ExtensionTokenKey> ExtensionIdToKey(
     const std::string& extension_id) {
   CoreAccountInfo user_info;
-  user_info.account_id = CoreAccountId("user_id");
+  user_info.account_id = CoreAccountId::FromGaiaId("user_id");
   user_info.gaia = "user_id";
   user_info.email = "user_email";
 

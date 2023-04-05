@@ -14,6 +14,13 @@
 
 namespace ui {
 
+bool PlatformWindowDelegate::State::ProducesFrameOnUpdateFrom(
+    const State& old) const {
+  // Changing the bounds origin won't produce a new frame. Anything else will.
+  return old.bounds_dip.size() != bounds_dip.size() || old.size_px != size_px ||
+         old.window_scale != window_scale || old.raster_scale != raster_scale;
+}
+
 std::string PlatformWindowDelegate::State::ToString() const {
   std::stringstream result;
   result << "State {";

@@ -8,6 +8,7 @@
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/sessions/core/session_id.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_web_state_list_delegate.h"
@@ -125,6 +126,7 @@ class SessionRestorationBrowserAgentTest : public PlatformTest {
     for (int i = 0; i < sessions_count; i++) {
       CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
       session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
+      session_storage.uniqueIdentifier = SessionID::NewUnique();
       session_storage.lastCommittedItemIndex = 0;
       CRWNavigationItemStorage* item_storage =
           [[CRWNavigationItemStorage alloc] init];
@@ -183,6 +185,7 @@ TEST_F(SessionRestorationBrowserAgentTest, RestoreEmptySessions) {
   for (int i = 0; i < 3; i++) {
     CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
     session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
+    session_storage.uniqueIdentifier = SessionID::NewUnique();
     session_storage.lastCommittedItemIndex = -1;
     [sessions addObject:session_storage];
   }

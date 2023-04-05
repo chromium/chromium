@@ -74,7 +74,8 @@ TEST_F(PrintPreviewUIUnitTest, PrintPreviewData) {
   PrintViewManager* print_view_manager =
       PrintViewManager::FromWebContents(initiator);
   print_view_manager->PrintPreviewNow(initiator->GetPrimaryMainFrame(), false);
-  WebContents* preview_dialog = controller->GetOrCreatePreviewDialog(initiator);
+  WebContents* preview_dialog =
+      controller->GetOrCreatePreviewDialogForTesting(initiator);
 
   EXPECT_NE(initiator, preview_dialog);
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
@@ -119,7 +120,8 @@ TEST_F(PrintPreviewUIUnitTest, PrintPreviewDraftPages) {
   PrintViewManager* print_view_manager =
       PrintViewManager::FromWebContents(initiator);
   print_view_manager->PrintPreviewNow(initiator->GetPrimaryMainFrame(), false);
-  WebContents* preview_dialog = controller->GetOrCreatePreviewDialog(initiator);
+  WebContents* preview_dialog =
+      controller->GetOrCreatePreviewDialogForTesting(initiator);
 
   EXPECT_NE(initiator, preview_dialog);
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
@@ -177,7 +179,8 @@ TEST_F(PrintPreviewUIUnitTest, ShouldCancelRequest) {
   PrintViewManager* print_view_manager =
       PrintViewManager::FromWebContents(initiator);
   print_view_manager->PrintPreviewNow(initiator->GetPrimaryMainFrame(), false);
-  WebContents* preview_dialog = controller->GetOrCreatePreviewDialog(initiator);
+  WebContents* preview_dialog =
+      controller->GetOrCreatePreviewDialogForTesting(initiator);
 
   EXPECT_NE(initiator, preview_dialog);
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
@@ -219,7 +222,8 @@ TEST_F(PrintPreviewUIUnitTest, PrintPreviewFailureCancelsPendingActions) {
       PrintPreviewDialogController::GetInstance();
   ASSERT_TRUE(controller);
 
-  WebContents* preview_dialog = controller->GetOrCreatePreviewDialog(initiator);
+  WebContents* preview_dialog =
+      controller->GetOrCreatePreviewDialogForTesting(initiator);
 
   EXPECT_NE(initiator, preview_dialog);
   EXPECT_EQ(1, browser()->tab_strip_model()->count());

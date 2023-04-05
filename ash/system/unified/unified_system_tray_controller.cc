@@ -114,7 +114,10 @@ UnifiedSystemTrayController::UnifiedSystemTrayController(
       animation_(std::make_unique<gfx::SlideAnimation>(this)) {
   LoadIsExpandedPref();
 
-  animation_->Reset(model_->IsExpandedOnOpen() ? 1.0 : 0.0);
+  const float animation_value = features::IsQsRevampEnabled()
+                                    ? 1
+                                    : (model_->IsExpandedOnOpen() ? 1.0 : 0.0);
+  animation_->Reset(animation_value);
   animation_->SetSlideDuration(
       base::Milliseconds(kSystemMenuCollapseExpandAnimationDurationMs));
   animation_->SetTweenType(gfx::Tween::EASE_IN_OUT);
@@ -314,6 +317,10 @@ void UnifiedSystemTrayController::HandleEnterpriseInfoAction() {
 }
 
 void UnifiedSystemTrayController::ToggleExpanded() {
+  if (features::IsQsRevampEnabled()) {
+    return;
+  }
+
   if (animation_->is_animating()) {
     return;
   }
@@ -338,6 +345,10 @@ void UnifiedSystemTrayController::ToggleExpanded() {
 }
 
 void UnifiedSystemTrayController::BeginDrag(const gfx::PointF& location) {
+  if (features::IsQsRevampEnabled()) {
+    return;
+  }
+
   UpdateDragThreshold();
   // Ignore swipe collapsing when a detailed view is shown as it's confusing.
   if (detailed_view_controller_) {
@@ -348,6 +359,10 @@ void UnifiedSystemTrayController::BeginDrag(const gfx::PointF& location) {
 }
 
 void UnifiedSystemTrayController::UpdateDrag(const gfx::PointF& location) {
+  if (features::IsQsRevampEnabled()) {
+    return;
+  }
+
   // Ignore swipe collapsing when a detailed view is shown as it's confusing.
   if (detailed_view_controller_) {
     return;
@@ -367,13 +382,7 @@ void UnifiedSystemTrayController::UpdateDrag(const gfx::PointF& location) {
 
 void UnifiedSystemTrayController::StartAnimation(bool expand) {
   // UnifiedSystemTrayControllerTest does not add `unified_view_` to a widget.
-  if (features::IsQsRevampEnabled() && quick_settings_view_->GetWidget()) {
-    animation_tracker_.emplace(quick_settings_view_->GetWidget()
-                                   ->GetCompositor()
-                                   ->RequestNewThroughputTracker());
-    animation_tracker_->Start(metrics_util::ForSmoothness(
-        expand ? base::BindRepeating(&ReportExpandAnimationSmoothness)
-               : base::BindRepeating(&ReportCollapseAnimationSmoothness)));
+  if (features::IsQsRevampEnabled()) {
     return;
   }
 
@@ -397,6 +406,10 @@ void UnifiedSystemTrayController::StartAnimation(bool expand) {
 }
 
 void UnifiedSystemTrayController::EndDrag(const gfx::PointF& location) {
+  if (features::IsQsRevampEnabled()) {
+    return;
+  }
+
   // Ignore swipe collapsing when a detailed view is shown as it's confusing.
   if (detailed_view_controller_) {
     return;
@@ -423,6 +436,10 @@ void UnifiedSystemTrayController::EndDrag(const gfx::PointF& location) {
 }
 
 void UnifiedSystemTrayController::Fling(int velocity) {
+  if (features::IsQsRevampEnabled()) {
+    return;
+  }
+
   // Ignore swipe collapsing when a detailed view is shown as it's confusing.
   if (detailed_view_controller_) {
     return;
@@ -459,7 +476,8 @@ void UnifiedSystemTrayController::ShowNetworkDetailedView(bool force) {
 }
 
 void UnifiedSystemTrayController::ShowBluetoothDetailedView() {
-  if (!IsExpanded()) {
+  // QSRevamp does not allow expand/collapse of the System Tray.
+  if (!IsExpanded() && !features::IsQsRevampEnabled()) {
     return;
   }
 
@@ -582,6 +600,10 @@ bool UnifiedSystemTrayController::FocusOut(bool reverse) {
 }
 
 void UnifiedSystemTrayController::EnsureCollapsed() {
+  if (features::IsQsRevampEnabled()) {
+    return;
+  }
+
   if (IsExpanded()) {
     animation_->Hide();
   }
@@ -601,6 +623,10 @@ void UnifiedSystemTrayController::EnsureExpanded() {
 
 void UnifiedSystemTrayController::AnimationEnded(
     const gfx::Animation* animation) {
+  if (features::IsQsRevampEnabled()) {
+    return;
+  }
+
   if (animation_tracker_) {
     animation_tracker_->Stop();
     animation_tracker_.reset();
@@ -611,11 +637,19 @@ void UnifiedSystemTrayController::AnimationEnded(
 
 void UnifiedSystemTrayController::AnimationProgressed(
     const gfx::Animation* animation) {
+  if (features::IsQsRevampEnabled()) {
+    return;
+  }
+
   UpdateExpandedAmount();
 }
 
 void UnifiedSystemTrayController::AnimationCanceled(
     const gfx::Animation* animation) {
+  if (features::IsQsRevampEnabled()) {
+    return;
+  }
+
   animation_->Reset(std::round(animation_->GetCurrentValue()));
   UpdateExpandedAmount();
 }
@@ -825,6 +859,10 @@ void UnifiedSystemTrayController::ResetToCollapsedIfRequired() {
 }
 
 void UnifiedSystemTrayController::CollapseWithoutAnimating() {
+  if (features::IsQsRevampEnabled()) {
+    return;
+  }
+
   unified_view_->SetExpandedAmount(0.0);
   animation_->Reset(0);
 }
@@ -840,6 +878,9 @@ bool UnifiedSystemTrayController::IsDetailedViewShown() const {
 }
 
 void UnifiedSystemTrayController::UpdateDragThreshold() {
+  if (features::IsQsRevampEnabled()) {
+    return;
+  }
   UnifiedSystemTrayView* unified_view = bubble_->unified_view();
   drag_threshold_ = unified_view->GetExpandedSystemTrayHeight() -
                     unified_view->GetCollapsedSystemTrayHeight();
@@ -847,6 +888,10 @@ void UnifiedSystemTrayController::UpdateDragThreshold() {
 
 double UnifiedSystemTrayController::GetDragExpandedAmount(
     const gfx::PointF& location) const {
+  if (features::IsQsRevampEnabled()) {
+    return 1.0;
+  }
+
   double y_diff = (location - drag_init_point_).y();
   // If already expanded, only consider swiping down. Otherwise, only consider
   // swiping up.
@@ -858,7 +903,7 @@ double UnifiedSystemTrayController::GetDragExpandedAmount(
 }
 
 bool UnifiedSystemTrayController::IsExpanded() const {
-  return animation_->IsShowing();
+  return features::IsQsRevampEnabled() || animation_->IsShowing();
 }
 
 void UnifiedSystemTrayController::UpdateBubble() {

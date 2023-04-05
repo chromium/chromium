@@ -27,15 +27,11 @@ class MirrorAccountReconcilorDelegate : public AccountReconcilorDelegate,
   ~MirrorAccountReconcilorDelegate() override;
 
  protected:
-  // AccountReconcilorDelegate:
-  // TODO(sinhak): Make this private after deleting
-  // |ChromeOSAccountReconcilorDelegate|.
-  bool IsReconcileEnabled() const override;
-
   IdentityManager* GetIdentityManager() const { return identity_manager_; }
 
  private:
   // AccountReconcilorDelegate:
+  bool IsReconcileEnabled() const override;
   gaia::GaiaSource GetGaiaApiSource() const override;
   bool ShouldAbortReconcileIfPrimaryHasError() const override;
   ConsentLevel GetConsentLevelForPrimaryAccount() const override;

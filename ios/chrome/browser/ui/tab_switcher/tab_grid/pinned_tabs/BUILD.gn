@@ -11,6 +11,7 @@ source_set("pinned_tabs") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
+    ":constants",
     ":pinned_tabs_ui",
     "//base",
     "//components/favicon/ios:ios",
@@ -32,19 +33,27 @@ source_set("pinned_tabs") {
   frameworks = [ "UniformTypeIdentifiers.framework" ]
 }
 
+source_set("constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "pinned_tabs_constants.h",
+    "pinned_tabs_constants.mm",
+  ]
+  deps = []
+}
+
 source_set("pinned_tabs_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "pinned_cell.h",
     "pinned_cell.mm",
-    "pinned_tabs_constants.h",
-    "pinned_tabs_constants.mm",
     "pinned_tabs_layout.h",
     "pinned_tabs_layout.mm",
     "pinned_tabs_view_controller.h",
     "pinned_tabs_view_controller.mm",
   ]
   deps = [
+    ":constants",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/util",

@@ -13,7 +13,8 @@
           "dimension_sets": [
             {
               "integrity": "high",
-              "kvm": "1"
+              "kvm": "1",
+              "os": "Linux"
             }
           ],
           "expiration": 120,

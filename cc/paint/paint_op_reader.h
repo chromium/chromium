@@ -14,6 +14,7 @@
 #include "cc/paint/transfer_cache_deserialize_helper.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+struct SkGainmapInfo;
 class SkColorSpace;
 
 namespace gpu {
@@ -76,6 +77,7 @@ class CC_PAINT_EXPORT PaintOpReader {
   void Read(SkImageInfo* info);
   void Read(SkSamplingOptions* sampling);
   void Read(sk_sp<SkColorSpace>* color_space);
+  void Read(SkGainmapInfo* gainmap_info);
   void Read(SkYUVColorSpace* yuv_color_space);
   void Read(SkYUVAInfo::PlaneConfig* plane_config);
   void Read(SkYUVAInfo::Subsampling* subsampling);
@@ -191,8 +193,9 @@ class CC_PAINT_EXPORT PaintOpReader {
     kSharedImageProviderSkImageCreationFailed = 51,
     kZeroSkColorFilterBytes = 52,
     kInsufficientPixelData = 53,
+    kSkGainmapInfoDeserializationFailure = 54,
 
-    kMaxValue = kInsufficientPixelData
+    kMaxValue = kSkGainmapInfoDeserializationFailure
   };
 
   template <typename T>

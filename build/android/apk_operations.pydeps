@@ -88,6 +88,7 @@
 ../action_helpers.py
 ../gn_helpers.py
 ../print_python_deps.py
+../zip_helpers.py
 adb_command_line.py
 apk_operations.py
 devil_chromium.py
@@ -97,7 +98,6 @@ gyp/util/__init__.py
 gyp/util/build_utils.py
 gyp/util/md5_check.py
 gyp/util/resource_utils.py
-gyp/util/zipalign.py
 incremental_install/__init__.py
 incremental_install/installer.py
 pylib/__init__.py

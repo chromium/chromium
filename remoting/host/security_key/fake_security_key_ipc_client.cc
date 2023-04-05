@@ -11,16 +11,15 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "ipc/ipc_channel.h"
-#include "mojo/public/cpp/system/isolated_connection.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting {
 
 FakeSecurityKeyIpcClient::FakeSecurityKeyIpcClient(
-    const base::RepeatingClosure& channel_event_callback)
-    : channel_event_callback_(channel_event_callback) {
-  DCHECK(!channel_event_callback_.is_null());
+    const base::RepeatingClosure& connection_event_callback)
+    : SecurityKeyIpcClient(/* service_provider */ nullptr),
+      connection_event_callback_(connection_event_callback) {
+  DCHECK(!connection_event_callback_.is_null());
 }
 
 FakeSecurityKeyIpcClient::~FakeSecurityKeyIpcClient() = default;
@@ -56,48 +55,22 @@ bool FakeSecurityKeyIpcClient::SendSecurityKeyRequest(
 }
 
 void FakeSecurityKeyIpcClient::CloseIpcConnection() {
-  client_channel_.reset();
+  ipc_connected_ = false;
   security_key_forwarder_.reset();
-  mojo_connection_.reset();
-  channel_event_callback_.Run();
+  connection_event_callback_.Run();
 }
 
-bool FakeSecurityKeyIpcClient::ConnectWithPipe(
-    mojo::ScopedMessagePipeHandle pipe) {
-  if (!pipe.is_valid()) {
-    return false;
-  }
-
-  client_channel_ = IPC::Channel::CreateClient(
-      pipe.release(), this, base::SingleThreadTaskRunner::GetCurrentDefault());
-  if (!client_channel_->Connect()) {
-    ADD_FAILURE() << "Failed to connect to the IPC channel.";
-    return false;
-  }
-
-  auto* associated_interface_support =
-      client_channel_->GetAssociatedInterfaceSupport();
-  if (!associated_interface_support) {
-    ADD_FAILURE() << "Failed to retrieve associated interface support.";
-    return false;
-  }
-
-  associated_interface_support->GetRemoteAssociatedInterface(
-      security_key_forwarder_.BindNewEndpointAndPassReceiver());
-
-  return true;
-}
-
-bool FakeSecurityKeyIpcClient::ConnectToServerChannel(
-    const mojo::NamedPlatformChannel::ServerName& server_name) {
-  mojo::PlatformChannelEndpoint endpoint =
-      mojo::NamedPlatformChannel::ConnectToServer(server_name);
-  if (!endpoint.is_valid()) {
-    return false;
-  }
-
-  mojo_connection_ = std::make_unique<mojo::IsolatedConnection>();
-  return ConnectWithPipe(mojo_connection_->Connect(std::move(endpoint)));
+mojo::PendingReceiver<mojom::SecurityKeyForwarder>
+FakeSecurityKeyIpcClient::BindNewPipeAndPassReceiver() {
+  auto pending_receiver = security_key_forwarder_.BindNewPipeAndPassReceiver();
+  security_key_forwarder_.set_disconnect_handler(base::BindOnce(
+      &FakeSecurityKeyIpcClient::CloseIpcConnection, base::Unretained(this)));
+  // This is to determine if the peer binding is successful. If the connection
+  // is disconnected before OnQueryVersionResult() is called, it means the
+  // server has rejected the binding request.
+  security_key_forwarder_.QueryVersion(base::BindOnce(
+      &FakeSecurityKeyIpcClient::OnQueryVersionResult, base::Unretained(this)));
+  return pending_receiver;
 }
 
 void FakeSecurityKeyIpcClient::SendSecurityKeyRequestViaIpc(
@@ -108,26 +81,16 @@ void FakeSecurityKeyIpcClient::SendSecurityKeyRequestViaIpc(
                      base::Unretained(this)));
 }
 
-bool FakeSecurityKeyIpcClient::OnMessageReceived(const IPC::Message& message) {
-  ADD_FAILURE() << "Unexpected call to OnMessageReceived()";
-  return false;
-}
-
-void FakeSecurityKeyIpcClient::OnChannelConnected(int32_t peer_pid) {
-  ipc_channel_connected_ = true;
+void FakeSecurityKeyIpcClient::OnQueryVersionResult(uint32_t unused_version) {
+  ipc_connected_ = true;
   connection_ready_ = true;
-  channel_event_callback_.Run();
-}
-
-void FakeSecurityKeyIpcClient::OnChannelError() {
-  ipc_channel_connected_ = false;
-  channel_event_callback_.Run();
+  connection_event_callback_.Run();
 }
 
 void FakeSecurityKeyIpcClient::OnSecurityKeyResponse(
     const std::string& request_data) {
   last_message_received_ = request_data;
-  channel_event_callback_.Run();
+  connection_event_callback_.Run();
 }
 
 }  // namespace remoting

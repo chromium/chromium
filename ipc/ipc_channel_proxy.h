@@ -434,7 +434,7 @@ class COMPONENT_EXPORT(IPC) ChannelProxy : public Sender {
   bool did_init_;
 
 #if defined(ENABLE_IPC_FUZZER)
-  OutgoingMessageFilter* outgoing_message_filter_;
+  raw_ptr<OutgoingMessageFilter> outgoing_message_filter_;
 #endif
 
   SEQUENCE_CHECKER(sequence_checker_);

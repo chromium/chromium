@@ -64,7 +64,8 @@ class CrosHotspotConfigTest : public testing::Test {
         network_handler->hotspot_capabilities_provider(),
         network_handler->hotspot_state_handler(),
         network_handler->hotspot_controller(),
-        network_handler->hotspot_configuration_handler()));
+        network_handler->hotspot_configuration_handler(),
+        network_handler->hotspot_enabled_state_notifier()));
     base::RunLoop().RunUntilIdle();
   }
 

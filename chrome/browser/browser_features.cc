@@ -209,6 +209,12 @@ BASE_FEATURE(kRestartNetworkServiceUnsandboxedForFailedLaunch,
 BASE_FEATURE(kAppBoundEncryptionMetrics,
              "AppBoundEncryptionMetrics",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables locking the cookie database for profiles.
+// TODO(crbug.com/1430226): Remove after fully launched.
+BASE_FEATURE(kLockProfileCookieDatabase,
+             "LockProfileCookieDatabase",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Enables showing the email of the flex org admin that setup CBCM in the

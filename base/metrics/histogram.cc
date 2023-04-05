@@ -563,8 +563,16 @@ std::unique_ptr<HistogramSamples> Histogram::SnapshotDelta() {
 
   // MarkSamplesAsLogged() is final in order to a prevent vtable lookup here,
   // since SnapshotDelta() might be called often.
-  std::unique_ptr<HistogramSamples> snapshot = SnapshotUnloggedSamplesImpl();
-  MarkSamplesAsLogged(*snapshot);
+  std::unique_ptr<HistogramSamples> snapshot;
+  if (base::FeatureList::IsEnabled(internal::kHistogramNewSnapshotDelta)) {
+    snapshot = std::make_unique<SampleVector>(unlogged_samples_->id(),
+                                              bucket_ranges());
+    snapshot->Extract(*unlogged_samples_);
+    logged_samples_->Add(*snapshot);
+  } else {
+    snapshot = SnapshotUnloggedSamplesImpl();
+    MarkSamplesAsLogged(*snapshot);
+  }
 
   return snapshot;
 }

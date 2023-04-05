@@ -8,8 +8,8 @@
 
 #include "base/base64.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/hash/sha1.h"
+#include "base/uuid.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
@@ -88,9 +88,10 @@ void MockModelTypeProcessor::RunQueuedTasks() {
 std::unique_ptr<CommitRequestData> MockModelTypeProcessor::CommitRequest(
     const ClientTagHash& tag_hash,
     const sync_pb::EntitySpecifics& specifics) {
-  const std::string server_id = HasServerAssignedId(tag_hash)
-                                    ? GetServerAssignedId(tag_hash)
-                                    : base::GenerateGUID();
+  const std::string server_id =
+      HasServerAssignedId(tag_hash)
+          ? GetServerAssignedId(tag_hash)
+          : base::Uuid::GenerateRandomV4().AsLowercaseString();
   return CommitRequest(tag_hash, specifics, server_id);
 }
 
@@ -237,9 +238,10 @@ void MockModelTypeProcessor::SetCommitRequest(
 void MockModelTypeProcessor::AppendCommitRequest(
     const ClientTagHash& tag_hash,
     const sync_pb::EntitySpecifics& specifics) {
-  const std::string server_id = HasServerAssignedId(tag_hash)
-                                    ? GetServerAssignedId(tag_hash)
-                                    : base::GenerateGUID();
+  const std::string server_id =
+      HasServerAssignedId(tag_hash)
+          ? GetServerAssignedId(tag_hash)
+          : base::Uuid::GenerateRandomV4().AsLowercaseString();
   AppendCommitRequest(tag_hash, specifics, server_id);
 }
 

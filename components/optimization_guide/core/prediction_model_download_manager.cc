@@ -7,7 +7,6 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
@@ -16,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/download/public/background_service/background_download_service.h"
@@ -118,7 +118,7 @@ void PredictionModelDownloadManager::StartDownload(
   download::DownloadParams download_params;
   download_params.client =
       download::DownloadClient::OPTIMIZATION_GUIDE_PREDICTION_MODELS;
-  download_params.guid = base::GenerateGUID();
+  download_params.guid = base::GenerateUuid();
   download_params.custom_data[kPredictionModelOptimizationTargetCustomDataKey] =
       proto::OptimizationTarget_Name(optimization_target);
   download_params.callback =

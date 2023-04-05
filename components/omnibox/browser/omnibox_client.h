@@ -75,7 +75,7 @@ class OmniboxClient {
   virtual bool IsDefaultSearchProviderEnabled() const;
 
   // Returns the session ID of the current page.
-  virtual const SessionID& GetSessionID() const = 0;
+  virtual SessionID GetSessionID() const = 0;
 
   // Called when the user changes the selected |index| in the result list via
   // mouse down or arrow key down. |match| is the suggestion corresponding to

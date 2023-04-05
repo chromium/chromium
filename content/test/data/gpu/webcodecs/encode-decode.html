@@ -36,6 +36,7 @@ several frames and accelerated VideoDecoder needs to successfully decode them.
         encoder_config.avc = { format: 'annexb' };
       }
 
+      TEST.log('Starting test with arguments: ' + JSON.stringify(arg));
       let support = await VideoEncoder.isConfigSupported(encoder_config);
       if (!support.supported) {
         TEST.skip('Unsupported codec: ' + arg.codec);
@@ -117,7 +118,13 @@ several frames and accelerated VideoDecoder needs to successfully decode them.
         'frames_decoded mismatch: ' + frames_decoded);
       TEST.assert(
         errors == 0, 'Decoding or encoding errors occurred during the test');
+      TEST.log('Test completed');
     }
+    addManualTestButton({
+      'source_type': 'offscreen',
+      'codec': 'avc1.42001E',
+      'acceleration':'prefer-software'
+    });
   </script>
 </head>
 

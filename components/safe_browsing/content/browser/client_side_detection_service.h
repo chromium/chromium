@@ -20,6 +20,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
@@ -56,7 +57,8 @@ class ClientSideDetectionHost;
 enum class SBClientDetectionClassifyThresholdsResult {
   kSuccess = 0,
   kModelSizeMismatch = 1,
-  kMaxValue = kModelSizeMismatch,
+  kModelLabelNotFound = 2,
+  kMaxValue = kModelLabelNotFound,
 };
 
 // Main service which pushes models to the renderers, responds to classification
@@ -162,8 +164,7 @@ class ClientSideDetectionService
   virtual const base::File& GetVisualTfLiteModel();
 
   // Returns the visual TFLite model thresholds from the model class
-  virtual const google::protobuf::RepeatedPtrField<
-      TfLiteModelMetadata::Threshold>&
+  virtual const base::flat_map<std::string, TfLiteModelMetadata::Threshold>&
   GetVisualTfLiteModelThresholds();
 
   // Compare the scores from classification to TFLite model thresholds

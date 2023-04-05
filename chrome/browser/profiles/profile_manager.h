@@ -270,9 +270,6 @@ class ProfileManager : public Profile::Delegate {
   absl::optional<base::FilePath> FindLastActiveProfile(
       base::RepeatingCallback<bool(ProfileAttributesEntry*)> predicate);
 
-  // Deletes Guest profile's browsing data.
-  static void CleanUpGuestProfile();
-
   DeleteProfileHelper& GetDeleteProfileHelper();
 #endif
 

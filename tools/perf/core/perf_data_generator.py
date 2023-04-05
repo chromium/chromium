@@ -154,7 +154,6 @@ FYI_BUILDERS = {
     'android-cfi-builder-perf-fyi': {
         'additional_compile_targets': [
             'android_tools',
-            'cc_perftests',
             'chrome_public_apk',
             'chromium_builder_perf',
             'push_apps_to_background_apk',
@@ -201,7 +200,6 @@ FYI_BUILDERS = {
     'android_arm64-cfi-builder-perf-fyi': {
         'additional_compile_targets': [
             'android_tools',
-            'cc_perftests',
             'chrome_public_apk',
             'chromium_builder_perf',
             'push_apps_to_background_apk',
@@ -442,11 +440,8 @@ BUILDERS = {
     'android-builder-perf': {
         'additional_compile_targets': [
             'microdump_stackwalk',
-            'chrome_apk',
             'system_webview_google_apk',
             'android_tools',
-            'cc_perftests',
-            'chrome_public_apk',
             'chromium_builder_perf',
             'dump_syms',
             'push_apps_to_background_apk',
@@ -506,11 +501,8 @@ BUILDERS = {
     'android-builder-perf-pgo': {
         'additional_compile_targets': [
             'microdump_stackwalk',
-            'chrome_apk',
             'system_webview_google_apk',
             'android_tools',
-            'cc_perftests',
-            'chrome_public_apk',
             'chromium_builder_perf',
             'dump_syms',
             'push_apps_to_background_apk',
@@ -528,11 +520,8 @@ BUILDERS = {
     'android_arm64-builder-perf': {
         'additional_compile_targets': [
             'microdump_stackwalk',
-            'chrome_apk',
             'system_webview_google_apk',
             'android_tools',
-            'cc_perftests',
-            'chrome_public_apk',
             'chromium_builder_perf',
             'push_apps_to_background_apk',
             'system_webview_apk',
@@ -599,11 +588,8 @@ BUILDERS = {
     'android_arm64-builder-perf-pgo': {
         'additional_compile_targets': [
             'microdump_stackwalk',
-            'chrome_apk',
             'system_webview_google_apk',
             'android_tools',
-            'cc_perftests',
-            'chrome_public_apk',
             'chromium_builder_perf',
             'push_apps_to_background_apk',
             'system_webview_apk',
@@ -1237,6 +1223,24 @@ BUILDERS = {
             'mac_model': 'Macmini9,1',
             'os': 'Mac',
             'pool': 'chrome.tests.perf-pgo',
+        },
+    },
+    'mac-m1-pro-perf': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform':
+        'mac',
+        'dimension': {
+            'cpu': 'arm',
+            'mac_model': 'MacBookPro18,3',
+            'os': 'Mac',
+            'pool': 'chrome.tests.perf',
         },
     },
     'linux-perf': {

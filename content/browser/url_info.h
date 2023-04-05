@@ -123,7 +123,9 @@ struct CONTENT_EXPORT UrlInfo {
   // this will be the origin of the original resource. If the navigation to
   // |url| is performed via the loadDataWithBaseURL API (e.g., in a <webview>
   // tag or on Android Webview), this will be the base origin provided via that
-  // API. Otherwise, this will be nullopt.
+  // API. For renderer-initiated about:blank navigations, this will be the
+  // initiator's origin that about:blank should inherit. Otherwise, this will be
+  // nullopt.
   //
   // TODO(alexmos): Currently, this is also used to hold the origin committed
   // by the renderer at DidCommitNavigation() time, for use in commit-time URL

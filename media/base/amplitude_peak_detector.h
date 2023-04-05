@@ -42,6 +42,8 @@ class MEDIA_EXPORT AmplitudePeakDetector {
   void FindPeak(const void* data, int frames, int bytes_per_sample);
   void FindPeak(const AudioBus* audio_bus);
 
+  void SetIsTracingEnabledForTests(bool is_tracing_enabled);
+
  private:
   bool AreFramesLoud(const AudioBus* audio_bus);
   bool AreFramesLoud(const void* data, int frames, int bytes_per_sample);

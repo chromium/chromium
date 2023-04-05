@@ -5,20 +5,17 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "build/build_config.h"
 #include "chrome/browser/extensions/api/mdns/mdns_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/media/router/test/mock_dns_sd_registry.h"
-#include "chrome/common/extensions/api/mdns.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/result_catcher.h"
-#include "testing/gmock/include/gmock/gmock.h"
 
+using media_router::DnsSdRegistry;
 using ::testing::_;
 using ::testing::A;
-using media_router::DnsSdRegistry;
 
 namespace api = extensions::api;
 
@@ -26,7 +23,7 @@ namespace {
 
 class MDnsAPITest : public extensions::ExtensionApiTest {
  public:
-  MDnsAPITest() {}
+  MDnsAPITest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     extensions::ExtensionApiTest::SetUpCommandLine(command_line);
@@ -38,8 +35,7 @@ class MDnsAPITest : public extensions::ExtensionApiTest {
   void SetUpTestDnsSdRegistry() {
     extensions::MDnsAPI* api = extensions::MDnsAPI::Get(profile());
     dns_sd_registry_ = std::make_unique<media_router::MockDnsSdRegistry>(api);
-    EXPECT_CALL(*dns_sd_registry_, AddObserver(api))
-        .Times(1);
+    EXPECT_CALL(*dns_sd_registry_, AddObserver(api)).Times(1);
     api->SetDnsSdRegistryForTesting(dns_sd_registry_.get());
   }
 
@@ -54,8 +50,7 @@ IN_PROC_BROWSER_TEST_F(MDnsAPITest, RegisterListener) {
   const std::string& service_type = "_googlecast._tcp.local";
   SetUpTestDnsSdRegistry();
 
-  EXPECT_CALL(*dns_sd_registry_, RegisterDnsSdListener(service_type))
-      .Times(1);
+  EXPECT_CALL(*dns_sd_registry_, RegisterDnsSdListener(service_type)).Times(1);
   EXPECT_CALL(*dns_sd_registry_, UnregisterDnsSdListener(service_type))
       .Times(1);
   EXPECT_CALL(*dns_sd_registry_,
@@ -114,8 +109,7 @@ IN_PROC_BROWSER_TEST_F(MDnsAPITest, RegisterMultipleListeners) {
   const std::string& test_service_type = "_testing._tcp.local";
   SetUpTestDnsSdRegistry();
 
-  EXPECT_CALL(*dns_sd_registry_, RegisterDnsSdListener(service_type))
-      .Times(1);
+  EXPECT_CALL(*dns_sd_registry_, RegisterDnsSdListener(service_type)).Times(1);
   EXPECT_CALL(*dns_sd_registry_, UnregisterDnsSdListener(service_type))
       .Times(1);
   EXPECT_CALL(*dns_sd_registry_, RegisterDnsSdListener(test_service_type))

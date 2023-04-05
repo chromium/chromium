@@ -595,10 +595,6 @@ void WebstoreInstaller::StartDownload(const std::string& extension_id,
     ReportFailure(kDownloadDirectoryError, FAILURE_REASON_OTHER);
     return;
   }
-  if (!controller.GetBrowserContext()->GetResourceContext()) {
-    ReportFailure(kDownloadDirectoryError, FAILURE_REASON_OTHER);
-    return;
-  }
 
   // The download url for the given extension is contained in |download_url_|.
   // We will navigate the current tab to this url to start the download. The

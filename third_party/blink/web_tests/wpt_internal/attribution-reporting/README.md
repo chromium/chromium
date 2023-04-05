@@ -95,6 +95,11 @@ returned by the server or the test times out. Please note that receiving reports
 from the server is a destructive operation on the server-side. This would
 essentially clear the server of all the reports.
 
+### waitForSourceToBeRegistered
+
+Waits for a previously initiated source registration `registerAttributionSrc` to
+complete. Please note that a source can be "waited on" once.
+
 ```javascript
 // then syntax
 pollEventLevelReports(100).then(callback...);

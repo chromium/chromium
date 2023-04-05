@@ -20,12 +20,12 @@
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_storage_impl.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_client.h"
-#include "chrome/browser/nearby_sharing/common/nearby_share_http_result.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_switches.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/proto/certificate_rpc.pb.h"
 #include "chrome/browser/nearby_sharing/proto/encrypted_metadata.pb.h"
+#include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
 #include "chromeos/ash/components/nearby/common/scheduling/nearby_scheduler_factory.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
@@ -151,10 +151,11 @@ void RecordGetDecryptedPublicCertificateResultMetric(
       result);
 }
 
-void RecordDownloadPublicCertificatesResultMetrics(bool success,
-                                                   NearbyShareHttpResult result,
-                                                   size_t page_number,
-                                                   size_t certificate_count) {
+void RecordDownloadPublicCertificatesResultMetrics(
+    bool success,
+    ash::nearby::NearbyHttpResult result,
+    size_t page_number,
+    size_t certificate_count) {
   base::UmaHistogramBoolean(
       "Nearby.Share.Certificates.Manager.DownloadPublicCertificatesSuccessRate",
       success);
@@ -637,13 +638,13 @@ void NearbyShareCertificateManagerImpl::OnListPublicCertificatesSuccess(
 void NearbyShareCertificateManagerImpl::OnListPublicCertificatesFailure(
     size_t page_number,
     size_t certificate_count,
-    NearbyShareHttpError error) {
+    ash::nearby::NearbyHttpError error) {
   timer_.Stop();
   client_.reset();
 
   FinishDownloadPublicCertificates(
-      /*success=*/false, NearbyShareHttpErrorToResult(error), page_number,
-      certificate_count);
+      /*success=*/false, ash::nearby::NearbyHttpErrorToResult(error),
+      page_number, certificate_count);
 }
 
 void NearbyShareCertificateManagerImpl::OnListPublicCertificatesTimeout(
@@ -652,7 +653,7 @@ void NearbyShareCertificateManagerImpl::OnListPublicCertificatesTimeout(
   client_.reset();
 
   FinishDownloadPublicCertificates(
-      /*success=*/false, NearbyShareHttpResult::kTimeout, page_number,
+      /*success=*/false, ash::nearby::NearbyHttpResult::kTimeout, page_number,
       certificate_count);
 }
 
@@ -665,14 +666,15 @@ void NearbyShareCertificateManagerImpl::OnPublicCertificatesAddedToStorage(
     OnDownloadPublicCertificatesRequest(page_token, page_number + 1,
                                         certificate_count);
   } else {
-    FinishDownloadPublicCertificates(success, NearbyShareHttpResult::kSuccess,
+    FinishDownloadPublicCertificates(success,
+                                     ash::nearby::NearbyHttpResult::kSuccess,
                                      page_number, certificate_count);
   }
 }
 
 void NearbyShareCertificateManagerImpl::FinishDownloadPublicCertificates(
     bool success,
-    NearbyShareHttpResult http_result,
+    ash::nearby::NearbyHttpResult http_result,
     size_t page_number,
     size_t certificate_count) {
   if (success) {
@@ -683,7 +685,7 @@ void NearbyShareCertificateManagerImpl::FinishDownloadPublicCertificates(
 
     // Recompute the expiration timer to account for new certificates.
     public_certificate_expiration_scheduler_->Reschedule();
-  } else if (http_result == NearbyShareHttpResult::kSuccess) {
+  } else if (http_result == ash::nearby::NearbyHttpResult::kSuccess) {
     NS_LOG(ERROR) << __func__ << ": Public certificates not stored.";
   } else {
     NS_LOG(ERROR) << __func__

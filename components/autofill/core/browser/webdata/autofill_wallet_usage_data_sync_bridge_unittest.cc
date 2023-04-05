@@ -261,8 +261,7 @@ TEST_F(AutofillWalletUsageDataSyncBridgeTest, ApplySyncChanges) {
 
 // Tests that when sync is stopped and the data type is disabled, client should
 // remove all client data.
-TEST_F(AutofillWalletUsageDataSyncBridgeTest,
-       ApplyStopSyncChanges_ClearAllData) {
+TEST_F(AutofillWalletUsageDataSyncBridgeTest, ApplyDisableSyncChanges) {
   // Create a virtual card usage data in the client table.
   VirtualCardUsageData old_data = test::GetVirtualCardUsageData1();
   syncer::EntityChangeList entity_change_list;
@@ -275,36 +274,10 @@ TEST_F(AutofillWalletUsageDataSyncBridgeTest,
   EXPECT_CALL(backend(), CommitChanges());
   EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges());
 
-  // Passing in a non-null metadata change list indicates to the bridge that
-  // sync is stopping but the data type is not disabled.
-  bridge()->ApplyStopSyncChanges(/*delete_metadata_change_list=*/
-                                 bridge()->CreateMetadataChangeList());
+  bridge()->ApplyDisableSyncChanges(/*delete_metadata_change_list=*/
+                                    bridge()->CreateMetadataChangeList());
 
   EXPECT_TRUE(GetVirtualCardUsageDataFromTable().empty());
-}
-
-// Tests that when sync is stopped but the data type is not disabled, client
-// should keep all the data.
-TEST_F(AutofillWalletUsageDataSyncBridgeTest,
-       ApplyStopSyncChanges_KeepAllData) {
-  // Create a virtual card usage data in the client table.
-  VirtualCardUsageData old_data = test::GetVirtualCardUsageData1();
-  syncer::EntityChangeList entity_change_list;
-  entity_change_list.push_back(syncer::EntityChange::CreateAdd(
-      *old_data.usage_data_id(), VirtualCardUsageDataToEntity(old_data)));
-  EXPECT_EQ(bridge()->MergeSyncData(bridge()->CreateMetadataChangeList(),
-                                    std::move(entity_change_list)),
-            absl::nullopt);
-
-  // We do not write to DB at all, so we should not commit any changes.
-  EXPECT_CALL(backend(), CommitChanges()).Times(0);
-  EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges()).Times(0);
-
-  // Passing in a null metadata change list indicates to the bridge that
-  // sync is stopping and the data type is disabled.
-  bridge()->ApplyStopSyncChanges(/*delete_metadata_change_list=*/nullptr);
-
-  EXPECT_FALSE(GetVirtualCardUsageDataFromTable().empty());
 }
 
 // Test to ensure whether the data being valid is logged correctly.

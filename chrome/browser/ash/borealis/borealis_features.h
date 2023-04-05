@@ -15,6 +15,10 @@ class Profile;
 
 namespace borealis {
 
+// Borealis hashes tokens it gets from insert_coin using this salt before
+// storing it in prefs.
+extern const char kSaltForPrefStorage[];
+
 class AsyncAllowChecker;
 
 class BorealisFeatures {

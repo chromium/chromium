@@ -127,8 +127,8 @@ bool SessionRestorationBrowserAgent::RestoreSessionWindow(
     web::WebState* web_state = web_state_list_->GetWebStateAt(index);
 
     const int session_index = index - old_first_non_pinned;
-    DCHECK_EQ(restored_session_storages[session_index].stableIdentifier,
-              web_state->GetStableIdentifier());
+    DCHECK_EQ(restored_session_storages[session_index].uniqueIdentifier,
+              web_state->GetUniqueIdentifier());
 
     if (restored_session_storages[session_index].itemStorages.count > 0) {
       restored_web_states.push_back(web_state);
@@ -143,8 +143,8 @@ bool SessionRestorationBrowserAgent::RestoreSessionWindow(
     web::WebState* web_state = web_state_list_->GetWebStateAt(index);
 
     const int session_index = index - old_count;
-    DCHECK_EQ(restored_session_storages[session_index].stableIdentifier,
-              web_state->GetStableIdentifier());
+    DCHECK_EQ(restored_session_storages[session_index].uniqueIdentifier,
+              web_state->GetUniqueIdentifier());
 
     if (restored_session_storages[session_index].itemStorages.count > 0) {
       restored_web_states.push_back(web_state);

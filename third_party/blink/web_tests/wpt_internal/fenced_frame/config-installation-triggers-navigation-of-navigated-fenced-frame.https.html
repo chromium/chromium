@@ -22,7 +22,7 @@ promise_test(async () => {
   const config_navigation_key = token();
   const config_url = generateURL('resources/fenced-frame-loaded.html',
                                  [config_navigation_key]);
-  fenced_frame.config = new FencedFrameConfig(config_url.toString()); // PAHACER: do i need the toString()?
+  fenced_frame.config = new FencedFrameConfig(config_url.toString());
 
   // Installing an inner config to the fenced frame triggers navigation.
   const config_navigation_expected = "fenced frame loaded";

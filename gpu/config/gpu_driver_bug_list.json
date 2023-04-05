@@ -4184,6 +4184,18 @@
       "features": [
         "flush_before_create_fence"
       ]
+    },
+    {
+      "id": 410,
+      "description": "Disable use of Metal by default on dual-gpu Macs",
+      "cr_bugs": [1423439],
+      "os": {
+        "type": "macosx"
+      },
+      "multi_gpu_style": "amd_switchable",
+      "features": [
+        "disable_metal"
+      ]
     }
   ]
 }

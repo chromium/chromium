@@ -394,6 +394,7 @@ TEST_F(URLUtilTest, TestResolveRelativeWithNonStandardBase) {
       {"about:blank", "#id42", true, "about:blank#id42"},
       {"about:blank", " #id42", true, "about:blank#id42"},
       {"about:blank#oldfrag", "#newfrag", true, "about:blank#newfrag"},
+      {"about:blank", " #id:42", true, "about:blank#id:42"},
       // A surprising side effect of allowing fragments to resolve against
       // any URL scheme is we might break javascript: URLs by doing so...
       {"javascript:alert('foo#bar')", "#badfrag", true,

@@ -15,6 +15,7 @@
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/source_registration_error.mojom-shared.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "mojo/public/cpp/bindings/default_construct_tag.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -95,10 +96,12 @@ DestinationSet::FromJSON(const base::Value* v) {
 
 DestinationSet::DestinationSet(Destinations destinations)
     : destinations_(std::move(destinations)) {
-  DCHECK(DestinationsValid(destinations_));
+  DCHECK(IsValid());
 }
 
-DestinationSet::DestinationSet() = default;
+DestinationSet::DestinationSet(mojo::DefaultConstruct::Tag) {
+  DCHECK(!IsValid());
+}
 
 DestinationSet::~DestinationSet() = default;
 

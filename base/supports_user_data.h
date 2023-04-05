@@ -42,6 +42,7 @@ class BASE_EXPORT SupportsUserData {
   // NOTE: SetUserData() with an empty unique_ptr behaves the same as
   // RemoveUserData().
   Data* GetUserData(const void* key) const;
+  [[nodiscard]] std::unique_ptr<Data> TakeUserData(const void* key);
   void SetUserData(const void* key, std::unique_ptr<Data> data);
   void RemoveUserData(const void* key);
 

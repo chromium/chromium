@@ -1,0 +1,6 @@
+specific_include_rules = {
+  # Testing
+  ".*_unittest\.cc": [
+    "+ui/message_center/message_center.h"
+  ],
+}

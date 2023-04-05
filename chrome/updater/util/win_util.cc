@@ -23,6 +23,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -892,7 +893,8 @@ bool IsShutdownEventSignaled(UpdaterScope scope) {
   return event.IsSignaled();
 }
 
-bool StopGoogleUpdateProcesses(UpdaterScope scope) {
+void StopProcessesUnderPath(const base::FilePath& path,
+                            const base::TimeDelta& wait_period) {
   // Filters processes running under `path_prefix`.
   class PathPrefixProcessFilter : public base::ProcessFilter {
    public:
@@ -919,15 +921,18 @@ bool StopGoogleUpdateProcesses(UpdaterScope scope) {
     const base::FilePath path_prefix_;
   };
 
-  constexpr base::TimeDelta kShutdownWaitSeconds = base::Seconds(45);
+  PathPrefixProcessFilter path_prefix_filter(path);
 
-  absl::optional<base::FilePath> target = GetGoogleUpdateExePath(scope);
-  if (!target)
-    return false;
+  base::ProcessIterator iter(&path_prefix_filter);
+  base::flat_set<std::wstring> process_names_to_cleanup;
+  for (const base::ProcessEntry* entry = iter.NextProcessEntry(); entry;
+       entry = iter.NextProcessEntry()) {
+    process_names_to_cleanup.insert(entry->exe_file());
+  }
 
-  PathPrefixProcessFilter path_prefix_filter(target->DirName());
-  return base::CleanupProcesses(kLegacyExeName, kShutdownWaitSeconds, -1,
-                                &path_prefix_filter);
+  for (const auto& exe_file : process_names_to_cleanup) {
+    base::CleanupProcesses(exe_file, wait_period, -1, &path_prefix_filter);
+  }
 }
 
 absl::optional<base::CommandLine> CommandLineForLegacyFormat(

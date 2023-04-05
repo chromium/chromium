@@ -42,9 +42,7 @@ class BrowserListImpl : public BrowserList, public BrowserObserver {
   std::set<Browser*> browsers_;
   std::set<Browser*> incognito_browsers_;
 
-  // TODO(crbug.com/1421255): This should check that the list is empty
-  // when it is destroyed, and the Observers should be checked.
-  base::ObserverList<BrowserListObserver, false>::Unchecked observers_;
+  base::ObserverList<BrowserListObserver, true> observers_;
 };
 
 #endif  // IOS_CHROME_BROWSER_MAIN_BROWSER_LIST_IMPL_H_

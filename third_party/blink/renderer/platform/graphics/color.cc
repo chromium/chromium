@@ -967,10 +967,6 @@ bool Color::SetNamedColor(const String& name) {
   return found_color;
 }
 
-SkColor Color::ToSkColorDeprecated() const {
-  return SkColorSetARGB(Alpha(), Red(), Green(), Blue());
-}
-
 Color Color::Light() const {
   // Hardcode this common case for speed.
   if (*this == kBlack) {

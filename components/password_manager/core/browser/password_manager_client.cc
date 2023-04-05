@@ -36,8 +36,6 @@ void PasswordManagerClient::ShowPasswordManagerErrorMessage(
 void PasswordManagerClient::ShowTouchToFill(
     PasswordManagerDriver* driver,
     autofill::mojom::SubmissionReadinessState submission_readiness) {}
-
-void PasswordManagerClient::OnPasswordSelected(const std::u16string& text) {}
 #endif
 
 scoped_refptr<device_reauth::DeviceAuthenticator>

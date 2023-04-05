@@ -14,8 +14,8 @@ import time
 from typing import Optional, Tuple
 
 import common
-from common import check_ssh_config_file, get_system_info, find_image_in_sdk, \
-                   register_device_args
+from common import BootMode, boot_device, check_ssh_config_file, \
+    get_system_info, find_image_in_sdk, register_device_args
 from compatible_utils import get_sdk_hash, get_ssh_keys, pave, \
     running_unattended, add_exec_to_file, get_host_arch
 from ffx_integration import ScopedFfxConfig
@@ -39,7 +39,7 @@ def _get_system_info(target: Optional[str]) -> Tuple[str, str]:
     # into zedboot.
     if running_unattended():
         with ScopedFfxConfig('discovery.zedboot.enabled', 'true'):
-            common.run_ffx_command(('target', 'reboot'), target_id=target)
+            boot_device(target, BootMode.REGULAR)
         wait_cmd = common.run_ffx_command(('target', 'wait', '-t', '180'),
                                           target,
                                           check=False)
@@ -140,9 +140,7 @@ def flash(system_image_dir: str,
         lock(_FF_LOCK, timeout=_FF_LOCK_ACQ_TIMEOUT):
         if serial_num:
             with ScopedFfxConfig('discovery.zedboot.enabled', 'true'):
-                common.run_ffx_command(('target', 'reboot', '-b'),
-                                       target,
-                                       check=False)
+                boot_device(target, BootMode.BOOTLOADER)
             for _ in range(10):
                 time.sleep(10)
                 if common.run_ffx_command(('target', 'list', serial_num),
@@ -181,9 +179,8 @@ def update(system_image_dir: str,
                 # TODO(crbug.com/1405525): We should check the device state
                 # before and after rebooting it to avoid unnecessary reboot or
                 # undesired state.
-                common.run_ffx_command(('target', 'reboot', '-r'),
-                                       target,
-                                       check=False)
+                with ScopedFfxConfig('discovery.zedboot.enabled', 'true'):
+                    boot_device(target, BootMode.RECOVERY)
             try:
                 pave(system_image_dir, target)
                 time.sleep(180)

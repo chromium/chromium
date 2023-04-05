@@ -1170,7 +1170,7 @@ TEST(PermissionsTest, GetWarningMessages_CombinedSessions) {
     EXPECT_TRUE(VerifyOnePermissionMessage(
         permissions, Manifest::TYPE_EXTENSION,
         l10n_util::GetStringUTF16(
-            IDS_EXTENSION_PROMPT_WARNING_HISTORY_READ_AND_SESSIONS)));
+            IDS_EXTENSION_PROMPT_WARNING_HISTORY_READ_ON_ALL_DEVICES)));
   }
   {
     APIPermissionSet api_permissions;
@@ -1186,7 +1186,7 @@ TEST(PermissionsTest, GetWarningMessages_CombinedSessions) {
     EXPECT_TRUE(VerifyOnePermissionMessage(
         permissions, Manifest::TYPE_EXTENSION,
         l10n_util::GetStringUTF16(
-            IDS_EXTENSION_PROMPT_WARNING_HISTORY_WRITE_AND_SESSIONS)));
+            IDS_EXTENSION_PROMPT_WARNING_HISTORY_WRITE_ON_ALL_DEVICES)));
   }
 }
 

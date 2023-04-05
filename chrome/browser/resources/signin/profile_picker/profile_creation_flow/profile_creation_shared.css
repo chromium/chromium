@@ -15,39 +15,10 @@
   --banner-height: 244px;
 }
 
-#leftBanner {
-  background: url(../images/left_banner_image.svg);
-  left: 0;
-}
-
-#rightBanner {
-  background: url(../images/right_banner_image.svg);
-  right: 0;
-}
-
-@media (prefers-color-scheme: dark) {
-  #leftBanner {
-    background: url(../images/dark_mode_left_banner_image.svg);
-  }
-
-  #rightBanner {
-    background: url(../images/dark_mode_right_banner_image.svg);
-  }
-}
-
 #headerContainer {
   height: var(--banner-height);
   position: relative;
   width: 100%;
-}
-
-.banner {
-  height: 400px;
-  overflow: hidden;
-  position: absolute;
-  top: 0;
-  width: 169px;
-  z-index: -1;
 }
 
 #backButton {

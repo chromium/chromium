@@ -7,7 +7,6 @@
 #include <set>
 #include <string>
 
-#include "base/guid.h"
 #include "base/notreached.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"

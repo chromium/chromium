@@ -11,10 +11,15 @@
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
+#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom-forward.h"
 
 namespace content {
 class WebUI;
 }  // namespace content
+
+namespace ui {
+class ColorChangeHandler;
+}  // namespace ui
 
 namespace ash {
 
@@ -38,7 +43,14 @@ class FirmwareUpdateAppUI : public ui::MojoWebDialogUI {
   void BindInterface(
       mojo::PendingReceiver<firmware_update::mojom::UpdateProvider> receiver);
 
+  void BindInterface(
+      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>);
+
  private:
+  // The color change handler notifies the WebUI when the color provider
+  // changes.
+  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
+
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 

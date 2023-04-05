@@ -125,8 +125,8 @@ void FencedFrame::Navigate(
   // need to provide a `source_site_instance`.
   url::Origin initiator_origin;
   // Similarly, we don't want to leak information from the outer frame tree via
-  // base url.
-  GURL initiator_base_url;
+  // base url, so we pass nullopt for `initiator_base_url` to
+  // NavigateFromFrameProxy.
 
   // TODO(yaoxia): implement this. This information will be propagated to the
   // `NavigationHandle`. Skip propagating here is fine for now, because we are
@@ -140,7 +140,7 @@ void FencedFrame::Navigate(
       inner_root->current_frame_host(), validated_url,
       /*initiator_frame_token=*/nullptr,
       content::ChildProcessHost::kInvalidUniqueID, initiator_origin,
-      initiator_base_url,
+      /*initiator_base_url=*/absl::nullopt,
       /*source_site_instance=*/nullptr, content::Referrer(),
       ui::PAGE_TRANSITION_AUTO_SUBFRAME,
       /*should_replace_current_entry=*/true, download_policy, "GET",

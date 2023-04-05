@@ -31,6 +31,7 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "net/base/network_change_notifier.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -124,10 +125,12 @@ class FeedService::StreamDelegateImpl : public FeedStream::Delegate {
  public:
   StreamDelegateImpl(PrefService* local_state,
                      FeedService::Delegate* service_delegate,
-                     signin::IdentityManager* identity_manager)
+                     signin::IdentityManager* identity_manager,
+                     PrefService* profile_prefs)
       : service_delegate_(service_delegate),
         eula_notifier_(local_state),
-        identity_manager_(identity_manager) {}
+        identity_manager_(identity_manager),
+        profile_prefs_(profile_prefs) {}
   StreamDelegateImpl(const StreamDelegateImpl&) = delete;
   StreamDelegateImpl& operator=(const StreamDelegateImpl&) = delete;
 
@@ -163,6 +166,11 @@ class FeedService::StreamDelegateImpl : public FeedStream::Delegate {
     return AccountInfo(identity_manager_->GetPrimaryAccountInfo(
         GetConsentLevelNeededForPersonalizedFeed()));
   }
+  // Returns if signin is allowed on Android. Return true on other platform so
+  // behavior is unchanged there.
+  bool IsSigninAllowed() override {
+    return profile_prefs_->GetBoolean(::prefs::kSigninAllowed);
+  }
   bool IsSyncOn() override {
     return identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync);
   }
@@ -183,6 +191,7 @@ class FeedService::StreamDelegateImpl : public FeedStream::Delegate {
   std::unique_ptr<EulaObserver> eula_observer_;
   std::unique_ptr<HistoryObserverImpl> history_observer_;
   raw_ptr<signin::IdentityManager> identity_manager_;
+  raw_ptr<PrefService> profile_prefs_;
 };
 
 class FeedService::IdentityManagerObserverImpl
@@ -242,7 +251,7 @@ FeedService::FeedService(
     : delegate_(std::move(delegate)),
       refresh_task_scheduler_(std::move(refresh_task_scheduler)) {
   stream_delegate_ = std::make_unique<StreamDelegateImpl>(
-      local_state, delegate_.get(), identity_manager);
+      local_state, delegate_.get(), identity_manager, profile_prefs);
   network_delegate_ =
       std::make_unique<NetworkDelegateImpl>(delegate_.get(), identity_manager);
   metrics_reporter_ = std::make_unique<MetricsReporter>(profile_prefs);

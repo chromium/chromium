@@ -112,6 +112,10 @@ class RemoteSuggestionsService : public KeyedService {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // Exposed for testing.
+  void set_url_loader_factory_for_testing(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
  private:
   // Called when the transfer is done. Notifies `observers_` and calls
   // `completion_callback`.

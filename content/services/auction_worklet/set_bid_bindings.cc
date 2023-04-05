@@ -4,6 +4,7 @@
 
 #include "content/services/auction_worklet/set_bid_bindings.h"
 
+#include <cmath>
 #include <memory>
 #include <string>
 #include <utility>
@@ -18,6 +19,7 @@
 #include "gin/converter.h"
 #include "gin/dictionary.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
+#include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size_utils.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -141,12 +143,14 @@ void SetBidBindings::ReInitialize(
     base::TimeTicks start,
     bool has_top_level_seller_origin,
     const mojom::BidderWorkletNonSharedParams* bidder_worklet_non_shared_params,
+    const std::string& per_buyer_currency,
     base::RepeatingCallback<bool(const GURL&)> is_ad_excluded,
     base::RepeatingCallback<bool(const GURL&)> is_component_ad_excluded) {
   DCHECK(bidder_worklet_non_shared_params->ads.has_value());
   start_ = start;
   has_top_level_seller_origin_ = has_top_level_seller_origin;
   bidder_worklet_non_shared_params_ = bidder_worklet_non_shared_params;
+  per_buyer_currency_ = per_buyer_currency;
   is_ad_excluded_ = std::move(is_ad_excluded);
   is_component_ad_excluded_ = std::move(is_component_ad_excluded);
 }
@@ -166,6 +170,7 @@ void SetBidBindings::Reset() {
   bid_.reset();
   // Make sure we don't keep any dangling references to auction input.
   bidder_worklet_non_shared_params_ = nullptr;
+  per_buyer_currency_.clear();
   is_ad_excluded_.Reset();
   is_component_ad_excluded_.Reset();
 }
@@ -234,6 +239,24 @@ bool SetBidBindings::SetBid(v8::Local<v8::Value> generate_bid_result,
     return true;
   }
 
+  std::string bid_currency = blink::kUnspecifiedAdCurrency;
+  if (result_dict.Get("bidCurrency", &bid_currency)) {
+    if (!blink::IsValidAdCurrencyCode(bid_currency)) {
+      errors_out.push_back(
+          base::StringPrintf("%sbidCurrency of '%s' is not a currency code.",
+                             error_prefix.c_str(), bid_currency.c_str()));
+      return false;
+    }
+  }
+
+  if (!blink::VerifyAdCurrencyCode(per_buyer_currency_, bid_currency)) {
+    errors_out.push_back(base::StringPrintf(
+        "%sbidCurrency mismatch; returned '%s', expected '%s'.",
+        error_prefix.c_str(), bid_currency.c_str(),
+        per_buyer_currency_.c_str()));
+    return false;
+  }
+
   absl::optional<double> ad_cost;
   double tmp_ad_cost;
   if (result_dict.Get("adCost", &tmp_ad_cost)) {
@@ -274,6 +297,14 @@ bool SetBidBindings::SetBid(v8::Local<v8::Value> generate_bid_result,
                         "set to true. Bid dropped from component auction."}));
       return false;
     }
+  }
+
+  absl::optional<double> modeling_signals;
+  double tmp_modeling_signals;
+  if (result_dict.Get("modelingSignals", &tmp_modeling_signals) &&
+      !std::isnan(tmp_modeling_signals) && !std::isinf(tmp_modeling_signals) &&
+      tmp_modeling_signals >= 0 && tmp_modeling_signals < (1 << 12)) {
+    modeling_signals = tmp_modeling_signals;
   }
 
   std::string render_url_string;
@@ -405,11 +436,11 @@ bool SetBidBindings::SetBid(v8::Local<v8::Value> generate_bid_result,
   // including the time from the last setBid() call to when the bidder worklet
   // timed out, if the worklet did time out. So `bid_duration` is calculated
   // when ownership of the bid is taken by the caller, instead of here.
-  bid_ =
-      mojom::BidderWorkletBid::New(std::move(ad_json), bid, std::move(ad_cost),
-                                   blink::AdDescriptor(render_url, render_size),
-                                   std::move(ad_component_descriptors),
-                                   /*bid_duration=*/base::TimeDelta());
+  bid_ = mojom::BidderWorkletBid::New(
+      std::move(ad_json), bid, std::move(bid_currency), std::move(ad_cost),
+      blink::AdDescriptor(render_url, render_size),
+      std::move(ad_component_descriptors), std::move(modeling_signals),
+      /*bid_duration=*/base::TimeDelta());
   return true;
 }
 

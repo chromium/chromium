@@ -6,7 +6,6 @@ import("//build/config/chromebox_for_meetings/buildflags.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ozone.gni")
 import("//build/config/sanitizers/sanitizers.gni")
-import("//chromeos/ash/components/hibernate/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
 import("//printing/buildflags/buildflags.gni")
@@ -657,6 +656,8 @@ source_set("ash") {
     "bluetooth/hats_bluetooth_revamp_trigger_impl.h",
     "boot_times_recorder.cc",
     "boot_times_recorder.h",
+    "boot_times_recorder_tab_helper.cc",
+    "boot_times_recorder_tab_helper.h",
     "borealis/borealis_app_launcher.cc",
     "borealis/borealis_app_launcher.h",
     "borealis/borealis_app_launcher_impl.cc",
@@ -709,6 +710,8 @@ source_set("ash") {
     "borealis/borealis_switches.h",
     "borealis/borealis_task.cc",
     "borealis/borealis_task.h",
+    "borealis/borealis_token_hardware_checker.cc",
+    "borealis/borealis_token_hardware_checker.h",
     "borealis/borealis_util.cc",
     "borealis/borealis_util.h",
     "borealis/borealis_window_manager.cc",
@@ -1869,8 +1872,6 @@ source_set("ash") {
     "login/signin/oauth2_login_manager.h",
     "login/signin/oauth2_login_manager_factory.cc",
     "login/signin/oauth2_login_manager_factory.h",
-    "login/signin/oauth2_login_verifier.cc",
-    "login/signin/oauth2_login_verifier.h",
     "login/signin/oauth2_token_fetcher.cc",
     "login/signin/oauth2_token_fetcher.h",
     "login/signin/oauth2_token_initializer.cc",
@@ -2395,6 +2396,8 @@ source_set("ash") {
     "policy/handlers/minimum_version_policy_handler.h",
     "policy/handlers/minimum_version_policy_handler_delegate_impl.cc",
     "policy/handlers/minimum_version_policy_handler_delegate_impl.h",
+    "policy/handlers/screensaver_image_downloader.cc",
+    "policy/handlers/screensaver_image_downloader.h",
     "policy/handlers/screensaver_images_policy_handler.cc",
     "policy/handlers/screensaver_images_policy_handler.h",
     "policy/handlers/system_proxy_handler.cc",
@@ -3174,6 +3177,8 @@ source_set("ash") {
     "web_applications/os_settings_web_app_info.h",
     "web_applications/os_url_handler_system_web_app_info.cc",
     "web_applications/os_url_handler_system_web_app_info.h",
+    "web_applications/personalization_app/ambient_video_albums.cc",
+    "web_applications/personalization_app/ambient_video_albums.h",
     "web_applications/personalization_app/enterprise_policy_delegate_impl.cc",
     "web_applications/personalization_app/enterprise_policy_delegate_impl.h",
     "web_applications/personalization_app/keyboard_backlight_color_metrics_provider.cc",
@@ -3822,6 +3827,7 @@ source_set("ash") {
     "//chromeos/ash/components/dbus/featured",
     "//chromeos/ash/components/dbus/federated",
     "//chromeos/ash/components/dbus/fwupd",
+    "//chromeos/ash/components/dbus/hiberman",
     "//chromeos/ash/components/dbus/human_presence",
     "//chromeos/ash/components/dbus/image_burner",
     "//chromeos/ash/components/dbus/image_loader",
@@ -3844,7 +3850,6 @@ source_set("ash") {
     "//chromeos/ash/components/dbus/virtual_file_provider",
     "//chromeos/ash/components/device_activity",
     "//chromeos/ash/components/fwupd",
-    "//chromeos/ash/components/hibernate:buildflags",
     "//chromeos/ash/components/local_search_service/public/cpp",
     "//chromeos/ash/components/mojo_service_manager",
     "//chromeos/ash/components/multidevice:stub_multidevice_util",
@@ -4068,10 +4073,6 @@ source_set("ash") {
     ":dbus_service_files",
     ":mojo_service_manager_policy",
   ]
-
-  if (enable_hibernate) {
-    deps += [ "//chromeos/ash/components/dbus/hiberman" ]
-  }
 
   if (enable_rlz) {
     deps += [ "//components/rlz" ]
@@ -4724,6 +4725,7 @@ source_set("unit_tests") {
     "../ui/webui/settings/ash/multidevice_section_unittest.cc",
     "../ui/webui/settings/ash/os_apps_page/app_notification_handler_unittest.cc",
     "../ui/webui/settings/ash/os_apps_page/mojom/app_type_mojom_traits_unittest.cc",
+    "../ui/webui/settings/ash/os_settings_hats_handler_unittest.cc",
     "../ui/webui/settings/ash/os_settings_manager_unittest.cc",
     "../ui/webui/settings/ash/os_settings_section_unittest.cc",
 
@@ -5006,6 +5008,7 @@ source_set("unit_tests") {
     "borealis/borealis_security_delegate_unittest.cc",
     "borealis/borealis_shutdown_monitor_unittest.cc",
     "borealis/borealis_task_unittest.cc",
+    "borealis/borealis_token_hardware_checker_unittest.cc",
     "borealis/borealis_util_unittest.cc",
     "borealis/borealis_window_manager_unittest.cc",
     "borealis/infra/described_unittest.cc",
@@ -5433,6 +5436,7 @@ source_set("unit_tests") {
     "policy/handlers/extension_cache_unittest.cc",
     "policy/handlers/lock_to_single_user_manager_unittest.cc",
     "policy/handlers/minimum_version_policy_handler_unittest.cc",
+    "policy/handlers/screensaver_image_downloader_unittest.cc",
     "policy/handlers/screensaver_images_policy_handler_unittest.cc",
     "policy/handlers/system_proxy_handler_unittest.cc",
     "policy/handlers/tpm_auto_update_mode_policy_handler_unittest.cc",
@@ -5671,6 +5675,7 @@ source_set("unit_tests") {
     "web_applications/help_app/help_app_discover_tab_notification_unittest.cc",
     "web_applications/help_app/help_app_notification_controller_unittest.cc",
     "web_applications/os_settings_web_app_info_unittest.cc",
+    "web_applications/personalization_app/ambient_video_albums_unittest.cc",
     "web_applications/personalization_app/mock_personalization_app_manager.cc",
     "web_applications/personalization_app/mock_personalization_app_manager.h",
     "web_applications/personalization_app/personalization_app_ambient_provider_impl_unittest.cc",
@@ -5990,6 +5995,7 @@ source_set("unit_tests") {
     "//components/exo",
     "//components/exo:test_support",
     "//components/exo/server",
+    "//components/exo/wayland:test_support",
     "//components/favicon/core",
     "//components/favicon/core/test:test_support",
     "//components/favicon_base",

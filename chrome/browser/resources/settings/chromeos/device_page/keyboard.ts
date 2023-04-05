@@ -122,6 +122,11 @@ class SettingsKeyboardElement extends SettingsKeyboardElementBase {
       },
 
       /**
+       * Whether the setting for long press diacritics should be shown
+       */
+      shouldShowDiacriticSetting_: Boolean,
+
+      /**
        * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
@@ -130,6 +135,7 @@ class SettingsKeyboardElement extends SettingsKeyboardElementBase {
           Setting.kKeyboardFunctionKeys,
           Setting.kKeyboardAutoRepeat,
           Setting.kKeyboardShortcuts,
+          Setting.kShowDiacritic,
         ]),
       },
     };
@@ -143,6 +149,8 @@ class SettingsKeyboardElement extends SettingsKeyboardElementBase {
   private showAppleCommandKey_: boolean;
   private showCapsLock_: boolean;
   private showExternalMetaKey_: boolean;
+  private shouldShowDiacriticSetting_ =
+      loadTimeData.getBoolean('allowDiacriticsOnPhysicalKeyboardLongpress');
 
   constructor() {
     super();

@@ -71,10 +71,18 @@ ExtractOAuth2TokenPairResponse(const std::string& data) {
   gaia::TokenServiceFlags service_flags =
       gaia::ParseServiceFlags(id_token ? *id_token : std::string());
 
+  bool is_bound_to_key = false;
+  // If present, indicates special rules of how the token must be used.
+  std::string* refresh_token_type = dict.FindString("refresh_token_type");
+  if (refresh_token_type &&
+      base::EqualsCaseInsensitiveASCII(*refresh_token_type, "bound_to_key")) {
+    is_bound_to_key = true;
+  }
+
   return std::make_unique<const GaiaAuthConsumer::ClientOAuthResult>(
       *refresh_token, *access_token, expires_in_secs.value(),
       service_flags.is_child_account,
-      service_flags.is_under_advanced_protection);
+      service_flags.is_under_advanced_protection, is_bound_to_key);
 }
 
 // Parses server responses for token revocation.
@@ -162,9 +170,6 @@ std::string GaiaSource::ToString() {
     case Type::kAccountReconcilorMirror:
       source_string = "ChromiumAccountReconcilor";
       break;
-    case Type::kOAuth2LoginVerifier:
-      source_string = "ChromiumOAuth2LoginVerifier";
-      break;
     case Type::kPrimaryAccountManager:
       // Even though this string refers to an old name from the Chromium POV, it
       // should not be changed as it is passed server-side.
@@ -191,6 +196,10 @@ const char GaiaAuthFetcher::kOAuth2CodeToTokenPairBodyFormat[] =
 // static
 const char GaiaAuthFetcher::kOAuth2CodeToTokenPairDeviceIdParam[] =
     "device_id=%s&device_type=chrome";
+// static
+const char
+    GaiaAuthFetcher::kOAuth2CodeToTokenPairBindingRegistrationTokenParam[] =
+        "bound_token_registration_jwt=%s";
 // static
 const char GaiaAuthFetcher::kOAuth2RevokeTokenBodyFormat[] = "token=%s";
 // static
@@ -322,7 +331,8 @@ void GaiaAuthFetcher::CreateAndStartGaiaFetcher(
 // static
 std::string GaiaAuthFetcher::MakeGetTokenPairBody(
     const std::string& auth_code,
-    const std::string& device_id) {
+    const std::string& device_id,
+    const std::string& binding_registration_token) {
   std::string encoded_scope =
       base::EscapeUrlEncodedData(GaiaConstants::kOAuth1LoginScope, true);
   std::string encoded_client_id = base::EscapeUrlEncodedData(
@@ -337,6 +347,11 @@ std::string GaiaAuthFetcher::MakeGetTokenPairBody(
   if (!device_id.empty()) {
     body += "&" + base::StringPrintf(kOAuth2CodeToTokenPairDeviceIdParam,
                                      device_id.c_str());
+  }
+  if (!binding_registration_token.empty()) {
+    body += "&" + base::StringPrintf(
+                      kOAuth2CodeToTokenPairBindingRegistrationTokenParam,
+                      binding_registration_token.c_str());
   }
   return body;
 }
@@ -420,19 +435,24 @@ void GaiaAuthFetcher::StartRevokeOAuth2Token(const std::string& auth_token) {
 }
 
 void GaiaAuthFetcher::StartAuthCodeForOAuth2TokenExchange(
-    const std::string& auth_code) {
-  StartAuthCodeForOAuth2TokenExchangeWithDeviceId(auth_code, std::string());
+    const std::string& auth_code,
+    const std::string& binding_registration_token) {
+  StartAuthCodeForOAuth2TokenExchangeWithDeviceId(
+      auth_code, /*device_id=*/std::string(), binding_registration_token);
 }
 
 void GaiaAuthFetcher::StartAuthCodeForOAuth2TokenExchangeWithDeviceId(
     const std::string& auth_code,
-    const std::string& device_id) {
+    const std::string& device_id,
+    const std::string& binding_registration_token) {
   DCHECK(!fetch_pending_) << "Tried to fetch two things at once!";
 
   VLOG(1) << "Starting OAuth token pair fetch";
-  request_body_ = MakeGetTokenPairBody(auth_code, device_id);
+  request_body_ =
+      MakeGetTokenPairBody(auth_code, device_id, binding_registration_token);
   net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("gaia_auth_exchange_device_id", R"(
+      net::DefineNetworkTrafficAnnotation("gaia_auth_exchange_device_id",
+                                          R"(
         semantics {
           sender: "Chrome - Google authentication API"
           description:
@@ -443,8 +463,8 @@ void GaiaAuthFetcher::StartAuthCodeForOAuth2TokenExchangeWithDeviceId(
             "the end of the Chrome sign-in flow."
           data:
             "The Google console client ID and client secret of the Chrome "
-            "application, the OAuth 2.0 authorization code, and the ID of the "
-            "device."
+            "application, the OAuth 2.0 authorization code, the ID of the "
+            "device, and the public binding key."
           destination: GOOGLE_OWNED_SERVICE
         }
         policy {

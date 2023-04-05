@@ -14,6 +14,7 @@ source_set("quick_start_decoder") {
 
   deps = [
     "//base",
+    "//chromeos/ash/components/quick_start",
     "//chromeos/ash/services/nearby/public/mojom",
     "//components/cbor",
     "//mojo/public/cpp/bindings",
@@ -29,6 +30,7 @@ source_set("unit_tests") {
   deps = [
     ":quick_start_decoder",
     "//base/test:test_support",
+    "//chromeos/ash/components/quick_start",
     "//chromeos/ash/services/nearby/public/mojom",
     "//components/cbor",
     "//mojo/public/cpp/bindings",

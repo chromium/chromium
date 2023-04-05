@@ -12,7 +12,7 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
-namespace fast_ink {
+namespace ash {
 
 // FastInkView is a view supporting low-latency rendering by using FastInkHost.
 // The view's widget must have the same bounds as a root window (covers the
@@ -38,21 +38,21 @@ class FastInkView : public views::View {
 
   // Gets a handle that paints to the GPU buffer that is associated with the
   // FastInk surface without flickers.
-  std::unique_ptr<ash::FastInkHost::ScopedPaint> GetScopedPaint(
+  std::unique_ptr<FastInkHost::ScopedPaint> GetScopedPaint(
       const gfx::Rect& damage_rect_in_window) const;
 
  protected:
   FastInkView();
 
-  ash::FastInkHost* host() { return host_.get(); }
-  void SetFastInkHost(std::unique_ptr<ash::FastInkHost> host);
+  FastInkHost* host() { return host_.get(); }
+  void SetFastInkHost(std::unique_ptr<FastInkHost> host);
 
-  virtual ash::FastInkHost::PresentationCallback GetPresentationCallback();
+  virtual FastInkHost::PresentationCallback GetPresentationCallback();
 
  private:
-  std::unique_ptr<ash::FastInkHost> host_;
+  std::unique_ptr<FastInkHost> host_;
 };
 
-}  // namespace fast_ink
+}  // namespace ash
 
 #endif  // ASH_FAST_INK_FAST_INK_VIEW_H_

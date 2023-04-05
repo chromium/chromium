@@ -28,6 +28,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
 #include "url/gurl.h"
@@ -86,6 +87,9 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
       double browser_signal_highest_scoring_other_bid,
       bool browser_signal_made_highest_scoring_other_bid,
       absl::optional<double> browser_signal_ad_cost,
+      absl::optional<uint16_t> browser_signal_modeling_signals,
+      uint8_t browser_signal_join_count,
+      uint8_t browser_signal_recency,
       const url::Origin& browser_signal_seller_origin,
       const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
       uint32_t bidding_signals_data_version,
@@ -101,6 +105,7 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
       const absl::optional<std::string>& auction_signals_json,
       const absl::optional<std::string>& per_buyer_signals_json,
       const absl::optional<base::TimeDelta> per_buyer_timeout,
+      const std::string& per_buyer_currency,
       const absl::optional<GURL>& direct_from_seller_per_buyer_signals,
       const absl::optional<GURL>& direct_from_seller_auction_signals) override;
 
@@ -117,6 +122,7 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
   // should be offered. Waits for the GenerateBid() call first, if needed.
   void InvokeGenerateBidCallback(
       absl::optional<double> bid,
+      const std::string& bid_currency = blink::kUnspecifiedAdCurrency,
       const blink::AdDescriptor& ad_descriptor = blink::AdDescriptor(),
       auction_worklet::mojom::BidderWorkletKAnonEnforcedBidPtr mojo_kanon_bid =
           auction_worklet::mojom::BidderWorkletKAnonEnforcedBidPtr(),
@@ -209,12 +215,14 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
   // auction_worklet::mojom::SellerWorklet implementation:
   void ScoreAd(const std::string& ad_metadata_json,
                double bid,
+               const std::string& bid_currency,
                const blink::AuctionConfig::NonSharedParams&
                    auction_ad_config_non_shared_params,
                const absl::optional<GURL>& direct_from_seller_seller_signals,
                const absl::optional<GURL>& direct_from_seller_auction_signals,
                auction_worklet::mojom::ComponentAuctionOtherSellerPtr
                    browser_signals_other_seller,
+               const absl::optional<std::string>& component_expect_bid_currency,
                const url::Origin& browser_signal_interest_group_owner,
                const GURL& browser_signal_render_url,
                const std::vector<GURL>& browser_signal_ad_components,

@@ -206,7 +206,6 @@ extern const char kPrintingAPIExtensionsAllowlist[];
 extern const char kEnableSyncConsent[];
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-extern const char kOwnerPrimaryPointingStickButtonRight[];
 extern const char kUse24HourClock[];
 extern const char kUserTimezone[];
 extern const char kResolveTimezoneByGeolocationMethod[];
@@ -290,6 +289,8 @@ extern const char kHatsGeneralCameraIsSelected[];
 extern const char kHatsGeneralCameraSurveyCycleEndTs[];
 extern const char kHatsPrivacyHubBaselineIsSelected[];
 extern const char kHatsPrivacyHubBaselineCycleEndTs[];
+extern const char kHatsOsSettingsSearchSurveyCycleEndTs[];
+extern const char kHatsOsSettingsSearchSurveyIsSelected[];
 extern const char kEolStatus[];
 extern const char kEndOfLifeDate[];
 extern const char kEolNotificationDismissed[];
@@ -758,8 +759,6 @@ extern const char kEnrollmentPsmDeterminationTime[];
 extern const char kDeviceActivityTimes[];
 extern const char kAppActivityTimes[];
 extern const char kUserActivityTimes[];
-extern const char kOwnerPrimaryMouseButtonRight[];
-extern const char kOwnerTapToClickEnabled[];
 extern const char kUptimeLimit[];
 extern const char kRebootAfterUpdate[];
 extern const char kDeviceRobotAnyApiRefreshToken[];
@@ -980,7 +979,6 @@ extern const char kLacrosDataBackwardMigrationMode[];
 extern const char kCryptAuthDeviceId[];
 extern const char kCryptAuthInstanceId[];
 extern const char kCryptAuthInstanceIdToken[];
-extern const char kEasyUnlockHardlockState[];
 
 extern const char kRecoveryComponentNeedsElevation[];
 

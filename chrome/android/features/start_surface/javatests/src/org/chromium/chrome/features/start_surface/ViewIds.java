@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.features.start_surface;
 
-import org.chromium.chrome.R;
+import org.chromium.chrome.start_surface.R;
 
 /**
  * This class allows external tests to use these view IDs without depending directly on the internal

@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
@@ -75,44 +74,6 @@ void InvalidatorRegistrarWithMemory::RegisterPrefs(
   // For local state, we want to register exactly the same prefs as for profile
   // prefs; see comment in the header.
   RegisterProfilePrefs(registry);
-}
-
-// static
-void InvalidatorRegistrarWithMemory::ClearTopicsWithObsoleteOwnerNames(
-    PrefService* prefs) {
-  // Go through all senders and their topics. Find topics with deprecated owner
-  // name and mark them for cleanup.
-  ScopedDictPrefUpdate update(prefs, kTopicsToHandler);
-  for (auto sender_to_topics : update.Get()) {
-    const std::string& sender_id = sender_to_topics.first;
-
-    base::flat_set<std::string> topics_to_cleanup;
-    for (auto topic_to_handler : sender_to_topics.second.GetDict()) {
-      const std::string& topic_name = topic_to_handler.first;
-      std::string handler_name;
-
-      if (topic_to_handler.second.is_dict()) {
-        const std::string* handler_name_ptr =
-            topic_to_handler.second.FindStringKey(kHandler);
-        if (handler_name_ptr)
-          handler_name = *handler_name_ptr;
-      } else if (topic_to_handler.second.is_string()) {
-        handler_name = topic_to_handler.second.GetString();
-      }
-
-      // "Cloud" owner name used to be non unique and shared between all
-      // instances of |CloudPolicyInvalidator|.
-      // "RemoteCommand" owner name used to be non unique and shared between all
-      // instances of |RemoteCommandsInvalidator|.
-      if (handler_name == "Cloud" || handler_name == "RemoteCommand") {
-        topics_to_cleanup.insert(topic_name);
-      }
-    }
-    base::Value::Dict* topics_data = update->FindDict(sender_id);
-    for (const std::string& topic_name : topics_to_cleanup) {
-      topics_data->Remove(topic_name);
-    }
-  }
 }
 
 InvalidatorRegistrarWithMemory::InvalidatorRegistrarWithMemory(

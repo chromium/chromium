@@ -38,6 +38,7 @@ class BackgroundSyncScheduler;
 class BrowserContextImpl;
 class BrowsingDataRemoverImpl;
 class DownloadManager;
+class NavigationEntryScreenshotManager;
 class PermissionController;
 class PrefetchService;
 class StoragePartitionImplMap;
@@ -99,6 +100,8 @@ class BrowserContextImpl {
   void SetPrefetchServiceForTesting(
       std::unique_ptr<PrefetchService> prefetch_service);
 
+  NavigationEntryScreenshotManager* GetNavigationEntryScreenshotManager();
+
   using TraceProto = perfetto::protos::pbzero::ChromeBrowserContext;
   // Write a representation of this object into a trace.
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> context) const;
@@ -129,6 +132,8 @@ class BrowserContextImpl {
   std::unique_ptr<PermissionController> permission_controller_;
   scoped_refptr<BackgroundSyncScheduler> background_sync_scheduler_;
   std::unique_ptr<PrefetchService> prefetch_service_;
+  std::unique_ptr<NavigationEntryScreenshotManager>
+      nav_entry_screenshot_manager_;
 
   std::unique_ptr<media::learning::LearningSessionImpl> learning_session_;
   std::unique_ptr<media::VideoDecodePerfHistory> video_decode_perf_history_;

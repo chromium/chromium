@@ -97,6 +97,7 @@ class GM2TabStyle : public TabStyleViews {
   float GetActiveOpacity() const override;
   TabActive GetApparentActiveState() const override;
   TabStyle::TabColors CalculateColors() const override;
+  float GetSelectedTabOpacity() const override;
   void PaintTab(gfx::Canvas* canvas) const override;
   void SetHoverLocation(const gfx::Point& location) override;
   void ShowHover(ShowHoverStyle style) override;
@@ -191,7 +192,7 @@ class GM2TabStyle : public TabStyleViews {
 
 GM2TabStyle::GM2TabStyle(Tab* tab)
     : tab_(tab),
-      hover_controller_(gfx::Animation::ShouldRenderRichAnimation()
+      hover_controller_((tab && gfx::Animation::ShouldRenderRichAnimation())
                             ? new GlowHoverController(tab)
                             : nullptr) {
   // TODO(dfried): create a new STYLE_PROMINENT or similar to use instead of
@@ -202,6 +203,7 @@ SkPath GM2TabStyle::GetPath(PathType path_type,
                             float scale,
                             bool force_active,
                             RenderUnits render_units) const {
+  CHECK(tab());
   const int stroke_thickness = GetStrokeThickness(force_active);
 
   // We'll do the entire path calculation in aligned pixels.
@@ -417,6 +419,7 @@ gfx::Insets GM2TabStyle::GetContentsInsets() const {
 }
 
 float GM2TabStyle::GetZValue() const {
+  CHECK(tab());
   // This will return values so that inactive tabs can be sorted in the
   // following order:
   //
@@ -450,6 +453,7 @@ float GM2TabStyle::GetZValue() const {
 }
 
 float GM2TabStyle::GetActiveOpacity() const {
+  CHECK(tab());
   if (tab_->IsActive())
     return 1.0f;
   if (tab_->IsSelected())
@@ -469,6 +473,7 @@ TabActive GM2TabStyle::GetApparentActiveState() const {
 }
 
 TabStyle::TabColors GM2TabStyle::CalculateColors() const {
+  CHECK(tab());
   const TabActive active = GetApparentActiveState();
   const SkColor foreground_color =
       tab_->controller()->GetTabForegroundColor(active);
@@ -485,7 +490,12 @@ TabStyle::TabColors GM2TabStyle::CalculateColors() const {
           close_button_focus_ring_color};
 }
 
+float GM2TabStyle::GetSelectedTabOpacity() const {
+  return kDefaultSelectedTabOpacity;
+}
+
 void GM2TabStyle::PaintTab(gfx::Canvas* canvas) const {
+  CHECK(tab());
   absl::optional<int> active_tab_fill_id;
   int active_tab_y_inset = 0;
   if (tab_->GetThemeProvider()->HasCustomImage(IDR_THEME_TOOLBAR)) {
@@ -511,6 +521,7 @@ void GM2TabStyle::PaintTab(gfx::Canvas* canvas) const {
 }
 
 void GM2TabStyle::SetHoverLocation(const gfx::Point& location) {
+  CHECK(tab());
   // There's a "glow" that gets drawn over inactive tabs based on the mouse's
   // location. There is no glow for the active tab so don't update the hover
   // controller and incur a redraw.
@@ -519,6 +530,7 @@ void GM2TabStyle::SetHoverLocation(const gfx::Point& location) {
 }
 
 void GM2TabStyle::ShowHover(ShowHoverStyle style) {
+  CHECK(tab());
   if (!hover_controller_)
     return;
 
@@ -530,11 +542,13 @@ void GM2TabStyle::ShowHover(ShowHoverStyle style) {
 }
 
 void GM2TabStyle::HideHover(HideHoverStyle style) {
+  CHECK(tab());
   if (hover_controller_)
     hover_controller_->Hide(style);
 }
 
 TabStyle::SeparatorBounds GM2TabStyle::GetSeparatorBounds(float scale) const {
+  CHECK(tab());
   const gfx::RectF aligned_bounds =
       ScaleAndAlignBounds(tab_->bounds(), scale, GetStrokeThickness());
   const int corner_radius = GetCornerRadius() * scale;
@@ -587,6 +601,7 @@ TabStyle::SeparatorOpacities GM2TabStyle::GetSeparatorOpacities(
 }
 
 float GM2TabStyle::GetSeparatorOpacity(bool for_layout, bool leading) const {
+  CHECK(tab());
   // If the current tab is active, never show the separator.
   if (tab_->IsActive())
     return 0.0f;
@@ -673,6 +688,7 @@ float GM2TabStyle::GetSeparatorOpacity(bool for_layout, bool leading) const {
 float GM2TabStyle::GetHoverInterpolatedSeparatorOpacity(
     bool for_layout,
     const Tab* other_tab) const {
+  CHECK(tab());
   // Fade out the intervening separator while this tab or an adjacent tab is
   // hovered, which prevents sudden opacity changes when scrubbing the mouse
   // across the tabstrip. If that adjacent tab is active, don't consider its
@@ -706,6 +722,7 @@ double GM2TabStyle::GetHoverAnimationValue() const {
 }
 
 float GM2TabStyle::GetHoverOpacity() const {
+  CHECK(tab());
   // Opacity boost varies on tab width.  The interpolation is nonlinear so
   // that most tabs will fall on the low end of the opacity range, but very
   // narrow tabs will still stand out on the high end.
@@ -734,6 +751,7 @@ float GM2TabStyle::GetThrobValue() const {
 }
 
 int GM2TabStyle::GetStrokeThickness(bool should_paint_as_active) const {
+  CHECK(tab());
   absl::optional<tab_groups::TabGroupId> group = tab_->group();
   if (group.has_value() && tab_->IsActive())
     return TabGroupUnderline::kStrokeThickness;
@@ -747,6 +765,7 @@ int GM2TabStyle::GetStrokeThickness(bool should_paint_as_active) const {
 bool GM2TabStyle::ShouldPaintTabBackgroundColor(
     TabActive active,
     bool has_custom_background) const {
+  CHECK(tab());
   // In the active case, always paint the tab background. The fill image may be
   // transparent.
   if (active == TabActive::kActive)
@@ -762,6 +781,7 @@ bool GM2TabStyle::ShouldPaintTabBackgroundColor(
 }
 
 SkColor GM2TabStyle::GetTabBackgroundColor(TabActive active) const {
+  CHECK(tab());
   SkColor color = tab_->controller()->GetTabBackgroundColor(
       active, BrowserFrameActiveState::kUseCurrent);
 
@@ -769,6 +789,7 @@ SkColor GM2TabStyle::GetTabBackgroundColor(TabActive active) const {
 }
 
 ShapeModifier GM2TabStyle::GetShapeModifier(PathType path_type) const {
+  CHECK(tab());
   ShapeModifier shape_modifier = kNone;
   if (path_type == PathType::kFill && tab_->IsSelected() && !IsHoverActive() &&
       !tab_->IsActive()) {
@@ -787,6 +808,7 @@ ShapeModifier GM2TabStyle::GetShapeModifier(PathType path_type) const {
 }
 
 void GM2TabStyle::PaintInactiveTabBackground(gfx::Canvas* canvas) const {
+  CHECK(tab());
   PaintTabBackground(canvas, TabActive::kInactive,
                      tab_->controller()->GetCustomBackgroundId(
                          BrowserFrameActiveState::kUseCurrent),
@@ -797,6 +819,7 @@ void GM2TabStyle::PaintTabBackground(gfx::Canvas* canvas,
                                      TabActive active,
                                      absl::optional<int> fill_id,
                                      int y_inset) const {
+  CHECK(tab());
   // |y_inset| is only set when |fill_id| is being used.
   DCHECK(!y_inset || fill_id.has_value());
 
@@ -822,6 +845,7 @@ void GM2TabStyle::PaintTabBackgroundFill(gfx::Canvas* canvas,
                                          bool paint_hover_effect,
                                          absl::optional<int> fill_id,
                                          int y_inset) const {
+  CHECK(tab());
   const SkPath fill_path = GetPath(PathType::kFill, canvas->image_scale(),
                                    active == TabActive::kActive);
   gfx::ScopedCanvas scoped_canvas(canvas);
@@ -861,6 +885,7 @@ void GM2TabStyle::PaintTabBackgroundFill(gfx::Canvas* canvas,
 void GM2TabStyle::PaintBackgroundStroke(gfx::Canvas* canvas,
                                         TabActive active,
                                         SkColor stroke_color) const {
+  CHECK(tab());
   const bool is_active = active == TabActive::kActive;
   const int stroke_thickness = GetStrokeThickness(is_active);
   if (!stroke_thickness)
@@ -962,6 +987,7 @@ class GM3TabStyle : public GM2TabStyle {
 GM3TabStyle::GM3TabStyle(Tab* tab) : GM2TabStyle(tab) {}
 
 SkColor GM3TabStyle::GetTabBackgroundColor(TabActive active) const {
+  CHECK(tab());
   const auto* cp = tab()->GetWidget()->GetColorProvider();
   DCHECK(cp);
   if (!cp) {
@@ -979,6 +1005,7 @@ SkColor GM3TabStyle::GetTabBackgroundColor(TabActive active) const {
 }
 
 int GM3TabStyle::GetStrokeThickness(bool should_paint_as_active) const {
+  CHECK(tab());
   if (tab()->group().has_value() && tab()->IsActive()) {
     return TabGroupUnderline::kStrokeThickness;
   }
@@ -1041,6 +1068,10 @@ std::unique_ptr<TabStyleViews> TabStyleViews::CreateForTab(Tab* tab) {
     return std::make_unique<GM3TabStyle>(tab);
   }
   return std::make_unique<GM2TabStyle>(tab);
+}
+
+std::unique_ptr<TabStyleViews> TabStyleViews::Create() {
+  return TabStyleViews::CreateForTab(nullptr);
 }
 
 // static

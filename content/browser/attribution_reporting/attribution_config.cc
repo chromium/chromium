@@ -83,6 +83,11 @@ bool AttributionConfig::EventLevelLimit::Validate() const {
     return false;
   }
 
+  if (first_report_window_deadline < base::TimeDelta() ||
+      second_report_window_deadline <= first_report_window_deadline) {
+    return false;
+  }
+
   return true;
 }
 

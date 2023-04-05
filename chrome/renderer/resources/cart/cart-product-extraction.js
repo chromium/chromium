@@ -12,7 +12,8 @@ var priceCleanupPostfix = '(/(each|set))';
 var priceRegexTemplate = '((reg|regular|orig|from|' + priceCleanupPrefix +
     ')\\s+)?' +
     '(\\d+\\s*/\\s*)?(US(D)?\\s*)?' +
-    '\\$[\\d.,]+(\\s+(to|-|–)\\s+(\\$)?[\\d.,]+)?' + priceCleanupPostfix + '?';
+    '\\$\\s*[\\d.,]+(\\s+(to|-|–)\\s+(\\$)?[\\d.,]+)?' +
+    priceCleanupPostfix + '?';
 var priceRegexFull = new RegExp('^' + priceRegexTemplate + '( ea)?$', 'i');
 var priceRegex = new RegExp(priceRegexTemplate, 'i');
 var priceCleanupRegex = new RegExp(
@@ -514,9 +515,10 @@ function choosePrice(priceArray) {
 }
 
 function extractPrice(item) {
+  const hostname = new URL(document.baseURI).hostname;
   // shein.com shows price by one element per digit and it's challenging
   // to decide based on textContent.
-  if (document.URL.includes("shein.com")) {
+  if (hostname.endsWith("shein.com")) {
     return "";
   }
   // Etsy mobile
@@ -535,14 +537,15 @@ function extractPrice(item) {
   for (const price of item.querySelectorAll(
     'span, b, p, div, h3, td, li, em, strong, ins')) {
     let candidate = price.innerText.trim();
-    if (window.location.hostname.endsWith("urbanoutfitters.com")
-        || window.location.hostname.endsWith("freepeople.com")) {
+    if (hostname.endsWith("urbanoutfitters.com") ||
+        hostname.endsWith("freepeople.com")) {
       priceParts = candidate.split("\n");
       if (priceParts.length >= 2){
         candidate = priceParts[1];
       }
-    } else if (window.location.hostname.endsWith("thecompanystore.com")
-        || window.location.hostname.endsWith("childrensplace.com")) {
+    } else if (hostname.endsWith("thecompanystore.com") ||
+        hostname.endsWith("childrensplace.com") ||
+        hostname.endsWith("chewy.com")) {
       candidate = candidate.split("\n")[0];
     }
     if (!candidate.match(priceRegexFull))

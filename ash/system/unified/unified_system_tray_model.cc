@@ -5,6 +5,7 @@
 #include "ash/system/unified/unified_system_tray_model.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/shell_observer.h"
@@ -164,6 +165,11 @@ void UnifiedSystemTrayModel::RemoveObserver(Observer* observer) {
 }
 
 bool UnifiedSystemTrayModel::IsExpandedOnOpen() const {
+  // They System Tray is always expanded with QsRevamp enabled.
+  if (features::IsQsRevampEnabled()) {
+    return true;
+  }
+
   return expanded_on_open_ != StateOnOpen::COLLAPSED ||
          Shell::Get()->accessibility_controller()->spoken_feedback().enabled();
 }

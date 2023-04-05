@@ -92,6 +92,7 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerBase,
                              size_t desired_buffer_size) override;
   base::TimeDelta GetDeferStreamStartTimeout() const override;
   base::SingleThreadTaskRunner* GetTaskRunner() const override;
+  void StopAmplitudePeakTrace() override;
 
   static int HardwareSampleRateForDevice(AudioDeviceID device_id);
   static int HardwareSampleRate();

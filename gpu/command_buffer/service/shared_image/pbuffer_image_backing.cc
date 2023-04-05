@@ -108,7 +108,7 @@ std::unique_ptr<DawnImageRepresentation> PbufferImageBacking::ProduceDawn(
       std::move(view_formats), this, true);
 }
 
-std::unique_ptr<SkiaImageRepresentation> PbufferImageBacking::ProduceSkia(
+std::unique_ptr<SkiaImageRepresentation> PbufferImageBacking::ProduceSkiaGanesh(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {

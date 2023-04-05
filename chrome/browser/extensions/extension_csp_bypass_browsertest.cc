@@ -50,7 +50,7 @@ class ExtensionCSPBypassTest : public ExtensionBrowserTest {
   }
 
   const Extension* AddExtension(bool is_component, bool all_urls_permission) {
-    auto dir = std::make_unique<TestExtensionDir>();
+    TestExtensionDir dir;
 
     std::string unique_name = base::StringPrintf(
         "component=%d, all_urls=%d", is_component, all_urls_permission);
@@ -70,14 +70,14 @@ class ExtensionCSPBypassTest : public ExtensionBrowserTest {
       manifest.Set("key", key);
     }
 
-    dir->WriteFile(FILE_PATH_LITERAL("script.js"), "");
-    dir->WriteManifest(manifest.ToJSON());
+    dir.WriteFile(FILE_PATH_LITERAL("script.js"), "");
+    dir.WriteManifest(manifest.ToJSON());
 
     const Extension* extension = nullptr;
     if (is_component) {
-      extension = LoadExtensionAsComponent(dir->UnpackedPath());
+      extension = LoadExtensionAsComponent(dir.UnpackedPath());
     } else {
-      extension = LoadExtension(dir->UnpackedPath());
+      extension = LoadExtension(dir.UnpackedPath());
     }
     CHECK(extension);
     temp_dirs_.push_back(std::move(dir));
@@ -116,7 +116,7 @@ class ExtensionCSPBypassTest : public ExtensionBrowserTest {
   }
 
  private:
-  std::vector<std::unique_ptr<TestExtensionDir>> temp_dirs_;
+  std::vector<TestExtensionDir> temp_dirs_;
 };
 
 }  // namespace

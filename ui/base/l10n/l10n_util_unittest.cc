@@ -431,6 +431,23 @@ void CheckUiDisplayNameForLocale(const std::string& locale,
   }
 }
 
+TEST_F(L10nUtilTest, GetDisplayNameForLocaleWithoutCountry) {
+  ASSERT_EQ(u"English", l10n_util::GetDisplayNameForLocaleWithoutCountry(
+                            "en-US", "en", false));
+  ASSERT_EQ(u"English", l10n_util::GetDisplayNameForLocaleWithoutCountry(
+                            "en-GB", "en", false));
+  ASSERT_EQ(u"English", l10n_util::GetDisplayNameForLocaleWithoutCountry(
+                            "en-AU", "en", false));
+  ASSERT_EQ(u"English", l10n_util::GetDisplayNameForLocaleWithoutCountry(
+                            "en", "en", false));
+  EXPECT_EQ(u"Spanish", l10n_util::GetDisplayNameForLocaleWithoutCountry(
+                            "es-419", "en", false));
+  EXPECT_EQ(u"Chinese", l10n_util::GetDisplayNameForLocaleWithoutCountry(
+                            "zh-CH", "en", false));
+  EXPECT_EQ(u"Chinese", l10n_util::GetDisplayNameForLocaleWithoutCountry(
+                            "zh-TW", "en", false));
+}
+
 TEST_F(L10nUtilTest, GetDisplayNameForLocale) {
   // TODO(jungshik): Make this test more extensive.
   // Test zh-CN and zh-TW are treated as zh-Hans and zh-Hant.

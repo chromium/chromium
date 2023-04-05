@@ -96,11 +96,11 @@ class RealtimeReportingClientIsRealtimeReportingEnabledTest
       : is_feature_flag_enabled_(testing::get<0>(GetParam())),
         is_public_session_(testing::get<1>(GetParam())) {
     if (is_feature_flag_enabled_) {
-      scoped_feature_list_.InitWithFeatures(
-          {enterprise_connectors::kEnterpriseConnectorsEnabledOnMGS}, {});
+      scoped_feature_list_.InitWithFeatures({kEnterpriseConnectorsEnabledOnMGS},
+                                            {});
     } else {
       scoped_feature_list_.InitWithFeatures(
-          {}, {enterprise_connectors::kEnterpriseConnectorsEnabledOnMGS});
+          {}, {kEnterpriseConnectorsEnabledOnMGS});
     }
 
     // In chrome branded desktop builds, the browser is always manageable.
@@ -154,8 +154,8 @@ class RealtimeReportingClientIsRealtimeReportingEnabledTest
 
 TEST_P(RealtimeReportingClientIsRealtimeReportingEnabledTest,
        ShouldInitRealtimeReportingClient) {
-  EXPECT_EQ(should_init(), enterprise_connectors::RealtimeReportingClient::
-                               ShouldInitRealtimeReportingClient());
+  EXPECT_EQ(should_init(),
+            RealtimeReportingClient::ShouldInitRealtimeReportingClient());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

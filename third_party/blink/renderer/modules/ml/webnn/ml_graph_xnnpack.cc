@@ -1213,6 +1213,17 @@ const Vector<xnn_external_value>& MLGraphXnnpack::GetXnnExternalValuesTesting()
 
 void MLGraphXnnpack::BuildAsyncImpl(const MLNamedOperands& named_outputs,
                                     ScriptPromiseResolver* resolver) {
+  // The current implementation is not safe to be called in a Web worker thread.
+  // This is because the `CrossThreadPersistent` doesn't protect the heap owning
+  // an object from terminating. This would cause UAF (use-after-free) issue,
+  // when the calling Web worker thread terminates, e.g. user code calls
+  // `worker.terminate()`, `BuildOnBackgroundThread()` running worker pool
+  // thread will access these freed objects wrapped in `CrossThreadPersistent`.
+  //
+  // TODO(crbug.com/1425370): Fix this issue by avoiding wrapping the GC objects
+  // by `CrossThreadPersistent` and accessing them on the worker pool thread.
+  CHECK(IsMainThread());
+
   // TODO(crbug.com/1273291): Revisit whether the topological sorting should run
   // in the worker thread.
   auto* toposorted_operators = GetOperatorsInTopologicalOrder(named_outputs);
@@ -1292,6 +1303,13 @@ MLGraph* MLGraphXnnpack::BuildSyncImpl(const MLNamedOperands& named_outputs,
 void MLGraphXnnpack::ComputeAsyncImpl(const MLNamedArrayBufferViews& inputs,
                                       const MLNamedArrayBufferViews& outputs,
                                       ScriptPromiseResolver* resolver) {
+  // The current implementation is not safe to be called in a Web worker thread
+  // due to the same reason documented for `MLGraphXnnpack::BuildAsyncImpl()`.
+  //
+  // TODO(crbug.com/1425370): Fix this issue by avoiding wrapping the GC objects
+  // by `CrossThreadPersistent` and accessing them on the worker pool thread.
+  CHECK(IsMainThread());
+
   worker_pool::PostTask(
       FROM_HERE,
       CrossThreadBindOnce(

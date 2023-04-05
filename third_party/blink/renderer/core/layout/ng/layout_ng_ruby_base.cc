@@ -27,8 +27,6 @@ bool LayoutNGRubyBase::IsChildAllowed(LayoutObject*,
 void LayoutNGRubyBase::MoveChildren(LayoutNGRubyBase& to_base,
                                     LayoutObject* before_child) {
   NOT_DESTROYED();
-  // Callers should have handled the percent height descendant map.
-  DCHECK(!HasPercentHeightDescendants());
 
   if (before_child && before_child->Parent() != this) {
     before_child = SplitAnonymousBoxesAroundChild(before_child);
@@ -100,7 +98,6 @@ void LayoutNGRubyBase::MoveBlockChildrenTo(LayoutNGRubyBase& to_base,
     auto* anon_block_there = To<LayoutBlockFlow>(last_child_there);
     anon_block_here->MoveAllChildrenTo(anon_block_there,
                                        anon_block_there->Children());
-    anon_block_here->DeleteLineBoxTree();
     anon_block_here->Destroy();
   }
   // Move all remaining children normally. If moving all children, include our
@@ -117,7 +114,6 @@ void LayoutNGRubyBase::MoveBlockChildrenTo(LayoutNGRubyBase& to_base,
     MoveAllChildrenIncludingFloatsTo(&to_base, full_remove_insert);
   } else {
     MoveChildrenTo(&to_base, FirstChild(), before_child);
-    RemoveFloatingObjectsFromDescendants();
   }
 }
 

@@ -23,7 +23,7 @@ constexpr UiSourceId kTestUiSourceId_1 = 1u;
 constexpr UiSourceId kTestUiSourceId_2 = 2u;
 
 std::unique_ptr<UiResource> MakeResource(const gfx::Size& resource_size,
-                                         viz::ResourceFormat format,
+                                         viz::SharedImageFormat format,
                                          uint32_t ui_source_id) {
   auto resource = std::make_unique<UiResource>();
   resource->ui_source_id = ui_source_id;
@@ -51,52 +51,58 @@ class UiResourceManagerTest : public testing::Test {
 
 TEST_F(UiResourceManagerTest, ReuseResource_NoResources) {
   viz::ResourceId resource_id = resource_manager_->FindResourceToReuse(
-      gfx::Size(100, 100), viz::ResourceFormat::BGRA_8888, kTestUiSourceId_1);
+      gfx::Size(100, 100), viz::SinglePlaneFormat::kBGRA_8888,
+      kTestUiSourceId_1);
 
   EXPECT_EQ(resource_id, viz::kInvalidResourceId);
 }
 
 TEST_F(UiResourceManagerTest, ReuseResource) {
-  resource_manager_->OfferResource(MakeResource(
-      gfx::Size(10, 10), viz::ResourceFormat::BGRA_8888, kTestUiSourceId_1));
+  resource_manager_->OfferResource(
+      MakeResource(gfx::Size(10, 10), viz::SinglePlaneFormat::kBGRA_8888,
+                   kTestUiSourceId_1));
 
-  resource_manager_->OfferResource(MakeResource(
-      gfx::Size(20, 20), viz::ResourceFormat::BGRA_8888, kTestUiSourceId_1));
+  resource_manager_->OfferResource(
+      MakeResource(gfx::Size(20, 20), viz::SinglePlaneFormat::kBGRA_8888,
+                   kTestUiSourceId_1));
 
-  resource_manager_->OfferResource(MakeResource(
-      gfx::Size(10, 20), viz::ResourceFormat::BGRA_8888, kTestUiSourceId_2));
+  resource_manager_->OfferResource(
+      MakeResource(gfx::Size(10, 20), viz::SinglePlaneFormat::kBGRA_8888,
+                   kTestUiSourceId_2));
 
-  resource_manager_->OfferResource(MakeResource(
-      gfx::Size(10, 20), viz::ResourceFormat::BGRA_8888, kTestUiSourceId_2));
+  resource_manager_->OfferResource(
+      MakeResource(gfx::Size(10, 20), viz::SinglePlaneFormat::kBGRA_8888,
+                   kTestUiSourceId_2));
 
   EXPECT_EQ(resource_manager_->available_resources_count(), 4u);
 
   // When we have no match in the currently available resources.
   viz::ResourceId resource_id = resource_manager_->FindResourceToReuse(
-      gfx::Size(100, 100), viz::ResourceFormat::BGRA_8888, kTestUiSourceId_1);
+      gfx::Size(100, 100), viz::SinglePlaneFormat::kBGRA_8888,
+      kTestUiSourceId_1);
 
   EXPECT_EQ(resource_id, viz::kInvalidResourceId);
 
   // When we have the requested resource.
   resource_id = resource_manager_->FindResourceToReuse(
-      gfx::Size(10, 10), viz::ResourceFormat::BGRA_8888, kTestUiSourceId_1);
+      gfx::Size(10, 10), viz::SinglePlaneFormat::kBGRA_8888, kTestUiSourceId_1);
 
   EXPECT_NE(resource_id, viz::kInvalidResourceId);
 
   auto* found_resource = resource_manager_->PeekAvailableResource(resource_id);
   EXPECT_EQ(found_resource->ui_source_id, kTestUiSourceId_1);
-  EXPECT_EQ(found_resource->format, viz::ResourceFormat::BGRA_8888);
+  EXPECT_EQ(found_resource->format, viz::SinglePlaneFormat::kBGRA_8888);
   EXPECT_EQ(found_resource->resource_size, gfx::Size(10, 10));
 
   // When we have multiple matching resources, return any matching resource.
   resource_id = resource_manager_->FindResourceToReuse(
-      gfx::Size(10, 20), viz::ResourceFormat::BGRA_8888, kTestUiSourceId_2);
+      gfx::Size(10, 20), viz::SinglePlaneFormat::kBGRA_8888, kTestUiSourceId_2);
 
   EXPECT_NE(resource_id, viz::kInvalidResourceId);
   found_resource = resource_manager_->PeekAvailableResource(resource_id);
 
   EXPECT_EQ(found_resource->ui_source_id, kTestUiSourceId_2);
-  EXPECT_EQ(found_resource->format, viz::ResourceFormat::BGRA_8888);
+  EXPECT_EQ(found_resource->format, viz::SinglePlaneFormat::kBGRA_8888);
   EXPECT_EQ(found_resource->resource_size, gfx::Size(10, 20));
 }
 

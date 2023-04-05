@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/system_media_controls/linux/buildflags/buildflags.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "media/media_buildflags.h"
 
 #if BUILDFLAG(IS_LINUX)
@@ -1483,6 +1484,11 @@ bool IsVideoCaptureAcceleratedJpegDecodingEnabled() {
 #else
   return false;
 #endif
+}
+
+bool IsMultiPlaneFormatForHardwareVideoEnabled() {
+  return base::FeatureList::IsEnabled(features::kPassthroughYuvRgbConversion) &&
+         base::FeatureList::IsEnabled(kUseMultiPlaneFormatForHardwareVideo);
 }
 
 #if BUILDFLAG(IS_WIN)

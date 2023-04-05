@@ -211,22 +211,6 @@ TEST(UpdateClientUtils, ToInstallerResult) {
   EXPECT_EQ(20000, result4.extended_error);
 }
 
-TEST(UpdateClientUtils, BaseCreateNewTempDirectory) {
-  base::FilePath temp_dir;
-  EXPECT_TRUE(base::CreateNewTempDirectory(FILE_PATH_LITERAL("update_client"),
-                                           &temp_dir));
-
-  base::ScopedTempDir temp_dir_owner;
-  EXPECT_TRUE(temp_dir_owner.Set(temp_dir));
-
-#if BUILDFLAG(IS_WIN)
-  base::FilePath program_files_dir;
-  EXPECT_TRUE(
-      base::PathService::Get(base::DIR_PROGRAM_FILES, &program_files_dir));
-  EXPECT_EQ(program_files_dir.IsParent(temp_dir), !!::IsUserAnAdmin());
-#endif  // BUILDFLAG(IS_WIN)
-}
-
 TEST(UpdateClientUtils, GetArchitecture) {
   const std::string arch = GetArchitecture();
 

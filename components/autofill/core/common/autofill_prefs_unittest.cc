@@ -47,8 +47,8 @@ class AutofillPrefsTest : public testing::Test {
 // user is always considered opted-in and thus this test doesn't make sense.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(AutofillPrefsTest, WalletSyncTransportPref_GetAndSet) {
-  const CoreAccountId account1("account1");
-  const CoreAccountId account2("account2");
+  const CoreAccountId account1 = CoreAccountId::FromGaiaId("account1");
+  const CoreAccountId account2 = CoreAccountId::FromGaiaId("account2");
 
   // There should be no opt-in recorded at first.
   ASSERT_FALSE(IsUserOptedInWalletSyncTransport(pref_service(), account1));
@@ -94,7 +94,7 @@ TEST_F(AutofillPrefsTest, WalletSyncTransportPref_GetAndSet) {
 // Tests that AutofillSyncTransportOptIn is not stored using the plain text
 // account id.
 TEST_F(AutofillPrefsTest, WalletSyncTransportPref_UsesHashAccountId) {
-  const CoreAccountId account1("account1");
+  const CoreAccountId account1 = CoreAccountId::FromGaiaId("account1");
 
   // There should be no opt-in recorded at first.
   EXPECT_TRUE(
@@ -113,8 +113,8 @@ TEST_F(AutofillPrefsTest, WalletSyncTransportPref_UsesHashAccountId) {
 
 // Tests that clearing the AutofillSyncTransportOptIn works as expected.
 TEST_F(AutofillPrefsTest, WalletSyncTransportPref_Clear) {
-  const CoreAccountId account1("account1");
-  const CoreAccountId account2("account2");
+  const CoreAccountId account1 = CoreAccountId::FromGaiaId("account1");
+  const CoreAccountId account2 = CoreAccountId::FromGaiaId("account2");
 
   // There should be no opt-in recorded at first.
   EXPECT_TRUE(
@@ -139,7 +139,7 @@ TEST_F(AutofillPrefsTest, WalletSyncTransportPref_Clear) {
 // Tests that the account id hash that we generate can be written and read from
 // JSON properly.
 TEST_F(AutofillPrefsTest, WalletSyncTransportPref_CanBeSetAndReadFromJSON) {
-  const CoreAccountId account1("account1");
+  const CoreAccountId account1 = CoreAccountId::FromGaiaId("account1");
 
   // Set the opt-in for the first account.
   SetUserOptedInWalletSyncTransport(pref_service(), account1, true);

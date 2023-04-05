@@ -12,6 +12,7 @@ import org.junit.Assert;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeClassQualifiedName;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.net.impl.CronetUrlRequestContext;
 
 /**
@@ -39,13 +40,14 @@ public final class TestUploadDataStreamHandler {
         mCronetEngine = new CronetEngine.Builder(context).build();
         mNetworkThreadTestConnector = new CronetTestUtil.NetworkThreadTestConnector(mCronetEngine);
         CronetUrlRequestContext requestContext = (CronetUrlRequestContext) mCronetEngine;
-        mTestUploadDataStreamHandler = nativeCreateTestUploadDataStreamHandler(
-                uploadDataStream, requestContext.getUrlRequestContextAdapter());
+        mTestUploadDataStreamHandler =
+                TestUploadDataStreamHandlerJni.get().createTestUploadDataStreamHandler(
+                        this, uploadDataStream, requestContext.getUrlRequestContextAdapter());
     }
 
     public void destroyNativeObjects() {
         if (mTestUploadDataStreamHandler != 0) {
-            nativeDestroy(mTestUploadDataStreamHandler);
+            TestUploadDataStreamHandlerJni.get().destroy(mTestUploadDataStreamHandler);
             mTestUploadDataStreamHandler = 0;
             mNetworkThreadTestConnector.shutdown();
             mCronetEngine.shutdown();
@@ -57,19 +59,19 @@ public final class TestUploadDataStreamHandler {
      */
     public boolean init() {
         mData = "";
-        nativeInit(mTestUploadDataStreamHandler);
+        TestUploadDataStreamHandlerJni.get().init(mTestUploadDataStreamHandler);
         mWaitInitCalled.block();
         mWaitInitCalled.close();
         return mInitCompletedSynchronously;
     }
 
     public void read() {
-        nativeRead(mTestUploadDataStreamHandler);
+        TestUploadDataStreamHandlerJni.get().read(mTestUploadDataStreamHandler);
     }
 
     public void reset() {
         mData = "";
-        nativeReset(mTestUploadDataStreamHandler);
+        TestUploadDataStreamHandlerJni.get().reset(mTestUploadDataStreamHandler);
         mWaitResetComplete.block();
         mWaitResetComplete.close();
     }
@@ -79,7 +81,8 @@ public final class TestUploadDataStreamHandler {
      * by the native UploadDataStream.
      */
     public void checkInitCallbackNotInvoked() {
-        nativeCheckInitCallbackNotInvoked(mTestUploadDataStreamHandler);
+        TestUploadDataStreamHandlerJni.get().checkInitCallbackNotInvoked(
+                mTestUploadDataStreamHandler);
         mWaitCheckInit.block();
         mWaitCheckInit.close();
     }
@@ -89,7 +92,8 @@ public final class TestUploadDataStreamHandler {
      * by the native UploadDataStream.
      */
     public void checkReadCallbackNotInvoked() {
-        nativeCheckReadCallbackNotInvoked(mTestUploadDataStreamHandler);
+        TestUploadDataStreamHandlerJni.get().checkReadCallbackNotInvoked(
+                mTestUploadDataStreamHandler);
         mWaitCheckRead.block();
         mWaitCheckRead.close();
     }
@@ -156,24 +160,27 @@ public final class TestUploadDataStreamHandler {
         mWaitCheckRead.open();
     }
 
-    @NativeClassQualifiedName("TestUploadDataStreamHandler")
-    private native void nativeInit(long nativePtr);
+    @NativeMethods("cronet_tests")
+    interface Natives {
+        @NativeClassQualifiedName("TestUploadDataStreamHandler")
+        void init(long nativePtr);
 
-    @NativeClassQualifiedName("TestUploadDataStreamHandler")
-    private native void nativeRead(long nativePtr);
+        @NativeClassQualifiedName("TestUploadDataStreamHandler")
+        void read(long nativePtr);
 
-    @NativeClassQualifiedName("TestUploadDataStreamHandler")
-    private native void nativeReset(long nativePtr);
+        @NativeClassQualifiedName("TestUploadDataStreamHandler")
+        void reset(long nativePtr);
 
-    @NativeClassQualifiedName("TestUploadDataStreamHandler")
-    private native void nativeCheckInitCallbackNotInvoked(long nativePtr);
+        @NativeClassQualifiedName("TestUploadDataStreamHandler")
+        void checkInitCallbackNotInvoked(long nativePtr);
 
-    @NativeClassQualifiedName("TestUploadDataStreamHandler")
-    private native void nativeCheckReadCallbackNotInvoked(long nativePtr);
+        @NativeClassQualifiedName("TestUploadDataStreamHandler")
+        void checkReadCallbackNotInvoked(long nativePtr);
 
-    @NativeClassQualifiedName("TestUploadDataStreamHandler")
-    private native void nativeDestroy(long nativePtr);
+        @NativeClassQualifiedName("TestUploadDataStreamHandler")
+        void destroy(long nativePtr);
 
-    private native long nativeCreateTestUploadDataStreamHandler(
-            long uploadDataStream, long contextAdapter);
+        long createTestUploadDataStreamHandler(
+                TestUploadDataStreamHandler obj, long uploadDataStream, long contextAdapter);
+    }
 }

@@ -16,35 +16,62 @@
 
 @class TestBookmarkModelBridgeObserver;
 
-@interface TestOwner : NSObject {
- @public
-  std::unique_ptr<BookmarkModelBridge> bridge;
-}
+@interface TestBookmarkModelBridgeOwner : NSObject
 
-@property(nonatomic, strong) TestBookmarkModelBridgeObserver* observer;
+- (instancetype)initWithModel:(bookmarks::BookmarkModel*)model
+                     observer:(TestBookmarkModelBridgeObserver*)observer
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 - (void)bookmarkNodeDeleted;
-@end
 
-@implementation TestOwner
-- (void)bookmarkNodeDeleted {
-  bridge.reset();
-  self.observer = nil;
-}
+- (bool)bookmarkNodeDeletedCalled;
+
 @end
 
 @interface TestBookmarkModelBridgeObserver
     : NSObject <BookmarkModelBridgeObserver> {
-  id owner;
+  __weak TestBookmarkModelBridgeOwner* _owner;
 }
 
-- (void)setOwner:(id)newOwner;
+- (void)setOwner:(TestBookmarkModelBridgeOwner*)owner;
+@end
+
+@implementation TestBookmarkModelBridgeOwner {
+  std::unique_ptr<BookmarkModelBridge> _bridge;
+  TestBookmarkModelBridgeObserver* _observer;
+  bool _bookmarkNodeDeletedCalled;
+}
+
+- (instancetype)initWithModel:(bookmarks::BookmarkModel*)model
+                     observer:(TestBookmarkModelBridgeObserver*)observer {
+  if ((self = [super init])) {
+    DCHECK(model);
+    _observer = observer;
+    [_observer setOwner:self];
+
+    _bridge = std::make_unique<BookmarkModelBridge>(_observer, model);
+  }
+  return self;
+}
+
+- (void)bookmarkNodeDeleted {
+  _bookmarkNodeDeletedCalled = true;
+  _bridge.reset();
+  _observer = nil;
+}
+
+- (bool)bookmarkNodeDeletedCalled {
+  return _bookmarkNodeDeletedCalled;
+}
+
 @end
 
 @implementation TestBookmarkModelBridgeObserver
 
-- (void)setOwner:(id)newOwner {
-  owner = newOwner;
+- (void)setOwner:(TestBookmarkModelBridgeOwner*)owner {
+  _owner = owner;
 }
 
 #pragma mark - BookmarkModelBridgeObserver
@@ -72,7 +99,7 @@
 - (void)bookmarkModel:(bookmarks::BookmarkModel*)model
         didDeleteNode:(const bookmarks::BookmarkNode*)node
            fromFolder:(const bookmarks::BookmarkNode*)folder {
-  [owner bookmarkNodeDeleted];
+  [_owner bookmarkNodeDeleted];
 }
 
 @end
@@ -89,16 +116,15 @@ TEST_F(BookmarkModelBridgeObserverTest,
     const BookmarkNode* mobile_node = bookmark_model_->mobile_node();
     const BookmarkNode* folder = AddFolder(mobile_node, @"title");
 
-    TestOwner* owner = [[TestOwner alloc] init];
-    owner.observer = [[TestBookmarkModelBridgeObserver alloc] init];
-    [owner.observer setOwner:owner];
-
-    owner->bridge =
-        std::make_unique<BookmarkModelBridge>(owner.observer, bookmark_model_);
+    TestBookmarkModelBridgeOwner* owner = [[TestBookmarkModelBridgeOwner alloc]
+        initWithModel:bookmark_model_
+             observer:[[TestBookmarkModelBridgeObserver alloc] init]];
 
     // Deleting the folder should not cause a crash.
     bookmark_model_->Remove(folder,
                             bookmarks::metrics::BookmarkEditSource::kOther);
+
+    EXPECT_TRUE([owner bookmarkNodeDeletedCalled]);
   }
 }
 

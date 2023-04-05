@@ -256,6 +256,9 @@ void CallServiceUpdate(UpdaterScope updater_scope,
                        bool same_version_update_allowed);
 
 void SetupFakeLegacyUpdater(UpdaterScope scope);
+#if BUILDFLAG(IS_WIN)
+void RunFakeLegacyUpdater(UpdaterScope scope);
+#endif  // BUILDFLAG(IS_WIN)
 void ExpectLegacyUpdaterMigrated(UpdaterScope scope);
 
 void RunRecoveryComponent(UpdaterScope scope,

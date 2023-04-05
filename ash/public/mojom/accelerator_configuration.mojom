@@ -18,9 +18,16 @@ enum AcceleratorConfigResult {
   kAcceleratorLocked = 2,
   // Error - an existing action already contains the accelerator.
   kConflict = 3,
+  // Error - an existing action already contains the accelerator, but can be
+  // overridden.
+  kConflictCanOverride = 4,
   // Error - action ID cannot be found, indicating that the shortcut does not
   // exist.
-  kNotFound = 4,
+  kNotFound = 5,
   // Error - the key is not allowed to be used as an accelerator activation key.
-  kKeyNotAllowed = 5
+  kKeyNotAllowed = 6,
+  // Error - accelerator must have a modifier with key.
+  kMissingModifier = 7,
+  // Error - shift cannot be the only modifier.
+  kShiftOnlyNotAllowed = 8,
 };

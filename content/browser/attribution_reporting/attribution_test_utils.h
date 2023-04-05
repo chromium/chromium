@@ -468,6 +468,11 @@ MATCHER_P(ReportTimeIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.report_time(), result_listener);
 }
 
+MATCHER_P(InitialReportTimeIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.initial_report_time(),
+                            result_listener);
+}
+
 MATCHER_P(FailedSendAttemptsIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.failed_send_attempts(),
                             result_listener);
@@ -514,10 +519,6 @@ MATCHER_P(AggregatableAttributionDataIs, matcher, "") {
 
 MATCHER_P(AggregatableHistogramContributionsAre, matcher, "") {
   return ExplainMatchResult(matcher, arg.contributions, result_listener);
-}
-
-MATCHER_P(InitialReportTimeIs, matcher, "") {
-  return ExplainMatchResult(matcher, arg.initial_report_time, result_listener);
 }
 
 MATCHER_P(AggregationCoordinatorIs, matcher, "") {

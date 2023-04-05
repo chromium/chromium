@@ -16,7 +16,6 @@
 #include "ui/wm/public/activation_change_observer.h"
 
 namespace views {
-class View;
 class Widget;
 }  // namespace views
 
@@ -27,6 +26,7 @@ class ScopedWindowTargeter;
 namespace ash {
 
 class SplitViewController;
+class SplitViewDividerView;
 
 // Split view divider. It passes the mouse/gesture events to SplitViewController
 // to resize the left and right windows accordingly. The divider widget should
@@ -134,14 +134,14 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   // window will be resized accordingly.
   views::Widget* divider_widget_ = nullptr;
 
+  // The contents view of the `divider_widget_`.
+  SplitViewDividerView* divider_view_ = nullptr;
+
   // If true there is a window whose tabs are currently being dragged around.
   bool is_dragging_window_ = false;
 
   // Tracks observed windows.
   aura::Window::Windows observed_windows_;
-
-  // The content view of the divider.
-  views::View* divider_view_ = nullptr;
 
   // Tracks observed transient windows.
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>

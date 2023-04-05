@@ -10,6 +10,7 @@
 #import "content/public/browser/page.h"
 #import "content/public/browser/web_contents.h"
 #import "ios/web/content/js_messaging/content_web_frame.h"
+#import "ios/web/content/web_state/content_web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -19,11 +20,8 @@ namespace web {
 
 ContentWebFramesManager::ContentWebFramesManager(
     ContentWebState* content_web_state)
-    : content::WebContentsObserver(nullptr),
-      content_web_state_(content_web_state) {
-  // TODO(crbug.com/1419001) Pass a WebContents* to WebContentsObserver's
-  // constructor once ContentWebState exposes it.
-}
+    : content::WebContentsObserver(content_web_state->GetWebContents()),
+      content_web_state_(content_web_state) {}
 
 ContentWebFramesManager::~ContentWebFramesManager() = default;
 
@@ -53,7 +51,9 @@ WebFrame* ContentWebFramesManager::GetMainWebFrame() {
 }
 
 WebFrame* ContentWebFramesManager::GetFrameWithId(const std::string& frame_id) {
-  DCHECK(!frame_id.empty());
+  if (frame_id.empty()) {
+    return nullptr;
+  }
   auto web_frames_it = web_frames_.find(frame_id);
   return web_frames_it == web_frames_.end() ? nullptr
                                             : web_frames_it->second.get();
@@ -80,7 +80,7 @@ void ContentWebFramesManager::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
   content::GlobalRenderFrameHostId content_id =
       render_frame_host->GetGlobalId();
-  auto web_id_it = content_to_web_id_map_.find(main_frame_content_id_);
+  auto web_id_it = content_to_web_id_map_.find(content_id);
   DCHECK(web_id_it != content_to_web_id_map_.end());
 
   for (auto& observer : observers_) {

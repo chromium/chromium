@@ -52,7 +52,7 @@ export class AnimationThemeList extends WithPersonalizationStore {
   }
 
   animationThemes: AnimationTheme[];
-  private selectedAnimationTheme: AnimationTheme;
+  selectedAnimationTheme: AnimationTheme;
 
   override ready() {
     super.ready();

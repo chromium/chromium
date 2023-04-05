@@ -70,8 +70,6 @@
 #include "third_party/blink/renderer/core/layout/layout_html_canvas.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
-#include "third_party/blink/renderer/core/layout/layout_list_item.h"
-#include "third_party/blink/renderer/core/layout/layout_list_marker.h"
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/list_marker.h"
@@ -295,15 +293,6 @@ Node* AXLayoutObject::GetNodeOrContainingBlockNode() const {
   if (IsDetached())
     return nullptr;
 
-  // For legacy layout, or editable list marker when disabling EditingNG.
-  if (layout_object_->IsListMarker()) {
-    // Return the originating list item node.
-    return layout_object_->GetNode()->parentNode();
-  }
-
-  // For LayoutNG list marker.
-  // Note: When EditingNG is disabled, editable list items are laid out legacy
-  // layout even if LayoutNG enabled.
   if (auto* list_marker = ListMarker::Get(layout_object_)) {
     // Return the originating list item node.
     return list_marker->ListItem(*layout_object_)->GetNode();
@@ -418,10 +407,6 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
 #if DCHECK_IS_ON()
   DCHECK(initialized_);
 #endif
-
-  // Ignore continuations, they're duplicate copies of inline nodes with blocks
-  // inside. AXObjects are no longer created for these.
-  DCHECK(!layout_object_->IsElementContinuation());
 
   if (AXObject::ShouldIgnoreForHiddenOrInert(ignored_reasons)) {
     return true;
@@ -932,10 +917,6 @@ String AXLayoutObject::TextAlternative(
       } else {
         text_alternative = visible_text;
       }
-      found_text_alternative = true;
-    } else if (layout_object_->IsListMarkerForNormalContent() && !recursive) {
-      text_alternative =
-          To<LayoutListMarker>(layout_object_.Get())->TextAlternative();
       found_text_alternative = true;
     } else if (!recursive) {
       if (ListMarker* marker = ListMarker::Get(layout_object_)) {
@@ -1472,10 +1453,7 @@ void AXLayoutObject::GetWordBoundaries(Vector<int>& word_starts,
     return;
 
   String text_alternative;
-  if (layout_object_->IsListMarkerForNormalContent()) {
-    text_alternative =
-        To<LayoutListMarker>(layout_object_.Get())->TextAlternative();
-  } else if (ListMarker* marker = ListMarker::Get(layout_object_)) {
+  if (ListMarker* marker = ListMarker::Get(layout_object_)) {
     text_alternative = marker->TextAlternative(*layout_object_);
   }
   if (text_alternative.ContainsOnlyWhitespaceOrEmpty())

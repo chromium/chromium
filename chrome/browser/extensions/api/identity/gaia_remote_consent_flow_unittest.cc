@@ -92,7 +92,7 @@ class IdentityGaiaRemoteConsentFlowTest : public testing::Test {
       const std::string& window_key,
       GaiaRemoteConsentFlow::Delegate* delegate) {
     CoreAccountInfo user_info;
-    user_info.account_id = CoreAccountId("account_id");
+    user_info.account_id = CoreAccountId::FromGaiaId("account_id");
     user_info.gaia = "account_id";
     user_info.email = "email";
 

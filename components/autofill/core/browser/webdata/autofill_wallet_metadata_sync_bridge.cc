@@ -424,33 +424,30 @@ std::string AutofillWalletMetadataSyncBridge::GetStorageKey(
       entity_data.specifics.wallet_metadata().id());
 }
 
-void AutofillWalletMetadataSyncBridge::ApplyStopSyncChanges(
+void AutofillWalletMetadataSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
-  // If a metadata change list gets passed in, that means sync is actually
-  // disabled, so we want to delete the data as well (i.e. the wallet metadata
-  // entities).
-  if (delete_metadata_change_list) {
-    for (const auto& [storage_key, metadata] : cache_) {
-      TypeAndMetadataId parsed_storage_key =
-          ParseWalletMetadataStorageKey(storage_key);
-      RemoveServerMetadata(GetAutofillTable(), parsed_storage_key.type,
-                           parsed_storage_key.metadata_id);
-    }
-    cache_.clear();
-
-    // We do not notify the change to the UI because the data bridge will notify
-    // anyway and notifying on metadata deletion potentially before the data
-    // deletion is risky. This can cause another conversion of server addresses
-    // to local addresses as we lack the metadata (that it has been converted
-    // already).
-
-    // Commit the transaction to make sure the sync data (deleted here) and the
-    // sync metadata and the progress marker (deleted by the processor via
-    // |delete_metadata_change_list|) get wiped from the DB. This is especially
-    // important on Android where we cannot rely on committing transactions on
-    // shutdown).
-    web_data_backend_->CommitChanges();
+  // Sync is disabled so we want to delete the data as well (i.e. the wallet
+  // metadata entities).
+  for (const auto& [storage_key, metadata] : cache_) {
+    TypeAndMetadataId parsed_storage_key =
+        ParseWalletMetadataStorageKey(storage_key);
+    RemoveServerMetadata(GetAutofillTable(), parsed_storage_key.type,
+                         parsed_storage_key.metadata_id);
   }
+  cache_.clear();
+
+  // We do not notify the change to the UI because the data bridge will notify
+  // anyway and notifying on metadata deletion potentially before the data
+  // deletion is risky. This can cause another conversion of server addresses
+  // to local addresses as we lack the metadata (that it has been converted
+  // already).
+
+  // Commit the transaction to make sure the sync data (deleted here) and the
+  // sync metadata and the progress marker (deleted by the processor via
+  // |delete_metadata_change_list|) get wiped from the DB. This is especially
+  // important on Android where we cannot rely on committing transactions on
+  // shutdown).
+  web_data_backend_->CommitChanges();
 }
 
 void AutofillWalletMetadataSyncBridge::AutofillProfileChanged(

@@ -53,12 +53,11 @@ if (is_apple) {
   import("//base/time/buildflags/buildflags.gni")
 }
 
-declare_args() {
-  # Indicates if the Location object contains the source code information
-  # (file, function, line). False means only the program counter (and currently
-  # file name) is saved.
-  enable_location_source = true
+if (is_win) {
+  import("//build/config/win/control_flow_guard.gni")
+}
 
+declare_args() {
   # Unsafe developer build. Has developer-friendly features that may weaken or
   # disable security measures like sandboxing or ASLR.
   # IMPORTANT: Unsafe developer builds should never be distributed to end users.
@@ -377,7 +376,6 @@ component("base") {
     "functional/overloaded.h",
     "functional/unretained_traits.h",
     "gtest_prod_util.h",
-    "guid.cc",
     "guid.h",
     "hash/hash.cc",
     "hash/hash.h",
@@ -2212,8 +2210,6 @@ component("base") {
       ]
     } else {
       sources -= [
-        "allocator/dispatcher/dispatcher.cc",
-        "allocator/dispatcher/dispatcher.h",
         "sampling_heap_profiler/poisson_allocation_sampler.cc",
         "sampling_heap_profiler/poisson_allocation_sampler.h",
         "sampling_heap_profiler/sampling_heap_profiler.cc",
@@ -2420,7 +2416,6 @@ component("base") {
         "trace_event/cpufreq_monitor_android.h",
         "trace_event/java_heap_dump_provider_android.cc",
         "trace_event/java_heap_dump_provider_android.h",
-        "trace_event/trace_event_android.cc",
       ]
     }
 
@@ -2446,6 +2441,14 @@ component("base") {
   if (!is_debug) {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]
+  }
+
+  if (!use_allocation_event_dispatcher && (!is_ios || use_allocator_shim)) {
+    # The old hooks depend on PoissonAllocationSampler, which is not always enabled.
+    sources += [
+      "allocator/dispatcher/standard_hooks.cc",
+      "allocator/dispatcher/standard_hooks.h",
+    ]
   }
 }
 
@@ -2478,7 +2481,6 @@ buildflag_header("debugging_buildflags") {
 
   flags = [
     "DCHECK_IS_CONFIGURABLE=$dcheck_is_configurable",
-    "ENABLE_LOCATION_SOURCE=$enable_location_source",
     "ENABLE_PROFILING=$enable_profiling",
     "CAN_UNWIND_WITH_FRAME_POINTERS=$can_unwind_with_frame_pointers",
     "UNSAFE_DEVELOPER_BUILD=$is_unsafe_developer_build",
@@ -3057,6 +3059,7 @@ source_set("arm_bti_testfunctions") {
 
 test("base_unittests") {
   sources = [
+    "allocator/dispatcher/dispatcher_unittest.cc",
     "allocator/dispatcher/initializer_unittest.cc",
     "allocator/dispatcher/internal/dispatcher_internal_unittest.cc",
     "allocator/dispatcher/testing/dispatcher_test.cc",
@@ -3169,7 +3172,6 @@ test("base_unittests") {
     "json/string_escape_unittest.cc",
     "json/values_util_unittest.cc",
     "lazy_instance_unittest.cc",
-    "location_unittest.cc",
     "logging_unittest.cc",
     "memory/aligned_memory_unittest.cc",
     "memory/discardable_memory_backing_field_trial_unittest.cc",
@@ -3202,6 +3204,7 @@ test("base_unittests") {
     "metrics/histogram_macros_unittest.cc",
     "metrics/histogram_samples_unittest.cc",
     "metrics/histogram_snapshot_manager_unittest.cc",
+    "metrics/histogram_threadsafe_unittest.cc",
     "metrics/histogram_unittest.cc",
     "metrics/metrics_hashes_unittest.cc",
     "metrics/persistent_histogram_allocator_unittest.cc",
@@ -3418,15 +3421,18 @@ test("base_unittests") {
     "vlog_unittest.cc",
   ]
 
+  if (!is_cronet_build) {
+    # location_unittest.cc fails gn check for tracing-shimmed Cronet builds.
+    # Cronet buildbot do not run base_unittests, so exclusing this test
+    # instead of adding a nogncheck is preferred (crbug.com/1400235).
+    sources += [ "location_unittest.cc" ]
+  }
+
   if (build_rust_base_conversions) {
     sources += [
       "containers/span_rust_unittest.cc",
       "strings/string_piece_rust_unittest.cc",
     ]
-  }
-
-  if (use_allocator_shim) {
-    sources += [ "allocator/dispatcher/dispatcher_unittest.cc" ]
   }
 
   if (use_custom_libcxx && enable_safe_libcxx) {
@@ -3951,6 +3957,10 @@ test("base_unittests") {
       deps += [ ":base_profiler_test_support_library" ]
     }
     sources += [ "files/os_validation_win_unittest.cc" ]
+
+    if (toolchain_has_rust && win_enable_cfg_guards) {
+      deps += [ ":rust_cfg_win_test" ]
+    }
   }
   if (is_apple) {
     sources += [ "profiler/frame_pointer_unwinder_unittest.cc" ]
@@ -4002,7 +4012,6 @@ test("base_unittests") {
       sources += [
         "trace_event/cpufreq_monitor_android_unittest.cc",
         "trace_event/java_heap_dump_provider_android_unittest.cc",
-        "trace_event/trace_event_android_unittest.cc",
       ]
     }
 
@@ -4012,6 +4021,21 @@ test("base_unittests") {
       "//third_party/perfetto/protos/perfetto/trace/interned_data:lite",
       "//third_party/perfetto/protos/perfetto/trace/track_event:lite",
     ]
+  }
+}
+
+# Test that CFG is enabled in Rust code.
+if (is_win && toolchain_has_rust) {
+  source_set("rust_cfg_win_test") {
+    testonly = true
+    deps = [
+      ":base",
+      "//testing/gtest",
+    ]
+    data_deps = [ "//build/rust/tests/test_control_flow_guard" ]
+    cfg_exe = rebase_path("${root_out_dir}/test_control_flow_guard.exe")
+    defines = [ "RUST_CFG_WIN_UNITTEST_PATH_TO_RUST_EXE=\"${cfg_exe}\"" ]
+    sources = [ "memory/rust_cfg_win_unittest.cc" ]
   }
 }
 
@@ -4121,14 +4145,19 @@ if (is_android || is_robolectric) {
       "android/java/src/org/chromium/base/task/TaskRunnerImpl.java",
     ]
 
-    public_deps = [ ":android_runtime_jni_headers" ]
+    public_deps = [
+      ":android_runtime_jni_headers",
+      ":android_runtime_unchecked_jni_headers",
+    ]
   }
 
   generate_jar_jni("android_runtime_jni_headers") {
-    classes = [
-      "java/lang/Runnable.class",
-      "java/lang/Runtime.class",
-    ]
+    classes = [ "java/lang/Runtime.class" ]
+  }
+
+  generate_jar_jni("android_runtime_unchecked_jni_headers") {
+    classes = [ "java/lang/Runnable.class" ]
+    unchecked_exceptions = true
   }
 }  # is_android || is_robolectric
 
@@ -4414,7 +4443,6 @@ if (is_android) {
       "android/javatests/src/org/chromium/base/task/SequencedTaskRunnerImplTest.java",
       "android/javatests/src/org/chromium/base/task/SingleThreadTaskRunnerImplTest.java",
       "android/javatests/src/org/chromium/base/task/TaskRunnerImplTest.java",
-      "android/javatests/src/org/chromium/base/test/metrics/HistogramTestRuleTest.java",
       "android/javatests/src/org/chromium/base/test/metrics/HistogramWatcherTestBase.java",
       "android/javatests/src/org/chromium/base/test/metrics/HistogramWatcherTransitionToNativeTest.java",
       "android/javatests/src/org/chromium/base/test/metrics/HistogramWatcherWithNativeTest.java",
@@ -4501,7 +4529,6 @@ if (is_android) {
       "test/android/javatests/src/org/chromium/base/test/UiThreadTest.java",
       "test/android/javatests/src/org/chromium/base/test/UnitTestLifetimeAssertRule.java",
       "test/android/javatests/src/org/chromium/base/test/UnitTestNoBrowserProcessHook.java",
-      "test/android/javatests/src/org/chromium/base/test/metrics/HistogramTestRule.java",
       "test/android/javatests/src/org/chromium/base/test/params/BaseJUnit4RunnerDelegate.java",
       "test/android/javatests/src/org/chromium/base/test/params/BlockJUnit4RunnerDelegate.java",
       "test/android/javatests/src/org/chromium/base/test/params/MethodParamAnnotationRule.java",
@@ -4597,7 +4624,6 @@ if (is_android) {
       "//testing/android/junit:junit_test_support",
       "//third_party/androidx:androidx_test_core_java",
       "//third_party/androidx:androidx_test_monitor_java",
-      "//third_party/androidx:androidx_test_runner_java",
       "//third_party/hamcrest:hamcrest_java",
       "//third_party/junit:junit",
     ]

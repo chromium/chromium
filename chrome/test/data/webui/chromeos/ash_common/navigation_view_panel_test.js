@@ -279,4 +279,40 @@ export function navigationViewPanelTestSuite() {
         () => viewElement.removeSelectorById('dummy1'),
         'Removing the last selector is not supported.');
   });
+
+  test('selectPageById', async () => {
+    await addNavigationSections([
+      viewElement.createSelectorItem(
+          /*name=*/ 'Page 1',
+          /*pageIs=*/ 'dummy-page1',
+          /*icon=*/ '',
+          /*id=*/ 'dummy1'),
+      viewElement.createSelectorItem(
+          /*name=*/ 'Page 2',
+          /*pageIs=*/ 'dummy-page2',
+          /*icon=*/ '',
+          /*id=*/ 'dummy2'),
+      viewElement.createSelectorItem(
+          /*name=*/ 'Page 3',
+          /*pageIs=*/ 'dummy-page3',
+          /*icon=*/ '',
+          /*id=*/ 'dummy3'),
+    ]);
+
+    // The first page should be selected by default.
+    assertEquals('dummy1', viewElement.selectedItem.id);
+
+    // Select a different page id and verify that the correct page is selected.
+    viewElement.selectPageById('dummy2');
+    assertEquals('dummy2', viewElement.selectedItem.id);
+
+    // Select a different page id and verify that the correct page is selected.
+    viewElement.selectPageById('dummy3');
+    assertEquals('dummy3', viewElement.selectedItem.id);
+
+    // Select a non-existent page ID and verify that the selected page did
+    // not change.
+    viewElement.selectPageById('does-not-exist');
+    assertEquals('dummy3', viewElement.selectedItem.id);
+  });
 }

@@ -153,6 +153,11 @@ enum class EditingCommandType {
   kYankAndSelect = 138,
   kAlignCenter = 139,
 
+  // This command is for internal use only; the current use case is pasting GIF
+  // images selected from emoji picker on ChromeOS (the GIF URLs are from
+  // tenor.com).
+  kPasteFromImageURL = 140,
+
   // Add new commands immediately above this line.
   kNumberOfCommandTypes,
 

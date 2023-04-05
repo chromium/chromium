@@ -474,19 +474,18 @@ ReportBuilder& ReportBuilder::SetAttestationToken(
 
 AttributionReport ReportBuilder::Build() const {
   return AttributionReport(
-      attribution_info_, report_time_, external_report_id_,
-      /*failed_send_attempts=*/0,
+      attribution_info_, report_time_, /*initial_report_time=*/report_time_,
+      external_report_id_, /*failed_send_attempts=*/0,
       AttributionReport::EventLevelData(trigger_data_, priority_,
-                                        randomized_trigger_rate_, report_id_,
-                                        report_time_));
+                                        randomized_trigger_rate_, report_id_));
 }
 
 AttributionReport ReportBuilder::BuildAggregatableAttribution() const {
   return AttributionReport(
-      attribution_info_, report_time_, external_report_id_,
-      /*failed_send_attempts=*/0,
+      attribution_info_, report_time_, /*initial_report_time=*/report_time_,
+      external_report_id_, /*failed_send_attempts=*/0,
       AttributionReport::AggregatableAttributionData(
-          contributions_, aggregatable_attribution_report_id_, report_time_,
+          contributions_, aggregatable_attribution_report_id_,
           aggregation_coordinator_, attestation_token_));
 }
 
@@ -570,8 +569,7 @@ bool operator==(const AttributionReport::EventLevelData& a,
                 const AttributionReport::EventLevelData& b) {
   const auto tie = [](const AttributionReport::EventLevelData& data) {
     return std::make_tuple(data.trigger_data, data.priority,
-                           data.randomized_trigger_rate,
-                           data.initial_report_time);
+                           data.randomized_trigger_rate);
   };
   return tie(a) == tie(b);
 }
@@ -584,8 +582,7 @@ bool operator==(const AttributionReport::AggregatableAttributionData& a,
                 const AttributionReport::AggregatableAttributionData& b) {
   const auto tie =
       [](const AttributionReport::AggregatableAttributionData& data) {
-        return std::make_tuple(data.contributions, data.initial_report_time,
-                               data.attestation_token,
+        return std::make_tuple(data.contributions, data.attestation_token,
                                data.aggregation_coordinator);
       };
   return tie(a) == tie(b);
@@ -596,6 +593,7 @@ bool operator==(const AttributionReport::AggregatableAttributionData& a,
 bool operator==(const AttributionReport& a, const AttributionReport& b) {
   const auto tie = [](const AttributionReport& report) {
     return std::make_tuple(report.attribution_info(), report.report_time(),
+                           report.initial_report_time(),
                            report.external_report_id(),
                            report.failed_send_attempts(), report.data());
   };
@@ -813,8 +811,7 @@ std::ostream& operator<<(std::ostream& out,
   return out << "{trigger_data=" << data.trigger_data
              << ",priority=" << data.priority
              << ",randomized_trigger_rate=" << data.randomized_trigger_rate
-             << ",id=" << *data.id
-             << ",initial_report_time=" << data.initial_report_time << "}";
+             << ",id=" << *data.id;
 }
 
 std::ostream& operator<<(
@@ -828,8 +825,7 @@ std::ostream& operator<<(
     separator = ", ";
   }
 
-  out << "],id=" << *data.id
-      << ",initial_report_time=" << data.initial_report_time;
+  out << "],id=" << *data.id;
   if (data.attestation_token.has_value()) {
     out << ",attestation_token=" << data.attestation_token.value();
   } else {
@@ -853,6 +849,7 @@ std::ostream& operator<<(
 std::ostream& operator<<(std::ostream& out, const AttributionReport& report) {
   return out << "{attribution_info=" << report.attribution_info()
              << ",report_time=" << report.report_time()
+             << ",initial_report_time=" << report.initial_report_time()
              << ",external_report_id=" << report.external_report_id()
              << ",failed_send_attempts=" << report.failed_send_attempts()
              << ",data=" << report.data() << "}";

@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -154,4 +155,25 @@ TEST_F(SidePanelToolbarContainerTest, PinStateUpdatesOnPrefChange) {
 #else
   ASSERT_FALSE(pinned_buttons[0]->GetVisible());
 #endif
+}
+
+TEST_F(SidePanelToolbarContainerTest, CompanionButtonRemovedOnDSPChange) {
+  // Verify the pinned companion button exists.
+  auto pinned_buttons = GetPinnedEntryButtons();
+  ASSERT_EQ(pinned_buttons.size(), 1u);
+
+  // Update the default search provider.
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile());
+  TemplateURLData data;
+  data.SetShortName(u"foo.com");
+  data.SetURL("http://foo.com/url?bar={searchTerms}");
+  data.new_tab_url = "https://foo.com/newtab";
+  TemplateURL* template_url =
+      template_url_service->Add(std::make_unique<TemplateURL>(data));
+  template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
+
+  // Verify the button no longer exists.
+  pinned_buttons = GetPinnedEntryButtons();
+  ASSERT_EQ(pinned_buttons.size(), 0u);
 }

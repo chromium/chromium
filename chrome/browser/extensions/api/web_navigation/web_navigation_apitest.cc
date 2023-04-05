@@ -735,6 +735,7 @@ class WebNavigationApiFencedFrameTest : public WebNavigationApiTest {
   WebNavigationApiFencedFrameTest() {
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/{{blink::features::kFencedFrames, {}},
+                              {blink::features::kFencedFramesAPIChanges, {}},
                               {features::kPrivacySandboxAdsAPIsOverride, {}}},
         /*disabled_features=*/{features::kSpareRendererForSitePerProcess});
     // Fenced frames are only allowed in a secure context.
@@ -789,10 +790,11 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiFencedFrameTest, MappedURL) {
 
   ResultCatcher catcher;
   EXPECT_TRUE(content::ExecJs(
-      rfh, content::JsReplace("ff.src = $1;", urn_uuid.spec())));
+      rfh, content::JsReplace("ff.config = new FencedFrameConfig($1);",
+                              urn_uuid.spec())));
   ASSERT_TRUE(catcher.GetNextResult()) << message_;
 
   // The parent still sees the urn_uuid as the fenced frame src.
-  EXPECT_EQ(urn_uuid.spec(), content::EvalJs(rfh, "ff.src"));
+  EXPECT_EQ(urn_uuid.spec(), content::EvalJs(rfh, "ff.config.url"));
 }
 }  // namespace extensions

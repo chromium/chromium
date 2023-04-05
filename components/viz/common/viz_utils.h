@@ -59,6 +59,13 @@ VIZ_COMMON_EXPORT gfx::RectF ClippedQuadRectangleF(const DrawQuad* quad);
 VIZ_COMMON_EXPORT gfx::Rect GetExpandedRectWithPixelMovingForegroundFilter(
     const DrawQuad& rpdq,
     const cc::FilterOperations& filters);
+
+// This transforms a rect from the view transition content surface/render_pass
+// space to the shared element quad space.
+VIZ_COMMON_EXPORT gfx::Transform GetViewTransitionTransform(
+    gfx::Rect shared_element_quad,
+    gfx::Rect view_transition_content_output);
+
 }  // namespace viz
 
 #endif  // COMPONENTS_VIZ_COMMON_VIZ_UTILS_H_

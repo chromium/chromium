@@ -15,13 +15,40 @@
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_no_argument_constructor.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_run_function_for_shared_storage_run_operation.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_run_function_for_shared_storage_select_url_operation.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/threaded_messaging_proxy_base.h"
+#include "third_party/blink/renderer/modules/shared_storage/services/shared_storage_operation_definition.h"
 #include "third_party/blink/renderer/modules/shared_storage/services/shared_storage_worklet_thread.h"
+#include "third_party/blink/renderer/platform/bindings/callback_method_retriever.h"
 
 namespace blink {
+
+namespace {
+
+ScriptValue Deserialize(ScriptState* script_state,
+                        const std::vector<uint8_t>& serialized_data) {
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::Local<v8::Context> context = script_state->GetContext();
+
+  v8::Local<v8::Object> v8_data;
+  if (serialized_data.empty()) {
+    v8_data = v8::Object::New(isolate);
+  } else {
+    v8::ValueDeserializer deserializer(isolate, serialized_data.data(),
+                                       serialized_data.size());
+
+    v8::Local<v8::Value> value =
+        deserializer.ReadValue(context).ToLocalChecked();
+    v8_data = value->ToObject(context).ToLocalChecked();
+  }
+
+  return ScriptValue(isolate, v8_data);
+}
 
 // We try to use .stack property so that the error message contains a stack
 // trace, but otherwise fallback to .toString().
@@ -41,6 +68,155 @@ std::string ExceptionToString(ScriptState* script_state,
 
   return "Unknown Failure";
 }
+
+struct UnresolvedSelectURLRequest final
+    : public GarbageCollected<UnresolvedSelectURLRequest> {
+  UnresolvedSelectURLRequest(size_t urls_size,
+                             blink::mojom::SharedStorageWorkletService::
+                                 RunURLSelectionOperationCallback callback)
+      : urls_size(urls_size), callback(std::move(callback)) {}
+  ~UnresolvedSelectURLRequest() = default;
+
+  void Trace(Visitor* visitor) const {}
+
+  size_t urls_size;
+  blink::mojom::SharedStorageWorkletService::RunURLSelectionOperationCallback
+      callback;
+};
+
+struct UnresolvedRunRequest final
+    : public GarbageCollected<UnresolvedRunRequest> {
+  explicit UnresolvedRunRequest(
+      blink::mojom::SharedStorageWorkletService::RunOperationCallback callback)
+      : callback(std::move(callback)) {}
+  ~UnresolvedRunRequest() = default;
+
+  void Trace(Visitor* visitor) const {}
+
+  blink::mojom::SharedStorageWorkletService::RunOperationCallback callback;
+};
+
+class SelectURLResolutionSuccessCallback final
+    : public ScriptFunction::Callable {
+ public:
+  explicit SelectURLResolutionSuccessCallback(
+      UnresolvedSelectURLRequest* request)
+      : request_(request) {}
+
+  void Trace(Visitor* visitor) const final {
+    visitor->Trace(request_);
+    ScriptFunction::Callable::Trace(visitor);
+  }
+
+ private:
+  ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
+    ScriptState::Scope scope(script_state);
+
+    v8::Local<v8::Context> context = value.GetIsolate()->GetCurrentContext();
+    v8::Local<v8::Value> v8_value = value.V8Value();
+
+    v8::Local<v8::Uint32> v8_result_index;
+    if (!v8_value->ToUint32(context).ToLocal(&v8_result_index)) {
+      std::move(request_->callback)
+          .Run(/*success=*/false,
+               "Promise did not resolve to an uint32 number.",
+               /*index=*/0);
+    } else {
+      uint32_t result_index = v8_result_index->Value();
+      if (result_index >= request_->urls_size) {
+        std::move(request_->callback)
+            .Run(/*success=*/false,
+                 "Promise resolved to a number outside the length of the input "
+                 "urls.",
+                 /*index=*/0);
+      } else {
+        std::move(request_->callback)
+            .Run(/*success=*/true,
+                 /*error_message=*/{}, result_index);
+      }
+    }
+
+    return value;
+  }
+
+  Member<UnresolvedSelectURLRequest> request_;
+};
+
+class SelectURLResolutionFailureCallback final
+    : public ScriptFunction::Callable {
+ public:
+  explicit SelectURLResolutionFailureCallback(
+      UnresolvedSelectURLRequest* request)
+      : request_(request) {}
+
+  void Trace(Visitor* visitor) const final {
+    visitor->Trace(request_);
+    ScriptFunction::Callable::Trace(visitor);
+  }
+
+ private:
+  ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
+    ScriptState::Scope scope(script_state);
+
+    v8::Local<v8::Value> v8_value = value.V8Value();
+
+    std::move(request_->callback)
+        .Run(/*success=*/false, ExceptionToString(script_state, v8_value),
+             /*index=*/0);
+
+    return value;
+  }
+
+  Member<UnresolvedSelectURLRequest> request_;
+};
+
+class RunResolutionSuccessCallback final : public ScriptFunction::Callable {
+ public:
+  explicit RunResolutionSuccessCallback(UnresolvedRunRequest* request)
+      : request_(request) {}
+
+  void Trace(Visitor* visitor) const final {
+    visitor->Trace(request_);
+    ScriptFunction::Callable::Trace(visitor);
+  }
+
+ private:
+  ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
+    std::move(request_->callback)
+        .Run(/*success=*/true,
+             /*error_message=*/{});
+    return value;
+  }
+
+  Member<UnresolvedRunRequest> request_;
+};
+
+class RunResolutionFailureCallback final : public ScriptFunction::Callable {
+ public:
+  explicit RunResolutionFailureCallback(UnresolvedRunRequest* request)
+      : request_(request) {}
+
+  void Trace(Visitor* visitor) const final {
+    visitor->Trace(request_);
+    ScriptFunction::Callable::Trace(visitor);
+  }
+
+ private:
+  ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
+    ScriptState::Scope scope(script_state);
+
+    v8::Local<v8::Value> v8_value = value.V8Value();
+
+    std::move(request_->callback)
+        .Run(/*success=*/false, ExceptionToString(script_state, v8_value));
+
+    return value;
+  }
+
+  Member<UnresolvedRunRequest> request_;
+};
+
+}  // namespace
 
 SharedStorageWorkletGlobalScope::SharedStorageWorkletGlobalScope(
     std::unique_ptr<GlobalScopeCreationParams> creation_params,
@@ -64,8 +240,54 @@ void SharedStorageWorkletGlobalScope::BindSharedStorageWorkletService(
   receiver_.set_disconnect_handler(std::move(disconnect_handler));
 }
 
+void SharedStorageWorkletGlobalScope::Register(
+    const String& name,
+    V8NoArgumentConstructor* operation_ctor,
+    ExceptionState& exception_state) {
+  if (name.empty()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "Operation name cannot be empty.");
+    return;
+  }
+
+  if (operation_definition_map_.Contains(name)) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "Operation name already registered.");
+    return;
+  }
+
+  // If the result of Type(argument=prototype) is not Object, throw a TypeError.
+  CallbackMethodRetriever retriever(operation_ctor);
+  retriever.GetPrototypeObject(exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
+
+  v8::Local<v8::Function> v8_run =
+      retriever.GetMethodOrThrow("run", exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
+
+  auto* operation_definition =
+      MakeGarbageCollected<SharedStorageOperationDefinition>(
+          ScriptController()->GetScriptState(), name, operation_ctor, v8_run);
+
+  operation_definition_map_.Set(name, operation_definition);
+}
+
+void SharedStorageWorkletGlobalScope::OnConsoleApiMessage(
+    mojom::ConsoleMessageLevel level,
+    const String& message,
+    SourceLocation* location) {
+  client_->ConsoleLog(message.Utf8());
+
+  WorkerOrWorkletGlobalScope::OnConsoleApiMessage(level, message, location);
+}
+
 void SharedStorageWorkletGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(receiver_);
+  visitor->Trace(operation_definition_map_);
   visitor->Trace(client_);
   visitor->Trace(private_aggregation_host_);
   WorkletGlobalScope::Trace(visitor);
@@ -108,23 +330,126 @@ void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
     const std::vector<GURL>& urls,
     const std::vector<uint8_t>& serialized_data,
     RunURLSelectionOperationCallback callback) {
-  NOTIMPLEMENTED();
+  std::string error_message;
+  SharedStorageOperationDefinition* operation_definition = nullptr;
+  if (!PerformCommonOperationChecks(name, error_message,
+                                    operation_definition)) {
+    std::move(callback).Run(
+        /*success=*/false, error_message,
+        /*length=*/0);
+    return;
+  }
 
-  std::move(callback).Run(
-      /*success=*/false,
-      /*error_message=*/"Not implemented",
-      /*length=*/0);
+  DCHECK(operation_definition);
+
+  ScriptState* script_state = operation_definition->GetScriptState();
+  ScriptState::Scope scope(script_state);
+
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::TryCatch try_catch(isolate);
+  try_catch.SetVerbose(true);
+
+  TraceWrapperV8Reference<v8::Value> instance =
+      operation_definition->GetInstance();
+  V8RunFunctionForSharedStorageSelectURLOperation* registered_run_function =
+      operation_definition->GetRunFunctionForSharedStorageSelectURLOperation();
+
+  Vector<String> blink_urls;
+  base::ranges::transform(
+      urls, std::back_inserter(blink_urls),
+      [](const GURL& url) { return String(url.spec().c_str()); });
+
+  ScriptValue blink_data = Deserialize(script_state, serialized_data);
+
+  v8::Maybe<ScriptPromise> result = registered_run_function->Invoke(
+      instance.Get(isolate), blink_urls, blink_data);
+
+  if (try_catch.HasCaught()) {
+    v8::Local<v8::Value> exception = try_catch.Exception();
+    std::move(callback).Run(/*success=*/false,
+                            ExceptionToString(script_state, exception),
+                            /*index=*/0);
+    return;
+  }
+
+  if (result.IsNothing()) {
+    std::move(callback).Run(/*success=*/false, "Internal error.",
+                            /*index=*/0);
+    return;
+  }
+
+  auto* unresolved_request = MakeGarbageCollected<UnresolvedSelectURLRequest>(
+      urls.size(), std::move(callback));
+
+  ScriptPromise promise = result.FromJust();
+
+  auto* success_callback = MakeGarbageCollected<ScriptFunction>(
+      script_state, MakeGarbageCollected<SelectURLResolutionSuccessCallback>(
+                        unresolved_request));
+  auto* failure_callback = MakeGarbageCollected<ScriptFunction>(
+      script_state, MakeGarbageCollected<SelectURLResolutionFailureCallback>(
+                        unresolved_request));
+
+  promise.Then(success_callback, failure_callback);
 }
 
 void SharedStorageWorkletGlobalScope::RunOperation(
     const std::string& name,
     const std::vector<uint8_t>& serialized_data,
     RunOperationCallback callback) {
-  NOTIMPLEMENTED();
+  std::string error_message;
+  SharedStorageOperationDefinition* operation_definition = nullptr;
+  if (!PerformCommonOperationChecks(name, error_message,
+                                    operation_definition)) {
+    std::move(callback).Run(
+        /*success=*/false, error_message);
+    return;
+  }
 
-  std::move(callback).Run(
-      /*success=*/false,
-      /*error_message=*/"Not implemented");
+  DCHECK(operation_definition);
+
+  ScriptState* script_state = operation_definition->GetScriptState();
+  ScriptState::Scope scope(script_state);
+
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::TryCatch try_catch(isolate);
+  try_catch.SetVerbose(true);
+
+  TraceWrapperV8Reference<v8::Value> instance =
+      operation_definition->GetInstance();
+  V8RunFunctionForSharedStorageRunOperation* registered_run_function =
+      operation_definition->GetRunFunctionForSharedStorageRunOperation();
+
+  ScriptValue blink_data = Deserialize(script_state, serialized_data);
+
+  v8::Maybe<ScriptPromise> result =
+      registered_run_function->Invoke(instance.Get(isolate), blink_data);
+
+  if (try_catch.HasCaught()) {
+    v8::Local<v8::Value> exception = try_catch.Exception();
+    std::move(callback).Run(/*success=*/false,
+                            ExceptionToString(script_state, exception));
+    return;
+  }
+
+  if (result.IsNothing()) {
+    std::move(callback).Run(/*success=*/false, "Internal error.");
+    return;
+  }
+
+  auto* unresolved_request =
+      MakeGarbageCollected<UnresolvedRunRequest>(std::move(callback));
+
+  ScriptPromise promise = result.FromJust();
+
+  auto* success_callback = MakeGarbageCollected<ScriptFunction>(
+      script_state,
+      MakeGarbageCollected<RunResolutionSuccessCallback>(unresolved_request));
+  auto* failure_callback = MakeGarbageCollected<ScriptFunction>(
+      script_state,
+      MakeGarbageCollected<RunResolutionFailureCallback>(unresolved_request));
+
+  promise.Then(success_callback, failure_callback);
 }
 
 void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
@@ -133,6 +458,9 @@ void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
     std::unique_ptr<std::string> response_body,
     std::string error_message) {
   module_script_downloader_.reset();
+
+  DCHECK(!module_script_loaded_);
+  module_script_loaded_ = true;
 
   if (!response_body) {
     std::move(callback).Run(false, std::string(error_message));
@@ -170,6 +498,43 @@ void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
   }
 
   std::move(callback).Run(true, /*error_message=*/{});
+}
+
+bool SharedStorageWorkletGlobalScope::PerformCommonOperationChecks(
+    const std::string& operation_name,
+    std::string& error_message,
+    SharedStorageOperationDefinition*& operation_definition) {
+  DCHECK(error_message.empty());
+  DCHECK_EQ(operation_definition, nullptr);
+
+  if (!module_script_loaded_) {
+    // TODO(http://crbug/1249581): if this operation comes while fetching the
+    // module script, we might want to queue the operation to be handled later
+    // after addModule completes.
+    error_message = "The module script hasn't been loaded.";
+    return false;
+  }
+
+  auto it = operation_definition_map_.find(String(operation_name.c_str()));
+  if (it == operation_definition_map_.end()) {
+    error_message = "Cannot find operation name.";
+    return false;
+  }
+
+  operation_definition = it->value;
+
+  ScriptState* script_state = operation_definition->GetScriptState();
+
+  ScriptState::Scope scope(script_state);
+
+  TraceWrapperV8Reference<v8::Value> instance =
+      operation_definition->GetInstance();
+  if (instance.IsEmpty()) {
+    error_message = "Internal error.";
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace blink

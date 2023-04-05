@@ -28,6 +28,8 @@ const char* ToString(mojom::blink::AnnotationType type) {
       return "SharedHighlight";
     case mojom::blink::AnnotationType::kUserNote:
       return "UserNote";
+    case mojom::blink::AnnotationType::kTextFinder:
+      return "TextFinder";
   }
 }
 }  // namespace

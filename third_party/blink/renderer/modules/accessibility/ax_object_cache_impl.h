@@ -151,6 +151,8 @@ class MODULES_EXPORT AXObjectCacheImpl
   void ListboxOptionStateChanged(HTMLOptionElement*) override;
   void ListboxSelectedChildrenChanged(HTMLSelectElement*) override;
   void ListboxActiveIndexChanged(HTMLSelectElement*) override;
+  void SetMenuListOptionsBounds(HTMLSelectElement*,
+                                const WTF::Vector<gfx::Rect>&) override;
   void LocationChanged(const LayoutObject*) override;
   void ImageLoaded(const LayoutObject*) override;
 

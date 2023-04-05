@@ -105,8 +105,8 @@
             <div class="folder-title">
               [[item.title]]
             </div>
-            <template is="dom-if"
-                if="[[hasChildFolders_(item, newFolders_.*)]]" restamp>
+            <template is="dom-if" restamp
+                if="[[hasAvailableChildFolders_(item, newFolders_.*)]]">
               <cr-icon-button class="subpage-arrow"
                   aria-label="[[getForwardButtonLabel_(item)]]"
                   on-click="onForward_">

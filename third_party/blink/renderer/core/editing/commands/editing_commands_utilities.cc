@@ -254,8 +254,10 @@ bool LineBreakExistsAtPosition(const Position& position) {
     return false;
 
   const auto* text_node = DynamicTo<Text>(position.AnchorNode());
-  if (!text_node || !text_node->GetLayoutObject()->Style()->PreserveNewline())
+  if (!text_node ||
+      text_node->GetLayoutObject()->Style()->ShouldCollapseBreaks()) {
     return false;
+  }
 
   unsigned offset = position.OffsetInContainerNode();
   return offset < text_node->length() && text_node->data()[offset] == '\n';
@@ -322,8 +324,9 @@ Position LeadingCollapsibleWhitespacePosition(const Position& position,
     return Position();
   if (option == kNotConsiderNonCollapsibleWhitespace &&
       anchor_node->GetLayoutObject() &&
-      !anchor_node->GetLayoutObject()->Style()->CollapseWhiteSpace())
+      anchor_node->GetLayoutObject()->Style()->ShouldPreserveWhiteSpaces()) {
     return Position();
+  }
   const String& string = anchor_text_node->data();
   const UChar previous_character = string[prev.ComputeOffsetInContainerNode()];
   const bool is_space = option == kConsiderNonCollapsibleWhitespace

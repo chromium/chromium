@@ -67,8 +67,7 @@ void SVGClipPathElement::ChildrenChanged(const ChildrenChange& change) {
   }
 }
 
-LayoutObject* SVGClipPathElement::CreateLayoutObject(const ComputedStyle&,
-                                                     LegacyLayout) {
+LayoutObject* SVGClipPathElement::CreateLayoutObject(const ComputedStyle&) {
   return MakeGarbageCollected<LayoutSVGResourceClipper>(this);
 }
 

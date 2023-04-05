@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
 #include "components/sync/protocol/unique_position.pb.h"
@@ -69,7 +69,7 @@ class BookmarkEntityBuilder {
 
   // Set parent GUID to populate in specifics for generations above
   // |kHierarchyFieldsInSpecifics|. The GUID must be valid.
-  BookmarkEntityBuilder& SetParentGuid(const base::GUID& parent_guid);
+  BookmarkEntityBuilder& SetParentGuid(const base::Uuid& parent_guid);
 
   // Sets the index of the bookmark to be built. If this is not called,
   // the bookmark will be placed at index 0.
@@ -120,7 +120,7 @@ class BookmarkEntityBuilder {
 
   // The ID of the parent bookmark folder.
   std::string parent_id_;
-  base::GUID parent_guid_;
+  base::Uuid parent_guid_;
 
   // The index of the bookmark folder within its siblings.
   int index_ = 0;

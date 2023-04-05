@@ -26,10 +26,10 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/common/extensions/extension_test_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extensions_client.h"
-#include "extensions/common/features/features_test_utils.h"
 #include "extensions/common/manifest_constants.h"
 #endif
 
@@ -144,9 +144,9 @@ TEST_F(ChromeContentRendererClientTest, ExtensionsClientInitialized) {
   // Ensure that the availability map is initialized correctly.
   const auto& map =
       extensions_client->GetFeatureDelegatedAvailabilityCheckMap();
-  EXPECT_EQ(4u, map.size());
+  EXPECT_EQ(5u, map.size());
   for (const auto* feature :
-       extensions::features_test_utils::GetExpectedDelegatedFeaturesForTest()) {
+       extension_test_util::GetExpectedDelegatedFeaturesForTest()) {
     EXPECT_EQ(1u, map.count(feature));
   }
 }

@@ -22,6 +22,7 @@
 
 class Browser;
 class CompanionSidePanelUntrustedUI;
+class Profile;
 
 namespace companion {
 class CompanionUrlBuilder;
@@ -35,8 +36,7 @@ class CompanionPageHandler : public side_panel::mojom::CompanionPageHandler,
   CompanionPageHandler(
       mojo::PendingReceiver<side_panel::mojom::CompanionPageHandler> receiver,
       mojo::PendingRemote<side_panel::mojom::CompanionPage> page,
-      Browser* browser,
-      CompanionSidePanelUntrustedUI* search_companion_ui);
+      raw_ptr<CompanionSidePanelUntrustedUI> companion_ui);
   CompanionPageHandler(const CompanionPageHandler&) = delete;
   CompanionPageHandler& operator=(const CompanionPageHandler&) = delete;
   ~CompanionPageHandler() override;
@@ -50,6 +50,10 @@ class CompanionPageHandler : public side_panel::mojom::CompanionPageHandler,
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;
 
+  // Informs the page handler that a new text query to initialize / reload the
+  // page with was sent from client.
+  void OnSearchTextQuery(const std::string& text_query);
+
  private:
   // MsbbDelegate overrides.
   void EnableMsbb(bool enable_msbb) override;
@@ -58,9 +62,13 @@ class CompanionPageHandler : public side_panel::mojom::CompanionPageHandler,
   // changed or when the primary page has changed on the active tab.
   void NotifyURLChanged();
 
+  // Get the current browser associated with the WebUI.
+  Browser* GetBrowser();
+  // Get the profile associated with the WebUI.
+  Profile* GetProfile();
+
   mojo::Receiver<side_panel::mojom::CompanionPageHandler> receiver_;
   mojo::Remote<side_panel::mojom::CompanionPage> page_;
-  raw_ptr<Browser> browser_;
   raw_ptr<CompanionSidePanelUntrustedUI> companion_untrusted_ui_ = nullptr;
   std::unique_ptr<SigninDelegate> signin_delegate_;
   std::unique_ptr<CompanionUrlBuilder> url_builder_;

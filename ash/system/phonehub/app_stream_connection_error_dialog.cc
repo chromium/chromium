@@ -19,6 +19,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
+#include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -165,7 +166,7 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
             &ConnectionErrorDialogDelegateView::OnStartTetheringClicked,
             base::Unretained(this))),
         l10n_util::GetStringUTF16(
-            IDS_ASH_ECHE_APP_STREAMING_ERROR_DIALOG_OK_TEXT),
+            IDS_ASH_ECHE_APP_STREMING_ERROR_DIALOG_TURN_ON_HOTSPOT),
         PillButton::Type::kPrimaryWithoutIcon, nullptr));
   }
 
@@ -200,9 +201,9 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
         AshColorProvider::ContentLayerType::kTextColorPrimary));
   }
 
-  void OnStartTetheringClicked() {
+  void OnStartTetheringClicked(const ui::Event& event) {
     if (start_tethering_callback_) {
-      std::move(start_tethering_callback_).Run();
+      std::move(start_tethering_callback_).Run(event);
     }
 
     GetWidget()->CloseWithReason(

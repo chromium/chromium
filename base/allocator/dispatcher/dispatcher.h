@@ -5,17 +5,12 @@
 #ifndef BASE_ALLOCATOR_DISPATCHER_DISPATCHER_H_
 #define BASE_ALLOCATOR_DISPATCHER_DISPATCHER_H_
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/dispatcher/internal/dispatcher_internal.h"
 #include "base/base_export.h"
 
 #include <memory>
 
 namespace base::allocator::dispatcher {
-
-#if !BUILDFLAG(USE_ALLOCATION_EVENT_DISPATCHER)
-void BASE_EXPORT InstallStandardAllocatorHooks();
-#endif
 
 namespace internal {
 struct DispatchData;

@@ -408,11 +408,10 @@ bool HTMLFrameSetElement::LayoutObjectIsNeeded(
 }
 
 LayoutObject* HTMLFrameSetElement::CreateLayoutObject(
-    const ComputedStyle& style,
-    LegacyLayout legacy) {
+    const ComputedStyle& style) {
   if (style.ContentBehavesAsNormal())
     return MakeGarbageCollected<LayoutNGFrameSet>(this);
-  return LayoutObject::CreateObject(this, style, legacy);
+  return LayoutObject::CreateObject(this, style);
 }
 
 void HTMLFrameSetElement::AttachLayoutTree(AttachContext& context) {

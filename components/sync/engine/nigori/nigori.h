@@ -24,9 +24,9 @@ class KeyDerivationParams;
 // the cloud. This implementation does not support server authentication or
 // assisted key derivation.
 //
-// To store secrets securely, use the |Permute| method to derive a lookup name
-// for your secret (basically a map key), and |Encrypt| and |Decrypt| to store
-// and retrieve the secret.
+// To store secrets securely, use the |GetKeyName| method to derive a lookup
+// name for your secret (basically a map key), and |Encrypt| and |Decrypt| to
+// store and retrieve the secret.
 //
 // https://www.cl.cam.ac.uk/~drt24/nigori/nigori-overview.pdf
 class Nigori {
@@ -53,9 +53,8 @@ class Nigori {
 
   // Derives a secure lookup name for |this|, computed as
   // Permute[Kenc,Kmac](Nigori::Password || "nigori-key") as per Nigori
-  // protocol. Note that |permuted| will be Base64 encoded.
-  // TODO(crbug.com/1407696) change signature to: string GetKeyName().
-  bool GetKeyName(std::string* permuted) const;
+  // protocol. The return value will be Base64 encoded.
+  std::string GetKeyName() const;
 
   // Encrypts |value|. Note that the returned value is Base64 encoded.
   std::string Encrypt(const std::string& value) const;

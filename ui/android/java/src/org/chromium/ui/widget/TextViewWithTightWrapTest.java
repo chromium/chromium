@@ -19,8 +19,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.components.browser_ui.widget.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.R;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.RenderTestRule;
 

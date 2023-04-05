@@ -256,6 +256,47 @@ suite('AutofillSectionAddressTests', function() {
     assertEquals(addressSummary, actualSummary);
   });
 
+  test('verifyAddressLocalIndication', async () => {
+    const autofillManager = new TestAutofillManager();
+    autofillManager.data.addresses = [createAddressEntry()];
+    autofillManager.data.accountInfo = {
+      email: 'stub-user@example.com',
+      isSyncEnabledForAutofillProfiles: true,
+    };
+    AutofillManagerImpl.setInstance(autofillManager);
+
+    const section = document.createElement('settings-autofill-section');
+    document.body.appendChild(section);
+    await autofillManager.whenCalled('getAddressList');
+
+    await flushTasks();
+
+    const addressList = section.$.addressList;
+
+    assertFalse(
+        isVisible(addressList.children[0]!.querySelector('[icon*=cloud-off]')),
+        'Sync for addresses is enabled, the local indicator should be off.');
+
+    const changeListener =
+        autofillManager.lastCallback.setPersonalDataManagerListener!;
+
+    changeListener(autofillManager.data.addresses, [], [], {
+      email: 'stub-user@example.com',
+      isSyncEnabledForAutofillProfiles: false,
+    });
+    assertTrue(
+        isVisible(addressList.children[0]!.querySelector('[icon*=cloud-off]')),
+        'Sync is disabled, the local indicator should be visible.');
+
+    changeListener(autofillManager.data.addresses, [], [], undefined);
+    assertTrue(
+        isVisible(section.$.addressList.children[0]!.querySelector(
+            '[icon*=cloud-off]')),
+        'The user is logged-out, the local indicator should be visible.');
+
+    document.body.removeChild(section);
+  });
+
   test('verifyAddressRowButtonTriggersDropdown', async function() {
     const address = createAddressEntry();
     const section = await createAutofillSection([address], {});

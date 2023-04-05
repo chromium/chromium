@@ -56,10 +56,6 @@ class LineLayoutBox : public LineLayoutBoxModel {
     return ToBox()->DeprecatedFlipForWritingMode(point);
   }
 
-  void MoveWithEdgeOfInlineContainerIfNecessary(bool is_horizontal) {
-    ToBox()->MoveWithEdgeOfInlineContainerIfNecessary(is_horizontal);
-  }
-
   void Move(const LayoutUnit& width, const LayoutUnit& height) {
     ToBox()->Move(width, height);
   }
@@ -82,24 +78,6 @@ class LineLayoutBox : public LineLayoutBoxModel {
   PhysicalOffset ScrolledContentOffset() const {
     return ToBox()->ScrolledContentOffset();
   }
-
-  InlineBox* CreateInlineBox() { return ToBox()->CreateInlineBox(); }
-
-  InlineBox* InlineBoxWrapper() const { return ToBox()->InlineBoxWrapper(); }
-
-  void SetInlineBoxWrapper(InlineBox* box) {
-    return ToBox()->SetInlineBoxWrapper(box);
-  }
-
-#if DCHECK_IS_ON()
-
-  void ShowLineTreeAndMark(const InlineBox* marked_box1,
-                           const char* marked_label1) const {
-    if (auto* layout_block_flow = DynamicTo<LayoutBlockFlow>(GetLayoutObject()))
-      layout_block_flow->ShowLineTreeAndMark(marked_box1, marked_label1);
-  }
-
-#endif
 
  private:
   LayoutBox* ToBox() { return To<LayoutBox>(GetLayoutObject()); }

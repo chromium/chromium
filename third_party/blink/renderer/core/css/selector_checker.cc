@@ -1690,30 +1690,20 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       }
       break;
     }
-    case CSSSelector::kPseudoOpen:
-      if (auto* selectmenu = DynamicTo<HTMLSelectMenuElement>(element)) {
-        return selectmenu->open();
-      }
+    case CSSSelector::kPseudoPopoverOpen:
       if (auto* html_element = DynamicTo<HTMLElement>(element);
           html_element && html_element->HasPopoverAttribute()) {
         return html_element->popoverOpen();
       }
       return false;
-    case CSSSelector::kPseudoClosed:
-      if (!RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
-              element.GetDocument().GetExecutionContext())) {
-        // The html.css UA stylesheet contains a rule for <dialog> elements
-        // that uses :closed, with `dialog:not(:not(:closed))`, so it's
-        // important to *match* when the feature is *disabled*.
-        return true;
+    case CSSSelector::kPseudoOpen:
+      if (auto* selectmenu = DynamicTo<HTMLSelectMenuElement>(element)) {
+        return selectmenu->open();
       }
+      return false;
+    case CSSSelector::kPseudoClosed:
       if (auto* selectmenu = DynamicTo<HTMLSelectMenuElement>(element)) {
         return !selectmenu->open();
-      }
-      if (auto* html_element = DynamicTo<HTMLElement>(element);
-          html_element && html_element->HasPopoverAttribute()) {
-        return html_element->GetPopoverData()->visibilityState() ==
-               PopoverVisibilityState::kHidden;
       }
       return false;
     case CSSSelector::kPseudoFullscreen:

@@ -159,6 +159,14 @@ void LogMoreAppsButtonFullAppsLatency(const base::TimeDelta latency);
 // Logs the recent apps UI state when the Phone Hub bubble is opened.
 void LogRecentAppsStateOnBubbleOpened(RecentAppsUiState ui_state);
 
+// Logs the latency between showing the loading animation in the Recent Apps
+// view to the connection failed error button.
+void LogRecentAppsTransitionToFailedLatency(const base::TimeDelta latency);
+
+// Logs the latency between showing the loading animation in the Recent Apps
+// view to showing the recent apps icons and more apps button.
+void LogRecentAppsTransitionToSuccessLatency(const base::TimeDelta latency);
+
 }  // namespace ash::phone_hub_metrics
 
 #endif  // ASH_SYSTEM_PHONEHUB_PHONE_HUB_METRICS_H_

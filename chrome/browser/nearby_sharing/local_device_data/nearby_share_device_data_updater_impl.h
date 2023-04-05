@@ -9,9 +9,9 @@
 
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/nearby_sharing/common/nearby_share_http_result.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_device_data_updater.h"
 #include "chrome/browser/nearby_sharing/proto/device_rpc.pb.h"
+#include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
 
 class NearbyShareClient;
 class NearbyShareClientFactory;
@@ -51,7 +51,7 @@ class NearbyShareDeviceDataUpdaterImpl : public NearbyShareDeviceDataUpdater {
   void HandleNextRequest() override;
   void OnTimeout();
   void OnRpcSuccess(const nearbyshare::proto::UpdateDeviceResponse& response);
-  void OnRpcFailure(NearbyShareHttpError error);
+  void OnRpcFailure(ash::nearby::NearbyHttpError error);
 
   base::TimeDelta timeout_;
   NearbyShareClientFactory* client_factory_ = nullptr;

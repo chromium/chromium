@@ -10,14 +10,17 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "ui/base/wayland/wayland_display_util.h"
+#include "ui/display/screen.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 
 namespace ui {
 
 namespace {
-constexpr uint32_t kMinVersion = 1;
-constexpr uint32_t kMaxVersion = 1;
+// To support all existing use cases of zaura_output and xdg_output,
+// zaura_output_manager must be version 2+.
+constexpr uint32_t kMinVersion = 2;
+constexpr uint32_t kMaxVersion = 2;
 }  // namespace
 
 // static
@@ -65,7 +68,8 @@ WaylandZAuraOutputManager::WaylandZAuraOutputManager(
        &OnLogicalTransform,
        &OnPanelTransform,
        &OnName,
-       &OnDescription};
+       &OnDescription,
+       &OnActivated};
   zaura_output_manager_add_listener(obj_.get(), &zaura_output_manager_listener,
                                     this);
 }
@@ -92,6 +96,13 @@ WaylandOutput::Id WaylandZAuraOutputManager::GetId(wl_output* output) const {
   return output_manager->GetOutputId(output);
 }
 
+WaylandOutput* WaylandZAuraOutputManager::GetWaylandOutput(
+    WaylandOutput::Id output_id) {
+  WaylandOutputManager* output_manager = connection_->wayland_output_manager();
+  CHECK(output_manager);
+  return output_manager->GetOutput(output_id);
+}
+
 bool WaylandZAuraOutputManager::IsReady(WaylandOutput::Id output_id) const {
   return base::Contains(output_metrics_map_, output_id);
 }
@@ -106,6 +117,15 @@ void WaylandZAuraOutputManager::OnDone(void* data,
 
   self->output_metrics_map_[output_id] =
       self->pending_output_metrics_map_[output_id];
+
+  if (auto* wayland_output = self->GetWaylandOutput(output_id)) {
+    // Update the metrics on the corresponding WaylandOutput.
+    wayland_output->SetMetrics(self->output_metrics_map_[output_id]);
+
+    // TODO(tluk): In the case of multiple outputs we should wait until we
+    // receive state updates for all outputs before propagating notifications.
+    wayland_output->TriggerDelegateNotifications();
+  }
 }
 
 // static
@@ -219,6 +239,19 @@ void WaylandZAuraOutputManager::OnDescription(
   auto* self = static_cast<WaylandZAuraOutputManager*>(data);
   self->pending_output_metrics_map_[self->GetId(output)].description =
       description;
+}
+
+// static
+void WaylandZAuraOutputManager::OnActivated(
+    void* data,
+    zaura_output_manager* output_manager,
+    wl_output* output) {
+  CHECK(display::Screen::GetScreen());
+
+  const auto* self = static_cast<WaylandZAuraOutputManager*>(data);
+  const WaylandOutput::Id output_id = self->GetId(output);
+  display::Screen::GetScreen()->SetDisplayForNewWindows(
+      self->GetOutputMetrics(output_id)->display_id);
 }
 
 }  // namespace ui

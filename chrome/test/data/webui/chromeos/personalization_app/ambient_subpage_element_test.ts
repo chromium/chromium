@@ -839,4 +839,29 @@ suite('AmbientSubpageTest', function() {
             AmbientActionName.SET_ANIMATION_THEME) as SetAnimationThemeAction;
     assertEquals(AnimationTheme.kVideo, action.animationTheme);
   });
+
+  test('disables non-video topic sources for video animation', async () => {
+    // Enabled `isTimeOfDayScreensaverEnabled` to show the updated UI.
+    loadTimeData.overrideValues({'isTimeOfDayScreenSaverEnabled': true});
+
+    ambientSubpageElement = await displayMainSettings(
+        TopicSource.kArtGallery, TemperatureUnit.kFahrenheit,
+        /*ambientModeEnabled=*/ true, AnimationTheme.kVideo);
+
+    const topicSourceList =
+        ambientSubpageElement.shadowRoot!.querySelector('topic-source-list');
+    assertTrue(!!topicSourceList);
+    const topicSourceItems =
+        topicSourceList.shadowRoot!.querySelectorAll('topic-source-item');
+    assertEquals(3, topicSourceItems!.length);
+    const video = topicSourceItems[0] as TopicSourceItem;
+    const googlePhotos = topicSourceItems[1] as TopicSourceItem;
+    const art = topicSourceItems[2] as TopicSourceItem;
+    assertEquals(TopicSource.kGooglePhotos, googlePhotos.topicSource);
+    assertEquals(TopicSource.kArtGallery, art.topicSource);
+
+    assertFalse(video.disabled);
+    assertTrue(googlePhotos.disabled);
+    assertTrue(art.disabled);
+  });
 });

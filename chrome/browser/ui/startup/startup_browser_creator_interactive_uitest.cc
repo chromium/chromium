@@ -8,7 +8,6 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
-#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -16,6 +15,7 @@
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -39,48 +39,43 @@ using StartupBrowserCreatorTest = InProcessBrowserTest;
 // And this test is useless without that functionality.
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, LastUsedProfileActivated) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
   ProfileManager* profile_manager = g_browser_process->profile_manager();
 
   // Create 4 profiles, they will be scheduled for destruction when the last
   // browser window they are associated to will be closed.
-  Profile* profile_1 = profile_manager->GetProfile(
-      profile_manager->user_data_dir().Append(FILE_PATH_LITERAL(
-          "New Profile 1")));
-  ASSERT_TRUE(profile_1);
-  Profile* profile_2 = profile_manager->GetProfile(
-      profile_manager->user_data_dir().Append(FILE_PATH_LITERAL(
-          "New Profile 2")));
-  ASSERT_TRUE(profile_2);
-  Profile* profile_3 = profile_manager->GetProfile(
-      profile_manager->user_data_dir().Append(FILE_PATH_LITERAL(
-          "New Profile 3")));
-  ASSERT_TRUE(profile_3);
-  Profile* profile_4 = profile_manager->GetProfile(
-      profile_manager->user_data_dir().Append(FILE_PATH_LITERAL(
-          "New Profile 4")));
-  ASSERT_TRUE(profile_4);
+  Profile& profile_1 = profiles::testing::CreateProfileSync(
+      profile_manager, profile_manager->user_data_dir().Append(
+                           FILE_PATH_LITERAL("New Profile 1")));
+  Profile& profile_2 = profiles::testing::CreateProfileSync(
+      profile_manager, profile_manager->user_data_dir().Append(
+                           FILE_PATH_LITERAL("New Profile 2")));
+  Profile& profile_3 = profiles::testing::CreateProfileSync(
+      profile_manager, profile_manager->user_data_dir().Append(
+                           FILE_PATH_LITERAL("New Profile 3")));
+  Profile& profile_4 = profiles::testing::CreateProfileSync(
+      profile_manager, profile_manager->user_data_dir().Append(
+                           FILE_PATH_LITERAL("New Profile 4")));
 
   SessionStartupPref pref_urls(SessionStartupPref::URLS);
   pref_urls.urls.push_back(ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(FILE_PATH_LITERAL("title1.html"))));
-  SessionStartupPref::SetStartupPref(profile_1, pref_urls);
-  SessionStartupPref::SetStartupPref(profile_2, pref_urls);
-  SessionStartupPref::SetStartupPref(profile_3, pref_urls);
-  SessionStartupPref::SetStartupPref(profile_4, pref_urls);
+  SessionStartupPref::SetStartupPref(&profile_1, pref_urls);
+  SessionStartupPref::SetStartupPref(&profile_2, pref_urls);
+  SessionStartupPref::SetStartupPref(&profile_3, pref_urls);
+  SessionStartupPref::SetStartupPref(&profile_4, pref_urls);
 
   // Do a simple non-process-startup browser launch.
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
 
   StartupBrowserCreator browser_creator;
   std::vector<Profile*> last_opened_profiles;
-  last_opened_profiles.push_back(profile_1);
-  last_opened_profiles.push_back(profile_2);
-  last_opened_profiles.push_back(profile_3);
-  last_opened_profiles.push_back(profile_4);
+  last_opened_profiles.push_back(&profile_1);
+  last_opened_profiles.push_back(&profile_2);
+  last_opened_profiles.push_back(&profile_3);
+  last_opened_profiles.push_back(&profile_4);
   browser_creator.Start(dummy, profile_manager->user_data_dir(),
-                        {profile_2, StartupProfileMode::kBrowserWindow},
+                        {&profile_2, StartupProfileMode::kBrowserWindow},
                         last_opened_profiles);
 
   while (!browser_creator.ActivatedProfile())
@@ -89,24 +84,24 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, LastUsedProfileActivated) {
   Browser* new_browser = nullptr;
 
   // The last used profile (the profile_2 in this case) must be active.
-  ASSERT_EQ(1u, chrome::GetBrowserCount(profile_2));
-  new_browser = chrome::FindBrowserWithProfile(profile_2);
+  ASSERT_EQ(1u, chrome::GetBrowserCount(&profile_2));
+  new_browser = chrome::FindBrowserWithProfile(&profile_2);
   ASSERT_TRUE(new_browser);
   EXPECT_TRUE(new_browser->window()->IsActive());
 
   // All other profiles browser should not be active.
-  ASSERT_EQ(1u, chrome::GetBrowserCount(profile_1));
-  new_browser = chrome::FindBrowserWithProfile(profile_1);
+  ASSERT_EQ(1u, chrome::GetBrowserCount(&profile_1));
+  new_browser = chrome::FindBrowserWithProfile(&profile_1);
   ASSERT_TRUE(new_browser);
   EXPECT_FALSE(new_browser->window()->IsActive());
 
-  ASSERT_EQ(1u, chrome::GetBrowserCount(profile_3));
-  new_browser = chrome::FindBrowserWithProfile(profile_3);
+  ASSERT_EQ(1u, chrome::GetBrowserCount(&profile_3));
+  new_browser = chrome::FindBrowserWithProfile(&profile_3);
   ASSERT_TRUE(new_browser);
   EXPECT_FALSE(new_browser->window()->IsActive());
 
-  ASSERT_EQ(1u, chrome::GetBrowserCount(profile_4));
-  new_browser = chrome::FindBrowserWithProfile(profile_4);
+  ASSERT_EQ(1u, chrome::GetBrowserCount(&profile_4));
+  new_browser = chrome::FindBrowserWithProfile(&profile_4);
   ASSERT_TRUE(new_browser);
   EXPECT_FALSE(new_browser->window()->IsActive());
 }

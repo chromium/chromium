@@ -46,6 +46,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/user_metrics.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/aura/client/aura_constants.h"
@@ -614,8 +615,9 @@ void OverviewItem::HideCannotSnapWarning(bool animate) {
 
 void OverviewItem::OnSelectorItemDragStarted(OverviewItem* item) {
   is_being_dragged_ = (item == this);
+
   overview_item_view_->SetHeaderVisibility(
-      is_being_dragged_
+      is_being_dragged_ && !chromeos::features::IsJellyrollEnabled()
           ? OverviewItemView::HeaderVisibility::kInvisible
           : OverviewItemView::HeaderVisibility::kCloseButtonInvisibleOnly,
       /*animate=*/true);
@@ -1248,6 +1250,19 @@ void OverviewItem::SetItemBounds(const gfx::RectF& target_bounds,
   gfx::RectF overview_item_bounds =
       transform_window_.ShrinkRectToFitPreservingAspectRatio(
           screen_rect, transformed_bounds, top_view_inset, kHeaderHeightDp);
+
+  if (chromeos::features::IsJellyrollEnabled()) {
+    // Adjust the `overview_item_bounds` if the window has normal dimensions
+    // type to make sure it's aligned with overview item header view after the
+    // transform.
+    if (transform_window_.type() == OverviewGridWindowFillMode::kNormal &&
+        overview_item_bounds.width() != transformed_bounds.width()) {
+      overview_item_bounds.set_x(
+          overview_item_bounds.x() +
+          0.5f * (overview_item_bounds.width() - transformed_bounds.width()));
+      overview_item_bounds.set_width(transformed_bounds.width());
+    }
+  }
 
   const gfx::Transform transform =
       gfx::TransformBetweenRects(screen_rect, overview_item_bounds);

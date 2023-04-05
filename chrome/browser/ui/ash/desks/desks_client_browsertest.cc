@@ -467,7 +467,6 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest {
   DesksClientTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{ash::features::kDesksTemplates,
-                              ash::features::kEnableSavedDesks,
                               chromeos::wm::features::kWindowLayoutMenu},
         /*disabled_features=*/{ash::features::kDeskTemplateSync});
 

@@ -11,29 +11,22 @@
     background-color: var(--cros-highlight-color-hover);
   }
 
-  #searchResultRow {
+  #searchResultRowInner {
     align-items: center;
     cursor: pointer;
     display: flex;
+    flex-direction: row;
     height: 48px;
     justify-content: center;
-  }
-
-  #searchResultRowInner {
-    align-items: center;
-    display: flex;
-    flex-direction: row;
-    height: 100%;
     width: 100%;
   }
 
   #description {
-    /* Fade out long descriptions. */
-    -webkit-mask-image: linear-gradient(to left, transparent, white 32px);
     flex: 1;
     margin-inline-end: 16px;
     overflow: hidden;
     padding-inline-start: 16px;
+    text-overflow: ellipsis;
     white-space: nowrap;
   }
 
@@ -66,9 +59,11 @@
 
 <div id="searchResultRow" focus-row-container>
   <div focus-row-control
+      aria-disabled="true"
       focus-type="rowWrapper"
       id="searchResultRowInner"
-      aria-disabled="true"
+      on-click="onSearchResultSelected"
+      on-keypress="onKeyPress"
       selectable>
       <div id="description">[[getSearchResultDescription(searchResult)]]</div>
       <div id="accelerators">

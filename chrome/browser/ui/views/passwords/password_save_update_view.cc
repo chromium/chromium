@@ -154,11 +154,11 @@ void BuildCredentialRows(views::View* parent_view,
 
 // Create a vector which contains only the values in |items| and no elements.
 std::vector<std::u16string> ToValues(
-    const password_manager::ValueElementVector& items) {
+    const password_manager::AlternativeElementVector& items) {
   std::vector<std::u16string> passwords;
   passwords.reserve(items.size());
-  for (auto& pair : items)
-    passwords.push_back(pair.first);
+  for (const auto& item : items)
+    passwords.push_back(item.value);
   return passwords;
 }
 
@@ -167,10 +167,10 @@ std::vector<std::u16string> ToValues(
 std::unique_ptr<views::EditableCombobox> CreateUsernameEditableCombobox(
     const password_manager::PasswordForm& form) {
   std::vector<std::u16string> usernames = {form.username_value};
-  for (const password_manager::ValueElementPair& other_possible_username_pair :
+  for (const password_manager::AlternativeElement& other_possible_username :
        form.all_possible_usernames) {
-    if (other_possible_username_pair.first != form.username_value)
-      usernames.push_back(other_possible_username_pair.first);
+    if (other_possible_username.value != form.username_value)
+      usernames.push_back(other_possible_username.value);
   }
   base::EraseIf(usernames, [](const std::u16string& username) {
     return username.empty();

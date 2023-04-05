@@ -131,8 +131,7 @@ bool SVGEllipseElement::SelfHasRelativeLengths() const {
          rx_->CurrentValue()->IsRelative() || ry_->CurrentValue()->IsRelative();
 }
 
-LayoutObject* SVGEllipseElement::CreateLayoutObject(const ComputedStyle&,
-                                                    LegacyLayout) {
+LayoutObject* SVGEllipseElement::CreateLayoutObject(const ComputedStyle&) {
   return MakeGarbageCollected<LayoutSVGEllipse>(this);
 }
 

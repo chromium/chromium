@@ -68,19 +68,22 @@ class PLATFORM_EXPORT PendingLayer {
     chunks_.SetPaintArtifact(std::move(paint_artifact));
   }
 
+  using IsCompositedScrollFunction =
+      PropertyTreeState::IsCompositedScrollFunction;
+
   // Merges |guest| into |this| if it can, by appending chunks of |guest|
   // after chunks of |this|, with appropriate space conversion applied to
   // both layers from their original property tree states to |merged_state|.
   // Returns whether the merge is successful.
-  bool Merge(
-      const PendingLayer& guest,
-      LCDTextPreference lcd_text_preference = LCDTextPreference::kIgnored);
+  bool Merge(const PendingLayer& guest,
+             LCDTextPreference lcd_text_preference,
+             IsCompositedScrollFunction);
 
   // Returns true if `guest` that could be upcasted with decomposited blend
   // mode can be merged into `this`.
-  bool CanMergeWithDecompositedBlendMode(
-      const PendingLayer& guest,
-      const PropertyTreeState& upcast_state) const;
+  bool CanMergeWithDecompositedBlendMode(const PendingLayer& guest,
+                                         const PropertyTreeState& upcast_state,
+                                         IsCompositedScrollFunction) const;
 
   // Mutate this layer's property tree state to a more general (shallower)
   // state, thus the name "upcast". The concrete effect of this is to
@@ -161,7 +164,8 @@ class PLATFORM_EXPORT PendingLayer {
   // PropertyTreeState::CanUpcastWith().
   absl::optional<PropertyTreeState> CanUpcastWith(
       const PendingLayer& guest,
-      const PropertyTreeState& guest_state) const;
+      const PropertyTreeState& guest_state,
+      IsCompositedScrollFunction is_comosited_scroll) const;
 
   gfx::RectF MapRectKnownToBeOpaque(
       const PropertyTreeState& new_state,

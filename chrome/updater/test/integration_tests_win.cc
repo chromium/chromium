@@ -186,6 +186,10 @@ void CheckInstallation(UpdaterScope scope,
       EXPECT_TRUE(base::CommandLine::FromString(uninstall_cmd_line_string)
                       .HasSwitch(kWakeSwitch));
 
+      EXPECT_EQ(ERROR_SUCCESS,
+                base::win::RegKey(root, UPDATER_KEY, Wow6432(KEY_READ))
+                    .HasValue(kRegValueVersion));
+
       if (!IsSystemInstall(scope)) {
         std::wstring run_updater_wake_command;
         EXPECT_EQ(ERROR_SUCCESS,
@@ -1512,17 +1516,47 @@ void SetupFakeLegacyUpdater(UpdaterScope scope) {
   ASSERT_TRUE(google_update_exe.has_value());
 
   const base::FilePath exe_dir(google_update_exe->DirName());
-
-  base::FilePath cmd_exe_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SYSTEM, &cmd_exe_path));
-  cmd_exe_path = cmd_exe_path.Append(L"cmd.exe");
+  base::CommandLine command_line =
+      GetTestProcessCommandLine(scope, test::GetTestName());
 
   for (const base::FilePath& dir :
        {exe_dir, exe_dir.Append(L"1.2.3.4"), exe_dir.Append(L"Download"),
         exe_dir.Append(L"Install")}) {
     ASSERT_TRUE(base::CreateDirectory(dir));
-    ASSERT_TRUE(base::CopyFile(cmd_exe_path, dir.Append(kLegacyExeName)));
-    ASSERT_TRUE(base::CopyFile(cmd_exe_path, dir.Append(L"mock.exe")));
+
+    for (const std::wstring exe_name : {kLegacyExeName, L"mock.exe"}) {
+      const base::FilePath exe(dir.Append(exe_name));
+      ASSERT_TRUE(base::CopyFile(command_line.GetProgram(), exe));
+    }
+  }
+}
+
+void RunFakeLegacyUpdater(UpdaterScope scope) {
+  const absl::optional<base::FilePath> google_update_exe =
+      GetGoogleUpdateExePath(scope);
+  ASSERT_TRUE(base::PathExists(*google_update_exe));
+
+  const base::FilePath exe_dir(google_update_exe->DirName());
+  base::CommandLine command_line =
+      GetTestProcessCommandLine(scope, test::GetTestName());
+  command_line.AppendSwitchASCII(
+      updater::kTestSleepSecondsSwitch,
+      base::NumberToString(TestTimeouts::action_timeout().InSeconds() / 4));
+
+  for (const base::FilePath& dir :
+       {exe_dir, exe_dir.Append(L"1.2.3.4"), exe_dir.Append(L"Download"),
+        exe_dir.Append(L"Install")}) {
+    for (const std::wstring exe_name : {kLegacyExeName, L"mock.exe"}) {
+      const base::FilePath exe(dir.Append(exe_name));
+      ASSERT_TRUE(base::PathExists(exe));
+
+      base::Process process = base::LaunchProcess(
+          base::StrCat(
+              {base::CommandLine::QuoteForCommandLineToArgvW(exe.value()), L" ",
+               command_line.GetArgumentsString()}),
+          {});
+      ASSERT_TRUE(process.IsValid());
+    }
   }
 }
 

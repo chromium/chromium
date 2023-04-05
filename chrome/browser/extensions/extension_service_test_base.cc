@@ -65,7 +65,8 @@ namespace {
 std::unique_ptr<TestingProfile> BuildTestingProfile(
     const ExtensionServiceTestBase::ExtensionServiceInitParams& params,
     base::ScopedTempDir& temp_dir,
-    policy::PolicyService* policy_service) {
+    policy::PolicyService* policy_service,
+    const base::FilePath::CharType* preferences_filename) {
   TestingProfile::Builder profile_builder;
 
   if (!temp_dir.CreateUniqueTempDir()) {
@@ -83,8 +84,7 @@ std::unique_ptr<TestingProfile> BuildTestingProfile(
   // If pref_file is empty, TestingProfile automatically creates
   // sync_preferences::TestingPrefServiceSyncable instance.
   if (params.prefs_content.has_value()) {
-    base::FilePath prefs_path =
-        profile_dir.Append(chrome::kPreferencesFilename);
+    base::FilePath prefs_path = profile_dir.Append(preferences_filename);
     if (!base::WriteFile(prefs_path, params.prefs_content.value())) {
       LOG(ERROR) << "Failed to write a prefs file";
       return nullptr;
@@ -122,6 +122,32 @@ std::unique_ptr<TestingProfile> BuildTestingProfile(
                              true)) {
       LOG(ERROR) << "Failed to copy extensions directory";
       return nullptr;
+    }
+  }
+
+  // Only perform cleanup and copying of unpacked extensions if the path exists
+  // for the test since this is less common than for packed extensions.
+  if (base::PathExists(params.unpacked_extensions_dir)) {
+    base::FilePath unpacked_extensions_install_dir =
+        profile_dir.AppendASCII(extensions::kUnpackedInstallDirectoryName);
+    if (!base::DeletePathRecursively(unpacked_extensions_install_dir)) {
+      LOG(ERROR) << "Failed to clean unpacked extensions directory";
+      return nullptr;
+    }
+    if (params.extensions_dir.empty()) {
+      if (base::File::Error error = base::File::FILE_OK;
+          !base::CreateDirectoryAndGetError(unpacked_extensions_install_dir,
+                                            &error)) {
+        LOG(ERROR) << "Failed to create unpacked extensions directory: "
+                   << error;
+        return nullptr;
+      }
+    } else {
+      if (!base::CopyDirectory(params.extensions_dir,
+                               unpacked_extensions_install_dir, true)) {
+        LOG(ERROR) << "Failed to copy unpacked extensions directory";
+        return nullptr;
+      }
     }
   }
 
@@ -182,11 +208,15 @@ bool ExtensionServiceTestBase::ExtensionServiceInitParams::
 }
 
 bool ExtensionServiceTestBase::ExtensionServiceInitParams::
-    ConfigureByTestDataDirectory(const base::FilePath& filepath) {
-  if (!SetPrefsContentFromFile(filepath.Append(chrome::kPreferencesFilename))) {
+    ConfigureByTestDataDirectory(
+        const base::FilePath& filepath,
+        const base::FilePath::CharType* preferences_filename) {
+  if (!SetPrefsContentFromFile(filepath.Append(preferences_filename))) {
     return false;
   }
   extensions_dir = filepath.AppendASCII(extensions::kInstallDirectoryName);
+  unpacked_extensions_dir =
+      filepath.AppendASCII(extensions::kUnpackedInstallDirectoryName);
   return true;
 }
 
@@ -222,10 +252,14 @@ ExtensionServiceTestBase::~ExtensionServiceTestBase() {
 }
 
 void ExtensionServiceTestBase::InitializeExtensionService(
-    const ExtensionServiceTestBase::ExtensionServiceInitParams& params) {
-  profile_ = BuildTestingProfile(params, temp_dir_, policy_service_.get());
+    const ExtensionServiceTestBase::ExtensionServiceInitParams& params,
+    const base::FilePath::CharType* preferences_filename) {
+  profile_ = BuildTestingProfile(params, temp_dir_, policy_service_.get(),
+                                 preferences_filename);
   extensions_install_dir_ =
       profile_->GetPath().AppendASCII(extensions::kInstallDirectoryName);
+  unpacked_install_dir_ = profile_->GetPath().AppendASCII(
+      extensions::kUnpackedInstallDirectoryName);
 
   CreateExtensionService(params);
   registry_ = ExtensionRegistry::Get(profile());
@@ -242,11 +276,16 @@ void ExtensionServiceTestBase::InitializeEmptyExtensionService() {
   InitializeExtensionService(params);
 }
 
-void ExtensionServiceTestBase::InitializeGoodInstalledExtensionService() {
+void ExtensionServiceTestBase::InitializeGoodInstalledExtensionService(
+    bool unpacked) {
   ExtensionServiceInitParams params;
-  ASSERT_TRUE(
-      params.ConfigureByTestDataDirectory(data_dir().AppendASCII("good")));
-  InitializeExtensionService(params);
+  const base::FilePath::CharType* preferences_filename =
+      unpacked ? FILE_PATH_LITERAL("PreferencesUnzipped")
+               : chrome::kPreferencesFilename;
+
+  ASSERT_TRUE(params.ConfigureByTestDataDirectory(
+      data_dir().AppendASCII("good"), preferences_filename));
+  InitializeExtensionService(params, preferences_filename);
 }
 
 void ExtensionServiceTestBase::InitializeExtensionServiceWithUpdater() {
@@ -403,7 +442,8 @@ void ExtensionServiceTestBase::CreateExtensionService(
 
   service_ = system->CreateExtensionService(
       base::CommandLine::ForCurrentProcess(), extensions_install_dir_,
-      params.autoupdate_enabled, params.extensions_enabled);
+      unpacked_install_dir_, params.autoupdate_enabled,
+      params.extensions_enabled);
 
   service_->component_loader()->set_ignore_allowlist_for_testing(true);
 

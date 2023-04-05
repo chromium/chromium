@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_coordinator.h"
 
+#import <QuartzCore/QuartzCore.h>
 #import <UIKit/UIKit.h>
 
 #import "base/notreached.h"
@@ -15,6 +16,7 @@
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_mediator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_user_education_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_view_controller.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -25,14 +27,23 @@
 #endif
 
 namespace {
+
 // The duration for the presentation/dismissal animation of the inactive tabs
 // view.
 const NSTimeInterval kDuration = 0.2;
+
+// NSUserDefaults key to check whether the user education screen has ever been
+// shown. The associated value in user defaults is a BOOL.
+NSString* const kInactiveTabsUserEducationShownOnce =
+    @"InactiveTabsUserEducationShownOnce";
+
 }  // namespace
 
-@interface InactiveTabsCoordinator () <GridViewControllerDelegate,
-                                       InactiveTabsViewControllerDelegate,
-                                       SettingsNavigationControllerDelegate>
+@interface InactiveTabsCoordinator () <
+    GridViewControllerDelegate,
+    InactiveTabsUserEducationCoordinatorDelegate,
+    InactiveTabsViewControllerDelegate,
+    SettingsNavigationControllerDelegate>
 
 // The view controller displaying the inactive tabs.
 @property(nonatomic, strong) InactiveTabsViewController* viewController;
@@ -43,6 +54,11 @@ const NSTimeInterval kDuration = 0.2;
 // The mutually exclusive constraints for placing `viewController`.
 @property(nonatomic, strong) NSLayoutConstraint* hiddenConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* visibleConstraint;
+
+// The potential user education coordinator shown the first time Inactive Tabs
+// are displayed.
+@property(nonatomic, strong)
+    InactiveTabsUserEducationCoordinator* userEducationCoordinator;
 
 @end
 
@@ -98,11 +114,14 @@ const NSTimeInterval kDuration = 0.2;
 
   [baseView layoutIfNeeded];
   [UIView animateWithDuration:kDuration
-                   animations:^{
-                     self.hiddenConstraint.active = NO;
-                     self.visibleConstraint.active = YES;
-                     [baseView layoutIfNeeded];
-                   }];
+      animations:^{
+        self.hiddenConstraint.active = NO;
+        self.visibleConstraint.active = YES;
+        [baseView layoutIfNeeded];
+      }
+      completion:^(BOOL finished) {
+        [self startUserEducationIfNeeded];
+      }];
 }
 
 - (void)hide {
@@ -126,6 +145,9 @@ const NSTimeInterval kDuration = 0.2;
 
 - (void)stop {
   [super stop];
+
+  [self.userEducationCoordinator stop];
+  self.userEducationCoordinator = nil;
 
   [self.mediator disconnect];
   self.mediator = nil;
@@ -215,13 +237,24 @@ const NSTimeInterval kDuration = 0.2;
 
 - (void)didTapInactiveTabsSettingsLinkInGridViewController:
     (GridViewController*)gridViewController {
-  SettingsNavigationController* settingsController =
-      [SettingsNavigationController
-          inactiveTabsControllerForBrowser:self.browser
-                                  delegate:self];
-  [self.baseViewController presentViewController:settingsController
-                                        animated:YES
-                                      completion:nil];
+  [self presentSettings];
+}
+
+#pragma mark - InactiveTabsUserEducationCoordinatorDelegate
+
+- (void)inactiveTabsUserEducationCoordinatorDidTapSettingsButton:
+    (InactiveTabsUserEducationCoordinator*)
+        inactiveTabsUserEducationCoordinator {
+  [self.userEducationCoordinator stop];
+  self.userEducationCoordinator = nil;
+  [self presentSettings];
+}
+
+- (void)inactiveTabsUserEducationCoordinatorDidFinish:
+    (InactiveTabsUserEducationCoordinator*)
+        inactiveTabsUserEducationCoordinator {
+  [self.userEducationCoordinator stop];
+  self.userEducationCoordinator = nil;
 }
 
 #pragma mark - InactiveTabsViewControllerDelegate
@@ -296,10 +329,42 @@ const NSTimeInterval kDuration = 0.2;
 
 #pragma mark - Private
 
+// Called when the Inactive Tabs grid is shown, to start the user education
+// coordinator. If the user education screen was ever presented, this is a
+// no-op.
+- (void)startUserEducationIfNeeded {
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  if ([defaults boolForKey:kInactiveTabsUserEducationShownOnce]) {
+    return;
+  }
+
+  // Start the user education coordinator.
+  self.userEducationCoordinator = [[InactiveTabsUserEducationCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:nullptr];
+  self.userEducationCoordinator.delegate = self;
+  [self.userEducationCoordinator start];
+
+  // Record the presentation.
+  [defaults setBool:YES forKey:kInactiveTabsUserEducationShownOnce];
+}
+
 // Called when the user confirmed wanting to close all inactive tabs.
 - (void)closeAllInactiveTabs {
   [self.delegate inactiveTabsCoordinatorDidFinish:self];
   [self.mediator closeAllItems];
+}
+
+// Presents the Inactive Tabs settings modally in their own navigation
+// controller.
+- (void)presentSettings {
+  SettingsNavigationController* settingsController =
+      [SettingsNavigationController
+          inactiveTabsControllerForBrowser:self.browser
+                                  delegate:self];
+  [self.baseViewController presentViewController:settingsController
+                                        animated:YES
+                                      completion:nil];
 }
 
 @end

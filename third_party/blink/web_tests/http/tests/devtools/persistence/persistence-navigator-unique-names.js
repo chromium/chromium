@@ -27,6 +27,6 @@
     TestRunner.waitForUISourceCode('3.js')
   ]);
 
-  SourcesTestRunner.dumpNavigatorView(filesNavigator, true);
+  SourcesTestRunner.dumpNavigatorView(filesNavigator);
   TestRunner.completeTest();
 })();

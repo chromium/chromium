@@ -34,6 +34,7 @@
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
@@ -276,6 +277,7 @@ class UserManagerTest : public testing::Test {
   TestWallpaperController test_wallpaper_controller_;
 
   content::BrowserTaskEnvironment task_environment_;
+  system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 
   ScopedCrosSettingsTestHelper settings_helper_;
   // local_state_ should be destructed after ProfileManager.
@@ -533,7 +535,7 @@ TEST_F(UserManagerTest, ScreenLockAvailability) {
       false /* browser_restart */, false /* is_child */);
   user_manager::User* const user =
       user_manager::UserManager::Get()->GetActiveUser();
-  Profile* const profile = profiles::testing::CreateProfileSync(
+  Profile& profile = profiles::testing::CreateProfileSync(
       g_browser_process->profile_manager(),
       ash::ProfileHelper::GetProfilePathByUserIdHash(user->username_hash()));
 
@@ -542,7 +544,7 @@ TEST_F(UserManagerTest, ScreenLockAvailability) {
   EXPECT_EQ(1U, user_manager::UserManager::Get()->GetUnlockUsers().size());
 
   // The user is not allowed to lock the screen.
-  profile->GetPrefs()->SetBoolean(prefs::kAllowScreenLock, false);
+  profile.GetPrefs()->SetBoolean(prefs::kAllowScreenLock, false);
   EXPECT_FALSE(user_manager::UserManager::Get()->CanCurrentUserLock());
   EXPECT_EQ(0U, user_manager::UserManager::Get()->GetUnlockUsers().size());
 

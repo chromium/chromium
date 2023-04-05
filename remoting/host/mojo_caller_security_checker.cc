@@ -30,6 +30,7 @@ constexpr auto kAllowedCallerProgramNames =
       "remote-open-url", "remote-webauthn",
 #elif BUILDFLAG(IS_WIN)
       L"remote_open_url.exe", L"remote_webauthn.exe",
+          L"remote_security_key.exe",
 #else
       // MakeFixedFlatSet() requires at least one element.
       "unsupported",

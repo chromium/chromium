@@ -11,6 +11,9 @@ interface KeyboardSettingsObserver {
   // Notifies KeyboardSettingsObserver when the list of connected keyboards
   // and their settings are updated.
   OnKeyboardListUpdated(array<ash.mojom.Keyboard> keyboards);
+  // Notifies KeyboardSettingsObserver whenever the set of policies which
+  // control keyboard settings change.
+  OnKeyboardPoliciesUpdated(ash.mojom.KeyboardPolicies policies);
 };
 
 // Interface for observing touchpad settings changes in OSSettings SWA.

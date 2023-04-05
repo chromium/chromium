@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/threading/thread_checker.h"
+#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "url/gurl.h"
 
 class PrefRegistrySimple;
@@ -36,20 +37,20 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_TIMEZONE) TimeZoneResolver {
   using DelayNetworkCallClosure =
       base::RepeatingCallback<void(base::OnceClosure)>;
 
-  class Delegate {
+  class Delegate : public SimpleGeolocationProvider::Delegate {
    public:
-    Delegate();
+    Delegate() = default;
 
     Delegate(const Delegate&) = delete;
     Delegate& operator=(const Delegate&) = delete;
 
-    virtual ~Delegate();
+    ~Delegate() override = default;
 
     // Returns true if TimeZoneResolver should include WiFi data in request.
-    virtual bool ShouldSendWiFiGeolocationData() = 0;
+    virtual bool ShouldSendWiFiGeolocationData() const = 0;
 
     // Returns true if TimeZoneResolver should include Cellular data in request.
-    virtual bool ShouldSendCellularGeolocationData() = 0;
+    virtual bool ShouldSendCellularGeolocationData() const = 0;
   };
 
   // This is a LocalState preference to store base::Time value of the last
@@ -100,7 +101,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_TIMEZONE) TimeZoneResolver {
   static int IntervalForNextRequestForTesting(const int requests);
 
  private:
-  Delegate* delegate_;
+  const Delegate* const delegate_;
 
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   const GURL url_;

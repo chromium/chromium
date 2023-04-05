@@ -220,12 +220,16 @@ struct OverflowMenuDestinationView: View {
 
   enum AccessibilityIdentifier {
     /// The addition to the `accessibilityIdentfier` for this element if it
-    /// has a badge.
-    static let badgeAddition = "badge"
+    /// has an error badge.
+    static let errorBadge = "errorBadge"
+
+    /// The addition to the `accessibilityIdentfier` for this element if it
+    /// has a promo badge.
+    static let promoBadge = "promoBadge"
 
     /// The addition to the `accessibilityIdentfier` for this element if it
     /// has a "New" badge.
-    static let newBadgeAddition = "newBadge"
+    static let newBadge = "newBadge"
   }
 
   /// The destination for this view.
@@ -268,8 +272,9 @@ struct OverflowMenuDestinationView: View {
   var accessibilityIdentifier: String {
     return [
       destination.accessibilityIdentifier,
-      destination.badge == .promo ? AccessibilityIdentifier.badgeAddition : nil,
-      destination.badge == .new ? AccessibilityIdentifier.newBadgeAddition : nil,
+      destination.badge == .error ? AccessibilityIdentifier.errorBadge : nil,
+      destination.badge == .promo ? AccessibilityIdentifier.promoBadge : nil,
+      destination.badge == .new ? AccessibilityIdentifier.newBadge : nil,
     ].compactMap { $0 }.joined(separator: "-")
   }
 

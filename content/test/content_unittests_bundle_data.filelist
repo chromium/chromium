@@ -757,11 +757,8 @@ data/gpu/pixel_webgpu_copy_externalImage_webgl_canvas.html
 data/gpu/pixel_webgpu_copy_externalImage_webgpu_canvas.html
 data/gpu/pixel_webgpu_copy_image.html
 data/gpu/pixel_webgpu_display_p3.html
-data/gpu/pixel_webgpu_import_2d_canvas.html
 data/gpu/pixel_webgpu_import_video_frame.html
 data/gpu/pixel_webgpu_import_video_frame_offscreen_canvas.html
-data/gpu/pixel_webgpu_import_webgl_canvas.html
-data/gpu/pixel_webgpu_import_webgpu_canvas.html
 data/gpu/pixel_webgpu_util.js
 data/gpu/pixel_webgpu_webgl_teximage2d.html
 data/gpu/power_video_bear_1280x720_mp4.html
@@ -993,6 +990,8 @@ data/interest_group/bidding_logic_invalid_ad_url.js
 data/interest_group/bidding_logic_invalid_ad_url.js.mock-http-headers
 data/interest_group/bidding_logic_loop_forever.js
 data/interest_group/bidding_logic_loop_forever.js.mock-http-headers
+data/interest_group/bidding_logic_register_ad_beacon.js
+data/interest_group/bidding_logic_register_ad_beacon.js.mock-http-headers
 data/interest_group/bidding_logic_report_to_name.js
 data/interest_group/bidding_logic_report_to_name.js.mock-http-headers
 data/interest_group/bidding_logic_stop_bidding_after_win.js
@@ -1021,6 +1020,8 @@ data/interest_group/decision_logic_expect_top_frame_a_test.js
 data/interest_group/decision_logic_expect_top_frame_a_test.js.mock-http-headers
 data/interest_group/decision_logic_loop_forever.js
 data/interest_group/decision_logic_loop_forever.js.mock-http-headers
+data/interest_group/decision_logic_register_ad_beacon.js
+data/interest_group/decision_logic_register_ad_beacon.js.mock-http-headers
 data/interest_group/decision_logic_report_to_seller_signals.js
 data/interest_group/decision_logic_report_to_seller_signals.js.mock-http-headers
 data/interest_group/decision_logic_throws.js
@@ -1475,6 +1476,7 @@ data/service_worker/fetch_event.js
 data/service_worker/fetch_event.js.mock-http-headers
 data/service_worker/fetch_event_blob.js
 data/service_worker/fetch_event_blob.js.mock-http-headers
+data/service_worker/fetch_event_object_removing_itself.js
 data/service_worker/fetch_event_pass_through.js
 data/service_worker/fetch_event_pass_through.js.mock-http-headers
 data/service_worker/fetch_event_rejected.js
@@ -1484,6 +1486,7 @@ data/service_worker/fetch_event_respond_with_fetch.js
 data/service_worker/fetch_event_response_via_cache.js
 data/service_worker/fetch_event_set_in_install_event.js
 data/service_worker/fetch_event_set_in_install_event.js.mock-http-headers
+data/service_worker/fetch_event_with_handle_event_property.js
 data/service_worker/fetch_event_worker_clients.js
 data/service_worker/fetch_from_page.html
 data/service_worker/fetch_from_service_worker.html
@@ -1568,6 +1571,7 @@ data/shared_storage/private_aggregation_permissions_policy_none.html
 data/shared_storage/private_aggregation_permissions_policy_none.html.mock-http-headers
 data/shared_storage/simple_module.js
 data/shared_storage/simple_module2.js
+data/shared_storage/slow_and_fast_module.js
 data/simple_database.html
 data/simple_links.html
 data/simple_page.html

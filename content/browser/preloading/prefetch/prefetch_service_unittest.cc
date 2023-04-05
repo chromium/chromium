@@ -23,6 +23,7 @@
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/fake_service_worker_context.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/preloading_test_util.h"
@@ -256,7 +257,8 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
         {{features::kPrefetchUseContentRefactor,
           {{"ineligible_decoy_request_probability", "0"},
            {"prefetch_container_lifetime_s", "-1"}}}},
-        {network::features::kPrefetchNoVarySearch});
+        {network::features::kPrefetchNoVarySearch,
+         ::features::kPreloadingConfig});
   }
 
   void MakePrefetchService(std::unique_ptr<MockPrefetchServiceDelegate>
@@ -857,7 +859,8 @@ class PrefetchServiceAllowAllDomainsTest : public PrefetchServiceTest {
           {{"ineligible_decoy_request_probability", "0"},
            {"prefetch_container_lifetime_s", "-1"},
            {"allow_all_domains", "true"}}}},
-        {network::features::kPrefetchNoVarySearch});
+        {network::features::kPrefetchNoVarySearch,
+         ::features::kPreloadingConfig});
   }
 };
 
@@ -943,7 +946,8 @@ class PrefetchServiceAllowAllDomainsForExtendedPreloadingTest
           {{"ineligible_decoy_request_probability", "0"},
            {"prefetch_container_lifetime_s", "-1"},
            {"allow_all_domains_for_extended_preloading", "true"}}}},
-        {network::features::kPrefetchNoVarySearch});
+        {network::features::kPrefetchNoVarySearch,
+         ::features::kPreloadingConfig});
   }
 };
 
@@ -2385,7 +2389,8 @@ class PrefetchServiceLimitedPrefetchesTest : public PrefetchServiceTest {
           {{"ineligible_decoy_request_probability", "0"},
            {"prefetch_container_lifetime_s", "-1"},
            {"max_srp_prefetches", "2"}}}},
-        {network::features::kPrefetchNoVarySearch});
+        {network::features::kPrefetchNoVarySearch,
+         ::features::kPreloadingConfig});
   }
 };
 
@@ -2558,7 +2563,8 @@ class PrefetchServiceWithHTMLOnlyTest : public PrefetchServiceTest {
           {{"ineligible_decoy_request_probability", "0"},
            {"prefetch_container_lifetime_s", "-1"},
            {"html_only", "true"}}}},
-        {network::features::kPrefetchNoVarySearch});
+        {network::features::kPrefetchNoVarySearch,
+         ::features::kPreloadingConfig});
   }
 };
 
@@ -2633,7 +2639,8 @@ class PrefetchServiceAlwaysMakeDecoyRequestTest : public PrefetchServiceTest {
           {{"ineligible_decoy_request_probability", "1"},
            {"prefetch_container_lifetime_s", "-1"}}},
          {features::kPrefetchRedirects, {}}},
-        {network::features::kPrefetchNoVarySearch});
+        {network::features::kPrefetchNoVarySearch,
+         ::features::kPreloadingConfig});
   }
 };
 
@@ -2851,8 +2858,10 @@ TEST_F(PrefetchServiceAlwaysMakeDecoyRequestTest, MAYBE_RedirectDecoyRequest) {
 class PrefetchServiceHoldbackTest : public PrefetchServiceTest {
  public:
   void InitScopedFeatureList() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kPrefetchUseContentRefactor, {{"prefetch_holdback", "true"}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kPrefetchUseContentRefactor,
+          {{"prefetch_holdback", "true"}}}},
+        {::features::kPreloadingConfig});
   }
 };
 
@@ -3040,11 +3049,12 @@ TEST_F(PrefetchServiceTest, NonDefaultStoragePartition) {
 class PrefetchServiceStreamingURLLoaderTest : public PrefetchServiceTest {
  public:
   void InitScopedFeatureList() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kPrefetchUseContentRefactor,
-        {{"ineligible_decoy_request_probability", "0"},
-         {"prefetch_container_lifetime_s", "-1"},
-         {"use_streaming_url_loader", "true"}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kPrefetchUseContentRefactor,
+          {{"ineligible_decoy_request_probability", "0"},
+           {"prefetch_container_lifetime_s", "-1"},
+           {"use_streaming_url_loader", "true"}}}},
+        {::features::kPreloadingConfig});
   }
 };
 
@@ -3181,7 +3191,7 @@ class PrefetchServiceNoVarySearchTest : public PrefetchServiceTest {
     scoped_feature_list_.InitWithFeatures(
         {features::kPrefetchUseContentRefactor,
          network::features::kPrefetchNoVarySearch},
-        {});
+        {::features::kPreloadingConfig});
   }
 };
 
@@ -3271,7 +3281,8 @@ class PrefetchServiceAllowRedirectTest : public PrefetchServiceTest {
           {{"ineligible_decoy_request_probability", "0"},
            {"prefetch_container_lifetime_s", "-1"}}},
          {features::kPrefetchRedirects, {}}},
-        {network::features::kPrefetchNoVarySearch});
+        {network::features::kPrefetchNoVarySearch,
+         ::features::kPreloadingConfig});
   }
 };
 
@@ -3607,7 +3618,8 @@ class PrefetchServiceNeverBlockUntilHeadTest : public PrefetchServiceTest {
            {"block_until_head_eager_prefetch", "false"},
            {"block_until_head_moderate_prefetch", "false"},
            {"block_until_head_conservative_prefetch", "false"}}}},
-        {network::features::kPrefetchNoVarySearch});
+        {network::features::kPrefetchNoVarySearch,
+         ::features::kPreloadingConfig});
   }
 };
 
@@ -3687,7 +3699,8 @@ class PrefetchServiceAlwaysBlockUntilHeadTest
            {"block_until_head_eager_prefetch", "true"},
            {"block_until_head_moderate_prefetch", "true"},
            {"block_until_head_conservative_prefetch", "true"}}}},
-        {network::features::kPrefetchNoVarySearch});
+        {network::features::kPrefetchNoVarySearch,
+         ::features::kPreloadingConfig});
   }
 };
 

@@ -24,6 +24,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -107,7 +108,7 @@ mojom::PointingStickPtr BuildMojomPointingStick(
 // keyboards, otherwise the keyboard settings are not valid.
 // Modifier remappings must only contain valid modifiers within the
 // modifier_keys array.
-bool keyboardSettingsAreValid(const mojom::Keyboard& keyboard,
+bool KeyboardSettingsAreValid(const mojom::Keyboard& keyboard,
                               const mojom::KeyboardSettings& settings) {
   for (const auto& remapping : settings.modifier_remappings) {
     auto it = base::ranges::find(keyboard.modifier_keys, remapping.first);
@@ -117,6 +118,26 @@ bool keyboardSettingsAreValid(const mojom::Keyboard& keyboard,
   }
   return keyboard.is_external || (settings.suppress_meta_fkey_rewrites ==
                                   kDefaultSuppressMetaFKeyRewrites);
+}
+
+void RecordSetKeyboardSetttingsValidMetric(bool is_valid) {
+  base::UmaHistogramBoolean(
+      "ChromeOS.Settings.Device.Keyboard.SetSettingsSucceeded", is_valid);
+}
+
+void RecordSetTouchpadSetttingsValidMetric(bool is_valid) {
+  base::UmaHistogramBoolean(
+      "ChromeOS.Settings.Device.Touchpad.SetSettingsSucceeded", is_valid);
+}
+
+void RecordSetPointingStickSetttingsValidMetric(bool is_valid) {
+  base::UmaHistogramBoolean(
+      "ChromeOS.Settings.Device.PointingStick.SetSettingsSucceeded", is_valid);
+}
+
+void RecordSetMouseSetttingsValidMetric(bool is_valid) {
+  base::UmaHistogramBoolean(
+      "ChromeOS.Settings.Device.Mouse.SetSettingsSucceeded", is_valid);
 }
 
 InputDeviceSettingsControllerImpl::InputDeviceSettingsControllerImpl()
@@ -168,6 +189,7 @@ void InputDeviceSettingsControllerImpl::Init() {
           base::BindRepeating(
               &InputDeviceSettingsControllerImpl::OnPointingStickListUpdated,
               base::Unretained(this)));
+  metrics_manager_ = std::make_unique<InputDeviceSettingsMetricsManager>();
 }
 
 void InputDeviceSettingsControllerImpl::InitializePolicyHandler() {
@@ -213,6 +235,10 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
   // but all dependencies of `InputDeviceSettingsControllerImpl` must be
   // updated due to the active pref service change first. Therefore, schedule
   // a task so other dependencies are updated first.
+  ScheduleDeviceSettingsRefresh();
+}
+
+void InputDeviceSettingsControllerImpl::ScheduleDeviceSettingsRefresh() {
   if (!settings_refresh_pending_) {
     settings_refresh_pending_ = true;
     sequenced_task_runner_->PostTask(
@@ -229,6 +255,9 @@ void InputDeviceSettingsControllerImpl::RefreshAllDeviceSettings() {
     keyboard_pref_handler_->InitializeKeyboardSettings(
         active_pref_service_, policy_handler_->keyboard_policies(),
         keyboard.get());
+    if (active_pref_service_) {
+      metrics_manager_->RecordKeyboardInitialMetrics(*keyboard);
+    }
     DispatchKeyboardSettingsChanged(id);
   }
   for (const auto& [id, touchpad] : touchpads_) {
@@ -249,12 +278,16 @@ void InputDeviceSettingsControllerImpl::RefreshAllDeviceSettings() {
 }
 
 void InputDeviceSettingsControllerImpl::OnKeyboardPoliciesChanged() {
-  for (const auto& [id, keyboard] : keyboards_) {
-    keyboard_pref_handler_->InitializeKeyboardSettings(
-        active_pref_service_, policy_handler_->keyboard_policies(),
-        keyboard.get());
-    DispatchKeyboardSettingsChanged(id);
+  for (auto& observer : observers_) {
+    observer.OnKeyboardPoliciesUpdated(policy_handler_->keyboard_policies());
   }
+  ScheduleDeviceSettingsRefresh();
+}
+
+const mojom::KeyboardPolicies&
+InputDeviceSettingsControllerImpl::GetKeyboardPolicies() {
+  CHECK(policy_handler_);
+  return policy_handler_->keyboard_policies();
 }
 
 const mojom::KeyboardSettings*
@@ -349,13 +382,16 @@ void InputDeviceSettingsControllerImpl::SetKeyboardSettings(
   // If a device with the given id does not exist, do nothing.
   auto found_keyboard_iter = keyboards_.find(id);
   if (found_keyboard_iter == keyboards_.end()) {
+    RecordSetKeyboardSetttingsValidMetric(/*is_valid=*/false);
     return;
   }
 
   auto& found_keyboard = *found_keyboard_iter->second;
-  if (!keyboardSettingsAreValid(found_keyboard, *settings)) {
+  if (!KeyboardSettingsAreValid(found_keyboard, *settings)) {
+    RecordSetKeyboardSetttingsValidMetric(/*is_valid=*/false);
     return;
   }
+  RecordSetKeyboardSetttingsValidMetric(/*is_valid=*/true);
   found_keyboard.settings = settings.Clone();
   keyboard_pref_handler_->UpdateKeyboardSettings(
       active_pref_service_, policy_handler_->keyboard_policies(),
@@ -380,8 +416,10 @@ void InputDeviceSettingsControllerImpl::SetTouchpadSettings(
   // If a device with the given id does not exist, do nothing.
   auto found_touchpad_iter = touchpads_.find(id);
   if (found_touchpad_iter == touchpads_.end()) {
+    RecordSetTouchpadSetttingsValidMetric(/*is_valid=*/false);
     return;
   }
+  RecordSetTouchpadSetttingsValidMetric(/*is_valid=*/true);
 
   // TODO(dpad): Validate incoming settings to make sure the settings can
   // apply to the given device.
@@ -409,11 +447,11 @@ void InputDeviceSettingsControllerImpl::SetMouseSettings(
   // If a device with the given id does not exist, do nothing.
   auto found_mouse_iter = mice_.find(id);
   if (found_mouse_iter == mice_.end()) {
+    RecordSetMouseSetttingsValidMetric(/*is_valid=*/false);
     return;
   }
+  RecordSetMouseSetttingsValidMetric(/*is_valid=*/true);
 
-  // TODO(dpad): Validate incoming settings to make sure the settings can
-  // apply to the given device.
   auto& found_mouse = *found_mouse_iter->second;
   found_mouse.settings = settings.Clone();
   mouse_pref_handler_->UpdateMouseSettings(active_pref_service_, found_mouse);
@@ -437,11 +475,11 @@ void InputDeviceSettingsControllerImpl::SetPointingStickSettings(
   // If a device with the given id does not exist, do nothing.
   auto found_pointing_stick_iter = pointing_sticks_.find(id);
   if (found_pointing_stick_iter == pointing_sticks_.end()) {
+    RecordSetPointingStickSetttingsValidMetric(/*is_valid=*/false);
     return;
   }
+  RecordSetPointingStickSetttingsValidMetric(/*is_valid=*/true);
 
-  // TODO(dpad): Validate incoming settings to make sure the settings can
-  // apply to the given device.
   auto& found_pointing_stick = *found_pointing_stick_iter->second;
   found_pointing_stick.settings = settings.Clone();
   pointing_stick_pref_handler_->UpdatePointingStickSettings(
@@ -589,6 +627,9 @@ void InputDeviceSettingsControllerImpl::OnKeyboardListUpdated(
     keyboard_pref_handler_->InitializeKeyboardSettings(
         active_pref_service_, policy_handler_->keyboard_policies(),
         mojom_keyboard.get());
+    if (active_pref_service_) {
+      metrics_manager_->RecordKeyboardInitialMetrics(*mojom_keyboard);
+    }
     keyboards_.insert_or_assign(keyboard.id, std::move(mojom_keyboard));
     DispatchKeyboardConnected(keyboard.id);
   }

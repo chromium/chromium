@@ -31,6 +31,7 @@ source_set("keyboard_assist") {
     "//ios/chrome/browser/search_engines:search_engines_util",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:util_swift",
     "//ios/chrome/browser/ui/lens:lens_availability",

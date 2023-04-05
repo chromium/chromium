@@ -28,13 +28,14 @@
 #
 # * Test the tests, add new ones to Git, remove deleted ones from Git, etc.
 
-from typing import Any, List, Mapping, MutableMapping, Optional
+from typing import Any, List, Mapping, MutableMapping, Optional, Tuple
 
 import re
 import collections
 import dataclasses
 import enum
 import importlib
+import itertools
 import os
 import pathlib
 import sys
@@ -69,6 +70,43 @@ def _escapeJS(string: str) -> str:
     # Kind of an ugly hack, for nicer failure-message output.
     string = re.sub(r'\[(\w+)\]', r'[\\""+(\1)+"\\"]', string)
     return string
+
+
+def _unroll(text: str) -> str:
+    """Unrolls text with all possible permutations of the parameter lists.
+
+    Example:
+    >>> print _unroll('f = {<a | b>: <1 | 2 | 3>};')
+    // a
+    f = {a: 1};
+    f = {a: 2};
+    f = {a: 3};
+    // b
+    f = {b: 1};
+    f = {b: 2};
+    f = {b: 3};
+    """
+    patterns = []  # type: List[Tuple[str, List[str]]]
+    while match := re.search(r'<([^>]+)>', text):
+        key = f'@unroll_pattern_{len(patterns)}'
+        values = text[match.start(1):match.end(1)]
+        text = text[:match.start(0)] + key + text[match.end(0):]
+        patterns.append((key, [value.strip() for value in values.split('|')]))
+
+    def unroll_patterns(text: str,
+                        patterns: List[Tuple[str, List[str]]],
+                        label: Optional[str] = None) -> List[str]:
+        if not patterns:
+            return [text]
+        patterns = patterns.copy()
+        key, values = patterns.pop(0)
+        return (['// ' + label] if label else []) + list(
+            itertools.chain.from_iterable(
+                unroll_patterns(text.replace(key, value), patterns, value)
+                for value in values))
+
+    result = '\n'.join(unroll_patterns(text, patterns))
+    return result
 
 
 def _expand_nonfinite(method: str, argstr: str, tail: str) -> str:
@@ -133,6 +171,12 @@ def _get_test_sub_dir(name: str, name_to_sub_dir: Mapping[str, str]) -> str:
 
 
 def _expand_test_code(code: str) -> str:
+    # Remove newlines if a backslash is found at end of line.
+    code = re.sub(r'\\\n\s*', '', code, flags=re.MULTILINE | re.DOTALL)
+
+    # Unroll expressions with a cross-product-style parameter expansion.
+    code = re.sub(r'@unroll ([^;]*;)', lambda m: _unroll(m.group(1)), code)
+
     code = re.sub(r'@nonfinite ([^(]+)\(([^)]+)\)(.*)', lambda m:
                   _expand_nonfinite(m.group(1), m.group(2), m.group(3)),
                   code)  # Must come before '@assert throws'.
@@ -456,7 +500,7 @@ def genTestUtils_union(TEMPLATEFILE: str, NAME2DIRFILE: str) -> None:
                 test['name'] += '.' + variant_name
                 test['code'] = test['code'] % variant_params
                 if 'reference' in test:
-                  test['reference'] = test['reference'] % variant_params
+                    test['reference'] = test['reference'] % variant_params
                 test.update(variant_params)
 
             name = test['name']

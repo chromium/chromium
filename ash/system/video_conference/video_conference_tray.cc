@@ -58,7 +58,7 @@ class ToggleBubbleButton : public IconButton {
   ToggleBubbleButton(VideoConferenceTray* tray, PressedCallback callback)
       : IconButton(std::move(callback),
                    IconButton::Type::kMediumFloating,
-                   &kUnifiedMenuExpandIcon,
+                   &kVideoConferenceUpChevronIcon,
                    IDS_ASH_VIDEO_CONFERENCE_TOGGLE_BUBBLE_BUTTON_TOOLTIP,
                    /*is_togglable=*/true,
                    /*has_border=*/true),

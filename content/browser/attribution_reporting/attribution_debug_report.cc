@@ -355,7 +355,7 @@ base::Value::Dict GetReportDataBody(DebugDataType data_type,
       DCHECK(result.dropped_event_level_report());
       DCHECK(original_report_time);
       *original_report_time =
-          result.dropped_event_level_report()->OriginalReportTime();
+          result.dropped_event_level_report()->initial_report_time();
       return result.dropped_event_level_report()->ReportBody();
     case DebugDataType::kSourceDestinationLimit:
     case DebugDataType::kSourceNoised:

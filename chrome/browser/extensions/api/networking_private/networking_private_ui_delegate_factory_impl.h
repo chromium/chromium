@@ -12,14 +12,13 @@ namespace extensions {
 class NetworkingPrivateUIDelegateFactoryImpl
     : public NetworkingPrivateDelegateFactory::UIDelegateFactory {
  public:
-  NetworkingPrivateUIDelegateFactoryImpl();
+  NetworkingPrivateUIDelegateFactoryImpl() = default;
+  ~NetworkingPrivateUIDelegateFactoryImpl() override = default;
 
   NetworkingPrivateUIDelegateFactoryImpl(
       const NetworkingPrivateUIDelegateFactoryImpl&) = delete;
   NetworkingPrivateUIDelegateFactoryImpl& operator=(
       const NetworkingPrivateUIDelegateFactoryImpl&) = delete;
-
-  ~NetworkingPrivateUIDelegateFactoryImpl() override;
 
   std::unique_ptr<NetworkingPrivateDelegate::UIDelegate> CreateDelegate()
       override;

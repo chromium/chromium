@@ -17,8 +17,8 @@
 
 namespace updater {
 
-bool UpdateUsageStatsTask::UsageStatsAllowed(
-    const std::vector<std::string>& app_ids) const {
+bool OtherAppUsageStatsAllowed(const std::vector<std::string>& app_ids,
+                               UpdaterScope scope) {
   for (auto app_id : app_ids) {
     if (base::EqualsCaseInsensitiveASCII(app_id, kUpdaterAppId)) {
       continue;
@@ -26,9 +26,9 @@ bool UpdateUsageStatsTask::UsageStatsAllowed(
     std::wstring app_id_u16;
     DWORD usagestats = 0;
     if (base::win::RegKey(
-            UpdaterScopeToHKeyRoot(scope_),
-            base::StrCat({IsSystemInstall(scope_) ? CLIENT_STATE_MEDIUM_KEY
-                                                  : CLIENT_STATE_KEY,
+            UpdaterScopeToHKeyRoot(scope),
+            base::StrCat({IsSystemInstall(scope) ? CLIENT_STATE_MEDIUM_KEY
+                                                 : CLIENT_STATE_KEY,
                           base::SysUTF8ToWide(app_id)})
                 .c_str(),
             Wow6432(KEY_READ))

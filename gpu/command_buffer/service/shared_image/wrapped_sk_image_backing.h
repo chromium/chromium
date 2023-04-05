@@ -64,7 +64,7 @@ class WrappedSkImageBacking : public ClearTrackingSharedImageBacking {
   bool UploadFromMemory(const std::vector<SkPixmap>& pixmaps) override;
 
  protected:
-  std::unique_ptr<SkiaImageRepresentation> ProduceSkia(
+  std::unique_ptr<SkiaImageRepresentation> ProduceSkiaGanesh(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;

@@ -200,15 +200,15 @@ export interface ShortcutProviderInterface extends
   getAcceleratorLayoutInfos(): Promise<{layoutInfos: MojoLayoutInfo[]}>;
   isMutable(source: AcceleratorSource): Promise<{isMutable: boolean}>;
   hasLauncherButton(): Promise<{hasLauncherButton: boolean}>;
+  addAccelerator(
+      source: AcceleratorSource, action: number,
+      accelerator: Accelerator): Promise<{result: AcceleratorResultData}>;
   removeAccelerator(
       source: AcceleratorSource, action: number,
       accelerator: Accelerator): Promise<{result: AcceleratorResultData}>;
   replaceAccelerator(
       source: AcceleratorSource, action: number, oldAccelerator: Accelerator,
       newAccelerator: Accelerator): Promise<AcceleratorConfigResult>;
-  addUserAccelerator(
-      source: AcceleratorSource, action: number,
-      accelerator: Accelerator): Promise<AcceleratorConfigResult>;
   addObserver(observer: AcceleratorsUpdatedObserverRemote): void;
   restoreDefault(source: AcceleratorSource, actionId: number):
       Promise<{result: AcceleratorResultData}>;

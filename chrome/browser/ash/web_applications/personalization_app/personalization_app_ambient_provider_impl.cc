@@ -298,7 +298,8 @@ void PersonalizationAppAmbientProviderImpl::OnTopicSourceChanged() {
   // previews.
   OnPreviewsFetched(std::vector<GURL>());
   if (features::IsPersonalizationJellyEnabled() ||
-      settings_->topic_source == ash::AmbientModeTopicSource::kGooglePhotos) {
+      settings_->topic_source == AmbientModeTopicSource::kGooglePhotos ||
+      settings_->topic_source == AmbientModeTopicSource::kVideo) {
     if (is_updating_backend_) {
       // Once settings updated, fetch preview images.
       needs_update_previews_ = true;
@@ -542,6 +543,19 @@ void PersonalizationAppAmbientProviderImpl::MaybeUpdateTopicSource(
 void PersonalizationAppAmbientProviderImpl::FetchPreviewImages() {
   needs_update_previews_ = false;
   previews_weak_factory_.InvalidateWeakPtrs();
+  if (GetCurrentUiSettings().theme() == AmbientTheme::kVideo) {
+    absl::optional<AmbientVideo> video = GetCurrentUiSettings().video();
+    DCHECK(video.has_value());
+    auto url_arr =
+        AmbientBackendController::Get()->GetTimeOfDayVideoPreviewImageUrls(
+            video.value());
+    std::vector<GURL> previews;
+    base::ranges::transform(url_arr, std::back_inserter(previews),
+                            [](const char* url) { return GURL(url); });
+    OnPreviewsFetched(std::move(previews));
+    return;
+  }
+
   const gfx::Size image_size =
       features::IsPersonalizationJellyEnabled()
           ? gfx::Size(kJellyBannerWidthPx, kJellyBannerHeightPx)

@@ -54,7 +54,7 @@ class GPU_GLES2_EXPORT DXGISwapChainImageBacking
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;
 
-  std::unique_ptr<SkiaImageRepresentation> ProduceSkia(
+  std::unique_ptr<SkiaImageRepresentation> ProduceSkiaGanesh(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
@@ -69,7 +69,8 @@ class GPU_GLES2_EXPORT DXGISwapChainImageBacking
       SkAlphaType alpha_type,
       uint32_t usage,
       Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
-      Microsoft::WRL::ComPtr<IDXGISwapChain1> dxgi_swap_chain);
+      Microsoft::WRL::ComPtr<IDXGISwapChain1> dxgi_swap_chain,
+      int buffers_need_alpha_initialization_count);
 
   friend class DXGISwapChainOverlayImageRepresentation;
   bool Present(bool should_synchronize_present_with_vblank);
@@ -80,7 +81,7 @@ class GPU_GLES2_EXPORT DXGISwapChainImageBacking
 
   friend class SkiaGLImageRepresentationDXGISwapChain;
   // Called by the Skia representation to indicate where it intends to draw.
-  void AddSwapRect(const gfx::Rect& swap_rect);
+  void DidBeginWriteAccess(const gfx::Rect& swap_rect);
   absl::optional<gfx::Rect> pending_swap_rect_;
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
@@ -88,6 +89,15 @@ class GPU_GLES2_EXPORT DXGISwapChainImageBacking
 
   // Holds a gles2::TexturePassthrough and corresponding egl image.
   scoped_refptr<D3DImageBacking::GLTextureHolder> gl_texture_holder_;
+
+  // Count of buffers in |dxgi_swap_chain_| that need to have their alpha
+  // channels be cleared to opaque before use. If positive at the start of write
+  // access, this count will be decremented and the back buffer cleared.
+  // This value should be initialized to 0 or the swap chain's buffer count. It
+  // assumes DXGI swap chains cycle through its buffers in order, so after
+  // calling present |buffer_count - 1| times, |GetBuffer(0)| will have referred
+  // to every buffer once.
+  int buffers_need_alpha_initialization_count_ = 0;
 
   bool first_swap_ = true;
 };

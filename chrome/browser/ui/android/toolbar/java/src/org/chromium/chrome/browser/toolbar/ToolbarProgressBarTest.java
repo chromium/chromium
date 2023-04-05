@@ -55,7 +55,7 @@ public class ToolbarProgressBarTest {
         mShadowLooper = ShadowLooper.shadowMainLooper();
 
         mActivityScenario = ActivityScenario.launch(TestActivity.class).onActivity(activity -> {
-            activity.setTheme(org.chromium.chrome.R.style.Theme_BrowserUI_DayNight);
+            activity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
             ViewGroup view = new FrameLayout(activity);
             view.setVisibility(View.VISIBLE);

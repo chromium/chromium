@@ -4642,10 +4642,14 @@ TEST_P(PaintArtifactCompositorTest, AddNonCompositedScrollNodes) {
   if (!base::FeatureList::IsEnabled(::features::kScrollUnification))
     return;
 
-  const uint32_t main_thread_scrolling_reason =
-      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText;
-  ASSERT_TRUE(cc::MainThreadScrollingReason::HasNonCompositedScrollReasons(
-      main_thread_scrolling_reason));
+  uint32_t main_thread_scrolling_reason =
+      cc::MainThreadScrollingReason::kNotScrollingOnMain;
+  if (!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
+    main_thread_scrolling_reason =
+        cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText;
+    ASSERT_TRUE(cc::MainThreadScrollingReason::HasNonCompositedScrollReasons(
+        main_thread_scrolling_reason));
+  }
   auto scroll_state =
       ScrollState1(PropertyTreeState::Root(), CompositingReason::kNone,
                    main_thread_scrolling_reason);
@@ -4653,11 +4657,17 @@ TEST_P(PaintArtifactCompositorTest, AddNonCompositedScrollNodes) {
   WTF::Vector<const TransformPaintPropertyNode*> scroll_translation_nodes;
   scroll_translation_nodes.push_back(&scroll_state.Transform());
 
-  Update(TestPaintArtifact()
-             .Chunk(1)
-             .Properties(scroll_state.Transform(), c0(), e0())
-             .Build(),
-         ViewportProperties(), scroll_translation_nodes);
+  Update(
+      TestPaintArtifact()
+          .Chunk(1)
+          .ScrollHitTest(scroll_state.Transform().ScrollNode()->ContainerRect(),
+                         &scroll_state.Transform())
+          // In CompositeScrollAfterPaint, this chunk being non-opaque makes
+          // the scroll not composited.
+          .Chunk(2)
+          .Properties(scroll_state.Transform(), c0(), e0())
+          .Build(),
+      ViewportProperties(), scroll_translation_nodes);
 
   const auto& scroll_tree = GetPropertyTrees().scroll_tree();
   auto* scroll_node = scroll_tree.FindNodeFromElementId(

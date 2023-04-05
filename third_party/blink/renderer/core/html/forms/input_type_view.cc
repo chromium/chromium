@@ -93,9 +93,9 @@ HTMLFormElement* InputTypeView::FormForSubmission() const {
   return GetElement().Form();
 }
 
-LayoutObject* InputTypeView::CreateLayoutObject(const ComputedStyle& style,
-                                                LegacyLayout legacy) const {
-  return LayoutObject::CreateObject(&GetElement(), style, legacy);
+LayoutObject* InputTypeView::CreateLayoutObject(
+    const ComputedStyle& style) const {
+  return LayoutObject::CreateObject(&GetElement(), style);
 }
 
 ControlPart InputTypeView::AutoAppearance() const {

@@ -20,7 +20,7 @@ struct NGInlineItemSpan final {
  public:
   NGInlineItemSpan() = default;
 
-  void SetItems(NGInlineItemsData* data, size_t begin, size_t size) {
+  void SetItems(NGInlineItemsData* data, wtf_size_t begin, wtf_size_t size) {
     SECURITY_DCHECK(begin < data->items.size());
     SECURITY_DCHECK(begin_ + size_ <= data->items.size());
     data_ = data;
@@ -34,7 +34,7 @@ struct NGInlineItemSpan final {
   }
 
   bool empty() const { return size_ == 0; }
-  size_t size() const { return size_; }
+  wtf_size_t size() const { return size_; }
 
   const NGInlineItem* begin() const {
     SECURITY_DCHECK(begin_ < data_->items.size());
@@ -56,8 +56,8 @@ struct NGInlineItemSpan final {
 
  private:
   Member<NGInlineItemsData> data_;
-  size_t begin_ = 0;
-  size_t size_ = 0;
+  wtf_size_t begin_ = 0;
+  wtf_size_t size_ = 0;
 };
 
 }  // namespace blink

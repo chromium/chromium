@@ -3763,6 +3763,7 @@
     },
 
     'ios_blink_tests': {
+      'absl_hardening_tests': {},
       'base_unittests': {},
       'blink_common_unittests': {},
       'blink_fuzzer_unittests': {},
@@ -3790,12 +3791,21 @@
       'media_unittests': {},
       'midi_unittests': {},
       'mojo_unittests': {},
+      'net_unittests': {
+        'args': [
+          '--gtest_filter=-*WebSocket*',
+        ],
+      },
+      'shell_dialogs_unittests': {},
       'skia_unittests': {},
       'sql_unittests': {},
       'storage_unittests': {},
+      'ui_base_unittests': {},
+      'ui_touch_selection_unittests': {},
       'url_unittests': {},
       'viz_unittests': {},
       'wtf_unittests': {},
+      'zlib_unittests': {},
     },
 
     'ios_clang_tests': {
@@ -4196,6 +4206,48 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter',
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.filter',
+        ],
+        'swarming': {
+          'shards': 3,
+        },
+      },
+    },
+
+    'linux_lacros_chrome_interactive_ui_tests_version_skew_beta': {
+      'interactive_ui_tests version skew beta': {
+        'name': 'interactive_ui_tests',
+        'test': 'interactive_ui_tests',
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.beta.filter',
+        ],
+        'swarming': {
+          'shards': 3,
+        },
+      },
+    },
+
+    'linux_lacros_chrome_interactive_ui_tests_version_skew_dev': {
+      'interactive_ui_tests version skew dev': {
+        'name': 'interactive_ui_tests',
+        'test': 'interactive_ui_tests',
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.dev.filter',
+        ],
+        'swarming': {
+          'shards': 3,
+        },
+      },
+    },
+
+    'linux_lacros_chrome_interactive_ui_tests_version_skew_stable': {
+      'interactive_ui_tests version skew stable': {
+        'name': 'interactive_ui_tests',
+        'test': 'interactive_ui_tests',
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.stable.filter',
         ],
         'swarming': {
           'shards': 3,
@@ -6655,68 +6707,48 @@
       },
     },
 
-    'gpu_fyi_lacros_device_release_telemetry_tests': {
-      # TODO(crbug.com/1392806): Enable more tests if bots are not busy.
-      'gpu_common_and_optional_telemetry_tests': {
-        'variants': [
-          'LACROS_ASH_TOT',
-        ]
-      },
-      # 'gpu_mediapipe_passthrough_telemetry_tests',
-      'gpu_passthrough_telemetry_tests': {
-        'variants': [
-          'LACROS_ASH_TOT',
-        ]
-      },
-      # 'gpu_webcodecs_telemetry_test',
-      # 'gpu_webgl2_conformance_gles_passthrough_telemetry_tests',
-      # 'gpu_webgl_conformance_gles_passthrough_telemetry_tests',
-    },
-
     'ios16_beta_simulator_tests': {
       'ios_common_tests': {
         'variants': [
-          'SIM_IPHONE_X_16_2',
+          'SIM_IPHONE_X_16_4',
         ],
       },
       'ios_eg2_tests': {
         'mixins': ['xcode_parallelization', 'record_failed_tests'],
         'variants': [
-          'SIM_IPHONE_X_16_2',
-          'SIM_IPHONE_8_16_2',
-          'SIM_IPAD_AIR_3RD_GEN_16_2',
-          'SIM_IPAD_6_GEN_16_2',
-          'SIM_IPAD_PRO_3RD_GEN_16_2',
+          'SIM_IPHONE_X_16_4',
+          'SIM_IPAD_AIR_3RD_GEN_16_4',
+          'SIM_IPAD_6_GEN_16_4',
+          'SIM_IPAD_PRO_3RD_GEN_16_4',
         ]
       },
       'ios_eg2_cq_tests': {
         'mixins': ['xcode_parallelization', 'record_failed_tests'],
         'variants': [
-          'SIM_IPHONE_8_16_2',
-          'SIM_IPHONE_X_16_2',
-          'SIM_IPAD_6_GEN_16_2',
-          'SIM_IPAD_PRO_3RD_GEN_16_2',
+          'SIM_IPHONE_X_16_4',
+          'SIM_IPAD_6_GEN_16_4',
+          'SIM_IPAD_PRO_3RD_GEN_16_4',
         ]
       },
       'ios_screen_size_dependent_tests': {
         'variants': [
-          'SIM_IPHONE_8_PLUS_16_2',
-          'SIM_IPHONE_X_16_2',
-          'SIM_IPAD_AIR_3RD_GEN_16_2',
-          'SIM_IPAD_PRO_3RD_GEN_16_2',
+          'SIM_IPHONE_X_16_4',
+          'SIM_IPHONE_SE_3RD_GEN_16_4',
+          'SIM_IPAD_AIR_3RD_GEN_16_4',
+          'SIM_IPAD_PRO_3RD_GEN_16_4',
         ],
       },
       'ios_crash_xcuitests': {
         'mixins': ['xcode_parallelization'],
         'variants': [
-          'SIM_IPHONE_X_16_2',
+          'SIM_IPHONE_X_16_4',
         ]
       },
       'ios_swift_interop_xcuitests': {
         'mixins': ['xcode_parallelization'],
         'variants': [
-          'SIM_IPHONE_8_16_2',
-          'SIM_IPAD_PRO_3RD_GEN_16_2',
+          'SIM_IPHONE_X_16_4',
+          'SIM_IPAD_PRO_3RD_GEN_16_4',
         ],
       },
     },
@@ -6724,62 +6756,44 @@
     'ios16_sdk_simulator_tests': {
       'ios_common_tests': {
         'variants': [
-          'SIM_IPHONE_8_16_2',
-          'SIM_IPHONE_6S_15_5',
+          'SIM_IPHONE_X_16_4',
         ],
       },
       'ios_crash_xcuitests': {
         'mixins': ['xcode_parallelization'],
         'variants': [
-          'SIM_IPHONE_X_16_2',
-          'SIM_IPHONE_6S_15_5',
+          'SIM_IPHONE_X_16_4',
         ]
       },
       'ios_eg2_tests': {
-        'mixins': ['xcode_parallelization', 'record_failed_tests'],
+        'mixins': ['xcode_parallelization'],
         'variants': [
-          'SIM_IPHONE_8_16_2',
-          'SIM_IPAD_AIR_3RD_GEN_16_2',
-          'SIM_IPHONE_X_16_2',
-          'SIM_IPHONE_7_15_5',
-          'SIM_IPAD_AIR_2_15_5',
-          'SIM_IPHONE_X_15_5',
-          'SIM_IPHONE_7_15_5',
-          'SIM_IPAD_PRO_3RD_GEN_15_5',
-          'SIM_IPAD_PRO_3RD_GEN_16_2',
+          'SIM_IPHONE_X_16_4',
+          'SIM_IPAD_AIR_3RD_GEN_16_4',
+          'SIM_IPAD_PRO_3RD_GEN_16_4',
         ]
       },
       'ios_eg2_cq_tests': {
-        'mixins': ['xcode_parallelization', 'record_failed_tests'],
+        'mixins': ['xcode_parallelization'],
         'variants': [
-          'SIM_IPHONE_8_16_2',
-          'SIM_IPAD_AIR_3RD_GEN_16_2',
-          'SIM_IPHONE_X_16_2',
-          'SIM_IPHONE_7_15_5',
-          'SIM_IPAD_AIR_2_15_5',
-          'SIM_IPHONE_X_15_5',
-          'SIM_IPAD_PRO_3RD_GEN_15_5',
-          'SIM_IPAD_PRO_3RD_GEN_16_2',
+          'SIM_IPHONE_X_16_4',
+          'SIM_IPAD_AIR_3RD_GEN_16_4',
+          'SIM_IPAD_PRO_3RD_GEN_16_4',
         ]
       },
       'ios_screen_size_dependent_tests': {
         'variants': [
-          'SIM_IPHONE_8_PLUS_16_2',
-          'SIM_IPHONE_8_16_2',
-          'SIM_IPHONE_SE_3RD_GEN_16_2',
-          'SIM_IPAD_AIR_3RD_GEN_16_2',
-          'SIM_IPAD_PRO_3RD_GEN_16_2',
-          'SIM_IPHONE_6S_PLUS_15_5',
-          'SIM_IPHONE_6S_15_5',
-          'SIM_IPHONE_SE_1ST_GEN_15_5',
-          'SIM_IPAD_AIR_2_15_5',
+          'SIM_IPHONE_X_16_4',
+          'SIM_IPHONE_SE_3RD_GEN_16_4',
+          'SIM_IPAD_AIR_3RD_GEN_16_4',
+          'SIM_IPAD_PRO_3RD_GEN_16_4',
         ],
       },
       'ios_swift_interop_xcuitests': {
         'mixins': ['xcode_parallelization'],
         'variants': [
-          'SIM_IPHONE_8_16_2',
-          'SIM_IPAD_AIR_3RD_GEN_16_2',
+          'SIM_IPHONE_X_16_4',
+          'SIM_IPAD_AIR_3RD_GEN_16_4',
         ],
       },
     },
@@ -7065,8 +7079,8 @@
     'ios_webrtc_fyi_tests': {
       'ios_remoting_fyi_unittests': {
         'variants': [
-          'SIM_IPHONE_X_14_5',
-          'SIM_IPAD_AIR_3RD_GEN_14_5',
+          'SIM_IPHONE_X_16_2',
+          'SIM_IPAD_AIR_3RD_GEN_16_2',
         ]
       },
     },
@@ -7287,8 +7301,20 @@
       'linux_lacros_chrome_interactive_ui_tests_version_skew': {
         'variants': [
           'LACROS_VERSION_SKEW_CANARY',
-          'LACROS_VERSION_SKEW_DEV',
+        ]
+      },
+      'linux_lacros_chrome_interactive_ui_tests_version_skew_beta': {
+        'variants': [
           'LACROS_VERSION_SKEW_BETA',
+        ]
+      },
+      'linux_lacros_chrome_interactive_ui_tests_version_skew_dev': {
+        'variants': [
+          'LACROS_VERSION_SKEW_DEV',
+        ]
+      },
+      'linux_lacros_chrome_interactive_ui_tests_version_skew_stable': {
+        'variants': [
           'LACROS_VERSION_SKEW_STABLE',
         ]
       },

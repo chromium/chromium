@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
@@ -20,14 +21,15 @@
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/animation/animation_builder.h"
+#include "ui/views/background.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
 
 namespace {
 
-// The vertical distance from the top of `window_` to the nudge.
-constexpr int kNudgeYOffset = 38;
+// The vertical distance from the window header bar to the nudge.
+constexpr int kNudgeYOffset = 8;
 // The time it takes for the nudge to fade in or out.
 constexpr base::TimeDelta kNudgeFadeDuration = base::Milliseconds(100);
 // The timer after the second bounce finishes until the nudge starts to fade
@@ -46,8 +48,8 @@ constexpr base::TimeDelta kBounceStartDuration = base::Milliseconds(400);
 constexpr base::TimeDelta kBounceEndDuration = base::Milliseconds(700);
 
 // RoundedLabel construction values.
-constexpr int kLabelPadding = 8;
-constexpr int kLabelHeight = 28;
+constexpr int kLabelHorizontalPadding = 16;
+constexpr int kLabelHeight = 36;
 constexpr float kRoundedDivisor = 2.f;
 
 // The nudge will not be shown if it already been shown 3 times, or if 24 hours
@@ -79,13 +81,15 @@ std::unique_ptr<views::Widget> CreateWidget(aura::Window* window) {
 
   auto widget = std::make_unique<views::Widget>(std::move(params));
 
-  auto nudge_label = std::make_unique<RoundedLabel>(
-      kLabelPadding, kLabelPadding, kLabelHeight / kRoundedDivisor,
-      kLabelHeight,
+  auto nudge_label = std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_ASH_TUCK_EDUCATIONAL_NUDGE_LABEL));
 
-  // TODO(hewer): Update label color to `ui::kColorSysSurface3` to match other
-  // nudges.
+  nudge_label->SetBackground(views::CreateThemedRoundedRectBackground(
+      ui::kColorSysSurface3, kLabelHeight / kRoundedDivisor));
+  nudge_label->SetPreferredSize(gfx::Size(
+      nudge_label->GetPreferredSize().width() + kLabelHorizontalPadding * 2,
+      kLabelHeight));
+
   widget->SetContentsView(std::move(nudge_label));
 
   return widget;
@@ -164,10 +168,10 @@ void TabletModeTuckEducation::ActivateTuckEducation() {
   gfx::Size nudge_pref_size =
       nudge_widget_->GetContentsView()->GetPreferredSize();
   gfx::Rect window_bounds = window_->GetBoundsInScreen();
-  gfx::Rect new_bounds((window_bounds.width() - nudge_pref_size.width()) / 2,
-                       kNudgeYOffset, nudge_pref_size.width(),
-                       nudge_pref_size.height());
-  nudge_widget_->SetBounds(new_bounds);
+  nudge_widget_->SetBounds(gfx::Rect(
+      (window_bounds.width() - nudge_pref_size.width()) / 2,
+      window_->GetProperty(aura::client::kTopViewInset) + kNudgeYOffset,
+      nudge_pref_size.width(), nudge_pref_size.height()));
 
   const display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(window_);
@@ -175,11 +179,16 @@ void TabletModeTuckEducation::ActivateTuckEducation() {
   bool bounce_right =
       window_bounds.CenterPoint().x() > display.bounds().CenterPoint().x();
 
-  // Move towards edge of screen.
+  // Move window towards edge of screen.
   const gfx::Transform side_transform = gfx::Transform::MakeTranslation(
       bounce_right ? kBounceDistance : -kBounceDistance, 0);
 
-  // Move back to starting position.
+  // Start nudge at the top of the window (not animated).
+  const gfx::Transform nudge_start_transform = gfx::Transform::MakeTranslation(
+      0, -window_->GetProperty(aura::client::kTopViewInset));
+
+  // Move the window back to its starting position, and the nudge to just below
+  // the header bar.
   const gfx::Transform reset_transform = gfx::Transform();
 
   views::AnimationBuilder()
@@ -188,10 +197,14 @@ void TabletModeTuckEducation::ActivateTuckEducation() {
       .OnEnded(base::BindOnce(&TabletModeTuckEducation::DismissNudge,
                               weak_factory_.GetWeakPtr()))
       .SetPreemptionStrategy(ui::LayerAnimator::ENQUEUE_NEW_ANIMATION)
-      // Fade nudge in.
+      // Set initial nudge position at the top of the window.
       .Once()
+      .SetTransform(nudge_widget_->GetLayer(), nudge_start_transform)
+      // Fade nudge in and drop down to actual position.
+      .Then()
       .SetDuration(kNudgeFadeDuration)
       .SetOpacity(nudge_widget_->GetLayer(), 1.0f, gfx::Tween::LINEAR)
+      .SetTransform(nudge_widget_->GetLayer(), reset_transform)
       // First bounce.
       .Then()
       .SetDuration(kBounceStartDuration)

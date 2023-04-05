@@ -88,8 +88,7 @@ void WaylandZcrColorSpace::OnCompleteNames(void* data,
     zcr_color_space
         ->gathered_information[static_cast<uint8_t>(InformationType::kNames)] =
         gfx::ColorSpace(primaryID, gfx::ColorSpace::TransferID::CUSTOM_HDR,
-                        matrixID, rangeID, nullptr, &transfer_fn,
-                        /*is_hdr=*/true);
+                        matrixID, rangeID, nullptr, &transfer_fn);
     return;
   }
   zcr_color_space
@@ -164,7 +163,7 @@ void WaylandZcrColorSpace::OnCompleteParams(void* data,
         ->gathered_information[static_cast<uint8_t>(InformationType::kParams)] =
         gfx::ColorSpace(gfx::ColorSpace::PrimaryID::CUSTOM,
                         gfx::ColorSpace::TransferID::CUSTOM_HDR, matrixID,
-                        rangeID, &xyzd50, &transfer_fn, true);
+                        rangeID, &xyzd50, &transfer_fn);
 
     return;
   }

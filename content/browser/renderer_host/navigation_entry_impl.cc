@@ -573,10 +573,13 @@ const std::u16string& NavigationEntryImpl::GetTitleForDisplay() {
 
   // Use the virtual URL first if any, and fall back on using the real URL.
   std::u16string title;
-  if (!virtual_url_.is_empty()) {
-    title = url_formatter::FormatUrl(virtual_url_);
-  } else if (!GetURL().is_empty()) {
-    title = url_formatter::FormatUrl(GetURL());
+  if (!virtual_url_.is_empty() || !GetURL().is_empty()) {
+    title = url_formatter::FormatUrl(
+        virtual_url_.is_empty() ? GetURL() : virtual_url_,
+        url_formatter::kFormatUrlOmitDefaults |
+            url_formatter::kFormatUrlOmitTrivialSubdomains |
+            url_formatter::kFormatUrlOmitHTTPS,
+        base::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
   }
 
   // For file:// URLs use the filename as the title, not the full path.

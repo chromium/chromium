@@ -61,14 +61,15 @@ class MojoPageTimingSender : public PageTimingSender {
                   const mojom::FrameRenderDataUpdate& render_data,
                   const mojom::CpuTimingPtr& cpu_timing,
                   mojom::InputTimingPtr input_timing_delta,
-                  mojom::SubresourceLoadMetricsPtr subresource_load_metrics,
+                  const absl::optional<blink::SubresourceLoadMetrics>&
+                      subresource_load_metrics,
                   uint32_t soft_navigation_count) override {
     DCHECK(page_load_metrics_);
     page_load_metrics_->UpdateTiming(
         limited_sending_mode_ ? CreatePageLoadTiming() : timing->Clone(),
         metadata->Clone(), new_features, std::move(resources),
         render_data.Clone(), cpu_timing->Clone(), std::move(input_timing_delta),
-        std::move(subresource_load_metrics), soft_navigation_count);
+        subresource_load_metrics, soft_navigation_count);
   }
 
   void SetUpSmoothnessReporting(
@@ -141,17 +142,10 @@ void MetricsRenderFrameObserver::DidObserveLoadingBehavior(
 }
 
 void MetricsRenderFrameObserver::DidObserveSubresourceLoad(
-    uint32_t number_of_subresources_loaded,
-    uint32_t number_of_subresource_loads_handled_by_service_worker,
-    bool pervasive_payload_requested,
-    int64_t pervasive_bytes_fetched,
-    int64_t total_bytes_fetched) {
+    const blink::SubresourceLoadMetrics& subresource_load_metrics) {
   if (page_timing_metrics_sender_)
     page_timing_metrics_sender_->DidObserveSubresourceLoad(
-        number_of_subresources_loaded,
-        number_of_subresource_loads_handled_by_service_worker,
-        pervasive_payload_requested, pervasive_bytes_fetched,
-        total_bytes_fetched);
+        subresource_load_metrics);
 }
 
 void MetricsRenderFrameObserver::DidObserveNewFeatureUsage(

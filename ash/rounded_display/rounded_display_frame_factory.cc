@@ -20,6 +20,7 @@
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_id.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -32,8 +33,8 @@
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -43,8 +44,9 @@ namespace {
 
 using RoundedCorner = RoundedDisplayGutter::RoundedCorner;
 
-constexpr viz::ResourceFormat kResourceFormat =
-    SK_B32_SHIFT ? viz::RGBA_8888 : viz::BGRA_8888;
+constexpr viz::SharedImageFormat kSharedImageFormat =
+    SK_B32_SHIFT ? viz::SinglePlaneFormat::kRGBA_8888
+                 : viz::SinglePlaneFormat::kBGRA_8888;
 
 gfx::Transform GetRootRotationTransform(const aura::Window& host_window) {
   // Root transform has both the rotation and scaling of the whole UI, therefore
@@ -113,7 +115,7 @@ RoundedDisplayUiResource::~RoundedDisplayUiResource() = default;
 // static
 std::unique_ptr<RoundedDisplayUiResource>
 RoundedDisplayFrameFactory::CreateUiResource(const gfx::Size& size,
-                                             viz::ResourceFormat format,
+                                             viz::SharedImageFormat format,
                                              UiSourceId ui_source_id,
                                              bool is_overlay) {
   DCHECK(!size.IsEmpty());
@@ -125,9 +127,10 @@ RoundedDisplayFrameFactory::CreateUiResource(const gfx::Size& size,
       aura::Env::GetInstance()
           ->context_factory()
           ->GetGpuMemoryBufferManager()
-          ->CreateGpuMemoryBuffer(size, viz::BufferFormat(kResourceFormat),
-                                  gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
-                                  gpu::kNullSurfaceHandle, nullptr);
+          ->CreateGpuMemoryBuffer(
+              size, viz::BufferFormat(kSharedImageFormat.resource_format()),
+              gfx::BufferUsage::SCANOUT_CPU_READ_WRITE, gpu::kNullSurfaceHandle,
+              nullptr);
 
   if (!gpu_memory_buffer) {
     LOG(ERROR) << "Failed to create GPU memory buffer";
@@ -177,7 +180,7 @@ RoundedDisplayFrameFactory::AcquireUiResource(
   gfx::Size resource_size = gutter.bounds().size();
 
   viz::ResourceId reusable_resource_id = resource_manager.FindResourceToReuse(
-      resource_size, kResourceFormat, gutter.ui_source_id());
+      resource_size, kSharedImageFormat, gutter.ui_source_id());
 
   std::unique_ptr<RoundedDisplayUiResource> resource;
 
@@ -186,7 +189,7 @@ RoundedDisplayFrameFactory::AcquireUiResource(
         resource_manager.ReleaseAvailableResource(reusable_resource_id)
             .release()));
   } else {
-    resource = CreateUiResource(resource_size, kResourceFormat,
+    resource = CreateUiResource(resource_size, kSharedImageFormat,
                                 gutter.ui_source_id(), gutter.NeedsOverlays());
   }
 
@@ -334,12 +337,15 @@ void RoundedDisplayFrameFactory::AppendQuad(
   // Since a single gutter is created for the full layer and we re-render the
   // full texture making the quad_rect same as the layer_rect.
   const gfx::Rect& quad_rect = layer_rect;
-  const gfx::RectF quad_rect_f(layer_rect);
 
+  // Since the gutter texture is drawn into a buffer of exact size, therefore
+  // we do not need to scale uv coordinates (zoom in or out on texture) to fit
+  // the buffer size.
   texture_quad->SetNew(
       quad_state, quad_rect, quad_rect,
       /*needs_blending=*/true, resource.id,
-      /*premultiplied=*/true, quad_rect_f.origin(), quad_rect_f.bottom_right(),
+      /*premultiplied=*/true, /*uv_top_left=*/gfx::PointF(0, 0),
+      /*uv_bottom_right=*/gfx::PointF(1, 1),
       /*background=*/SkColors::kTransparent, kVertexOpacity,
       /*flipped=*/false,
       /*nearest=*/false,

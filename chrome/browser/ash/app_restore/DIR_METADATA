@@ -1,0 +1,4 @@
+monorail: {
+  component: "Platform>Apps>Foundation"
+}
+os: CHROME_OS

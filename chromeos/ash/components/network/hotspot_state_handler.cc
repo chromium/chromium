@@ -62,6 +62,11 @@ HotspotStateHandler::GetHotspotState() const {
   return hotspot_state_;
 }
 
+const hotspot_config::mojom::DisableReason&
+HotspotStateHandler::GetDisableReason() const {
+  return disable_reason_;
+}
+
 size_t HotspotStateHandler::GetHotspotActiveClientCount() const {
   return active_client_count_;
 }
@@ -136,6 +141,7 @@ void HotspotStateHandler::UpdateDisableReason(const base::Value::Dict& status) {
     hotspot_config::mojom::DisableReason disable_reason =
         ShillTetheringIdleReasonToMojomState(*idle_reason);
     NotifyHotspotTurnedOff(disable_reason);
+    disable_reason_ = disable_reason;
   }
 }
 

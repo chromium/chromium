@@ -2047,17 +2047,19 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
                                       step_data)
 
   def _check_swarming_config(self, filename, builder, step_name, step_data):
-    # TODO(crbug.com/1203436): Ensure all swarming tests specify os and cpu, not
+    # TODO(crbug.com/1203436): Ensure all swarming tests specify cpu, not
     # just mac tests.
-    if ('mac' in builder.lower()
-        and step_data['swarming']['can_use_on_swarming_builders']):
+    if step_data['swarming']['can_use_on_swarming_builders']:
       dimension_sets = step_data['swarming'].get('dimension_sets')
       if not dimension_sets:
-        raise BBGenErr('%s: %s / %s : os and cpu must be specified for mac '
+        raise BBGenErr('%s: %s / %s : os must be specified for all '
                        'swarmed tests' % (filename, builder, step_name))
       for s in dimension_sets:
-        if not s.get('os') or not s.get('cpu'):
-          raise BBGenErr('%s: %s / %s : os and cpu must be specified for mac '
+        if not s.get('os'):
+          raise BBGenErr('%s: %s / %s : os must be specified for all '
+                         'swarmed tests' % (filename, builder, step_name))
+        if 'Mac' in s.get('os') and not s.get('cpu'):
+          raise BBGenErr('%s: %s / %s : cpu must be specified for mac '
                          'swarmed tests' % (filename, builder, step_name))
 
   def check_consistency(self, verbose=False):

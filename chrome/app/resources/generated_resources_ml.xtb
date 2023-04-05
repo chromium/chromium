@@ -44,6 +44,7 @@
 <translation id="1036511912703768636">ഈ USB ഉപകരണങ്ങളിലേതിലേക്കെങ്കിലും ആക്സസ് ചെയ്യുക</translation>
 <translation id="1038168778161626396">എന്‍‌സിഫര്‍‌ മാത്രം</translation>
 <translation id="1038462104119736705">കുറഞ്ഞത് <ph name="INSTALL_SIZE" /> ഇടമാണ് Linux-ന് വേണ്ടി ശുപാർശ ചെയ്യുന്നത്. ഇടം സൃഷ്‌ടിക്കാൻ, നിങ്ങളുടെ ഉപകരണത്തിൽ നിന്ന് ഫയലുകൾ ഇല്ലാതാക്കുക.</translation>
+<translation id="1038643060055067718">ലൈനുകൾ:</translation>
 <translation id="1039337018183941703">ഫയൽ അസാധുവോ കേടായതോ ആണ്</translation>
 <translation id="1041175011127912238">ഈ പേജ് പ്രതികരിക്കുന്നില്ല</translation>
 <translation id="1041263367839475438">ലഭ്യമായ ഉപകരണങ്ങൾ</translation>
@@ -2601,6 +2602,7 @@
 <translation id="3234978181857588512">ഉപകരണത്തിൽ സംരക്ഷിക്കുക</translation>
 <translation id="3238192140106069382">കണക്റ്റ് ചെയ്‌ത് പരിശോധിച്ചുറപ്പിക്കുന്നു</translation>
 <translation id="3239373508713281971"><ph name="APP_NAME" /> എന്നതിനുള്ള സമയപരിധി നീക്കം ചെയ്തു</translation>
+<translation id="3241638166094654466">ഓരോ വരിയിലെയും കളങ്ങൾ:</translation>
 <translation id="3241680850019875542">പായ്ക്ക് ചെയ്യുന്നതിന് വിപുലീകരണത്തിന്‍റെ റൂട്ട് ഡയറക്‌റ്ററി തിരഞ്ഞെടുക്കുക. വിപുലീകരണം അപ്‌ഡേറ്റ് ചെയ്യുന്നതിന്, വീണ്ടും ഉപയോഗിക്കുന്നതിന് സ്വകാര്യ കീ ഫയലും തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="3242289508736283383">ChromeOS കിയോസ്‌ക് മോഡിൽ, 'kiosk_only' മാനിഫെസ്റ്റ് ആട്രിബ്യൂട്ട് ഉള്ള ആപ്പ് ഇൻസ്റ്റാൾ ചെയ്യണം</translation>
 <translation id="3242665648857227438">ഈ പ്രൊഫൈൽ ChromeOS പ്രോക്‌സി ക്രമീകരണം ഉപയോഗിക്കുന്നു.</translation>
@@ -2859,7 +2861,6 @@
 <translation id="3462958980772249646">{COUNT,plural, =1{ഈ ഉപകരണത്തിൽ {COUNT} പാസ്‌വേഡ് സംരക്ഷിച്ചിരിക്കുന്നു}other{ഈ ഉപകരണത്തിൽ {COUNT} പാസ്‌വേഡുകൾ സംരക്ഷിച്ചിരിക്കുന്നു}}</translation>
 <translation id="346298925039590474">ഈ ഉപകരണത്തിലുള്ള എല്ലാ ഉപയോക്താക്കൾക്കും ഈ മൊബൈൽ നെറ്റ്‌വർക്ക് ലഭ്യമാകും</translation>
 <translation id="3464145797867108663">ഔദ്യോഗിക പ്രൊഫൈൽ ചേർക്കുക</translation>
-<translation id="346431825526753">ഇത് <ph name="CUSTODIAN_EMAIL" /> എന്നയാൾ നിയന്ത്രിക്കുന്ന കുട്ടികൾക്കുള്ള അക്കൗണ്ടാണ്.</translation>
 <translation id="346546413339447252"><ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> എന്നിവയ്ക്കും മറ്റും കിഴിവുകൾ നേടുക</translation>
 <translation id="3468298837301810372">ലേബല്‍‌</translation>
 <translation id="3468999815377931311">Android ഫോൺ</translation>
@@ -3662,7 +3663,6 @@
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158315983204257156">വെബ്‌സൈറ്റ് ടെക്സ്റ്റിന്റെ വലുപ്പവും ഫോണും</translation>
 <translation id="4158364720893025815">വിജയകരം</translation>
-<translation id="4159681666905192102">ഇത് <ph name="CUSTODIAN_EMAIL" />, <ph name="SECOND_CUSTODIAN_EMAIL" /> എന്നിവർ നിയന്ത്രിക്കുന്ന കുട്ടികൾക്കുള്ള അക്കൗണ്ടാണ്.</translation>
 <translation id="4163560723127662357">അജ്ഞാത കീബോർഡ്</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> സാധുവായ ഒരു സ്ഥാപനത്തിൽ ഉൾപ്പെടുന്നതല്ല. നിങ്ങളുടെ അഡ്‌മിനെ ബന്ധപ്പെടുക. നിങ്ങൾ ഒരു അഡ്മിൻ ആണെങ്കിൽ ഇവിടെ സന്ദർശിച്ച് നിങ്ങളുടെ സ്ഥാപനം സജ്ജീകരിക്കാനാകും: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">സൈറ്റ് ക്രമീകരണങ്ങൾ</translation>
@@ -6020,7 +6020,6 @@
 <translation id="630948338437014525">മനോഹര ഓർമ്മകൾ</translation>
 <translation id="6309510305002439352">മൈക്രോഫോൺ ഓഫാക്കി</translation>
 <translation id="6310141306111263820">ഇ-സിം പ്രൊഫൈല്‍ ഇന്‍സ്റ്റാള്‍ ചെയ്യാനായില്ല. സഹായത്തിന് നിങ്ങളുടെ സേവനദാതാവിനെ ബന്ധപ്പെടുക.</translation>
-<translation id="6311165245110979290">വെർച്വൽ കാർഡ് ലഭ്യമാണ്</translation>
 <translation id="6311220991371174222">നിങ്ങളുടെ പ്രൊഫൈൽ തുറക്കുമ്പോൾ എന്തോ കുഴപ്പമുണ്ടായതിനാൽ Chrome ആരംഭിക്കാനാവില്ല. Chrome പുനഃരാരംഭിക്കുന്നത് പരീക്ഷിച്ചുനോക്കൂ.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{ഒരു ദിവസം മുമ്പ് സുരക്ഷാ പരിശോധന നടത്തി}other{{NUM_DAYS} ദിവസം മുമ്പ് സുരക്ഷാ പരിശോധന നടത്തി}}</translation>
 <translation id="6312638141433622592">പിന്തുണയുള്ളപ്പോൾ, ലേഖനങ്ങൾ വായനാ മോഡിൽ കാണിക്കുന്ന സൗകര്യം</translation>
@@ -7255,6 +7254,7 @@
 <translation id="7427315069950454694">ഇന്നത്തെ നിങ്ങളുടെ മനോഹര ഓർമ്മകൾ</translation>
 <translation id="7427348830195639090">പശ്ചാത്തല പേജ്: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> എന്ന ഉപകരണത്തിൽ നിന്നും വിളിക്കുക</translation>
+<translation id="7429415133937917139">സ്‌ക്രീനിന്റെ മുകൾഭാഗത്തുള്ള ChromeVox പാനലിൽ പുതുക്കാവുന്ന ബ്രെയ്‌ലി ഡിസ്‌പ്ലേ ഔട്ട്പുട്ട് സൃ‌ഷ്‌ടിക്കുന്നു</translation>
 <translation id="7431719494109538750">HID ഉപകരണങ്ങളൊന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="7431991332293347422">തിരയലും മറ്റും വ്യക്തിപരമാക്കുന്നതിന് നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രം ഉപയോഗിക്കുന്ന വിധം നിയന്ത്രിക്കുക</translation>
 <translation id="7432200167665670017">നിങ്ങളുടെ അഡ്‌മിൻ "<ph name="EXTENSION_NAME" />" ബ്ലോക്ക് ചെയ്‌തിരിക്കുന്നു - ആപ്പ് ഐഡി <ph name="EXTENSION_ID" /></translation>
@@ -7767,6 +7767,7 @@
 <translation id="7870790288828963061">ഏറ്റവും പുതിയ പതിപ്പിലുള്ള കിയോസ്‌ക് ആപ്പുകളൊന്നും കണ്ടെത്തിയില്ല. USB സ്‌റ്റിക്ക് നീക്കംചെയ്യുക.</translation>
 <translation id="7871049986386271121">ഈ സൈറ്റിൽ എപ്പോഴും അനുവദിക്കുക</translation>
 <translation id="7871109039747854576">കാൻഡിഡേറ്റ് ലിസ്‌റ്റ് പേജ് ചെയ്യാൻ <ph name="COMMA" /> കീയും <ph name="PERIOD" /> കീയും ഉപയോഗിക്കൽ</translation>
+<translation id="7871691770940645922">വെർച്വൽ ബ്രെയ്‌ലി ഡിസ്‌പ്ലേ</translation>
 <translation id="787268756490971083">ഓഫാണ്</translation>
 <translation id="7872758299142009420">വളരെയധികം നെസ്റ്റഡ് ഗ്രൂപ്പുകൾ: <ph name="ERROR_LINE" /></translation>
 <translation id="7874257161694977650">Chrome പശ്ചാത്തലങ്ങൾ</translation>
@@ -8434,6 +8435,7 @@
 <translation id="8448729345478502352">സ്ക്രീനിലെ ഇനങ്ങൾ കൂടുതൽ ചെറുതോ വലുതോ ആക്കുക</translation>
 <translation id="8449008133205184768">ശൈലി ഒട്ടിക്കുകയും പൊരുത്തപ്പെടുത്തുകയും ചെയ്യുക</translation>
 <translation id="8449036207308062757">സ്റ്റോറേജ് മാനേജ് ചെയ്യുക</translation>
+<translation id="8449836157089738489">എല്ലാം പുതിയ ടാബ് ഗ്രൂപ്പിൽ തുറക്കുക</translation>
 <translation id="845702320058262034">കണക്‌റ്റ് ചെയ്യാനാവുന്നില്ല. ഫോണിൻ്റെ Bluetooth ഓണാണന്ന് ഉറപ്പുവരുത്തുക.</translation>
 <translation id="8457451314607652708">ബുക്ക്‌മാർക്കുകൾ ഇമ്പോർട്ടുചെയ്യുക</translation>
 <translation id="8458341576712814616">കുറുക്കുവഴി</translation>

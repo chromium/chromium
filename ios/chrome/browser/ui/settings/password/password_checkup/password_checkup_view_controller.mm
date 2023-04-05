@@ -6,6 +6,7 @@
 
 #import "base/metrics/user_metrics.h"
 #import "base/strings/string_number_conversions.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
@@ -19,7 +20,6 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
-#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -82,7 +82,6 @@ UIImage* GetHeaderImage(PasswordCheckupHomepageState password_checkup_state,
     case PasswordCheckupHomepageStateRunning:
       return [UIImage
           imageNamed:password_manager::kPasswordCheckupHeaderImageLoading];
-    case PasswordCheckupHomepageStateError:
     case PasswordCheckupHomepageStateDisabled:
       return nil;
   }
@@ -153,7 +152,6 @@ void SetUpTrailingIconAndAccessoryType(
       item.indicatorHidden = NO;
       break;
     }
-    case PasswordCheckupHomepageStateError:
     case PasswordCheckupHomepageStateDisabled:
       break;
   }
@@ -404,6 +402,23 @@ void SetUpTrailingIconAndAccessoryType(
   [self updatePasswordCheckupTimestampDetailText];
 }
 
+- (void)showErrorDialogWithMessage:(NSString*)message {
+  NSString* title = l10n_util::GetNSString(
+      IDS_IOS_PASSWORD_CHECKUP_HOMEPAGE_ERROR_DIALOG_TITLE);
+  UIAlertController* alert =
+      [UIAlertController alertControllerWithTitle:title
+                                          message:message
+                                   preferredStyle:UIAlertControllerStyleAlert];
+
+  UIAlertAction* okAction =
+      [UIAlertAction actionWithTitle:l10n_util::GetNSString(IDS_OK)
+                               style:UIAlertActionStyleDefault
+                             handler:nil];
+  [alert addAction:okAction];
+
+  [self presentViewController:alert animated:YES completion:nil];
+}
+
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
@@ -505,11 +520,9 @@ void SetUpTrailingIconAndAccessoryType(
       [_headerImageView setImage:headerImage];
       break;
     }
-    case PasswordCheckupHomepageStateError:
     case PasswordCheckupHomepageStateDisabled:
       break;
   }
-  [self.tableView layoutIfNeeded];
 }
 
 // Updates the `_compromisedPasswordsItem`.
@@ -611,7 +624,6 @@ void SetUpTrailingIconAndAccessoryType(
       break;
     }
     case PasswordCheckupHomepageStateDone:
-    case PasswordCheckupHomepageStateError:
     case PasswordCheckupHomepageStateDisabled:
       _passwordCheckupTimestampItem.text = _formattedElapsedTimeSinceLastCheck;
       _passwordCheckupTimestampItem.indicatorHidden = YES;

@@ -1590,7 +1590,7 @@
         "args": [],
         "autotest_name": "tast.chrome-from-tls",
         "cros_board": "octopus",
-        "cros_img": "octopus-release/R114-15404.0.0",
+        "cros_img": "octopus-release/R114-15408.0.0",
         "name": "chrome_all_tast_tests OCTOPUS_RELEASE_CHROME_FROM_TLS_LKGM",
         "shards": 10,
         "swarming": {},
@@ -1693,28 +1693,6 @@
         },
         "test": "disk_usage_tast_test",
         "test_id_prefix": "ninja://chromeos:disk_usage_tast_test/"
-      }
-    ]
-  },
-  "chromeos-trogdor64-chrome-skylab": {
-    "additional_compile_targets": [
-      "chrome",
-      "linux_symbols",
-      "symupload"
-    ],
-    "skylab_tests": [
-      {
-        "args": [],
-        "autotest_name": "tast.chrome-from-tls",
-        "cros_board": "trogdor",
-        "cros_img": "trogdor64-release/R108-15130.0.0",
-        "name": "chrome_all_tast_tests TROGDOR64_RELEASE_LKGM",
-        "swarming": {},
-        "tast_expr": "(\"group:mainline\" && \"dep:chrome\" && !informational)",
-        "test": "chrome_all_tast_tests",
-        "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
-        "timeout_sec": 21600,
-        "variant_id": "TROGDOR64_RELEASE_LKGM"
       }
     ]
   },
@@ -1854,7 +1832,7 @@
       {
         "args": [],
         "cros_board": "dedede",
-        "cros_img": "dedede-release/R114-15405.0.0",
+        "cros_img": "dedede-release/R114-15410.0.0",
         "name": "lacros_all_tast_tests DEDEDE_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
@@ -1870,7 +1848,7 @@
       {
         "args": [],
         "cros_board": "dedede",
-        "cros_img": "dedede-release/R113-15393.6.0",
+        "cros_img": "dedede-release/R113-15393.12.0",
         "name": "lacros_all_tast_tests DEDEDE_RELEASE_DEV",
         "resultdb": {
           "enable": true,
@@ -1886,7 +1864,7 @@
       {
         "args": [],
         "cros_board": "dedede",
-        "cros_img": "dedede-release/R112-15359.31.0",
+        "cros_img": "dedede-release/R112-15359.37.0",
         "name": "lacros_all_tast_tests DEDEDE_RELEASE_BETA",
         "resultdb": {
           "enable": true,
@@ -1918,7 +1896,7 @@
       {
         "args": [],
         "cros_board": "eve",
-        "cros_img": "eve-release/R114-15405.0.0",
+        "cros_img": "eve-release/R114-15410.0.0",
         "name": "lacros_all_tast_tests EVE_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
@@ -1934,7 +1912,7 @@
       {
         "args": [],
         "cros_board": "eve",
-        "cros_img": "eve-release/R113-15393.6.0",
+        "cros_img": "eve-release/R113-15393.12.0",
         "name": "lacros_all_tast_tests EVE_RELEASE_DEV",
         "resultdb": {
           "enable": true,
@@ -1950,7 +1928,7 @@
       {
         "args": [],
         "cros_board": "eve",
-        "cros_img": "eve-release/R112-15359.31.0",
+        "cros_img": "eve-release/R112-15359.37.0",
         "name": "lacros_all_tast_tests EVE_RELEASE_BETA",
         "resultdb": {
           "enable": true,
@@ -2017,7 +1995,7 @@
       {
         "args": [],
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R114-15405.0.0",
+        "cros_img": "jacuzzi-release/R114-15410.0.0",
         "name": "lacros_all_tast_tests JACUZZI_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
@@ -2033,7 +2011,7 @@
       {
         "args": [],
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R113-15393.6.0",
+        "cros_img": "jacuzzi-release/R113-15393.12.0",
         "name": "lacros_all_tast_tests JACUZZI_RELEASE_DEV",
         "resultdb": {
           "enable": true,
@@ -2049,7 +2027,7 @@
       {
         "args": [],
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R112-15359.31.0",
+        "cros_img": "jacuzzi-release/R112-15359.37.0",
         "name": "lacros_all_tast_tests JACUZZI_RELEASE_BETA",
         "resultdb": {
           "enable": true,
@@ -2116,7 +2094,7 @@
       {
         "args": [],
         "cros_board": "herobrine",
-        "cros_img": "herobrine-release/R114-15405.0.0",
+        "cros_img": "herobrine-release/R114-15410.0.0",
         "name": "lacros_all_tast_tests HEROBRINE_RELEASE_LKGM",
         "resultdb": {
           "enable": true,

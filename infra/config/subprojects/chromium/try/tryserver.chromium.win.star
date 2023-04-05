@@ -87,8 +87,6 @@ try_.orchestrator_builder(
     coverage_test_types = ["unit", "overall"],
     experiments = {
         "chromium_rts.inverted_rts": 100,
-        # go/nplus1shardsproposal
-        "chromium.add_one_test_shard": 5,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -157,6 +155,16 @@ try_.builder(
 try_.builder(
     name = "win_upload_clang",
     executable = "recipe:chromium_upload_clang",
+    builderless = False,
+    cores = 32,
+    os = os.WINDOWS_ANY,
+    execution_timeout = 6 * time.hour,
+    reclient_instance = None,
+)
+
+try_.builder(
+    name = "win_upload_rust",
+    executable = "recipe:chromium_upload_rust",
     builderless = False,
     cores = 32,
     os = os.WINDOWS_ANY,

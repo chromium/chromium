@@ -17,6 +17,7 @@
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"
+#include "gpu/command_buffer/service/shared_image/d3d_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/dxgi_swap_chain_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
@@ -120,9 +121,18 @@ std::unique_ptr<DXGISwapChainImageBacking> DXGISwapChainImageBacking::Create(
     }
   }
 
+  // When |format| has no alpha (e.g. RGBX) but |internal_format| does, we wrap
+  // the back buffer in ANGLE as |GL_RGB|. To ensure shaders that sample from
+  // it see an opaque color, it needs to have 1.f in the alpha channel.
+  // When |format| has alpha, we can rely on DirectRenderer to ensure all pixels
+  // are initialized before use.
+  int buffers_need_alpha_initialization_count =
+      !format.HasAlpha() ? desc.BufferCount : 0;
+
   return base::WrapUnique(new DXGISwapChainImageBacking(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(d3d11_device), std::move(dxgi_swap_chain)));
+      std::move(d3d11_device), std::move(dxgi_swap_chain),
+      buffers_need_alpha_initialization_count));
 }
 
 DXGISwapChainImageBacking::DXGISwapChainImageBacking(
@@ -134,7 +144,8 @@ DXGISwapChainImageBacking::DXGISwapChainImageBacking(
     SkAlphaType alpha_type,
     uint32_t usage,
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
-    Microsoft::WRL::ComPtr<IDXGISwapChain1> dxgi_swap_chain)
+    Microsoft::WRL::ComPtr<IDXGISwapChain1> dxgi_swap_chain,
+    int buffers_need_alpha_initialization_count)
     : ClearTrackingSharedImageBacking(
           mailbox,
           format,
@@ -146,7 +157,9 @@ DXGISwapChainImageBacking::DXGISwapChainImageBacking(
           gfx::BufferSizeForBufferFormat(size, ToBufferFormat(format)),
           /*is_thread_safe=*/false),
       d3d11_device_(std::move(d3d11_device)),
-      dxgi_swap_chain_(std::move(dxgi_swap_chain)) {
+      dxgi_swap_chain_(std::move(dxgi_swap_chain)),
+      buffers_need_alpha_initialization_count_(
+          buffers_need_alpha_initialization_count) {
   const bool has_scanout = !!(usage & SHARED_IMAGE_USAGE_SCANOUT);
   const bool has_write = !!(usage & SHARED_IMAGE_USAGE_DISPLAY_WRITE);
   DCHECK(has_scanout);
@@ -164,7 +177,8 @@ void DXGISwapChainImageBacking::Update(
   DCHECK(!in_fence);
 }
 
-void DXGISwapChainImageBacking::AddSwapRect(const gfx::Rect& swap_rect) {
+void DXGISwapChainImageBacking::DidBeginWriteAccess(
+    const gfx::Rect& swap_rect) {
   if (pending_swap_rect_.has_value()) {
     // Force a Present if there's already a pending swap rect. For normal usage
     // of this backing, we normally expect one Skia write access to overlay read
@@ -177,6 +191,19 @@ void DXGISwapChainImageBacking::AddSwapRect(const gfx::Rect& swap_rect) {
   }
 
   pending_swap_rect_ = swap_rect;
+
+  // To clear only uninitialized buffers, this must happen after |Present|s of
+  // outstanding draws, including the one above.
+  if (buffers_need_alpha_initialization_count_ > 0) {
+    // We only need to write the alpha channel, but we clear since it's simpler
+    // and are guaranteed to not have pixels we need to preserve before the
+    // first write to each buffer.
+    if (!D3DImageBackingFactory::ClearBackBufferToOpaque(dxgi_swap_chain_,
+                                                         d3d11_device_)) {
+      LOG(ERROR) << "Could not initialize back buffer alpha";
+    }
+    buffers_need_alpha_initialization_count_--;
+  }
 }
 
 bool DXGISwapChainImageBacking::Present(
@@ -246,11 +273,12 @@ DXGISwapChainImageBacking::ProduceOverlay(SharedImageManager* manager,
       manager, this, tracker);
 }
 
-std::unique_ptr<SkiaImageRepresentation> DXGISwapChainImageBacking::ProduceSkia(
+std::unique_ptr<SkiaImageRepresentation>
+DXGISwapChainImageBacking::ProduceSkiaGanesh(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
-  TRACE_EVENT0("gpu", "DXGISwapChainImageBacking::ProduceSkia");
+  TRACE_EVENT0("gpu", "DXGISwapChainImageBacking::ProduceSkiaGanesh");
 
   if (!gl_texture_holder_) {
     Microsoft::WRL::ComPtr<ID3D11Texture2D> backbuffer_texture;

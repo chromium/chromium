@@ -124,8 +124,8 @@ void ClickToCallUiController::DoUpdateApps(UpdateAppsCallback callback) {
   }
 
   if (!default_program_name_.empty()) {
-    apps.emplace_back(&vector_icons::kOpenInNewIcon, gfx::Image(),
-                      default_program_name_, std::string());
+    apps.emplace_back(&kOpenInNewIcon, gfx::Image(), default_program_name_,
+                      std::string());
   }
   std::move(callback).Run(std::move(apps));
 }

@@ -350,8 +350,7 @@ void SkiaOutputSurfaceImpl::Reshape(const ReshapeParams& params) {
   DCHECK(color_type != kUnknown_SkColorType)
       << "SkColorType is invalid for buffer format_index: " << format_index;
 
-  auto sk_color_space =
-      params.color_space.ToSkColorSpace(params.sdr_white_level);
+  auto sk_color_space = params.color_space.ToSkColorSpace();
   characterization_ = CreateSkSurfaceCharacterizationCurrentFrame(
       params.size, color_type, params.alpha_type, /*mipmap=*/false,
       std::move(sk_color_space));
@@ -656,7 +655,7 @@ void SkiaOutputSurfaceImpl::ScheduleOutputSurfaceAsOverlay(
 SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
     const AggregatedRenderPassId& id,
     const gfx::Size& surface_size,
-    ResourceFormat format,
+    SharedImageFormat format,
     bool mipmap,
     bool scanout_dcomp_surface,
     sk_sp<SkColorSpace> color_space,
@@ -668,7 +667,7 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
   DCHECK(resource_sync_tokens_.empty());
 
   SkColorType color_type =
-      ResourceFormatToClosestSkColorType(/*gpu_compositing=*/true, format);
+      ToClosestSkColorType(/*gpu_compositing=*/true, format);
   SkSurfaceCharacterization characterization =
       CreateSkSurfaceCharacterizationRenderPass(
           surface_size, color_type, kPremul_SkAlphaType, mipmap,

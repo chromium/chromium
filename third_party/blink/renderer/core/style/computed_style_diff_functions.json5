@@ -188,6 +188,10 @@
             field_dependencies: ["IsStackingContextWithoutContainment",
                                  "opacity"]
           },
+          {
+            predicate: "a.AnchorDefaultDataEquivalent(b)",
+            field_dependencies: ["anchor-default"]
+          },
         ]
     },
     {

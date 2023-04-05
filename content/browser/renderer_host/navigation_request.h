@@ -34,6 +34,7 @@
 #include "content/browser/renderer_host/navigation_type.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/site_instance_impl.h"
+#include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/common/content_export.h"
 #include "content/common/navigation_client.mojom-forward.h"
 #include "content/public/browser/global_routing_id.h"
@@ -42,6 +43,7 @@
 #include "content/public/browser/prerender_trigger_type.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/weak_document_ptr.h"
+#include "content/public/browser/web_ui_controller.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -1172,6 +1174,11 @@ class CONTENT_EXPORT NavigationRequest
   void set_resume_commit_closure(base::OnceClosure closure) {
     resume_commit_closure_ = std::move(closure);
   }
+
+  // Creates a WebUI object for this navigation which will later be saved in
+  // `frame_host`. If no WebUI applies, returns null.
+  std::unique_ptr<WebUIImpl> CreateWebUIIfNeeded(
+      RenderFrameHostImpl* frame_host);
 
  private:
   friend class NavigationRequestTest;

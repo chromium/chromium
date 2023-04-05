@@ -44,10 +44,9 @@ class LayoutNGCustom final : public LayoutNGBlockFlow {
 
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
-  PaginationBreakability GetPaginationBreakability(
-      FragmentationEngine) const final {
+  bool IsMonolithic() const final {
     NOT_DESTROYED();
-    return kForbidBreaks;
+    return true;
   }
 
  private:

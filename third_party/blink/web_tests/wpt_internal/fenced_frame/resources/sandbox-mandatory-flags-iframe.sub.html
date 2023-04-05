@@ -6,9 +6,8 @@
 <script>
   const fencedframe = document.createElement("fencedframe");
   fencedframe.config = new FencedFrameConfig(
-      generateURL("sandbox-mandatory-flags-inner.sub.html?key={{GET[key]}}" + 
+      generateURL("sandbox-mandatory-flags-inner.sub.html?key={{GET[key]}}" +
           "&value={{GET[value]}}", []));
   document.body.appendChild(fencedframe);
-  // PAHACER: double check this
 </script>
 </body>

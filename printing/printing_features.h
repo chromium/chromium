@@ -52,6 +52,7 @@ extern const base::FeatureParam<bool> kEnableOopPrintDriversSandbox;
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 COMPONENT_EXPORT(PRINTING_BASE)
 BASE_DECLARE_FEATURE(kEnablePrintContentAnalysis);
+BASE_DECLARE_FEATURE(kEnablePrintScanAfterPreview);
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
 }  // namespace features

@@ -33,6 +33,11 @@ bool KnownSafeUrl(const GURL& url) {
   return url.SchemeIs(content::kChromeUIScheme);
 }
 
+void LogTotalDelay3Metrics(base::TimeDelta total_delay) {
+  base::UmaHistogramTimes("SafeBrowsing.RendererThrottle.TotalDelay3",
+                          total_delay);
+}
+
 void LogTotalDelay2MetricsWithResponseType(bool is_response_from_cache,
                                            base::TimeDelta total_delay) {
   base::UmaHistogramTimes(
@@ -74,6 +79,7 @@ void RendererURLLoaderThrottle::WillStartRequest(
       "SafeBrowsing.RendererThrottle.RequestDestination", request->destination);
 
   if (KnownSafeUrl(request->url)) {
+    LogTotalDelay3Metrics(base::TimeDelta());
     return;
   }
 
@@ -84,6 +90,7 @@ void RendererURLLoaderThrottle::WillStartRequest(
                                     network::mojom::RequestDestination::kFont}};
   if (base::Contains(*request_destinations_to_skip, request->destination) &&
       base::FeatureList::IsEnabled(kSafeBrowsingSkipImageCssFont)) {
+    LogTotalDelay3Metrics(base::TimeDelta());
     return;
   }
 
@@ -252,8 +259,7 @@ void RendererURLLoaderThrottle::OnCompleteCheckInternal(
       LogTotalDelay2MetricsWithResponseType(is_response_from_cache_,
                                             total_delay_);
     }
-    base::UmaHistogramTimes("SafeBrowsing.RendererThrottle.TotalDelay2",
-                            total_delay_);
+    LogTotalDelay3Metrics(total_delay_);
   }
 
   if (proceed) {

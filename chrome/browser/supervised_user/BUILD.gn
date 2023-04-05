@@ -135,6 +135,7 @@ if (is_android) {
 
   android_library("javatests") {
     testonly = true
+    resources_package = "org.chromium.chrome.browser.supervised_user"
     sources = [
       "android/javatests/src/org/chromium/chrome/browser/supervised_user/WebsiteParentApprovalNativesTest.java",
       "android/javatests/src/org/chromium/chrome/browser/supervised_user/WebsiteParentApprovalTest.java",
@@ -142,6 +143,7 @@ if (is_android) {
       "android/javatests/src/org/chromium/chrome/browser/supervised_user/website_approval/WebsiteApprovalSheetContentTest.java",
     ]
     deps = [
+      ":java_resources",
       ":test_support_java",
       "//base:base_java",
       "//base:base_java_test_support",
@@ -172,8 +174,10 @@ if (is_android) {
 
   robolectric_library("junit") {
     testonly = true
+    resources_package = "org.chromium.chrome.browser.supervised_user"
     sources = [ "android/javatests/src/org/chromium/chrome/browser/supervised_user/WebsiteParentApprovalMetricsTest.java" ]
     deps = [
+      ":java_resources",
       ":supervised_user_metrics_java",
       "//base:base_java",
       "//base:base_java_test_support",

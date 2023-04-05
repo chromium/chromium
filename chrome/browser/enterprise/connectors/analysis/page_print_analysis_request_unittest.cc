@@ -47,7 +47,7 @@ INSTANTIATE_TEST_SUITE_P(,
                          PagePrintAnalysisRequestTest,
                          testing::ValuesIn(kTestValues));
 
-TEST_P(PagePrintAnalysisRequestTest, Sizes) {
+TEST_P(PagePrintAnalysisRequestTest, CloudSizes) {
   PagePrintAnalysisRequest request(
       AnalysisSettings(), CreateFakePage(page_size()), base::DoNothing());
 
@@ -68,6 +68,35 @@ TEST_P(PagePrintAnalysisRequestTest, Sizes) {
           ASSERT_EQ(data.page.GetSize(), page_size());
           ASSERT_TRUE(data.page.IsValid());
         }
+
+        run_loop.Quit();
+      }));
+
+  run_loop.Run();
+}
+
+TEST_P(PagePrintAnalysisRequestTest, LocalSizes) {
+  AnalysisSettings settings;
+  settings.cloud_or_local_settings =
+      CloudOrLocalAnalysisSettings(LocalAnalysisSettings());
+
+  PagePrintAnalysisRequest request(
+      settings, CreateFakePage(page_size()), base::DoNothing());
+
+  base::RunLoop run_loop;
+  request.GetRequestData(base::BindLambdaForTesting(
+      [&run_loop, this](
+          safe_browsing::BinaryUploadService::Result result,
+          safe_browsing::BinaryUploadService::Request::Data data) {
+        ASSERT_TRUE(data.contents.empty());
+        ASSERT_TRUE(data.hash.empty());
+        ASSERT_TRUE(data.mime_type.empty());
+        ASSERT_TRUE(data.path.empty());
+
+        ASSERT_EQ(result, safe_browsing::BinaryUploadService::Result::SUCCESS);
+        ASSERT_EQ(data.size, page_size());
+        ASSERT_EQ(data.page.GetSize(), page_size());
+        ASSERT_TRUE(data.page.IsValid());
 
         run_loop.Quit();
       }));

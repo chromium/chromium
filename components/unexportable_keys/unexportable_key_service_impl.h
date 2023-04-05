@@ -36,6 +36,11 @@ class UnexportableKeyServiceImpl : public UnexportableKeyService {
 
   ~UnexportableKeyServiceImpl() override;
 
+  // Returns whether the current platform has a support for unexportable signing
+  // keys. If this returns false, all service methods will return
+  // `ServiceError::kNoKeyProvider`.
+  static bool IsUnexportableKeyProviderSupported();
+
   // UnexportableKeyService:
   void GenerateSigningKeySlowlyAsync(
       base::span<const crypto::SignatureVerifier::SignatureAlgorithm>

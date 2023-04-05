@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/format_macros.h"
-#include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/mac/foundation_util.h"
@@ -22,6 +21,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"

@@ -240,24 +240,11 @@ export const SearchRecency = {
 };
 
 /**
- * Enumeration of all supported file types. We use generic buckets such as
- * Images, to denote all "*.jpg", "*.gif", "*.png", etc., file types.
- * @enum{string}
- */
-export const SearchFileType = {
-  ALL_TYPES: 'all_types',
-  AUDIO: 'audio',
-  DOCUMENTS: 'documents',
-  IMAGES: 'images',
-  VIDEOS: 'videos',
-};
-
-/**
  * The options used by the file search operation.
  * @typedef {{
  *   location: SearchLocation,
  *   recency: SearchRecency,
- *   type: SearchFileType,
+ *   type:  chrome.fileManagerPrivate.FileCategory,
  * }}
  */
 export let SearchOptions;

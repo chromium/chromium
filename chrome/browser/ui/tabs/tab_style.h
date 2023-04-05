@@ -17,12 +17,6 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace gfx {
-class Canvas;
-}
-
-class SkPath;
-
 // Holds the basic logic for rendering tabs, including preferred sizes, paths,
 // etc.
 class TabStyle {
@@ -108,49 +102,6 @@ class TabStyle {
   TabStyle& operator=(const TabStyle&) = delete;
   virtual ~TabStyle();
 
-  // Gets the specific |path_type| associated with the specific |tab|.
-  // If |force_active| is true, applies an active appearance on the tab (usually
-  // involving painting an optional stroke) even if the tab is not the active
-  // tab.
-  virtual SkPath GetPath(
-      PathType path_type,
-      float scale,
-      bool force_active = false,
-      RenderUnits render_units = RenderUnits::kPixels) const = 0;
-
-  // Returns the insets to use for laying out tab contents.
-  virtual gfx::Insets GetContentsInsets() const = 0;
-
-  // Returns the z-value of the tab, which should be used to paint them in
-  // ascending order. Return values are in the range (0,
-  // TabStyle::GetMaximumZValue()).
-  virtual float GetZValue() const = 0;
-
-  // Returns the current opacity of the "active" portion of the tab's state.
-  virtual float GetActiveOpacity() const = 0;
-
-  // Returns whichever of (active, inactive) the tab appears more like given the
-  // active opacity.
-  virtual TabActive GetApparentActiveState() const = 0;
-
-  // Derives and returns colors for the tab. See TabColors, above.
-  virtual TabColors CalculateColors() const = 0;
-
-  // Paints the tab.
-  virtual void PaintTab(gfx::Canvas* canvas) const = 0;
-
-  // Sets the center of the radial highlight in the hover animation.
-  virtual void SetHoverLocation(const gfx::Point& location) = 0;
-
-  // Shows the hover animation.
-  virtual void ShowHover(ShowHoverStyle style) = 0;
-
-  // Hides the hover animation.
-  virtual void HideHover(HideHoverStyle style) = 0;
-
-  // Opacity of the active tab background painted over inactive selected tabs.
-  virtual float GetSelectedTabOpacity() const;
-
   // Returns the preferred width of a single Tab, assuming space is
   // available.
   static int GetStandardWidth();
@@ -160,11 +111,6 @@ class TabStyle {
 
   // Returns the overlap between adjacent tabs.
   static int GetTabOverlap();
-
-  // Get the space only partially occupied by a tab that we should
-  // consider to be padding rather than part of the body of the tab for
-  // interaction purposes.
-  static gfx::Insets GetTabInternalPadding();
 
   // Gets the size of the separator drawn between tabs, if any.
   static gfx::Size GetSeparatorSize();
@@ -187,6 +133,8 @@ class TabStyle {
   static constexpr float kMaximumZValue = 7.0f;
 
   static constexpr float kDefaultSelectedTabOpacity = 0.75f;
+
+  static std::unique_ptr<const TabStyle> Create();
 
  protected:
   // Avoid implicitly-deleted constructor.

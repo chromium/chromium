@@ -36,11 +36,10 @@ void NGFragmentPainter::AddURLRectIfNeeded(const PaintInfo& paint_info,
                                            const PhysicalOffset& paint_offset) {
   DCHECK(paint_info.ShouldAddUrlMetadata());
 
-  // TODO(layout-dev): Should use break token when NG has its own tree building.
   const NGPhysicalBoxFragment& fragment = PhysicalFragment();
-  if (fragment.GetLayoutObject()->IsElementContinuation() ||
-      fragment.Style().Visibility() != EVisibility::kVisible)
+  if (fragment.Style().Visibility() != EVisibility::kVisible) {
     return;
+  }
 
   Node* node = fragment.GetNode();
   if (!node || !node->IsLink())

@@ -19,8 +19,8 @@ extern NSString* const kConfirmationAlertSecondaryActionAccessibilityIdentifier;
 // A view controller useful to show modal alerts and confirmations. The main
 // content consists in a big image, a title, and a subtitle which are contained
 // in a scroll view for cases when the content doesn't fit in the screen.
-// The view controller can have up to three action buttons, which are position
-// in the bottom. They are arranged, from top to bottom,
+// The view controller can have up to three action buttons, which are positioned
+// at the bottom. They are arranged, from top to bottom,
 // `primaryActionString`, `secondaryActionString`, `tertiaryActionString`.
 // Setting those properties will make those buttons be added to the view
 // controller.
@@ -29,6 +29,10 @@ extern NSString* const kConfirmationAlertSecondaryActionAccessibilityIdentifier;
 // The navigation bar title view. Nil if not needed. If needed, must be set
 // before the view is loaded.
 @property(nonatomic, strong) UIView* titleView;
+
+// The view displayed under titles and subtitles. Nil if not needed.
+// If needed, must be set before the view is loaded.
+@property(nonatomic, strong) UIView* underTitleView;
 
 // The headline below the image. Must be set before the view is loaded.
 @property(nonatomic, copy) NSString* titleString;

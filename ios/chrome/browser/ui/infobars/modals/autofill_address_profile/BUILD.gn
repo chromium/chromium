@@ -6,13 +6,13 @@ source_set("modals") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "infobar_edit_address_profile_modal_consumer.h",
-    "infobar_edit_address_profile_modal_delegate.h",
-    "infobar_edit_address_profile_table_view_controller.h",
-    "infobar_edit_address_profile_table_view_controller.mm",
     "infobar_save_address_profile_modal_consumer.h",
     "infobar_save_address_profile_modal_delegate.h",
     "infobar_save_address_profile_table_view_controller.h",
     "infobar_save_address_profile_table_view_controller.mm",
+    "legacy_infobar_edit_address_profile_modal_delegate.h",
+    "legacy_infobar_edit_address_profile_table_view_controller.h",
+    "legacy_infobar_edit_address_profile_table_view_controller.mm",
   ]
   deps = [
     "//base",
@@ -39,8 +39,8 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
-    "infobar_edit_address_profile_table_view_controller_unittest.mm",
     "infobar_save_address_profile_table_view_controller_unittest.mm",
+    "legacy_infobar_edit_address_profile_table_view_controller_unittest.mm",
   ]
   deps = [
     ":modals",

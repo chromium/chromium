@@ -1097,14 +1097,14 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
 // Verify that switching to clamshell mode when the fade in animation in tablet
 // mode is running, and gets aborted during tablet mode transition works as
 // expected.
-// TODO(crbug.com/1404129): flaky on linux-chromeos-dbg.
-#if (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG))
+// TODO(crbug.com/1404129): flaky on linux-chromeos-dbg/rel.
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TransitionToClamshellModeDuringAbortedFadeInAnimation \
   DISABLED_TransitionToClamshellModeDuringAbortedFadeInAnimation
 #else
 #define MAYBE_TransitionToClamshellModeDuringAbortedFadeInAnimation \
   TransitionToClamshellModeDuringAbortedFadeInAnimation
-#endif  // BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG))
+#endif  // BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(
     AppListSortBrowserTest,
     MAYBE_TransitionToClamshellModeDuringAbortedFadeInAnimation) {

@@ -109,23 +109,20 @@ void MojoMessage::SetParcel(ScopedIpczHandle parcel) {
 
   // We always pass a parcel object in, so Begin/EndGet() must always succeed.
   DCHECK_EQ(result, IPCZ_RESULT_OK);
+  if (num_bytes > 0) {
+    data_storage_.reset(
+        static_cast<uint8_t*>(base::AllocNonScannable(num_bytes)));
+    memcpy(data_storage_.get(), data, num_bytes);
+  } else {
+    data_storage_.reset();
+  }
+  data_ = {data_storage_.get(), num_bytes};
+  data_storage_size_ = num_bytes;
 
-  // Grab only the handles.
   handles_.resize(num_handles);
-  result = GetIpczAPI().EndGet(parcel_.get(), 0, num_handles, IPCZ_NO_FLAGS,
-                               nullptr, handles_.data());
+  result = GetIpczAPI().EndGet(parcel_.get(), num_bytes, num_handles,
+                               IPCZ_NO_FLAGS, nullptr, handles_.data());
   DCHECK_EQ(result, IPCZ_RESULT_OK);
-
-  // Now start a new two-phase get, which we'll leave active indefinitely for
-  // `data_` to reference.
-  result = GetIpczAPI().BeginGet(parcel_.get(), IPCZ_NO_FLAGS, nullptr, &data,
-                                 &num_bytes, &num_handles);
-  DCHECK_EQ(result, IPCZ_RESULT_OK);
-
-  DCHECK_EQ(0u, num_handles);
-  data_ = base::make_span(static_cast<uint8_t*>(const_cast<void*>(data)),
-                          num_bytes);
-
   if (!FixUpDataPipeHandles(handles_)) {
     // The handle list was malformed. Although this is a validation error, it
     // is not safe to trigger MojoNotifyBadMessage from within MojoReadMessage,

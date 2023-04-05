@@ -1514,8 +1514,8 @@ Style notes:
       <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_FULL" desc="Text 'full' is a synonym of the background blur 'maximum' setting, in the VC bubble.">
         Full
       </message>
-      <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_PORTRAIT_RELIGHT_NAME" desc="Text for name of the portrait relight effect in the VC bubble.">
-        Portrait Relighting
+      <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_PORTRAIT_RELIGHT_NAME" desc="Text for name of the portrait relight effect in the VC bubble, which is a toggle and effectively adjusts the users lighting.">
+        Adjust Lighting
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_TOAST_SPEAK_ON_MUTE_DETECTED" desc="A toast message that we show when user tries to speak while muted on system-level.">
         Are you speaking? You are on mute. Learn more
@@ -6466,6 +6466,26 @@ To shut down the device, press and hold the power button on the device again.
        <!-- Tuck Education -->
       <message name="IDS_ASH_TUCK_EDUCATIONAL_NUDGE_LABEL" desc="The text shown to users when a window is floated in tablet mode to indicate the tuck gesture." >
         Swipe to hide your floating window
+      </message>
+
+      <!-- Welcome Tour -->
+      <message name="IDS_ASH_WELCOME_TOUR_EXPLORE_APP_BUBBLE_BODY_TEXT" desc="Text shown in the body of a help bubble anchored to the Explore app as part of the System UI Welcome Tour." translateable="false">
+        [i18n] Those were the basics! Continue in Explore to make the most of your Chromebook. You'll find the best apps for Chromebook, tips on getting started, special offers, and more.
+      </message>
+      <message name="IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_BODY_TEXT" desc="Text shown in the body of a help bubble anchored to the home button as part of the System UI Welcome Tour." translateable="false">
+        [i18n] Use apps to do everything you need on your Chromebook. Find your apps in the Launcher. You can also press the Launcher key on the keyboard.
+      </message>
+      <message name="IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_BODY_TEXT" desc="Text shown in the body of a help bubble anchored to the search box as part of the System UI Welcome Tour." translateable="false">
+        [i18n] Search for files, apps, and more in Launcher. You can also get answers to questions about your Chromebook.
+      </message>
+      <message name="IDS_ASH_WELCOME_TOUR_SETTINGS_APP_BUBBLE_BODY_TEXT" desc="Text shown in the body of a help bubble anchored to the Settings app as part of the System UI Welcome Tour" translateable="false">
+        [i18n] Customize and personalize your Chromebook in Settings.
+      </message>
+      <message name="IDS_ASH_WELCOME_TOUR_SHELF_BUBBLE_BODY_TEXT" desc="Text shown in the body of a help bubble anchored to the shelf as part of the System UI Welcome Tour." translateable="false">
+        [i18n] Your pinned apps and open apps are on the Shelf. It's similar to a taskbar or dock.
+      </message>
+      <message name="IDS_ASH_WELCOME_TOUR_STATUS_AREA_BUBBLE_BODY_TEXT" desc="Text shown in the body of a help bubble anchored to the status area as part of the System UI Welcome Tour." translateable="false">
+        [i18n] Frequently used controls like Wi-Fi, Bluetooth and volume controls are in Quick Settings. You can also go here to take screenshots.
       </message>
      </messages>
     </release>

@@ -517,36 +517,6 @@ namespace {
 // Please keep the list of deprecated prefs in chronological order. i.e. Add to
 // the bottom of the list, not here at the top.
 
-// Deprecated 02/2022.
-#if !BUILDFLAG(IS_ANDROID)
-const char kMediaRouterCloudServicesPrefSet[] =
-    "media_router.cloudservices.prefset";
-const char kMediaRouterEnableCloudServices[] =
-    "media_router.cloudservices.enabled";
-#endif
-const char kWebSQLInThirdPartyContextEnabled[] =
-    "policy.web_sql_in_third_party_context_enabled";
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Deprecated 02/2022
-const char kPhoneHubCameraRollPendingStatePrefName[] =
-    "multidevice_setup.phone_hub_camera_roll_pending_state";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-// Deprecated 02/2022
-const char kFlocIdValuePrefKey[] = "federated_learning.floc_id.value";
-const char kFlocIdStatusPrefKey[] = "federated_learning.floc_id.status";
-const char kFlocIdHistoryBeginTimePrefKey[] =
-    "federated_learning.floc_id.history_begin_time";
-const char kFlocIdHistoryEndTimePrefKey[] =
-    "federated_learning.floc_id.history_end_time";
-const char kFlocIdFinchConfigVersionPrefKey[] =
-    "federated_learning.floc_id.finch_config_version";
-const char kFlocIdSortingLshVersionPrefKey[] =
-    "federated_learning.floc_id.sorting_lsh_version";
-const char kFlocIdComputeTimePrefKey[] =
-    "federated_learning.floc_id.compute_time";
-
 // Deprecated 03/2022.
 const char kStabilityChildProcessCrashCount[] =
     "user_experience_metrics.stability.child_process_crash_count";
@@ -839,12 +809,14 @@ const char kWebAuthnLastOperationWasNativeAPI[] =
     "webauthn.last_op_used_native_api";
 #endif
 
+// Deprecated 03/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kEasyUnlockHardlockState[] = "easy_unlock.hardlock_state";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
-  // Deprecated 02/2022.
-  registry->RegisterBooleanPref(kWebSQLInThirdPartyContextEnabled, false);
-
   // Deprecated 03/2022.
   registry->RegisterIntegerPref(kStabilityChildProcessCrashCount, 0);
   registry->RegisterIntegerPref(kStabilityRendererFailedLaunchCount, 0);
@@ -936,6 +908,11 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterDictionaryPref(kEasyUnlockLocalStateUserPrefs);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Deprecated 04/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterDictionaryPref(kEasyUnlockHardlockState);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -951,11 +928,6 @@ void RegisterProfilePrefsForMigration(
   chrome_browser_net::secure_dns::RegisterProbesSettingBackupPref(registry);
 
 #if !BUILDFLAG(IS_ANDROID)
-  registry->RegisterBooleanPref(kMediaRouterCloudServicesPrefSet, false);
-  registry->RegisterBooleanPref(kMediaRouterEnableCloudServices, false);
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
   // Removed in M91.
   registry->RegisterBooleanPref(prefs::kMediaFeedsBackgroundFetching, false);
   registry->RegisterBooleanPref(prefs::kMediaFeedsSafeSearchEnabled, false);
@@ -969,18 +941,6 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterListPref(
       prefs::kManagedProfileSerialAllowUsbDevicesForUrlsDeprecated);
 #endif
-
-  registry->RegisterUint64Pref(kFlocIdValuePrefKey, 0);
-  registry->RegisterIntegerPref(kFlocIdStatusPrefKey, 0);
-  registry->RegisterTimePref(kFlocIdHistoryBeginTimePrefKey, base::Time());
-  registry->RegisterTimePref(kFlocIdHistoryEndTimePrefKey, base::Time());
-  registry->RegisterUint64Pref(kFlocIdFinchConfigVersionPrefKey, 0);
-  registry->RegisterUint64Pref(kFlocIdSortingLshVersionPrefKey, 0);
-  registry->RegisterTimePref(kFlocIdComputeTimePrefKey, base::Time());
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterIntegerPref(kPhoneHubCameraRollPendingStatePrefName, 0);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   registry->RegisterBooleanPref(kShowReadingListInBookmarkBar, true);
 
@@ -1272,7 +1232,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ash::DeviceNameStore::RegisterLocalStatePrefs(registry);
   chromeos::DeviceOAuth2TokenStoreChromeOS::RegisterPrefs(registry);
   ash::device_settings_cache::RegisterPrefs(registry);
-  ash::EasyUnlockService::RegisterPrefs(registry);
   ash::EnableAdbSideloadingScreen::RegisterPrefs(registry);
   ash::device_activity::DeviceActivityController::RegisterPrefs(registry);
   ash::EnableDebuggingScreenHandler::RegisterPrefs(registry);
@@ -1817,13 +1776,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
 
-  // Added 01/2022.
-  invalidation::InvalidatorRegistrarWithMemory::
-      ClearTopicsWithObsoleteOwnerNames(local_state);
-
-  // Added 02/2022.
-  local_state->ClearPref(kWebSQLInThirdPartyContextEnabled);
-
   // Added 03/2022.
   local_state->ClearPref(kStabilityChildProcessCrashCount);
   local_state->ClearPref(kStabilityRendererFailedLaunchCount);
@@ -1922,6 +1874,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kEasyUnlockLocalStateUserPrefs);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Added 04/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  local_state->ClearPref(kEasyUnlockHardlockState);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
 
@@ -1956,30 +1913,6 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // is fully launched.
   chrome_browser_net::secure_dns::MigrateProbesSettingToOrFromBackup(
       profile_prefs);
-
-  // Added 01/2022.
-  invalidation::InvalidatorRegistrarWithMemory::
-      ClearTopicsWithObsoleteOwnerNames(profile_prefs);
-
-  // Added 02/2022
-  profile_prefs->ClearPref(kFlocIdValuePrefKey);
-  profile_prefs->ClearPref(kFlocIdStatusPrefKey);
-  profile_prefs->ClearPref(kFlocIdHistoryBeginTimePrefKey);
-  profile_prefs->ClearPref(kFlocIdHistoryEndTimePrefKey);
-  profile_prefs->ClearPref(kFlocIdFinchConfigVersionPrefKey);
-  profile_prefs->ClearPref(kFlocIdSortingLshVersionPrefKey);
-  profile_prefs->ClearPref(kFlocIdComputeTimePrefKey);
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Added 02/2022
-  profile_prefs->ClearPref(kMediaRouterCloudServicesPrefSet);
-  profile_prefs->ClearPref(kMediaRouterEnableCloudServices);
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 02/2022
-  profile_prefs->ClearPref(kPhoneHubCameraRollPendingStatePrefName);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Added 03/2022
   profile_prefs->ClearPref(kShowReadingListInBookmarkBar);

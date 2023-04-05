@@ -136,11 +136,11 @@ Profile* CreateAdditionalProfile() {
   size_t starting_number_of_profiles = profile_manager->GetNumberOfProfiles();
 
   base::FilePath new_path = profile_manager->GenerateNextProfileDirectoryPath();
-  Profile* profile =
+  Profile& profile =
       profiles::testing::CreateProfileSync(profile_manager, new_path);
   EXPECT_EQ(starting_number_of_profiles + 1,
             profile_manager->GetNumberOfProfiles());
-  return profile;
+  return &profile;
 }
 
 std::unique_ptr<KeyedService> CreateTestTracker(content::BrowserContext*) {

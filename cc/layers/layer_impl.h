@@ -463,6 +463,8 @@ class CC_EXPORT LayerImpl {
       const base::flat_set<viz::ViewTransitionElementResourceId>&
           known_resource_ids) {}
 
+  virtual viz::ViewTransitionElementResourceId ViewTransitionResourceId() const;
+
  protected:
   // When |will_always_push_properties| is true, the layer will not itself set
   // its SetNeedsPushProperties() state, as it expects to be always pushed to

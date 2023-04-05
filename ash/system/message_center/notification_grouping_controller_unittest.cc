@@ -617,4 +617,86 @@ TEST_P(NotificationGroupingControllerTest,
   EXPECT_EQ(4u, message_center->GetVisibleNotifications().size());
 }
 
+TEST_P(NotificationGroupingControllerTest, ChildNotificationsPinned) {
+  auto* message_center = MessageCenter::Get();
+  std::string id0, id1, id2;
+  const GURL url(u"http://test-url.com/");
+
+  // Creates 2 notifications with one is pinned, the parent notification should
+  // be pinned as well.
+  auto notification = MakeNotification(id0, url);
+  notification->set_pinned(false);
+  message_center->AddNotification(std::move(notification));
+
+  notification = MakeNotification(id1, url);
+  notification->set_pinned(true);
+  message_center->AddNotification(std::move(notification));
+
+  std::string id_parent = id0 + kIdSuffixForGroupContainerNotification;
+  auto* parent_notification = message_center->FindNotificationById(id_parent);
+  ASSERT_TRUE(parent_notification->group_parent());
+  EXPECT_TRUE(parent_notification->pinned());
+
+  // Adds another pinned notification. Parent should still be pinned.
+  notification = MakeNotification(id2, url);
+  notification->set_pinned(true);
+  message_center->AddNotification(std::move(notification));
+
+  EXPECT_TRUE(parent_notification->pinned());
+
+  // Removes one pinned notification. Parent should still be pinned.
+  message_center->RemoveNotification(id1,
+                                     /*by_user=*/false);
+
+  EXPECT_TRUE(parent_notification->pinned());
+
+  // Removes the other pinned notification. Parent then should not be pinned.
+  message_center->RemoveNotification(id2,
+                                     /*by_user=*/false);
+
+  EXPECT_FALSE(parent_notification->pinned());
+
+  // Adds back the pinned notification. Parent should now be pinned.
+  notification = MakeNotification(id2, url);
+  notification->set_pinned(true);
+  message_center->AddNotification(std::move(notification));
+
+  EXPECT_TRUE(parent_notification->pinned());
+}
+
+TEST_P(NotificationGroupingControllerTest, ChildNotificationsUpdatePinned) {
+  auto* message_center = MessageCenter::Get();
+  std::string id0, id1, id2, id3;
+  const GURL url(u"http://test-url.com/");
+
+  // Creates 2 un-pinned notifications, the parent notification should be
+  // un-pinned as well.
+  auto notification = MakeNotification(id0, url);
+  notification->set_pinned(false);
+  message_center->AddNotification(std::move(notification));
+
+  notification = MakeNotification(id1, url);
+  notification->set_pinned(false);
+  message_center->AddNotification(std::move(notification));
+
+  std::string id_parent = id0 + kIdSuffixForGroupContainerNotification;
+  auto* parent_notification = message_center->FindNotificationById(id_parent);
+  ASSERT_TRUE(parent_notification->group_parent());
+  EXPECT_FALSE(parent_notification->pinned());
+
+  // Updates one to pinned, the parent should be pinned now.
+  notification = MakeNotification(id2, url);
+  notification->set_pinned(true);
+  message_center->UpdateNotification(id1, std::move(notification));
+
+  EXPECT_TRUE(parent_notification->pinned());
+
+  // Updates again to un-pinned, the parent should be un-pinned.
+  notification = MakeNotification(id3, url);
+  notification->set_pinned(false);
+  message_center->UpdateNotification(id2, std::move(notification));
+
+  EXPECT_FALSE(parent_notification->pinned());
+}
+
 }  // namespace ash

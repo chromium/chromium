@@ -7,11 +7,13 @@
 #include <memory>
 #include <utility>
 
+#include "base/base_paths.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/path_service.h"
 #include "base/scoped_observation.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
@@ -271,6 +273,10 @@ class DeveloperPrivateApiUnitTest : public ExtensionServiceTestWithInstall {
   DeveloperPrivateApiUnitTest& operator=(const DeveloperPrivateApiUnitTest&) =
       delete;
 
+  // ExtensionServiceTestBase:
+  void SetUp() override;
+  void TearDown() override;
+
  protected:
   DeveloperPrivateApiUnitTest() {}
   ~DeveloperPrivateApiUnitTest() override {}
@@ -330,16 +336,12 @@ class DeveloperPrivateApiUnitTest : public ExtensionServiceTestWithInstall {
   }
 
  private:
-  // ExtensionServiceTestBase:
-  void SetUp() override;
-  void TearDown() override;
-
   // The browser (and accompanying window).
   std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<content::RenderProcessHost> render_process_host_;
 
-  std::vector<std::unique_ptr<TestExtensionDir>> test_extension_dirs_;
+  std::vector<TestExtensionDir> test_extension_dirs_;
 };
 
 bool DeveloperPrivateApiUnitTest::RunFunction(
@@ -360,16 +362,16 @@ const Extension* DeveloperPrivateApiUnitTest::LoadUnpackedExtension() {
            "permissions": ["*://*/*"]
          })";
 
-  test_extension_dirs_.push_back(std::make_unique<TestExtensionDir>());
-  TestExtensionDir* dir = test_extension_dirs_.back().get();
-  dir->WriteManifest(kManifest);
+  test_extension_dirs_.emplace_back();
+  TestExtensionDir& dir = test_extension_dirs_.back();
+  dir.WriteManifest(kManifest);
 
   ChromeTestExtensionLoader loader(profile());
   // The fact that unpacked extensions get file access by default is an
   // irrelevant detail to these tests. Disable it.
   loader.set_allow_file_access(false);
 
-  return loader.LoadExtension(dir->UnpackedPath()).get();
+  return loader.LoadExtension(dir.UnpackedPath()).get();
 }
 
 const Extension* DeveloperPrivateApiUnitTest::LoadSimpleExtension() {
@@ -1970,7 +1972,42 @@ TEST_F(DeveloperPrivateApiUnitTest, ExtensionUpdatedEventOnPermissionsChange) {
       api::developer_private::EVENT_TYPE_PERMISSIONS_CHANGED));
 }
 
-TEST_F(DeveloperPrivateApiUnitTest, InstallDroppedFileZip) {
+class DeveloperPrivateApiZipFileUnitTest
+    : public DeveloperPrivateApiUnitTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUp() override {
+    DeveloperPrivateApiUnitTest::SetUp();
+    const bool kFeatureEnabled = GetParam();
+    feature_list_.InitWithFeatureState(
+        extensions_features::kExtensionsZipFileInstalledInProfileDir,
+        kFeatureEnabled);
+    if (kFeatureEnabled) {
+      expected_extension_install_directory_ =
+          service()->unpacked_install_directory();
+    } else {
+      base::FilePath dir_temp;
+      ASSERT_TRUE(base::PathService::Get(base::DIR_TEMP, &dir_temp));
+      expected_extension_install_directory_ = dir_temp;
+    }
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::FilePath expected_extension_install_directory_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    DeveloperPrivateApiZipFileUnitTest,
+    // extensions_features::kExtensionsZipFileInstalledInProfileDir enabled.
+    testing::Bool(),
+    [](const testing::TestParamInfo<
+        DeveloperPrivateApiZipFileUnitTest::ParamType>& info) {
+      return info.param ? "ProfileDir" : "TempDir";
+    });
+
+TEST_P(DeveloperPrivateApiZipFileUnitTest, InstallDroppedFileZip) {
   base::FilePath zip_path = data_dir().AppendASCII("simple_empty.zip");
   extensions::ExtensionInstallUI::set_disable_ui_for_tests();
   ScopedTestDialogAutoConfirm auto_confirm(ScopedTestDialogAutoConfirm::ACCEPT);
@@ -1991,6 +2028,17 @@ TEST_F(DeveloperPrivateApiUnitTest, InstallDroppedFileZip) {
       observer.WaitForExtensionInstalled();
   ASSERT_TRUE(extension);
   EXPECT_EQ("Simple Empty Extension", extension->name());
+
+  // Expect extension install directory to be immediate subdir of expected
+  // unpacked install directory. E.g. /a/b/c/d == /a/b/c + /d.
+  EXPECT_EQ(extension->path(), expected_extension_install_directory_.Append(
+                                   extension->path().BaseName()));
+
+  // Expect extension install directory to exist and be named with the right
+  // prefix.
+  EXPECT_TRUE(base::PathExists(extension->path()));
+  EXPECT_TRUE(
+      extension->path().BaseName().AsUTF8Unsafe().starts_with("simple_empty"));
 }
 
 // Test developerPrivate.getUserSiteSettings.

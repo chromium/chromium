@@ -171,4 +171,8 @@ BASE_FEATURE(kSyntheticCapabilities,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCormorant, "Cormorant", base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kFeedUserInteractionReliabilityReport,
+             "FeedUserInteractionReliabilityReport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace feed

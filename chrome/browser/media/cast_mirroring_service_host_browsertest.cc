@@ -8,6 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/task/bind_post_task.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
@@ -23,6 +24,7 @@
 #include "components/mirroring/mojom/session_observer.mojom.h"
 #include "components/mirroring/mojom/session_parameters.mojom.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -226,6 +228,24 @@ class CastMirroringServiceHostBrowserTest
     run_loop.Run();
   }
 
+  void PauseMirroring() {
+    base::RunLoop run_loop;
+    host_->Pause();
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindPostTaskToCurrentDefault(run_loop.QuitWhenIdleClosure()));
+    run_loop.Run();
+  }
+
+  void ResumeMirroring() {
+    base::RunLoop run_loop;
+    host_->Resume();
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindPostTaskToCurrentDefault(run_loop.QuitWhenIdleClosure()));
+    run_loop.Run();
+  }
+
   void StopMirroring() {
     if (video_frame_receiver_) {
       base::RunLoop run_loop;
@@ -419,6 +439,41 @@ IN_PROC_BROWSER_TEST_P(CastMirroringServiceHostBrowserTestTabSwitcher,
   SwitchTabSource();
   GetVideoCaptureHost();
   StartVideoCapturing();
+  StopMirroring();
+}
+
+class CastMirroringServiceHostBrowserTestFreezeSession
+    : public CastMirroringServiceHostBrowserTest {
+ public:
+  CastMirroringServiceHostBrowserTestFreezeSession() {
+    feature_list_.InitWithFeatures({features::kAccessCodeCastFreezeUI}, {});
+  }
+
+  CastMirroringServiceHostBrowserTestFreezeSession(
+      const CastMirroringServiceHostBrowserTestFreezeSession&) = delete;
+  CastMirroringServiceHostBrowserTestFreezeSession& operator=(
+      const CastMirroringServiceHostBrowserTestFreezeSession&) = delete;
+
+  ~CastMirroringServiceHostBrowserTestFreezeSession() override = default;
+
+  void VerifyEnabledFeatures() {
+    ASSERT_TRUE(
+        base::FeatureList::IsEnabled(features::kAccessCodeCastFreezeUI));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(CastMirroringServiceHostBrowserTestFreezeSession,
+                       FreezeSession) {
+  VerifyEnabledFeatures();
+  EnableAccessCodeCast();
+  StartTabMirroring();
+  GetVideoCaptureHost();
+  StartVideoCapturing();
+  PauseMirroring();
+  ResumeMirroring();
   StopMirroring();
 }
 

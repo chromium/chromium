@@ -335,26 +335,6 @@ extern const base::FeatureParam<int> kFuzzyUrlSuggestionsPenaltyLow;
 // applied and where the low penalty will be applied.
 extern const base::FeatureParam<int> kFuzzyUrlSuggestionsPenaltyTaperLength;
 
-// Returns true if the default browser pedal feature is enabled.
-bool IsDefaultBrowserPedalEnabled();
-
-// Indicates whether the default browser pedal should make the change
-// immediately by calling the shell_integration API directly. When
-// false (default), the pedal goes to settings to let the user see
-// and commit the change themselves.
-extern const base::FeatureParam<bool> kDefaultBrowserPedalImmediate;
-
-// Note: These two feature params are only relevant when the above
-// param `kDefaultBrowserPedalImmediate` is true.
-// Indicates whether the default browser pedal can be used when the
-// shell_integration API indicates the system sets default browser
-// interactively, e.g. by bringing up system settings.
-extern const base::FeatureParam<bool> kDefaultBrowserPedalInteractive;
-// Indicates whether the default browser pedal can be used when the
-// shell_integration API indicates the system sets default browser
-// without any further user interaction, i.e. "unattended".
-extern const base::FeatureParam<bool> kDefaultBrowserPedalUnattended;
-
 // Simply a convenient wrapper for testing a flag. Used downstream for an
 // assortment of keyword mode experiments.
 bool IsExperimentalKeywordModeEnabled();

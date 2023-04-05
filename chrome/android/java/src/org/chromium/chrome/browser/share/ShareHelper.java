@@ -56,6 +56,8 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
     // TODO(https://crbug.com/1420388): Remove when Android OS provides this string.
     private static final String INTENT_EXTRA_CHOOSER_CUSTOM_ACTIONS =
             "android.intent.extra.CHOOSER_CUSTOM_ACTIONS";
+    private static final String INTENT_EXTRA_CHOOSER_MODIFY_SHARE_ACTION =
+            "android.intent.extra.CHOOSER_MODIFY_SHARE_ACTION";
     // A generous number used to allocate requestCode for pending intent used by custom actions.
     private static final int MAX_CUSTOM_ACTION_SUPPORTED = 10;
     private static final int CUSTOM_ACTION_REQUEST_CODE_BASE = 112;
@@ -312,23 +314,19 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
             int requestCode = activity.getTaskId() * MAX_CUSTOM_ACTION_SUPPORTED
                     + CUSTOM_ACTION_REQUEST_CODE_BASE;
             for (var action : chromeCustomShareActions) {
-                Intent sendBackIntent = createSendBackIntentWithFilteredAction();
-                sendBackIntent.putExtra(EXTRA_SHARE_CUSTOM_ACTION, action.key);
-                // Make custom action immutable, since it doesn't need change any chooser component.
-                PendingIntent pendingIntent =
-                        PendingIntent.getBroadcast(activity, requestCode++, sendBackIntent,
-                                PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT
-                                        | PendingIntent.FLAG_IMMUTABLE);
-
-                Parcelable chooserAction = ChooserActionHelper.newChooserAction(
-                        action.icon, action.label, pendingIntent);
-                mActionsMap.put(action.key, action.runnable);
-
+                Parcelable chooserAction = createChooserAction(action, activity, requestCode++);
                 chooserActions.add(chooserAction);
             }
 
             Parcelable[] customActions = chooserActions.toArray(new Parcelable[0]);
             chooserIntent.putExtra(INTENT_EXTRA_CHOOSER_CUSTOM_ACTIONS, customActions);
+
+            if (mCustomActionProvider.getModifyShareAction() != null) {
+                var modifiedShareAction = createChooserAction(
+                        mCustomActionProvider.getModifyShareAction(), activity, requestCode);
+                chooserIntent.putExtra(
+                        INTENT_EXTRA_CHOOSER_MODIFY_SHARE_ACTION, modifiedShareAction);
+            }
 
             return chooserIntent;
         }
@@ -340,6 +338,23 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
                 assert mActionsMap.get(action) != null : "Action <" + action + "> does not exists.";
                 mActionsMap.get(action).run();
             }
+        }
+
+        private Parcelable createChooserAction(
+                ChromeCustomShareAction action, Activity activity, int requestCode) {
+            Intent sendBackIntent = createSendBackIntentWithFilteredAction();
+            sendBackIntent.putExtra(EXTRA_SHARE_CUSTOM_ACTION, action.key);
+            // Make custom action immutable, since it doesn't need change any chooser component.
+            PendingIntent pendingIntent =
+                    PendingIntent.getBroadcast(activity, requestCode++, sendBackIntent,
+                            PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT
+                                    | PendingIntent.FLAG_IMMUTABLE);
+
+            Parcelable chooserAction =
+                    ChooserActionHelper.newChooserAction(action.icon, action.label, pendingIntent);
+            mActionsMap.put(action.key, action.runnable);
+
+            return chooserAction;
         }
     }
 

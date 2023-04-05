@@ -126,8 +126,7 @@ void SVGForeignObjectElement::SvgAttributeChanged(
 }
 
 LayoutObject* SVGForeignObjectElement::CreateLayoutObject(
-    const ComputedStyle& style,
-    LegacyLayout legacy) {
+    const ComputedStyle& style) {
   // Suppress foreignObject LayoutObjects in SVG hidden containers.
   // LayoutSVGHiddenContainers does not allow the subtree to be rendered, but
   // allow LayoutObject descendants to be created. That will causes crashes in

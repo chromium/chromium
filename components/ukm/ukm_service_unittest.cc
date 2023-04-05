@@ -17,11 +17,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/ranges/algorithm.h"
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -36,14 +38,19 @@
 #include "components/metrics/unsent_log_store.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/ukm/observers/ukm_consent_state_observer.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "components/ukm/ukm_entry_filter.h"
 #include "components/ukm/ukm_pref_names.h"
 #include "components/ukm/ukm_recorder_impl.h"
+#include "components/ukm/ukm_recorder_observer.h"
 #include "components/ukm/unsent_log_store_metrics_impl.h"
+#include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_entry_builder.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/metrics/ukm_recorder_factory_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/ukm/report.pb.h"
@@ -259,6 +266,31 @@ class UkmServiceTest : public testing::Test,
       task_runner_current_default_handle_;
 };
 
+class UkmReduceAddEntryIpcTest : public testing::Test {
+ public:
+  UkmReduceAddEntryIpcTest() {
+    UkmService::RegisterPrefs(prefs_.registry());
+    ClearPrefs();
+    scoped_feature_list_.InitAndEnableFeature(ukm::kUkmReduceAddEntryIPC);
+  }
+
+  UkmReduceAddEntryIpcTest(const UkmReduceAddEntryIpcTest&) = delete;
+  UkmReduceAddEntryIpcTest& operator=(const UkmReduceAddEntryIpcTest&) = delete;
+
+  void ClearPrefs() {
+    prefs_.ClearPref(prefs::kUkmClientId);
+    prefs_.ClearPref(prefs::kUkmSessionId);
+    prefs_.ClearPref(prefs::kUkmUnsentLogStore);
+  }
+
+ protected:
+  TestingPrefServiceSimple prefs_;
+  metrics::TestMetricsServiceClient client_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+ private:
+  base::test::TaskEnvironment task_environment;
+};
 }  // namespace
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -2130,4 +2162,239 @@ INSTANTIATE_TEST_SUITE_P(
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+class MockUkmRecorder : public ukm::UkmRecorder {
+ public:
+  MockUkmRecorder() = default;
+  ~MockUkmRecorder() override = default;
+
+  MOCK_METHOD(void, AddEntry, (mojom::UkmEntryPtr entry), (override));
+  MOCK_METHOD(void,
+              UpdateSourceURL,
+              (SourceId source_id, const GURL& url),
+              (override));
+
+  MOCK_METHOD(void,
+              UpdateAppURL,
+              (SourceId source_id, const GURL& url, const AppType app_type),
+              (override));
+
+  MOCK_METHOD(void,
+              RecordNavigation,
+              (SourceId source_id,
+               const UkmSource::NavigationData& navigation_data),
+              (override));
+
+  MOCK_METHOD(void,
+              MarkSourceForDeletion,
+              (ukm::SourceId source_id),
+              (override));
+};
+
+TEST_F(UkmReduceAddEntryIpcTest, RecordingEnabled) {
+  ASSERT_TRUE(base::FeatureList::IsEnabled(ukm::kUkmReduceAddEntryIPC));
+
+  base::RunLoop run_loop;
+  UkmService service(&prefs_, &client_,
+                     std::make_unique<MockDemographicMetricsProvider>());
+  // Initialize UkmService.
+  service.Initialize();
+
+  ukm::UkmEntryBuilder builder(ukm::NoURLSourceId(),
+                               "Event.ScrollUpdate.Touch");
+  builder.SetMetric("TimeToScrollUpdateSwapBegin", 17);
+
+  // Custom UkmRecorder to intercept messages to and from UkmService to clients.
+  MockUkmRecorder mock_recorder;
+  mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
+  metrics::UkmRecorderFactoryImpl::Create(&mock_recorder,
+                                          factory.BindNewPipeAndPassReceiver());
+
+  // MojoUkmRecorder (client).
+  auto mojo_recorder = MojoUkmRecorder::Create(*factory);
+
+  service.EnableRecording();
+  run_loop.RunUntilIdle();
+
+  // Since UkmObservers list is empty, the final decision regarding sending the
+  // AddEntry IPC from clients to UkmService depends on recording being
+  // enabled/disabled.
+  EXPECT_CALL(mock_recorder, AddEntry).Times(1);
+
+  builder.Record(mojo_recorder.get());
+  run_loop.RunUntilIdle();
+}
+
+TEST_F(UkmReduceAddEntryIpcTest, RecordingDisabled) {
+  ASSERT_TRUE(base::FeatureList::IsEnabled(ukm::kUkmReduceAddEntryIPC));
+
+  base::RunLoop run_loop;
+  ukm::UkmEntryBuilder builder(ukm::NoURLSourceId(),
+                               "Event.ScrollUpdate.Touch");
+  builder.SetMetric("TimeToScrollUpdateSwapBegin", 17);
+
+  UkmService service(&prefs_, &client_,
+                     std::make_unique<MockDemographicMetricsProvider>());
+  // Initialize UkmService.
+  service.Initialize();
+
+  // Custom UkmRecorder to intercept messages to and from UkmService to clients.
+  MockUkmRecorder mock_recorder;
+  mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
+  metrics::UkmRecorderFactoryImpl::Create(&mock_recorder,
+                                          factory.BindNewPipeAndPassReceiver());
+
+  // MojoUkmRecorder (client).
+  auto mojo_recorder = MojoUkmRecorder::Create(*factory);
+
+  service.DisableRecording();
+  run_loop.RunUntilIdle();
+
+  // Since UkmObservers list is empty, the final decision regarding sending the
+  // AddEntry IPC from clients to UkmService depends on recording being
+  // enabled/disabled.
+  EXPECT_CALL(mock_recorder, AddEntry).Times(0);
+
+  builder.Record(mojo_recorder.get());
+  run_loop.RunUntilIdle();
+}
+
+TEST_F(UkmReduceAddEntryIpcTest, AddRemoveUkmObserver) {
+  ASSERT_TRUE(base::FeatureList::IsEnabled(ukm::kUkmReduceAddEntryIPC));
+
+  base::RunLoop run_loop;
+  UkmService service(&prefs_, &client_,
+                     std::make_unique<MockDemographicMetricsProvider>());
+  // Initialize UkmService.
+  service.Initialize();
+
+  // Custom UkmRecorder to intercept messages to and from UkmService to clients.
+  MockUkmRecorder mock_recorder;
+  mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
+  metrics::UkmRecorderFactoryImpl::Create(&mock_recorder,
+                                          factory.BindNewPipeAndPassReceiver());
+
+  // MojoUkmRecorder (client).
+  auto mojo_recorder = MojoUkmRecorder::Create(*factory);
+
+  // Recording Disabled.
+  service.DisableRecording();
+  run_loop.RunUntilIdle();
+
+  mojom::UkmEntryPtr observed_ukm_entry;
+
+  // UkmRecorderObservers with different event hashes. If an entry is seen at
+  // client where event_hash matches with one from observers, we need to send
+  // AddEntry IPC even if recording is disabled.
+  UkmRecorderObserver obs1, obs2;
+  base::flat_set<uint64_t> events1 = {
+      base::HashMetricName("Event.ScrollUpdate.Touch")};
+  service.AddUkmRecorderObserver(events1, &obs1);
+  base::flat_set<uint64_t> events2 = {
+      base::HashMetricName("Event.ScrollBegin.Wheel")};
+  service.AddUkmRecorderObserver(events2, &obs2);
+  run_loop.RunUntilIdle();
+
+  {
+    // This event is being observed by UkmRecorderObserver obs1. Hence, even
+    // when UKM recording has been disabled, the event needs to be sent to
+    // browser process.
+    ukm::UkmEntryBuilder builder(ukm::NoURLSourceId(),
+                                 "Event.ScrollUpdate.Touch");
+    builder.SetMetric("TimeToScrollUpdateSwapBegin", 17);
+    builder.SetMetric("IsMainThread", 21);
+    auto expected_ukm_entry = builder.GetEntryForTesting();
+    // We expect this event will not be filtered at client,i.e., MojoUkmRecorder
+    // and the mock method AddEntry would be called once.
+    EXPECT_CALL(mock_recorder, AddEntry)
+        .Times(1)
+        .WillOnce(testing::Invoke([&](mojom::UkmEntryPtr entry) {
+          observed_ukm_entry = std::move(entry);
+        }));
+
+    builder.Record(mojo_recorder.get());
+    run_loop.RunUntilIdle();
+    // Expects the UkmEntry seen at both sent(MojoUkmRecorder) and
+    // receive(MockUkmRecorder) to be same.
+    EXPECT_EQ(expected_ukm_entry, observed_ukm_entry);
+  }
+  {
+    // This event is not being observed by any of UkmRecorderObservers and since
+    // UKM recording has been disabled, the event will not be sent to browser
+    // process.
+    ukm::UkmEntryBuilder builder2(ukm::NoURLSourceId(), "Download.Interrupted");
+    builder2.SetMetric("BytesWasted", 10);
+    // Expect 0 calls to MockUkmRecorer::AddEntry since the UKM event will be
+    // filtered out at the client.
+    EXPECT_CALL(mock_recorder, AddEntry).Times(0);
+    builder2.Record(mojo_recorder.get());
+    run_loop.RunUntilIdle();
+  }
+  {
+    // This event is being observed by UkmRecorderObserver obs2. Hence, even
+    // when UKM recording has been disabled, the event needs to be sent to
+    // browser process.
+    ukm::UkmEntryBuilder builder3(ukm::NoURLSourceId(),
+                                  "Event.ScrollBegin.Wheel");
+    builder3.SetMetric("TimeToScrollUpdateSwapBegin", 25);
+    auto expected_ukm_entry = builder3.GetEntryForTesting();
+
+    EXPECT_CALL(mock_recorder, AddEntry)
+        .Times(1)
+        .WillOnce(testing::Invoke([&](mojom::UkmEntryPtr entry) {
+          observed_ukm_entry = std::move(entry);
+        }));
+    builder3.Record(mojo_recorder.get());
+    run_loop.RunUntilIdle();
+    EXPECT_EQ(expected_ukm_entry, observed_ukm_entry);
+  }
+  // Remove UkmRecorderObserver obs1.
+  service.RemoveUkmRecorderObserver(&obs1);
+  run_loop.RunUntilIdle();
+  {
+    // This event is not being observed by any of the UkmRecorderObservers now,
+    // and since UKM recording is disabled, it will be filtered out.
+    ukm::UkmEntryBuilder builder4(ukm::NoURLSourceId(),
+                                  "Event.ScrollUpdate.Touch");
+    builder4.SetMetric("TimeToScrollUpdateSwapBegin", 17);
+    // Expect 0 calls to MockUkmRecorer::AddEntry since the UKM event will be
+    // filtered out at the client, because of UKM recording being disabled.
+    EXPECT_CALL(mock_recorder, AddEntry).Times(0);
+    builder4.Record(mojo_recorder.get());
+    run_loop.RunUntilIdle();
+  }
+}
+
+TEST_F(UkmReduceAddEntryIpcTest, MultipleDelegates) {
+  ASSERT_TRUE(base::FeatureList::IsEnabled(ukm::kUkmReduceAddEntryIPC));
+
+  base::RunLoop run_loop;
+  ukm::UkmEntryBuilder builder(ukm::NoURLSourceId(),
+                               "Event.ScrollUpdate.Touch");
+  builder.SetMetric("TimeToScrollUpdateSwapBegin", 17);
+
+  UkmService service(&prefs_, &client_,
+                     std::make_unique<MockDemographicMetricsProvider>());
+  // Initialize UkmService.
+  service.Initialize();
+  MockUkmRecorder mock_recorder;
+  mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
+  metrics::UkmRecorderFactoryImpl::Create(&mock_recorder,
+                                          factory.BindNewPipeAndPassReceiver());
+
+  // MojoUkmRecorder (client).
+  auto mojo_recorder = MojoUkmRecorder::Create(*factory);
+
+  // Disabled recording but having multiple delegates will default clients
+  // sending all AddEntry IPCs to the browser.
+  service.DisableRecording();
+  run_loop.RunUntilIdle();
+
+  ukm::TestAutoSetUkmRecorder test_recorder;
+  run_loop.RunUntilIdle();
+
+  EXPECT_CALL(mock_recorder, AddEntry).Times(1);
+
+  builder.Record(mojo_recorder.get());
+  run_loop.RunUntilIdle();
+}
 }  // namespace ukm

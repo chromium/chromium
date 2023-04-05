@@ -42,6 +42,8 @@ class GamepadComparisonsTest : public testing::Test {
                                          dummy_time_floor);
   }
 
+  using GamepadList = HeapVector<Member<Gamepad>>;
+
   HeapVector<Member<Gamepad>> CreateEmptyGamepadList() {
     return HeapVector<Member<Gamepad>>(device::Gamepads::kItemsLengthCap);
   }
@@ -121,6 +123,121 @@ class GamepadComparisonsTest : public testing::Test {
     gamepad->SetAxes(1, axes);
     gamepad->SetButtons(1, buttons);
     gamepad->SetConnected(true);
+    list[0] = gamepad;
+    return list;
+  }
+
+  void initTouch(float x,
+                 float y,
+                 uint8_t surface_id,
+                 uint32_t touch_id,
+                 bool has_surface_dimensions,
+                 uint32_t surface_width,
+                 uint32_t surface_height,
+                 device::GamepadTouch& touch) {
+    touch.x = x;
+    touch.y = y;
+    touch.surface_id = surface_id;
+    touch.touch_id = touch_id;
+    touch.has_surface_dimensions = has_surface_dimensions;
+    touch.surface_width = surface_width;
+    touch.surface_height = surface_height;
+  }
+
+  GamepadList CreateGamepadListWithTopLeftTouch() {
+    double axes[1] = {0.0};
+    device::GamepadButton buttons[1] = {{false, false, 0.0}};
+    device::GamepadTouch touch;
+    initTouch(0.0f, 0.0f, 0, 0, false, 0, 0, touch);
+    auto list = CreateEmptyGamepadList();
+    auto* gamepad = CreateGamepad();
+    gamepad->SetId("gamepad");
+    gamepad->SetAxes(1, axes);
+    gamepad->SetButtons(1, buttons);
+    gamepad->SetConnected(true);
+    gamepad->SetTouchEvents(1, &touch);
+    list[0] = gamepad;
+    return list;
+  }
+
+  GamepadList CreateGamepadListWithTopLeftTouchesTouchId1() {
+    double axes[1] = {0.0};
+    device::GamepadButton buttons[1] = {{false, false, 0.0}};
+    device::GamepadTouch touch[2];
+    initTouch(0.0f, 0.0f, 0, 0, false, 0, 0, touch[0]);
+    initTouch(0.0f, 0.0f, 0, 1, false, 0, 0, touch[1]);
+    auto list = CreateEmptyGamepadList();
+    auto* gamepad = CreateGamepad();
+    gamepad->SetId("gamepad");
+    gamepad->SetAxes(1, axes);
+    gamepad->SetButtons(1, buttons);
+    gamepad->SetConnected(true);
+    gamepad->SetTouchEvents(2, touch);
+    list[0] = gamepad;
+    return list;
+  }
+
+  GamepadList CreateGamepadListWithTopLeftTouchesTouchId3() {
+    double axes[1] = {0.0};
+    device::GamepadButton buttons[1] = {{false, false, 0.0}};
+    device::GamepadTouch touch[2];
+    initTouch(0.0f, 0.0f, 0, 0, false, 0, 0, touch[0]);
+    initTouch(0.0f, 0.0f, 0, 3, false, 0, 0, touch[1]);
+    auto list = CreateEmptyGamepadList();
+    auto* gamepad = CreateGamepad();
+    gamepad->SetId("gamepad");
+    gamepad->SetAxes(1, axes);
+    gamepad->SetButtons(1, buttons);
+    gamepad->SetConnected(true);
+    gamepad->SetTouchEvents(2, touch);
+    list[0] = gamepad;
+    return list;
+  }
+
+  GamepadList CreateGamepadListWithTopLeftTouchSurface1() {
+    double axes[1] = {0.0};
+    device::GamepadButton buttons[1] = {{false, false, 0.0}};
+    device::GamepadTouch touch;
+    initTouch(0.0f, 0.0f, 0, 1, true, 1280, 720, touch);
+    auto list = CreateEmptyGamepadList();
+    auto* gamepad = CreateGamepad();
+    gamepad->SetId("gamepad");
+    gamepad->SetAxes(1, axes);
+    gamepad->SetButtons(1, buttons);
+    gamepad->SetConnected(true);
+    gamepad->SetTouchEvents(1, &touch);
+    list[0] = gamepad;
+    return list;
+  }
+
+  GamepadList CreateGamepadListWithTopLeftTouchSurface2() {
+    double axes[1] = {0.0};
+    device::GamepadButton buttons[1] = {{false, false, 0.0}};
+    device::GamepadTouch touch;
+    initTouch(0.0f, 0.0f, 0, 1, true, 1920, 1080, touch);
+    auto list = CreateEmptyGamepadList();
+    auto* gamepad = CreateGamepad();
+    gamepad->SetId("gamepad");
+    gamepad->SetAxes(1, axes);
+    gamepad->SetButtons(1, buttons);
+    gamepad->SetConnected(true);
+    gamepad->SetTouchEvents(1, &touch);
+    list[0] = gamepad;
+    return list;
+  }
+
+  GamepadList CreateGamepadListWithCenterTouch() {
+    double axes[1] = {0.0};
+    device::GamepadButton buttons[1] = {{false, false, 0.0}};
+    device::GamepadTouch touch;
+    initTouch(0.5f, 0.5f, 0, 1, true, 1280, 720, touch);
+    auto list = CreateEmptyGamepadList();
+    auto* gamepad = CreateGamepad();
+    gamepad->SetId("gamepad");
+    gamepad->SetAxes(1, axes);
+    gamepad->SetButtons(1, buttons);
+    gamepad->SetConnected(true);
+    gamepad->SetTouchEvents(1, &touch);
     list[0] = gamepad;
     return list;
   }
@@ -376,6 +493,68 @@ TEST_F(GamepadComparisonsTest, CompareButtonTouchedWithNeutral) {
   EXPECT_TRUE(compareResult.IsButtonChanged(0, 0));
   EXPECT_FALSE(compareResult.IsButtonDown(0, 0));
   EXPECT_FALSE(compareResult.IsButtonUp(0, 0));
+}
+
+TEST_F(GamepadComparisonsTest, CompareDifferentTouch) {
+  auto list1 = CreateGamepadListWithTopLeftTouch();
+  auto list2 = CreateGamepadListWithCenterTouch();
+
+  auto compareResult = GamepadComparisons::Compare(
+      list1, list2, /*compare_all_axes=*/false, /*compare_all_buttons=*/false);
+  EXPECT_TRUE(compareResult.IsDifferent());
+}
+
+TEST_F(GamepadComparisonsTest, CompareDifferentSurface) {
+  auto list1 = CreateGamepadListWithTopLeftTouch();
+  auto list2 = CreateGamepadListWithTopLeftTouchSurface1();
+
+  auto compareResult = GamepadComparisons::Compare(
+      list1, list2, /*compare_all_axes=*/false, /*compare_all_buttons=*/false);
+  EXPECT_TRUE(compareResult.IsDifferent());
+}
+
+TEST_F(GamepadComparisonsTest, CompareDifferentTouchId) {
+  auto list1 = CreateGamepadListWithTopLeftTouchesTouchId1();
+  auto list2 = CreateGamepadListWithTopLeftTouchesTouchId3();
+
+  auto compareResult = GamepadComparisons::Compare(
+      list1, list2, /*compare_all_axes=*/false, /*compare_all_buttons=*/false);
+
+  EXPECT_TRUE(compareResult.IsDifferent());
+}
+
+TEST_F(GamepadComparisonsTest, CompareSameTouch1) {
+  auto list1 = CreateGamepadListWithTopLeftTouch();
+
+  auto compareResult = GamepadComparisons::Compare(
+      list1, list1, /*compare_all_axes=*/false, /*compare_all_buttons=*/false);
+  EXPECT_FALSE(compareResult.IsDifferent());
+}
+
+TEST_F(GamepadComparisonsTest, CompareSameTouch2) {
+  auto list1 = CreateGamepadListWithTopLeftTouchesTouchId3();
+
+  auto compareResult = GamepadComparisons::Compare(
+      list1, list1, /*compare_all_axes=*/false, /*compare_all_buttons=*/false);
+  EXPECT_FALSE(compareResult.IsDifferent());
+}
+
+TEST_F(GamepadComparisonsTest, CompareSurfaceNoSurfaceTouch) {
+  auto list1 = CreateGamepadListWithTopLeftTouchSurface1();
+  auto list2 = CreateGamepadListWithTopLeftTouch();
+
+  auto compareResult = GamepadComparisons::Compare(
+      list1, list2, /*compare_all_axes=*/false, /*compare_all_buttons=*/false);
+  EXPECT_TRUE(compareResult.IsDifferent());
+}
+
+TEST_F(GamepadComparisonsTest, CompareDifferentSurfaceTouch) {
+  auto list1 = CreateGamepadListWithTopLeftTouchSurface1();
+  auto list2 = CreateGamepadListWithTopLeftTouchSurface2();
+
+  auto compareResult = GamepadComparisons::Compare(
+      list1, list2, /*compare_all_axes=*/false, /*compare_all_buttons=*/false);
+  EXPECT_TRUE(compareResult.IsDifferent());
 }
 
 }  // namespace blink

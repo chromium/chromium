@@ -54,6 +54,7 @@ class WaylandZAuraOutputManager
 
  private:
   WaylandOutput::Id GetId(wl_output* output) const;
+  WaylandOutput* GetWaylandOutput(WaylandOutput::Id output_id);
 
   // Returns true once the output manager has received the done event. At this
   // point all mandatory state for the output has been received.
@@ -110,6 +111,9 @@ class WaylandZAuraOutputManager
                             zaura_output_manager* output_manager,
                             wl_output* output,
                             const char* description);
+  static void OnActivated(void* data,
+                          zaura_output_manager* output_manager,
+                          wl_output* output);
 
   // `pending_output_metrics_map_` holds Metrics objects that are updated
   // incrementally as events arrive from the server. These Metrics objects are

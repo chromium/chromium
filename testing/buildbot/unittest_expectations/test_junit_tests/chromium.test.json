@@ -5,6 +5,7 @@
     "junit_tests": [
       {
         "name": "foo_test",
+        "swarming": {},
         "test": "foo_test"
       }
     ]

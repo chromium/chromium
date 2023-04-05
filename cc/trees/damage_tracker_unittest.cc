@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "cc/base/math_util.h"
 #include "cc/layers/layer_impl.h"
+#include "cc/layers/view_transition_content_layer_impl.h"
 #include "cc/paint/filter_operation.h"
 #include "cc/paint/filter_operations.h"
 #include "cc/test/fake_picture_layer_impl.h"
@@ -60,6 +61,58 @@ gfx::Rect TestLayerImpl::GetDamageRect() const {
 }
 
 void TestLayerImpl::ResetChangeTracking() {
+  LayerImpl::ResetChangeTracking();
+  damage_rect_.SetRect(0, 0, 0, 0);
+}
+
+class TestViewTransitionContentLayerImpl
+    : public ViewTransitionContentLayerImpl {
+ public:
+  static std::unique_ptr<TestViewTransitionContentLayerImpl> Create(
+      LayerTreeImpl* tree_impl,
+      int id,
+      const viz::ViewTransitionElementResourceId& resource_id,
+      bool is_live_content_layer) {
+    return base::WrapUnique(new TestViewTransitionContentLayerImpl(
+        tree_impl, id, resource_id, is_live_content_layer));
+  }
+
+  void AddDamageRect(const gfx::Rect& damage_rect);
+
+  // LayerImpl overrides.
+  gfx::Rect GetDamageRect() const override;
+  void ResetChangeTracking() override;
+
+ private:
+  TestViewTransitionContentLayerImpl(
+      LayerTreeImpl* tree_impl,
+      int id,
+      const viz::ViewTransitionElementResourceId& resource_id,
+      bool is_live_content_layer);
+
+  gfx::Rect damage_rect_;
+};
+
+TestViewTransitionContentLayerImpl::TestViewTransitionContentLayerImpl(
+    LayerTreeImpl* tree_impl,
+    int id,
+    const viz::ViewTransitionElementResourceId& resource_id,
+    bool is_live_content_layer)
+    : ViewTransitionContentLayerImpl(tree_impl,
+                                     id,
+                                     resource_id,
+                                     is_live_content_layer) {}
+
+void TestViewTransitionContentLayerImpl::AddDamageRect(
+    const gfx::Rect& damage_rect) {
+  damage_rect_.Union(damage_rect);
+}
+
+gfx::Rect TestViewTransitionContentLayerImpl::GetDamageRect() const {
+  return damage_rect_;
+}
+
+void TestViewTransitionContentLayerImpl::ResetChangeTracking() {
   LayerImpl::ResetChangeTracking();
   damage_rect_.SetRect(0, 0, 0, 0);
 }
@@ -1391,6 +1444,78 @@ TEST_F(DamageTrackerTest, VerifyDamageForSurfaceChangeFromDescendantSurface) {
                   ->has_damage_from_contributing_content());
 
   EXPECT_TRUE(GetRenderSurface(child2_)
+                  ->damage_tracker()
+                  ->has_damage_from_contributing_content());
+}
+
+TEST_F(DamageTrackerTest, VerifyDamageForSurfaceChangeFromViewTransitionLayer) {
+  ClearLayersAndProperties();
+
+  LayerImpl* root = root_layer();
+  root->SetBounds(gfx::Size(500, 500));
+  root->layer_tree_impl()->SetDeviceViewportRect(gfx::Rect(root->bounds()));
+  root->SetDrawsContent(true);
+  SetupRootProperties(root);
+
+  LayerImpl* child1 = AddLayer<TestLayerImpl>();
+  LayerImpl* grand_child1 = AddLayer<TestLayerImpl>();
+  LayerImpl* child2 = AddLayer<TestViewTransitionContentLayerImpl>(
+      viz::ViewTransitionElementResourceId(3), false);
+
+  // child 1 of the root - live render surface.
+  child1->SetBounds(gfx::Size(80, 80));
+  child1->SetDrawsContent(true);
+  CopyProperties(root, child1);
+  CreateTransformNode(child1).post_translation = gfx::Vector2dF(100.f, 100.f);
+  CreateEffectNode(child1).render_surface_reason = RenderSurfaceReason::kTest;
+
+  // grandchild 1 - child of the child1
+  grand_child1->SetBounds(gfx::Size(10, 20));
+  grand_child1->SetDrawsContent(true);
+  CopyProperties(child1, grand_child1);
+  grand_child1->SetOffsetToTransformParent(gfx::Vector2dF(30.f, 30.f));
+
+  // child2 of the root - Shared element layer
+  child2->SetBounds(gfx::Size(160, 160));
+  child2->SetDrawsContent(true);
+  CopyProperties(root, child2);
+  child2->SetOffsetToTransformParent(gfx::Vector2dF(100.f, 100.f));
+
+  SetElementIdsForTesting();
+  EmulateDrawingOneFrame(root);
+
+  // Assign the same element resource id to child 1.
+  GetRenderSurface(child1)
+      ->OwningEffectNodeMutableForTest()
+      ->view_transition_element_resource_id =
+      child2->ViewTransitionResourceId();
+  EmulateDrawingOneFrame(root);
+
+  gfx::Rect child1_damage_rect;
+  gfx::Rect root_damage_rect;
+
+  // Next frame
+  ClearDamageForAllSurfaces(root);
+  grand_child1->NoteLayerPropertyChanged();
+  EmulateDrawingOneFrame(root);
+
+  EXPECT_TRUE(GetRenderSurface(child1)->damage_tracker()->GetDamageRectIfValid(
+      &child1_damage_rect));
+  EXPECT_TRUE(GetRenderSurface(root)->damage_tracker()->GetDamageRectIfValid(
+      &root_damage_rect));
+
+  EXPECT_EQ(gfx::Rect(30, 30, 10, 20).ToString(),
+            child1_damage_rect.ToString());
+
+  // The damage from the shared content render surface should contributes to
+  // the view transition layer's parent surface.
+  EXPECT_EQ(gfx::Rect(130, 130, 50, 70).ToString(),
+            root_damage_rect.ToString());
+
+  EXPECT_TRUE(GetRenderSurface(root)
+                  ->damage_tracker()
+                  ->has_damage_from_contributing_content());
+  EXPECT_TRUE(GetRenderSurface(child1)
                   ->damage_tracker()
                   ->has_damage_from_contributing_content());
 }

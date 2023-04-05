@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/types/id_type.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
@@ -95,7 +96,10 @@ GURL SubstituteSizeIntoURL(const blink::AdDescriptor& ad_descriptor) {
 
 }  // namespace
 
-FencedFrameURLMapping::FencedFrameURLMapping() = default;
+FencedFrameURLMapping::FencedFrameURLMapping() : unique_id_(GetNextId()) {
+  CHECK(unique_id_);
+}
+
 FencedFrameURLMapping::~FencedFrameURLMapping() = default;
 
 FencedFrameURLMapping::SharedStorageURNMappingResult::
@@ -155,6 +159,8 @@ absl::optional<GURL> FencedFrameURLMapping::AddFencedFrameURLForTesting(
 
   config.fenced_frame_reporter_ = std::move(fenced_frame_reporter);
   config.mode_ = blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds;
+  config.deprecated_should_freeze_initial_size_.emplace(
+      true, VisibilityToEmbedder::kTransparent, VisibilityToContent::kOpaque);
   return urn;
 }
 
@@ -213,13 +219,16 @@ FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
 
   std::vector<FencedFrameConfig> nested_configs;
   nested_configs.reserve(ad_component_descriptors.size());
-  for (auto& ad_component_descriptor : ad_component_descriptors) {
+  for (const auto& ad_component_descriptor : ad_component_descriptors) {
     // This config has no urn:uuid. It will later be set when being read into
     // `nested_urn_config_pairs` in `GenerateURNConfigVectorForConfigs()`.
+    // For an ad component, the `fenced_frame_reporter` from its parent fenced
+    // frame is reused.
     // TODO(crbug.com/1420638): Once the representation of size in fenced frame
     // config is finalized, pass the ad component size from the winning bid to
     // its fenced frame config.
-    nested_configs.emplace_back(SubstituteSizeIntoURL(ad_component_descriptor));
+    nested_configs.emplace_back(SubstituteSizeIntoURL(ad_component_descriptor),
+                                /*is_ad_component=*/true);
   }
   config.nested_configs_.emplace(std::move(nested_configs),
                                  VisibilityToEmbedder::kOpaque,
@@ -360,6 +369,12 @@ void FencedFrameURLMapping::SubstituteMappedURL(
     }
   }
   it->second = std::move(info);
+}
+
+// static
+FencedFrameURLMapping::Id FencedFrameURLMapping::GetNextId() {
+  static Id::Generator generator;
+  return generator.GenerateNextId();
 }
 
 bool FencedFrameURLMapping::IsMapped(const GURL& urn_uuid) const {

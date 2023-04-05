@@ -45,7 +45,8 @@ class ChromeKioskAppInstaller
   void FinalizeAppInstall();
 
   // extensions::InstallObserver overrides.
-  void OnFinishCrxInstall(const std::string& extension_id,
+  void OnFinishCrxInstall(content::BrowserContext* context,
+                          const std::string& extension_id,
                           bool success) override;
 
   // extensions::InstallStageTracker::Observer overrides.

@@ -41,8 +41,8 @@ void UkmEntryBuilderBase::Record(UkmRecorder* recorder) {
     entry_.reset();
 }
 
-mojom::UkmEntryPtr UkmEntryBuilderBase::TakeEntry() {
-  return std::move(entry_);
+mojom::UkmEntryPtr UkmEntryBuilderBase::GetEntryForTesting() {
+  return entry_.Clone();
 }
 
 }  // namespace internal

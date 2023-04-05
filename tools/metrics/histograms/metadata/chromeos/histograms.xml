@@ -873,7 +873,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 </histogram>
 
 <histogram name="ChromeOS.CWP.ParsePSICPU" enum="ChromeOSParsePSICPUStatus"
-    expires_after="2023-07-30">
+    expires_after="2023-10-01">
   <owner>shantuo@google.com</owner>
   <owner>cwp-team@google.com</owner>
   <summary>
@@ -1557,7 +1557,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 </histogram>
 
 <histogram name="ChromeOS.Intents.IntentPickerAction"
-    enum="IntentPickerDialogAction" expires_after="2023-09-17">
+    enum="IntentPickerDialogAction" expires_after="2023-10-01">
   <owner>tsergeant@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
@@ -2028,7 +2028,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 </histogram>
 
 <histogram name="ChromeOS.Ownership.OwnerKeyUmaEvent" enum="OwnerKeyUmaEvent"
-    expires_after="2023-07-30">
+    expires_after="2023-10-01">
   <owner>miersh@google.com</owner>
   <owner>pmarko@google.com</owner>
   <owner>chromeos-commercial-networking@google.com</owner>
@@ -2049,7 +2049,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 </histogram>
 
 <histogram name="ChromeOS.PlatformVerification.Result2"
-    enum="ChromeOSPlatformVerificationResult2" expires_after="2023-07-30">
+    enum="ChromeOSPlatformVerificationResult2" expires_after="2023-10-01">
   <owner>erikchen@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -2186,7 +2186,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 </histogram>
 
 <histogram name="ChromeOS.SAML.InSessionPasswordChangeEvent"
-    enum="SamlInSessionPasswordChangeEvent" expires_after="2023-07-30">
+    enum="SamlInSessionPasswordChangeEvent" expires_after="2023-10-01">
   <owner>mslus@chromium.org</owner>
   <owner>rsorokin@chromium.org</owner>
   <summary>
@@ -2236,7 +2236,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 </histogram>
 
 <histogram name="ChromeOS.Sandboxing.LandlockEnabled" enum="Boolean"
-    expires_after="2023-07-30">
+    expires_after="2023-10-01">
   <owner>enlightened@chromium.org</owner>
   <owner>chromeos-security-core@google.com</owner>
   <summary>
@@ -2249,17 +2249,54 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Secagentd.Bootmode.Cros" enum="SecagentdBootmodeCros"
+    expires_after="2023-09-24">
+  <owner>rborzello@google.com</owner>
+  <owner>cros-enterprise-security@google.com</owner>
+  <summary>
+    Records whether the cros bootmode for the device was successfully found for
+    devices running the CrOS secagentd daemon. Emits either success or the
+    failure reason. When XDR reporting is enabled it will emit once per daemon
+    lifetime.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Secagentd.Bootmode.Uefi" enum="SecagentdBootmodeUefi"
+    expires_after="2023-09-24">
+  <owner>rborzello@google.com</owner>
+  <owner>cros-enterprise-security@google.com</owner>
+  <summary>
+    Records whether the bootparams file was successfully parsed for the UEFI
+    bootmode information for devices running the CrOS secagentd daemon. Emits
+    either success or the failure reason. When XDR reporting is enabled it will
+    emit once per daemon lifetime.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Secagentd.Bpf.{Bpf}.AttachResult"
-    enum="SecagentdBpfAttachResult" expires_after="2023-05-18">
+    enum="SecagentdBpfAttachResult" expires_after="2023-09-24">
   <owner>aashay@google.com</owner>
   <owner>cros-enterprise-security@google.com</owner>
   <summary>
     Records the initialization status of the {Bpf} BPF used by the CrOS
-    secagentd daemon. Emits either a success or a specific error value.
+    secagentd daemon. Emits either a success or a specific error value. When XDR
+    reporting is enabled it will be recorded once per daemon lifetime.
   </summary>
   <token key="Bpf">
     <variant name="Process" summary="Process BPF"/>
   </token>
+</histogram>
+
+<histogram name="ChromeOS.Secagentd.Cache" enum="SecagentdCache"
+    expires_after="2023-09-24">
+  <owner>rborzello@google.com</owner>
+  <owner>cros-enterprise-security@google.com</owner>
+  <summary>
+    Records whether the processe's information was found in the cache for the
+    CrOS secagentd daemon. Emits either Cache Hit, Cache Miss or Cache Miss but
+    scraped procfs successfully. It will be recorded at most 3 times per XDR
+    event.
+  </summary>
 </histogram>
 
 <histogram name="ChromeOS.Secagentd.Policy" enum="SecagentdPolicy"
@@ -2275,6 +2312,44 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
     Note that even though the daemon regularly polls device policy for updates,
     it will emit exactly one on-check value and at most one enabled value during
     its lifetime (generally per device per boot).
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Secagentd.Process.{EventType}Event"
+    enum="SecagentdProcessEvent" expires_after="2023-09-24">
+  <owner>rborzello@google.com</owner>
+  <owner>cros-enterprise-security@google.com</owner>
+  <summary>
+    Records whether the Process {EventType} Event was correctly formed for the
+    CrOS secagentd daemon. Emits event was complete or the reason it was not. It
+    is recorded once per XDR event.
+  </summary>
+  <token key="EventType">
+    <variant name="Exec" summary="Process exec events"/>
+    <variant name="Terminate" summary="Process terminate events"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Secagentd.SendMessageResult"
+    enum="SecagentdSendMessageResult" expires_after="2023-09-24">
+  <owner>rborzello@google.com</owner>
+  <owner>cros-enterprise-security@google.com</owner>
+  <summary>
+    Records the status response of all events sent by the CrOS secagentd daemon.
+    Emits either a success or the failure reason. It is recorded once per XDR
+    event.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Secagentd.Tpm" enum="SecagentdTpm"
+    expires_after="2023-09-24">
+  <owner>rborzello@google.com</owner>
+  <owner>cros-enterprise-security@google.com</owner>
+  <summary>
+    Records whether the TPM for the device was successfully found for devices
+    running the CrOS secagentd daemon. Emits either success or the failure
+    reason. When XDR reporting is enabled it will be recorded once per daemon
+    lifetime.
   </summary>
 </histogram>
 
@@ -2345,6 +2420,22 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
     <variant name="External"/>
     <variant name="ExternalChromeOs"/>
     <variant name="Internal"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Settings.Device.{DeviceType}.SetSettingsSucceeded"
+    enum="Boolean" expires_after="2024-03-29">
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records if the {DeviceType} settings are set successfully. Set settings will
+    fail if the id or the settings object is invalid.
+  </summary>
+  <token key="DeviceType">
+    <variant name="Keyboard"/>
+    <variant name="Mouse"/>
+    <variant name="PointingStick"/>
+    <variant name="Touchpad"/>
   </token>
 </histogram>
 
@@ -2654,6 +2745,19 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   <summary>
     This value represents the speed of the USB Type-C cable which is connected
     to a device. It is recorded every time a new peripheral is connected.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.TypeC.DpSuccess" enum="DpSuccessMetric"
+    expires_after="2023-10-08">
+  <owner>pmalani@chromium.org</owner>
+  <owner>chromeos-usb@google.com</owner>
+  <summary>
+    This value represents DisplayPort (DP) alternate mode entry success (or
+    failure) for USB Type-C peripherals that support this alternate mode. This
+    metric gets recorded by the Chrome OS Type-C system daemon (typecd) when a
+    peripheral that supports DP alternate mode is connected to the systems that
+    support this metric.
   </summary>
 </histogram>
 

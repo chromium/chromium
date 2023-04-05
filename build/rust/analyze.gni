@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/compute_inputs_for_analyze.gni")
+import("//build/config/rust.gni")
 
 if (compute_inputs_for_analyze) {
   template("analyze_rust") {
@@ -28,7 +29,7 @@ if (compute_inputs_for_analyze) {
 
       args = [
         "--generate-depfile",
-        "third_party/rust-toolchain/bin/rustc",
+        "${rust_sysroot}/bin/rustc",
         rebase_path(crate_root, root_build_dir),
         rebase_path(depfile, root_build_dir),
         "{{rustflags}}",

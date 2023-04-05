@@ -7,9 +7,9 @@
 #include <string>
 
 #include "base/containers/fixed_flat_map.h"
-#include "base/guid.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_metadata.h"
 #include "components/autofill/core/common/autofill_regexes.h"
@@ -181,7 +181,7 @@ constexpr char16_t kEllipsisOneSpace = u'\u2006';
 IBAN::IBAN(const std::string& guid)
     : AutofillDataModel(guid, /*origin=*/std::string()) {}
 
-IBAN::IBAN() : IBAN(base::GenerateGUID()) {}
+IBAN::IBAN() : IBAN(base::GenerateUuid()) {}
 
 IBAN::IBAN(const IBAN& iban) : IBAN() {
   operator=(iban);

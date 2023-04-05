@@ -111,8 +111,7 @@ public class WebViewChromiumAwInit {
         mFactory = factory;
         // Do not make calls into 'factory' in this ctor - this ctor is called from the
         // WebViewChromiumFactoryProvider ctor, so 'factory' is not properly initialized yet.
-        TraceEvent.maybeEnableEarlyTracing(
-                TraceEvent.ATRACE_TAG_WEBVIEW, /*readCommandLine=*/false);
+        TraceEvent.maybeEnableEarlyTracing(/*readCommandLine=*/false);
     }
 
     public AwTracingController getAwTracingController() {

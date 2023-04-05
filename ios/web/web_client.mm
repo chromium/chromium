@@ -150,4 +150,8 @@ bool WebClient::IsMixedContentAutoupgradeEnabled(
   return true;
 }
 
+bool WebClient::IsBrowserLockdownModeEnabled(web::BrowserState* browser_state) {
+  return false;
+}
+
 }  // namespace web

@@ -87,7 +87,7 @@ SoftwareImageDecodeCacheUtils::DoDecodeImage(
                "SoftwareImageDecodeCacheUtils::DoDecodeImage - "
                "decode");
   bool result = paint_image.Decode(target_pixmap, key.frame_key().frame_index(),
-                                   client_id);
+                                   AuxImage::kDefault, client_id);
   if (!result) {
     target_pixels->Unlock();
     return nullptr;

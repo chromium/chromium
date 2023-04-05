@@ -26,7 +26,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/hash/hash.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
@@ -43,6 +42,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
@@ -2152,8 +2152,9 @@ AutofillProfile* BrowserAutofillManager::GetProfile(int unique_id) {
       suggestion_generator_->GetBackendIdFromFrontendId(unique_id);
 
   std::string guid = profile_id.value();
-  if (base::IsValidGUID(guid))
+  if (base::IsValidUuid(guid)) {
     return client()->GetPersonalDataManager()->GetProfileByGUID(guid);
+  }
   return nullptr;
 }
 

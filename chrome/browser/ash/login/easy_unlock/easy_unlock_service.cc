@@ -25,7 +25,6 @@
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_factory.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -41,8 +40,6 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
@@ -53,10 +50,6 @@
 namespace ash {
 
 namespace {
-
-PrefService* GetLocalState() {
-  return g_browser_process ? g_browser_process->local_state() : nullptr;
-}
 
 void SetAuthTypeIfChanged(
     proximity_auth::ScreenlockBridge::LockHandler* lock_handler,
@@ -140,26 +133,6 @@ void EasyUnlockService::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(prefs::kEasyUnlockPairing);
   proximity_auth::ProximityAuthProfilePrefManager::RegisterPrefs(registry);
-}
-
-// static
-void EasyUnlockService::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterDictionaryPref(prefs::kEasyUnlockHardlockState);
-}
-
-// static
-void EasyUnlockService::ResetLocalStateForUser(const AccountId& account_id) {
-  DCHECK(account_id.is_valid());
-
-  PrefService* local_state = GetLocalState();
-  if (!local_state)
-    return;
-
-  for (const std::string& pref :
-       std::vector<std::string>{prefs::kEasyUnlockHardlockState}) {
-    ScopedDictPrefUpdate update(local_state, pref);
-    update->Remove(account_id.GetUserEmail());
-  }
 }
 
 void EasyUnlockService::Initialize() {

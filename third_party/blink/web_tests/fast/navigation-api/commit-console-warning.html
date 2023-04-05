@@ -1,0 +1,78 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<iframe id="i" src="../history/resources/dummy.html"></iframe>
+
+<script>
+promise_test(async t => {
+  navigation.addEventListener("navigate", e => {
+    e.intercept();
+  }, { once: true });
+
+  navigation.addEventListener("navigate", e => {
+    e.intercept({ commit: "immediate" });
+  }, { once: true });
+
+  await navigation.navigate("#1").finished;
+}, "(not provided) + immediate");
+
+promise_test(async t => {
+  navigation.addEventListener("navigate", e => {
+    e.intercept();
+  }, { once: true });
+
+  navigation.addEventListener("navigate", e => {
+    e.intercept({ commit: "after-transition" });
+  }, { once: true });
+
+  await navigation.navigate("#2").finished;
+}, "(not provided) + after-transition");
+
+promise_test(async t => {
+  navigation.addEventListener("navigate", e => {
+    e.intercept({ commit: "immediate" });
+  }, { once: true });
+
+  navigation.addEventListener("navigate", e => {
+    e.intercept({ commit: "after-transition" });
+  }, { once: true });
+
+  await navigation.navigate("#3").finished;
+}, "immediate + after-transition");
+
+promise_test(async t => {
+  navigation.addEventListener("navigate", e => {
+    e.intercept({ commit: "immediate" });
+  }, { once: true });
+
+  navigation.addEventListener("navigate", e => {
+    e.intercept();
+  }, { once: true });
+
+  await navigation.navigate("#4").finished;
+}, "immediate + (not provided)");
+
+promise_test(async t => {
+  navigation.addEventListener("navigate", e => {
+    e.intercept({ commit: "after-transition" });
+  }, { once: true });
+
+  navigation.addEventListener("navigate", e => {
+    e.intercept({ commit: "immediate" });
+  }, { once: true });
+
+  await navigation.navigate("#5").finished;
+}, "after-transition + immediate");
+
+promise_test(async t => {
+  navigation.addEventListener("navigate", e => {
+    e.intercept({ commit: "after-transition" });
+  }, { once: true });
+
+  navigation.addEventListener("navigate", e => {
+    e.intercept();
+  }, { once: true });
+
+  await navigation.navigate("#6").finished;
+}, "after-transition + (not provided)");
+</script>

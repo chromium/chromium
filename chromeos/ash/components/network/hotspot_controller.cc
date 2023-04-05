@@ -63,6 +63,18 @@ void HotspotController::RestartHotspotIfActive() {
       hotspot_config::mojom::DisableReason::kRestart);
 }
 
+void HotspotController::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void HotspotController::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
+bool HotspotController::HasObserver(Observer* observer) const {
+  return observer_list_.HasObserver(observer);
+}
+
 void HotspotController::ProcessRequestQueue() {
   if (queued_requests_.empty())
     return;
@@ -258,6 +270,19 @@ void HotspotController::OnDisableHotspotCompleteForRestart(
     return;
   }
   EnableHotspot(base::DoNothing());
+}
+
+void HotspotController::NotifyHotspotTurnedOn(bool wifi_turned_off) {
+  for (auto& observer : observer_list_) {
+    observer.OnHotspotTurnedOn(current_request_->wifi_turned_off);
+  }
+}
+
+void HotspotController::NotifyHotspotTurnedOff(
+    hotspot_config::mojom::DisableReason disable_reason) {
+  for (auto& observer : observer_list_) {
+    observer.OnHotspotTurnedOff(disable_reason);
+  }
 }
 
 }  //  namespace ash

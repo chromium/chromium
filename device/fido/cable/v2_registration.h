@@ -64,10 +64,6 @@ class Registration {
     std::array<uint8_t, kPairingIDSize> pairing_id;
     std::array<uint8_t, kClientNonceSize> client_nonce;
     absl::optional<std::vector<uint8_t>> contact_id;
-
-    // protocol_revision can be optionally asserted while we transition from
-    // revision zero to revision one. This might be removed in the future.
-    unsigned protocol_revision = 0;
   };
 
   virtual ~Registration();

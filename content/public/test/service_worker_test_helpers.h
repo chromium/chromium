@@ -43,6 +43,14 @@ void AdvanceClockAfterRequestTimeout(ServiceWorkerContext* context,
 bool TriggerTimeoutAndCheckRunningState(ServiceWorkerContext* context,
                                         int64_t service_worker_version_id);
 
+// Returns whether the service worker is still running.
+bool CheckServiceWorkerIsRunning(ServiceWorkerContext* context,
+                                 int64_t service_worker_version_id);
+
+void SetServiceWorkerIdleDelay(ServiceWorkerContext* context,
+                               int64_t service_worker_version_id,
+                               base::TimeDelta delay);
+
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_TEST_SERVICE_WORKER_TEST_HELPERS_H_

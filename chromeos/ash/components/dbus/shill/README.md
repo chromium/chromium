@@ -146,7 +146,7 @@ implemented by
 ## Shill profile client {#shill-profile-client-testing}
 The [`ShillProfileClient::TestInterface`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/dbus/shill/shill_profile_client.h;l=37-98;drc=2527cfc617c6cc4bbad415d49a00b44a773e1d9f)
 allows you to add fake profile entries for ChromeOS unit testing
-purposes. This interface is implemented in the [FakeShillProfileClient](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/dbus/shill/fake_shill_profile_client.h;drc=2527cfc617c6cc4bbad415d49a00b44a773e1d9f).
+purposes. This interface is implemented in the [`FakeShillProfileClient`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/dbus/shill/fake_shill_profile_client.h;drc=2527cfc617c6cc4bbad415d49a00b44a773e1d9f).
 
 
 ## Shill service client {#shill-service-client-testing}

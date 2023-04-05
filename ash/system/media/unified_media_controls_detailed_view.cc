@@ -9,6 +9,7 @@
 #include "ash/system/media/media_tray.h"
 #include "ash/system/tray/tri_view.h"
 #include "media/base/media_switches.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/border.h"
 
 namespace ash {
@@ -36,5 +37,8 @@ void UnifiedMediaControlsDetailedView::CreateExtraTitleRowButtons() {
   tri_view()->SetContainerVisible(TriView::Container::END, true);
   tri_view()->AddView(TriView::Container::END, new MediaTray::PinButton());
 }
+
+BEGIN_METADATA(UnifiedMediaControlsDetailedView, TrayDetailedView)
+END_METADATA
 
 }  // namespace ash

@@ -326,14 +326,14 @@ TEST_F(ScriptingPermissionsModifierUnitTest,
   ExtensionId extension_id = extension->id();
   // Hold onto references for the extension dirs so they don't get deleted
   // outside the lambda.
-  std::vector<std::unique_ptr<TestExtensionDir>> extension_dirs;
+  std::vector<TestExtensionDir> extension_dirs;
 
   auto update_extension = [this, &extension_id, &pem_path, &kManifestTemplate,
                            &extension_dirs](const char* version) {
-    auto update_version = std::make_unique<TestExtensionDir>();
-    update_version->WriteManifest(
+    TestExtensionDir update_version;
+    update_version.WriteManifest(
         base::StringPrintf(kManifestTemplate, version));
-    PackCRXAndUpdateExtension(extension_id, update_version->UnpackedPath(),
+    PackCRXAndUpdateExtension(extension_id, update_version.UnpackedPath(),
                               pem_path, ENABLED);
     scoped_refptr<const Extension> updated_extension =
         registry()->GetInstalledExtension(extension_id);

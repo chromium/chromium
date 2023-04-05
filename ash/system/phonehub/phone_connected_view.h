@@ -9,6 +9,7 @@
 #include "ash/system/phonehub/app_stream_connection_error_dialog.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
+#include "ui/events/event.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -16,6 +17,8 @@ namespace ash {
 namespace phonehub {
 class PhoneHubManager;
 }
+
+class QuickActionsView;
 
 // A view of the Phone Hub panel, displaying phone status and utility actions
 // such as phone status, task continuation, etc.
@@ -37,9 +40,10 @@ class PhoneConnectedView : public PhoneHubContentView {
  private:
   void OnAppStreamErrorDialogClosed();
 
-  void OnAppStreamErrorDialogButtonClicked();
+  void OnAppStreamErrorDialogButtonClicked(const ui::Event& event);
 
   phonehub::PhoneHubManager* phone_hub_manager_;
+  QuickActionsView* quick_actions_view_;
   std::unique_ptr<AppStreamConnectionErrorDialog> app_stream_error_dialog_;
 };
 

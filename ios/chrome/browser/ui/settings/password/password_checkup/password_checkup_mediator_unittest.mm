@@ -4,12 +4,15 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_mediator.h"
 
+#import "base/test/bind.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/keyed_service/core/service_access_type.h"
+#import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/test_password_store.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/passwords/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/passwords/password_check_observer_bridge.h"
@@ -62,6 +65,13 @@ class PasswordCheckupMediatorTest : public PlatformTest {
         base::BindRepeating(
             &password_manager::BuildPasswordStore<web::BrowserState,
                                                   TestPasswordStore>));
+    builder.AddTestingFactory(
+        IOSChromeAffiliationServiceFactory::GetInstance(),
+        base::BindRepeating(base::BindLambdaForTesting([](web::BrowserState*) {
+          return std::unique_ptr<KeyedService>(
+              std::make_unique<password_manager::FakeAffiliationService>());
+        })));
+
     browser_state_ = builder.Build();
 
     password_check_ = IOSChromePasswordCheckManagerFactory::GetForBrowserState(
@@ -149,6 +159,46 @@ TEST_F(PasswordCheckupMediatorTest, NotifiesConsumerOnInsecurePasswordChange) {
   AddIssueToForm(&form, InsecureType::kReused);
   AddIssueToForm(&form, InsecureType::kWeak);
   GetTestStore().AddLogin(form);
+  RunUntilIdle();
+
+  EXPECT_OCMOCK_VERIFY(consumer());
+}
+
+// Tests that the consumer is notified with the results of the last successful
+// password check when the current password check fails.
+TEST_F(PasswordCheckupMediatorTest,
+       NotifiesConsumerAfterPasswordCheckupFailed) {
+  PasswordCheckupMediator<PasswordCheckObserver>* password_check_observer =
+      static_cast<PasswordCheckupMediator<PasswordCheckObserver>*>(mediator());
+
+  [password_check_observer
+      passwordCheckStateDidChange:PasswordCheckState::kIdle];
+
+  // Add a leaked password. This password should be taken into account in the
+  // `insecurePasswordCounts` passed to the conusmer.
+  PasswordForm form1 = CreatePasswordForm();
+  AddIssueToForm(&form1, InsecureType::kLeaked);
+  GetTestStore().AddLogin(form1);
+  RunUntilIdle();
+
+  InsecurePasswordCounts counts = {1, 0, 0, 0};
+
+  OCMExpect([consumer()
+         setPasswordCheckupHomepageState:PasswordCheckupHomepageState::
+                                             PasswordCheckupHomepageStateDone
+                  insecurePasswordCounts:counts
+      formattedElapsedTimeSinceLastCheck:@"Check never run."]);
+  OCMExpect([consumer() setAffiliatedGroupCount:1]);
+
+  // Enter an error state of PasswordCheckState.
+  [password_check_observer
+      passwordCheckStateDidChange:PasswordCheckState::kSignedOut];
+
+  // Add a weak password. This password shouldn't be taken into account in the
+  // `insecurePasswordCounts` passed to the conusmer since an error occured.
+  PasswordForm form2 = CreatePasswordForm();
+  AddIssueToForm(&form2, InsecureType::kWeak);
+  GetTestStore().AddLogin(form2);
   RunUntilIdle();
 
   EXPECT_OCMOCK_VERIFY(consumer());

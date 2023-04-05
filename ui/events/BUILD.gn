@@ -614,7 +614,7 @@ static_library("test_support") {
   }
 }
 
-if (!is_ios) {
+if (use_blink) {
   test("events_unittests") {
     use_xvfb = use_xvfb_in_this_config
 

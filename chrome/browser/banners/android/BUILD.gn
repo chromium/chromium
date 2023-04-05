@@ -45,6 +45,7 @@ generate_jni("jni_headers") {
 
 android_library("javatests") {
   testonly = true
+  resources_package = "org.chromium.chrome.browser.banners"
   sources = [
     "java/src/org/chromium/chrome/browser/banners/AppBannerManagerTest.java",
   ]
@@ -52,6 +53,7 @@ android_library("javatests") {
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//chrome/android:chrome_app_java_resources",
     "//chrome/android:chrome_java",
     "//chrome/android:chrome_test_java",
     "//chrome/android:chrome_test_util_java",
@@ -62,16 +64,19 @@ android_library("javatests") {
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/appmenu/test:test_support_java",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//chrome/browser/webapps/android:java",
     "//chrome/test/android:chrome_java_integration_test_support",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/feature_engagement/public:public_java",
     "//components/infobars/android:java",
+    "//components/infobars/android:java_resources",
     "//components/messages/android:java",
     "//components/messages/android/internal:java",
     "//components/messages/android/test:test_support_java",
     "//components/signin/public/android:signin_java_test_support",
     "//components/site_engagement/content/android:java",
+    "//components/webapk/android/libs/common:splash_resources",
     "//components/webapps/browser/android:java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",

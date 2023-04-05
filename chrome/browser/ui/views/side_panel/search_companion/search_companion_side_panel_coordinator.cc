@@ -6,13 +6,17 @@
 
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/search.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_toolbar_container.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/webui/side_panel/companion/companion_side_panel_untrusted_ui.h"
 #include "chrome/common/webui_url_constants.h"
 
@@ -23,25 +27,26 @@ SearchCompanionSidePanelCoordinator::SearchCompanionSidePanelCoordinator(
       // TODO(b/269331995): Localize menu item label.
       name_(u"Companion"),
       icon_(kJourneysIcon) {
-  browser_->tab_strip_model()->AddObserver(this);
+  if (auto* template_url_service =
+          TemplateURLServiceFactory::GetForProfile(browser->profile())) {
+    template_url_service_observation_.Observe(template_url_service);
+  }
+  // Only start observing tab changes if google is the default search provider.
+  dsp_is_google_ = search::DefaultSearchProviderIsGoogle(browser_->profile());
+  if (dsp_is_google_) {
+    browser_->tab_strip_model()->AddObserver(this);
+    CreateAndRegisterEntriesForExistingWebContents(browser_->tab_strip_model());
+  }
 }
 
 SearchCompanionSidePanelCoordinator::~SearchCompanionSidePanelCoordinator() =
     default;
 
 // static
-bool SearchCompanionSidePanelCoordinator::IsSupported(Profile* profile) {
-  return !profile->IsIncognitoProfile() && !profile->IsGuestSession();
-}
-
-void SearchCompanionSidePanelCoordinator::
-    CreateAndRegisterEntriesForExistingWebContents(
-        TabStripModel* tab_strip_model) {
-  for (int index = 0; index < tab_strip_model->GetTabCount(); index++) {
-    auto* contextual_registry =
-        SidePanelRegistry::Get(tab_strip_model->GetWebContentsAt(index));
-    contextual_registry->Register(CreateCompanionEntry());
-  }
+bool SearchCompanionSidePanelCoordinator::IsSupported(Profile* profile,
+                                                      bool include_dsp_check) {
+  return !profile->IsIncognitoProfile() && !profile->IsGuestSession() &&
+         (!include_dsp_check || search::DefaultSearchProviderIsGoogle(profile));
 }
 
 std::unique_ptr<views::View>
@@ -52,7 +57,6 @@ SearchCompanionSidePanelCoordinator::CreateCompanionWebView() {
           GetBrowserView()->GetProfile(),
           /*webui_resizes_host=*/false,
           /*esc_closes_ui=*/false);
-  auto* raw_wrapper = wrapper.get();
   auto companion_web_view =
       std::make_unique<SidePanelWebUIViewT<CompanionSidePanelUntrustedUI>>(
           base::RepeatingClosure(), base::RepeatingClosure(),
@@ -61,10 +65,6 @@ SearchCompanionSidePanelCoordinator::CreateCompanionWebView() {
   // Observe on the webcontents for opening links in new tab.
   Observe(companion_web_view->GetWebContents());
 
-  // Need to set browser after SidePanelWebUIViewT is constructed since it
-  // creates the WebUIController. The WebUI needs a Browser pointer in order
-  // to observe changes to the tab strip model.
-  raw_wrapper->GetWebUIController()->GetWeakPtr()->set_browser(browser_);
   return companion_web_view;
 }
 
@@ -98,6 +98,26 @@ void SearchCompanionSidePanelCoordinator::OnTabStripModelChanged(
         contextual_registry->Register(CreateCompanionEntry());
       }
     }
+  }
+}
+
+void SearchCompanionSidePanelCoordinator::
+    CreateAndRegisterEntriesForExistingWebContents(
+        TabStripModel* tab_strip_model) {
+  for (int index = 0; index < tab_strip_model->GetTabCount(); index++) {
+    auto* contextual_registry =
+        SidePanelRegistry::Get(tab_strip_model->GetWebContentsAt(index));
+    contextual_registry->Register(CreateCompanionEntry());
+  }
+}
+
+void SearchCompanionSidePanelCoordinator::
+    DeregisterEntriesForExistingWebContents(TabStripModel* tab_strip_model) {
+  for (int index = 0; index < tab_strip_model->GetTabCount(); index++) {
+    auto* contextual_registry =
+        SidePanelRegistry::Get(tab_strip_model->GetWebContentsAt(index));
+    contextual_registry->Deregister(
+        SidePanelEntry::Key(SidePanelEntry::Id::kSearchCompanion));
   }
 }
 
@@ -144,6 +164,34 @@ void SearchCompanionSidePanelCoordinator::DidOpenRequestedURL(
 
   // Open the url in a new tab.
   browser_view->browser()->OpenURL(params);
+}
+
+void SearchCompanionSidePanelCoordinator::OnTemplateURLServiceChanged() {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
+  if (!browser_view) {
+    return;
+  }
+  SidePanelToolbarContainer* container =
+      browser_view->toolbar()->side_panel_container();
+  bool dsp_was_google = dsp_is_google_;
+  dsp_is_google_ = search::DefaultSearchProviderIsGoogle(browser_->profile());
+
+  // Update existence of companion entry points based on changes to the default
+  // search provider.
+  if (dsp_is_google_ && !dsp_was_google) {
+    container->AddPinnedEntryButtonFor(SidePanelEntry::Id::kSearchCompanion,
+                                       name(), icon());
+    browser_->tab_strip_model()->AddObserver(this);
+    CreateAndRegisterEntriesForExistingWebContents(browser_->tab_strip_model());
+  } else if (!dsp_is_google_ && dsp_was_google) {
+    container->RemovePinnedEntryButtonFor(SidePanelEntry::Id::kSearchCompanion);
+    browser_->tab_strip_model()->RemoveObserver(this);
+    DeregisterEntriesForExistingWebContents(browser_->tab_strip_model());
+  }
+}
+
+void SearchCompanionSidePanelCoordinator::OnTemplateURLServiceShuttingDown() {
+  template_url_service_observation_.Reset();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchCompanionSidePanelCoordinator);

@@ -15,6 +15,7 @@
 #include "components/printing/common/print.mojom-forward.h"
 #include "printing/image.h"
 #include "printing/mojom/print.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -102,10 +103,10 @@ class MockPrinter {
   bool SaveSource(unsigned int page, const base::FilePath& filepath) const;
   bool SaveBitmap(unsigned int page, const base::FilePath& filepath) const;
 
- protected:
-  int CreateDocumentCookie();
-
  private:
+  // Sets `document_cookie_` based on `use_invalid_settings_`.
+  void CreateDocumentCookie();
+
   // Helper function to fill the fields in |params|.
   void SetPrintParams(printing::mojom::PrintParams* params);
 
@@ -126,8 +127,7 @@ class MockPrinter {
   bool should_print_backgrounds_;
 
   // Cookie for the document to ensure correctness.
-  int document_cookie_;
-  int current_document_cookie_;
+  absl::optional<int> document_cookie_;
 
   // The current status of this printer.
   Status printer_status_;

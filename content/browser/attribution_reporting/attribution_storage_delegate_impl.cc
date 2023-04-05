@@ -4,10 +4,12 @@
 
 #include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <cstdlib>
 #include <utility>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
@@ -31,6 +33,16 @@
 namespace content {
 
 namespace {
+
+using ::attribution_reporting::mojom::SourceType;
+
+const base::FeatureParam<base::TimeDelta> kFirstReportWindowDeadline{
+    &blink::features::kConversionMeasurement, "first_report_window_deadline",
+    AttributionConfig::EventLevelLimit::kDefaultFirstReportWindowDeadline};
+
+const base::FeatureParam<base::TimeDelta> kSecondReportWindowDeadline{
+    &blink::features::kConversionMeasurement, "second_report_window_deadline",
+    AttributionConfig::EventLevelLimit::kDefaultSecondReportWindowDeadline};
 
 const base::FeatureParam<base::TimeDelta> kAggregateReportMinDelay{
     &blink::features::kConversionMeasurement, "aggregate_report_min_delay",
@@ -64,6 +76,25 @@ AttributionStorageDelegateImpl::AttributionStorageDelegateImpl(
     : AttributionStorageDelegateImpl(noise_mode,
                                      delay_mode,
                                      AttributionConfig()) {
+  base::TimeDelta first_deadline = kFirstReportWindowDeadline.Get();
+  base::TimeDelta second_deadline = kSecondReportWindowDeadline.Get();
+
+  if (!first_deadline.is_negative() && first_deadline < second_deadline) {
+    config_.event_level_limit.first_report_window_deadline = first_deadline;
+    config_.event_level_limit.second_report_window_deadline = second_deadline;
+  } else {
+    LOG(WARNING)
+        << "Invalid reporting window deadline value(s) - "
+        << "Reporting window deadlines should be non-negative "
+        << "and the first deadline should be less than the second."
+        << "Using default values: ["
+        << AttributionConfig::EventLevelLimit::kDefaultFirstReportWindowDeadline
+        << ", "
+        << AttributionConfig::EventLevelLimit::
+               kDefaultSecondReportWindowDeadline
+        << "]";
+  }
+
   if (base::TimeDelta min_delay = kAggregateReportMinDelay.Get();
       !min_delay.is_negative()) {
     config_.aggregate_limit.min_delay = min_delay;
@@ -112,10 +143,13 @@ base::Time AttributionStorageDelegateImpl::GetEventLevelReportTime(
     base::Time trigger_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  const CommonSourceInfo& common_info = source.common_info();
+
   switch (delay_mode_) {
     case AttributionDelayMode::kDefault:
-      return ComputeReportTime(source.common_info(),
-                               source.event_report_window_time(), trigger_time);
+      return ComputeReportTime(common_info.source_time(),
+                               source.event_report_window_time(), trigger_time,
+                               EarlyDeadlines(common_info.source_type()));
     case AttributionDelayMode::kNone:
       return trigger_time;
   }
@@ -262,8 +296,10 @@ AttributionStorageDelegateImpl::GetFakeReportsForSequenceIndex(
         source, event_report_window_time, /*window_index=*/result.quot);
     base::Time trigger_time = LastTriggerTimeForReportTime(report_time);
 
-    DCHECK_EQ(ComputeReportTime(source, event_report_window_time, trigger_time),
-              report_time);
+    DCHECK_EQ(
+        ComputeReportTime(source.source_time(), event_report_window_time,
+                          trigger_time, EarlyDeadlines(source.source_type())),
+        report_time);
 
     fake_reports.push_back({
         .trigger_data = static_cast<uint64_t>(trigger_data),
@@ -301,6 +337,43 @@ absl::optional<base::Time> AttributionStorageDelegateImpl::GetReportWindowTime(
              ? absl::make_optional(
                    GetClampedTime(declared_window.value(), source_time))
              : absl::nullopt;
+}
+
+std::vector<base::TimeDelta> AttributionStorageDelegateImpl::EarlyDeadlines(
+    SourceType source_type) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  switch (source_type) {
+    case SourceType::kNavigation:
+      return std::vector<base::TimeDelta>{
+          config_.event_level_limit.first_report_window_deadline,
+          config_.event_level_limit.second_report_window_deadline};
+    case SourceType::kEvent:
+      return std::vector<base::TimeDelta>();
+  }
+}
+
+int AttributionStorageDelegateImpl::NumReportWindows(
+    SourceType source_type) const {
+  // Add 1 for the expiry deadline.
+  return 1 + EarlyDeadlines(source_type).size();
+}
+
+base::Time AttributionStorageDelegateImpl::ReportTimeAtWindow(
+    const CommonSourceInfo& source,
+    base::Time event_report_window_time,
+    int window_index) const {
+  DCHECK_GE(window_index, 0);
+  DCHECK_LT(window_index, NumReportWindows(source.source_type()));
+
+  std::vector<base::TimeDelta> early_deadlines =
+      EarlyDeadlines(source.source_type());
+
+  base::TimeDelta deadline =
+      static_cast<size_t>(window_index) < early_deadlines.size()
+          ? early_deadlines[window_index]
+          : ExpiryDeadline(source.source_time(), event_report_window_time);
+
+  return ReportTimeFromDeadline(source.source_time(), deadline);
 }
 
 }  // namespace content

@@ -16,6 +16,13 @@ style_variable_generator("cros_styles") {
   cpp_namespace = "cros_styles"
 }
 
+style_variable_generator("cros_typography") {
+  # If you change the sources, also change the paths in presubmit_support.py
+  sources = [ "cros_gm3_typography.json5" ]
+  gen_css = true
+  gen_views = false
+}
+
 style_variable_generator("cros_tokens") {
   # If you change the sources, also change the paths in presubmit_support.py
   sources = [

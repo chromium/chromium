@@ -239,7 +239,7 @@ VideoSurfaceTextureImageBacking::ProduceGLTexturePassthrough(
 }
 
 std::unique_ptr<SkiaImageRepresentation>
-VideoSurfaceTextureImageBacking::ProduceSkia(
+VideoSurfaceTextureImageBacking::ProduceSkiaGanesh(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {

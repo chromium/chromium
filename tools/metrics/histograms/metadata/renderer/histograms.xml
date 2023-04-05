@@ -573,22 +573,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="RendererScheduler.TaskCPUDurationPerTaskType2.DedicatedWorker"
-    enum="RendererSchedulerTaskType" expires_after="M85">
-  <owner>altimin@chromium.org</owner>
-  <summary>
-    Total duration (reported in full seconds) of dedicated worker tasks (thread
-    time) split by per thread type. Note that partial seconds are rounded
-    up/down so that they average to the correct value when many reports are
-    added. For more details, check base::ScaledLinearHistogram.
-
-    This is reported each time a task is completed.
-
-    Note that this metric discards tasks longer than 30 seconds because they are
-    considered to be a result of measurement glitch.
-  </summary>
-</histogram>
-
 <histogram base="true" name="RendererScheduler.TaskDurationPerFrameOriginType2"
     enum="RendererSchedulerFrameOriginType" expires_after="M85">
   <owner>altimin@chromium.org</owner>
@@ -598,40 +582,6 @@ chromium-metrics-reviews@google.com.
     Note that partial seconds are rounded up/down so that they average to the
     correct value when many reports are added. For more details, check
     base::ScaledLinearHistogram.
-
-    Note that this metric discards tasks longer than 30 seconds because they are
-    considered to be a result of measurement glitch.
-  </summary>
-</histogram>
-
-<histogram name="RendererScheduler.TaskDurationPerTaskType2"
-    enum="RendererSchedulerTaskType" expires_after="2021-12-12">
-  <owner>altimin@chromium.org</owner>
-  <owner>hajimehoshi@chromium.org</owner>
-  <summary>
-    Total duration (reported in full seconds) of renderer per-frame tasks split
-    per task type. Note that partial seconds are rounded up/down so that they
-    average to the correct value when many reports are added. For more details,
-    check base::ScaledLinearHistogram.
-
-    Used to monitor usage of each task type. Reported each time a task is
-    completed.
-
-    This metric is susceptible to problematic outliers and should be analyzed
-    with custom scripts accounting for that rather than from a dashboard.
-  </summary>
-</histogram>
-
-<histogram name="RendererScheduler.TaskDurationPerTaskType2.DedicatedWorker"
-    enum="RendererSchedulerTaskType" expires_after="M77">
-  <owner>altimin@chromium.org</owner>
-  <summary>
-    Total duration (repored in full seconds) of dedicated worker tasks (wall
-    time) split by per thread type. Note that partial seconds are rounded
-    up/down so that they average to the correct value when many reports are
-    added. For more details, check base::ScaledLinearHistogram.
-
-    Reported each time a task is completed.
 
     Note that this metric discards tasks longer than 30 seconds because they are
     considered to be a result of measurement glitch.

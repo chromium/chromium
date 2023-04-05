@@ -38,14 +38,20 @@ inline bool IsWhiteSpaceCollapseAny(WhiteSpaceCollapse value,
                                     WhiteSpaceCollapse flags) {
   return static_cast<uint8_t>(value) & static_cast<uint8_t>(flags);
 }
-inline bool ShouldPreserveSpacesAndTabs(WhiteSpaceCollapse collapse) {
+
+// Whether to collapse or preserve all whitespaces: spaces (U+0020), tabs
+// (U+0009), and segment breaks.
+// https://w3c.github.io/csswg-drafts/css-text-4/#white-space
+inline bool ShouldPreserveWhiteSpaces(WhiteSpaceCollapse collapse) {
   return IsWhiteSpaceCollapseAny(collapse, WhiteSpaceCollapse::kPreserve);
 }
+inline bool ShouldCollapseWhiteSpaces(WhiteSpaceCollapse collapse) {
+  return !ShouldPreserveWhiteSpaces(collapse);
+}
+// Whether to collapse or preserve segment breaks.
+// https://w3c.github.io/csswg-drafts/css-text-4/#segment-break
 inline bool ShouldPreserveBreaks(WhiteSpaceCollapse collapse) {
   return collapse != WhiteSpaceCollapse::kCollapse;
-}
-inline bool ShouldCollapseSpacesAndTabs(WhiteSpaceCollapse collapse) {
-  return !ShouldPreserveSpacesAndTabs(collapse);
 }
 inline bool ShouldCollapseBreaks(WhiteSpaceCollapse collapse) {
   return !ShouldPreserveBreaks(collapse);

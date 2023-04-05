@@ -94,6 +94,8 @@ const char kUninstallScript[] = "uninstall.cmd";
 
 // Developer override key names.
 const char kDevOverrideKeyUrl[] = "url";
+const char kDevOverrideKeyCrashUploadUrl[] = "crash_upload_url";
+const char kDevOverrideKeyDeviceManagementUrl[] = "device_management_url";
 const char kDevOverrideKeyUseCUP[] = "use_cup";
 const char kDevOverrideKeyInitialDelay[] = "initial_delay";
 const char kDevOverrideKeyServerKeepAliveSeconds[] = "server_keep_alive";

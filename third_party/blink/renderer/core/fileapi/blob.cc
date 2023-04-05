@@ -58,7 +58,7 @@ namespace blink {
 // PublicURLManager to deprecate this.
 class NullURLRegistry final : public URLRegistry {
  public:
-  void RegisterURL(SecurityOrigin*, const KURL&, URLRegistrable*) override {}
+  void RegisterURL(const KURL&, URLRegistrable*) override {}
   void UnregisterURL(const KURL&) override {}
 };
 

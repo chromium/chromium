@@ -315,6 +315,9 @@ class InputMethodEngine : virtual public TextInputMethod,
     TextInputMethod::KeyEventDoneCallback callback;
   };
 
+  // Called when Diacritics setting changed for metrics.
+  void DiacriticsSettingsChanged();
+
   // Notifies InputContextHandler that the composition is changed.
   void UpdateComposition(const ui::CompositionText& composition_text,
                          uint32_t cursor_pos,

@@ -257,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerUITest,
 // popup was open.
 IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerUITest,
                        ClickingOnASecondActionClosesTheFirst) {
-  std::vector<std::unique_ptr<extensions::TestExtensionDir>> test_dirs;
+  std::vector<extensions::TestExtensionDir> test_dirs;
   auto load_extension = [&](const char* extension_name) {
     constexpr char kManifestTemplate[] =
         R"({
@@ -271,15 +271,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerUITest,
     constexpr char kPopupJsTemplate[] =
         R"(chrome.test.sendMessage('%s popup opened');)";
 
-    auto test_dir = std::make_unique<extensions::TestExtensionDir>();
-    test_dir->WriteManifest(
+    extensions::TestExtensionDir test_dir;
+    test_dir.WriteManifest(
         base::StringPrintf(kManifestTemplate, extension_name));
-    test_dir->WriteFile(FILE_PATH_LITERAL("popup.html"), kPopupHtml);
-    test_dir->WriteFile(FILE_PATH_LITERAL("popup.js"),
-                        base::StringPrintf(kPopupJsTemplate, extension_name));
+    test_dir.WriteFile(FILE_PATH_LITERAL("popup.html"), kPopupHtml);
+    test_dir.WriteFile(FILE_PATH_LITERAL("popup.js"),
+                       base::StringPrintf(kPopupJsTemplate, extension_name));
     scoped_refptr<const extensions::Extension> extension =
         extensions::ChromeTestExtensionLoader(browser()->profile())
-            .LoadExtension(test_dir->UnpackedPath());
+            .LoadExtension(test_dir.UnpackedPath());
     test_dirs.push_back(std::move(test_dir));
     return extension;
   };

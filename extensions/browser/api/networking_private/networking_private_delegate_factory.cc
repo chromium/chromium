@@ -48,11 +48,9 @@ NetworkingPrivateDelegateFactory::GetInstance() {
 NetworkingPrivateDelegateFactory::NetworkingPrivateDelegateFactory()
     : BrowserContextKeyedServiceFactory(
           "NetworkingPrivateDelegate",
-          BrowserContextDependencyManager::GetInstance()) {
-}
+          BrowserContextDependencyManager::GetInstance()) {}
 
-NetworkingPrivateDelegateFactory::~NetworkingPrivateDelegateFactory() {
-}
+NetworkingPrivateDelegateFactory::~NetworkingPrivateDelegateFactory() = default;
 
 void NetworkingPrivateDelegateFactory::SetUIDelegateFactory(
     std::unique_ptr<UIDelegateFactory> factory) {
@@ -78,8 +76,9 @@ KeyedService* NetworkingPrivateDelegateFactory::BuildServiceInstanceFor(
   delegate = nullptr;
 #endif
 
-  if (ui_factory_)
+  if (ui_factory_) {
     delegate->set_ui_delegate(ui_factory_->CreateDelegate());
+  }
 
   return delegate;
 }

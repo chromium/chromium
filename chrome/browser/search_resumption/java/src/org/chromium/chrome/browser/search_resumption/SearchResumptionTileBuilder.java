@@ -8,8 +8,8 @@ import android.text.TextUtils;
 import android.view.ViewGroup;
 
 import org.chromium.base.TraceEvent;
-import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.url.GURL;
 
 import java.util.List;

@@ -25,6 +25,7 @@
 #include "components/safe_browsing/content/browser/threat_details.h"
 #include "components/safe_browsing/content/browser/threat_details_history.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
+#include "components/safe_browsing/content/browser/web_contents_key.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -139,7 +140,7 @@ class ThreatDetailsWrap : public ThreatDetails {
 
   ~ThreatDetailsWrap() override {}
 
-  void ThreatDetailsDone(content::WebContents* web_contents) {
+  void ThreatDetailsDone(WebContentsKey web_contents_key) {
     ++done_callback_count_;
     run_loop_->Quit();
     run_loop_ = nullptr;

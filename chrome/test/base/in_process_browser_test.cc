@@ -716,10 +716,10 @@ Browser* InProcessBrowserTest::CreateGuestBrowser() {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   base::FilePath guest_path = profile_manager->GetGuestProfilePath();
 
-  Profile* guest_profile =
+  Profile& guest_profile =
       profiles::testing::CreateProfileSync(profile_manager, guest_path);
   Profile* guest_profile_otr =
-      guest_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+      guest_profile.GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
   // Create browser and add tab.
   Browser* browser =

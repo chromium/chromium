@@ -16,5 +16,6 @@ specific_include_rules = {
     "+chromeos/ash/components/dbus",
     "+services/network/test",
     "+testing/gtest",
+    "+testing/gmock",
   ],
 }

@@ -99,10 +99,6 @@ struct CORE_EXPORT PaintLayerRareData final
 
   void Trace(Visitor* visitor) const;
 
-  // The offset for an in-flow relative-positioned PaintLayer. This is not
-  // set by any other style.
-  PhysicalOffset offset_for_in_flow_rel_position;
-
   std::unique_ptr<gfx::Transform> transform;
 
   Member<PaintLayerResourceInfo> resource_info;
@@ -587,11 +583,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 #endif
 
   void DirtyStackingContextZOrderLists();
-
-  PhysicalOffset OffsetForInFlowRelPosition() const {
-    return rare_data_ ? rare_data_->offset_for_in_flow_rel_position
-                      : PhysicalOffset();
-  }
 
   bool KnownToClipSubtreeToPaddingBox() const;
 

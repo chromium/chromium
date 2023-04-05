@@ -37,22 +37,25 @@ base::WaitableEvent EventForSwitch(const base::CommandLine& command_line,
 }
 
 int DoMain(const base::CommandLine* command_line) {
+  VLOG(1) << "Test process starting. Command line: " << ::GetCommandLine()
+          << ": Pid: " << GetCurrentProcessId();
+
   if (command_line->HasSwitch(updater::kTestName)) {
     VLOG(1) << "Running for test: "
             << command_line->GetSwitchValueASCII(updater::kTestName);
   }
 
-  if (command_line->HasSwitch(updater::kTestSleepMinutesSwitch)) {
+  if (command_line->HasSwitch(updater::kTestSleepSecondsSwitch)) {
     std::string value =
-        command_line->GetSwitchValueASCII(updater::kTestSleepMinutesSwitch);
-    int sleep_minutes = 0;
-    if (!base::StringToInt(value, &sleep_minutes) || sleep_minutes <= 0) {
+        command_line->GetSwitchValueASCII(updater::kTestSleepSecondsSwitch);
+    int sleep_seconds = 0;
+    if (!base::StringToInt(value, &sleep_seconds) || sleep_seconds <= 0) {
       LOG(ERROR) << "Invalid sleep delay value " << value;
       NOTREACHED();
     }
 
-    VLOG(1) << "Process is sleeping for " << sleep_minutes << " minutes";
-    ::Sleep(base::Minutes(sleep_minutes).InMilliseconds());
+    VLOG(1) << "Process is sleeping for " << sleep_seconds << " seconds";
+    ::Sleep(base::Seconds(sleep_seconds).InMilliseconds());
     return 0;
   }
 
@@ -102,6 +105,7 @@ int main(int, char**) {
   updater::NotifyInitializationDoneForTesting();
 
   int exit_code = DoMain(command_line);
-  VLOG(1) << "Test process ended. Exit code: " << exit_code;
+  VLOG(1) << "Test process ended. Exit code: " << exit_code
+          << ": Pid: " << GetCurrentProcessId();
   return exit_code;
 }

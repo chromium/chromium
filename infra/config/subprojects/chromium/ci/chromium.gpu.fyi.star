@@ -355,39 +355,6 @@ ci.gpu.linux_builder(
 )
 
 ci.gpu.linux_builder(
-    name = "Lacros FYI Release (octopus)",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "chromeos",
-                "checkout_lacros_sdk",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_arch = builder_config.target_arch.INTEL,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.CHROMEOS,
-            target_cros_boards = [
-                "amd64-generic",
-                "octopus",
-            ],
-        ),
-        run_tests_serially = True,
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "Lacros|Intel",
-        short_name = "oct",
-    ),
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-)
-
-ci.gpu.linux_builder(
     name = "GPU Flake Finder",
     executable = "recipe:chromium_expectation_files/expectation_file_scripts",
     # This will eventually be set up to run on a schedule, but only support

@@ -1667,6 +1667,8 @@ NavigationRequest::NavigationRequest(
               ? absl::make_optional(FencedFrameProperties())
               : absl::nullopt),
       embedder_shared_storage_context_(embedder_shared_storage_context) {
+  CHECK(!common_params_->initiator_base_url ||
+        !common_params_->initiator_base_url->is_empty());
   DCHECK(!blink::IsRendererDebugURL(common_params_->url));
   DCHECK(common_params_->method == "POST" || !common_params_->post_data);
   DCHECK_EQ(common_params_->url, commit_params_->original_url);
@@ -2657,7 +2659,7 @@ void NavigationRequest::BeginNavigationImpl() {
     if (HasRenderFrameHost()) {
       auto* site_instance = render_frame_host_.value()->GetSiteInstance();
       if (!site_instance->HasSite() &&
-          SiteInstanceImpl::ShouldAssignSiteForURL(common_params_->url)) {
+          SiteInstanceImpl::ShouldAssignSiteForUrlInfo(GetUrlInfo())) {
         site_instance->ConvertToDefaultOrSetSite(GetUrlInfo());
       }
     }
@@ -3777,6 +3779,29 @@ UrlInfo NavigationRequest::GetUrlInfo() {
     // navigations.
     url_info_init.WithOrigin(
         url::Origin::Create(common_params().base_url_for_data_url));
+  } else if (GetURL().IsAboutBlank() && GetInitiatorOrigin().has_value()) {
+    // about:blank inherits its origin from the initiator, so ensure that this
+    // is reflected in the UrlInfo.  In the common case, this isn't needed for
+    // process model decisions, since we already leave about:blank in the
+    // source SiteInstance, which corresponds to the initiator (see
+    // `RenderFrameHostManager::CanUseSourceSiteInstance()`). However, in
+    // certain corner cases, the source SiteInstance can't be used, but we
+    // will still need to assign a proper process for about:blank. In that
+    // case, we should honor the initiator origin, so that about:blank ends up
+    // in a process that's locked to that origin, rather than an unlocked
+    // process with an unassigned SiteInstance.  The latter would be violating
+    // site isolation guarantees and would be problematic for Citadel
+    // enforcements in
+    // ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin().  See
+    // https://crbug.com/1426928.
+    //
+    // TODO(alexmos): Consider also specifying UrlInfo::origin for about:srcdoc
+    // navigations. This is not currently needed in the SiteInstance
+    // and process assignment paths for srcdoc frames, but doing this might
+    // simplify some of that code and would be good for consistency, since both
+    // about:blank and about:srcdoc inherit the origin per spec
+    // (https://html.spec.whatwg.org/multipage/document-sequences.html#determining-the-origin).
+    url_info_init.WithOrigin(*GetInitiatorOrigin());
   } else {
     // Overriding the origin for a URL is dangerous and only allowed in very
     // narrow cases which are handled explicitly above.  Please think very
@@ -4242,7 +4267,7 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
 
   subresource_loader_params_ = std::move(subresource_loader_params);
 
-  // Most cases where ShouldAssignSiteForURL() is false should never load
+  // Most cases where ShouldAssignSiteForUrlInfo() is false should never load
   // actual content and reach this.  Since only empty document schemes are
   // allowed to leave a SiteInstance's site unassigned, they should follow the
   // !NeedsUrlLoader() path for committing the navigation early without ever
@@ -4265,7 +4290,7 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
   } else {
     // TODO(alexmos): Convert to a CHECK after verifying that this doesn't
     // happen in practice.
-    if (!SiteInstanceImpl::ShouldAssignSiteForURL(common_params_->url)) {
+    if (!SiteInstanceImpl::ShouldAssignSiteForUrlInfo(GetUrlInfo())) {
       DVLOG(1) << "This URL was unexpectedly loaded through the network stack: "
                << common_params_->url;
       base::debug::DumpWithoutCrashing();
@@ -4279,7 +4304,7 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
     // https://crbug.com/738634.
     SiteInstanceImpl* instance = GetRenderFrameHost()->GetSiteInstance();
     if (!instance->HasSite() &&
-        SiteInstanceImpl::ShouldAssignSiteForURL(common_params_->url)) {
+        SiteInstanceImpl::ShouldAssignSiteForUrlInfo(GetUrlInfo())) {
       instance->ConvertToDefaultOrSetSite(GetUrlInfo());
     }
 
@@ -4347,8 +4372,8 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
     NavigationEntryImpl* nav_entry =
         frame_tree_node_->navigator().controller().GetLastCommittedEntry();
     if (nav_entry && !nav_entry->GetURL().IsAboutBlank() &&
-        !SiteInstanceImpl::ShouldAssignSiteForURL(nav_entry->GetURL()) &&
-        SiteInstanceImpl::ShouldAssignSiteForURL(common_params_->url)) {
+        !SiteInstance::ShouldAssignSiteForURL(nav_entry->GetURL()) &&
+        SiteInstanceImpl::ShouldAssignSiteForUrlInfo(GetUrlInfo())) {
       scoped_refptr<FrameNavigationEntry> frame_entry =
           nav_entry->root_node()->frame_entry;
       scoped_refptr<SiteInstanceImpl> new_site_instance =
@@ -9315,6 +9340,40 @@ bool NavigationRequest::GetIsThirdPartyCookiesUserBypassEnabled() {
     return state_context.IsThirdPartyCookiesUserBypassEnabled();
   }
   return GetParentFrame()->GetIsThirdPartyCookiesUserBypassEnabled();
+}
+
+std::unique_ptr<WebUIImpl> NavigationRequest::CreateWebUIIfNeeded(
+    RenderFrameHostImpl* frame_host) {
+  TRACE_EVENT2("content", "NavigationRequest::CreateWebUI", "frame_host",
+               frame_host, "url", GetURL());
+  WebUI::TypeID new_web_ui_type =
+      WebUIControllerFactoryRegistry::GetInstance()->GetWebUIType(
+          frame_host->GetSiteInstance()->GetBrowserContext(), GetURL());
+  if (new_web_ui_type == WebUI::kNoWebUI) {
+    // The navigation doesn't need a WebUI.
+    return nullptr;
+  }
+
+  // We reuse WebUI on navigations with the same WebUI type where we use the
+  // same RFH, so don't create a new one if there is already an existing WebUI
+  // in `frame_host`. However, it is useful to verify that its type hasn't
+  // changed. Site isolation guarantees that RenderFrameHostImpl will be changed
+  // if the WebUI type differs.
+  if (frame_host->web_ui()) {
+    CHECK_EQ(new_web_ui_type, frame_host->web_ui_type());
+    return nullptr;
+  }
+
+  std::unique_ptr<WebUIImpl> web_ui = std::make_unique<WebUIImpl>(frame_host);
+  std::unique_ptr<WebUIController> controller(
+      WebUIControllerFactoryRegistry::GetInstance()
+          ->CreateWebUIControllerForURL(web_ui.get(), GetURL()));
+  if (!controller) {
+    return nullptr;
+  }
+
+  web_ui->SetController(std::move(controller));
+  return web_ui;
 }
 
 }  // namespace content

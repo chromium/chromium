@@ -676,15 +676,17 @@ GURL SiteInfo::GetSiteForURLInternal(const IsolationContext& isolation_context,
   // served from Web Bundles [1], this should be the origin of the web bundle
   // rather than the uuid-in-package: URL, which lacks any origin information.
   // For LoadDataWithBaseURL navigations, this should be the origin of the base
-  // URL rather than the data URL. In these cases, we should use the alternate
-  // origin which will be passed through UrlInfo, ensuring to use its precursor
-  // if the origin is opaque (as will be the case for Web Bundles) to still
-  // compute a meaningful site URL.
+  // URL rather than the data URL. about:blank navigations ought to inherit the
+  // initiator's origin. In all these cases, we should use the alternate origin
+  // which will be passed through UrlInfo, ensuring to use its precursor if the
+  // origin is opaque (as will be the case for Web Bundles) to still compute a
+  // meaningful site URL.
   //
   // [1] bit.ly/subresource-web-bundles-doc
   url::Origin origin;
   bool scheme_allows_origin_override =
-      url.SchemeIs(url::kUuidInPackageScheme) || url.SchemeIs(url::kDataScheme);
+      url.SchemeIs(url::kUuidInPackageScheme) ||
+      url.SchemeIs(url::kDataScheme) || url.IsAboutBlank();
   if (real_url_info.origin.has_value() && scheme_allows_origin_override) {
     auto precursor = real_url_info.origin->GetTupleOrPrecursorTupleIfOpaque();
     if (precursor.IsValid()) {

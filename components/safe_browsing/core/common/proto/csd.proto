@@ -2059,6 +2059,19 @@ message ExtensionTelemetryReportRequest {
     }
 
     optional PotentialPasswordTheftInfo potential_password_theft_info = 5;
+
+    // declarativeNetRequest API signal information.
+    message DeclarativeNetRequestInfo {
+      // List of modifyHeaders/redirect rules collected in JSON form.
+      repeated string rules = 1;
+
+      // Number of rules collected in each signal is limited to a maximum value
+      // (default: 50). This field counts the number of rules not recorded after
+      // limit is reached, and resets after each generated report.
+      optional uint32 max_exceeded_rules_count = 2;
+    }
+
+    optional DeclarativeNetRequestInfo declarative_net_request_info = 6;
   }
 
   // Single report structure consists of all the signals observed for a

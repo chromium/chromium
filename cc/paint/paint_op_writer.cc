@@ -194,7 +194,15 @@ uint64_t* PaintOpWriter::WriteSize(size_t size) {
   // size_t is always serialized as uint64_t to make the serialized result
   // portable between 32bit and 64bit processes.
   uint64_t* memory = reinterpret_cast<uint64_t*>(memory_.get());
-  WriteSimple(static_cast<uint64_t>(size));
+  uint64_t size64 = static_cast<uint64_t>(size);
+
+  // size_t is always aligned to only 4 bytes. Avoid undefined behavior by
+  // reading as two uint32_ts and combining the result.
+  // https://crbug.com/1429994
+  uint32_t lo = static_cast<uint32_t>(size64);
+  uint32_t hi = static_cast<uint32_t>(size64 >> 32);
+  WriteSimple(lo);
+  WriteSimple(hi);
   return memory;
 }
 
@@ -449,6 +457,27 @@ void PaintOpWriter::Write(const SkColorSpace* color_space) {
   size_t written = color_space->writeToMemory(memory_);
   CHECK_EQ(written, size);
   DidWrite(written);
+}
+
+void PaintOpWriter::Write(const SkGainmapInfo& gainmap_info) {
+  Write(gainmap_info.fGainmapRatioMin);
+  Write(gainmap_info.fGainmapRatioMax);
+  Write(gainmap_info.fGainmapGamma);
+  Write(gainmap_info.fEpsilonSdr);
+  Write(gainmap_info.fEpsilonHdr);
+  Write(gainmap_info.fDisplayRatioSdr);
+  Write(gainmap_info.fDisplayRatioHdr);
+  Write(gainmap_info.fDisplayRatioHdr);
+  uint32_t base_image_type = 0;
+  switch (gainmap_info.fBaseImageType) {
+    case SkGainmapInfo::BaseImageType::kSDR:
+      base_image_type = 0;
+      break;
+    case SkGainmapInfo::BaseImageType::kHDR:
+      base_image_type = 1;
+      break;
+  }
+  Write(base_image_type);
 }
 
 void PaintOpWriter::Write(const sk_sp<GrSlug>& slug) {

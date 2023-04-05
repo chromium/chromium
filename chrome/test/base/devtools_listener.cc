@@ -21,6 +21,8 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "url/url_util.h"
 
 namespace coverage {
@@ -136,6 +138,19 @@ void DevToolsListener::StopAndStoreJSCoverage(content::DevToolsAgentHost* host,
   AwaitCommandResponse(40);
 
   script_coverage_ = std::move(value_);
+  base::Value::Dict* result = script_coverage_.FindDict("result");
+  CHECK(result) << "result key is null: " << script_coverage_;
+
+  base::Value::List* coverage_entries = result->FindList("result");
+  CHECK(coverage_entries) << "Can't find result key: " << *result;
+
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+  VerifyAllScriptsAreParsedRepeatedly(coverage_entries, run_loop.QuitClosure(),
+                                      /*retries=*/10);
+  run_loop.Run();
+  CHECK(all_scripts_parsed_) << "All scripts in coverage results were not "
+                                "retrieved after 10s of waiting";
+
   StoreScripts(host, store);
 
   std::string stop_debugger = "{\"id\":41,\"method\":\"Debugger.disable\"}";
@@ -143,12 +158,6 @@ void DevToolsListener::StopAndStoreJSCoverage(content::DevToolsAgentHost* host,
 
   std::string stop_profiler = "{\"id\":42,\"method\":\"Profiler.disable\"}";
   SendCommandMessage(host, stop_profiler);
-
-  base::Value::Dict* result = script_coverage_.FindDict("result");
-  CHECK(result) << "result key is null: " << script_coverage_;
-
-  base::Value::List* coverage_entries = result->FindList("result");
-  CHECK(coverage_entries) << "Can't find result key: " << *result;
 
   base::Value::List entries;
   for (base::Value& entry_value : *coverage_entries) {
@@ -186,6 +195,52 @@ void DevToolsListener::StopAndStoreJSCoverage(content::DevToolsAgentHost* host,
 
   AwaitCommandResponse(42);
   value_.clear();
+  all_scripts_parsed_ = false;
+}
+
+void DevToolsListener::VerifyAllScriptsAreParsedRepeatedly(
+    const base::Value::List* coverage_entries,
+    base::OnceClosure done_callback,
+    int retries) {
+  CHECK_GT(retries, 0);
+  CHECK(done_callback);
+
+  // Collect all the scriptId's that have been seen via the aggregated
+  // `Debugger.scriptParsed` events.
+  std::set<std::string> script_ids;
+  for (base::Value::Dict& script : scripts_) {
+    std::string* id = script.FindStringByDottedPath("params.scriptId");
+    if (!id) {
+      continue;
+    }
+    script_ids.emplace(*id);
+  }
+
+  // All the scriptId values seen in the coverage values must have been sent via
+  // the `Debugger.scriptParsed` event. This tries 10 times with a 1 second
+  // pause in between verification attempts.
+  bool missing_script = false;
+  for (const auto& entry : *coverage_entries) {
+    const std::string* id = entry.FindStringPath("scriptId");
+    CHECK(id) << "Can't extract scriptId: " << entry;
+    if (!script_ids.contains(*id)) {
+      missing_script = true;
+      break;
+    }
+  }
+
+  all_scripts_parsed_ = !missing_script;
+  if (all_scripts_parsed_ || --retries == 0) {
+    std::move(done_callback).Run();
+    return;
+  }
+
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&DevToolsListener::VerifyAllScriptsAreParsedRepeatedly,
+                     weak_ptr_factory_.GetWeakPtr(), coverage_entries,
+                     std::move(done_callback), retries),
+      base::Seconds(1));
 }
 
 void DevToolsListener::StoreScripts(content::DevToolsAgentHost* host,
@@ -305,10 +360,11 @@ void DevToolsListener::DispatchProtocolMessage(
   base::Value::Dict dict_value = std::move(value.value().GetDict());
   std::string* method = dict_value.FindString("method");
   if (method) {
-    if (*method == "Runtime.executionContextsCreated")
+    if (*method == "Runtime.executionContextsCreated") {
       scripts_.clear();
-    else if (*method == "Debugger.scriptParsed")
+    } else if (*method == "Debugger.scriptParsed" && !all_scripts_parsed_) {
       scripts_.push_back(std::move(dict_value));
+    }
     return;
   }
 

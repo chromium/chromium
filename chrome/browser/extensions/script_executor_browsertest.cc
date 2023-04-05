@@ -7,6 +7,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -520,6 +521,86 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, SpecifiedFrames) {
                     get_result_matcher(base::Value(), kNonExistentFrameId,
                                        GURL(), "No frame with ID: 99999")));
   }
+}
+
+// Tests injecting a script into a user script world, verifying the exposed
+// properties and APIs.
+IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, UserScriptWorldExecution) {
+  // Load a simple extension with permission to example.com and navigate a new
+  // tab to example.com.
+  const Extension* extension =
+      LoadExtensionWithHostPermission("http://example.com/*");
+
+  GURL example_com =
+      embedded_test_server()->GetURL("example.com", "/simple.html");
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+
+  {
+    content::TestNavigationObserver nav_observer(web_contents);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), example_com));
+    nav_observer.Wait();
+    EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+  }
+
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
+
+  // Set a flag in the main world of the page. This will allow us to verify
+  // the new script is running in an isolated world.
+  constexpr char kSetFlagScript[] = "window.mainWorldFlag = 'executionFlag';";
+  // NOTE: We use ExecuteScript() (and not EvalJs or ExecJs) because we
+  // explicitly *need* this to happen in the main world for the test.
+  EXPECT_TRUE(content::ExecuteScript(main_frame, kSetFlagScript));
+
+  ScriptExecutor script_executor(web_contents);
+
+  ScriptExecutorHelper helper;
+  std::vector<mojom::JSSourcePtr> sources;
+  // Inject a script into a user script world. The script will return the
+  // values of both the main world flag (set above) and all properties exposed
+  // on `chrome.runtime`.
+  static constexpr char kScriptSource[] =
+      R"(let result = {};
+         result.mainWorldFlag = window.mainWorldFlag || '<no flag>';
+         result.chromeKeys =
+             chrome ? Object.keys(chrome).sort() : '<no chrome>';
+         result.runtimeKeys = chrome && chrome.runtime ?
+             Object.keys(chrome.runtime).sort() : '<no runtime>';
+         result;)";
+  sources.push_back(mojom::JSSource::New(kScriptSource, GURL()));
+  script_executor.ExecuteScript(
+      mojom::HostID(mojom::HostID::HostType::kExtensions, extension->id()),
+      mojom::CodeInjection::NewJs(mojom::JSInjection::New(
+          std::move(sources), mojom::ExecutionWorld::kUserScript,
+          blink::mojom::WantResultOption::kWantResult,
+          blink::mojom::UserActivationOption::kDoNotActivate,
+          blink::mojom::PromiseResultOption::kAwait)),
+      ScriptExecutor::SPECIFIED_FRAMES, {ExtensionApiFrameIdMap::kTopFrameId},
+      ScriptExecutor::DONT_MATCH_ABOUT_BLANK, mojom::RunLocation::kDocumentIdle,
+      ScriptExecutor::DEFAULT_PROCESS, GURL() /* webview_src */,
+      helper.GetCallback());
+  helper.Wait();
+
+  ASSERT_EQ(1u, helper.results().size());
+  EXPECT_EQ(web_contents->GetLastCommittedURL(), helper.results()[0].url);
+  // Verify the expected results. Since the user script world is less
+  // privileged, it shouldn't have access to most runtime APIs (such as reload,
+  // onStartup, getManifest, etc).
+  static constexpr char kExpectedJson[] =
+      R"({
+           "mainWorldFlag": "<no flag>",
+           "chromeKeys": ["csi", "loadTimes", "runtime"],
+           "runtimeKeys": ["ContextType", "OnInstalledReason",
+                           "OnRestartRequiredReason", "PlatformArch",
+                           "PlatformNaclArch", "PlatformOs",
+                           "RequestUpdateCheckStatus",
+                           "connect", "id", "onConnect", "onMessage",
+                           "sendMessage"]
+         })";
+  EXPECT_THAT(helper.results()[0].value, base::test::IsJson(kExpectedJson));
+  EXPECT_EQ(0, helper.results()[0].frame_id);
+  EXPECT_EQ("", helper.results()[0].error);
 }
 
 }  // namespace extensions

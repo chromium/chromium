@@ -87,8 +87,8 @@ void FrameRequestCallbackCollection::ExecuteFrameCallbacks(
                                   inspector_animation_frame_event::Data,
                                   context_, callback->Id());
     probe::AsyncTask async_task(context_, callback->async_task_context());
-    probe::UserCallback probe(context_, "Window", "requestAnimationFrame",
-                              AtomicString(), true);
+    probe::UserCallback probe(context_, "requestAnimationFrame", AtomicString(),
+                              true);
     if (callback->GetUseLegacyTimeBase())
       callback->Invoke(high_res_now_ms_legacy);
     else

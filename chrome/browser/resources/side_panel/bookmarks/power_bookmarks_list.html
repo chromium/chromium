@@ -245,12 +245,13 @@
       hidden="[[!hasNoBookmarksInActiveFolder_(shownBookmarks_,
                                                activeFolderPath_.*)]]"
       guest$="[[guestMode_]]"
-      image-path="./images/bookmarks_empty.svg"
-      dark-image-path="./images/bookmarks_empty_dark.svg"
-      heading="[[getEmptyTitle_()]]"
-      body="[[getEmptyBody_()]]">
+      image-path="[[getEmptyImagePath_(labels_.*, searchQuery_)]]"
+      dark-image-path="[[getEmptyImagePathDark_(labels_.*, searchQuery_)]]"
+      heading="[[getEmptyTitle_(labels_.*, searchQuery_)]]"
+      body="[[getEmptyBody_(labels_.*, searchQuery_)]]">
   </sp-empty-state>
   <sp-footer
+      hidden="[[shouldShowEmptySearchState_(labels_.*, searchQuery_)]]"
       pinned="[[!hasNoBookmarksInActiveFolder_(shownBookmarks_,
                                                activeFolderPath_.*)]]">
     <cr-button class="floating-button"

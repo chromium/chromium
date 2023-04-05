@@ -514,7 +514,6 @@ void SandboxedUnpacker::StoreVerifiedContentsInExtensionDir(
 
 void SandboxedUnpacker::Unpack(const base::FilePath& directory) {
   DCHECK(unpacker_io_task_runner_->RunsTasksInCurrentSequence());
-
   DCHECK(directory.DirName() == temp_dir_.GetPath());
 
   base::FilePath manifest_path = extension_root_.Append(kManifestFilename);

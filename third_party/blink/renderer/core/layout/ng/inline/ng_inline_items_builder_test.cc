@@ -30,8 +30,7 @@ class NGInlineItemsBuilderTest : public RenderingTest {
   void SetUp() override {
     RenderingTest::SetUp();
     style_ = &GetDocument().GetStyleResolver().InitialStyle();
-    block_flow_ = LayoutBlockFlow::CreateAnonymous(&GetDocument(), style_,
-                                                   LegacyLayout::kAuto);
+    block_flow_ = LayoutBlockFlow::CreateAnonymous(&GetDocument(), style_);
     items_ = MakeGarbageCollected<HeapVector<NGInlineItem>>();
     anonymous_objects_ =
         MakeGarbageCollected<HeapVector<Member<LayoutObject>>>();
@@ -67,22 +66,22 @@ class NGInlineItemsBuilderTest : public RenderingTest {
   }
 
   void AppendText(const String& text, NGInlineItemsBuilder* builder) {
-    LayoutText* layout_text = LayoutText::CreateEmptyAnonymous(
-        GetDocument(), style_.get(), LegacyLayout::kAuto);
+    LayoutText* layout_text =
+        LayoutText::CreateEmptyAnonymous(GetDocument(), style_.get());
     anonymous_objects_->push_back(layout_text);
     builder->AppendText(text, layout_text);
   }
 
   void AppendAtomicInline(NGInlineItemsBuilder* builder) {
-    LayoutBlockFlow* layout_block_flow = LayoutBlockFlow::CreateAnonymous(
-        &GetDocument(), style_, LegacyLayout::kAuto);
+    LayoutBlockFlow* layout_block_flow =
+        LayoutBlockFlow::CreateAnonymous(&GetDocument(), style_);
     anonymous_objects_->push_back(layout_block_flow);
     builder->AppendAtomicInline(layout_block_flow);
   }
 
   void AppendBlockInInline(NGInlineItemsBuilder* builder) {
-    LayoutBlockFlow* layout_block_flow = LayoutBlockFlow::CreateAnonymous(
-        &GetDocument(), style_, LegacyLayout::kAuto);
+    LayoutBlockFlow* layout_block_flow =
+        LayoutBlockFlow::CreateAnonymous(&GetDocument(), style_);
     anonymous_objects_->push_back(layout_block_flow);
     builder->AppendBlockInInline(layout_block_flow);
   }
@@ -108,7 +107,7 @@ class NGInlineItemsBuilderTest : public RenderingTest {
     for (Input& input : inputs) {
       if (!input.layout_text) {
         input.layout_text = LayoutText::CreateEmptyAnonymous(
-            GetDocument(), GetStyle(input.whitespace), LegacyLayout::kAuto);
+            GetDocument(), GetStyle(input.whitespace));
         anonymous_objects.push_back(input.layout_text);
       }
       builder.AppendText(input.text, input.layout_text);

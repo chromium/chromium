@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -13,8 +14,11 @@
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
+#include "chrome/browser/image_service/image_service_factory.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/browser/ui/bookmarks/recently_used_folders_combo_model.h"
 #include "chrome/browser/ui/browser.h"
@@ -34,6 +38,9 @@
 #include "components/commerce/core/shopping_service.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "components/image_fetcher/core/image_fetcher.h"
+#include "components/image_fetcher/core/image_fetcher_service.h"
+#include "components/page_image_service/image_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
@@ -42,6 +49,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/image_model.h"
+#include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
@@ -61,7 +69,34 @@ views::BubbleDialogDelegate* BookmarkBubbleView::bookmark_bubble_ = nullptr;
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBookmarkName);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBookmarkFolder);
+
+void FetchImageForUrl(const GURL& url, Profile* profile) {
+  page_image_service::ImageService* image_service =
+      page_image_service::ImageServiceFactory::GetForBrowserContext(profile);
+  page_image_service::mojom::Options options;
+  options.suggest_images = true;
+  options.optimization_guide_images = true;
+  image_service->FetchImageFor(
+      page_image_service::mojom::ClientId::Bookmarks, url, options,
+      base::BindOnce(&BookmarkBubbleView::HandleImageUrlResponse, profile));
 }
+
+gfx::ImageSkia GetFaviconForWebContents(content::WebContents* web_contents) {
+  const gfx::Image url_favicon =
+      favicon::TabFaviconFromWebContents(web_contents);
+  const gfx::Image favicon =
+      url_favicon.IsEmpty() ? favicon::GetDefaultFavicon() : url_favicon;
+  const ui::NativeTheme* native_theme =
+      ui::NativeTheme::GetInstanceForNativeUi();
+  const bool is_dark = native_theme && native_theme->ShouldUseDarkColors();
+  constexpr int kMainImageDimension = 112;
+  gfx::ImageSkia centered_favicon =
+      gfx::ImageSkiaOperations::CreateImageWithRoundRectBackground(
+          kMainImageDimension, 0, is_dark ? SK_ColorBLACK : SK_ColorWHITE,
+          favicon.AsImageSkia());
+  return centered_favicon;
+}
+}  // namespace
 
 class BookmarkBubbleView::BookmarkBubbleDelegate
     : public ui::DialogModelDelegate {
@@ -219,18 +254,10 @@ void BookmarkBubbleView::ShowBubble(
     gfx::ImageSkia main_image = product_image.AsImageSkia();
 
     if (product_image.IsEmpty()) {
-      const gfx::Image url_favicon =
-          favicon::TabFaviconFromWebContents(web_contents);
-      const gfx::Image favicon =
-          url_favicon.IsEmpty() ? favicon::GetDefaultFavicon() : url_favicon;
-      const ui::NativeTheme* native_theme =
-          ui::NativeTheme::GetInstanceForNativeUi();
-      const bool is_dark = native_theme && native_theme->ShouldUseDarkColors();
-      constexpr int kMainImageDimension = 112;
-      gfx::ImageSkia centered_favicon =
-          gfx::ImageSkiaOperations::CreateImageWithRoundRectBackground(
-              kMainImageDimension, 0, is_dark ? SK_ColorBLACK : SK_ColorWHITE,
-              favicon.AsImageSkia());
+      // Fetch image from ImageService asynchronously
+      FetchImageForUrl(url, profile);
+      // Display favicon while awaiting ImageService response
+      const auto centered_favicon = GetFaviconForWebContents(web_contents);
       main_image = centered_favicon;
     }
 
@@ -325,4 +352,72 @@ void BookmarkBubbleView::ShowBubble(
 void BookmarkBubbleView::Hide() {
   if (bookmark_bubble_)
     bookmark_bubble_->GetWidget()->Close();
+}
+
+// static
+void BookmarkBubbleView::HandleImageUrlResponse(const Profile* profile,
+                                                const GURL& image_service_url) {
+  if (!image_service_url.is_empty()) {
+    constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
+        net::DefineNetworkTrafficAnnotation("bookmarks_image_fetcher",
+                                            R"(
+        semantics {
+          sender: "Image fetcher for the bookmarks feature."
+          description:
+            "Retrieves an image that is representative of the active webpage, "
+            "base on heuristics. The image is fetched from Google servers. "
+            "This will be shown to the user as part of the bookmarking action."
+          trigger:
+            "When adding a new bookmark, we will attempt to fetch the "
+            "image for it."
+          data:
+            "A gstatic URL for an image on the active web page"
+          destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              email: "chrome-desktop-ui-sea@google.com"
+            }
+          }
+          user_data {
+            type: SENSITIVE_URL
+          }
+          last_reviewed: "2023-03-24"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "This fetch is enabled for any user with the Bookmarks sync"
+            "feature enabled."
+          chrome_policy {
+            SyncDisabled {
+              SyncDisabled: true
+            }
+            SyncTypesListDisabled {
+              SyncTypesListDisabled: {
+                entries: "bookmarks"
+              }
+            }
+          }
+        })");
+
+    constexpr char kImageFetcherUmaClient[] = "Bookmarks";
+
+    image_fetcher::ImageFetcher* fetcher =
+        ImageFetcherServiceFactory::GetForKey(profile->GetProfileKey())
+            ->GetImageFetcher(image_fetcher::ImageFetcherConfig::kNetworkOnly);
+    fetcher->FetchImage(image_service_url,
+                        base::BindOnce(&HandleImageBytesResponse),
+                        image_fetcher::ImageFetcherParams(
+                            kTrafficAnnotation, kImageFetcherUmaClient));
+  }
+}
+
+// static
+void BookmarkBubbleView::HandleImageBytesResponse(
+    const gfx::Image& image,
+    const image_fetcher::RequestMetadata& metadata) {
+  if (!image.IsEmpty() && BookmarkBubbleView::bookmark_bubble()) {
+    BookmarkBubbleView::bookmark_bubble()->SetMainImage(
+        ui::ImageModel::FromImage(image));
+  }
 }

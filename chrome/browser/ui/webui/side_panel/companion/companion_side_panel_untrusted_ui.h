@@ -11,8 +11,6 @@
 #include "content/public/common/url_constants.h"
 #include "ui/webui/untrusted_bubble_web_ui_controller.h"
 
-class Browser;
-
 class CompanionSidePanelUntrustedUI
     : public ui::UntrustedBubbleWebUIController,
       public side_panel::mojom::CompanionPageHandlerFactory {
@@ -32,7 +30,6 @@ class CompanionSidePanelUntrustedUI
 
   // Gets a weak pointer to this object.
   base::WeakPtr<CompanionSidePanelUntrustedUI> GetWeakPtr();
-  void set_browser(Browser* browser) { browser_ = browser; }
 
  private:
   // side_panel::mojom::CompanionPageHandlerFactory:
@@ -44,8 +41,7 @@ class CompanionSidePanelUntrustedUI
       companion_page_handler_;
   mojo::Receiver<side_panel::mojom::CompanionPageHandlerFactory>
       companion_page_factory_receiver_{this};
-  raw_ptr<Browser> browser_ = nullptr;
-  raw_ptr<content::WebUI> web_ui_;
+
   base::WeakPtrFactory<CompanionSidePanelUntrustedUI> weak_factory_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();

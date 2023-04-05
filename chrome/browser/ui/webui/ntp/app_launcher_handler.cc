@@ -504,6 +504,7 @@ void AppLauncherHandler::RegisterMessages() {
 }
 
 void AppLauncherHandler::OnAppsReordered(
+    content::BrowserContext* context,
     const absl::optional<std::string>& extension_id) {
   if (ignore_changes_ || !has_loaded_apps_)
     return;

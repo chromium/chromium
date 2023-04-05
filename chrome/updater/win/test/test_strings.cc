@@ -7,7 +7,7 @@
 namespace updater {
 
 // Command line switches.
-const char kTestSleepMinutesSwitch[] = "test-sleep-minutes";
+const char kTestSleepSecondsSwitch[] = "test-sleep-seconds";
 const char kTestEventToSignal[] = "test-event-to-signal";
 const char kTestEventToSignalIfMediumIntegrity[] =
     "test-event-to-signal-if-medium-integrity";

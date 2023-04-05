@@ -490,6 +490,8 @@ TEST(ServiceWorkerDatabaseTest, GetStorageKeysWithRegistrations) {
             database->WriteRegistration(data6, resources6, &deleted_version));
 
   scoped_feature_list.Reset();
+  scoped_feature_list.InitAndDisableFeature(
+      net::features::kThirdPartyStoragePartitioning);
   // Because kThirdPartyStoragePartitioning is disabled now we shouldn't get the
   // partitioned keys in the following checks.
 
@@ -551,6 +553,7 @@ TEST(ServiceWorkerDatabaseTest, GetStorageKeysWithRegistrations) {
 
   // Now re-enable kThirdPartyStoragePartitioning and check for the partitioned
   // keys.
+  scoped_feature_list.Reset();
   scoped_feature_list.InitAndEnableFeature(
       net::features::kThirdPartyStoragePartitioning);
 
@@ -830,6 +833,8 @@ TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
 
   // Disable partitioning to ensure the partitioned keys are not found.
   scoped_feature_list.Reset();
+  scoped_feature_list.InitAndDisableFeature(
+      net::features::kThirdPartyStoragePartitioning);
 
   // Keys with nonces should always be gettable.
   GURL origin7 = GURL("https://www7.example.com");
@@ -863,6 +868,7 @@ TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
   VerifyRegistrationData(data7, *registrations[4]);
 
   // Re-enable partitioning and check for the partitioned keys.
+  scoped_feature_list.Reset();
   scoped_feature_list.InitAndEnableFeature(
       net::features::kThirdPartyStoragePartitioning);
 

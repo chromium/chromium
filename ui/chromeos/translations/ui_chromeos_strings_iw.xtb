@@ -129,6 +129,7 @@
 <translation id="2084108471225856927">הגדרות המכשיר</translation>
 <translation id="2084809735218147718">חתימת תודה רבה</translation>
 <translation id="2088690981887365033">‏רשת VPN</translation>
+<translation id="2111134541987263231">מפעילים את האפשרות <ph name="BEGIN_BOLD" />לאפשר במצב פרטי<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">יימחקו <ph name="NUMBER_OF_ITEMS" /> פריטים ולא תהיה אפשרות לשחזר אותם.</translation>
 <translation id="2122305276694332719">חיבור אוטומטי לרשת מוסתרת מאפשר לאחרים לראות את המכשיר שלך וחלק מהגדרות הרשת. האפשרות הזו לא מומלצת.</translation>
 <translation id="2125607626296734455">חמר</translation>
@@ -227,6 +228,7 @@
 <translation id="290843123675549676">מראטית</translation>
 <translation id="2923240520113693977">אסטונית</translation>
 <translation id="2938685643439809023">מונגולית</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{לא ניתן למצוא את התוסף}one{לא ניתן למצוא את התוספים}two{לא ניתן למצוא את התוספים}other{לא ניתן למצוא את התוספים}}</translation>
 <translation id="2943503720238418293">השם צריך להיות קצר יותר</translation>
 <translation id="2949781154072577687">מתבצע פרמוט של <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">מדוזה</translation>
@@ -281,6 +283,7 @@
 <translation id="3356580349448036450">בוצע</translation>
 <translation id="3358452157379365236">גיטרה</translation>
 <translation id="3368922792935385530">מחובר</translation>
+<translation id="3372635229069101468">לוחצים על <ph name="BEGIN_BOLD" />פרטים<ph name="END_BOLD" /></translation>
 <translation id="3382143449143186018">‏נפאלית עם מקלדת InScript</translation>
 <translation id="338691029516748599">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="SECURITY_STATUS" />,‏ עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, הרשת מנוהלת על ידי מנהל המערכת שלך, התחברות</translation>
 <translation id="3408072735282270043">הפעלה, <ph name="NETWORK_NAME" /></translation>
@@ -365,6 +368,7 @@
 <translation id="4124935795427217608">חד-קרן</translation>
 <translation id="4131235941541910880">אפשר להעביר לאשפה פריטים שאין לך צורך בהם</translation>
 <translation id="4134804435730168042">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, הפעלה בסיום הגדרת המכשיר</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{מפעילים את התוסף הבא במצב פרטי:}one{מפעילים את התוספים הבאים במצב פרטי:}two{מפעילים את התוספים הבאים במצב פרטי:}other{מפעילים את התוספים הבאים במצב פרטי:}}</translation>
 <translation id="4153015322587141338">כדי לגשת במהירות לקבצים שבמדף, יש ללחוץ לחיצה ימנית על קובץ ולבחור באפשרות '<ph name="PIN_COMMAND" />'.</translation>
 <translation id="4157569377477607576">לפי מדיניות האדמין, הפעולות הבאות לא מומלצות:</translation>
 <translation id="4159731583141908892">ההעברה של <ph name="FILE_NAME" /> הסתיימה.</translation>
@@ -461,8 +465,10 @@
 <translation id="4801956050125744859">שמירת שתיהן</translation>
 <translation id="4804827417948292437">אבוקדו</translation>
 <translation id="4805966553127040832">בתהליך שחזור של <ph name="COUNT" /> פריטים</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{הארגון שלך דורש תוסף כדי להשתמש במצב פרטי}one{הארגון שלך דורש תוספים מסוימים כדי להשתמש במצב פרטי}two{הארגון שלך דורש תוספים מסוימים כדי להשתמש במצב פרטי}other{הארגון שלך דורש תוספים מסוימים כדי להשתמש במצב פרטי}}</translation>
 <translation id="4823651846660089135">המכשיר מוגדר לקריאה בלבד</translation>
 <translation id="4826849268470072925">‏טמילית ITRANS</translation>
+<translation id="482932175346970750">‏מקלידים <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> בדפדפן</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> פריטים נבחרו</translation>
 <translation id="4843566743023903107">‏מכשירי Chromebase</translation>
 <translation id="4850886885716139402">הצגה</translation>
@@ -534,6 +540,7 @@
     על קבצים עם אנשים נוספים - הכול במקום אחד.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">‏קבצים ששוחזרו מ-Google Drive</translation>
 <translation id="5278111733643988471">כדי לשחזר את הפריט הזה, גוררים אותו לתיקייה חדשה מחוץ לאשפה. התיקייה המקורית '<ph name="PARENT_FOLDER_NAME" />' של הפריט הזה נמחקה.</translation>
+<translation id="5283101102242354279">כדי להפעיל תוסף במצב פרטי:</translation>
 <translation id="5286194356314741248">הסריקה מתבצעת</translation>
 <translation id="5288441970121584418">המבורגר</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -780,6 +787,7 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, פרטים</translation>
 <translation id="7246947237293279874">‏שרת proxy של FTP</translation>
 <translation id="7248671827512403053">יישום</translation>
+<translation id="7252604552361840748">מאתרים את התוסף שלמעלה</translation>
 <translation id="7256405249507348194">שגיאה לא מזוהה: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">שירותים זמינים</translation>
 <translation id="7292816689782057017">מדיניות האדמין מגבילה את השמירה במיקומים מסוימים.</translation>

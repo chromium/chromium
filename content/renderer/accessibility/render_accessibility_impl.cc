@@ -128,10 +128,10 @@ RenderAccessibilityImpl::RenderAccessibilityImpl(
       ukm_timer_(std::make_unique<base::ElapsedTimer>()),
       last_ukm_source_id_(ukm::kInvalidSourceId),
       serialize_post_lifecycle_(serialize_post_lifecycle) {
-  mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> recorder;
+  mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
   content::RenderThread::Get()->BindHostReceiver(
-      recorder.InitWithNewPipeAndPassReceiver());
-  ukm_recorder_ = std::make_unique<ukm::MojoUkmRecorder>(std::move(recorder));
+      factory.BindNewPipeAndPassReceiver());
+  ukm_recorder_ = ukm::MojoUkmRecorder::Create(*factory);
   WebView* web_view = render_frame_->GetWebView();
   WebSettings* settings = web_view->GetSettings();
 
@@ -929,9 +929,10 @@ void RenderAccessibilityImpl::OnPluginRootNodeUpdated() {
     return;
 
   MarkWebAXObjectDirty(obj, /* subtree */ false);
-  if (serialize_post_lifecycle_) {
-    ScheduleImmediateAXUpdate();
-  }
+  // Schedule an update immediately whenever the PDF root in PDF accessibility
+  // tree changes. It is needed to ensure that changes (e.g. bounds) in PDF
+  // accessibility tree are serialized.
+  ScheduleImmediateAXUpdate();
 }
 
 void RenderAccessibilityImpl::ShowPluginContextMenu() {

@@ -62,7 +62,7 @@ class SliderThumbElement final : public HTMLDivElement {
   bool IsSliderThumbElement() const override { return true; }
 
  private:
-  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
   void AdjustStyle(ComputedStyleBuilder&) final;
   Element& CloneWithoutAttributesAndChildren(Document&) const override;
   bool IsDisabledFormControl() const override;
@@ -79,10 +79,11 @@ inline Element& SliderThumbElement::CloneWithoutAttributesAndChildren(
   return *MakeGarbageCollected<SliderThumbElement>(factory);
 }
 
-// FIXME: There are no ways to check if a node is a SliderThumbElement.
 template <>
 struct DowncastTraits<SliderThumbElement> {
-  static bool AllowFrom(const Node& node) { return node.IsHTMLElement(); }
+  static bool AllowFrom(const Element& element) {
+    return element.IsSliderThumbElement();
+  }
 };
 
 class SliderContainerElement final : public HTMLDivElement {
@@ -103,7 +104,7 @@ class SliderContainerElement final : public HTMLDivElement {
   void RemoveAllEventListeners() override;
 
  private:
-  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
   const AtomicString& ShadowPseudoId() const override;
   Direction GetDirection(LayoutPoint&, LayoutPoint&);
   bool CanSlide();

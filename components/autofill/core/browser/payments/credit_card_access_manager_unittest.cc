@@ -530,6 +530,7 @@ class CreditCardAccessManagerTest : public testing::Test {
             otp_authenticator_->selected_challenge_option().challenge_info,
             u"xxx-xxx-3547");
         break;
+      case CardUnmaskChallengeOptionType::kEmailOtp:
       case CardUnmaskChallengeOptionType::kUnknownType:
         NOTREACHED();
         break;
@@ -2447,6 +2448,7 @@ TEST_F(CreditCardAccessManagerTest,
                 .with_cvc(u"123"));
         break;
       }
+      case CardUnmaskChallengeOptionType::kEmailOtp:
       case CardUnmaskChallengeOptionType::kUnknownType:
         NOTREACHED();
         break;

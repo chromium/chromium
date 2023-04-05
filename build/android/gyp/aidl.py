@@ -15,6 +15,7 @@ import zipfile
 
 from util import build_utils
 import action_helpers  # build_utils adds //build to sys.path.
+import zip_helpers
 
 
 def main(argv):
@@ -52,7 +53,7 @@ def main(argv):
           pkg_name = re.search(r'^\s*package\s+(.*?)\s*;', data, re.M).group(1)
           arcname = '%s/%s' % (
               pkg_name.replace('.', '/'), os.path.basename(path))
-          build_utils.AddToZipHermetic(srcjar, arcname, data=data)
+          zip_helpers.add_to_zip_hermetic(srcjar, arcname, data=data)
 
   if options.depfile:
     include_files = []

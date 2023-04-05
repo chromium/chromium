@@ -689,6 +689,12 @@ void ReadingListModelImpl::AddEntryImpl(scoped_refptr<ReadingListEntry> entry,
   DCHECK(loaded());
   DCHECK(GetMutableEntryFromURL(entry->URL()) == nullptr);
 
+  // TODO(crbug.com/1427677): Should decide if the DCHECK(entry) should be
+  // removed or there's a proper fix that remove the below condition.
+  if (!entry) {
+    return;
+  }
+
   const GURL url = entry->URL();
 
   for (auto& observer : observers_) {

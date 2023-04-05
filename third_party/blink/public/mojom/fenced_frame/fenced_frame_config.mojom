@@ -84,7 +84,6 @@ struct SharedStorageBudgetMetadata {
   url.mojom.Origin origin;
   double budget_to_charge;
   bool top_navigated;
-  bool report_event_called;
 };
 
 union PotentiallyOpaqueSharedStorageBudgetMetadata {

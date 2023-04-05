@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
 import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
@@ -184,11 +185,10 @@ public class AccessibilitySettingsTest {
                         new IntentFilter(Settings.ACTION_CAPTIONING_SETTINGS), null, false);
 
         // First scroll to the Captions preference, then click.
-        onView(withId(org.chromium.chrome.R.id.recycler_view))
-                .perform(RecyclerViewActions.scrollTo(hasDescendant(
-                        withText(org.chromium.chrome.R.string.accessibility_captions_title))));
-        onView(withText(org.chromium.chrome.R.string.accessibility_captions_title))
-                .perform(click());
+        onView(withId(R.id.recycler_view))
+                .perform(RecyclerViewActions.scrollTo(
+                        hasDescendant(withText(R.string.accessibility_captions_title))));
+        onView(withText(R.string.accessibility_captions_title)).perform(click());
         monitor.waitForActivityWithTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
         Assert.assertEquals("Monitor for has not been called", 1, monitor.getHits());
         InstrumentationRegistry.getInstrumentation().removeMonitor(monitor);
@@ -219,11 +219,10 @@ public class AccessibilitySettingsTest {
                         new IntentFilter(Intent.ACTION_MAIN), null, true);
 
         // First scroll to the Image Descriptions preference, then click.
-        onView(withId(org.chromium.chrome.R.id.recycler_view))
-                .perform(RecyclerViewActions.scrollTo(hasDescendant(
-                        withText(org.chromium.chrome.R.string.image_descriptions_settings_title))));
-        onView(withText(org.chromium.chrome.R.string.image_descriptions_settings_title))
-                .perform(click());
+        onView(withId(R.id.recycler_view))
+                .perform(RecyclerViewActions.scrollTo(
+                        hasDescendant(withText(R.string.image_descriptions_settings_title))));
+        onView(withText(R.string.image_descriptions_settings_title)).perform(click());
 
         // The activity is blocked, so just wait for the ActivityMonitor to capture an Intent.
         CriteriaHelper.pollInstrumentationThread(

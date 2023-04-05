@@ -19,7 +19,7 @@
     overflow: scroll;
   }
 
-  #content:focus-visible {
+  #dialog:focus-visible {
     outline: none;
   }
 
@@ -120,16 +120,18 @@
   }
 </style>
 
-<div id="header-image">
-  <slot name="header-image"></slot>
-</div>
-<div class="body-wrapper">
-  <div id="content" tabindex="-1">
-    <slot name="title"></slot>
-    <slot name="body"></slot>
+<div id="dialog" role="dialog" tabindex="-1" aria-labelledby="title">
+  <div id="header-image">
+    <slot name="header-image"></slot>
   </div>
-  <div id="footer">
-    <div id="dots"></div>
-    <slot name="button-container"></slot>
+  <div class="body-wrapper">
+    <div id="content">
+      <slot id="title" name="title"></slot>
+      <slot name="body"></slot>
+    </div>
+    <div id="footer">
+      <div id="dots"></div>
+      <slot name="button-container"></slot>
+    </div>
   </div>
 </div>

@@ -89,6 +89,27 @@ TEST_P(SupportsUserDataTest, ClearAllUserData) {
   EXPECT_FALSE(supports_user_data.GetUserData(&key2));
 }
 
+TEST_P(SupportsUserDataTest, TakeUserData) {
+  TestSupportsUserData supports_user_data;
+  char key1 = 0;
+  supports_user_data.SetUserData(&key1, std::make_unique<TestData>());
+
+  TestSupportsUserData::Data* data1_ptr = supports_user_data.GetUserData(&key1);
+  EXPECT_NE(data1_ptr, nullptr);
+
+  char wrong_key = 0;
+  EXPECT_FALSE(supports_user_data.TakeUserData(&wrong_key));
+
+  EXPECT_EQ(supports_user_data.GetUserData(&key1), data1_ptr);
+
+  std::unique_ptr<TestSupportsUserData::Data> data1 =
+      supports_user_data.TakeUserData(&key1);
+  EXPECT_EQ(data1.get(), data1_ptr);
+
+  EXPECT_FALSE(supports_user_data.GetUserData(&key1));
+  EXPECT_FALSE(supports_user_data.TakeUserData(&key1));
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          SupportsUserDataTest,
                          testing::Values(false, true));

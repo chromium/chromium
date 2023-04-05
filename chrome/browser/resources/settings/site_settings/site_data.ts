@@ -7,18 +7,18 @@
  * 'settings-site-data' is the polymer element for showing the
  * settings for site data under Site Settings.
  */
+import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import '../controls/settings_radio_group.js';
-import '../prefs/prefs.js';
 import '../privacy_page/collapse_radio_button.js';
 import './site_list.js';
 
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
-import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {SettingsCollapseRadioButtonElement} from '../privacy_page/collapse_radio_button.js';
 
 import {ContentSetting, ContentSettingsTypes} from './constants.js';

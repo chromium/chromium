@@ -30,8 +30,9 @@
 
 using autofill_address_profile_infobar_overlays::
     SaveAddressProfileModalRequestConfig;
-using save_address_profile_infobar_modal_responses::EditedProfileSaveAction;
 using save_address_profile_infobar_modal_responses::CancelViewAction;
+using save_address_profile_infobar_modal_responses::
+    LegacyEditedProfileSaveAction;
 
 // Test fixture for
 // SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller.
@@ -87,11 +88,11 @@ class SaveAddressProfileInfobarModalOverlayRequestCallbackInstallerTest
 };
 
 TEST_F(SaveAddressProfileInfobarModalOverlayRequestCallbackInstallerTest,
-       SaveEditedProfile) {
+       LegacySaveEditedProfile) {
   NSDictionary* empty = @{}.mutableCopy;
   EXPECT_CALL(mock_handler_, SaveEditedProfile(infobar_, empty));
   request_->GetCallbackManager()->DispatchResponse(
-      OverlayResponse::CreateWithInfo<EditedProfileSaveAction>(empty));
+      OverlayResponse::CreateWithInfo<LegacyEditedProfileSaveAction>(empty));
 }
 
 TEST_F(SaveAddressProfileInfobarModalOverlayRequestCallbackInstallerTest,

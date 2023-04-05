@@ -42,8 +42,17 @@ void FlossAdapterClient::SetName(ResponseCallback<Void> callback,
 
 void FlossAdapterClient::SetDiscoverable(ResponseCallback<Void> callback,
                                          bool discoverable) {
-  CallAdapterMethod<Void>(std::move(callback), adapter::kSetDiscoverable,
-                          discoverable, /*duration=*/0u);
+  SetDiscoverable(std::move(callback),
+                  discoverable ? BtDiscoverableMode::kGeneralDiscoverable
+                               : BtDiscoverableMode::kNonDiscoverable,
+                  /*duration=*/0u);
+}
+
+void FlossAdapterClient::SetDiscoverable(ResponseCallback<Void> callback,
+                                         BtDiscoverableMode mode,
+                                         uint32_t duration) {
+  CallAdapterMethod<Void>(std::move(callback), adapter::kSetDiscoverable, mode,
+                          duration);
 }
 
 void FlossAdapterClient::StartDiscovery(ResponseCallback<Void> callback) {
@@ -558,6 +567,13 @@ void FlossDBusClient::WriteDBusParam(
     dbus::MessageWriter* writer,
     const FlossAdapterClient::BluetoothTransport& data) {
   writer->AppendUint32(static_cast<uint32_t>(data));
+}
+
+template <>
+void FlossDBusClient::WriteDBusParam(
+    dbus::MessageWriter* writer,
+    const FlossAdapterClient::BtDiscoverableMode& mode) {
+  writer->AppendUint32(static_cast<uint32_t>(mode));
 }
 
 // These methods are explicitly instantiated for FlossAdapterClientTest since

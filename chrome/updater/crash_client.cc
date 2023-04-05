@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -16,6 +17,8 @@
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/tag.h"
+#include "chrome/updater/update_usage_stats_task.h"
+#include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -23,6 +26,7 @@
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"
 #include "third_party/crashpad/crashpad/client/prune_crash_reports.h"
 #include "third_party/crashpad/crashpad/client/settings.h"
+#include "third_party/crashpad/crashpad/client/simulate_crash.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -79,6 +83,9 @@ bool CrashClient::InitializeCrashReporting(UpdaterScope updater_scope) {
   if (!InitializeDatabaseOnly(updater_scope))
     return false;
 
+  base::debug::SetDumpWithoutCrashingFunction(
+      []() { CRASHPAD_SIMULATE_CRASH(); });
+
 #if BUILDFLAG(IS_WIN)
   // Catch exceptions thrown from a window procedure.
   base::win::WinProcExceptionFilter exception_filter =
@@ -125,7 +132,9 @@ bool CrashClient::InitializeCrashReporting(UpdaterScope updater_scope) {
        *tag_args->usage_stats_enable) ||
       (base::Environment::Create()->GetVar(kUsageStatsEnabled,
                                            &env_usage_stats) &&
-       env_usage_stats == kUsageStatsEnabledValueEnabled)) {
+       env_usage_stats == kUsageStatsEnabledValueEnabled) ||
+      (OtherAppUsageStatsAllowed({UPDATER_APPID, LEGACY_GOOGLE_UPDATE_APPID},
+                                 updater_scope))) {
     crashpad::Settings* crashpad_settings = database_->GetSettings();
     CHECK(crashpad_settings);
     crashpad_settings->SetUploadsEnabled(true);

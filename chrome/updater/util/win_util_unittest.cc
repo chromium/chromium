@@ -14,10 +14,13 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
+#include "base/process/launch.h"
+#include "base/process/process.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -26,6 +29,7 @@
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
+#include "base/threading/platform_thread.h"
 #include "base/win/atl.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
@@ -329,12 +333,6 @@ TEST(WinUtil, CreateSecureTempDir) {
   absl::optional<base::ScopedTempDir> temp_dir = CreateSecureTempDir();
   EXPECT_TRUE(temp_dir);
   EXPECT_TRUE(temp_dir->IsValid());
-
-  base::FilePath program_files_dir;
-  EXPECT_TRUE(
-      base::PathService::Get(base::DIR_PROGRAM_FILES, &program_files_dir));
-  EXPECT_EQ(program_files_dir.IsParent(temp_dir->GetPath()),
-            !!::IsUserAnAdmin());
 }
 
 TEST(WinUtil, SignalShutdownEvent) {
@@ -352,10 +350,44 @@ TEST(WinUtil, SignalShutdownEvent) {
       << "Unexpected shutdown event signaled";
 }
 
-TEST(WinUtil, StopGoogleUpdateProcesses) {
-  // TODO(crbug.com/1290496) perhaps some comprehensive tests for
-  // `StopGoogleUpdateProcesses`?
-  EXPECT_TRUE(StopGoogleUpdateProcesses(GetTestScope()));
+TEST(WinUtil, StopProcessesUnderPath) {
+  base::FilePath exe_dir;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_dir));
+  exe_dir = exe_dir.AppendASCII(test::GetTestName());
+
+  base::CommandLine command_line =
+      GetTestProcessCommandLine(GetTestScope(), test::GetTestName());
+  command_line.AppendSwitchASCII(
+      updater::kTestSleepSecondsSwitch,
+      base::NumberToString(TestTimeouts::action_timeout().InSeconds() / 4));
+
+  std::vector<base::Process> processes;
+  for (const base::FilePath& dir :
+       {exe_dir, exe_dir.Append(L"1"), exe_dir.Append(L"2")}) {
+    ASSERT_TRUE(base::CreateDirectory(dir));
+
+    for (const std::wstring exe_name : {L"random1.exe", L"random2.exe"}) {
+      const base::FilePath exe(dir.Append(exe_name));
+      ASSERT_TRUE(base::CopyFile(command_line.GetProgram(), exe));
+
+      base::Process process = base::LaunchProcess(
+          base::StrCat(
+              {base::CommandLine::QuoteForCommandLineToArgvW(exe.value()), L" ",
+               command_line.GetArgumentsString()}),
+          {});
+      ASSERT_TRUE(process.IsValid());
+      processes.push_back(std::move(process));
+    }
+  }
+
+  StopProcessesUnderPath(exe_dir, TestTimeouts::action_timeout());
+  base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
+
+  for (const base::Process& process : processes) {
+    EXPECT_FALSE(process.IsRunning()) << process.Pid();
+  }
+
+  EXPECT_TRUE(base::DeletePathRecursively(exe_dir));
 }
 
 TEST(WinUtil, IsGuid) {

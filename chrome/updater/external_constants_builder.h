@@ -41,6 +41,12 @@ class ExternalConstantsBuilder {
   ExternalConstantsBuilder& SetUpdateURL(const std::vector<std::string>& urls);
   ExternalConstantsBuilder& ClearUpdateURL();
 
+  ExternalConstantsBuilder& SetCrashUploadURL(const std::string& url);
+  ExternalConstantsBuilder& ClearCrashUploadURL();
+
+  ExternalConstantsBuilder& SetDeviceManagementURL(const std::string& url);
+  ExternalConstantsBuilder& ClearDeviceManagementURL();
+
   ExternalConstantsBuilder& SetUseCUP(bool use_cup);
   ExternalConstantsBuilder& ClearUseCUP();
 

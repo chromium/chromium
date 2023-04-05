@@ -87,7 +87,11 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   // This enum indicates whether a scroll animation was
   // interrupted by another scroll animation. We use this to decide
   // whether or not to fire scrollend.
-  enum class ScrollCompletionMode { kFinished, kInterruptedByScroll };
+  enum class ScrollCompletionMode {
+    kFinished,
+    kInterruptedByScroll,
+    kZeroDelta
+  };
   using ScrollCallback =
       base::OnceCallback<void(ScrollableArea::ScrollCompletionMode)>;
 

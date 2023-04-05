@@ -1031,7 +1031,6 @@ String FrameSelection::SelectedHTMLForClipboard() const {
                       CreateMarkupOptions::Builder()
                           .SetShouldAnnotateForInterchange(true)
                           .SetShouldResolveURLs(kResolveNonLocalURLs)
-                          .SetShouldSkipUnselectableContent(true)
                           .Build());
 }
 
@@ -1332,11 +1331,6 @@ LayoutSelectionStatus FrameSelection::ComputeLayoutSelectionStatus(
 SelectionState FrameSelection::ComputePaintingSelectionStateForCursor(
     const NGInlineCursorPosition& position) const {
   return layout_selection_->ComputePaintingSelectionStateForCursor(position);
-}
-
-SelectionState FrameSelection::ComputeLayoutSelectionStateForInlineTextBox(
-    const InlineTextBox& text_box) const {
-  return layout_selection_->ComputeSelectionStateForInlineTextBox(text_box);
 }
 
 bool FrameSelection::IsDirectional() const {

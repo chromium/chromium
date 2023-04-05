@@ -110,4 +110,28 @@ TEST_F(HostExtensionSessionManagerTest, ExtensionCapabilities_AreChecked) {
   EXPECT_FALSE(extension3_.was_instantiated());
 }
 
+TEST_F(HostExtensionSessionManagerTest,
+       FindExtensionSession_ReturnsSessionIfFound) {
+  HostExtensionSessionManager extension_manager(extensions_,
+                                                &client_session_details_);
+  extension_manager.OnNegotiatedCapabilities(&client_stub_, "cap1");
+  EXPECT_EQ(extension1_.extension_session(),
+            extension_manager.FindExtensionSession("cap1"));
+}
+
+TEST_F(HostExtensionSessionManagerTest,
+       FindExtensionSession_ReturnsNullptrIfNegotiationHasNotCompleted) {
+  HostExtensionSessionManager extension_manager(extensions_,
+                                                &client_session_details_);
+  EXPECT_EQ(nullptr, extension_manager.FindExtensionSession("cap1"));
+}
+
+TEST_F(HostExtensionSessionManagerTest,
+       FindExtensionSession_ReturnsNullptrIfCapabilityIsNotSupported) {
+  HostExtensionSessionManager extension_manager(extensions_,
+                                                &client_session_details_);
+  extension_manager.OnNegotiatedCapabilities(&client_stub_, "cap1");
+  EXPECT_EQ(nullptr, extension_manager.FindExtensionSession("cap2"));
+}
+
 }  // namespace remoting

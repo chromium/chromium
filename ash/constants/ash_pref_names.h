@@ -464,6 +464,7 @@ extern const char kSystemTrayExpanded[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kUserCameraAllowed[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kUserMicrophoneAllowed[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kUserGeolocationAllowed[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDeviceGeolocationAllowed[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kTapDraggingEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kTouchpadEnabled[];
@@ -523,6 +524,7 @@ extern const char kLauncherFilesPrivacyNotice[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kLockScreenMediaControlsEnabled[];
 
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLongPressDiacriticsEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kXkbAutoRepeatDelay[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kXkbAutoRepeatEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kXkbAutoRepeatInterval[];
@@ -675,6 +677,15 @@ extern const char kPointingStickAcceleration[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kTimeOfLastSessionActivation[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kOwnerPrimaryMouseButtonRight[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kOwnerPrimaryPointingStickButtonRight[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kOwnerTapToClickEnabled[];
 
 }  // namespace prefs
 }  // namespace ash

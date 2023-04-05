@@ -14,8 +14,7 @@ NetworkingPrivateDelegate::UIDelegate::~UIDelegate() = default;
 
 NetworkingPrivateDelegate::NetworkingPrivateDelegate() = default;
 
-NetworkingPrivateDelegate::~NetworkingPrivateDelegate() {
-}
+NetworkingPrivateDelegate::~NetworkingPrivateDelegate() = default;
 
 void NetworkingPrivateDelegate::AddObserver(
     NetworkingPrivateDelegateObserver* observer) {

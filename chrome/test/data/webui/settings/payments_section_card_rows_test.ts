@@ -463,9 +463,11 @@ suite('PaymentsSectionCardRows', function() {
     assertEquals(1, getLocalAndServerCreditCardListItems().length);
     assertFalse(getCardRowShadowRoot(section.$.paymentsList)
                     .querySelector<HTMLElement>('#summarySublabel')!.hidden);
+    assertTrue(!!creditCard.expirationMonth);
+    assertTrue(!!creditCard.expirationYear);
     assertEquals(
-        creditCard.expirationMonth + '/' + creditCard.expirationYear +
-            '\u00a0|\u00a0' + creditCard.metadata!.summarySublabel,
+        parseInt(creditCard.expirationMonth, 10) + '/' +
+            creditCard.expirationYear.substring(2),
         getCardRowShadowRoot(section.$.paymentsList)
             .querySelector<HTMLElement>(
                 '#summarySublabel')!.textContent!.trim());
@@ -525,10 +527,11 @@ suite('PaymentsSectionCardRows', function() {
         assertFalse(
             getCardRowShadowRoot(section.$.paymentsList)
                 .querySelector<HTMLElement>('#summarySublabel')!.hidden);
+        assertTrue(!!creditCard.expirationMonth);
+        assertTrue(!!creditCard.expirationYear);
         assertEquals(
-            creditCard.expirationMonth + '/' + creditCard.expirationYear +
-                '\u00a0|\u00a0' +
-                'Virtual card available',
+            parseInt(creditCard.expirationMonth, 10) + '/' +
+                creditCard.expirationYear.substring(2),
             getCardRowShadowRoot(section.$.paymentsList)
                 .querySelector<HTMLElement>(
                     '#summarySublabel')!.textContent!.trim());
@@ -554,37 +557,7 @@ suite('PaymentsSectionCardRows', function() {
             getCardRowShadowRoot(section.$.paymentsList)
                 .querySelector<HTMLElement>('#summarySublabel')!.hidden);
         assertEquals(
-            creditCard.expirationMonth + '/' + creditCard.expirationYear +
-                '\u00a0|\u00a0' +
-                'Virtual card turned on',
-            getCardRowShadowRoot(section.$.paymentsList)
-                .querySelector<HTMLElement>(
-                    '#summarySublabel')!.textContent!.trim());
-      });
-
-  test(
-      'verifyCreditCardSummarySublabelExpirationAndVirtualCardAvailable',
-      async function() {
-        loadTimeData.overrideValues({
-          removeCardExpirationAndTypeTitles: true,
-        });
-        const creditCard = createCreditCardEntry();
-        creditCard.metadata!.isLocal = false;
-        creditCard.metadata!.isVirtualCardEnrollmentEligible = false;
-        creditCard.metadata!.isVirtualCardEnrolled = true;
-        const section = await createPaymentsSection(
-            [creditCard], /*ibans=*/[], /*upiIds=*/[], /*prefValues=*/ {});
-
-        const creditCardList = section.$.paymentsList;
-        assertTrue(!!creditCardList);
-        assertEquals(1, getLocalAndServerCreditCardListItems().length);
-        assertFalse(
-            getCardRowShadowRoot(section.$.paymentsList)
-                .querySelector<HTMLElement>('#summarySublabel')!.hidden);
-        assertEquals(
-            creditCard.expirationMonth + '/' + creditCard.expirationYear +
-                '\u00a0|\u00a0' +
-                'Virtual card turned on',
+            'Virtual card turned on',
             getCardRowShadowRoot(section.$.paymentsList)
                 .querySelector<HTMLElement>(
                     '#summarySublabel')!.textContent!.trim());

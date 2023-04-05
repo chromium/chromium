@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/containers/lru_cache.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -57,6 +58,18 @@ struct InProgressCluster {
   // Whether this cluster was meant to be cleaned up but is being held for
   // persistence.
   bool cleaned_up = false;
+};
+
+struct CachedEngagementScore {
+  CachedEngagementScore(float score, base::Time expiry_time);
+  ~CachedEngagementScore();
+  CachedEngagementScore(const CachedEngagementScore&);
+
+  // The site engagement score.
+  float score = 0.0;
+
+  // The time that this cache entry expires.
+  base::Time expiry_time;
 };
 
 // A HistoryServiceObserver responsible for grouping visits into clusters.
@@ -108,6 +121,9 @@ class ContextClustererHistoryServiceObserver
                                            bool is_search_normalized_url,
                                            const history::VisitRow& visit_row);
 
+  // Gets the site engagement score for `normalized_url`.
+  float GetEngagementScore(const GURL& normalized_url);
+
   // Overrides `clock_` for testing.
   void OverrideClockForTesting(const base::Clock* clock);
 
@@ -141,6 +157,10 @@ class ContextClustererHistoryServiceObserver
   // but is guaranteed to outlive `this`.
   raw_ptr<optimization_guide::NewOptimizationGuideDecider>
       optimization_guide_decider_;
+
+  // URL host to score mapping.
+  base::HashingLRUCache<std::string, CachedEngagementScore>
+      engagement_score_cache_;
 
   // Used to determine how "interesting" a visit is likely to be to a user.
   // Should only be null for tests.

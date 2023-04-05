@@ -1245,8 +1245,9 @@ bool OmniboxViewViews::SkipDefaultKeyEventProcessing(
        model()->PopupIsOpen())) {
     return true;
   }
-  if (event.key_code() == ui::VKEY_ESCAPE)
+  if (event.key_code() == ui::VKEY_ESCAPE && !event.IsShiftDown()) {
     return true;
+  }
   return Textfield::SkipDefaultKeyEventProcessing(event);
 }
 

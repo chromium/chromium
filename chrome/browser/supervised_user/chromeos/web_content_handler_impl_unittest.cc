@@ -10,6 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/supervised_user/chromeos/mock_large_icon_service.h"
 #include "chrome/browser/supervised_user/chromeos/supervised_user_favicon_request_handler.h"
 #include "chrome/test/base/testing_profile.h"
@@ -35,7 +36,11 @@ class MockSupervisedUserSettingsService
 
 class WebContentHandlerImplTest : public ::testing::Test {
  public:
-  WebContentHandlerImplTest() = default;
+  WebContentHandlerImplTest() {
+    TestingProfile::Builder builder;
+    profile_ = IdentityTestEnvironmentProfileAdaptor::
+        CreateProfileForIdentityTestEnvironment(builder);
+  }
 
   WebContentHandlerImplTest(const WebContentHandlerImplTest&) = delete;
   WebContentHandlerImplTest& operator=(const WebContentHandlerImplTest&) =
@@ -48,12 +53,12 @@ class WebContentHandlerImplTest : public ::testing::Test {
   }
 
   MockLargeIconService& large_icon_service() { return large_icon_service_; }
-  TestingProfile* GetProfilePtr() { return &profile_; }
+  TestingProfile* GetProfilePtr() { return profile_.get(); }
 
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  TestingProfile profile_;
+  std::unique_ptr<TestingProfile> profile_;
   MockLargeIconService large_icon_service_;
 };
 

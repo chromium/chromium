@@ -268,8 +268,6 @@ function onProcessCpu(port) {
       'browserCpuUsage': browserProcessCpu || 0,
       'gpuCpuUsage': gpuProcessCpu || 0,
       'tabCpuUsage': tabProcess.cpu,
-      'tabNetworkUsage': tabProcess.network,
-      'tabPrivateMemory': tabProcess.privateMemory,
       'tabJsMemoryAllocated': tabProcess.jsMemoryAllocated,
       'tabJsMemoryUsed': tabProcess.jsMemoryUsed,
     });

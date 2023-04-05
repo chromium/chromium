@@ -46,7 +46,7 @@ class CORE_EXPORT HTMLBRElement final : public HTMLElement {
       const AtomicString&,
       MutableCSSPropertyValueSet*) override;
 
-  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
 };
 
 }  // namespace blink

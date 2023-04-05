@@ -153,7 +153,8 @@ TEST_F(ResultRefreshManagerTest, TestRefreshModelResultsSuccess) {
   result_providers[kTestClient1] = std::move(client1_result_provider_);
   result_providers[kTestClient2] = std::move(client2_result_provider_);
 
-  result_refresh_manager_->RefreshModelResults(std::move(result_providers));
+  result_refresh_manager_->RefreshModelResults(std::move(result_providers),
+                                               nullptr);
 
   VerifyIfResultUpdatedInPrefs(kTestClient1, result_from_db_for_client1);
   VerifyIfResultUpdatedInPrefs(kTestClient2, result_from_model_for_client2);
@@ -182,7 +183,8 @@ TEST_F(ResultRefreshManagerTest, TestRefreshModelResultWithNoResult) {
   result_providers[kTestClient1] = std::move(client1_result_provider_);
   result_providers[kTestClient2] = std::move(client2_result_provider_);
 
-  result_refresh_manager_->RefreshModelResults(std::move(result_providers));
+  result_refresh_manager_->RefreshModelResults(std::move(result_providers),
+                                               nullptr);
 
   VerifyIfResultNotUpdatedInPrefs(kTestClient1);
   VerifyIfResultNotUpdatedInPrefs(kTestClient2);

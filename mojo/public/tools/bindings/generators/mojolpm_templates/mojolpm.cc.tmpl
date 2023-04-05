@@ -7,7 +7,7 @@
 #include <functional>
 
 #include "base/functional/bind.h"
-#include "mojo/public/cpp/bindings/default_construct_traits.h"
+#include "mojo/public/cpp/bindings/lib/default_construct_tag_internal.h"
 
 {% for extra_traits_header in all_extra_traits_headers %}
 #include "{{extra_traits_header}}"
@@ -179,7 +179,7 @@ bool FromProto(uint32_t input,
     }
   } else {
     auto impl = std::make_unique<{{interface.name}}Impl>();
-    auto receiver_ptr = 
+    auto receiver_ptr =
       std::make_unique<::mojo::AssociatedReceiver<{{mojom_type}}>>(
         impl.get(), output.InitWithNewEndpointAndPassReceiver());
     mojolpm::GetContext()->AddInstance(std::move(impl));
@@ -344,9 +344,9 @@ bool HandleCall(uint32_t instance_id,
 {%-         set kind = param.kind %}
 {%-         set param_mojom_type = kind|cpp_wrapper_type(add_same_module_namespaces=true) %}
 {%-         set param_maybe_mojom_type = kind|cpp_wrapper_type(add_same_module_namespaces=true, ignore_nullable=True) %}
-  {{param_mojom_type}} local_{{name}} = ::mojo::DefaultConstructTraits::CreateInstance<{{param_mojom_type}}>();
+  {{param_mojom_type}} local_{{name}}{ {{- kind|default_constructor_args -}} };
 {%-         if kind|is_nullable_kind %}
-  {{param_maybe_mojom_type}} local_maybe_{{name}} = ::mojo::DefaultConstructTraits::CreateInstance<{{param_maybe_mojom_type}}>();
+  {{param_maybe_mojom_type}} local_maybe_{{name}}{ {{- kind|default_constructor_args -}} };
 {%-         endif %}
 {%-       endfor %}
 
@@ -416,9 +416,9 @@ bool HandleResponse(
 {%-           set kind = param.kind %}
 {%-           set param_mojom_type = kind|cpp_wrapper_type(add_same_module_namespaces=true) %}
 {%-           set param_maybe_mojom_type = kind|cpp_wrapper_type(add_same_module_namespaces=true, ignore_nullable=True) %}
-  {{param_mojom_type}} local_{{name}} = ::mojo::DefaultConstructTraits::CreateInstance<{{param_mojom_type}}>();
+  {{param_mojom_type}} local_{{name}}{ {{- kind|default_constructor_args -}} };
 {%-           if kind|is_nullable_kind %}
-  {{param_maybe_mojom_type}} local_maybe_{{name}} = ::mojo::DefaultConstructTraits::CreateInstance<{{param_maybe_mojom_type}}>();
+  {{param_maybe_mojom_type}} local_maybe_{{name}}{ {{- kind|default_constructor_args -}} };
 {%-           endif %}
 {%-         endfor %}
 

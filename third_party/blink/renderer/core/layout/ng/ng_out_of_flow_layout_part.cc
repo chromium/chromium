@@ -1826,10 +1826,6 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::Layout(
     return layout_result;
   }
 
-  if (node_info.node.GetLayoutBox()->IsLayoutNGObject()) {
-    To<LayoutBlock>(node_info.node.GetLayoutBox())
-        ->SetIsLegacyInitiatedOutOfFlowLayout(false);
-  }
   // Legacy grid and flexbox handle OOF-positioned margins on their own, and
   // break if we set them here.
   if (!container_builder_->GetLayoutObject()

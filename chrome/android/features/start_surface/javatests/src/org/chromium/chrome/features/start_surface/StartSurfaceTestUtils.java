@@ -35,8 +35,6 @@ import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.matcher.ViewMatchers;
-import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
-import androidx.test.runner.lifecycle.Stage;
 import androidx.test.uiautomator.UiDevice;
 
 import org.hamcrest.Matcher;
@@ -49,12 +47,12 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.gesturenav.GestureNavigationUtils;
+import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
@@ -74,6 +72,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
@@ -189,7 +188,10 @@ public class StartSurfaceTestUtils {
      * @param cta The ChromeTabbedActivity under test.
      */
     public static void waitForStartSurfaceVisible(ChromeTabbedActivity cta) {
+        CriteriaHelper.pollUiThread(() -> cta.getLayoutManager() != null);
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), getStartSurfaceLayoutType());
+
+        onViewWaiting(allOf(withId(R.id.primary_tasks_surface_view), isDisplayed()));
     }
 
     /**
@@ -221,6 +223,8 @@ public class StartSurfaceTestUtils {
             @LayoutType int currentlyActiveLayout, ChromeTabbedActivity cta) {
         waitForLayoutVisible(layoutChangedCallbackHelper, currentlyActiveLayout, cta,
                 getStartSurfaceLayoutType());
+
+        onViewWaiting(allOf(withId(R.id.primary_tasks_surface_view), isDisplayed()));
     }
 
     /**
@@ -276,6 +280,11 @@ public class StartSurfaceTestUtils {
      */
     public static void createTabStateFile(int[] tabIds, @Nullable String[] urls, int selectedIndex)
             throws IOException {
+        createTabStateFile(tabIds, urls, selectedIndex, true);
+    }
+
+    private static void createTabStateFile(int[] tabIds, @Nullable String[] urls, int selectedIndex,
+            boolean createStateFile) throws IOException {
         TabPersistentStore.TabModelMetadata normalInfo =
                 new TabPersistentStore.TabModelMetadata(selectedIndex);
         for (int i = 0; i < tabIds.length; i++) {
@@ -283,7 +292,9 @@ public class StartSurfaceTestUtils {
             String url = urls != null ? urls[i] : "about:blank";
             normalInfo.urls.add(url);
 
-            saveTabState(tabIds[i], false);
+            if (createStateFile) {
+                saveTabState(tabIds[i], false);
+            }
         }
         TabPersistentStore.TabModelMetadata incognitoInfo =
                 new TabPersistentStore.TabModelMetadata(0);
@@ -295,6 +306,17 @@ public class StartSurfaceTestUtils {
         FileOutputStream output = new FileOutputStream(stateFile);
         output.write(listData);
         output.close();
+    }
+
+    /**
+     * Creates a Tab state metadata file without creating Tab state files for the given Tab's info.
+     * @param tabIds All the Tab IDs in the normal tab model.
+     * @param urls All the Tab URLs in the normal tab model.
+     * @param selectedIndex The selected index of normal tab model.
+     */
+    public static void prepareTabStateMetadataFile(
+            int[] tabIds, @Nullable String[] urls, int selectedIndex) throws IOException {
+        createTabStateFile(tabIds, urls, selectedIndex, false);
     }
 
     /**
@@ -377,7 +399,7 @@ public class StartSurfaceTestUtils {
         onView(withId(R.id.tab_switcher_toolbar)).check(matches(not(isDisplayed())));
 
         // Check the toolbar's background color.
-        ToolbarPhone toolbar = cta.findViewById(org.chromium.chrome.R.id.toolbar);
+        ToolbarPhone toolbar = cta.findViewById(R.id.toolbar);
         Assert.assertEquals(toolbar.getToolbarDataProvider().getPrimaryColor(),
                 toolbar.getBackgroundDrawable().getColor());
     }
@@ -554,7 +576,7 @@ public class StartSurfaceTestUtils {
      */
     static View getCarouselTabSwitcherTabListView(ChromeTabbedActivity cta) {
         return cta.findViewById(R.id.tab_switcher_module_container)
-                .findViewById(org.chromium.chrome.test.R.id.tab_list_view);
+                .findViewById(R.id.tab_list_view);
     }
 
     /**
@@ -562,18 +584,9 @@ public class StartSurfaceTestUtils {
      */
     public static void pressBackAndVerifyChromeToBackground(ChromeTabbedActivityTestRule testRule) {
         // Verifies Chrome is closed.
-        try {
-            pressBack(testRule);
-        } catch (Exception e) {
-        } finally {
-            CriteriaHelper.pollUiThread(
-                    ()
-                            -> ActivityLifecycleMonitorRegistry.getInstance().getLifecycleStageOf(
-                                       testRule.getActivity())
-                            == Stage.STOPPED,
-                    "Tapping back button should close Chrome.", MAX_TIMEOUT_MS,
-                    CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-        }
+        AsyncInitializationActivity.interceptMoveTaskToBackForTesting();
+        pressBack(testRule);
+        Assert.assertTrue(AsyncInitializationActivity.wasMoveTaskToBackInterceptedForTesting());
     }
 
     /**

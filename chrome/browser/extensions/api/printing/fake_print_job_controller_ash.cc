@@ -98,7 +98,8 @@ void FakePrintJobControllerAsh::StartPrinting(
   }
 
   auto document = base::MakeRefCounted<printing::PrintedDocument>(
-      std::move(settings), std::u16string(), 0);
+      std::move(settings), std::u16string(),
+      printing::PrintSettings::NewCookie());
   int observer_count = 0;
   for (auto& observer : job->GetObserversForTesting()) {
     observer.OnDocDone(job_id_, document.get());

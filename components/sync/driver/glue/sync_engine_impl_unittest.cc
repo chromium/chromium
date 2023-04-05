@@ -240,7 +240,8 @@ class SyncEngineImplTest : public testing::Test {
     params.host = &mock_host_;
     params.http_factory_getter = base::BindOnce(&CreateHttpBridgeFactory);
     params.authenticated_account_info.gaia = gaia_id;
-    params.authenticated_account_info.account_id = CoreAccountId("account_id");
+    params.authenticated_account_info.account_id =
+        CoreAccountId::FromGaiaId("gaia_id");
     params.sync_manager_factory = std::move(fake_manager_factory_);
 
     EXPECT_CALL(mock_host_, OnEngineInitialized(expect_success, _))

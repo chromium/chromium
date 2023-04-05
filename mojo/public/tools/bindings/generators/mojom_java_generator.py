@@ -25,8 +25,9 @@ from mojom.generate.template_expander import UseJinja
 sys.path.insert(
     1,
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir,
-                 os.pardir, os.pardir, 'build', 'android', 'gyp'))
-from util import build_utils
+                 os.pardir, os.pardir, 'build'))
+import action_helpers
+import zip_helpers
 
 GENERATOR_PREFIX = 'java'
 
@@ -557,7 +558,8 @@ class Generator(generator.Generator):
     with TempDir() as temp_java_root:
       self.output_dir = os.path.join(temp_java_root, package_path)
       self._DoGenerateFiles();
-      build_utils.ZipDir(zip_filename, temp_java_root)
+      with action_helpers.atomic_output(zip_filename) as f:
+        zip_helpers.zip_directory(f, temp_java_root)
 
     if args.java_output_directory:
       # If requested, generate the java files directly into indicated directory.

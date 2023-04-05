@@ -85,8 +85,7 @@ class VTTElement final : public Element {
   void Trace(Visitor*) const override;
 
  private:
-  LayoutObject* CreateLayoutObject(const ComputedStyle& style,
-                                   LegacyLayout legacy) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle& style) override;
 
   Member<TextTrack> track_;
   unsigned is_past_node_ : 1;

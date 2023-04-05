@@ -33,8 +33,7 @@ class CORE_EXPORT MathMLPaddedElement final : public MathMLRowElement {
   void CollectStyleForPresentationAttribute(const QualifiedName&,
                                             const AtomicString&,
                                             MutableCSSPropertyValueSet*) final;
-  LayoutObject* CreateLayoutObject(const ComputedStyle&,
-                                   LegacyLayout legacy) final;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&) final;
 
   bool IsGroupingElement() const final { return false; }
 };

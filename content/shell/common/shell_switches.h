@@ -7,6 +7,8 @@
 #ifndef CONTENT_SHELL_COMMON_SHELL_SWITCHES_H_
 #define CONTENT_SHELL_COMMON_SHELL_SWITCHES_H_
 
+#include "build/build_config.h"
+
 namespace switches {
 
 extern const char kContentShellDataPath[];
@@ -15,7 +17,9 @@ extern const char kDisableSystemFontCheck[];
 extern const char kExposeInternalsForTesting[];
 extern const char kContentShellHostWindowSize[];
 extern const char kContentShellHideToolbar[];
+#if !BUILDFLAG(IS_ANDROID)
 extern const char kContentShellDevToolsTabTarget[];
+#endif
 extern const char kIsolatedContextOrigins[];
 extern const char kRemoteDebuggingAddress[];
 extern const char kRunWebTests[];

@@ -27,7 +27,8 @@ TEST_F(AccessibilityFocusRingControllerTest, CallingHideWhenEmpty) {
   controller->HideFocusRing("catsRCute");
 }
 
-TEST_F(AccessibilityFocusRingControllerTest, SetFocusRingCorrectRingGroup) {
+// Disabled due to failure. http://crbug.com/1279278
+TEST_F(AccessibilityFocusRingControllerTest, DISABLED_SetFocusRingCorrectRingGroup) {
   auto* controller = Shell::Get()->accessibility_focus_ring_controller();
   EXPECT_EQ(nullptr, controller->GetFocusRingGroupForTesting("catsRCute"));
   SkColor cat_color = SkColorSetARGB(0xFF, 0x42, 0x42, 0x42);

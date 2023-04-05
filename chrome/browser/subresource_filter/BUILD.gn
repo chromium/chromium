@@ -20,6 +20,7 @@ if (is_android) {
 
   android_library("subresource_filter_javatests") {
     testonly = true
+    resources_package = "org.chromium.chrome.browser.subresource_filter"
     sources = [ "../../android/javatests/src/org/chromium/chrome/browser/subresource_filter/SubresourceFilterTest.java" ]
     deps = [
       ":subresource_filter_java_test_support",
@@ -32,6 +33,7 @@ if (is_android) {
       "//chrome/browser/ui/messages/android:java",
       "//chrome/test/android:chrome_java_integration_test_support",
       "//components/browser_ui/modaldialog/android:java",
+      "//components/browser_ui/modaldialog/android:java_resources",
       "//components/infobars/android:java",
       "//components/messages/android:java",
       "//components/messages/android/internal:java",
@@ -41,8 +43,6 @@ if (is_android) {
       "//content/public/test/android:content_java_test_support",
       "//net/android:net_java_test_support",
       "//third_party/android_deps:espresso_java",
-      "//third_party/androidx:androidx_test_monitor_java",
-      "//third_party/androidx:androidx_test_rules_java",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/junit",
       "//ui/android:ui_java_test_support",

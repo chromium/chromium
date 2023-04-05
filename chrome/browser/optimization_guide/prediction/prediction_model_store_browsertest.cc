@@ -52,7 +52,7 @@ constexpr base::TimeDelta kModelFileDownloadTimeout = base::Seconds(60);
 
 Profile* CreateProfile() {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  return profiles::testing::CreateProfileSync(
+  return &profiles::testing::CreateProfileSync(
       profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
 }
 

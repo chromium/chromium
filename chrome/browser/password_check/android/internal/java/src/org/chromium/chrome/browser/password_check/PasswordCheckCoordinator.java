@@ -15,7 +15,6 @@ import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckChangePasswordHelper;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckIconHelper;
-import org.chromium.chrome.browser.password_check.internal.R;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -90,8 +89,7 @@ class PasswordCheckCoordinator implements PasswordCheckComponentUi, LifecycleObs
                         mSettingsLauncher, customTabIntentHelper, trustedIntentHelper);
         PasswordCheckIconHelper iconHelper = new PasswordCheckIconHelper(
                 new LargeIconBridge(Profile.getLastUsedRegularProfile()),
-                mFragmentView.getResources().getDimensionPixelSize(
-                        org.chromium.chrome.browser.ui.favicon.R.dimen.default_favicon_size));
+                mFragmentView.getResources().getDimensionPixelSize(R.dimen.default_favicon_size));
         mMediator = new PasswordCheckMediator(changePasswordHelper, mReauthenticationHelper,
                 mReauthenticatorBridge, mSettingsLauncher, iconHelper);
     }

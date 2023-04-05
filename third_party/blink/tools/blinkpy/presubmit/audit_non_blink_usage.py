@@ -791,6 +791,7 @@ _CONFIG = [
         'paths': ['third_party/blink/renderer/core/animation'],
         'allowed': [
             '[a-z_]+_functions::.+',
+            'cc::ScrollTimeline',
         ],
     },
     {

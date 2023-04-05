@@ -222,6 +222,12 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
         UMA_HISTOGRAM_BOOLEAN("IOS.MainFrameNavigationIsInLockdownMode",
                               preferences.lockdownModeEnabled);
       }
+
+      if (self.webStateImpl) {
+        web::BrowserState* browser_state = self.webStateImpl->GetBrowserState();
+        if (web::GetWebClient()->IsBrowserLockdownModeEnabled(browser_state))
+          preferences.lockdownModeEnabled = true;
+      }
     }
 #endif  // defined (__IPHONE_16_0)
     handler(policy, preferences);

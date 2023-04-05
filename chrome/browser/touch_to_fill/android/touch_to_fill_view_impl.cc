@@ -17,8 +17,10 @@
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
+#include "components/strings/grit/components_strings.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -55,8 +57,10 @@ PasskeyCredential ConvertJavaWebAuthnCredential(
     JNIEnv* env,
     const JavaParamRef<jobject>& credential) {
   return PasskeyCredential(
-      PasskeyCredential::Username(ConvertJavaStringToUTF16(
+      PasskeyCredential::Username(ConvertJavaStringToUTF8(
           env, Java_WebAuthnCredential_getUsername(env, credential))),
+      PasskeyCredential::DeviceName(
+          l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_SCREEN_LOCK)),
       PasskeyCredential::BackendId(ConvertJavaStringToUTF8(
           env, Java_WebAuthnCredential_getId(env, credential))));
 }
@@ -114,8 +118,8 @@ void TouchToFillViewImpl::Show(
     const PasskeyCredential& credential = passkey_credentials[i];
     Java_TouchToFillBridge_insertWebAuthnCredential(
         env, passkey_array, i,
-        ConvertUTF16ToJavaString(env, credential.username().value()),
-        ConvertUTF8ToJavaString(env, credential.id().value()));
+        ConvertUTF16ToJavaString(env, credential.username()),
+        ConvertUTF8ToJavaString(env, credential.id()));
   }
 
   Java_TouchToFillBridge_showCredentials(

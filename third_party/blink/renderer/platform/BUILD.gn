@@ -1386,6 +1386,8 @@ component("platform") {
     "text/bidi_character_run.h",
     "text/bidi_context.cc",
     "text/bidi_context.h",
+    "text/bidi_paragraph.cc",
+    "text/bidi_paragraph.h",
     "text/bidi_resolver.h",
     "text/bidi_run_list.h",
     "text/bidi_text_run.cc",

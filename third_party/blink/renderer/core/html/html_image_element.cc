@@ -459,17 +459,16 @@ ImageCandidate HTMLImageElement::FindBestFitImageFromPictureParent() {
   return ImageCandidate();
 }
 
-LayoutObject* HTMLImageElement::CreateLayoutObject(const ComputedStyle& style,
-                                                   LegacyLayout legacy) {
+LayoutObject* HTMLImageElement::CreateLayoutObject(const ComputedStyle& style) {
   if (auto* content_image =
           DynamicTo<ImageContentData>(style.GetContentData())) {
     if (!content_image->GetImage()->ErrorOccurred())
-      return LayoutObject::CreateObject(this, style, legacy);
+      return LayoutObject::CreateObject(this, style);
   }
 
   switch (layout_disposition_) {
     case LayoutDisposition::kFallbackContent:
-      return LayoutObjectFactory::CreateBlockFlow(*this, style, legacy);
+      return LayoutObjectFactory::CreateBlockFlow(*this, style);
     case LayoutDisposition::kPrimaryContent: {
       LayoutImage* image = MakeGarbageCollected<LayoutImage>(this);
       image->SetImageResource(MakeGarbageCollected<LayoutImageResource>());

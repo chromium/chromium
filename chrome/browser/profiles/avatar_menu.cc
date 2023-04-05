@@ -178,28 +178,6 @@ absl::optional<size_t> AvatarMenu::GetActiveProfileIndex() const {
   return index;
 }
 
-std::u16string AvatarMenu::GetSupervisedUserInformation() const {
-  // |browser_| can be NULL in unit_tests.
-  if (browser_ && browser_->profile()->IsChild()) {
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-    SupervisedUserService* service =
-        SupervisedUserServiceFactory::GetForProfile(browser_->profile());
-    std::u16string custodian =
-        base::UTF8ToUTF16(service->GetCustodianEmailAddress());
-    std::u16string second_custodian =
-        base::UTF8ToUTF16(service->GetSecondCustodianEmailAddress());
-    if (second_custodian.empty()) {
-      return l10n_util::GetStringFUTF16(IDS_CHILD_INFO_ONE_CUSTODIAN,
-                                        custodian);
-    } else {
-      return l10n_util::GetStringFUTF16(IDS_CHILD_INFO_TWO_CUSTODIANS,
-                                        custodian, second_custodian);
-    }
-#endif
-  }
-  return std::u16string();
-}
-
 void AvatarMenu::ActiveBrowserChanged(Browser* browser) {
   browser_ = browser;
 

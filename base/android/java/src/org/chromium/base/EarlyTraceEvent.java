@@ -121,7 +121,7 @@ public class EarlyTraceEvent {
     @VisibleForTesting
     static List<AsyncEvent> sAsyncEvents;
 
-    /** @see TraceEvent#maybeEnableEarlyTracing(long, boolean) */
+    /** @see TraceEvent#maybeEnableEarlyTracing(boolean) */
     static void maybeEnableInBrowserProcess() {
         ThreadUtils.assertOnUiThread();
         assert !sEnabledInChildProcessBeforeCommandLine
@@ -341,7 +341,7 @@ public class EarlyTraceEvent {
             if (e.mIsStart) {
                 EarlyTraceEventJni.get().recordEarlyAsyncBeginEvent(e.mName, e.mId, e.mTimeNanos);
             } else {
-                EarlyTraceEventJni.get().recordEarlyAsyncEndEvent(e.mName, e.mId, e.mTimeNanos);
+                EarlyTraceEventJni.get().recordEarlyAsyncEndEvent(e.mId, e.mTimeNanos);
             }
         }
     }
@@ -355,6 +355,6 @@ public class EarlyTraceEvent {
         void recordEarlyToplevelEndEvent(
                 String name, long timeNanos, int threadId, long threadMillis);
         void recordEarlyAsyncBeginEvent(String name, long id, long timeNanos);
-        void recordEarlyAsyncEndEvent(String name, long id, long timeNanos);
+        void recordEarlyAsyncEndEvent(long id, long timeNanos);
     }
 }

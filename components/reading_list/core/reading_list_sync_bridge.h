@@ -139,9 +139,9 @@ class ReadingListSyncBridge : public syncer::ModelTypeSyncBridge {
   // should be.
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
 
-  // Invoked when sync is paused or permanently stopped.
-  void ApplyStopSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
-                                delete_metadata_change_list) override;
+  // Invoked when sync is permanently stopped.
+  void ApplyDisableSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
+                                   delete_metadata_change_list) override;
 
  private:
   void AddEntryToBatch(syncer::MutableDataBatch* batch,

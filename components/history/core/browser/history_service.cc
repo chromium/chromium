@@ -36,6 +36,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/history/core/browser/download_row.h"
+#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_backend_client.h"
 #include "components/history/core/browser/history_client.h"
@@ -301,14 +302,17 @@ base::CancelableTaskTracker::TaskId HistoryService::ReplaceClusters(
       std::move(callback));
 }
 
-base::CancelableTaskTracker::TaskId HistoryService::ReserveNextClusterId(
+base::CancelableTaskTracker::TaskId
+HistoryService::ReserveNextClusterIdWithVisit(
+    const ClusterVisit& cluster_visit,
     ClusterIdCallback callback,
     base::CancelableTaskTracker* tracker) {
   DCHECK(backend_task_runner_) << "History service being called after cleanup";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return tracker->PostTaskAndReplyWithResult(
       backend_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&HistoryBackend::ReserveNextClusterId, history_backend_),
+      base::BindOnce(&HistoryBackend::ReserveNextClusterIdWithVisit,
+                     history_backend_, cluster_visit),
       std::move(callback));
 }
 
@@ -390,6 +394,44 @@ void HistoryService::AddObserver(HistoryServiceObserver* observer) {
 void HistoryService::RemoveObserver(HistoryServiceObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.RemoveObserver(observer);
+}
+
+void HistoryService::SetDeviceInfoTracker(
+    syncer::DeviceInfoTracker* device_info_tracker) {
+  CHECK(history::IsSyncSegmentsDataEnabled());
+  CHECK(device_info_tracker != nullptr);
+
+  device_info_tracker_observation_.Reset();
+  device_info_tracker_ = device_info_tracker;
+  device_info_tracker_observation_.Observe(device_info_tracker);
+
+  OnDeviceInfoChange();
+}
+
+void HistoryService::OnDeviceInfoChange() {
+  CHECK(history::IsSyncSegmentsDataEnabled());
+  CHECK(device_info_tracker_ != nullptr);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  SyncDeviceInfoMap sync_device_info;
+
+  for (const auto& device_info : device_info_tracker_->GetAllDeviceInfo()) {
+    sync_device_info[device_info->guid()] = {device_info->os_type(),
+                                             device_info->form_factor()};
+  }
+
+  backend_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&HistoryBackend::SetSyncDeviceInfo,
+                                history_backend_, std::move(sync_device_info)));
+}
+
+// TODO(crbug.com/1400663): `OnDeviceInfoShutdown()` was created as a workaround
+// because PrivacySandboxSettingsFactory incorrectly declares its KeyedServices
+// dependencies. Once this is fixed, `OnDeviceInfoShutdown()` should be
+// deprecated.
+void HistoryService::OnDeviceInfoShutdown() {
+  device_info_tracker_observation_.Reset();
+  device_info_tracker_ = nullptr;
 }
 
 base::CancelableTaskTracker::TaskId HistoryService::ScheduleDBTask(

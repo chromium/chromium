@@ -64,11 +64,6 @@ class ScrollableAppsGridViewTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    app_list_test_model_ = std::make_unique<test::AppListTestModel>();
-    search_model_ = std::make_unique<SearchModel>();
-    Shell::Get()->app_list_controller()->SetActiveModel(
-        /*profile_id=*/1, app_list_test_model_.get(), search_model_.get());
-
     shelf_item_factory_ = std::make_unique<ShelfItemFactoryFake>();
     ShelfModel::Get()->SetShelfItemFactory(shelf_item_factory_.get());
   }
@@ -80,20 +75,21 @@ class ScrollableAppsGridViewTest : public AshTestBase {
 
   test::AppListTestModel::AppListTestItem* AddAppListItem(
       const std::string& id) {
-    return app_list_test_model_->CreateAndAddItem(id);
+    return GetAppListTestHelper()->model()->CreateAndAddItem(id);
   }
 
-  void PopulateApps(int n) { app_list_test_model_->PopulateApps(n); }
+  void PopulateApps(int n) { GetAppListTestHelper()->model()->PopulateApps(n); }
 
   void DeleteApps(int n) {
-    AppListItemList* item_list = app_list_test_model_->top_level_item_list();
+    AppListItemList* item_list =
+        GetAppListTestHelper()->model()->top_level_item_list();
     for (int i = 0; i < n; i++) {
-      app_list_test_model_->DeleteItem(item_list->item_at(0)->id());
+      GetAppListTestHelper()->model()->DeleteItem(item_list->item_at(0)->id());
     }
   }
 
   AppListFolderItem* CreateAndPopulateFolderWithApps(int n) {
-    return app_list_test_model_->CreateAndPopulateFolderWithApps(n);
+    return GetAppListTestHelper()->model()->CreateAndPopulateFolderWithApps(n);
   }
 
   void SimulateKeyPress(ui::KeyboardCode key_code, int flags = ui::EF_NONE) {
@@ -155,8 +151,6 @@ class ScrollableAppsGridViewTest : public AshTestBase {
            index_range->last_index == last_index;
   }
 
-  std::unique_ptr<test::AppListTestModel> app_list_test_model_;
-  std::unique_ptr<SearchModel> search_model_;
   std::unique_ptr<ShelfItemFactoryFake> shelf_item_factory_;
 
   // Cache some view pointers to make the tests more concise.
@@ -199,7 +193,8 @@ TEST_F(ScrollableAppsGridViewTest, DragApp) {
   EXPECT_EQ(0, GetTestAppListClient()->activate_item_count());
 
   // Items were reordered.
-  AppListItemList* item_list = app_list_test_model_->top_level_item_list();
+  AppListItemList* item_list =
+      GetAppListTestHelper()->model()->top_level_item_list();
   ASSERT_EQ(2u, item_list->item_count());
   EXPECT_EQ("id2", item_list->item_at(0)->id());
   EXPECT_EQ("id1", item_list->item_at(1)->id());
@@ -236,7 +231,8 @@ TEST_F(ScrollableAppsGridViewTest, DragAppAfterScrollingDown) {
   ShowAppList();
 
   // "aaa" and "bbb" are the last two items.
-  AppListItemList* item_list = app_list_test_model_->top_level_item_list();
+  AppListItemList* item_list =
+      GetAppListTestHelper()->model()->top_level_item_list();
   ASSERT_EQ(22u, item_list->item_count());
   ASSERT_EQ("aaa", item_list->item_at(20)->id());
   ASSERT_EQ("bbb", item_list->item_at(21)->id());
@@ -418,7 +414,8 @@ TEST_F(ScrollableAppsGridViewTest, DragItemIntoEmptySpaceWillReorderToEnd) {
   generator->ReleaseLeftButton();
 
   // The first item was reordered to the end.
-  AppListItemList* item_list = app_list_test_model_->top_level_item_list();
+  AppListItemList* item_list =
+      GetAppListTestHelper()->model()->top_level_item_list();
   ASSERT_EQ(3u, item_list->item_count());
   EXPECT_EQ("id2", item_list->item_at(0)->id());
   EXPECT_EQ("id3", item_list->item_at(1)->id());
@@ -543,7 +540,8 @@ TEST_F(ScrollableAppsGridViewTest, DragItemOutOfFolderRecordsHistogram) {
 
   // The dragged item is now in the top level item list and the reordering is
   // recorded.
-  AppListItemList* item_list = app_list_test_model_->top_level_item_list();
+  AppListItemList* item_list =
+      GetAppListTestHelper()->model()->top_level_item_list();
   EXPECT_EQ(2u, item_list->item_count());
   EXPECT_EQ(item_list->item_at(1)->id(), item_id);
   EXPECT_EQ(2u, folder_item->item_list()->item_count());
@@ -674,7 +672,8 @@ TEST_F(ScrollableAppsGridViewTest, CanceledReparentDragToNewRow) {
   EXPECT_EQ(initial_preferred_size, apps_grid_view_->GetPreferredSize());
   AppListItemView* last_item = apps_grid_view_->GetItemViewAt(kInitialItems);
   EXPECT_FALSE(last_item);
-  AppListItem* dragged_item = app_list_test_model_->FindItem(dragged_item_id);
+  AppListItem* dragged_item =
+      GetAppListTestHelper()->model()->FindItem(dragged_item_id);
   ASSERT_TRUE(dragged_item);
   EXPECT_EQ(folder_item->id(), dragged_item->folder_id());
   EXPECT_EQ(3u, folder_item->ChildItemCount());

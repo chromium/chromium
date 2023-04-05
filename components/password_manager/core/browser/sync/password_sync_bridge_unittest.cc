@@ -1314,9 +1314,9 @@ INSTANTIATE_TEST_SUITE_P(
 #endif
 
 TEST_F(PasswordSyncBridgeTest,
-       ShouldDeleteSyncMetadataWhenApplyStopSyncChanges) {
+       ShouldDeleteSyncMetadataWhenApplyDisableSyncChanges) {
   EXPECT_CALL(*mock_sync_metadata_store_sync(), DeleteAllSyncMetadata());
-  bridge()->ApplyStopSyncChanges(bridge()->CreateMetadataChangeList());
+  bridge()->ApplyDisableSyncChanges(bridge()->CreateMetadataChangeList());
 }
 
 TEST_F(PasswordSyncBridgeTest, ShouldNotifyOnSyncEnable) {
@@ -1365,7 +1365,7 @@ TEST_F(PasswordSyncBridgeTest, ShouldNotifyOnSyncDisableIfAccountStore) {
   // should trigger the callback.
   EXPECT_CALL(*mock_sync_enabled_or_disabled_cb(), Run());
 
-  bridge()->ApplyStopSyncChanges(bridge()->CreateMetadataChangeList());
+  bridge()->ApplyDisableSyncChanges(bridge()->CreateMetadataChangeList());
 }
 
 TEST_F(PasswordSyncBridgeTest, ShouldNotifyOnSyncDisableIfProfileStore) {
@@ -1374,7 +1374,7 @@ TEST_F(PasswordSyncBridgeTest, ShouldNotifyOnSyncDisableIfProfileStore) {
 
   EXPECT_CALL(*mock_sync_enabled_or_disabled_cb(), Run());
 
-  bridge()->ApplyStopSyncChanges(bridge()->CreateMetadataChangeList());
+  bridge()->ApplyDisableSyncChanges(bridge()->CreateMetadataChangeList());
 }
 
 TEST_F(PasswordSyncBridgeTest, ShouldNotifyUnsyncedCredentialsIfAccountStore) {
@@ -1442,7 +1442,7 @@ TEST_F(PasswordSyncBridgeTest, ShouldNotifyUnsyncedCredentialsIfAccountStore) {
                   UnorderedElementsAre(unsynced_credential)));
 
   // The content of the metadata change list does not matter in this case.
-  bridge()->ApplyStopSyncChanges(bridge()->CreateMetadataChangeList());
+  bridge()->ApplyDisableSyncChanges(bridge()->CreateMetadataChangeList());
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.AccountStorage.UnsyncedPasswordsFoundDuringSignOut", 1,
@@ -1480,7 +1480,7 @@ TEST_F(PasswordSyncBridgeTest,
       .Times(0);
 
   // The content of the metadata change list does not matter in this case.
-  bridge()->ApplyStopSyncChanges(bridge()->CreateMetadataChangeList());
+  bridge()->ApplyDisableSyncChanges(bridge()->CreateMetadataChangeList());
 
   histogram_tester.ExpectTotalCount(
       "PasswordManager.AccountStorage.UnsyncedPasswordsFoundDuringSignOut", 0);

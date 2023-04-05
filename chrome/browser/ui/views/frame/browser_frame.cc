@@ -98,6 +98,7 @@ void BrowserFrame::InitBrowserFrame() {
     // This doesn't change anything visually, but has the side-effect of keeping
     // the pip window in the tab order.
     params.remove_standard_frame = true;
+    params.visible_on_all_workspaces = true;
   }
 
 #if BUILDFLAG(IS_OZONE)

@@ -24,6 +24,7 @@
 #include "calendar_model.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/compositor/compositor_animation_observer.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/view.h"
 
@@ -42,6 +43,8 @@ namespace ash {
 class CalendarEventListView;
 class CalendarMonthView;
 class IconButton;
+class CalendarSurfaceLayerMask;
+class CalendarView;
 
 // The header of the calendar view, which shows the current month and year.
 class CalendarHeaderView : public views::View {
@@ -68,6 +71,25 @@ class CalendarHeaderView : public views::View {
 
   // The year header which follows the `header_`.
   views::Label* const header_year_;
+};
+
+// Container view used for holding the event list view and / or the up next
+// view and animating them together.
+// Calculates the path for the `CalendarSurfaceLayerMask` to use.
+class CalendarSlidingSurface : public views::View {
+ public:
+  METADATA_HEADER(CalendarSlidingSurface);
+  explicit CalendarSlidingSurface(CalendarView* calendar_view)
+      : calendar_view_(calendar_view) {}
+  CalendarSlidingSurface(const CalendarSlidingSurface& other) = delete;
+  CalendarSlidingSurface& operator=(const CalendarSlidingSurface& other) =
+      delete;
+  ~CalendarSlidingSurface() override = default;
+
+  SkPath GetPath() const;
+
+ private:
+  CalendarView* const calendar_view_;
 };
 
 // This view displays a scrollable calendar.
@@ -111,6 +133,8 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   CalendarViewController* calendar_view_controller() {
     return calendar_view_controller_.get();
   }
+
+  CalendarUpNextView* up_next_view() { return up_next_view_; }
 
  private:
   // The header of each month view which shows the month's name. If the year of
@@ -336,9 +360,6 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   // Removes the `up_next_view_`.
   void RemoveUpNextView();
 
-  // Animation callback.
-  void OnShowUpNextComplete();
-
   // Used by the `CalendarUpNextView` to open the event list for today's date.
   void OpenEventListForTodaysDate();
 
@@ -350,6 +371,9 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   // Used for clipping the calendar scroll view height to the different states
   // that the calendar view can be in.
   void ClipScrollViewHeight(ScrollViewState state_to_change_to);
+
+  // Creates the `CalendarSurfaceLayerMask` if it doesn't already exist.
+  void MaybeCreateLayerMask();
 
   // Setters for animation flags.
   void set_should_header_animate(bool should_animate) {
@@ -389,14 +413,16 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   IconButton* managed_button_ = nullptr;
   IconButton* up_button_ = nullptr;
   IconButton* down_button_ = nullptr;
-  views::View* calendar_sliding_surface_ = nullptr;
+  CalendarSlidingSurface* calendar_sliding_surface_ = nullptr;
   CalendarEventListView* event_list_view_ = nullptr;
+  // Owned by CalendarView.
   CalendarUpNextView* up_next_view_ = nullptr;
   std::map<base::Time, CalendarModel::FetchingStatus> on_screen_month_;
   CalendarModel* calendar_model_ =
       Shell::Get()->system_tray_model()->calendar_model();
 
-  std::unique_ptr<ui::LayerOwner> up_next_view_mask_;
+  // Layer mask that sits over the scrollview and hides the content underneath.
+  std::unique_ptr<CalendarSurfaceLayerMask> calendar_surface_layer_mask_;
 
   // If it `is_resetting_scroll_`, we don't calculate the scroll position and we
   // don't need to check if we need to update the month or not.

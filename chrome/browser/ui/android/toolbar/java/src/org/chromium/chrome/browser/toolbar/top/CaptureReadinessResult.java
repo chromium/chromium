@@ -50,6 +50,7 @@ public class CaptureReadinessResult {
             TopToolbarBlockCaptureReason.BROWSER_CONTROLS_LOCKED,
             TopToolbarBlockCaptureReason.TAB_SWITCHER_MODE,
             TopToolbarBlockCaptureReason.COMPOSITOR_IN_MOTION,
+            TopToolbarBlockCaptureReason.NTP_Y_TRANSLATION,
             TopToolbarBlockCaptureReason.NUM_ENTRIES})
     @Retention(RetentionPolicy.SOURCE)
     public @interface TopToolbarBlockCaptureReason {
@@ -65,8 +66,8 @@ public class CaptureReadinessResult {
         int BROWSER_CONTROLS_LOCKED = 9;
         int TAB_SWITCHER_MODE = 10;
         int COMPOSITOR_IN_MOTION = 11;
-        // TODO(https://crbug.com/1324678): NATIVE_PAGE.
-        int NUM_ENTRIES = 12;
+        int NTP_Y_TRANSLATION = 12;
+        int NUM_ENTRIES = 13;
     }
 
     public static CaptureReadinessResult readyForced() {

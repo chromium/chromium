@@ -73,6 +73,8 @@ std::string GetContextTypeDescriptionString(Feature::Context context_type) {
       return "LOCK_SCREEN_EXTENSION";
     case Feature::OFFSCREEN_EXTENSION_CONTEXT:
       return "OFFSCREEN_EXTENSION_CONTEXT";
+    case Feature::USER_SCRIPT_CONTEXT:
+      return "USER_SCRIPT_CONTEXT";
   }
   NOTREACHED();
   return std::string();

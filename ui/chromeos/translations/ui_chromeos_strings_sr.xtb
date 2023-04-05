@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">Планета</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> је избачен.</translation>
 <translation id="2307462900900812319">Конфигуриши мрежу</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Нисмо успели да пронађемо додатак са ИД-ом <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Обратите се администратору.}one{Нисмо успели да пронађемо додатке са ИД-овима <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Обратите се администратору.}few{Нисмо успели да пронађемо додатке са ИД-овима <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Обратите се администратору.}other{Нисмо успели да пронађемо додатке са ИД-овима <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Обратите се администратору.}}</translation>
 <translation id="2325650632570794183">Овај тип датотеке није подржан. Посетите Chrome веб-продавницу и пронађите апликацију која може да отвара овај тип датотеке.</translation>
 <translation id="2326539130272988168">бугарски</translation>
 <translation id="2337715497728194187">Делите са виртуелном машином Bruschetta</translation>

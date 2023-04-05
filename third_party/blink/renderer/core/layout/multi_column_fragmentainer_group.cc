@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/layout/multi_column_fragmentainer_group.h"
 
-#include "third_party/blink/renderer/core/layout/column_balancer.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_context.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_set.h"
 
@@ -71,91 +70,8 @@ LayoutUnit MultiColumnFragmentainerGroup::LogicalHeightInFlowThreadAt(
 }
 
 void MultiColumnFragmentainerGroup::ResetColumnHeight() {
-  LayoutMultiColumnFlowThread* flow_thread =
-      column_set_->MultiColumnFlowThread();
-  if (flow_thread->IsNGMulticol()) {
-    is_logical_height_known_ = false;
-    logical_height_ = LayoutUnit();
-    return;
-  }
-
-  max_logical_height_ = CalculateMaxColumnHeight();
-
-  if (column_set_->HeightIsAuto()) {
-    FragmentationContext* enclosing_fragmentation_context =
-        flow_thread->EnclosingFragmentationContext();
-    if (enclosing_fragmentation_context &&
-        enclosing_fragmentation_context->IsFragmentainerLogicalHeightKnown()) {
-      // Set an initial height, based on the fragmentainer height in the outer
-      // fragmentation context, in order to tell how much content this
-      // MultiColumnFragmentainerGroup can hold, and when we need to append a
-      // new one.
-      is_logical_height_known_ = true;
-      logical_height_ = max_logical_height_;
-      return;
-    }
-  }
-  // If the multicol container has a definite height, use it as the column
-  // height. This even applies when we are to balance the columns. We'll still
-  // use the definite height as an initial height, and lay out once at that
-  // column height. If it turns out that the content needs less than this
-  // height, we have to balance and shrink the height and lay out the columns
-  // over again.
-  if (LayoutUnit logical_height = flow_thread->ColumnHeightAvailable()) {
-    is_logical_height_known_ = true;
-    SetAndConstrainColumnHeight(HeightAdjustedForRowOffset(logical_height));
-  } else {
-    is_logical_height_known_ = false;
-    logical_height_ = LayoutUnit();
-  }
-}
-
-bool MultiColumnFragmentainerGroup::RecalculateColumnHeight(
-    LayoutMultiColumnSet& column_set) {
-  LayoutUnit old_column_height = logical_height_;
-
-  max_logical_height_ = CalculateMaxColumnHeight();
-
-  // Only the last row may have auto height, and thus be balanced. There are no
-  // good reasons to balance the preceding rows, and that could potentially lead
-  // to an insane number of layout passes as well.
-  if (IsLastGroup() && column_set.HeightIsAuto()) {
-    LayoutUnit new_column_height;
-    if (!column_set.IsInitialHeightCalculated()) {
-      // Initial balancing: Start with the lowest imaginable column height. Also
-      // calculate the height of the tallest piece of unbreakable content.
-      // Columns should never get any shorter than that (unless constrained by
-      // max-height). Propagate this to our containing column set, in case there
-      // is an outer multicol container that also needs to balance. After having
-      // calculated the initial column height, the multicol container needs
-      // another layout pass with the column height that we just calculated.
-      InitialColumnHeightFinder initial_height_finder(
-          column_set, LogicalTopInFlowThread(), LogicalBottomInFlowThread());
-      column_set.PropagateTallestUnbreakableLogicalHeight(
-          initial_height_finder.TallestUnbreakableLogicalHeight());
-      new_column_height = initial_height_finder.InitialMinimalBalancedHeight();
-    } else {
-      // Rebalancing: After having laid out again, we'll need to rebalance if
-      // the height wasn't enough and we're allowed to stretch it, and then
-      // re-lay out.  There are further details on the column balancing
-      // machinery in ColumnBalancer and its derivates.
-      new_column_height = RebalanceColumnHeightIfNeeded();
-    }
-    SetAndConstrainColumnHeight(new_column_height);
-  } else {
-    // The position of the column set may have changed, in which case height
-    // available for columns may have changed as well.
-    SetAndConstrainColumnHeight(logical_height_);
-  }
-
-  // We may not have found our final height yet, but at least we've found a
-  // height.
-  is_logical_height_known_ = true;
-
-  if (logical_height_ == old_column_height)
-    return false;  // No change. We're done.
-
-  return true;  // Need another pass.
+  is_logical_height_known_ = false;
+  logical_height_ = LayoutUnit();
 }
 
 LayoutSize MultiColumnFragmentainerGroup::FlowThreadTranslationAtOffset(
@@ -360,75 +276,6 @@ LayoutUnit MultiColumnFragmentainerGroup::HeightAdjustedForRowOffset(
   LayoutUnit adjusted_height =
       height - LogicalTop() - column_set_->LogicalTopFromMulticolContentEdge();
   return adjusted_height.ClampNegativeToZero();
-}
-
-LayoutUnit MultiColumnFragmentainerGroup::CalculateMaxColumnHeight() const {
-  LayoutMultiColumnFlowThread* flow_thread =
-      column_set_->MultiColumnFlowThread();
-  LayoutUnit max_column_height = flow_thread->MaxColumnLogicalHeight();
-  LayoutUnit max_height = HeightAdjustedForRowOffset(max_column_height);
-  if (FragmentationContext* enclosing_fragmentation_context =
-          flow_thread->EnclosingFragmentationContext()) {
-    if (enclosing_fragmentation_context->IsFragmentainerLogicalHeightKnown()) {
-      // We're nested inside another fragmentation context whose fragmentainer
-      // heights are known. This constrains the max height.
-      LayoutUnit remaining_outer_logical_height =
-          enclosing_fragmentation_context->RemainingLogicalHeightAt(
-              BlockOffsetInEnclosingFragmentationContext());
-      if (max_height > remaining_outer_logical_height)
-        max_height = remaining_outer_logical_height;
-    }
-  }
-  return max_height;
-}
-
-void MultiColumnFragmentainerGroup::SetAndConstrainColumnHeight(
-    LayoutUnit new_height) {
-  logical_height_ = new_height;
-  if (logical_height_ > max_logical_height_)
-    logical_height_ = max_logical_height_;
-}
-
-LayoutUnit MultiColumnFragmentainerGroup::RebalanceColumnHeightIfNeeded()
-    const {
-  if (ActualColumnCount() <= column_set_->UsedColumnCount()) {
-    // With the current column height, the content fits without creating
-    // overflowing columns. We're done.
-    return logical_height_;
-  }
-
-  if (logical_height_ >= max_logical_height_) {
-    // We cannot stretch any further. We'll just have to live with the
-    // overflowing columns. This typically happens if the max column height is
-    // less than the height of the tallest piece of unbreakable content (e.g.
-    // lines).
-    return logical_height_;
-  }
-
-  MinimumSpaceShortageFinder shortage_finder(
-      ColumnSet(), LogicalTopInFlowThread(), LogicalBottomInFlowThread());
-
-  if (shortage_finder.ForcedBreaksCount() + 1 >=
-      column_set_->UsedColumnCount()) {
-    // Too many forced breaks to allow any implicit breaks. Initial balancing
-    // should already have set a good height. There's nothing more we should do.
-    return logical_height_;
-  }
-
-  // If the initial guessed column height wasn't enough, stretch it now. Stretch
-  // by the lowest amount of space.
-  LayoutUnit min_space_shortage = shortage_finder.MinimumSpaceShortage();
-
-  DCHECK_GT(min_space_shortage, 0);  // We should never _shrink_ the height!
-
-  if (min_space_shortage == LayoutUnit::Max()) {
-    // We failed to find an amount to stretch the columns by. This is a bug; see
-    // e.g. crbug.com/510340 . If this happens, though, we need bail out rather
-    // than looping infinitely.
-    return logical_height_;
-  }
-
-  return logical_height_ + min_space_shortage;
 }
 
 LayoutRect MultiColumnFragmentainerGroup::ColumnRectAt(

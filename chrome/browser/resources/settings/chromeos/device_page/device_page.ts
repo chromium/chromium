@@ -6,6 +6,7 @@
  * @fileoverview 'settings-device-page' is the settings page for device and
  * peripheral settings.
  */
+import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import './audio.js';
 import './display.js';
@@ -20,7 +21,6 @@ import './power.js';
 import './storage.js';
 import './storage_external.js';
 import './stylus.js';
-import '../../prefs/prefs.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 import '../os_settings_page/os_settings_subpage.js';
 import '../../settings_shared.css.js';
@@ -31,6 +31,7 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {KeyboardPolicies} from '../mojom-webui/input_device_settings.mojom-webui.js';
 import {KeyboardSettingsObserverReceiver, MouseSettingsObserverReceiver, PointingStickSettingsObserverReceiver, TouchpadSettingsObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
@@ -199,6 +200,10 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
         type: Array,
       },
 
+      keyboardPolicies: {
+        type: Object,
+      },
+
       touchpads: {
         type: Array,
       },
@@ -220,6 +225,7 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
 
   protected pointingSticks: PointingStick[];
   protected keyboards: Keyboard[];
+  protected keyboardPolicies: KeyboardPolicies;
   protected touchpads: Touchpad[];
   protected mice: Mouse[];
   private browserProxy_: DevicePageBrowserProxy;
@@ -306,6 +312,10 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
 
   onKeyboardListUpdated(keyboards: Keyboard[]): void {
     this.keyboards = keyboards;
+  }
+
+  onKeyboardPoliciesUpdated(keyboardPolicies: KeyboardPolicies): void {
+    this.keyboardPolicies = keyboardPolicies;
   }
 
   private observeTouchpadSettings(): void {

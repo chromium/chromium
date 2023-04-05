@@ -319,6 +319,8 @@ static_library("arc_test_support") {
     "test/fake_bluetooth_instance.h",
     "test/fake_clipboard_instance.cc",
     "test/fake_clipboard_instance.h",
+    "test/fake_compatibility_mode_instance.cc",
+    "test/fake_compatibility_mode_instance.h",
     "test/fake_file_system_instance.cc",
     "test/fake_file_system_instance.h",
     "test/fake_iio_sensor_instance.cc",

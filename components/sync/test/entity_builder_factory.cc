@@ -4,15 +4,15 @@
 
 #include "components/sync/test/entity_builder_factory.h"
 
-#include "base/guid.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/uuid.h"
 
 using std::string;
 
 namespace fake_server {
 
 EntityBuilderFactory::EntityBuilderFactory()
-    : cache_guid_(base::GenerateGUID()) {}
+    : cache_guid_(base::Uuid::GenerateRandomV4().AsLowercaseString()) {}
 
 EntityBuilderFactory::EntityBuilderFactory(const string& cache_guid)
     : cache_guid_(cache_guid) {}
@@ -23,7 +23,8 @@ BookmarkEntityBuilder EntityBuilderFactory::NewBookmarkEntityBuilder(
     const string& title,
     absl::optional<std::string> originator_client_item_id) {
   if (!originator_client_item_id)
-    originator_client_item_id = base::GenerateGUID();
+    originator_client_item_id =
+        base::Uuid::GenerateRandomV4().AsLowercaseString();
 
   BookmarkEntityBuilder builder(title, cache_guid_, *originator_client_item_id);
   return builder;

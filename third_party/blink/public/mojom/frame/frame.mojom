@@ -18,6 +18,7 @@ import "services/network/public/mojom/network_types.mojom";
 import "services/network/public/mojom/source_location.mojom";
 import "services/network/public/mojom/url_loader_completion_status.mojom";
 import "skia/public/mojom/skcolor.mojom";
+import "skia/public/mojom/skcolor4f.mojom";
 import "third_party/blink/public/mojom/blob/blob.mojom";
 import "third_party/blink/public/mojom/blob/blob_url_store.mojom";
 import "third_party/blink/public/mojom/choosers/popup_menu.mojom";
@@ -272,7 +273,7 @@ interface LocalFrameHost {
   // Notifies the browser that the associated frame has changed its computed CSS
   // background color. This will be called on main-frames only.
   // |color_adjust| is true if the background is forced by color adjustments.
-  DidChangeBackgroundColor(skia.mojom.SkColor background_color, bool color_adjust);
+  DidChangeBackgroundColor(skia.mojom.SkColor4f background_color, bool color_adjust);
 
   // Sent when the renderer fails to load with |error_code| which means a net
   // error code.
@@ -313,6 +314,12 @@ interface LocalFrameHost {
   // process.
   BubbleLogicalScrollInParentFrame(ScrollDirection direction,
                                    ui.mojom.ScrollGranularity granularity);
+
+  // Sent by the renderer to indicate that a same document navigation
+  // commit was requested, but was deferred by script via the NavigationApi. The
+  // browser should show loading UI while waiting for the script to undefer and
+  // allow the commit to proceed.
+  StartLoadingForAsyncNavigationApiCommit();
 
   // Indicates an attempt by the associated frame to navigate from the
   // |initiator_url| to the |blocked_url|, but the navigation was
@@ -438,14 +445,20 @@ interface LocalFrameHost {
   // Initiates a download based on user actions like 'ALT+click'.
   DownloadURL(DownloadURLParams params);
 
-  // Sent to the browser when focus changes inside the frame. The first
-  // parameter says whether the newly focused element needs keyboard input
-  // (true for textfields, text areas and content editable divs).
-  // The second parameter is the newly focused element's bounds relative to
-  // local root's view, and it will be an empty bounds if there is no focused
-  // element.
+  // Sent to the browser when focus changes inside the frame.
+  // - is_editable_element: Whether the newly focused element needs
+  //   keyboard input (true for textfields, text areas and content
+  //   editable divs).
+  // - is_richly_editable_element: Whether the newly focused element
+  //   is richly editable (true for content editable divs).
+  // - bounds_in_frame_widget: The newly focused element's bounds
+  //   relative to local root's view, and it will be an empty bounds
+  //   if there is no focused element.
+  // - foucus_type: Focus type.
   FocusedElementChanged(bool is_editable_element,
-                        gfx.mojom.Rect bounds_in_frame_widget, blink.mojom.FocusType focus_type);
+                        bool is_richly_editable_element,
+                        gfx.mojom.Rect bounds_in_frame_widget,
+                        blink.mojom.FocusType focus_type);
 
   // Notification that the text selection has changed.
   // Note: The second parameter is the character based offset of the

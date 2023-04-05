@@ -143,7 +143,7 @@ class ExtensionWebContentsObserver
  private:
   using PassKey = base::PassKey<ExtensionWebContentsObserver>;
 
-  void OnWindowIdChanged(const SessionID& id);
+  void OnWindowIdChanged(SessionID id);
 
   // The BrowserContext associated with the WebContents being observed.
   raw_ptr<content::BrowserContext> browser_context_;

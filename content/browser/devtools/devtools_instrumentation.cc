@@ -1263,6 +1263,11 @@ void WillStartDragging(FrameTreeNode* main_frame_tree_node,
                    *drag_data, drag_operations_mask, intercepted);
 }
 
+void DragEnded(FrameTreeNode& node) {
+  DCHECK(node.frame_tree().root() == &node);
+  DispatchToAgents(&node, &protocol::InputHandler::DragEnded);
+}
+
 namespace {
 std::unique_ptr<protocol::Array<protocol::String>> BuildExclusionReasons(
     net::CookieInclusionStatus status) {

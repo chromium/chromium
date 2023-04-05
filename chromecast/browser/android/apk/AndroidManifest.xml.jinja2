@@ -50,6 +50,10 @@
                   android:showWhenLocked="true">
         </activity>
 
+        <service android:name="org.chromium.chromecast.shell.TaskRemovedMonitorService"
+                 android:exported="false">
+        </service>
+
         <!-- The following service entries exist in order to allow us to
              start more than one sandboxed process. -->
         {% set num_sandboxed_services = 40 %}

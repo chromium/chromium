@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+function optimizedMethodCall(renderPassEncoder, x, y, width, height) {
+  renderPassEncoder.setScissorRect(x, y, width, height);
+}
+
+function test(t, hotLoop, renderPassEncoder, x, y, width, height) {
+  try {
+    hotLoop(1, renderPassEncoder, x, y, width, height);
+  } catch(e) {
+    assert_true(e instanceof TypeError);
+    return;
+  }
+  assert_unreached("A TypeError should be thrown.");
+}
+
+promise_test(async t => {
+  const adapter = await navigator.gpu.requestAdapter();
+  assert_true(adapter instanceof GPUAdapter, 'Failed to request WebGPU adapter');
+  const device = await adapter.requestDevice();
+  assert_true(device instanceof GPUDevice, 'Failed to request WebGPU device');
+
+  const encoder = device.createCommandEncoder();
+
+  const colorTexture = device.createTexture({
+    format: 'rgba8unorm',
+    size: [4, 4, 1],
+    usage: GPUTextureUsage.RENDER_ATTACHMENT,
+  });
+  const renderPassEncoder = encoder.beginRenderPass({
+    colorAttachments: [{
+      view: colorTexture.createView(),
+      loadOp: 'load',
+      storeOp: 'store',
+    }],
+  });
+  function hotLoop(count, renderPassEncoder, x, y, width, height) {
+    for (let i = 0; i < count; ++i) {
+      optimizedMethodCall(renderPassEncoder, x, y, width, height);
+    }
+  }
+  hotLoop(100, renderPassEncoder, 1, 2, 3, 4);
+
+  // Wait a bit for V8 to optimize. Then call again with an out-of-bounds value.
+  // An exception should be thrown.
+  await new Promise(resolve => t.step_timeout(resolve, 50));
+
+  test(t, hotLoop, renderPassEncoder, 0xFFFFFFFF + 1, 2, 3, 4);
+  test(t, hotLoop, renderPassEncoder, 1, 0xFFFFFFFF + 1, 3, 4);
+  test(t, hotLoop, renderPassEncoder, 1, 2, 0xFFFFFFFF + 1, 4);
+  test(t, hotLoop, renderPassEncoder, 1, 2, 3, 0xFFFFFFFF + 1);
+});
+</script>
+</body>
+</html>

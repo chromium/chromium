@@ -28,11 +28,10 @@ void SessionServiceBaseTestHelper::SaveNow() {
   return service_->GetCommandStorageManagerForTest()->Save();
 }
 
-void SessionServiceBaseTestHelper::PrepareTabInWindow(
-    const SessionID& window_id,
-    const SessionID& tab_id,
-    int visual_index,
-    bool select) {
+void SessionServiceBaseTestHelper::PrepareTabInWindow(SessionID window_id,
+                                                      SessionID tab_id,
+                                                      int visual_index,
+                                                      bool select) {
   service_->SetTabWindow(window_id, tab_id);
   service_->SetTabIndexInWindow(window_id, tab_id, visual_index);
   if (select)
@@ -40,15 +39,15 @@ void SessionServiceBaseTestHelper::PrepareTabInWindow(
 }
 
 void SessionServiceBaseTestHelper::SetTabExtensionAppID(
-    const SessionID& window_id,
-    const SessionID& tab_id,
+    SessionID window_id,
+    SessionID tab_id,
     const std::string& extension_app_id) {
   service_->SetTabExtensionAppID(window_id, tab_id, extension_app_id);
 }
 
 void SessionServiceBaseTestHelper::SetTabUserAgentOverride(
-    const SessionID& window_id,
-    const SessionID& tab_id,
+    SessionID window_id,
+    SessionID tab_id,
     const sessions::SerializedUserAgentOverride& user_agent_override) {
   service_->SetTabUserAgentOverride(window_id, tab_id, user_agent_override);
 }
@@ -66,8 +65,8 @@ void SessionServiceBaseTestHelper::ReadWindows(
 }
 
 void SessionServiceBaseTestHelper::AssertTabEquals(
-    const SessionID& window_id,
-    const SessionID& tab_id,
+    SessionID window_id,
+    SessionID tab_id,
     int visual_index,
     int nav_index,
     size_t nav_count,
@@ -126,13 +125,13 @@ SessionServiceBaseTestHelper::GetBackendTaskRunner() {
 }
 
 void SessionServiceBaseTestHelper::SetAvailableRange(
-    const SessionID& tab_id,
+    SessionID tab_id,
     const std::pair<int, int>& range) {
   service_->SetAvailableRangeForTest(tab_id, range);
 }
 
 bool SessionServiceBaseTestHelper::GetAvailableRange(
-    const SessionID& tab_id,
+    SessionID tab_id,
     std::pair<int, int>* range) {
   return service_->GetAvailableRangeForTest(tab_id, range);
 }

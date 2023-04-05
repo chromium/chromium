@@ -194,6 +194,7 @@ bool ChromeExtensionsRendererClient::AllowPopup() {
     case extensions::Feature::WEBUI_CONTEXT:
     case extensions::Feature::WEBUI_UNTRUSTED_CONTEXT:
     case extensions::Feature::OFFSCREEN_EXTENSION_CONTEXT:
+    case extensions::Feature::USER_SCRIPT_CONTEXT:
     case extensions::Feature::LOCK_SCREEN_EXTENSION_CONTEXT:
       return false;
     case extensions::Feature::BLESSED_EXTENSION_CONTEXT:
@@ -221,6 +222,7 @@ ChromeExtensionsRendererClient::GetProtocolHandlerSecurityLevel() {
     case extensions::Feature::OFFSCREEN_EXTENSION_CONTEXT:
     case extensions::Feature::UNBLESSED_EXTENSION_CONTEXT:
     case extensions::Feature::UNSPECIFIED_CONTEXT:
+    case extensions::Feature::USER_SCRIPT_CONTEXT:
     case extensions::Feature::WEBUI_CONTEXT:
     case extensions::Feature::WEBUI_UNTRUSTED_CONTEXT:
     case extensions::Feature::WEB_PAGE_CONTEXT:
@@ -278,11 +280,10 @@ void ChromeExtensionsRendererClient::WillSendRequest(
   if (url.ProtocolIs(extensions::kExtensionScheme) &&
       request_url.host_piece() == extension_misc::kDocsOfflineExtensionId) {
     if (!ukm_recorder_) {
-      mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> recorder;
+      mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
       content::RenderThread::Get()->BindHostReceiver(
-          recorder.InitWithNewPipeAndPassReceiver());
-      ukm_recorder_ =
-          std::make_unique<ukm::MojoUkmRecorder>(std::move(recorder));
+          factory.BindNewPipeAndPassReceiver());
+      ukm_recorder_ = ukm::MojoUkmRecorder::Create(*factory);
     }
 
     const ukm::SourceId source_id = frame->GetDocument().GetUkmSourceId();

@@ -47,6 +47,10 @@ class DispatcherDelegate {
   virtual void InitializeBindingsSystem(
       Dispatcher* dispatcher,
       NativeExtensionBindingsSystem* bindings_system) {}
+
+  // Blink maintains an allowlist for custom element names. This method
+  // provides the delegate the ability to add more names to that allowlist.
+  virtual void EnableCustomElementAllowlist() {}
 };
 
 }  // namespace extensions

@@ -53,6 +53,13 @@ constexpr char kProfileUpdateNumberOfEditsHistogram[] =
 constexpr char kProfileUpdateNumberOfAffectedTypesHistogram[] =
     "Autofill.ProfileImport.UpdateProfileNumberOfAffectedFields";
 
+// Test that two AutofillProfiles have the same `source() and `Compare()` equal.
+MATCHER(CompareWithSource, "") {
+  const AutofillProfile& a = std::get<0>(arg);
+  const AutofillProfile& b = std::get<1>(arg);
+  return a.source() == b.source() && a.Compare(b) == 0;
+}
+
 class MockPersonalDataManager : public TestPersonalDataManager {
  public:
   MockPersonalDataManager() = default;
@@ -162,6 +169,13 @@ bool IsConfirmableMerge(const ImportScenarioTestCase& test_scenario) {
              AutofillProfileImportType::kConfirmableMergeAndSilentUpdate;
 }
 
+bool IsMigration(const ImportScenarioTestCase& test_scenario) {
+  return test_scenario.expected_import_type ==
+             AutofillProfileImportType::kProfileMigration ||
+         test_scenario.expected_import_type ==
+             AutofillProfileImportType::kProfileMigrationAndSilentUpdate;
+}
+
 class AddressProfileSaveManagerTest
     : public testing::Test,
       public testing::WithParamInterface<std::tuple<bool, bool>> {
@@ -197,13 +211,15 @@ class AddressProfileSaveManagerTest
   }
 
  protected:
+  void VerifyFinalProfiles(const ImportScenarioTestCase& test_scenario) const;
+
   void VerifyUMAMetricsCollection(
       const ImportScenarioTestCase& test_scenario,
       const base::HistogramTester& histogram_tester) const;
 
   void VerifyStrikeCounts(const ImportScenarioTestCase& test_scenario,
                           const ProfileImportProcess& last_import,
-                          int initial_strikes) const;
+                          int initial_strikes_for_domain) const;
 
   void VerifyUkmForAddressImport(
       const ukm::TestUkmRecorder* ukm_recorder,
@@ -239,21 +255,22 @@ void AddressProfileSaveManagerTest::TestImportScenario(
 
   // If the domain is blocked for new imports, use the defined limit for the
   // initial strikes. Otherwise, use 1.
-  int initial_strikes =
+  int initial_strikes_for_domain =
       test_scenario.new_profiles_suppresssed_for_domain
           ? mock_personal_data_manager_.GetProfileSaveStrikeDatabase()
                 ->GetMaxStrikesLimit()
           : 1;
   mock_personal_data_manager_.GetProfileSaveStrikeDatabase()->AddStrikes(
-      initial_strikes, form_url().host());
+      initial_strikes_for_domain, form_url().host());
   ASSERT_EQ(mock_personal_data_manager_.IsNewProfileImportBlockedForDomain(
                 form_url()),
             test_scenario.new_profiles_suppresssed_for_domain);
-
   // Add one strike for each existing profile and the maximum number of strikes
   // for blocked profiles.
   for (const AutofillProfile& profile : test_scenario.existing_profiles) {
     mock_personal_data_manager_.AddStrikeToBlockProfileUpdate(profile.guid());
+    mock_personal_data_manager_.AddStrikeToBlockProfileMigration(
+        profile.guid());
   }
   for (const std::string& guid : test_scenario.blocked_guids_for_updates) {
     BlockProfileForUpdates(guid);
@@ -289,24 +306,40 @@ void AddressProfileSaveManagerTest::TestImportScenario(
 
   EXPECT_EQ(test_scenario.expected_import_type, last_import->import_type());
 
-  // Make a copy of the final profiles in the personal data manager for
-  // comparison.
-  std::vector<AutofillProfile> final_profiles;
-  final_profiles.reserve(test_scenario.expected_final_profiles.size());
-  for (const auto* profile : mock_personal_data_manager_.GetProfiles())
-    final_profiles.push_back(*profile);
-
-  EXPECT_THAT(test_scenario.expected_final_profiles,
-              testing::UnorderedElementsAreArray(final_profiles));
+  VerifyFinalProfiles(test_scenario);
 
   // Test that the merge and import candidates are correct.
   EXPECT_EQ(test_scenario.merge_candidate, last_import->merge_candidate());
   EXPECT_EQ(test_scenario.import_candidate, last_import->import_candidate());
 
   VerifyUMAMetricsCollection(test_scenario, histogram_tester);
-  VerifyStrikeCounts(test_scenario, *last_import, initial_strikes);
+  VerifyStrikeCounts(test_scenario, *last_import, initial_strikes_for_domain);
   VerifyUkmForAddressImport(autofill_client_.GetTestUkmRecorder(),
                             test_scenario);
+}
+
+void AddressProfileSaveManagerTest::VerifyFinalProfiles(
+    const ImportScenarioTestCase& test_scenario) const {
+  // Make a copy of the final profiles in the personal data manager for
+  // comparison.
+  std::vector<AutofillProfile> final_profiles;
+  final_profiles.reserve(test_scenario.expected_final_profiles.size());
+  for (const AutofillProfile* profile :
+       mock_personal_data_manager_.GetProfiles()) {
+    final_profiles.push_back(*profile);
+  }
+
+  // During a profile migration, a new GUID is assigned to the migrated profile.
+  // Since this GUID is randomly selected, the `expected_final_profiles` cannot
+  // be set correctly. Thus, for migrations, don't compare the GUIDs.
+  if (!IsMigration(test_scenario)) {
+    EXPECT_THAT(test_scenario.expected_final_profiles,
+                testing::UnorderedElementsAreArray(final_profiles));
+  } else {
+    EXPECT_THAT(
+        test_scenario.expected_final_profiles,
+        testing::UnorderedPointwise(CompareWithSource(), final_profiles));
+  }
 }
 
 void AddressProfileSaveManagerTest::VerifyUMAMetricsCollection(
@@ -405,42 +438,57 @@ void AddressProfileSaveManagerTest::VerifyUMAMetricsCollection(
 void AddressProfileSaveManagerTest::VerifyStrikeCounts(
     const ImportScenarioTestCase& test_scenario,
     const ProfileImportProcess& last_import,
-    int initial_strikes) const {
+    int initial_strikes_for_domain) const {
   // Check that the strike count was incremented if the import of a new
   // profile was declined.
+  const int profile_save_strikes =
+      mock_personal_data_manager_.GetProfileSaveStrikeDatabase()->GetStrikes(
+          form_url().host());
   if (IsNewProfile(test_scenario) && last_import.UserDeclined()) {
-    EXPECT_EQ(2, mock_personal_data_manager_.GetProfileSaveStrikeDatabase()
-                     ->GetStrikes(form_url().host()));
+    EXPECT_EQ(initial_strikes_for_domain + 1, profile_save_strikes);
   } else if (IsNewProfile(test_scenario) && last_import.UserAccepted()) {
     // If the import of a new profile was accepted, the count should have been
     // reset.
-    EXPECT_EQ(0, mock_personal_data_manager_.GetProfileSaveStrikeDatabase()
-                     ->GetStrikes(form_url().host()));
+    EXPECT_EQ(0, profile_save_strikes);
   } else {
     // In all other cases, the number of strikes should be unaltered.
-    EXPECT_EQ(
-        initial_strikes,
-        mock_personal_data_manager_.GetProfileSaveStrikeDatabase()->GetStrikes(
-            form_url().host()));
+    EXPECT_EQ(initial_strikes_for_domain, profile_save_strikes);
   }
 
   // Check that the strike count for profile updates is reset if a profile was
   // updated.
-  if (IsConfirmableMerge(test_scenario) &&
-      (test_scenario.user_decision == UserDecision::kAccepted ||
-       test_scenario.user_decision == UserDecision::kEditAccepted)) {
-    EXPECT_EQ(0, mock_personal_data_manager_.GetProfileUpdateStrikeDatabase()
-                     ->GetStrikes(test_scenario.merge_candidate->guid()));
-  } else if (IsConfirmableMerge(test_scenario) &&
-             (test_scenario.user_decision == UserDecision::kDeclined ||
-              test_scenario.user_decision == UserDecision::kMessageDeclined)) {
+  const StrikeDatabaseIntegratorBase* db =
+      mock_personal_data_manager_.GetProfileUpdateStrikeDatabase();
+  if (IsConfirmableMerge(test_scenario) && last_import.UserAccepted()) {
+    EXPECT_EQ(0, db->GetStrikes(test_scenario.merge_candidate->guid()));
+  } else if (IsConfirmableMerge(test_scenario) && last_import.UserDeclined()) {
     // Or that it is incremented if the update was declined.
-    EXPECT_EQ(2, mock_personal_data_manager_.GetProfileUpdateStrikeDatabase()
-                     ->GetStrikes(test_scenario.merge_candidate->guid()));
+    EXPECT_EQ(2, db->GetStrikes(test_scenario.merge_candidate->guid()));
   } else if (test_scenario.merge_candidate.has_value()) {
     // In all other cases, the number of strikes should be unaltered.
-    EXPECT_EQ(1, mock_personal_data_manager_.GetProfileUpdateStrikeDatabase()
-                     ->GetStrikes(test_scenario.merge_candidate->guid()));
+    EXPECT_EQ(1, db->GetStrikes(test_scenario.merge_candidate->guid()));
+  }
+
+  // Check the strike counts for profile migration. If the user accepted a
+  // migration, the original profile is gone. The strike count for that GUID
+  // should nevertheless be reset.
+  // If the user declined, the strikes should get increased. Otherwise they
+  // should be unaltered.
+  db = mock_personal_data_manager_.GetProfileMigrationStrikeDatabase();
+  if (IsMigration(test_scenario) && last_import.UserAccepted()) {
+    EXPECT_EQ(0, db->GetStrikes(test_scenario.import_candidate->guid()));
+  } else if (IsMigration(test_scenario) && last_import.UserDeclined()) {
+    // Ignoring the message counts as a single strike, while the "No thanks"
+    // button increases the strike count to its max.
+    // Note that in these tests each profiles starts with one strike.
+    EXPECT_EQ(last_import.user_decision() == UserDecision::kNever ? 3 : 2,
+              db->GetStrikes(test_scenario.import_candidate->guid()));
+  } else if (test_scenario.import_candidate.has_value() &&
+             !IsNewProfile(test_scenario)) {
+    // The initial strike count of 1 is only set for all
+    // `test_scenario.existing_profiles`. New profiles start at 0.
+    EXPECT_EQ(IsNewProfile(test_scenario) ? 0 : 1,
+              db->GetStrikes(test_scenario.import_candidate->guid()));
   }
 }
 
@@ -1363,6 +1411,59 @@ TEST_P(AddressProfileSaveManagerTest,
       .expected_final_profiles = {mergeable_profile},
       .allow_only_silent_updates = true};
 
+  TestImportScenario(test_scenario);
+}
+
+// Tests that for eligible users, migration prompts are offered for
+// `kLocalOrSyncable` profiles.
+TEST_P(AddressProfileSaveManagerTest, Migration_Accept) {
+  const AutofillProfile standard_profile = test::StandardProfile();
+  mock_personal_data_manager_.SetIsEligibleForAddressAccountStorage(true);
+  ImportScenarioTestCase test_scenario{
+      .existing_profiles = {standard_profile},
+      .observed_profile = standard_profile,
+      .is_prompt_expected = true,
+      .user_decision = UserDecision::kAccepted,
+      .expected_import_type = AutofillProfileImportType::kProfileMigration,
+      .is_profile_change_expected = true,
+      .import_candidate = {standard_profile},
+      .expected_final_profiles = {standard_profile.ConvertToAccountProfile()},
+      .allow_only_silent_updates = false};
+  TestImportScenario(test_scenario);
+}
+
+// Tests declining a migration. The strike count should be increased.
+TEST_P(AddressProfileSaveManagerTest, Migration_Decline) {
+  const AutofillProfile standard_profile = test::StandardProfile();
+  mock_personal_data_manager_.SetIsEligibleForAddressAccountStorage(true);
+  ImportScenarioTestCase test_scenario{
+      .existing_profiles = {standard_profile},
+      .observed_profile = standard_profile,
+      .is_prompt_expected = true,
+      .user_decision = UserDecision::kDeclined,
+      .expected_import_type = AutofillProfileImportType::kProfileMigration,
+      .is_profile_change_expected = false,
+      .import_candidate = {standard_profile},
+      .expected_final_profiles = {standard_profile},
+      .allow_only_silent_updates = false};
+  TestImportScenario(test_scenario);
+}
+
+// Tests declining a migration with the "never migrate" option. Tests that the
+// strike count is incremented up to the strike limit.
+TEST_P(AddressProfileSaveManagerTest, Migration_Never) {
+  const AutofillProfile standard_profile = test::StandardProfile();
+  mock_personal_data_manager_.SetIsEligibleForAddressAccountStorage(true);
+  ImportScenarioTestCase test_scenario{
+      .existing_profiles = {standard_profile},
+      .observed_profile = standard_profile,
+      .is_prompt_expected = true,
+      .user_decision = UserDecision::kNever,
+      .expected_import_type = AutofillProfileImportType::kProfileMigration,
+      .is_profile_change_expected = false,
+      .import_candidate = {standard_profile},
+      .expected_final_profiles = {standard_profile},
+      .allow_only_silent_updates = false};
   TestImportScenario(test_scenario);
 }
 

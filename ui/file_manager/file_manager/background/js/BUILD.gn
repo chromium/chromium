@@ -210,6 +210,7 @@ js_library("file_operation_handler") {
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/externs/background:file_operation_manager",
     "//ui/file_manager/file_manager/externs/background:progress_center",
+    "//ui/file_manager/file_manager/externs/ts:store",
   ]
 }
 

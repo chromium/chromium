@@ -390,6 +390,13 @@ if (!is_android && !is_mac) {
         data_deps = []
         ldflags += [ "--collect-inputs-only" ]
       }
+
+      if (is_linux) {
+        sources += [
+          "app/chrome_main_linux.cc",
+          "app/chrome_main_linux.h",
+        ]
+      }
     }
   }
   _chrome_exe("chrome_initial") {

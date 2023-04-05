@@ -13,7 +13,10 @@
 // Tabs feature and a link to its settings.
 @interface InactiveTabsPreambleHeader : UICollectionReusableView
 
-/// The callback when the Inactive Tabs settings link is pressed.
+// The number of days after which tabs are considered inactive.
+@property(nonatomic, assign) NSInteger daysThreshold;
+
+// The callback when the Inactive Tabs settings link is pressed.
 @property(nonatomic, copy) ProceduralBlock settingsLinkAction;
 
 @end

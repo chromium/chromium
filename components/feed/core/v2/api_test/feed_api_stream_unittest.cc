@@ -4096,6 +4096,51 @@ TEST_F(FeedApiTest, GetRequestMetadataForSyncedUser) {
   ASSERT_EQ(metadata.sign_in_status, feedwire::ChromeSignInStatus::SYNCED);
 }
 
+TEST_F(FeedApiTest, GetRequestMetadataForSigninDisallowedUser) {
+  TestForYouSurface surface(stream_.get());
+  account_info_ = {};
+  is_sync_on_ = false;
+  is_signin_allowed_ = false;
+
+  RequestMetadata metadata =
+      stream_->GetRequestMetadata(StreamType(StreamKind::kForYou), false);
+
+  ASSERT_EQ(metadata.sign_in_status,
+            feedwire::ChromeSignInStatus::SIGNIN_DISALLOWED_BY_CONFIG);
+}
+
+TEST_F(FeedApiTest, GetRequestMetadataForSigninDisallowedUserWhenSignedIn) {
+  TestForYouSurface surface(stream_.get());
+  is_sync_on_ = false;
+  is_signin_allowed_ = false;
+
+  RequestMetadata metadata =
+      stream_->GetRequestMetadata(StreamType(StreamKind::kForYou), false);
+
+  ASSERT_EQ(metadata.sign_in_status,
+            feedwire::ChromeSignInStatus::SIGNED_IN_WITHOUT_SYNC);
+}
+
+TEST_F(FeedApiTest, ClearAllOnSigninAllowedPrefChange) {
+  CallbackReceiver<> on_clear_all;
+  on_clear_all_ = on_clear_all.BindRepeating();
+
+  // Fetch a feed, so that there's stored data.
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  // Set signin allowed pref to false. It should perform a ClearAll.
+  profile_prefs_.SetBoolean(::prefs::kSigninAllowed, false);
+  WaitForIdleTaskQueue();
+  EXPECT_TRUE(on_clear_all.called());
+
+  // Re-create the feed, and verify ClearAll isn't called again.
+  on_clear_all.Clear();
+  WaitForIdleTaskQueue();
+  EXPECT_FALSE(on_clear_all.called());
+}
+
 // Keep instantiations at the bottom.
 INSTANTIATE_TEST_SUITE_P(FeedApiTest,
                          FeedStreamTestForAllStreamTypes,

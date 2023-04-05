@@ -1638,7 +1638,7 @@ bool AXNodeObject::IsLineBreakingObject() const {
   // Line 2</pre>
   if (const LayoutText* layout_text = DynamicTo<LayoutText>(layout_object)) {
     const ComputedStyle& style = layout_object->StyleRef();
-    if (layout_text->HasNonCollapsedText() && style.PreserveNewline() &&
+    if (layout_text->HasNonCollapsedText() && style.ShouldPreserveBreaks() &&
         layout_text->PlainText().find('\n') != WTF::kNotFound) {
       return true;
     }
@@ -3678,6 +3678,11 @@ String AXNodeObject::TextFromDescendants(
   base::AutoReset<bool> auto_reset(&is_computing_text_from_descendants_, true);
 #endif
   for (AXObject* child : children) {
+    if (!child || child->IsDetached()) {
+      // If this child was destroyed while processing another, the weak member
+      // will become null.
+      continue;
+    }
     constexpr size_t kMaxDescendantsForTextAlternativeComputation = 100;
     if (visited.size() > kMaxDescendantsForTextAlternativeComputation)
       break;

@@ -440,7 +440,7 @@ class MotionMarkFixed2SecondsCanvasLines(MotionMarkFixed2SecondsPage):
 class MotionMarkFixed2SecondsImages(MotionMarkFixed2SecondsPage):
   BASE_NAME = 'motionmark_fixed_2_seconds_images'
   URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl('MotionMark', 'Images',
-                                                        102)
+                                                        200)
 
 
 class MotionMarkFixed2SecondsDesign(MotionMarkFixed2SecondsPage):

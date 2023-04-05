@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/phonehub/phone_connected_view.h"
 #include "base/gtest_prod_util.h"
+#include "base/timer/timer.h"
 #include "chromeos/ash/components/phonehub/recent_apps_interaction_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/controls/button/image_button.h"
@@ -62,6 +63,10 @@ class ASH_EXPORT PhoneHubRecentAppsView
                            MultipleRecentAppButtonsView);
   FRIEND_TEST_ALL_PREFIXES(RecentAppButtonsViewTest,
                            MultipleRecentAppButtonsWithMoreAppsButtonView);
+  FRIEND_TEST_ALL_PREFIXES(RecentAppButtonsViewTest,
+                           LogRecentAppsTransitionToFailedLatency);
+  FRIEND_TEST_ALL_PREFIXES(RecentAppButtonsViewTest,
+                           LogRecentAppsTransitionToSuccessLatency);
 
   class PlaceholderView;
 
@@ -139,6 +144,11 @@ class ASH_EXPORT PhoneHubRecentAppsView
     return header_view_->get_error_button_for_test();
   }
   LoadingView* get_loading_view_for_test() { return loading_view_; }
+
+  // Timers to measure the latency between loading to error, loading to app
+  // icons, and error to app icons.
+  base::TimeTicks loading_animation_start_time_ = base::TimeTicks();
+  base::TimeTicks error_button_start_time_ = base::TimeTicks();
 
   RecentAppButtonsView* recent_app_buttons_view_ = nullptr;
   std::vector<views::View*> recent_app_button_list_;

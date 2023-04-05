@@ -35,7 +35,7 @@ struct MODULES_EXPORT V8CanvasStyle {
   V8CanvasStyleType type;
   CanvasPattern* pattern = nullptr;
   CanvasGradient* gradient = nullptr;
-  RGBA32 css_color_value = 0;
+  Color css_color_value = Color::kTransparent;
   AtomicString string;
 };
 

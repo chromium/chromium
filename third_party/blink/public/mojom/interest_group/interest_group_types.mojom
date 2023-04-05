@@ -229,6 +229,22 @@ union AuctionAdConfigMaybePromiseBuyerTimeouts {
   AuctionAdConfigBuyerTimeouts value;
 };
 
+// See blink::AuctionConfig::BuyerCurrencies
+struct AuctionAdConfigBuyerCurrencies {
+  // Requirement for bid currency that, if specified, will apply to all bids
+  // made by buyers not specified in `per_buyer_currencies`.
+  string? all_buyers_currency;
+
+  // Can provide a requirement for bid currency for buyers by origin.
+  map<url.mojom.Origin, string>? per_buyer_currencies;
+};
+
+// See blink::AuctionConfig::MaybePromiseBuyerCurrencies
+union AuctionAdConfigMaybePromiseBuyerCurrencies {
+  uint32 promise; // value unused
+  AuctionAdConfigBuyerCurrencies value;
+};
+
 union AuctionAdConfigMaybePromiseDirectFromSellerSignals {
   uint32 promise;  // value unused
   DirectFromSellerSignals? value;
@@ -293,6 +309,16 @@ struct AuctionAdConfigNonSharedParams {
 
   // Timeouts for individual interest group worklet Javascript execution.
   AuctionAdConfigMaybePromiseBuyerTimeouts buyer_timeouts;
+
+  // Expectations for currency provided by seller when modifying bids for
+  // parent auctions or to help with mixed-currency reporting. If this is set,
+  // any currency annotation from seller will be checked against it.
+  string? seller_currency;
+
+  // Expectations for currencies used by buyers to bid. If a currency is
+  // specified for a buyer here, and they annotate their bid with a currency,
+  // their consistency will be checked before accepting the bid.
+  AuctionAdConfigMaybePromiseBuyerCurrencies buyer_currencies;
 
   // Cumulative timeouts for all interest groups with the same buyer. Includes
   // launching worklet processes, loading scripts and signals, and running

@@ -45,8 +45,7 @@ HTMLMeterElement::HTMLMeterElement(Document& document)
 
 HTMLMeterElement::~HTMLMeterElement() = default;
 
-LayoutObject* HTMLMeterElement::CreateLayoutObject(const ComputedStyle& style,
-                                                   LegacyLayout legacy) {
+LayoutObject* HTMLMeterElement::CreateLayoutObject(const ComputedStyle& style) {
   switch (style.EffectiveAppearance()) {
     case kMeterPart:
       UseCounter::Count(GetDocument(),
@@ -59,7 +58,7 @@ LayoutObject* HTMLMeterElement::CreateLayoutObject(const ComputedStyle& style,
     default:
       break;
   }
-  return HTMLElement::CreateLayoutObject(style, legacy);
+  return HTMLElement::CreateLayoutObject(style);
 }
 
 void HTMLMeterElement::ParseAttribute(

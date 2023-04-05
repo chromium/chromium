@@ -203,6 +203,7 @@
 #include "chromeos/ash/components/dbus/services/cros_dbus_service.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/ash/components/device_activity/device_active_use_case.h"
 #include "chromeos/ash/components/device_activity/device_activity_controller.h"
@@ -1264,6 +1265,16 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
 
     screen_ai::chrome_os_installer::ManageInstallation(
         g_browser_process->local_state());
+
+    ash::ShillManagerClient::Get()->SetProperty(
+        shill::kEnableRFC8925Property,
+        base::Value(base::FeatureList::IsEnabled(features::kEnableRFC8925)),
+        base::DoNothing(),
+        base::BindOnce([](const std::string& error_name,
+                          const std::string& error_message) {
+          NET_LOG(ERROR) << "Fail to set EnableRFC8925 shill property, error:"
+                         << error_name << ", message: " << error_message;
+        }));
   }
 
   ChromeBrowserMainPartsLinux::PostProfileInit(profile, is_initial_profile);

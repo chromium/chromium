@@ -55,28 +55,12 @@ class LineLayoutInline : public LineLayoutBoxModel {
     return ToInline()->AlwaysCreateLineBoxes();
   }
 
-  InlineBox* FirstLineBoxIncludingCulling() const {
-    return ToInline()->FirstLineBoxIncludingCulling();
-  }
-
-  InlineBox* LastLineBoxIncludingCulling() const {
-    return ToInline()->LastLineBoxIncludingCulling();
-  }
-
-  LineBoxList* LineBoxes() { return ToInline()->MutableLineBoxes(); }
-
   bool HitTestCulledInline(HitTestResult& result,
                            const HitTestLocation& hit_test_location,
                            const PhysicalOffset& accumulated_offset) {
     return ToInline()->HitTestCulledInline(result, hit_test_location,
                                            accumulated_offset);
   }
-
-  InlineBox* CreateAndAppendInlineFlowBox() {
-    return ToInline()->CreateAndAppendInlineFlowBox();
-  }
-
-  InlineFlowBox* LastLineBox() { return ToInline()->LastLineBox(); }
 
  protected:
   LayoutInline* ToInline() { return To<LayoutInline>(GetLayoutObject()); }

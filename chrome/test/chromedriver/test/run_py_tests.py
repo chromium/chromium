@@ -4299,7 +4299,12 @@ class ChromeDriverFencedFrame(ChromeDriverBaseTestWithWebServer):
       <!DOCTYPE html>
         <html>
           <body>
-            <fencedframe src="/fencedframe.html"></fencedframe>
+            <fencedframe></fencedframe>
+            <script>
+              const url = new URL("fencedframe.html", location.href);
+              document.querySelector("fencedframe").config =
+                  new FencedFrameConfig(url);
+            </script>
           </body>
         </html>
       """, 'utf-8'))
@@ -4338,7 +4343,8 @@ class ChromeDriverFencedFrame(ChromeDriverBaseTestWithWebServer):
     self._driver = self.CreateDriver(
         accept_insecure_certs = True,
         chrome_switches=['--site-per-process',
-            '--enable-features=FencedFrames,PrivacySandboxAdsAPIsOverride'])
+          '--enable-features=FencedFrames,PrivacySandboxAdsAPIsOverride,'
+          'FencedFramesAPIChanges'])
 
   def testCanSwitchToFencedFrame(self):
     self._initDriver()

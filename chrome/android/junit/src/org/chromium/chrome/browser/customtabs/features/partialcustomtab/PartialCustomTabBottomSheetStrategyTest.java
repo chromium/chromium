@@ -907,6 +907,7 @@ public class PartialCustomTabBottomSheetStrategyTest {
         assertEquals(WindowManager.LayoutParams.MATCH_PARENT, attrs.width);
     }
 
+    @Config(sdk = Build.VERSION_CODES.Q)
     @Test
     @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
     public void enterAndExitHtmlFullscreen() {
@@ -920,7 +921,7 @@ public class PartialCustomTabBottomSheetStrategyTest {
         int height = getWindowAttributes().height;
         doReturn(47)
                 .when(mPCCTTestRule.mResources)
-                .getDimensionPixelSize(eq(org.chromium.chrome.R.dimen.custom_tabs_shadow_offset));
+                .getDimensionPixelSize(eq(R.dimen.custom_tabs_shadow_offset));
 
         strategy.setFullscreenSupplierForTesting(() -> mFullscreen);
 
@@ -1026,6 +1027,7 @@ public class PartialCustomTabBottomSheetStrategyTest {
         verify(mPCCTTestRule.mDragBarBackground).setColor(PCCT_TOOLBAR_COLOR);
     }
 
+    @Config(sdk = Build.VERSION_CODES.Q)
     @Test
     public void noTopShadowAtFullHeight() {
         doReturn(47)
@@ -1130,7 +1132,28 @@ public class PartialCustomTabBottomSheetStrategyTest {
 
     @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
     @Test
-    public void useDividerLine() {
+    public void useDividerLine_LowEndDevice() {
+        doReturn(8)
+                .when(mPCCTTestRule.mResources)
+                .getDimensionPixelSize(eq(R.dimen.custom_tabs_shadow_offset));
+        mPCCTTestRule.configPortraitMode();
+        var strategy = createPcctAtHeight(1500);
+
+        assertEquals("Top margin should be zero because there is no shadow", 0,
+                mPCCTTestRule.mLayoutParams.topMargin);
+
+        // 900 dp landscape bottom sheet
+        mPCCTTestRule.configLandscapeMode();
+        strategy = createPcctAtHeight(3000);
+        assertEquals("Right margin should be zero because there is no shadow", 0,
+                mPCCTTestRule.mLayoutParams.rightMargin);
+        assertEquals("Left margin should not be zero because there is no shadow", 0,
+                mPCCTTestRule.mLayoutParams.leftMargin);
+    }
+
+    @Config(sdk = Build.VERSION_CODES.P)
+    @Test
+    public void useDividerLine_OldOS() {
         doReturn(8)
                 .when(mPCCTTestRule.mResources)
                 .getDimensionPixelSize(eq(R.dimen.custom_tabs_shadow_offset));

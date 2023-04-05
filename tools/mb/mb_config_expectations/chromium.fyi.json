@@ -245,7 +245,6 @@
     "gn_args": {
       "concurrent_links": 50,
       "dcheck_always_on": false,
-      "enable_nacl": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,

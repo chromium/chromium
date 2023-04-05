@@ -149,7 +149,7 @@ std::unique_ptr<SessionCommand> CreateSetWindowUserTitleCommand(
 
 std::unique_ptr<SessionCommand> CreateAddExtraDataCommand(
     SessionCommand::id_type command,
-    const SessionID& session_id,
+    SessionID session_id,
     const std::string& key,
     const std::string& data) {
   base::Pickle pickle;

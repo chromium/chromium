@@ -29,6 +29,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_decode.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_recorder_impl_utils.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
@@ -82,28 +83,6 @@ bool HasSupportedScheme(const GURL& url) {
          url.SchemeIs(kAppScheme);
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// Update tools/metrics/histograms/enums.xml when new entries are added.
-enum class DroppedDataReason {
-  NOT_DROPPED = 0,
-  RECORDING_DISABLED = 1,
-  MAX_HIT = 2,
-  DEPRECATED_NOT_WHITELISTED = 3,
-  UNSUPPORTED_URL_SCHEME = 4,
-  SAMPLED_OUT = 5,
-  EXTENSION_URLS_DISABLED = 6,
-  EXTENSION_NOT_SYNCED = 7,
-  NOT_MATCHED = 8,
-  EMPTY_URL = 9,
-  REJECTED_BY_FILTER = 10,
-  SAMPLING_UNCONFIGURED = 11,
-  MSBB_CONSENT_DISABLED = 12,
-  APPS_CONSENT_DISABLED = 13,
-  EXTENSION_URL_INVALID = 14,
-  NUM_DROPPED_DATA_REASONS
-};
-
 void RecordDroppedSource(DroppedDataReason reason) {
   UMA_HISTOGRAM_ENUMERATION(
       "UKM.Sources.Dropped", static_cast<int>(reason),
@@ -114,41 +93,6 @@ void RecordDroppedSource(bool already_recorded_another_reason,
                          DroppedDataReason reason) {
   if (!already_recorded_another_reason)
     RecordDroppedSource(reason);
-}
-
-void RecordDroppedEntry(uint64_t event_hash, DroppedDataReason reason) {
-  // Truncate the unsigned 64-bit hash to 31 bits, to
-  // make it a suitable histogram sample.
-  uint32_t value = event_hash & 0x7fffffff;
-  // The enum for these histograms gets populated by the
-  // PopulateEnumWithUkmEvents
-  // function in populate_enums.py when producing the merged XML.
-
-  UMA_HISTOGRAM_SPARSE("UKM.Entries.Dropped.ByEntryHash", value);
-
-  // Because the "UKM.Entries.Dropped.ByEntryHash" histogram will be emitted to
-  // every single time an entry is dropped, it will be dominated by the
-  // RECORDING_DISABLED reason (which is not very insightful). We also emit
-  // histograms split by selected reasons that are deemed interesting or helpful
-  // for data quality investigations.
-  switch (reason) {
-    case DroppedDataReason::MAX_HIT:
-      UMA_HISTOGRAM_SPARSE("UKM.Entries.Dropped.MaxHit.ByEntryHash", value);
-      break;
-    case DroppedDataReason::SAMPLED_OUT:
-      UMA_HISTOGRAM_SPARSE("UKM.Entries.Dropped.SampledOut.ByEntryHash", value);
-      break;
-    case DroppedDataReason::REJECTED_BY_FILTER:
-      UMA_HISTOGRAM_SPARSE("UKM.Entries.Dropped.RejectedByFilter.ByEntryHash",
-                           value);
-      break;
-    default:
-      break;
-  }
-
-  UMA_HISTOGRAM_ENUMERATION(
-      "UKM.Entries.Dropped", static_cast<int>(reason),
-      static_cast<int>(DroppedDataReason::NUM_DROPPED_DATA_REASONS));
 }
 
 void StoreEntryProto(const mojom::UkmEntry& in, Entry* out) {
@@ -250,6 +194,7 @@ void UkmRecorderImpl::UpdateRecording(ukm::UkmConsentState state) {
 
 void UkmRecorderImpl::EnableRecording() {
   recording_enabled_ = true;
+  OnRecorderParametersChanged();
 }
 
 void UkmRecorderImpl::DisableRecording() {
@@ -257,6 +202,7 @@ void UkmRecorderImpl::DisableRecording() {
   if (recording_enabled())
     recording_is_continuous_ = false;
   recording_enabled_ = false;
+  OnRecorderParametersChanged();
 }
 
 void UkmRecorderImpl::SetSamplingForTesting(int rate) {
@@ -367,26 +313,33 @@ void UkmRecorderImpl::AddUkmRecorderObserver(
     const base::flat_set<uint64_t>& event_hashes,
     UkmRecorderObserver* observer) {
   DCHECK(observer);
-  base::AutoLock auto_lock(lock_);
-  scoped_refptr<UkmRecorderObserverList> observers;
-  if (observers_.find(event_hashes) == observers_.end()) {
-    observers_.insert(
-        {event_hashes, base::MakeRefCounted<UkmRecorderObserverList>()});
-  }
+  {
+    base::AutoLock auto_lock(lock_);
+    if (!observers_.contains(event_hashes)) {
+      observers_.insert(
+          {event_hashes, base::MakeRefCounted<UkmRecorderObserverList>()});
+    }
 
-  observers_[event_hashes]->AddObserver(observer);
+    observers_[event_hashes]->AddObserver(observer);
+  }
+  // Update the UkmRecorderParameters to capture a UKM event which is being
+  // observed by any UkmRecorderObserver in |observers_|.
+  OnRecorderParametersChanged();
 }
 
 void UkmRecorderImpl::RemoveUkmRecorderObserver(UkmRecorderObserver* observer) {
-  base::AutoLock auto_lock(lock_);
-  for (auto it = observers_.begin(); it != observers_.end();) {
-    if (it->second->RemoveObserver(observer) ==
-        UkmRecorderObserverList::RemoveObserverResult::kWasOrBecameEmpty) {
-      it = observers_.erase(it);
-    } else {
-      ++it;
+  {
+    base::AutoLock auto_lock(lock_);
+    for (auto it = observers_.begin(); it != observers_.end();) {
+      if (it->second->RemoveObserver(observer) ==
+          UkmRecorderObserverList::RemoveObserverResult::kWasOrBecameEmpty) {
+        it = observers_.erase(it);
+      } else {
+        ++it;
+      }
     }
   }
+  OnRecorderParametersChanged();
 }
 
 void UkmRecorderImpl::OnUkmAllowedStateChanged(UkmConsentState state) {
@@ -1263,6 +1216,15 @@ void UkmRecorderImpl::NotifyAllObservers(Method m, Params&&... params) {
   for (const auto& observer : observers_) {
     observer.second->Notify(FROM_HERE, m, std::forward<Params>(params)...);
   }
+}
+
+std::set<uint64_t> UkmRecorderImpl::GetObservedEventHashes() {
+  base::AutoLock lock(lock_);
+  std::set<uint64_t> hashes;
+  for (const auto& observer : observers_) {
+    hashes.insert(observer.first.begin(), observer.first.end());
+  }
+  return hashes;
 }
 
 }  // namespace ukm

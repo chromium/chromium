@@ -127,7 +127,7 @@ class NavigationEntry : public base::SupportsUserData {
   // Page-related helpers ------------------------------------------------------
 
   // Returns the title to be displayed on the tab. This could be the title of
-  // the page if it is available or the URL.
+  // the page if it is available or the simplified URL.
   virtual const std::u16string& GetTitleForDisplay() = 0;
 
   // Returns true if the current tab is in view source mode. This will be false

@@ -25,6 +25,8 @@ namespace {
 
 using base::SequencedTaskRunner;
 using base::TimeDelta;
+using drivefs::mojom::QueryItem;
+using drivefs::mojom::QueryItemPtr;
 using mojom::FileMetadata;
 using mojom::FileMetadataPtr;
 using std::ostream;
@@ -43,6 +45,7 @@ bool InProgress(const Stage stage) {
     case Stage::kCannotGetFreeSpace:
     case Stage::kCannotListFiles:
     case Stage::kNotEnoughSpace:
+    case Stage::kCannotEnableDocsOffline:
       return false;
   }
 
@@ -323,6 +326,7 @@ ostream& operator<<(ostream& out, const Stage stage) {
     PRINT(CannotGetFreeSpace)
     PRINT(CannotListFiles)
     PRINT(NotEnoughSpace)
+    PRINT(CannotEnableDocsOffline)
 #undef PRINT
   }
 
@@ -352,6 +356,26 @@ bool Progress::HasEnoughFreeSpace() const {
                          << HumanReadableSize(required_space) << " + margin "
                          << HumanReadableSize(margin);
   return enough;
+}
+
+bool Progress::IsError() const {
+  switch (stage) {
+    case Stage::kCannotGetFreeSpace:
+    case Stage::kCannotListFiles:
+    case Stage::kNotEnoughSpace:
+    case Stage::kCannotEnableDocsOffline:
+      return true;
+
+    case Stage::kGettingFreeSpace:
+    case Stage::kListingFiles:
+    case Stage::kPaused:
+    case Stage::kSuccess:
+    case Stage::kSyncing:
+    case Stage::kStopped:
+      return false;
+  }
+
+  NOTREACHED_NORETURN() << "Unexpected Stage " << stage;
 }
 
 constexpr TimeDelta kStalledFileInterval = base::Seconds(10);
@@ -613,7 +637,7 @@ void PinManager::Start() {
 void PinManager::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (progress_.stage != Stage::kStopped) {
+  if (!progress_.IsError()) {
     VLOG(1) << "Stopping";
     Complete(Stage::kStopped);
   }
@@ -636,6 +660,19 @@ void PinManager::OnFreeSpaceRetrieved1(const int64_t free_space) {
   progress_.free_space = free_space;
   VLOG(1) << "Free space: " << HumanReadableSize(free_space);
 
+  VLOG(1) << "Enabling Docs offline";
+  drivefs_->SetDocsOfflineEnabled(
+      true, base::BindOnce(&PinManager::OnDocsOfflineEnabled, GetWeakPtr()));
+}
+
+void PinManager::OnDocsOfflineEnabled(drive::FileError error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (error != drive::FILE_ERROR_OK) {
+    LOG(ERROR) << "Cannot enable Docs offline: " << error;
+    return Complete(Stage::kCannotEnableDocsOffline);
+  }
+
+  VLOG(1) << "Successfully enabled Docs offline";
   VLOG(1) << "Listing files";
   timer_ = base::ElapsedTimer();
   progress_.stage = Stage::kListingFiles;
@@ -715,12 +752,11 @@ void PinManager::GetNextPage(const Id dir_id, Path dir_path, Query query) {
   q->GetNextPage(base::BindOnce(
       [](const base::WeakPtr<PinManager> pin_manager, Id dir_id, Path dir_path,
          Query query, const drive::FileError error,
-         const absl::optional<std::vector<mojom::QueryItemPtr>> items) {
+         const absl::optional<std::vector<QueryItemPtr>> items) {
         if (pin_manager) {
           pin_manager->OnSearchResult(
               dir_id, std::move(dir_path), std::move(query), error,
-              items ? *items
-                    : base::span<const drivefs::mojom::QueryItemPtr>{});
+              items ? *items : base::span<const QueryItemPtr>{});
         } else {
           VLOG(1) << "Dropped query for " << dir_id << " " << Quote(dir_path);
         }
@@ -728,12 +764,11 @@ void PinManager::GetNextPage(const Id dir_id, Path dir_path, Query query) {
       GetWeakPtr(), dir_id, std::move(dir_path), std::move(query)));
 }
 
-void PinManager::OnSearchResult(
-    const Id dir_id,
-    Path dir_path,
-    Query query,
-    const drive::FileError error,
-    const base::span<const drivefs::mojom::QueryItemPtr> items) {
+void PinManager::OnSearchResult(const Id dir_id,
+                                Path dir_path,
+                                Query query,
+                                const drive::FileError error,
+                                const base::span<const QueryItemPtr> items) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(progress_.stage, Stage::kListingFiles);
 
@@ -780,67 +815,78 @@ void PinManager::OnSearchResult(
     return StartPinning();
   }
 
+  progress_.listed_items += items.size();
   VLOG(2) << "Got " << items.size() << " items from " << dir_id << " "
           << Quote(dir_path);
-  const Path files_by_id_path("/.files-by-id");
 
-  for (const mojom::QueryItemPtr& item : items) {
+  for (const QueryItemPtr& item : items) {
     DCHECK(item);
-    DCHECK(item->metadata);
-    const FileMetadata& md = *item->metadata;
-    const Id id = Id(md.stable_id);
-
-    const Path& path = item->path;
-    if (files_by_id_path.IsParent(path) || !dir_path.IsParent(path)) {
-      LOG(ERROR) << "Unexpected path " << Quote(path) << " for " << Quote(md)
-                 << " when listing items in " << dir_id << " "
-                 << Quote(dir_path);
-    }
-
-    if (md.shortcut_details) {
-      progress_.skipped_items++;
-      progress_.listed_shortcuts++;
-      VLOG(2) << "Skipped " << id << " " << Quote(path) << ": Shortcut to "
-              << md.type << " " << Id(md.shortcut_details->target_stable_id);
-      continue;
-    }
-
-    using Type = FileMetadata::Type;
-
-    switch (md.type) {
-      case Type::kFile:
-        progress_.listed_files++;
-        Add(md, path);
-        continue;
-
-      case Type::kHosted:
-        progress_.listed_docs++;
-        Add(md, path);
-        continue;
-
-      case Type::kDirectory:
-        progress_.listed_dirs++;
-
-        if (const auto [it, ok] = visited_dirs_.try_emplace(id, dir_path);
-            !ok) {
-          DCHECK_EQ(it->first, id);
-          progress_.skipped_items++;
-          VLOG(1) << "Dir " << id << " " << Quote(path) << " seen when listing "
-                  << dir_id << " " << Quote(dir_path)
-                  << " was previously seen when listing " << Quote(it->second);
-          continue;
-        }
-
-        ListItems(id, path);
-    }
+    HandleQueryItem(dir_id, dir_path, *item);
   }
 
-  progress_.listed_items += items.size();
   VLOG(1) << NiceNum << "Listed " << progress_.listed_items << " items in "
           << Quote(timer_.Elapsed()) << ", Skipped " << progress_.skipped_items
           << " items, Tracking " << files_to_track_.size() << " files";
   NotifyProgress();
   GetNextPage(dir_id, std::move(dir_path), std::move(query));
+}
+
+void PinManager::HandleQueryItem(Id dir_id,
+                                 const Path& dir_path,
+                                 const drivefs::mojom::QueryItem& item) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(item.metadata);
+  const FileMetadata& md = *item.metadata;
+  const Id id = Id(md.stable_id);
+  const Path& path = item.path;
+
+  if (!dir_path.IsParent(path)) {
+    progress_.skipped_items++;
+    LOG(ERROR) << "Unexpected path " << id << " " << Quote(path) << " for "
+               << Quote(md) << " when listing items in " << dir_id << " "
+               << Quote(dir_path);
+    return;
+  }
+
+  if (md.shortcut_details) {
+    progress_.skipped_items++;
+    progress_.listed_shortcuts++;
+    VLOG(2) << "Skipped " << id << " " << Quote(path) << ": Shortcut to "
+            << md.type << " " << Id(md.shortcut_details->target_stable_id);
+    return;
+  }
+
+  using Type = FileMetadata::Type;
+  switch (md.type) {
+    case Type::kFile:
+      progress_.listed_files++;
+      Add(md, path);
+      return;
+
+    case Type::kHosted:
+      progress_.listed_docs++;
+      Add(md, path);
+      return;
+
+    case Type::kDirectory:
+      progress_.listed_dirs++;
+
+      if (const auto [it, ok] = visited_dirs_.try_emplace(id, dir_path); !ok) {
+        DCHECK_EQ(it->first, id);
+        progress_.skipped_items++;
+        VLOG(1) << "Dir " << id << " " << Quote(path) << " seen when listing "
+                << dir_id << " " << Quote(dir_path)
+                << " was previously seen when listing " << Quote(it->second);
+        return;
+      }
+
+      ListItems(id, path);
+      return;
+  }
+
+  progress_.skipped_items++;
+  LOG(ERROR) << "Unexpected item type " << Quote(md.type) << " for " << id
+             << " " << path;
 }
 
 void PinManager::Complete(const Stage stage) {
@@ -1032,14 +1078,6 @@ bool PinManager::OnSyncingEvent(mojom::ItemEvent& event) {
   using State = mojom::ItemEvent::State;
   switch (event.state) {
     case State::kQueued:
-      // (TODO b/266462624) kQueued events come with a bytes_to_transfer field
-      // incorrectly set to zero. So we set it to -1 to ignore it.
-      if (event.bytes_to_transfer == 0) {
-        VLOG(3) << "Zero bytes_to_transfer in " << Quote(event);
-        event.bytes_to_transfer = -1;
-      }
-      [[fallthrough]];
-
     case State::kInProgress:
       if (!Update(id, path, event.bytes_transferred, event.bytes_to_transfer)) {
         return false;

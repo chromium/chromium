@@ -1475,6 +1475,11 @@ ONC configuration of of **Cellular** networks is not yet supported.
       possible. Note, that disabled **AllowRoaming**
       takes precedence over autoconnect.
 
+* **CustomAPNList**
+    * (optional) - [array of APN](#APN-type)
+    * List of custom APN configurations, added by either the user or enterprise
+      admin.
+
 * **EID**
     * (optional, read-only, provided only for eSIM networks) - **string**
     * For GSM / LTE modems, the Embedded Universal Integrated Circuit Card
@@ -1625,10 +1630,6 @@ ONC configuration of of **Cellular** networks is not yet supported.
 * **SupportNetworkScan**
     * (optional, read-only) - **boolean**
     * True if the cellular network supports scanning.
-
-* **UserAPNList**
-    * (optional) - [array of APN](#APN-type)
-    * List of user APN configurations.
 
 ### APN type
 

@@ -12,8 +12,8 @@ h2 {
 
 table {
   border-collapse: collapse;
-  min-width: 100%;
   table-layout: fixed;
+  width: 95%;
 }
 
 th,
@@ -66,11 +66,11 @@ div[slot='panel'] > div > div {
 }
 
 .detection-logs-time {
-  width: 10%;
+  width: 7%;
 }
 
 .detection-logs-url {
-  width: 20%;
+  width: 15%;
 }
 
 td.detection-logs-url {
@@ -79,19 +79,19 @@ td.detection-logs-url {
 }
 
 .detection-logs-content-language {
-  width: 10%;
+  width: 7%;
 }
 
 .detection-logs-cld-language {
-  width: 10%;
+  width: 7%;
 }
 
 .detection-logs-detection-model-version {
-  width: 10%;
+  width: 5%;
 }
 
 .detection-logs-model-reliability {
-  width: 10%;
+  width: 5%;
 }
 
 .detection-logs-is-cld-reliable {
@@ -99,19 +99,19 @@ td.detection-logs-url {
 }
 
 .detection-logs-has-notranslate {
-  width: 10%;
+  width: 5%;
 }
 
 .detection-logs-html-root-language {
-  width: 10%;
+  width: 7%;
 }
 
 .detection-logs-adopted-language {
-  width: 10%;
+  width: 7%;
 }
 
 .detection-logs-content {
-  width: 20%;
+  width: 30%;
 }
 
 td.detection-logs-content div {

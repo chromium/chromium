@@ -20,7 +20,6 @@
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -318,10 +317,8 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
       account_id, signin::ConsentLevel::kSync);
   base::HistogramTester histogram_tester;
 
-  auto* profile_manager = g_browser_process->profile_manager();
-  Profile* primary_profile =
-      profile_manager->GetProfile(profile_manager->GetPrimaryUserProfilePath());
-  EXPECT_TRUE(ShouldOpenFirstRun(primary_profile));
+  ASSERT_TRUE(profile()->IsMainProfile());
+  EXPECT_TRUE(ShouldOpenFirstRun(profile()));
 
   ASSERT_TRUE(fre_service());
 
@@ -343,10 +340,8 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
   EXPECT_FALSE(
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
 
-  auto* profile_manager = g_browser_process->profile_manager();
-  Profile* primary_profile =
-      profile_manager->GetProfile(profile_manager->GetPrimaryUserProfilePath());
-  EXPECT_TRUE(ShouldOpenFirstRun(primary_profile));
+  ASSERT_TRUE(profile()->IsMainProfile());
+  EXPECT_TRUE(ShouldOpenFirstRun(profile()));
 
   ASSERT_TRUE(fre_service());
 
@@ -381,10 +376,8 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
       ->device_settings_lacros()
       ->UpdateDeviceSettings(std::move(device_settings));
 
-  auto* profile_manager = g_browser_process->profile_manager();
-  Profile* primary_profile =
-      profile_manager->GetProfile(profile_manager->GetPrimaryUserProfilePath());
-  EXPECT_TRUE(ShouldOpenFirstRun(primary_profile));
+  ASSERT_TRUE(profile()->IsMainProfile());
+  EXPECT_TRUE(ShouldOpenFirstRun(profile()));
 
   ASSERT_TRUE(fre_service());
 
@@ -536,6 +529,47 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceCohortBrowserTest, GroupViaPrefs) {
   // The registered group is read from the prefs, not from the feature param.
   EXPECT_TRUE(variations::IsInSyntheticTrialGroup("ForYouFreSynthetic",
                                                   kStudyTestGroupName2));
+}
+
+class FirstRunServiceControlBrowserTest : public FirstRunServiceBrowserTest {
+ public:
+  static constexpr char kStudyTestGroupName[] = "control";
+
+  FirstRunServiceControlBrowserTest() {
+    variations::SyntheticTrialsActiveGroupIdProvider::GetInstance()
+        ->ResetForTesting();
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {
+            {kForYouFreSyntheticTrialRegistration,
+             {{"group_name", kStudyTestGroupName}}},
+        },
+        {kForYouFre});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+IN_PROC_BROWSER_TEST_F(FirstRunServiceControlBrowserTest, PRE_Control) {
+  EXPECT_EQ(nullptr, FirstRunServiceFactory::GetForBrowserContext(profile()));
+
+  // The FRE is directly marked finished and we join the indicated cohort.
+  PrefService* local_state = g_browser_process->local_state();
+  EXPECT_TRUE(local_state->GetBoolean(prefs::kFirstRunFinished));
+  EXPECT_EQ(kStudyTestGroupName,
+            local_state->GetString(prefs::kFirstRunStudyGroup));
+
+  EXPECT_TRUE(variations::HasSyntheticTrial("ForYouFreSynthetic"));
+  EXPECT_TRUE(variations::IsInSyntheticTrialGroup("ForYouFreSynthetic",
+                                                  kStudyTestGroupName));
+}
+IN_PROC_BROWSER_TEST_F(FirstRunServiceControlBrowserTest, Control) {
+  EXPECT_EQ(nullptr, FirstRunServiceFactory::GetForBrowserContext(profile()));
+
+  // On subsequent startups, we continue the registration.
+  EXPECT_TRUE(variations::HasSyntheticTrial("ForYouFreSynthetic"));
+  EXPECT_TRUE(variations::IsInSyntheticTrialGroup("ForYouFreSynthetic",
+                                                  kStudyTestGroupName));
 }
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

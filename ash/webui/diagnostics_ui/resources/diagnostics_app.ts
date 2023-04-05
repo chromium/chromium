@@ -16,6 +16,7 @@ import './system_page.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {SelectorItem} from 'chrome://resources/ash/common/navigation_selector.js';
 import {NavigationViewPanelElement} from 'chrome://resources/ash/common/navigation_view_panel.js';
+import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
@@ -207,6 +208,14 @@ export class DiagnosticsAppElement extends DiagnosticsAppElementBase {
 
   override connectedCallback(): void {
     super.connectedCallback();
+    if (loadTimeData.getBoolean('isJellyEnabledForDiagnosticsApp')) {
+      // TODO(b/276493287): After the Jelly experiment is launched, replace
+      // `cros_styles.css` with `theme/colors.css` directly in `index.html`.
+      document.querySelector('link[href*=\'cros_styles.css\']')
+          ?.setAttribute('href', 'chrome://theme/colors.css?sets=legacy,sys');
+      startColorChangeUpdater();
+    }
+
     this.createNavigationPanel();
     window.addEventListener(
         'show-toast', (e) => this.showToastHandler((e as ShowToastEvent)));

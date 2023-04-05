@@ -23,6 +23,7 @@
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "mojo/public/cpp/bindings/default_construct_tag.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
@@ -61,7 +62,8 @@ void RecordSourceRegistrationError(mojom::SourceRegistrationError error) {
   base::UmaHistogramEnumeration("Conversions.SourceRegistrationError2", error);
 }
 
-SourceRegistration::SourceRegistration() = default;
+SourceRegistration::SourceRegistration(mojo::DefaultConstruct::Tag tag)
+    : destination_set(tag) {}
 
 SourceRegistration::SourceRegistration(DestinationSet destination_set)
     : destination_set(std::move(destination_set)) {}

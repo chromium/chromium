@@ -58,6 +58,7 @@
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
+#include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size_utils.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
@@ -338,6 +339,27 @@ absl::optional<base::TimeDelta> PerBuyerCumulativeTimeout(
       buyer, auction_config.non_shared_params.buyer_cumulative_timeouts);
 }
 
+std::string PerBuyerCurrency(const url::Origin& buyer,
+                             const blink::AuctionConfig& auction_config) {
+  const blink::AuctionConfig::MaybePromiseBuyerCurrencies& buyer_currencies =
+      auction_config.non_shared_params.buyer_currencies;
+  DCHECK(!buyer_currencies.is_promise());
+  const auto& per_buyer_currencies =
+      buyer_currencies.value().per_buyer_currencies;
+  if (per_buyer_currencies.has_value()) {
+    auto it = per_buyer_currencies->find(buyer);
+    if (it != per_buyer_currencies->end()) {
+      return it->second;
+    }
+  }
+  const auto& all_buyers_currency =
+      buyer_currencies.value().all_buyers_currency;
+  if (all_buyers_currency.has_value()) {
+    return all_buyers_currency.value();
+  }
+  return blink::kUnspecifiedAdCurrency;
+}
+
 }  // namespace
 
 InterestGroupAuction::BidState::BidState() = default;
@@ -398,9 +420,11 @@ InterestGroupAuction::Bid::Bid(
     BidRole bid_role,
     std::string ad_metadata,
     double bid,
+    std::string bid_currency,
     absl::optional<double> ad_cost,
     blink::AdDescriptor ad_descriptor,
     std::vector<blink::AdDescriptor> ad_component_descriptors,
+    absl::optional<uint16_t> modeling_signals,
     base::TimeDelta bid_duration,
     absl::optional<uint32_t> bidding_signals_data_version,
     const blink::InterestGroup::Ad* bid_ad,
@@ -409,9 +433,11 @@ InterestGroupAuction::Bid::Bid(
     : bid_role(bid_role),
       ad_metadata(std::move(ad_metadata)),
       bid(bid),
+      bid_currency(std::move(bid_currency)),
       ad_cost(std::move(ad_cost)),
       ad_descriptor(std::move(ad_descriptor)),
       ad_component_descriptors(std::move(ad_component_descriptors)),
+      modeling_signals(modeling_signals),
       bid_duration(bid_duration),
       bidding_signals_data_version(bidding_signals_data_version),
       interest_group(&bid_state->bidder->interest_group),
@@ -489,6 +515,8 @@ class InterestGroupAuction::BuyerHelper
         // TODO(mmenke): If we can make this the standard behavior for the
         // `priority` field as well, the API would be more consistent.
         if (priority < 0) {
+          auction_->auction_metrics_recorder_
+              ->RecordBidFilteredDuringInterestGroupLoad();
           continue;
         }
       }
@@ -584,6 +612,10 @@ class InterestGroupAuction::BuyerHelper
            !interest_group.priority_vector->empty())
               ? state->calculated_priority
               : absl::optional<double>());
+      if (*new_priority < 0) {
+        auction_->auction_metrics_recorder_
+            ->RecordBidFilteredDuringReprioritization();
+      }
     }
     OnBiddingSignalsReceivedInternal(state, new_priority,
                                      std::move(resume_generate_bid_callback));
@@ -812,6 +844,8 @@ class InterestGroupAuction::BuyerHelper
       // sufficient.
       CloseBidStatePipes(*bid_states_[i]);
     }
+    auction_->auction_metrics_recorder_->RecordBidsFilteredByPerBuyerLimits(
+        bid_states_.size() - size_limit_);
     bid_states_.resize(size_limit_);
 
     // Restore the origin grouping within lowest priority band among the
@@ -826,6 +860,9 @@ class InterestGroupAuction::BuyerHelper
       BidState* bid_state,
       AuctionWorkletManager::FatalErrorType fatal_error_type,
       const std::vector<std::string>& errors) {
+    auction_->auction_metrics_recorder_
+        ->RecordBidAbortedByBidderWorkletFatalError();
+
     // Add error(s) directly to error list.
     if (fatal_error_type ==
         AuctionWorkletManager::FatalErrorType::kWorkletCrash) {
@@ -998,6 +1035,7 @@ class InterestGroupAuction::BuyerHelper
         GetPerBuyerSignals(*auction_->config_,
                            bid_state->bidder->interest_group.owner),
         PerBuyerTimeout(owner_, *auction_->config_),
+        PerBuyerCurrency(owner_, *auction_->config_),
         GetDirectFromSellerPerBuyerSignals(
             url_builder, bid_state->bidder->interest_group.owner),
         GetDirectFromSellerAuctionSignals(url_builder));
@@ -1005,8 +1043,9 @@ class InterestGroupAuction::BuyerHelper
   }
 
   // Invoked when OnBiddingSignalsReceived() has been called for `state`, or
-  // with a negative priority when the worklet process has an error and is
-  // waiting on the OnBiddingSignalsReceived() invocation.
+  // with a negative priority when the worklet process has an error, or the
+  // buyer reaches their cumulative timeout, and is still waiting on the
+  // OnBiddingSignalsReceived() invocation.
   void OnBiddingSignalsReceivedInternal(
       BidState* state,
       absl::optional<double> new_priority,
@@ -1347,6 +1386,8 @@ class InterestGroupAuction::BuyerHelper
       }
     }
 
+    auction_->auction_metrics_recorder_
+        ->RecordBidsAbortedByBuyerCumulativeTimeout(pending_bids.size());
     for (auto* pending_bid : pending_bids) {
       // Fail bids individually, with errors. This does potentially do extra
       // work over just failing the entire auction directly, but ensures there's
@@ -1377,6 +1418,15 @@ class InterestGroupAuction::BuyerHelper
     if (mojo_bid->bid_duration.is_negative()) {
       generate_bid_client_receiver_set_.ReportBadMessage(
           "Invalid bid duration");
+      return nullptr;
+    }
+
+    if (!blink::IsValidOrUnspecifiedAdCurrencyCode(mojo_bid->bid_currency) ||
+        !blink::VerifyAdCurrencyCode(
+            PerBuyerCurrency(owner_, *auction_->config_),
+            mojo_bid->bid_currency)) {
+      generate_bid_client_receiver_set_.ReportBadMessage(
+          "Invalid bid currency");
       return nullptr;
     }
 
@@ -1439,10 +1489,11 @@ class InterestGroupAuction::BuyerHelper
     }
 
     return std::make_unique<Bid>(
-        bid_role, std::move(mojo_bid->ad), mojo_bid->bid, mojo_bid->ad_cost,
+        bid_role, std::move(mojo_bid->ad), mojo_bid->bid,
+        std::move(mojo_bid->bid_currency), mojo_bid->ad_cost,
         std::move(mojo_bid->ad_descriptor), std::move(ad_component_descriptors),
-        mojo_bid->bid_duration, bidding_signals_data_version, matching_ad,
-        &bid_state, auction_);
+        std::move(mojo_bid->modeling_signals), mojo_bid->bid_duration,
+        bidding_signals_data_version, matching_ad, &bid_state, auction_);
   }
 
   // Close all Mojo pipes associated with `state`.
@@ -1750,6 +1801,8 @@ InterestGroupAuction::CreateReporter(
   // winning bidder's generateBid() method.
   winning_bid_info.bid = winner->bid->auction->top_bid()->bid->bid;
   winning_bid_info.ad_cost = winner->bid->auction->top_bid()->bid->ad_cost;
+  winning_bid_info.modeling_signals =
+      winner->bid->auction->top_bid()->bid->modeling_signals;
   winning_bid_info.bid_duration = winner->bid->bid_duration;
   winning_bid_info.bidding_signals_data_version =
       winner->bid->bidding_signals_data_version;
@@ -2723,10 +2776,12 @@ InterestGroupAuction::CreateBidFromComponentAuctionWinner(
       bid_role, modified_bid_params->ad,
       modified_bid_params->has_bid ? modified_bid_params->bid
                                    : component_bid->bid,
+      modified_bid_params->has_bid ? modified_bid_params->bid_currency
+                                   : std::string(),
       component_bid->ad_cost, component_bid->ad_descriptor,
-      component_bid->ad_component_descriptors, component_bid->bid_duration,
-      component_bid->bidding_signals_data_version, component_bid->bid_ad,
-      component_bid->bid_state, component_bid->auction);
+      component_bid->ad_component_descriptors, component_bid->modeling_signals,
+      component_bid->bid_duration, component_bid->bidding_signals_data_version,
+      component_bid->bid_ad, component_bid->bid_state, component_bid->auction);
 }
 
 void InterestGroupAuction::OnBidSourceDone() {
@@ -2774,13 +2829,16 @@ void InterestGroupAuction::ScoreBidIfReady(std::unique_ptr<Bid> bid) {
   DCHECK(url_builder);  // Should be ready by now.
   seller_worklet_handle_->AuthorizeSubresourceUrls(*url_builder);
   seller_worklet_handle_->GetSellerWorklet()->ScoreAd(
-      bid_raw->ad_metadata, bid_raw->bid, config_->non_shared_params,
-      GetDirectFromSellerSellerSignals(url_builder),
+      bid_raw->ad_metadata, bid_raw->bid, bid_raw->bid_currency,
+      config_->non_shared_params, GetDirectFromSellerSellerSignals(url_builder),
       GetDirectFromSellerAuctionSignals(url_builder),
-      GetOtherSellerParam(*bid_raw), bid_raw->interest_group->owner,
-      bid_raw->ad_descriptor.url, bid_raw->GetAdComponentUrls(),
-      bid_raw->bid_duration.InMilliseconds(), SellerTimeout(), bid_trace_id,
-      std::move(score_ad_remote));
+      GetOtherSellerParam(*bid_raw),
+      parent_ ? absl::make_optional<std::string>(
+                    PerBuyerCurrency(config_->seller, *parent_->config_))
+              : absl::nullopt,
+      bid_raw->interest_group->owner, bid_raw->ad_descriptor.url,
+      bid_raw->GetAdComponentUrls(), bid_raw->bid_duration.InMilliseconds(),
+      SellerTimeout(), bid_trace_id, std::move(score_ad_remote));
 }
 
 bool InterestGroupAuction::ValidateScoreBidCompleteResult(
@@ -2816,13 +2874,29 @@ bool InterestGroupAuction::ValidateScoreBidCompleteResult(
           "Invalid component_auction_modified_bid_params");
       return false;
     }
-    // If a component seller modified the bid, the new bid must also be valid.
+    // If a component seller modified the bid, the new bid must also be valid,
+    // as should its currency.
     if (component_auction_modified_bid_params &&
-        component_auction_modified_bid_params->has_bid &&
-        !IsValidBid(component_auction_modified_bid_params->bid)) {
-      score_ad_receivers_.ReportBadMessage(
-          "Invalid component_auction_modified_bid_params bid");
-      return false;
+        component_auction_modified_bid_params->has_bid) {
+      if (!IsValidBid(component_auction_modified_bid_params->bid)) {
+        score_ad_receivers_.ReportBadMessage(
+            "Invalid component_auction_modified_bid_params bid");
+        return false;
+      }
+
+      if (!blink::IsValidOrUnspecifiedAdCurrencyCode(
+              component_auction_modified_bid_params->bid_currency) ||
+          (config_->non_shared_params.seller_currency &&
+           !blink::VerifyAdCurrencyCode(
+               config_->non_shared_params.seller_currency.value(),
+               component_auction_modified_bid_params->bid_currency)) ||
+          !blink::VerifyAdCurrencyCode(
+              PerBuyerCurrency(config_->seller, *parent_->config_),
+              component_auction_modified_bid_params->bid_currency)) {
+        score_ad_receivers_.ReportBadMessage(
+            "Invalid component_auction_modified_bid_params bid_currency");
+        return false;
+      }
     }
   }
   return true;

@@ -23,6 +23,8 @@ class VIEWS_EXPORT ComboboxMenuModel : public ui::MenuModel {
   absl::optional<ui::ColorId> GetForegroundColorId(size_t index) override;
   absl::optional<ui::ColorId> GetSubmenuBackgroundColorId(
       size_t index) override;
+  absl::optional<ui::ColorId> GetSelectedBackgroundColorId(
+      size_t index) override;
 
   void SetForegroundColorId(absl::optional<ui::ColorId> foreground_color) {
     foreground_color_id_ = foreground_color;
@@ -31,6 +33,11 @@ class VIEWS_EXPORT ComboboxMenuModel : public ui::MenuModel {
   void SetSubmenuBackgroundColorId(
       absl::optional<ui::ColorId> background_color) {
     submenu_background_color_id_ = background_color;
+  }
+
+  void SetSelectedBackgroundColorId(
+      absl::optional<ui::ColorId> selected_color) {
+    selected_background_color_id_ = selected_color;
   }
 
  protected:
@@ -62,6 +69,7 @@ class VIEWS_EXPORT ComboboxMenuModel : public ui::MenuModel {
 
   absl::optional<ui::ColorId> foreground_color_id_;
   absl::optional<ui::ColorId> submenu_background_color_id_;
+  absl::optional<ui::ColorId> selected_background_color_id_;
 
   raw_ptr<views::Combobox> owner_;    // Weak. Owns this.
   raw_ptr<ui::ComboboxModel> model_;  // Weak.

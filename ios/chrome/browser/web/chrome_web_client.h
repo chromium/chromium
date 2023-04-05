@@ -65,9 +65,9 @@ class ChromeWebClient : public web::WebClient {
       web::WebState* web_state) const override API_AVAILABLE(ios(16));
   void StartTextSearchInWebState(web::WebState* web_state) override;
   void StopTextSearchInWebState(web::WebState* web_state) override;
-
   bool IsMixedContentAutoupgradeEnabled(
       web::BrowserState* browser_state) const override;
+  bool IsBrowserLockdownModeEnabled(web::BrowserState* browser_state) override;
 
  private:
   // Reference to a view that is attached to a window.

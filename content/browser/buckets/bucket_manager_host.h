@@ -64,6 +64,10 @@ class BucketManagerHost : public blink::mojom::BucketManagerHost {
   void OpenBucket(const std::string& name,
                   blink::mojom::BucketPoliciesPtr policy,
                   OpenBucketCallback callback) override;
+  // Gets the bucket with the given name. Doesn't create the bucket if it
+  // doesn't exist.
+  void GetBucketForDevtools(const std::string& name,
+                            GetBucketForDevtoolsCallback callback) override;
   void Keys(KeysCallback callback) override;
   void DeleteBucket(const std::string& name,
                     DeleteBucketCallback callback) override;
@@ -88,6 +92,11 @@ class BucketManagerHost : public blink::mojom::BucketManagerHost {
   void DidDeleteBucket(const std::string& bucket_name,
                        DeleteBucketCallback callback,
                        blink::mojom::QuotaStatusCode status);
+
+  void DidGetBucketForDevtools(
+      base::WeakPtr<BucketContext> bucket_context,
+      GetBucketForDevtoolsCallback callback,
+      storage::QuotaErrorOr<storage::BucketInfo> result);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

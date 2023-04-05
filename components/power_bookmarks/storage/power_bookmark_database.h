@@ -58,7 +58,7 @@ class PowerBookmarkDatabase : public PowerBookmarkSyncBridge::Delegate {
 
   // Delete the given `guid` in the database, if it exists. Returns whether
   // the operation was successful.
-  virtual bool DeletePower(const base::GUID& guid) = 0;
+  virtual bool DeletePower(const base::Uuid& guid) = 0;
 
   // Delete all powers for the given `url`. Use `power_type` to restrict which
   // type is deleted or use POWER_TYPE_UNSPECIFIED to delete everything.

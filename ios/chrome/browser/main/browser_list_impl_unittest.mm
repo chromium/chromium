@@ -192,9 +192,9 @@ TEST_F(BrowserListImplTest, BrowserListObserver) {
   browser_list_->RemoveObserver(&observer);
 }
 
-// TODO(crbug.com/1421255): when checking the ObserverList is empty when
-// BrowserList is destroyed this test will have to be modified as the
-// stack allocated TestBrowserListObserver is still registered.
+// Check that deleting the ChromeBrowserState, destroy the BrowserList and
+// informs the observer. TestBrowserListObserver knows to remove itself as
+// an Observer when BrowserList::OnBrowserListShutdown() is called.
 TEST_F(BrowserListImplTest, DeleteBrowserState) {
   TestBrowserListObserver observer;
   browser_list_->AddObserver(&observer);

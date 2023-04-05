@@ -10,6 +10,7 @@
 #include <limits>
 #include <memory>
 
+#include "base/check.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/gtest_util.h"
 #include "base/values.h"
@@ -33,8 +34,8 @@
 #include "third_party/skia/include/core/SkBlendMode.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkClipOp.h"
-#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkGraphics.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageGenerator.h"
@@ -92,16 +93,16 @@ class DiscardableImageMapTest : public testing::Test {
     for (const auto* image : draw_image_ptrs)
       draw_images.push_back(DrawImage(
           *image, 1.f, PaintImage::kDefaultFrameIndex, target_color_params));
-
+    DCHECK_CALLED_ON_VALID_SEQUENCE(image_map.images_rtree_sequence_checker_);
     std::vector<PositionScaleDrawImage> position_draw_images;
-    std::vector<DrawImage> results;
-    image_map.images_rtree_.Search(rect, &results);
-    for (DrawImage& image : results) {
-      auto image_id = image.paint_image().stable_id();
+    std::vector<const DrawImage*> results;
+    image_map.images_rtree_->Search(rect, &results);
+    for (const DrawImage* image : results) {
+      auto image_id = image->paint_image().stable_id();
       position_draw_images.push_back(PositionScaleDrawImage(
-          image.paint_image(),
+          image->paint_image(),
           ImageRectsToRegion(image_map.GetRectsForImage(image_id)).bounds(),
-          image.scale()));
+          image->scale()));
     }
 
     EXPECT_EQ(draw_images.size(), position_draw_images.size());

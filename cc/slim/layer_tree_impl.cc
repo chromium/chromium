@@ -169,12 +169,6 @@ void LayerTreeImpl::SetNeedsRedraw() {
   SetClientNeedsOneBeginFrame();
 }
 
-void LayerTreeImpl::MaybeCompositeNow() {
-  if (frame_sink_) {
-    frame_sink_->MaybeCompositeNow();
-  }
-}
-
 const scoped_refptr<Layer>& LayerTreeImpl::root() const {
   return root_;
 }
@@ -230,7 +224,6 @@ bool LayerTreeImpl::BeginFrame(
   // Skip any delayed BeginFrame messages that arrive even after we no longer
   // need it.
   if (!NeedsDraw()) {
-    TRACE_EVENT_INSTANT0("cc", "EarlyOut_NotNeeded", TRACE_EVENT_SCOPE_THREAD);
     num_begin_frames_with_no_draw_++;
     frame_sink_->SetNeedsBeginFrame(NeedsBeginFrames());
     return false;

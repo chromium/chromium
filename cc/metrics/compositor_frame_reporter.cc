@@ -484,8 +484,7 @@ CompositorFrameReporter::CompositorFrameReporter(
       layer_tree_host_id_(layer_tree_host_id),
       global_trackers_(trackers) {
   DCHECK(global_trackers_.dropped_frame_counter);
-  global_trackers_.dropped_frame_counter->OnBeginFrame(
-      args, IsScrollActive(active_trackers_));
+  global_trackers_.dropped_frame_counter->OnBeginFrame(args);
   DCHECK(IsScrollActive(active_trackers_) ||
          scrolling_thread_ == FrameInfo::SmoothEffectDrivingThread::kUnknown);
   if (scrolling_thread_ == FrameInfo::SmoothEffectDrivingThread::kCompositor) {
@@ -1356,14 +1355,30 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents(
 void CompositorFrameReporter::ReportScrollJankMetrics() const {
   int32_t fling_input_count = 0;
   int32_t normal_input_count = 0;
+  float total_predicted_delta = 0;
+  bool had_gesture_scrolls = false;
+
   for (const auto& event : events_metrics_) {
+    TRACE_EVENT("input", "GestureType", "gesture", event->type());
     switch (event->type()) {
       case EventMetrics::EventType::kGestureScrollUpdate:
+        normal_input_count += event->AsScrollUpdate()->coalesced_event_count();
+        total_predicted_delta += event->AsScrollUpdate()->predicted_delta();
+        had_gesture_scrolls = true;
+        break;
       case EventMetrics::EventType::kFirstGestureScrollUpdate:
         normal_input_count += event->AsScrollUpdate()->coalesced_event_count();
+        total_predicted_delta += event->AsScrollUpdate()->predicted_delta();
+        if (global_trackers_.predictor_jank_tracker) {
+          global_trackers_.predictor_jank_tracker
+              ->ResetCurrentScrollReporting();
+        }
+        had_gesture_scrolls = true;
         break;
       case EventMetrics::EventType::kInertialGestureScrollUpdate:
         fling_input_count += event->AsScrollUpdate()->coalesced_event_count();
+        total_predicted_delta += event->AsScrollUpdate()->predicted_delta();
+        had_gesture_scrolls = true;
         break;
       default:
         continue;
@@ -1376,6 +1391,13 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
                 TraceScrollJankMetrics(events_metrics, fling_input_count,
                                        normal_input_count, ctx);
               });
+
+  const auto end_timestamp = viz_breakdown_.presentation_feedback.timestamp;
+  if (had_gesture_scrolls && global_trackers_.predictor_jank_tracker) {
+    global_trackers_.predictor_jank_tracker->ReportLatestScrollDelta(
+        total_predicted_delta, end_timestamp, args_.interval);
+  }
+
   // Counting number of inputs per frame for flings and normal input has
   // to be separate as the rate of input generation is different for each
   // of them, normal input is screen generated, and flings are GPU vsync

@@ -238,8 +238,7 @@ void WorkerThreadDebugger::consoleAPIMessage(
   std::unique_ptr<SourceLocation> location = std::make_unique<SourceLocation>(
       ToCoreString(url), String(), line_number, column_number,
       stack_trace ? stack_trace->clone() : nullptr, 0);
-  worker_thread->GetWorkerReportingProxy().ReportConsoleMessage(
-      mojom::ConsoleMessageSource::kConsoleApi,
+  worker_thread->GlobalScope()->OnConsoleApiMessage(
       V8MessageLevelToMessageLevel(level), ToCoreString(message),
       location.get());
 }

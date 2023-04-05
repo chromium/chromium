@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "base/guid.h"
 #include "base/logging.h"
+#include "base/uuid.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/loopback_server.pb.h"
@@ -41,7 +41,7 @@ std::unique_ptr<LoopbackServerEntity> PersistentBookmarkEntity::CreateNew(
   }
 
   const std::string originator_client_item_id = client_entity.id_string();
-  if (!base::IsValidGUIDOutputString(originator_client_item_id)) {
+  if (!base::Uuid::ParseLowercase(originator_client_item_id).is_valid()) {
     DLOG(WARNING) << "Invalid originator client item ID: "
                   << originator_client_item_id;
     return nullptr;

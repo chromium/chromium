@@ -134,4 +134,70 @@ class DesktopNonZpsSection : public Section {
   void InitFromMatches(ACMatches& matches) override;
 };
 
+// Section expressing the iPhone NTP ZPS limits:
+// - 1 clipboard suggestion
+// - up to 20 personalized suggestions
+// - up to 20 suggestions total
+class IOSNTPZpsSection : public ZpsSection {
+ public:
+  explicit IOSNTPZpsSection(omnibox::GroupConfigMap& group_configs);
+};
+
+// Section expressing the iPhone ZPS on Web limits:
+// - 1 verbatim suggestion
+// - 1 clipboard suggestion
+// - 1 row of MV tiles
+// - up to 20 personalized suggestions
+// - up to 8 suggestions related to previous searches
+// - up to 20 suggestions total
+class IOSWebZpsSection : public ZpsSection {
+ public:
+  explicit IOSWebZpsSection(omnibox::GroupConfigMap& group_configs);
+};
+
+// Section expressing the iPhone ZPS on SRP limits:
+// - 1 verbatim suggestion
+// - 1 clipboard suggestion
+// - 1 row of MV tiles
+// - up to 8 suggestions related to this page
+// - up to 20 personalized suggestions
+// - up to 20 suggestions total
+class IOSSRPZpsSection : public ZpsSection {
+ public:
+  explicit IOSSRPZpsSection(omnibox::GroupConfigMap& group_configs);
+};
+
+// Section expressing the iPad NTP ZPS limits:
+// - 1 clipboard suggestion
+// - up to 10 personalized suggestions
+// - up to 10 suggestions total
+class IOSIpadNTPZpsSection : public ZpsSection {
+ public:
+  explicit IOSIpadNTPZpsSection(omnibox::GroupConfigMap& group_configs);
+};
+
+// Section expressing the iPad ZPS on Web limits:
+// - 1 verbatim suggestion
+// - 1 clipboard suggestion
+// - 1 row of MV tiles
+// - up to 10 personalized suggestions
+// - up to 8 suggestions related to previous searches
+// - up to 10 suggestions total
+class IOSIpadWebZpsSection : public ZpsSection {
+ public:
+  explicit IOSIpadWebZpsSection(omnibox::GroupConfigMap& group_configs);
+};
+
+// Section expressing the iPhone ZPS on SRP limits:
+// - 1 verbatim suggestion
+// - 1 clipboard suggestion
+// - 1 row of MV tiles
+// - up to 8 suggestions related to page
+// - up to 10 personalized suggestions
+// - up to 10 suggestions total
+class IOSIpadSRPZpsSection : public ZpsSection {
+ public:
+  explicit IOSIpadSRPZpsSection(omnibox::GroupConfigMap& group_configs);
+};
+
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_GROUPER_SECTIONS_H_

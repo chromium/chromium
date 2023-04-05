@@ -12,6 +12,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
+#include "ui/ozone/platform/wayland/host/wayland_output.h"
 
 namespace ui {
 
@@ -22,19 +23,17 @@ class XDGOutput {
   XDGOutput& operator=(const XDGOutput&) = delete;
   ~XDGOutput();
 
-  absl::optional<gfx::Point> logical_position() const {
-    return logical_position_;
-  }
-  gfx::Size logical_size() const { return logical_size_; }
-  const std::string& description() const { return description_; }
-  const std::string& name() const { return name_; }
-
   // Returns true if all state defined by this extension necessary to correctly
   // represent the Display has successfully arrived from the server.
   bool IsReady() const;
 
   // Called after wl_output.done event has been received for this output.
   void OnDone();
+
+  // Called after processing the wl_output.done event. Translates the received
+  // state into the metrics object as part of a chained atomic update.
+  void UpdateMetrics(bool surface_submission_in_pixel_coordinates,
+                     WaylandOutput::Metrics& metrics);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WaylandOutputTest, NameAndDescriptionFallback);
@@ -63,7 +62,7 @@ class XDGOutput {
   bool is_ready_ = false;
 
   wl::Object<zxdg_output_v1> xdg_output_;
-  absl::optional<gfx::Point> logical_position_;
+  gfx::Point logical_position_;
   gfx::Size logical_size_;
   std::string description_;
   std::string name_;

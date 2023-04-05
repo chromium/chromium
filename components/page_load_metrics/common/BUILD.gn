@@ -43,6 +43,21 @@ source_set("test_support") {
 
 mojom("page_load_metrics_mojom") {
   sources = [ "page_load_metrics.mojom" ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "page_load_metrics.mojom.SubresourceLoadMetrics"
+          cpp = "::blink::SubresourceLoadMetrics"
+        },
+      ]
+      traits_headers = [ "page_load_metrics_mojom_traits.h" ]
+      traits_sources = [ "page_load_metrics_mojom_traits.cc" ]
+      traits_public_deps = [ "//third_party/blink/public/common" ]
+    },
+  ]
+
   public_deps = [
     "//mojo/public/mojom/base",
     "//third_party/blink/public/mojom:mojom_platform",

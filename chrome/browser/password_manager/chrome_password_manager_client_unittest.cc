@@ -904,47 +904,6 @@ TEST_F(ChromePasswordManagerClientTest,
   EXPECT_FALSE(client->IsSavingAndFillingEnabled(kUrlOn));
   EXPECT_FALSE(client->IsFillingEnabled(kUrlOn));
 }
-
-TEST_F(ChromePasswordManagerClientTest,
-       VerifyMaybeProtectedPasswordEntryRequestCalled) {
-  std::unique_ptr<WebContents> test_web_contents(
-      content::WebContentsTester::CreateTestWebContents(
-          web_contents()->GetBrowserContext(), nullptr));
-  std::unique_ptr<MockChromePasswordManagerClient> client(
-      new MockChromePasswordManagerClient(test_web_contents.get()));
-
-  EXPECT_CALL(
-      *client->password_protection_service(),
-      MaybeStartProtectedPasswordEntryRequest(_, _, "username", _, _, true))
-      .Times(4);
-  std::vector<password_manager::MatchingReusedCredential> credentials = {
-      {"saved_domain.com", u"username"}};
-
-  client->CheckProtectedPasswordEntry(
-      password_manager::metrics_util::PasswordType::SAVED_PASSWORD, "username",
-      credentials, true, 0, std::string());
-  client->CheckProtectedPasswordEntry(
-      password_manager::metrics_util::PasswordType::PRIMARY_ACCOUNT_PASSWORD,
-      "username", credentials, true, 0, std::string());
-  client->CheckProtectedPasswordEntry(
-      password_manager::metrics_util::PasswordType::OTHER_GAIA_PASSWORD,
-      "username", credentials, true, 0, std::string());
-  client->CheckProtectedPasswordEntry(
-      password_manager::metrics_util::PasswordType::ENTERPRISE_PASSWORD,
-      "username", credentials, true, 0, std::string());
-}
-
-TEST_F(ChromePasswordManagerClientTest, VerifyLogPasswordReuseDetectedEvent) {
-  std::unique_ptr<WebContents> test_web_contents(
-      content::WebContentsTester::CreateTestWebContents(
-          web_contents()->GetBrowserContext(), nullptr));
-  std::unique_ptr<MockChromePasswordManagerClient> client(
-      new MockChromePasswordManagerClient(test_web_contents.get()));
-  EXPECT_CALL(*client->password_protection_service(),
-              MaybeLogPasswordReuseDetectedEvent(test_web_contents.get()))
-      .Times(1);
-  client->LogPasswordReuseDetectedEvent();
-}
 #endif
 
 TEST_F(ChromePasswordManagerClientTest, MissingUIDelegate) {

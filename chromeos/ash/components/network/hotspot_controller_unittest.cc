@@ -16,7 +16,6 @@
 #include "chromeos/ash/components/network/metrics/hotspot_metrics_helper.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
-#include "chromeos/ash/services/hotspot_config/public/cpp/hotspot_enabled_state_test_observer.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -30,11 +29,43 @@ const char kCellularServiceGuid[] = "cellular_guid0";
 const char kCellularServiceName[] = "cellular_name0";
 const char kShillNetworkingFailure[] = "network_failure";
 
+class TestObserver : public HotspotController::Observer {
+ public:
+  TestObserver() = default;
+  ~TestObserver() override = default;
+
+  // HotspotStateHandler::Observer:
+  void OnHotspotTurnedOn(bool wifi_turned_off) override {
+    hotspot_turned_on_count_++;
+  }
+  void OnHotspotTurnedOff(
+      hotspot_config::mojom::DisableReason disable_reason) override {
+    last_disable_reason_ = disable_reason;
+    hotspot_turned_off_count_++;
+  }
+
+  size_t hotspot_turned_on_count() { return hotspot_turned_on_count_; }
+
+  size_t hotspot_turned_off_count() { return hotspot_turned_off_count_; }
+
+  hotspot_config::mojom::DisableReason last_disable_reason() {
+    return last_disable_reason_;
+  }
+
+ private:
+  size_t hotspot_turned_on_count_ = 0u;
+  size_t hotspot_turned_off_count_ = 0u;
+  hotspot_config::mojom::DisableReason last_disable_reason_;
+};
+
 }  // namespace
 
 class HotspotControllerTest : public ::testing::Test {
  public:
   void SetUp() override {
+    if (hotspot_controller_ && hotspot_controller_->HasObserver(&observer_)) {
+      hotspot_controller_->RemoveObserver(&observer_);
+    }
     hotspot_capabilities_provider_ =
         std::make_unique<HotspotCapabilitiesProvider>();
     hotspot_capabilities_provider_->Init(
@@ -49,12 +80,14 @@ class HotspotControllerTest : public ::testing::Test {
     hotspot_controller_->Init(hotspot_capabilities_provider_.get(),
                               hotspot_state_handler_.get(),
                               technology_state_controller_.get());
+    hotspot_controller_->AddObserver(&observer_);
     SetReadinessCheckResultReady();
   }
 
   void TearDown() override {
     network_state_test_helper_.ClearDevices();
     network_state_test_helper_.ClearServices();
+    hotspot_controller_->RemoveObserver(&observer_);
     hotspot_controller_.reset();
     hotspot_capabilities_provider_.reset();
     hotspot_state_handler_.reset();
@@ -106,13 +139,6 @@ class HotspotControllerTest : public ::testing::Test {
     service_test->AddService(kCellularServicePath, kCellularServiceGuid,
                              kCellularServiceName, shill::kTypeCellular,
                              shill::kStateOnline, /*visible=*/true);
-  }
-
-  void SetupObserver() {
-    hotspot_enabled_state_observer_ =
-        std::make_unique<hotspot_config::HotspotEnabledStateTestObserver>();
-    hotspot_controller_->ObserveEnabledStateChanges(
-        hotspot_enabled_state_observer_->GenerateRemote());
   }
 
   hotspot_config::mojom::HotspotControlResult EnableHotspot() {
@@ -190,10 +216,6 @@ class HotspotControllerTest : public ::testing::Test {
 
   void FlushMojoCalls() { base::RunLoop().RunUntilIdle(); }
 
-  hotspot_config::HotspotEnabledStateTestObserver* hotspotStateObserver() {
-    return hotspot_enabled_state_observer_.get();
-  }
-
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -202,10 +224,9 @@ class HotspotControllerTest : public ::testing::Test {
   std::unique_ptr<HotspotCapabilitiesProvider> hotspot_capabilities_provider_;
   std::unique_ptr<HotspotStateHandler> hotspot_state_handler_;
   std::unique_ptr<TechnologyStateController> technology_state_controller_;
-  std::unique_ptr<hotspot_config::HotspotEnabledStateTestObserver>
-      hotspot_enabled_state_observer_;
   NetworkStateTestHelper network_state_test_helper_{
       /*use_default_devices_and_services=*/false};
+  TestObserver observer_;
 };
 
 TEST_F(HotspotControllerTest, EnableTetheringCapabilitiesNotAllowed) {
@@ -373,14 +394,13 @@ TEST_F(HotspotControllerTest, QueuedRequests) {
 }
 
 TEST_F(HotspotControllerTest, PrepareEnableWifi) {
-  SetupObserver();
   network_state_test_helper_.manager_test()->SetSimulateTetheringEnableResult(
       FakeShillSimulatedResult::kSuccess, shill::kTetheringEnableResultSuccess);
   SetHotspotStateInShill(shill::kTetheringStateActive);
   EXPECT_TRUE(PrepareEnableWifi());
-  EXPECT_EQ(1u, hotspotStateObserver()->hotspot_turned_off_count());
+  EXPECT_EQ(1u, observer_.hotspot_turned_off_count());
   EXPECT_EQ(hotspot_config::mojom::DisableReason::kWifiEnabled,
-            hotspotStateObserver()->last_disable_reason());
+            observer_.last_disable_reason());
 
   network_state_test_helper_.manager_test()->SetSimulateTetheringEnableResult(
       FakeShillSimulatedResult::kSuccess, kShillNetworkingFailure);
@@ -388,25 +408,23 @@ TEST_F(HotspotControllerTest, PrepareEnableWifi) {
 }
 
 TEST_F(HotspotControllerTest, SetPolicyAllowHotspot) {
-  SetupObserver();
   network_state_test_helper_.manager_test()->SetSimulateTetheringEnableResult(
       FakeShillSimulatedResult::kSuccess, shill::kTetheringEnableResultSuccess);
   SetHotspotStateInShill(shill::kTetheringStateActive);
 
   SetPolicyAllowHotspot(/*allow_hotspot=*/false);
-  EXPECT_EQ(1u, hotspotStateObserver()->hotspot_turned_off_count());
+  EXPECT_EQ(1u, observer_.hotspot_turned_off_count());
   EXPECT_EQ(hotspot_config::mojom::DisableReason::kProhibitedByPolicy,
-            hotspotStateObserver()->last_disable_reason());
+            observer_.last_disable_reason());
 }
 
 TEST_F(HotspotControllerTest, RestartHotspotIfActive) {
-  SetupObserver();
   network_state_test_helper_.manager_test()->SetSimulateTetheringEnableResult(
       FakeShillSimulatedResult::kSuccess, shill::kTetheringEnableResultSuccess);
   hotspot_controller_->RestartHotspotIfActive();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(0u, hotspotStateObserver()->hotspot_turned_off_count());
-  EXPECT_EQ(0u, hotspotStateObserver()->hotspot_turned_on_count());
+  EXPECT_EQ(0u, observer_.hotspot_turned_off_count());
+  EXPECT_EQ(0u, observer_.hotspot_turned_on_count());
 
   SetHotspotStateInShill(shill::kTetheringStateActive);
   SetValidTetheringCapabilities();
@@ -415,9 +433,9 @@ TEST_F(HotspotControllerTest, RestartHotspotIfActive) {
 
   hotspot_controller_->RestartHotspotIfActive();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1u, hotspotStateObserver()->hotspot_turned_off_count());
+  EXPECT_EQ(1u, observer_.hotspot_turned_off_count());
   EXPECT_EQ(hotspot_config::mojom::DisableReason::kRestart,
-            hotspotStateObserver()->last_disable_reason());
+            observer_.last_disable_reason());
 }
 
 }  // namespace ash

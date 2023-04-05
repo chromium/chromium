@@ -200,9 +200,11 @@ bool VerifyUpdaterSignature(const base::FilePath& updater_app_bundle) {
     return false;
   }
   if (SecRequirementCreateWithString(
-          CFSTR("anchor apple generic and identifier "
-                "\"" MAC_BUNDLE_IDENTIFIER_STRING
-                "\" and certificate leaf[subject.OU] "
+          CFSTR("anchor apple generic and ("
+                " identifier \"" MAC_BUNDLE_IDENTIFIER_STRING "\""
+                " or identifier \"" LEGACY_GOOGLE_UPDATE_APPID "\""
+                " or identifier \"" LEGACY_GOOGLE_UPDATE_APPID ".Agent\""
+                ") and certificate leaf[subject.OU] "
                 "= " MAC_TEAM_IDENTIFIER_STRING),
           kSecCSDefaultFlags, requirement.InitializeInto()) != errSecSuccess) {
     return false;

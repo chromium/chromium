@@ -56,6 +56,7 @@ generate_jni("jni_headers") {
 
 android_library("java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  resources_package = "org.chromium.components.paintpreview.player"
 
   sources = [
     "java/src/org/chromium/components/paintpreview/player/LinkClickHandler.java",
@@ -126,9 +127,6 @@ android_library("player_java_test_support") {
     "//components/signin/public/android:signin_java_test_support",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
-    "//third_party/androidx:androidx_test_monitor_java",
-    "//third_party/androidx:androidx_test_rules_java",
-    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//url:gurl_java",
   ]
@@ -145,8 +143,8 @@ android_library("javatests") {
     "//base:base_java_test_support",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_test_monitor_java",
-    "//third_party/androidx:androidx_test_rules_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/androidx:androidx_test_uiautomator_uiautomator_java",
     "//third_party/hamcrest:hamcrest_java",

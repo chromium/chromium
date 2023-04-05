@@ -120,7 +120,7 @@ android_library("internal_java") {
     "java/src/org/chromium/chrome/browser/password_check/helper/PasswordCheckIconHelper.java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
-  resources_package = "org.chromium.chrome.browser.password_check.internal"
+  resources_package = "org.chromium.chrome.browser.password_check"
 }
 
 android_resources("java_resources") {

@@ -45,37 +45,32 @@ class FakeTickClock : public base::TickClock {
 
 constexpr base::TimeDelta FakeTickClock::kTicksAdvanceAfterEachCall;
 
-TEST(SyncNigoriTest, Permute) {
+TEST(SyncNigoriTest, GetKeyName) {
   std::unique_ptr<Nigori> nigori = Nigori::CreateByDerivation(
       KeyDerivationParams::CreateForPbkdf2(), "password");
   ASSERT_THAT(nigori, NotNull());
 
-  std::string permuted;
-  EXPECT_TRUE(nigori->GetKeyName(&permuted));
-
   std::string expected =
       "ibGL7ymU0Si+eYCXGS6SBHPFT+JCYiB6GDOYqj6vIwEi"
       "WJ7RENSHxmIQ8Q3rXd/UnZUmFHYB+jSIbthQADXvrQ==";
-  EXPECT_EQ(expected, permuted);
+  EXPECT_EQ(expected, nigori->GetKeyName());
 }
 
-TEST(SyncNigoriTest, PermuteIsConstant) {
+TEST(SyncNigoriTest, GetKeyNameIsConstant) {
   std::unique_ptr<Nigori> nigori1 = Nigori::CreateByDerivation(
       KeyDerivationParams::CreateForPbkdf2(), "password");
   ASSERT_THAT(nigori1, NotNull());
 
-  std::string permuted1;
-  EXPECT_TRUE(nigori1->GetKeyName(&permuted1));
+  std::string keyname1 = nigori1->GetKeyName();
 
   std::unique_ptr<Nigori> nigori2 = Nigori::CreateByDerivation(
       KeyDerivationParams::CreateForPbkdf2(), "password");
   ASSERT_THAT(nigori2, NotNull());
 
-  std::string permuted2;
-  EXPECT_TRUE(nigori2->GetKeyName(&permuted2));
+  std::string keyname2 = nigori2->GetKeyName();
 
-  EXPECT_LT(0U, permuted1.size());
-  EXPECT_EQ(permuted1, permuted2);
+  EXPECT_LT(0U, keyname1.size());
+  EXPECT_EQ(keyname1, keyname2);
 }
 
 TEST(SyncNigoriTest, EncryptDifferentIv) {
@@ -190,10 +185,9 @@ TEST(SyncNigoriTest, ExportImport) {
   EXPECT_TRUE(nigori1->Decrypt(nigori2->Encrypt(original), &plaintext));
   EXPECT_EQ(original, plaintext);
 
-  std::string permuted1, permuted2;
-  EXPECT_TRUE(nigori1->GetKeyName(&permuted1));
-  EXPECT_TRUE(nigori2->GetKeyName(&permuted2));
-  EXPECT_EQ(permuted1, permuted2);
+  std::string keyname1 = nigori1->GetKeyName();
+  EXPECT_FALSE(keyname1.empty());
+  EXPECT_EQ(keyname1, nigori2->GetKeyName());
 }
 
 TEST(SyncNigoriTest, CreateByDerivationSetsUserKey) {

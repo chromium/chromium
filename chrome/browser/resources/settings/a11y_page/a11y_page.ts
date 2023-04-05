@@ -37,6 +37,12 @@ import {CaptionsBrowserProxyImpl} from './captions_browser_proxy.js';
 
 // </if>
 
+// clang-format off
+// <if expr="not is_chromeos">
+import {LanguageHelper, LanguagesModel} from '../languages_page/languages_types.js';
+// </if>
+// clang-format on
+
 const SettingsA11yPageElementBase =
     WebUiListenerMixin(BaseMixin(PolymerElement));
 
@@ -68,6 +74,17 @@ class SettingsA11yPageElement extends SettingsA11yPageElementBase {
       },
 
       // <if expr="not is_chromeos">
+      /**
+       * Read-only reference to the languages model provided by the
+       * 'settings-languages' instance.
+       */
+      languages: {
+        type: Object,
+        notify: true,
+      },
+
+      languageHelper: Object,
+
       enableLiveCaption_: {
         type: Boolean,
         value: function() {
@@ -142,6 +159,9 @@ class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   }
 
   // <if expr="not is_chromeos">
+  languages: LanguagesModel;
+  languageHelper: LanguageHelper;
+
   private enableLiveCaption_: boolean;
   private showFocusHighlightOption_: boolean;
   // </if>

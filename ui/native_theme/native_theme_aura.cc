@@ -112,11 +112,12 @@ NativeThemeAura* NativeThemeAura::web_instance() {
   return s_native_theme_for_web.get();
 }
 
-SkColor NativeThemeAura::FocusRingColorForBaseColor(SkColor base_color) const {
+SkColor4f NativeThemeAura::FocusRingColorForBaseColor(
+    SkColor4f base_color) const {
 #if BUILDFLAG(IS_APPLE)
   // On Mac OSX, the system Accent Color setting is darkened a bit
   // for better contrast.
-  return SkColorSetA(base_color, 166);
+  return SkColor4f(base_color.fR, base_color.fG, base_color.fB, 166 / 255.0f);
 #else
   return base_color;
 #endif  // BUILDFLAG(IS_APPLE)
@@ -359,13 +360,11 @@ void NativeThemeAura::PaintScrollbarCorner(cc::PaintCanvas* canvas,
                                            ColorScheme color_scheme) const {
   // Overlay Scrollbar should never paint a scrollbar corner.
   DCHECK(!use_overlay_scrollbars_);
+  const SkColor corner_color = GetControlColor(kScrollbarCornerControlColorId,
+                                               color_scheme, color_provider);
+
   cc::PaintFlags flags;
-  // TODO(crbug.com/1374573): use the system color for the high contrast mode.
-  // Move the definition to the NativeThemeBase::GetControlColor().
-  SkColor bg_color = color_scheme == ui::NativeTheme::ColorScheme::kDark
-                         ? SkColorSetRGB(0x12, 0x12, 0x12)
-                         : SkColorSetRGB(0xDC, 0xDC, 0xDC);
-  flags.setColor(bg_color);
+  flags.setColor(corner_color);
   canvas->drawIRect(RectToSkIRect(rect), flags);
 }
 

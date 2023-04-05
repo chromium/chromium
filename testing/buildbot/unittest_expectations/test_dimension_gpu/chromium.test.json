@@ -25,7 +25,8 @@
           "dimension_sets": [
             {
               "iama": "mixin",
-              "integrity": "high"
+              "integrity": "high",
+              "os": "Linux"
             }
           ],
           "expiration": 120,

@@ -605,6 +605,11 @@ bool SwapChainPresenter::AdjustTargetToFullScreenSizeIfNeeded(
   if (params.clip_rect.has_value())
     clipped_onscreen_rect.Intersect(*visual_clip_rect);
 
+  // Restore after test
+  // if (clipped_onscreen_rect == gfx::Rect(monitor_size)) {
+  //  return true;
+  //}
+
   // Because of the rounding when converting between pixels and DIPs, a
   // fullscreen video can become slightly larger than the monitor - e.g. on
   // a 3000x2000 monitor with a scale factor of 1.75 a 1920x1079 video can
@@ -648,37 +653,66 @@ bool SwapChainPresenter::AdjustTargetToFullScreenSizeIfNeeded(
     }
   }
 
+  //
   // Adjust the clip rect.
+  //
   if (params.clip_rect.has_value()) {
     *visual_clip_rect = gfx::Rect(monitor_size);
   }
 
-  // Adjust the swap chain size.
+  //
+  // Adjust the swap chain size if needed.
+  //
+  // Change the swap chain size so the scaling is performed by video processor.
+  // Make the final |visual_transform| after this function an Identity if
+  // possible.
   // The swap chain is either the size of overlay_onscreen_rect or
-  // min(overlay_onscreen_rect, content_rect). It might not need to update if it
-  // has the content size.
-  if (IsWithinMargin(swap_chain_size->width(), monitor_size.width()) &&
-      IsWithinMargin(swap_chain_size->height(), monitor_size.height())) {
+  // min(overlay_onscreen_rect, content_rect). The swap chain might not need to
+  // be updated if it's the content size.
+  // |visual_transform| transforms the swap chain to the on-screen rect.
+  // (See UpdateSwapChainTransform() in CalculateSwapChainSize().) Now update
+  // |visual_transform| so it still produces the same on-screen rect
+  // after changing the swapchain.
+  float scale_x;
+  float scale_y;
+  if (*swap_chain_size == overlay_onscreen_rect.size()) {
+    scale_x = swap_chain_size->width() * 1.0f / monitor_size.width();
+    scale_y = swap_chain_size->height() * 1.0f / monitor_size.height();
+    visual_transform->Scale(scale_x, scale_y);
     *swap_chain_size = monitor_size;
   }
 
+  //
   // Adjust the transform matrix.
-  float scale_x = monitor_size.width() * 1.0f / swap_chain_size->width();
-  float scale_y = monitor_size.height() * 1.0f / swap_chain_size->height();
-  visual_transform->MakeIdentity();
+  //
+  // Add the new scale that scales |overlay_onscreen_rect| to |monitor_size|.
+  // The new |visual_transform| will produce a rect of the monitor size.
+  scale_x = monitor_size.width() * 1.0f / overlay_onscreen_rect.width();
+  scale_y = monitor_size.height() * 1.0f / overlay_onscreen_rect.height();
   visual_transform->Scale(scale_x, scale_y);
 
   // Origin is probably (0,0) all the time. If not, adjust the origin.
-  if (!params.quad_rect.origin().IsOrigin()) {
-    auto new_origin = visual_transform->MapPoint(params.quad_rect.origin());
-    visual_transform->PostTranslate(-new_origin.OffsetFromOrigin());
+  gfx::Rect mapped_rect = visual_transform->MapRect(
+      gfx::Rect(params.quad_rect.origin(), *swap_chain_size));
+  visual_transform->PostTranslate(-mapped_rect.OffsetFromOrigin());
+
+#if DCHECK_IS_ON()
+  //  Verify if the new transform matrix transforms the swap chain to the
+  //  monitor rect.
+  gfx::Rect new_rect = visual_transform->MapRect(
+      gfx::Rect(params.quad_rect.origin(), *swap_chain_size));
+  if (params.clip_rect.has_value()) {
+    new_rect.Intersect(*visual_clip_rect);
   }
 
-  // The new transform matrix should transform the swap chain to the monitor
-  // rect.
-  DCHECK_EQ(visual_transform->MapRect(
-                gfx::Rect(params.quad_rect.origin(), *swap_chain_size)),
-            gfx::Rect(monitor_size));
+  DCHECK_EQ(new_rect, gfx::Rect(monitor_size))
+      << ", params.quad_rect: " << params.quad_rect.ToString()
+      << ", params.content_rect: " << params.content_rect.ToString()
+      << ", clipped_onscreen_rect: " << clipped_onscreen_rect.ToString()
+      << ", overlay_onscreen_rect: " << overlay_onscreen_rect.ToString()
+      << ", params.transform: " << params.transform.ToString()
+      << ", visual_transform: " << visual_transform->ToString();
+#endif
 
   return true;
 }
@@ -735,89 +769,125 @@ void SwapChainPresenter::AdjustTargetForFullScreenLetterboxing(
     return;
   }
 
-  // Adjust the onscreen rect to touch two screen borders, and also make sure
-  // the onscreen rect be right in the center.
-  // At the same time, make sure the origin position for clipped_onscreen_rect
-  // with round-up integer so that no extra blank bar shows up.
+  //
+  // Adjust the on-screen rect.
+  //
+  // Make sure the on-screen rect touches both the screen borders, and the
+  // on-screen rect is right in the center. At the same time, make sure the
+  // origin position for |new_onscreen_rect| with round-up integer so that no
+  // extra blank bar shows up.
+  gfx::Rect new_onscreen_rect = clipped_onscreen_rect;
   if (is_onscreen_rect_x_near_0) {
-    clipped_onscreen_rect.set_x(0);
-    clipped_onscreen_rect.set_width(monitor_size.width());
-    int new_y = (monitor_size.height() - clipped_onscreen_rect.height()) / 2;
-    if (new_y < clipped_onscreen_rect.y()) {
-      // If clipped_onscreen_rect needs to be moved up by n lines, we add n
+    new_onscreen_rect.set_x(0);
+    new_onscreen_rect.set_width(monitor_size.width());
+    int new_y = (monitor_size.height() - new_onscreen_rect.height()) / 2;
+    if (new_y < new_onscreen_rect.y()) {
+      // If new_onscreen_rect needs to be moved up by n lines, we add n
       // lines to the video onscreen rect height.
-      clipped_onscreen_rect.set_height(clipped_onscreen_rect.height() +
-                                       clipped_onscreen_rect.y() - new_y);
-      clipped_onscreen_rect.set_y(new_y);
-    } else if (new_y > clipped_onscreen_rect.y()) {
-      // If clipped_onscreen_rect needs to be moved down by n lines, we keep
+      new_onscreen_rect.set_height(new_onscreen_rect.height() +
+                                   new_onscreen_rect.y() - new_y);
+      new_onscreen_rect.set_y(new_y);
+    } else if (new_y > new_onscreen_rect.y()) {
+      // If new_onscreen_rect needs to be moved down by n lines, we keep
       // the original point of the video onscreen rect. Meanwhile, increase its
       // size to make it symmetrical around the monitor center.
-      clipped_onscreen_rect.set_height(monitor_size.height() -
-                                       clipped_onscreen_rect.y() * 2);
+      new_onscreen_rect.set_height(monitor_size.height() -
+                                   new_onscreen_rect.y() * 2);
     }
 
-    // Make clipped_onscreen_rect height even.
-    if (clipped_onscreen_rect.height() % 2 == 1)
-      clipped_onscreen_rect.set_height(clipped_onscreen_rect.height() + 1);
+    // Make new_onscreen_rect height even.
+    if (new_onscreen_rect.height() % 2 == 1) {
+      new_onscreen_rect.set_height(new_onscreen_rect.height() + 1);
+    }
   }
 
   if (is_onscreen_rect_y_near_0) {
-    clipped_onscreen_rect.set_y(0);
-    clipped_onscreen_rect.set_height(monitor_size.height());
-    int new_x = (monitor_size.width() - clipped_onscreen_rect.width()) / 2;
-    if (new_x < clipped_onscreen_rect.x()) {
-      // If clipped_onscreen_rect needs to be moved left by n lines, we add n
+    new_onscreen_rect.set_y(0);
+    new_onscreen_rect.set_height(monitor_size.height());
+    int new_x = (monitor_size.width() - new_onscreen_rect.width()) / 2;
+    if (new_x < new_onscreen_rect.x()) {
+      // If new_onscreen_rect needs to be moved left by n lines, we add n
       // lines to the video onscreen rect width.
-      clipped_onscreen_rect.set_width(clipped_onscreen_rect.width() +
-                                      clipped_onscreen_rect.x() - new_x);
-      clipped_onscreen_rect.set_x(new_x);
-    } else if (new_x > clipped_onscreen_rect.x()) {
-      // If clipped_onscreen_rect needs to be moved right by n lines, we keep
+      new_onscreen_rect.set_width(new_onscreen_rect.width() +
+                                  new_onscreen_rect.x() - new_x);
+      new_onscreen_rect.set_x(new_x);
+    } else if (new_x > new_onscreen_rect.x()) {
+      // If new_onscreen_rect needs to be moved right by n lines, we keep
       // the original point of the video onscreen rect. Meanwhile, increase its
       // size to make it symmetrical around the monitor center.
-      clipped_onscreen_rect.set_width(monitor_size.width() -
-                                      clipped_onscreen_rect.x() * 2);
+      new_onscreen_rect.set_width(monitor_size.width() -
+                                  new_onscreen_rect.x() * 2);
     }
 
-    // Make clipped_onscreen_rect width even.
-    if (clipped_onscreen_rect.width() % 2 == 1)
-      clipped_onscreen_rect.set_width(clipped_onscreen_rect.width() + 1);
+    // Make new_onscreen_rect width even.
+    if (new_onscreen_rect.width() % 2 == 1) {
+      new_onscreen_rect.set_width(new_onscreen_rect.width() + 1);
+    }
   }
 
+  // Restore after test
+  // if (new_onscreen_rect == clipped_onscreen_rect) {
+  //  return true;
+  //}
+
+  //
   // Adjust the clip rect.
+  //
   if (params.clip_rect.has_value())
-    *visual_clip_rect = clipped_onscreen_rect;
+    *visual_clip_rect = new_onscreen_rect;
 
-  // Swap chain size has been updated before. Do not update it if it is not
-  // necessary.
-  if (!IsWithinMargin(swap_chain_size->width(),
-                      clipped_onscreen_rect.width()) ||
-      !IsWithinMargin(swap_chain_size->height(),
-                      clipped_onscreen_rect.height())) {
-    *swap_chain_size = clipped_onscreen_rect.size();
+  //
+  // Adjust the swap chain size if needed.
+  //
+  // The swap chain is either the size of overlay_onscreen_rect or
+  // min(overlay_onscreen_rect, content_rect). The swap chain might not need to
+  // be updated if it's the content size.
+  // After UpdateSwapChainTransform() in CalculateSwapChainSize(),
+  // |visual_transform| transforms the swap chain to the on-screen rect. Now
+  // update |visual_transform| so it still produces the same on-screen rect
+  // after changing the swapchain.
+  float scale_x;
+  float scale_y;
+  if (*swap_chain_size == overlay_onscreen_rect.size()) {
+    scale_x = swap_chain_size->width() * 1.0f / new_onscreen_rect.width();
+    scale_y = swap_chain_size->height() * 1.0f / new_onscreen_rect.height();
+    visual_transform->Scale(scale_x, scale_y);
+
+    *swap_chain_size = new_onscreen_rect.size();
   }
 
+  //
   // Adjust the transform matrix.
-  float scale_x =
-      clipped_onscreen_rect.width() * 1.0f / swap_chain_size->width();
-  float scale_y =
-      clipped_onscreen_rect.height() * 1.0f / swap_chain_size->height();
-  visual_transform->set_rc(0, 3, clipped_onscreen_rect.x());
-  visual_transform->set_rc(1, 3, clipped_onscreen_rect.y());
-  visual_transform->set_rc(0, 0, scale_x);
-  visual_transform->set_rc(1, 1, scale_y);
+  //
+  // Add the new scale that scales |overlay_onscreen_rect| to
+  // |new_onscreen_rect|. The new |visual_transform| will produce a new width or
+  // a new height of the monitor size.
+  scale_x = new_onscreen_rect.width() * 1.0f / overlay_onscreen_rect.width();
+  scale_y = new_onscreen_rect.height() * 1.0f / overlay_onscreen_rect.height();
+  visual_transform->Scale(scale_x, scale_y);
+
+  // Update the origin.
+  gfx::Rect mapped_rect = visual_transform->MapRect(
+      gfx::Rect(params.quad_rect.origin(), *swap_chain_size));
+  auto offset =
+      new_onscreen_rect.OffsetFromOrigin() - mapped_rect.OffsetFromOrigin();
+  visual_transform->PostTranslate(offset);
 
 #if DCHECK_IS_ON()
   {
-    // The new transform matrix should transform the swap chain correctly
+    // Verify if the new transform matrix transforms the swap chain correctly.
     gfx::Rect new_swap_chain_rect(params.quad_rect.origin(), *swap_chain_size);
     gfx::Rect result_rect = visual_transform->MapRect(new_swap_chain_rect);
-    gfx::Rect new_clipped_onscreen_rect = clipped_onscreen_rect;
+    if (params.clip_rect.has_value()) {
+      result_rect.Intersect(*visual_clip_rect);
+    }
+    gfx::Rect new_onscreen_rect_local = new_onscreen_rect;
+
+    // TODO(crbug.com/1366493): Remove these crash keys.
     gfx::Transform new_visual_transform = *visual_transform;
     base::debug::Alias(&new_swap_chain_rect);
     base::debug::Alias(&result_rect);
-    base::debug::Alias(&new_clipped_onscreen_rect);
+    base::debug::Alias(&new_onscreen_rect_local);
     base::debug::Alias(&new_visual_transform);
     // https://crbug.com/1366493: "DCHECK_EQ(result_rect.x(), 0);" sometimes
     // failed in the field. But here we collect possible crashes in general.
@@ -834,12 +904,12 @@ void SwapChainPresenter::AdjustTargetForFullScreenLetterboxing(
     base::debug::ScopedCrashKeyString scoped_crash_key_3(
         result_rect_key, result_rect.ToString());
 
-    if (IsWithinMargin(clipped_onscreen_rect.x(), 0)) {
+    if (is_onscreen_rect_x_near_0) {
       DCHECK_EQ(result_rect.x(), 0);
       DCHECK_EQ(result_rect.width(), monitor_size.width());
     }
 
-    if (IsWithinMargin(clipped_onscreen_rect.y(), 0)) {
+    if (is_onscreen_rect_y_near_0) {
       DCHECK_EQ(result_rect.y(), 0);
       DCHECK_EQ(result_rect.height(), monitor_size.height());
     }

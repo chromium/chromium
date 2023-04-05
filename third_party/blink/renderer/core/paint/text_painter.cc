@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/layout/api/line_layout_api_shim.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_item.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
-#include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/text_decoration_offset_base.h"
 #include "third_party/blink/renderer/core/paint/applied_decoration_painter.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
@@ -34,31 +33,15 @@ void TextPainter::Paint(unsigned start_offset,
                         const AutoDarkMode& auto_dark_mode) {
   GraphicsContextStateSaver state_saver(graphics_context_, false);
   UpdateGraphicsContext(text_style, state_saver);
-  if (combined_text_) {
-    graphics_context_.Save();
-    combined_text_->TransformToInlineCoordinates(graphics_context_,
-                                                 text_frame_rect_);
-    PaintInternal<kPaintText>(start_offset, end_offset, length, node_id,
-                              auto_dark_mode);
-    graphics_context_.Restore();
-  } else {
-    PaintInternal<kPaintText>(start_offset, end_offset, length, node_id,
-                              auto_dark_mode);
-  }
+  PaintInternal<kPaintText>(start_offset, end_offset, length, node_id,
+                            auto_dark_mode);
 
   if (!emphasis_mark_.empty()) {
-    if (combined_text_) {
-      graphics_context_.ConcatCTM(Rotation(text_frame_rect_, kClockwise));
-      PaintEmphasisMarkForCombinedText(
-          text_style, combined_text_->OriginalFont(), auto_dark_mode);
-      graphics_context_.ConcatCTM(
-          Rotation(text_frame_rect_, kCounterclockwise));
-    } else {
-      if (text_style.emphasis_mark_color != text_style.fill_color)
-        graphics_context_.SetFillColor(text_style.emphasis_mark_color);
-      PaintInternal<kPaintEmphasisMark>(start_offset, end_offset, length,
-                                        node_id, auto_dark_mode);
+    if (text_style.emphasis_mark_color != text_style.fill_color) {
+      graphics_context_.SetFillColor(text_style.emphasis_mark_color);
     }
+    PaintInternal<kPaintEmphasisMark>(start_offset, end_offset, length, node_id,
+                                      auto_dark_mode);
   }
 }
 
@@ -76,9 +59,6 @@ void TextPainter::PaintDecorationsExceptLineThrough(
   GraphicsContext& context = paint_info.context;
   GraphicsContextStateSaver state_saver(context);
   UpdateGraphicsContext(context, text_style, state_saver);
-
-  if (combined_text_)
-    context.ConcatCTM(Rotation(text_frame_rect_, kClockwise));
 
   for (wtf_size_t applied_decoration_index = 0;
        applied_decoration_index < decorations.size();
@@ -107,10 +87,6 @@ void TextPainter::PaintDecorationsExceptLineThrough(
                                      TextDecorationLine::kOverline);
     }
   }
-
-  // Restore rotation as needed.
-  if (combined_text_)
-    context.ConcatCTM(Rotation(text_frame_rect_, kCounterclockwise));
 }
 
 void TextPainter::PaintDecorationsOnlyLineThrough(
@@ -126,9 +102,6 @@ void TextPainter::PaintDecorationsOnlyLineThrough(
   GraphicsContext& context = paint_info.context;
   GraphicsContextStateSaver state_saver(context);
   UpdateGraphicsContext(context, text_style, state_saver);
-
-  if (combined_text_)
-    context.ConcatCTM(Rotation(text_frame_rect_, kClockwise));
 
   for (wtf_size_t applied_decoration_index = 0;
        applied_decoration_index < decorations.size();
@@ -148,10 +121,6 @@ void TextPainter::PaintDecorationsOnlyLineThrough(
       decoration_painter.Paint();
     }
   }
-
-  // Restore rotation as needed.
-  if (combined_text_)
-    context.ConcatCTM(Rotation(text_frame_rect_, kCounterclockwise));
 }
 
 template <TextPainter::PaintInternalStep step>

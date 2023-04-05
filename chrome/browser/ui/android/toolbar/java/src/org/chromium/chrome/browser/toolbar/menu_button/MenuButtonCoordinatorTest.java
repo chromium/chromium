@@ -23,6 +23,7 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
@@ -81,14 +82,12 @@ public class MenuButtonCoordinatorTest {
                 .getAppMenuPropertiesDelegate();
         mAppMenuSupplier = new OneshotSupplierImpl<>();
         mMenuUiState = new MenuUiState();
-        doReturn(mMenuButton)
-                .when(mActivity)
-                .findViewById(org.chromium.chrome.R.id.menu_button_wrapper);
+        doReturn(mMenuButton).when(mActivity).findViewById(R.id.menu_button_wrapper);
         doReturn(mImageButton).when(mMenuButton).getImageButton();
         doReturn(mResources).when(mActivity).getResources();
         doReturn(10)
                 .when(mResources)
-                .getDimensionPixelSize(org.chromium.chrome.R.dimen.toolbar_url_focus_translation_x);
+                .getDimensionPixelSize(R.dimen.toolbar_url_focus_translation_x);
         doReturn(new WeakReference<>(mActivity)).when(mWindowAndroid).getActivity();
         doReturn(mKeyboardDelegate).when(mWindowAndroid).getKeyboardDelegate();
 
@@ -96,7 +95,7 @@ public class MenuButtonCoordinatorTest {
         mMenuButtonCoordinator = new MenuButtonCoordinator(mAppMenuSupplier,
                 mControlsVisibilityDelegate, mWindowAndroid, mFocusFunction, mRequestRenderRunnable,
                 true, () -> false, mThemeColorProvider, () -> null, () -> {},
-                org.chromium.chrome.R.id.menu_button_wrapper);
+                R.id.menu_button_wrapper);
         // clang-format on
     }
 

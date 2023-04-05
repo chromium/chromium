@@ -422,7 +422,7 @@ public class TabSwitcherCoordinator
     }
 
     private ScrimCoordinator createScrimCoordinator() {
-        ViewGroup coordinator = mActivity.findViewById(org.chromium.chrome.R.id.coordinator);
+        ViewGroup coordinator = mActivity.findViewById(R.id.coordinator);
         SystemUiScrimDelegate delegate = new SystemUiScrimDelegate() {
             @Override
             public void setStatusBarScrimFraction(float scrimFraction) {}
@@ -431,8 +431,7 @@ public class TabSwitcherCoordinator
             public void setNavigationBarScrimFraction(float scrimFraction) {}
         };
         return new ScrimCoordinator(mActivity, delegate, coordinator,
-                coordinator.getContext().getColor(
-                        org.chromium.chrome.R.color.omnibox_focused_fading_background_color));
+                coordinator.getContext().getColor(R.color.omnibox_focused_fading_background_color));
     }
 
     @VisibleForTesting

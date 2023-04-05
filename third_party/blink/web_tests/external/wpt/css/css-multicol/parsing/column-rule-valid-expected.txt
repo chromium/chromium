@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS e.style['column-rule'] = "10px" should set the property value
+PASS e.style['column-rule'] = "dotted" should set the property value
+PASS e.style['column-rule'] = "red" should set the property value
+FAIL e.style['column-rule'] = "currentcolor hidden medium" should set the property value assert_equals: serialization should be canonical expected "hidden" but got "medium hidden currentcolor"
+Harness: the test ran to completion.
+

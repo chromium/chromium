@@ -7,7 +7,13 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@protocol PromosManagerUIHandler;
+
 @interface DefaultBrowserPromoManager : ChromeCoordinator
+
+// The promos manager ui handler to alert for promo UI changes. Should only be
+// set if this coordinator was a promo presented by the PromosManager.
+@property(nonatomic, weak) id<PromosManagerUIHandler> promosUIHandler;
 
 @end
 

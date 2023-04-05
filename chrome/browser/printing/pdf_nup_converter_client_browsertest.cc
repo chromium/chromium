@@ -16,6 +16,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "pdf/pdf.h"
+#include "printing/print_settings.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size_f.h"
 
@@ -137,7 +138,7 @@ class PdfNupConverterClientBrowserTest : public InProcessBrowserTest {
     {
       base::RunLoop run_loop;
       converter->DoNupPdfDocumentConvert(
-          /*document_cookie=*/8, pages_per_sheet,
+          /*document_cookie=*/PrintSettings::NewCookie(), pages_per_sheet,
           /*page_size=*/gfx::Size(612, 792),
           /*printable_area=*/gfx::Rect(612, 792), std::move(pdf_region),
           base::BindOnce(&ResultCallbackImpl, &status, &nup_pdf_region, &called,

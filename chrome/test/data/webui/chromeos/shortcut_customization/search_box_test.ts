@@ -12,6 +12,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {fakeSearchResults} from 'chrome://shortcut-customization/js/fake_data.js';
 import {FakeShortcutSearchHandler} from 'chrome://shortcut-customization/js/search/fake_shortcut_search_handler.js';
 import {SearchBoxElement} from 'chrome://shortcut-customization/js/search/search_box.js';
+import {SearchResultRowElement} from 'chrome://shortcut-customization/js/search/search_result_row.js';
 import {setShortcutSearchHandlerForTesting} from 'chrome://shortcut-customization/js/search/shortcut_search_handler.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -92,14 +93,22 @@ suite('searchBoxTest', function() {
 
     if (query) {
       await waitForSearchResultsFetched();
+      await waitForListUpdate();
     }
-    await flush();
+    flush();
   }
 
   async function waitForSearchResultsFetched() {
     assertTrue(!!searchBoxElement);
     await eventToPromise('search-results-fetched', searchBoxElement);
-    await flush();
+    flush();
+  }
+
+  async function waitForListUpdate() {
+    assertTrue(!!resultsListElement);
+    // Wait for iron-list to complete resizing.
+    await eventToPromise('iron-resize', resultsListElement);
+    flush();
   }
 
   function isSearchTextSelected() {
@@ -115,8 +124,8 @@ suite('searchBoxTest', function() {
   });
 
   test('SearchResultsPopulated', async () => {
-    [searchBoxElement, searchFieldElement, dropdownElement] =
-        initSearchBoxElement();
+    [searchBoxElement, searchFieldElement, dropdownElement,
+     resultsListElement] = initSearchBoxElement();
 
     // Before: No search results shown.
     assertEquals('', searchFieldElement.getValue());
@@ -261,5 +270,41 @@ suite('searchBoxTest', function() {
         .click();
     assertTrue(isSearchTextSelected());
     assertTrue(dropdownElement.opened);
+  });
+
+  test('Keypress Enter on selected row causes dropdown to close', async () => {
+    [searchBoxElement, searchFieldElement, dropdownElement,
+     resultsListElement] = initSearchBoxElement();
+
+    await simulateSearch('query');
+    assertTrue(dropdownElement.opened);
+    assertTrue(searchBoxElement.shouldShowDropdown);
+
+    const selectedRow = strictQuery(
+        'search-result-row[selected]', dropdownElement, SearchResultRowElement);
+    const selectedRowInnerElement = strictQuery(
+        '#searchResultRowInner', selectedRow.shadowRoot, HTMLDivElement);
+
+    const enterEvent = new KeyboardEvent(
+        'keypress', {cancelable: true, key: 'Enter', keyCode: 13});
+    selectedRowInnerElement.dispatchEvent(enterEvent);
+    assertFalse(dropdownElement.opened);
+  });
+
+  test('Clicking on a row closes the dropdown', async () => {
+    [searchBoxElement, searchFieldElement, dropdownElement,
+     resultsListElement] = initSearchBoxElement();
+
+    await simulateSearch('query');
+    assertTrue(dropdownElement.opened);
+    assertTrue(searchBoxElement.shouldShowDropdown);
+
+    const selectedRow = strictQuery(
+        'search-result-row[selected]', dropdownElement, SearchResultRowElement);
+    const selectedRowInnerElement = strictQuery(
+        '#searchResultRowInner', selectedRow.shadowRoot, HTMLDivElement);
+
+    selectedRowInnerElement.click();
+    assertFalse(dropdownElement.opened);
   });
 });

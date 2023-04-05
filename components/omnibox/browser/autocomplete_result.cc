@@ -397,6 +397,30 @@ void AutocompleteResult::SortAndCull(
         sections.push_back(std::make_unique<DesktopSecondaryZpsSection>(
             suggestion_groups_map_));
       }
+    } else if constexpr (is_ios) {
+      if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+        if (omnibox::IsNTPPage(page_classification)) {
+          sections.push_back(
+              std::make_unique<IOSIpadNTPZpsSection>(suggestion_groups_map_));
+        } else if (omnibox::IsSearchResultsPage(page_classification)) {
+          sections.push_back(
+              std::make_unique<IOSIpadSRPZpsSection>(suggestion_groups_map_));
+        } else {
+          sections.push_back(
+              std::make_unique<IOSIpadWebZpsSection>(suggestion_groups_map_));
+        }
+      } else {
+        if (omnibox::IsNTPPage(page_classification)) {
+          sections.push_back(
+              std::make_unique<IOSNTPZpsSection>(suggestion_groups_map_));
+        } else if (omnibox::IsSearchResultsPage(page_classification)) {
+          sections.push_back(
+              std::make_unique<IOSSRPZpsSection>(suggestion_groups_map_));
+        } else {
+          sections.push_back(
+              std::make_unique<IOSWebZpsSection>(suggestion_groups_map_));
+        }
+      }
     }
     matches_ = Section::GroupMatches(std::move(sections), matches_);
   } else if (use_grouping_for_non_zps) {

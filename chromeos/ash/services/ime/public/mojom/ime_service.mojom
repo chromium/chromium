@@ -22,12 +22,6 @@ import "sandbox/policy/mojom/sandbox.mojom";
 // TODO(b/214153032): Paraphrase and modernise this documentation block. There
 // are currently quite some vague and/or oudated bits.
 
-// Specifies where a ConnectionFactory should initialize connections.
-enum ConnectionTarget {
-  kImeServiceLib= 0,
-  kRulebasedEngine = 1,
-};
-
 // Manages access to a set of IMEs, implemented by the IME service
 // itself. The IME framework in the browser process is responsible for brokering
 // the connection between the IME service and the IME extension, but does not
@@ -56,8 +50,7 @@ interface InputEngineManager {
   // TODO(b/214153032): Rename to InitializeMojoModeSharedLibConnectionFactory()
   // to better reflect what this does. Also, paraphrase documentation above.
   InitializeConnectionFactory(
-    pending_receiver<ConnectionFactory> connection_factory,
-    ConnectionTarget connection_target)
+    pending_receiver<ConnectionFactory> connection_factory)
     => (bool success);
 };
 

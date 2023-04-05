@@ -158,6 +158,12 @@ bool DarkLightModeControllerImpl::IsDarkModeEnabled() const {
     return false;
   }
 
+  // Disable dark mode for Shimless RMA.
+  if (features::IsShimlessRMADarkModeDisabled() &&
+      session_state == session_manager::SessionState::RMA) {
+    return false;
+  }
+
   if (is_dark_mode_enabled_in_oobe_for_testing_.has_value()) {
     return is_dark_mode_enabled_in_oobe_for_testing_.value();
   }
@@ -187,8 +193,7 @@ bool DarkLightModeControllerImpl::IsDarkModeEnabled() const {
     return is_dark_mode_enabled_for_focused_pod_.value();
   }
 
-  // Keep the color mode as DARK in login screen or when dark/light mode feature
-  // is not enabled.
+  // Keep the color mode as DARK in login screen.
   if (!active_user_pref_service_) {
     return true;
   }
@@ -249,19 +254,11 @@ void DarkLightModeControllerImpl::OnActiveUserPrefServiceChanged(
 
 void DarkLightModeControllerImpl::OnSessionStateChanged(
     session_manager::SessionState state) {
+  auto closure = GetNotifyOnDarkModeChangeClosure();
   if (state != session_manager::SessionState::OOBE &&
       state != session_manager::SessionState::LOGIN_PRIMARY) {
     oobe_state_ = OobeDialogState::HIDDEN;
   }
-
-  // Disable dark mode for Shimless RMA
-  if (features::IsShimlessRMADarkModeDisabled() &&
-      state == session_manager::SessionState::RMA) {
-    RefreshColorsOnColorMode(/*is_dark_mode_enabled=*/false);
-    return;
-  }
-
-  RefreshColorsOnColorMode(IsDarkModeEnabled());
 }
 
 void DarkLightModeControllerImpl::RefreshFeatureState() {}

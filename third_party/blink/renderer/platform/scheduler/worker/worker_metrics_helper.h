@@ -30,10 +30,6 @@ class PLATFORM_EXPORT WorkerMetricsHelper : public MetricsHelper {
   void SetParentFrameType(FrameOriginType frame_type);
 
  private:
-  scheduling_metrics::TaskDurationMetricReporter<TaskType>
-      dedicated_worker_per_task_type_duration_reporter_;
-  scheduling_metrics::TaskDurationMetricReporter<TaskType>
-      dedicated_worker_per_task_type_cpu_duration_reporter_;
   scheduling_metrics::TaskDurationMetricReporter<FrameOriginType>
       dedicated_worker_per_parent_frame_status_duration_reporter_;
   scheduling_metrics::TaskDurationMetricReporter<FrameOriginType>

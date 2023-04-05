@@ -1,0 +1,44 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non ChromeOS builds must not depend on //chromeos/ash")
+
+source_set("client") {
+  sources = [
+    "nearby_api_call_flow.h",
+    "nearby_api_call_flow_impl.cc",
+    "nearby_api_call_flow_impl.h",
+    "nearby_http_result.cc",
+    "nearby_http_result.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/signin/public/identity_manager",
+    "//net",
+    "//net/traffic_annotation",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "nearby_api_call_flow_impl_unittest.cc" ]
+
+  deps = [
+    ":client",
+    "//base",
+    "//base/test:test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//net",
+    "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
+    "//testing/gtest",
+  ]
+}

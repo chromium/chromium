@@ -11,11 +11,40 @@
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/import_results.h"
 #include "components/password_manager/services/csv_password/csv_password_parser_service.h"
 #include "components/password_manager/services/csv_password/public/mojom/csv_password_parser.mojom.h"
 
 namespace password_manager {
+
+struct NotesImportMetrics {
+  // Number of valid non-empty notes (note's length is not greater than 1000
+  // characters).
+  size_t notes_per_file_count = 0;
+  // Number of imported notes that are duplicates of local notes of the same
+  // credential.
+  size_t notes_duplicates_per_file_count = 0;
+  // Number of imported notes that are substrings of local notes of the same
+  // credential.
+  size_t notes_substrings_per_file_count = 0;
+  // Number of imported notes that were concatenated with local notes of the
+  // same credential.
+  size_t notes_concatenations_per_file_count = 0;
+};
+
+struct ImportedPasswords {
+  ImportedPasswords();
+  ImportedPasswords(ImportedPasswords&& other);
+  ~ImportedPasswords();
+
+  ImportedPasswords& operator=(ImportedPasswords&& other);
+
+  // Passwords that should be added to the store.
+  std::vector<password_manager::CredentialUIEntry> add_credentials;
+  // Passwords that should be updated in the store.
+  std::vector<password_manager::PasswordForm> edit_forms;
+};
 
 class SavedPasswordsPresenter;
 
@@ -26,9 +55,9 @@ class PasswordImporter {
   static constexpr size_t MAX_PASSWORDS_PER_IMPORT = 3000;
   static constexpr size_t MAX_NOTE_LENGTH = 1000;
 
-  // CompletionCallback is the type of the processing function for parsed
+  // ConsumePasswordsCallback is the type of the processing function for parsed
   // passwords.
-  using CompletionCallback =
+  using ConsumePasswordsCallback =
       password_manager::mojom::CSVPasswordParser::ParseCSVCallback;
 
   using ImportResultsCallback =
@@ -56,26 +85,42 @@ class PasswordImporter {
   void SetServiceForTesting(
       mojo::PendingRemote<mojom::CSVPasswordParser> parser);
 
-  bool IsRunning() const { return !results_callback_.is_null(); }
+  bool IsRunning() const { return import_started_; }
 
  private:
   // Parses passwords from |input| using a mojo sandbox process and
   // asynchronously calls |completion| with the results.
   void ParseCSVPasswordsInSandbox(
-      CompletionCallback completion,
+      PasswordForm::Store to_store,
+      ImportResultsCallback results_callback,
       base::expected<std::string, ImportResults::Status> result);
 
-  void ConsumePasswords(std::string file_name,
-                        password_manager::PasswordForm::Store store,
+  // Processes passwords when they've been parsed by ParseCSVPasswordsInSandbox.
+  void ConsumePasswords(PasswordForm::Store to_store,
+                        ImportResultsCallback results_callback,
                         password_manager::mojom::CSVPasswordSequencePtr seq);
+
+  // Triggers the processes for adding and updating `imported_passwords`.
+  void ExecuteImport(ImportResultsCallback results_callback,
+                     ImportResults results,
+                     base::Time start_time,
+                     ImportedPasswords imported_passwords);
+
+  // Runs `results_callback` with aggregate results `results_` after all
+  // imported passwords were added and updated.
+  // Also, reports import results metrics.
+  void ImportFinished(ImportResultsCallback results_callback,
+                      ImportResults results,
+                      base::Time start_time);
 
   const mojo::Remote<mojom::CSVPasswordParser>& GetParser();
 
   mojo::Remote<mojom::CSVPasswordParser> parser_;
 
-  ImportResults::Status status_ = ImportResults::Status::NONE;
+  bool import_started_ = false;
 
-  ImportResultsCallback results_callback_;
+  // Path of the imported file.
+  base::FilePath file_path_;
 
   const raw_ptr<SavedPasswordsPresenter> presenter_;
 

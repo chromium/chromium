@@ -33,9 +33,8 @@
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/whitespace_attacher.h"
-#include "third_party/blink/renderer/core/layout/layout_object_factory.h"
-#include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/svg/svg_foreign_object_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
@@ -270,7 +269,7 @@ static inline bool CanHaveWhitespaceChildren(
         !context.previous_in_flow->IsText())
       return false;
 
-    return style.PreserveNewline() ||
+    return style.ShouldPreserveBreaks() ||
            !EndsWithWhitespace(
                To<LayoutText>(context.previous_in_flow)->GetText());
   }
@@ -299,13 +298,15 @@ bool Text::TextLayoutObjectIsNeeded(const AttachContext& context,
     return false;
 
   // pre-wrap in SVG never makes layoutObject.
-  if (!style.CollapseWhiteSpace() && style.ShouldWrapLine() && parent.IsSVG()) {
+  if (style.ShouldPreserveWhiteSpaces() && style.ShouldWrapLine() &&
+      parent.IsSVG()) {
     return false;
   }
 
   // pre/pre-wrap/pre-line always make layoutObjects.
-  if (style.PreserveNewline())
+  if (style.ShouldPreserveBreaks()) {
     return true;
+  }
 
   if (!context.use_previous_in_flow)
     return false;
@@ -329,15 +330,10 @@ static bool IsSVGText(Text* text) {
          !IsA<SVGForeignObjectElement>(*parent_or_shadow_host_node);
 }
 
-LayoutText* Text::CreateTextLayoutObject(const ComputedStyle& style,
-                                         LegacyLayout legacy) {
+LayoutText* Text::CreateTextLayoutObject() {
   if (IsSVGText(this))
     return MakeGarbageCollected<LayoutSVGInlineText>(this, data());
-
-  if (style.HasTextCombine())
-    return LayoutObjectFactory::CreateTextCombine(this, data(), legacy);
-
-  return LayoutObjectFactory::CreateText(this, data(), legacy);
+  return MakeGarbageCollected<LayoutNGText>(this, data());
 }
 
 void Text::AttachLayoutTree(AttachContext& context) {
@@ -389,7 +385,7 @@ void Text::ReattachLayoutTreeIfNeeded(AttachContext& context) {
 namespace {
 
 bool NeedsWhitespaceLayoutObject(const ComputedStyle& style) {
-  return style.PreserveNewline();
+  return style.ShouldPreserveBreaks();
 }
 
 }  // namespace

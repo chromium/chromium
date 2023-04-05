@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_manager.h"
 
-#include "ash/components/arc/test/fake_app_instance.h"
+#include "ash/components/arc/test/fake_compatibility_mode_instance.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
@@ -463,19 +463,15 @@ TEST_F(ArcInputOverlayManagerTest, TestDisplayRotationChanged) {
 TEST_F(ArcInputOverlayManagerTest, TestFeatureAvailability) {
   std::unique_ptr<TestingProfile> profile = std::make_unique<TestingProfile>();
   ArcAppTest arc_app_test;
+  arc_app_test.set_wait_compatibility_mode(true);
   arc_app_test.SetUp(profile.get());
 
   // Test without enabling beta flag.
-  int task_id = 21;
-  arc_app_test.app_instance()->set_app_category_of_pkg(
-      kRandomGamePackageName, arc::mojom::AppCategory::kGame);
+  arc_app_test.compatibility_mode_instance()->set_is_gio_applicable(false);
   task_environment()->RunUntilIdle();
   auto game_window =
       CreateArcWindow(ash::Shell::GetPrimaryRootWindow(),
                       gfx::Rect(10, 10, 100, 100), kRandomGamePackageName);
-  exo::SetShellApplicationId(
-      game_window->GetNativeWindow(),
-      base::StringPrintf("org.chromium.arc.%d", task_id));
   task_environment()->FastForwardBy(kIORead);
   auto* injector = GetTouchInjector(game_window->GetNativeWindow());
   EXPECT_FALSE(injector);
@@ -499,17 +495,11 @@ TEST_F(ArcInputOverlayManagerTest, TestFeatureAvailability) {
   task_environment()->FastForwardBy(kIORead);
   injector = GetTouchInjector(app_window->GetNativeWindow());
   EXPECT_FALSE(injector);
-  // Create an app with game category.
-  task_id = 22;
-  arc_app_test.app_instance()->set_app_category_of_pkg(
-      kRandomGamePackageName, arc::mojom::AppCategory::kGame);
+  arc_app_test.compatibility_mode_instance()->set_is_gio_applicable(true);
   task_environment()->RunUntilIdle();
   game_window =
       CreateArcWindow(ash::Shell::GetPrimaryRootWindow(),
                       gfx::Rect(10, 10, 100, 100), kRandomGamePackageName);
-  exo::SetShellApplicationId(
-      game_window->GetNativeWindow(),
-      base::StringPrintf("org.chromium.arc.%d", task_id));
   task_environment()->FastForwardBy(kIORead);
   injector = GetTouchInjector(game_window->GetNativeWindow());
   EXPECT_TRUE(injector);

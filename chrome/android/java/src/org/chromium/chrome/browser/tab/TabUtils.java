@@ -282,18 +282,18 @@ public class TabUtils {
 
     private static int getThumbnailHeightDiff(Context context) {
         final int tabGridCardMargin = (int) TabUiThemeProvider.getTabGridCardMargin(context);
-        final int thumbnailMargin = (int) context.getResources().getDimension(
-                org.chromium.chrome.tab_ui.R.dimen.tab_grid_card_thumbnail_margin);
+        final int thumbnailMargin =
+                (int) context.getResources().getDimension(R.dimen.tab_grid_card_thumbnail_margin);
         int heightMargins = (2 * tabGridCardMargin) + thumbnailMargin;
-        final int titleHeight = (int) context.getResources().getDimension(
-                org.chromium.chrome.tab_ui.R.dimen.tab_grid_card_header_height);
+        final int titleHeight =
+                (int) context.getResources().getDimension(R.dimen.tab_grid_card_header_height);
         return titleHeight + heightMargins;
     }
 
     private static int getThumbnailWidthDiff(Context context) {
         final int tabGridCardMargin = (int) TabUiThemeProvider.getTabGridCardMargin(context);
-        final int thumbnailMargin = (int) context.getResources().getDimension(
-                org.chromium.chrome.tab_ui.R.dimen.tab_grid_card_thumbnail_margin);
+        final int thumbnailMargin =
+                (int) context.getResources().getDimension(R.dimen.tab_grid_card_thumbnail_margin);
         return 2 * (tabGridCardMargin + thumbnailMargin);
     }
 }

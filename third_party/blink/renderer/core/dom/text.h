@@ -51,7 +51,9 @@ class CORE_EXPORT Text : public CharacterData {
   Text(TreeScope& tree_scope, String&& data, ConstructionType type)
       : CharacterData(tree_scope, std::move(data), type) {}
 
-  LayoutText* GetLayoutObject() const;
+  // Note that this one is defined in layout/layout_text.h, because it needs
+  // LayoutText to be defined, and that's not possible here.
+  inline LayoutText* GetLayoutObject() const;
 
   // mergeNextSiblingNodesIfPossible() merges next sibling nodes if possible
   // then returns a node not merged.
@@ -67,7 +69,7 @@ class CORE_EXPORT Text : public CharacterData {
   void RebuildTextLayoutTree(WhitespaceAttacher&);
   bool TextLayoutObjectIsNeeded(const AttachContext&,
                                 const ComputedStyle&) const;
-  LayoutText* CreateTextLayoutObject(const ComputedStyle&, LegacyLayout);
+  LayoutText* CreateTextLayoutObject();
   void UpdateTextLayoutObject(unsigned offset_of_replaced_data,
                               unsigned length_of_replaced_data);
 

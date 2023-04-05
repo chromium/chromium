@@ -178,7 +178,11 @@ TEST_P(PingManagerTest, SendPing) {
 
     EXPECT_TRUE(request.contains("@os"));
     EXPECT_EQ("fake_prodid", CHECK_DEREF(request.FindString("@updater")));
+#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
+    EXPECT_EQ("crx3,puff", CHECK_DEREF(request.FindString("acceptformat")));
+#else
     EXPECT_EQ("crx3", CHECK_DEREF(request.FindString("acceptformat")));
+#endif
     EXPECT_TRUE(request.contains("arch"));
     EXPECT_EQ("cr", CHECK_DEREF(request.FindString("dedup")));
     EXPECT_LT(0, request.FindByDottedPath("hw.physmemory")->GetInt());

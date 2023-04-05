@@ -214,8 +214,10 @@ bool PermissionUtil::IsGuardContentSetting(ContentSettingsType type) {
 bool PermissionUtil::CanPermissionBeAllowedOnce(ContentSettingsType type) {
   switch (type) {
     case ContentSettingsType::GEOLOCATION:
+    case ContentSettingsType::MEDIASTREAM_MIC:
+    case ContentSettingsType::MEDIASTREAM_CAMERA:
       return base::FeatureList::IsEnabled(
-          permissions::features::kOneTimeGeolocationPermission);
+          permissions::features::kOneTimePermission);
     default:
       return false;
   }

@@ -11,6 +11,8 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/values.h"
+#include "chromeos/ash/components/quick_start/quick_start_message.h"
+#include "chromeos/ash/components/quick_start/quick_start_message_type.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
@@ -25,14 +27,12 @@ using GetAssertionStatus = mojom::GetAssertionResponse::GetAssertionStatus;
 
 constexpr char kCredentialIdKey[] = "id";
 constexpr char kEntitiyIdMapKey[] = "id";
-constexpr char kBootstrapConfigurationsKey[] = "bootstrapConfigurations";
 constexpr char kDeviceDetailsKey[] = "deviceDetails";
 constexpr char kCryptauthDeviceIdKey[] = "cryptauthDeviceId";
 constexpr uint8_t kCtapDeviceResponseSuccess = 0x00;
 constexpr int kCborDecoderNoError = 0;
 constexpr int kCborDecoderUnknownError = 14;
 constexpr uint8_t kCtap2ErrInvalidCBOR = 0x12;
-constexpr char kSecondDeviceAuthPayloadKey[] = "secondDeviceAuthPayload";
 constexpr char kFidoMessageKey[] = "fidoMessage";
 
 std::pair<int, absl::optional<cbor::Value>> CborDecodeGetAssertionResponse(
@@ -173,23 +173,11 @@ mojom::GetAssertionResponsePtr QuickStartDecoder::DoDecodeGetAssertionResponse(
 mojom::BootstrapConfigurationsPtr
 QuickStartDecoder::DoDecodeBootstrapConfigurations(
     const std::vector<uint8_t>& data) {
-  std::string raw_message_payload(data.begin(), data.end());
-  absl::optional<base::Value> message_payload_json =
-      base::JSONReader::Read(raw_message_payload);
-  if (!message_payload_json.has_value() || !message_payload_json->is_dict()) {
-    LOG(ERROR) << "MessagePayload cannot be parsed as a JSON Dictionary.";
-    return nullptr;
-  }
-  base::Value::Dict& message_payload = message_payload_json.value().GetDict();
-  base::Value::Dict* bootstrap_configurations =
-      message_payload.FindDict(kBootstrapConfigurationsKey);
-  if (!bootstrap_configurations) {
-    LOG(ERROR)
-        << "BootstrapConfigurations cannot be found within MessagePayload.";
-    return nullptr;
-  }
+  std::unique_ptr<QuickStartMessage> message = QuickStartMessage::ReadMessage(
+      data, QuickStartMessageType::kBootstrapConfigurations);
+
   base::Value::Dict* device_details =
-      bootstrap_configurations->FindDict(kDeviceDetailsKey);
+      message->GetPayload()->FindDict(kDeviceDetailsKey);
   if (!device_details) {
     LOG(ERROR)
         << "DeviceDetails cannot be found within BootstrapConfigurations.";
@@ -222,22 +210,16 @@ void QuickStartDecoder::DecodeGetAssertionResponse(
 absl::optional<std::vector<uint8_t>>
 QuickStartDecoder::ExtractFidoDataFromJsonResponse(
     const std::vector<uint8_t>& data) {
-  std::string raw_message_payload(data.begin(), data.end());
-  absl::optional<base::Value> message_payload_json =
-      base::JSONReader::Read(raw_message_payload);
-  if (!message_payload_json.has_value()) {
-    LOG(ERROR) << "MessagePayload cannot be parsed as JSON";
-    return absl::nullopt;
-  }
+  std::unique_ptr<ash::quick_start::QuickStartMessage> parsed_message =
+      ash::quick_start::QuickStartMessage::ReadMessage(
+          data, QuickStartMessageType::kSecondDeviceAuthPayload);
 
-  base::Value::Dict* message_json = message_payload_json->GetIfDict();
-  if (!message_json) {
+  if (!parsed_message) {
     LOG(ERROR) << "MessagePayload cannot be parsed as a JSON Dictionary.";
     return absl::nullopt;
   }
 
-  base::Value::Dict* second_device_auth_payload =
-      message_json->FindDict(kSecondDeviceAuthPayloadKey);
+  base::Value::Dict* second_device_auth_payload = parsed_message->GetPayload();
   if (!second_device_auth_payload) {
     LOG(ERROR) << "secondDeviceAuthPayload cannot be found within Message.";
     return absl::nullopt;

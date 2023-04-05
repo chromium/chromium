@@ -17,7 +17,7 @@ struct AutocompleteMatchType {
   // and cannot be renumbered.
   //
   // Automatically generate a corresponding Java enum:
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.omnibox
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.omnibox
   // GENERATED_JAVA_CLASS_NAME_OVERRIDE: OmniboxSuggestionType
   // clang-format off
   //

@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/base64.h"
-#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
@@ -40,7 +39,6 @@
 #include "content/shell/browser/shell_browser_main_parts.h"
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/shell/browser/shell_devtools_manager_delegate.h"
-#include "content/shell/common/shell_switches.h"
 #include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -49,7 +47,9 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "base/command_line.h"
 #include "content/public/browser/devtools_frontend_host.h"
+#include "content/shell/common/shell_switches.h"
 #endif
 
 namespace content {
@@ -228,8 +228,13 @@ void ShellDevToolsBindings::ReadyToCommitNavigation(
 void ShellDevToolsBindings::AttachInternal() {
   if (agent_host_)
     agent_host_->DetachClient(this);
-  agent_host_ = base::CommandLine::ForCurrentProcess()->HasSwitch(
-                    switches::kContentShellDevToolsTabTarget)
+#if BUILDFLAG(IS_ANDROID)
+  const bool create_for_tab = false;
+#else
+  const bool create_for_tab = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kContentShellDevToolsTabTarget);
+#endif
+  agent_host_ = create_for_tab
                     ? DevToolsAgentHost::GetOrCreateForTab(inspected_contents_)
                     : DevToolsAgentHost::GetOrCreateFor(inspected_contents_);
   agent_host_->AttachClient(this);

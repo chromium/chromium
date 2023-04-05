@@ -36,6 +36,7 @@
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/interest_group_pa_report_util.h"
 #include "content/browser/interest_group/interest_group_storage.h"
+#include "content/browser/interest_group/noiser_and_bucketer.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
@@ -535,6 +536,11 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
     rounded_ad_cost = RoundStochasticallyToKBits(
         winning_bid_info_.ad_cost.value(), kFledgeAdCostReportingBits.Get());
   }
+  absl::optional<uint16_t> noised_and_masked_modeling_signals;
+  if (winning_bid_info_.modeling_signals) {
+    noised_and_masked_modeling_signals =
+        NoiseAndMaskModelingSignals(*winning_bid_info_.modeling_signals);
+  }
   bidder_worklet_handle_->GetBidderWorklet()->ReportWin(
       group_name, auction_config->non_shared_params.auction_signals.value(),
       per_buyer_signals,
@@ -552,7 +558,17 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
       seller_info.highest_scoring_other_bid_owner.has_value() &&
           winning_bid_info_.storage_interest_group->interest_group.owner ==
               seller_info.highest_scoring_other_bid_owner.value(),
-      rounded_ad_cost, auction_config->seller,
+      rounded_ad_cost, noised_and_masked_modeling_signals,
+      NoiseAndBucketJoinCount(
+          // Browser signals may be null in tests.
+          winning_bid_info_.storage_interest_group->bidding_browser_signals
+              ? winning_bid_info_.storage_interest_group
+                    ->bidding_browser_signals->join_count
+              : 1),
+      NoiseAndBucketRecency(
+          base::Time::Now() -
+          winning_bid_info_.storage_interest_group->join_time),
+      auction_config->seller,
       /*browser_signal_top_level_seller_origin=*/
       component_seller_winning_bid_info_
           ? top_level_seller_winning_bid_info_.auction_config->seller

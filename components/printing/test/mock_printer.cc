@@ -14,6 +14,7 @@
 #include "ipc/ipc_message_utils.h"
 #include "printing/metafile_skia.h"
 #include "printing/mojom/print.mojom.h"
+#include "printing/print_settings.h"
 #include "printing/units.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -72,8 +73,6 @@ MockPrinter::MockPrinter()
     : dpi_(printing::kPointsPerInch),
       selection_only_(false),
       should_print_backgrounds_(false),
-      document_cookie_(-1),
-      current_document_cookie_(0),
       printer_status_(PRINTER_READY),
       number_pages_(0u),
       page_number_(0u),
@@ -100,16 +99,16 @@ MockPrinter::~MockPrinter() {
 
 void MockPrinter::ResetPrinter() {
   printer_status_ = PRINTER_READY;
-  document_cookie_ = -1;
+  document_cookie_.reset();
 }
 
 printing::mojom::PrintParamsPtr MockPrinter::GetDefaultPrintSettings() {
   // Verify this printer is not processing a job.
   // Sorry, this mock printer is very fragile.
-  EXPECT_EQ(-1, document_cookie_);
+  EXPECT_FALSE(document_cookie_.has_value());
 
   // Assign a unit document cookie and set the print settings.
-  document_cookie_ = CreateDocumentCookie();
+  CreateDocumentCookie();
   auto params = printing::mojom::PrintParams::New();
   SetPrintParams(params.get());
   return params;
@@ -144,7 +143,7 @@ void MockPrinter::ScriptedPrint(int cookie,
   settings->params->dpi = gfx::Size(dpi_, dpi_);
   settings->params->selection_only = selection_only_;
   settings->params->should_print_backgrounds = should_print_backgrounds_;
-  settings->params->document_cookie = document_cookie_;
+  settings->params->document_cookie = document_cookie_.value();
   settings->params->page_size = page_size_;
   settings->params->content_size = content_size_;
   settings->params->printable_area = printable_area_;
@@ -163,9 +162,8 @@ void MockPrinter::UpdateSettings(printing::mojom::PrintPagesParams* params,
                                  int margins_type,
                                  const gfx::Size& page_size,
                                  int scale_factor) {
-  if (document_cookie_ == -1) {
-    document_cookie_ = CreateDocumentCookie();
-  }
+  EXPECT_TRUE(document_cookie_.has_value());
+
   *params->params = printing::mojom::PrintParams();
   params->pages = pages;
   SetPrintParams(params->params.get());
@@ -271,15 +269,17 @@ bool MockPrinter::SaveBitmap(unsigned int page,
   return true;
 }
 
-int MockPrinter::CreateDocumentCookie() {
-  return use_invalid_settings_ ? 0 : ++current_document_cookie_;
+void MockPrinter::CreateDocumentCookie() {
+  EXPECT_FALSE(document_cookie_.has_value());
+  document_cookie_ =
+      use_invalid_settings_ ? 0 : printing::PrintSettings::NewCookie();
 }
 
 void MockPrinter::SetPrintParams(printing::mojom::PrintParams* params) {
   params->dpi = gfx::Size(dpi_, dpi_);
   params->selection_only = selection_only_;
   params->should_print_backgrounds = should_print_backgrounds_;
-  params->document_cookie = document_cookie_;
+  params->document_cookie = document_cookie_.value();
   params->page_size = page_size_;
   params->content_size = content_size_;
   params->printable_area = printable_area_;

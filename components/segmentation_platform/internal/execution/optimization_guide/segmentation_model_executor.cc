@@ -42,10 +42,9 @@ bool SegmentationModelExecutor::Preprocess(
 
 absl::optional<ModelProvider::Response> SegmentationModelExecutor::Postprocess(
     const std::vector<const TfLiteTensor*>& output_tensors) {
-  // The output must be a single tensor with a single float element.
+  // The output must be a single tensor with float elements.
   DCHECK_EQ(1u, output_tensors.size());
   DCHECK_EQ(kTfLiteFloat32, output_tensors[0]->type);
-  DCHECK_EQ(1u, output_tensors[0]->bytes / sizeof(output_tensors[0]->type));
 
   ModelProvider::Response data;
   absl::Status status =
@@ -54,7 +53,6 @@ absl::optional<ModelProvider::Response> SegmentationModelExecutor::Postprocess(
     NOTREACHED();
     return absl::nullopt;
   }
-  DCHECK_EQ(1u, data.size());
   return data;
 }
 

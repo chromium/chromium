@@ -152,9 +152,17 @@ bool BluetoothDeviceFloss::IsGattConnected() const {
 }
 
 bool BluetoothDeviceFloss::IsConnectable() const {
-  // Mark all devices as connectable for now.
-  // TODO(b/211126690): Implement based on supported profiles.
-  return true;
+  // Mimic current BlueZ behavior that Non-HID is connectable
+  switch (GetDeviceType()) {
+    case device::BluetoothDeviceType::PERIPHERAL:
+    case device::BluetoothDeviceType::JOYSTICK:
+    case device::BluetoothDeviceType::KEYBOARD:
+    case device::BluetoothDeviceType::MOUSE:
+    case device::BluetoothDeviceType::KEYBOARD_MOUSE_COMBO:
+      return false;
+    default:
+      return true;
+  }
 }
 
 bool BluetoothDeviceFloss::IsConnecting() const {
@@ -396,6 +404,12 @@ void BluetoothDeviceFloss::Pair(
   // Pair is the same as Connect due to influence from BlueZ.
   // TODO(b/269516642): We should make distinction between them in the future.
   Connect(pairing_delegate, std::move(callback));
+}
+
+BluetoothPairingFloss* BluetoothDeviceFloss::BeginPairing(
+    BluetoothDevice::PairingDelegate* pairing_delegate) {
+  pairing_ = std::make_unique<BluetoothPairingFloss>(pairing_delegate);
+  return pairing_.get();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

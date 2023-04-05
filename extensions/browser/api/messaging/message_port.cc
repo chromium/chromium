@@ -36,9 +36,9 @@ void MessagePort::ClosePort(int process_id,
                             int routing_id,
                             int worker_thread_id) {}
 
-void MessagePort::IncrementLazyKeepaliveCount() {}
+void MessagePort::IncrementLazyKeepaliveCount(Activity::Type activity_type) {}
 
-void MessagePort::DecrementLazyKeepaliveCount() {}
+void MessagePort::DecrementLazyKeepaliveCount(Activity::Type activity_type) {}
 
 void MessagePort::NotifyResponsePending() {}
 

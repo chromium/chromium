@@ -75,23 +75,23 @@ class BrowserPersister : public sessions::CommandStorageManagerDelegate,
                      const std::map<std::string, std::string>& data) override;
 
   // sessions::SessionTabHelperDelegate:
-  void SetTabUserAgentOverride(const SessionID& window_id,
-                               const SessionID& tab_id,
+  void SetTabUserAgentOverride(SessionID window_id,
+                               SessionID tab_id,
                                const sessions::SerializedUserAgentOverride&
                                    user_agent_override) override;
-  void SetSelectedNavigationIndex(const SessionID& window_id,
-                                  const SessionID& tab_id,
+  void SetSelectedNavigationIndex(SessionID window_id,
+                                  SessionID tab_id,
                                   int index) override;
   void UpdateTabNavigation(
-      const SessionID& window_id,
-      const SessionID& tab_id,
+      SessionID window_id,
+      SessionID tab_id,
       const sessions::SerializedNavigationEntry& navigation) override;
-  void TabNavigationPathPruned(const SessionID& window_id,
-                               const SessionID& tab_id,
+  void TabNavigationPathPruned(SessionID window_id,
+                               SessionID tab_id,
                                int index,
                                int count) override;
-  void TabNavigationPathEntriesDeleted(const SessionID& window_id,
-                                       const SessionID& tab_id) override;
+  void TabNavigationPathEntriesDeleted(SessionID window_id,
+                                       SessionID tab_id) override;
 
   // Schedules recreating the file on the next save.
   void ScheduleRebuildOnNextSave();

@@ -17,6 +17,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -130,7 +131,10 @@ HomeButton::HomeButton(PressedCallback callback, PrefService* prefs)
       coordinator_(this, prefs) {
   SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                            ui::EF_MIDDLE_MOUSE_BUTTON);
-  SetVectorIcons(kNavigateHomeIcon, kNavigateHomeTouchIcon);
+  SetVectorIcons(features::IsChromeRefresh2023()
+                     ? kNavigateHomeChromeRefreshIcon
+                     : kNavigateHomeIcon,
+                 kNavigateHomeTouchIcon);
   SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_HOME));
   SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_HOME));
   SetID(VIEW_ID_HOME_BUTTON);

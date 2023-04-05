@@ -451,9 +451,6 @@ void WebFrameWidgetImpl::DragTargetDragEnter(
     DragOperationsMask operations_allowed,
     uint32_t key_modifiers,
     DragTargetDragEnterCallback callback) {
-  // Nothing must be dragging.
-  CHECK(!current_drag_data_);
-
   current_drag_data_ = DataObject::Create(web_drag_data);
   operations_allowed_ = operations_allowed;
 
@@ -469,9 +466,6 @@ void WebFrameWidgetImpl::DragTargetDragOver(
     DragOperationsMask operations_allowed,
     uint32_t key_modifiers,
     DragTargetDragOverCallback callback) {
-  // Must occur after dragenter.
-  CHECK(current_drag_data_);
-
   operations_allowed_ = operations_allowed;
 
   DragTargetDragEnterOrOver(point_in_viewport, screen_point, kDragOver,
@@ -483,13 +477,10 @@ void WebFrameWidgetImpl::DragTargetDragOver(
 void WebFrameWidgetImpl::DragTargetDragLeave(
     const gfx::PointF& point_in_viewport,
     const gfx::PointF& screen_point) {
-  // Must occur after dragenter.
-  CHECK(current_drag_data_);
-
   base::ScopedClosureRunner runner(
       WTF::BindOnce(&WebFrameWidgetImpl::CancelDrag, WrapWeakPersistent(this)));
 
-  if (IgnoreInputEvents()) {
+  if (IgnoreInputEvents() || !current_drag_data_) {
     return;
   }
 
@@ -508,14 +499,11 @@ void WebFrameWidgetImpl::DragTargetDrop(const WebDragData& web_drag_data,
                                         const gfx::PointF& screen_point,
                                         uint32_t key_modifiers,
                                         base::OnceClosure callback) {
-  // Must occur after dragenter.
-  CHECK(current_drag_data_);
-
   base::ScopedClosureRunner callback_runner(std::move(callback));
   base::ScopedClosureRunner runner(
       WTF::BindOnce(&WebFrameWidgetImpl::CancelDrag, WrapWeakPersistent(this)));
 
-  if (IgnoreInputEvents()) {
+  if (IgnoreInputEvents() || !current_drag_data_) {
     return;
   }
 
@@ -1234,7 +1222,7 @@ void WebFrameWidgetImpl::DragTargetDragEnterOrOver(
     const gfx::PointF& screen_point,
     DragAction drag_action,
     uint32_t key_modifiers) {
-  if (IgnoreInputEvents()) {
+  if (IgnoreInputEvents() || !current_drag_data_) {
     CancelDrag();
     return;
   }
@@ -1525,7 +1513,7 @@ void WebFrameWidgetImpl::UpdateLifecycle(WebLifecycleUpdate requested_update,
       SetBackgroundColor(background_color);
       if (background_color != data.last_background_color) {
         LocalRootImpl()->GetFrame()->DidChangeBackgroundColor(
-            background_color, false /* color_adjust */);
+            SkColor4f::FromColor(background_color), false /* color_adjust */);
         data.last_background_color = background_color;
       }
     }

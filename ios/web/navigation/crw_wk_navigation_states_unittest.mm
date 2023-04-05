@@ -255,8 +255,8 @@ TEST_F(CRWWKNavigationStatesTest, PendingNavigations) {
   ASSERT_EQ(WKNavigationState::PROVISIONALY_FAILED,
             [states_ stateForNavigation:nil]);
   ASSERT_EQ(3U, [states_ pendingNavigations].count);
+  EXPECT_TRUE([[states_ pendingNavigations] containsObject:navigation1_]);
   EXPECT_TRUE([[states_ pendingNavigations] containsObject:navigation2_]);
-  EXPECT_TRUE([[states_ pendingNavigations] containsObject:navigation3_]);
   EXPECT_TRUE([[states_ pendingNavigations] containsObject:navigation3_]);
 
   // Commit navigation_1.

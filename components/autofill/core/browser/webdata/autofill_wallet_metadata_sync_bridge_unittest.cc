@@ -330,11 +330,9 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
         mock_processor_.CreateForwardingProcessor(), &backend_);
   }
 
-  void StopSyncing() {
+  void StopSyncingAndClearMetadata() {
     real_processor_->OnSyncStopping(syncer::CLEAR_METADATA);
   }
-
-  void Shutdown() { real_processor_->OnSyncStopping(syncer::KEEP_METADATA); }
 
   void StartSyncing(
       const std::vector<WalletMetadataSpecifics>& remote_data = {}) {
@@ -615,7 +613,7 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest, GetData_ShouldReturnCompleteData) {
 }
 
 TEST_F(AutofillWalletMetadataSyncBridgeTest,
-       ApplyStopSyncChanges_ShouldWipeLocalDataWhenSyncStopped) {
+       ApplyDisableSyncChanges_ShouldWipeLocalDataWhenSyncStopped) {
   // Perform initial sync to create sync data & metadata.
   ResetBridge(/*initial_sync_done=*/false);
   WalletMetadataSpecifics profile =
@@ -630,32 +628,9 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
   // data bridge will do that).
   EXPECT_CALL(*backend(), CommitChanges());
   EXPECT_CALL(*backend(), NotifyOfMultipleAutofillChanges()).Times(0);
-  StopSyncing();
+  StopSyncingAndClearMetadata();
 
   EXPECT_THAT(GetAllLocalDataInclRestart(), IsEmpty());
-}
-
-TEST_F(AutofillWalletMetadataSyncBridgeTest,
-       ApplyStopSyncChanges_ShouldKeepLocalDataOnShutdown) {
-  // Perform initial sync to create sync data & metadata.
-  ResetBridge(/*initial_sync_done=*/false);
-  WalletMetadataSpecifics profile =
-      CreateWalletMetadataSpecificsForAddressWithDetails(
-          kAddr1SpecificsId, /*use_count=*/10, /*use_date=*/20);
-  WalletMetadataSpecifics card =
-      CreateWalletMetadataSpecificsForCardWithDetails(
-          kCard1SpecificsId, /*use_count=*/30, /*use_date=*/40);
-  StartSyncing({profile, card});
-
-  // Now simulate shutting down the browser. This should not touch any of the
-  // data and thus also not notify the backend.
-  EXPECT_CALL(*backend(), CommitChanges()).Times(0);
-  EXPECT_CALL(*backend(), NotifyOfMultipleAutofillChanges()).Times(0);
-  Shutdown();
-
-  EXPECT_THAT(
-      GetAllLocalDataInclRestart(),
-      UnorderedElementsAre(EqualsSpecifics(profile), EqualsSpecifics(card)));
 }
 
 // Verify that lower values of metadata are not sent to the sync server when

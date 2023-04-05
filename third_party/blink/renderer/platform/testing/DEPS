@@ -69,6 +69,7 @@ specific_include_rules = {
     ],
     "scoped_fake_ukm_recorder\.cc": [
         "+services/metrics/public/mojom/ukm_interface.mojom-blink.h",
+        "+services/metrics/public/cpp/ukm_recorder_client_interface_registry.h",
     ],
     "scoped_fake_ukm_recorder\.h": [
         "+components/ukm/test_ukm_recorder.h",

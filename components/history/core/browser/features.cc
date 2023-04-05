@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "components/history/core/browser/top_sites_impl.h"
+#include "components/sync/base/features.h"
 
 namespace history {
 namespace {
@@ -73,5 +74,14 @@ const base::FeatureParam<int> kRepeatableQueriesMinVisitCount(
     &kOrganicRepeatableQueries,
     "RepeatableQueriesMinVisitCount",
     1);
+
+BASE_FEATURE(kSyncSegmentsData,
+             "SyncSegmentsData",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsSyncSegmentsDataEnabled() {
+  return base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType) &&
+         base::FeatureList::IsEnabled(kSyncSegmentsData);
+}
 
 }  // namespace history

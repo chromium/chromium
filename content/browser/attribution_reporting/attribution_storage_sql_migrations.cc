@@ -4,12 +4,14 @@
 
 #include "content/browser/attribution_reporting/attribution_storage_sql_migrations.h"
 
-#include "base/containers/span.h"
+#include <vector>
+
 #include "base/functional/function_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/attribution_reporting/source_type.mojom-shared.h"
+#include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
@@ -601,30 +603,30 @@ bool To48(sql::Database& db) {
   sql::Statement update_statement(db.GetUniqueStatement(kUpdateOriginalTime));
 
   while (select_statement.Step()) {
-    base::Time initial_report_time;
     int source_type = select_statement.ColumnInt(3);
     base::Time source_time = select_statement.ColumnTime(0);
     base::Time event_report_window_time = select_statement.ColumnTime(1);
     base::Time trigger_time = select_statement.ColumnTime(2);
+
+    std::vector<base::TimeDelta> early_deadlines;
     switch (source_type) {
       case static_cast<int>(
           attribution_reporting::mojom::SourceType::kNavigation):
-        initial_report_time = ComputeReportTime(
-            source_time, event_report_window_time, trigger_time,
-            /*early_deadlines=*/
-            base::span<const base::TimeDelta>({base::Days(2), base::Days(7)}));
+        early_deadlines = {AttributionConfig::EventLevelLimit::
+                               kDefaultFirstReportWindowDeadline,
+                           AttributionConfig::EventLevelLimit::
+                               kDefaultSecondReportWindowDeadline};
         break;
       case static_cast<int>(attribution_reporting::mojom::SourceType::kEvent):
-        initial_report_time = ComputeReportTime(
-            source_time, event_report_window_time, trigger_time,
-            /*early_deadlines=*/{});
         break;
       default:
         continue;
     }
 
     update_statement.Reset(/*clear_bound_vars=*/true);
-    update_statement.BindTime(0, initial_report_time);
+    update_statement.BindTime(
+        0, ComputeReportTime(source_time, event_report_window_time,
+                             trigger_time, early_deadlines));
     update_statement.BindInt64(1, select_statement.ColumnInt64(4));
     if (!update_statement.Run()) {
       return false;

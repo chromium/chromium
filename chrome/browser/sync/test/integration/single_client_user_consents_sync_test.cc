@@ -25,7 +25,7 @@ using SyncConsent = sync_pb::UserConsentTypes::SyncConsent;
 namespace {
 
 CoreAccountId GetAccountId() {
-  return CoreAccountId("gaia_id_for_user_gmail.com");
+  return CoreAccountId::FromGaiaId("gaia_id_for_user_gmail.com");
 }
 
 class UserConsentEqualityChecker : public SingleClientStatusChangeChecker {

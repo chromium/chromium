@@ -5,6 +5,7 @@
 #include "chrome/browser/touch_to_fill/touch_to_fill_controller_webauthn_delegate.h"
 
 #include <memory>
+#include <string>
 
 #include "base/base64.h"
 #include "base/strings/utf_string_conversions.h"
@@ -48,11 +49,14 @@ std::string UserId1AsString() {
 std::string UserId2AsString() {
   return base::Base64Encode(kUserId2);
 }
-std::u16string UserName1() {
-  return base::UTF8ToUTF16(std::string(kUserName1));
+std::string UserName1() {
+  return std::string(kUserName1);
 }
-std::u16string UserName2() {
-  return base::UTF8ToUTF16(std::string(kUserName2));
+std::string UserName2() {
+  return std::string(kUserName2);
+}
+std::u16string DeviceName() {
+  return u"Use your lock screen";
 }
 
 class MockWebAuthnRequestDelegateAndroid
@@ -142,6 +146,7 @@ class TouchToFillControllerWebAuthnTest
 
 TEST_F(TouchToFillControllerWebAuthnTest, ShowAndSelectCredential) {
   PasskeyCredential credential((PasskeyCredential::Username(UserName1())),
+                               PasskeyCredential::DeviceName(DeviceName()),
                                PasskeyCredential::BackendId(UserId1AsString()));
   std::vector<PasskeyCredential> credentials({credential});
 
@@ -159,11 +164,14 @@ TEST_F(TouchToFillControllerWebAuthnTest, ShowAndSelectCredential) {
 }
 
 TEST_F(TouchToFillControllerWebAuthnTest, ShowAndSelectWithMultipleCredential) {
-  PasskeyCredential::Username passkeyName(UserName1());
   PasskeyCredential credential1(
-      passkeyName, PasskeyCredential::BackendId(UserId1AsString()));
+      (PasskeyCredential::Username(UserName1())),
+      PasskeyCredential::DeviceName(DeviceName()),
+      PasskeyCredential::BackendId(UserId1AsString()));
+
   PasskeyCredential credential2(
       (PasskeyCredential::Username(UserName2())),
+      PasskeyCredential::DeviceName(DeviceName()),
       PasskeyCredential::BackendId(UserId2AsString()));
   std::vector<PasskeyCredential> credentials({credential1, credential2});
 
@@ -181,8 +189,8 @@ TEST_F(TouchToFillControllerWebAuthnTest, ShowAndSelectWithMultipleCredential) {
 }
 
 TEST_F(TouchToFillControllerWebAuthnTest, ShowAndCancel) {
-  PasskeyCredential::Username passkeyName(UserName1());
-  PasskeyCredential credential(passkeyName,
+  PasskeyCredential credential((PasskeyCredential::Username(UserName1())),
+                               PasskeyCredential::DeviceName(DeviceName()),
                                PasskeyCredential::BackendId(UserId1AsString()));
   std::vector<PasskeyCredential> credentials({credential});
 

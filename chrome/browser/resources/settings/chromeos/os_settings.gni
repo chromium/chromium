@@ -395,6 +395,7 @@ non_web_component_files = [
   "chromeos/os_settings_routes.ts",
   "chromeos/os_settings_search_box/os_settings_search_box_browser_proxy.ts",
   "chromeos/os_settings.ts",
+  "chromeos/os_settings_ui/os_settings_hats_browser_proxy.ts",
   "chromeos/parental_controls_page/parental_controls_browser_proxy.ts",
   "chromeos/personalization_page/personalization_hub_browser_proxy.ts",
   "chromeos/route_observer_mixin.ts",
@@ -406,6 +407,7 @@ non_web_component_files = [
   "chromeos/setting_id_param_util.ts",
 
   # Files below are from Browser Settings and shared with ChromeOS Settings
+  "a11y_page/captions_browser_proxy.ts",
   "appearance_page/fonts_browser_proxy.ts",
   "controls/cr_policy_pref_mixin.ts",
   "controls/pref_control_mixin.ts",
@@ -417,10 +419,6 @@ non_web_component_files = [
   "page_visibility.ts",
   "people_page/profile_info_browser_proxy.ts",
   "people_page/sync_browser_proxy.ts",
-  "prefs/pref_util.ts",
-  "prefs/prefs.ts",
-  "prefs/prefs_mixin.ts",
-  "prefs/prefs_types.ts",
   "privacy_page/privacy_page_browser_proxy.ts",
   "relaunch_mixin.ts",
 ]

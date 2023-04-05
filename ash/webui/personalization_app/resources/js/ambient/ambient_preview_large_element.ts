@@ -61,6 +61,8 @@ export class AmbientPreviewLarge extends AmbientPreviewBase {
   /** Returns the array of images that form the collage when Jelly is off. */
   private computeCollageImages_(): Url[] {
     switch (this.topicSource_) {
+      case TopicSource.kVideo:
+        return this.previewImages_ || [];
       case TopicSource.kArtGallery:
         return (this.previewAlbums_ || []).map(album => album.url).slice(0, 2);
       case TopicSource.kGooglePhotos:

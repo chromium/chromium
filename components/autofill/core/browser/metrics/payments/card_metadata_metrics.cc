@@ -55,13 +55,25 @@ std::string GetCardIssuerIdSuffix(const std::string& card_issuer_id) {
 
 }  // namespace
 
+CardMetadataLoggingContext::CardMetadataLoggingContext() = default;
+CardMetadataLoggingContext::CardMetadataLoggingContext(
+    const CardMetadataLoggingContext&) = default;
+CardMetadataLoggingContext& CardMetadataLoggingContext::operator=(
+    const CardMetadataLoggingContext&) = default;
+CardMetadataLoggingContext::~CardMetadataLoggingContext() = default;
+
 CardMetadataLoggingContext GetMetadataLoggingContext(
     const std::vector<CreditCard>& cards) {
+  CardMetadataLoggingContext metadata_logging_context;
   bool card_product_description_available = false;
   bool card_art_image_available = false;
   bool virtual_card_with_card_art_image = false;
 
   for (const CreditCard& card : cards) {
+    if (card.issuer_id().empty()) {
+      continue;
+    }
+
     if (!card.product_description().empty()) {
       card_product_description_available = true;
     }
@@ -73,9 +85,13 @@ CardMetadataLoggingContext GetMetadataLoggingContext(
         virtual_card_with_card_art_image = true;
       }
     }
+
+    bool card_has_metadata =
+        !card.product_description().empty() || card.card_art_url().is_valid();
+    metadata_logging_context
+        .issuer_to_metadata_availability[card.issuer_id()] |= card_has_metadata;
   }
 
-  CardMetadataLoggingContext metadata_logging_context;
   metadata_logging_context.card_metadata_available =
       card_product_description_available || card_art_image_available;
 
@@ -93,6 +109,16 @@ CardMetadataLoggingContext GetMetadataLoggingContext(
        virtual_card_with_card_art_image);
 
   return metadata_logging_context;
+}
+
+void LogCardWithMetadataShownMetric(const CardMetadataLoggingContext& context) {
+  for (const auto& [issuer, has_metadata] :
+       context.issuer_to_metadata_availability) {
+    base::UmaHistogramBoolean("Autofill.CreditCard." +
+                                  GetCardIssuerIdSuffix(issuer) +
+                                  ".ShownWithMetadata",
+                              has_metadata);
+  }
 }
 
 void LogAcceptanceLatency(base::TimeDelta latency,

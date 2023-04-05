@@ -16,6 +16,59 @@ namespace {
 // position.
 const double kButtonActivationThreshold = 0.9;
 
+template <typename Collection>
+bool HasSameNumberofElements(const Collection* lhs, const Collection* rhs) {
+  return lhs->length() == rhs->length();
+}
+
+bool HasSameNumberofElements(const GamepadTouchVector* lhs,
+                             const GamepadTouchVector* rhs) {
+  return lhs->size() == rhs->size();
+}
+
+template <typename T>
+auto Begin(const T* col) {
+  return col->Data();
+}
+
+template <typename T>
+auto End(const T* col) {
+  return col->Data() + col->length();
+}
+
+auto Begin(const GamepadTouchVector* col) {
+  return col->begin();
+}
+
+auto End(const GamepadTouchVector* col) {
+  return col->end();
+}
+
+template <typename Collection,
+          typename Pred = std::equal_to<typename Collection::ValueType>>
+bool Compare(const Collection* old_array,
+             const Collection* new_array,
+             Pred pred = Pred{}) {
+  if (old_array && new_array) {
+    // Both arrays are non-null.
+    // Compare length
+    if (!HasSameNumberofElements(old_array, new_array)) {
+      return true;
+    }
+
+    // Compare elements until a difference is found.
+    bool is_equal =
+        std::equal(Begin(old_array), End(old_array), Begin(new_array), pred);
+
+    return !is_equal;
+  } else if (old_array != new_array) {
+    // Exactly one array is non-null.
+    return true;
+  }
+  // Both arrays are null, or the arrays are identical.
+  return false;
+}
+
 }  // namespace
 
 // static
@@ -125,13 +178,14 @@ bool GamepadStateCompareResult::CompareGamepads(
         CompareAxes(old_gamepad, new_gamepad, i, compare_all_axes);
     bool any_button_updated =
         CompareButtons(old_gamepad, new_gamepad, i, compare_all_buttons);
+    bool any_touch_updated = CompareTouches(old_gamepad, new_gamepad);
 
     if (newly_connected)
       gamepad_connected_.set(i);
     if (newly_disconnected)
       gamepad_disconnected_.set(i);
     if (newly_connected || newly_disconnected || any_axis_updated ||
-        any_button_updated) {
+        any_button_updated || any_touch_updated) {
       any_change = true;
     }
   }
@@ -221,6 +275,29 @@ bool GamepadStateCompareResult::CompareButtons(Gamepad* old_gamepad,
     }
   }
   return any_button_changed;
+}
+
+bool GamepadStateCompareResult::CompareTouches(Gamepad* old_gamepad,
+                                               Gamepad* new_gamepad) {
+  if (!new_gamepad) {
+    return false;
+  }
+
+  const auto* new_touches = new_gamepad->touchEvents();
+  const auto* old_touches = old_gamepad ? old_gamepad->touchEvents() : nullptr;
+
+  return Compare(old_touches, new_touches,
+                 [](const Member<GamepadTouch>& new_touch,
+                    const Member<GamepadTouch>& old_touch) {
+                   return new_touch->touchId() == old_touch->touchId() &&
+                          new_touch->surfaceId() == old_touch->surfaceId() &&
+                          new_touch->HasSurfaceDimensions() ==
+                              old_touch->HasSurfaceDimensions() &&
+                          !Compare(new_touch->surfaceDimensions(),
+                                   old_touch->surfaceDimensions()) &&
+                          !Compare(new_touch->position(),
+                                   old_touch->position());
+                 });
 }
 
 GamepadStateCompareResult GamepadComparisons::Compare(

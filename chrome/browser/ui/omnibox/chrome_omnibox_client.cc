@@ -151,7 +151,7 @@ bool ChromeOmniboxClient::IsDefaultSearchProviderEnabled() const {
               .value_or(false);
 }
 
-const SessionID& ChromeOmniboxClient::GetSessionID() const {
+SessionID ChromeOmniboxClient::GetSessionID() const {
   return sessions::SessionTabHelper::FromWebContents(
              edit_model_delegate_->GetWebContents())
       ->session_id();

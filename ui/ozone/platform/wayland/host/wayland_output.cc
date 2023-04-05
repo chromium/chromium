@@ -129,89 +129,29 @@ float WaylandOutput::GetUIScaleFactor() const {
              : scale_factor();
 }
 
-WaylandOutput::Metrics WaylandOutput::GetMetrics() const {
-  // TODO(aluh): Change to designated initializers once C++20 is supported.
-  return {output_id(),         display_id(), origin(),       logical_size(),
-          physical_size(),     insets(),     scale_factor(), panel_transform(),
-          logical_transform(), description()};
+const WaylandOutput::Metrics& WaylandOutput::GetMetrics() const {
+  return metrics_;
+}
+
+void WaylandOutput::SetMetrics(const Metrics& metrics) {
+  metrics_ = metrics;
 }
 
 float WaylandOutput::scale_factor() const {
-  if (xdg_output_ && xdg_output_->IsReady()) {
-    const gfx::Size output_logical_size = logical_size();
-    const bool can_calculate_scale =
-        connection_->surface_submission_in_pixel_coordinates() &&
-        !output_logical_size.IsEmpty();
-
-    if (can_calculate_scale) {
-      const gfx::Size output_physical_size = physical_size();
-      DCHECK(!output_physical_size.IsEmpty());
-      const float max_physical_side =
-          std::max(output_physical_size.width(), output_physical_size.height());
-      const float max_logical_side =
-          std::max(output_logical_size.width(), output_logical_size.height());
-      return max_physical_side / max_logical_side;
-    }
-  }
-
-  // If xdg output is defined and ready but we still can't calculate the
-  // scale factor, fall back to the scale factor sent in wl_output.scale.
-  return scale_factor_;
-}
-
-int32_t WaylandOutput::panel_transform() const {
-  return panel_transform_;
-}
-
-int32_t WaylandOutput::logical_transform() const {
-  return aura_output_ && aura_output_->IsReady()
-             ? aura_output_->logical_transform().value()
-             : panel_transform();
-}
-
-gfx::Point WaylandOutput::origin() const {
-  return xdg_output_ && xdg_output_->IsReady()
-             ? xdg_output_->logical_position().value()
-             : origin_;
-}
-
-gfx::Size WaylandOutput::logical_size() const {
-  return xdg_output_ && xdg_output_->IsReady() ? xdg_output_->logical_size()
-                                               : gfx::Size();
-}
-
-gfx::Size WaylandOutput::physical_size() const {
-  return physical_size_;
-}
-
-gfx::Insets WaylandOutput::insets() const {
-  return aura_output_ && aura_output_->IsReady() ? aura_output_->insets()
-                                                 : gfx::Insets();
-}
-
-const std::string& WaylandOutput::description() const {
-  // Description is an optional xdg_output event.
-  return xdg_output_ && xdg_output_->IsReady() &&
-                 !xdg_output_->description().empty()
-             ? xdg_output_->description()
-             : description_;
-}
-
-int64_t WaylandOutput::display_id() const {
-  // For the non-aura case we map the global output "name" to the display_id.
-  return aura_output_ && aura_output_->IsReady()
-             ? aura_output_->display_id().value()
-             : output_id_;
-}
-
-const std::string& WaylandOutput::name() const {
-  // Name is an optional xdg_output event.
-  return xdg_output_ && xdg_output_->IsReady() && !xdg_output_->name().empty()
-             ? xdg_output_->name()
-             : name_;
+  return metrics_.scale_factor;
 }
 
 bool WaylandOutput::IsReady() const {
+  // zaura_output_manager is guaranteed to have received all relevant output
+  // metrics before the first wl_output.done event. zaura_output_manager is
+  // responsible for updating `metrics_` in an atomic and consistent way as soon
+  // as it receives all its necessary output metrics events.
+  if (IsUsingZAuraOutputManager()) {
+    // WaylandOutput should be considered ready after the first atomic update to
+    // `metrics_`.
+    return metrics_.output_id == output_id_;
+  }
+
   // The aura output requires both the logical size and the display ID
   // to become ready. If a client that uses xdg_output but not aura_output
   // needs different condition for readiness, this needs to be updated.
@@ -225,7 +165,7 @@ zaura_output* WaylandOutput::get_zaura_output() {
 }
 
 void WaylandOutput::SetScaleFactorForTesting(float scale_factor) {
-  scale_factor_ = scale_factor;
+  metrics_.scale_factor = scale_factor;
 }
 
 void WaylandOutput::TriggerDelegateNotifications() {
@@ -235,6 +175,31 @@ void WaylandOutput::TriggerDelegateNotifications() {
     return;
 
   delegate_->OnOutputHandleMetrics(GetMetrics());
+}
+
+void WaylandOutput::UpdateMetrics() {
+  metrics_.output_id = output_id_;
+  // For the non-aura case we map the global output "name" to the display_id.
+  metrics_.display_id = output_id_;
+  metrics_.origin = origin_;
+  metrics_.physical_size = physical_size_;
+  metrics_.scale_factor = scale_factor_;
+  metrics_.panel_transform = panel_transform_;
+  metrics_.logical_transform = panel_transform_;
+  metrics_.name = name_;
+  metrics_.description = description_;
+
+  if (xdg_output_) {
+    xdg_output_->UpdateMetrics(
+        connection_->surface_submission_in_pixel_coordinates(), metrics_);
+  }
+  if (aura_output_) {
+    aura_output_->UpdateMetrics(metrics_);
+  }
+}
+
+bool WaylandOutput::IsUsingZAuraOutputManager() const {
+  return connection_->zaura_output_manager() != nullptr;
 }
 
 // static
@@ -275,19 +240,29 @@ void WaylandOutput::OutputHandleMode(void* data,
 
 // static
 void WaylandOutput::OutputHandleDone(void* data, struct wl_output* wl_output) {
-  if (auto* output = static_cast<WaylandOutput*>(data)) {
-    output->is_ready_ = true;
+  auto* output = static_cast<WaylandOutput*>(data);
 
-    if (auto& xdg_output = output->xdg_output_) {
-      xdg_output->OnDone();
-    }
-
-    if (auto& aura_output = output->aura_output_) {
-      aura_output->OnDone();
-    }
-
-    output->TriggerDelegateNotifications();
+  // zaura_output_manager takes responsibility of keeping `metrics_` up to date
+  // and triggering delegate notifications.
+  if (!output || output->IsUsingZAuraOutputManager()) {
+    return;
   }
+
+  output->is_ready_ = true;
+
+  if (auto& xdg_output = output->xdg_output_) {
+    xdg_output->OnDone();
+  }
+
+  if (auto& aura_output = output->aura_output_) {
+    aura_output->OnDone();
+  }
+
+  // Once all metrics have been received perform an atomic update on this
+  // output's `metrics_`.
+  output->UpdateMetrics();
+
+  output->TriggerDelegateNotifications();
 }
 
 // static

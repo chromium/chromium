@@ -72,18 +72,14 @@ struct EmptyTrait {};
 // which isn't worth the complexity over ignoring EmptyTrait.
 template <typename... TraitsToExclude>
 struct Exclude {
-  template <typename T,
-            std::enable_if_t<ParameterPack<
-                TraitsToExclude...>::template HasType<T>::value>* = nullptr>
-  static constexpr EmptyTrait Filter(T t) {
-    return EmptyTrait();
-  }
-
-  template <typename T,
-            std::enable_if_t<!ParameterPack<
-                TraitsToExclude...>::template HasType<T>::value>* = nullptr>
-  static constexpr T Filter(T t) {
-    return t;
+  template <typename T>
+  static constexpr auto Filter(T t) {
+    if constexpr (ParameterPack<TraitsToExclude...>::template HasType<
+                      T>::value) {
+      return EmptyTrait();
+    } else {
+      return t;
+    }
   }
 };
 

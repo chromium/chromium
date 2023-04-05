@@ -65,7 +65,7 @@ crbug.com/1041052 [ Linux ] external/wpt/html/canvas/offscreen/manual/filter/off
 crbug.com/1050559 [ Linux ] external/wpt/WebCryptoAPI/derive_bits_keys/hkdf.https.any.worker.html?1-1000 [ Skip ]
 
 # Flaky timeouts on MSan.
-crbug.com/1174822 [ Linux ] http/tests/mojo/bindings-lite-sw.https.html [ Pass Timeout ]
+crbug.com/1174822 [ Linux ] http/tests/mojo/lite/bindings-api-sw.https.html [ Pass Timeout ]
 
 # Sheriff 2021-02-18
 crbug.com/1179829 [ Linux ] http/tests/devtools/sources/debugger-pause/pause-on-elements-panel.js [ Pass Timeout ]
@@ -115,4 +115,3 @@ crbug.com/1378044 [ Linux ] external/wpt/html/semantics/scripting-1/the-script-e
 crbug.com/1419916 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-fillPath-shadow.html [ Crash ]
 crbug.com/1419916 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-fillPath-alpha-shadow.html [ Crash ]
 crbug.com/1419916 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-fillPath-gradient-shadow.html [ Crash ]
-

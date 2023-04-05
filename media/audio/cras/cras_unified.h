@@ -20,6 +20,7 @@
 #include "media/audio/audio_io.h"
 #include "media/audio/cras/audio_manager_cras_base.h"
 #include "media/audio/system_glitch_reporter.h"
+#include "media/base/amplitude_peak_detector.h"
 #include "media/base/audio_parameters.h"
 
 namespace media {
@@ -131,6 +132,8 @@ class MEDIA_EXPORT CrasUnifiedStream : public AudioOutputStream {
 
   // Used to accumulate glitch info to report to |source_callback_|
   AudioGlitchInfo::Accumulator glitch_info_accumulator_;
+
+  AmplitudePeakDetector peak_detector_;
 };
 
 }  // namespace media

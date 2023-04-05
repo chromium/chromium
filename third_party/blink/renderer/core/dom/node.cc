@@ -2579,11 +2579,7 @@ ExecutionContext* Node::GetExecutionContext() const {
 
 void Node::WillMoveToNewDocument(Document& old_document,
                                  Document& new_document) {
-#if DCHECK_IS_ON()
-  if (RuntimeEnabledFeatures::UseSeparateTraversalForWillMoveEnabled()) {
-    DCHECK_NE(&GetDocument(), &new_document);
-  }
-#endif  // DCHECK_IS_ON()
+  DCHECK_NE(&GetDocument(), &new_document);
 
   // In rare situations, this node may be the focused element of the old
   // document. In this case, we need to clear the focused element of the old

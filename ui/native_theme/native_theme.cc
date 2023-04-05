@@ -59,7 +59,7 @@ SkColor NativeTheme::GetSystemButtonPressedColor(SkColor base_color) const {
   return base_color;
 }
 
-SkColor NativeTheme::FocusRingColorForBaseColor(SkColor base_color) const {
+SkColor4f NativeTheme::FocusRingColorForBaseColor(SkColor4f base_color) const {
   return base_color;
 }
 

@@ -9,11 +9,13 @@
 #include <vector>
 
 #include "base/thread_annotations.h"
+#include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/common/content_export.h"
 
 namespace base {
 class Time;
+class TimeDelta;
 }  // namespace base
 
 namespace content {
@@ -114,6 +116,14 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
 
   const AttributionNoiseMode noise_mode_ GUARDED_BY_CONTEXT(sequence_checker_);
   const AttributionDelayMode delay_mode_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+ private:
+  std::vector<base::TimeDelta> EarlyDeadlines(
+      attribution_reporting::mojom::SourceType source_type) const;
+  int NumReportWindows(attribution_reporting::mojom::SourceType) const;
+  base::Time ReportTimeAtWindow(const CommonSourceInfo&,
+                                base::Time event_report_window_time,
+                                int window_index) const;
 };
 
 }  // namespace content

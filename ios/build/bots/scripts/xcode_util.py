@@ -17,6 +17,7 @@ XcodeIOSSimulatorDefaultRuntimeFilename = 'iOS.simruntime'
 XcodeIOSSimulatorRuntimeRelPath = ('Contents/Developer/Platforms/'
                                    'iPhoneOS.platform/Library/Developer/'
                                    'CoreSimulator/Profiles/Runtimes')
+XcodeCipdFiles = ['.cipd', '.xcode_versions']
 
 
 def _using_new_mac_toolchain(mac_toolchain):
@@ -90,7 +91,7 @@ def _install_runtime(mac_toolchain, install_path, xcode_build_version,
   # status folders, so mac_toolchain(underlying CIPD) will work to download a
   # new one.
   if len(existing_runtimes) == 0:
-    for dir_name in ['.cipd', '.xcode_versions']:
+    for dir_name in XcodeCipdFiles:
       dir_path = os.path.join(install_path, dir_name)
       if os.path.exists(dir_path):
         LOGGER.warning('Removing %s in runtime cache folder.', dir_path)
@@ -290,21 +291,21 @@ def install(mac_toolchain, xcode_build_version, xcode_app_path, **runtime_args):
   """
   using_new_mac_toolchain = _using_new_mac_toolchain(mac_toolchain)
 
-  # (crbug/1406204): for MacOS13+, codesign check is automatically run prior
-  # to Xcode.app runFirstLaunch. To avoid codesign check failure on corrupted
-  # Xcode cache later, we will trigger a codesign check ourself first
-  # to ensure the cached Xcode is good.
-  # Otherwise, we will remove the corrupted Xcode.app and re-install Xcode.
+  # (crbug/1406204): for MacOS13+, cipd files are automatically removed in
+  # mac_toolchain prior to runFirstLaunch because they will cause codesign
+  # check failures. If the cached Xcode still contains cipd files, it means
+  # that something went wrong during the install process, and the Xcode should
+  # be re-installed.
   if mac_util.is_macos_13_or_higher():
-    LOGGER.debug("checking Xcode's code signature")
-    codesign_success, codesign_error = mac_util.run_codesign_check(
-        xcode_app_path)
-    if not codesign_success:
-      LOGGER.debug(
-          "Xcode signature is invalid %s, going to re-create Xcode.app" %
-          codesign_error)
-      shutil.rmtree(xcode_app_path)
-      os.mkdir(xcode_app_path)
+    LOGGER.debug('checking if the cached Xcode is corruputed...')
+    for dir_name in XcodeCipdFiles:
+      dir_path = os.path.join(xcode_app_path, dir_name)
+      if os.path.exists(dir_path):
+        LOGGER.debug('Xcode cache will be re-created because it contains %s' %
+                     dir_path)
+        shutil.rmtree(xcode_app_path)
+        os.mkdir(xcode_app_path)
+        break
 
   _install_xcode(mac_toolchain, xcode_build_version, xcode_app_path,
                  using_new_mac_toolchain)

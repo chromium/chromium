@@ -13,12 +13,12 @@ import '../../settings_shared.css.js';
 import './os_japanese_clear_ime_data_dialog.js';
 import './os_japanese_manage_user_dictionary_page.js';
 
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {afterNextRender, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {assertExhaustive} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
@@ -150,7 +150,6 @@ class SettingsInputMethodOptionsPageElement extends
   // Internal properties for mixins.
   // From DeepLinkingMixin.
   override supportedSettingIds = new Set<Setting>([
-    Setting.kShowDiacritic,
     Setting.kShowPKAutoCorrection,
     Setting.kShowVKAutoCorrection,
   ]);
@@ -257,7 +256,6 @@ class SettingsInputMethodOptionsPageElement extends
   private populateOptionSections_(): void {
     const options = generateOptions(
         this.engineId_, loadTimeData.getBoolean('allowPredictiveWriting'),
-        loadTimeData.getBoolean('allowDiacriticsOnPhysicalKeyboardLongpress'),
         loadTimeData.getBoolean('systemJapanesePhysicalTyping'));
     const inputMethodSpecificSettings =
         this.getPref<PrefsObjectType>(PREFS_PATH).value;
@@ -323,10 +321,6 @@ class SettingsInputMethodOptionsPageElement extends
 
       let link = -1;
 
-      if (name ===
-          OptionType.PHYSICAL_KEYBOARD_ENABLE_DIACRITICS_ON_LONGPRESS) {
-        link = Setting.kShowDiacritic;
-      }
       if (name === OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL) {
         link = Setting.kShowPKAutoCorrection;
       }

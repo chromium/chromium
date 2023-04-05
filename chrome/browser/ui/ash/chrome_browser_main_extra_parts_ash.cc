@@ -29,6 +29,7 @@
 #include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/sync/sync_error_notifier_factory.h"
+#include "chrome/browser/ash/system/timezone_resolver_manager.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -251,6 +252,7 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
 #endif
 
   night_light_client_ = std::make_unique<ash::NightLightClient>(
+      g_browser_process->platform_part()->GetTimezoneResolverManager(),
       g_browser_process->shared_url_loader_factory());
   night_light_client_->Start();
 

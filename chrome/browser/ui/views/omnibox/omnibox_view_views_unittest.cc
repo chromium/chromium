@@ -67,8 +67,6 @@
 using gfx::Range;
 using metrics::OmniboxEventProto;
 
-namespace {
-
 class TestingOmniboxView;
 
 // TestingOmniboxView ---------------------------------------------------------
@@ -112,6 +110,9 @@ class TestingOmniboxView : public OmniboxViewViews {
   void OnThemeChanged() override;
 
   using OmniboxView::OnInlineAutocompleteTextMaybeChanged;
+
+  using OmniboxViewViews::SetTextAndSelectedRanges;
+  using OmniboxViewViews::SkipDefaultKeyEventProcessing;
 
  protected:
   // OmniboxViewViews:
@@ -290,8 +291,6 @@ class TestingOmniboxEditModelDelegate : public ChromeOmniboxEditModelDelegate {
   raw_ptr<LocationBarModel> location_bar_model_;
   raw_ptr<OmniboxViewViews> omnibox_view_ = nullptr;
 };
-
-}  // namespace
 
 // OmniboxViewViewsTest -------------------------------------------------------
 
@@ -718,6 +717,17 @@ TEST_F(OmniboxViewViewsTest, RevertOnEscape) {
 
   EXPECT_EQ(u"https://permanent-text.com/", omnibox_view()->GetText());
   EXPECT_FALSE(omnibox_view()->model()->user_input_in_progress());
+}
+
+TEST_F(OmniboxViewViewsTest, ShiftEscapeDoesNotSkipDefaultProcessing) {
+  ui::KeyEvent shiftEscape(ui::ET_KEY_PRESSED, ui::VKEY_ESCAPE,
+                           ui::EF_SHIFT_DOWN);
+  EXPECT_EQ(omnibox_view()->SkipDefaultKeyEventProcessing(shiftEscape), false);
+}
+
+TEST_F(OmniboxViewViewsTest, EscapeSkipsDefaultProcessing) {
+  ui::KeyEvent escape(ui::ET_KEY_PRESSED, ui::VKEY_ESCAPE, 0);
+  EXPECT_EQ(omnibox_view()->SkipDefaultKeyEventProcessing(escape), true);
 }
 
 TEST_F(OmniboxViewViewsTest, BackspaceExitsKeywordMode) {

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+function runTest(style_text) {
+  test(() => {
+    assert_selection(
+      `<div contenteditable><div style="${style_text}">a|</div></div>`,
+      'insertParagraph',
+      `<div contenteditable><div style="${style_text}">a</div>` +
+      `<div style="${style_text}">|<br></div></div>`);
+  }, `${style_text}`);
+}
+
+const tests = [
+  'text-decoration: underline;',
+  'white-space: normal;',
+  'white-space: pre;',
+  'white-space: break-spaces;',
+];
+for (const [name, value] of [
+  ['text-wrap', 'wrap'],
+  ['text-wrap', 'balance'],
+  ['white-space', 'balance'],
+  ['white-space', 'preserve balance'],
+  ['white-space-collapse', 'preserve'],
+]) {
+  if (CSS.supports(name, value)) {
+    tests.push(`${name}: ${value};`);
+  }
+}
+for (const test of tests) {
+  runTest(test);
+}
+</script>

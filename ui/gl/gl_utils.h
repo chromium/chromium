@@ -47,6 +47,7 @@ GL_EXPORT bool PassthroughCommandDecoderSupported();
 // SetGlWorkarounds function below.
 struct GlWorkarounds {
   bool disable_d3d11 = false;
+  bool disable_metal = false;
   bool disable_es3gl_context = false;
   bool disable_es3gl_context_for_testing = false;
   bool disable_direct_composition = false;

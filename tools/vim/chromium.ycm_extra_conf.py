@@ -33,6 +33,17 @@
 #
 #   * You must have built Chromium recently.
 #
+# For improved performance you can use a clang compile-commands.json database. To
+# enable this you must use the --export-compile-commands when running gn gen, eg:
+#
+#   gn gen out_$BOARD/Release --export-compile-commands
+#
+#   Next you'll need to set an environment variable CHROMIUM_BUILD_DIR with the path
+#   to your build. eg:
+#
+#   export CHROMIUM_BUILD_DIR=$HOME/chromium/src/out_$BOARD/Release
+#
+#   And then you can start vim.
 #
 # Hacking notes:
 #
@@ -53,6 +64,15 @@ import re
 import shlex
 import subprocess
 import sys
+import ycm_core
+
+# If the user has set the environment variable CHROMIUM_BUILD_DIR we will
+# first attempt to find compilation flags in the compile-commands.json file in that
+# directory first.
+database = None
+compilation_database_folder=os.getenv('CHROMIUM_BUILD_DIR')
+if compilation_database_folder and os.path.exists(compilation_database_folder):
+  database = ycm_core.CompilationDatabase(compilation_database_folder)
 
 # Flags from YCM's default config.
 _default_flags = [
@@ -216,6 +236,40 @@ def GetClangCommandLineFromNinjaForSource(out_dir, filename):
       return command_line
   return None
 
+def ProcessIndividualFlag(flag, out_dir):
+  def abspath(path):
+    return os.path.normpath(os.path.join(out_dir, path))
+
+  include_pattern = re.compile(r'^(-I|-isystem|-F)(.+)$')
+  include_match = include_pattern.match(flag)
+  if include_match:
+    # Relative paths need to be resolved, because they're relative to the
+    # output dir, not the source.
+    path = abspath(include_match.group(2))
+    return include_match.group(1) + path
+  elif flag.startswith('-std') or flag == '-nostdinc++':
+    return flag
+  elif flag.startswith('-march=arm'):
+    # Value armv7-a of this flag causes a parsing error with a message
+    # "ClangParseError: Failed to parse the translation unit."
+    return None
+  elif flag.startswith('-') and flag[1] in 'DWfmO':
+    if flag == '-Wno-deprecated-register' or flag == '-Wno-header-guard':
+      # These flags causes libclang (3.3) to crash. Remove it until things
+      # are fixed.
+      return None
+    return flag
+  elif flag == '-isysroot' or flag == '-isystem' or flag == '-I':
+    if flag_index + 1 < len(clang_tokens):
+      return flag.append(abspath(clang_tokens[flag_index + 1]))
+  elif flag.startswith('--sysroot='):
+    # On Linux we use a sysroot image.
+    sysroot_path = flag.lstrip('--sysroot=')
+    if sysroot_path.startswith('/'):
+      return flag
+    else:
+      return '--sysroot=' + abspath(sysroot_path)
+  return flag
 
 def GetClangOptionsFromCommandLine(clang_commandline, out_dir,
                                    additional_flags):
@@ -233,43 +287,33 @@ def GetClangOptionsFromCommandLine(clang_commandline, out_dir,
   """
   clang_flags = [] + additional_flags
 
-  def abspath(path):
-    return os.path.normpath(os.path.join(out_dir, path))
-
   # Parse flags that are important for YCM's purposes.
   clang_tokens = shlex.split(clang_commandline)
-  include_pattern = re.compile(r'^(-I|-isystem|-F)(.+)$')
   for flag_index, flag in enumerate(clang_tokens):
-    include_match = include_pattern.match(flag)
-    if include_match:
-      # Relative paths need to be resolved, because they're relative to the
-      # output dir, not the source.
-      path = abspath(include_match.group(2))
-      clang_flags.append(include_match.group(1) + path)
-    elif flag.startswith('-std') or flag == '-nostdinc++':
-      clang_flags.append(flag)
-    elif flag.startswith('-march=arm'):
-      # Value armv7-a of this flag causes a parsing error with a message
-      # "ClangParseError: Failed to parse the translation unit."
-      continue
-    elif flag.startswith('-') and flag[1] in 'DWfmO':
-      if flag == '-Wno-deprecated-register' or flag == '-Wno-header-guard':
-        # These flags causes libclang (3.3) to crash. Remove it until things
-        # are fixed.
-        continue
-      clang_flags.append(flag)
-    elif flag == '-isysroot' or flag == '-isystem' or flag == '-I':
-      if flag_index + 1 < len(clang_tokens):
-        clang_flags.append(flag)
-        clang_flags.append(abspath(clang_tokens[flag_index + 1]))
-    elif flag.startswith('--sysroot='):
-      # On Linux we use a sysroot image.
-      sysroot_path = flag.lstrip('--sysroot=')
-      if sysroot_path.startswith('/'):
-        clang_flags.append(flag)
-      else:
-        clang_flags.append('--sysroot=' + abspath(sysroot_path))
+      clang_flags.append(ProcessIndividualFlag(flag, out_dir))
   return clang_flags
+
+def FileCompilationCandidates(filename):
+  basename, extension = os.path.splitext(filename)
+  if extension == '.h':
+    candidates = [basename + ext for ext in _header_alternates]
+  else:
+    candidates = [filename]
+
+  return candidates
+
+def GetAdditionalFlags(chrome_root):
+  # Generally, everyone benefits from including Chromium's src/, because all of
+  # Chromium's includes are relative to that.
+  additional_flags = ['-I' + os.path.join(chrome_root)]
+
+  # Version of Clang used to compile Chromium can be newer then version of
+  # libclang that YCM uses for completion. So it's possible that YCM's libclang
+  # doesn't know about some used warning options, which causes compilation
+  # warnings (and errors, because of '-Werror');
+  additional_flags.append('-Wno-unknown-warning-option')
+  return additional_flags
+
 
 
 def GetClangOptionsFromNinjaForFilename(chrome_root, filename):
@@ -292,29 +336,15 @@ def GetClangOptionsFromNinjaForFilename(chrome_root, filename):
   if not chrome_root:
     return []
 
-  # Generally, everyone benefits from including Chromium's src/, because all of
-  # Chromium's includes are relative to that.
-  additional_flags = ['-I' + os.path.join(chrome_root)]
-
-  # Version of Clang used to compile Chromium can be newer then version of
-  # libclang that YCM uses for completion. So it's possible that YCM's libclang
-  # doesn't know about some used warning options, which causes compilation
-  # warnings (and errors, because of '-Werror');
-  additional_flags.append('-Wno-unknown-warning-option')
+  additional_flags = GetAdditionalFlags(chrome_root)
 
   sys.path.append(os.path.join(chrome_root, 'tools', 'vim'))
   from ninja_output import GetNinjaOutputDirectory
   out_dir = GetNinjaOutputDirectory(chrome_root)
 
-  basename, extension = os.path.splitext(filename)
-  if extension == '.h':
-    candidates = [basename + ext for ext in _header_alternates]
-  else:
-    candidates = [filename]
-
   clang_line = None
-  buildable_extension = extension
-  for candidate in candidates:
+  buildable_extension = os.path.splitext(filename)[1]
+  for candidate in FileCompilationCandidates(filename):
     clang_line = GetClangCommandLineFromNinjaForSource(out_dir, candidate)
     if clang_line:
       buildable_extension = os.path.splitext(candidate)[1]
@@ -336,6 +366,24 @@ def GetClangOptionsFromNinjaForFilename(chrome_root, filename):
 
   return GetClangOptionsFromCommandLine(clang_line, out_dir, additional_flags)
 
+def GetClangOptionsFromDBForFilename(chrome_root, filename):
+  if not chrome_root:
+    return []
+
+  if not database:
+    return None
+
+  additional_flags = GetAdditionalFlags(chrome_root)
+
+  for candidate in FileCompilationCandidates(filename):
+    compilation_info = database.GetCompilationInfoForFile(candidate)
+    if compilation_info:
+        # ycm_core returns a StringVector we need to convert it.
+        flags = [] + additional_flags
+        for flag in compilation_info.compiler_flags_:
+            flags.append(ProcessIndividualFlag(flag, compilation_database_folder))
+        return flags
+  return None
 
 # FlagsForFile entrypoint is deprecated in YCM and has replaced by
 # Settings.
@@ -352,12 +400,16 @@ def FlagsForFile(filename):
   """
   return Settings(filename=filename)
 
-
 def Settings(**kwargs):
   filename = kwargs['filename']
   abs_filename = os.path.abspath(filename)
   chrome_root = FindChromeSrcFromFilename(abs_filename)
-  clang_flags = GetClangOptionsFromNinjaForFilename(chrome_root, abs_filename)
+
+  # Always check the compilation-commands.json database first.
+  clang_flags = GetClangOptionsFromDBForFilename(chrome_root, filename)
+
+  if not clang_flags:
+    clang_flags = GetClangOptionsFromNinjaForFilename(chrome_root, abs_filename)
 
   # If clang_flags could not be determined, then assume that was due to a
   # transient failure. Preventing YCM from caching the flags allows us to try to

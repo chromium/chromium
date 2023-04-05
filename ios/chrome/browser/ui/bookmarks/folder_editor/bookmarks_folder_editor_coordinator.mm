@@ -59,6 +59,7 @@
                                 parentFolderNode:
                                     (const bookmarks::BookmarkNode*)
                                         parentFolder {
+  DCHECK(parentFolder);
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
@@ -72,6 +73,7 @@
                                    browser:(Browser*)browser
                                 folderNode:
                                     (const bookmarks::BookmarkNode*)folder {
+  DCHECK(folder);
   self = [super initWithBaseViewController:baseViewController browser:browser];
   if (self) {
     _folderNode = folder;
@@ -91,7 +93,7 @@
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(browserState);
   if (_baseNavigationController) {
-    DCHECK(!_folderNode);
+    DCHECK(_parentFolderNode);
     _viewController = [BookmarksFolderEditorViewController
         folderCreatorWithBookmarkModel:model
                           parentFolder:_parentFolderNode

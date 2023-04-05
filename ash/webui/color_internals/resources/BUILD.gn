@@ -8,7 +8,7 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_chromeos_ash, "Color Internals is ash-chrome only")
 
-ash_ts_library("color_internals_ts") {
+ts_library("color_internals_ts") {
   root_dir = "."
   out_dir = "$target_gen_dir/tsc"
   composite = true

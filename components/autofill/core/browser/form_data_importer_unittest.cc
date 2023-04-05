@@ -18,7 +18,6 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
@@ -27,6 +26,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -721,7 +721,7 @@ class FormDataImporterTestBase {
         *credit_card_import_candidate);
 
     WaitForOnPersonalDataChanged();
-    CreditCard expected(base::GenerateGUID(), test::kEmptyOrigin);
+    CreditCard expected(base::GenerateUuid(), test::kEmptyOrigin);
     test::SetCreditCardInfo(&expected, exp_name, exp_cc_num, exp_cc_month,
                             exp_cc_year, "");
     EXPECT_THAT(personal_data_manager_->GetCreditCards(),
@@ -1670,7 +1670,7 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles_MissingName) {
 TEST_P(FormDataImporterTest,
        ImportAddressProfiles_ExistingVerifiedProfileWithConflict) {
   // Start with a verified profile.
-  AutofillProfile profile(base::GenerateGUID(), kSettingsOrigin);
+  AutofillProfile profile(base::GenerateUuid(), kSettingsOrigin);
   test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox", "123 Zoo St.", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
@@ -1739,7 +1739,7 @@ TEST_P(FormDataImporterTest,
 TEST_P(FormDataImporterTest,
        IncorporateStructuredNameInformationInVerifiedProfile) {
   // Start with a verified profile.
-  AutofillProfile profile(base::GenerateGUID(), kSettingsOrigin);
+  AutofillProfile profile(base::GenerateUuid(), kSettingsOrigin);
   test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox", "123 Zoo St.", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
@@ -1821,7 +1821,7 @@ TEST_P(FormDataImporterTest,
 TEST_P(FormDataImporterTest,
        IncorporateStructuredAddressInformationInVerififedProfile) {
   // Start with a verified profile.
-  AutofillProfile profile(base::GenerateGUID(), kSettingsOrigin);
+  AutofillProfile profile(base::GenerateUuid(), kSettingsOrigin);
   test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox", "123 Zoo St.", "",
                        "Hollywood", "CA", "91601", "US", "12345678910");
@@ -1945,7 +1945,7 @@ TEST_P(FormDataImporterTest,
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
   ExtractAddressProfiles(/*extraction_successful=*/true, form_structure);
 
-  AutofillProfile expected(base::GenerateGUID(), test::kEmptyOrigin);
+  AutofillProfile expected(base::GenerateUuid(), test::kEmptyOrigin);
   test::SetProfileInfo(&expected, "George", nullptr, "Washington",
                        "theprez@gmail.com", nullptr,
                        "No. 43 Bo Aung Gyaw Street", nullptr, "Yangon", "",
@@ -1984,7 +1984,7 @@ TEST_P(FormDataImporterTest, ExtractCreditCard_Valid) {
 
   WaitForOnPersonalDataChanged();
 
-  CreditCard expected(base::GenerateGUID(), test::kEmptyOrigin);
+  CreditCard expected(base::GenerateUuid(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&expected, "Biggie Smalls", "4111111111111111", "01",
                           "2999", "");  // Imported cards have no billing info.
   EXPECT_THAT(personal_data_manager_->GetCreditCards(),
@@ -2087,7 +2087,7 @@ TEST_P(FormDataImporterTest, ExtractCreditCard_MonthSelectInvalidText) {
   WaitForOnPersonalDataChanged();
 
   // See that the invalid option text was converted to the right value.
-  CreditCard expected(base::GenerateGUID(), test::kEmptyOrigin);
+  CreditCard expected(base::GenerateUuid(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&expected, "Biggie Smalls", "4111111111111111", "02",
                           "2999", "");  // Imported cards have no billing info.
   EXPECT_THAT(personal_data_manager_->GetCreditCards(),
@@ -2106,7 +2106,7 @@ TEST_P(FormDataImporterTest, ExtractCreditCard_TwoValidCards) {
 
   WaitForOnPersonalDataChanged();
 
-  CreditCard expected(base::GenerateGUID(), test::kEmptyOrigin);
+  CreditCard expected(base::GenerateUuid(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&expected, "Biggie Smalls", "4111111111111111", "01",
                           "2999", "");  // Imported cards have no billing info.
   EXPECT_THAT(personal_data_manager_->GetCreditCards(),
@@ -2129,7 +2129,7 @@ TEST_P(FormDataImporterTest, ExtractCreditCard_TwoValidCards) {
 
   WaitForOnPersonalDataChanged();
 
-  CreditCard expected2(base::GenerateGUID(), test::kEmptyOrigin);
+  CreditCard expected2(base::GenerateUuid(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&expected2, "", "5500000000000004", "02", "2999",
                           "");  // Imported cards have no billing info.
   // We ignore the order because multiple profiles or credit cards that
@@ -2308,7 +2308,7 @@ TEST_P(FormDataImporterTest, ExtractCreditCard_SameCreditCardWithConflict) {
 
   WaitForOnPersonalDataChanged();
 
-  CreditCard expected(base::GenerateGUID(), test::kEmptyOrigin);
+  CreditCard expected(base::GenerateUuid(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&expected, "Biggie Smalls", "4111111111111111", "01",
                           "2998", "");  // Imported cards have no billing info.
   EXPECT_THAT(personal_data_manager_->GetCreditCards(),
@@ -2332,7 +2332,7 @@ TEST_P(FormDataImporterTest, ExtractCreditCard_SameCreditCardWithConflict) {
 
   // Expect that the newer information is saved.  In this case the year is
   // updated to "2999".
-  CreditCard expected2(base::GenerateGUID(), test::kEmptyOrigin);
+  CreditCard expected2(base::GenerateUuid(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&expected2, "Biggie Smalls", "4111111111111111", "01",
                           "2999", "");  // Imported cards have no billing info.
   const std::vector<CreditCard*>& results2 =
@@ -2359,7 +2359,7 @@ TEST_P(FormDataImporterTest, ExtractCreditCard_ShouldReturnLocalCard) {
 
   WaitForOnPersonalDataChanged();
 
-  CreditCard expected(base::GenerateGUID(), test::kEmptyOrigin);
+  CreditCard expected(base::GenerateUuid(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&expected, "Biggie Smalls", "4111111111111111", "01",
                           "2998", "");  // Imported cards have no billing info.
   EXPECT_THAT(personal_data_manager_->GetCreditCards(),
@@ -2385,7 +2385,7 @@ TEST_P(FormDataImporterTest, ExtractCreditCard_ShouldReturnLocalCard) {
 
   // Expect that the newer information is saved.  In this case the year is
   // updated to "2999".
-  CreditCard expected2(base::GenerateGUID(), test::kEmptyOrigin);
+  CreditCard expected2(base::GenerateUuid(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&expected2, "Biggie Smalls", "4111111111111111", "01",
                           "2999", "");  // Imported cards have no billing info.
   const std::vector<CreditCard*>& results2 =
@@ -2413,7 +2413,7 @@ TEST_P(FormDataImporterTest, ExtractCreditCard_EmptyCardWithConflict) {
 
   WaitForOnPersonalDataChanged();
 
-  CreditCard expected(base::GenerateGUID(), test::kEmptyOrigin);
+  CreditCard expected(base::GenerateUuid(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&expected, "Biggie Smalls", "4111111111111111", "01",
                           "2998", "");  // Imported cards have no billing info.
   EXPECT_THAT(personal_data_manager_->GetCreditCards(),
@@ -2437,7 +2437,7 @@ TEST_P(FormDataImporterTest, ExtractCreditCard_EmptyCardWithConflict) {
   ResetPersonalDataManager(USER_MODE_NORMAL);
 
   // No change is expected.
-  CreditCard expected2(base::GenerateGUID(), test::kEmptyOrigin);
+  CreditCard expected2(base::GenerateUuid(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&expected2, "Biggie Smalls", "4111111111111111", "01",
                           "2998", "");
   const std::vector<CreditCard*>& results2 =
@@ -2464,7 +2464,7 @@ TEST_P(FormDataImporterTest, ExtractCreditCard_MissingInfoInNew) {
 
   WaitForOnPersonalDataChanged();
 
-  CreditCard expected(base::GenerateGUID(), test::kEmptyOrigin);
+  CreditCard expected(base::GenerateUuid(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&expected, "Biggie Smalls", "4111111111111111", "01",
                           "2999", "");
   EXPECT_THAT(personal_data_manager_->GetCreditCards(),
@@ -2489,7 +2489,7 @@ TEST_P(FormDataImporterTest, ExtractCreditCard_MissingInfoInNew) {
   ResetPersonalDataManager(USER_MODE_NORMAL);
 
   // No change is expected.
-  CreditCard expected2(base::GenerateGUID(), test::kEmptyOrigin);
+  CreditCard expected2(base::GenerateUuid(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&expected2, "Biggie Smalls", "4111111111111111", "01",
                           "2999", "");
   const std::vector<CreditCard*>& results2 =
@@ -2516,7 +2516,7 @@ TEST_P(FormDataImporterTest, ExtractCreditCard_MissingInfoInNew) {
   ResetPersonalDataManager(USER_MODE_NORMAL);
 
   // No change is expected.
-  CreditCard expected3(base::GenerateGUID(), test::kEmptyOrigin);
+  CreditCard expected3(base::GenerateUuid(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&expected3, "Biggie Smalls", "4111111111111111", "01",
                           "2999", "");
   const std::vector<CreditCard*>& results3 =
@@ -2528,7 +2528,7 @@ TEST_P(FormDataImporterTest, ExtractCreditCard_MissingInfoInNew) {
 TEST_P(FormDataImporterTest, ExtractCreditCard_MissingInfoInOld) {
   // Start with a single valid credit card stored via the preferences.
   // Note the empty name.
-  CreditCard saved_credit_card(base::GenerateGUID(), test::kEmptyOrigin);
+  CreditCard saved_credit_card(base::GenerateUuid(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&saved_credit_card, "", "4111111111111111" /* Visa */,
                           "01", "2998", "1");
   personal_data_manager_->AddCreditCard(saved_credit_card);
@@ -2558,7 +2558,7 @@ TEST_P(FormDataImporterTest, ExtractCreditCard_MissingInfoInOld) {
 
   // Expect that the newer information is saved.  In this case the year is
   // added to the existing credit card.
-  CreditCard expected2(base::GenerateGUID(), test::kEmptyOrigin);
+  CreditCard expected2(base::GenerateUuid(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&expected2, "Biggie Smalls", "4111111111111111", "01",
                           "2999", "1");
   const std::vector<CreditCard*>& results2 =
@@ -2572,7 +2572,7 @@ TEST_P(FormDataImporterTest, ExtractCreditCard_MissingInfoInOld) {
 TEST_P(FormDataImporterTest, ExtractCreditCard_SameCardWithSeparators) {
   // Start with a single valid credit card stored via the preferences.
   // Note the separators in the credit card number.
-  CreditCard saved_credit_card(base::GenerateGUID(), test::kEmptyOrigin);
+  CreditCard saved_credit_card(base::GenerateUuid(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&saved_credit_card, "Biggie Smalls",
                           "4111 1111 1111 1111" /* Visa */, "01", "2999", "");
   personal_data_manager_->AddCreditCard(saved_credit_card);
@@ -2613,7 +2613,7 @@ TEST_P(FormDataImporterTest, ExtractCreditCard_SameCardWithSeparators) {
 TEST_P(FormDataImporterTest,
        ExtractCreditCard_ExistingVerifiedCardWithConflict) {
   // Start with a verified credit card.
-  CreditCard credit_card(base::GenerateGUID(), kSettingsOrigin);
+  CreditCard credit_card(base::GenerateUuid(), kSettingsOrigin);
   test::SetCreditCardInfo(&credit_card, "Biggie Smalls",
                           "4111 1111 1111 1111" /* Visa */, "01", "2998", "");
   EXPECT_TRUE(credit_card.IsVerified());
@@ -2656,7 +2656,7 @@ TEST_P(FormDataImporterTest,
 TEST_P(FormDataImporterTest,
        ExtractFormData_SecondImportResetsCreditCardRecordType) {
   // Start with a single valid credit card stored via the preferences.
-  CreditCard saved_credit_card(base::GenerateGUID(), test::kEmptyOrigin);
+  CreditCard saved_credit_card(base::GenerateUuid(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&saved_credit_card, "Biggie Smalls",
                           "4111 1111 1111 1111" /* Visa */, "01", "2999", "");
   personal_data_manager_->AddCreditCard(saved_credit_card);
@@ -2773,7 +2773,7 @@ TEST_P(FormDataImporterTest,
 TEST_P(FormDataImporterTest,
        ExtractFormData_ExtractCreditCardRecordType_LocalCard) {
   // Start with a single valid credit card stored via the preferences.
-  CreditCard saved_credit_card(base::GenerateGUID(), test::kEmptyOrigin);
+  CreditCard saved_credit_card(base::GenerateUuid(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&saved_credit_card, "Biggie Smalls",
                           "4111 1111 1111 1111" /* Visa */, "01", "2999", "");
   personal_data_manager_->AddCreditCard(saved_credit_card);
@@ -3037,7 +3037,7 @@ TEST_P(FormDataImporterTest, ExtractFormData_OneAddressOneCreditCard) {
   WaitForOnPersonalDataChanged();
 
   // Test that the address has been saved.
-  AutofillProfile expected_address(base::GenerateGUID(), test::kEmptyOrigin);
+  AutofillProfile expected_address(base::GenerateUuid(), test::kEmptyOrigin);
   test::SetProfileInfo(&expected_address, "George", nullptr, "Washington",
                        "theprez@gmail.com", nullptr, "21 Laussat St", nullptr,
                        "San Francisco", "California", "94102", "US", nullptr);
@@ -3047,7 +3047,7 @@ TEST_P(FormDataImporterTest, ExtractFormData_OneAddressOneCreditCard) {
   EXPECT_THAT(*results_addr[0], ComparesEqual(expected_address));
 
   // Test that the credit card has also been saved.
-  CreditCard expected_card(base::GenerateGUID(), test::kEmptyOrigin);
+  CreditCard expected_card(base::GenerateUuid(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&expected_card, "Biggie Smalls", "4111111111111111",
                           "01", "2999", "");
   const std::vector<CreditCard*>& results_cards =
@@ -3126,7 +3126,7 @@ TEST_P(FormDataImporterTest, ExtractFormData_TwoAddressesOneCreditCard) {
   EXPECT_EQ(2U, personal_data_manager_->GetProfiles().size());
 
   // Test that the credit card has been saved.
-  CreditCard expected_card(base::GenerateGUID(), test::kEmptyOrigin);
+  CreditCard expected_card(base::GenerateUuid(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&expected_card, "Biggie Smalls", "4111111111111111",
                           "01", "2999", "");
   const std::vector<CreditCard*>& results =
@@ -3300,7 +3300,7 @@ TEST_P(FormDataImporterTest, ExtractFormData_AddressesDisabledOneCreditCard) {
   EXPECT_EQ(0U, personal_data_manager_->GetProfiles().size());
 
   // Test that the credit card has been saved.
-  CreditCard expected_card(base::GenerateGUID(), test::kEmptyOrigin);
+  CreditCard expected_card(base::GenerateUuid(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&expected_card, "Biggie Smalls", "4111111111111111",
                           "01", "2999", "");
   const std::vector<CreditCard*>& results =
@@ -3352,7 +3352,7 @@ TEST_P(FormDataImporterTest, ExtractFormData_OneAddressCreditCardDisabled) {
   WaitForOnPersonalDataChanged();
 
   // Test that the address has been saved.
-  AutofillProfile expected_address(base::GenerateGUID(), test::kEmptyOrigin);
+  AutofillProfile expected_address(base::GenerateUuid(), test::kEmptyOrigin);
   test::SetProfileInfo(&expected_address, "George", nullptr, "Washington",
                        "theprez@gmail.com", nullptr, "21 Laussat St", nullptr,
                        "San Francisco", "California", "94102", "US", nullptr);
@@ -3497,7 +3497,7 @@ TEST_P(FormDataImporterTest, ExtractFormData_HiddenCreditCardFormAfterEntered) {
   WaitForOnPersonalDataChanged();
 
   // Test that the credit card has been saved.
-  CreditCard expected_card(base::GenerateGUID(), test::kEmptyOrigin);
+  CreditCard expected_card(base::GenerateUuid(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&expected_card, "Biggie Smalls", "4111111111111111",
                           "01", "2999", "");
   const std::vector<CreditCard*>& results =
@@ -3953,7 +3953,7 @@ TEST_P(FormDataImporterTest, SilentlyUpdateExistingProfileByIncompleteProfile) {
   scoped_feature_list.InitAndEnableFeature(
       features::kAutofillSilentProfileUpdateForInsufficientImport);
 
-  AutofillProfile profile(base::GenerateGUID(), test::kEmptyOrigin);
+  AutofillProfile profile(base::GenerateUuid(), test::kEmptyOrigin);
   test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox", "123 Zoo St.", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
@@ -4009,7 +4009,7 @@ TEST_P(
   scoped_feature_list.InitAndEnableFeature(
       features::kAutofillSilentProfileUpdateForInsufficientImport);
 
-  AutofillProfile profile(base::GenerateGUID(), test::kEmptyOrigin);
+  AutofillProfile profile(base::GenerateUuid(), test::kEmptyOrigin);
   test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox", "123 Zoo St.", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
@@ -4065,7 +4065,7 @@ TEST_P(FormDataImporterTest, UnusableIncompleteProfile) {
   scoped_feature_list.InitAndEnableFeature(
       features::kAutofillSilentProfileUpdateForInsufficientImport);
 
-  AutofillProfile profile(base::GenerateGUID(), test::kEmptyOrigin);
+  AutofillProfile profile(base::GenerateUuid(), test::kEmptyOrigin);
   test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox", "123 Zoo St.", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");

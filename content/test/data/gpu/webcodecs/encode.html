@@ -31,6 +31,7 @@ Take frames coming from various sources and check that:
         framerate: 24
       };
 
+      TEST.log('Starting test with arguments: ' + JSON.stringify(arg));
       let support = await VideoEncoder.isConfigSupported(encoder_config);
       if (!support.supported) {
         TEST.skip('Unsupported codec: ' + arg.codec);
@@ -98,6 +99,11 @@ Take frames coming from various sources and check that:
       TEST.assert(errors == 0, 'Encoding errors occurred during the test');
       TEST.log('Test completed');
     }
+    addManualTestButton({
+      'source_type': 'offscreen',
+      'codec': 'avc1.42001E',
+      'acceleration':'prefer-software'
+    });
   </script>
 </head>
 

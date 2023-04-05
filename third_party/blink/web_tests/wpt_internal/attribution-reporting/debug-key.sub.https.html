@@ -10,13 +10,16 @@
 <script>
 const debug_key_promise_test = (testCase, forSource) =>
   attribution_reporting_promise_test(async t => {
+    const source = {
+      source_event_id: generateSourceEventId(),
+      destination: `https://{{host}}`,
+      debug_key: forSource ? testCase.debugKey : undefined,
+    };
     await registerAttributionSrc(t, {
-      source: {
-        destination: `https://{{host}}`,
-        debug_key: forSource ? testCase.debugKey : undefined,
-      },
+      source,
       cookie: testCase.cookie,
     });
+    await waitForSourceToBeRegistered(source.source_event_id);
 
     await registerAttributionSrc(t, {trigger: {
       event_trigger_data: [{}],

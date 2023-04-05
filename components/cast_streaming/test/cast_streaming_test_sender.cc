@@ -150,7 +150,11 @@ void CastStreamingTestSender::Stop() {
   video_sender_observer_.reset();
 
   // Disconnect the message port before destructing its client.
-  message_port_->ResetClient();
+  if (message_port_) {
+    // TODO(crbug.com/1420075): CastMessagePortSender should be RAII and clean itself during
+    // the destruction instead of relying the client to call its ResetClient function.
+    message_port_->ResetClient();
+  }
   sender_session_.reset();
   message_port_.reset();
 

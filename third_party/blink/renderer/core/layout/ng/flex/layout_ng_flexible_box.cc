@@ -67,7 +67,6 @@ void MergeAnonymousFlexItems(LayoutObject* remove_child) {
     return;
   To<LayoutBoxModelObject>(next)->MoveAllChildrenTo(
       To<LayoutBoxModelObject>(prev));
-  To<LayoutBlockFlow>(next)->DeleteLineBoxTree();
   next->Destroy();
 }
 

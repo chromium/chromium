@@ -23,6 +23,11 @@ COMPONENT_EXPORT(URL) bool IsRecordingIDNA2008Metrics();
 COMPONENT_EXPORT(URL)
 BASE_DECLARE_FEATURE(kStrictIPv4EmbeddedIPv6AddressParsing);
 
+// When enabled, allows resolving of a bare fragment containing a colon against
+// a non-hierarchical URL. (For example '#foo:bar' against 'about:blank'.)
+COMPONENT_EXPORT(URL)
+BASE_DECLARE_FEATURE(kResolveBareFragmentWithColonOnNonHierarchical);
+
 }  // namespace url
 
 #endif  // URL_URL_FEATURES_H_

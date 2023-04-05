@@ -34,6 +34,7 @@ from util import parallel
 from util import protoresources
 from util import resource_utils
 import action_helpers  # build_utils adds //build to sys.path.
+import zip_helpers
 
 
 # Pngs that we shouldn't convert to webp. Please add rationale when updating.
@@ -998,7 +999,8 @@ def main(args):
                                       rjava_build_options, options.srcjar_out,
                                       custom_root_package_name,
                                       grandparent_custom_package_name)
-      build_utils.ZipDir(build.srcjar_path, build.srcjar_dir)
+      with action_helpers.atomic_output(build.srcjar_path) as f:
+        zip_helpers.zip_directory(f, build.srcjar_dir)
 
     logging.debug('Copying outputs')
     _WriteOutputs(options, build)

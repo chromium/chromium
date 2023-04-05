@@ -247,10 +247,14 @@ void MessagePumpForUI::WaitForWork(Delegate::NextWorkInfo next_work_info) {
   // Wait until a message is available, up to the time needed by the timer
   // manager to fire the next set of timers.
   DWORD wait_flags = MWMO_INPUTAVAILABLE;
+  bool last_wakeup_was_spurious = false;
   for (DWORD delay = GetSleepTimeoutMs(next_work_info.delayed_run_time,
                                        next_work_info.recent_now);
        delay != 0; delay = GetSleepTimeoutMs(next_work_info.delayed_run_time)) {
-    run_state_->delegate->BeforeWait();
+    if (!last_wakeup_was_spurious) {
+      run_state_->delegate->BeforeWait();
+    }
+    last_wakeup_was_spurious = false;
 
     // Tell the optimizer to retain these values to simplify analyzing hangs.
     base::debug::Alias(&delay);
@@ -293,6 +297,11 @@ void MessagePumpForUI::WaitForWork(Delegate::NextWorkInfo next_work_info) {
       // has returned false. Reset |wait_flags| so that we wait for a *new*
       // message.
       wait_flags = 0;
+    } else {
+      last_wakeup_was_spurious = true;
+      TRACE_EVENT_INSTANT("base",
+                          "MessagePumpForUI::WaitForWork Spurious Wakeup",
+                          "reason: ", result);
     }
 
     DCHECK_NE(WAIT_FAILED, result) << GetLastError();

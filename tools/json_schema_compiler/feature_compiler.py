@@ -173,6 +173,7 @@ FEATURE_GRAMMAR = ({
                 'lock_screen_extension':
                 'Feature::LOCK_SCREEN_EXTENSION_CONTEXT',
                 'offscreen_extension': 'Feature::OFFSCREEN_EXTENSION_CONTEXT',
+                'user_script': 'Feature::USER_SCRIPT_CONTEXT',
                 'web_page': 'Feature::WEB_PAGE_CONTEXT',
                 'webui': 'Feature::WEBUI_CONTEXT',
                 'webui_untrusted': 'Feature::WEBUI_UNTRUSTED_CONTEXT',

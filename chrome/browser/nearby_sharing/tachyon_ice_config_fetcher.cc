@@ -10,7 +10,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/nearby_sharing/common/nearby_share_http_result.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/token_fetcher.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/proto/duration.pb.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/nearby_sharing/proto/tachyon_common.pb.h"
 #include "chrome/browser/nearby_sharing/proto/tachyon_enums.pb.h"
 #include "chrome/services/sharing/public/cpp/sharing_webrtc_metrics.h"
+#include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -120,7 +120,7 @@ tachyon_proto::GetICEServerRequest BuildRequest() {
   return request;
 }
 
-void RecordResultMetric(const NearbyShareHttpStatus& http_status) {
+void RecordResultMetric(const ash::nearby::NearbyHttpStatus& http_status) {
   bool success = http_status.IsSuccess();
   base::UmaHistogramBoolean(
       "Nearby.Connections.InstantMessaging.TachyonIceConfigFetcher.Result",
@@ -149,8 +149,8 @@ void RecordTokenFetchSuccessMetric(bool token_fetch_successful) {
 bool IsLoaderSuccessful(const network::SimpleURLLoader* loader,
                         const std::string& request_id) {
   DCHECK(loader);
-  NearbyShareHttpStatus status =
-      NearbyShareHttpStatus(loader->NetError(), loader->ResponseInfo());
+  ash::nearby::NearbyHttpStatus status =
+      ash::nearby::NearbyHttpStatus(loader->NetError(), loader->ResponseInfo());
 
   RecordResultMetric(status);
 

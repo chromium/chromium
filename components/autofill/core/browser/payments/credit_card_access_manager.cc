@@ -12,7 +12,6 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/not_fn.h"
-#include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
@@ -1210,6 +1209,7 @@ void CreditCardAccessManager::OnUserAcceptedAuthenticationSelectionDialog(
               ? UnmaskAuthFlowType::kOtpFallbackFromFido
               : UnmaskAuthFlowType::kOtp;
       break;
+    case CardUnmaskChallengeOptionType::kEmailOtp:
     case CardUnmaskChallengeOptionType::kUnknownType:
       NOTREACHED();
       break;

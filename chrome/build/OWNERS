@@ -1,13 +1,5 @@
 jeffyoon@google.com
 sebmarchand@chromium.org
 
-per-file linux.pgo.txt=chromium-autoroll@skia-public.iam.gserviceaccount.com
-per-file linux.pgo.txt=chromium-release-autoroll@skia-public.iam.gserviceaccount.com
-per-file mac-arm.pgo.txt=chromium-autoroll@skia-public.iam.gserviceaccount.com
-per-file mac-arm.pgo.txt=chromium-release-autoroll@skia-public.iam.gserviceaccount.com
-per-file mac.pgo.txt=chromium-autoroll@skia-public.iam.gserviceaccount.com
-per-file mac.pgo.txt=chromium-release-autoroll@skia-public.iam.gserviceaccount.com
-per-file win32.pgo.txt=chromium-autoroll@skia-public.iam.gserviceaccount.com
-per-file win32.pgo.txt=chromium-release-autoroll@skia-public.iam.gserviceaccount.com
-per-file win64.pgo.txt=chromium-autoroll@skia-public.iam.gserviceaccount.com
-per-file win64.pgo.txt=chromium-release-autoroll@skia-public.iam.gserviceaccount.com
+per-file *.pgo.txt=chromium-autoroll@skia-public.iam.gserviceaccount.com
+per-file *.pgo.txt=chromium-release-autoroll@skia-public.iam.gserviceaccount.com

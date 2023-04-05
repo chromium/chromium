@@ -506,3 +506,14 @@ bool ChromeWebClient::IsMixedContentAutoupgradeEnabled(
   return base::FeatureList::IsEnabled(
       security_interstitials::features::kMixedContentAutoupgrade);
 }
+
+bool ChromeWebClient::IsBrowserLockdownModeEnabled(
+    web::BrowserState* browser_state) {
+  if (base::FeatureList::IsEnabled(web::kEnableBrowserLockdownMode)) {
+    ChromeBrowserState* chrome_browser_state =
+        ChromeBrowserState::FromBrowserState(browser_state);
+    PrefService* prefs = chrome_browser_state->GetPrefs();
+    return prefs->GetBoolean(prefs::kBrowserLockdownModeEnabled);
+  }
+  return false;
+}

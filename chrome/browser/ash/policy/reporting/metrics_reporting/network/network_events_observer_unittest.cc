@@ -345,7 +345,10 @@ TEST_F(NetworkEventsObserverSignalStrengthTest, FeatureDisabled) {
 
 struct NetworkConnectionStateTestCase {
   std::string test_name;
+  std::string guid;
   NetworkState input_state;
+  NetworkState other_state = NetworkState::kNotConnected;
+  MetricEventType expected_event_type;
   NetworkConnectionState expected_state;
 };
 
@@ -356,36 +359,14 @@ class NetworkEventsObserverConnectionStateTest
 
   void TearDown() override { network_events_observer_test_helper_.TearDown(); }
 
-  void VerifyConnectionState(const MetricData& result_metric_data,
-                             base::StringPiece guid,
-                             NetworkConnectionState expected_connection_state) {
-    ASSERT_TRUE(result_metric_data.has_event_data());
-    EXPECT_THAT(result_metric_data.event_data().type(),
-                Eq(MetricEventType::NETWORK_STATE_CHANGE));
-    ASSERT_TRUE(result_metric_data.telemetry_data()
-                    .networks_telemetry()
-                    .has_network_connection_change_event_data());
-    const auto& connection_change_event_data =
-        result_metric_data.telemetry_data()
-            .networks_telemetry()
-            .network_connection_change_event_data();
-    EXPECT_THAT(connection_change_event_data.guid(), Eq(guid));
-    EXPECT_THAT(connection_change_event_data.connection_state(),
-                Eq(expected_connection_state));
-  }
-
-  void SetFeatureEnabled(bool enabled) {
-    scoped_feature_list_.InitWithFeatureState(
-        kEnableNetworkConnectionStateEventsReporting, enabled);
-  }
-
- private:
   NetworkEventsObserverTestHelper network_events_observer_test_helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(NetworkEventsObserverConnectionStateTest, FeatureDisabled) {
-  SetFeatureEnabled(false);
+TEST_F(NetworkEventsObserverConnectionStateTest, PhysicalFeatureDisabled) {
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{kEnableVpnConnectionStateEventsReporting},
+      /*disabled_features=*/{kEnableNetworkConnectionStateEventsReporting});
 
   bool event_reported = false;
 
@@ -398,11 +379,20 @@ TEST_F(NetworkEventsObserverConnectionStateTest, FeatureDisabled) {
   network_events_observer.OnConnectionStateChanged(kWifiGuid,
                                                    NetworkState::kNotConnected);
 
-  EXPECT_FALSE(event_reported);
+  ASSERT_FALSE(event_reported);
+
+  network_events_observer.OnConnectionStateChanged(kVpnGuid,
+                                                   NetworkState::kNotConnected);
+
+  EXPECT_TRUE(event_reported);
 }
 
-TEST_F(NetworkEventsObserverConnectionStateTest, VirtualConnection) {
-  SetFeatureEnabled(true);
+TEST_F(NetworkEventsObserverConnectionStateTest, VpnFeatureDisabled) {
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/
+      {kEnableNetworkConnectionStateEventsReporting},
+      /*disabled_features=*/
+      {kEnableVpnConnectionStateEventsReporting});
 
   bool event_reported = false;
 
@@ -414,76 +404,42 @@ TEST_F(NetworkEventsObserverConnectionStateTest, VirtualConnection) {
   network_events_observer.SetOnEventObservedCallback(std::move(cb));
   network_events_observer.OnConnectionStateChanged(kVpnGuid,
                                                    NetworkState::kNotConnected);
+
+  ASSERT_FALSE(event_reported);
+
+  network_events_observer.OnConnectionStateChanged(kWifiGuid,
+                                                   NetworkState::kNotConnected);
+
+  EXPECT_TRUE(event_reported);
+}
+
+TEST_F(NetworkEventsObserverConnectionStateTest, TetherConnection) {
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/
+      {kEnableNetworkConnectionStateEventsReporting,
+       kEnableVpnConnectionStateEventsReporting},
+      /*disabled_features=*/
+      {});
+
+  bool event_reported = false;
+
+  NetworkEventsObserver network_events_observer;
+  MetricData result_metric_data;
+  auto cb =
+      base::BindLambdaForTesting([&](MetricData) { event_reported = true; });
+
+  network_events_observer.SetOnEventObservedCallback(std::move(cb));
   network_events_observer.OnConnectionStateChanged(kTetherGuid,
                                                    NetworkState::kConnected);
 
   EXPECT_FALSE(event_reported);
 }
 
-TEST_F(NetworkEventsObserverConnectionStateTest, MultipleEvents) {
-  SetFeatureEnabled(true);
-
-  bool event_reported = false;
-
-  NetworkEventsObserver network_events_observer;
-  MetricData result_metric_data;
-  auto cb = base::BindLambdaForTesting([&](MetricData metric_data) {
-    event_reported = true;
-    result_metric_data = std::move(metric_data);
-  });
-
-  network_events_observer.SetOnEventObservedCallback(std::move(cb));
-  network_events_observer.OnConnectionStateChanged(kWifiIdleGuid,
-                                                   NetworkState::kNotConnected);
-
-  ASSERT_TRUE(event_reported);
-  VerifyConnectionState(result_metric_data, kWifiIdleGuid, NOT_CONNECTED);
-
-  // Duplicate events should not be reported.
-  event_reported = false;
-  network_events_observer.OnConnectionStateChanged(kWifiIdleGuid,
-                                                   NetworkState::kNotConnected);
-
-  ASSERT_FALSE(event_reported);
-
-  // Same event with different guid should be reported.
-  event_reported = false;
-  network_events_observer.OnConnectionStateChanged(kWifiGuid,
-                                                   NetworkState::kNotConnected);
-
-  ASSERT_TRUE(event_reported);
-  VerifyConnectionState(result_metric_data, kWifiGuid, NOT_CONNECTED);
-
-  // Duplicate events should not be reported even if another connection event
-  // was observed in between.
-  event_reported = false;
-  network_events_observer.OnConnectionStateChanged(kWifiIdleGuid,
-                                                   NetworkState::kNotConnected);
-
-  ASSERT_FALSE(event_reported);
-
-  // Different event with same guid should be reported.
-  event_reported = false;
-  network_events_observer.OnConnectionStateChanged(kWifiGuid,
-                                                   NetworkState::kConnecting);
-
-  ASSERT_TRUE(event_reported);
-  VerifyConnectionState(result_metric_data, kWifiGuid, CONNECTING);
-
-  // Same event with same guid should be reported if reporting state changed
-  // from disabled to enabled.
-  network_events_observer.SetReportingEnabled(/*is_enabled=*/false);
-  network_events_observer.SetReportingEnabled(/*is_enabled=*/true);
-  event_reported = false;
-  network_events_observer.OnConnectionStateChanged(kWifiGuid,
-                                                   NetworkState::kConnecting);
-
-  ASSERT_TRUE(event_reported);
-  VerifyConnectionState(result_metric_data, kWifiGuid, CONNECTING);
-}
-
 TEST_F(NetworkEventsObserverConnectionStateTest, InvalidGuid) {
-  SetFeatureEnabled(true);
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{kEnableNetworkConnectionStateEventsReporting,
+                            kEnableVpnConnectionStateEventsReporting},
+      /*disabled_features=*/{});
 
   NetworkEventsObserver network_events_observer;
   bool event_reported = false;
@@ -494,16 +450,18 @@ TEST_F(NetworkEventsObserverConnectionStateTest, InvalidGuid) {
   network_events_observer.SetReportingEnabled(/*is_enabled=*/true);
   network_events_observer.OnConnectionStateChanged("invalid_guid",
                                                    NetworkState::kOnline);
-  base::RunLoop().RunUntilIdle();
 
   ASSERT_FALSE(event_reported);
 }
 
 TEST_P(NetworkEventsObserverConnectionStateTest, Default) {
-  SetFeatureEnabled(true);
-
   const NetworkConnectionStateTestCase& test_case = GetParam();
   bool event_reported = false;
+
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{kEnableNetworkConnectionStateEventsReporting,
+                            kEnableVpnConnectionStateEventsReporting},
+      /*disabled_features=*/{});
 
   NetworkEventsObserver network_events_observer;
   MetricData result_metric_data;
@@ -513,13 +471,13 @@ TEST_P(NetworkEventsObserverConnectionStateTest, Default) {
   });
 
   network_events_observer.SetOnEventObservedCallback(std::move(cb));
-  network_events_observer.OnConnectionStateChanged(kWifiGuid,
+  network_events_observer.OnConnectionStateChanged(test_case.guid,
                                                    test_case.input_state);
 
   ASSERT_TRUE(event_reported);
   ASSERT_TRUE(result_metric_data.has_event_data());
   EXPECT_THAT(result_metric_data.event_data().type(),
-              Eq(MetricEventType::NETWORK_STATE_CHANGE));
+              Eq(test_case.expected_event_type));
   ASSERT_TRUE(result_metric_data.has_telemetry_data());
   ASSERT_TRUE(result_metric_data.telemetry_data().has_networks_telemetry());
   ASSERT_TRUE(result_metric_data.telemetry_data()
@@ -529,33 +487,71 @@ TEST_P(NetworkEventsObserverConnectionStateTest, Default) {
                   .networks_telemetry()
                   .network_connection_change_event_data()
                   .guid(),
-              Eq(kWifiGuid));
+              Eq(test_case.guid));
   EXPECT_THAT(result_metric_data.telemetry_data()
                   .networks_telemetry()
                   .network_connection_change_event_data()
                   .connection_state(),
               Eq(test_case.expected_state));
 
+  // Same event with different guid should be reported.
+  event_reported = false;
+  network_events_observer.OnConnectionStateChanged(kWifiIdleGuid,
+                                                   test_case.input_state);
+  ASSERT_TRUE(event_reported);
+
   // Duplicate events should not be reported
   event_reported = false;
-  network_events_observer.OnConnectionStateChanged(kWifiGuid,
+  network_events_observer.OnConnectionStateChanged(test_case.guid,
                                                    test_case.input_state);
-
   ASSERT_FALSE(event_reported);
+
+  // Different event for same network should be reported.
+  network_events_observer.OnConnectionStateChanged(test_case.guid,
+                                                   test_case.other_state);
+  ASSERT_TRUE(event_reported);
+
+  // Same event with same guid should be reported if reporting state changed
+  // from disabled to enabled.
+  network_events_observer.SetReportingEnabled(/*is_enabled=*/false);
+  network_events_observer.SetReportingEnabled(/*is_enabled=*/true);
+  event_reported = false;
+  network_events_observer.OnConnectionStateChanged(test_case.guid,
+                                                   test_case.other_state);
+  ASSERT_TRUE(event_reported);
 }
 
 INSTANTIATE_TEST_SUITE_P(
     NetworkEventsObserverConnectionStateTest,
     NetworkEventsObserverConnectionStateTest,
     ::testing::ValuesIn<NetworkConnectionStateTestCase>(
-        {{"Online", NetworkState::kOnline, NetworkConnectionState::ONLINE},
-         {"Connected", NetworkState::kConnected,
-          NetworkConnectionState::CONNECTED},
-         {"Portal", NetworkState::kPortal, NetworkConnectionState::PORTAL},
-         {"Connecting", NetworkState::kConnecting,
-          NetworkConnectionState::CONNECTING},
-         {"NotConnected", NetworkState::kNotConnected,
-          NetworkConnectionState::NOT_CONNECTED}}),
+        {{.test_name = "WifiOnline",
+          .guid = kWifiGuid,
+          .input_state = NetworkState::kOnline,
+          .other_state = NetworkState::kNotConnected,
+          .expected_event_type = MetricEventType::NETWORK_STATE_CHANGE,
+          .expected_state = NetworkConnectionState::ONLINE},
+         {.test_name = "CellularConnected",
+          .guid = kCellularGuid,
+          .input_state = NetworkState::kConnected,
+          .expected_event_type = MetricEventType::NETWORK_STATE_CHANGE,
+          .expected_state = NetworkConnectionState::CONNECTED},
+         {.test_name = "WifiPortal",
+          .guid = kWifiGuid,
+          .input_state = NetworkState::kPortal,
+          .expected_event_type = MetricEventType::NETWORK_STATE_CHANGE,
+          .expected_state = NetworkConnectionState::PORTAL},
+         {.test_name = "VpnConnecting",
+          .guid = kVpnGuid,
+          .input_state = NetworkState::kConnecting,
+          .expected_event_type = MetricEventType::VPN_CONNECTION_STATE_CHANGE,
+          .expected_state = NetworkConnectionState::CONNECTING},
+         {.test_name = "VpnNotConnected",
+          .guid = kVpnGuid,
+          .input_state = NetworkState::kNotConnected,
+          .other_state = NetworkState::kConnecting,
+          .expected_event_type = MetricEventType::VPN_CONNECTION_STATE_CHANGE,
+          .expected_state = NetworkConnectionState::NOT_CONNECTED}}),
     [](const testing::TestParamInfo<
         NetworkEventsObserverConnectionStateTest::ParamType>& info) {
       return info.param.test_name;

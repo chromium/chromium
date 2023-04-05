@@ -880,6 +880,61 @@ TEST_F(AttributionDataHostManagerImplTest,
   task_environment_.FastForwardBy(base::TimeDelta());
 }
 
+TEST_F(AttributionDataHostManagerImplTest, NavigationRedirectOsSource_InOrder) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kAttributionReportingCrossAppWeb);
+
+  AttributionOsLevelManagerAndroid::ScopedOsSupportForTesting
+      scoped_os_support_setting(
+          attribution_reporting::mojom::OsSupport::kEnabled);
+
+  auto reporter = *SuitableOrigin::Deserialize("https://report.test");
+  auto source_site = *SuitableOrigin::Deserialize("https://source.test");
+
+  {
+    InSequence seq;
+
+    EXPECT_CALL(mock_manager_,
+                HandleOsRegistration(
+                    OsRegistration(GURL("https://b.test/"), *source_site,
+                                   AttributionInputEvent()),
+                    kFrameId));
+    EXPECT_CALL(mock_manager_,
+                HandleOsRegistration(
+                    OsRegistration(GURL("https://a.test/"), *source_site,
+                                   AttributionInputEvent()),
+                    kFrameId));
+  }
+
+  const blink::AttributionSrcToken attribution_src_token;
+
+  {
+    auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+    headers->SetHeader(kAttributionReportingRegisterOsSourceHeader,
+                       R"("https://b.test/")");
+
+    data_host_manager_.NotifyNavigationRedirectRegistration(
+        attribution_src_token, headers.get(), reporter, source_site,
+        AttributionInputEvent(), AttributionNavigationType::kAnchor,
+        /*is_within_fenced_frame=*/false, kFrameId);
+  }
+
+  {
+    auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+    headers->SetHeader(kAttributionReportingRegisterOsSourceHeader,
+                       R"("https://a.test/")");
+
+    data_host_manager_.NotifyNavigationRedirectRegistration(
+        attribution_src_token, headers.get(), reporter, source_site,
+        AttributionInputEvent(), AttributionNavigationType::kAnchor,
+        /*is_within_fenced_frame=*/false, kFrameId);
+  }
+
+  // Wait for parsing to finish.
+  task_environment_.FastForwardBy(base::TimeDelta());
+}
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -928,6 +983,55 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionInputEvent(), AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId);
   data_host_manager_.NotifyNavigationFinished(attribution_src_token);
+
+  // Wait for parsing to finish.
+  task_environment_.FastForwardBy(base::TimeDelta());
+}
+
+TEST_F(AttributionDataHostManagerImplTest, NavigationRedirectSource_InOrder) {
+  {
+    InSequence seq;
+
+    EXPECT_CALL(mock_manager_,
+                HandleSource(SourceRegistrationIs(SourceRegistrationMatches(
+                                 SourceRegistrationMatcherConfig(
+                                     /*source_event_id=*/2))),
+                             kFrameId));
+    EXPECT_CALL(mock_manager_,
+                HandleSource(SourceRegistrationIs(SourceRegistrationMatches(
+                                 SourceRegistrationMatcherConfig(
+                                     /*source_event_id=*/1))),
+                             kFrameId));
+  }
+
+  auto reporter = *SuitableOrigin::Deserialize("https://report.test");
+  auto source_site = *SuitableOrigin::Deserialize("https://source.test");
+
+  const blink::AttributionSrcToken attribution_src_token;
+
+  {
+    auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+    headers->SetHeader(
+        kAttributionReportingRegisterSourceHeader,
+        R"json({"source_event_id":"2","destination":"https://dest.test"})json");
+
+    data_host_manager_.NotifyNavigationRedirectRegistration(
+        attribution_src_token, headers.get(), reporter, source_site,
+        AttributionInputEvent(), AttributionNavigationType::kAnchor,
+        /*is_within_fenced_frame=*/false, kFrameId);
+  }
+
+  {
+    auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+    headers->SetHeader(
+        kAttributionReportingRegisterSourceHeader,
+        R"json({"source_event_id":"1","destination":"https://dest.test"})json");
+
+    data_host_manager_.NotifyNavigationRedirectRegistration(
+        attribution_src_token, headers.get(), reporter, source_site,
+        AttributionInputEvent(), AttributionNavigationType::kAnchor,
+        /*is_within_fenced_frame=*/false, kFrameId);
+  }
 
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());

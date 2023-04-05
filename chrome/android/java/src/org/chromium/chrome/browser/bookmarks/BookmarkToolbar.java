@@ -9,8 +9,10 @@ import android.util.AttributeSet;
 import android.view.MenuItem;
 import android.view.View.OnClickListener;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
+import androidx.core.view.MenuCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
@@ -53,7 +55,15 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
     public BookmarkToolbar(Context context, AttributeSet attrs) {
         super(context, attrs);
         setNavigationOnClickListener(this);
-        inflateMenu(R.menu.bookmark_toolbar_menu);
+
+        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+            inflateMenu(R.menu.bookmark_toolbar_menu_improved);
+            MenuCompat.setGroupDividerEnabled(
+                    getMenu().findItem(R.id.normal_options_submenu).getSubMenu(), true);
+        } else {
+            inflateMenu(R.menu.bookmark_toolbar_menu);
+        }
+
         setOnMenuItemClickListener(this);
     }
 
@@ -104,6 +114,8 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
     }
 
     void setSearchButtonVisible(boolean visible) {
+        // The improved bookmarks experience embeds search in the list.
+        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) return;
         mSearchButtonVisible = visible;
         getMenu().findItem(R.id.search_menu_id).setVisible(visible);
     }
@@ -115,6 +127,14 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
 
     void setNavigationButtonState(@NavigationButton int navigationButtonState) {
         setNavigationButton(navigationButtonState);
+    }
+
+    void setCheckedSortMenuId(@IdRes int id) {
+        getMenu().findItem(id).setChecked(true);
+    }
+
+    void setCheckedViewMenuId(@IdRes int id) {
+        getMenu().findItem(id).setChecked(true);
     }
 
     void setCurrentFolder(BookmarkId folder) {

@@ -4,11 +4,8 @@
   "android-builder-perf": {
     "additional_compile_targets": [
       "microdump_stackwalk",
-      "chrome_apk",
       "system_webview_google_apk",
       "android_tools",
-      "cc_perftests",
-      "chrome_public_apk",
       "chromium_builder_perf",
       "dump_syms",
       "push_apps_to_background_apk",
@@ -161,11 +158,8 @@
   "android-builder-perf-pgo": {
     "additional_compile_targets": [
       "microdump_stackwalk",
-      "chrome_apk",
       "system_webview_google_apk",
       "android_tools",
-      "cc_perftests",
-      "chrome_public_apk",
       "chromium_builder_perf",
       "dump_syms",
       "push_apps_to_background_apk",
@@ -1219,11 +1213,8 @@
   "android_arm64-builder-perf": {
     "additional_compile_targets": [
       "microdump_stackwalk",
-      "chrome_apk",
       "system_webview_google_apk",
       "android_tools",
-      "cc_perftests",
-      "chrome_public_apk",
       "chromium_builder_perf",
       "push_apps_to_background_apk",
       "system_webview_apk",
@@ -1403,11 +1394,8 @@
   "android_arm64-builder-perf-pgo": {
     "additional_compile_targets": [
       "microdump_stackwalk",
-      "chrome_apk",
       "system_webview_google_apk",
       "android_tools",
-      "cc_perftests",
-      "chrome_public_apk",
       "chromium_builder_perf",
       "push_apps_to_background_apk",
       "system_webview_apk",
@@ -2170,6 +2158,55 @@
       ],
       "script": "//tools/perf/process_perf_results.py"
     }
+  },
+  "mac-m1-pro-perf": {
+    "isolated_scripts": [
+      {
+        "args": [
+          "-v",
+          "--browser=release",
+          "--upload-results",
+          "--test-shard-map-filename=mac-m1-pro-perf_map.json",
+          "--ignore-benchmark-exit-code",
+          "--assert-gpu-compositing"
+        ],
+        "isolate_name": "performance_test_suite",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "performance_test_suite",
+        "override_compile_targets": [
+          "performance_test_suite"
+        ],
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "arm",
+              "mac_model": "MacBookPro18,3",
+              "os": "Mac",
+              "pool": "chrome.tests.perf"
+            }
+          ],
+          "expiration": 7200,
+          "hard_timeout": 21600,
+          "io_timeout": 21600,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 5
+        },
+        "trigger_script": {
+          "args": [
+            "--multiple-dimension-script-verbose",
+            "True"
+          ],
+          "requires_simultaneous_shard_dispatch": true,
+          "script": "//testing/trigger_scripts/perf_device_trigger.py"
+        }
+      }
+    ]
   },
   "mac-m1_mini_2020-perf": {
     "isolated_scripts": [

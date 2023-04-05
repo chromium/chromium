@@ -14,4 +14,12 @@ source_set("tests") {
     "//mojo/public/cpp/system",
     "//testing/gtest",
   ]
+
+  if (is_win || is_mac || (is_posix && !is_nacl && !is_ios)) {
+    sources += [ "platform_channel_server_unittest.cc" ]
+    deps += [
+      "//base/test:test_support",
+      "//mojo/core/embedder",
+    ]
+  }
 }

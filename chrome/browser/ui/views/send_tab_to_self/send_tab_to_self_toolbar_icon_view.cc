@@ -17,6 +17,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/views/controls/button/button_controller.h"
@@ -25,9 +26,12 @@ namespace send_tab_to_self {
 
 SendTabToSelfToolbarIconView::SendTabToSelfToolbarIconView(
     BrowserView* browser_view)
-    : ImageView(ui::ImageModel::FromVectorIcon(kLaptopAndSmartphoneIcon,
-                                               ui::kColorIcon,
-                                               gfx::kFaviconSize)),
+    : ImageView(ui::ImageModel::FromVectorIcon(
+          features::IsChromeRefresh2023()
+              ? kLaptopAndSmartphoneChromeRefreshIcon
+              : kLaptopAndSmartphoneIcon,
+          ui::kColorIcon,
+          gfx::kFaviconSize)),
       browser_(browser_view->browser()),
       browser_view_(browser_view) {
   SetAccessibleName(l10n_util::GetStringUTF16(

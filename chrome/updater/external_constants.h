@@ -35,6 +35,12 @@ class ExternalConstants : public base::RefCountedThreadSafe<ExternalConstants> {
   // The URL to send update checks to.
   virtual std::vector<GURL> UpdateURL() const = 0;
 
+  // The URL to send crash reports to.
+  virtual GURL CrashUploadURL() const = 0;
+
+  // The URL to fetch device management policies.
+  virtual GURL DeviceManagementURL() const = 0;
+
   // True if client update protocol signing of update checks is enabled.
   virtual bool UseCUP() const = 0;
 

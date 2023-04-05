@@ -276,7 +276,12 @@ void AutoEnrollmentController::Start() {
         InitializeAndGetDeviceManagementService(),
         g_browser_process->system_network_context_manager()
             ->GetSharedURLLoaderFactory(),
-        ash::SystemClockClient::Get());
+        ash::SystemClockClient::Get(),
+        g_browser_process->platform_part()
+            ->browser_policy_connector_ash()
+            ->GetStateKeysBroker(),
+        ash::DeviceSettingsService::Get());
+
     enrollment_state_fetcher_->Start();
     return;
   }

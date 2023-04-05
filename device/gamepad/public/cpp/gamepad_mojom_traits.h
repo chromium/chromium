@@ -120,6 +120,31 @@ struct COMPONENT_EXPORT(GAMEPAD_SHARED_TRAITS)
 
 template <>
 struct COMPONENT_EXPORT(GAMEPAD_SHARED_TRAITS)
+    StructTraits<device::mojom::GamepadTouchDataView, device::GamepadTouch> {
+  static uint32_t touch_id(const device::GamepadTouch& r) { return r.touch_id; }
+  static uint32_t surface_id(const device::GamepadTouch& r) {
+    return r.surface_id;
+  }
+  static bool has_surface_dimensions(const device::GamepadTouch& r) {
+    return r.has_surface_dimensions;
+  }
+
+  static double x(const device::GamepadTouch& r) { return r.x; }
+  static double y(const device::GamepadTouch& r) { return r.y; }
+
+  static uint32_t surface_width(const device::GamepadTouch& r) {
+    return r.surface_width;
+  }
+  static uint32_t surface_height(const device::GamepadTouch& r) {
+    return r.surface_height;
+  }
+
+  static bool Read(device::mojom::GamepadTouchDataView data,
+                   device::GamepadTouch* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(GAMEPAD_SHARED_TRAITS)
     EnumTraits<device::mojom::GamepadHand, device::GamepadHand> {
   static device::mojom::GamepadHand ToMojom(device::GamepadHand input);
   static bool FromMojom(device::mojom::GamepadHand input,
@@ -144,6 +169,10 @@ struct COMPONENT_EXPORT(GAMEPAD_SHARED_TRAITS)
   }
   static const device::GamepadPose& pose(const device::Gamepad& r) {
     return r.pose;
+  }
+  static base::span<const device::GamepadTouch> touch_events(
+      const device::Gamepad& r) {
+    return base::make_span(r.touch_events, r.touch_events_length);
   }
   static const device::GamepadHand& hand(const device::Gamepad& r) {
     return r.hand;

@@ -354,6 +354,10 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
       base::BindRepeating(&UserManager::NotifyUsersSignInConstraintsChanged,
                           weak_factory_.GetWeakPtr()));
 
+  ephemeral_users_enabled_subscription_ = cros_settings_->AddSettingsObserver(
+      kAccountsPrefEphemeralUsersEnabled,
+      base::BindRepeating(&ChromeUserManagerImpl::RetrieveTrustedDevicePolicies,
+                          weak_factory_.GetWeakPtr()));
   local_accounts_subscription_ = cros_settings_->AddSettingsObserver(
       kAccountsPrefDeviceLocalAccounts,
       base::BindRepeating(&ChromeUserManagerImpl::RetrieveTrustedDevicePolicies,
@@ -427,6 +431,7 @@ void ChromeUserManagerImpl::Shutdown() {
     GetMinimumVersionPolicyHandler()->RemoveObserver(this);
   }
 
+  ephemeral_users_enabled_subscription_ = {};
   local_accounts_subscription_ = {};
 
   if (session_length_limiter_ && IsEnterpriseManaged()) {
@@ -982,8 +987,6 @@ void ChromeUserManagerImpl::RemoveNonCryptohomeDataPostExternalDataRemoval(
   supervised_user_manager_->RemoveNonCryptohomeData(account_id.GetUserEmail());
 
   multi_profile_user_controller_->RemoveCachedValues(account_id.GetUserEmail());
-
-  EasyUnlockService::ResetLocalStateForUser(account_id);
 
   ChromeUserManager::RemoveNonCryptohomeData(account_id);
 }

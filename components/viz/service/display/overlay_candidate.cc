@@ -42,30 +42,6 @@ bool OverlayCandidate::IsInvisibleQuad(const DrawQuad* quad) {
 }
 
 // static
-bool OverlayCandidate::IsOccluded(const OverlayCandidate& candidate,
-                                  QuadList::ConstIterator quad_list_begin,
-                                  QuadList::ConstIterator quad_list_end) {
-  // The rects are rounded as they're snapped by the compositor to pixel unless
-  // it is AA'ed, in which case, it won't be overlaid.
-  gfx::Rect target_rect =
-      gfx::ToRoundedRect(DisplayRectInTargetSpace(candidate));
-
-  // Check that no visible quad overlaps the candidate.
-  for (auto overlap_iter = quad_list_begin; overlap_iter != quad_list_end;
-       ++overlap_iter) {
-    gfx::Rect overlap_rect = gfx::ToRoundedRect(cc::MathUtil::MapClippedRect(
-        overlap_iter->shared_quad_state->quad_to_target_transform,
-        gfx::RectF(overlap_iter->rect)));
-
-    if (!OverlayCandidate::IsInvisibleQuad(*overlap_iter) &&
-        target_rect.Intersects(overlap_rect)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-// static
 void OverlayCandidate::ApplyClip(OverlayCandidate& candidate,
                                  const gfx::RectF& clip_rect) {
   DCHECK(absl::holds_alternative<gfx::OverlayTransform>(candidate.transform));

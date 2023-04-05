@@ -58,10 +58,10 @@ public class InactiveTabsButtonHeader: UICollectionReusableView {
     set { buttonState.action = newValue }
   }
 
-  /// The display string showing the number of days after which tabs are considered inactive.
-  @objc public var inactivityThresholdDisplayString: String? {
-    get { buttonState.inactivityThresholdDisplayString }
-    set { buttonState.inactivityThresholdDisplayString = newValue }
+  /// Sets the number of days after which tabs are considered inactive.
+  /// Note: this can't be a property because Swift doesn't support "Int?" with @objc.
+  @objc public func configure(daysThreshold: Int) {
+    buttonState.daysThreshold = daysThreshold
   }
 
   /// Sets the count on the Inactive Tabs button.

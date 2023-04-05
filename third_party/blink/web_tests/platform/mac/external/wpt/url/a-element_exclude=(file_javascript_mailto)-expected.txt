@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 661 tests; 347 PASS, 314 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 662 tests; 348 PASS, 314 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -281,6 +281,7 @@ PASS Parsing: <http://foo:💩@example.com/bar> against <http://other.com/>
 PASS Parsing: <#> against <test:test>
 FAIL Parsing: <#x> against <data:,> assert_equals: href expected "data:,#x" but got "test:test#x"
 PASS Parsing: <#x> against <about:blank>
+PASS Parsing: <#x:y> against <about:blank>
 PASS Parsing: <#> against <test:test?test>
 PASS Parsing: <https://@test@test@example:800/> against <http://doesnotmatter/>
 PASS Parsing: <https://@@@example> against <http://doesnotmatter/>

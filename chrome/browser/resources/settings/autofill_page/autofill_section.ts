@@ -7,6 +7,7 @@
  * addresses for use in autofill and payments APIs.
  */
 
+import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -15,7 +16,6 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import '../settings_shared.css.js';
 import '../controls/extension_controlled_indicator.js';
 import '../controls/settings_toggle_button.js';
-import '../prefs/prefs.js';
 import './address_edit_dialog.js';
 import './address_remove_confirmation_dialog.js';
 import './passwords_shared.css.js';
@@ -67,6 +67,8 @@ export class SettingsAutofillSectionElement extends
 
   static get properties() {
     return {
+      accountInfo_: Object,
+
       /** An array of saved addresses. */
       addresses: Array,
 
@@ -230,6 +232,13 @@ export class SettingsAutofillSectionElement extends
     this.autofillManager_.saveAddress(event.detail);
   }
 
+  private isInAccountOrSyncable_(
+      address: chrome.autofillPrivate.AddressEntry,
+      accountInfo?: chrome.autofillPrivate.AccountInfo): boolean {
+    return address.metadata?.source ===
+        chrome.autofillPrivate.AddressSource.ACCOUNT ||
+        !!accountInfo?.isSyncEnabledForAutofillProfiles;
+  }
   /**
    * @returns the title for the More Actions button corresponding to the address
    *     which is described by `label` and `sublabel`.

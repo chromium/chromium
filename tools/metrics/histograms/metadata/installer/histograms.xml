@@ -149,6 +149,21 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Installer.Postinstall.RevenPartitionMigration"
+    enum="ChromeOSRevenPartitionMigration" expires_after="2023-08-28">
+  <owner>nicholasbishop@google.com</owner>
+  <owner>chromeos-flex-eng@google.com</owner>
+  <summary>
+    Result of running the Reven (ChromeOS Flex) partition migration.
+
+    This is reported at the end of the partition migration, which is run during
+    postinstall. The migration is only run with USE=reven_partition_migration.
+
+    Note that some metrics may be lost during postinstall, see:
+    https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform2/installer/docs/postinst_metrics.md
+  </summary>
+</histogram>
+
 <histogram name="Installer.PowerwashCount" units="powerwashes"
     expires_after="2023-08-13">
   <owner>kimjae@chromium.org</owner>

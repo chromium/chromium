@@ -187,6 +187,9 @@ class AutofillField : public FormFieldData {
   // field).
   bool IsFieldFillable() const;
 
+  // Returns true if the field's type is a credit card expiration type.
+  bool HasExpirationDateType() const;
+
   // Address Autofill gets disabled by an unrecognized autocomplete attribute.
   // If `kAutofillFillAndImportFromMoreFields` is enabled, this changes and the
   // server/heuristic predictions overwrite the unrecognized autocomplete

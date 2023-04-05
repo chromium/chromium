@@ -143,7 +143,8 @@ class PlatformSensor : public base::RefCountedThreadSafe<PlatformSensor> {
   // updated, and false otherwise.
   // Note: this method is thread-safe.
   bool UpdateSharedBuffer(const SensorReading& reading,
-                          bool do_significance_check);
+                          bool do_significance_check)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Check if multiple instances of PlatformSensor can exist at once. It weas
   // first suggested in crbug.com/1383180.
@@ -156,7 +157,7 @@ class PlatformSensor : public base::RefCountedThreadSafe<PlatformSensor> {
   mojom::SensorType type_;
   ConfigMap config_map_;
   raw_ptr<PlatformSensorProvider> provider_;
-  bool is_active_ = false;
+  bool is_active_ GUARDED_BY(lock_);
   absl::optional<SensorReading> last_raw_reading_ GUARDED_BY(lock_);
   absl::optional<SensorReading> last_rounded_reading_ GUARDED_BY(lock_);
   // Protect last_raw_reading_ & last_rounded_reading_.

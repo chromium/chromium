@@ -8,11 +8,11 @@
 #include <tuple>
 
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "sql/meta_table.h"
 #include "sql/recovery.h"
@@ -32,7 +32,7 @@ const int kCompatibleVersionNumber = 1;
 
 void BindShortcutToStatement(const ShortcutsDatabase::Shortcut& shortcut,
                              sql::Statement* s) {
-  DCHECK(base::IsValidGUID(shortcut.id));
+  DCHECK(base::IsValidUuid(shortcut.id));
   s->BindString(0, shortcut.id);
   s->BindString16(1, shortcut.text);
   s->BindString16(2, shortcut.match_core.fill_into_edit);

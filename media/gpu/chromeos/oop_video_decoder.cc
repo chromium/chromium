@@ -326,8 +326,16 @@ void OOPVideoDecoder::Initialize(const VideoDecoderConfig& config,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK(!init_cb_);
-  CHECK(pending_decodes_.empty());
+  CHECK(!HasPendingDecodeCallbacks());
   CHECK(!reset_cb_);
+
+  // According to the VideoDecoder interface, Initialize() shouldn't be called
+  // during pending decodes. Therefore, in addition to CHECK()ing that there are
+  // no pending decode callbacks above, we also clear
+  // |fake_timestamp_to_real_timestamp_cache_| which, together with the
+  // validation in OnVideoFrameDecoded(), should guarantee that all frames
+  // received going forward come from Decode() requests after this point.
+  fake_timestamp_to_real_timestamp_cache_.Clear();
 
   if (has_error_) {
     // TODO(b/171813538): create specific error code for this decoder.
@@ -376,6 +384,8 @@ void OOPVideoDecoder::Initialize(const VideoDecoderConfig& config,
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
+  initialized_for_protected_content_ = config.is_encrypted();
+
   init_cb_ = std::move(init_cb);
   output_cb_ = output_cb;
   waiting_cb_ = waiting_cb;
@@ -417,17 +427,14 @@ void OOPVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   CHECK(!is_flushing_);
 
   if (has_error_ || remote_decoder_type_ == VideoDecoderType::kUnknown) {
-    decoder_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(std::move(decode_cb),
-                                  DecoderStatus::Codes::kNotInitialized));
+    DeferDecodeCallback(std::move(decode_cb),
+                        DecoderStatus::Codes::kNotInitialized);
     return;
   }
 
   if (decode_counter_ == std::numeric_limits<uint64_t>::max()) {
     // Error out in case of overflow.
-    decoder_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(decode_cb), DecoderStatus::Codes::kFailed));
+    DeferDecodeCallback(std::move(decode_cb), DecoderStatus::Codes::kFailed);
     return;
   }
 
@@ -437,9 +444,7 @@ void OOPVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
         current_fake_timestamp_ + base::Microseconds(1u);
     if (next_fake_timestamp == current_fake_timestamp_) {
       // We've reached the maximum base::TimeDelta.
-      decoder_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(decode_cb), DecoderStatus::Codes::kFailed));
+      DeferDecodeCallback(std::move(decode_cb), DecoderStatus::Codes::kFailed);
       return;
     }
     current_fake_timestamp_ = next_fake_timestamp;
@@ -489,6 +494,7 @@ void OOPVideoDecoder::OnDecodeDone(uint64_t decode_id,
 
     // Check that the |decode_cb| corresponding to the flush is not called until
     // the decode callback has been called for each pending decode.
+    CHECK_EQ(num_deferred_decode_cbs_, 0u);
     if (pending_decodes_.size() != 1) {
       VLOGF(2) << "Received a flush callback while having pending decodes";
       Stop();
@@ -510,6 +516,31 @@ void OOPVideoDecoder::OnDecodeDone(uint64_t decode_id,
   std::move(decode_cb).Run(status);
 }
 
+void OOPVideoDecoder::DeferDecodeCallback(DecodeCB decode_cb,
+                                          const DecoderStatus& status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(b/220915557): it's very unlikely that we'll get an integer overflow
+  // here, but should we handle it gracefully if we do?
+  CHECK_LT(num_deferred_decode_cbs_, std::numeric_limits<uint64_t>::max());
+  num_deferred_decode_cbs_++;
+  decoder_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&OOPVideoDecoder::CallDeferredDecodeCallback,
+                                weak_this_factory_.GetWeakPtr(),
+                                std::move(decode_cb), status));
+}
+
+void OOPVideoDecoder::CallDeferredDecodeCallback(DecodeCB decode_cb,
+                                                 const DecoderStatus& status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::move(decode_cb).Run(status);
+  num_deferred_decode_cbs_--;
+}
+
+bool OOPVideoDecoder::HasPendingDecodeCallbacks() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return !pending_decodes_.empty() || num_deferred_decode_cbs_ > 0;
+}
+
 void OOPVideoDecoder::Reset(base::OnceClosure reset_cb) {
   DVLOGF(2);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -517,15 +548,23 @@ void OOPVideoDecoder::Reset(base::OnceClosure reset_cb) {
   CHECK(!init_cb_);
   CHECK(!reset_cb_);
 
+  reset_cb_ = std::move(reset_cb);
+
   if (has_error_ || remote_decoder_type_ == VideoDecoderType::kUnknown) {
     // Post a task instead of calling |reset_cb| immediately in order to keep
     // the relative order between decode callbacks (posted as tasks in Decode())
     // and the reset callback.
-    decoder_task_runner_->PostTask(FROM_HERE, std::move(reset_cb));
+    //
+    // Note: we don't post std::move(reset_cb_) as the task because we want
+    // |reset_cb_| to be valid until it's actually called so that we can
+    // properly enforce the VideoDecoder API requirement that no VideoDecoder
+    // calls are made before the reset callback is executed.
+    decoder_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&OOPVideoDecoder::CallResetCallback,
+                                  weak_this_factory_.GetWeakPtr()));
     return;
   }
 
-  reset_cb_ = std::move(reset_cb);
   remote_decoder_->Reset(base::BindOnce(&OOPVideoDecoder::OnResetDone,
                                         weak_this_factory_.GetWeakPtr()));
 }
@@ -535,6 +574,7 @@ void OOPVideoDecoder::OnResetDone() {
 
   CHECK(!has_error_);
   CHECK(reset_cb_);
+  CHECK_EQ(num_deferred_decode_cbs_, 0u);
   if (!pending_decodes_.empty()) {
     VLOGF(2) << "Received a reset callback while having pending decodes";
     Stop();
@@ -550,6 +590,12 @@ void OOPVideoDecoder::OnResetDone() {
   // OnVideoFrameDecoded() should guarantee this.
   fake_timestamp_to_real_timestamp_cache_.Clear();
 
+  CallResetCallback();
+}
+
+void OOPVideoDecoder::CallResetCallback() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(reset_cb_);
   std::move(reset_cb_).Run();
 }
 
@@ -593,18 +639,19 @@ void OOPVideoDecoder::Stop() {
     // media::VideoDecoder interface, the decode callback should not be called
     // from within Decode(). Therefore, we should not call the decode callbacks
     // here, and instead, we should post them as tasks.
-    decoder_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(std::move(pending_decode.second),
-                                  DecoderStatus::Codes::kFailed));
+    DeferDecodeCallback(std::move(pending_decode.second),
+                        DecoderStatus::Codes::kFailed);
   }
   pending_decodes_.clear();
   is_flushing_ = false;
 
   if (reset_cb_) {
-    // We post the |reset_cb_| as a task instead of calling it immediately so
-    // that we keep the order of pending decode callbacks (posted as tasks
-    // above) with respect to the reset callback.
-    decoder_task_runner_->PostTask(FROM_HERE, std::move(reset_cb_));
+    // We post a task instead of calling |reset_cb_| immediately so that we keep
+    // the order of pending decode callbacks (posted as tasks above) with
+    // respect to the reset callback.
+    decoder_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&OOPVideoDecoder::CallResetCallback,
+                                  weak_this_factory_.GetWeakPtr()));
   }
 }
 
@@ -696,6 +743,22 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
   }
   frame->set_timestamp(it->second);
 
+  // Validate protected content metadata.
+  if (!initialized_for_protected_content_ &&
+      (frame->metadata().protected_video || frame->metadata().hw_protected)) {
+    VLOGF(2) << "Received a frame with unexpected metadata from a decoder that "
+                "was not configured for protected content";
+    Stop();
+    return;
+  }
+  if (initialized_for_protected_content_ &&
+      (!frame->metadata().protected_video || !frame->metadata().hw_protected)) {
+    VLOGF(2) << "Received a frame with unexpected metadata from a decoder that "
+                "was configured for protected content";
+    Stop();
+    return;
+  }
+
   // The destruction observer will be called after the client releases the
   // video frame. base::BindPostTaskToCurrentDefault() is used to make sure that
   // the WeakPtr is dereferenced on the correct sequence.
@@ -719,6 +782,18 @@ void OOPVideoDecoder::OnWaiting(WaitingReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK(!has_error_);
+
+  // Note: the remote video decoder may be of a newer version than us (see e.g.,
+  // go/lacros-version-skew-guide). Therefore, we may get the default
+  // WaitingReason::kNoCdm if the value received over mojo is unrecognized. It's
+  // not expected that we'll ever use WaitingReason::kNoCdm for anything
+  // legitimate in ChromeOS, so if we receive that for any reason, the remote
+  // decoder is either misbehaving or too new.
+  if (reason == WaitingReason::kNoCdm) {
+    VLOGF(2) << "Received an unexpected WaitingReason";
+    Stop();
+    return;
+  }
 
   if (waiting_cb_)
     waiting_cb_.Run(reason);

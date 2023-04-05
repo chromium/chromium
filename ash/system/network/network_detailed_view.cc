@@ -22,6 +22,7 @@
 #include "base/metrics/user_metrics.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/onc/onc_constants.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
 
@@ -138,5 +139,8 @@ void NetworkDetailedView::OnSettingsClicked() {
     system_tray_client->ShowNetworkSettings(guid);
   }
 }
+
+BEGIN_METADATA(NetworkDetailedView, TrayDetailedView)
+END_METADATA
 
 }  // namespace ash

@@ -41,8 +41,7 @@ class CORE_EXPORT LayoutNGOutsideListMarker final
     return list_marker_;
   }
 
-  PaginationBreakability GetPaginationBreakability(
-      FragmentationEngine engine) const final;
+  bool IsMonolithic() const final;
 
  private:
   bool IsOfType(LayoutObjectType) const override;

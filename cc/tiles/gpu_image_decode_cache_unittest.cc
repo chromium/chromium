@@ -3182,6 +3182,7 @@ TEST_P(GpuImageDecodeCacheTest, BasicMips) {
         EnsureImageBacked(std::move(serialized_decoded_draw_image));
     EXPECT_TRUE(decoded_draw_image.image());
     EXPECT_TRUE(decoded_draw_image.image()->isTextureBacked());
+    EXPECT_EQ(should_have_mips, decoded_draw_image.image()->hasMipmaps());
 
     if (do_yuv_decode_) {
       // Skia will flatten a YUV SkImage upon calling makeTextureImage. Thus,

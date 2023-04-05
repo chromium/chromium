@@ -326,7 +326,6 @@ void HTMLSlotElement::AttachLayoutTree(AttachContext& context) {
     LayoutObject* layout_object = GetLayoutObject();
     AttachContext children_context(context);
     const ComputedStyle* style = GetComputedStyle();
-    AdjustForceLegacyLayout(style, &children_context.force_legacy_layout);
     if (layout_object || !style || style->IsEnsuredInDisplayNone()) {
       children_context.previous_in_flow = nullptr;
       children_context.parent = layout_object;

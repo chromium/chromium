@@ -150,12 +150,7 @@ class CORE_EXPORT CSSAnimations final {
           specified_timing(new_animation.timing),
           style_rule(new_animation.style_rule),
           style_rule_version(new_animation.style_rule_version),
-          play_state_list(new_animation.play_state_list) {
-      if (animation->timeline() && animation->timeline()->IsViewTimeline()) {
-        scroll_offsets =
-            To<ViewTimeline>(animation->timeline())->GetResolvedScrollOffsets();
-      }
-    }
+          play_state_list(new_animation.play_state_list) {}
 
     AnimationTimeline* Timeline() const { return animation->timeline(); }
     const absl::optional<TimelineOffset>& RangeStart() const {
@@ -171,11 +166,6 @@ class CORE_EXPORT CSSAnimations final {
       style_rule_version = update.style_rule_version;
       play_state_list = update.play_state_list;
       specified_timing = update.specified_timing;
-      if (update.animation->timeline() &&
-          update.animation->timeline()->IsViewTimeline()) {
-        scroll_offsets = To<ViewTimeline>(update.animation->timeline())
-                             ->GetResolvedScrollOffsets();
-      }
     }
 
     void Trace(Visitor* visitor) const {
@@ -190,7 +180,6 @@ class CORE_EXPORT CSSAnimations final {
     Member<StyleRuleKeyframes> style_rule;
     unsigned style_rule_version;
     Vector<EAnimPlayState> play_state_list;
-    absl::optional<ScrollTimeline::ScrollOffsets> scroll_offsets;
   };
 
   struct RunningTransition : public GarbageCollected<RunningTransition> {
@@ -210,11 +199,11 @@ class CORE_EXPORT CSSAnimations final {
     DISALLOW_NEW();
 
    public:
-    void SetScrollTimeline(const ScopedCSSName& name, CSSScrollTimeline*);
+    void SetScrollTimeline(const ScopedCSSName& name, ScrollTimeline*);
     const CSSScrollTimelineMap& GetScrollTimelines() const {
       return scroll_timelines_;
     }
-    void SetViewTimeline(const ScopedCSSName& name, CSSViewTimeline*);
+    void SetViewTimeline(const ScopedCSSName& name, ViewTimeline*);
     const CSSViewTimelineMap& GetViewTimelines() const {
       return view_timelines_;
     }
@@ -316,13 +305,12 @@ class CORE_EXPORT CSSAnimations final {
   static ScrollTimeline* FindTimelineForNode(const ScopedCSSName& name,
                                              Node*,
                                              const CSSAnimationUpdate*);
-  static CSSScrollTimeline* FindScrollTimelineForElement(
-      const ScopedCSSName&,
-      const CSSAnimationUpdate*,
-      const TimelineData*);
-  static CSSViewTimeline* FindViewTimelineForElement(const ScopedCSSName& name,
-                                                     const CSSAnimationUpdate*,
-                                                     const TimelineData*);
+  static ScrollTimeline* FindScrollTimelineForElement(const ScopedCSSName&,
+                                                      const CSSAnimationUpdate*,
+                                                      const TimelineData*);
+  static ViewTimeline* FindViewTimelineForElement(const ScopedCSSName& name,
+                                                  const CSSAnimationUpdate*,
+                                                  const TimelineData*);
   template <typename TimelineType>
   static TimelineType* FindTimelineForElement(
       const ScopedCSSName& name,

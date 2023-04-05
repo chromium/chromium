@@ -25,7 +25,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
-#include "third_party/blink/renderer/core/layout/layout_text.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
@@ -38,7 +38,7 @@ class FirstLetterPseudoElement;
 // We cache offsets so that text transformations can be applied in such a way
 // that we can recover the original unaltered string from our corresponding DOM
 // node.
-class CORE_EXPORT LayoutTextFragment : public LayoutText {
+class CORE_EXPORT LayoutTextFragment : public LayoutNGText {
  public:
   LayoutTextFragment(Node*, const String&, int start_offset, int length);
   ~LayoutTextFragment() override;
@@ -46,21 +46,16 @@ class CORE_EXPORT LayoutTextFragment : public LayoutText {
   static LayoutTextFragment* Create(Node*,
                                     const String&,
                                     int start_offset,
-                                    int length,
-                                    LegacyLayout);
-  static LayoutTextFragment* CreateAnonymous(PseudoElement&,
-                                             const String&,
-                                             LegacyLayout);
+                                    int length);
+  static LayoutTextFragment* CreateAnonymous(PseudoElement&, const String&);
   static LayoutTextFragment* CreateAnonymous(PseudoElement&,
                                              const String&,
                                              unsigned start,
-                                             unsigned length,
-                                             LegacyLayout);
+                                             unsigned length);
   static LayoutTextFragment* CreateAnonymous(Document&,
                                              const String&,
                                              unsigned start,
-                                             unsigned length,
-                                             LegacyLayout);
+                                             unsigned length);
 
   void Trace(Visitor*) const override;
 
@@ -132,6 +127,11 @@ class CORE_EXPORT LayoutTextFragment : public LayoutText {
   void WillBeDestroyed() override;
 
  private:
+  void InsertedIntoTree() final {
+    NOT_DESTROYED();
+    valid_ng_items_ = false;
+    LayoutNGText::InsertedIntoTree();
+  }
   LayoutBlock* BlockForAccompanyingFirstLetter() const;
   UChar PreviousCharacter() const override;
   void TextDidChange() override;

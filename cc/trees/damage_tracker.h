@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/layers/layer_collections.h"
+#include "cc/layers/view_transition_content_layer_impl.h"
 #include "cc/paint/element_id.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -53,6 +54,9 @@ class CC_EXPORT DamageTracker {
   }
 
  private:
+  using ViewTransitionElementResourceIdToRenderSurfaceMap =
+      base::flat_map<viz::ViewTransitionElementResourceId, RenderSurfaceImpl*>;
+
   DamageTracker();
 
   class DamageAccumulator {
@@ -95,13 +99,29 @@ class CC_EXPORT DamageTracker {
 
   DamageAccumulator TrackDamageFromLeftoverRects();
 
+  static void InitializeUpdateDamageTracking(
+      LayerTreeImpl* layer_tree_impl,
+      ViewTransitionElementResourceIdToRenderSurfaceMap&
+          id_to_render_surface_map);
+
   // These helper functions are used only during UpdateDamageTracking().
   void PrepareForUpdate();
-  void AccumulateDamageFromLayer(LayerImpl* layer);
+  // view_transition_content_surface corresponds to the render surface which
+  // produces content drawn by a ViewTransitionContentLayer. Must be provided if
+  // layer has a valid view transition resource id.
+  void AccumulateDamageFromLayer(
+      LayerImpl* layer,
+      ViewTransitionElementResourceIdToRenderSurfaceMap&
+          id_to_render_surface_map);
   void AccumulateDamageFromRenderSurface(RenderSurfaceImpl* render_surface);
   void ComputeSurfaceDamage(RenderSurfaceImpl* render_surface);
   void ExpandDamageInsideRectWithFilters(const gfx::Rect& pre_filter_rect,
                                          const FilterOperations& filters);
+
+  gfx::Rect GetViewTransitionContentSurfaceDamageInSharedElementLayerSpace(
+      LayerImpl* layer,
+      ViewTransitionElementResourceIdToRenderSurfaceMap&
+          id_to_render_surface_map);
 
   struct LayerRectMapData {
     LayerRectMapData() = default;
@@ -163,6 +183,16 @@ class CC_EXPORT DamageTracker {
   };
 
   std::vector<SurfaceWithRect> contributing_surfaces_;
+
+  // Track the view transition content render surfaces.
+  // The corresponding content surface of a view transition layer might be
+  // omitted. Surface appearing and disappearing should cause full damage on the
+  // view transition layer. Tracking previous/current content surfaces to
+  // determine surface appearing and disappearing.
+  std::vector<viz::ViewTransitionElementResourceId>
+      previous_view_transition_content_surfaces_by_id_;
+  std::vector<viz::ViewTransitionElementResourceId>
+      current_view_transition_content_surfaces_by_id_;
 };
 
 }  // namespace cc

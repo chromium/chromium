@@ -5,6 +5,9 @@
 /**
  * @fileoverview Class to manage the ChromeVox menus.
  */
+import {AsyncUtil} from '../../common/async_util.js';
+import {EventGenerator} from '../../common/event_generator.js';
+import {KeyCode} from '../../common/key_code.js';
 import {Command, CommandStore} from '../common/command_store.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelNodeMenuData, PanelNodeMenuId, PanelNodeMenuItemData} from '../common/panel_menu_data.js';
@@ -100,6 +103,21 @@ export class MenuManager {
   /** @param {!PanelNodeMenuItemData} itemData */
   addNodeMenuItem(itemData) {
     this.nodeMenuDictionary_[itemData.menuId].addItemFromData(itemData);
+  }
+
+  /** @param {!PanelMenu} menu */
+  async addOSKeyboardShortcutsMenuItem(menu) {
+    let localizedSlash =
+        await AsyncUtil.getLocalizedDomKeyStringForKeyCode(KeyCode.OEM_2);
+    if (!localizedSlash) {
+      localizedSlash = '/';
+    }
+    menu.addMenuItem(
+        Msgs.getMsg('open_keyboard_shortcuts_menu'),
+        `Ctrl+Alt+${localizedSlash}`, '', '', async () => {
+          EventGenerator.sendKeyPress(
+              KeyCode.OEM_2 /* forward slash */, {'ctrl': true, 'alt': true});
+        });
   }
 
   /**

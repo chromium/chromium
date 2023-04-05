@@ -13,12 +13,12 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/i18n/string_compare.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
+#include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_load_details.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
@@ -132,7 +132,7 @@ BookmarkModel::BookmarkModel(std::unique_ptr<BookmarkClient> client)
     : client_(std::move(client)),
       owned_root_(std::make_unique<BookmarkNode>(
           /*id=*/0,
-          base::GUID::ParseLowercase(BookmarkNode::kRootNodeGuid),
+          base::Uuid::ParseLowercase(BookmarkNode::kRootNodeGuid),
           GURL())),
       root_(owned_root_.get()),
       observers_(base::ObserverListPolicy::EXISTING_ONLY),
@@ -750,7 +750,7 @@ const BookmarkNode* BookmarkModel::AddFolder(
     const std::u16string& title,
     const BookmarkNode::MetaInfoMap* meta_info,
     absl::optional<base::Time> creation_time,
-    absl::optional<base::GUID> guid) {
+    absl::optional<base::Uuid> guid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded_);
   DCHECK(parent);
@@ -763,7 +763,7 @@ const BookmarkNode* BookmarkModel::AddFolder(
       creation_time.value_or(Time::Now());
 
   auto new_node = std::make_unique<BookmarkNode>(
-      generate_next_node_id(), guid.value_or(base::GUID::GenerateRandomV4()),
+      generate_next_node_id(), guid.value_or(base::Uuid::GenerateRandomV4()),
       GURL());
   new_node->set_date_added(provided_creation_time_or_now);
   new_node->set_date_folder_modified(provided_creation_time_or_now);
@@ -794,7 +794,7 @@ const BookmarkNode* BookmarkModel::AddURL(
     const GURL& url,
     const BookmarkNode::MetaInfoMap* meta_info,
     absl::optional<base::Time> creation_time,
-    absl::optional<base::GUID> guid,
+    absl::optional<base::Uuid> guid,
     bool added_by_user) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded_);
@@ -814,7 +814,7 @@ const BookmarkNode* BookmarkModel::AddURL(
   }
 
   auto new_node = std::make_unique<BookmarkNode>(
-      generate_next_node_id(), guid.value_or(base::GUID::GenerateRandomV4()),
+      generate_next_node_id(), guid.value_or(base::Uuid::GenerateRandomV4()),
       url);
   new_node->SetTitle(title);
   new_node->set_date_added(provided_creation_time_or_now);

@@ -21,13 +21,13 @@ component("embedder") {
   public_deps = [
     "//base",
     "//mojo:buildflags",
+    "//mojo/core:embedder_internal",
     "//mojo/public/cpp/platform",
     "//third_party/ipcz/src:ipcz_chromium",
   ]
 
   deps = [
     ":features",
-    "//mojo/core:embedder_internal",
     "//mojo/public/c/system",
   ]
 }

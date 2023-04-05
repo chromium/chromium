@@ -26,9 +26,6 @@ class ASH_EXPORT SplitViewHighlightView : public views::View {
   SplitViewHighlightView(const SplitViewHighlightView&) = delete;
   SplitViewHighlightView& operator=(const SplitViewHighlightView&) = delete;
 
-  // views::View:
-  void OnThemeChanged() override;
-
   // Updates bounds, animating if |animation_type| has a value.
   void SetBounds(const gfx::Rect& bounds,
                  const absl::optional<SplitviewAnimationType>& animation_type);

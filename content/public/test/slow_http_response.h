@@ -50,8 +50,6 @@ class SlowHttpResponse : public net::test_server::HttpResponse {
   SlowHttpResponse(const SlowHttpResponse&) = delete;
   SlowHttpResponse& operator=(const SlowHttpResponse&) = delete;
 
-  virtual bool IsHandledUrl();
-
   // Subclasses can override this method to add custom HTTP response headers.
   // These headers are only applied to the slow response itself, not the
   // response to |kFinishSlowResponseUrl|.

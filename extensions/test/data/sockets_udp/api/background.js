@@ -221,6 +221,71 @@ var testSetPaused = function() {
   }
 }
 
+var testPauseAndThenResume = function () {
+  waitCount = 0;
+  socketId = 0;
+
+  console.log("testPauseAndThenResume");
+  setTimeout(waitForBlockingOperation, 1000);
+  chrome.sockets.udp.create({}, onCreate);
+
+  function onCreate(socketInfo) {
+    console.log("socket created: " + socketInfo.socketId);
+    socketId = socketInfo.socketId;
+    chrome.test.assertTrue(socketId > 0, "failed to create socket");
+
+    chrome.sockets.udp.onReceive.addListener(onReceive);
+
+    chrome.sockets.udp.setPaused(socketId, true, () => {
+      chrome.sockets.udp.bind(socketId, "0.0.0.0", 0, onBind);
+    });
+  }
+
+  let sendNumber = 0;
+  function send(callback) {
+    const encoder = new TextEncoder();
+    sendNumber++;
+    console.log(`Issuing send request #${sendNumber}`);
+    chrome.sockets.udp.send(
+      socketId, encoder.encode(request), address, port, callback);
+  }
+
+  function onBind(result) {
+    console.log("socket bound to local host");
+    chrome.test.assertEq(0, result, "Bind failed with error: " + result);
+    if (result < 0)
+      return;
+
+    send(() => { setTimeout(waitForFirstReceiveToTimeout, 1000); });
+  }
+
+  let packetsReceived = 0;
+  function waitForFirstReceiveToTimeout() {
+    console.log("waitForFirstReceiveToTimeout");
+    // No packets should arrive in response to the first send request.
+    chrome.test.assertEq(packetsReceived, 0);
+    chrome.sockets.udp.setPaused(socketId, false, () => {
+      send(() => { setTimeout(waitForSecondReceiveToSucceed, 1000); });
+    });
+  }
+
+  function waitForSecondReceiveToSucceed() {
+    console.log("waitForSecondReceiveToSucceed");
+    // After unpausing the socket and issuing one more send request there should
+    // be two packets -- echoes from the first and second send respectively.
+    chrome.test.assertEq(packetsReceived, 2);
+    chrome.test.succeed();
+  }
+
+  function onReceive(info) {
+    if (socketId == info.socketId) {
+      // Packets should only arrive in response to the second send request.
+      chrome.test.assertEq(sendNumber, 2);
+      packetsReceived++;
+    }
+  }
+}
+
 var testBroadcast = function() {
   var listeningSocketId;
   var sendingSocketId;
@@ -325,8 +390,8 @@ var onMessageReply = function(message) {
     chrome.test.runTests([ testMulticast ]);
   } else {
     console.log("Running udp tests");
-    chrome.test.runTests([ testSocketCreation, testSending, testSetPaused,
-                           testBroadcast ]);
+    chrome.test.runTests([testSocketCreation, testSending, testSetPaused,
+      testPauseAndThenResume, testBroadcast]);
   }
 };
 

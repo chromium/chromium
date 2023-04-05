@@ -13,6 +13,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_features.h"
+#import "ios/chrome/browser/bookmarks/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -116,12 +117,8 @@
   bookmarks::BookmarkModel* profileModel =
       ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
           browserState);
-  // TODO(crbug.com/1428045): Hook up the correct `accountModel` after the
-  // backend work is finished.
   bookmarks::BookmarkModel* accountModel =
-      base::FeatureList::IsEnabled(bookmarks::kEnableBookmarksAccountStorage)
-          ? profileModel
-          : nullptr;
+      ios::AccountBookmarkModelFactory::GetForBrowserState(browserState);
   _mediator = [[BookmarksFolderChooserMediator alloc]
       initWithProfileBookmarkModel:profileModel
               accountBookmarkModel:accountModel

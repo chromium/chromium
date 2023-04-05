@@ -11,116 +11,140 @@
     // TODO(crbug.com/1410937): Run as a non-test component.
     "//build/config/fuchsia/test/chromium_system_test_facet.shard.test-cml",
     "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml",
-
     "sys/component/realm_builder_absolute.shard.cml",
+
     "syslog/client.shard.cml",
   ],
   program: {
     binary: "web_engine_shell_exec",
   },
+
+
   use: [
-    // Used only when run with `--use-context-provider`.
-    {
-      protocol: "fuchsia.web.ContextProvider",
-      availability: "optional",
-    },
+    // Required in `--use-context-provider` mode.
 
-    // Used to hold the cdm_data directory passed to web_instance.
-    {
-      storage: "data",
-      path: "/data",
-    },
-
-    // Needed when launched with --enable-web-instance-tmp.
-    {
-      storage: "tmp",
-      path: "/tmp",
-      availability: "optional",
-    },
-
-    // Uses below this line are for web_instance.cmx.
     {
       protocol: [
+        // Required to display the View in Scene Manager unless running in
+        // `--headless` mode.
+        "fuchsia.element.GraphicalPresenter",
+
+        // Required to display the View in Root Presenter unless running in
+        // `--headless` mode.
+        // TODO(crbug.com/1402457): Remove after transition is complete.
+        "fuchsia.ui.policy.Presenter",
+      ],
+      availability: "optional",
+    },
+
+    {
+      protocol: [
+        // The system ContextProvider is required to create the Context.
+        "fuchsia.web.ContextProvider",
+      ],
+      availability: "optional",
+    },
+
+    // The remaining are provided from this Component to the `web_instance.cm`
+    // via `CreateContextParams.service_directory`.
+
+    {
+      // Used to hold the cdm_data directory passed to the WebInstance.
+      storage: "data",
+      path: "/data",
+
+      // The `--use-context-provider` mode  does not support
+      // `--enable-web-instance-tmp` so there is no need to `use` "tmp" like
+      // the `offer` when not in `--use-context-provider` mode.
+    },
+    {
+      protocol: [
+        // Required capabilities for all WebInstance configurations.
         "fuchsia.buildinfo.Provider",
         "fuchsia.device.NameProvider",
         "fuchsia.fonts.Provider",
         "fuchsia.hwinfo.Product",
-        "fuchsia.input.virtualkeyboard.ControllerCreator",
         "fuchsia.intl.PropertyProvider",
-        "fuchsia.kernel.VmexResource",
-        "fuchsia.media.Audio",
-        "fuchsia.media.AudioDeviceEnumerator",
-        "fuchsia.media.ProfileProvider",
-        "fuchsia.media.SessionAudioConsumerFactory",
-        "fuchsia.mediacodec.CodecFactory",
+        // "fuchsia.logger/LogSink", is included by the shard above.
         "fuchsia.memorypressure.Provider",
+        "fuchsia.process.Launcher",
+        "fuchsia.sysmem.Allocator",
+      ],
+      // TODO(crbug.com/1421351): Make required when `--use-context-provider`.
+      availability: "optional",
+    },
+    {
+      protocol: [
+        // Allows CPU scheduling profiles to be applied to threads to
+        // tune their performance, especially for media rendering.
+        // TODO(crbug.com/1224707): Migrate to `fuchsia.scheduler`.
+        "fuchsia.media.ProfileProvider",
+
+        // Optionally used by the tracing service.
+        // TODO(crbug.com/1364196): Offer only when enabled.
+        "fuchsia.tracing.perfetto.ProducerConnector",
+      ],
+      availability: "optional",
+    },
+    {
+      protocol: [
+        // Required by `fuchsia.web/ContextFeatureFlags.NETWORK`.
         "fuchsia.net.interfaces.State",
         "fuchsia.net.name.Lookup",
         "fuchsia.posix.socket.Provider",
-        "fuchsia.process.Launcher",
-        "fuchsia.sysmem.Allocator",
-        "fuchsia.ui.input3.Keyboard",
-      ],
-    },
 
-    // Used conditionally based on the value of `enable_widevine` at build time.
-    // TODO(crbug.com/1379411): Use a shard to conditionally use based on
-    // build-time config.
+        // Required by `fuchsia.web/ContextFeatureFlags.AUDIO`.
+        "fuchsia.media.Audio",
+        "fuchsia.media.AudioDeviceEnumerator",
+        "fuchsia.media.SessionAudioConsumerFactory",
+
+        // Required by `fuchsia.web/ContextFeatureFlags.VULKAN`.
+        // "fuchsia.tracing.provider.Registry" is optionally used by the
+        // tracing service.
+        "fuchsia.tracing.provider.Registry",
+        "fuchsia.vulkan.loader.Loader",
+
+        // Required by `fuchsia.web/ContextFeatureFlags.HARDWARE_VIDEO_DECODER`.
+        "fuchsia.mediacodec.CodecFactory",
+      ],
+      // TODO(crbug.com/1421351): Make required when `--use-context-provider`.
+      availability: "optional",
+    },
     {
+      // Required by `fuchsia.web/ContextFeatureFlags.WIDEVINE_CDM` if the value
+      // of the GN arg `enable_widevine` at is true.
+      // TODO(crbug.com/1379411): Use a shard to conditionally `use` based on
+      // the build-time config.
       protocol: "fuchsia.media.drm.Widevine",
       availability: "optional",
     },
-
-    // Used conditionally based on the absence of `--headless` on the command
-    // line at runtime.
     {
       protocol: [
+        // Required by the absence of `fuchsia.web/ContextFeatureFlags.HEADLESS`
+        // unless running in `--headless` mode.
         "fuchsia.accessibility.semantics.SemanticsManager",
-        "fuchsia.element.GraphicalPresenter",
-        "fuchsia.tracing.provider.Registry",
         "fuchsia.ui.composition.Allocator",
         "fuchsia.ui.composition.Flatland",
-
-        // TODO(crbug.com/1402457): Remove fuchsia.ui.policy.Presenter.
-        "fuchsia.ui.policy.Presenter",
+        // TODO(crbug.com/1427170): Remove Scenic after migration is complete.
         "fuchsia.ui.scenic.Scenic",
-        "fuchsia.vulkan.loader.Loader",
       ],
       availability: "optional",
     },
     {
-      protocol: "fuchsia.tracing.perfetto.ProducerConnector",
-      availability: "optional",
+      protocol: [
+        // Required by `fuchsia.web/ContextFeatureFlags.KEYBOARD`.
+        "fuchsia.ui.input3.Keyboard",
+
+        // Required by `fuchsia.web/ContextFeatureFlags.VIRTUAL_KEYBOARD`.
+        "fuchsia.input.virtualkeyboard.ControllerCreator",
+
+        // Required by the absence of
+        // `fuchsia.web/ContextFeatureFlags.DISABLE_DYNAMIC_CODE_GENERATION`.
+        "fuchsia.kernel.VmexResource",
+      ],
     },
   ],
   offer: [
-    {
-      storage: [
-        "data",
-        "tmp",
-      ],
-      from: "parent",
-      to: "#realm_builder",
-    },
-    {
-      // ContextFeatureFlags::NETWORK is always specified.
-      directory: "root-ssl-certificates",
-      from: "parent",
-      to: "#realm_builder",
-    },
-
-    // Offers for web_instance.cm.
-    // The chromium test realm offers the system-wide config-data dir to test
-    // components. Route the web_engine sub-directory of this as required by
-    // WebInstanceHost.
-    {
-      directory: "config-data",
-      from: "parent",
-      as: "config-data-for-web-instance",
-      to: "#realm_builder",
-      subdir: "web_engine",
-      availability: "optional",
-    },
     {
       // Required capabilities for WebInstanceHost in a child Component.
       protocol: [
@@ -130,74 +154,159 @@
       from: "parent",
       to: "#realm_builder",
     },
+
+    // Offered for use by the relaunched
+    // `fuchsia_web/shell/web_engine_shell_for_web_instance_host.cml`
+    // TODO(crbug.com/1410937): Remove when running as a non-test component and
+    // thus the relaunch is no longer needed.
     {
+      protocol: [
+        // Required to display the View in Scene Manager unless running in
+        // `--headless` mode.
+        "fuchsia.element.GraphicalPresenter",
+
+        // Required to display the View in Root Presenter unless running in
+        // `--headless` mode.
+        // TODO(crbug.com/1402457): Remove after transition is complete.
+        "fuchsia.ui.policy.Presenter",
+      ],
+      from: "parent",
+      to: "#realm_builder",
+      availability: "optional",
+    },
+
+    // The remaining are offered from the parent to `web_instance.cm` via
+    // `RealmBuilder` when not in `--use-context-provider` mode.
+
+    {
+      // Used to hold the cdm_data directory passed to web_instance.
+      storage: "data",
+      from: "parent",
+      to: "#realm_builder",
+    },
+    {
+      // Used when launched with --enable-web-instance-tmp.
+      storage: [ "tmp" ],
+      from: "parent",
+      to: "#realm_builder",
+      availability: "optional",
+    },
+    {
+      // The chromium test realm offers the system-wide config-data dir to test
+      // components. Route the web_engine sub-directory of this as required by
+      // WebInstanceHost.
+      directory: "config-data",
+      from: "parent",
+      as: "config-data-for-web-instance",
+      to: "#realm_builder",
+      subdir: "web_engine",
+      availability: "optional",
+    },
+    {
+      // Required by `fuchsia.web/ContextFeatureFlags.NETWORK`.
+      directory: "root-ssl-certificates",
+      from: "parent",
+      to: "#realm_builder",
+    },
+    {
+      // Required capabilities for all WebInstance configurations.
       protocol: [
         "fuchsia.buildinfo.Provider",
         "fuchsia.device.NameProvider",
         "fuchsia.fonts.Provider",
         "fuchsia.hwinfo.Product",
-        "fuchsia.input.virtualkeyboard.ControllerCreator",
         "fuchsia.intl.PropertyProvider",
-        "fuchsia.kernel.VmexResource",
-        "fuchsia.media.Audio",
-        "fuchsia.media.AudioDeviceEnumerator",
-        "fuchsia.media.ProfileProvider",
-        "fuchsia.media.SessionAudioConsumerFactory",
-        "fuchsia.mediacodec.CodecFactory",
+        // "fuchsia.logger/LogSink", is included by the shard above.
         "fuchsia.memorypressure.Provider",
-        "fuchsia.net.interfaces.State",
-        "fuchsia.net.name.Lookup",
-        "fuchsia.posix.socket.Provider",
         "fuchsia.process.Launcher",
         "fuchsia.sysmem.Allocator",
-        "fuchsia.ui.input3.Keyboard",
       ],
       from: "parent",
       to: "#realm_builder",
     },
-
-    // Used conditionally based on the value of `enable_widevine` at build time.
-    // TODO(crbug.com/1379411): Use a shard to conditionally use based on
-    // build-time config.
     {
+      protocol: [
+        // Allows CPU scheduling profiles to be applied to threads to
+        // tune their performance, especially for media rendering.
+        // TODO(crbug.com/1224707): Migrate to `fuchsia.scheduler`.
+        "fuchsia.media.ProfileProvider",
+
+        // Optionally used by the tracing service.
+        // TODO(crbug.com/1364196): Offer only when enabled.
+        "fuchsia.tracing.perfetto.ProducerConnector",
+      ],
+      from: "parent",
+      to: "#realm_builder",
+      availability: "optional",
+    },
+    {
+      protocol: [
+        // Required by `fuchsia.web/ContextFeatureFlags.NETWORK`.
+        "fuchsia.net.interfaces.State",
+        "fuchsia.net.name.Lookup",
+        "fuchsia.posix.socket.Provider",
+
+        // Required by `fuchsia.web/ContextFeatureFlags.AUDIO`.
+        "fuchsia.media.Audio",
+        "fuchsia.media.AudioDeviceEnumerator",
+        "fuchsia.media.SessionAudioConsumerFactory",
+
+        // Required by `fuchsia.web/ContextFeatureFlags.VULKAN`.
+        // "fuchsia.tracing.provider.Registry" is optionally used by the
+        // tracing service.
+        "fuchsia.tracing.provider.Registry",
+        "fuchsia.vulkan.loader.Loader",
+
+        // Required by `fuchsia.web/ContextFeatureFlags.HARDWARE_VIDEO_DECODER`.
+        "fuchsia.mediacodec.CodecFactory",
+      ],
+      from: "parent",
+      to: "#realm_builder",
+    },
+    {
+      // Required by `fuchsia.web/ContextFeatureFlags.WIDEVINE_CDM` if the value
+      // of the GN arg `enable_widevine` at is true.
+      // TODO(crbug.com/1379411): Use a shard to conditionally `offer` based on
+      // the build-time config.
       protocol: "fuchsia.media.drm.Widevine",
       from: "parent",
       to: "#realm_builder",
       availability: "optional",
     },
-
-    // Used conditionally based on the absence of `--headless` on the command
-    // line at runtime.
     {
       protocol: [
+        // Required by the absence of `fuchsia.web/ContextFeatureFlags.HEADLESS`
+        // unless running in `--headless` mode.
         "fuchsia.accessibility.semantics.SemanticsManager",
-        "fuchsia.element.GraphicalPresenter",
-        "fuchsia.tracing.provider.Registry",
         "fuchsia.ui.composition.Allocator",
         "fuchsia.ui.composition.Flatland",
-
-        // TODO(crbug.com/1402457): Remove fuchsia.ui.policy.Presenter.
-        "fuchsia.ui.policy.Presenter",
+        // TODO(crbug.com/1427170): Remove Scenic after migration is complete.
         "fuchsia.ui.scenic.Scenic",
-        "fuchsia.vulkan.loader.Loader",
       ],
       from: "parent",
       to: "#realm_builder",
       availability: "optional",
     },
-
-    // Optional capabilities, dependent on availability of tracing services.
     {
-      protocol: "fuchsia.tracing.perfetto.ProducerConnector",
+      protocol: [
+        // Required by `fuchsia.web/ContextFeatureFlags.KEYBOARD`.
+        "fuchsia.ui.input3.Keyboard",
+
+        // Required by `fuchsia.web/ContextFeatureFlags.VIRTUAL_KEYBOARD`.
+        "fuchsia.input.virtualkeyboard.ControllerCreator",
+
+        // Required by the absence of
+        // `fuchsia.web/ContextFeatureFlags.DISABLE_DYNAMIC_CODE_GENERATION`.
+        "fuchsia.kernel.VmexResource",
+      ],
       from: "parent",
       to: "#realm_builder",
-      availability: "optional",
     },
   ],
   facets: {
+    // TODO(crbug.com/1410937): Remove when converting to a non-test component.
     "fuchsia.test": {
       "deprecated-allowed-packages": [
-        "test_manager",
         "web_engine",
         "web_engine_with_webui",
       ],

@@ -110,10 +110,8 @@ void LayoutQuote::UpdateText() {
                            : Style());
     fragment->SetContentString(text_.Impl());
   } else {
-    LegacyLayout legacy =
-        ForceLegacyLayout() ? LegacyLayout::kForce : LegacyLayout::kAuto;
-    fragment = LayoutTextFragment::CreateAnonymous(*owning_pseudo_,
-                                                   text_.Impl(), legacy);
+    fragment =
+        LayoutTextFragment::CreateAnonymous(*owning_pseudo_, text_.Impl());
     fragment->SetStyle(Style());
     AddChild(fragment);
   }

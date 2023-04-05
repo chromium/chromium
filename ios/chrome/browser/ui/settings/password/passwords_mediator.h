@@ -9,10 +9,8 @@
 
 #include "base/memory/scoped_refptr.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
-#include "ios/chrome/browser/signin/identity_manager_factory.h"
 #include "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller_delegate.h"
-#import "ios/chrome/browser/ui/settings/utils/password_auto_fill_status_observer.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 
 class FaviconLoader;
@@ -25,18 +23,16 @@ struct CredentialUIEntry;
 }
 
 // This mediator fetches and organises the passwords for its consumer.
-@interface PasswordsMediator : NSObject <PasswordAutoFillStatusObserver,
-                                         PasswordManagerViewControllerDelegate,
+@interface PasswordsMediator : NSObject <PasswordManagerViewControllerDelegate,
                                          SuccessfulReauthTimeAccessor,
                                          TableViewFaviconDataSource>
 
-- (instancetype)
-    initWithPasswordCheckManager:
-        (scoped_refptr<IOSChromePasswordCheckManager>)passwordCheckManager
-                syncSetupService:(SyncSetupService*)syncSetupService
-                   faviconLoader:(FaviconLoader*)faviconLoader
-                 identityManager:(signin::IdentityManager*)identityManager
-                     syncService:(syncer::SyncService*)syncService
+- (instancetype)initWithPasswordCheckManager:
+                    (scoped_refptr<IOSChromePasswordCheckManager>)
+                        passwordCheckManager
+                            syncSetupService:(SyncSetupService*)syncSetupService
+                               faviconLoader:(FaviconLoader*)faviconLoader
+                                 syncService:(syncer::SyncService*)syncService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

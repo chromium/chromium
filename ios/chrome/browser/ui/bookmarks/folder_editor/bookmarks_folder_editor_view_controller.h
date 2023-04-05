@@ -71,8 +71,8 @@ class SyncService;
 // Designated factory methods.
 
 // Returns a view controller set to create a new folder in `parentFolder`.
-// If `parentFolder` is NULL, a default parent will be set.
-// `bookmarkModel` must not be NULL and must be loaded.
+// `parentFolder` must not be `nullptr`.
+// `bookmarkModel` must not be `nullptr` and must be loaded.
 + (instancetype)
     folderCreatorWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
                       parentFolder:(const bookmarks::BookmarkNode*)parentFolder
@@ -80,9 +80,9 @@ class SyncService;
                   syncSetupService:(SyncSetupService*)syncSetupService
                        syncService:(syncer::SyncService*)syncService;
 
-// `bookmarkModel` must not be null and must be loaded.
-// `folder` must not be NULL and be editable.
-// `browser` must not be null.
+// `bookmarkModel` must not be `nullptr` and must be loaded.
+// `folder` must not be `nullptr` and must be editable.
+// `browser` must not be `nullptr`.
 + (instancetype)
     folderEditorWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
                            folder:(const bookmarks::BookmarkNode*)folder

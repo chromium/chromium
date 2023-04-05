@@ -39,7 +39,7 @@ void TouchToFillControllerWebAuthnDelegate::OnPasskeyCredentialSelected(
     const password_manager::PasskeyCredential& credential,
     base::OnceClosure action_complete) {
   request_delegate_->OnWebAuthnAccountSelected(
-      *base::Base64Decode(credential.id().value()));
+      *base::Base64Decode(credential.id()));
   std::move(action_complete).Run();
 }
 

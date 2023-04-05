@@ -160,13 +160,6 @@ bool StructTraits<blink::mojom::SharedStorageBudgetMetadataDataView,
         const blink::FencedFrame::SharedStorageBudgetMetadata& input) {
   return input.top_navigated;
 }
-// static
-bool StructTraits<blink::mojom::SharedStorageBudgetMetadataDataView,
-                  blink::FencedFrame::SharedStorageBudgetMetadata>::
-    report_event_called(
-        const blink::FencedFrame::SharedStorageBudgetMetadata& input) {
-  return input.report_event_called;
-}
 
 // static
 bool StructTraits<blink::mojom::SharedStorageBudgetMetadataDataView,
@@ -178,7 +171,6 @@ bool StructTraits<blink::mojom::SharedStorageBudgetMetadataDataView,
   }
   out_data->budget_to_charge = data.budget_to_charge();
   out_data->top_navigated = data.top_navigated();
-  out_data->report_event_called = data.report_event_called();
   return true;
 }
 

@@ -165,7 +165,15 @@ bool IsValidRequestDeviceOptions(
   if (options->accept_all_devices)
     return !options->filters.has_value();
 
-  return HasValidFilter(options->filters);
+  if (!HasValidFilter(options->filters)) {
+    return false;
+  }
+
+  if (options->exclusion_filters.has_value()) {
+    return HasValidFilter(options->exclusion_filters);
+  }
+
+  return true;
 }
 
 bool IsValidRequestScanOptions(

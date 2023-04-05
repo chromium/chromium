@@ -103,7 +103,7 @@ struct Config {
 
   // No effect if `persist_clusters_in_history_db` is disabled. Determines how
   // soon to update clusters after startup in minutes. E.g., by default, will
-  // update clusters 5 minutes minutes after startup.
+  // update clusters 5 minutes after startup.
   int persist_clusters_in_history_db_after_startup_delay_minutes = 5;
 
   // No effect if `persist_clusters_in_history_db` is disabled. Determines how
@@ -264,6 +264,11 @@ struct Config {
 
   // The `kUseEngagementScoreCache` feature and child params.
 
+  // Whether to use a cache to store the site engagement scores per host. Used
+  // in both the old (OnDeviceClusteringBackend) and new
+  // (ContextClustererHistoryServiceObserver) clustering paths.
+  bool use_engagement_score_cache = true;
+
   // The max number of hosts that should be stored in the engagement score
   // cache.
   int engagement_score_cache_size = 100;
@@ -354,7 +359,7 @@ struct Config {
   bool hide_visits = false;
 
   // Whether to the icon or menu item.
-  bool hide_visits_icon = false;
+  bool hide_visits_icon = true;
 
   // Lonely features without child params.
 

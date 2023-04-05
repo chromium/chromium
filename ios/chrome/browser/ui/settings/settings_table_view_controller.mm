@@ -900,6 +900,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       kColorfulBackgroundSymbolCornerRadius;
   // Check if an issue state should be shown for updates.
   if (!IsAppUpToDate() && PreviousSafetyCheckIssueFound()) {
+    // TODO(crbug.com/1406540): Incorporate the new insecure types.
     UIImage* unSafeIconImage = DefaultSymbolTemplateWithPointSize(
         kWarningFillSymbol, kTrailingSymbolImagePointSize);
     _safetyCheckItem.trailingImage = unSafeIconImage;
@@ -1557,6 +1558,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 // Checks if there are any remaining password issues that are not muted from the
 // last time password check was run.
 - (BOOL)hasPasswordIssuesRemaining {
+  CHECK(!_settingsAreDismissed);
+  CHECK(_passwordCheckManager);
   return !_passwordCheckManager->GetInsecureCredentials().empty();
 }
 
@@ -2018,11 +2021,19 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 #pragma mark - PasswordCheckObserver
 
 - (void)passwordCheckStateDidChange:(PasswordCheckState)state {
-  [self setSafetyCheckIssueStateUnsafe:[self hasPasswordIssuesRemaining]];
+  // Settings may have been dismissed in the meantime as the callback is
+  // asynchronous. There is no UI to update in that case.
+  if (!_settingsAreDismissed) {
+    [self setSafetyCheckIssueStateUnsafe:[self hasPasswordIssuesRemaining]];
+  }
 }
 
 - (void)insecureCredentialsDidChange {
-  [self setSafetyCheckIssueStateUnsafe:[self hasPasswordIssuesRemaining]];
+  // Settings may have been dismissed in the meantime as the callback is
+  // asynchronous. There is no UI to update in that case.
+  if (!_settingsAreDismissed) {
+    [self setSafetyCheckIssueStateUnsafe:[self hasPasswordIssuesRemaining]];
+  }
 }
 
 #pragma mark - PrefObserverDelegate

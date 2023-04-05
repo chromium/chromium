@@ -64,8 +64,10 @@ mojom::ApnAuthenticationType OncApnAuthenticationTypeToMojo(
   return mojom::ApnAuthenticationType::kAutomatic;
 }
 
-mojom::ApnIpType OncApnIpTypeToMojo(const std::string& ip_type) {
-  if (ip_type.empty() || ip_type == ::onc::cellular_apn::kIpTypeAutomatic) {
+mojom::ApnIpType OncApnIpTypeToMojo(
+    const absl::optional<std::string>& ip_type) {
+  if (!ip_type.has_value() || ip_type->empty() ||
+      ip_type == ::onc::cellular_apn::kIpTypeAutomatic) {
     return mojom::ApnIpType::kAutomatic;
   }
   if (ip_type == ::onc::cellular_apn::kIpTypeIpv4) {
@@ -78,7 +80,7 @@ mojom::ApnIpType OncApnIpTypeToMojo(const std::string& ip_type) {
     return mojom::ApnIpType::kIpv4Ipv6;
   }
 
-  NOTREACHED() << "Unexpected ONC APN IP type: " << ip_type;
+  NOTREACHED() << "Unexpected ONC APN IP type: " << ip_type.value();
   return mojom::ApnIpType::kAutomatic;
 }
 
@@ -324,17 +326,17 @@ bool IsInhibited(const mojom::DeviceStateProperties* device) {
   return device->inhibit_reason != mojom::InhibitReason::kNotInhibited;
 }
 
-base::Value::Dict UserApnListToOnc(const std::string& network_guid,
-                                   const base::Value::List* user_apn_list) {
+base::Value::Dict CustomApnListToOnc(const std::string& network_guid,
+                                     const base::Value::List* custom_apn_list) {
   base::Value::Dict onc;
   onc.Set(::onc::network_config::kGUID, network_guid);
   onc.Set(::onc::network_config::kType, ::onc::network_type::kCellular);
   base::Value::Dict type_dict;
-  // If |user_apn_list| is a nullptr, set the value as Value::Type::NONE
-  if (user_apn_list) {
-    type_dict.Set(::onc::cellular::kUserAPNList, user_apn_list->Clone());
+  // If |custom_apn_list| is a nullptr, set the value as Value::Type::NONE
+  if (custom_apn_list) {
+    type_dict.Set(::onc::cellular::kCustomAPNList, custom_apn_list->Clone());
   } else {
-    type_dict.Set(::onc::cellular::kUserAPNList, base::Value());
+    type_dict.Set(::onc::cellular::kCustomAPNList, base::Value());
   }
   onc.Set(::onc::network_type::kCellular, std::move(type_dict));
   return onc;
@@ -377,8 +379,8 @@ mojom::ApnPropertiesPtr GetApnProperties(const base::Value::Dict& onc_apn,
 
   if (is_apn_revamp_enabled) {
     apn->id = GetString(onc_apn, ::onc::cellular_apn::kId);
-    apn->ip_type = OncApnIpTypeToMojo(
-        GetRequiredString(onc_apn, ::onc::cellular_apn::kIpType));
+    apn->ip_type =
+        OncApnIpTypeToMojo(GetString(onc_apn, ::onc::cellular_apn::kIpType));
     apn->apn_types = OncApnTypesToMojo(
         GetRequiredStringList(onc_apn, ::onc::cellular_apn::kApnTypes));
   }

@@ -12,6 +12,7 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
@@ -68,13 +69,20 @@ class FakeNightLightController : public ash::NightLightController {
   int position_pushes_num_ = 0;
 };
 
+class FakeDelegate : public SimpleGeolocationProvider::Delegate {
+ public:
+  bool IsPreciseGeolocationAllowed() const override { return true; }
+};
+
 // A fake implementation of NightLightClient that doesn't perform any actual
 // geoposition requests.
 class FakeNightLightClient : public NightLightClient,
                              public base::Clock,
                              public base::TickClock {
  public:
-  FakeNightLightClient() : NightLightClient(nullptr /* url_context_getter */) {
+  explicit FakeNightLightClient(
+      const SimpleGeolocationProvider::Delegate* delegate)
+      : NightLightClient(delegate, nullptr /* url_context_getter */) {
     SetTimerForTesting(
         std::make_unique<base::OneShotTimer>(this /* tick_clock */));
     SetClockForTesting(this);
@@ -123,7 +131,7 @@ class FakeNightLightClient : public NightLightClient,
 // Base test fixture.
 class NightLightClientTest : public testing::TestWithParam<ScheduleType> {
  public:
-  NightLightClientTest() = default;
+  NightLightClientTest() : client_(&delegate_) {}
 
   NightLightClientTest(const NightLightClientTest&) = delete;
   NightLightClientTest& operator=(const NightLightClientTest&) = delete;
@@ -142,12 +150,15 @@ class NightLightClientTest : public testing::TestWithParam<ScheduleType> {
 
   FakeNightLightController controller_;
   FakeNightLightClient client_;
+
+ private:
+  FakeDelegate delegate_;
 };
 
 // Test that the client is retrieving geoposition periodically only when the
 // schedule type is "sunset to sunrise" or "custom".
 TEST_F(NightLightClientTest,
-       TestClientRunningWhenSunsetToSunriseOrCustomSchedule) {
+       TestClientRunningWhenSunsetToSunriseOnCustomSchedule) {
   EXPECT_FALSE(client_.using_geoposition());
   controller_.NotifyScheduleTypeChanged(ScheduleType::kNone);
   EXPECT_FALSE(client_.using_geoposition());

@@ -69,11 +69,7 @@ void SendSystemColorsChangedMessage(content::mojom::Renderer* renderer) {
   [defaults synchronize];
 
   renderer->OnSystemColorsChanged(
-      [[defaults stringForKey:@"AppleAquaColorVariant"] intValue],
-      base::SysNSStringToUTF8(
-          [defaults stringForKey:@"AppleHighlightedTextColor"]),
-      base::SysNSStringToUTF8(
-          [defaults stringForKey:@"AppleHighlightColor"]));
+      [[defaults stringForKey:@"AppleAquaColorVariant"] intValue]);
 }
 
 SkColor NSColorToSkColor(NSColor* color) {

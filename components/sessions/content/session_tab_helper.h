@@ -24,7 +24,7 @@ class SESSIONS_EXPORT SessionTabHelper
   using DelegateLookup =
       base::RepeatingCallback<SessionTabHelperDelegate*(content::WebContents*)>;
   using WindowIdChangedCallbackList =
-      base::RepeatingCallbackList<void(const SessionID& id)>;
+      base::RepeatingCallbackList<void(SessionID id)>;
 
   SessionTabHelper(const SessionTabHelper&) = delete;
   SessionTabHelper& operator=(const SessionTabHelper&) = delete;
@@ -32,11 +32,11 @@ class SESSIONS_EXPORT SessionTabHelper
   ~SessionTabHelper() override;
 
   // Returns the identifier used by session restore for this tab.
-  const SessionID& session_id() const { return session_id_; }
+  SessionID session_id() const { return session_id_; }
 
   // Identifier of the window the tab is in.
-  void SetWindowID(const SessionID& id);
-  const SessionID& window_id() const { return window_id_; }
+  void SetWindowID(SessionID id);
+  SessionID window_id() const { return window_id_; }
 
   // If the specified WebContents has a SessionTabHelper (probably because it
   // was used as the contents of a tab), returns a tab id. This value is

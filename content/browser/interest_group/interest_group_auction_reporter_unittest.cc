@@ -203,7 +203,7 @@ class InterestGroupAuctionReporterTest
         CreateSellerWinningBidInfo(&component_auction_config);
     component_seller_winning_bid_info_->component_auction_modified_bid_params =
         auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(
-            /*ad=*/"null", /*bid=*/0, /*has_bid=*/false);
+            /*ad=*/"null", /*bid=*/0, /*bid_currency=*/"", /*has_bid=*/false);
   }
 
   void SetUpReporterAndStart() {

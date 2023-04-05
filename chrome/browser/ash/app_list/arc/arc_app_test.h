@@ -19,6 +19,7 @@ class ArcPlayStoreEnabledPreferenceHandler;
 class ArcServiceManager;
 class ArcSessionManager;
 class FakeAppInstance;
+class FakeCompatibilityModeInstance;
 class FakeIntentHelperHost;
 class FakeIntentHelperInstance;
 }  // namespace arc
@@ -97,6 +98,10 @@ class ArcAppTest {
 
   arc::FakeAppInstance* app_instance() { return app_instance_.get(); }
 
+  arc::FakeCompatibilityModeInstance* compatibility_mode_instance() {
+    return compatibility_mode_instance_.get();
+  }
+
   arc::FakeIntentHelperInstance* intent_helper_instance() {
     return intent_helper_instance_.get();
   }
@@ -130,6 +135,10 @@ class ArcAppTest {
     initialize_real_intent_helper_bridge_ = value;
   }
 
+  void set_wait_compatibility_mode(bool value) {
+    wait_compatibility_mode_ = value;
+  }
+
  private:
   const user_manager::User* CreateUserAndLogin();
   bool FindPackage(const std::string& package_name);
@@ -157,11 +166,15 @@ class ArcAppTest {
   // up.
   bool initialize_real_intent_helper_bridge_ = false;
 
+  bool wait_compatibility_mode_ = false;
+
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
   std::unique_ptr<arc::ArcPlayStoreEnabledPreferenceHandler>
       arc_play_store_enabled_preference_handler_;
   std::unique_ptr<arc::FakeAppInstance> app_instance_;
+  std::unique_ptr<arc::FakeCompatibilityModeInstance>
+      compatibility_mode_instance_;
   std::unique_ptr<arc::FakeIntentHelperHost> intent_helper_host_;
   std::unique_ptr<arc::FakeIntentHelperInstance> intent_helper_instance_;
 

@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 {
+  include: [
+    // Enable logging from the Component that is a web_instance_host.
+    "syslog/use.shard.cml",
+  ],
   collections: [
     // The collection in which child instances are dynamically created.
     {
@@ -31,10 +35,6 @@
         "fuchsia.feedback.CrashReportingProductRegister",
       ],
     },
-    {
-      // Protocols needed when running in CFv1 mode.
-      protocol: "fuchsia.sys.Environment",
-    },
   ],
   offer: [
     {
@@ -46,12 +46,12 @@
     },
     {
       // Statically offered to all web_instances regardless of whether they were
-      // created with `ContextFeatureFlags::NETWORK`.
+      // created with `ContextFeatureFlags.NETWORK`.
       directory: "root-ssl-certificates",
       from: "parent",
       to: "#web_instances",
       // Required if the WebInstanceHost may create Contexts with
-      // ContextFeatureFlags::NETWORK.
+      // `ContextFeatureFlags.NETWORK`.
       availability: "optional",
     },
     {
@@ -61,7 +61,7 @@
         "fuchsia.fonts.Provider",
         "fuchsia.hwinfo.Product",
         "fuchsia.intl.PropertyProvider",
-        "fuchsia.logger.LogSink",
+        "fuchsia.logger.LogSink",  // Targeted copy of syslog/offer.shard.cml.
         "fuchsia.memorypressure.Provider",
         "fuchsia.process.Launcher",
         "fuchsia.sysmem.Allocator",

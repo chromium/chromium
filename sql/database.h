@@ -74,8 +74,10 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   // on every transaction, and comes with a small performance penalty.
   //
   // Setting this to true causes the locking protocol to be used once, when the
-  // database is opened. No other process will be able to access the database at
-  // the same time.
+  // database is opened. No other SQLite process will be able to access the
+  // database at the same time. Note that this uses OS-level
+  // advisory/cooperative locking, so this does not protect the database file
+  // from uncooperative processes.
   //
   // More details at https://www.sqlite.org/pragma.html#pragma_locking_mode
   //
@@ -86,6 +88,25 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   // up a transaction. It also removes the need of handling transaction failures
   // due to lock contention.
   bool exclusive_locking = true;
+
+  // If true, enables exclusive=true vfs URI parameter on the database file.
+  // This is only supported on Windows.
+  //
+  // If this option is true then the database file cannot be opened by any
+  // processes on the system until the database has been closed. Note, this is
+  // not the same as `exclusive_locking` above, which refers to
+  // advisory/cooperative locks. This option sets file handle sharing attributes
+  // to prevent the database files from being opened from any process including
+  // being opened a second time by the hosting process.
+  //
+  // A side effect of setting this flag is that the database cannot be
+  // preloaded. If you would like to set this flag on a preloaded database,
+  // please reach out to a //sql owner.
+  //
+  // This option is experimental and will be merged into the `exclusive_locking`
+  // option above if proven to cause no OS compatibility issues.
+  // TODO(crbug.com/1429117): Merge into above option, if possible.
+  bool exclusive_database_file_lock = false;
 
   // If true, enables SQLite's Write-Ahead Logging (WAL).
   //

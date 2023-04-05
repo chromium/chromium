@@ -18,10 +18,12 @@ mojom("mojom") {
         {
           mojom = "web_package.mojom.Ed25519PublicKey"
           cpp = "::web_package::Ed25519PublicKey"
+          default_constructible = false
         },
         {
           mojom = "web_package.mojom.Ed25519Signature"
           cpp = "::web_package::Ed25519Signature"
+          default_constructible = false
         },
       ]
       traits_headers =

@@ -140,9 +140,7 @@ const AtomicString& HTMLFieldSetElement::FormControlType() const {
   return fieldset;
 }
 
-LayoutObject* HTMLFieldSetElement::CreateLayoutObject(
-    const ComputedStyle& style,
-    LegacyLayout legacy) {
+LayoutObject* HTMLFieldSetElement::CreateLayoutObject(const ComputedStyle&) {
   return MakeGarbageCollected<LayoutNGFieldset>(this);
 }
 

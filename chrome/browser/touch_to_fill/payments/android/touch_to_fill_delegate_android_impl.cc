@@ -286,7 +286,7 @@ bool TouchToFillDelegateAndroidImpl::IsFormPrefilled(const FormData& form) {
   return base::ranges::any_of(
       form.fields.begin(), form.fields.end(), [&](const FormFieldData& field) {
         AutofillField* autofill_field = manager_->GetAutofillField(form, field);
-        if (!FieldHasExpirationDateType(autofill_field) &&
+        if (!autofill_field->HasExpirationDateType() &&
             autofill_field->Type().GetStorableType() !=
                 ServerFieldType::CREDIT_CARD_NUMBER) {
           return false;

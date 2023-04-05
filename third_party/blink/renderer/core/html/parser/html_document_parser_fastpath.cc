@@ -334,8 +334,7 @@ class HTMLFastPathParser {
       static constexpr const char tagname[] = "div";
     };
 
-    struct Footer
-        : ContainerTag<HTMLDivElement, PermittedParents::kFlowContent> {
+    struct Footer : ContainerTag<HTMLElement, PermittedParents::kFlowContent> {
       static constexpr const char tagname[] = "footer";
       static HTMLElement* Create(Document& document) {
         return MakeGarbageCollected<HTMLElement>(html_names::kFooterTag,

@@ -20,6 +20,7 @@ import static org.chromium.chrome.browser.browserservices.intents.BrowserService
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_NONE;
+import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW;
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_POSITION_DEFAULT;
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_POSITION_END;
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_POSITION_START;
@@ -47,6 +48,7 @@ import org.robolectric.annotation.LooperMode.Mode;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.ui.base.LocalizationUtils;
@@ -55,7 +57,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Tests for {@link PartialCustomTabSideSheetStrategy}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE, shadows = {PartialCustomTabTestRule.ShadowSemanticColorUtils.class})
 @LooperMode(Mode.PAUSED)
 @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
 public class PartialCustomTabSideSheetStrategyTest {
@@ -201,7 +203,7 @@ public class PartialCustomTabSideSheetStrategyTest {
     public void noTopShadow() {
         doReturn(47)
                 .when(mPCCTTestRule.mResources)
-                .getDimensionPixelSize(eq(org.chromium.chrome.R.dimen.custom_tabs_shadow_offset));
+                .getDimensionPixelSize(eq(R.dimen.custom_tabs_shadow_offset));
 
         mPCCTTestRule.configLandscapeMode();
         createPcctSideSheetStrategy(2000);
@@ -218,7 +220,7 @@ public class PartialCustomTabSideSheetStrategyTest {
     public void leftShadowIsVisible() {
         doReturn(47)
                 .when(mPCCTTestRule.mResources)
-                .getDimensionPixelSize(eq(org.chromium.chrome.R.dimen.custom_tabs_shadow_offset));
+                .getDimensionPixelSize(eq(R.dimen.custom_tabs_shadow_offset));
 
         mPCCTTestRule.configLandscapeMode();
         createPcctSideSheetStrategy(2000);
@@ -237,7 +239,7 @@ public class PartialCustomTabSideSheetStrategyTest {
     public void rightShadowIsVisible() {
         doReturn(47)
                 .when(mPCCTTestRule.mResources)
-                .getDimensionPixelSize(eq(org.chromium.chrome.R.dimen.custom_tabs_shadow_offset));
+                .getDimensionPixelSize(eq(R.dimen.custom_tabs_shadow_offset));
 
         mPCCTTestRule.configLandscapeMode();
         createLeftPcctSideSheetStrategy(2000);
@@ -256,7 +258,7 @@ public class PartialCustomTabSideSheetStrategyTest {
     public void noShadowsFullWidth() {
         doReturn(47)
                 .when(mPCCTTestRule.mResources)
-                .getDimensionPixelSize(eq(org.chromium.chrome.R.dimen.custom_tabs_shadow_offset));
+                .getDimensionPixelSize(eq(R.dimen.custom_tabs_shadow_offset));
 
         mPCCTTestRule.configLandscapeMode();
         createLeftPcctSideSheetStrategy(3000);
@@ -280,10 +282,32 @@ public class PartialCustomTabSideSheetStrategyTest {
     public void drawDividerLine() {
         doReturn(10)
                 .when(mPCCTTestRule.mResources)
-                .getDimensionPixelSize(eq(org.chromium.chrome.R.dimen.custom_tabs_shadow_offset));
+                .getDimensionPixelSize(eq(R.dimen.custom_tabs_shadow_offset));
         mPCCTTestRule.configLandscapeMode();
         var strategy = createPcctSideSheetStrategy(2000, ACTIVITY_SIDE_SHEET_SLIDE_IN_DEFAULT,
                 ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER);
+        strategy.onToolbarInitialized(
+                mPCCTTestRule.mToolbarCoordinator, mPCCTTestRule.mToolbarView, 5);
+        mPCCTTestRule.verifyWindowFlagsSet();
+
+        assertTrue(strategy.shouldDrawDividerLine());
+        assertEquals("Right margin should zero for no shadow", 0,
+                mPCCTTestRule.mLayoutParams.rightMargin);
+        assertEquals("Left margin should be zero for no shadow", 0,
+                mPCCTTestRule.mLayoutParams.leftMargin);
+    }
+
+    @Config(sdk = Build.VERSION_CODES.P)
+    @Test
+    public void drawDividerLine_OverrideWithOldOS() {
+        doReturn(10)
+                .when(mPCCTTestRule.mResources)
+                .getDimensionPixelSize(eq(R.dimen.custom_tabs_shadow_offset));
+        mPCCTTestRule.configLandscapeMode();
+        // Only override instead of shadow. If they set to no decoration, we don't override with
+        // divider line
+        var strategy = createPcctSideSheetStrategy(2000, ACTIVITY_SIDE_SHEET_SLIDE_IN_DEFAULT,
+                ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW);
         strategy.onToolbarInitialized(
                 mPCCTTestRule.mToolbarCoordinator, mPCCTTestRule.mToolbarView, 5);
         mPCCTTestRule.verifyWindowFlagsSet();
@@ -299,7 +323,7 @@ public class PartialCustomTabSideSheetStrategyTest {
     public void noDecoration() {
         doReturn(10)
                 .when(mPCCTTestRule.mResources)
-                .getDimensionPixelSize(eq(org.chromium.chrome.R.dimen.custom_tabs_shadow_offset));
+                .getDimensionPixelSize(eq(R.dimen.custom_tabs_shadow_offset));
         mPCCTTestRule.configLandscapeMode();
         var strategy = createPcctSideSheetStrategy(2000, ACTIVITY_SIDE_SHEET_POSITION_DEFAULT,
                 ACTIVITY_SIDE_SHEET_DECORATION_TYPE_NONE);
@@ -318,7 +342,7 @@ public class PartialCustomTabSideSheetStrategyTest {
     public void enterAndExitHtmlFullscreen() {
         doReturn(47)
                 .when(mPCCTTestRule.mResources)
-                .getDimensionPixelSize(eq(org.chromium.chrome.R.dimen.custom_tabs_shadow_offset));
+                .getDimensionPixelSize(eq(R.dimen.custom_tabs_shadow_offset));
         var strategy = createPcctSideSheetStrategy(1000);
         verify(mPCCTTestRule.mOnActivityLayoutCallback)
                 .onActivityLayout(anyInt(), anyInt(), anyInt(), anyInt(),

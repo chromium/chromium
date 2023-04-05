@@ -220,6 +220,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Dobrý den, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Zadávání textu</translation>
+<translation id="1980808257969311265">Připojit se k události <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Zobrazit předchozí týden</translation>
 <translation id="1989113344093894667">Obsah se nepodařilo zaznamenat</translation>
 <translation id="1990046457226896323">Stažené řečové soubory</translation>
@@ -574,6 +575,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3659814201068740063">Zbývá asi: <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" /> %).
 Připojte zařízení k napájení.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> – spravovaný uživatel</translation>
+<translation id="3666266999138159418">Plovoucí okno skryjete přejetím prstem</translation>
 <translation id="367531336287639526">Vybrat první ikonu vlevo od adresního řádku</translation>
 <translation id="3679827876008292680">Přejít na poslední kartu v okně</translation>
 <translation id="36813544980941320">Sítě Wi-Fi se budou sdílet mezi vaším telefonem a zařízením <ph name="DEVICE_NAME" /></translation>

@@ -60,6 +60,11 @@ WebKioskAshRequiresLacrosTest*
 -ChromeVoxBackgroundTest.GestureOnPopUpButton
 -ChromeVoxBackgroundTest.HitTestOnExoSurface
 -ChromeVoxEditingTest.JumpCommandsSyncSelection
+-ChromeVoxBackgroundTest.MixedNavWithRangeInvalidation
+-ChromeVoxBackgroundTest.NavigateOutOfMultiline
+-ChromeVoxBackgroundTest.ShowContextMenu
+-ChromeVoxBackgroundTestWithTestServer.InPageLinks
+-ChromeVoxBackgroundTest.UseEditableState
 # TODO(b/268051293) Flaky
 -SelectToSpeakKeystrokeSelectionTest.NonReorderedSvgPreservesSelectionStartEnd
 -SelectToSpeakKeystrokeSelectionTest.OmniboxPartiallySelectedInMid

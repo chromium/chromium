@@ -52,7 +52,7 @@
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/base/ime/ash/mock_input_method_manager.h"
+#include "ui/base/ime/ash/mock_input_method_manager_impl.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/display_manager.h"
@@ -273,7 +273,7 @@ void AshTestHelper::SetUp(InitParams init_params) {
   if (!input_method::InputMethodManager::Get()) {
     // |input_method_manager_| is not owned and is cleaned up in TearDown()
     // by calling InputMethodManager::Shutdown().
-    input_method_manager_ = new input_method::MockInputMethodManager();
+    input_method_manager_ = new input_method::MockInputMethodManagerImpl();
     input_method::InputMethodManager::Initialize(input_method_manager_);
   }
   if (floss::features::IsFlossEnabled()) {

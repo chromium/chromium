@@ -27,6 +27,7 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_or_resource_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -5125,16 +5126,13 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
   // Now that the process only contains a BrowsingInstance where bar.com is
   // considered isolated and cannot reuse the old process, it should lose access
   // to bar.com's data due to citadel enforcement in CanAccessDataForOrigin.
-  // TODO(alexmos): We use EXPECT_FALSE() on platforms that support citadel
-  // enforcements. Currently this is only on Android, but will be extended to
-  // desktop, at which time the EXPECT_TRUE() case below can be removed.
-#if BUILDFLAG(IS_ANDROID)
-  EXPECT_FALSE(policy->CanAccessDataForOrigin(old_process_id,
-                                              url::Origin::Create(bar_url)));
-#else
-  EXPECT_TRUE(policy->CanAccessDataForOrigin(old_process_id,
-                                             url::Origin::Create(bar_url)));
-#endif
+  if (base::FeatureList::IsEnabled(kSiteIsolationCitadelEnforcement)) {
+    EXPECT_FALSE(policy->CanAccessDataForOrigin(old_process_id,
+                                                url::Origin::Create(bar_url)));
+  } else {
+    EXPECT_TRUE(policy->CanAccessDataForOrigin(old_process_id,
+                                               url::Origin::Create(bar_url)));
+  }
 }
 
 // Verify that a process locked to foo.com is not reused for a navigation to

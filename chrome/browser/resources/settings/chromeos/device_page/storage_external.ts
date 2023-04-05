@@ -9,8 +9,8 @@
  */
 
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
+import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import './storage_external_entry.js';
-import '../../prefs/prefs.js';
 import '../../settings_shared.css.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';

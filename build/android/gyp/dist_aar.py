@@ -17,6 +17,7 @@ import zipfile
 import filter_zip
 from util import build_utils
 import action_helpers  # build_utils adds //build to sys.path.
+import zip_helpers
 
 
 _ANDROID_BUILD_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -117,36 +118,42 @@ def main(args):
   with tempfile.NamedTemporaryFile(delete=False) as staging_file:
     try:
       with zipfile.ZipFile(staging_file.name, 'w') as z:
-        build_utils.AddToZipHermetic(
-            z, 'AndroidManifest.xml', src_path=options.android_manifest)
+        zip_helpers.add_to_zip_hermetic(z,
+                                        'AndroidManifest.xml',
+                                        src_path=options.android_manifest)
 
         path_transform = filter_zip.CreatePathTransform(
             options.jar_excluded_globs, options.jar_included_globs)
         with tempfile.NamedTemporaryFile() as jar_file:
-          build_utils.MergeZips(
-              jar_file.name, options.jars, path_transform=path_transform)
-          build_utils.AddToZipHermetic(z, 'classes.jar', src_path=jar_file.name)
+          zip_helpers.merge_zips(jar_file.name,
+                                 options.jars,
+                                 path_transform=path_transform)
+          zip_helpers.add_to_zip_hermetic(z,
+                                          'classes.jar',
+                                          src_path=jar_file.name)
 
-        build_utils.AddToZipHermetic(
-            z,
-            'R.txt',
-            data=_MergeRTxt(options.r_text_files,
-                            options.resource_included_globs))
-        build_utils.AddToZipHermetic(z, 'public.txt', data='')
+        zip_helpers.add_to_zip_hermetic(z,
+                                        'R.txt',
+                                        data=_MergeRTxt(
+                                            options.r_text_files,
+                                            options.resource_included_globs))
+        zip_helpers.add_to_zip_hermetic(z, 'public.txt', data='')
 
         if options.proguard_configs:
-          build_utils.AddToZipHermetic(
-              z, 'proguard.txt',
-              data=_MergeProguardConfigs(options.proguard_configs))
+          zip_helpers.add_to_zip_hermetic(z,
+                                          'proguard.txt',
+                                          data=_MergeProguardConfigs(
+                                              options.proguard_configs))
 
         _AddResources(z, options.dependencies_res_zips,
                       options.resource_included_globs)
 
         for native_library in options.native_libraries:
           libname = os.path.basename(native_library)
-          build_utils.AddToZipHermetic(
-              z, os.path.join('jni', options.abi, libname),
-              src_path=native_library)
+          zip_helpers.add_to_zip_hermetic(z,
+                                          os.path.join('jni', options.abi,
+                                                       libname),
+                                          src_path=native_library)
     except:
       os.unlink(staging_file.name)
       raise

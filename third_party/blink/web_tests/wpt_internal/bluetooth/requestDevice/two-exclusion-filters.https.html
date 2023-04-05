@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+bluetooth_test(() => {
+  return setBluetoothFakeAdapter('GlucoseHeartRateAdapter')
+      .then(() => requestDeviceWithTrustedClick({
+              filters:
+                  [{name: 'Glucose Device'}, {services: ['heart_rate']}],
+              exclusionFilters:
+                  [{services: ['glucose']}, {services: ['battery_service']}],
+            }))
+      .then(device => assert_equals(device.name, 'Heart Rate Device'));
+}, 'An extra exclusion filter doesn\'t prevent matching.');
+</script>

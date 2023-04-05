@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
 import("//build/config/nacl/config.gni")
 import("//components/nacl/toolchain.gni")
 
@@ -28,9 +29,21 @@ component("platform") {
     sources += [ "socket_utils_posix.cc" ]
   }
 
+  if (is_win || is_mac || (is_posix && !is_nacl && !is_ios)) {
+    public += [ "platform_channel_server.h" ]
+    sources += [ "platform_channel_server.cc" ]
+  }
+
   if (is_win) {
     public += [ "platform_handle_security_util_win.h" ]
-    sources += [ "platform_handle_security_util_win.cc" ]
+    sources += [
+      "platform_channel_server_win.cc",
+      "platform_handle_security_util_win.cc",
+    ]
+  } else if (is_mac) {
+    sources += [ "platform_channel_server_mac.cc" ]
+  } else if (is_posix && !is_nacl) {
+    sources += [ "platform_channel_server_posix.cc" ]
   }
 
   public_deps = [
@@ -39,14 +52,14 @@ component("platform") {
     "//mojo/public/c/system:headers",
   ]
 
-  deps = []
+  deps = [ "//build:blink_buildflags" ]
 
-  if (is_posix && !is_nacl && !is_minimal_toolchain && !is_mac) {
+  if (is_posix && !is_nacl && !is_minimal_toolchain && !is_apple) {
     sources += [ "named_platform_channel_posix.cc" ]
     deps += [ "//net" ]
   }
 
-  if (is_mac) {
+  if (is_apple && use_blink) {
     sources += [ "named_platform_channel_mac.cc" ]
   }
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CapabilitiesResponse, Cdd, DEFAULT_MAX_COPIES, Destination, DestinationOrigin, DestinationStore, ExtensionDestinationInfo, GooglePromotedDestinationId, LocalDestinationInfo, MeasurementSystemUnitType, MediaSizeCapability, MediaSizeOption, NativeInitialSettings, VendorCapabilityValueType} from 'chrome://print/print_preview.js';
+import {CapabilitiesResponse, Cdd, ColorOption, DEFAULT_MAX_COPIES, Destination, DestinationOrigin, DestinationStore, DpiOption, DuplexOption, ExtensionDestinationInfo, GooglePromotedDestinationId, LocalDestinationInfo, MeasurementSystemUnitType, MediaSizeCapability, MediaSizeOption, NativeInitialSettings, PageOrientationOption, VendorCapabilityValueType} from 'chrome://print/print_preview.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
@@ -50,27 +50,27 @@ export function getCddTemplate(
           option: [
             {type: 'STANDARD_COLOR', is_default: true},
             {type: 'STANDARD_MONOCHROME'},
-          ],
+          ] as ColorOption[],
         },
         dpi: {
           option: [
             {horizontal_dpi: 200, vertical_dpi: 200, is_default: true},
             {horizontal_dpi: 100, vertical_dpi: 100},
-          ],
+          ] as DpiOption[],
         },
         duplex: {
           option: [
             {type: 'NO_DUPLEX', is_default: true},
             {type: 'LONG_EDGE'},
             {type: 'SHORT_EDGE'},
-          ],
+          ] as DuplexOption[],
         },
         page_orientation: {
           option: [
             {type: 'PORTRAIT', is_default: true},
             {type: 'LANDSCAPE'},
             {type: 'AUTO'},
-          ],
+          ] as PageOrientationOption[],
         },
         media_size: {
           option: [
@@ -87,7 +87,7 @@ export function getCddTemplate(
               height_microns: 215900,
               custom_display_name: 'CUSTOM_SQUARE',
             },
-          ],
+          ] as MediaSizeOption[],
         },
       },
     },
@@ -187,7 +187,7 @@ export function getPdfPrinter(): {capabilities: Cdd} {
             {type: 'AUTO', is_default: true},
             {type: 'PORTRAIT'},
             {type: 'LANDSCAPE'},
-          ],
+          ] as PageOrientationOption[],
         },
         color: {option: [{type: 'STANDARD_COLOR', is_default: true}]},
         media_size: {
@@ -322,7 +322,7 @@ export function getMediaSizeCapabilityWithCustomNames(): MediaSizeCapability {
         height_microns: 79400,
         custom_display_name: customMediaName,
       },
-    ],
+    ] as MediaSizeOption[],
   };
 }
 

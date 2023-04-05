@@ -110,9 +110,11 @@ void InputDeviceSettingsProvider::ObserveKeyboardSettings(
   DCHECK(features::IsInputDeviceSettingsSplitEnabled());
   DCHECK(InputDeviceSettingsController::Get());
   const auto id = keyboard_settings_observers_.Add(std::move(observer));
-  keyboard_settings_observers_.Get(id)->OnKeyboardListUpdated(
-      SanitizeAndSortDeviceList(
-          InputDeviceSettingsController::Get()->GetConnectedKeyboards()));
+  auto* keyboard_settings_observer = keyboard_settings_observers_.Get(id);
+  keyboard_settings_observer->OnKeyboardListUpdated(SanitizeAndSortDeviceList(
+      InputDeviceSettingsController::Get()->GetConnectedKeyboards()));
+  keyboard_settings_observer->OnKeyboardPoliciesUpdated(
+      InputDeviceSettingsController::Get()->GetKeyboardPolicies().Clone());
 }
 
 void InputDeviceSettingsProvider::ObserveTouchpadSettings(
@@ -153,6 +155,18 @@ void InputDeviceSettingsProvider::OnKeyboardConnected(
 void InputDeviceSettingsProvider::OnKeyboardDisconnected(
     const ::ash::mojom::Keyboard& keyboard) {
   NotifyKeyboardsUpdated();
+}
+
+void InputDeviceSettingsProvider::OnKeyboardSettingsUpdated(
+    const ::ash::mojom::Keyboard& keyboard) {
+  NotifyKeyboardsUpdated();
+}
+
+void InputDeviceSettingsProvider::OnKeyboardPoliciesUpdated(
+    const ::ash::mojom::KeyboardPolicies& keyboard_policies) {
+  for (const auto& observer : keyboard_settings_observers_) {
+    observer->OnKeyboardPoliciesUpdated(keyboard_policies.Clone());
+  }
 }
 
 void InputDeviceSettingsProvider::OnTouchpadConnected(

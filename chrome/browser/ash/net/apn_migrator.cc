@@ -20,11 +20,11 @@ namespace ash {
 
 namespace {
 
-void OnSetShillUserApnListSuccess() {}
+void OnSetShillCustomApnListSuccess() {}
 
-void OnSetShillUserApnListFailure(const std::string& guid,
-                                  const std::string& error_name) {
-  NET_LOG(ERROR) << "ApnMigrator: Failed to update the user APN "
+void OnSetShillCustomApnListFailure(const std::string& guid,
+                                    const std::string& error_name) {
+  NET_LOG(ERROR) << "ApnMigrator: Failed to update the custom APN "
                     "list in Shill for network: "
                  << guid << ": [" << error_name << ']';
 }
@@ -67,10 +67,10 @@ void ApnMigrator::NetworkListChanged() {
             network->iccid());
     if (!ash::features::IsApnRevampEnabled()) {
       // If the network has been marked as migrated, but the ApnRevamp flag is
-      // disabled, the flag was disabled after being enabled. Clear UserApnList
-      // so that Shill knows to use legacy APN selection logic.
+      // disabled, the flag was disabled after being enabled. Clear
+      // CustomApnList so that Shill knows to use legacy APN selection logic.
       if (has_network_been_migrated) {
-        SetShillUserApnListForNetwork(*network, /*apn_list=*/nullptr);
+        SetShillCustomApnListForNetwork(*network, /*apn_list=*/nullptr);
       }
       continue;
     }
@@ -85,22 +85,22 @@ void ApnMigrator::NetworkListChanged() {
     // The network has already been migrated. Send Shill the revamp APN list.
     if (const base::Value::List* custom_apn_list =
             network_metadata_store_->GetCustomApnList(network->guid())) {
-      SetShillUserApnListForNetwork(*network, custom_apn_list);
+      SetShillCustomApnListForNetwork(*network, custom_apn_list);
       continue;
     }
-    base::Value::List empty_user_apn_list;
-    SetShillUserApnListForNetwork(*network, &empty_user_apn_list);
+    base::Value::List empty_custom_apn_list;
+    SetShillCustomApnListForNetwork(*network, &empty_custom_apn_list);
   }
 }
 
-void ApnMigrator::SetShillUserApnListForNetwork(
+void ApnMigrator::SetShillCustomApnListForNetwork(
     const NetworkState& network,
     const base::Value::List* apn_list) {
   network_configuration_handler_->SetProperties(
       network.path(),
-      chromeos::network_config::UserApnListToOnc(network.guid(), apn_list),
-      base::BindOnce(&OnSetShillUserApnListSuccess),
-      base::BindOnce(&OnSetShillUserApnListFailure, network.guid()));
+      chromeos::network_config::CustomApnListToOnc(network.guid(), apn_list),
+      base::BindOnce(&OnSetShillCustomApnListSuccess),
+      base::BindOnce(&OnSetShillCustomApnListFailure, network.guid()));
 }
 
 void ApnMigrator::MigrateNetwork(const NetworkState& network) {
@@ -128,7 +128,7 @@ void ApnMigrator::MigrateNetwork(const NetworkState& network) {
                       "Shill and marking as migrated: "
                    << network.iccid();
     base::Value::List empty_apn_list;
-    SetShillUserApnListForNetwork(network, &empty_apn_list);
+    SetShillCustomApnListForNetwork(network, &empty_apn_list);
     managed_cellular_pref_handler_->AddApnMigratedIccid(network.iccid());
     return;
   }
@@ -188,7 +188,7 @@ void ApnMigrator::OnGetManagedProperties(
                    << "call, setting Shill with empty list for network: "
                    << guid;
     base::Value::List empty_apn_list;
-    SetShillUserApnListForNetwork(*network, &empty_apn_list);
+    SetShillCustomApnListForNetwork(*network, &empty_apn_list);
     managed_cellular_pref_handler_->AddApnMigratedIccid(iccid);
     iccids_in_migration_.erase(iccid);
     return;
@@ -220,7 +220,7 @@ void ApnMigrator::OnGetManagedProperties(
           << "Managed network's selected APN doesn't match the saved custom "
           << "APN, setting Shill with empty list for network: " << guid;
       base::Value::List empty_apn_list;
-      SetShillUserApnListForNetwork(*network, &empty_apn_list);
+      SetShillCustomApnListForNetwork(*network, &empty_apn_list);
     }
   } else {
     // TODO(b/162365553): Implement this case.

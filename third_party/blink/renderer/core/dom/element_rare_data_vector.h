@@ -311,18 +311,6 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
 
   void SetDidAttachInternals() { did_attach_internals_ = true; }
   bool DidAttachInternals() const { return did_attach_internals_; }
-  void SetStyleShouldForceLegacyLayout(bool force) {
-    style_should_force_legacy_layout_ = force;
-  }
-  bool StyleShouldForceLegacyLayout() const {
-    return style_should_force_legacy_layout_;
-  }
-  void SetShouldForceLegacyLayoutForChild(bool force) {
-    should_force_legacy_layout_for_child_ = force;
-  }
-  bool ShouldForceLegacyLayoutForChild() const {
-    return should_force_legacy_layout_for_child_;
-  }
   bool HasUndoStack() const { return has_undo_stack_; }
   void SetHasUndoStack(bool value) { has_undo_stack_ = value; }
   bool ScrollbarPseudoElementStylesDependOnFontMetrics() const {
@@ -420,8 +408,6 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
 
  private:
   unsigned did_attach_internals_ : 1;
-  unsigned should_force_legacy_layout_for_child_ : 1;
-  unsigned style_should_force_legacy_layout_ : 1;
   unsigned has_undo_stack_ : 1;
   unsigned scrollbar_pseudo_element_styles_depend_on_font_metrics_ : 1;
   HasInvalidationFlags has_invalidation_flags_;

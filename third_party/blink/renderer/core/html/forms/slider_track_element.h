@@ -17,8 +17,7 @@ class SliderTrackElement final : public HTMLDivElement {
   explicit SliderTrackElement(Document& document);
 
  private:
-  LayoutObject* CreateLayoutObject(const ComputedStyle& style,
-                                   LegacyLayout legacy) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle& style) override;
 };
 
 }  // namespace blink

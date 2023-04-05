@@ -98,6 +98,7 @@ class RecoveryComponentActionHandlerWin
   // Overrides for RecoveryComponentActionHandler.
   base::CommandLine MakeCommandLine(
       const base::FilePath& unpack_path) const override;
+  void PrepareFiles(const base::FilePath& unpack_path) const override;
   void Elevate(Callback callback) override;
 
   // Calls the elevator service to handle the CRX. Since the invocation of
@@ -115,6 +116,11 @@ base::CommandLine RecoveryComponentActionHandlerWin::MakeCommandLine(
   if (!app_guid.empty())
     command_line.AppendSwitchASCII("appguid", app_guid);
   return command_line;
+}
+
+void RecoveryComponentActionHandlerWin::PrepareFiles(
+    const base::FilePath& unpack_path) const {
+  // Nothing to do.
 }
 
 void RecoveryComponentActionHandlerWin::Elevate(Callback callback) {

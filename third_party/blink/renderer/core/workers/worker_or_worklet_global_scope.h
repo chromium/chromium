@@ -64,7 +64,8 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
       WorkerClients*,
       std::unique_ptr<WebContentSettingsClient>,
       scoped_refptr<WebWorkerFetchContext>,
-      WorkerReportingProxy&);
+      WorkerReportingProxy&,
+      bool is_worker_loaded_from_data_url);
   ~WorkerOrWorkletGlobalScope() override;
 
   // EventTarget
@@ -193,6 +194,12 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
 
   // Returns the current list of user preferred languages.
   String GetAcceptLanguages() const;
+
+  // Called when a console message is recorded via the console API. This
+  // will invoke `WorkerReportingProxy::ReportConsoleMessage()`.
+  virtual void OnConsoleApiMessage(mojom::ConsoleMessageLevel level,
+                                   const String& message,
+                                   SourceLocation* location);
 
  protected:
   // Sets outside's CSP used for off-main-thread top-level worker script

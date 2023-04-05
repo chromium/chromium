@@ -23,6 +23,7 @@ import zipfile
 import jni_generator
 from util import build_utils
 import action_helpers  # build_utils adds //build to sys.path.
+import zip_helpers
 
 # All but FULL_CLASS_NAME, which is used only for sorting.
 MERGEABLE_KEYS = [
@@ -113,13 +114,13 @@ def _Generate(options, java_file_paths):
 
         if options.use_proxy_hash or options.enable_jni_multiplexing:
           # J/N.java
-          build_utils.AddToZipHermetic(
+          zip_helpers.add_to_zip_hermetic(
               srcjar,
               '%s.java' %
               jni_generator.ProxyHelpers.GetQualifiedClass(True, module_name),
               data=CreateProxyJavaFromDict(options, module_name, combined_dict))
           # org/chromium/base/natives/GEN_JNI.java
-          build_utils.AddToZipHermetic(
+          zip_helpers.add_to_zip_hermetic(
               srcjar,
               '%s.java' %
               jni_generator.ProxyHelpers.GetQualifiedClass(False, module_name),
@@ -129,7 +130,7 @@ def _Generate(options, java_file_paths):
                                            forwarding=True))
         else:
           # org/chromium/base/natives/GEN_JNI.java
-          build_utils.AddToZipHermetic(
+          zip_helpers.add_to_zip_hermetic(
               srcjar,
               '%s.java' %
               jni_generator.ProxyHelpers.GetQualifiedClass(False, module_name),

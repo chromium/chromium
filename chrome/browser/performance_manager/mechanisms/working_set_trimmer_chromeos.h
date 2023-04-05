@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/process/process_handle.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/performance_manager/mechanisms/working_set_trimmer.h"
 
 namespace content {
@@ -73,8 +74,12 @@ class WorkingSetTrimmerChromeOS : public WorkingSetTrimmer {
                          ArcVmReclaimType reclaim_type,
                          int page_limit,
                          bool result);
-  void OnArcVmMemoryGuestReclaim(TrimArcVmWorkingSetCallback callback,
-                                 arc::mojom::ReclaimResultPtr result);
+
+  // |elapsed_timer| measures the time since the reclaim operation started.
+  void OnArcVmMemoryGuestReclaim(
+      std::unique_ptr<base::ElapsedTimer> elapsed_timer,
+      TrimArcVmWorkingSetCallback callback,
+      arc::mojom::ReclaimResultPtr result);
 
   void LogErrorAndInvokeCallback(const char* error,
                                  TrimArcVmWorkingSetCallback callback);

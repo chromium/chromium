@@ -9,6 +9,7 @@ import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.util.function.Function;
@@ -39,6 +40,8 @@ class BookmarkToolbarProperties {
     // Can change within SelectableListToolbar which makes the model value to become stale.
     static final WritableObjectPropertyKey<Integer> NAVIGATION_BUTTON_STATE =
             new WritableObjectPropertyKey<>(/*skipEquality=*/true);
+    static final WritableIntPropertyKey CHECKED_SORT_MENU_ID = new WritableIntPropertyKey();
+    static final WritableIntPropertyKey CHECKED_VIEW_MENU_ID = new WritableIntPropertyKey();
 
     /** Bookmark state properties. */
     static final WritableObjectPropertyKey<BookmarkId> CURRENT_FOLDER =
@@ -47,13 +50,14 @@ class BookmarkToolbarProperties {
     /** Callables to delegate business logic back to the mediator */
     static final WritableObjectPropertyKey<Runnable> OPEN_SEARCH_UI_RUNNABLE =
             new WritableObjectPropertyKey<>();
-    static final WritableObjectPropertyKey<Callback<BookmarkId>> OPEN_FOLDER_CALLBACK =
-            new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<Function<Integer, Boolean>> MENU_ID_CLICKED_FUNCTION =
+            new WritableObjectPropertyKey<>();
+    static final WritableObjectPropertyKey<Callback<BookmarkId>> OPEN_FOLDER_CALLBACK =
             new WritableObjectPropertyKey<>();
 
     static final PropertyKey[] ALL_KEYS = {BOOKMARK_MODEL, BOOKMARK_OPENER, SELECTION_DELEGATE,
             TITLE, BOOKMARK_UI_MODE, SOFT_KEYBOARD_VISIBLE, IS_DIALOG_UI, DRAG_ENABLED,
             SEARCH_BUTTON_VISIBLE, EDIT_BUTTON_VISIBLE, NAVIGATION_BUTTON_STATE, CURRENT_FOLDER,
-            OPEN_SEARCH_UI_RUNNABLE, OPEN_FOLDER_CALLBACK, MENU_ID_CLICKED_FUNCTION};
+            CHECKED_SORT_MENU_ID, CHECKED_VIEW_MENU_ID, OPEN_SEARCH_UI_RUNNABLE,
+            MENU_ID_CLICKED_FUNCTION, OPEN_FOLDER_CALLBACK};
 }

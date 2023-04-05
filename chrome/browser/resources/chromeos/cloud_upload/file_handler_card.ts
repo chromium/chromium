@@ -17,7 +17,6 @@ export class BaseCardElement extends HTMLElement {
     shadowRoot.innerHTML = getTemplate();
     this.addStyles();
     this.addEventListener('keyup', this.onKeyUp.bind(this));
-    this.role = 'option';
   }
 
   $(query: string): HTMLElement {
@@ -27,7 +26,6 @@ export class BaseCardElement extends HTMLElement {
   addStyles() {
     this.$('#container')!.classList.add(
         'margin-top', 'round-top', 'round-bottom');
-    this.role = 'button';
     this.tabIndex = 0;
   }
 
@@ -57,6 +55,7 @@ export class AccordionTopCardElement extends BaseCardElement {
     this.$('#right-icon')!.classList.add('chevron');
     this.$('#container')!.removeChild(this.$('paper-ripple'));
     this.ariaExpanded = 'false';
+    this.role = 'button';
   }
 
   toggleExpandedState(): boolean {
@@ -90,6 +89,8 @@ export class FileHandlerCardElement extends BaseCardElement {
   constructor() {
     super();
     this.ariaSelected = 'false';
+    this.ariaCurrent = 'false';
+    this.role = 'option';
   }
 
   updateSelection(selected: boolean) {
@@ -97,9 +98,11 @@ export class FileHandlerCardElement extends BaseCardElement {
     if (this.selected_) {
       this.$('#card')!.setAttribute('selected', '');
       this.ariaSelected = 'true';
+      this.ariaCurrent = 'true';
     } else {
       this.$('#card')!.removeAttribute('selected');
       this.ariaSelected = 'false';
+      this.ariaCurrent = 'false';
     }
   }
 

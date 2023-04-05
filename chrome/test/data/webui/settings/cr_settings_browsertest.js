@@ -152,6 +152,30 @@ TEST_F('CrSettingsTranslatePageTest', 'NeverTranslateDialog', function() {
   mocha.grep(translate_page_tests.TestNames.NeverTranslateDialog).run();
 });
 
+GEN('#if !BUILDFLAG(IS_CHROMEOS)');
+var CrSettingsLiveCaptionSection = class extends CrSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/live_caption_section_tests.js';
+  }
+};
+
+TEST_F('CrSettingsLiveCaptionSection', 'LiveCaptionSection', function() {
+  runMochaSuite('LiveCaptionSection');
+});
+
+var CrSettingsLiveTranslateSection = class extends CrSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/live_translate_section_tests.js';
+  }
+};
+
+TEST_F('CrSettingsLiveTranslateSection', 'LiveTranslateSection', function() {
+  runMochaSuite('LiveTranslateSection');
+});
+GEN('#endif');
+
 var CrSettingsLanguagesPageMetricsTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -913,8 +937,6 @@ TEST_F('CrSettingsMenuTest', 'All', function() {
  ['PaymentsSectionUpi', 'payments_section_upi_test.js'],
  ['PeoplePage', 'people_page_test.js'],
  ['PeoplePageSyncControls', 'people_page_sync_controls_test.js'],
- ['Prefs', 'prefs_tests.js'],
- ['PrefUtil', 'pref_util_tests.js'],
  ['PreloadingPage', 'preloading_page_test.js'],
  ['ProtocolHandlers', 'protocol_handlers_tests.js'],
  ['RecentSitePermissions', 'recent_site_permissions_test.js'],

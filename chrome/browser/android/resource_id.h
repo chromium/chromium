@@ -84,6 +84,24 @@ LINK_RESOURCE_ID(IDR_AUTOFILL_CC_TROY, R.drawable.troy_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_UNIONPAY, R.drawable.unionpay_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_VISA, R.drawable.visa_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY, R.drawable.google_pay)
+LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_AMEX, R.drawable.amex_metadata_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_CAPITALONE,
+                 R.drawable.capitalone_metadata_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_DINERS,
+                 R.drawable.diners_metadata_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_DISCOVER,
+                 R.drawable.discover_metadata_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_ELO, R.drawable.elo_metadata_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_GENERIC,
+                 R.drawable.ic_metadata_credit_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_JCB, R.drawable.jcb_metadata_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_MASTERCARD,
+                 R.drawable.mc_metadata_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_MIR, R.drawable.mir_metadata_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_TROY, R.drawable.troy_metadata_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_UNIONPAY,
+                 R.drawable.unionpay_metadata_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_VISA, R.drawable.visa_metadata_card)
 // Use DECLARE_RESOURCE_ID here as these resources are used for android only.
 DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_CC_SCAN_NEW,
                     R.drawable.ic_photo_camera_black)

@@ -471,7 +471,7 @@ void color_manager_create_color_space_from_complete_names(
         std::make_unique<NameBasedColorSpace>(
             gfx::ColorSpace(chromaticity_id,
                             gfx::ColorSpace::TransferID::CUSTOM_HDR, matrix_id,
-                            range_id, nullptr, &transfer_fn, /*is_hdr=*/true),
+                            range_id, nullptr, &transfer_fn),
             static_cast<zcr_color_manager_v1_chromaticity_names>(chromaticity),
             static_cast<zcr_color_manager_v1_eotf_names>(eotf),
             static_cast<zcr_color_manager_v1_matrix_names>(matrix),

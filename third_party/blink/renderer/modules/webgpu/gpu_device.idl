@@ -19,7 +19,6 @@
 
     [RaisesException] GPUBuffer createBuffer(GPUBufferDescriptor descriptor);
     [RaisesException] GPUTexture createTexture(GPUTextureDescriptor descriptor);
-    [RuntimeEnabled=WebGPUImportTexture, RaisesException] GPUTexture experimentalImportTexture(HTMLCanvasElement canvas, GPUTextureUsageFlags usage);
     GPUSampler createSampler(optional GPUSamplerDescriptor descriptor = {});
     [RaisesException, CallWith=ScriptState] GPUExternalTexture importExternalTexture(GPUExternalTextureDescriptor descriptor);
 

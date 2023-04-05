@@ -90,7 +90,7 @@ class CONTENT_EXPORT PageImpl : public Page {
 
   void OnThemeColorChanged(const absl::optional<SkColor>& theme_color);
 
-  void DidChangeBackgroundColor(SkColor background_color, bool color_adjust);
+  void DidChangeBackgroundColor(SkColor4f background_color, bool color_adjust);
 
   // Notifies the page's color scheme was inferred.
   void DidInferColorScheme(blink::mojom::PreferredColorScheme color_scheme);
@@ -186,17 +186,6 @@ class CONTENT_EXPORT PageImpl : public Page {
   bool CheckAndMaybeDebitSelectURLBudgets(const url::Origin& origin,
                                           double bits_to_charge);
 
-  // Returns whether a pending call to `fence.reportEvent()` with
-  // `FencedFrame::ReportingDestination::kSharedStorageSelectUrl` should be
-  // allowed. If `blink::features::kSharedStorageReportEventLimit` is enabled,
-  // checks whether sufficient budget remains in
-  // `select_url_report_event_budget_`, and if so, deducts the bits
-  // corresponding to the current call (if they haven't previously been deducted
-  // for this URN) and returns true. If
-  // `blink::features::kSharedStorageReportEventLimit` is disabled, always
-  // returns true without deducting any bits.
-  bool CheckAndMaybeDebitReportEventForSelectURLBudget(RenderFrameHost& rfh);
-
  private:
   void DidActivateAllRenderViewsForPrerendering();
 
@@ -279,15 +268,6 @@ class CONTENT_EXPORT PageImpl : public Page {
   // destroyed (e.g. during navigation or not). Used only if
   // `blink::features::kSharedStorageSelectURLLimit` is enabled.
   base::flat_map<url::Origin, double> select_url_per_origin_budget_;
-
-  // If `blink::features::kSharedStorageReportEventLimit` is enabled, the
-  // maximum number of bits of entropy per pageload that are allowed to leak via
-  // calls to `fence.reportEvent()` with
-  // `FencedFrame::ReportingDestination::kSharedStorageSelectUrl`. Any
-  // additional such calls will be blocked.
-  // `absl::nullopt` if `blink::features::kSharedStorageReportEventLimit` is
-  // disabled.
-  absl::optional<double> select_url_report_event_budget_;
 
   // This class is owned by the main RenderFrameHostImpl and it's safe to keep a
   // reference to it.

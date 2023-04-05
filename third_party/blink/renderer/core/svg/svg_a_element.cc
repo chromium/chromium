@@ -96,8 +96,7 @@ void SVGAElement::SvgAttributeChanged(const SvgAttributeChangedParams& params) {
   SVGGraphicsElement::SvgAttributeChanged(params);
 }
 
-LayoutObject* SVGAElement::CreateLayoutObject(const ComputedStyle&,
-                                              LegacyLayout) {
+LayoutObject* SVGAElement::CreateLayoutObject(const ComputedStyle&) {
   auto* svg_element = DynamicTo<SVGElement>(parentNode());
   if (svg_element && svg_element->IsTextContent())
     return MakeGarbageCollected<LayoutSVGInline>(this);

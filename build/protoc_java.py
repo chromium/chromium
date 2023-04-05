@@ -23,6 +23,7 @@ import subprocess
 import sys
 
 import action_helpers
+import zip_helpers
 
 sys.path.append(os.path.join(os.path.dirname(__file__), 'android', 'gyp'))
 from util import build_utils
@@ -93,7 +94,8 @@ def main(argv):
       build_utils.DeleteDirectory(options.java_out_dir)
       shutil.copytree(temp_dir, options.java_out_dir)
     else:
-      build_utils.ZipDir(options.srcjar, temp_dir)
+      with action_helpers.atomic_output(options.srcjar) as f:
+        zip_helpers.zip_directory(f, temp_dir)
 
   if options.depfile:
     assert options.srcjar

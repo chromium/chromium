@@ -5,18 +5,20 @@
 #ifndef IOS_CHROME_BROWSER_MAIN_BROWSER_LIST_OBSERVER_H_
 #define IOS_CHROME_BROWSER_MAIN_BROWSER_LIST_OBSERVER_H_
 
+#include "base/observer_list_types.h"
+
 class Browser;
 class BrowserList;
 
 // Observer interface for BrowserList.
-class BrowserListObserver {
+class BrowserListObserver : public base::CheckedObserver {
  public:
   BrowserListObserver() = default;
 
   BrowserListObserver(const BrowserListObserver&) = delete;
   BrowserListObserver& operator=(const BrowserListObserver&) = delete;
 
-  virtual ~BrowserListObserver() = default;
+  ~BrowserListObserver() override;
 
   // Called after `browser` is added to `browser_list`.
   virtual void OnBrowserAdded(const BrowserList* browser_list,

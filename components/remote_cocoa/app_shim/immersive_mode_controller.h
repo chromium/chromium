@@ -96,6 +96,14 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
   // Returns true if kImmersiveFullscreenTabs is being used.
   virtual bool IsTabbed();
 
+ protected:
+  // Used by derived classes to manually set last_used_style_. Typically this is
+  // used while a RevealLock is active, allowing for a style change after the
+  // last RevealLock has been released.
+  void set_last_used_style(mojom::ToolbarVisibilityStyle style) {
+    last_used_style_ = style;
+  }
+
  private:
   // Pin or unpin the titlebar.
   void SetTitlebarPinned(bool pinned);

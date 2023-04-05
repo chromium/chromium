@@ -37,8 +37,8 @@ action("remoting_me2me_host_archive") {
   script = "//remoting/host/installer/build-installer-archive.py"
 
   sources = [
-    # This is used by build-installer-archive.py for creating the ZIP archive.
-    "//build/android/gyp/util/build_utils.py",
+    # Used by build-installer-archive.py.
+    "//build/zip_helpers.py",
   ]
 
   args = [

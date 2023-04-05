@@ -51,6 +51,22 @@ void ImmersiveModeTabbedController::Enable() {
       base::mac::ObjCCastStrict<BridgedContentView>(tab_window_.contentView);
   [tab_content_view_ retain];
   [tab_content_view_ removeFromSuperview];
+
+  // The ordering of resetting the `contentView` is important for macOS 12 and
+  // below. `tab_content_view_` needs to be removed from the
+  // `tab_window_.contentView` property before adding `tab_content_view_` to a
+  // new NSView tree. We will be left with a blank view if this ordering is not
+  // maintained.
+  tab_window_.contentView =
+      [[[BridgedContentView alloc] initWithBridge:tab_content_view_.bridge
+                                           bounds:gfx::Rect()] autorelease];
+
+  // This will allow the NSToolbarFullScreenWindow to become key when
+  // interacting with the tab strip.
+  // The `overlay_window_` is handled the same way in ImmersiveModeController.
+  // See the comment there for more details.
+  tab_window_.ignoresMouseEvents = YES;
+
   [tab_titlebar_view_controller_.get().view addSubview:tab_content_view_];
   [tab_content_view_ release];
   [tab_titlebar_view_controller_.get().view
@@ -67,16 +83,6 @@ void ImmersiveModeTabbedController::Enable() {
       constraintEqualToAnchor:tab_content_view_.superview.widthAnchor]
       .active = YES;
 
-  tab_window_.contentView =
-      [[[BridgedContentView alloc] initWithBridge:tab_content_view_.bridge
-                                           bounds:gfx::Rect()] autorelease];
-
-  // This will allow the NSToolbarFullScreenWindow to become key when
-  // interacting with the tab strip.
-  // The `overlay_window_` is handled the same way in ImmersiveModeController.
-  // See the comment there for more details.
-  tab_window_.ignoresMouseEvents = YES;
-
   ObserveChildWindows(tab_window_);
 }
 
@@ -85,6 +91,13 @@ void ImmersiveModeTabbedController::FullscreenTransitionCompleted() {
   // Keep the titlebar hidden until the fullscreen transition is complete.
   NSToolbar* toolbar = [[[NSToolbar alloc] init] autorelease];
   toolbar.visible = NO;
+
+  // Remove the baseline separator for macOS 10.15 and earlier. This has no
+  // effect on macOS 11 and above. See
+  // `-[ImmersiveModeTitlebarViewController separatorView]` for removing the
+  // separator on macOS 11+.
+  toolbar.showsBaselineSeparator = NO;
+
   browser_window().toolbar = toolbar;
 
   // `UpdateToolbarVisibility()` will make the toolbar visible as necessary.
@@ -98,6 +111,14 @@ void ImmersiveModeTabbedController::FullscreenTransitionCompleted() {
 
 void ImmersiveModeTabbedController::UpdateToolbarVisibility(
     mojom::ToolbarVisibilityStyle style) {
+  // Don't make changes when a reveal lock is active. Do update the
+  // `last_used_style` so the style will be updated once all outstanding reveal
+  // locks are released.
+  if (reveal_lock_count() > 0) {
+    set_last_used_style(style);
+    return;
+  }
+
   // TODO(https://crbug.com/1426944): A NSTitlebarAccessoryViewController hosted
   // in the titlebar, as opposed to above or below it, does not hide/show when
   // using the `hidden` property. Instead we must entirely remove the view

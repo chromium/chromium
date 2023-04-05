@@ -238,6 +238,11 @@ class CONTENT_EXPORT SiteInstance : public base::RefCounted<SiteInstance> {
 
   // Determine if a URL should "use up" a site.  URLs such as about:blank or
   // chrome-native:// leave the site unassigned.
+  //
+  // Note that this API shouldn't be used for cases where about:blank has an
+  // inherited origin, because that origin may influence the outcome of this
+  // call.  See the content-internal ShouldAssignSiteForUrlInfo() for more
+  // information.
   static bool ShouldAssignSiteForURL(const GURL& url);
 
   // Starts requiring a dedicated process for |url|'s site.  On platforms where

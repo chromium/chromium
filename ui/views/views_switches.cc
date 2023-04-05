@@ -10,6 +10,12 @@ namespace views::switches {
 
 // Please keep alphabetized.
 
+// Disables the disregarding of potentially unintended input events such as
+// button clicks that happen instantly after the button is shown. Use this for
+// integration tests that do automated clicks etc.
+const char kDisableInputEventActivationProtectionForTesting[] =
+    "disable-input-event-activation-protection";
+
 // Draws a semitransparent rect to indicate the bounds of each view.
 const char kDrawViewBoundsRects[] = "draw-view-bounds-rects";
 

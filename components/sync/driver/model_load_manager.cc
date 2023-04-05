@@ -70,14 +70,6 @@ void ModelLoadManager::Initialize(ModelTypeSet preferred_types_without_errors,
       ShutdownReason reason = preferred_types.Has(dtc->type())
                                   ? ShutdownReason::STOP_SYNC_AND_KEEP_DATA
                                   : ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA;
-      // If we're switching to transport-only mode, don't clear any old data.
-      // The reason is that if a user temporarily disables Sync, we don't want
-      // to wipe (and later redownload) all their data, just because Sync
-      // restarted in transport-only mode.
-      if (sync_mode_changed &&
-          configure_context_.sync_mode == SyncMode::kTransportOnly) {
-        reason = ShutdownReason::STOP_SYNC_AND_KEEP_DATA;
-      }
       DVLOG(1) << "ModelLoadManager: stop " << dtc->name() << " due to "
                << ShutdownReasonToString(reason);
       StopDatatypeImpl(SyncError(), reason, dtc.get(), base::DoNothing());

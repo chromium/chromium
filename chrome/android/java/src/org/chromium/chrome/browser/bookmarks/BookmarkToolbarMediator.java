@@ -71,7 +71,31 @@ class BookmarkToolbarMediator implements BookmarkUiObserver,
     }
 
     boolean onMenuIdClick(@IdRes int id) {
-        if (id == R.id.edit_menu_id) {
+        // Sorting/viewing submenu needs to be caught, but haven't been implemented yet.
+        // TODO(crbug.com/1413463): Handle the new toolbar options.
+        if (id == R.id.create_new_folder_menu_id) {
+            return true;
+        } else if (id == R.id.normal_options_submenu) {
+            return true;
+        } else if (id == R.id.sort_by_newest) {
+            mModel.set(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID, id);
+            return true;
+        } else if (id == R.id.sort_by_oldest) {
+            mModel.set(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID, id);
+            return true;
+        } else if (id == R.id.sort_by_alpha) {
+            mModel.set(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID, id);
+            return true;
+        } else if (id == R.id.sort_by_reverse_alpha) {
+            mModel.set(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID, id);
+            return true;
+        } else if (id == R.id.visual_view) {
+            mModel.set(BookmarkToolbarProperties.CHECKED_VIEW_MENU_ID, id);
+            return true;
+        } else if (id == R.id.compact_view) {
+            mModel.set(BookmarkToolbarProperties.CHECKED_VIEW_MENU_ID, id);
+            return true;
+        } else if (id == R.id.edit_menu_id) {
             BookmarkAddEditFolderActivity.startEditFolderActivity(mContext, mCurrentFolder);
             return true;
         } else if (id == R.id.close_menu_id) {

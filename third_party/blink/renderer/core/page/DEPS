@@ -6,6 +6,7 @@ include_rules = [
 specific_include_rules = {
   "chrome_client_impl_test\.cc": [
     "+base/run_loop.h",
+    "+components/autofill/core/common/autofill_features.h"
   ],
   "context_menu_controller\.cc": [
     "+components/shared_highlighting/core/common/shared_highlighting_features.h",

@@ -37,6 +37,22 @@ void AuctionMetricsRecorder::OnAuctionEnd(AuctionResult auction_result) {
   builder_.SetNumBidderWorklets(
       GetExponentialBucketMinForCounts1000(bidder_worklet_keys_.size()));
 
+  builder_.SetNumBidsAbortedByBuyerCumulativeTimeout(
+      GetExponentialBucketMinForCounts1000(
+          num_bids_aborted_by_buyer_cumulative_timeout_));
+  builder_.SetNumBidsAbortedByBidderWorkletFatalError(
+      GetExponentialBucketMinForCounts1000(
+          num_bids_aborted_by_bidder_worklet_fatal_error_));
+  builder_.SetNumBidsFilteredDuringInterestGroupLoad(
+      GetExponentialBucketMinForCounts1000(
+          num_bids_filtered_during_interest_group_load_));
+  builder_.SetNumBidsFilteredDuringReprioritization(
+      GetExponentialBucketMinForCounts1000(
+          num_bids_filtered_during_reprioritization_));
+  builder_.SetNumBidsFilteredByPerBuyerLimits(
+      GetExponentialBucketMinForCounts1000(
+          num_bids_filtered_by_per_buyer_limits_));
+
   builder_.SetNumInterestGroupsWithNoBids(
       GetExponentialBucketMinForCounts1000(num_interest_groups_with_no_bids_));
   builder_.SetNumInterestGroupsWithOnlyNonKAnonBid(
@@ -85,6 +101,28 @@ void AuctionMetricsRecorder::ReportBuyer(url::Origin& owner) {
 void AuctionMetricsRecorder::ReportBidderWorkletKey(
     AuctionWorkletManager::WorkletKey& worklet_key) {
   bidder_worklet_keys_.emplace(worklet_key.GetHash());
+}
+
+void AuctionMetricsRecorder::RecordBidsAbortedByBuyerCumulativeTimeout(
+    int64_t num_bids) {
+  num_bids_aborted_by_buyer_cumulative_timeout_ += num_bids;
+}
+
+void AuctionMetricsRecorder::RecordBidAbortedByBidderWorkletFatalError() {
+  ++num_bids_aborted_by_bidder_worklet_fatal_error_;
+}
+
+void AuctionMetricsRecorder::RecordBidFilteredDuringInterestGroupLoad() {
+  ++num_bids_filtered_during_interest_group_load_;
+}
+
+void AuctionMetricsRecorder::RecordBidFilteredDuringReprioritization() {
+  ++num_bids_filtered_during_reprioritization_;
+}
+
+void AuctionMetricsRecorder::RecordBidsFilteredByPerBuyerLimits(
+    int64_t num_bids) {
+  num_bids_filtered_by_per_buyer_limits_ += num_bids;
 }
 
 void AuctionMetricsRecorder::SetKAnonymityBidMode(

@@ -10,16 +10,9 @@
 #include "base/values.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/public/browser/preloading.h"
+#include "content/public/common/content_features.h"
 
 namespace content {
-
-namespace features {
-
-BASE_FEATURE(kPreloadingConfig,
-             "PreloadingConfig",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-}  // namespace features
 
 namespace {
 
@@ -31,23 +24,52 @@ namespace {
 //  * holdback: whether this preloading_type, predictor combination should be
 //    held back for counterfactual evaluation.
 //  * sampling_likelihood: the fraction of preloading attempts that will be
-//    logged in UKM.
-//
-// Example configuration:
-// [{
-//   "preloading_type": "Preconnect",
-//   "preloading_predictor": "UrlPointerDownOnAnchor",
-//   "holdback": true,
-//   "sampling_likelihood": 0.5
-// },{
-//   "preloading_type": "Prerender",
-//   "preloading_predictor": "UrlPointerHoverOnAnchor",
-//   "holdback": false,
-//   "sampling_likelihood": 0.75
-// }]
+//    logged in UKM. See crbug.com/1411841#c3 to see how the sampling_likelihood
+//    default values are determined.
 constexpr base::FeatureParam<std::string> kPreloadingConfigParam{
-    &features::kPreloadingConfig, "preloading_config", ""};
-
+    &features::kPreloadingConfig, "preloading_config", R"(
+[{
+  "preloading_type": "Prefetch",
+  "preloading_predictor": "OmniboxSearchPredictor",
+  "sampling_likelihood": 1.000000
+}, {
+  "preloading_type": "Prefetch",
+  "preloading_predictor": "OmniboxMousePredictor",
+  "sampling_likelihood": 1.000000
+}, {
+  "preloading_type": "Prerender",
+  "preloading_predictor": "DefaultSearchEngine",
+  "sampling_likelihood": 1.000000
+}, {
+  "preloading_type": "Prerender",
+  "preloading_predictor": "SpeculationRules",
+  "sampling_likelihood": 1.000000
+}, {
+  "preloading_type": "Prefetch",
+  "preloading_predictor": "DefaultSearchEngine",
+  "sampling_likelihood": 0.074620
+}, {
+  "preloading_type": "NoStatePrefetch",
+  "preloading_predictor": "DirectURLInput",
+  "sampling_likelihood": 0.065070
+}, {
+  "preloading_type": "Prerender",
+  "preloading_predictor": "DirectURLInput",
+  "sampling_likelihood": 0.036904
+}, {
+  "preloading_type": "NoStatePrefetch",
+  "preloading_predictor": "LinkRel",
+  "sampling_likelihood": 0.016354
+}, {
+  "preloading_type": "Prefetch",
+  "preloading_predictor": "SpeculationRules",
+  "sampling_likelihood": 0.007387
+}, {
+  "preloading_type": "Preconnect",
+  "preloading_predictor": "PointerDownOnAnchor",
+  "sampling_likelihood": 0.000345
+}]
+)"};
 }  // namespace
 
 PreloadingConfig& PreloadingConfig::GetInstance() {

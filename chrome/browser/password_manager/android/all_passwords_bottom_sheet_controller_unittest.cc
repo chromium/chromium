@@ -23,6 +23,7 @@
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/safe_browsing/core/browser/password_protection/stub_password_reuse_detection_manager_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -83,12 +84,16 @@ class MockAllPasswordsBottomSheetView : public AllPasswordsBottomSheetView {
 class MockPasswordManagerClient
     : public password_manager::StubPasswordManagerClient {
  public:
-  MOCK_METHOD(void, OnPasswordSelected, (const std::u16string&), (override));
-
   MOCK_METHOD(scoped_refptr<device_reauth::DeviceAuthenticator>,
               GetDeviceAuthenticator,
               (),
               (override));
+};
+
+class MockPasswordReuseDetectionManagerClient
+    : public safe_browsing::StubPasswordReuseDetectionManagerClient {
+ public:
+  MOCK_METHOD(void, OnPasswordSelected, (const std::u16string&), (override));
 };
 
 }  // namespace
@@ -139,7 +144,8 @@ class AllPasswordsBottomSheetControllerTest : public testing::Test {
             base::PassKey<AllPasswordsBottomSheetControllerTest>(),
             std::move(mock_view_unique_ptr), driver_.AsWeakPtr(), store_.get(),
             dissmissal_callback_.Get(), focused_field_type,
-            mock_pwd_manager_client_.get());
+            mock_pwd_manager_client_.get(),
+            mock_pwd_reuse_detection_manager_client_.get());
   }
 
   MockPasswordManagerDriver& driver() { return driver_; }
@@ -164,6 +170,11 @@ class AllPasswordsBottomSheetControllerTest : public testing::Test {
     return mock_authenticator_;
   }
 
+  MockPasswordReuseDetectionManagerClient&
+  password_reuse_detection_manager_client() {
+    return *mock_pwd_reuse_detection_manager_client_.get();
+  }
+
  private:
   content::BrowserTaskEnvironment task_env_;
   MockPasswordManagerDriver driver_;
@@ -177,6 +188,9 @@ class AllPasswordsBottomSheetControllerTest : public testing::Test {
       std::make_unique<MockPasswordManagerClient>();
   scoped_refptr<MockDeviceAuthenticator> mock_authenticator_ =
       base::MakeRefCounted<MockDeviceAuthenticator>();
+  std::unique_ptr<MockPasswordReuseDetectionManagerClient>
+      mock_pwd_reuse_detection_manager_client_ =
+          std::make_unique<MockPasswordReuseDetectionManagerClient>();
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -321,7 +335,8 @@ TEST_F(AllPasswordsBottomSheetControllerTest, OnDismiss) {
 
 TEST_F(AllPasswordsBottomSheetControllerTest,
        OnCredentialSelectedTriggersPhishGuard) {
-  EXPECT_CALL(client(), OnPasswordSelected(std::u16string(kPassword)));
+  EXPECT_CALL(password_reuse_detection_manager_client(),
+              OnPasswordSelected(std::u16string(kPassword)));
 
   all_passwords_controller()->OnCredentialSelected(
       kUsername1, kPassword, RequestsToFillPassword(true));
@@ -329,7 +344,8 @@ TEST_F(AllPasswordsBottomSheetControllerTest,
 
 TEST_F(AllPasswordsBottomSheetControllerTest,
        PhishGuardIsNotCalledForUsernameInPasswordField) {
-  EXPECT_CALL(client(), OnPasswordSelected).Times(0);
+  EXPECT_CALL(password_reuse_detection_manager_client(), OnPasswordSelected)
+      .Times(0);
 
   all_passwords_controller()->OnCredentialSelected(
       kUsername1, kPassword, RequestsToFillPassword(false));
@@ -338,7 +354,8 @@ TEST_F(AllPasswordsBottomSheetControllerTest,
 TEST_F(AllPasswordsBottomSheetControllerTest,
        PhishGuardIsNotCalledForUsername) {
   createAllPasswordsController(FocusedFieldType::kFillableUsernameField);
-  EXPECT_CALL(client(), OnPasswordSelected).Times(0);
+  EXPECT_CALL(password_reuse_detection_manager_client(), OnPasswordSelected)
+      .Times(0);
 
   all_passwords_controller()->OnCredentialSelected(
       kUsername1, kPassword, RequestsToFillPassword(false));

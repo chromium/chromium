@@ -235,12 +235,14 @@ void HotspotMetricsHelper::Init(
     HotspotStateHandler* hotspot_state_handler,
     HotspotController* hotspot_controller,
     HotspotConfigurationHandler* hotspot_configuration_handler,
+    HotspotEnabledStateNotifier* hotspot_enabled_state_notifier,
     NetworkStateHandler* network_state_handler) {
   hotspot_state_handler_ = hotspot_state_handler;
   hotspot_state_handler_->AddObserver(this);
   hotspot_capabilities_provider_ = hotspot_capabilities_provider;
   hotspot_capabilities_provider_->AddObserver(this);
   hotspot_configuration_handler_ = hotspot_configuration_handler;
+  hotspot_enabled_state_notifier_ = hotspot_enabled_state_notifier;
   network_state_handler_ = network_state_handler;
 
   if (LoginState::IsInitialized()) {
@@ -251,9 +253,8 @@ void HotspotMetricsHelper::Init(
   hotspot_state_handler_->ObserveEnabledStateChanges(
       hotspot_state_enabled_state_observer_receiver_
           .BindNewPipeAndPassRemote());
-  hotspot_controller->ObserveEnabledStateChanges(
-      hotspot_controller_enabled_state_observer_receiver_
-          .BindNewPipeAndPassRemote());
+  hotspot_enabled_state_notifier->ObserveEnabledStateChanges(
+      hotspot_enabled_state_notifier_receiver_.BindNewPipeAndPassRemote());
 }
 
 void HotspotMetricsHelper::OnHotspotCapabilitiesChanged() {

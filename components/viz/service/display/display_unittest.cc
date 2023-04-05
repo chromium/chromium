@@ -170,7 +170,8 @@ class DisplayTest : public testing::Test {
                                                          &manager_,
                                                          kArbitraryFrameSinkId,
                                                          true /* is_root */)),
-        task_runner_(new base::NullTaskRunner) {}
+        task_runner_(new base::NullTaskRunner),
+        client_(std::make_unique<StubDisplayClient>()) {}
 
   ~DisplayTest() override {}
 
@@ -277,6 +278,7 @@ class DisplayTest : public testing::Test {
   ParentLocalSurfaceIdAllocator id_allocator_;
   scoped_refptr<base::NullTaskRunner> task_runner_;
   std::unique_ptr<BeginFrameSource> begin_frame_source_;
+  std::unique_ptr<StubDisplayClient> client_;  // Must outlive `display_`.
   std::unique_ptr<Display> display_;
   raw_ptr<TestSoftwareOutputDevice> software_output_device_ = nullptr;
   raw_ptr<FakeSoftwareOutputSurface> output_surface_ = nullptr;
@@ -289,13 +291,12 @@ TEST_F(DisplayTest, DisplayDamaged) {
   RendererSettings settings;
   settings.partial_swap_enabled = true;
   SetUpSoftwareDisplay(settings);
+  display_->Initialize(client_.get(), manager_.surface_manager());
+
   gfx::ColorSpace color_space_1 = gfx::ColorSpace::CreateXYZD50();
   gfx::ColorSpace color_space_2 = gfx::ColorSpace::CreateSRGBLinear();
   gfx::DisplayColorSpaces color_spaces_1(color_space_1);
   gfx::DisplayColorSpaces color_spaces_2(color_space_2);
-
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
   display_->SetDisplayColorSpaces(color_spaces_1);
 
   EXPECT_FALSE(scheduler_->damaged());
@@ -557,9 +558,7 @@ TEST_F(DisplayTest, DisplayDamaged) {
 // Verifies latency info is stored only up to a limit if a swap fails.
 void DisplayTest::LatencyInfoCapTest(bool over_capacity) {
   SetUpSoftwareDisplay(RendererSettings());
-
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
 
   id_allocator_.GenerateId();
   LocalSurfaceId local_surface_id(id_allocator_.GetCurrentLocalSurfaceId());
@@ -634,14 +633,9 @@ TEST_F(DisplayTest, DisableSwapUntilResize) {
 
   RendererSettings settings;
   settings.partial_swap_enabled = true;
-
   SetUpGpuDisplay(settings);
-
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
-
+  display_->Initialize(client_.get(), manager_.surface_manager());
   display_->SetLocalSurfaceId(local_surface_id1, 1.f);
-
   display_->Resize(gfx::Size(100, 100));
 
   {
@@ -712,8 +706,7 @@ TEST_F(DisplayTest, BackdropFilterTest) {
 
   // Set up first display.
   SetUpSoftwareDisplay(settings);
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
   display_->SetLocalSurfaceId(local_surface_id, 1.f);
 
   // Create frame sink for a sub surface.
@@ -861,8 +854,7 @@ TEST_F(DisplayTest, CompositorFrameDamagesCorrectDisplay) {
 
   // Set up first display.
   SetUpSoftwareDisplay(settings);
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
   display_->SetLocalSurfaceId(local_surface_id, 1.f);
 
   // Set up second frame sink + display.
@@ -872,13 +864,13 @@ TEST_F(DisplayTest, CompositorFrameDamagesCorrectDisplay) {
   auto scheduler_for_display2 = std::make_unique<TestDisplayScheduler>(
       begin_frame_source2.get(), task_runner_.get());
   TestDisplayScheduler* scheduler2 = scheduler_for_display2.get();
+  StubDisplayClient client2;  // Must outlive `display2`.
   auto display2 = CreateDisplay(
       settings, kAnotherFrameSinkId, std::move(scheduler_for_display2),
       std::make_unique<FakeSoftwareOutputSurface>(
           std::make_unique<TestSoftwareOutputDevice>()));
   manager_.RegisterBeginFrameSource(begin_frame_source2.get(),
                                     kAnotherFrameSinkId);
-  StubDisplayClient client2;
   display2->Initialize(&client2, manager_.surface_manager());
   display2->SetLocalSurfaceId(local_surface_id, 1.f);
 
@@ -912,8 +904,7 @@ TEST_F(DisplayTest, DrawOcclusionWithBlending) {
   RendererSettings settings;
   settings.minimum_fragments_reduced = 0;
   SetUpGpuDisplay(settings);
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
   AggregatedFrame frame = MakeDefaultAggregatedFrame(/*num_render_passes=*/2);
 
   bool are_contents_opaque = true;
@@ -959,8 +950,7 @@ TEST_F(DisplayTest, DrawOcclusionWithIntersectingBackdropFilter) {
   RendererSettings settings;
   settings.minimum_fragments_reduced = 0;
   SetUpGpuDisplay(settings);
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
   AggregatedFrame frame = MakeDefaultAggregatedFrame(/*num_render_passes=*/2);
 
   bool are_contents_opaque = true;
@@ -1031,9 +1021,7 @@ TEST_F(DisplayTest, DrawOcclusionWithIntersectingBackdropFilter) {
 // covered completely.
 TEST_F(DisplayTest, DrawOcclusionWithNonCoveringDrawQuad) {
   SetUpGpuDisplay(RendererSettings());
-
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
 
   AggregatedFrame frame = MakeDefaultAggregatedFrame();
 
@@ -1251,9 +1239,7 @@ TEST_F(DisplayTest, DrawOcclusionWithNonCoveringDrawQuad) {
 TEST_F(DisplayTest, DrawOcclusionWithSingleOverlapBehindDisjointedDrawQuads) {
   RendererSettings settings;
   SetUpGpuDisplay(settings);
-
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
 
   AggregatedFrame frame = MakeDefaultAggregatedFrame();
 
@@ -1306,9 +1292,7 @@ TEST_F(DisplayTest, DrawOcclusionWithSingleOverlapBehindDisjointedDrawQuads) {
 TEST_F(DisplayTest, DrawOcclusionWithMultipleOverlapBehindDisjointedDrawQuads) {
   RendererSettings settings;
   SetUpGpuDisplay(settings);
-
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
 
   AggregatedFrame frame = MakeDefaultAggregatedFrame();
   std::vector<gfx::Rect> rects;
@@ -1358,9 +1342,7 @@ TEST_F(DisplayTest, DrawOcclusionWithMultipleOverlapBehindDisjointedDrawQuads) {
 TEST_F(DisplayTest, CompositorFrameWithOverlapDrawQuad) {
   RendererSettings settings;
   SetUpGpuDisplay(settings);
-
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
 
   AggregatedFrame frame = MakeDefaultAggregatedFrame();
   gfx::Rect rect1(0, 0, 100, 100);
@@ -1485,9 +1467,7 @@ TEST_F(DisplayTest, CompositorFrameWithOverlapDrawQuad) {
 TEST_F(DisplayTest, CompositorFrameWithTransformer) {
   RendererSettings settings;
   SetUpGpuDisplay(settings);
-
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
 
   // Rect 2, 3, 4 are contained in rect 1 only after applying the half scale
   // matrix. They are repetition of CompositorFrameWithOverlapDrawQuad.
@@ -1753,9 +1733,7 @@ TEST_F(DisplayTest, CompositorFrameWithTransformer) {
 // Check if draw occlusion works with transform at epsilon scale.
 TEST_F(DisplayTest, CompositorFrameWithEpsilonScaleTransform) {
   SetUpGpuDisplay(RendererSettings());
-
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
 
   AggregatedFrame frame = MakeDefaultAggregatedFrame();
   gfx::Rect rect(0, 0, 100, 100);
@@ -1862,9 +1840,7 @@ TEST_F(DisplayTest, CompositorFrameWithEpsilonScaleTransform) {
 // Check if draw occlusion works with transform at negative scale.
 TEST_F(DisplayTest, CompositorFrameWithNegativeScaleTransform) {
   SetUpGpuDisplay(RendererSettings());
-
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
 
   AggregatedFrame frame = MakeDefaultAggregatedFrame();
   gfx::Rect rect(0, 0, 100, 100);
@@ -1982,9 +1958,7 @@ TEST_F(DisplayTest, CompositorFrameWithNegativeScaleTransform) {
 TEST_F(DisplayTest, CompositorFrameWithRotation) {
   RendererSettings settings;
   SetUpGpuDisplay(settings);
-
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
 
   // rect 2 is inside rect 1 initially.
   AggregatedFrame frame = MakeDefaultAggregatedFrame();
@@ -2108,9 +2082,7 @@ TEST_F(DisplayTest, CompositorFrameWithRotation) {
 TEST_F(DisplayTest, CompositorFrameWithPerspective) {
   RendererSettings settings;
   SetUpGpuDisplay(settings);
-
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
 
   // rect 2 is inside rect 1 initially.
   AggregatedFrame frame = MakeDefaultAggregatedFrame();
@@ -2181,9 +2153,7 @@ TEST_F(DisplayTest, CompositorFrameWithPerspective) {
 TEST_F(DisplayTest, CompositorFrameWithOpacityChange) {
   RendererSettings settings;
   SetUpGpuDisplay(settings);
-
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
 
   AggregatedFrame frame = MakeDefaultAggregatedFrame();
   gfx::Rect rect1(0, 0, 100, 100);
@@ -2244,9 +2214,7 @@ TEST_F(DisplayTest, CompositorFrameWithOpacityChange) {
 TEST_F(DisplayTest, CompositorFrameWithOpaquenessChange) {
   RendererSettings settings;
   SetUpGpuDisplay(settings);
-
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
 
   AggregatedFrame frame = MakeDefaultAggregatedFrame();
   gfx::Rect rect1(0, 0, 100, 100);
@@ -2308,9 +2276,7 @@ TEST_F(DisplayTest, CompositorFrameWithOpaquenessChange) {
 TEST_F(DisplayTest, CompositorFrameZTranslate) {
   RendererSettings settings;
   SetUpGpuDisplay(settings);
-
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
 
   AggregatedFrame frame = MakeDefaultAggregatedFrame();
   gfx::Rect rect1(0, 0, 100, 100);
@@ -2358,9 +2324,7 @@ TEST_F(DisplayTest, CompositorFrameZTranslate) {
 TEST_F(DisplayTest, CompositorFrameWithTranslateTransformer) {
   RendererSettings settings;
   SetUpGpuDisplay(settings);
-
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
 
   // rect 2 and 3 are outside rect 1 initially.
   AggregatedFrame frame = MakeDefaultAggregatedFrame();
@@ -2475,9 +2439,7 @@ TEST_F(DisplayTest, CompositorFrameWithTranslateTransformer) {
 TEST_F(DisplayTest, CompositorFrameWithCombinedSharedQuadState) {
   RendererSettings settings;
   SetUpGpuDisplay(settings);
-
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
 
   // rect 3 is inside of combined rect of rect 1 and rect 2.
   AggregatedFrame frame = MakeDefaultAggregatedFrame();
@@ -2598,8 +2560,7 @@ TEST_F(DisplayTest, CompositorFrameWithCombinedSharedQuadState) {
 // Remove overlapping quads in non-root render passes.
 TEST_F(DisplayTest, DrawOcclusionWithMultipleRenderPass) {
   SetUpGpuDisplay(RendererSettings());
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
 
   AggregatedFrame frame = MakeDefaultAggregatedFrame(/*num_render_passes=*/2);
 
@@ -2645,9 +2606,7 @@ TEST_F(DisplayTest, DrawOcclusionWithMultipleRenderPass) {
 TEST_F(DisplayTest, CompositorFrameWithMultipleRenderPass) {
   RendererSettings settings;
   SetUpGpuDisplay(settings);
-
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
 
   // rect 3 is inside of combined rect of rect 1 and rect 2.
   AggregatedFrame frame = MakeDefaultAggregatedFrame();
@@ -2718,9 +2677,7 @@ TEST_F(DisplayTest, CompositorFrameWithMultipleRenderPass) {
 
 TEST_F(DisplayTest, CompositorFrameWithCoveredRenderPass) {
   SetUpGpuDisplay(RendererSettings());
-
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
 
   // rect 3 is inside of combined rect of rect 1 and rect 2.
   AggregatedFrame frame = MakeDefaultAggregatedFrame();
@@ -2787,9 +2744,7 @@ TEST_F(DisplayTest, CompositorFrameWithCoveredRenderPass) {
 TEST_F(DisplayTest, CompositorFrameWithClip) {
   RendererSettings settings;
   SetUpGpuDisplay(settings);
-
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
 
   AggregatedFrame frame = MakeDefaultAggregatedFrame();
   gfx::Rect rect1(0, 0, 100, 100);
@@ -2899,9 +2854,7 @@ TEST_F(DisplayTest, CompositorFrameWithClip) {
 TEST_F(DisplayTest, CompositorFrameWithCopyRequest) {
   RendererSettings settings;
   SetUpGpuDisplay(settings);
-
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
 
   AggregatedFrame frame = MakeDefaultAggregatedFrame();
   gfx::Rect rect1(0, 0, 100, 100);
@@ -2944,9 +2897,7 @@ TEST_F(DisplayTest, CompositorFrameWithCopyRequest) {
 TEST_F(DisplayTest, CompositorFrameWithRenderPass) {
   RendererSettings settings;
   SetUpGpuDisplay(settings);
-
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
 
   AggregatedFrame frame = MakeDefaultAggregatedFrame();
   gfx::Rect rect1(0, 0, 100, 100);
@@ -3123,9 +3074,7 @@ TEST_F(DisplayTest, CompositorFrameWithRenderPass) {
 TEST_F(DisplayTest, CompositorFrameWithMultipleDrawQuadInSharedQuadState) {
   RendererSettings settings;
   SetUpGpuDisplay(settings);
-
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
 
   AggregatedFrame frame = MakeDefaultAggregatedFrame();
   gfx::Rect rect1(0, 0, 100, 100);
@@ -3296,9 +3245,8 @@ TEST_F(DisplayTest, CompositorFrameWithMultipleDrawQuadInSharedQuadState) {
 TEST_F(DisplayTest, CompositorFrameWithNonInvertibleTransform) {
   RendererSettings settings;
   SetUpGpuDisplay(settings);
+  display_->Initialize(client_.get(), manager_.surface_manager());
 
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
   AggregatedFrame frame = MakeDefaultAggregatedFrame();
   gfx::Rect rect1(0, 0, 100, 100);
   gfx::Rect rect2(10, 10, 50, 50);
@@ -3397,9 +3345,7 @@ TEST_F(DisplayTest, CompositorFrameWithNonInvertibleTransform) {
 // Check if draw occlusion works with very large DrawQuad. crbug.com/824528.
 TEST_F(DisplayTest, DrawOcclusionWithLargeDrawQuad) {
   SetUpGpuDisplay(RendererSettings());
-
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
 
   AggregatedFrame frame = MakeDefaultAggregatedFrame();
   // The size of this DrawQuad will be 237790x237790 > 2^32 (uint32_t.max())
@@ -3466,8 +3412,7 @@ TEST_P(OnBeginFrameAcksDisplayTest, CompositorFrameWithPresentationToken) {
 
   // Set up first display.
   SetUpSoftwareDisplay(settings);
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
   display_->SetLocalSurfaceId(local_surface_id, 1.f);
 
   // Create frame sink for a sub surface.
@@ -3586,9 +3531,7 @@ INSTANTIATE_TEST_SUITE_P(,
 TEST_F(DisplayTest, BeginFrameThrottling) {
   id_allocator_.GenerateId();
   SetUpGpuDisplay(RendererSettings());
-
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
   display_->SetLocalSurfaceId(id_allocator_.GetCurrentLocalSurfaceId(), 1.f);
   support_->SetNeedsBeginFrame(true);
 
@@ -3657,9 +3600,7 @@ TEST_F(DisplayTest, BeginFrameThrottling) {
 TEST_F(DisplayTest, BeginFrameThrottlingMultipleSurfaces) {
   id_allocator_.GenerateId();
   SetUpGpuDisplay(RendererSettings());
-
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
   display_->SetLocalSurfaceId(id_allocator_.GetCurrentLocalSurfaceId(), 1.f);
   support_->SetNeedsBeginFrame(true);
 
@@ -3726,9 +3667,7 @@ TEST_F(DisplayTest, BeginFrameThrottlingMultipleSurfaces) {
 TEST_F(DisplayTest, DontThrottleWhenParentBlocked) {
   id_allocator_.GenerateId();
   SetUpGpuDisplay(RendererSettings());
-
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
   display_->SetLocalSurfaceId(id_allocator_.GetCurrentLocalSurfaceId(), 1.f);
   support_->SetNeedsBeginFrame(true);
 
@@ -3805,9 +3744,7 @@ TEST_F(DisplayTest, DontThrottleWhenParentBlocked) {
 
 TEST_F(DisplayTest, DrawOcclusionWithRoundedCornerDoesNotOcclude) {
   SetUpGpuDisplay(RendererSettings());
-
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
 
   AggregatedFrame frame = MakeDefaultAggregatedFrame();
 
@@ -3860,9 +3797,7 @@ TEST_F(DisplayTest, DrawOcclusionWithRoundedCornerDoesNotOcclude) {
 
 TEST_F(DisplayTest, DrawOcclusionWithRoundedCornerDoesOcclude) {
   SetUpGpuDisplay(RendererSettings());
-
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
 
   // The quad with rounded corner completely covers the quad below it.
   AggregatedFrame frame = MakeDefaultAggregatedFrame();
@@ -3913,9 +3848,7 @@ TEST_F(DisplayTest, DrawOcclusionWithRoundedCornerDoesOcclude) {
 
 TEST_F(DisplayTest, DrawOcclusionSplit) {
   SetUpGpuDisplay(RendererSettings());
-
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
 
   // The two partially occluded quads will be split into two additional quads,
   // preserving only the visible regions.
@@ -4006,9 +3939,7 @@ TEST_F(DisplayTest, DrawOcclusionSplit) {
 // https://tinyurl.com/RegionComplexityReduction#heading=h.fg95k5w5t791
 TEST_F(DisplayTest, FirstPassVisibleComplexityReduction) {
   SetUpGpuDisplay(RendererSettings());
-
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
 
   AggregatedFrame frame = MakeDefaultAggregatedFrame();
 
@@ -4116,9 +4047,7 @@ TEST_F(DisplayTest, FirstPassVisibleComplexityReduction) {
 // our threshold 128x128.
 TEST_F(DisplayTest, DrawOcclusionSplitDeviceScaleFactorFractional) {
   SetUpGpuDisplay(RendererSettings());
-
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
   display_->SetLocalSurfaceId(id_allocator_.GetCurrentLocalSurfaceId(), 1.5f);
   display_->Resize(gfx::Size(1000, 1000));
 
@@ -4159,9 +4088,7 @@ TEST_F(DisplayTest, DrawOcclusionSplitDeviceScaleFactorFractional) {
 
 TEST_F(DisplayTest, DrawOcclusionWithRoundedCornerPartialOcclude) {
   SetUpGpuDisplay(RendererSettings());
-
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
 
   // The quad with rounded corner completely covers the quad below it.
   AggregatedFrame frame = MakeDefaultAggregatedFrame();
@@ -4272,9 +4199,7 @@ TEST_F(DisplayTest, DrawOcclusionWithRoundedCornerPartialOcclude) {
 
 TEST_F(DisplayTest, DisplayTransformHint) {
   SetUpSoftwareDisplay(RendererSettings());
-
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
 
   id_allocator_.GenerateId();
   LocalSurfaceId local_surface_id(id_allocator_.GetCurrentLocalSurfaceId());
@@ -4336,9 +4261,7 @@ TEST_F(DisplayTest, DisplaySizeMismatch) {
   settings.partial_swap_enabled = true;
   settings.auto_resize_output_surface = false;
   SetUpSoftwareDisplay(settings);
-
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
 
   id_allocator_.GenerateId();
   display_->SetLocalSurfaceId(id_allocator_.GetCurrentLocalSurfaceId(), 1.f);
@@ -4389,8 +4312,7 @@ TEST_F(DisplayTest, PixelMovingForegroundFilterTest) {
 
   // Set up first display.
   SetUpSoftwareDisplay(settings);
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
   display_->SetLocalSurfaceId(local_surface_id, 1.f);
 
   // Create frame sink for a sub surface.
@@ -4506,8 +4428,7 @@ TEST_F(DisplayTest, CanSkipRenderPass) {
 
   // Set up first display.
   SetUpSoftwareDisplay(RendererSettings());
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
   display_->SetLocalSurfaceId(local_surface_id, 1.f);
 
   // Create frame sink for a sub surface.
@@ -5232,8 +5153,7 @@ using UnsupportedRendererDelegatedInkTest = DisplayTest;
 TEST_F(UnsupportedRendererDelegatedInkTest,
        DelegatedInkSilentlyFailsOnSoftwareRenderer) {
   SetUpSoftwareDisplay(RendererSettings());
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
+  display_->Initialize(client_.get(), manager_.surface_manager());
 
   // Should silently bail early from here. Test will crash if we actually try to
   // initialize the delegated ink point renderer.

@@ -239,11 +239,14 @@ void SerializeWordBox(const chrome_screen_ai::WordBox& word_box,
           inline_text_box.GetStringAttribute(ax::mojom::StringAttribute::kName)
               .length()));
 
-  if (!word_box.language().empty()) {
-    DCHECK_EQ(inline_text_box.GetStringAttribute(
-                  ax ::mojom::StringAttribute::kLanguage),
-              word_box.language())
-        << "A `WordBox` has a different language than its enclosing `LineBox`.";
+  if (!word_box.language().empty() &&
+      inline_text_box.GetStringAttribute(
+          ax ::mojom::StringAttribute::kLanguage) != word_box.language()) {
+    // TODO(crbug.com/1423809): Need to test it more with a more diverse set of
+    // PDF examples that contain from different languages. Design heuristics
+    // of verifying language recognition output from OCR.
+    VLOG(2) << "A `WordBox` has a different language than its enclosing "
+               "`LineBox`.";
   }
 
   if (word_box.estimate_color_success()) {

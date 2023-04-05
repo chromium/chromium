@@ -63,6 +63,8 @@ api::extension_types::ExecutionWorld ConvertExecutionWorldForAPI(
       return api::extension_types::EXECUTION_WORLD_ISOLATED;
     case mojom::ExecutionWorld::kMain:
       return api::extension_types::EXECUTION_WORLD_MAIN;
+    case mojom::ExecutionWorld::kUserScript:
+      NOTREACHED() << "UserScript worlds are not supported in this API.";
   }
 
   NOTREACHED();

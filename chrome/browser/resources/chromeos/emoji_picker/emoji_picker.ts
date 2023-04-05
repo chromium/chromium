@@ -588,7 +588,7 @@ export class EmojiPicker extends PolymerElement {
     name: string,
     visualContent: VisualContent,
   }) {
-    this.apiProxy.copyGifToClipboard(item.visualContent.url.full);
+    this.apiProxy.insertGif(item.visualContent.url.full);
     this.insertHistoryVisualContentItem(category, item);
   }
 

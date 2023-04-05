@@ -12,11 +12,13 @@
 #include "third_party/blink/renderer/modules/presentation/presentation_availability_observer.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_availability_state.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_connection.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
 
 PresentationController::PresentationController(LocalDOMWindow& window)
     : Supplement<LocalDOMWindow>(window),
+      presentation_service_remote_(&window),
       presentation_controller_receiver_(this, &window) {}
 
 PresentationController::~PresentationController() = default;
@@ -48,6 +50,7 @@ void PresentationController::Trace(Visitor* visitor) const {
   visitor->Trace(presentation_);
   visitor->Trace(connections_);
   visitor->Trace(availability_state_);
+  visitor->Trace(presentation_service_remote_);
   Supplement<LocalDOMWindow>::Trace(visitor);
 }
 
@@ -139,7 +142,7 @@ PresentationController::FindExistingConnection(
   return nullptr;
 }
 
-mojo::Remote<mojom::blink::PresentationService>&
+HeapMojoRemote<mojom::blink::PresentationService>&
 PresentationController::GetPresentationService() {
   if (!presentation_service_remote_ && GetSupplementable()) {
     scoped_refptr<base::SingleThreadTaskRunner> task_runner =

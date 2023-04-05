@@ -46,6 +46,7 @@ component("common") {
     "//chromeos/ash/components/feature_usage",
     "//chromeos/ash/services/quick_pair/public/mojom",
     "//components/metrics/structured:structured_events",
+    "//components/metrics/structured:structured_metrics_features",
     "//components/prefs",
     "//device/bluetooth",
     "//device/bluetooth/public/cpp",

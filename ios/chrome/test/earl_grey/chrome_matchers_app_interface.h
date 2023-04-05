@@ -536,6 +536,10 @@
 // carousel.
 + (id<GREYMatcher>)passwordsDestinationButton;
 
+// Returns matcher for the price notifications destination button in the
+// overflow menu carousel.
++ (id<GREYMatcher>)priceNotificationsDestinationButton;
+
 // Returns matcher for the reading list destination button in the overflow menu
 // carousel.
 + (id<GREYMatcher>)readingListDestinationButton;
@@ -555,6 +559,10 @@
 // Returns matcher for the downloads destination button in the overflow menu
 // carousel.
 + (id<GREYMatcher>)downloadsDestinationButton;
+
+// Returns matcher for the What's New destination button in the overflow menu
+// carousel.
++ (id<GREYMatcher>)whatsNewDestinationButton;
 
 #pragma mark - Overflow Menu Actions
 

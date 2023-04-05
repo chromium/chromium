@@ -144,6 +144,10 @@ class RawInputGamepadDeviceWin final : public AbstractHapticGamepad {
   size_t axes_length_ = 0;
   RawGamepadAxis axes_[Gamepad::kAxesLengthCap];
 
+  bool supports_touch_events_ = false;
+  size_t touches_length_ = 0;
+  GamepadTouch touches_[Gamepad::kTouchEventsLengthCap];
+
   // Buffer used for querying device capabilities. |ppd_buffer_| owns the
   // memory pointed to by |preparsed_data_|.
   std::unique_ptr<uint8_t[]> ppd_buffer_;

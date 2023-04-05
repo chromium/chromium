@@ -38,18 +38,34 @@ class TestRegistrationObserver : public content::ServiceWorkerContextObserver {
   // scope to be stored.
   void WaitForRegistrationStored();
 
+  // Wait for OnVersionStartedRunning event is triggered, so that the observer
+  // captures the running service worker version id.
+  void WaitForWorkerStart();
+
   // Returns the number of completed registrations for |scope|.
   int GetCompletedCount(const GURL& scope) const;
+
+  // Get the running service worker version id.
+  // This method must be called after WaitForWorkerStart().
+  int64_t GetServiceWorkerVersionId() const {
+    CHECK(running_version_id_);
+    return running_version_id_.value();
+  }
 
  private:
   // ServiceWorkerContextObserver:
   void OnRegistrationCompleted(const GURL& scope) override;
   void OnRegistrationStored(int64_t registration_id,
                             const GURL& scope) override;
+  void OnVersionStartedRunning(
+      int64_t version_id,
+      const content::ServiceWorkerRunningInfo& running_info) override;
   void OnDestruct(content::ServiceWorkerContext* context) override;
 
   RegistrationsMap registrations_completed_map_;
   base::RunLoop stored_run_loop_;
+  base::RunLoop started_run_loop_;
+  absl::optional<int64_t> running_version_id_;
   raw_ptr<content::ServiceWorkerContext> context_ = nullptr;
 };
 

@@ -32,11 +32,8 @@ BrokerHost::BrokerHost(base::Process client_process,
       client_process_(std::move(client_process))
 #endif
 {
-  CHECK(connection_params.endpoint().is_valid() ||
-        connection_params.server_endpoint().is_valid());
-
   base::CurrentThread::Get()->AddDestructionObserver(this);
-
+  CHECK(connection_params.endpoint().is_valid());
   channel_ = Channel::Create(this, std::move(connection_params),
 #if BUILDFLAG(IS_WIN)
                              client_process_

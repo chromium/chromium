@@ -16,7 +16,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -27,6 +26,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_undo_delegate.h"
@@ -666,7 +666,7 @@ TEST_F(BookmarkModelTest, AddURLWithGUID) {
   const GURL url("http://foo.com");
   const Time time = Time::Now() - base::Days(1);
   BookmarkNode::MetaInfoMap meta_info;
-  const base::GUID guid = base::GUID::GenerateRandomV4();
+  const base::Uuid guid = base::Uuid::GenerateRandomV4();
 
   const BookmarkNode* new_node =
       model_->AddURL(root, /*index=*/0, title, url, &meta_info, time, guid);
@@ -737,7 +737,7 @@ TEST_F(BookmarkModelTest, AddFolderWithGUID) {
   const BookmarkNode* root = model_->bookmark_bar_node();
   const std::u16string title(u"foo");
   BookmarkNode::MetaInfoMap meta_info;
-  const base::GUID guid = base::GUID::GenerateRandomV4();
+  const base::Uuid guid = base::Uuid::GenerateRandomV4();
 
   const BookmarkNode* new_node =
       model_->AddFolder(root, /*index=*/0, title, &meta_info,
@@ -1409,8 +1409,7 @@ TEST_F(BookmarkModelTest, HasBookmarks) {
   EXPECT_TRUE(model_->HasBookmarks());
 }
 
-// http://crbug.com/450464
-TEST_F(BookmarkModelTest, DISABLED_Sort) {
+TEST_F(BookmarkModelTest, Sort) {
   // Populate the bookmark bar node with nodes for 'B', 'a', 'd' and 'C'.
   // 'C' and 'a' are folders.
   TestNode bbn;
@@ -1733,7 +1732,7 @@ TEST(BookmarkModelLoadTest, TitledUrlIndexPopulatedOnLoad) {
 
 TEST(BookmarkNodeTest, NodeMetaInfo) {
   GURL url;
-  BookmarkNode node(/*id=*/0, base::GUID::GenerateRandomV4(), url);
+  BookmarkNode node(/*id=*/0, base::Uuid::GenerateRandomV4(), url);
   EXPECT_FALSE(node.GetMetaInfoMap());
 
   EXPECT_TRUE(node.SetMetaInfo("key1", "value1"));

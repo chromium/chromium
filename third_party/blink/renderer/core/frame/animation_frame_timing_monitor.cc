@@ -8,6 +8,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
+#include "third_party/blink/renderer/bindings/core/v8/js_based_event_listener.h"
 #include "third_party/blink/renderer/core/core_probe_sink.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -555,7 +556,8 @@ void AnimationFrameTimingMonitor::Did(const probe::UpdateLayout& probe_data) {
   }
 }
 
-void AnimationFrameTimingMonitor::Will(const probe::UserCallback& probe_data) {
+void AnimationFrameTimingMonitor::Will(
+    const probe::InvokeCallback& probe_data) {
   // Callbacks can be recursive. We only want the top-level one. We need to
   // keep track of the depth so that we report only when the top-levle one is
   // done.
@@ -568,16 +570,95 @@ void AnimationFrameTimingMonitor::Will(const probe::UserCallback& probe_data) {
       !client_.ShouldReportLongAnimationFrameTiming()) {
     return;
   }
-  pending_script_info_ = PendingScriptInfo{
-      .type = probe_data.event_target ? ScriptTimingInfo::Type::kEventHandler
-                                      : ScriptTimingInfo::Type::kUserCallback,
-      .start_time = probe_data.CaptureStartTime()};
+  pending_script_info_ =
+      PendingScriptInfo{.type = ScriptTimingInfo::Type::kUserCallback,
+                        .start_time = probe_data.CaptureStartTime(),
+                        .execution_start_time = probe_data.CaptureStartTime()};
 }
 
 namespace {
-AtomicString GetClassLikeNameForEventTarget(EventTarget* event_target) {
-  DCHECK(event_target);
-  if (Node* node = event_target->ToNode()) {
+
+ScriptTimingInfo::ScriptSourceLocation CaptureScriptSourceLocation(
+    const v8::Local<v8::Value>& value) {
+  if (value.IsEmpty() || !value->IsFunction()) {
+    return ScriptTimingInfo::ScriptSourceLocation();
+  }
+
+  v8::Local<v8::Value> bound = value.As<v8::Function>()->GetBoundFunction();
+  if (bound.IsEmpty() || !bound->IsFunction()) {
+    return ScriptTimingInfo::ScriptSourceLocation();
+  }
+
+  if (std::unique_ptr<SourceLocation> location =
+          CaptureSourceLocation(bound.As<v8::Function>())) {
+    return ScriptTimingInfo::ScriptSourceLocation{
+        location->Url(), location->Function(), location->LineNumber(),
+        location->ColumnNumber()};
+  }
+
+  return ScriptTimingInfo::ScriptSourceLocation();
+}
+
+}  // namespace
+
+void AnimationFrameTimingMonitor::Did(const probe::InvokeCallback& probe_data) {
+  user_callback_depth_--;
+  if (user_callback_depth_) {
+    return;
+  }
+
+  ScriptTimingInfo* info = DidExecuteScript(probe_data);
+  if (!info) {
+    return;
+  }
+
+  info->SetPropertyLikeName(probe_data.name);
+  v8::HandleScope handle_scope(probe_data.context->GetIsolate());
+  if (probe_data.callback) {
+    info->SetSourceLocation(
+        CaptureScriptSourceLocation(probe_data.callback->CallbackObject()));
+  } else if (!probe_data.function.IsEmpty() &&
+             probe_data.function->IsFunction()) {
+    info->SetSourceLocation(CaptureScriptSourceLocation(probe_data.function));
+  }
+}
+
+void AnimationFrameTimingMonitor::Will(
+    const probe::InvokeEventHandler& probe_data) {
+  user_callback_depth_++;
+  if (pending_script_info_) {
+    return;
+  }
+
+  if (!probe_data.context->IsWindow() ||
+      !client_.ShouldReportLongAnimationFrameTiming()) {
+    return;
+  }
+  pending_script_info_ =
+      PendingScriptInfo{.type = ScriptTimingInfo::Type::kEventHandler,
+                        .start_time = probe_data.CaptureStartTime(),
+                        .execution_start_time = probe_data.CaptureStartTime()};
+}
+
+void AnimationFrameTimingMonitor::Did(
+    const probe::InvokeEventHandler& probe_data) {
+  user_callback_depth_--;
+  if (user_callback_depth_) {
+    return;
+  }
+
+  if (probe_data.event->IsUIEvent() && first_ui_event_timestamp_.is_null()) {
+    first_ui_event_timestamp_ = probe_data.event->PlatformTimeStamp();
+  }
+
+  ScriptTimingInfo* info = DidExecuteScript(probe_data);
+  if (!info) {
+    return;
+  }
+
+  info->SetPropertyLikeName(probe_data.event->type());
+  info->SetDesiredExecutionStartTime(probe_data.event->PlatformTimeStamp());
+  if (Node* node = probe_data.event_target->ToNode()) {
     StringBuilder builder;
     builder.Append(node->nodeName());
     if (Element* element = DynamicTo<Element>(node)) {
@@ -591,70 +672,19 @@ AtomicString GetClassLikeNameForEventTarget(EventTarget* event_target) {
       }
     }
 
-    return builder.ToAtomicString();
+    info->SetClassLikeName(builder.ToAtomicString());
   } else {
-    return event_target->InterfaceName();
-  }
-}
-}  // namespace
-
-void AnimationFrameTimingMonitor::Did(const probe::UserCallback& probe_data) {
-  user_callback_depth_--;
-  if (user_callback_depth_) {
-    return;
+    info->SetClassLikeName(probe_data.event_target->InterfaceName());
   }
 
-  if (probe_data.event && probe_data.event->IsUIEvent() &&
-      first_ui_event_timestamp_.is_null()) {
-    first_ui_event_timestamp_ = probe_data.event->PlatformTimeStamp();
-  }
-
-  ScriptTimingInfo* info = DidExecuteScript(probe_data);
-  if (!info) {
-    return;
-  }
-
-  info->SetClassLikeName(
-      probe_data.event_target
-          ? GetClassLikeNameForEventTarget(probe_data.event_target)
-          : probe_data.class_like_name);
-  info->SetPropertyLikeName(probe_data.name ? probe_data.name
-                                            : probe_data.atomic_name);
-  if (Event* event = probe_data.event) {
-    if (event->IsUIEvent() && first_ui_event_timestamp_.is_null()) {
-      first_ui_event_timestamp_ = event->PlatformTimeStamp();
-    }
-    info->SetDesiredExecutionStartTime(event->PlatformTimeStamp());
-  }
-}
-
-// Note that CallFunction in particular is very performance sensitive, we should
-// not perform any time captures for internal function calls, only top-level.
-void AnimationFrameTimingMonitor::Will(const probe::CallFunction& probe_data) {
-  if (probe_data.depth || !pending_script_info_) {
-    return;
-  }
-  if (pending_script_info_->execution_start_time.is_null()) {
-    pending_script_info_->execution_start_time = probe_data.CaptureStartTime();
-  }
-}
-
-void AnimationFrameTimingMonitor::Did(const probe::CallFunction& probe_data) {
-  // We use this probe callback only to capture source location.
-  if (probe_data.depth || !pending_script_info_) {
-    return;
-  }
-
-  if (pending_script_info_->source_location.url) {
+  if (!probe_data.listener->IsJSBasedEventListener()) {
     return;
   }
 
   v8::HandleScope handle_scope(probe_data.context->GetIsolate());
-  std::unique_ptr<SourceLocation> source_location =
-      CaptureSourceLocation(probe_data.function);
-  pending_script_info_->source_location =
-      ScriptTimingInfo::ScriptSourceLocation::FromSourceLocation(
-          *source_location);
+  info->SetSourceLocation(CaptureScriptSourceLocation(
+      To<JSBasedEventListener>(probe_data.listener)
+          ->GetListenerObject(*probe_data.event_target)));
 }
 
 }  // namespace blink

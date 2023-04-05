@@ -60,6 +60,37 @@ void XDGOutput::OnDone() {
   is_ready_ = !logical_size_.IsEmpty();
 }
 
+void XDGOutput::UpdateMetrics(bool surface_submission_in_pixel_coordinates,
+                              WaylandOutput::Metrics& metrics) {
+  if (!IsReady()) {
+    return;
+  }
+
+  metrics.origin = logical_position_;
+  metrics.logical_size = logical_size_;
+
+  // Name is an optional xdg_output event.
+  if (!name_.empty()) {
+    metrics.name = name_;
+  }
+
+  // Description is an optional xdg_output event.
+  if (!description_.empty()) {
+    metrics.description = description_;
+  }
+
+  const gfx::Size logical_size = logical_size_;
+  if (surface_submission_in_pixel_coordinates && !logical_size.IsEmpty()) {
+    const gfx::Size physical_size = metrics.physical_size;
+    DCHECK(!physical_size.IsEmpty());
+    const float max_physical_side =
+        std::max(physical_size.width(), physical_size.height());
+    const float max_logical_side =
+        std::max(logical_size.width(), logical_size.height());
+    metrics.scale_factor = max_physical_side / max_logical_side;
+  }
+}
+
 // static
 void XDGOutput::OutputHandleName(void* data,
                                  struct zxdg_output_v1* zxdg_output_v1,

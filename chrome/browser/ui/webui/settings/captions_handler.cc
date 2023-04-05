@@ -32,6 +32,7 @@
 namespace {
 constexpr char kCodeKey[] = "code";
 constexpr char kDisplayNameKey[] = "displayName";
+constexpr char kNativeDisplayNameKey[] = "nativeDisplayName";
 }  // namespace
 
 namespace settings {
@@ -146,6 +147,10 @@ base::Value::List CaptionsHandler::GetAvailableLanguagePacks() {
           kDisplayNameKey,
           speech::GetLanguageDisplayName(
               config.language_name, g_browser_process->GetApplicationLocale()));
+      available_language_pack.Set(
+          kNativeDisplayNameKey,
+          speech::GetLanguageDisplayName(config.language_name,
+                                         config.language_name));
       available_language_packs.Append(std::move(available_language_pack));
     }
   }
@@ -166,6 +171,10 @@ base::Value::List CaptionsHandler::GetInstalledLanguagePacks() {
           kDisplayNameKey, speech::GetLanguageDisplayName(
                                config->language_name,
                                g_browser_process->GetApplicationLocale()));
+      installed_language_pack.Set(
+          kNativeDisplayNameKey,
+          speech::GetLanguageDisplayName(config->language_name,
+                                         config->language_name));
       installed_language_packs.Append(std::move(installed_language_pack));
     }
   }

@@ -9,8 +9,9 @@
 
 #import "ios/chrome/browser/ui/settings/tabs/inactive_tabs/inactive_tabs_settings_table_view_controller_delegate.h"
 
-class PrefService;
+class Browser;
 @protocol InactiveTabsSettingsConsumer;
+class PrefService;
 
 // Mediator for the inactive tabs settings.
 @interface InactiveTabsSettingsMediator
@@ -19,7 +20,9 @@ class PrefService;
 // Designated initializer. All the parameters should not be null.
 // `localPrefService`: preference service from the application context.
 // `consumer`: consumer that will be notified when the data change.
+// `browser`: regular browser.
 - (instancetype)initWithUserLocalPrefService:(PrefService*)localPrefService
+                                     browser:(Browser*)browser
                                     consumer:(id<InactiveTabsSettingsConsumer>)
                                                  consumer
     NS_DESIGNATED_INITIALIZER;

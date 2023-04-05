@@ -91,6 +91,10 @@ class ConsolidatedConsentScreen
   void OnBackupAndRestoreModeChanged(bool enabled, bool managed) override;
   void OnLocationServicesModeChanged(bool enabled, bool managed) override;
 
+  // Called by unit tests to notify observers that the user aceepted the terms
+  // of service.
+  void NotifyConsolidatedConsentAcceptForTesting();
+
  protected:
   // BaseScreen:
   bool MaybeSkip(WizardContext& context) override;

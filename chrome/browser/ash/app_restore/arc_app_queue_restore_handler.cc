@@ -11,6 +11,7 @@
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "ash/shell.h"
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
@@ -199,10 +200,8 @@ void ArcAppQueueRestoreHandler::OnAppConnectionReady() {
 
   if (!stop_restore_timer_) {
     stop_restore_timer_ = std::make_unique<base::OneShotTimer>();
-    stop_restore_timer_->Start(
-        FROM_HERE, kStopRestoreDelay,
-        base::BindOnce(&ArcAppQueueRestoreHandler::StopRestore,
-                       weak_ptr_factory_.GetWeakPtr()));
+    stop_restore_timer_->Start(FROM_HERE, kStopRestoreDelay, this,
+                               &ArcAppQueueRestoreHandler::StopRestore);
   }
 }
 
@@ -565,13 +564,19 @@ void ArcAppQueueRestoreHandler::MaybeLaunchApp() {
     return;
   }
 
-  for (auto it = pending_windows_.begin(); it != pending_windows_.end(); ++it) {
-    if (IsAppReady(it->app_id)) {
-      LaunchAppWindow(it->app_id, it->window_id);
-      pending_windows_.erase(it);
-      MaybeReStartTimer(kAppLaunchDelay);
-      return;
-    }
+  const auto find_ready_window = [this](const std::list<WindowInfo>& l) {
+    return std::find_if(l.begin(), l.end(), [this](const WindowInfo& info) {
+      return IsAppReady(info.app_id);
+    });
+  };
+
+  if (const auto it = find_ready_window(pending_windows_);
+      it != pending_windows_.end()) {
+    const WindowInfo info = *it;
+    LaunchAppWindow(info.app_id, info.window_id);
+    MaybeReStartTimer(kAppLaunchDelay);
+    base::Erase(pending_windows_, info);
+    return;
   }
 
   if (!windows_.empty()) {
@@ -594,14 +599,12 @@ void ArcAppQueueRestoreHandler::MaybeLaunchApp() {
     return;
   }
 
-  for (auto it = no_stack_windows_.begin(); it != no_stack_windows_.end();
-       ++it) {
-    if (IsAppReady(it->app_id)) {
-      LaunchAppWindow(it->app_id, it->window_id);
-      no_stack_windows_.erase(it);
-      MaybeReStartTimer(kAppLaunchDelay);
-      return;
-    }
+  if (auto it = find_ready_window(no_stack_windows_);
+      it != no_stack_windows_.end()) {
+    const WindowInfo info = *it;
+    LaunchAppWindow(info.app_id, info.window_id);
+    MaybeReStartTimer(kAppLaunchDelay);
+    base::Erase(no_stack_windows_, info);
   }
 }
 
@@ -737,10 +740,8 @@ void ArcAppQueueRestoreHandler::MaybeReStartTimer(
 
   current_delay_ = delay;
 
-  app_launch_timer_->Start(
-      FROM_HERE, current_delay_,
-      base::BindRepeating(&ArcAppQueueRestoreHandler::MaybeLaunchApp,
-                          weak_ptr_factory_.GetWeakPtr()));
+  app_launch_timer_->Start(FROM_HERE, current_delay_, this,
+                           &ArcAppQueueRestoreHandler::MaybeLaunchApp);
 }
 
 void ArcAppQueueRestoreHandler::StopRestore() {
@@ -773,10 +774,9 @@ int ArcAppQueueRestoreHandler::GetCpuUsageRate() {
 }
 
 void ArcAppQueueRestoreHandler::StartCpuUsageCount() {
-  cpu_tick_count_timer_.Start(
-      FROM_HERE, base::Seconds(kCpuUsageRefreshIntervalInSeconds),
-      base::BindRepeating(&ArcAppQueueRestoreHandler::UpdateCpuUsage,
-                          weak_ptr_factory_.GetWeakPtr()));
+  cpu_tick_count_timer_.Start(FROM_HERE,
+                              base::Seconds(kCpuUsageRefreshIntervalInSeconds),
+                              this, &ArcAppQueueRestoreHandler::UpdateCpuUsage);
 }
 
 void ArcAppQueueRestoreHandler::StopCpuUsageCount() {

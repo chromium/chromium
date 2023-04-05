@@ -19,6 +19,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
+import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 
 /**
@@ -40,12 +41,10 @@ public class WebApkInstallBroadcastReceiver extends BroadcastReceiver {
     @VisibleForTesting
     static final String RETRY_PROTO = "WebApkInstallNotification.retry_proto";
 
-    private final WebApkInstallCoordinatorBridge mBridge;
+    private WebApkInstallCoordinatorBridge mBridge;
 
     /** Constructor used by the Android framework. */
-    public WebApkInstallBroadcastReceiver() {
-        this(new WebApkInstallCoordinatorBridge());
-    }
+    public WebApkInstallBroadcastReceiver() {}
 
     /** Constructor that allows dependency injection for use in tests. */
     @VisibleForTesting
@@ -67,7 +66,7 @@ public class WebApkInstallBroadcastReceiver extends BroadcastReceiver {
 
         if (ACTION_RETRY_INSTALL.equals(intent.getAction())) {
             if (icon != null && proto != null && proto.length != 0) {
-                mBridge.retry(id, proto, icon);
+                retryInstall(id, proto, icon);
             } else {
                 assert false : "Invalid intent data " + id;
                 openInChrome(context, startUrl);
@@ -112,5 +111,13 @@ public class WebApkInstallBroadcastReceiver extends BroadcastReceiver {
         chromeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         chromeIntent.putExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true);
         context.startActivity(chromeIntent);
+    }
+
+    private void retryInstall(String id, byte[] proto, Bitmap icon) {
+        if (mBridge == null) {
+            ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
+            mBridge = new WebApkInstallCoordinatorBridge();
+        }
+        mBridge.retry(id, proto, icon);
     }
 }

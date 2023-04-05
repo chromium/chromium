@@ -2069,10 +2069,6 @@ class NTPInterceptionTest : public ExtensionApiTest,
         profile(), https_test_server_.base_url().spec(), ntp_url.spec());
   }
 
-  const net::EmbeddedTestServer* https_test_server() const {
-    return &https_test_server_;
-  }
-
  private:
   net::EmbeddedTestServer https_test_server_;
 };
@@ -2352,7 +2348,8 @@ class ContentScriptApiFencedFrameTest : public ContentScriptApiTest {
   ContentScriptApiFencedFrameTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kFencedFrames, {{"implementation_type", "mparch"}}},
-         {features::kPrivacySandboxAdsAPIsOverride, {}}},
+         {features::kPrivacySandboxAdsAPIsOverride, {}},
+         {blink::features::kFencedFramesAPIChanges, {}}},
         {/* disabled_features */});
     UseHttpsTestServer();
   }
@@ -2401,15 +2398,24 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiFencedFrameTest,
   GURL fenced_frame_url =
       embedded_test_server()->GetURL("a.test", "/fenced_frames/title1.html");
 
-  const char kFencedFrameHtml[] =
-      R"HTML(<html>Fenced Frame Test!<fencedframe src="%s">
-          </fencedframe></html>)HTML";
-
   TestExtensionDir document_idle_extension_dir;
   document_idle_extension_dir.WriteManifest(kDocumentIdleExtensionManifest);
+
+  document_idle_extension_dir.WriteFile(FILE_PATH_LITERAL("test.html"), R"HTML(
+    <html>
+      Fenced Frame Test!
+      <fencedframe></fencedframe>
+      <script src="navigation.js"></script>
+    </html>
+  )HTML");
+
   document_idle_extension_dir.WriteFile(
-      FILE_PATH_LITERAL("test.html"),
-      base::StringPrintf(kFencedFrameHtml, fenced_frame_url.spec().c_str()));
+      FILE_PATH_LITERAL("navigation.js"),
+      content::JsReplace(
+          "const fencedframe = document.querySelector('fencedframe');"
+          "fencedframe.config = new FencedFrameConfig($1);",
+          fenced_frame_url));
+
   document_idle_extension_dir.WriteFile(FILE_PATH_LITERAL("script.js"),
                                         kNonBlockingScript);
   const Extension* extension =

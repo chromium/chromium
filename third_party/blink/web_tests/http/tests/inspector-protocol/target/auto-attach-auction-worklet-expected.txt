@@ -4,7 +4,7 @@ Attached to page target: about:blank
     (waiting: false)
 Detached: about:blank
 Attached to page target: https://a.test:8443/inspector-protocol/resources/fledge_join.html
-    (title: https://a.test:8443/inspector-protocol/resources/fledge_join.html)
+    (title: a.test:8443/inspector-protocol/resources/fledge_join.html)
     (waiting: false)
 Auction winner:undefined
 Attached to page target: about:blank
@@ -12,10 +12,10 @@ Attached to page target: about:blank
     (waiting: false)
 Detached: about:blank
 Attached to page target: https://a.test:8443/inspector-protocol/resources/fledge_join.html
-    (title: https://a.test:8443/inspector-protocol/resources/fledge_join.html)
+    (title: a.test:8443/inspector-protocol/resources/fledge_join.html)
     (waiting: false)
 Attached to page target: https://a.test:8443/inspector-protocol/resources/fledge_join.html
-    (title: https://a.test:8443/inspector-protocol/resources/fledge_join.html)
+    (title: a.test:8443/inspector-protocol/resources/fledge_join.html)
     (waiting: false)
 Auction winner:undefined
 DONE

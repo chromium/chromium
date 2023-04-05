@@ -390,7 +390,7 @@ class HistorySyncBridgeTest : public testing::Test {
     }
   }
 
-  void ApplyStopSyncChangesIncludingDeletingMetadata() {
+  void ApplyDisableSyncChanges() {
     syncer::MetadataBatch all_metadata;
     metadata_db_.GetAllSyncMetadata(&all_metadata);
 
@@ -401,7 +401,7 @@ class HistorySyncBridgeTest : public testing::Test {
     }
     delete_all_metadata->ClearModelTypeState();
 
-    bridge()->ApplyStopSyncChanges(std::move(delete_all_metadata));
+    bridge()->ApplyDisableSyncChanges(std::move(delete_all_metadata));
 
     // After stopping sync, metadata is not tracked anymore.
     processor()->SetIsTrackingMetadata(false);
@@ -476,7 +476,7 @@ TEST_F(HistorySyncBridgeTest, MergesRemoteChanges) {
   ASSERT_EQ(backend()->GetVisits()[0].visit_duration, base::TimeDelta());
 
   // Stop Sync, then start it again so the same data gets downloaded again.
-  ApplyStopSyncChangesIncludingDeletingMetadata();
+  ApplyDisableSyncChanges();
   // ...but the data has been updated in the meantime.
   remote_entity.set_visit_duration_micros(1000);
   ApplyInitialSyncChanges({remote_entity});
@@ -531,7 +531,7 @@ TEST_F(HistorySyncBridgeTest, ClearsDataWhenSyncStopped) {
   ASSERT_FALSE(GetPersistedEntityMetadata().empty());
 
   // Stop Sync.
-  ApplyStopSyncChangesIncludingDeletingMetadata();
+  ApplyDisableSyncChanges();
 
   // Any Sync metadata should have been cleared.
   EXPECT_EQ(GetPersistedModelTypeState().ByteSizeLong(), 0u);
@@ -553,14 +553,14 @@ TEST_F(HistorySyncBridgeTest, DeletesForeignVisitsWhenTypeStoppedPermanently) {
 
   // Stop the data type temporarily, i.e. without deleting metadata, and without
   // changing the transport state.
-  bridge()->ApplyStopSyncChanges(/*delete_metadata_change_list=*/nullptr);
+  bridge()->OnSyncPaused();  // No-op, but for the sake of a realistic sequence.
 
   // This should *not* have cleared foreign visits from the DB.
   EXPECT_EQ(backend()->delete_all_foreign_visits_call_count(), 0);
 
   // Resume syncing, then stop the data type permanently.
   bridge()->OnSyncStarting(syncer::DataTypeActivationRequest());
-  ApplyStopSyncChangesIncludingDeletingMetadata();
+  ApplyDisableSyncChanges();
 
   // Now foreign visits should've been cleared.
   EXPECT_EQ(backend()->delete_all_foreign_visits_call_count(), 1);
@@ -577,7 +577,7 @@ TEST_F(HistorySyncBridgeTest, DeletesForeignVisitsWhenSyncStoppedPermanently) {
 
   // Enter the Sync-paused state.
   bridge()->SetSyncTransportState(syncer::SyncService::TransportState::PAUSED);
-  bridge()->ApplyStopSyncChanges(/*delete_metadata_change_list=*/nullptr);
+  bridge()->OnSyncPaused();  // No-op, but for the sake of a realistic sequence.
 
   // This should *not* have cleared foreign visits from the DB.
   EXPECT_EQ(backend()->delete_all_foreign_visits_call_count(), 0);
@@ -587,7 +587,7 @@ TEST_F(HistorySyncBridgeTest, DeletesForeignVisitsWhenSyncStoppedPermanently) {
   bridge()->SetSyncTransportState(syncer::SyncService::TransportState::ACTIVE);
 
   // Stop Sync permanently.
-  ApplyStopSyncChangesIncludingDeletingMetadata();
+  ApplyDisableSyncChanges();
   bridge()->SetSyncTransportState(
       syncer::SyncService::TransportState::DISABLED);
 
@@ -612,8 +612,8 @@ TEST_F(
 
   // Stop Sync permanently, but without clearing metadata. This "shouldn't"
   // happen (metadata should get cleared in that case), but due to
-  // crbug.com/1383912 it can actually happen.
-  bridge()->ApplyStopSyncChanges(/*delete_metadata_change_list=*/nullptr);
+  // crbug.com/897628 it can actually happen.
+  bridge()->OnSyncPaused();  // No-op, but for the sake of a realistic sequence.
   bridge()->SetSyncTransportState(
       syncer::SyncService::TransportState::DISABLED);
 
@@ -774,7 +774,7 @@ TEST_F(HistorySyncBridgeTest, DoesNotUploadWhileSyncIsPaused) {
 
   // Stop Sync temporarily - this happens e.g. in the "Sync paused" case, i.e.
   // when the user signs out from the web.
-  bridge()->ApplyStopSyncChanges(/*delete_metadata_change_list=*/nullptr);
+  bridge()->OnSyncPaused();  // No-op, but for the sake of a realistic sequence.
   bridge()->SetSyncTransportState(syncer::SyncService::TransportState::PAUSED);
   // Note that IsTrackingMetadata() remains true - Sync is still enabled in
   // principle, just temporarily stopped.

@@ -20,6 +20,7 @@
 
   #key-text {
     color: var(--cros-text-color-secondary);
+    font: var(--cros-button-2-font);
   }
 
   :host([key-state='not-selected']) .key-container {
@@ -33,7 +34,15 @@
     background-color: var(--cros-highlight-color);
     border: none;
     box-shadow: 0 1px 1px var(--cros-highlight-color);
+  }
+
+  :host([key-state='modifier-selected']:not([key='meta'])) .key-container {
+    min-width: 44px;
     padding-inline: 12px;
+  }
+
+  :host([key-state='modifier-selected'][key='meta']) .key-container {
+    padding-inline: 6px;
   }
 
   :host([key-state='alpha-numeric-selected']) .key-container {
@@ -62,17 +71,11 @@
     background-color: var(--cros-bg-color);
   }
 
-  :host(#ctrlKey) .key-container,
-  :host(#altKey) .key-container,
-  :host(#shiftKey) .key-container,
-  :host(#searchKey) .key-container,
-  :host([key-state='modifier-selected']) .key-container {
-    min-width: 44px;
-  }
 
   #key-icon {
-    --iron-icon-height: 14px;
-    --iron-icon-width: 14px;
+    --iron-icon-height: 16px;
+    --iron-icon-width: 16px;
+    --iron-icon-fill-color: var(--cros-text-color-secondary);
   }
 </style>
 

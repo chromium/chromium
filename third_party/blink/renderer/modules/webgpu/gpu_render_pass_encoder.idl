@@ -8,22 +8,24 @@
     Exposed(Window WebGPU, DedicatedWorker WebGPU),
     SecureContext
 ] interface GPURenderPassEncoder {
-    void setViewport(float x, float y,
-                     float width, float height,
-                     float minDepth, float maxDepth);
+    [NoAllocDirectCall] void setViewport(float x, float y,
+                                         float width, float height,
+                                         float minDepth, float maxDepth);
 
-    void setScissorRect(GPUIntegerCoordinate x, GPUIntegerCoordinate y,
-                        GPUIntegerCoordinate width, GPUIntegerCoordinate height);
+    [NoAllocDirectCall] void setScissorRect(GPUIntegerCoordinate x,
+                                            GPUIntegerCoordinate y,
+                                            GPUIntegerCoordinate width,
+                                            GPUIntegerCoordinate height);
 
     [RaisesException] void setBlendConstant(GPUColor color);
-    void setStencilReference(GPUStencilValue reference);
+    [NoAllocDirectCall] void setStencilReference(GPUStencilValue reference);
 
     void executeBundles(sequence<GPURenderBundle> bundles);
-    void beginOcclusionQuery(GPUSize32 queryIndex);
-    void endOcclusionQuery();
+    [NoAllocDirectCall] void beginOcclusionQuery(GPUSize32 queryIndex);
+    [NoAllocDirectCall] void endOcclusionQuery();
     [RaisesException] void writeTimestamp(GPUQuerySet querySet, GPUSize32 queryIndex);
 
-    void end();
+    [NoAllocDirectCall] void end();
 };
 GPURenderPassEncoder includes GPUObjectBase;
 GPURenderPassEncoder includes GPUProgrammablePassEncoder;

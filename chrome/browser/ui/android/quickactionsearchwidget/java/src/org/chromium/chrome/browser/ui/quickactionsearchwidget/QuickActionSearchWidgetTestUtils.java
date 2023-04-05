@@ -67,8 +67,8 @@ class QuickActionSearchWidgetTestUtils {
             Tab activityTab = activity.getActivityTab();
             Criteria.checkThat(activityTab, Matchers.notNullValue());
             Criteria.checkThat(activityTab.getUrl(), Matchers.notNullValue());
-            Criteria.checkThat(activityTab.getUrl().getSpec(),
-                    Matchers.startsWith(UrlConstants.CHROME_DINO_URL));
+            Criteria.checkThat(
+                    activityTab.getUrl().getSpec(), Matchers.equalTo(UrlConstants.CHROME_DINO_URL));
         });
     }
 

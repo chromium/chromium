@@ -6,8 +6,10 @@ package org.chromium.chrome.browser.ntp;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
@@ -58,7 +60,6 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.feed.FeedActionDelegate;
 import org.chromium.chrome.browser.feed.FeedReliabilityLogger;
@@ -78,6 +79,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
@@ -138,6 +140,7 @@ public class NewTabPageTest {
     private static final int RENDER_TEST_REVISION = 5;
 
     private static final String HISTOGRAM_NTP_MODULE_CLICK = "NewTabPage.Module.Click";
+    private static final String HISTOGRAM_NTP_MODULE_LONGCLICK = "NewTabPage.Module.LongClick";
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -775,6 +778,26 @@ public class NewTabPageTest {
         });
     }
 
+    /**
+     * Test whether the clicking action on the home button in {@link NewTabPage} is been recorded in
+     * histogram correctly.
+     */
+    @Test
+    @SmallTest
+    public void testRecordHistogramHomeButtonClick_Ntp() {
+        HistogramWatcher histogramWatcher = expectHomeButtonRecordForNtpModuleClick();
+        onView(withId(R.id.home_button)).perform(click());
+        histogramWatcher.assertExpected(HISTOGRAM_NTP_MODULE_CLICK
+                + " is not recorded correctly when click on the home button.");
+
+        histogramWatcher = expectHomeButtonRecordForNtpModuleLongClick();
+        onView(withId(R.id.home_button)).perform(longClick());
+        onView(withText(R.string.options_homepage_edit_title)).perform(click());
+        histogramWatcher.assertExpected(HISTOGRAM_NTP_MODULE_LONGCLICK
+                + " is not recorded correctly when we perform long click on the home button "
+                + "and navigate to home page setting.");
+    }
+
     private void captureThumbnail() {
         Canvas canvas = new Canvas();
         mNtp.captureThumbnail(canvas);
@@ -847,6 +870,16 @@ public class NewTabPageTest {
     private static HistogramWatcher expectFeedRecordForNtpModuleClick() {
         return HistogramWatcher.newSingleRecordWatcher(
                 HISTOGRAM_NTP_MODULE_CLICK, BrowserUiUtils.ModuleTypeOnStartAndNTP.FEED);
+    }
+
+    private static HistogramWatcher expectHomeButtonRecordForNtpModuleClick() {
+        return HistogramWatcher.newSingleRecordWatcher(
+                HISTOGRAM_NTP_MODULE_CLICK, BrowserUiUtils.ModuleTypeOnStartAndNTP.HOME_BUTTON);
+    }
+
+    private static HistogramWatcher expectHomeButtonRecordForNtpModuleLongClick() {
+        return HistogramWatcher.newSingleRecordWatcher(
+                HISTOGRAM_NTP_MODULE_LONGCLICK, BrowserUiUtils.ModuleTypeOnStartAndNTP.HOME_BUTTON);
     }
 
     private static HistogramWatcher expectNoRecordsForNtpModuleClick() {

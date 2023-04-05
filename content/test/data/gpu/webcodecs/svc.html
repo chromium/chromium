@@ -10,7 +10,6 @@ some chunks.
   <script src="webcodecs_common.js"></script>
   <script type="text/javascript">
     'use strict';
-    const acceleration = 'prefer-hardware';
     async function main(arg) {
       const width = 640;
       const height = 480;
@@ -23,7 +22,7 @@ some chunks.
 
       const encoder_config = {
         codec: arg.codec,
-        hardwareAcceleration: acceleration,
+        hardwareAcceleration: arg.acceleration,
         width: width,
         height: height,
         bitrate: 2000000,
@@ -31,6 +30,7 @@ some chunks.
         latencyMode: "realtime",
       };
 
+      TEST.log('Starting test with arguments: ' + JSON.stringify(arg));
       let support = await VideoEncoder.isConfigSupported(encoder_config);
       if (!support.supported) {
         TEST.skip('Unsupported codec: ' + arg.codec);
@@ -107,7 +107,13 @@ some chunks.
         'frames_decoded mismatch: ' + frames_decoded);
       TEST.assert(
         errors == 0, 'Decoding or encoding errors occurred during the test');
+      TEST.log('Test completed');
     }
+    addManualTestButton({
+      'codec': 'avc1.42001E',
+      'acceleration':'prefer-software',
+      'layers': 2
+    });
   </script>
 </head>
 

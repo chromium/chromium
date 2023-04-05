@@ -17,7 +17,6 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/guid.h"
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -28,6 +27,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_metadata.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
@@ -564,7 +564,7 @@ std::u16string Truncate(const std::u16string& data) {
 void BindAutofillProfileToStatement(const AutofillProfile& profile,
                                     const base::Time& modification_date,
                                     sql::Statement* s) {
-  DCHECK(base::IsValidGUID(profile.guid()));
+  DCHECK(base::IsValidUuid(profile.guid()));
   int index = 0;
   s->BindString(index++, profile.guid());
 
@@ -613,7 +613,7 @@ void BindCreditCardToStatement(const CreditCard& credit_card,
                                const base::Time& modification_date,
                                sql::Statement* s,
                                const AutofillTableEncryptor& encryptor) {
-  DCHECK(base::IsValidGUID(credit_card.guid()));
+  DCHECK(base::IsValidUuid(credit_card.guid()));
   int index = 0;
   s->BindString(index++, credit_card.guid());
 
@@ -635,7 +635,7 @@ void BindCreditCardToStatement(const CreditCard& credit_card,
 void BindIBANToStatement(const IBAN& iban,
                          sql::Statement* s,
                          const AutofillTableEncryptor& encryptor) {
-  DCHECK(base::IsValidGUID(iban.guid()));
+  DCHECK(base::IsValidUuid(iban.guid()));
   int index = 0;
   s->BindString(index++, iban.guid());
 
@@ -689,7 +689,7 @@ std::unique_ptr<CreditCard> CreditCardFromStatement(
 
   int index = 0;
   credit_card->set_guid(s.ColumnString(index++));
-  DCHECK(base::IsValidGUID(credit_card->guid()));
+  DCHECK(base::IsValidUuid(credit_card->guid()));
 
   for (ServerFieldType type : {CREDIT_CARD_NAME_FULL, CREDIT_CARD_EXP_MONTH,
                                CREDIT_CARD_EXP_4_DIGIT_YEAR}) {
@@ -714,7 +714,7 @@ std::unique_ptr<IBAN> IBANFromStatement(
 
   int index = 0;
   iban->set_guid(s.ColumnString(index++));
-  DCHECK(base::IsValidGUID(iban->guid()));
+  DCHECK(base::IsValidUuid(iban->guid()));
   iban->set_use_count(s.ColumnInt64(index++));
   iban->set_use_date(base::Time::FromTimeT(s.ColumnInt64(index++)));
 
@@ -1650,7 +1650,7 @@ bool AutofillTable::AddAutofillProfile(const AutofillProfile& profile) {
 }
 
 bool AutofillTable::UpdateAutofillProfile(const AutofillProfile& profile) {
-  DCHECK(base::IsValidGUID(profile.guid()));
+  DCHECK(base::IsValidUuid(profile.guid()));
 
   std::unique_ptr<AutofillProfile> old_profile =
       GetAutofillProfile(profile.guid(), profile.source());
@@ -1701,7 +1701,7 @@ bool AutofillTable::UpdateAutofillProfile(const AutofillProfile& profile) {
 bool AutofillTable::RemoveAutofillProfile(
     const std::string& guid,
     AutofillProfile::Source profile_source) {
-  DCHECK(base::IsValidGUID(guid));
+  DCHECK(base::IsValidUuid(guid));
   if (profile_source == AutofillProfile::Source::kAccount) {
     sql::Transaction transaction(db_);
     return transaction.Begin() &&
@@ -1725,7 +1725,7 @@ bool AutofillTable::RemoveAllAutofillProfiles(
 std::unique_ptr<AutofillProfile> AutofillTable::GetAutofillProfile(
     const std::string& guid,
     AutofillProfile::Source profile_source) {
-  DCHECK(base::IsValidGUID(guid));
+  DCHECK(base::IsValidUuid(guid));
   if (profile_source == AutofillProfile::Source::kAccount)
     return GetAutofillProfileFromContactInfoTable(db_, guid);
 
@@ -1743,7 +1743,7 @@ std::unique_ptr<AutofillProfile> AutofillTable::GetAutofillProfile(
   auto profile = std::make_unique<AutofillProfile>(
       guid, /*origin=*/s.ColumnString(0),
       AutofillProfile::Source::kLocalOrSyncable);
-  DCHECK(base::IsValidGUID(profile->guid()));
+  DCHECK(base::IsValidUuid(profile->guid()));
 
   // Get associated name info using guid.
   AddAutofillProfileNamesToProfile(db_, profile.get());
@@ -1937,7 +1937,7 @@ bool AutofillTable::AddIBAN(const IBAN& iban) {
 }
 
 bool AutofillTable::UpdateIBAN(const IBAN& iban) {
-  DCHECK(base::IsValidGUID(iban.guid()));
+  DCHECK(base::IsValidUuid(iban.guid()));
 
   std::unique_ptr<IBAN> old_iban = GetIBAN(iban.guid());
   if (!old_iban) {
@@ -1959,12 +1959,12 @@ bool AutofillTable::UpdateIBAN(const IBAN& iban) {
 }
 
 bool AutofillTable::RemoveIBAN(const std::string& guid) {
-  DCHECK(base::IsValidGUID(guid));
+  DCHECK(base::IsValidUuid(guid));
   return DeleteWhereColumnEq(db_, kIBANsTable, kGuid, guid);
 }
 
 std::unique_ptr<IBAN> AutofillTable::GetIBAN(const std::string& guid) {
-  DCHECK(base::IsValidGUID(guid));
+  DCHECK(base::IsValidUuid(guid));
   sql::Statement s;
   SelectBuilder(db_, s, kIBANsTable,
                 {kGuid, kUseCount, kUseDate, kValue, kNickname},
@@ -2012,7 +2012,7 @@ bool AutofillTable::AddCreditCard(const CreditCard& credit_card) {
 }
 
 bool AutofillTable::UpdateCreditCard(const CreditCard& credit_card) {
-  DCHECK(base::IsValidGUID(credit_card.guid()));
+  DCHECK(base::IsValidUuid(credit_card.guid()));
 
   std::unique_ptr<CreditCard> old_credit_card =
       GetCreditCard(credit_card.guid());
@@ -2039,7 +2039,7 @@ bool AutofillTable::UpdateCreditCard(const CreditCard& credit_card) {
 }
 
 bool AutofillTable::RemoveCreditCard(const std::string& guid) {
-  DCHECK(base::IsValidGUID(guid));
+  DCHECK(base::IsValidUuid(guid));
   return DeleteWhereColumnEq(db_, kCreditCardsTable, kGuid, guid);
 }
 
@@ -2072,7 +2072,7 @@ bool AutofillTable::AddFullServerCreditCard(const CreditCard& credit_card) {
 
 std::unique_ptr<CreditCard> AutofillTable::GetCreditCard(
     const std::string& guid) {
-  DCHECK(base::IsValidGUID(guid));
+  DCHECK(base::IsValidUuid(guid));
   sql::Statement s;
   SelectBuilder(db_, s, kCreditCardsTable,
                 {kGuid, kNameOnCard, kExpirationMonth, kExpirationYear,

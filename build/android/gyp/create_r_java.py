@@ -10,6 +10,7 @@ import sys
 from util import build_utils
 from util import resource_utils
 import action_helpers  # build_utils adds //build to sys.path.
+import zip_helpers
 
 
 def _ConcatRTxts(rtxt_in_paths, combined_out_path):
@@ -35,7 +36,8 @@ def _CreateRJava(rtxts, package_name, srcjar_out):
                                     rjava_build_options=rjava_build_options,
                                     srcjar_out=srcjar_out,
                                     ignore_mismatched_values=True)
-    build_utils.ZipDir(srcjar_out, build.srcjar_dir)
+    with action_helpers.atomic_output(srcjar_out) as f:
+      zip_helpers.zip_directory(f, build.srcjar_dir)
 
 
 def main(args):

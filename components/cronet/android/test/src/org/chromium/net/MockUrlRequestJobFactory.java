@@ -7,6 +7,7 @@ package org.chromium.net;
 import static junit.framework.Assert.assertTrue;
 
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.net.impl.CronetUrlRequestContext;
 import org.chromium.net.test.FailurePhase;
 
@@ -24,7 +25,7 @@ public final class MockUrlRequestJobFactory {
     public MockUrlRequestJobFactory(CronetEngine cronetEngine) {
         mNetworkThreadTestConnector = new CronetTestUtil.NetworkThreadTestConnector(cronetEngine);
 
-        mInterceptorHandle = nativeAddUrlInterceptors(
+        mInterceptorHandle = MockUrlRequestJobFactoryJni.get().addUrlInterceptors(
                 ((CronetUrlRequestContext) cronetEngine).getUrlRequestContextAdapter());
     }
 
@@ -32,7 +33,7 @@ public final class MockUrlRequestJobFactory {
      * Remove URL Interceptors.
      */
     public void shutdown() {
-        nativeRemoveUrlInterceptorJobFactory(mInterceptorHandle);
+        MockUrlRequestJobFactoryJni.get().removeUrlInterceptorJobFactory(mInterceptorHandle);
         mNetworkThreadTestConnector.shutdown();
     }
 
@@ -54,7 +55,7 @@ public final class MockUrlRequestJobFactory {
                 throw new IllegalArgumentException(
                         "phase not in org.chromium.net.test.FailurePhase");
         }
-        return nativeGetMockUrlWithFailure(phase, netError);
+        return MockUrlRequestJobFactoryJni.get().getMockUrlWithFailure(phase, netError);
     }
 
     /**
@@ -65,7 +66,7 @@ public final class MockUrlRequestJobFactory {
      * @param dataRepeatCount number of times to repeat the data.
      */
     public static String getMockUrlForData(String data, int dataRepeatCount) {
-        return nativeGetMockUrlForData(data, dataRepeatCount);
+        return MockUrlRequestJobFactoryJni.get().getMockUrlForData(data, dataRepeatCount);
     }
 
     /**
@@ -73,34 +74,31 @@ public final class MockUrlRequestJobFactory {
      * the string "data" as the response.
      */
     public static String getMockUrlForClientCertificateRequest() {
-        return nativeGetMockUrlForClientCertificateRequest();
+        return MockUrlRequestJobFactoryJni.get().getMockUrlForClientCertificateRequest();
     }
 
     /**
      * Constructs a mock URL that will fail with an SSL certificate error.
      */
     public static String getMockUrlForSSLCertificateError() {
-        return nativeGetMockUrlForSSLCertificateError();
+        return MockUrlRequestJobFactoryJni.get().getMockUrlForSSLCertificateError();
     }
 
     /**
      * Constructs a mock URL that will hang when try to read response body from the remote.
      */
     public static String getMockUrlForHangingRead() {
-        return nativeGetMockUrlForHangingRead();
+        return MockUrlRequestJobFactoryJni.get().getMockUrlForHangingRead();
     }
 
-    private static native long nativeAddUrlInterceptors(long requestContextAdapter);
-
-    private static native void nativeRemoveUrlInterceptorJobFactory(long interceptorHandle);
-
-    private static native String nativeGetMockUrlWithFailure(int phase, int netError);
-
-    private static native String nativeGetMockUrlForData(String data, int dataRepeatCount);
-
-    private static native String nativeGetMockUrlForClientCertificateRequest();
-
-    private static native String nativeGetMockUrlForSSLCertificateError();
-
-    private static native String nativeGetMockUrlForHangingRead();
+    @NativeMethods("cronet_tests")
+    interface Natives {
+        long addUrlInterceptors(long requestContextAdapter);
+        void removeUrlInterceptorJobFactory(long interceptorHandle);
+        String getMockUrlWithFailure(int phase, int netError);
+        String getMockUrlForData(String data, int dataRepeatCount);
+        String getMockUrlForClientCertificateRequest();
+        String getMockUrlForSSLCertificateError();
+        String getMockUrlForHangingRead();
+    }
 }

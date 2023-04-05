@@ -105,27 +105,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   struct SchedulingSettings {
     SchedulingSettings();
 
-    // Background page priority experiment (crbug.com/848835).
-    bool low_priority_background_page;
-    bool best_effort_background_page;
-
-    // Task and subframe priority experiment (crbug.com/852380).
-    bool low_priority_subframe;
-    bool low_priority_throttleable;
-    bool low_priority_subframe_throttleable;
-    bool low_priority_hidden_frame;
-
-    // Ads priority experiment (crbug.com/856150).
-    bool low_priority_ad_frame;
-    bool best_effort_ad_frame;
-
-    // Origin type priority experiment (crbug.com/856158).
-    bool low_priority_cross_origin;
-
-    // Prioritize compositing and loading tasks until first contentful paint.
-    // (crbug.com/971191)
-    bool prioritize_compositing_and_loading_during_early_loading;
-
     // Prioritise one BeginMainFrame after an input task.
     bool prioritize_compositing_after_input;
 
@@ -371,11 +350,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     return main_thread_only().compositor_priority;
   }
 
-  bool should_prioritize_loading_with_compositing() const {
-    return main_thread_only()
-        .current_policy.should_prioritize_loading_with_compositing();
-  }
-
   bool main_thread_compositing_is_fast() const {
     return main_thread_only().main_thread_compositing_is_fast;
   }
@@ -479,13 +453,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     bool& frozen_when_backgrounded() { return frozen_when_backgrounded_; }
     bool frozen_when_backgrounded() const { return frozen_when_backgrounded_; }
 
-    bool& should_prioritize_loading_with_compositing() {
-      return should_prioritize_loading_with_compositing_;
-    }
-    bool should_prioritize_loading_with_compositing() const {
-      return should_prioritize_loading_with_compositing_;
-    }
-
     bool& should_freeze_compositor_task_queue() {
       return should_freeze_compositor_task_queue_;
     }
@@ -517,8 +484,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     bool operator==(const Policy& other) const {
       return rail_mode_ == other.rail_mode_ &&
              frozen_when_backgrounded_ == other.frozen_when_backgrounded_ &&
-             should_prioritize_loading_with_compositing_ ==
-                 other.should_prioritize_loading_with_compositing_ &&
              should_freeze_compositor_task_queue_ ==
                  other.should_freeze_compositor_task_queue_ &&
              should_defer_task_queues_ == other.should_defer_task_queues_ &&
@@ -536,7 +501,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
    private:
     RAILMode rail_mode_{RAILMode::kAnimation};
     bool frozen_when_backgrounded_{false};
-    bool should_prioritize_loading_with_compositing_{false};
     bool should_freeze_compositor_task_queue_{false};
     bool should_defer_task_queues_{false};
     bool should_pause_task_queues_{false};

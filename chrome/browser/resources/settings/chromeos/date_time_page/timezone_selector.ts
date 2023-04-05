@@ -9,12 +9,12 @@
 import '../../settings_shared.css.js';
 import '../../controls/settings_dropdown_menu.js';
 
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import {CrSettingsPrefs} from 'chrome://resources/cr_components/settings_prefs/prefs_types.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DropdownMenuOptionList} from '../../controls/settings_dropdown_menu.js';
-import {PrefsMixin} from '../../prefs/prefs_mixin.js';
-import {CrSettingsPrefs} from '../../prefs/prefs_types.js';
 
 import {TimeZoneBrowserProxyImpl} from './timezone_browser_proxy.js';
 import {getTemplate} from './timezone_selector.html.js';

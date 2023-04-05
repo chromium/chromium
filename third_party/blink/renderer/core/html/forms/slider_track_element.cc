@@ -11,8 +11,7 @@ namespace blink {
 SliderTrackElement::SliderTrackElement(Document& document)
     : HTMLDivElement(document) {}
 
-LayoutObject* SliderTrackElement::CreateLayoutObject(const ComputedStyle& style,
-                                                     LegacyLayout legacy) {
+LayoutObject* SliderTrackElement::CreateLayoutObject(const ComputedStyle&) {
   return MakeGarbageCollected<LayoutNGBlockFlow>(this);
 }
 

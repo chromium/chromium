@@ -169,7 +169,7 @@ PillButton::PillButton(PressedCallback callback,
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   label()->SetSubpixelRenderingEnabled(false);
-  TypographyProvider::Get()->StyleLabel(TypographyToken::kLegacyButton1,
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kLegacyButton2,
                                         *label());
   StyleUtil::SetUpInkDropForButton(
       this, gfx::Insets(),

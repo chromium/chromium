@@ -40,11 +40,4 @@ CreateMarkupOptions::Builder::SetIsForMarkupSanitization(
   return *this;
 }
 
-CreateMarkupOptions::Builder&
-CreateMarkupOptions::Builder::SetShouldSkipUnselectableContent(
-    bool skip_unselectable_content) {
-  data_.should_skip_unselectable_content_ = skip_unselectable_content;
-  return *this;
-}
-
 }  // namespace blink

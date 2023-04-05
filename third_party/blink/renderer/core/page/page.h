@@ -338,7 +338,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   void ReportIntervention(const String& message) override;
   bool RequestBeginMainFrameNotExpected(bool new_state) override;
   void OnSetPageFrozen(bool is_frozen) override;
-  bool LocalMainFrameNetworkIsAlmostIdle() const override;
 
   void AddAutoplayFlags(int32_t flags);
   void ClearAutoplayFlags();

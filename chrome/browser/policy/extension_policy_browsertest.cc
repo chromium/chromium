@@ -2557,7 +2557,7 @@ class ExtensionPolicyTest2Contexts : public PolicyTest {
     base::FilePath path_profile =
         profile_manager->GenerateNextProfileDirectoryPath();
     // Create an additional profile.
-    return profiles::testing::CreateProfileSync(profile_manager, path_profile);
+    return &profiles::testing::CreateProfileSync(profile_manager, path_profile);
   }
 
   extensions::ExtensionService* CreateExtensionService(

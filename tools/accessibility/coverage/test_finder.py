@@ -116,6 +116,7 @@ class TestFinder(argparse.Namespace):
     self.maybe_tests = dict()
     self.total_disabled = 0
     self.total_maybe = 0
+    self.total_working = 0
     self.dirs = args.dirs
     self.comps = args.components
     self.dir_thread_manager = ThreadManager(args.jobs * .75)
@@ -132,6 +133,8 @@ class TestFinder(argparse.Namespace):
 
   def is_test_file(self, filepath):
     if filepath.endswith('.py'):
+      return False
+    if filepath.endswith('.png'):
       return False
     noext = os.path.splitext(os.path.abspath(filepath))[0]
     name = os.path.basename(noext)
@@ -185,6 +188,8 @@ class TestFinder(argparse.Namespace):
             maybe = []
             self.maybe_tests[relPath] = maybe
           maybe.append(m[1] + "." + m[2])
+        else:
+          self.total_working += 1
       # Find suites
       matches = re.findall(TEST_SUITE_REGEX, text)
       for m in matches:
@@ -218,7 +223,10 @@ class TestFinder(argparse.Namespace):
           "disabled_tests": self.disabled_tests,
           "maybe_tests": self.maybe_tests,
           "total_disabled": self.total_disabled,
-          "total_maybe": self.total_maybe
+          "total_maybe": self.total_maybe,
+          "total_working": self.total_working,
+          "total_tests":
+          self.total_working + self.total_maybe + self.total_disabled
       }
       json.dump(data, outfile, indent=2)
 
@@ -254,7 +262,6 @@ class TestFinder(argparse.Namespace):
         common_component_to_pass = component if using_common_metadata else common_component
         if not self.dir_thread_manager.run(self.build_component_map,
                                            (sub_dir, common_component_to_pass)):
-          print("didn't use thread for dir")
           self.build_component_map(sub_dir, common_component_to_pass)
 
 

@@ -360,7 +360,8 @@ AngleVulkanImageBacking::ProduceGLTexturePassthrough(
       manager, this, this, tracker, std::move(textures));
 }
 
-std::unique_ptr<SkiaImageRepresentation> AngleVulkanImageBacking::ProduceSkia(
+std::unique_ptr<SkiaImageRepresentation>
+AngleVulkanImageBacking::ProduceSkiaGanesh(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {

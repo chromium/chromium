@@ -504,8 +504,6 @@ PageLoadMetricsTestWaiter::GetMatchedBits(
           .has_value() &&
       timing.paint_timing->largest_contentful_paint->largest_image_paint
           ->is_positive()) {
-    current_num_largest_contentful_paint_image_++;
-
     // Set matched bit for largest contentful paint.
     matched_bits.Set(TimingField::kLargestContentfulPaint);
 
@@ -515,14 +513,14 @@ PageLoadMetricsTestWaiter::GetMatchedBits(
       observed_largest_contentful_paint_ =
           timing.paint_timing->largest_contentful_paint->largest_image_paint
               ->InMillisecondsF();
+
+      current_num_largest_contentful_paint_image_++;
     }
   }
   if (timing.paint_timing->largest_contentful_paint->largest_text_paint
           .has_value() &&
       timing.paint_timing->largest_contentful_paint->largest_text_paint
           ->is_positive()) {
-    current_num_largest_contentful_paint_text_++;
-
     // Set matched bit for largest contentful paint.
     matched_bits.Set(TimingField::kLargestContentfulPaint);
 
@@ -532,6 +530,8 @@ PageLoadMetricsTestWaiter::GetMatchedBits(
       observed_largest_contentful_paint_ =
           timing.paint_timing->largest_contentful_paint->largest_text_paint
               ->InMillisecondsF();
+
+      current_num_largest_contentful_paint_text_++;
     }
   }
   if (timing.paint_timing->first_input_or_scroll_notified_timestamp)

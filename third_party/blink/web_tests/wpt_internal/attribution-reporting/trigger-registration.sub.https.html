@@ -17,10 +17,12 @@
 <body>
 <script>
 attribution_reporting_promise_test(async t => {
-  await registerAttributionSrc(t, {source: {
-    destination: `https://{{host}}`,
-  }});
-
+  const source = {
+    destination: "https://{{host}}",
+    source_event_id: generateSourceEventId(),
+  };
+  await registerAttributionSrc(t, { source });
+  await waitForSourceToBeRegistered(source.source_event_id);
   await registerAttributionSrc(t, {
     trigger: {
       event_trigger_data: [{}],

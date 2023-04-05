@@ -333,7 +333,9 @@ void HTMLSelectMenuElement::setValueForBinding(const String& value) {
     setValue(value);
   } else {
     String old_value = this->value();
-    setValue(value);
+    setValue(value, /*send_events=*/false,
+             value != old_value ? WebAutofillState::kNotFilled
+                                : WebAutofillState::kAutofilled);
     if (Page* page = GetDocument().GetPage()) {
       page->GetChromeClient().JavaScriptChangedAutofilledValue(*this,
                                                                old_value);
@@ -341,7 +343,9 @@ void HTMLSelectMenuElement::setValueForBinding(const String& value) {
   }
 }
 
-void HTMLSelectMenuElement::setValue(const String& value, bool send_events) {
+void HTMLSelectMenuElement::setValue(const String& value,
+                                     bool send_events,
+                                     WebAutofillState autofill_state) {
   // Find the option with value matching the given parameter and make it the
   // current selection.
   HTMLOptionElement* selected_option = nullptr;
@@ -351,7 +355,7 @@ void HTMLSelectMenuElement::setValue(const String& value, bool send_events) {
       break;
     }
   }
-  SetSelectedOption(selected_option);
+  SetSelectedOption(selected_option, send_events, autofill_state);
 }
 
 bool HTMLSelectMenuElement::open() const {
@@ -365,16 +369,9 @@ bool HTMLSelectMenuElement::open() const {
   return listbox_part_->HasPopoverAttribute() && listbox_part_->popoverOpen();
 }
 
-void HTMLSelectMenuElement::SetAutofillValue(const String& value) {
-  // TODO(crbug.com/1424116) Update `HTMLFormControlElement::autofill_state_`.
-  // TODO(crbug.com/1427161) Call setValue() from SetAutofillValue().
-  for (auto& option : option_parts_) {
-    if (option->value() == value) {
-      SetSelectedOption(option);
-      DispatchInputAndChangeEventsIfNeeded();
-      break;
-    }
-  }
+void HTMLSelectMenuElement::SetAutofillValue(const String& value,
+                                             WebAutofillState autofill_state) {
+  setValue(value, /*send_events=*/true, autofill_state);
 }
 
 void HTMLSelectMenuElement::OpenListbox() {
@@ -807,7 +804,12 @@ HTMLOptionElement* HTMLSelectMenuElement::selectedOption() const {
 }
 
 void HTMLSelectMenuElement::SetSelectedOption(
-    HTMLOptionElement* selected_option) {
+    HTMLOptionElement* selected_option,
+    bool send_events,
+    WebAutofillState autofill_state) {
+  SetAutofillState(selected_option ? autofill_state
+                                   : WebAutofillState::kNotFilled);
+
   if (selected_option_ == selected_option)
     return;
 
@@ -821,7 +823,18 @@ void HTMLSelectMenuElement::SetSelectedOption(
 
   UpdateSelectedValuePartContents();
   SetNeedsValidityCheck();
+  if (send_events) {
+    DispatchInputAndChangeEventsIfNeeded();
+  }
   NotifyFormStateChanged();
+
+  // We set the Autofill state again because setting the autofill value
+  // triggers JavaScript events and the site may override the autofilled value,
+  // which resets the Autofilled state. Even if the website modifies the from
+  // control element's content during the autofill operation, we want the state
+  // to show as autofilled.
+  SetAutofillState(selected_option ? autofill_state
+                                   : WebAutofillState::kNotFilled);
 }
 
 void HTMLSelectMenuElement::OptionElementChildrenChanged(
@@ -976,6 +989,16 @@ const AtomicString& HTMLSelectMenuElement::FormControlType() const {
   return selectmenu;
 }
 
+void HTMLSelectMenuElement::DefaultEventHandler(Event& event) {
+  if (!GetLayoutObject()) {
+    return;
+  }
+
+  if (event.type() == event_type_names::kChange) {
+    user_has_edited_the_field_ = true;
+  }
+}
+
 bool HTMLSelectMenuElement::MayTriggerVirtualKeyboard() const {
   return true;
 }
@@ -1020,6 +1043,15 @@ bool HTMLSelectMenuElement::ValueMissing() const {
   return true;
 }
 
+void HTMLSelectMenuElement::CloneNonAttributePropertiesFrom(
+    const Element& source,
+    CloneChildrenFlag flag) {
+  const auto& source_element =
+      static_cast<const HTMLSelectMenuElement&>(source);
+  user_has_edited_the_field_ = source_element.user_has_edited_the_field_;
+  HTMLFormControlElement::CloneNonAttributePropertiesFrom(source, flag);
+}
+
 // https://html.spec.whatwg.org/C/#ask-for-a-reset
 void HTMLSelectMenuElement::ResetImpl() {
   for (auto& option : option_parts_) {
@@ -1029,6 +1061,7 @@ void HTMLSelectMenuElement::ResetImpl() {
   }
   ResetToDefaultSelection();
   SetNeedsValidityCheck();
+  HTMLFormControlElementWithState::ResetImpl();
 }
 
 // https://html.spec.whatwg.org/C#selectedness-setting-algorithm

@@ -249,7 +249,7 @@ TEST_F(BookmarkUtilsTest, GetBookmarksMatchingPropertiesConjunction) {
 
 // Copy and paste is not yet supported on iOS. http://crbug.com/228147
 #if !BUILDFLAG(IS_IOS)
-TEST_F(BookmarkUtilsTest, DISABLED_PasteBookmarkFromURL) {
+TEST_F(BookmarkUtilsTest, PasteBookmarkFromURL) {
   std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
   const std::u16string url_text = u"http://www.google.com/";
   const BookmarkNode* new_folder =
@@ -311,7 +311,7 @@ TEST_F(BookmarkUtilsTest, MAYBE_CopyPaste) {
 
 // Test for updating title such that url and title pair are unique among the
 // children of parent.
-TEST_F(BookmarkUtilsTest, DISABLED_MakeTitleUnique) {
+TEST_F(BookmarkUtilsTest, MakeTitleUnique) {
   std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
   const std::u16string url_text = u"http://www.google.com/";
   const std::u16string title_text = u"foobar";
@@ -344,7 +344,7 @@ TEST_F(BookmarkUtilsTest, DISABLED_MakeTitleUnique) {
   EXPECT_EQ(u"foobar (1)", bookmark_bar_node->children()[1]->GetTitle());
 }
 
-TEST_F(BookmarkUtilsTest, DISABLED_CopyPasteMetaInfo) {
+TEST_F(BookmarkUtilsTest, CopyPasteMetaInfo) {
   std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
   const BookmarkNode* node = model->AddURL(model->other_node(), 0, u"foo bar",
                                            GURL("http://www.google.com"));

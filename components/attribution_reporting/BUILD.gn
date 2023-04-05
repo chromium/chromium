@@ -203,6 +203,8 @@ mojom("registration_mojom") {
           forward_declaration =
               "namespace attribution_reporting { class SuitableOrigin; }"
 
+          default_constructible = false
+
           # Avoid expensive copies by forcing Mojo methods to take the type by
           # value, not const ref
           move_only = true
@@ -224,6 +226,8 @@ mojom("registration_mojom") {
           cpp = "::attribution_reporting::SourceRegistration"
           forward_declaration =
               "namespace attribution_reporting { struct SourceRegistration; }"
+
+          default_constructible = false
 
           # Avoid expensive copies by forcing Mojo methods to take the type by
           # value, not const ref
@@ -265,6 +269,7 @@ mojom("registration_mojom") {
         {
           mojom = "attribution_reporting.mojom.DestinationSet"
           cpp = "::attribution_reporting::DestinationSet"
+          default_constructible = false
           forward_declaration =
               "namespace attribution_reporting { class DestinationSet; }"
         },

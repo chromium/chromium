@@ -11,5 +11,5 @@ import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
  * credential with an authenticator.
  */
 public interface MakeCredentialResponseCallback {
-    public void onRegisterResponse(Integer status, MakeCredentialAuthenticatorResponse response);
+    public void onRegisterResponse(int status, MakeCredentialAuthenticatorResponse response);
 }

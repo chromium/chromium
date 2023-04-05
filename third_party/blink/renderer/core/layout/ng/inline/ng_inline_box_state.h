@@ -171,8 +171,7 @@ class CORE_EXPORT NGInlineLayoutStateStack {
   NGInlineBoxState* OnCloseTag(const NGConstraintSpace& space,
                                NGLogicalLineItems*,
                                NGInlineBoxState*,
-                               FontBaseline,
-                               bool has_end_edge = true);
+                               FontBaseline);
 
   // Compute all the pending positioning at the end of a line.
   void OnEndPlaceItems(const NGConstraintSpace& space,

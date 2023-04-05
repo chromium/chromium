@@ -33,6 +33,7 @@
 ../../../third_party/markupsafe/_native.py
 ../../action_helpers.py
 ../../gn_helpers.py
+../../zip_helpers.py
 ../pylib/__init__.py
 ../pylib/constants/__init__.py
 ../pylib/constants/host_paths.py

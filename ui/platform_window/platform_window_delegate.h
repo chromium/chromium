@@ -110,6 +110,10 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
     // Scale to raster the window at.
     float raster_scale = 1.0;
 
+    // Returns true if updating from the given State |old| to this state
+    // should produce a frame.
+    bool ProducesFrameOnUpdateFrom(const State& old) const;
+
     std::string ToString() const;
   };
 
@@ -192,7 +196,10 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   // new LocalSurfaceId for the window tree of this platform window. It returns
   // the new parent ID. Calling code can compare this value with the
   // gfx::FrameData::seq value to see when viz has produced a frame at or after
-  // the (conceptually) inserted sequence point.
+  // the (conceptually) inserted sequence point. OnStateUpdate may return -1 if
+  // the state update does not require a new frame to be considered
+  // synchronized. For example, this can happen if the old and new states are
+  // the same, or it only changes the origin of the bounds.
   virtual int64_t OnStateUpdate(const State& old, const State& latest);
 
   // Returns optional information for owned windows that require anchor for

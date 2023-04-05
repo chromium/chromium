@@ -6454,7 +6454,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerDefaultProcessTest,
   url::ScopedSchemeRegistryForTests scheme_registry;
   url::AddEmptyDocumentScheme("siteless");
   GURL siteless_url("siteless://test");
-  EXPECT_FALSE(SiteInstanceImpl::ShouldAssignSiteForURL(siteless_url));
+  EXPECT_FALSE(SiteInstance::ShouldAssignSiteForURL(siteless_url));
 
   // Set up the work to be done after the renderer is asked to commit
   // |siteless_url|, but before the corresponding DidCommitProvisionalLoad IPC

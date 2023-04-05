@@ -327,6 +327,7 @@ class CORE_EXPORT CSSSelector {
     kPseudoMultiSelectFocus,
     kPseudoOpen,
     kPseudoPastCue,
+    kPseudoPopoverOpen,
     kPseudoRelativeAnchor,
     kPseudoSlotted,
     kPseudoSpatialNavigationFocus,

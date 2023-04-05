@@ -35,7 +35,6 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_block_flow.h"
-#include "third_party/blink/renderer/core/layout/floating_objects.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
@@ -392,69 +391,6 @@ bool ShapeOutsideInfo::IsEnabledFor(const LayoutBox& box) {
   }
 
   return false;
-}
-
-ShapeOutsideDeltas ShapeOutsideInfo::ComputeDeltasForContainingBlockLine(
-    const LineLayoutBlockFlow& containing_block,
-    const FloatingObject& floating_object,
-    LayoutUnit line_top,
-    LayoutUnit line_height) {
-  DCHECK_GE(line_height, 0);
-
-  LayoutUnit border_box_top =
-      containing_block.LogicalTopForFloat(floating_object) +
-      containing_block.MarginBeforeForChild(*layout_box_);
-  LayoutUnit border_box_line_top = line_top - border_box_top;
-
-  if (IsShapeDirty() ||
-      !shape_outside_deltas_.IsForLine(border_box_line_top, line_height)) {
-    LayoutUnit reference_box_line_top =
-        border_box_line_top - LogicalTopOffset();
-    LayoutUnit float_margin_box_width = std::max(
-        containing_block.LogicalWidthForFloat(floating_object), LayoutUnit());
-
-    if (ComputedShape().LineOverlapsShapeMarginBounds(reference_box_line_top,
-                                                      line_height)) {
-      LineSegment segment = ComputedShape().GetExcludedInterval(
-          (border_box_line_top - LogicalTopOffset()),
-          std::min(line_height, ShapeLogicalBottom() - border_box_line_top));
-      if (segment.is_valid) {
-        LayoutUnit logical_left_margin =
-            containing_block.StyleRef().IsLeftToRightDirection()
-                ? containing_block.MarginStartForChild(*layout_box_)
-                : containing_block.MarginEndForChild(*layout_box_);
-        LayoutUnit raw_left_margin_box_delta =
-            segment.logical_left + LogicalLeftOffset() + logical_left_margin;
-        LayoutUnit left_margin_box_delta = ClampTo<LayoutUnit>(
-            raw_left_margin_box_delta, LayoutUnit(), float_margin_box_width);
-
-        LayoutUnit logical_right_margin =
-            containing_block.StyleRef().IsLeftToRightDirection()
-                ? containing_block.MarginEndForChild(*layout_box_)
-                : containing_block.MarginStartForChild(*layout_box_);
-        LayoutUnit raw_right_margin_box_delta =
-            segment.logical_right + LogicalLeftOffset() -
-            containing_block.LogicalWidthForChild(*layout_box_) -
-            logical_right_margin;
-        LayoutUnit right_margin_box_delta = ClampTo<LayoutUnit>(
-            raw_right_margin_box_delta, -float_margin_box_width, LayoutUnit());
-
-        shape_outside_deltas_ =
-            ShapeOutsideDeltas(left_margin_box_delta, right_margin_box_delta,
-                               true, border_box_line_top, line_height);
-        return shape_outside_deltas_;
-      }
-    }
-
-    // Lines that do not overlap the shape should act as if the float
-    // wasn't there for layout purposes. So we set the deltas to remove the
-    // entire width of the float.
-    shape_outside_deltas_ =
-        ShapeOutsideDeltas(float_margin_box_width, -float_margin_box_width,
-                           false, border_box_line_top, line_height);
-  }
-
-  return shape_outside_deltas_;
 }
 
 PhysicalRect ShapeOutsideInfo::ComputedShapePhysicalBoundingBox() const {

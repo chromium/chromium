@@ -3,4 +3,5 @@
 // found in the LICENSE file.
 
 // https://webidl.spec.whatwg.org/#VoidFunction
+[SupportsTaskAttribution]
 callback VoidFunction = undefined ();

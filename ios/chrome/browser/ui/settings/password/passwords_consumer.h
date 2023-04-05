@@ -63,12 +63,6 @@ typedef NS_ENUM(NSInteger, PasswordCheckUIState) {
                    (const std::vector<password_manager::CredentialUIEntry>&)
                        blockedSites;
 
-// Updates "On/Off" state for Passwords In Other Apps item.
-- (void)updatePasswordsInOtherAppsDetailedText;
-
-// Updates "on-device encryption" related UI.
-- (void)updateOnDeviceEncryptionSessionAndUpdateTableView;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORDS_CONSUMER_H_

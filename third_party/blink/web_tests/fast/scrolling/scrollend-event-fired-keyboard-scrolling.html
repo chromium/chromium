@@ -56,7 +56,7 @@
       // |target_offset| is calculated to be a scroll offset large enough to
       // require multiple key downs.
       await waitForScrollReset(scrolling_element);
-      assert_equals(scrolling_element.scrollTop, 0);
+      assert_equals(scrolling_element.scrollTop, 0, "element should not be scrolled");
 
       let target_scrollend_promise = waitForScrollendEvent(listening_element);
       // Buttons are capable of grabbing input focus so they provide a
@@ -76,7 +76,7 @@
       await scrollUpElement(button_element, 5);
       await target_scrollend_promise;
       // If scrollend fired prematurely, we would see non-zero scrolltop.
-      assert_equals(scrolling_element.scrollTop, 0);
+      assert_equals(scrolling_element.scrollTop, 0, "element should be scrolled all the way back up.");
     }
 
     function runTest() {

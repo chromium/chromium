@@ -952,22 +952,22 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTestWithDestroyProfile,
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   // Create a secondary profile.
-  Profile* secondary_profile = profiles::testing::CreateProfileSync(
+  Profile& secondary_profile = profiles::testing::CreateProfileSync(
       profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
-  ASSERT_FALSE(Profile::IsMainProfilePath(secondary_profile->GetPath()));
+  ASSERT_FALSE(Profile::IsMainProfilePath(secondary_profile.GetPath()));
 
   // Creates a browser for the secondary profile.
-  Browser* secondary_browser = CreateBrowser(secondary_profile);
+  Browser* secondary_browser = CreateBrowser(&secondary_profile);
   Browser* main_browser = browser();
 
   EXPECT_TRUE(profile_manager->HasKeepAliveForTesting(
       main_profile, ProfileKeepAliveOrigin::kLacrosMainProfile));
   EXPECT_FALSE(profile_manager->HasKeepAliveForTesting(
-      secondary_profile, ProfileKeepAliveOrigin::kLacrosMainProfile));
+      &secondary_profile, ProfileKeepAliveOrigin::kLacrosMainProfile));
 
   // Destruction Waiters for both profiles.
   ProfileDestructionWaiter main_waiter(main_profile);
-  ProfileDestructionWaiter secondary_waiter(secondary_profile);
+  ProfileDestructionWaiter secondary_waiter(&secondary_profile);
 
   // Close both browsers.
   CloseBrowserSynchronously(secondary_browser);

@@ -25,6 +25,7 @@
 ../../action_helpers.py
 ../../gn_helpers.py
 ../../print_python_deps.py
+../../zip_helpers.py
 prepare_resources.py
 util/__init__.py
 util/build_utils.py

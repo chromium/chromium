@@ -238,6 +238,8 @@ class CloudUploadDialog : public SystemWebDialogDelegate {
   void OnDialogShown(content::WebUI* webui) override;
   void OnDialogClosed(const std::string& json_retval) override;
 
+  void set_modal_type(ui::ModalType modal_type) { modal_type_ = modal_type; }
+
  protected:
   ~CloudUploadDialog() override;
   ui::ModalType GetDialogModalType() const override;
@@ -257,6 +259,9 @@ class CloudUploadDialog : public SystemWebDialogDelegate {
   mojom::DialogPage dialog_page_;
   size_t num_local_tasks_;
   bool office_move_confirmation_shown_;
+  // Modal by default, although if we don't have a parent window, we will
+  // make it non-modal so that the dialog stays on top.
+  ui::ModalType modal_type_ = ui::MODAL_TYPE_WINDOW;
 };
 
 }  // namespace ash::cloud_upload

@@ -69,7 +69,7 @@ std::vector<SyncState> SyncStatusTracker::GetChangesAndClean() {
 
   int64_t total_mem_usage_in_bytes = 0;
 
-  for (const auto &[id, node] : id_to_leaf_) {
+  for (const auto& [id, node] : id_to_leaf_) {
     // If the node is stale, set it as "completed" so that it's later removed.
     if (base::Time::Now() - node->last_update > kMaxStaleTime) {
       SetNodeState(node, kNotFound, 0, 0);

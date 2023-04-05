@@ -49,6 +49,19 @@ COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 extern const base::FeatureParam<bool>
     kSafetyCheckUnusedSitePermissionsWithDelay;
 
+// Determines the time interval after which sites are considered to be unused
+// and its permissions will be revoked.
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+extern const base::FeatureParam<base::TimeDelta>
+    kSafetyCheckUnusedSitePermissionsRevocationThreshold;
+
+// Determines the time interval after which the revoked permissions of unused
+// sites are cleaned up and no longer shown to users, starting from the point
+// in time that permissions for a site were revoked.
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+extern const base::FeatureParam<base::TimeDelta>
+    kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold;
+
 }  // namespace features
 }  // namespace content_settings
 

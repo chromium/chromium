@@ -12,10 +12,29 @@ namespace sandbox::policy::features {
 
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
 // Enables network service sandbox.
-// (Only causes an effect when feature kNetworkService is enabled.)
+// (Only causes an effect when feature kNetworkServiceInProcess is disabled.)
 BASE_FEATURE(kNetworkServiceSandbox,
              "NetworkServiceSandbox",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// Enables a fine-grained seccomp-BPF syscall filter for the network service.
+// Only has an effect if IsNetworkSandboxEnabled() returns true.
+// If the network service sandbox is enabled and |kNetworkServiceSyscallFilter|
+// is disabled, a seccomp-BPF filter will still be applied but it will not
+// disallow any syscalls.
+BASE_FEATURE(kNetworkServiceSyscallFilter,
+             "NetworkServiceSyscallFilter",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+// Enables a fine-grained file path allowlist for the network service.
+// Only has an effect if IsNetworkSandboxEnabled() returns true.
+// If the network service sandbox is enabled and |kNetworkServiceFileAllowlist|
+// is disabled, a file path allowlist will still be applied, but the policy will
+// allow everything.
+BASE_FEATURE(kNetworkServiceFileAllowlist,
+             "NetworkServiceFileAllowlist",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_WIN)

@@ -11,10 +11,19 @@
 
 class GURL;
 class Browser;
+class Profile;
 
 namespace content {
 class WebContents;
 }  // namespace content
+
+namespace gfx {
+class Image;
+}
+
+namespace image_fetcher {
+struct RequestMetadata;
+}
 
 namespace views {
 class BubbleDialogDelegate;
@@ -38,6 +47,13 @@ class BookmarkBubbleView {
                          bool already_bookmarked);
 
   static void Hide();
+
+  static void HandleImageUrlResponse(const Profile* profile,
+                                     const GURL& image_service_url);
+
+  static void HandleImageBytesResponse(
+      const gfx::Image& image,
+      const image_fetcher::RequestMetadata& metadata);
 
   static views::BubbleDialogDelegate* bookmark_bubble() {
     return bookmark_bubble_;

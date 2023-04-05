@@ -15,6 +15,9 @@ const char kAppStoreRatingPolicyEnabled[] = "ios.app_store_rating_enabled";
 // Boolean that is true when Suggest support is enabled.
 const char kArticlesForYouEnabled[] = "suggestions.articles_enabled";
 
+// Boolean that is true when Browser Lockdown Mode is enabled.
+const char kBrowserLockdownModeEnabled[] = "ios.browser_lockdown_mode_enabled";
+
 // A map of browser state data directory to cached information. This cache can
 // be used to display information about browser states without actually having
 // to load them.

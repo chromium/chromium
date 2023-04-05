@@ -46,6 +46,8 @@ class METRICS_EXPORT DelegatingUkmRecorder : public UkmRecorder {
   // The pointer is only used as a key.
   void RemoveDelegate(UkmRecorder* delegate);
 
+  bool HasMultipleDelegates();
+
  private:
   friend class AppSourceUrlRecorder;
   friend class internal::SourceUrlRecorderWebContentsObserver;

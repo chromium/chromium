@@ -45,8 +45,8 @@ BASE_FEATURE(kNotificationInteractionHistory,
              "NotificationInteractionHistory",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOneTimeGeolocationPermission,
-             "OneTimeGeolocationPermission",
+BASE_FEATURE(kOneTimePermission,
+             "OneTimePermission",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables an experimental permission prompt that uses a chip in the location
@@ -142,7 +142,7 @@ BASE_FEATURE(kWindowManagementPermissionAlias,
 namespace feature_params {
 
 const base::FeatureParam<bool> kOkButtonBehavesAsAllowAlways(
-    &permissions::features::kOneTimeGeolocationPermission,
+    &permissions::features::kOneTimePermission,
     "OkButtonBehavesAsAllowAlways",
     true);
 

@@ -35,6 +35,7 @@
 #include "media/audio/audio_manager.h"
 #include "media/audio/mac/scoped_audio_unit.h"
 #include "media/audio/system_glitch_reporter.h"
+#include "media/base/amplitude_peak_detector.h"
 #include "media/base/audio_parameters.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -60,6 +61,7 @@ class AUHALStreamClient {
 #if BUILDFLAG(IS_MAC)
   virtual base::TimeDelta GetDeferStreamStartTimeout() const = 0;
   virtual base::SingleThreadTaskRunner* GetTaskRunner() const = 0;
+  virtual void StopAmplitudePeakTrace() = 0;
 #endif
 };
 
@@ -215,6 +217,8 @@ class AUHALStream : public AudioOutputStream {
 
   // Callback to send statistics info.
   AudioManager::LogCallback log_callback_;
+
+  [[maybe_unused]] std::unique_ptr<AmplitudePeakDetector> peak_detector_;
 
   AudioGlitchInfo::Accumulator glitch_info_accumulator_;
 

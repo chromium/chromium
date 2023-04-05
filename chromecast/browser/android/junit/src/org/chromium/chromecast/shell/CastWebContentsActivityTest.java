@@ -8,6 +8,7 @@ import static android.os.Looper.getMainLooper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -440,7 +441,7 @@ public class CastWebContentsActivityTest {
 
     @Test
     @Config(shadows = {ExtendedShadowActivity.class}, sdk = {Build.VERSION_CODES.O})
-    public void testStopWhileInPipModeClosesActivity() {
+    public void testStopWhileInPipModeDoesNotClosesActivity() {
         mShadowActivityManager.setLockTaskModeState(ActivityManager.LOCK_TASK_MODE_NONE);
         ExtendedShadowActivity shadowActivity = (ExtendedShadowActivity) Shadow.extract(mActivity);
         mActivityLifecycle.create().start().resume();
@@ -449,8 +450,8 @@ public class CastWebContentsActivityTest {
         verifyBroadcastedIntent(
                 filterFor(CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED), () -> {
                     mActivityLifecycle.pause().stop();
-                    assertTrue(mActivity.isFinishing());
-                }, true);
+                    assertFalse(mActivity.isFinishing());
+                }, false);
     }
 
     @Test
@@ -643,6 +644,70 @@ public class CastWebContentsActivityTest {
         assertEquals(CastWebContentsIntentUtils.ACTION_REQUEST_MEDIA_PLAYING_STATUS,
                 broadcastIntent.getAction());
         assertWakeLockFlags(true, true);
+    }
+
+    @Test
+    public void testTaskRemovedMonitorServiceStartedOnCreation() {
+        mActivityLifecycle = Robolectric.buildActivity(CastWebContentsActivity.class,
+                CastWebContentsIntentUtils.requestStartCastActivity(RuntimeEnvironment.application,
+                        mWebContents, true, false, true, false, mSessionId));
+        mActivity = mActivityLifecycle.get();
+        mActivity.testingModeForTesting();
+        mActivityLifecycle.create();
+        //  RuntimeEnvironment.application
+        Intent serviceIntent =
+                Shadows.shadowOf(RuntimeEnvironment.application).getNextStartedService();
+        assertNotNull(serviceIntent);
+        assertEquals(TaskRemovedMonitorService.class.getName(),
+                serviceIntent.getComponent().getClassName());
+        assertEquals(mSessionId,
+                serviceIntent.getStringExtra(TaskRemovedMonitorService.ROOT_SESSION_KEY));
+        assertEquals(
+                mSessionId, serviceIntent.getStringExtra(TaskRemovedMonitorService.SESSION_KEY));
+    }
+
+    @Test
+    public void testTaskRemovedMonitorServiceUpdatedWithNewIntent() {
+        mActivityLifecycle = Robolectric.buildActivity(CastWebContentsActivity.class,
+                CastWebContentsIntentUtils.requestStartCastActivity(RuntimeEnvironment.application,
+                        mWebContents, true, false, true, false, mSessionId));
+        mActivity = mActivityLifecycle.get();
+        mActivity.testingModeForTesting();
+        mActivityLifecycle.create();
+        //  RuntimeEnvironment.application
+        Intent serviceIntent =
+                Shadows.shadowOf(RuntimeEnvironment.application).getNextStartedService();
+        assertNotNull(serviceIntent);
+        assertEquals(TaskRemovedMonitorService.class.getName(),
+                serviceIntent.getComponent().getClassName());
+        assertEquals(mSessionId,
+                serviceIntent.getStringExtra(TaskRemovedMonitorService.ROOT_SESSION_KEY));
+        assertEquals(
+                mSessionId, serviceIntent.getStringExtra(TaskRemovedMonitorService.SESSION_KEY));
+        String newSessionId = "1234-5678-910A";
+        Intent newIntent =
+                CastWebContentsIntentUtils.requestStartCastActivity(RuntimeEnvironment.application,
+                        mWebContents, true, false, true, false, newSessionId);
+        mActivityLifecycle.newIntent(newIntent);
+        serviceIntent = Shadows.shadowOf(RuntimeEnvironment.application).getNextStartedService();
+        assertNotNull(serviceIntent);
+        assertEquals(TaskRemovedMonitorService.class.getName(),
+                serviceIntent.getComponent().getClassName());
+        assertEquals(mSessionId,
+                serviceIntent.getStringExtra(TaskRemovedMonitorService.ROOT_SESSION_KEY));
+        assertEquals(
+                newSessionId, serviceIntent.getStringExtra(TaskRemovedMonitorService.SESSION_KEY));
+    }
+
+    @Test
+    public void testTaskRemovedMonitorServiceStoppedWhenActivityFinished() {
+        mActivityLifecycle.create();
+        mActivity.finishForTesting();
+        Intent serviceIntent =
+                Shadows.shadowOf(RuntimeEnvironment.application).getNextStoppedService();
+        assertNotNull(serviceIntent);
+        assertEquals(TaskRemovedMonitorService.class.getName(),
+                serviceIntent.getComponent().getClassName());
     }
 
     private void assertWakeLockFlags(boolean keepScreenOn, boolean allowLockWhileScreenOn) {

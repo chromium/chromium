@@ -196,7 +196,6 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
         rowParams.iconResId = isNewIconFeatureEnabled()
                 ? PageInfoAboutThisSiteControllerJni.get().getJavaDrawableIconId()
                 : R.drawable.ic_info_outline_grey_24dp;
-        rowParams.iconNeedsTint = !isNewIconFeatureEnabled();
         rowParams.decreaseIconSize = true;
         rowParams.clickCallback = this::onAboutThisSiteRowClicked;
         mRowView.setParams(rowParams);

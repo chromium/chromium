@@ -50,8 +50,9 @@ class SharingMessageBridgeImpl : public SharingMessageBridge,
       const syncer::FailedCommitResponseDataList& error_response_list) override;
   CommitAttemptFailedBehavior OnCommitAttemptFailed(
       syncer::SyncCommitError commit_error) override;
-  void ApplyStopSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
-                                metadata_change_list) override;
+  void ApplyDisableSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
+                                   metadata_change_list) override;
+  void OnSyncPaused() override;
 
   size_t GetCallbacksCountForTesting() const { return pending_commits_.size(); }
 

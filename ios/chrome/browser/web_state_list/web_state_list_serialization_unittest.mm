@@ -34,12 +34,6 @@ std::unique_ptr<web::WebState> CreateWebState() {
   return CreateWebStateWithNavigationItemCount(1);
 }
 
-std::unique_ptr<web::WebState> CreateWebStateWithID(NSString* web_state_id) {
-  auto web_state = std::make_unique<web::FakeWebState>(web_state_id);
-  web_state->SetNavigationItemCount(1);
-  return web_state;
-}
-
 std::unique_ptr<web::WebState> CreateWebStateWithSessionStorage(
     CRWSessionStorage* session_storage) {
   std::unique_ptr<web::WebState> web_state = CreateWebState();
@@ -145,18 +139,17 @@ TEST_F(WebStateListSerializationTest, SerializationRoundTrip) {
 
 TEST_F(WebStateListSerializationTest, Serialize) {
   WebStateList original_web_state_list(web_state_list_delegate());
-  original_web_state_list.InsertWebState(0, CreateWebStateWithID(@"1"),
-                                         WebStateList::INSERT_FORCE_INDEX,
-                                         WebStateOpener());
   original_web_state_list.InsertWebState(
-      1, CreateWebStateWithID(@"2"),
+      0, CreateWebState(), WebStateList::INSERT_FORCE_INDEX, WebStateOpener());
+  original_web_state_list.InsertWebState(
+      1, CreateWebState(),
       WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
       WebStateOpener(original_web_state_list.GetWebStateAt(0), 3));
   original_web_state_list.InsertWebState(
-      2, CreateWebStateWithID(@"3"), WebStateList::INSERT_FORCE_INDEX,
+      2, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
       WebStateOpener(original_web_state_list.GetWebStateAt(0), 2));
   original_web_state_list.InsertWebState(
-      3, CreateWebStateWithID(@"4"), WebStateList::INSERT_FORCE_INDEX,
+      3, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
       WebStateOpener(original_web_state_list.GetWebStateAt(1), 1));
 
   SessionWindowIOS* session_window =

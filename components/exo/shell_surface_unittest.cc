@@ -3110,4 +3110,22 @@ TEST_F(ShellSurfaceTest,
   EXPECT_EQ(1.0f, config_data.raster_scale);
 }
 
+TEST_F(ShellSurfaceTest, MoveParentWithoutWidget) {
+  UpdateDisplay("800x600, 800x600");
+  constexpr gfx::Size kSize{256, 256};
+  std::unique_ptr<ShellSurface> parent_surface =
+      test::ShellSurfaceBuilder(kSize).BuildShellSurface();
+
+  std::unique_ptr<ShellSurface> child_surface =
+      test::ShellSurfaceBuilder(kSize).SetNoCommit().BuildShellSurface();
+  child_surface->SetParent(parent_surface.get());
+  auto* parent_widget = parent_surface->GetWidget();
+  auto* root_before = parent_widget->GetNativeWindow()->GetRootWindow();
+  parent_widget->SetBounds({{1000, 0}, kSize});
+  // Crash (crbug.com/1395433) happens when a transient parent moved
+  // to another root window before widget is created. Make sure that
+  // happened.
+  EXPECT_NE(root_before, parent_widget->GetNativeWindow()->GetRootWindow());
+}
+
 }  // namespace exo

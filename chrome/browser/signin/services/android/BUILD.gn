@@ -61,6 +61,7 @@ android_resources("java_resources") {
 
 android_library("unit_device_javatests") {
   testonly = true
+  resources_package = "org.chromium.chrome.browser.signin.services"
   sources = [
     "java/src/org/chromium/chrome/browser/signin/services/ProfileDataCacheRenderTest.java",
     "java/src/org/chromium/chrome/browser/signin/services/ProfileDataCacheWithBadgeRenderTest.java",
@@ -68,6 +69,7 @@ android_library("unit_device_javatests") {
   deps = [
     ":java",
     "//base:base_java_test_support",
+    "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/test/android:chrome_java_integration_test_support",
@@ -84,6 +86,7 @@ android_library("unit_device_javatests") {
 }
 
 robolectric_library("junit") {
+  resources_package = "org.chromium.chrome.browser.signin.services"
   sources = [
     "junit/src/org/chromium/chrome/browser/signin/services/ProfileDataCacheUnitTest.java",
     "junit/src/org/chromium/chrome/browser/signin/services/WebSigninBridgeTest.java",
@@ -93,6 +96,7 @@ robolectric_library("junit") {
     ":java_resources",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/test/android:chrome_java_unit_test_support",

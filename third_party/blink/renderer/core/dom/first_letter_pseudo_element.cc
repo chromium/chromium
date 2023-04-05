@@ -313,8 +313,6 @@ void FirstLetterPseudoElement::AttachLayoutTree(AttachContext& context) {
   first_letter_context.next_sibling_valid = true;
   if (first_letter_text) {
     first_letter_context.parent = first_letter_text->Parent();
-    if (first_letter_context.parent->ForceLegacyLayout())
-      first_letter_context.force_legacy_layout = true;
   }
   PseudoElement::AttachLayoutTree(first_letter_context);
   if (first_letter_text)
@@ -337,13 +335,12 @@ void FirstLetterPseudoElement::DetachLayoutTree(bool performing_reattach) {
 }
 
 LayoutObject* FirstLetterPseudoElement::CreateLayoutObject(
-    const ComputedStyle& style,
-    LegacyLayout legacy) {
-  if (UNLIKELY(legacy == LegacyLayout::kAuto &&
-               !style.InitialLetter().IsNormal()))
-    return LayoutObjectFactory::CreateBlockFlow(*this, style, legacy);
+    const ComputedStyle& style) {
+  if (UNLIKELY(!style.InitialLetter().IsNormal())) {
+    return LayoutObjectFactory::CreateBlockFlow(*this, style);
+  }
 
-  return PseudoElement::CreateLayoutObject(style, legacy);
+  return PseudoElement::CreateLayoutObject(style);
 }
 
 scoped_refptr<const ComputedStyle>
@@ -390,17 +387,13 @@ void FirstLetterPseudoElement::AttachFirstLetterTextLayoutObjects(
   // This text fragment might be empty.
   LayoutTextFragment* remaining_text;
 
-  LegacyLayout legacy_layout = first_letter_text->ForceLegacyLayout()
-                                   ? LegacyLayout::kForce
-                                   : LegacyLayout::kAuto;
-
   if (first_letter_text->GetNode()) {
-    remaining_text = LayoutTextFragment::Create(
-        first_letter_text->GetNode(), old_text.Impl(), length, remaining_length,
-        legacy_layout);
+    remaining_text =
+        LayoutTextFragment::Create(first_letter_text->GetNode(),
+                                   old_text.Impl(), length, remaining_length);
   } else {
     remaining_text = LayoutTextFragment::CreateAnonymous(
-        *this, old_text.Impl(), length, remaining_length, legacy_layout);
+        *this, old_text.Impl(), length, remaining_length);
   }
 
   remaining_text->SetFirstLetterPseudoElement(this);
@@ -417,8 +410,8 @@ void FirstLetterPseudoElement::AttachFirstLetterTextLayoutObjects(
 
   // Construct text fragment for the first letter.
   const ComputedStyle* const letter_style = GetComputedStyle();
-  LayoutTextFragment* letter = LayoutTextFragment::CreateAnonymous(
-      *this, old_text.Impl(), 0, length, legacy_layout);
+  LayoutTextFragment* letter =
+      LayoutTextFragment::CreateAnonymous(*this, old_text.Impl(), 0, length);
   letter->SetFirstLetterPseudoElement(this);
   if (UNLIKELY(GetLayoutObject()->IsInitialLetterBox())) {
     const LayoutBlock& paragraph = *GetLayoutObject()->ContainingBlock();

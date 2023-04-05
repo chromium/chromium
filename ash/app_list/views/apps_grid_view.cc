@@ -206,6 +206,8 @@ class AppsGridView::FolderIconItemHider : public AppListItemObserver,
   void OnViewIsDeleting(views::View* observed_view) override {
     DCHECK_EQ(item_view_, observed_view);
     item_view_ = nullptr;
+    folder_item_ = nullptr;
+    folder_item_observer_.Reset();
   }
 
   // AppListItemObserver:

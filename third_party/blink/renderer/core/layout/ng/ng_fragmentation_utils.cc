@@ -1416,8 +1416,9 @@ bool CanPaintMultipleFragments(const LayoutObject& layout_object) {
     return true;
 
   // If the object isn't monolithic, we're good.
-  if (layout_box->GetNGPaginationBreakability() != LayoutBox::kForbidBreaks)
+  if (!layout_box->IsMonolithic()) {
     return true;
+  }
 
   // There seems to be many issues preventing us from allowing repeated
   // scrollable containers, so we need to disallow them (unless we're printing,

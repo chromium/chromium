@@ -1,0 +1,51 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Defines a test API with no other mojom dependencies that can be used to
+// verify the behavior of the Mojom implementation for the Accessibility
+// Service.
+
+module axtest.mojom;
+
+// A structure with some Mojom types.
+struct TestStruct {
+  bool is_structy;
+  int32 num;
+  string name;
+};
+
+// An enum type.
+enum TestEnum {
+    kFirst,
+    kSecond,
+    kThird
+};
+
+// A test interface with a method that takes an enum.
+interface TestInterface {
+    // A method that takes an enum.
+    TestMethod(TestEnum num);
+};
+
+// An interface which can allow for binding to the TestInterface
+// and also has methods to signal when the test is completed.
+interface TestBindingInterface {
+    // Returns a PendingReceiver to the TestInterface, which can be used
+    // to receive testMethod calls.
+    AddTestInterface() => (pending_receiver<TestInterface> interface_receiver);
+
+    // Returns a value asynchronously through a callback.
+    GetTestStruct(int32 num, string name) => (TestStruct result);
+
+    // Requests that the TestBindingInterface send the enum to TestInterface,
+    // if bound.
+    SendEnumToTestInterface(TestEnum num);
+
+    // Disconnected the pipe from the TestBindingInterface implementation.
+    Disconnect();
+
+    // Called when the test is complete indicating if the test was successful
+    // or failed.
+    TestComplete(bool success);
+};

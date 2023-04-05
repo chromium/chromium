@@ -164,4 +164,11 @@ BASE_FEATURE(kWebviewTagMPArchBehavior,
              "WebviewTagMPArchBehavior",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, extensions installed from .zip files (from dev mode) are changed
+// from installing in base::TEMP_DIR to .../<profile_dir>/UnpackedExtensions and
+// persist until removed by the user.
+BASE_FEATURE(kExtensionsZipFileInstalledInProfileDir,
+             "ExtensionsZipFileInstalledInProfileDir",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace extensions_features

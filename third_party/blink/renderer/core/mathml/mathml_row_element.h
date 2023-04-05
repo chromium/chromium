@@ -20,8 +20,7 @@ class CORE_EXPORT MathMLRowElement : public MathMLElement {
   void ChildrenChanged(const ChildrenChange&) override;
 
  private:
-  LayoutObject* CreateLayoutObject(const ComputedStyle&,
-                                   LegacyLayout legacy) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
   InsertionNotificationRequest InsertedInto(ContainerNode&) final;
 
   bool IsGroupingElement() const override { return true; }

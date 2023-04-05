@@ -29,6 +29,7 @@ Check that VideoEncoder can encode in different latency and bitrate modes
         framerate: 24
       };
 
+      TEST.log('Starting test with arguments: ' + JSON.stringify(arg));
       let support = await VideoEncoder.isConfigSupported(encoder_config);
       if (!support.supported) {
         TEST.skip('Unsupported codec: ' + arg.codec);
@@ -77,7 +78,15 @@ Check that VideoEncoder can encode in different latency and bitrate modes
         'Output count mismatch: ' + chunks.length);
 
       TEST.assert(errors == 0, 'Encoding errors occurred during the test');
+      TEST.log('Test completed');
     }
+    addManualTestButton({
+      'source_type': 'offscreen',
+      'codec': 'avc1.42001E',
+      'acceleration':'prefer-software',
+      'bitrate_mode': 'constant',
+      'latency_mode': 'realtime'
+    });
   </script>
 </head>
 

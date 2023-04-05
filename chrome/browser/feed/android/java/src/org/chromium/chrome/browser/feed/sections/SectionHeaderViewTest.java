@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 
 import androidx.test.filters.SmallTest;
 
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,9 +25,9 @@ import org.robolectric.Robolectric;
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator.StreamTabId;
+import org.chromium.chrome.browser.feed.test.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.Tracker;
@@ -53,7 +52,7 @@ public final class SectionHeaderViewTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.setupActivity(Activity.class);
-        mActivity.setTheme(org.chromium.chrome.R.style.Theme_MaterialComponents);
+        mActivity.setTheme(R.style.Theme_MaterialComponents);
         TrackerFactory.setTrackerForTests(mTracker);
 
         // Build the class under test, and set up the fake UI.

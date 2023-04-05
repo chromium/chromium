@@ -369,7 +369,7 @@ source_set("internal") {
       "mac_util.cc",
       "mac_util.h",
     ]
-    frameworks = [ "CoreFoundation.framework" ]
+    frameworks = [ "Foundation.framework" ]
 
     if (is_mac) {
       sources += [
@@ -387,7 +387,6 @@ source_set("internal") {
         "policy_loader_ios.mm",
       ]
       configs += [ "//build/config/compiler:enable_arc" ]
-      frameworks += [ "Foundation.framework" ]
     }
   }
 }

@@ -11,10 +11,12 @@
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/common/extensions/api/mdns.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/api/async_api_function.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_registry.h"
@@ -34,8 +36,7 @@ const char kTestServiceType[] = "_testing._tcp.local";
 
 bool IsServiceTypeAllowlisted(const std::string& service_type) {
   return service_type == kCastServiceType ||
-         service_type == kPrivetServiceType ||
-         service_type == kTestServiceType;
+         service_type == kPrivetServiceType || service_type == kTestServiceType;
 }
 
 }  // namespace
@@ -71,8 +72,9 @@ BrowserContextKeyedAPIFactory<MDnsAPI>* MDnsAPI::GetFactoryInstance() {
 
 void MDnsAPI::SetDnsSdRegistryForTesting(DnsSdRegistry* dns_sd_registry) {
   dns_sd_registry_ = dns_sd_registry;
-  if (dns_sd_registry_)
+  if (dns_sd_registry_) {
     dns_sd_registry_->AddObserver(this);
+  }
 }
 
 void MDnsAPI::ForceDiscovery() {
@@ -201,8 +203,9 @@ bool MDnsAPI::IsMDnsAllowed(const std::string& extension_id,
       ExtensionRegistry::Get(browser_context_)
           ->enabled_extensions()
           .GetByID(extension_id);
-  if (!extension)
+  if (!extension) {
     return false;
+  }
 
   if (GetCurrentChannel() == version_info::Channel::DEV &&
       extension->is_extension()) {
@@ -221,20 +224,24 @@ void MDnsAPI::GetValidOnServiceListListeners(
     const std::string* service_type =
         filter->FindString(kEventFilterServiceTypeKey);
     if (!service_type || service_type->empty() ||
-        !base::IsStringASCII(*service_type))
+        !base::IsStringASCII(*service_type)) {
       continue;
+    }
 
     // Match service type when filter isn't ""
-    if (!service_type_filter.empty() && service_type_filter != *service_type)
+    if (!service_type_filter.empty() && service_type_filter != *service_type) {
       continue;
+    }
 
     // Don't listen for services associated only with disabled extensions
     // or non-allowlisted, non-platform-app extensions.
-    if (!IsMDnsAllowed(listener->extension_id(), *service_type))
+    if (!IsMDnsAllowed(listener->extension_id(), *service_type)) {
       continue;
+    }
 
-    if (extension_ids)
+    if (extension_ids) {
       extension_ids->insert(listener->extension_id());
+    }
     if (service_type_counts) {
       (*service_type_counts)[*service_type]++;
     }
@@ -260,18 +267,13 @@ void MDnsAPI::WriteToConsole(const std::string& service_type,
   for (const std::string& extension_id : extension_ids) {
     extensions::ExtensionHost* host =
         extensions::ProcessManager::Get(browser_context_)
-        ->GetBackgroundHostForExtension(extension_id);
+            ->GetBackgroundHostForExtension(extension_id);
     content::RenderFrameHost* rfh =
         host ? host->host_contents()->GetPrimaryMainFrame() : nullptr;
-    if (rfh)
+    if (rfh) {
       rfh->AddMessageToConsole(level, logged_message);
+    }
   }
-}
-
-MdnsForceDiscoveryFunction::MdnsForceDiscoveryFunction() {
-}
-
-MdnsForceDiscoveryFunction::~MdnsForceDiscoveryFunction() {
 }
 
 AsyncApiFunction::ResponseAction MdnsForceDiscoveryFunction::Run() {

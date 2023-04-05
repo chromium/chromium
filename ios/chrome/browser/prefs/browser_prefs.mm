@@ -419,6 +419,9 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   // Register pref used to determine if the Price Tracking UI has been shown.
   registry->RegisterBooleanPref(prefs::kPriceNotificationsHasBeenShown, false);
+
+  // Register pref used to determine if Browser Lockdown Mode is enabled.
+  registry->RegisterBooleanPref(prefs::kBrowserLockdownModeEnabled, false);
 }
 
 // This method should be periodically pruned of year+ old migrations.

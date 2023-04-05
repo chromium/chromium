@@ -857,7 +857,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason.{Source}"
+    name="History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason{Source}"
     enum="ClusterFilterReason" expires_after="2023-08-08">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
@@ -1489,6 +1489,28 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="History.Clusters.ContextClusterer.NumUnpersistedVisitsBeforeClusterPersisted"
+    units="num unpersisted visits" expires_after="2023-10-01">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
+  <summary>
+    When we decide a new visit belongs to a new cluster, we asyncly reserve a
+    new cluster ID and add the visit to the cluster. When subsequent visits
+    belong to the same cluster, we asyncly add those visits to the cluster. When
+    the latter occurs before the former completes, i.e. when there are multiple
+    visits done that belong in the same cluster before the cluster ID was
+    reserved, we queue those subsequent visits and only add them when the
+    cluster ID is reserved.
+
+    This histogram records the number of visits that were waiting to be
+    persisted while waiting for the persisted ID of the containg cluster to be
+    received. Recorded at most once per cluster that is generated via the
+    navigation graph.
+  </summary>
+</histogram>
+
+<histogram
     name="History.Clusters.ContextClusterer.VisitProcessingLatency.{Segment}"
     units="ms" expires_after="2023-10-01">
   <owner>sophiechang@chromium.org</owner>
@@ -1838,7 +1860,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.DatabaseFileMB" units="MB" expires_after="M115">
+<histogram name="History.DatabaseFileMB" units="MB" expires_after="2023-07-01">
   <owner>sophiechang@chromium.org</owner>
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
@@ -1883,17 +1905,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The exact database error encountered when initializing the database, if
     failed.
-  </summary>
-</histogram>
-
-<histogram name="History.DeleteFTSIndexDatabases" units="units"
-    expires_after="2018-08-30">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <component>UI&gt;Browser&gt;History</component>
-  <summary>
-    Count of &quot;History Index *&quot; databases deleted. These databases
-    stored the full-text-search data for history, which was removed at r213442,
-    this histogram tracks cleanup.
   </summary>
 </histogram>
 
@@ -2265,12 +2276,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.InitTime" units="ms" expires_after="M79">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <component>UI&gt;Browser&gt;History</component>
-  <summary>TBD</summary>
-</histogram>
-
 <histogram name="History.InMemoryDBItemCount" units="typed URLs"
     expires_after="2023-08-27">
   <owner>sky@chromium.org</owner>
@@ -2535,17 +2540,6 @@ chromium-metrics-reviews@google.com.
     Records the time taken to load the history Web UI and render (at least) a
     screen full of items. This is roughly equivalent to 'time to first
     meaningful paint' for the history page.
-  </summary>
-</histogram>
-
-<histogram name="History.ShownHeaderAboutOtherFormsOfBrowsingHistory"
-    enum="BooleanShown" expires_after="M77">
-  <owner>msramek@chromium.org</owner>
-  <component>UI&gt;Browser&gt;History</component>
-  <summary>
-    Whether the notice about other forms of browsing history was shown in the
-    header of the History page when the header was displayed. The header is
-    refreshed with every history query.
   </summary>
 </histogram>
 

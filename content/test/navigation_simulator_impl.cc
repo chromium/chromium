@@ -1555,6 +1555,9 @@ NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
 
   // This mirrors the calculation in
   // RenderFrameImpl::MakeDidCommitProvisionalLoadParams.
+  // TODO(wjmaclean): If params->url is about:blank or about:srcdoc then we
+  // should also populate params->initiator_base_url in a manner similar to
+  // RenderFrameImpl::MakeDidCommitProvisionalLoadParams.
   if (same_document) {
     params->origin = current_rfh->GetLastCommittedOrigin();
   } else {

@@ -34,6 +34,11 @@
 - (void)loadModel {
   [super loadModel];
   [self.handler loadModel];
+  [self.handler loadFooterForSettings];
+}
+
+- (BOOL)isItemAtIndexPathTextEditCell:(NSIndexPath*)cellPath {
+  return [self.handler isItemAtIndexPathTextEditCell:cellPath];
 }
 
 #pragma mark - SettingsRootTableViewController
@@ -50,7 +55,9 @@
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
-  return [self.handler cell:cell forRowAtIndexPath:indexPath];
+  return [self.handler cell:cell
+          forRowAtIndexPath:indexPath
+           withTextDelegate:self];
 }
 
 - (void)tableView:(UITableView*)tableView
@@ -78,17 +85,19 @@
 
 - (BOOL)tableView:(UITableView*)tableView
     canEditRowAtIndexPath:(NSIndexPath*)indexPath {
-  return [self.handler canEditRowAtIndexPath:indexPath];
+  // If we don't allow the edit of the cell, the selection of the cell isn't
+  // forwarded.
+  return YES;
 }
 
 - (UITableViewCellEditingStyle)tableView:(UITableView*)tableView
            editingStyleForRowAtIndexPath:(NSIndexPath*)indexPath {
-  return [self.handler editingStyleForRowAtIndexPath:indexPath];
+  return UITableViewCellEditingStyleNone;
 }
 
 - (BOOL)tableView:(UITableView*)tableView
     shouldIndentWhileEditingRowAtIndexPath:(NSIndexPath*)indexPath {
-  return [self.handler shouldIndentWhileEditingRowAtIndexPath:indexPath];
+  return NO;
 }
 
 @end

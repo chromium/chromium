@@ -2018,20 +2018,20 @@ INSTANTIATE_TEST_SUITE_P(
             net::CookieSettingOverrides(
                 net::CookieSettingOverride::kForceThirdPartyByUser))));
 
-class PartitionedCookiesRestrictedCookieManagerTest
+class UnpartitionedCookiesRestrictedCookieManagerTest
     : public RestrictedCookieManagerTest {
  public:
-  PartitionedCookiesRestrictedCookieManagerTest() {
-    feature_list_.InitAndEnableFeature(net::features::kPartitionedCookies);
+  UnpartitionedCookiesRestrictedCookieManagerTest() {
+    feature_list_.InitAndDisableFeature(net::features::kPartitionedCookies);
   }
-  ~PartitionedCookiesRestrictedCookieManagerTest() override = default;
+  ~UnpartitionedCookiesRestrictedCookieManagerTest() override = default;
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
 // Test Partitioned cookie behavior when feature is disabled.
-TEST_P(RestrictedCookieManagerTest, PartitionedCookies) {
+TEST_P(UnpartitionedCookiesRestrictedCookieManagerTest, PartitionedCookies) {
   const GURL kCookieURL("https://example.com");
   const GURL kTopFrameURL("https://foo.com");
   const net::SiteForCookies kSiteForCookies =
@@ -2123,7 +2123,8 @@ TEST_P(RestrictedCookieManagerTest, PartitionedCookies) {
   }
 }
 
-TEST_P(RestrictedCookieManagerTest, PartitionKeyFromScript) {
+TEST_P(UnpartitionedCookiesRestrictedCookieManagerTest,
+       PartitionKeyFromScript) {
   const GURL kCookieURL("https://example.com");
   const GURL kTopFrameURL("https://foo.com");
   const net::SiteForCookies kSiteForCookies =
@@ -2155,7 +2156,7 @@ TEST_P(RestrictedCookieManagerTest, PartitionKeyFromScript) {
 }
 
 // Test Partitioned cookie behavior when feature is enabled.
-TEST_P(PartitionedCookiesRestrictedCookieManagerTest, PartitionedCookies) {
+TEST_P(RestrictedCookieManagerTest, PartitionedCookies) {
   const GURL kCookieURL("https://example.com");
   const GURL kTopFrameURL("https://sub.foo.com");
   const net::SiteForCookies kSiteForCookies =
@@ -2271,7 +2272,7 @@ TEST_P(PartitionedCookiesRestrictedCookieManagerTest, PartitionedCookies) {
   }
 }
 
-TEST_P(PartitionedCookiesRestrictedCookieManagerTest, PartitionKeyFromScript) {
+TEST_P(RestrictedCookieManagerTest, PartitionKeyFromScript) {
   const GURL kCookieURL("https://example.com");
   const GURL kTopFrameURL("https://foo.com");
   const net::SiteForCookies kSiteForCookies =
@@ -2304,7 +2305,7 @@ TEST_P(PartitionedCookiesRestrictedCookieManagerTest, PartitionKeyFromScript) {
   EXPECT_EQ("__Host-foo", cookies[0].Name());
 }
 
-TEST_P(PartitionedCookiesRestrictedCookieManagerTest, PartitionKeyWithNonce) {
+TEST_P(UnpartitionedCookiesRestrictedCookieManagerTest, PartitionKeyWithNonce) {
   const GURL kCookieURL("https://example.com");
   const GURL kTopFrameURL("https://foo.com");
   const net::SiteForCookies kSiteForCookies =
@@ -2455,7 +2456,7 @@ TEST_P(PartitionedCookiesRestrictedCookieManagerTest, PartitionKeyWithNonce) {
 
 INSTANTIATE_TEST_SUITE_P(
     SameParty,
-    PartitionedCookiesRestrictedCookieManagerTest,
+    UnpartitionedCookiesRestrictedCookieManagerTest,
     testing::Combine(
         testing::Values(mojom::RestrictedCookieManagerRole::SCRIPT,
                         mojom::RestrictedCookieManagerRole::NETWORK),

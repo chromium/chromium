@@ -121,19 +121,6 @@ base::TimeTicks IdlenessDetector::GetNetworkAlmostIdleTime() {
   return network_2_quiet_start_time_;
 }
 
-bool IdlenessDetector::NetworkIsAlmostIdle() {
-  if (in_network_2_quiet_period_)
-    return false;
-  if (!network_2_quiet_.is_null())
-    return false;
-  if (network_2_quiet_start_time_.is_null())
-    return false;
-  base::TimeTicks current_time = base::TimeTicks::Now();
-  if (current_time - network_2_quiet_start_time_ <= network_quiet_window_)
-    return false;
-  return true;
-}
-
 base::TimeTicks IdlenessDetector::GetNetworkIdleTime() {
   return network_0_quiet_start_time_;
 }

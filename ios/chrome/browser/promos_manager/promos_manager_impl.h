@@ -25,6 +25,8 @@ namespace feature_engagement {
 class Tracker;
 }
 
+class PromosManagerEventExporter;
+
 // Centralized promos manager for coordinating and scheduling the display of
 // app-wide promos. Feature teams should not use this directly, use
 // promo_manager.h instead.
@@ -38,7 +40,8 @@ class PromosManagerImpl : public PromosManager {
 
   PromosManagerImpl(PrefService* local_state,
                     base::Clock* clock,
-                    feature_engagement::Tracker* tracker);
+                    feature_engagement::Tracker* tracker,
+                    PromosManagerEventExporter* event_exporter);
   ~PromosManagerImpl() override;
 
   // `promo`-specific impression limits, if defined. May return an empty
@@ -70,6 +73,8 @@ class PromosManagerImpl : public PromosManager {
 
   // Initializes the `single_display_pending_promos_`, constructs it from Pref.
   void InitializePendingPromos();
+
+  void OnFeatureEngagementTrackerInitialized(bool success);
 
   // Returns true if any impression limit from `impression_limits` is triggered,
   // and false otherwise.
@@ -161,6 +166,11 @@ class PromosManagerImpl : public PromosManager {
 
   // Promo-specific configuration.
   PromoConfigsSet promo_configs_;
+
+  // The class to handle migrating events to the Feature Engagement Tracker.
+  PromosManagerEventExporter* event_exporter_;
+
+  base::WeakPtrFactory<PromosManagerImpl> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_PROMOS_MANAGER_PROMOS_MANAGER_IMPL_H_
