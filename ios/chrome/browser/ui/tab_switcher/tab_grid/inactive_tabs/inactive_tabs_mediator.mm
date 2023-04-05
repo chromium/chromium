@@ -8,12 +8,18 @@
 #import "base/scoped_multi_source_observation.h"
 #import "base/scoped_observation.h"
 #import "components/favicon/ios/web_favicon_driver.h"
+#import "components/prefs/ios/pref_observer_bridge.h"
+#import "components/prefs/pref_change_registrar.h"
+#import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache_observer.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_commands.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_info_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/browser/url/url_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -74,10 +80,13 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 }  // namespace
 
 @interface InactiveTabsMediator () <CRWWebStateObserver,
+                                    PrefObserverDelegate,
                                     SnapshotCacheObserver,
                                     WebStateListObserving> {
   // The UI consumer to which updates are made.
-  __weak id<TabCollectionConsumer> _consumer;
+  __weak id<TabCollectionConsumer, InactiveTabsInfoConsumer> _consumer;
+  // The handler for commands related to Inactive Tabs.
+  __weak id<InactiveTabsCommands> _commandHandler;
   // The list of inactive tabs.
   WebStateList* _webStateList;
   // The snapshot cache of _webStateList.
@@ -88,6 +97,12 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   // The observers of web states from _webStateList.
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
   std::unique_ptr<ScopedWebStateObservation> _scopedWebStateObservation;
+  // Preference service from the application context.
+  PrefService* _prefService;
+  // Pref observer to track changes to prefs.
+  std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
+  // Registrar for pref changes notifications.
+  PrefChangeRegistrar _prefChangeRegistrar;
   // The short-term cache for grid thumbnails.
   NSMutableDictionary<NSString*, UIImage*>* _appearanceCache;
 }
@@ -96,15 +111,22 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 
 @implementation InactiveTabsMediator
 
-- (instancetype)initWithConsumer:(id<TabCollectionConsumer>)consumer
+- (instancetype)initWithConsumer:
+                    (id<TabCollectionConsumer, InactiveTabsInfoConsumer>)
+                        consumer
+                  commandHandler:(id<InactiveTabsCommands>)commandHandler
                     webStateList:(WebStateList*)webStateList
+                     prefService:(PrefService*)prefService
                    snapshotCache:(SnapshotCache*)snapshotCache {
   DCHECK(IsInactiveTabsEnabled());
   DCHECK(consumer);
+  DCHECK(commandHandler);
   DCHECK(webStateList);
+  DCHECK(prefService);
   self = [super init];
   if (self) {
     _consumer = consumer;
+    _commandHandler = commandHandler;
     _webStateList = webStateList;
 
     // Observe the web state list.
@@ -122,8 +144,21 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
         _webStateObserverBridge.get());
     AddWebStateObservations(_scopedWebStateObservation.get(), _webStateList);
 
+    // Observe the preferences for changes to Inactive Tabs settings.
+    _prefService = prefService;
+    _prefChangeRegistrar.Init(_prefService);
+    _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
+    // Register to observe any changes on pref backed values displayed by the
+    // screen.
+    _prefObserverBridge->ObserveChangesForPreference(
+        prefs::kInactiveTabsTimeThreshold, &_prefChangeRegistrar);
+
     // Push the tabs to the consumer.
     PopulateConsumerItems(_consumer, _webStateList);
+    // Push the info to the consumer.
+    NSInteger daysThreshold =
+        _prefService->GetInteger(prefs::kInactiveTabsTimeThreshold);
+    [_consumer updateInactiveTabsDaysThreshold:daysThreshold];
 
     _snapshotCache = snapshotCache;
     [_snapshotCache addObserver:self];
@@ -164,6 +199,9 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   _scopedWebStateListObservation.reset();
   _webStateListObserverBridge.reset();
   _webStateList = nullptr;
+  _prefChangeRegistrar.RemoveAll();
+  _prefObserverBridge.reset();
+  _prefService = nullptr;
   [_snapshotCache removeObserver:self];
   _appearanceCache = nil;
 }
@@ -254,6 +292,20 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 
 - (void)clearPreloadedSnapshots {
   [_appearanceCache removeAllObjects];
+}
+
+#pragma mark - PrefObserverDelegate
+
+- (void)onPreferenceChanged:(const std::string&)preferenceName {
+  if (preferenceName == prefs::kInactiveTabsTimeThreshold) {
+    NSInteger daysThreshold =
+        _prefService->GetInteger(prefs::kInactiveTabsTimeThreshold);
+    [_consumer updateInactiveTabsDaysThreshold:daysThreshold];
+
+    if (daysThreshold == kInactiveTabsDisabledByUser) {
+      [_commandHandler inactiveTabsExplicitlyDisabledByUser];
+    }
+  }
 }
 
 #pragma mark - SnapshotCacheObserver

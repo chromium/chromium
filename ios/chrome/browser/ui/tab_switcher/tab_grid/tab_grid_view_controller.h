@@ -21,7 +21,7 @@
 @protocol PriceCardDataSource;
 @protocol GridShareableItemsProvider;
 class GURL;
-@protocol InactiveTabsCountConsumer;
+@protocol InactiveTabsInfoConsumer;
 @protocol IncognitoReauthCommands;
 @protocol IncognitoReauthConsumer;
 @class LayoutGuideCenter;
@@ -120,7 +120,7 @@ enum class TabGridPageConfiguration {
 
 // Consumers send updates from the model layer to the UI layer.
 @property(nonatomic, readonly)
-    id<TabCollectionConsumer, InactiveTabsCountConsumer>
+    id<TabCollectionConsumer, InactiveTabsInfoConsumer>
         regularTabsConsumer;
 @property(nonatomic, readonly)
     id<TabCollectionConsumer, IncognitoReauthConsumer>
