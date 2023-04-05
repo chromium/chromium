@@ -68,37 +68,11 @@ class LineLayoutText : public LineLayoutItem {
     return ToText()->ContainsOnlyWhitespace(from, len);
   }
 
-  float Width(unsigned from,
-              unsigned len,
-              const Font& font,
-              LayoutUnit x_pos,
-              TextDirection text_direction,
-              HashSet<const SimpleFontData*>* fallback_fonts,
-              gfx::RectF* glyph_bounds,
-              float expansion = 0) const {
-    return ToText()->Width(from, len, font, x_pos, text_direction,
-                           fallback_fonts, glyph_bounds, expansion);
-  }
-
-  float Width(unsigned from,
-              unsigned len,
-              LayoutUnit x_pos,
-              TextDirection text_direction,
-              bool first_line,
-              HashSet<const SimpleFontData*>* fallback_fonts = nullptr,
-              gfx::RectF* glyph_bounds = nullptr,
-              float expansion = 0) const {
-    return ToText()->Width(from, len, x_pos, text_direction, first_line,
-                           fallback_fonts, glyph_bounds, expansion);
-  }
-
   float HyphenWidth(const Font& font, TextDirection text_direction) {
     return ToText()->HyphenWidth(font, text_direction);
   }
 
   unsigned TextStartOffset() const { return ToText()->TextStartOffset(); }
-
-  float MinLogicalWidth() const { return ToText()->MinLogicalWidth(); }
 
   UChar PreviousCharacter() const { return ToText()->PreviousCharacter(); }
 
