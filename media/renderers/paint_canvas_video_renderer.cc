@@ -1446,11 +1446,10 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     // alpha been requested. And dst texture mipLevel must be 0.
     // TODO(crbug.com/1155003): Figure out whether premultiply options here are
     // accurate.
+    // TODO(crbug.com/1366486): Update check for SharedImageFormatType once
+    // passthrough decoder supports copying shared image to gl texture.
     if ((media::IsOpaque(video_frame->format()) || premultiply_alpha) &&
-        level == 0 &&
-        (video_frame->NumTextures() > 1 ||
-         video_frame->shared_image_format_type() ==
-             SharedImageFormatType::kSharedImageFormat)) {
+        level == 0 && video_frame->NumTextures() > 1) {
       if (UploadVideoFrameToGLTexture(raster_context_provider, destination_gl,
                                       video_frame.get(), target, texture,
                                       internal_format, format, type, flip_y)) {
@@ -1559,6 +1558,13 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
   if (raster_context_provider->ContextCapabilities().disable_legacy_mailbox)
     return false;
 
+  // TODO(crbug.com/1366486): Remove early return once passthrough decoder
+  // supports copying shared image to gl texture.
+  if (video_frame->shared_image_format_type() !=
+      SharedImageFormatType::kLegacy) {
+    return false;
+  }
+
   DCHECK(video_frame->metadata().texture_origin_is_top_left);
 
   // Trigger resource allocation for dst texture to back SkSurface.
@@ -1568,56 +1574,37 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
       target, 0, internal_format, video_frame->visible_rect().width(),
       video_frame->visible_rect().height(), 0, format, type, nullptr);
 
-  // Copy shared image to gl texture for hardware video decode with multiplanar
-  // shared image formats.
-  if (video_frame->HasTextures() && video_frame->shared_image_format_type() !=
-                                        SharedImageFormatType::kLegacy) {
-    gpu::MailboxHolder mailbox_holder =
-        GetVideoFrameMailboxHolder(video_frame.get());
-    destination_gl->WaitSyncTokenCHROMIUM(
-        mailbox_holder.sync_token.GetConstData());
+  gpu::MailboxHolder mailbox_holder;
+  mailbox_holder.texture_target = target;
+  destination_gl->ProduceTextureDirectCHROMIUM(texture,
+                                               mailbox_holder.mailbox.name);
 
-    destination_gl->CopySharedImageToTextureINTERNAL(
-        texture, target, internal_format, type, video_frame->visible_rect().x(),
-        video_frame->visible_rect().y(), video_frame->visible_rect().width(),
-        video_frame->visible_rect().height(), flip_y,
-        mailbox_holder.mailbox.name);
+  destination_gl->GenUnverifiedSyncTokenCHROMIUM(
+      mailbox_holder.sync_token.GetData());
 
-    SynchronizeVideoFrameRead(std::move(video_frame), destination_gl,
+  VideoFrameYUVConverter::GrParams yuv_gr_params;
+  yuv_gr_params.internal_format = internal_format;
+  yuv_gr_params.type = type;
+  yuv_gr_params.flip_y = flip_y;
+  yuv_gr_params.use_visible_rect = true;
+  if (!VideoFrameYUVConverter::ConvertYUVVideoFrameNoCaching(
+          video_frame.get(), raster_context_provider, mailbox_holder,
+          yuv_gr_params)) {
+    return false;
+  }
+
+  gpu::raster::RasterInterface* source_ri =
+      raster_context_provider->RasterInterface();
+  // Wait for mailbox creation on canvas context before consuming it.
+  source_ri->GenUnverifiedSyncTokenCHROMIUM(
+      mailbox_holder.sync_token.GetData());
+
+  destination_gl->WaitSyncTokenCHROMIUM(
+      mailbox_holder.sync_token.GetConstData());
+
+  if (video_frame->HasTextures()) {
+    SynchronizeVideoFrameRead(std::move(video_frame), source_ri,
                               raster_context_provider->ContextSupport());
-  } else {
-    gpu::MailboxHolder mailbox_holder;
-    mailbox_holder.texture_target = target;
-    destination_gl->ProduceTextureDirectCHROMIUM(texture,
-                                                 mailbox_holder.mailbox.name);
-
-    destination_gl->GenUnverifiedSyncTokenCHROMIUM(
-        mailbox_holder.sync_token.GetData());
-
-    VideoFrameYUVConverter::GrParams yuv_gr_params;
-    yuv_gr_params.internal_format = internal_format;
-    yuv_gr_params.type = type;
-    yuv_gr_params.flip_y = flip_y;
-    yuv_gr_params.use_visible_rect = true;
-    if (!VideoFrameYUVConverter::ConvertYUVVideoFrameNoCaching(
-            video_frame.get(), raster_context_provider, mailbox_holder,
-            yuv_gr_params)) {
-      return false;
-    }
-
-    gpu::raster::RasterInterface* source_ri =
-        raster_context_provider->RasterInterface();
-    // Wait for mailbox creation on canvas context before consuming it.
-    source_ri->GenUnverifiedSyncTokenCHROMIUM(
-        mailbox_holder.sync_token.GetData());
-
-    destination_gl->WaitSyncTokenCHROMIUM(
-        mailbox_holder.sync_token.GetConstData());
-
-    if (video_frame->HasTextures()) {
-      SynchronizeVideoFrameRead(std::move(video_frame), source_ri,
-                                raster_context_provider->ContextSupport());
-    }
   }
 
   return true;
@@ -1632,11 +1619,12 @@ bool PaintCanvasVideoRenderer::PrepareVideoFrameForWebGL(
     unsigned int texture) {
   // TODO(776222): This static function uses no common functionality in
   // PaintCanvasVideoRenderer, and should be removed from this class.
-  CHECK(video_frame);
-  CHECK(video_frame->HasTextures());
-  if (video_frame->NumTextures() == 1 &&
-      video_frame->shared_image_format_type() !=
-          SharedImageFormatType::kSharedImageFormat) {
+
+  DCHECK(video_frame);
+  DCHECK(video_frame->HasTextures());
+  // TODO(crbug.com/1366486): Remove early return once passthrough decoder
+  // supports copying shared image to gl texture.
+  if (video_frame->NumTextures() == 1) {
     if (target == GL_TEXTURE_EXTERNAL_OES) {
       // We don't support Android now.
       // TODO(crbug.com/776222): support Android.
@@ -1661,50 +1649,37 @@ bool PaintCanvasVideoRenderer::PrepareVideoFrameForWebGL(
                              video_frame->coded_size().height(), 0, GL_RGBA,
                              GL_UNSIGNED_BYTE, nullptr);
 
-  if (video_frame->shared_image_format_type() ==
-      SharedImageFormatType::kLegacy) {
-    CHECK_GT(video_frame->NumTextures(), 1u);
-    gpu::MailboxHolder mailbox_holder;
-    mailbox_holder.texture_target = target;
-    gpu::raster::RasterInterface* source_ri =
-        raster_context_provider->RasterInterface();
-    destination_gl->ProduceTextureDirectCHROMIUM(texture,
-                                                 mailbox_holder.mailbox.name);
-    destination_gl->GenUnverifiedSyncTokenCHROMIUM(
-        mailbox_holder.sync_token.GetData());
+  gpu::raster::RasterInterface* source_ri =
+      raster_context_provider->RasterInterface();
+  gpu::MailboxHolder mailbox_holder;
+  mailbox_holder.texture_target = target;
+  destination_gl->ProduceTextureDirectCHROMIUM(texture,
+                                               mailbox_holder.mailbox.name);
 
-    // Generate a new image.
-    VideoFrameYUVConverter::ConvertYUVVideoFrameNoCaching(
-        video_frame.get(), raster_context_provider, mailbox_holder);
+  destination_gl->GenUnverifiedSyncTokenCHROMIUM(
+      mailbox_holder.sync_token.GetData());
 
-    // Wait for mailbox creation on canvas context before consuming it and
-    // copying from it on the consumer context.
-    source_ri->GenUnverifiedSyncTokenCHROMIUM(
-        mailbox_holder.sync_token.GetData());
-
-    destination_gl->WaitSyncTokenCHROMIUM(
-        mailbox_holder.sync_token.GetConstData());
-
-    WaitAndReplaceSyncTokenClient client(source_ri);
-    video_frame->UpdateReleaseSyncToken(&client);
-  } else {
-    CHECK_EQ(video_frame->NumTextures(), 1u);
-    CHECK_EQ(video_frame->shared_image_format_type(),
-             SharedImageFormatType::kSharedImageFormat);
-    gpu::MailboxHolder mailbox_holder =
-        GetVideoFrameMailboxHolder(video_frame.get());
-    destination_gl->WaitSyncTokenCHROMIUM(
-        mailbox_holder.sync_token.GetConstData());
-
-    destination_gl->CopySharedImageToTextureINTERNAL(
-        texture, target, GL_RGBA, GL_UNSIGNED_BYTE,
-        /*src_x=*/0, /*src_y=*/0, video_frame->coded_size().width(),
-        video_frame->coded_size().height(), /*flip_y=*/GL_FALSE,
-        mailbox_holder.mailbox.name);
-
-    WaitAndReplaceSyncTokenClient client(destination_gl);
-    video_frame->UpdateReleaseSyncToken(&client);
+  // Generate a new image.
+  if (video_frame->HasTextures()) {
+    if (video_frame->NumTextures() > 1) {
+      VideoFrameYUVConverter::ConvertYUVVideoFrameNoCaching(
+          video_frame.get(), raster_context_provider, mailbox_holder);
+    } else {
+      // We don't support Android now.
+      return false;
+    }
   }
+
+  // Wait for mailbox creation on canvas context before consuming it and
+  // copying from it on the consumer context.
+  source_ri->GenUnverifiedSyncTokenCHROMIUM(
+      mailbox_holder.sync_token.GetData());
+
+  destination_gl->WaitSyncTokenCHROMIUM(
+      mailbox_holder.sync_token.GetConstData());
+
+  WaitAndReplaceSyncTokenClient client(source_ri);
+  video_frame->UpdateReleaseSyncToken(&client);
 
   return true;
 }
