@@ -4,11 +4,13 @@
 
 #include "chrome/browser/safe_browsing/ohttp_key_service_factory.h"
 
+#include "base/feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/network_context_service_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/ohttp_key_service.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 
@@ -40,6 +42,9 @@ KeyedService* OhttpKeyServiceFactory::BuildServiceInstanceFor(
   if (!g_browser_process->safe_browsing_service()) {
     return nullptr;
   }
+  if (!base::FeatureList::IsEnabled(kHashRealTimeOverOhttp)) {
+    return nullptr;
+  }
   Profile* profile = Profile::FromBrowserContext(context);
   auto url_loader_factory =
       std::make_unique<network::CrossThreadPendingSharedURLLoaderFactory>(
@@ -48,6 +53,11 @@ KeyedService* OhttpKeyServiceFactory::BuildServiceInstanceFor(
   return new OhttpKeyService(
       network::SharedURLLoaderFactory::Create(std::move(url_loader_factory)),
       profile->GetPrefs());
+}
+
+bool OhttpKeyServiceFactory::ServiceIsCreatedWithBrowserContext() const {
+  // The service is created early to start async key fetch.
+  return true;
 }
 
 }  // namespace safe_browsing

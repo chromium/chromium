@@ -19,8 +19,14 @@ constexpr base::TimeDelta kKeyFetchTimeout = base::Seconds(3);
 // TODO(crbug.com/1407283): Update the endpoint when it is finalized.
 constexpr char kKeyFetchServerUrl[] =
     "https://safebrowsingohttpgateway.googleapis.com/key";
-// Key older than 30 days is considered expired and should be refetched.
-constexpr base::TimeDelta kKeyExpirationDuration = base::Days(30);
+// Key older than 7 days is considered expired and should be refetched.
+constexpr base::TimeDelta kKeyExpirationDuration = base::Days(7);
+
+// Async fetch will kick in if the key is close to the expiration threshold.
+constexpr base::TimeDelta kKeyCloseToExpirationThreshold = base::Days(1);
+
+// The interval that async workflow checks the status of the key.
+constexpr base::TimeDelta kAsyncFetchCheckInterval = base::Hours(1);
 
 constexpr net::NetworkTrafficAnnotationTag kOhttpKeyTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("safe_browsing_ohttp_key_fetch",
@@ -78,18 +84,63 @@ OhttpKeyService::OhttpKeyService(
   if (!pref_service_) {
     return;
   }
+
   PopulateKeyFromPref();
+
+  pref_change_registrar_.Init(pref_service_);
+  pref_change_registrar_.Add(
+      prefs::kSafeBrowsingEnabled,
+      base::BindRepeating(&OhttpKeyService::OnSafeBrowsingStateChanged,
+                          weak_factory_.GetWeakPtr()));
+  pref_change_registrar_.Add(
+      prefs::kSafeBrowsingEnhanced,
+      base::BindRepeating(&OhttpKeyService::OnSafeBrowsingStateChanged,
+                          weak_factory_.GetWeakPtr()));
+
+  SetEnabled(GetSafeBrowsingState(*pref_service_) ==
+             SafeBrowsingState::STANDARD_PROTECTION);
 }
 
 OhttpKeyService::~OhttpKeyService() = default;
 
+void OhttpKeyService::OnSafeBrowsingStateChanged() {
+  SetEnabled(GetSafeBrowsingState(*pref_service_) ==
+             SafeBrowsingState::STANDARD_PROTECTION);
+}
+
+void OhttpKeyService::SetEnabled(bool enable) {
+  if (enabled_ == enable) {
+    return;
+  }
+  enabled_ = enable;
+  if (!enabled_) {
+    url_loader_.reset();
+    pending_callbacks_.Notify(absl::nullopt);
+    async_fetch_timer_.Stop();
+    return;
+  }
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&OhttpKeyService::MaybeStartOrRescheduleAsyncFetch,
+                     weak_factory_.GetWeakPtr()));
+}
+
 void OhttpKeyService::GetOhttpKey(Callback callback) {
+  if (!enabled_) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
   // If there is a valid key in memory, use it directly.
   if (ohttp_key_ && ohttp_key_->expiration > base::Time::Now()) {
     std::move(callback).Run(ohttp_key_->key);
     return;
   }
 
+  StartFetch(std::move(callback));
+}
+
+void OhttpKeyService::StartFetch(Callback callback) {
   pending_callbacks_.AddUnsafe(std::move(callback));
   // If url_loader_ is not null, that means a request is already in progress.
   // Will notify the callback when it is completed.
@@ -130,6 +181,36 @@ void OhttpKeyService::OnURLLoaderComplete(
                                 : absl::nullopt);
 }
 
+void OhttpKeyService::MaybeStartOrRescheduleAsyncFetch() {
+  if (!enabled_) {
+    return;
+  }
+
+  if (ShouldStartAsyncFetch()) {
+    StartFetch(base::BindOnce(&OhttpKeyService::OnAsyncFetchCompleted,
+                              weak_factory_.GetWeakPtr()));
+  } else {
+    async_fetch_timer_.Start(
+        FROM_HERE, kAsyncFetchCheckInterval, this,
+        &OhttpKeyService::MaybeStartOrRescheduleAsyncFetch);
+  }
+}
+
+void OhttpKeyService::OnAsyncFetchCompleted(
+    absl::optional<std::string> ohttp_key) {
+  if (!enabled_) {
+    return;
+  }
+  // TODO(crbug.com/1407283): Start next fetch based on backoff status.
+  async_fetch_timer_.Start(FROM_HERE, kAsyncFetchCheckInterval, this,
+                           &OhttpKeyService::MaybeStartOrRescheduleAsyncFetch);
+}
+
+bool OhttpKeyService::ShouldStartAsyncFetch() {
+  return !ohttp_key_ || ohttp_key_->expiration <=
+                            base::Time::Now() + kKeyCloseToExpirationThreshold;
+}
+
 void OhttpKeyService::PopulateKeyFromPref() {
   std::string key =
       pref_service_->GetString(prefs::kSafeBrowsingHashRealTimeOhttpKey);
@@ -152,6 +233,8 @@ void OhttpKeyService::StoreKeyToPref() {
 void OhttpKeyService::Shutdown() {
   url_loader_.reset();
   pending_callbacks_.Notify(absl::nullopt);
+  pref_change_registrar_.RemoveAll();
+  async_fetch_timer_.Stop();
 }
 
 void OhttpKeyService::set_ohttp_key_for_testing(
