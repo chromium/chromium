@@ -6745,14 +6745,14 @@ scoped_refptr<const ComputedStyle> Element::StyleForPseudoElement(
     return result;
   }
 
-  // Use the originating DOM element when resolving style for ::transition*
+  // We use the originating DOM element when resolving style for ::transition*
   // pseudo elements instead of the element's direct ancestor (which could
   // itself be a pseudo element).
-  auto* originating_element = IsTransitionPseudoElement(GetPseudoId())
-                                  ? GetDocument().documentElement()
-                                  : this;
+  DCHECK(!IsTransitionPseudoElement(GetPseudoId()) ||
+         (GetDocument().documentElement() == this));
+
   return GetDocument().GetStyleResolver().ResolveStyle(
-      originating_element, style_recalc_context, request);
+      this, style_recalc_context, request);
 }
 
 bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {
