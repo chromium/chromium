@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/side_panel/side_panel_prefs.h"
+#include "base/feature_list.h"
 #include "base/i18n/rtl.h"
+#include "chrome/browser/companion/core/features.h"
+#include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
-#include "chrome/common/pref_names.h"
-#include "chrome/browser/ui/ui_features.h"
-#include "base/feature_list.h"
 
 namespace side_panel_prefs {
 
@@ -19,7 +19,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // replace false and true respectively.
   registry->RegisterBooleanPref(prefs::kSidePanelHorizontalAlignment,
                                 base::i18n::IsRTL() ? false : true);
-  if (base::FeatureList::IsEnabled(features::kSidePanelCompanion)) {
+  if (base::FeatureList::IsEnabled(companion::features::kSidePanelCompanion)) {
     registry->RegisterBooleanPref(
         prefs::kSidePanelCompanionEntryPinnedToToolbar, true);
   }

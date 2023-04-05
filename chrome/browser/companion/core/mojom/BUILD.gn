@@ -4,9 +4,6 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
-# Feature dependent on side panel only available on desktop.
-assert(!is_android)
-
 mojom("mojo_bindings") {
   sources = [ "companion.mojom" ]
   webui_module_path = "/"

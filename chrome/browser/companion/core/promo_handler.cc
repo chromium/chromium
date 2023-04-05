@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/side_panel/companion/promo_handler.h"
+#include "chrome/browser/companion/core/promo_handler.h"
 
-#include "chrome/browser/ui/webui/side_panel/companion/companion.mojom.h"
-#include "chrome/browser/ui/webui/side_panel/companion/constants.h"
-#include "chrome/browser/ui/webui/side_panel/companion/msbb_delegate.h"
-#include "chrome/browser/ui/webui/side_panel/companion/signin_delegate.h"
+#include "chrome/browser/companion/core/constants.h"
+#include "chrome/browser/companion/core/mojom/companion.mojom.h"
+#include "chrome/browser/companion/core/msbb_delegate.h"
+#include "chrome/browser/companion/core/signin_delegate.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
