@@ -4,8 +4,10 @@
 
 #import "ios/chrome/browser/ui/authentication/tangible_sync/tangible_sync_view_controller.h"
 
+#import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
+#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/shared/ui/elements/instruction_view.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
@@ -107,9 +109,14 @@ UIView* IconViewWithImage(NSString* image_name, BOOL custom_symbol) {
     l10n_util::GetNSString(IDS_IOS_TANGIBLE_SYNC_DATA_TYPE_AUTOFILL),
     l10n_util::GetNSString(IDS_IOS_TANGIBLE_SYNC_DATA_TYPE_HISTORY),
   ];
+  UIView* autofillIconView =
+      base::FeatureList::IsEnabled(
+          password_manager::features::kEnablePasswordsAccountStorage)
+          ? IconViewWithImage(kDocPlaintext, /*custom_symbol=*/NO)
+          : IconViewWithImage(kPasswordSymbol, /*custom_symbol=*/YES);
   NSArray<UIView*>* imageViews = @[
     IconViewWithImage(kBookmarksSymbol, /*custom_symbol=*/NO),
-    IconViewWithImage(kPasswordSymbol, /*custom_symbol=*/YES),
+    autofillIconView,
     IconViewWithImage(kRecentTabsSymbol, /*custom_symbol=*/YES),
   ];
   InstructionView* instructionView =

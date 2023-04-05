@@ -46,6 +46,7 @@ source_set("signin_ui") {
     "tangible_sync_view_controller_delegate.h",
   ]
   deps = [
+    "//components/password_manager/core/common:features",
     "//components/signin/public/base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/elements",
