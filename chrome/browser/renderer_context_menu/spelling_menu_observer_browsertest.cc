@@ -330,7 +330,9 @@ IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
   EXPECT_EQ(IDC_SPELLCHECK_SUGGESTION_0 + 2, item.command_id);
   EXPECT_TRUE(item.enabled);
   EXPECT_FALSE(item.hidden);
-  EXPECT_EQ(u"were", item.title);
+  // Some versions of Windows spell checker return "ware", some "were".
+  // Just verify that it starts with "w".
+  EXPECT_TRUE(base::StartsWith(item.title, u"w"));
   // Second separator.
   menu()->GetMenuItem(4, &item);
   EXPECT_EQ(-1, item.command_id);
