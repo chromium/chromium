@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_POLICY_HANDLERS_SCREENSAVER_IMAGE_DOWNLOADER_H_
 
 #include <memory>
+#include <string>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -37,6 +38,22 @@ class ScreensaverImageDownloader {
       base::OnceCallback<void(ScreensaverImageDownloadResult result,
                               absl::optional<base::FilePath> path)>;
 
+  // Represents a single image download request from `image_url` to
+  // `download_directory_` with name `file_name`. Once this job has been
+  // completed, `result_callback` will be invoked with the actual result, and
+  // the path to the downloaded file if the operation suceeded.
+  struct Job {
+    Job() = delete;
+    Job(const std::string& image_url,
+        const std::string& file_name,
+        ResultCallback result_callback);
+    ~Job();
+
+    const std::string image_url;
+    std::string file_name;
+    ResultCallback result_callback;
+  };
+
   ScreensaverImageDownloader() = delete;
 
   ScreensaverImageDownloader(
@@ -52,15 +69,11 @@ class ScreensaverImageDownloader {
   // Downloads a new external image from `image_url` to the download folder as
   // `file_name`. The async `callback` will pass the result, and the file path
   // if the operation succeeded.
-  void DowloadImageFromUrl(const std::string& image_url,
-                           const std::string& file_name,
-                           ResultCallback callback);
+  void QueueDownloadJob(std::unique_ptr<Job> download_job);
 
  private:
   // Creates a new request to download an image from an external URL.
-  void DownloadImageToFileInternal(const std::string& url,
-                                   const std::string& file_name,
-                                   ResultCallback callback,
+  void DownloadImageToFileInternal(std::unique_ptr<Job> download_job,
                                    bool can_download_file);
 
   // Moves the downloaded image to its desired path. To avoid reading errors,
@@ -68,15 +81,18 @@ class ScreensaverImageDownloader {
   // `callback` is invoked.
   void OnUrlDownloadedToTempFile(
       std::unique_ptr<network::SimpleURLLoader> simple_loader,
-      const std::string& file_name,
-      ResultCallback callback,
+      std::unique_ptr<Job> download_job,
       base::FilePath temp_path);
 
   // Handles the final result of the image download process, and triggers the
   // complete `callback`.
   void OnUrlDownloadToFileComplete(const base::FilePath& path,
-                                   ResultCallback callback,
+                                   std::unique_ptr<Job> download_job,
                                    bool file_is_present);
+
+  void ReplyDownloadJobWithResult(std::unique_ptr<Job> download_job,
+                                  ScreensaverImageDownloadResult result,
+                                  absl::optional<base::FilePath> path);
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;

@@ -72,15 +72,16 @@ class ScreensaverImageDownloaderTest : public testing::Test {
 
 TEST_F(ScreensaverImageDownloaderTest, DownloadImagesTest) {
   // Test successful download.
+  using Job = ScreensaverImageDownloader::Job;
   {
     url_loader_factory()->AddResponse(kImageUrl1, kFileContents);
 
     base::test::TestFuture<ScreensaverImageDownloadResult,
                            absl::optional<base::FilePath>>
         download_completed_cb;
-    screensaver_image_downloader()->DowloadImageFromUrl(
-        kImageUrl1, kImageFileName, download_completed_cb.GetCallback());
-
+    auto job = std::make_unique<Job>(kImageUrl1, kImageFileName,
+                                     download_completed_cb.GetCallback());
+    screensaver_image_downloader()->QueueDownloadJob(std::move(job));
     EXPECT_EQ(ScreensaverImageDownloadResult::kSuccess,
               download_completed_cb.Get<0>());
     ASSERT_TRUE(download_completed_cb.Get<1>().has_value());
@@ -101,8 +102,9 @@ TEST_F(ScreensaverImageDownloaderTest, DownloadImagesTest) {
     base::test::TestFuture<ScreensaverImageDownloadResult,
                            absl::optional<base::FilePath>>
         download_completed_cb;
-    screensaver_image_downloader()->DowloadImageFromUrl(
-        kImageUrl2, kImageFileName, download_completed_cb.GetCallback());
+    auto job = std::make_unique<Job>(kImageUrl2, kImageFileName,
+                                     download_completed_cb.GetCallback());
+    screensaver_image_downloader()->QueueDownloadJob(std::move(job));
 
     EXPECT_EQ(ScreensaverImageDownloadResult::kNetworkError,
               download_completed_cb.Get<0>());
@@ -115,8 +117,9 @@ TEST_F(ScreensaverImageDownloaderTest, DownloadImagesTest) {
     base::test::TestFuture<ScreensaverImageDownloadResult,
                            absl::optional<base::FilePath>>
         download_completed_cb;
-    screensaver_image_downloader()->DowloadImageFromUrl(
-        kImageUrl3, kImageFileName, download_completed_cb.GetCallback());
+    auto job = std::make_unique<Job>(kImageUrl3, kImageFileName,
+                                     download_completed_cb.GetCallback());
+    screensaver_image_downloader()->QueueDownloadJob(std::move(job));
 
     // Wait until the request have been made to delete the tmp folder
     EXPECT_TRUE(url_loader_factory()->IsPending(kImageUrl3));

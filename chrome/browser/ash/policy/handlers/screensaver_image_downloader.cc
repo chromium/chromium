@@ -88,6 +88,15 @@ int GetResponseCode(network::SimpleURLLoader* simple_loader) {
 }
 }  // namespace
 
+ScreensaverImageDownloader::Job::Job(const std::string& image_url,
+                                     const std::string& file_name,
+                                     ResultCallback result_callback)
+    : image_url(image_url),
+      file_name(file_name),
+      result_callback(std::move(result_callback)) {}
+
+ScreensaverImageDownloader::Job::~Job() = default;
+
 ScreensaverImageDownloader::ScreensaverImageDownloader(
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     const base::FilePath& download_directory)
@@ -99,10 +108,9 @@ ScreensaverImageDownloader::ScreensaverImageDownloader(
 
 ScreensaverImageDownloader::~ScreensaverImageDownloader() = default;
 
-void ScreensaverImageDownloader::DowloadImageFromUrl(
-    const std::string& image_url,
-    const std::string& file_name,
-    ResultCallback callback) {
+void ScreensaverImageDownloader::QueueDownloadJob(
+    std::unique_ptr<Job> download_job) {
+  CHECK(download_job);
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
@@ -121,25 +129,23 @@ void ScreensaverImageDownloader::DowloadImageFromUrl(
           },
           download_directory_),
       base::BindOnce(&ScreensaverImageDownloader::DownloadImageToFileInternal,
-                     weak_ptr_factory_.GetWeakPtr(), image_url, file_name,
-                     std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(download_job)));
 }
 
 void ScreensaverImageDownloader::DownloadImageToFileInternal(
-    const std::string& url,
-    const std::string& file_name,
-    ResultCallback callback,
+    std::unique_ptr<Job> download_job,
     bool can_download_file) {
   if (!can_download_file) {
     // TODO(b/276208772): Track result with metrics
-    std::move(callback).Run(
+    ReplyDownloadJobWithResult(
+        std::move(download_job),
         ScreensaverImageDownloadResult::kFileSystemWriteError, absl::nullopt);
     return;
   }
 
   CHECK(shared_url_loader_factory_);
   std::unique_ptr<network::SimpleURLLoader> simple_loader =
-      CreateSimpleURLLoader(url);
+      CreateSimpleURLLoader(download_job->image_url);
 
   auto* loader = simple_loader.get();
   // Download to temp file first to guarantee entire image is written without
@@ -148,17 +154,16 @@ void ScreensaverImageDownloader::DownloadImageToFileInternal(
       shared_url_loader_factory_.get(),
       base::BindOnce(&ScreensaverImageDownloader::OnUrlDownloadedToTempFile,
                      weak_ptr_factory_.GetWeakPtr(), std::move(simple_loader),
-                     file_name, std::move(callback)),
+                     std::move(download_job)),
       kMaxFileSizeInBytes);
 }
 
 void ScreensaverImageDownloader::OnUrlDownloadedToTempFile(
     std::unique_ptr<network::SimpleURLLoader> simple_loader,
-    const std::string& file_name,
-    ResultCallback callback,
+    std::unique_ptr<Job> download_job,
     base::FilePath temp_path) {
   const base::FilePath desired_path =
-      download_directory_.AppendASCII(file_name);
+      download_directory_.AppendASCII(download_job->file_name);
   if (simple_loader->NetError() != net::OK || temp_path.empty()) {
     LOG(ERROR) << "Downloading to file failed with error code: "
                << GetResponseCode(simple_loader.get()) << " with network error "
@@ -170,9 +175,9 @@ void ScreensaverImageDownloader::OnUrlDownloadedToTempFile(
           FROM_HERE,
           base::BindOnce(base::IgnoreResult(&base::DeleteFile), temp_path));
     }
-    // TODO(b/276208772): Track result with metrics
-    std::move(callback).Run(ScreensaverImageDownloadResult::kNetworkError,
-                            absl::nullopt);
+    ReplyDownloadJobWithResult(std::move(download_job),
+                               ScreensaverImageDownloadResult::kNetworkError,
+                               absl::nullopt);
     return;
   }
 
@@ -181,22 +186,32 @@ void ScreensaverImageDownloader::OnUrlDownloadedToTempFile(
       FROM_HERE, base::BindOnce(&base::Move, temp_path, desired_path),
       base::BindOnce(&ScreensaverImageDownloader::OnUrlDownloadToFileComplete,
                      weak_ptr_factory_.GetWeakPtr(), desired_path,
-                     std::move(callback)));
+                     std::move(download_job)));
 }
 
 void ScreensaverImageDownloader::OnUrlDownloadToFileComplete(
     const base::FilePath& path,
-    ResultCallback callback,
+    std::unique_ptr<Job> download_job,
     bool file_is_present) {
-  // TODO(b/276208772): Track result with metrics
   if (!file_is_present) {
     DLOG(WARNING) << "Could not save the downloaded file to " << path;
-    std::move(callback).Run(ScreensaverImageDownloadResult::kFileSaveError,
-                            absl::nullopt);
+    ReplyDownloadJobWithResult(std::move(download_job),
+                               ScreensaverImageDownloadResult::kFileSaveError,
+                               absl::nullopt);
     return;
   }
 
-  std::move(callback).Run(ScreensaverImageDownloadResult::kSuccess, path);
+  ReplyDownloadJobWithResult(std::move(download_job),
+                             ScreensaverImageDownloadResult::kSuccess, path);
+}
+
+void ScreensaverImageDownloader::ReplyDownloadJobWithResult(
+    std::unique_ptr<Job> download_job,
+    ScreensaverImageDownloadResult result,
+    absl::optional<base::FilePath> path) {
+  // TODO(b/276208772): Track result with metrics
+  CHECK(!download_job->result_callback.is_null());
+  std::move(download_job->result_callback).Run(result, path);
 }
 
 }  // namespace policy
