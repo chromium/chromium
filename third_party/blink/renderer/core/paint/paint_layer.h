@@ -148,7 +148,7 @@ struct CORE_EXPORT PaintLayerRareData final
 //   PaintLayers.
 // - If the flag is false, the LayoutObject is painted like normal children (ie
 //   as if it didn't have a PaintLayer). The paint order is handled by
-//   BlockPainter::paintChild that looks at children LayoutObjects.
+//   NGBoxFragmentPainter.
 // This means that the self-painting flag changes the painting order in a subtle
 // way, which can potentially have visible consequences. Those bugs are called
 // painting inversion as we invert the order of painting for 2 elements

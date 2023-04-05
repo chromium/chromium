@@ -63,7 +63,6 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/root_scroller_controller.h"
 #include "third_party/blink/renderer/core/paint/block_paint_invalidator.h"
-#include "third_party/blink/renderer/core/paint/block_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -532,19 +531,19 @@ LayoutUnit LayoutBlock::MarginIntrinsicLogicalWidthForChild(
 
 void LayoutBlock::Paint(const PaintInfo& paint_info) const {
   NOT_DESTROYED();
-  BlockPainter(*this).Paint(paint_info);
+  NOTREACHED_NORETURN();
 }
 
 void LayoutBlock::PaintChildren(const PaintInfo& paint_info,
                                 const PhysicalOffset&) const {
   NOT_DESTROYED();
-  BlockPainter(*this).PaintChildren(paint_info);
+  NOTREACHED_NORETURN();
 }
 
 void LayoutBlock::PaintObject(const PaintInfo& paint_info,
                               const PhysicalOffset& paint_offset) const {
   NOT_DESTROYED();
-  BlockPainter(*this).PaintObject(paint_info, paint_offset);
+  NOTREACHED_NORETURN();
 }
 
 TrackedLayoutBoxLinkedHashSet* LayoutBlock::PositionedObjectsInternal() const {
