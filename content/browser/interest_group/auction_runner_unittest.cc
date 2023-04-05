@@ -1927,6 +1927,10 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
                     kNumInterestGroupsWithSeparateBidsForKAnonAndNonKAnonName,
                 Entry::kMeanComponentAuctionLatencyInMillisName,
                 Entry::kMaxComponentAuctionLatencyInMillisName,
+                Entry::kMeanBidForOneInterestGroupLatencyInMillisName,
+                Entry::kMaxBidForOneInterestGroupLatencyInMillisName,
+                Entry::kMeanGenerateSingleBidLatencyInMillisName,
+                Entry::kMaxGenerateSingleBidLatencyInMillisName,
             });
 
     EXPECT_THAT(ukm_entries, testing::SizeIs(1));
@@ -2011,19 +2015,47 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     MetricsExpectations& SetNumInterestGroupsWithOnlyNonKAnonBid(
         int64_t value) {
       num_interest_groups_with_only_non_k_anon_bid = value;
+      InferHasBidRelatedLatencyMetrics();
       return *this;
     }
 
     MetricsExpectations& SetNumInterestGroupsWithSameBidForKAnonAndNonKAnon(
         int64_t value) {
       num_interest_groups_with_same_bid_for_k_anon_and_non_k_anon = value;
+      InferHasBidRelatedLatencyMetrics();
       return *this;
     }
 
     MetricsExpectations&
     SetNumInterestGroupsWithSeparateBidsForKAnonAndNonKAnon(int64_t value) {
       num_interest_groups_with_separate_bids_for_k_anon_and_non_k_anon = value;
+      InferHasBidRelatedLatencyMetrics();
       return *this;
+    }
+
+    // This should be called after calls to any of the SetNumInterestGroups*
+    // methods above, as those override the value of this expectation.
+    MetricsExpectations& SetHasBidForOneInterestGroupLatencyMetrics(
+        bool value) {
+      has_bid_for_one_interest_group_latency_metrics = value;
+      return *this;
+    }
+
+    // This should be called after calls to any of the SetNumInterestGroups*
+    // methods above, as those override the value of this expectation.
+    MetricsExpectations& SetHasGenerateSingleBidLatencyMetrics(bool value) {
+      has_generate_single_bid_latency_metrics = value;
+      return *this;
+    }
+
+    void InferHasBidRelatedLatencyMetrics() {
+      bool generated_bids =
+          num_interest_groups_with_only_non_k_anon_bid +
+              num_interest_groups_with_same_bid_for_k_anon_and_non_k_anon +
+              num_interest_groups_with_separate_bids_for_k_anon_and_non_k_anon >
+          0;
+      SetHasBidForOneInterestGroupLatencyMetrics(generated_bids);
+      SetHasGenerateSingleBidLatencyMetrics(generated_bids);
     }
 
     AuctionResult result;
@@ -2042,6 +2074,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     int64_t num_interest_groups_with_same_bid_for_k_anon_and_non_k_anon = 0;
     int64_t num_interest_groups_with_separate_bids_for_k_anon_and_non_k_anon =
         0;
+    bool has_bid_for_one_interest_group_latency_metrics = false;
+    bool has_generate_single_bid_latency_metrics = false;
   };
 
   // Check histogram values and UKMs.
@@ -2179,6 +2213,26 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
         ukm_metrics,
         OnlyHasMetricIf(UkmEntry::kMaxComponentAuctionLatencyInMillisName,
                         is_multi_seller_auction));
+
+    EXPECT_THAT(
+        ukm_metrics,
+        OnlyHasMetricIf(
+            UkmEntry::kMeanBidForOneInterestGroupLatencyInMillisName,
+            expectations.has_bid_for_one_interest_group_latency_metrics));
+    EXPECT_THAT(
+        ukm_metrics,
+        OnlyHasMetricIf(
+            UkmEntry::kMaxBidForOneInterestGroupLatencyInMillisName,
+            expectations.has_bid_for_one_interest_group_latency_metrics));
+
+    EXPECT_THAT(
+        ukm_metrics,
+        OnlyHasMetricIf(UkmEntry::kMeanGenerateSingleBidLatencyInMillisName,
+                        expectations.has_generate_single_bid_latency_metrics));
+    EXPECT_THAT(
+        ukm_metrics,
+        OnlyHasMetricIf(UkmEntry::kMaxGenerateSingleBidLatencyInMillisName,
+                        expectations.has_generate_single_bid_latency_metrics));
   }
 
   AuctionRunner::IsInterestGroupApiAllowedCallback
@@ -4621,7 +4675,9 @@ TEST_F(AuctionRunnerTest, NoBidMadeByScript) {
                    .SetNumOwnersAndDistinctOwners(2)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(2)
-                   .SetNumInterestGroupsWithNoBids(2));
+                   .SetNumInterestGroupsWithNoBids(2)
+                   // We successfully generated no bids, so record that latency
+                   .SetHasBidForOneInterestGroupLatencyMetrics(true));
 }
 
 // An auction where the seller script doesn't have a scoring function.
@@ -8730,13 +8786,18 @@ TEST_F(AuctionRunnerTest, BadBid) {
     EXPECT_TRUE(result_.private_aggregation_event_map.empty());
     EXPECT_THAT(result_.interest_groups_that_bid,
                 testing::UnorderedElementsAre());
-    CheckMetrics(MetricsExpectations(AuctionResult::kNoBids)
-                     .SetNumInterestGroups(2)
-                     .SetNumOwnersAndDistinctOwners(2)
-                     .SetNumSellers(1)
-                     .SetNumBidderWorklets(2)
-                     .SetNumInterestGroupsWithNoBids(1)
-                     .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
+
+    MetricsExpectations expectations(AuctionResult::kNoBids);
+    expectations.SetNumInterestGroups(2)
+        .SetNumOwnersAndDistinctOwners(2)
+        .SetNumSellers(1)
+        .SetNumBidderWorklets(2)
+        .SetNumInterestGroupsWithNoBids(1)
+        .SetNumInterestGroupsWithOnlyNonKAnonBid(1)
+        // We don't record negative latencies, so these metrics have no value.
+        .SetHasGenerateSingleBidLatencyMetrics(
+            !test_case.duration.is_negative());
+    CheckMetrics(expectations);
   }
 }
 
@@ -9266,7 +9327,9 @@ TEST_F(AuctionRunnerTest, PerBuyerCumulativeTimeouts) {
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(1)
                    .SetNumBidsAbortedByBuyerCumulativeTimeout(1)
-                   .SetNumInterestGroupsWithNoBids(1));
+                   .SetNumInterestGroupsWithNoBids(1)
+                   // We explicitly include timeouts in these metrics.
+                   .SetHasBidForOneInterestGroupLatencyMetrics(true));
 }
 
 // Test the case where the perBuyerCumulativeTimeout expires during the
@@ -9533,7 +9596,9 @@ TEST_F(AuctionRunnerTest, PerBuyerCumulativeTimeoutsAllBuyersTimeout) {
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(1)
                    .SetNumBidsAbortedByBuyerCumulativeTimeout(1)
-                   .SetNumInterestGroupsWithNoBids(1));
+                   .SetNumInterestGroupsWithNoBids(1)
+                   // We explicitly include timeouts in these metrics.
+                   .SetHasBidForOneInterestGroupLatencyMetrics(true));
 }
 
 // Auction with only one interest group participating. The priority calculated

@@ -73,6 +73,17 @@ void AuctionMetricsRecorder::OnAuctionEnd(AuctionResult auction_result) {
       /*set_mean_function=*/&UkmEntry::SetMeanComponentAuctionLatencyInMillis,
       /*set_max_function=*/&UkmEntry::SetMaxComponentAuctionLatencyInMillis);
 
+  MaybeSetMeanAndMaxLatency(
+      bid_for_one_interest_group_latency_aggregator_,
+      /*set_mean_function=*/
+      &UkmEntry::SetMeanBidForOneInterestGroupLatencyInMillis,
+      /*set_max_function=*/
+      &UkmEntry::SetMaxBidForOneInterestGroupLatencyInMillis);
+  MaybeSetMeanAndMaxLatency(
+      generate_single_bid_latency_aggregator_,
+      /*set_mean_function=*/&UkmEntry::SetMeanGenerateSingleBidLatencyInMillis,
+      /*set_max_function=*/&UkmEntry::SetMaxGenerateSingleBidLatencyInMillis);
+
   auto* ukm_recorder = ukm::UkmRecorder::Get();
   builder_.Record(ukm_recorder->Get());
 }
@@ -159,6 +170,16 @@ void AuctionMetricsRecorder::
 void AuctionMetricsRecorder::RecordComponentAuctionLatency(
     base::TimeDelta latency) {
   component_auction_latency_aggregator_.RecordLatency(latency);
+}
+
+void AuctionMetricsRecorder::RecordBidForOneInterestGroupLatency(
+    base::TimeDelta latency) {
+  bid_for_one_interest_group_latency_aggregator_.RecordLatency(latency);
+}
+
+void AuctionMetricsRecorder::RecordGenerateSingleBidLatency(
+    base::TimeDelta latency) {
+  generate_single_bid_latency_aggregator_.RecordLatency(latency);
 }
 
 void AuctionMetricsRecorder::LatencyAggregator::RecordLatency(

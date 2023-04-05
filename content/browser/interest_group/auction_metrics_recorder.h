@@ -96,6 +96,12 @@ class CONTENT_EXPORT AuctionMetricsRecorder {
   // Records the latency of each component for a multi-seller auction.
   void RecordComponentAuctionLatency(base::TimeDelta latency);
 
+  // Latency of the entire GenerateBid flow, including signals requests, for
+  // a given BidState.
+  void RecordBidForOneInterestGroupLatency(base::TimeDelta latency);
+  // Latency of just the call to GenerateSingleBid.
+  void RecordGenerateSingleBidLatency(base::TimeDelta latency);
+
  private:
   using UkmEntry = ukm::builders::AdsInterestGroup_AuctionLatency;
   using EntrySetFunction = UkmEntry& (UkmEntry::*)(int64_t value);
@@ -158,7 +164,10 @@ class CONTENT_EXPORT AuctionMetricsRecorder {
   int64_t num_interest_groups_with_separate_bids_for_k_anon_and_non_k_anon_ = 0;
   int64_t num_interest_groups_with_same_bid_for_k_anon_and_non_k_anon_ = 0;
 
+  // Various latency measurements.
   LatencyAggregator component_auction_latency_aggregator_;
+  LatencyAggregator bid_for_one_interest_group_latency_aggregator_;
+  LatencyAggregator generate_single_bid_latency_aggregator_;
 };
 
 }  // namespace content
