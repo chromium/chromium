@@ -15,7 +15,6 @@
 #include <fuchsia/memorypressure/cpp/fidl.h>
 #include <fuchsia/net/interfaces/cpp/fidl.h>
 #include <fuchsia/settings/cpp/fidl.h>
-#include <fuchsia/sys/cpp/fidl.h>
 #include <fuchsia/sysmem/cpp/fidl.h>
 #include <fuchsia/tracing/provider/cpp/fidl.h>
 #include <fuchsia/ui/composition/cpp/fidl.h>
@@ -135,8 +134,6 @@ CastRunnerLauncher::CastRunnerLauncher(CastRunnerFeatures runner_features) {
               Protocol{"fuchsia.posix.socket.Provider"},
               Protocol{"fuchsia.process.Launcher"},
               Protocol{fuchsia::settings::Display::Name_},
-              Protocol{fuchsia::sys::Environment::Name_},
-              Protocol{fuchsia::sys::Loader::Name_},
               Storage{.name = "cache", .path = "/cache"},
           },
       .source = ParentRef(),
@@ -187,8 +184,7 @@ CastRunnerLauncher::CastRunnerLauncher(CastRunnerFeatures runner_features) {
   realm_builder.AddRoute(
       Route{.capabilities = {Protocol{chromium::cast::DataReset::Name_},
                              Protocol{fuchsia::web::FrameHost::Name_},
-                             Protocol{fuchsia::web::Debug::Name_},
-                             Protocol{fuchsia::sys::Runner::Name_}},
+                             Protocol{fuchsia::web::Debug::Name_}},
             .source = ChildRef{kCastRunnerComponentName},
             .targets = {ParentRef()}});
 

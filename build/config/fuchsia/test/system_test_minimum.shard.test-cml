@@ -34,7 +34,6 @@
         "fuchsia.intl.PropertyProvider",
         "fuchsia.media.ProfileProvider",
         "fuchsia.process.Launcher",
-        "fuchsia.sys.Loader",
       ],
     },
     {

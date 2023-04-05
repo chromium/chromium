@@ -22,7 +22,6 @@
             protocol: [
                 "fuchsia.feedback.ComponentDataRegister",
                 "fuchsia.feedback.CrashReportingProductRegister",
-                "fuchsia.sys.Loader",
             ],
             from: "parent",
             to: "#context_provider",

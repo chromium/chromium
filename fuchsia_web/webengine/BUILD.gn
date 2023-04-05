@@ -674,7 +674,6 @@ test("web_engine_unittests") {
   ]
 
   additional_manifest_fragments = [
-    "//build/config/fuchsia/test/cfv1_launcher.shard.test-cml",
     "//build/config/fuchsia/test/network.shard.test-cml",
     "//build/config/fuchsia/test/sysmem.shard.test-cml",
   ]
@@ -722,7 +721,6 @@ test("web_engine_integration_tests") {
     "//build/config/fuchsia/test/audio_output.shard.test-cml",
     "//build/config/fuchsia/test/fonts.shard.test-cml",
     "//build/config/fuchsia/test/network.shard.test-cml",
-    "//build/config/fuchsia/test/web_instance_host.shard.test-cml",
     "//fuchsia_web/webengine/web_engine_integration_tests.shard.test-cml",
     "//third_party/fuchsia-sdk/sdk/pkg/sys/component/realm_builder_absolute.shard.cml",
     "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",

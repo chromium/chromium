@@ -231,7 +231,6 @@ test("cast_runner_integration_tests") {
     ],
   ]
   additional_manifest_fragments = [
-    "//build/config/fuchsia/test/cfv1_launcher.shard.test-cml",
     "//build/config/fuchsia/test/fonts.shard.test-cml",
     "//build/config/fuchsia/test/network.shard.test-cml",
     "//fuchsia_web/runners/cast/cast_runner_integration_test.shard.test-cml",
