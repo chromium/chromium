@@ -164,11 +164,9 @@ void AddressProfileSaveManager::FinalizeProfileImport(
     personal_data_manager_->SetProfilesForAllSources(&resulting_profiles);
   }
 
-  AutofillProfileImportType import_type = import_process->import_type();
-
   // If the import of a new profile was declined, add a strike for this source
   // url. If it was accepted, reset the potentially existing strikes.
-  if (import_type == AutofillProfileImportType::kNewProfile) {
+  if (import_process->import_type() == AutofillProfileImportType::kNewProfile) {
     if (import_process->UserDeclined()) {
       personal_data_manager_->AddStrikeToBlockNewProfileImportForDomain(
           import_process->form_source_url());
@@ -176,9 +174,7 @@ void AddressProfileSaveManager::FinalizeProfileImport(
       personal_data_manager_->RemoveStrikesToBlockNewProfileImportForDomain(
           import_process->form_source_url());
     }
-  } else if (import_type == AutofillProfileImportType::kConfirmableMerge ||
-             import_type ==
-                 AutofillProfileImportType::kConfirmableMergeAndSilentUpdate) {
+  } else if (import_process->is_confirmable_update()) {
     DCHECK(import_process->merge_candidate().has_value());
     if (import_process->UserDeclined()) {
       personal_data_manager_->AddStrikeToBlockProfileUpdate(

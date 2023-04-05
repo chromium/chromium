@@ -151,6 +151,12 @@ class ProfileImportProcess {
 
   AutofillProfileImportType import_type() const { return import_type_; }
 
+  bool is_confirmable_update() const {
+    return import_type_ == AutofillProfileImportType::kConfirmableMerge ||
+           import_type_ ==
+               AutofillProfileImportType::kConfirmableMergeAndSilentUpdate;
+  }
+
   bool is_migration() const {
     return import_type_ == AutofillProfileImportType::kProfileMigration ||
            import_type_ ==

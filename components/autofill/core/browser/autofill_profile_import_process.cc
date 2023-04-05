@@ -499,9 +499,7 @@ void ProfileImportProcess::CollectMetrics(ukm::UkmRecorder* ukm_recorder,
         import_metadata_.num_autocomplete_unrecognized_fields);
 
     LogUkmMetrics(num_edited_fields);
-  } else if (import_type_ == AutofillProfileImportType::kConfirmableMerge ||
-             import_type_ ==
-                 AutofillProfileImportType::kConfirmableMergeAndSilentUpdate) {
+  } else if (is_confirmable_update()) {
     autofill_metrics::LogProfileUpdateImportDecision(user_decision_);
     autofill_metrics::LogProfileUpdateNumberOfAutocompleteUnrecognizedFields(
         import_metadata_.num_autocomplete_unrecognized_fields);
@@ -524,6 +522,9 @@ void ProfileImportProcess::CollectMetrics(ukm::UkmRecorder* ukm_recorder,
     LogUkmMetrics(num_edited_fields);
   } else if (import_type_ == AutofillProfileImportType::kSilentUpdate) {
     LogUkmMetrics();
+  } else if (is_migration()) {
+    // TODO(crbug.com/1423319): Log migration metrics.
+    LogUkmMetrics(num_edited_fields);
   }
 }
 
