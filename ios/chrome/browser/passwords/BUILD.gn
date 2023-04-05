@@ -70,6 +70,7 @@ source_set("passwords") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/autofill:autofill_shared",
+    "//ios/chrome/browser/autofill/bottom_sheet",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/credential_provider_promo:features",
     "//ios/chrome/browser/flags:system_flags",

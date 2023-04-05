@@ -39,6 +39,14 @@ class WebState;
             (PasswordSuggestionHelper*)suggestionHelper
                                             inFrame:(web::WebFrame*)frame;
 
+// Adds event listeners to fields which are associated with a bottom sheet.
+// When the focus event occurs on these fields, a bottom sheet will be shown
+// instead of the keyboard, allowing the user to fill the fields by tapping
+// one of the suggestions.
+- (void)attachListenersForBottomSheet:
+            (const std::vector<autofill::FieldRendererId>&)rendererIds
+                              inFrame:(web::WebFrame*)frame;
+
 @end
 
 // Provides common logic of password autofill suggestions for both ios/chrome

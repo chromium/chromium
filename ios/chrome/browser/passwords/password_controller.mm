@@ -51,6 +51,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/driver/sync_service.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
+#import "ios/chrome/browser/autofill/bottom_sheet/bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/form_input_accessory_view_handler.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
@@ -562,6 +563,13 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
     // Navigate to the settings list.
     [self.delegate displaySavedPasswordList];
   }
+}
+
+- (void)attachListenersForBottomSheet:
+            (const std::vector<autofill::FieldRendererId>&)rendererIds
+                              inFrame:(web::WebFrame*)frame {
+  BottomSheetTabHelper::FromWebState(_webState)->AttachListeners(rendererIds,
+                                                                 frame);
 }
 
 - (BOOL)shouldShowAccountStorageNotice {

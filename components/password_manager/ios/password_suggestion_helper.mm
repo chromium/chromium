@@ -6,6 +6,7 @@
 
 #include "base/strings/sys_string_conversions.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/password_form_fill_data.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/ios/account_select_fill_data.h"
@@ -178,6 +179,16 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
   DCHECK(_webState.get());
   fillData->Add(formData,
                 IsCrossOriginIframe(_webState.get(), isMainFrame, origin));
+
+  // "attachListenersForBottomSheet" is used to add event listeners
+  // to fields which must trigger a specific behavior. In this case,
+  // the username and password fields' renderer ids are sent through
+  // "attachListenersForBottomSheet" so that they may trigger the
+  // password bottom sheet on focus events for these specific fields.
+  std::vector<autofill::FieldRendererId> rendererIds(2);
+  rendererIds[0] = formData.username_element_renderer_id;
+  rendererIds[1] = formData.password_element_renderer_id;
+  [self.delegate attachListenersForBottomSheet:rendererIds inFrame:frame];
 
   _processedPasswordSuggestions = YES;
 
