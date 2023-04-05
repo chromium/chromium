@@ -49,6 +49,7 @@ class DataTypeManagerImpl : public DataTypeManager,
   ModelTypeSet GetPurgedDataTypes() const override;
   ModelTypeSet GetActiveProxyDataTypes() const override;
   State state() const override;
+  ModelTypeSet GetTypesWithPendingDownloadForInitialSync() const override;
 
   // |ModelLoadManagerDelegate| implementation.
   void OnAllDataTypesReadyForConfigure() override;

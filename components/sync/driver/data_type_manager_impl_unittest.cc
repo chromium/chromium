@@ -303,11 +303,13 @@ TEST_F(SyncDataTypeManagerImplTest, ConfigureOne) {
   Configure(ModelTypeSet(BOOKMARKS));
   EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
   EXPECT_EQ(ModelTypeSet(BOOKMARKS), configurer_.connected_types());
+  EXPECT_TRUE(dtm_->GetTypesWithPendingDownloadForInitialSync().Has(BOOKMARKS));
 
   FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
   FinishDownload(ModelTypeSet(BOOKMARKS), ModelTypeSet());
   EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
   EXPECT_EQ(1U, configurer_.connected_types().Size());
+  EXPECT_TRUE(dtm_->GetTypesWithPendingDownloadForInitialSync().Empty());
 
   dtm_->Stop(SyncStopMetadataFate::KEEP_METADATA);
   EXPECT_EQ(DataTypeManager::STOPPED, dtm_->state());
@@ -355,10 +357,13 @@ TEST_F(SyncDataTypeManagerImplTest, ConfigureOneStopWhileDownloadPending) {
     Configure(ModelTypeSet(BOOKMARKS));
     EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
     EXPECT_EQ(ModelTypeSet(BOOKMARKS), configurer_.connected_types());
+    EXPECT_TRUE(
+        dtm_->GetTypesWithPendingDownloadForInitialSync().Has(BOOKMARKS));
 
     dtm_->Stop(SyncStopMetadataFate::KEEP_METADATA);
     EXPECT_EQ(DataTypeManager::STOPPED, dtm_->state());
     EXPECT_TRUE(configurer_.connected_types().Empty());
+    EXPECT_TRUE(dtm_->GetTypesWithPendingDownloadForInitialSync().Empty());
   }
 
   FinishDownloadWhileStopped(ModelTypeSet(BOOKMARKS), ModelTypeSet());
@@ -1286,6 +1291,8 @@ TEST_F(SyncDataTypeManagerImplTest, ErrorBeforeStartup) {
 
   EXPECT_TRUE(dtm_->GetActiveDataTypes().Has(PREFERENCES));
   EXPECT_FALSE(dtm_->GetActiveDataTypes().Has(BOOKMARKS));
+  EXPECT_FALSE(
+      dtm_->GetTypesWithPendingDownloadForInitialSync().Has(BOOKMARKS));
 }
 
 // Test that sync configures properly if all types are already downloaded.
@@ -1308,6 +1315,11 @@ TEST_F(SyncDataTypeManagerImplTest, AllTypesReady) {
 
   Configure(ModelTypeSet(PRIORITY_PREFERENCES, BOOKMARKS));
   EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
+
+  // TODO(crbug.com/1429600): Ideally the test should verify that
+  // GetTypesWithPendingDownloadForInitialSync() returns an empty set here,
+  // but it isn't possible today because of implementation details.
+
   // This started the configuration of control types, which aren't tracked by
   // DataTypeManagerImpl, so always considered already downloaded.
   ASSERT_EQ(1, configurer_.configure_call_count());
@@ -1342,6 +1354,7 @@ TEST_F(SyncDataTypeManagerImplTest, AllTypesReady) {
   EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
   EXPECT_EQ(2U, configurer_.connected_types().Size());
   EXPECT_TRUE(dtm_->GetActiveProxyDataTypes().Empty());
+  EXPECT_TRUE(dtm_->GetTypesWithPendingDownloadForInitialSync().Empty());
 
   dtm_->Stop(SyncStopMetadataFate::KEEP_METADATA);
   EXPECT_EQ(DataTypeManager::STOPPED, dtm_->state());

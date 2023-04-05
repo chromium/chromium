@@ -208,6 +208,14 @@ ModelTypeSet TestSyncService::GetActiveDataTypes() const {
   return Difference(GetPreferredDataTypes(), failed_data_types_);
 }
 
+ModelTypeSet TestSyncService::GetTypesWithPendingDownloadForInitialSync()
+    const {
+  if (transport_state_ != TransportState::CONFIGURING) {
+    return ModelTypeSet();
+  }
+  return Difference(GetPreferredDataTypes(), failed_data_types_);
+}
+
 void TestSyncService::StopAndClear() {}
 
 void TestSyncService::OnDataTypeRequestsSyncStartup(ModelType type) {}

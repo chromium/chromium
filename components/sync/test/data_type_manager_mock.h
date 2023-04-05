@@ -26,6 +26,10 @@ class DataTypeManagerMock : public DataTypeManager {
   MOCK_METHOD(ModelTypeSet, GetActiveDataTypes, (), (const override));
   MOCK_METHOD(ModelTypeSet, GetPurgedDataTypes, (), (const override));
   MOCK_METHOD(ModelTypeSet, GetActiveProxyDataTypes, (), (const override));
+  MOCK_METHOD(ModelTypeSet,
+              GetTypesWithPendingDownloadForInitialSync,
+              (),
+              (const override));
   MOCK_METHOD(State, state, (), (const override));
 
  private:

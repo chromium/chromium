@@ -1212,9 +1212,24 @@ ModelTypeSet SyncServiceImpl::GetActiveDataTypes() const {
 
   // Persistent auth errors lead to PAUSED, which implies
   // data_type_manager_==null above.
-  DCHECK(!GetAuthError().IsPersistentError());
+  CHECK(!GetAuthError().IsPersistentError());
 
   return data_type_manager_->GetActiveDataTypes();
+}
+
+ModelTypeSet SyncServiceImpl::GetTypesWithPendingDownloadForInitialSync()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!data_type_manager_) {
+    return ModelTypeSet();
+  }
+
+  // Persistent auth errors lead to PAUSED, which implies
+  // data_type_manager_==null above.
+  CHECK(!GetAuthError().IsPersistentError());
+
+  return data_type_manager_->GetTypesWithPendingDownloadForInitialSync();
 }
 
 void SyncServiceImpl::SetSyncRequestedAndIgnoreNotification(bool is_requested) {

@@ -714,8 +714,23 @@ void DataTypeManagerImpl::NotifyDone(const ConfigureResult& raw_result) {
 }
 
 ModelTypeSet DataTypeManagerImpl::GetActiveDataTypes() const {
-  if (state_ != CONFIGURED)
+  if (state_ != CONFIGURED) {
     return ModelTypeSet();
+  }
+  return GetEnabledTypes();
+}
+
+ModelTypeSet DataTypeManagerImpl::GetTypesWithPendingDownloadForInitialSync()
+    const {
+  if (state_ != CONFIGURING) {
+    return ModelTypeSet();
+  }
+  // The fact that the current state is CONFIGURING doesn't mean all datatypes
+  // are in the middle of the initial download, but it is a simple
+  // approximation that works well in most cases.
+  // TODO(crbug.com/1429600): Find a more reliable solution, for example by
+  // leaning more on DataTypeController state or via an improved version of
+  // |downloaded_types_|.
   return GetEnabledTypes();
 }
 
