@@ -28,8 +28,38 @@ namespace blink {
 
 namespace {
 
-// Mergeable columns cannot be distributed to.
-// Make at least one spanned column is distributable.
+// We cannot distribute space to mergeable columns. Mark at least one of the
+// spanned columns as distributable (i.e. non-mergeable).
+//
+// We'll mark the first (non-collapsed) column as non-mergeable. We should only
+// merge adjacent columns that have no cells that start there.
+//
+// Example:
+//
+//             +------------------------+------------------------+
+//             |          cell          |         cell           |
+//    row 1    |       colspan 2        |       colspan 2        |
+//             |                        |                        |
+//             +------------+-----------+-----------+------------+
+//             |    cell    |         cell          |   cell     |
+//    row 2    | colspan 1  |       colspan 2       | colspan 1  |
+//             |            |                       |            |
+//             +------------+-----------------------+------------+
+//
+//   columns   |  column 1  |  column 2 | column 3  |  column 4  |
+//
+// No columns should be merged here, as there are no columns that has no cell
+// starting there. We want all four columns to receive some space, or
+// distribution would be uneven.
+//
+// Another interesting problem being solved here is the interaction between
+// collapsed (visibility:collapse) and mergeable columns. We need to find the
+// first column that isn't collapsed and mark it as non-mergeable. Otherwise the
+// entire cell might merge into the first column, and collapse, and the whole
+// cell would be hidden if the first column is collapsed.
+//
+// If all columns spanned actually collapse, the first column will be marked as
+// non-meargeable.
 void EnsureDistributableColumnExists(
     wtf_size_t start_column_index,
     wtf_size_t span,
@@ -42,37 +72,16 @@ void EnsureDistributableColumnExists(
   NGTableTypes::Column* start_column =
       &column_constraints->data[start_column_index];
   NGTableTypes::Column* end_column = start_column + effective_span;
-
-  NGTableTypes::Column* first_mergeable_column = nullptr;
   for (NGTableTypes::Column* column = start_column; column != end_column;
        ++column) {
     if (!column->is_collapsed) {
-      if (!column->is_mergeable) {
-        // Found non-collapsed, non mergeable column, nothing to do.
-        return;
-      } else if (!first_mergeable_column) {
-        // Found first non-collapsed, mergeable column.
-        first_mergeable_column = column;
-      }
+      column->is_mergeable = false;
+      return;
     }
   }
-  // The interesting problem being solved here is interaction between
-  // collapsed and mergeable columns.
-  // All columns that are created by colspanned cell are mergeable by
-  // default. Without collapsing, the first column would always be
-  // marked as !mergeable.
-  // What to do if the first column collapses? If that was the only
-  // non-mergeable column, the entire cell would merge into first column,
-  // and collapse.
-  // To prevent "whole cell hidden if 1st cell is collapsed",
-  // we try to make first non-collapsed column mergeable.
-  // If all columns collapse, first cell is marked as meargable.
-  if (first_mergeable_column) {
-    // Some columns were not collapsed, mark first as mergeable.
-    first_mergeable_column->is_mergeable = false;
-  } else {
-    start_column->is_mergeable = false;
-  }
+  // We didn't find any non-collapsed column. Mark the first one as
+  // non-mergeable.
+  start_column->is_mergeable = false;
 }
 
 // Applies cell/wide cell constraints to columns.
