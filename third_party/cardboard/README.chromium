@@ -1,7 +1,7 @@
 Name: Cardboard SDK
 Short Name: cardboard
 URL: https://github.com/googlevr/cardboard
-Version: 1.19.0
+Version: 1.20.0
 License: Apache 2.0
 License File: LICENSE
 Security Critical: yes
@@ -12,7 +12,6 @@ smartphones inserted into Cardboard viewers.
 
 Local Modifications:
 * Created local top-level BUILD.gn based on src/sdk/build.gradle
-* Created local proguard-rules.pro to remove wildcard rules
-* Created local override for device_gyroscope_sensor to remove static initializers
+* Created local proguard-rules.pro to remove proto-specific rule
 * Created local override for LoadJClass in jni_utils to leaverage //base JNI loading due to splits.
 * Created local override for opengl_es2_distortion_renderer to allow using external_oes textures.

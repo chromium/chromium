@@ -30,6 +30,7 @@ android_library("cardboard_java") {
   sources = [
     "src/sdk/device_params/android/java/com/google/cardboard/sdk/deviceparams/CardboardV1DeviceParams.java",
     "src/sdk/device_params/android/java/com/google/cardboard/sdk/deviceparams/DeviceParamsUtils.java",
+    "src/sdk/java_utils/android/java/com/google/cardboard/sdk/UsedByNative.java",
     "src/sdk/qrcode/android/java/com/google/cardboard/sdk/HeadsetDetectionActivity.java",
     "src/sdk/qrcode/android/java/com/google/cardboard/sdk/QrCodeCaptureActivity.java",
     "src/sdk/qrcode/android/java/com/google/cardboard/sdk/qrcode/AsyncTask.java",
@@ -60,8 +61,9 @@ android_library("cardboard_java") {
     "//third_party/androidx:androidx_core_core_java",
   ]
 
-  # TODO(alcooper): Switch this to "src/sdk/proguard-rules.pro" once b/264530605
-  # is fixed/rolled-in.
+  # "src/sdk/proguard-rules.pro" contains an additional exemption for the proto
+  # files which causes us to include a bunch of non-affiliated files, which
+  # the generic chrome proguard rules already handle appropriately.
   proguard_configs = [ "proguard-rules.pro" ]
 }
 
@@ -94,6 +96,7 @@ static_library("cardboard") {
     "src/sdk/screen_params/android/screen_params.cc",
     "src/sdk/sensors/accelerometer_data.h",
     "src/sdk/sensors/android/device_accelerometer_sensor.cc",
+    "src/sdk/sensors/android/device_gyroscope_sensor.cc",
     "src/sdk/sensors/android/sensor_event_producer.cc",
     "src/sdk/sensors/device_accelerometer_sensor.h",
     "src/sdk/sensors/device_gyroscope_sensor.h",
@@ -130,7 +133,6 @@ static_library("cardboard") {
     "src/sdk/util/vectorutils.h",
     "src_overrides/sdk/jni_utils/android/jni_utils.cc",
     "src_overrides/sdk/rendering/opengl_es2_distortion_renderer.cc",
-    "src_overrides/sdk/sensors/android/device_gyroscope_sensor.cc",
   ]
 
   deps = [ "//base" ]
