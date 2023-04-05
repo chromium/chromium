@@ -380,6 +380,16 @@
       '--test-apk-as-instant',
     ],
   },
+  'CROS_BRYA_RELEASE_LKGM': {
+    'skylab': {
+      'cros_board': 'brya',
+      'cros_chrome_version': '114.0.5685.0',
+      'cros_img': 'brya-release/R114-15407.0.0',
+      'autotest_name': 'tast.chrome-from-tls',
+    },
+    'enabled': True,
+    'identifier': 'BRYA_RELEASE_LKGM',
+  },
   'CROS_DEDEDE_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'dedede',
@@ -678,6 +688,16 @@
     },
     'enabled': True,
     'identifier': 'TROGDOR64_RELEASE_LKGM',
+  },
+  'CROS_VOLTEER_RELEASE_LKGM': {
+    'skylab': {
+      'cros_board': 'volteer',
+      'cros_chrome_version': '114.0.5685.0',
+      'cros_img': 'volteer-release/R114-15407.0.0',
+      'autotest_name': 'tast.chrome-from-tls',
+    },
+    'enabled': True,
+    'identifier': 'VOLTEER_RELEASE_LKGM',
   },
   'CROS_ZORK_PUBLIC': {
     'skylab': {
