@@ -1525,4 +1525,21 @@ LayoutNGBlockFlow DIV id="root"
             ToSimpleLayoutTree(root_layout_object));
 }
 
+// crbug.com/1430617
+TEST_F(LayoutNGTextCombineTest, ShouldBeParentOfSvg) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="root" style="text-combine-upright: all;">
+    <svg>
+    <text style="writing-mode: vertical-rl;">Text)HTML");
+
+  // Should have no LayoutNGTextCombine.
+  EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow DIV id="root" style="text-combine-upright: all;"
+  +--LayoutSVGRoot svg
+  |  +--LayoutNGSVGText text style="writing-mode: vertical-rl;"
+  |  |  +--LayoutSVGInlineText #text "Text"
+)DUMP",
+            ToSimpleLayoutTree(*GetLayoutObjectByElementId("root")));
+}
+
 }  // namespace blink
