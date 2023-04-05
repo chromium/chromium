@@ -3338,6 +3338,15 @@ bool ChromeContentBrowserClient::IsInterestGroupAPIAllowed(
   return allowed;
 }
 
+void ChromeContentBrowserClient::OnAuctionComplete(
+    content::RenderFrameHost* render_frame_host,
+    content::InterestGroupManager::InterestGroupDataKey winner_data_key) {
+  content_settings::PageSpecificContentSettings::BrowsingDataAccessed(
+      render_frame_host, winner_data_key,
+      BrowsingDataModel::StorageType::kInterestGroup,
+      /*blocked=*/false);
+}
+
 bool ChromeContentBrowserClient::IsAttributionReportingOperationAllowed(
     content::BrowserContext* browser_context,
     AttributionReportingOperation operation,

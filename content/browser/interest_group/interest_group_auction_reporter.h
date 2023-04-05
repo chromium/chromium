@@ -244,6 +244,8 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
 
   const std::vector<std::string>& errors() const { return errors_; }
 
+  const WinningBidInfo& winning_bid_info() const { return winning_bid_info_; }
+
   // The FencedFrameReporter that `this` will pass event-level ad beacon
   // information received from reporting worklets to, as they're received.
   // Created by `this`. The consumer is responsible for wiring this up to a

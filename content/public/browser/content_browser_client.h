@@ -32,6 +32,7 @@
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/commit_deferring_condition.h"
 #include "content/public/browser/generated_code_cache_settings.h"
+#include "content/public/browser/interest_group_manager.h"
 #include "content/public/browser/login_delegate.h"
 #include "content/public/browser/mojo_binder_policy_map.h"
 #include "content/public/browser/storage_partition_config.h"
@@ -855,6 +856,10 @@ class CONTENT_EXPORT ContentBrowserClient {
       InterestGroupApiOperation operation,
       const url::Origin& top_frame_origin,
       const url::Origin& api_origin);
+
+  virtual void OnAuctionComplete(
+      RenderFrameHost* render_frame_host,
+      InterestGroupManager::InterestGroupDataKey data_key);
 
   enum class AttributionReportingOperation {
     kSource,
