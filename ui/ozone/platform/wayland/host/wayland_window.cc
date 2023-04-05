@@ -291,6 +291,9 @@ void WaylandWindow::CancelDrag() {
 }
 
 void WaylandWindow::Show(bool inactive) {
+  // Initially send the window geometry. After this, we only update window
+  // geometry when the value in latched_state_ updates.
+  SetWindowGeometry(latched_state_.bounds_dip.size());
   frame_manager_->MaybeProcessPendingFrame();
 }
 
@@ -716,6 +719,7 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
   std::vector<gfx::Rect> region{gfx::Rect{latched_state().size_px}};
   root_surface_->set_opaque_region(&region);
   root_surface_->ApplyPendingState();
+
   connection_->Flush();
 
   return true;
@@ -1057,21 +1061,6 @@ void WaylandWindow::RequestState(PlatformWindowDelegate::State state,
   state.size_px =
       gfx::ScaleToEnclosingRect(state.bounds_dip, state.window_scale).size();
 
-  if (in_flight_requests_.empty() && state == latched_state_) {
-    // If the requested state is latched, and no buffers will change the latched
-    // state until after this request, then ack it immediately. This is relied
-    // upon during window initialization, where we can receive a buffer before
-    // the corresponding configure. We need to ack on receiving the configure,
-    // rather than latching the buffer. This also handles the case of updating
-    // the window geometry when decorations are updated.
-    StateRequest req;
-    req.state = state;
-    req.serial = serial;
-    // Make sure wayland messages are delivered during window initialisation.
-    LatchStateRequest(req, /*force=*/true);
-    return;
-  }
-
   if (!in_flight_requests_.empty() &&
       in_flight_requests_.back().state == state) {
     // If we already asked for this configure state, we can send back a higher
@@ -1130,7 +1119,7 @@ void WaylandWindow::ProcessSequencePoint(int64_t viz_seq) {
   }
 
   // Latch the latest state which was actually applied.
-  LatchStateRequest(*iter, /*force=*/false);
+  LatchStateRequest(*iter);
 
   in_flight_requests_.erase(in_flight_requests_.begin(), ++iter);
 
@@ -1195,12 +1184,12 @@ gfx::Rect WaylandWindow::AdjustBoundsToConstraintsDIP(
   return adjusted_bounds_dip;
 }
 
-void WaylandWindow::LatchStateRequest(const StateRequest& req, bool force) {
+void WaylandWindow::LatchStateRequest(const StateRequest& req) {
   // Latch the most up to date state we have a frame back for.
   auto old_state = latched_state_;
   latched_state_ = req.state;
 
-  if (force || req.state.bounds_dip.size() != old_state.bounds_dip.size()) {
+  if (req.state.bounds_dip.size() != old_state.bounds_dip.size()) {
     SetWindowGeometry(req.state.bounds_dip.size());
   }
   UpdateWindowMask();
@@ -1242,6 +1231,14 @@ void WaylandWindow::MaybeApplyLatestStateRequest(bool force) {
   // old and new states are the same, or it only changes the origin of the
   // bounds.
   latest.viz_seq = delegate()->OnStateUpdate(old, latest.state);
+
+  // If we have state requests which don't require synchronization to latch, or
+  // if no frames will be produced, ack them immediately. Using -2 (or any
+  // negative number that isn't -1) will cause all requests with viz_seq==-1 to
+  // be latched. We don't use -1 because ProcessSequencePoint has a special case
+  // to re-map -1 to a large number to handle GPU process crashes.
+  constexpr int64_t kLatchAllWithoutVizSeq = -2;
+  ProcessSequencePoint(kLatchAllWithoutVizSeq);
 
   // Latch in tests immediately if the test config is set.
   // Otherwise, such tests as interactive_ui_tests fail.
