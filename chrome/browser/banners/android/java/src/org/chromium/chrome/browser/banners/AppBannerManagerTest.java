@@ -70,7 +70,6 @@ import org.chromium.base.test.util.PackageManagerWrapper;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.browserservices.intents.BitmapHelper;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -82,7 +81,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
-import org.chromium.chrome.browser.webapps.WebappDataStorage;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -207,27 +205,6 @@ public class AppBannerManagerTest {
 
         @Override
         public void destroy() {}
-    }
-
-    private static class TestDataStorageFactory extends WebappDataStorage.Factory {
-        public String mSplashImage;
-
-        @Override
-        public WebappDataStorage create(final String webappId) {
-            return new WebappDataStorageWrapper(webappId);
-        }
-
-        private class WebappDataStorageWrapper extends WebappDataStorage {
-            public WebappDataStorageWrapper(String webappId) {
-                super(webappId);
-            }
-
-            @Override
-            public void updateSplashScreenImage(String splashScreenImage) {
-                Assert.assertNull(mSplashImage);
-                mSplashImage = splashScreenImage;
-            }
-        }
     }
 
     private static class InfobarListener implements InfoBarAnimationListener {
@@ -546,10 +523,6 @@ public class AppBannerManagerTest {
     @Feature({"AppBanners"})
     @CommandLineFlags.Add({"disable-features=" + FeatureConstants.PWA_INSTALL_AVAILABLE_FEATURE})
     public void testAppInstalledEventModalWebAppBannerBrowserTab() throws Exception {
-        // Sets the overridden factory to observer splash screen update.
-        final TestDataStorageFactory dataStorageFactory = new TestDataStorageFactory();
-        WebappDataStorage.setFactoryForTests(dataStorageFactory);
-
         triggerModalWebAppBanner(mTabbedActivityTestRule,
                 WebappTestPage.getServiceWorkerUrlWithAction(
                         mTestServer, "call_stashed_prompt_on_click_verify_appinstalled"),
@@ -569,28 +542,12 @@ public class AppBannerManagerTest {
                     RecordHistogram.getHistogramValueCountForTesting(
                             INSTALL_PATH_HISTOGRAM_NAME, /* kApiInitiateInfobar= */ 3));
         });
-
-        // Make sure that the splash screen icon was downloaded.
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(dataStorageFactory.mSplashImage, Matchers.notNullValue());
-        });
-
-        // Test that bitmap sizes match expectations.
-        int idealSize = mTabbedActivityTestRule.getActivity().getResources().getDimensionPixelSize(
-                R.dimen.webapp_splash_image_size_ideal);
-        Bitmap splashImage = BitmapHelper.decodeBitmapFromString(dataStorageFactory.mSplashImage);
-        Assert.assertEquals(idealSize, splashImage.getWidth());
-        Assert.assertEquals(idealSize, splashImage.getHeight());
     }
 
     @Test
     @SmallTest
     @Feature({"AppBanners"})
     public void testAppInstalledEventModalWebAppBannerCustomTab() throws Exception {
-        // Sets the overridden factory to observer splash screen update.
-        final TestDataStorageFactory dataStorageFactory = new TestDataStorageFactory();
-        WebappDataStorage.setFactoryForTests(dataStorageFactory);
-
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                         InstrumentationRegistry.getTargetContext(),
@@ -614,18 +571,6 @@ public class AppBannerManagerTest {
                     RecordHistogram.getHistogramValueCountForTesting(
                             INSTALL_PATH_HISTOGRAM_NAME, /* kApiInitiatedInfobar= */ 3));
         });
-
-        // Make sure that the splash screen icon was downloaded.
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(dataStorageFactory.mSplashImage, Matchers.notNullValue());
-        });
-
-        // Test that bitmap sizes match expectations.
-        int idealSize = mTabbedActivityTestRule.getActivity().getResources().getDimensionPixelSize(
-                R.dimen.webapp_splash_image_size_ideal);
-        Bitmap splashImage = BitmapHelper.decodeBitmapFromString(dataStorageFactory.mSplashImage);
-        Assert.assertEquals(idealSize, splashImage.getWidth());
-        Assert.assertEquals(idealSize, splashImage.getHeight());
     }
 
     @Test

@@ -532,7 +532,7 @@ public abstract class ChromeFeatureList {
             "WebApkTrampolineOnInitialIntent";
     public static final String WEB_APK_UNIQUE_ID = "WebApkUniqueId";
     public static final String WEB_APK_INSTALL_FAILURE_NOTIFICATION =
-            "kWebApkInstallFailureNotification";
+            "WebApkInstallFailureNotification";
     public static final String WEB_APK_INSTALL_RETRY = "WebApkInstallFailureRetry";
     public static final String WEB_FEED = "WebFeed";
     public static final String WEB_FEED_AWARENESS = "WebFeedAwareness";
