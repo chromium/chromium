@@ -80,4 +80,78 @@ base::Value MergePreference(const PrefModelAssociatorClient* client,
   return server_value.Clone();
 }
 
+std::pair<base::Value::Dict, base::Value::Dict> UnmergeDictionaryValues(
+    base::Value::Dict new_dict,
+    const base::Value::Dict& original_local_dict,
+    const base::Value::Dict& original_account_dict) {
+  base::Value::Dict new_local_dict;
+  base::Value::Dict new_account_dict;
+
+  // Keep only keys that exist in the `new_dict`.
+  for (auto [k, v] : original_local_dict) {
+    if (new_dict.contains(k)) {
+      new_local_dict.Set(k, v.Clone());
+    }
+  }
+  for (auto [k, v] : original_account_dict) {
+    if (new_dict.contains(k)) {
+      new_account_dict.Set(k, v.Clone());
+    }
+  }
+
+  // Add or update individual keys.
+  for (auto [k, new_dict_value] : new_dict) {
+    // If contained value is again a dict, recursively un-merge.
+    if (new_dict_value.is_dict()) {
+      base::Value local_dict_value(base::Value::Type::DICT);
+      if (base::Value::Dict* local_dict_value_dict =
+              new_local_dict.FindDict(k)) {
+        local_dict_value = base::Value(std::move(*local_dict_value_dict));
+      }
+      base::Value account_dict_value(base::Value::Type::DICT);
+      if (base::Value::Dict* account_dict_value_dict =
+              new_account_dict.FindDict(k)) {
+        account_dict_value = base::Value(std::move(*account_dict_value_dict));
+      }
+      // Note: Passing empty dict values in case the key does not exist or has a
+      // different type.
+      auto [local_v, account_v] = UnmergeDictionaryValues(
+          std::move(new_dict_value).TakeDict(), local_dict_value.GetDict(),
+          account_dict_value.GetDict());
+      // If the new unmerged dict value is empty, remove the key.
+      if (!local_v.empty()) {
+        new_local_dict.Set(k, std::move(local_v));
+      } else {
+        new_local_dict.Remove(k);
+      }
+      // If the new unmerged dict value is empty, remove the key.
+      if (!account_v.empty()) {
+        new_account_dict.Set(k, std::move(account_v));
+      } else {
+        new_account_dict.Remove(k);
+      }
+    } else if (base::Value* account_dict_value = new_account_dict.Find(k)) {
+      // The key already existed in the account store. Copy to the local store
+      // if its value changed.
+      if (*account_dict_value != new_dict_value) {
+        new_local_dict.Set(k, new_dict_value.Clone());
+        *account_dict_value = std::move(new_dict_value);
+      }
+    } else if (base::Value* local_dict_value = new_local_dict.Find(k)) {
+      // The key already existed in the local store. Copy to the account store
+      // if its value changed.
+      if (*local_dict_value != new_dict_value) {
+        new_account_dict.Set(k, new_dict_value.Clone());
+        *local_dict_value = std::move(new_dict_value);
+      }
+    } else {
+      // New dict entry - the key didn't exist before. Add it to both the
+      // stores.
+      new_account_dict.Set(k, new_dict_value.Clone());
+      new_local_dict.Set(k, std::move(new_dict_value));
+    }
+  }
+  return {std::move(new_local_dict), std::move(new_account_dict)};
+}
+
 }  // namespace sync_preferences::helper
