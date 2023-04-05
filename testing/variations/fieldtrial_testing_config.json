@@ -10012,7 +10012,8 @@
                 {
                     "name": "PrioritizeCompositingAfter50ms2",
                     "params": {
-                        "PostFCP": "50"
+                        "PostFCP": "50",
+                        "PreFCP": "100"
                     },
                     "enable_features": [
                         "PrioritizeCompositingAfterDelayTrials"
