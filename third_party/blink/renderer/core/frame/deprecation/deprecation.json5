@@ -66,7 +66,7 @@
     {
       name: "CanRequestURLHTTPContainingNewline",
       message: "Resource requests whose URLs contained both removed whitespace `\\(n|r|t)` characters and less-than characters (`<`) are blocked. Please remove newlines and encode less-than characters from places like element attribute values in order to load these resources.",
-      translation_note: "This warning occurs when a page attempts to request a resource whose URL contained both a newline character (`\n` or `\r`), and a less-than character (`<`). These resources are blocked.",
+      translation_note: "This warning occurs when a page attempts to request a resource whose URL contained both a newline character (`\\n` or `\\r`), and a less-than character (`<`). These resources are blocked.",
       web_features: [
         "kCanRequestURLHTTPContainingNewline",
       ],
