@@ -13,7 +13,6 @@
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/home_launcher_animation_info.h"
 #include "ash/app_list/model/search/search_model.h"
-#include "ash/app_list/quick_app_access_model.h"
 #include "ash/ash_export.h"
 #include "ash/assistant/model/assistant_ui_model_observer.h"
 #include "ash/display/window_tree_host_manager.h"
@@ -344,11 +343,6 @@ class ASH_EXPORT AppListControllerImpl
 
   // Returns the preferred width for the bubble launcher for the |root_window|.
   int GetPreferredBubbleWidth(aura::Window* root_window) const;
-
-  // Set the launchable quick app button shown next to the home button. This app
-  // icon is shown next to the home button until the app is launched or the
-  // launcher is opened.
-  void SetHomeButtonQuickApp(const std::string& app_id);
 
  private:
   // Convenience methods for getting models from `model_provider_`.

@@ -58,7 +58,6 @@ void AppListTestViewDelegate::OpenSearchResult(
       case ash::AppListLaunchedFrom::kLaunchedFromGrid:
       case ash::AppListLaunchedFrom::kLaunchedFromShelf:
       case ash::AppListLaunchedFrom::kLaunchedFromContinueTask:
-      case ash::AppListLaunchedFrom::kLaunchedFromQuickAppAccess:
         return;
       case ash::AppListLaunchedFrom::DEPRECATED_kLaunchedFromSuggestionChip:
         NOTREACHED();

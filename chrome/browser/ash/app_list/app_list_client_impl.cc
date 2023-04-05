@@ -862,9 +862,7 @@ void AppListClientImpl::MaybeRecordLauncherAction(
   DCHECK(launched_from == ash::AppListLaunchedFrom::kLaunchedFromGrid ||
          launched_from == ash::AppListLaunchedFrom::kLaunchedFromRecentApps ||
          launched_from == ash::AppListLaunchedFrom::kLaunchedFromSearchBox ||
-         launched_from == ash::AppListLaunchedFrom::kLaunchedFromContinueTask ||
-         launched_from ==
-             ash::AppListLaunchedFrom::kLaunchedFromQuickAppAccess);
+         launched_from == ash::AppListLaunchedFrom::kLaunchedFromContinueTask);
 
   // Return early if the current user is not new.
   if (!user_manager::UserManager::Get()->IsCurrentUserNew()) {
