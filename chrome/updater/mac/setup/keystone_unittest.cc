@@ -54,7 +54,7 @@ TEST_F(KeystoneTest, MigrateKeystoneApps) {
             registration_requests.push_back(request);
           }));
 
-  EXPECT_EQ(registration_requests.size(), 3u);
+  EXPECT_EQ(registration_requests.size(), 4u);
 
   EXPECT_EQ(registration_requests[0].app_id, "com.chromium.CorruptedApp");
   EXPECT_TRUE(registration_requests[0].brand_code.empty());
@@ -83,6 +83,9 @@ TEST_F(KeystoneTest, MigrateKeystoneApps) {
             base::FilePath("/"));
   EXPECT_FALSE(registration_requests[2].dla);   // No data.
   EXPECT_FALSE(registration_requests[2].dlrc);  // String value is ignored.
+
+  EXPECT_EQ(registration_requests[3].app_id, "com.chromium.NonExistApp");
+  EXPECT_TRUE(registration_requests[3].brand_path.empty());
 }
 
 }  // namespace updater

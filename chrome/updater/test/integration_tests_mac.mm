@@ -325,8 +325,8 @@ void ExpectLegacyUpdaterMigrated(UpdaterScope scope) {
   EXPECT_FALSE(
       persisted_data->GetProductVersion("com.google.keystone").IsValid());
 
-  // Uninstalled app should not be migrated.
-  EXPECT_FALSE(
+  // Uninstalled app should be migrated.
+  EXPECT_TRUE(
       persisted_data->GetProductVersion("com.chromium.NonExistApp").IsValid());
 
   // App Kipple.
