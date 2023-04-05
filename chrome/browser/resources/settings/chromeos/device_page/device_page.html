@@ -15,7 +15,7 @@
         if="[[showPerDeviceMouseRow_(hasMouse_,
                                      isDeviceSettingsSplitEnabled_)]]">
       <cr-link-row class="hr" id="perDeviceMouseRow" label="$i18n{mouseTitle}"
-          on-click="onPerDeviceMouseTap_"
+          on-click="onPerDeviceMouseTap_" aria-label="$i18n{mouseTitle}"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
     </template>
@@ -23,6 +23,7 @@
         if="[[showPerDeviceTouchpadRow_(hasTouchpad_,
                                         isDeviceSettingsSplitEnabled_)]]">
       <cr-link-row class="hr" id="perDeviceTouchpadRow"
+          aria-label="$i18n{touchpadTitle}"
           label="$i18n{touchpadTitle}" on-click="onPerDeviceTouchpadTap_"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
@@ -31,6 +32,7 @@
         if="[[showPerDevicePointingStickRow_(hasPointingStick_,
                                              isDeviceSettingsSplitEnabled_)]]">
       <cr-link-row class="hr" id="perDevicePointingStickRow"
+          aria-label="$i18n{pointingStickTitle}"
           label="$i18n{pointingStickTitle}"
           on-click="onPerDevicePointingStickTap_"
           role-description="$i18n{subpageArrowRoleDescription}">
@@ -38,7 +40,7 @@
     </template>
     <template is="dom-if" if="[[isDeviceSettingsSplitEnabled_]]">
       <cr-link-row class="hr" id="perDeviceKeyboardRow"
-          label="$i18n{keyboardTitle}"
+          label="$i18n{keyboardTitle}" aria-label="$i18n{keyboardTitle}"
           on-click="onPerDeviceKeyboardTap_"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>

@@ -43,9 +43,11 @@
     </settings-toggle-button>
   </template>
   <cr-link-row id="remapKeyboardKeys"
-    class="hr" on-click="onRemapKeyboardKeysTap"
-    label="$i18n{remapKeyboardKeysRowLabel}"
-    sub-label$="[[remapKeyboardKeysSublabel]]"
-    deep-link-focus-id$="[[Setting.kKeyboardRemapKeys]]">
+      class="hr" on-click="onRemapKeyboardKeysTap"
+      label="$i18n{remapKeyboardKeysRowLabel}"
+      sub-label$="[[remapKeyboardKeysSublabel]]"
+      aria-label=
+          "[[getKeyboardName(keyboard.name)]] $i18n{remapKeyboardKeysRowLabel}"
+      deep-link-focus-id$="[[Setting.kKeyboardRemapKeys]]">
   </cr-link-row>
 </div>
