@@ -43,12 +43,10 @@ class MEDIA_EXPORT EsParserH264 : public EsParser {
 
   EsParserH264(NewVideoConfigCB new_video_config_cb,
                EmitBufferCB emit_buffer_cb);
-#if BUILDFLAG(ENABLE_HLS_SAMPLE_AES)
   EsParserH264(NewVideoConfigCB new_video_config_cb,
                EmitBufferCB emit_buffer_cb,
                EncryptionScheme init_encryption_scheme,
                const GetDecryptConfigCB& get_decrypt_config_cb);
-#endif
 
   EsParserH264(const EsParserH264&) = delete;
   EsParserH264& operator=(const EsParserH264&) = delete;
@@ -89,12 +87,10 @@ class MEDIA_EXPORT EsParserH264 : public EsParser {
   std::unique_ptr<H264Parser> h264_parser_;
   int64_t current_access_unit_pos_;
   int64_t next_access_unit_pos_;
-#if BUILDFLAG(ENABLE_HLS_SAMPLE_AES)
   const EncryptionScheme init_encryption_scheme_;
   // Callback to obtain the current decrypt_config.
   GetDecryptConfigCB get_decrypt_config_cb_;
   Ranges<int> protected_blocks_;
-#endif
 
   // Last video decoder config.
   VideoDecoderConfig last_video_decoder_config_;

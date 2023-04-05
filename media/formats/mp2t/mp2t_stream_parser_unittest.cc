@@ -11,12 +11,16 @@
 #include <memory>
 #include <string>
 
+#include <openssl/aes.h>
+#include <openssl/evp.h>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "crypto/openssl_util.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/encryption_pattern.h"
@@ -30,12 +34,6 @@
 #include "media/base/video_decoder_config.h"
 #include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(ENABLE_HLS_SAMPLE_AES)
-#include <openssl/aes.h>
-#include <openssl/evp.h>
-#include "crypto/openssl_util.h"
-#endif
 
 namespace media {
 namespace mp2t {
@@ -61,7 +59,6 @@ bool IsAlmostEqual(DecodeTimestamp t0, DecodeTimestamp t1) {
   return (diff >= -kMaxDeviation && diff <= kMaxDeviation);
 }
 
-#if BUILDFLAG(ENABLE_HLS_SAMPLE_AES)
 class ScopedCipherCTX {
  public:
   explicit ScopedCipherCTX() { EVP_CIPHER_CTX_init(&ctx_); }
@@ -154,7 +151,6 @@ std::string DecryptBuffer(const StreamParserBuffer& buffer,
   }
   return result;
 }
-#endif
 
 }  // namespace
 
@@ -359,12 +355,7 @@ class Mp2tStreamParserTest : public testing::Test {
   }
 
   void OnKeyNeeded(EmeInitDataType type,
-                   const std::vector<uint8_t>& init_data) {
-#if !BUILDFLAG(ENABLE_HLS_SAMPLE_AES)
-    LOG(ERROR) << "OnKeyNeeded not expected in the Mpeg2 TS parser";
-    EXPECT_TRUE(false);
-#endif
-  }
+                   const std::vector<uint8_t>& init_data) {}
 
   void OnNewSegment() {
     DVLOG(1) << "OnNewSegment";
@@ -520,7 +511,6 @@ TEST_F(Mp2tStreamParserTest, DisableAudioStream) {
   EXPECT_EQ(config_count_, 1);
 }
 
-#if BUILDFLAG(ENABLE_HLS_SAMPLE_AES)
 TEST_F(Mp2tStreamParserTest, HLSSampleAES) {
   std::vector<std::string> decrypted_video_buffers;
   std::vector<std::string> decrypted_audio_buffers;
@@ -583,8 +573,6 @@ TEST_F(Mp2tStreamParserTest, PrepareForHLSSampleAES) {
       current_audio_config_.encryption_scheme();
   EXPECT_NE(audio_encryption_scheme, EncryptionScheme::kUnencrypted);
 }
-
-#endif
 
 }  // namespace mp2t
 }  // namespace media

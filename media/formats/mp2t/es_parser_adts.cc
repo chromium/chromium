@@ -120,14 +120,10 @@ EsParserAdts::EsParserAdts(NewAudioConfigCB new_audio_config_cb,
                            bool sbr_in_mimetype)
     : new_audio_config_cb_(std::move(new_audio_config_cb)),
       emit_buffer_cb_(std::move(emit_buffer_cb)),
-#if BUILDFLAG(ENABLE_HLS_SAMPLE_AES)
       get_decrypt_config_cb_(),
       init_encryption_scheme_(EncryptionScheme::kUnencrypted),
-#endif
-      sbr_in_mimetype_(sbr_in_mimetype) {
-}
+      sbr_in_mimetype_(sbr_in_mimetype) {}
 
-#if BUILDFLAG(ENABLE_HLS_SAMPLE_AES)
 EsParserAdts::EsParserAdts(NewAudioConfigCB new_audio_config_cb,
                            EmitBufferCB emit_buffer_cb,
                            GetDecryptConfigCB get_decrypt_config_cb,
@@ -138,12 +134,9 @@ EsParserAdts::EsParserAdts(NewAudioConfigCB new_audio_config_cb,
       get_decrypt_config_cb_(std::move(get_decrypt_config_cb)),
       init_encryption_scheme_(init_encryption_scheme),
       sbr_in_mimetype_(sbr_in_mimetype) {}
-#endif
 
-EsParserAdts::~EsParserAdts() {
-}
+EsParserAdts::~EsParserAdts() = default;
 
-#if BUILDFLAG(ENABLE_HLS_SAMPLE_AES)
 void EsParserAdts::CalculateSubsamplesForAdtsFrame(
     const AdtsFrame& adts_frame,
     std::vector<SubsampleEntry>* subsamples) {
@@ -168,7 +161,6 @@ void EsParserAdts::CalculateSubsamplesForAdtsFrame(
     subsamples->push_back(subsample);
   }
 }
-#endif
 
 bool EsParserAdts::ParseFromEsQueue() {
   // Look for every ADTS frame in the ES buffer.
@@ -207,7 +199,6 @@ bool EsParserAdts::ParseFromEsQueue() {
     stream_parser_buffer->SetDecodeTimestamp(
         DecodeTimestamp::FromPresentationTime(current_pts));
     stream_parser_buffer->set_duration(frame_duration);
-#if BUILDFLAG(ENABLE_HLS_SAMPLE_AES)
     if (get_decrypt_config_cb_) {
       const DecryptConfig* base_decrypt_config = get_decrypt_config_cb_.Run();
       if (base_decrypt_config) {
@@ -220,7 +211,6 @@ bool EsParserAdts::ParseFromEsQueue() {
                 subsamples, EncryptionPattern()));
       }
     }
-#endif
     emit_buffer_cb_.Run(stream_parser_buffer);
 
     // Update the PTS of the next frame.
@@ -258,13 +248,9 @@ bool EsParserAdts::UpdateAudioConfiguration(const uint8_t* adts_header,
   const int extended_samples_per_second =
       sbr_in_mimetype_ ? std::min(2 * orig_sample_rate, 48000)
                        : orig_sample_rate;
-  EncryptionScheme scheme = EncryptionScheme::kUnencrypted;
-#if BUILDFLAG(ENABLE_HLS_SAMPLE_AES)
-  scheme = init_encryption_scheme_;
-#endif
   AudioDecoderConfig audio_decoder_config(
       AudioCodec::kAAC, kSampleFormatS16, channel_layout,
-      extended_samples_per_second, extra_data, scheme);
+      extended_samples_per_second, extra_data, init_encryption_scheme_);
 
   if (!audio_decoder_config.IsValidConfig()) {
     DVLOG(1) << "Invalid config: "

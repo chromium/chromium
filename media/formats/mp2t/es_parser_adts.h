@@ -34,13 +34,11 @@ class MEDIA_EXPORT EsParserAdts : public EsParser {
   EsParserAdts(NewAudioConfigCB new_audio_config_cb,
                EmitBufferCB emit_buffer_cb,
                bool sbr_in_mimetype);
-#if BUILDFLAG(ENABLE_HLS_SAMPLE_AES)
   EsParserAdts(NewAudioConfigCB new_audio_config_cb,
                EmitBufferCB emit_buffer_cb,
                GetDecryptConfigCB get_decrypt_config_cb,
                EncryptionScheme init_encryption_scheme,
                bool sbr_in_mimetype);
-#endif
 
   EsParserAdts(const EsParserAdts&) = delete;
   EsParserAdts& operator=(const EsParserAdts&) = delete;
@@ -72,21 +70,17 @@ class MEDIA_EXPORT EsParserAdts : public EsParser {
   // a supported ADTS audio config.
   bool UpdateAudioConfiguration(const uint8_t* adts_header, int size);
 
-#if BUILDFLAG(ENABLE_HLS_SAMPLE_AES)
   void CalculateSubsamplesForAdtsFrame(const AdtsFrame& adts_frame,
                                        std::vector<SubsampleEntry>* subsamples);
-#endif
 
   // Callbacks:
   // - to signal a new audio configuration,
   // - to send ES buffers.
   NewAudioConfigCB new_audio_config_cb_;
   EmitBufferCB emit_buffer_cb_;
-#if BUILDFLAG(ENABLE_HLS_SAMPLE_AES)
   // - to obtain the current decrypt_config.
   GetDecryptConfigCB get_decrypt_config_cb_;
   const EncryptionScheme init_encryption_scheme_;
-#endif
 
   // True when AAC SBR extension is signalled in the mimetype
   // (mp4a.40.5 in the codecs parameter).
