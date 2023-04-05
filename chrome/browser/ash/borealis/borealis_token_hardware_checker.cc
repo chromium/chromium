@@ -33,95 +33,91 @@ BorealisTokenHardwareChecker::BorealisTokenHardwareChecker(Data data)
 BorealisTokenHardwareChecker::~BorealisTokenHardwareChecker() = default;
 
 AllowStatus BorealisTokenHardwareChecker::Check() const {
-  // Tokens provide more fine-grained control over whether borealis can be run
-  // on a specific device. The different kinds of token are:
-  //  * "Super" token: Allows borealis on any device.
-  //  * "Test" token: Allows borealis on any device with sufficient hardware
-  //    (where *-borealis boards are always considered sufficient).
-  //  * /board token: Similar to the super token, but only works for a subset
-  //  of boards.
-  //
-  // All tokens will only function if borealis is already available on that
-  // board based on its use flags.
+  // Get the status from the board's perspective, based on some combination of
+  // tokens and hardware/model checks.
+  AllowStatus per_board_status = BoardSpecificChecks();
 
-  // The "super" token.
-  if (TokenHashMatches("i9n6HT3+3Bo:C1p^_qk!\\",
-                       "X1391g+2yiuBQrceA3gRGrT7+DQcaYGR/GkmFscyOfQ=")) {
-    LOG(WARNING) << "Super-token provided, bypassing hardware checks.";
+  // Early exit if we're allowed.
+  if (per_board_status == AllowStatus::kAllowed) {
     return AllowStatus::kAllowed;
   }
 
-  // The "test" token.
-  if (TokenHashMatches("MpOI9+d58she4,97rI",
-                       "Eec1m+UrIkLUu3L6mV+5zTYZId6HJ+vz+50MseJJaGw=")) {
-    LOG(WARNING) << "Test-token provided, bypassing hardware checks.";
+  if (HasNamedToken("super", "i9n6HT3+3Bo:C1p^_qk!\\",
+                    "X1391g+2yiuBQrceA3gRGrT7+DQcaYGR/GkmFscyOfQ=")) {
     return AllowStatus::kAllowed;
   }
 
-  // The board-specific tokens.
+  return per_board_status;
+}
+
+// Helper method that performs different checks based on the user's board.
+AllowStatus BorealisTokenHardwareChecker::BoardSpecificChecks() const {
   if (BoardIn({"hatch-borealis", "puff-borealis", "zork-borealis",
                "volteer-borealis", "aurora-borealis"})) {
-    if (TokenHashMatches("MXlY+SFZ!2,P_k^02]hK",
-                         "FbxB2mxNa/uqskX4X+NqHhAE6ebHeWC0u+Y+UlGEB/4=")) {
-      LOG(WARNING) << "Dogfooder token provided, bypassing hardware checks.";
+    if (HasNamedToken("dogfood", "MXlY+SFZ!2,P_k^02]hK",
+                      "FbxB2mxNa/uqskX4X+NqHhAE6ebHeWC0u+Y+UlGEB/4=")) {
       return AllowStatus::kAllowed;
     }
     return AllowStatus::kIncorrectToken;
   } else if (IsBoard("volteer")) {
-    if (TokenHashMatches("w/8GMLXyB.EOkFaP/-AA",
-                         "waiTIRjxZCFjFIRkuUVlnAbiDOMBSzyp3iSJl5x3YwA=")) {
-      LOG(WARNING) << "Vendor token provided, bypassing hardware checks.";
+    bool valid_model =
+        ModelIn({"delbin", "voxel", "volta", "lindar", "elemi", "volet",
+                 "drobit", "lillipup", "delbing", "eldrid", "chronicler"});
+    if (HasSufficientHardware(kBorealisCapableIntelCpuRegex) && valid_model) {
+      return AllowStatus::kAllowed;
+    } else if (HasNamedToken("volteer", "w/8GMLXyB.EOkFaP/-AA",
+                             "waiTIRjxZCFjFIRkuUVlnAbiDOMBSzyp3iSJl5x3YwA=")) {
       return AllowStatus::kAllowed;
     }
-    if (!ModelIn({"delbin", "voxel", "volta", "lindar", "elemi", "volet",
-                  "drobit", "lillipup", "delbing", "eldrid", "chronicler"})) {
-      return AllowStatus::kUnsupportedModel;
-    }
-    return ReleasedBoardChecks(kBorealisCapableIntelCpuRegex);
+    return valid_model ? AllowStatus::kHardwareChecksFailed
+                       : AllowStatus::kUnsupportedModel;
   } else if (BoardIn({"brya", "adlrvp", "brask"})) {
-    if (TokenHashMatches("tPl24iMxXNR,w$h6,g",
-                         "LWULWUcemqmo6Xvdu2LalOYOyo/V4/CkljTmAneXF+U=")) {
-      LOG(WARNING) << "Vendor token provided, bypassing hardware checks.";
+    if (HasSufficientHardware(kBorealisCapableIntelCpuRegex)) {
+      return AllowStatus::kAllowed;
+    } else if (HasNamedToken("brya", "tPl24iMxXNR,w$h6,g",
+                             "LWULWUcemqmo6Xvdu2LalOYOyo/V4/CkljTmAneXF+U=")) {
       return AllowStatus::kAllowed;
     }
-    return ReleasedBoardChecks(kBorealisCapableIntelCpuRegex);
+    return AllowStatus::kHardwareChecksFailed;
   } else if (BoardIn({"guybrush", "majolica"})) {
-    if (TokenHashMatches("^_GkTVWDP.FQo5KclS",
-                         "ftqv2wT3qeJKajioXqd+VrEW34CciMsigH3MGfMiMsU=")) {
-      LOG(WARNING) << "Vendor token provided, bypassing hardware checks.";
+    if (HasSufficientHardware("Ryzen [357]")) {
+      return AllowStatus::kAllowed;
+    } else if (HasNamedToken("guybrush-majolica", "^_GkTVWDP.FQo5KclS",
+                             "ftqv2wT3qeJKajioXqd+VrEW34CciMsigH3MGfMiMsU=")) {
       return AllowStatus::kAllowed;
     }
-    return ReleasedBoardChecks("Ryzen [357]");
+    return AllowStatus::kHardwareChecksFailed;
   } else if (IsBoard("draco")) {
     return AllowStatus::kAllowed;
   } else if (IsBoard("nissa")) {
-    if (TokenHashMatches("nissa/!wcers4vuP7+2a/X$C8",
-                         "24/U3nXWbTno/VJwp17HI+UDzWd77iXj5oDgavIZhoI=")) {
-      LOG(WARNING) << "Nissa vendor token provided, bypassing hardware checks.";
+    // TODO(b/274537000): unblock for non-developer users.
+    if (HasNamedToken("nissa", "nissa/!wcers4vuP7+2a/X$C8",
+                      "24/U3nXWbTno/VJwp17HI+UDzWd77iXj5oDgavIZhoI=")) {
       return AllowStatus::kAllowed;
     }
-    // TODO(b/274537000): unblock for non-developer users.
-    return AllowStatus::kIncorrectToken;
   } else if (IsBoard("skyrim")) {
-    if (TokenHashMatches("skyrim/!2-DxWY_cL/nXF1U+oV",
-                         "esBGhWX18eOMlNrqOS5oEcFfyy0MbNJ5VWz+92iVOwk=")) {
-      LOG(WARNING)
-          << "Skyrim vendor token provided, bypassing hardware checks.";
+    // TODO(b/274537000): unblock for non-developer users.
+    if (HasNamedToken("skyrim", "skyrim/!2-DxWY_cL/nXF1U+oV",
+                      "esBGhWX18eOMlNrqOS5oEcFfyy0MbNJ5VWz+92iVOwk=")) {
       return AllowStatus::kAllowed;
     }
-    // TODO(b/274537000): unblock for non-developer users.
-    return AllowStatus::kIncorrectToken;
   }
-  return AllowStatus::kIncorrectToken;
+  return AllowStatus::kUnsupportedModel;
 }
 
-AllowStatus BorealisTokenHardwareChecker::ReleasedBoardChecks(
+bool BorealisTokenHardwareChecker::HasSufficientHardware(
     const std::string& cpu_regex) const {
-  if (!HasMemory(7 * kGibi)) {
-    return AllowStatus::kHardwareChecksFailed;
+  return HasMemory(7 * kGibi) && CpuRegexMatches(cpu_regex);
+}
+
+bool BorealisTokenHardwareChecker::HasNamedToken(const char* name,
+                                                 const char* salt,
+                                                 const char* expected) const {
+  if (TokenHashMatches(salt, expected)) {
+    LOG(WARNING) << "Bypassing hardware checks with \"" << name << "\" token";
+    return true;
   }
-  return CpuRegexMatches(cpu_regex) ? AllowStatus::kAllowed
-                                    : AllowStatus::kHardwareChecksFailed;
+  return false;
 }
 
 }  // namespace borealis
