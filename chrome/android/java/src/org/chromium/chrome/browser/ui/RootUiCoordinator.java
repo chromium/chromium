@@ -1582,8 +1582,8 @@ public class RootUiCoordinator
      *         otherwise.
      */
     public void onSaveInstanceState(Bundle outState, boolean isRecreatingForTabletModeChange) {
-        FoldTransitionController.saveUiState(outState, getToolbarManager(), mActivityTabProvider,
-                isRecreatingForTabletModeChange);
+        FoldTransitionController.saveUiState(
+                outState, getToolbarManager(), isRecreatingForTabletModeChange);
     }
 
     /**
