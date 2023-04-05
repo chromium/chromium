@@ -195,7 +195,14 @@ class DesksClient::LaunchPerformanceTracker
   void MaybeRecordMetric() {
     if (tracked_window_ids_.empty()) {
       RecordTimeToLoadTemplateHistogram(time_launch_started_);
-      templates_client_->RemoveLaunchPerformanceTracker(template_id_);
+
+      // Remove this tracker. We do this async since this function may be called
+      // from DesksClient code that iterates over the map of trackers. See
+      // http://b/271156600 for more info.
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&DesksClient::RemoveLaunchPerformanceTracker,
+                         base::Unretained(templates_client_), template_id_));
     }
   }
 
@@ -763,7 +770,8 @@ void DesksClient::OnLaunchComplete(int32_t launch_id) {
   app_launch_handlers_.erase(launch_id);
 }
 
-void DesksClient::RemoveLaunchPerformanceTracker(base::GUID tracker_uuid) {
+void DesksClient::RemoveLaunchPerformanceTracker(
+    const base::GUID& tracker_uuid) {
   template_ids_to_launch_performance_trackers_.erase(tracker_uuid);
 }
 
