@@ -20,6 +20,7 @@
 <translation id="1103523840287552314">Traducir siempre del <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Cambiar a ventana abierta</translation>
 <translation id="1112015203684611006">Error al imprimir.</translation>
+<translation id="1118266931011974190">Después de <ph name="THRESHOLD" /> días</translation>
 <translation id="1125564390852150847">Crear nueva pestaña.</translation>
 <translation id="1126013303640354461">Los métodos de pago y las direcciones de Google Pay no se cifrarán. El historial de navegación de Chrome no se sincronizará.
 Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifrados. La frase de contraseña no se enviará a Google y Google tampoco la almacenará. Si la olvidas o quieres cambiar este ajuste, tendrás que restablecer la sincronización. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
@@ -177,6 +178,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2218443599109088993">Reducir</translation>
 <translation id="2230173723195178503">Página web cargada</translation>
 <translation id="2239626343334228536">Borrando datos de navegación...</translation>
+<translation id="22508856139286506">Advertencias cerradas (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Menú → Historial</translation>
 <translation id="2256933947031277845">Tu organización solo te permite iniciar sesión con determinadas cuentas.</translation>
 <translation id="225943865679747347">Código de error: <ph name="ERROR_CODE" /></translation>
@@ -204,7 +206,6 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 <translation id="2411749908844615428">{count,plural, =1{{count} dirección guardada disponible encima del teclado.}other{{count} direcciones guardadas disponibles encima del teclado.}}</translation>
 <translation id="2421004566762153674">Bloquear cookies de terceros</translation>
 <translation id="2421044535038393232">Seguir editando</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} contraseña vulnerada}other{{COUNT} contraseñas vulneradas}}</translation>
 <translation id="2434405374328098816">Ya has guardado una contraseña para <ph name="USERNAME" /> en <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Mostrar contraseña</translation>
 <translation id="2451654228769116489">Fijar pestaña</translation>
@@ -231,6 +232,7 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 <translation id="2626236249646841566">Comprueba tu conexión y prueba a iniciar sesión de nuevo.</translation>
 <translation id="2637313651144986786">Buscar en pestañas...</translation>
 <translation id="2647269890314209800">Cookies en uso</translation>
+<translation id="2648721026697078500">No mover nunca</translation>
 <translation id="2648803196158606475">Eliminar entradas leídas</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2664621323652615289">Detener</translation>
@@ -346,6 +348,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3305294846493618482">más</translation>
 <translation id="3311748811247479259">Desactivada</translation>
 <translation id="3324193307694657476">Dirección 2</translation>
+<translation id="3328459813621383194">Mover pestañas inactivas</translation>
 <translation id="3328801116991980348">Información del sitio</translation>
 <translation id="3371831930909698441">El Traductor está disponible. Opciones disponibles cerca de la parte inferior de la pantalla.</translation>
 <translation id="3377063233124932127">Ahora tus marcadores, contraseñas y otros elementos guardados se muestran en la parte superior.</translation>
@@ -510,6 +513,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="452750746583162491">Revisar los datos sincronizados</translation>
 <translation id="4536418791685807335">Prueba a iniciar sesión de nuevo.</translation>
 <translation id="4540780316273593836">Se ha producido un error</translation>
+<translation id="4550040941166547650">Solo en este dispositivo</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{¿Cerrar {COUNT} pestaña inactiva?}other{¿Cerrar {COUNT} pestañas inactivas?}}</translation>
 <translation id="457386861538956877">Más...</translation>
 <translation id="4587235830039045480">Guarda la contraseña en tu cuenta de Google</translation>
@@ -763,6 +767,7 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="6193424046394092997">{count,plural, =1{Marcador añadido a {title}}other{Marcadores añadidos a {title}}}</translation>
 <translation id="6196207969502475924">Búsqueda por voz</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Cerrar {COUNT} pestaña}other{Cerrar {COUNT} pestañas}}</translation>
+<translation id="6210079381482819663">Las pestañas que no se usen durante <ph name="THRESHOLD" /> días o más se moverán aquí. Puedes cambiar esta opción en cualquier momento desde la <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" />.</translation>
 <translation id="6213567400989743524">Advertencias cerradas</translation>
 <translation id="6219550825416862075">Hola de nuevo</translation>
 <translation id="6219688215832490856">No traducir nunca</translation>
@@ -918,7 +923,6 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Pestañas recientes</translation>
 <translation id="7006788746334555276">Configuración de contenido</translation>
-<translation id="7014087399239955356">Comprobando contraseñas...</translation>
 <translation id="7029809446516969842">Contraseñas</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7062545763355031412">Aceptar y cambiar de cuenta</translation>
@@ -1058,6 +1062,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8059533439631660104">Oculta la sección.</translation>
 <translation id="8065292699993359127">Abrir URLs en Chrome en incógnito</translation>
 <translation id="806745655614357130">Mantener mis datos separados</translation>
+<translation id="8069394452933076548">Elige cuándo se moverán las pestañas que no se han usado recientemente a la sección de pestañas inactivas.</translation>
 <translation id="8073670137947914548">Descarga finalizada</translation>
 <translation id="8073872304774253879">Mejorar las búsquedas y la navegación</translation>
 <translation id="8076492880354921740">Pestañas</translation>
@@ -1202,6 +1207,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="9055772144595778347">Error al iniciar sesión</translation>
 <translation id="9055960261314198756">La protección mejorada está desactivada</translation>
 <translation id="9057972802061533987">No se puede seguir. Algo ha fallado.</translation>
+<translation id="9061495354530850708">En tu cuenta de Google</translation>
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9068336935206019333">Abrir en modo Incógnito de Chrome</translation>
 <translation id="9079935439869366234">Marcar todo como no leído</translation>

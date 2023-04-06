@@ -20,6 +20,7 @@
 <translation id="1103523840287552314"><ph name="LANGUAGE" />નો હંમેશાં અનુવાદ કરો</translation>
 <translation id="110724200315609752">ખુલ્લી વિંડો પર સ્વિચ કરો</translation>
 <translation id="1112015203684611006">છાપવાનું નિષ્ફળ થયું.</translation>
+<translation id="1118266931011974190"><ph name="THRESHOLD" /> દિવસ પછી</translation>
 <translation id="1125564390852150847">નવું ટૅબ બનાવો.</translation>
 <translation id="1126013303640354461">Google Payમાંથી ચુકવણી પદ્ધતિઓ અને સરનામા એન્ક્રિપ્ટ કરવામાં આવશે નહીં. Chromeમાંથી બ્રાઉઝિંગ ઇતિહાસ સિંક થશે નહીં.
 તમારો પાસફ્રેઝ ધરાવતી વ્યક્તિ જ તમારો એન્ક્રિપ્ટેડ ડેટા વાંચી શકશે. Google દ્વારા પાસફ્રેઝ મોકલવામાં અથવા સ્ટોર કરવામાં આવતો નથી. જો તમે તમારો પાસફ્રેઝ ભૂલી જાઓ અથવા આ સેટિંગ બદલવા માગો, તો તમારે સિંક કરવાની પ્રક્રિયા રીસેટ કરવી જરૂરી રહેશે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
@@ -205,7 +206,6 @@
 <translation id="2411749908844615428">{count,plural, =1{તમારા કીબોર્ડ પર {count} સાચવેલું સરનામું ઉપલબ્ધ છે.}one{તમારા કીબોર્ડ પર {count} સાચવેલું સરનામું ઉપલબ્ધ છે.}other{તમારા કીબોર્ડ પર {count} સાચવેલા સરનામા ઉપલબ્ધ છે.}}</translation>
 <translation id="2421004566762153674">ત્રીજા પક્ષની કુકી બ્લૉક કરી રહ્યાં છીએ</translation>
 <translation id="2421044535038393232">ફેરફાર કરતા રહો</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{ચેડાં કરાયેલો {COUNT} પાસવર્ડ}one{ચેડાં કરાયેલો {COUNT} પાસવર્ડ}other{ચેડાં કરાયેલા {COUNT} પાસવર્ડ}}</translation>
 <translation id="2434405374328098816">તમે <ph name="WEBSITE" /> પર "<ph name="USERNAME" />" માટેનો પાસવર્ડ પહેલેથી સાચવ્યો છે</translation>
 <translation id="2435457462613246316">પાસવર્ડ બતાવો</translation>
 <translation id="2451654228769116489">ટૅબને પિન કરો</translation>
@@ -232,6 +232,7 @@
 <translation id="2626236249646841566">તમારું કનેક્શન ચેક કરો અને સાઇન ઇન કરવાનો ફરી પ્રયાસ કરો.</translation>
 <translation id="2637313651144986786">ટૅબ શોધો...</translation>
 <translation id="2647269890314209800">ઉપયોગમાંની કુકી</translation>
+<translation id="2648721026697078500">ક્યારેય ખસેડશો નહીં</translation>
 <translation id="2648803196158606475">વાંચેલું ડિલીટ કરો</translation>
 <translation id="2653659639078652383">સબમિટ કરો</translation>
 <translation id="2664621323652615289">રોકો</translation>
@@ -347,6 +348,7 @@
 <translation id="3305294846493618482">વધુ</translation>
 <translation id="3311748811247479259">બંધ</translation>
 <translation id="3324193307694657476">સરનામાં 2</translation>
+<translation id="3328459813621383194">નિષ્ક્રિય ટૅબ ખસેડો</translation>
 <translation id="3328801116991980348">સાઇટ માહિતી</translation>
 <translation id="3371831930909698441">અનુવાદ ઉપલબ્ધ છે. વિકલ્પો સ્ક્રીનની નીચેની બાજુએ ઉપલબ્ધ રહે છે.</translation>
 <translation id="3377063233124932127">હવે તમારા બુકમાર્ક, પાસવર્ડ અને બીજું ઘણું સૌથી ઉપર રહે છે.</translation>
@@ -510,6 +512,7 @@
 <translation id="452750746583162491">તમારા સિંક કરેલા ડેટાનો રિવ્યૂ કરો</translation>
 <translation id="4536418791685807335">ફરીથી સાઇન ઇન કરવાનો પ્રયાસ કરો.</translation>
 <translation id="4540780316273593836">કંઈક ખોટું થયું હતું</translation>
+<translation id="4550040941166547650">માત્ર આ જ ડિવાઇસ પર</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{{COUNT} નિષ્ક્રિય ટૅબ બંધ કરીએ?}one{{COUNT} નિષ્ક્રિય ટૅબ બંધ કરીએ?}other{{COUNT} નિષ્ક્રિય ટૅબ બંધ કરીએ?}}</translation>
 <translation id="457386861538956877">વધુ...</translation>
 <translation id="4587235830039045480">તમારા Google એકાઉન્ટમાં પાસવર્ડ સાચવો</translation>
@@ -763,6 +766,7 @@
 <translation id="6193424046394092997">{count,plural, =1{{title} પર બુકમાર્ક કર્યું}one{{title} પર બુકમાર્ક કર્યું}other{{title} પર બુકમાર્ક કર્યા}}</translation>
 <translation id="6196207969502475924">વૉઇસ શોધ</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} ટૅબ બંધ કરો}one{{COUNT} ટૅબ બંધ કરો}other{{COUNT} ટૅબ બંધ કરો}}</translation>
+<translation id="6210079381482819663"><ph name="THRESHOLD" /> દિવસ કે તેથી વધારે સમય સુધી ઉપયોગ કરવામાં આવ્યો ન હોય એવા ટૅબને અહીં ખસેડવામાં આવશે. તમે <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />માં જઈને આને કોઈપણ સમયે બદલી શકો છો.</translation>
 <translation id="6213567400989743524">છોડી દીધેલી ચેતવણીઓ</translation>
 <translation id="6219550825416862075">આપનું ફરી સ્વાગત છે</translation>
 <translation id="6219688215832490856">ક્યારેય અનુવાદ કરશો નહીં</translation>
@@ -918,7 +922,6 @@
 <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">તાજેતરના ટૅબ્સ</translation>
 <translation id="7006788746334555276">કન્ટેન્ટ સેટિંગ</translation>
-<translation id="7014087399239955356">પાસવર્ડ ચેક કરી રહ્યાં છીએ…</translation>
 <translation id="7029809446516969842">પાસવર્ડ</translation>
 <translation id="7053983685419859001">અવરોધિત કરો</translation>
 <translation id="7062545763355031412">સ્વીકારો અને એકાઉન્ટ્સ સ્વિચ કરો</translation>
@@ -1058,6 +1061,7 @@
 <translation id="8059533439631660104">વિભાગને સંકુચિત કરે છે.</translation>
 <translation id="8065292699993359127">છૂપા મોડમાં Chromeમાં URLs ખોલો</translation>
 <translation id="806745655614357130">મારા ડેટાને અલગ રાખો</translation>
+<translation id="8069394452933076548">તાજેતરમાં જે ટૅબનો ઉપયોગ કરવામાં આવ્યો ન હોય, તેમને નિષ્ક્રિય ટૅબના વિભાગમાં ક્યારે ખસેડવામાં આવે તે પસંદ કરો.</translation>
 <translation id="8073670137947914548">ડાઉનલોડ સમાપ્ત</translation>
 <translation id="8073872304774253879">શોધ અને બ્રાઉઝિંગ વધુ સારું બનાવો</translation>
 <translation id="8076492880354921740">ટૅબ્સ</translation>
@@ -1202,6 +1206,7 @@
 <translation id="9055772144595778347">સાઇન ઇન કરી શકાતું નથી</translation>
 <translation id="9055960261314198756">વધારેલું સંરક્ષણ બંધ છે</translation>
 <translation id="9057972802061533987">ફૉલો કરી શકતા નથી. કંઈક ખોટું થયું.</translation>
+<translation id="9061495354530850708">તમારા Google એકાઉન્ટમાં</translation>
 <translation id="9065203028668620118">ફેરફાર કરો</translation>
 <translation id="9068336935206019333">Chromeના છૂપા મોડમાં ખોલો</translation>
 <translation id="9079935439869366234">તમામને વાંચ્યા વગરની તરીકે ચિહ્નિત કરો</translation>

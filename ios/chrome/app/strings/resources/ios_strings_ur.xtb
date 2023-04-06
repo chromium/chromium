@@ -20,6 +20,7 @@
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> کو ہمیشہ ترجمہ کریں</translation>
 <translation id="110724200315609752">کھلی ہوئی ونڈو پر سوئچ کریں</translation>
 <translation id="1112015203684611006">پرنٹنگ ناکام۔</translation>
+<translation id="1118266931011974190"><ph name="THRESHOLD" /> دن کے بعد</translation>
 <translation id="1125564390852150847">نیا ٹیب بنائیں۔</translation>
 <translation id="1126013303640354461">‏Google Pay سے ادائیگی کے طریقے اور پتے مرموز نہیں ہوں گے۔ Chrome سے براؤزنگ کی سرگزشت مطابقت پذیر نہیں ہوگی۔
 صرف وہ شخص جس کے پاس آپ کی پاس فریز ہے آپ کے مرموز کردہ ڈیٹا کو پڑھ سکتا ہے۔ پاس فریز Google کو نہیں بھیجا جاتا یا اس کے ذریعے اسٹور نہیں کیا جاتا ہے۔ اگر آپ اپنا پاس فریز بھول جاتے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو آپ کو مطابقت پذیری دوبارہ ترتیب دینے کی ضرورت ہوگی۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
@@ -205,7 +206,6 @@
 <translation id="2411749908844615428">{count,plural, =1{آپ کے کی بورڈ کے اوپر {count} محفوظ کردہ پتہ دستیاب ہے۔}other{آپ کے کی بورڈ کے اوپر {count} محفوظ کردہ پتے دستیاب ہیں۔}}</translation>
 <translation id="2421004566762153674">فریق ثالث کوکیز کو مسدود کیا جا رہا ہے</translation>
 <translation id="2421044535038393232">ترمیم جاری رکھیں</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} متاثرہ پاس ورڈ}other{{COUNT} متاثرہ پاس ورڈز}}</translation>
 <translation id="2434405374328098816">آپ نے <ph name="WEBSITE" /> پر "<ph name="USERNAME" />" کے لیے پہلے ہی پاس ورڈ محفوظ کر لیا ہے</translation>
 <translation id="2435457462613246316">پاس ورڈ دکھائیں</translation>
 <translation id="2451654228769116489">ٹیب کو پن کریں</translation>
@@ -232,6 +232,7 @@
 <translation id="2626236249646841566">اپنا کنکشن چیک کریں اور دوبارہ سائن ان کرنے کی کوشش کریں۔</translation>
 <translation id="2637313651144986786">ٹیبز تلاش کریں...</translation>
 <translation id="2647269890314209800">زیر استعمال کوکیز</translation>
+<translation id="2648721026697078500">کبھی منتقل نہ کریں</translation>
 <translation id="2648803196158606475">پڑھے ہوئے کو حذف کریں</translation>
 <translation id="2653659639078652383">جمع کرائیں</translation>
 <translation id="2664621323652615289">روکیں</translation>
@@ -347,6 +348,7 @@
 <translation id="3305294846493618482">مزید</translation>
 <translation id="3311748811247479259">آف</translation>
 <translation id="3324193307694657476">پتہ 2</translation>
+<translation id="3328459813621383194">غیر فعال ٹیبز کو منتقل کریں</translation>
 <translation id="3328801116991980348">سائٹ کی معلومات</translation>
 <translation id="3371831930909698441">ترجمہ دستیاب ہے۔ اسکرین کے نچلے حصہ کے قریب اختیارات دستیاب ہیں۔</translation>
 <translation id="3377063233124932127">اب آپ کے محفوظ کردہ بک مارکس، پاس ورڈز اور بہت کچھ سب سے اوپر ہیں۔</translation>
@@ -511,6 +513,7 @@
 <translation id="452750746583162491">اپنے مطابقت پذیر ڈیٹا کا جائزہ لیں</translation>
 <translation id="4536418791685807335">دوبارہ سائن ان کرنے کی کوشش کریں۔</translation>
 <translation id="4540780316273593836">کچھ غلط ہو گیا</translation>
+<translation id="4550040941166547650">صرف اس آلہ پر</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{{COUNT} غیر فعال ٹیب بند کریں؟}other{{COUNT} غیر فعال ٹیبز بند کریں؟}}</translation>
 <translation id="457386861538956877">مزید…</translation>
 <translation id="4587235830039045480">‏اپنے Google اکاؤنٹ میں پاس ورڈ محفوظ کریں</translation>
@@ -764,6 +767,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6193424046394092997">{count,plural, =1{{title} میں بُک مارک ہو گیا}other{{title} میں بُک مارک ہو گیا}}</translation>
 <translation id="6196207969502475924">صوتی تلاش</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} ٹیب بند کریں}other{{COUNT} ٹیبز بند کریں}}</translation>
+<translation id="6210079381482819663"><ph name="THRESHOLD" /> دن یا اس سے زیادہ استعمال نہ ہونے والے ٹیبز کو یہاں منتقل کر دیا جاتا ہے۔ آپ اسے <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> میں کسی بھی وقت تبدیل کر سکتے ہیں۔</translation>
 <translation id="6213567400989743524">برخاست کردہ وارننگز</translation>
 <translation id="6219550825416862075">واپسی پر خوش آمدید</translation>
 <translation id="6219688215832490856">کبھی بھی ترجمہ نہ کریں</translation>
@@ -919,7 +923,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">حالیہ ٹیبز</translation>
 <translation id="7006788746334555276">مواد کی ترتیبات</translation>
-<translation id="7014087399239955356">پاس ورڈز چیک ہو رہے ہیں…</translation>
 <translation id="7029809446516969842">پاس ورڈز</translation>
 <translation id="7053983685419859001">مسدود کریں</translation>
 <translation id="7062545763355031412">قبول کریں اور اکاؤنٹس سوئچ کریں</translation>
@@ -1059,6 +1062,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8059533439631660104">سیکشن کو سکیڑیں۔</translation>
 <translation id="8065292699993359127">‏URLs کو Chrome میں پوشیدگی میں کھولیں</translation>
 <translation id="806745655614357130">میرا ڈیٹا علیحدہ رکھیں</translation>
+<translation id="8069394452933076548">منتخب کریں کہ وہ ٹیبز جو حال ہی میں استعمال نہیں ہوئے ہیں انہیں غیر فعال ٹیب سیکشن میں کب منتقل کیا جائے۔</translation>
 <translation id="8073670137947914548">ڈاؤن لوڈ کا عمل مکمل ہو گیا</translation>
 <translation id="8073872304774253879">تلاشوں اور براؤزنگ کو بہتر بنائیں</translation>
 <translation id="8076492880354921740">ٹیبز</translation>
@@ -1203,6 +1207,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="9055772144595778347">سائن ان نہیں کر سکتے ہیں</translation>
 <translation id="9055960261314198756">بہتر کردہ حفاظت آف ہے</translation>
 <translation id="9057972802061533987">پیروی نہیں کر سکتے۔ کچھ غلط ہوگیا۔</translation>
+<translation id="9061495354530850708">‏آپ کے Google اکاؤنٹ میں</translation>
 <translation id="9065203028668620118">تبدیل کریں</translation>
 <translation id="9068336935206019333">‏Chrome پوشیدگی میں کھولیں</translation>
 <translation id="9079935439869366234">سبھی کو نہ پڑھا ہوا کے بطور نشان کریں</translation>

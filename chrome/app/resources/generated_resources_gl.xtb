@@ -1327,7 +1327,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2114820389966440614">Mostrar aquí Destacadas recentes e outras lembranzas</translation>
 <translation id="2114896190328250491">Foto de <ph name="NAME" /></translation>
 <translation id="2114995631896158695">Non se inseriu ningunha tarxeta SIM</translation>
-<translation id="2116020356255810305">Activar a opción de abrir a aplicación ao iniciar</translation>
 <translation id="2116619964159595185">Os sitios adoitan conectarse a dispositivos Bluetooth para ofrecerche determinadas funcións (por exemplo, configurar ou sincronizar unha baliza de baixo consumo, un dispositivo de seguimento da saúde ou da forma física, ou unha lámpada de luz intelixente)</translation>
 <translation id="2117655453726830283">Seguinte diapositiva</translation>
 <translation id="2119349053129246860">Abrir na aplicación <ph name="APP" /></translation>
@@ -3256,7 +3255,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="380329542618494757">Nome</translation>
 <translation id="3803345858388753269">Calidade do vídeo</translation>
 <translation id="3803367742635802571">É posible que os sitios que visites deixen de funcionar segundo o previsto</translation>
-<translation id="3803583375545057606">Queres pedirlle ao teu pai ou nai permiso para activar esta extensión?</translation>
 <translation id="380408572480438692">Activar a recompilación de datos de rendemento axudará a Google a mellorar o sistema co tempo. Non se enviarán datos ata que presentes un informe de comentarios (Alt-Maiús-I) e inclúas datos sobre o rendemento. Podes volver a esta pantalla para desactivar a recompilación cando queiras.</translation>
 <translation id="3807249107536149332">Non se permite o uso de <ph name="EXTENSION_NAME" /> (ID da extensión "<ph name="EXTENSION_ID" />") nunha pantalla de inicio de sesión.</translation>
 <translation id="3807747707162121253">&amp;Cancelar</translation>
@@ -3678,7 +3676,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4169535189173047238">Non permitir</translation>
 <translation id="4170314459383239649">Borrar as cookies ao saír</translation>
 <translation id="417096670996204801">Seleccionar un perfil</translation>
-<translation id="41725145403849567">Queres pedirlle ao teu pai ou nai permiso para engadir esta extensión?</translation>
 <translation id="4175137578744761569">Púrpura claro e branco</translation>
 <translation id="4175737294868205930">Almacenamento persistente</translation>
 <translation id="4176463684765177261">Desactivado</translation>
@@ -5091,7 +5088,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{O PIN debe ter como mínimo 1 carácter}other{O PIN debe ter como mínimo # caracteres}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> require que te conectes agora á wifi e descargues unha actualización. Tamén podes descargala desde unha conexión de pago por consumo (pódense aplicar cargos).</translation>
 <translation id="5476016146231427848">Reinicia o dispositivo para usar Steam no Chromebook</translation>
-<translation id="5476897066181964657">Para poderes engadir esta extensión, ten que darche permiso o teu pai, nai, titor ou titora</translation>
 <translation id="5481273127572794904">Sitios que non poden descargar automaticamente varios ficheiros</translation>
 <translation id="5481941284378890518">Engadir impresoras que estean cerca</translation>
 <translation id="5483785310822538350">Revogar acceso a ficheiros e dispositivos</translation>
@@ -5188,7 +5184,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5555639311269196631">Desactivar zona wifi</translation>
 <translation id="5556459405103347317">Volver cargar</translation>
 <translation id="5558129378926964177">Achegar</translation>
-<translation id="5558247502209241936">Activar a opción de abrir a aplicación nunha ventá</translation>
 <translation id="5559311991468302423">Eliminar o enderezo</translation>
 <translation id="55601339223879446">Axustar os límites do escritorio dentro da pantalla</translation>
 <translation id="5561162485081632007">Móstrache unha advertencia cando detecta eventos perigosos</translation>
@@ -6011,7 +6006,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6305607932814307878">Política global:</translation>
 <translation id="6305702903308659374">Manter o volume de reprodución aínda que ChromeVox estea falando</translation>
 <translation id="6305909198255586420">Realiza a instalación co perfil principal</translation>
-<translation id="630750887748244481">O teu pai ou nai desactivou esta opción en Chrome: Permisos para sitios, aplicacións e extensións. Non se permite engadir esta extensión.</translation>
 <translation id="6307990684951724544">Sistema ocupado</translation>
 <translation id="6308493641021088955">Inicio de sesión fornecido por <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Gardar liga&amp;zón como...</translation>
@@ -6837,7 +6831,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7025190659207909717">Xestión de servizos de datos móbiles</translation>
 <translation id="7025895441903756761">Seguranza e privacidade</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Abrir todos nunha ventá de &amp;incógnito}=1{Abrir nunha ventá de &amp;incógnito}other{Abrir todos ({COUNT}) nunha ventá de &amp;incógnito}}</translation>
-<translation id="7028057921476386252">Para poderes activar esta extensión, ten que darche permiso o teu pai, nai, titor ou titora</translation>
 <translation id="7029307918966275733">Crostini non está instalado. Instálao para ver os créditos.</translation>
 <translation id="7029809446516969842">Contrasinais</translation>
 <translation id="7030304022046916278">Envía enderezos URL á función Navegación segura para comprobalos</translation>
@@ -8215,7 +8208,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8251509999076836464">Vinculándose a <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">Miniatura eliminada.</translation>
 <translation id="825238165904109940">Mostrar sempre URL completos</translation>
-<translation id="8252538334423261825">Non se pode engadir a extensión</translation>
 <translation id="8252569384384439529">Cargando…</translation>
 <translation id="8253198102038551905">Facer clic en "+" para obter as propiedades da rede</translation>
 <translation id="8255212965098517578">Aplicacións, notificacións e fotos recentes</translation>

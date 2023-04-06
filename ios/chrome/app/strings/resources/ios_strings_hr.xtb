@@ -178,6 +178,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="2218443599109088993">Smanji</translation>
 <translation id="2230173723195178503">Web-stranica učitana</translation>
 <translation id="2239626343334228536">Brisanje podataka o pregledavanju...</translation>
+<translation id="22508856139286506">Odbačena upozorenja (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Izbornik → Povijest</translation>
 <translation id="2256933947031277845">Vaša organizacija dopušta da se prijavite samo putem određenih računa.</translation>
 <translation id="225943865679747347">Kôd pogreške: <ph name="ERROR_CODE" /></translation>
@@ -205,7 +206,6 @@ Web-lokacije ne mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregled
 <translation id="2411749908844615428">{count,plural, =1{Iznad tipkovnice dostupna je {count} spremljena adresa.}one{Iznad tipkovnice dostupna je {count} spremljena adresa.}few{Iznad tipkovnice dostupne su {count} spremljene adrese.}other{Iznad tipkovnice dostupno je {count} spremljenih adresa.}}</translation>
 <translation id="2421004566762153674">Blokiranje kolačića trećih strana</translation>
 <translation id="2421044535038393232">Nastavi uređivati</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} ugrožena zaporka}one{{COUNT} ugrožena zaporka}few{{COUNT} ugrožene zaporke}other{{COUNT} ugroženih zaporki}}</translation>
 <translation id="2434405374328098816">Već ste spremili zaporku za korisničko ime <ph name="USERNAME" /> na web-lokaciji <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Pokaži zaporku</translation>
 <translation id="2451654228769116489">Prikvači karticu</translation>
@@ -923,7 +923,6 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Nedavne kartice</translation>
 <translation id="7006788746334555276">Postavke sadržaja</translation>
-<translation id="7014087399239955356">Provjera zaporki…</translation>
 <translation id="7029809446516969842">Zaporke</translation>
 <translation id="7053983685419859001">Blokiraj</translation>
 <translation id="7062545763355031412">Prihvati i promijeni račun</translation>

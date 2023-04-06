@@ -206,7 +206,6 @@
 <translation id="2411749908844615428">{count,plural, =1{键盘上方显示了 {count} 个已保存的地址。}other{键盘上方显示了 {count} 个已保存的地址。}}</translation>
 <translation id="2421004566762153674">阻止第三方 Cookie</translation>
 <translation id="2421044535038393232">继续修改</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{有 {COUNT} 个已泄露的密码}other{有 {COUNT} 个已泄露的密码}}</translation>
 <translation id="2434405374328098816">您已经在 <ph name="WEBSITE" /> 上保存了“<ph name="USERNAME" />”的密码</translation>
 <translation id="2435457462613246316">显示密码</translation>
 <translation id="2451654228769116489">固定标签页</translation>
@@ -924,7 +923,6 @@
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">最近打开的标签页</translation>
 <translation id="7006788746334555276">内容设置</translation>
-<translation id="7014087399239955356">正在检查密码…</translation>
 <translation id="7029809446516969842">密码</translation>
 <translation id="7053983685419859001">禁止</translation>
 <translation id="7062545763355031412">接受并切换帐号</translation>

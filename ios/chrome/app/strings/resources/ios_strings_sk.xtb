@@ -206,7 +206,6 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="2411749908844615428">{count,plural, =1{Nad klávesnicou je k dispozícii {count} uložená adresa.}few{Nad klávesnicou sú k dispozícii {count} uložené adresy.}many{{count} saved addresses available above your keyboard.}other{Nad klávesnicou je k dispozícii {count} uložených adries.}}</translation>
 <translation id="2421004566762153674">Blokovanie súborov cookie tretích strán</translation>
 <translation id="2421044535038393232">Ďalej upravovať</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} odhalené heslo}few{{COUNT} odhalené heslá}many{{COUNT} Compromised Passwords}other{{COUNT} odhalených hesiel}}</translation>
 <translation id="2434405374328098816">Heslo pre používateľské meno <ph name="USERNAME" /> ste už uložili na <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Zobraziť heslo</translation>
 <translation id="2451654228769116489">Pripnúť kartu</translation>
@@ -924,7 +923,6 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Nedávne karty</translation>
 <translation id="7006788746334555276">Nastavenia obsahu</translation>
-<translation id="7014087399239955356">Kontrolujú sa heslá…</translation>
 <translation id="7029809446516969842">Heslá</translation>
 <translation id="7053983685419859001">Blokovať</translation>
 <translation id="7062545763355031412">Prijať a prepnúť účty</translation>

@@ -206,7 +206,6 @@
 <translation id="2411749908844615428">{count,plural, =1{சேமிக்கப்பட்ட {count} முகவரி உங்கள் கீபோர்டுக்கு மேலே காட்டப்படும்.}other{சேமிக்கப்பட்ட {count} முகவரிகள் உங்கள் கீபோர்டுக்கு மேலே காட்டப்படும்.}}</translation>
 <translation id="2421004566762153674">மூன்றாம் தரப்புக் குக்கீகளைத் தடுக்கிறது</translation>
 <translation id="2421044535038393232">தொடர்ந்து திருத்து</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} களவாடப்பட்ட கடவுச்சொல்}other{{COUNT} களவாடப்பட்ட கடவுச்சொற்கள்}}</translation>
 <translation id="2434405374328098816"><ph name="WEBSITE" /> இணையதளத்தில் "<ph name="USERNAME" />" கணக்கிற்கான கடவுச்சொல்லை ஏற்கெனவே சேமித்துள்ளீர்கள்</translation>
 <translation id="2435457462613246316">கடவுச்சொல்லைக் காண்பி</translation>
 <translation id="2451654228769116489">உலாவிப் பக்கத்தைப் பின் செய்</translation>
@@ -924,7 +923,6 @@
 <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">சமீபத்திய தாவல்கள்</translation>
 <translation id="7006788746334555276">உள்ளடக்க அமைப்புகள்</translation>
-<translation id="7014087399239955356">கடவுச்சொற்களைச் சரிபார்க்கிறது...</translation>
 <translation id="7029809446516969842">கடவுச்சொற்கள்</translation>
 <translation id="7053983685419859001">தடு</translation>
 <translation id="7062545763355031412">சரி, கணக்குகளை மாற்று</translation>

@@ -206,7 +206,6 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="2411749908844615428">{count,plural, =1{{count} vistað heimilisfang tiltækt ofan við lyklaborðið.}one{{count} vistað heimilisfang tiltækt ofan við lyklaborðið.}other{{count} vistuð heimilisföng tiltæk ofan við lyklaborðið.}}</translation>
 <translation id="2421004566762153674">Lokað á fótspor frá þriðju aðilum</translation>
 <translation id="2421044535038393232">Halda áfram að breyta</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} aðgangsorð í hættu}one{{COUNT} aðgangsorð í hættu}other{{COUNT} aðgangsorð í hættu}}</translation>
 <translation id="2434405374328098816">Þú hefur þegar vistað aðgangsorð fyrir „<ph name="USERNAME" />“ á <ph name="WEBSITE" />.</translation>
 <translation id="2435457462613246316">Sýna aðgangsorð</translation>
 <translation id="2451654228769116489">Festa flipa</translation>
@@ -924,7 +923,6 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Nýlegir flipar</translation>
 <translation id="7006788746334555276">Efnisstillingar</translation>
-<translation id="7014087399239955356">Athugar aðgangsorð…</translation>
 <translation id="7029809446516969842">Aðgangsorð</translation>
 <translation id="7053983685419859001">Setja á bannlista</translation>
 <translation id="7062545763355031412">Samþykkja og skipta um reikning</translation>

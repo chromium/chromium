@@ -206,7 +206,6 @@
 <translation id="2411749908844615428">{count,plural, =1{సేవ్ చేసిన {count} అడ్రస్ మీ కీబోర్డ్ పైన అందుబాటులో ఉంది.}other{సేవ్ చేసిన {count} అడ్రస్‌లు మీ కీబోర్డ్ పైన అందుబాటులో ఉన్నాయి.}}</translation>
 <translation id="2421004566762153674">థర్డ్-పార్టీ కుక్కీలను బ్లాక్ చేయడం</translation>
 <translation id="2421044535038393232">ఎడిట్‌ను కొనసాగించండి</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} చోరీకి గురైన పాస్‌వర్డ్}other{{COUNT} చోరీకి గురైన పాస్‌వర్డ్‌లు}}</translation>
 <translation id="2434405374328098816">మీరు "<ph name="USERNAME" />" కోసం పాస్‌వర్డ్‌ను <ph name="WEBSITE" />లో ఇప్పటికే సేవ్ చేశారు</translation>
 <translation id="2435457462613246316">పాస్‌వర్డ్‌ను చూపించు</translation>
 <translation id="2451654228769116489">ట్యాబ్‌ను పిన్ చేయండి</translation>
@@ -924,7 +923,6 @@
 <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">ఇటీవలి ట్యాబ్‌లు</translation>
 <translation id="7006788746334555276">కంటెంట్ సెట్టింగ్‌లు</translation>
-<translation id="7014087399239955356">పాస్‌వర్డ్‌లను చెక్ చేస్తోంది...</translation>
 <translation id="7029809446516969842">పాస్‌వర్డ్‌లు</translation>
 <translation id="7053983685419859001">నిరోధించు</translation>
 <translation id="7062545763355031412">అంగీకరిస్తున్నాను, ఖాతాలను మార్చు</translation>

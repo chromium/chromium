@@ -178,6 +178,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="2218443599109088993">Txikitu</translation>
 <translation id="2230173723195178503">Kargatu da webgunea</translation>
 <translation id="2239626343334228536">Arakatze-datuak garbitzen…</translation>
+<translation id="22508856139286506">Baztertutako abisuak (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Menua → Historia</translation>
 <translation id="2256933947031277845">Erakundeak kontu jakin batzuekin soilik uzten du saioa hasten.</translation>
 <translation id="225943865679747347">Errore-kodea: <ph name="ERROR_CODE" /></translation>
@@ -205,7 +206,6 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="2411749908844615428">{count,plural, =1{Gordetako helbide {count} dago erabilgarri teklatuaren gainean.}other{Gordetako {count} helbide daude erabilgarri teklatuaren gainean.}}</translation>
 <translation id="2421004566762153674">Hirugarrenen cookieak blokeatzea</translation>
 <translation id="2421044535038393232">Jarraitu editatzen</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} pasahitz dago arriskuan}other{{COUNT} pasahitz daude arriskuan}}</translation>
 <translation id="2434405374328098816">Gordeta daukazu jada "<ph name="USERNAME" />" erabiltzaile-izenari eta <ph name="WEBSITE" /> webguneari dagokien pasahitza</translation>
 <translation id="2435457462613246316">Erakutsi pasahitza</translation>
 <translation id="2451654228769116489">Ainguratu fitxa</translation>
@@ -923,7 +923,6 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Azken fitxak</translation>
 <translation id="7006788746334555276">Edukiaren ezarpenak</translation>
-<translation id="7014087399239955356">Pasahitzak egiaztatzen…</translation>
 <translation id="7029809446516969842">Pasahitzak</translation>
 <translation id="7053983685419859001">Blokeatu</translation>
 <translation id="7062545763355031412">Onartu eta aldatu kontua</translation>

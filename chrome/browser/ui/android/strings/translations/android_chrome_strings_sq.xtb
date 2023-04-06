@@ -455,6 +455,7 @@ Kodet e gjendjes private përmirësojnë privatësinë në ueb dhe nuk mund të 
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /> mbi përmbajtjen e sugjeruar</translation>
 <translation id="3495219333887281978">Fleta e poshtme e identifikimit u hap në gjysmë lartësi.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="350276055892098337">Rendit nga më i vjetri</translation>
 <translation id="3507132249039706973">"Mbrojtja standarde" është aktive</translation>
 <translation id="3509330069915219067">Jashtë linje. Chrome nuk mund të kontrollojë për përditësime</translation>
 <translation id="3513704683820682405">Realiteti i zgjeruar</translation>
@@ -575,6 +576,7 @@ Kodet e gjendjes private përmirësojnë privatësinë në ueb dhe nuk mund të 
 <translation id="4177222230309051052">Merr të gjithë faqeshënuesit e tu</translation>
 <translation id="4177501066905053472">Temat e reklamave</translation>
 <translation id="4181841719683918333">Gjuhët</translation>
+<translation id="4188221736490993796">Rendit nga Zh-ja në A</translation>
 <translation id="4195643157523330669">Hape në një skedë të re</translation>
 <translation id="4196597275619698563">Krijo kartën</translation>
 <translation id="4198423547019359126">Nuk ka vendndodhje shkarkimi</translation>
@@ -640,6 +642,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4565377596337484307">Fshih fjalëkalimin</translation>
 <translation id="4572422548854449519">Identifikohu në llogarinë e menaxhuar</translation>
 <translation id="4576892426230499203">Provo një opsion tjetër verifikimi</translation>
+<translation id="4577115723294378384">Rendit nga A-ja në Zh</translation>
 <translation id="4578289292431526768">Fillojmë</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minutë më parë}other{# minuta më parë}}</translation>
 <translation id="4587589328781138893">Sajtet</translation>
@@ -663,6 +666,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4689792375321623175">Kërko për imazhin me Google <ph name="BEGIN_NEW" />E re<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 dhe <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> tjetër}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 dhe <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> të tjera}}</translation>
 <translation id="4699172675775169585">Imazhet dhe skedarët në memorien specifike</translation>
+<translation id="4710167854527459075">Rendit nga më i riu</translation>
 <translation id="4719927025381752090">Ofro që t'i përkthesh</translation>
 <translation id="4720023427747327413">Hape në <ph name="PRODUCT_NAME" /></translation>
 <translation id="47217992755561375">Shiko sajtet e tua kryesore</translation>
@@ -832,6 +836,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5561162485081632007">Zbulon dhe të paralajmëron rreth ngjarjeve të rrezikshme kur ato ndodhin</translation>
 <translation id="5561549206367097665">Në pritje të rrjetit…</translation>
 <translation id="5568069709869097550">Nuk mund të identifkohet</translation>
+<translation id="557018954714092179">Krijo dosje të re</translation>
 <translation id="5578795271662203820">Kërko në <ph name="SEARCH_ENGINE" /> për këtë imazh</translation>
 <translation id="5581519193887989363">Mund të zgjedhësh gjithmonë se çfarë do të sinkronizosh te <ph name="BEGIN_LINK1" />cilësimet<ph name="END_LINK1" />.</translation>
 <translation id="5590372121997663538">Kujtoje këtë kompjuter</translation>
@@ -936,6 +941,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="6138832295072039549">Ndrysho këtu cilësimet e sajtit tënd</translation>
 <translation id="6140709049082532940">Mbrojtja e përmirësuar:</translation>
 <translation id="6140912465461743537">Shteti/rajoni</translation>
+<translation id="6148266338772765473">Përjashto lidhjen</translation>
 <translation id="6150320133806434356">Faqeshënuesi u ruajt</translation>
 <translation id="6154478581116148741">Aktivizo kyçjen e ekranit te "Cilësimet" për të eksportuar fjalëkalime e tua nga kjo pajisje</translation>
 <translation id="6159729262978459665">Pastron historikun nga të gjitha pajisjet e sinkronizuara.</translation>
@@ -1027,6 +1033,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="6590680911007613645">Sigurohu që fjalëkalimi që po ruan përputhet me fjalëkalimin tënd për <ph name="SITE" />.</translation>
 <translation id="6593061639179217415">Sajti për desktop</translation>
 <translation id="6594121454516132231">Shiko se si planifikon Chrome të të mbrojë nga gjurmimi nëpër sajtet e uebit, ndërkohë që vazhdon të ruajë uebin e hapur</translation>
+<translation id="6594347733515723558">Opsionet e renditjes dhe shikimit</translation>
 <translation id="6595046016124923392">Imazhet janë dërguar te Google për të përmirësuar përshkrimet për ty.</translation>
 <translation id="6600954340915313787">Kopjuar në Chrome</translation>
 <translation id="661266467055912436">Përmirëson sigurinë për ty dhe këdo në ueb.</translation>

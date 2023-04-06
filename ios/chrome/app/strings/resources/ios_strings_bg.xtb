@@ -178,6 +178,7 @@
 <translation id="2218443599109088993">Отдалечаване</translation>
 <translation id="2230173723195178503">Уеб страницата се зареди</translation>
 <translation id="2239626343334228536">Данните за сърфирането се изчистват...</translation>
+<translation id="22508856139286506">Отхвърлени предупреждения (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">„Меню → История“</translation>
 <translation id="2256933947031277845">Организацията ви разрешава да влизате само с определени профили.</translation>
 <translation id="225943865679747347">Код на грешката: <ph name="ERROR_CODE" /></translation>
@@ -205,7 +206,6 @@
 <translation id="2411749908844615428">{count,plural, =1{{count} запазен адрес е налице над клавиатурата ви.}other{{count} запазени адреса са налице над клавиатурата ви.}}</translation>
 <translation id="2421004566762153674">„Бисквитките“ на трети страни се блокират</translation>
 <translation id="2421044535038393232">Продължаване на редактирането</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} компрометирана парола}other{{COUNT} компрометирани пароли}}</translation>
 <translation id="2434405374328098816">Вече запазихте парола за <ph name="USERNAME" /> за <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Показване на паролата</translation>
 <translation id="2451654228769116489">Фиксиране на раздела</translation>
@@ -923,7 +923,6 @@
 <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Скорошни раздели</translation>
 <translation id="7006788746334555276">Настройки за съдържанието</translation>
-<translation id="7014087399239955356">Паролите се проверяват...</translation>
 <translation id="7029809446516969842">Пароли</translation>
 <translation id="7053983685419859001">Блокиране</translation>
 <translation id="7062545763355031412">Приемане и превключване на профилите</translation>

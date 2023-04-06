@@ -206,7 +206,6 @@ A webhelyek nem használhatnak cookie-kat arra, hogy megfigyeljék más webhelye
 <translation id="2411749908844615428">{count,plural, =1{{count} mentett cím áll rendelkezésre a billentyűzet felett.}other{{count} mentett cím áll rendelkezésre a billentyűzet felett.}}</translation>
 <translation id="2421004566762153674">Harmadik félhez tartozó cookie-k letiltása</translation>
 <translation id="2421044535038393232">Szerkesztés folytatása</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} illetéktelen kezekbe került jelszó}other{{COUNT} illetéktelen kezekbe került jelszó}}</translation>
 <translation id="2434405374328098816">Már mentett jelszót a(z) „<ph name="USERNAME" />” felhasználónévhez a(z) <ph name="WEBSITE" /> webhelyen</translation>
 <translation id="2435457462613246316">Jelszó megjelenítése</translation>
 <translation id="2451654228769116489">Lap rögzítése</translation>
@@ -924,7 +923,6 @@ Inkognitó módban a webhelyek nem használhatnak cookie-kat arra, hogy megfigye
 <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="7004499039102548441">Nemrég megnyitott lapok</translation>
 <translation id="7006788746334555276">Tartalombeállítások</translation>
-<translation id="7014087399239955356">Jelszavak ellenőrzése…</translation>
 <translation id="7029809446516969842">Jelszavak</translation>
 <translation id="7053983685419859001">Letiltás</translation>
 <translation id="7062545763355031412">Elfogadás és fiókváltás</translation>

@@ -20,6 +20,7 @@
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> সদাই অনুবাদ কৰক</translation>
 <translation id="110724200315609752">খোলা থকা ৱিণ্ড’লৈ যাওক</translation>
 <translation id="1112015203684611006">প্ৰিণ্টিং কৰিব পৰা নগ'ল।</translation>
+<translation id="1118266931011974190"><ph name="THRESHOLD" /> দিনৰ পাছত</translation>
 <translation id="1125564390852150847">নতুন টেব সৃষ্টি কৰক।</translation>
 <translation id="1126013303640354461">Google Payৰ পৰা পৰিশোধ পদ্ধতি আৰু ঠিকনা এনক্ৰিপ্ট কৰা নহ’ব। Chromeৰ পৰা ব্ৰাউজিঙৰ ইতিহাস ছিংক কৰা নহ’ব।
 আপোনাৰ পাছফ্ৰেজ থকাগৰাকীয়েহে আপোনাৰ এনক্ৰিপ্ট কৰা ডেটা পঢ়িব পাৰিব। পাছফ্ৰেজটো Googleলৈ পঠিওৱা নহয় অথবা Googleএ সেয়া ষ্ট’ৰ নকৰে। আপুনি যদি নিজৰ পাছফ্ৰেজটো পাহৰে অথবা এই ছেটিংটো সলাব বিচাৰে, তেন্তে আপুনি ছিংক ৰিছেট কৰিব লাগিব। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
@@ -177,6 +178,7 @@
 <translation id="2218443599109088993">জুম আউট কৰক</translation>
 <translation id="2230173723195178503">ৱেবপৃষ্ঠা ল’ড হ’ল</translation>
 <translation id="2239626343334228536">ব্ৰাউজিঙৰ ডেটা মচি থকা হৈছে...</translation>
+<translation id="22508856139286506">অগ্ৰাহ্য কৰা সকীয়নি (<ph name="COUNT" /> টা)</translation>
 <translation id="2251686759395008410">মেনু → ইতিহাস</translation>
 <translation id="2256933947031277845">আপোনাৰ প্ৰতিষ্ঠানে আপোনাক কেৱল কিছুমান নিৰ্দিষ্ট একাউণ্টৰ জৰিয়তেহে ছাইন ইন কৰিবলৈ দিয়ে।</translation>
 <translation id="225943865679747347">আসোঁৱাহ ক’ড: <ph name="ERROR_CODE" /></translation>
@@ -204,7 +206,6 @@
 <translation id="2411749908844615428">{count,plural, =1{আপোনাৰ কীব’ৰ্ডৰ ওপৰত {count} টা ছেভ কৰি থোৱা ঠিকনা উপলব্ধ।}one{আপোনাৰ কীব’ৰ্ডৰ ওপৰত {count} টা ছেভ কৰি থোৱা ঠিকনা উপলব্ধ।}other{আপোনাৰ কীব’ৰ্ডৰ ওপৰত {count} টা ছেভ কৰি থোৱা ঠিকনা উপলব্ধ।}}</translation>
 <translation id="2421004566762153674">তৃতীয় পক্ষৰ কুকিসমূহ অৱৰোধ কৰা</translation>
 <translation id="2421044535038393232">সম্পাদনা কৰি থাকক</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} টা হেক কৰা পাছৱৰ্ড}one{{COUNT} টা হেক কৰা পাছৱৰ্ড}other{{COUNT} টা হেক কৰা পাছৱৰ্ড}}</translation>
 <translation id="2434405374328098816">আপুনি ইতিমধ্যে "<ph name="USERNAME" />"ৰ বাবে <ph name="WEBSITE" />ত এটা পাছৱৰ্ড ছেভ কৰিছে</translation>
 <translation id="2435457462613246316">পাছৱৰ্ড দেখুৱাওক</translation>
 <translation id="2451654228769116489">টেবটো পিন কৰক</translation>
@@ -231,6 +232,7 @@
 <translation id="2626236249646841566">আপোনাৰ সংযোগ পৰীক্ষা কৰক আৰু পুনৰ ছাইন ইন কৰি চাওক।</translation>
 <translation id="2637313651144986786">সন্ধানৰ টেব…</translation>
 <translation id="2647269890314209800">ব্যৱহাৰ হৈ থকা কুকিসমূহ</translation>
+<translation id="2648721026697078500">কেতিয়াও স্থানান্তৰ নকৰিব</translation>
 <translation id="2648803196158606475">পঢ়া প্ৰৱিষ্টি মচক</translation>
 <translation id="2653659639078652383">দাখিল কৰক</translation>
 <translation id="2664621323652615289">বন্ধ কৰক</translation>
@@ -346,6 +348,7 @@
 <translation id="3305294846493618482">অধিক</translation>
 <translation id="3311748811247479259">অফ আছে</translation>
 <translation id="3324193307694657476">ঠিকনা ২</translation>
+<translation id="3328459813621383194">নিষ্ক্ৰিয় টেবসমূহ স্থানান্তৰ কৰক</translation>
 <translation id="3328801116991980348">ছাইটৰ তথ্য</translation>
 <translation id="3371831930909698441">অনুবাদ কৰিব পাৰি। স্ক্ৰীনৰ একেবাৰে তলৰ অংশৰ কাষত থকা বিকল্পসমূহ।</translation>
 <translation id="3377063233124932127">এতিয়া আপোনাৰ ছেভ কৰি থোৱা বুকমাৰ্ক, পাছৱৰ্ড আৰু অধিক একেবাৰে ওপৰত।</translation>
@@ -510,6 +513,7 @@
 <translation id="452750746583162491">আপোনাৰ ছিংক কৰা ডেটা পর্যালোচনা কৰক</translation>
 <translation id="4536418791685807335">পুনৰ ছাইন ইন কৰি চাওক।</translation>
 <translation id="4540780316273593836">কিবা ভুল হ’ল</translation>
+<translation id="4550040941166547650">কেৱল এই ডিভাইচটোত</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{{COUNT} টা নিষ্ক্ৰিয় টেব বন্ধ কৰিবনে?}one{{COUNT} টা নিষ্ক্ৰিয় টেব বন্ধ কৰিবনে?}other{{COUNT} টা নিষ্ক্ৰিয় টেব বন্ধ কৰিবনে?}}</translation>
 <translation id="457386861538956877">অধিক…</translation>
 <translation id="4587235830039045480">পাছৱৰ্ড আপোনাৰ Google একাউণ্টত ছেভ কৰক</translation>
@@ -763,6 +767,7 @@
 <translation id="6193424046394092997">{count,plural, =1{{title}ত বুকমাৰ্ক কৰা হৈছে}one{{title}ত বুকমাৰ্ক কৰা হৈছে}other{{title}ত বুকমাৰ্ক কৰা হৈছে}}</translation>
 <translation id="6196207969502475924">কণ্ঠধ্বনিৰদ্বাৰা সন্ধান</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} টা টেব বন্ধ কৰক}one{{COUNT} টা টেব বন্ধ কৰক}other{{COUNT} টা টেব বন্ধ কৰক}}</translation>
+<translation id="6210079381482819663"><ph name="THRESHOLD" /> অথবা ততোধিক দিন ব্যৱহাৰ নকৰা টেবসমূহ ইয়ালৈ স্থানান্তৰ কৰা হয়। আপুনি যিকোনো সময়তে <ph name="BEGIN_LINK" />ছেটিঙ<ph name="END_LINK" />ত এইটো সলনি কৰিব পাৰে।</translation>
 <translation id="6213567400989743524">অগ্ৰাহ্য কৰা সকীয়নি</translation>
 <translation id="6219550825416862075">পুনৰ স্বাগতম</translation>
 <translation id="6219688215832490856">কেতিয়াও অনুবাদ নকৰিব</translation>
@@ -918,7 +923,6 @@
 <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">শেহতীয়া টেব</translation>
 <translation id="7006788746334555276">সমলৰ ছেটিংসমূহ</translation>
-<translation id="7014087399239955356">পাছৱৰ্ড পৰীক্ষা কৰি থকা হৈছে...</translation>
 <translation id="7029809446516969842">পাছৱৰ্ডসমূহ</translation>
 <translation id="7053983685419859001">অৱৰোধ কৰক</translation>
 <translation id="7062545763355031412">গ্ৰহণ কৰি একাউণ্টসমূহ সলনি কৰক</translation>
@@ -1058,6 +1062,7 @@
 <translation id="8059533439631660104">শাখাটো সংকোচন কৰে</translation>
 <translation id="8065292699993359127">Chromeৰ ইনক’গনিট’ত URLসমূহ খোলক</translation>
 <translation id="806745655614357130">মোৰ ডেটা পৃথক কৰি ৰাখক</translation>
+<translation id="8069394452933076548">শেহতীয়াকৈ ব্যৱহাৰ নকৰা টেবসমূহ কেতিয়া নিষ্ক্ৰিয় টেব শাখালৈ স্থানান্তৰ কৰা হয় বাছনি কৰক।</translation>
 <translation id="8073670137947914548">ডাউনল’ড সম্পূর্ণ হ’ল</translation>
 <translation id="8073872304774253879">সন্ধানসমূহ আৰু ব্ৰাউজিং উন্নত কৰক</translation>
 <translation id="8076492880354921740">টেব</translation>
@@ -1202,6 +1207,7 @@
 <translation id="9055772144595778347">ছাইন ইন কৰিব নোৱাৰি</translation>
 <translation id="9055960261314198756">বৰ্ধিত সুৰক্ষা অফ কৰা আছে</translation>
 <translation id="9057972802061533987">ফ’ল’ কৰিব নোৱাৰি। কিবা ভুল হ’ল।</translation>
+<translation id="9061495354530850708">আপোনাৰ Google একাউণ্টত</translation>
 <translation id="9065203028668620118">সম্পাদনা কৰক</translation>
 <translation id="9068336935206019333">Chromeৰ ইনক’গনিট’ ম’ডত খোলক</translation>
 <translation id="9079935439869366234">সকলো নপঢ়া বুলি চিহ্নিত কৰক</translation>

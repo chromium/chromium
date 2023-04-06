@@ -206,7 +206,6 @@
 <translation id="2411749908844615428">{count,plural, =1{キーボードの上部に保存済みの住所が {count} 件表示されています。}other{キーボードの上部に保存済みの住所が {count} 件表示されています。}}</translation>
 <translation id="2421004566762153674">サードパーティの Cookie をブロック</translation>
 <translation id="2421044535038393232">編集を続ける</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{不正使用されたパスワード: {COUNT} 件}other{不正使用されたパスワード: {COUNT} 件}}</translation>
 <translation id="2434405374328098816"><ph name="WEBSITE" /> の「<ph name="USERNAME" />」のパスワードは保存済みです</translation>
 <translation id="2435457462613246316">パスワードを表示</translation>
 <translation id="2451654228769116489">タブを固定</translation>
@@ -924,7 +923,6 @@
 <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">最近使ったタブ</translation>
 <translation id="7006788746334555276">コンテンツの設定</translation>
-<translation id="7014087399239955356">パスワードをチェックしています...</translation>
 <translation id="7029809446516969842">パスワード</translation>
 <translation id="7053983685419859001">ブロック</translation>
 <translation id="7062545763355031412">同意してアカウントを切り替える</translation>

@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> çıxarılıb.</translation>
 <translation id="2307462900900812319">Şəbəkəni konfiqurasiya edin</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Bu məlumat ilə artırmanın yerini tapmaq olmur: <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Admin ilə əlaqə saxlayın.}other{Bu məlumat ilə artırmaların yerini tapmaq olmur: <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Admin ilə əlaqə saxlayın.}}</translation>
 <translation id="2325650632570794183">Bu fayl növü dəstəklənmir. Bu faylı aça bilən tətbiqi tapmaq üçün Chrome Veb Marketə daxil olun.</translation>
 <translation id="2326539130272988168">Bolqar</translation>
 <translation id="2337715497728194187">Bruschetta ilə paylaşın</translation>
@@ -274,6 +275,7 @@
 <translation id="3290356915286466215">Güvənsiz</translation>
 <translation id="3291218047831493686">SIM kilidi ayarını dəyişdirmək üçün bu şəbəkəyə qoşulun</translation>
 <translation id="3293023191599135697">WEP şəbəkələri dəstəklənmir</translation>
+<translation id="3295006446256079333">Bu disk</translation>
 <translation id="3295357220137379386">Cihaz məşğuldur</translation>
 <translation id="3296763833017966289">Gürcü Dili</translation>
 <translation id="3307875152560779385">Ukrayna</translation>

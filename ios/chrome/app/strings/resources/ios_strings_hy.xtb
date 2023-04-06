@@ -178,6 +178,7 @@
 <translation id="2218443599109088993">Փոքրացնել</translation>
 <translation id="2230173723195178503">Կայքէջը բեռնվեց</translation>
 <translation id="2239626343334228536">Այցելությունների պատմությունը ջնջվում է…</translation>
+<translation id="22508856139286506">Թաքցված նախազգուշացումներ (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Ընտրացանկ → Պատմություն</translation>
 <translation id="2256933947031277845">Ձեր կազմակերպությունում հնարավոր է մուտք գործել միայն որոշակի հաշիվներ։</translation>
 <translation id="225943865679747347">Սխալի կոդ` <ph name="ERROR_CODE" /></translation>
@@ -205,7 +206,6 @@
 <translation id="2411749908844615428">{count,plural, =1{{count} պահված հասցե ցուցադրվում է ստեղնաշարի վերևում։}one{{count} պահված հասցե ցուցադրվում է ստեղնաշարի վերևում։}other{{count} պահված հասցե ցուցադրվում է ստեղնաշարի վերևում։}}</translation>
 <translation id="2421004566762153674">Երրորդ կողմի քուքիների արգելափակում</translation>
 <translation id="2421044535038393232">Շարունակել խմբագրումը</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} կոտրված գաղտնաբառ}one{{COUNT} կոտրված գաղտնաբառ}other{{COUNT} կոտրված գաղտնաբառ}}</translation>
 <translation id="2434405374328098816">Դուք <ph name="WEBSITE" /> կայքում «<ph name="USERNAME" />» օգտատիրոջ համար արդեն գաղտնաբառ պահել եք։</translation>
 <translation id="2435457462613246316">Ցույց տալ գաղտնաբառը</translation>
 <translation id="2451654228769116489">Ամրացնել ներդիրը</translation>
@@ -923,7 +923,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Վերջին բացած ներդիրները</translation>
 <translation id="7006788746334555276">Բովանդակության կարգավորումներ</translation>
-<translation id="7014087399239955356">Գաղտնաբառերի ստուգում…</translation>
 <translation id="7029809446516969842">Գաղտնաբառեր</translation>
 <translation id="7053983685419859001">Արգելափակել</translation>
 <translation id="7062545763355031412">Ընդունել և փոխարկել հաշիվները</translation>

@@ -178,6 +178,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="2218443599109088993">Sogeza Mbali</translation>
 <translation id="2230173723195178503">Ukurasa wa Wavuti umepakiwa</translation>
 <translation id="2239626343334228536">Inafuta data ya kuvinjari...</translation>
+<translation id="22508856139286506">Maonyo Uliyoondoa (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Menyu → Historia</translation>
 <translation id="2256933947031277845">Shirika lako hukuruhusu kuingia kwa kutumia baadhi ya akaunti tu.</translation>
 <translation id="225943865679747347">Hitilafu ya msimbo: <ph name="ERROR_CODE" /></translation>
@@ -205,7 +206,6 @@ Tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="2411749908844615428">{count,plural, =1{Anwani {count} iliyohifadhiwa inapatikana juu ya kibodi yako.}other{Anwani {count} zilizohifadhiwa zinapatikana juu ya kibodi yako.}}</translation>
 <translation id="2421004566762153674">Kuzuia vidakuzi vya tovuti nyingine</translation>
 <translation id="2421044535038393232">Endelea Kubadilisha</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{Nenosiri {COUNT} limeathiriwa}other{Manenosiri {COUNT} yameathiriwa}}</translation>
 <translation id="2434405374328098816">Tayari umehifadhi nenosiri la "<ph name="USERNAME" />" unalotumia katika <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Onyesha nenosiri</translation>
 <translation id="2451654228769116489">Bandika Kichupo</translation>
@@ -923,7 +923,6 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Vichupo vya Hivi Punde</translation>
 <translation id="7006788746334555276">Mipangilio ya Maudhui</translation>
-<translation id="7014087399239955356">Inakagua Manenosiri…</translation>
 <translation id="7029809446516969842">Manenosiri</translation>
 <translation id="7053983685419859001">Zuia</translation>
 <translation id="7062545763355031412">Kubali na ubadilishe akaunti</translation>

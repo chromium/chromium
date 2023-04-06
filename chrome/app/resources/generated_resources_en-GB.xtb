@@ -1340,7 +1340,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2114820389966440614">See 'Recent highlights' and other memories here</translation>
 <translation id="2114896190328250491">Photo by <ph name="NAME" /></translation>
 <translation id="2114995631896158695">No SIM card inserted</translation>
-<translation id="2116020356255810305">Enable launching app at startup</translation>
 <translation id="2116619964159595185">Sites usually connect to Bluetooth devices for features like setting up or syncing a low-energy beacon, a health or fitness tracker, or a smart light bulb</translation>
 <translation id="2117655453726830283">Next slide</translation>
 <translation id="2119349053129246860">Open in <ph name="APP" /></translation>
@@ -3272,7 +3271,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="380329542618494757">Name</translation>
 <translation id="3803345858388753269">Video quality</translation>
 <translation id="3803367742635802571">Sites that you visit may stop working as designed</translation>
-<translation id="3803583375545057606">Ask your parent or guardian to enable this extension?</translation>
 <translation id="380408572480438692">Enabling collection of performance data will help Google improve the system over time. No data is sent until you file a feedback report (Alt-Shift-I) and include performance data. You can return to this screen to disable collection at any time.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (extension ID "<ph name="EXTENSION_ID" />") is not allowed on a login screen.</translation>
 <translation id="3807747707162121253">&amp;Cancel</translation>
@@ -3694,7 +3692,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4169535189173047238">Don't allow</translation>
 <translation id="4170314459383239649">Clear On Exit</translation>
 <translation id="417096670996204801">Choose a profile</translation>
-<translation id="41725145403849567">Ask your parent or guardian to add this extension?</translation>
 <translation id="4175137578744761569">Light purple and white</translation>
 <translation id="4175737294868205930">Persistent storage</translation>
 <translation id="4176463684765177261">Disabled</translation>
@@ -5108,7 +5105,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN must be at least one character}other{PIN must be at least # characters}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> requires you to connect to Wi-Fi now and download an update. Or, download from a metered connection (charges may apply).</translation>
 <translation id="5476016146231427848">Please restart your device to use Steam on Chromebook</translation>
-<translation id="5476897066181964657">A parent or guardian has to say that it's OK for you to add this extension</translation>
 <translation id="5481273127572794904">Not allowed to automatically download multiple files</translation>
 <translation id="5481941284378890518">Add Nearby Printers</translation>
 <translation id="5483785310822538350">Revoke file and device access</translation>
@@ -5205,7 +5201,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5555639311269196631">Turn off hotspot</translation>
 <translation id="5556459405103347317">Reload</translation>
 <translation id="5558129378926964177">Zoom &amp;In</translation>
-<translation id="5558247502209241936">Enable opening app in window</translation>
 <translation id="5559311991468302423">Delete address</translation>
 <translation id="55601339223879446">Adjust the boundaries of your desktop within the display</translation>
 <translation id="5561162485081632007">Detects and warns you about dangerous events when they happen</translation>
@@ -6031,7 +6026,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6305607932814307878">Global Policy:</translation>
 <translation id="6305702903308659374">Play at normal volume even if ChromeVox is speaking</translation>
 <translation id="6305909198255586420">Please install using your primary profile</translation>
-<translation id="630750887748244481">Your parent has turned off 'Permissions for sites, apps and extensions' for Chrome. Adding this extension is not allowed.</translation>
 <translation id="6307990684951724544">System busy</translation>
 <translation id="6308493641021088955">Sign-in provided by <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Save lin&amp;k as...</translation>
@@ -6857,7 +6851,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7025190659207909717">Mobile data service management</translation>
 <translation id="7025895441903756761">Security and privacy</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Open All in &amp;Incognito Window}=1{Open in &amp;Incognito Window}other{Open All ({COUNT}) in &amp;Incognito Window}}</translation>
-<translation id="7028057921476386252">A parent or guardian has to say that it's OK for you to enable this extension</translation>
 <translation id="7029307918966275733">Crostini is not installed. Please install Crostini to view credits.</translation>
 <translation id="7029809446516969842">Passwords</translation>
 <translation id="7030304022046916278">Sends URLs to Safe Browsing to check them</translation>
@@ -8236,7 +8229,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8251509999076836464">Pairing to <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">Thumbnail removed.</translation>
 <translation id="825238165904109940">Always Show Full URLs</translation>
-<translation id="8252538334423261825">Can't add extension</translation>
 <translation id="8252569384384439529">Uploading…</translation>
 <translation id="8253198102038551905">Click '+' to get network properties</translation>
 <translation id="8255212965098517578">Recent photos, notifications and apps</translation>

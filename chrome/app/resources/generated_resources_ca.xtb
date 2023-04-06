@@ -1328,7 +1328,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2114820389966440614">Consulta aquí "Fotos destacades recents" i altres records</translation>
 <translation id="2114896190328250491">Foto feta per <ph name="NAME" /></translation>
 <translation id="2114995631896158695">No hi ha cap targeta SIM inserida</translation>
-<translation id="2116020356255810305">Activa l'execució de l'aplicació a l'inici</translation>
 <translation id="2116619964159595185">Els llocs web solen connectar-se a dispositius Bluetooth per a funcions com ara configurar o sincronitzar una balisa de baix consum, una aplicació de seguiment de fitnes o salut, o una bombeta intel·ligent</translation>
 <translation id="2117655453726830283">Diapositiva següent</translation>
 <translation id="2119349053129246860">Obre a <ph name="APP" /></translation>
@@ -3257,7 +3256,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="380329542618494757">Nom</translation>
 <translation id="3803345858388753269">Qualitat de vídeo</translation>
 <translation id="3803367742635802571">És possible que els llocs web que visites deixin de funcionar de la manera prevista</translation>
-<translation id="3803583375545057606">Vols demanar al teu pare o mare que activi aquesta extensió?</translation>
 <translation id="380408572480438692">L'activació de la recollida de dades de rendiment ajudarà Google a millorar el sistema amb el temps. No s'enviarà cap dada fins que no empleneu un informe de suggeriments (Alt-Maj-I) i les dades de rendiment. Podeu tornar a aquesta pantalla per desactivar la recopilació en qualsevol moment.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (amb identificador d'extensió "<ph name="EXTENSION_ID" />") no es permet a les pantalles d'inici de sessió.</translation>
 <translation id="3807747707162121253">&amp;Cancel·la</translation>
@@ -3678,7 +3676,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4169535189173047238">No permetis</translation>
 <translation id="4170314459383239649">Esborra en sortir</translation>
 <translation id="417096670996204801">Selecciona un perfil</translation>
-<translation id="41725145403849567">Vols demanar al teu pare o mare que afegeixi aquesta extensió?</translation>
 <translation id="4175137578744761569">Porpra clar i blanc</translation>
 <translation id="4175737294868205930">Emmagatzematge permanent</translation>
 <translation id="4176463684765177261">Desactivat</translation>
@@ -4473,7 +4470,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4885692421645694729">Aquesta extensió no té accés a cap lloc web addicional</translation>
 <translation id="4887424188275796356">Obre amb el lector del sistema</translation>
 <translation id="488785315393301722">Mostra els detalls</translation>
-<translation id="488862352499217187">Crea una carpeta nova</translation>
+<translation id="488862352499217187">Crea una carpeta</translation>
 <translation id="4890773143211625964">Mostra les opcions avançades de la impressora</translation>
 <translation id="4891089016822695758">Fòrum per a la versió beta</translation>
 <translation id="4892229439761351791">El lloc web pot fer servir Bluetooth</translation>
@@ -5092,7 +5089,6 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{El PIN ha de tenir almenys 1 caràcter}other{El PIN ha de tenir almenys # caràcters}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> requereix que et connectis a la Wi-Fi ara i que baixis una actualització. També pots baixar-la amb una connexió d'ús mesurat, però és possible que s'apliquin càrrecs.</translation>
 <translation id="5476016146231427848">Reinicia el dispositiu per utilitzar Steam a Chromebook</translation>
-<translation id="5476897066181964657">El teu pare, mare o tutor ha de dir si pots afegir aquesta extensió</translation>
 <translation id="5481273127572794904">Sense permís per baixar automàticament diversos fitxers</translation>
 <translation id="5481941284378890518">Afegeix impressores properes</translation>
 <translation id="5483785310822538350">Revoca l'accés al dispositiu i al fitxer</translation>
@@ -5189,7 +5185,6 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5555639311269196631">Desactiva el punt d'accés Wi‑Fi</translation>
 <translation id="5556459405103347317">Torna a carregar</translation>
 <translation id="5558129378926964177">&amp;Amplia</translation>
-<translation id="5558247502209241936">Permet obrir l'aplicació en una finestra</translation>
 <translation id="5559311991468302423">Suprimeix l'adreça</translation>
 <translation id="55601339223879446">Ajusta els límits de l'escriptori dins de la pantalla</translation>
 <translation id="5561162485081632007">Detecta esdeveniments perillosos quan es produeixen i t'avisa</translation>
@@ -6013,7 +6008,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6305607932814307878">Política global:</translation>
 <translation id="6305702903308659374">Reprodueix a un volum normal encara que ChromeVox parli</translation>
 <translation id="6305909198255586420">Instal·la utilitzant el teu perfil principal</translation>
-<translation id="630750887748244481">El teu pare o mare ha desactivat Permisos per a llocs web, aplicacions i extensions a Chrome. Aquesta extensió no es permet afegir.</translation>
 <translation id="6307990684951724544">El sistema està ocupat</translation>
 <translation id="6308493641021088955">Inici de sessió proporcionat per <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Desa l'en&amp;llaç com a...</translation>
@@ -6839,7 +6833,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7025190659207909717">Gestió de serveis de dades mòbils</translation>
 <translation id="7025895441903756761">Seguretat i privadesa</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Obre-les totes en una finestra d'&amp;incògnit}=1{Obre en una finestra d'&amp;incògnit}other{Obre-les totes ({COUNT}) en una finestra d'&amp;incògnit}}</translation>
-<translation id="7028057921476386252">El teu pare, mare o tutor ha de dir si pots activar aquesta extensió</translation>
 <translation id="7029307918966275733">Crostini no està instal·lat. Instal·la'l per veure els crèdits.</translation>
 <translation id="7029809446516969842">Contrasenyes</translation>
 <translation id="7030304022046916278">Envia els URL a Navegació segura perquè els comprovi</translation>
@@ -8218,7 +8211,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8251509999076836464">S'està vinculant a <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">S'ha eliminat la miniatura.</translation>
 <translation id="825238165904109940">Mostra sempre els URL complets</translation>
-<translation id="8252538334423261825">No es pot afegir l'extensió</translation>
 <translation id="8252569384384439529">S'està penjant...</translation>
 <translation id="8253198102038551905">Feu clic a "+" per consultar les propietats de la xarxa</translation>
 <translation id="8255212965098517578">Fotos, notificacions i aplicacions recents</translation>

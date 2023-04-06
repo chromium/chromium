@@ -178,6 +178,7 @@
 <translation id="2218443599109088993">സൂം ഔട്ട് ചെയ്യുക</translation>
 <translation id="2230173723195178503">വെബ്‌പേജ് ലോഡ് ചെയ്‌തു</translation>
 <translation id="2239626343334228536">ബ്രൗസിംഗ് ഡാറ്റ മായ്‌ക്കുന്നു...</translation>
+<translation id="22508856139286506">ഡിസ്‌മിസ് ചെയ്‌ത മുന്നറിയിപ്പുകൾ (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">മെനു → ചരിത്രം</translation>
 <translation id="2256933947031277845">ചില അക്കൗണ്ടുകൾ ഉപയോഗിച്ച് മാത്രമേ സൈൻ ഇൻ ചെയ്യാൻ നിങ്ങളുടെ സ്ഥാപനം അനുവദിക്കൂ.</translation>
 <translation id="225943865679747347">പിശക് കോഡ്: <ph name="ERROR_CODE" /></translation>
@@ -205,7 +206,6 @@
 <translation id="2411749908844615428">{count,plural, =1{നിങ്ങളുടെ കീബോർഡിന് മുകളിൽ {count} സംരക്ഷിച്ച വിലാസം ലഭ്യമാണ്.}other{നിങ്ങളുടെ കീബോർഡിന് മുകളിൽ {count} സംരക്ഷിച്ച വിലാസങ്ങൾ ലഭ്യമാണ്.}}</translation>
 <translation id="2421004566762153674">മൂന്നാം കക്ഷി കുക്കികളെ ബ്ലോക്ക് ചെയ്യുന്നു</translation>
 <translation id="2421044535038393232">എഡിറ്റ് ചെയ്യുന്നത് തുടരുക</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{അപഹരിക്കപ്പെട്ട {COUNT} പാസ്‌വേഡ്}other{അപഹരിക്കപ്പെട്ട {COUNT} പാസ്‌വേഡുകൾ}}</translation>
 <translation id="2434405374328098816">നിങ്ങൾ "<ph name="USERNAME" />" എന്നതിനുള്ള പാസ്‍വേഡ് <ph name="WEBSITE" /> എന്ന വെബ്സൈറ്റിൽ മുമ്പേ സംരക്ഷിച്ചു</translation>
 <translation id="2435457462613246316">പാസ്‌വേഡ് കാണിക്കുക</translation>
 <translation id="2451654228769116489">ടാബ് പിൻ ചെയ്യുക</translation>
@@ -923,7 +923,6 @@
 <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">സമീപകാല ടാബുകൾ</translation>
 <translation id="7006788746334555276">ഉള്ളടക്ക ക്രമീകരണങ്ങള്‍‌</translation>
-<translation id="7014087399239955356">പാസ്‌വേഡുകൾ പരിശോധിക്കുന്നു...</translation>
 <translation id="7029809446516969842">പാസ്‌വേഡുകള്‍</translation>
 <translation id="7053983685419859001">തടയുക</translation>
 <translation id="7062545763355031412">അംഗീകരിച്ചശേഷം, അക്കൗണ്ടുകൾ മാറുക</translation>

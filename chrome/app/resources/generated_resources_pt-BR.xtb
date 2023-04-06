@@ -118,6 +118,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1091767800771861448">Pressione ESC para pular (versões não-oficiais apenas).</translation>
 <translation id="1093457606523402488">Redes visíveis</translation>
 <translation id="1095761715416917775">Tenha sempre acesso aos seus dados sincronizados</translation>
+<translation id="1095879482467973146">Gerenciador de senhas do Google na Web</translation>
 <translation id="109647177154844434">A desinstalação do Parallels Desktop excluirá sua imagem do Windows. Isso inclui os aplicativos, as configurações e os dados dele. Tem certeza de que quer continuar?</translation>
 <translation id="1097016918605049747">Não foi possível traduzir esta página</translation>
 <translation id="1097658378307015415">Antes de fazer login, entre como Visitante para ativar a rede <ph name="NETWORK_ID" /></translation>
@@ -1340,7 +1341,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2114820389966440614">Ver "Destaques recentes" e outras recordações aqui</translation>
 <translation id="2114896190328250491">Foto de <ph name="NAME" /></translation>
 <translation id="2114995631896158695">Nenhum chip inserido</translation>
-<translation id="2116020356255810305">Ativar abertura do app na inicialização</translation>
 <translation id="2116619964159595185">Os sites geralmente se conectam a dispositivos Bluetooth para recursos como a configuração ou sincronização de um sensor de baixa energia, um monitor de saúde ou atividade física ou uma lâmpada de iluminação inteligente</translation>
 <translation id="2117655453726830283">Próximo slide</translation>
 <translation id="2119349053129246860">Abrir no app <ph name="APP" /></translation>
@@ -1500,6 +1500,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2252017960592955005">Proteção de visualização (Beta)</translation>
 <translation id="225240747099314620">Permitir identificadores de conteúdo protegido (pode ser necessário reiniciar o computador)</translation>
 <translation id="2253318212986772520">Não foi possível recuperar o arquivo PPD da <ph name="PRINTER_NAME" />.</translation>
+<translation id="2253927598983295051">Escolha o que compartilhar com o app <ph name="APP_NAME" /></translation>
 <translation id="2255077166240162850">Este dispositivo foi bloqueado para um domínio ou modo diferente.</translation>
 <translation id="2255317897038918278">Carimbo de data/hora da Microsoft</translation>
 <translation id="2256115617011615191">Reiniciar agora</translation>
@@ -1848,6 +1849,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2532589005999780174">Modo de alto contraste</translation>
 <translation id="2533649878691950253">Este site foi impedido de saber seu local exato porque você normalmente não permite esse acesso</translation>
 <translation id="253434972992662860">&amp;Pausar</translation>
+<translation id="253498598929009420">O site terá acesso ao conteúdo da sua tela</translation>
 <translation id="253557089021624350">Contagem de manutenção de atividade</translation>
 <translation id="2535799430745250929">Não há nenhuma rede celular</translation>
 <translation id="2537395079978992874"><ph name="ORIGIN" /> tem permissão para ver e editar os arquivos e as pastas a seguir</translation>
@@ -3271,7 +3273,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="380329542618494757">Nome</translation>
 <translation id="3803345858388753269">Qualidade do vídeo</translation>
 <translation id="3803367742635802571">Os sites que você visita podem parar de funcionar como planejado</translation>
-<translation id="3803583375545057606">Pedir ao seu familiar responsável para ativar essa extensão?</translation>
 <translation id="380408572480438692">A ativação da coleta de dados de desempenho ajuda o Google a melhorar o sistema com o passar do tempo. Os dados só são enviados depois que você preencher um relatório de feedback (Alt-Shift-I) e incluir dados de desempenho. Você pode retornar a esta tela para desativar a coleta a qualquer momento.</translation>
 <translation id="3807249107536149332">A extensão <ph name="EXTENSION_NAME" /> (código "<ph name="EXTENSION_ID" />") não é permitida em uma tela de login.</translation>
 <translation id="3807747707162121253">&amp;Cancelar</translation>
@@ -3693,7 +3694,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4169535189173047238">Não permitir</translation>
 <translation id="4170314459383239649">Limpar ao sair</translation>
 <translation id="417096670996204801">Escolha um perfil</translation>
-<translation id="41725145403849567">Pedir ao seu familiar responsável para adicionar essa extensão?</translation>
 <translation id="4175137578744761569">Roxo-claro e branco</translation>
 <translation id="4175737294868205930">Armazenamento persistente</translation>
 <translation id="4176463684765177261">Desativado</translation>
@@ -5107,7 +5107,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{O PIN precisa ter pelo menos 1 caractere}one{O PIN precisa ter pelo menos # caractere}other{O PIN precisa ter pelo menos # caracteres}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> precisa que você se conecte ao Wi-Fi para fazer o download de uma atualização. Você também pode fazer o download em uma conexão limitada (sujeito a cobranças).</translation>
 <translation id="5476016146231427848">Reinicie o dispositivo para usar o Steam no Chromebook</translation>
-<translation id="5476897066181964657">Um familiar ou responsável precisa autorizar a adição dessa extensão</translation>
 <translation id="5481273127572794904">Bloquear o download automático de vários arquivos</translation>
 <translation id="5481941284378890518">Adicionar impressoras próximas</translation>
 <translation id="5483785310822538350">Revogar acesso ao arquivo e ao dispositivo</translation>
@@ -5204,7 +5203,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="5555639311269196631">Desativar o ponto de acesso</translation>
 <translation id="5556459405103347317">Recarregar</translation>
 <translation id="5558129378926964177">Aumentar z&amp;oom</translation>
-<translation id="5558247502209241936">Ativar abertura do app na janela</translation>
 <translation id="5559311991468302423">Excluir endereço</translation>
 <translation id="55601339223879446">Ajustar as fronteiras da sua área de trabalho dentro da tela</translation>
 <translation id="5561162485081632007">Detecta e avisa você sobre eventos perigosos quando eles acontecem</translation>
@@ -6031,7 +6029,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6305607932814307878">Política global:</translation>
 <translation id="6305702903308659374">Reproduzir no volume normal mesmo se o ChromeVox estiver falando</translation>
 <translation id="6305909198255586420">Instale usando seu perfil principal</translation>
-<translation id="630750887748244481">Seu familiar responsável desativou a opção "Permissões para sites, apps e extensões" no Chrome. Não é permitido adicionar essa extensão.</translation>
 <translation id="6307990684951724544">Sistema ocupado</translation>
 <translation id="6308493641021088955">Login fornecido por <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Salvar &amp;link como...</translation>
@@ -6859,7 +6856,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7025190659207909717">Gerenciamento dos serviços de dados móveis</translation>
 <translation id="7025895441903756761">Segurança e privacidade</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Abrir tudo em &amp;uma janela anônima}=1{Abrir em &amp;uma janela anônima}one{Abrir tudo ({COUNT}) em &amp;uma janela anônima}other{Abrir tudo ({COUNT}) em &amp;uma janela anônima}}</translation>
-<translation id="7028057921476386252">Um familiar ou responsável precisa autorizar a ativação dessa extensão</translation>
 <translation id="7029307918966275733">O Crostini não está instalado. Instale o Crostini para ver os créditos.</translation>
 <translation id="7029809446516969842">Senhas</translation>
 <translation id="7030304022046916278">Envia URLs para a verificação do Navegação segura</translation>
@@ -8238,7 +8234,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8251509999076836464">Pareando com <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">Miniatura removida.</translation>
 <translation id="825238165904109940">Sempre mostrar URLs completos</translation>
-<translation id="8252538334423261825">Não é possível adicionar uma extensão</translation>
 <translation id="8252569384384439529">Fazendo upload…</translation>
 <translation id="8253198102038551905">Clique em "+" para ver as propriedades da rede</translation>
 <translation id="8255212965098517578">Fotos, notificações e apps recentes</translation>

@@ -206,7 +206,6 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="2411749908844615428">{count,plural, =1{{count} salvestatud aadress on klaviatuuri kohal saadaval.}other{{count} salvestatud aadressi on klaviatuuri kohal saadaval.}}</translation>
 <translation id="2421004566762153674">Kolmanda osapoole küpsisefailide blokeerimine</translation>
 <translation id="2421044535038393232">Jätka töötlemist</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} ohustatud parool}other{{COUNT} ohustatud parooli}}</translation>
 <translation id="2434405374328098816">Olete kasutaja „<ph name="USERNAME" />“ jaoks parooli saidil <ph name="WEBSITE" /> juba salvestanud.</translation>
 <translation id="2435457462613246316">Kuva parool</translation>
 <translation id="2451654228769116489">Kinnita vaheleht</translation>
@@ -924,7 +923,6 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Hiljutised vahelehed</translation>
 <translation id="7006788746334555276">Sisu seaded</translation>
-<translation id="7014087399239955356">Paroolide kontrollimine …</translation>
 <translation id="7029809446516969842">Paroolid</translation>
 <translation id="7053983685419859001">Blokeeri</translation>
 <translation id="7062545763355031412">Nõustu ja vaheta kontosid</translation>

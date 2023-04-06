@@ -1027,7 +1027,7 @@
 <translation id="1850508293116537636">چرخاندن در جهت &amp;عقربه‌های ساعت</translation>
 <translation id="185111092974636561">‏<ph name="BEGIN_PARAGRAPH1" />پیش‌از ثبت‌نام، باید TPM را پاک کنید تا <ph name="DEVICE_OS" /> بتواند مالک این دستگاه شود.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />همچنین می‌توانید دستگاه TPM را به‌طور کامل خاموش کنید. داده‌های شما همچنان بااستفاده از رمزگذاری نرم‌افزار به‌طور ایمن ذخیره می‌شود، اما برخی‌از ویژگی‌های امنیتی مثل گواهینامه‌های دارای پشتیبان سخت‌افزاری غیرفعال می‌شود.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />می‌توانید با راه‌اندازی مجدد سیستم و وارد شدن به تنظیمات BIOS/UEFI سیستم، تنظیمات TPM را تغییر دهید. مراحل بسته به مدل دستگاه متفاوت است. برای کسب اطلاعات بیشتر، پیش‌از راه‌اندازی مجدد، اسناد <ph name="DEVICE_OS" /> را در دستگاه دیگری باز کنید: g.co/flex/TPMHelp<ph name="END_PARAGRAPH3" /></translation>
+    <ph name="BEGIN_PARAGRAPH3" />می‌توانید با بازراه‌اندازی سیستم و وارد شدن به تنظیمات BIOS/UEFI سیستم، تنظیمات TPM را تغییر دهید. مراحل بسته به مدل دستگاه متفاوت است. برای کسب اطلاعات بیشتر، پیش‌از بازراه‌اندازی، اسناد <ph name="DEVICE_OS" /> را در دستگاه دیگری باز کنید: g.co/flex/TPMHelp<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1852141627593563189">یافتن نرم‌افزارهای مضر</translation>
 <translation id="1852799913675865625">خطایی در حین خواندن این فایل وجود داشت: <ph name="ERROR_TEXT" /></translation>
 <translation id="1854049213067042715">کارتان را از جایی که متوقف کرده‌اید ادامه دهید. در «تنظیمات» می‌توانید برنامه‌ها را طوری تنظیم کنید که همیشه هنگام راه‌اندازی بازیابی شوند یا بازیابی را خاموش کنید.</translation>
@@ -1311,7 +1311,7 @@
       https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
       <ph name="BR" />
       <ph name="BR" />
-      <ph name="BEGIN_BOLD" />توجه:<ph name="END_BOLD" />  سیستم درطول پردازش مجدداً راه‌اندازی می‌شود.</translation>
+      <ph name="BEGIN_BOLD" />توجه:<ph name="END_BOLD" />  سیستم درطول پردازش بازراه‌اندازی می‌شود.</translation>
 <translation id="2095774564753225041">انواع فایل‌های پشتیبانی‌شده</translation>
 <translation id="2097616539631531348">وقتی این برگه غیرفعال بود، «بهینه‌سازی حافظ» حافظه را برای کارهای دیگر آزاد کرد.</translation>
 <translation id="2098805196501063469">بررسی گذرواژه‌های باقی‌مانده</translation>
@@ -1337,7 +1337,6 @@
 <translation id="2114820389966440614">«عکس‌های برگزیده اخیر» و خاطرات دیگر را اینجا ببینید</translation>
 <translation id="2114896190328250491">عکس از <ph name="NAME" /></translation>
 <translation id="2114995631896158695">سیم کارتی وارد نشده است</translation>
-<translation id="2116020356255810305">فعال کردن راه‌اندازی برنامه هنگام شروع به کار</translation>
 <translation id="2116619964159595185">سایت‌ها معمولاً برای ارائه ویژگی‌هایی مثل راه‌اندازی یا همگام‌سازی نشان‌فرست کم‌مصرف، ردیاب سلامت یا تناسب اندام، یا چراغ حبابی هوشمند، به دستگاه‌های بلوتوث متصل می‌شوند</translation>
 <translation id="2117655453726830283">اسلاید بعدی</translation>
 <translation id="2119349053129246860">باز کردن در <ph name="APP" /></translation>
@@ -1574,7 +1573,7 @@
       https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
       <ph name="BR" />
       <ph name="BR" />
-      <ph name="BEGIN_BOLD" />توجه:<ph name="END_BOLD" /> سیستم درطول پردازش مجدداً راه‌اندازی می‌شود.</translation>
+      <ph name="BEGIN_BOLD" />توجه:<ph name="END_BOLD" /> سیستم درطول پردازش بازراه‌اندازی می‌شود.</translation>
 <translation id="23030561267973084">«<ph name="EXTENSION_NAME" />» اجازه‌های جانبی درخواست کرده است.</translation>
 <translation id="2307462900900812319">پیکربندی شبکه</translation>
 <translation id="2307553512430195144">‏اگر موافقت کنید، «دستیار Google» در حالت آماده‌به‌کار منتظر می‌ماند تا گفته شدن «Ok Google» را تشخیص دهد و می‌تواند تشخیص دهد که <ph name="SUPERVISED_USER_NAME" /> درحال صحبت کردن با Voice Match است.
@@ -1920,7 +1919,7 @@
 <translation id="2605668923777146443">‏برای دیدن گزینه‌های Better Together، به <ph name="LINK_BEGIN" />تنظیمات<ph name="LINK_END" /> بروید.</translation>
 <translation id="2606246518223360146">داده‌های پیوند</translation>
 <translation id="2606454609872547359">‏نه، بدون ChromeVox ادامه داده شود</translation>
-<translation id="2606568927909309675">به‌طور خودکار برای صدا و ویدیوی انگلیسی زیرنویس ناشنوایان ایجاد می‌کند. صداها و زیرنویس ناشنوایان هرگز از دستگاهتان خارج نمی‌شوند.</translation>
+<translation id="2606568927909309675">به‌طور خودکار برای صدا و ویدیو  انگلیسی زیرنویس ناشنوایان ایجاد می‌کند. صداها و زیرنویس ناشنوایان هرگز از دستگاهتان خارج نمی‌شوند.</translation>
 <translation id="2607101320794533334">اطلاعات کلید عمومی موضوع</translation>
 <translation id="2609896558069604090">ایجاد میان‌برها...</translation>
 <translation id="2609980095400624569">اتصال برقرار نشد</translation>
@@ -2882,7 +2881,7 @@
 <translation id="3468999815377931311">‏تلفن Android</translation>
 <translation id="3469583217479686109">ابزار انتخاب</translation>
 <translation id="3470392222765168737">دنبال کردن سایت</translation>
-<translation id="3471876058939596279">‏نمی‌توان به‌طور هم‌زمان از درگاه‌های HDMI و USB نوع C برای ویدیو استفاده کرد. از درگاه ویدیوی دیگری استفاده کنید.</translation>
+<translation id="3471876058939596279">‏نمی‌توان به‌طور هم‌زمان از درگاه‌های HDMI و USB نوع C برای ویدیو استفاده کرد. از درگاه ویدیو  دیگری استفاده کنید.</translation>
 <translation id="3472469028191701821">در برگه جدید باز می‌شود</translation>
 <translation id="3473241910002674503">با دکمه‌های «حالت رایانه لوحی» به صفحه اصلی پیمایش کنید، به صفحه قبل برگردید، و بین برنامه‌ها جابه‌جا شوید.</translation>
 <translation id="3473479545200714844">ذره‌بین صفحه</translation>
@@ -2986,7 +2985,7 @@
 <translation id="3564334271939054422">‏احتمالاً شبکه‌ Wi-Fi مورد استفاده‌تان (<ph name="NETWORK_ID" />) نیاز دارد که به یک صفحه ورود به سیستم بروید.</translation>
 <translation id="3564848315152754834">‏کلید امنیتی USB</translation>
 <translation id="3566325075220776093">از این دستگاه</translation>
-<translation id="3566721612727112615">سایتی اضافه نشد</translation>
+<translation id="3566721612727112615">سایتی اضافه نشده است</translation>
 <translation id="3567284462585300767">برای دریافت و پذیرفتن فایل‌های افرادی که در اطرافتان هستند، نمایان شوید</translation>
 <translation id="3569382839528428029">آیا می‌خواهید <ph name="APP_NAME" /> صفحه شما را به اشتراک بگذارد؟</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> می‌تواند فایل‌ها و پوشه‌های زیر را مشاهده کند</translation>
@@ -3269,7 +3268,6 @@
 <translation id="380329542618494757">نام</translation>
 <translation id="3803345858388753269">کیفیت ویدیو</translation>
 <translation id="3803367742635802571">ممکن است سایت‌هایی که بازدید می‌کنید دیگر مطابق طراحی عمل نکنند</translation>
-<translation id="3803583375545057606">از ولی‌تان خواسته شود این افزونه را فعال کند؟</translation>
 <translation id="380408572480438692">‏فعال کردن جمع‌آوری داده‌های عملکرد به Google کمک می‌کند به تدریج سیستم را بهبود ببخشد. تا وقتی‌که شما گزارش بازخورد ارائه ندهید (Alt-Shift-I) و داده‌های عملکرد را اضافه نکنید، هیچ داده‌ای ارسال نخواهد شد. هر زمان که بخواهید می‌توانید به این صفحه بازگردید و جمع‌آوری را غیرفعال کنید.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (شناسه افزونه «<ph name="EXTENSION_ID" />») در صفحه ورود به سیستم مجاز نیست.</translation>
 <translation id="3807747707162121253">&amp;لغو</translation>
@@ -3667,7 +3665,7 @@
 <translation id="4139326893730851150">به‌روزرسانی‌های سفت‌افزار</translation>
 <translation id="4142052906269098341">قفل <ph name="DEVICE_TYPE" /> را با تلفنتان باز کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="4142518881503042940">چاپگرهای شناسایی‌شده را در نمایه‌تان ذخیره کنید یا چاپگر جدیدی اضافه کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
-<translation id="4144218403971135344">‏دریافت ویدیوی با کیفیت بهتر و افزایش ماندگاری شارژ باتری. ویدیو فقط در صفحه‌نمایش سازگار با Cast پخش خواهد شد.</translation>
+<translation id="4144218403971135344">‏دریافت ویدیو  با کیفیت بهتر و افزایش ماندگاری شارژ باتری. ویدیو فقط در صفحه‌نمایش سازگار با Cast پخش خواهد شد.</translation>
 <translation id="4144468798716165316">فرمان‌های سریع</translation>
 <translation id="4146026355784316281">همیشه با نظاره‌گر سیستم باز شود</translation>
 <translation id="4146785383423576110">بارنشانی و پاک کردن</translation>
@@ -3691,7 +3689,6 @@
 <translation id="4169535189173047238">اجازه داده نشود</translation>
 <translation id="4170314459383239649">پاک کردن هنگام خروج</translation>
 <translation id="417096670996204801">انتخاب نمایه</translation>
-<translation id="41725145403849567">از ولی‌تان خواسته شود این افزونه را اضافه کند؟</translation>
 <translation id="4175137578744761569">بنفش روشن و سفید</translation>
 <translation id="4175737294868205930">محل ذخیره‌سازی دائمی</translation>
 <translation id="4176463684765177261">غیرفعال شد</translation>
@@ -3768,7 +3765,7 @@
 <translation id="4252899949534773101">بلوتوث غیرفعال است</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - محتوای برگه به اشتراک گذاشته شده است</translation>
 <translation id="4253168017788158739">یادداشت</translation>
-<translation id="4253183225471855471">شبکه‌ای پیدا نشد. لطفاً سیم‌کارت را وارد کنید، دستگاه را راه‌اندازی مجدد کنید، و سپس دوباره امتحان کنید.</translation>
+<translation id="4253183225471855471">شبکه‌ای پیدا نشد. لطفاً سیم‌کارت را وارد کنید، دستگاه را بازراه‌اندازی و دوباره امتحان کنید.</translation>
 <translation id="4254414375763576535">اشاره‌گر بزرگ</translation>
 <translation id="4254813446494774748">زبان ترجمه:</translation>
 <translation id="425573743389990240">نسبت تخلیه باتری به وات (مقدار منفی به معنی این است که باتری در حال شارژ شدن است)</translation>
@@ -4423,7 +4420,7 @@
 <translation id="4838836835474292213">دسترسی برای خواندن محتوای بریده‌دان مجاز شد</translation>
 <translation id="4838907349371614303">گذرواژه به‌روزرسانی شد</translation>
 <translation id="4838958829619609362">مورد انتخاب‌شده به زبان <ph name="LANGUAGE" /> نیست</translation>
-<translation id="4839303808932127586">ذ&amp;خیره فایل ویدیوی به‌عنوان...</translation>
+<translation id="4839303808932127586">ذ&amp;خیره فایل ویدیو  به‌عنوان...</translation>
 <translation id="4839910546484524995">دستگاهتان را بررسی کنید</translation>
 <translation id="4840096453115567876">درهرصورت از «حالت ناشناس» خارج می‌شوید؟</translation>
 <translation id="4841741146571978176">یکی از ماشین‌های مجازی ضروری موجود نیست. برای ادامه، لطفاً <ph name="VM_TYPE" /> را راه‌اندازی کنید</translation>
@@ -5105,7 +5102,6 @@
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{پین باید حداقل یک نویسه داشته باشد}one{پین باید حداقل # نویسه داشته باشد}other{پین باید حداقل # نویسه داشته باشد}}</translation>
 <translation id="5474859849784484111">‏<ph name="MANAGER" /> از شما می‌خواهد اکنون به Wi-Fi متصل شوید و به‌روزرسانی را بارگیری کنید. یا آن را ازطریق اتصال محدود بارگیری کنید (ممکن است هزینه اعمال شود).</translation>
 <translation id="5476016146231427848">‏برای استفاده از Steam در Chromebook، لطفاً دستگاهتان را بازراه‌اندازی کنید</translation>
-<translation id="5476897066181964657">ولی یا سرپرست باید اضافه شدن این افزونه را برای شما تأیید کند</translation>
 <translation id="5481273127572794904">اجازه ندارد چند فایل را به‌طور خودکار بارگیری کند</translation>
 <translation id="5481941284378890518">افزودن چاپگرهای اطراف</translation>
 <translation id="5483785310822538350">لغو دسترسی به فایل و دستگاه</translation>
@@ -5202,7 +5198,6 @@
 <translation id="5555639311269196631">خاموش کردن نقطه اتصال</translation>
 <translation id="5556459405103347317">بار کردن مجدد</translation>
 <translation id="5558129378926964177">&amp;بزرگنمایی</translation>
-<translation id="5558247502209241936">فعال کردن باز شدن برنامه در پنجره</translation>
 <translation id="5559311991468302423">حذف نشانی</translation>
 <translation id="55601339223879446">تنظیم محدوه دسک‌تاپ شما در صفحه نمایشگر</translation>
 <translation id="5561162485081632007">رویدادهای خطرناک را درصورت وقوع شناسایی می‌کند و به شما هشدار می‌دهد</translation>
@@ -6028,7 +6023,6 @@
 <translation id="6305607932814307878">خط‌مشی کلی:</translation>
 <translation id="6305702903308659374">‏پخش با صدایی معمولی حتی اگر ChromeVox درحال صحبت کردن باشد</translation>
 <translation id="6305909198255586420">لطفاً نصب را بااستفاده از نمایه اصلی انجام دهید</translation>
-<translation id="630750887748244481">‏ولی‌تان «اجازه‌های مربوط به سایت‌ها، برنامه‌ها، و افزونه‌ها» را برای Chrome خاموش کرده است. اضافه کردن این افزونه مجاز نیست.</translation>
 <translation id="6307990684951724544">سیستم مشغول است</translation>
 <translation id="6308493641021088955">ورود به سیستم ارائه‌شده توسط <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">ذخیره پی&amp;وند به‌عنوان...</translation>
@@ -6856,7 +6850,6 @@
 <translation id="7025190659207909717">مدیریت خدمات داده‌های تلفن همراه</translation>
 <translation id="7025895441903756761">امنیت و حریم خصوصی</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{باز کردن همه در پنجره ناشناس}=1{باز کردن در پنجره ناشناس}one{باز کردن همه ({COUNT}) در پنجره ناشناس}other{باز کردن همه ({COUNT}) در پنجره ناشناس}}</translation>
-<translation id="7028057921476386252">ولی یا سرپرست باید فعال شدن این افزونه را برای شما تأیید کند</translation>
 <translation id="7029307918966275733">‏Crostini نصب نشده است. لطفاً برای مشاهده اعتبارها، Crostini را نصب کنید.</translation>
 <translation id="7029809446516969842">گذرواژه‌ها</translation>
 <translation id="7030304022046916278">نشانی‌های وب را به «مرور ایمن» ارسال می‌کند تا بررسی شوند</translation>
@@ -8234,7 +8227,6 @@
 <translation id="8251509999076836464">درحال مرتبط‌سازی <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">تصویر کوچک حذف شد.</translation>
 <translation id="825238165904109940">همیشه نشانی‌های وب کامل نشان داده شود</translation>
-<translation id="8252538334423261825">نمی‌توان افزونه اضافه کرد</translation>
 <translation id="8252569384384439529">درحال بارگذاری…</translation>
 <translation id="8253198102038551905">روی «+» کلیک کنید تا مشخصات شبکه را دریافت کنید</translation>
 <translation id="8255212965098517578">عکس‌ها، اعلان‌ها، و برنامه‌های اخیر</translation>

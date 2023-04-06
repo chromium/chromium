@@ -206,7 +206,6 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="2411749908844615428">{count,plural, =1{Có {count} địa chỉ đã lưu xuất hiện phía trên bàn phím.}other{Có {count} địa chỉ đã lưu xuất hiện phía trên bàn phím.}}</translation>
 <translation id="2421004566762153674">Chặn cookie của bên thứ ba</translation>
 <translation id="2421044535038393232">Tiếp tục chỉnh sửa</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} mật khẩu bị lộ}other{{COUNT} mật khẩu bị lộ}}</translation>
 <translation id="2434405374328098816">Bạn đã lưu mật khẩu cho "<ph name="USERNAME" />" tại <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Hiện mật khẩu</translation>
 <translation id="2451654228769116489">Ghim thẻ</translation>
@@ -924,7 +923,6 @@ Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</tra
 <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Các thẻ gần đây</translation>
 <translation id="7006788746334555276">Cài đặt nội dung</translation>
-<translation id="7014087399239955356">Đang kiểm tra mật khẩu...</translation>
 <translation id="7029809446516969842">Mật khẩu</translation>
 <translation id="7053983685419859001">Chặn</translation>
 <translation id="7062545763355031412">Chấp nhận và chuyển đổi tài khoản</translation>

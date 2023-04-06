@@ -118,6 +118,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1091767800771861448">Pulsa Esc para omitir este paso (solo para compilaciones no oficiales).</translation>
 <translation id="1093457606523402488">Redes visibles:</translation>
 <translation id="1095761715416917775">Asegúrate de que siempre puedas acceder a tus datos sincronizados</translation>
+<translation id="1095879482467973146">Gestor de contraseñas de Google en la Web</translation>
 <translation id="109647177154844434">Si desinstalas Parallels Desktop, se eliminará tu imagen de Windows, lo que incluye sus aplicaciones, ajustes y datos. ¿Seguro que quieres continuar?</translation>
 <translation id="1097016918605049747">No se ha podido traducir esta página</translation>
 <translation id="1097658378307015415">Antes de iniciar sesión, entra como invitado para activar la red <ph name="NETWORK_ID" />.</translation>
@@ -1238,7 +1239,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2050339315714019657">Vertical</translation>
 <translation id="2051555741181591333">Inhabilitar punto de acceso automáticamente</translation>
 <translation id="2052572566310583903">Instaladas en tus otros dispositivos</translation>
-<translation id="2053105195397337973">Estamos explorando formas de restringir el seguimiento, así como que los sitios puedan detener el spam publicitario y el fraude.</translation>
+<translation id="2053105195397337973">Estamos buscando formas de restringir el seguimiento, al tiempo que permitimos que los sitios puedan detener el spam publicitario y el fraude.</translation>
 <translation id="2053312383184521053">Datos de estado de inactividad</translation>
 <translation id="2054240652864153171">¿Borrar datos del sitio <ph name="SITE_NAME" /> con particiones en <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Se cerrarán tus sesiones en esos sitios (también en las pestañas abiertas)</translation>
@@ -1327,7 +1328,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2114820389966440614">Ver Destacadas recientes y otros recuerdos aquí</translation>
 <translation id="2114896190328250491">Foto de <ph name="NAME" /></translation>
 <translation id="2114995631896158695">No hay ninguna tarjeta SIM insertada.</translation>
-<translation id="2116020356255810305">Habilitar inicio de la aplicación al iniciar</translation>
 <translation id="2116619964159595185">Los sitios se suelen conectar a dispositivos Bluetooth para usarlos en funciones como configurar o sincronizar una baliza electrónica, un monitor de actividad física o de salud, o una bombilla inteligente</translation>
 <translation id="2117655453726830283">Diapositiva siguiente</translation>
 <translation id="2119349053129246860">Abrir en <ph name="APP" /></translation>
@@ -1487,6 +1487,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2252017960592955005">Protección contra fisgones (beta)</translation>
 <translation id="225240747099314620">Permitir identificadores para contenido protegido (es posible que sea necesario reiniciar el ordenador)</translation>
 <translation id="2253318212986772520">No se puede obtener el PPD de <ph name="PRINTER_NAME" />.</translation>
+<translation id="2253927598983295051">Elige qué quieres compartir con <ph name="APP_NAME" /></translation>
 <translation id="2255077166240162850">Este dispositivo ha sido bloqueado en un dominio o modo diferente.</translation>
 <translation id="2255317897038918278">Impresión de fecha de Microsoft</translation>
 <translation id="2256115617011615191">Reiniciar ahora</translation>
@@ -1833,6 +1834,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2532589005999780174">Modo Contraste alto</translation>
 <translation id="2533649878691950253">Se ha bloqueado el acceso a tu ubicación precisa en este sitio, ya que normalmente no concedes este permiso</translation>
 <translation id="253434972992662860">&amp;Pausa</translation>
+<translation id="253498598929009420">El sitio podrá ver el contenido de tu pantalla</translation>
 <translation id="253557089021624350">Número de actividades en curso</translation>
 <translation id="2535799430745250929">No existe ninguna red móvil</translation>
 <translation id="2537395079978992874"><ph name="ORIGIN" /> puede ver y editar los siguientes archivos y carpetas</translation>
@@ -2750,7 +2752,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3371140690572404006">Dispositivo USB tipo C (puerto frontal derecho)</translation>
 <translation id="337286756654493126">Lee carpetas que abras en la aplicación</translation>
 <translation id="3373059063088819384">Abrir en modo Lectura</translation>
-<translation id="3373701465337594448">Cuando está activada la opción, una lista de los sitios que visitas y que estiman tus intereses se muestra aquí.</translation>
+<translation id="3373701465337594448">Cuando está activada la opción, aquí se muestra una lista de los sitios que visitas y que estiman tus intereses.</translation>
 <translation id="3374294321938930390">Se ha movido "<ph name="BOOKMARK_TITLE" />" a "<ph name="NEW_FOLDER_TITLE" />".</translation>
 <translation id="3378572629723696641">Esta extensión puede estar dañada.</translation>
 <translation id="3378627645871606983">Los permisos concedidos a Steam se aplicarán a todos los juegos y aplicaciones de Steam.</translation>
@@ -3255,7 +3257,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="380329542618494757">Nombre</translation>
 <translation id="3803345858388753269">Calidad de vídeo</translation>
 <translation id="3803367742635802571">Es posible que los sitios que visites dejen de funcionar como deben</translation>
-<translation id="3803583375545057606">¿Pedirle a tu padre o madre que habilite esta extensión?</translation>
 <translation id="380408572480438692">Habilitar la recogida de datos de rendimiento ayudará a Google a mejorar el sistema en el futuro. No se enviará ningún dato hasta que no envíes un informe de comentarios (Alt-Mayús-I) e incluyas datos de rendimiento. Puedes volver a esta pantalla para inhabilitar la recogida de datos en cualquier momento.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (ID de extensión "<ph name="EXTENSION_ID" />") no se puede utilizar en una pantalla de inicio de sesión.</translation>
 <translation id="3807747707162121253">&amp;Cancelar</translation>
@@ -3676,7 +3677,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4169535189173047238">No permitir</translation>
 <translation id="4170314459383239649">Borrar al salir</translation>
 <translation id="417096670996204801">Elige un perfil</translation>
-<translation id="41725145403849567">¿Pedirle a tu padre o madre que añada esta extensión?</translation>
 <translation id="4175137578744761569">Morado claro y blanco</translation>
 <translation id="4175737294868205930">Almacenamiento permanente</translation>
 <translation id="4176463684765177261">Inhabilitado</translation>
@@ -3877,7 +3877,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4366138410738374926">Impresión iniciada</translation>
 <translation id="4367513928820380646">Revisar permisos quitados</translation>
 <translation id="4369215744064167350">Solicitud de sitio web aprobada</translation>
-<translation id="4369735607080757018">Algunos tipos de datos (como la hora del día en la que has visto un anuncio) se compartirán entre los sitios para medir el rendimiento de los anuncios.</translation>
+<translation id="4369735607080757018">Algunos tipos de datos limitados (como la hora del día en la que has visto un anuncio) se compartirán entre los sitios para medir el rendimiento de los anuncios.</translation>
 <translation id="4370975561335139969">La dirección de correo electrónico y la contraseña que has introducido no coinciden</translation>
 <translation id="4374805630006466253">Usar otro teléfono o tablet</translation>
 <translation id="4374831787438678295">Instalador de Linux</translation>
@@ -5089,7 +5089,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{El PIN debe tener al menos un carácter}other{El PIN debe tener al menos # caracteres}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> necesita que te conectes a una red Wi‑Fi para descargar una actualización. También puedes descargarla con una conexión de uso medido (sujeto a cargos).</translation>
 <translation id="5476016146231427848">Reinicia tu dispositivo para usar Steam en Chromebook</translation>
-<translation id="5476897066181964657">Tu padre, madre o tutor/a debe darte permiso para que añadas esta extensión</translation>
 <translation id="5481273127572794904">No puede descargar varios archivos automáticamente</translation>
 <translation id="5481941284378890518">Añadir impresoras cercanas</translation>
 <translation id="5483785310822538350">Revocar acceso al archivo y al dispositivo</translation>
@@ -5186,7 +5185,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5555639311269196631">Desactivar punto de acceso</translation>
 <translation id="5556459405103347317">Volver a cargar</translation>
 <translation id="5558129378926964177">&amp;Ampliar</translation>
-<translation id="5558247502209241936">Permitir que se abra la aplicación en una ventana</translation>
 <translation id="5559311991468302423">Eliminar dirección</translation>
 <translation id="55601339223879446">Ajusta los extremos de tu escritorio en la pantalla</translation>
 <translation id="5561162485081632007">Detecta y te advierte de los eventos peligrosos cuando suceden</translation>
@@ -6012,7 +6010,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6305607932814307878">Política global:</translation>
 <translation id="6305702903308659374">Reproducir a un volumen normal aunque ChromeVox hable</translation>
 <translation id="6305909198255586420">Instálalo usando tu perfil principal</translation>
-<translation id="630750887748244481">Tus padres han desactivado "Permisos de sitios web, aplicaciones y extensiones" en Chrome. No se puede añadir esta extensión.</translation>
 <translation id="6307990684951724544">Sistema ocupado</translation>
 <translation id="6308493641021088955">Inicio de sesión proporcionado por <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Guardar &amp;enlace como...</translation>
@@ -6838,7 +6835,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7025190659207909717">Administración de servicio de datos para móviles</translation>
 <translation id="7025895441903756761">Seguridad y privacidad</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Abrir todas en una ventana de &amp;incógnito}=1{Abrir en una ventana de &amp;incógnito}other{Abrir todas ({COUNT}) en una ventana de &amp;incógnito}}</translation>
-<translation id="7028057921476386252">Tu padre, madre o tutor/a debe darte permiso para que habilites esta extensión</translation>
 <translation id="7029307918966275733">Crostini no está instalado. Para ver los créditos, instala Crostini.</translation>
 <translation id="7029809446516969842">Contraseñas</translation>
 <translation id="7030304022046916278">Envía URLs a Navegación segura para comprobarlas.</translation>
@@ -8217,7 +8213,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8251509999076836464">Emparejando con <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">Miniatura eliminada</translation>
 <translation id="825238165904109940">Mostrar siempre URL completas</translation>
-<translation id="8252538334423261825">No se pueden añadir extensiones</translation>
 <translation id="8252569384384439529">Subiendo...</translation>
 <translation id="8253198102038551905">Haz clic en + para consultar las propiedades de la red</translation>
 <translation id="8255212965098517578">Fotos, notificaciones y aplicaciones recientes</translation>
@@ -8673,7 +8668,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8666759526542103597">Acerca de la personalización de anuncios basada en el navegador</translation>
 <translation id="8667261224612332309">Tienes contraseñas que se pueden mejorar</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> se muestra ahora en pantalla completa y ha inhabilitado el cursor del ratón.</translation>
-<translation id="8667760277771450375">Estamos explorando formas de restringir el seguimiento entre sitios, así como que los sitios puedan detener el spam publicitario y el fraude.</translation>
+<translation id="8667760277771450375">Estamos explorando formas de restringir el seguimiento entre sitios, al tiempo que permitimos que los sitios puedan detener el spam publicitario y el fraude.</translation>
 <translation id="8668378421690365723">Es posible que tu dispositivo ya no funcione correctamente y que tenga problemas de seguridad y rendimiento.</translation>
 <translation id="8669284339312441707">Más cálido</translation>
 <translation id="8670537393737592796">Para volver aquí rápidamente, instala <ph name="APP_NAME" /> haciendo clic en el botón Instalar</translation>

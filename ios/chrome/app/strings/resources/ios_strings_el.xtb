@@ -206,7 +206,6 @@
 <translation id="2411749908844615428">{count,plural, =1{Διατίθεται {count} αποθηκευμένη διεύθυνση πάνω από το πληκτρολόγιο.}other{Διατίθενται {count} αποθηκευμένες διευθύνσεις πάνω από το πληκτρολόγιο.}}</translation>
 <translation id="2421004566762153674">Αποκλεισμός cookie τρίτου μέρους</translation>
 <translation id="2421044535038393232">Συνέχιση επεξεργασίας</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} παραβιασμένος κωδικός πρόσβασης}other{{COUNT} παραβιασμένοι κωδικοί πρόσβασης}}</translation>
 <translation id="2434405374328098816">Έχετε ήδη αποθηκεύσει έναν κωδικό πρόσβασης για τον χρήστη "<ph name="USERNAME" />" στον ιστότοπο <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Εμφάνιση κωδικού πρόσβασης</translation>
 <translation id="2451654228769116489">Καρφίτσωμα καρτέλας</translation>
@@ -925,7 +924,6 @@
 <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Πρόσφατες καρτέλες</translation>
 <translation id="7006788746334555276">Ρυθμίσεις περιεχομένου</translation>
-<translation id="7014087399239955356">Έλεγχος κωδικών πρόσβασης…</translation>
 <translation id="7029809446516969842">Κωδ. πρόσβασης</translation>
 <translation id="7053983685419859001">Αποκλεισμός</translation>
 <translation id="7062545763355031412">Αποδοχή και εναλλαγή λογαριασμών</translation>

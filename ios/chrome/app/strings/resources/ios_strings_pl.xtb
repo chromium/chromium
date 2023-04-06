@@ -206,7 +206,6 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="2411749908844615428">{count,plural, =1{{count} zapisany adres dostępny nad klawiaturą.}few{{count} zapisane adresy dostępne nad klawiaturą.}many{{count} zapisanych adresów dostępnych nad klawiaturą.}other{{count} zapisanego adresu dostępnego nad klawiaturą.}}</translation>
 <translation id="2421004566762153674">Blokowanie plików cookie innych firm</translation>
 <translation id="2421044535038393232">Edytuj dalej</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} przejęte hasło}few{{COUNT} przejęte hasła}many{{COUNT} przejętych haseł}other{{COUNT} przejętego hasła}}</translation>
 <translation id="2434405374328098816">Masz już zapisane hasło do strony <ph name="WEBSITE" /> powiązane z nazwą użytkownika „<ph name="USERNAME" />”</translation>
 <translation id="2435457462613246316">Pokaż hasło</translation>
 <translation id="2451654228769116489">Przypnij kartę</translation>
@@ -924,7 +923,6 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Ostatnie karty</translation>
 <translation id="7006788746334555276">Ustawienia treści</translation>
-<translation id="7014087399239955356">Sprawdzam hasła…</translation>
 <translation id="7029809446516969842">Hasła</translation>
 <translation id="7053983685419859001">Blokuj</translation>
 <translation id="7062545763355031412">Zaakceptuj i przełącz konta</translation>

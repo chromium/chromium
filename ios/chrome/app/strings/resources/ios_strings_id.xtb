@@ -206,7 +206,6 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 <translation id="2411749908844615428">{count,plural, =1{{count} alamat tersimpan tersedia di atas keyboard Anda.}other{{count} alamat tersimpan tersedia di atas keyboard Anda.}}</translation>
 <translation id="2421004566762153674">Memblokir cookie pihak ketiga</translation>
 <translation id="2421044535038393232">Terus Edit</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} Sandi Telah Dibobol}other{{COUNT} Sandi Telah Dibobol}}</translation>
 <translation id="2434405374328098816">Anda sudah menyimpan sandi untuk "<ph name="USERNAME" />" di <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Tampilkan sandi</translation>
 <translation id="2451654228769116489">Sematkan Tab</translation>
@@ -924,7 +923,6 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Tab Terbaru</translation>
 <translation id="7006788746334555276">Setelan Konten</translation>
-<translation id="7014087399239955356">Memeriksa Sandi...</translation>
 <translation id="7029809446516969842">Sandi</translation>
 <translation id="7053983685419859001">Blokir</translation>
 <translation id="7062545763355031412">Terima dan berganti akun</translation>

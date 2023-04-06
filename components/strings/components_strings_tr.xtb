@@ -1340,6 +1340,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4274173425554582601">Bilgisayar ve elektronik</translation>
 <translation id="4275830172053184480">Cihazınızı yeniden başlatın</translation>
 <translation id="4277028893293644418">Şifreyi sıfırla</translation>
+<translation id="4277937682389409325">Yerel adres</translation>
 <translation id="4278390842282768270">İzin veriliyor</translation>
 <translation id="4281998142035485137">{0,plural, =1{Gizli dosya açılsın mı?}other{Gizli dosyalar açılsın mı?}}</translation>
 <translation id="4282346679996504092">Bu ürünle ilgili uyarılar devre dışı bırakıldı ve yer işareti kaldırıldı</translation>
@@ -3126,7 +3127,7 @@ Ek ayrıntılar:
 <translation id="8705331520020532516">Seri Numarası</translation>
 <translation id="8708134712139312373">Bluetooth cihazlarına bağlanmak isteyebilir</translation>
 <translation id="8710842507289500830">Yazı tipi stili</translation>
-<translation id="8712637175834984815">Anlaşıldı</translation>
+<translation id="8712637175834984815">Anladım</translation>
 <translation id="8713438021996895321">Şiir</translation>
 <translation id="8715502133575042727">Çocuk edebiyatı</translation>
 <translation id="8718314106902482036">Ödeme işlemi tamamlanmadı</translation>

@@ -178,6 +178,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2218443599109088993">Zoom ud</translation>
 <translation id="2230173723195178503">Websiden er indlæst</translation>
 <translation id="2239626343334228536">Browserdata ryddes...</translation>
+<translation id="22508856139286506">Afviste advarsler (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Menu → Historik</translation>
 <translation id="2256933947031277845">Din organisation tillader kun login med bestemte konti.</translation>
 <translation id="225943865679747347">Fejlkode: <ph name="ERROR_CODE" /></translation>
@@ -205,7 +206,6 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="2411749908844615428">{count,plural, =1{{count} gemt adresse er tilgængelig over dit tastatur.}one{{count} gemt adresse er tilgængelig over dit tastatur.}other{{count} gemte adresser er tilgængelige over dit tastatur.}}</translation>
 <translation id="2421004566762153674">Blokering af cookies fra tredjeparter</translation>
 <translation id="2421044535038393232">Rediger videre</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} kompromitteret adgangskode}one{{COUNT} kompromitteret adgangskode}other{{COUNT} kompromitterede adgangskoder}}</translation>
 <translation id="2434405374328098816">Du har allerede gemt en adgangskode for "<ph name="USERNAME" />" på <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Vis adgangskode</translation>
 <translation id="2451654228769116489">Fastgør fane</translation>
@@ -923,7 +923,6 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Seneste faner</translation>
 <translation id="7006788746334555276">Indstillinger for indhold</translation>
-<translation id="7014087399239955356">Tjekker adgangskoder...</translation>
 <translation id="7029809446516969842">Adgangskoder</translation>
 <translation id="7053983685419859001">Bloker</translation>
 <translation id="7062545763355031412">Acceptér, og skift konto</translation>

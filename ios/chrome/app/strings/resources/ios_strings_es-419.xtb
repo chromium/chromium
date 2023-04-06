@@ -206,7 +206,6 @@ Tampoco pueden usar cookies para ver la actividad de navegación en diferentes s
 <translation id="2411749908844615428">{count,plural, =1{Hay {count} dirección guardada disponible sobre el teclado.}other{Hay {count} direcciones guardadas disponibles sobre el teclado.}}</translation>
 <translation id="2421004566762153674">Se están bloqueando las cookies de terceros</translation>
 <translation id="2421044535038393232">Seguir editando</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} contraseña hackeada}other{{COUNT} contraseñas hackeadas}}</translation>
 <translation id="2434405374328098816">Ya guardaste una contraseña para "<ph name="USERNAME" />" en <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Mostrar contraseña</translation>
 <translation id="2451654228769116489">Fijar pestaña</translation>
@@ -924,7 +923,6 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Pestañas recientes</translation>
 <translation id="7006788746334555276">Configuración de contenido</translation>
-<translation id="7014087399239955356">Revisando contraseñas…</translation>
 <translation id="7029809446516969842">Contraseñas</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7062545763355031412">Aceptar y cambiar de cuenta</translation>

@@ -20,6 +20,7 @@
 <translation id="1103523840287552314">Toujours traduire les pages rédigées en <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Retourner à la fenêtre ouverte</translation>
 <translation id="1112015203684611006">Échec impr.</translation>
+<translation id="1118266931011974190">Après <ph name="THRESHOLD" /> jours</translation>
 <translation id="1125564390852150847">Créer un onglet.</translation>
 <translation id="1126013303640354461">Les modes de paiement et les adresses de Google Pay ne seront pas chiffrés. L'historique de navigation de Chrome ne se synchronisera pas.
 Seule une personne connaissant votre phrase de passe peut lire vos données chiffrées. La phrase de passe n'est ni envoyée à Google, ni stockée par Google. Si vous oubliez votre phrase de passe ou si vous souhaitez la modifier, vous devrez réinitialiser la synchronisation. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
@@ -177,6 +178,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2218443599109088993">Zoom arrière</translation>
 <translation id="2230173723195178503">Page Web chargée</translation>
 <translation id="2239626343334228536">Effacement des données de navigation en cours…</translation>
+<translation id="22508856139286506">Avertissements ignorés (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Menu → Historique</translation>
 <translation id="2256933947031277845">Votre organisation vous autorise à vous connecter à certains comptes seulement.</translation>
 <translation id="225943865679747347">Code d'erreur : <ph name="ERROR_CODE" /></translation>
@@ -204,7 +206,6 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="2411749908844615428">{count,plural, =1{{count} adresse enregistrée proposée en haut du clavier.}one{{count} adresse enregistrée proposée en haut du clavier.}other{{count} adresses enregistrées proposées en haut du clavier.}}</translation>
 <translation id="2421004566762153674">Blocage des témoins tiers</translation>
 <translation id="2421044535038393232">Continuer à modifier</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} mot de passe compromis}one{{COUNT} mots de passe compromis}other{{COUNT} mots de passe compromis}}</translation>
 <translation id="2434405374328098816">Vous avez déjà enregistré un mot de passe pour l'utilisateur « <ph name="USERNAME" /> » sur le site <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Affich. mot de passe</translation>
 <translation id="2451654228769116489">Épingler l'onglet</translation>
@@ -231,6 +232,7 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="2626236249646841566">Vérifiez votre connexion et réessayez de vous connecter.</translation>
 <translation id="2637313651144986786">Rechercher des onglets…</translation>
 <translation id="2647269890314209800">Témoins en cours d'utilisation</translation>
+<translation id="2648721026697078500">Ne jamais déplacer</translation>
 <translation id="2648803196158606475">Supprimer les éléments lus</translation>
 <translation id="2653659639078652383">Envoyer</translation>
 <translation id="2664621323652615289">Arrêter</translation>
@@ -346,6 +348,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3305294846493618482">plus</translation>
 <translation id="3311748811247479259">Désactivé</translation>
 <translation id="3324193307694657476">Ligne adresse 2</translation>
+<translation id="3328459813621383194">Déplacer les onglets inactifs</translation>
 <translation id="3328801116991980348">Information sur le site</translation>
 <translation id="3371831930909698441">La traduction est disponible. Vous trouverez les options vers le bas de l'écran.</translation>
 <translation id="3377063233124932127">Désormais, vos favoris, vos mots de passe et d'autres éléments que vous avez enregistrés s'affichent en haut.</translation>
@@ -510,6 +513,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="452750746583162491">Examiner vos données synchronisées</translation>
 <translation id="4536418791685807335">Essayez de vous reconnecter.</translation>
 <translation id="4540780316273593836">Un problème est survenu</translation>
+<translation id="4550040941166547650">Uniquement sur cet appareil</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Fermer {COUNT} onglet inactif?}one{Fermer {COUNT} onglet inactif?}other{Fermer {COUNT} onglets inactifs?}}</translation>
 <translation id="457386861538956877">Autres...</translation>
 <translation id="4587235830039045480">Enregistrer le mot de passe dans votre compte Google</translation>
@@ -763,6 +767,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6193424046394092997">{count,plural, =1{Marqué comme favori dans {title}}one{Marqué comme favori dans {title}}other{Marqués comme favoris dans {title}}}</translation>
 <translation id="6196207969502475924">Recherche vocale</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Fermer {COUNT} onglet}one{Fermer {COUNT} onglet}other{Fermer {COUNT} onglets}}</translation>
+<translation id="6210079381482819663">Les onglets non utilisés pendant <ph name="THRESHOLD" /> jours ou plus sont déplacés ici. Vous pouvez changer cette option en tout temps dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="6213567400989743524">Avertissements ignorés</translation>
 <translation id="6219550825416862075">Rebonjour</translation>
 <translation id="6219688215832490856">Ne jamais traduire</translation>
@@ -918,7 +923,6 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Onglets récents</translation>
 <translation id="7006788746334555276">Paramètres de contenu</translation>
-<translation id="7014087399239955356">Vérification des mots de passe en cours…</translation>
 <translation id="7029809446516969842">Mots de passe</translation>
 <translation id="7053983685419859001">Bloquer</translation>
 <translation id="7062545763355031412">Accepter et changer de compte</translation>
@@ -1058,6 +1062,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8059533439631660104">Réduit la section.</translation>
 <translation id="8065292699993359127">Ouvrir les URL dans Chrome en mode de navigation privée</translation>
 <translation id="806745655614357130">Conserver mes données à part</translation>
+<translation id="8069394452933076548">Choisir quand les onglets qui n'ont pas été utilisés récemment sont déplacés vers la section des onglets inactifs.</translation>
 <translation id="8073670137947914548">Téléchargement terminé</translation>
 <translation id="8073872304774253879">Améliorer les recherches et de la navigation</translation>
 <translation id="8076492880354921740">Onglets</translation>
@@ -1202,6 +1207,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="9055772144595778347">Connexion impossible</translation>
 <translation id="9055960261314198756">La protection renforcée est désactivée</translation>
 <translation id="9057972802061533987">L'abonnement a échoué. Un problème est survenu.</translation>
+<translation id="9061495354530850708">Dans votre compte Google</translation>
 <translation id="9065203028668620118">Modifier</translation>
 <translation id="9068336935206019333">Ouvrir dans Chrome en navigation privée</translation>
 <translation id="9079935439869366234">Tout marquer comme non lu</translation>

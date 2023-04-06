@@ -20,6 +20,7 @@
 <translation id="1103523840287552314">Översätt alltid <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Byt till Öppet fönster</translation>
 <translation id="1112015203684611006">Utskriftsfel.</translation>
+<translation id="1118266931011974190">Efter <ph name="THRESHOLD" /> dagar</translation>
 <translation id="1125564390852150847">Skapa en ny flik.</translation>
 <translation id="1126013303640354461">Betalningsmetoder och adresser från Google Pay krypteras inte. Webbhistorik från Chrome synkroniseras inte.
 Din krypterade data kan endast läsas av en person som har din lösenfras. Lösenfrasen varken skickas till eller lagras av Google. Om du glömmer lösenfrasen eller vill ändra den här inställningen måste du återställa synkroniseringen. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
@@ -205,7 +206,6 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="2411749908844615428">{count,plural, =1{{count} sparad adress visas ovanför tangentbordet.}other{{count} sparade adresser visas ovanför tangentbordet.}}</translation>
 <translation id="2421004566762153674">Cookies från tredje part blockeras</translation>
 <translation id="2421044535038393232">Fortsätt redigera</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} utsatt lösenord}other{{COUNT} utsatta lösenord}}</translation>
 <translation id="2434405374328098816">Du har redan sparat ett lösenord för <ph name="USERNAME" /> på <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Visa lösenord</translation>
 <translation id="2451654228769116489">Fäst flik</translation>
@@ -232,6 +232,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="2626236249646841566">Kontrollera anslutningen och försök logga in igen.</translation>
 <translation id="2637313651144986786">Sök bland flikar …</translation>
 <translation id="2647269890314209800">Cookies är aktiverade</translation>
+<translation id="2648721026697078500">Flytta aldrig</translation>
 <translation id="2648803196158606475">Radera lästa</translation>
 <translation id="2653659639078652383">Skicka</translation>
 <translation id="2664621323652615289">Stopp</translation>
@@ -347,6 +348,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3305294846493618482">mer</translation>
 <translation id="3311748811247479259">Av</translation>
 <translation id="3324193307694657476">Adressrad 2</translation>
+<translation id="3328459813621383194">Flytta inaktiva flikar</translation>
 <translation id="3328801116991980348">Platsinformation</translation>
 <translation id="3371831930909698441">Översättning finns. Alternativ visas nära skärmens nedre kant.</translation>
 <translation id="3377063233124932127">Nu visas dina sparade bokmärken, lösenord och annat högst upp.</translation>
@@ -511,6 +513,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="452750746583162491">Granska din synkroniserade data</translation>
 <translation id="4536418791685807335">Försök att logga in igen.</translation>
 <translation id="4540780316273593836">Något gick fel</translation>
+<translation id="4550040941166547650">Bara på den här enheten</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Vill du stänga {COUNT} inaktiv flik?}other{Vill du stänga {COUNT} inaktiva flikar?}}</translation>
 <translation id="457386861538956877">Mer...</translation>
 <translation id="4587235830039045480">Spara lösenord i Google-kontot</translation>
@@ -764,6 +767,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6193424046394092997">{count,plural, =1{Bokmärkt i {title}}other{Bokmärkt i {title}}}</translation>
 <translation id="6196207969502475924">Röstsökning</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Stäng {COUNT} flik}other{Stäng {COUNT} flikar}}</translation>
+<translation id="6210079381482819663">Flikar som inte har använts på <ph name="THRESHOLD" /> dagar eller mer flyttas hit. Du kan när som helst ändra detta i <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" />.</translation>
 <translation id="6213567400989743524">Ignorerade varningar</translation>
 <translation id="6219550825416862075">Välkommen tillbaka</translation>
 <translation id="6219688215832490856">Översätt aldrig</translation>
@@ -919,7 +923,6 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Senaste flikarna</translation>
 <translation id="7006788746334555276">Innehållsinställningar</translation>
-<translation id="7014087399239955356">Kontrollerar lösenord …</translation>
 <translation id="7029809446516969842">Lösenord</translation>
 <translation id="7053983685419859001">Blockera</translation>
 <translation id="7062545763355031412">Godkänn och byt konto</translation>
@@ -1059,6 +1062,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8059533439631660104">Komprimera avsnittet.</translation>
 <translation id="8065292699993359127">Öppna webbadresser i Chrome i inkognitoläge</translation>
 <translation id="806745655614357130">Håll min data separat</translation>
+<translation id="8069394452933076548">Välj när flikar som inte har använts nyligen ska flyttas till avsnittet för inaktiva flikar.</translation>
 <translation id="8073670137947914548">Nedladdningen är klar</translation>
 <translation id="8073872304774253879">Förbättra sökningar och surfande</translation>
 <translation id="8076492880354921740">Flikar</translation>
@@ -1203,6 +1207,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="9055772144595778347">Kan inte logga in</translation>
 <translation id="9055960261314198756">Utökat skydd är inaktiverat</translation>
 <translation id="9057972802061533987">Det gick inte att börja följa detta. Något gick fel.</translation>
+<translation id="9061495354530850708">I Google-kontot</translation>
 <translation id="9065203028668620118">Redigera</translation>
 <translation id="9068336935206019333">Öppna i Chromes inkognitoläge</translation>
 <translation id="9079935439869366234">Markera alla som olästa</translation>

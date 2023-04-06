@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">ഗ്രഹം</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> ഒഴിവാക്കി.</translation>
 <translation id="2307462900900812319">നെറ്റ്‌വർക്ക് കോൺഫിഗർ ചെയ്യുക</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> ഐഡിയിൽ ഉള്ള വിപുലീകരണം കണ്ടെത്താനായില്ല. നിങ്ങളുടെ അഡ്‌മിനെ ബന്ധപ്പെടുക.}other{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> ഐഡികളിൽ ഉള്ള വിപുലീകരണങ്ങൾ കണ്ടെത്താനായില്ല. നിങ്ങളുടെ അഡ്‌മിനെ ബന്ധപ്പെടുക.}}</translation>
 <translation id="2325650632570794183">ഈ ഫയൽ തരം പിന്തുണയ്‌ക്കുന്നില്ല. ഈ ഫയൽ തരം തുറക്കാൻ കഴിയുന്ന ഒരു ആപ്പ് കണ്ടെത്തുന്നതിന് ഒരു Chrome വെബ് സ്റ്റോർ കണ്ടെത്തുക.</translation>
 <translation id="2326539130272988168">ബൾഗേറിയൻ</translation>
 <translation id="2337715497728194187">Bruschetta-യുമായി പങ്കിടുക</translation>

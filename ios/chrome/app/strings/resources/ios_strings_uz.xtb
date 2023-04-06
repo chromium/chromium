@@ -206,7 +206,6 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="2411749908844615428">{count,plural, =1{{count} ta saqlangan manzil klaviatura ustida chiqadi.}other{{count} ta saqlangan manzil klaviatura ustida chiqadi.}}</translation>
 <translation id="2421004566762153674">Tashqi cookie fayllarni bloklash</translation>
 <translation id="2421044535038393232">Tahrirlashda davom etish</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} ta parol oshkor etilgan}other{{COUNT} ta parol oshkor etilgan}}</translation>
 <translation id="2434405374328098816"><ph name="WEBSITE" /> saytidagi <ph name="USERNAME" /> paroli allaqachon saqlangan</translation>
 <translation id="2435457462613246316">Parolni ko‘rsatish</translation>
 <translation id="2451654228769116489">Varaqni mahkamlash</translation>
@@ -924,7 +923,6 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Oxirgi varaqlar</translation>
 <translation id="7006788746334555276">Kontent sozlamalari</translation>
-<translation id="7014087399239955356">Parollar tekshirilmoqda…</translation>
 <translation id="7029809446516969842">Parollar</translation>
 <translation id="7053983685419859001">Taqiqlash</translation>
 <translation id="7062545763355031412">Qabul qilish va kirish</translation>

@@ -206,7 +206,6 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="2411749908844615428">{count,plural, =1{{count} adresă salvată disponibilă deasupra tastaturii.}few{{count} adrese salvate disponibile deasupra tastaturii.}other{{count} de adrese salvate disponibile deasupra tastaturii.}}</translation>
 <translation id="2421004566762153674">Blocarea cookie-urilor terță parte</translation>
 <translation id="2421044535038393232">Continuă editarea</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} parolă compromisă}few{{COUNT} parole compromise}other{{COUNT} de parole compromise}}</translation>
 <translation id="2434405374328098816">Ai salvat deja o parolă pentru <ph name="USERNAME" /> la <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Afișați parola</translation>
 <translation id="2451654228769116489">Fixează fila</translation>
@@ -924,7 +923,6 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">File recente</translation>
 <translation id="7006788746334555276">Setări privind conținutul</translation>
-<translation id="7014087399239955356">Se verifică parolele…</translation>
 <translation id="7029809446516969842">Parole</translation>
 <translation id="7053983685419859001">Blochează</translation>
 <translation id="7062545763355031412">Acceptă și comută conturile</translation>

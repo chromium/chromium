@@ -1343,7 +1343,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2114820389966440614">Čia galite peržiūrėti „Vėliausi svarbiausi“ ir kitus prisiminimus</translation>
 <translation id="2114896190328250491"><ph name="NAME" /> nuotrauka</translation>
 <translation id="2114995631896158695">Neįdėta jokių SIM kortelių</translation>
-<translation id="2116020356255810305">Įgalinti programos paleidimą per paleistį</translation>
 <translation id="2116619964159595185">Paprastai svetainėse prisijungiama prie „Bluetooth“ įrenginių vykdant tam tikras funkcijas, pvz., nustatant ar sinchronizuojant žemo energijos lygio signalų siųstuvą, sveikatos ar mankštos stebėjimo priemonę arba išmaniojo šviestuvo lemputę</translation>
 <translation id="2117655453726830283">Kita skaidrė</translation>
 <translation id="2119349053129246860">Atidaryti naudojant „<ph name="APP" />“</translation>
@@ -3275,7 +3274,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="380329542618494757">Vardas ir pavardė</translation>
 <translation id="3803345858388753269">Vaizdo įrašo kokybė</translation>
 <translation id="3803367742635802571">Svetainės, kuriose lankotės, gali neveikti taip, kaip numatyta</translation>
-<translation id="3803583375545057606">Paprašyti vieno iš tėvų įgalinti šį plėtinį?</translation>
 <translation id="380408572480438692">Įgalinus našumo duomenų rinkimą „Google“ galės lengviau tobulinti sistemą laikui bėgant. Jokie duomenys nesiunčiami, kol pateikiate atsiliepimų ataskaitą („Alt“ – „Shift“ – I) ir įtraukiate našumo duomenis. Bet kada galite grįžti į šį ekraną ir neleisti rinkti duomenų.</translation>
 <translation id="3807249107536149332">„<ph name="EXTENSION_NAME" />“ (plėtinio ID <ph name="EXTENSION_ID" />) neleidžiamas prisijungimo ekrane.</translation>
 <translation id="3807747707162121253">&amp;Atšaukti</translation>
@@ -3697,7 +3695,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4169535189173047238">Neleisti</translation>
 <translation id="4170314459383239649">Išvalyti išeinant</translation>
 <translation id="417096670996204801">Profilio pasirinkimas</translation>
-<translation id="41725145403849567">Paprašyti vieno iš tėvų pridėti šį plėtinį?</translation>
 <translation id="4175137578744761569">Šviesiai violetinė ir balta</translation>
 <translation id="4175737294868205930">Nuolatinė saugykla</translation>
 <translation id="4176463684765177261">Išjungta</translation>
@@ -5111,7 +5108,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN kodą turi sudaryti bent vienas simbolis}one{PIN kodą turi sudaryti bent # simbolis}few{PIN kodą turi sudaryti bent # simboliai}many{PIN kodą turi sudaryti bent # simbolio}other{PIN kodą turi sudaryti bent # simbolių}}</translation>
 <translation id="5474859849784484111">Domenui <ph name="MANAGER" /> reikia, kad dabar prisijungtumėte prie „Wi-Fi“ ir atsisiųstumėte naujinį. Arba atsisiųskite naudodami matuojamą ryšį (gali būti taikomi mokesčiai).</translation>
 <translation id="5476016146231427848">Paleiskite įrenginį iš naujo, kad galėtumėte naudoti „Steam“ „Chromebook“ įrenginyje</translation>
-<translation id="5476897066181964657">Vienas iš tėvų arba globėjas turi patvirtinti, kad galite pridėti šį plėtinį</translation>
 <translation id="5481273127572794904">Neleidžiama automatiškai atsisiųsti kelių failų</translation>
 <translation id="5481941284378890518">Pridėti netoliese esančius spausdintuvus</translation>
 <translation id="5483785310822538350">Anuliuoti galimybę pasiekti failą ir įrenginį</translation>
@@ -5208,7 +5204,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5555639311269196631">Išjungti viešosios interneto prieigos tašką</translation>
 <translation id="5556459405103347317">Įkelti iš naujo</translation>
 <translation id="5558129378926964177">Artin&amp;ti</translation>
-<translation id="5558247502209241936">Įgalinti programos atidarymą lange</translation>
 <translation id="5559311991468302423">Ištrinti adresą</translation>
 <translation id="55601339223879446">Sureguliuokite stalinio kompiuterio ribas pagal vaizdą</translation>
 <translation id="5561162485081632007">Aptinka ir įspėja jus apie pavojingus įvykius, kai jų nutinka</translation>
@@ -6035,7 +6030,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6305607932814307878">Visuotinė politika:</translation>
 <translation id="6305702903308659374">Leisti įprastu garsumu net tada, kai kalba „ChromeVox“</translation>
 <translation id="6305909198255586420">Įdiekite naudodami pagrindinį profilį</translation>
-<translation id="630750887748244481">Jūsų tėvai išjungė svetainių, programų ir plėtinių leidimus sistemoje „Chrome“. Neleidžiama pridėti šio plėtinio.</translation>
 <translation id="6307990684951724544">Sistema užimta</translation>
 <translation id="6308493641021088955">Prisijungimo duomenis pateikė „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="6308937455967653460">Išsaugoti nuorod&amp;ą kaip...</translation>
@@ -6867,7 +6861,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7025190659207909717">Duomenų mobiliesiems paslaugos valdymas</translation>
 <translation id="7025895441903756761">Sauga ir privatumas</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Atidaryti viską &amp;inkognito lange}=1{Atidaryti &amp;inkognito lange}one{Atidaryti viską ({COUNT}) &amp;inkognito lange}few{Atidaryti viską ({COUNT}) &amp;inkognito lange}many{Atidaryti viską ({COUNT}) &amp;inkognito lange}other{Atidaryti viską ({COUNT}) &amp;inkognito lange}}</translation>
-<translation id="7028057921476386252">Vienas iš tėvų arba globėjų turi patvirtinti, kad galite įgalinti šį plėtinį</translation>
 <translation id="7029307918966275733">„Crostini“ neįdiegta. Jei norite peržiūrėti titrus, įdiekite „Crostini“.</translation>
 <translation id="7029809446516969842">Slaptažodžiai</translation>
 <translation id="7030304022046916278">Siunčia URL Saugaus naršymo funkcijai, kad juos patikrintų</translation>
@@ -8246,7 +8239,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8251509999076836464">Susiejama su „<ph name="DEVICE_NAME" />“</translation>
 <translation id="8251578425305135684">Miniatiūra pašalinta.</translation>
 <translation id="825238165904109940">Visada rodyti visus URL</translation>
-<translation id="8252538334423261825">Nepavyko pridėti plėtinio</translation>
 <translation id="8252569384384439529">Įkeliama...</translation>
 <translation id="8253198102038551905">Spustelėkite „+“, kad peržiūrėtumėte tinklo savybes</translation>
 <translation id="8255212965098517578">Naujausios nuotraukos, pranešimai ir programos</translation>

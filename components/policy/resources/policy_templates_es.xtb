@@ -100,6 +100,7 @@ Ten en cuenta que en <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> y <ph 
 <translation id="1079425471279127373">Si se establece la política, se permitirá que algunos orígenes de aplicaciones web de instalación forzada obtengan atributos de dispositivo (por ejemplo, el número de serie o el nombre de host) usando la API Device Attributes.
 
       La API Device Attributes es una lista de APIs web. Consulta https://wicg.github.io/WebApiDevice/device_attributes. Solo están disponibles para los orígenes que se correspondan con aplicaciones web de instalación forzada mediante <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> o la política que esté configurada en la sesión de kiosco.</translation>
+<translation id="1079498696402787191">Usar el valor predeterminado para los hashes permitidos en los handshakes de TLS</translation>
 <translation id="1079801999187584280">No permitir el uso de herramientas para desarrolladores</translation>
 <translation id="1082802595100075771">Permitir a los usuarios elegir usar un servicio de Google anónimo para proporcionar descripciones automáticas para las imágenes no etiquetadas</translation>
 <translation id="1087057100912843460">Permitir las actualizaciones</translation>
@@ -3230,6 +3231,7 @@ Esta política es una solución temporal y se eliminará gradualmente (está pre
 <translation id="3973371701361892765">No ocultar automáticamente los archivos</translation>
 <translation id="3977304360459208438">Utilizar el valor predeterminado para los paquetes de cifrado 3DES en TLS</translation>
 <translation id="3979738908158213640">Direcciones URL a las que se otorgará acceso para realizar la atestación del dispositivo durante la autenticación de SAML</translation>
+<translation id="3982322576186033243">No permitir hashes no seguros en handshakes de TLS</translation>
 <translation id="3983162212222338509">La resolución de DNS del sistema puede ejecutarse dentro o fuera del proceso de red, o bien parcialmente dentro y fuera de él, en función de la configuración del sistema y las marcas de funciones.</translation>
 <translation id="3986700049001404598">Permitir que los usuarios finalicen procesos con el administrador de tareas de Chrome</translation>
 <translation id="398884292557092447">Si se asigna el valor "True" a esta política o no se le asigna ninguno, los usuarios podrán controlar las sugerencias de Autocompletar para la información de tarjetas de crédito en la interfaz.
@@ -4635,6 +4637,7 @@ Nota: Esta política no se aplica a las actualizaciones de HSTS.</translation>
 <translation id="5328965694451556034">Informar de inicio o cierre de sesión</translation>
 <translation id="5329018127554115226">El modo Alta eficiencia se inhabilitará.</translation>
 <translation id="5330684698007383292">Permitir que <ph name="PRODUCT_FRAME_NAME" /> procese los tipos de contenido que se indican a continuación</translation>
+<translation id="5331342092479819688">Permitir hashes no seguros en handshakes de TLS</translation>
 <translation id="5331746669335642668">La política relativa a la nube de <ph name="PRODUCT_NAME" /> anula la política de la plataforma.</translation>
 <translation id="5334501839642146593">Nunca enviar métricas a Google</translation>
 <translation id="5340008866815063393">Habilitar informes de datos sobre políticas</translation>
@@ -4943,6 +4946,9 @@ Si no se establece la política, ningún dominio podrá acceder a URLs file:// e
           Si inhabilitas esta opción, no se podrán ver las contraseñas almacenadas sin cifrar en la ventana del gestor de contraseñas.
 
           Si habilitas esta opción o si no asignas un valor a esta política, los usuarios podrán ver sus contraseñas sin cifrar en el gestor de contraseñas.</translation>
+<translation id="5618908165853580022">Esta política permite que <ph name="PRODUCT_NAME" /> use hashes antiguos no seguros durante el proceso de handshake de TLS.
+
+      Si esta política no se configura, <ph name="PRODUCT_NAME" /> seguirá el proceso de lanzamiento predeterminado para bloquear los hashes no seguros. Si se habilita, <ph name="PRODUCT_NAME" /> permitirá que un servidor use hashes no seguros al negociar un handshake de TLS. Si se inhabilita, <ph name="PRODUCT_NAME" /> no permitirá que un servidor use hashes no seguros al negociar un handshake de TLS. Esta política se eliminará en la versión 119.</translation>
 <translation id="5619498195290770056">Si asignas un valor a esta política, podrás crear una lista de patrones de URL donde se especifique qué sitios no podrán establecer cookies.
 
       Si no se le asigna ningún valor, se utilizará <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> en todos los sitios, si se ha definido previamente. Si no se ha definido, se aplicará la configuración personal del usuario.
@@ -7552,6 +7558,13 @@ La finalidad de esta política de empresa es permitir que los administradores co
 <translation id="7999336306414770162">Inhabilitar los informes sobre VPD del dispositivo</translation>
 <translation id="7999818120028621358">Habilitar informes de eventos de prevención de filtración de datos</translation>
 <translation id="8001701200415781021">Restringir las cuentas de Google que se pueden establecer como cuentas principales de navegador en <ph name="PRODUCT_NAME" /></translation>
+<translation id="8005143535239983809">Esta política controla la capacidad del navegador de recordar automáticamente contraseñas en sitios web y de guardarlas en el gestor de contraseñas integrado. No restringe el acceso ni cambia el contenido de las contraseñas que se han guardado en el gestor de contraseñas y que posiblemente se hayan sincronizado con el perfil de la cuenta de Google y con <ph name="ANDROID_NAME" />.
+
+Si se habilita esta política, los usuarios podrán hacer que <ph name="PRODUCT_NAME" /> recuerde las contraseñas y se las proporcione la próxima vez que inicien sesión en un sitio.
+
+Si se inhabilita, los usuarios no podrán guardar las nuevas contraseñas, pero las contraseñas guardadas anteriormente seguirán funcionando.
+
+Si se define esta política, los usuarios no podrán modificarla en <ph name="PRODUCT_NAME" />. Si no se define, los usuarios podrán desactivar el guardado de contraseñas.</translation>
 <translation id="800595420827930383">Usar el verificador de certificados de la plataforma antigua</translation>
 <translation id="8006219716745491366">Si <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> está activada y se asigna un valor a <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" />, se especificará una lista con URL alternativas para extraer términos de búsqueda del buscador. Las URL deben incluir la cadena <ph name="SEARCH_TERM_MARKER" />.
 
@@ -8330,6 +8343,11 @@ Esta política asigna IDs de configuración a las configuraciones de VM. Si una 
 <translation id="8687958770985542440">Volver a habilitar la API v0 de componentes web hasta M84.</translation>
 <translation id="8693243869659262736">Utilizar cliente DNS integrado</translation>
 <translation id="8695006038397632296">Crear y subir solicitudes de instalación de extensiones a la consola de administración</translation>
+<translation id="8695108198606654558">Esta política solo controla el comportamiento de importación al ejecutar el navegador por primera vez después de instalarlo. Permite una transición más fluida a <ph name="PRODUCT_NAME" /> en entornos donde se ha usado mucho otro navegador antes de instalarlo. Esta política no afecta a las funciones del gestor de contraseñas en las cuentas de Google.
+
+Si se habilita esta política, se importarán las contraseñas guardadas del navegador predeterminado anterior al ejecutar el nuevo navegador por primera vez. También se podrán importar manualmente desde la página de configuración.
+Si se inhabilita esta política, no se importará ninguna contraseña guardada al ejecutar el nuevo navegador por primera vez y no se podrán importar manualmente desde la página de configuración.
+Si la política no se define, no se importará ninguna contraseña guardada al ejecutar el nuevo navegador por primera vez, pero el usuario podrá hacerlo desde la página de configuración.</translation>
 <translation id="8698286761337647563">Número de días de antelación para notificar a los usuarios de SAML que su contraseña está a punto de caducar</translation>
 <translation id="8699392919012430269">Envía información sobre las conexiones Bluetooth del dispositivo.
 
@@ -8368,6 +8386,7 @@ Si se configura la política, los usuarios no podrán cambiar esta función. Si 
       "http://notexample.com/", "http://example.com.invalid.com/" y "http://example.comabc/" solo serían coincidencias si se usa el modo Default.
 
       "http://acme.com/ABC" solo sería coincidencia en IESiteListMode.</translation>
+<translation id="8728854710675158426">Hashes no seguros habilitados en handshakes de TLS</translation>
 <translation id="8734543507835977857">Iniciar los retrasos de gestión de energía y los límites de duración de sesión al comenzar la sesión</translation>
 <translation id="8736538322216687231">Aplicar el modo restringido en YouTube como mínimo</translation>
 <translation id="8744844164152340112">Controla el tema utilizado para renderizar la interfaz de usuario la primera vez que se usa el dispositivo y durante la sesión (oscuro/claro/automático).

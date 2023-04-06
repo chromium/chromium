@@ -20,6 +20,7 @@
 <translation id="1103523840287552314">सँधै अनुवाद गर्नुहोस् <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">खुला विन्डोमा जानुहोस्</translation>
 <translation id="1112015203684611006">छाप्न सकिएन।</translation>
+<translation id="1118266931011974190"><ph name="THRESHOLD" /> दिनपछि</translation>
 <translation id="1125564390852150847">नयाँ ट्याब सिर्जना गर्नुहोस्।</translation>
 <translation id="1126013303640354461">Google Pay मा भएका भुक्तानी विधि र ठेगानाहरू इन्क्रिप्ट गरिने छैन। Chrome को ब्राउजिङ हिस्ट्री सिंक गरिने छैन।
 तपाईंको पासफ्रेज भएका मान्छे मात्र इन्क्रिप्ट गरिएको तपाईंको जानकारी पढ्न सक्छन्। उक्त पासफ्रेज Google मा पठाइँदैन वा Google ले उक्त पासफ्रेज भण्डारण गरेर राख्दैन। तपाईंले आफ्नो पासफ्रेज बिर्सनुभयो वा तपाईं यो सेटिङ बदल्न चाहनुहुन्छ भने तपाईंले सिंक गर्ने सुविधा रिसेट गर्नु पर्ने हुन्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
@@ -205,7 +206,6 @@
 <translation id="2411749908844615428">{count,plural, =1{तपाईंको किबोर्डको माथिल्लो भागमा {count} वटा सेभ गरिएको ठेगाना उपलब्ध छ।}other{तपाईंको किबोर्डको माथिल्लो भागमा {count} वटा सेभ गरिएको ठेगाना उपलब्ध छ।}}</translation>
 <translation id="2421004566762153674">तेस्रो पक्षीय कुकीहरूलाई रोक लगाउँदै</translation>
 <translation id="2421044535038393232">सम्पादन गरिरहनुहोस्</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} वटा पासवर्ड ह्याक वा चोरी भएको छ}other{{COUNT} वटा पासवर्ड ह्याक वा चोरी भएका छन्}}</translation>
 <translation id="2434405374328098816">तपाईंले <ph name="WEBSITE" /> का हकमा "<ph name="USERNAME" />" को पासवर्ड सेभ गरिसक्नुभएको छ</translation>
 <translation id="2435457462613246316">पासवर्ड देखाउनुहोस्</translation>
 <translation id="2451654228769116489">ट्याब पिन गर्नुहोस्</translation>
@@ -232,6 +232,7 @@
 <translation id="2626236249646841566">आफ्नो इन्टरनेट जाँच्नुहोस् र फेरि साइन इन गरी हेर्नुहोस्।</translation>
 <translation id="2637313651144986786">ट्याबहरू खोज्नुहोस्...</translation>
 <translation id="2647269890314209800">प्रयोगमा रहेका कुकीहरू</translation>
+<translation id="2648721026697078500">कहिल्यै पनि नसारियोस्</translation>
 <translation id="2648803196158606475">पढिसकिएकोलाई मेट्नुहोस्</translation>
 <translation id="2653659639078652383">पेश गर्नुहोस्</translation>
 <translation id="2664621323652615289">रोक्नुहोस्</translation>
@@ -347,6 +348,7 @@
 <translation id="3305294846493618482">थप</translation>
 <translation id="3311748811247479259">निष्क्रिय छ</translation>
 <translation id="3324193307694657476">ठेगाना 2</translation>
+<translation id="3328459813621383194">निष्क्रिय ट्याबहरू सार्नुहोस्</translation>
 <translation id="3328801116991980348">साइट जानकारी</translation>
 <translation id="3371831930909698441">अनुवाद उपलब्ध छ। विकल्पहरू स्क्रिनका पुछारतिर उपलब्ध छन्।</translation>
 <translation id="3377063233124932127">अब तपाईंले सेभ गर्नुभएका बुकमार्क तथा पासवर्डलगायतका कुराहरू सिरानमा देखिन्छन्।</translation>
@@ -511,6 +513,7 @@
 <translation id="452750746583162491">आफ्नो सिंक गरिएको डेटाको समीक्षा गर्नुहोस्</translation>
 <translation id="4536418791685807335">फेरि साइन इन गरी हेर्नुहोस्।</translation>
 <translation id="4540780316273593836">केही चिज गडबड भयो</translation>
+<translation id="4550040941166547650">यो डिभाइसमा मात्र</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{{COUNT} निष्क्रिय ट्याब बन्द गर्ने हो?}other{{COUNT} वटा निष्क्रिय ट्याब बन्द गर्ने हो?}}</translation>
 <translation id="457386861538956877">थप...</translation>
 <translation id="4587235830039045480">आफ्नो Google खातामा पासवर्ड सेभ गर्नुहोस्</translation>
@@ -764,6 +767,7 @@
 <translation id="6193424046394092997">{count,plural, =1{{title} मा बुकमार्क गरियो}other{{title} मा बुकमार्क गरियो}}</translation>
 <translation id="6196207969502475924">आवाज खोज</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} वटा ट्याब बन्द गर्नुहोस्}other{{COUNT} वटा ट्याब बन्द गर्नुहोस्}}</translation>
+<translation id="6210079381482819663"><ph name="THRESHOLD" /> वा सोभन्दा धेरै दिनसम्म प्रयोग नगरिएका ट्याबहरू सारेर यहाँ ल्याइन्छन्। तपाईं जुनसुकै बेला <ph name="BEGIN_LINK" />सेटिङ<ph name="END_LINK" />मा गई यो सेटिङ बदल्न सक्नुहुन्छ।</translation>
 <translation id="6213567400989743524">खारेज गरिएका चेतावनीहरू</translation>
 <translation id="6219550825416862075">फेरि स्वागत छ</translation>
 <translation id="6219688215832490856">कहिल्यै पनि अनुवाद नगर्नुहोस्</translation>
@@ -919,7 +923,6 @@
 <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">हालका ट्याबहरू</translation>
 <translation id="7006788746334555276">सामग्री सेटिङहरू</translation>
-<translation id="7014087399239955356">निम्न साइट वा एपका पासवर्डहरू जाँच गरिँदै छन्…</translation>
 <translation id="7029809446516969842">पासवर्डहरू</translation>
 <translation id="7053983685419859001">रोक्नुहोस्</translation>
 <translation id="7062545763355031412">स्वीकार गरी खाताहरू स्विच गर्नुहोस्</translation>
@@ -1059,6 +1062,7 @@
 <translation id="8059533439631660104">खण्ड संक्षिप्त गर्छ।</translation>
 <translation id="8065292699993359127">URL हरू Chrome को इन्कोग्निटो मोडमा खोल्नुहोस्</translation>
 <translation id="806745655614357130">मेरो डेटा अलग राख्नुहोस्</translation>
+<translation id="8069394452933076548">हालसालै प्रयोग नगरिएका ट्याबहरू सारेर निष्क्रिय ट्याबको खण्डमा कहिले लैजाने भन्ने कुरा छनौट गर्नुहोस्।</translation>
 <translation id="8073670137947914548">डाउनलोड भयो</translation>
 <translation id="8073872304774253879">खोज तथा ब्राउजिङलाई अझ राम्रा बनाउनुहोस्</translation>
 <translation id="8076492880354921740">ट्याबहरू</translation>
@@ -1203,6 +1207,7 @@
 <translation id="9055772144595778347">साइन इन गर्न सकिदैन</translation>
 <translation id="9055960261314198756">"उन्नत सुरक्षा" अफ गरिएको छ</translation>
 <translation id="9057972802061533987">फलो गर्न सकिएन। केही चिज गडबड भयो।</translation>
+<translation id="9061495354530850708">तपाईंको Google खातामा</translation>
 <translation id="9065203028668620118">सम्पादन गर्नुहोस</translation>
 <translation id="9068336935206019333">Chrome को इन्कोग्निटो मोडमा खोल्नुहोस्</translation>
 <translation id="9079935439869366234">नपढिएका भनी सबैलाई चिन्ह लगाउनुहोस्</translation>

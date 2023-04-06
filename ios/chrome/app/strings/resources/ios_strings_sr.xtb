@@ -206,7 +206,6 @@
 <translation id="2411749908844615428">{count,plural, =1{{count} сачувана адреса је доступна изнад тастатуре.}one{{count} сачувана адреса је доступна изнад тастатуре.}few{{count} сачуване адресе су доступне изнад тастатуре.}other{{count} сачуваних адреса је доступно изнад тастатуре.}}</translation>
 <translation id="2421004566762153674">Блокира колачиће треће стране</translation>
 <translation id="2421044535038393232">Настави изменe</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} угрожена лозинка}one{{COUNT} угрожена лозинка}few{{COUNT} угрожене лозинке}other{{COUNT} угрожених лозинки}}</translation>
 <translation id="2434405374328098816">Већ сте сачували лозинку за „<ph name="USERNAME" />“ на <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Прикажи лозинку</translation>
 <translation id="2451654228769116489">Закачи картицу</translation>
@@ -924,7 +923,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Недавне картице</translation>
 <translation id="7006788746334555276">Подешавања садржаја</translation>
-<translation id="7014087399239955356">Проверавају се лозинке…</translation>
 <translation id="7029809446516969842">Лозинке</translation>
 <translation id="7053983685419859001">Блокирај</translation>
 <translation id="7062545763355031412">Прихватам, промени налог</translation>

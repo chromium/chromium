@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> er skubbet ud.</translation>
 <translation id="2307462900900812319">Konfigurer netværk</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{En udvidelse med id'et <ph name="BEGIN_LIST" /><ph name="END_LIST" /> blev ikke fundet. Kontakt din administrator.}one{En udvidelse med id'et <ph name="BEGIN_LIST" /><ph name="END_LIST" /> blev ikke fundet. Kontakt din administrator.}other{Udvidelser med id'erne <ph name="BEGIN_LIST" /><ph name="END_LIST" /> blev ikke fundet. Kontakt din administrator.}}</translation>
 <translation id="2325650632570794183">Denne filtype understøttes ikke. Gå til Chrome Webshop for at finde en app, der kan åbne denne filtype.</translation>
 <translation id="2326539130272988168">Bulgarsk</translation>
 <translation id="2337715497728194187">Del med Bruschetta</translation>

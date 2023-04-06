@@ -77,7 +77,7 @@
 <translation id="1061373870045429865">Crea codice QR per questo link</translation>
 <translation id="1061904396131502319">È quasi ora di fare una pausa</translation>
 <translation id="1062407476771304334">Sostituisci</translation>
-<translation id="1062628064301375934">Aiutaci a rendere il Web più privato</translation>
+<translation id="1062628064301375934">Aiutaci a rendere il web più privato</translation>
 <translation id="1067048845568873861">Data creazione</translation>
 <translation id="1067661089446014701">Per maggiore sicurezza, puoi criptare le password sul dispositivo prima che vengano salvate nel tuo Account Google</translation>
 <translation id="1067922213147265141">Altri servizi Google</translation>
@@ -1328,7 +1328,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2114820389966440614">Vedi "Foto recenti in evidenza" e altri ricordi presenti qui</translation>
 <translation id="2114896190328250491">Foto di <ph name="NAME" /></translation>
 <translation id="2114995631896158695">Nessuna scheda SIM inserita</translation>
-<translation id="2116020356255810305">Attiva l'apertura dell'app all'avvio</translation>
 <translation id="2116619964159595185">Solitamente i siti si connettono ai dispositivi Bluetooth per funzionalità quali la configurazione o la sincronizzazione di beacon a bassa energia, di tracker per il monitoraggio dell'attività fisica o dello stato di salute oppure di lampadine smart</translation>
 <translation id="2117655453726830283">Diapositiva successiva</translation>
 <translation id="2119349053129246860">Apri in <ph name="APP" /></translation>
@@ -3207,7 +3206,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3764753550716962406">Vuoi consentire a Google di trovare sconti disponibili in base agli articoli nel tuo carrello?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Invio di <ph name="ATTACHMENTS" /> al dispositivo <ph name="DEVICE_NAME" />}other{Invio di <ph name="ATTACHMENTS" /> al dispositivo <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">Impossibile leggere le norme offline relative alla modalità demo.</translation>
-<translation id="3765696567014520261">I siti non possono utilizzare i cookie per conoscere la tua attività di navigazione su diversi siti web, ad esempio per personalizzare gli annunci. Le funzionalità su alcuni siti potrebbero non essere disponibili</translation>
+<translation id="3765696567014520261">I siti non possono utilizzare i cookie per conoscere la tua attività di navigazione su diversi siti, ad esempio per personalizzare gli annunci. Le funzionalità su alcuni siti potrebbero non essere disponibili</translation>
 <translation id="3766687283066842296">Scopri di più su Phone Hub</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="377050016711188788">Gelato</translation>
@@ -3257,7 +3256,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="380329542618494757">Nome</translation>
 <translation id="3803345858388753269">Qualità video</translation>
 <translation id="3803367742635802571">I siti che visiti potrebbero non funzionare più come previsto</translation>
-<translation id="3803583375545057606">Vuoi chiedere al tuo genitore di attivare questa estensione?</translation>
 <translation id="380408572480438692">Se attivi la raccolta dei dati sul rendimento, consenti a Google di migliorare il sistema nel tempo. I dati vengono inviati soltanto quando presenti un rapporto di feedback (Alt+Maiusc+I) e includi dati sul rendimento. Puoi tornare in qualsiasi momento in questa schermata per disattivare la raccolta.</translation>
 <translation id="3807249107536149332">L'estensione <ph name="EXTENSION_NAME" /> (ID estensione "<ph name="EXTENSION_ID" />") non è consentita in una schermata di accesso.</translation>
 <translation id="3807747707162121253">&amp;Annulla</translation>
@@ -3679,7 +3677,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4169535189173047238">Non consentire</translation>
 <translation id="4170314459383239649">Cancella all'uscita</translation>
 <translation id="417096670996204801">Scegli un profilo</translation>
-<translation id="41725145403849567">Vuoi chiedere al tuo genitore di aggiungere questa estensione?</translation>
 <translation id="4175137578744761569">Lilla e bianco</translation>
 <translation id="4175737294868205930">Archiviazione persistente</translation>
 <translation id="4176463684765177261">Disattivato</translation>
@@ -5092,7 +5089,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Il PIN deve contenere almeno un carattere}other{Il PIN deve contenere almeno # caratteri}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> richiede l'immediata connessione a una rete Wi-Fi per scaricare un aggiornamento. In alternativa, puoi eseguire il download tramite una connessione a consumo (potrebbero essere applicati costi).</translation>
 <translation id="5476016146231427848">Riavvia il dispositivo per usare Steam su Chromebook</translation>
-<translation id="5476897066181964657">Un genitore o un tutore deve autorizzarti ad aggiungere questa estensione</translation>
 <translation id="5481273127572794904">Non possono scaricare automaticamente più file</translation>
 <translation id="5481941284378890518">Aggiungi stampanti nelle vicinanze</translation>
 <translation id="5483785310822538350">Revoca accesso a file e dispositivi</translation>
@@ -5170,7 +5166,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5544482392629385159">Dispositivo <ph name="DEVICE_INDEX" /> of <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" /></translation>
 <translation id="554517701842997186">Renderer</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Aggiungi scheda a gruppo}other{Aggiungi schede a gruppo}}</translation>
-<translation id="5545693483061321551">I siti non possono utilizzare i cookie per conoscere la tua attività di navigazione su diversi siti web, ad esempio per personalizzare gli annunci. Le funzionalità su alcuni siti potrebbero non essere disponibili.</translation>
+<translation id="5545693483061321551">I siti non possono utilizzare i cookie per conoscere la tua attività di navigazione su diversi siti, ad esempio per personalizzare gli annunci. Le funzionalità su alcuni siti potrebbero non essere disponibili.</translation>
 <translation id="5546865291508181392">Trova</translation>
 <translation id="5548075230008247516">Tutti gli elementi deselezionati, modalità di selezione disattivata.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" e 1 altra scheda}other{"<ph name="TAB_TITLE" />" e altre # schede}}</translation>
@@ -5189,7 +5185,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5555639311269196631">Disattiva l'hotspot</translation>
 <translation id="5556459405103347317">Ricarica</translation>
 <translation id="5558129378926964177">&amp;Ingrandisci</translation>
-<translation id="5558247502209241936">Attiva l'apertura dell'app nella finestra</translation>
 <translation id="5559311991468302423">Elimina indirizzo</translation>
 <translation id="55601339223879446">Regola i bordi del desktop all'interno del display</translation>
 <translation id="5561162485081632007">Rileva e ti avvisa quando si verificano eventi pericolosi</translation>
@@ -6012,7 +6007,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6305607932814307878">Norme globali:</translation>
 <translation id="6305702903308659374">Riproduci con volume normale anche durante la lettura vocale di ChromeVox</translation>
 <translation id="6305909198255586420">Installa utilizzando il tuo profilo principale</translation>
-<translation id="630750887748244481">Uno dei tuoi genitori ha disattivato "Autorizzazioni per siti, app ed estensioni" per Chrome. L'aggiunta di questa estensione non è consentita.</translation>
 <translation id="6307990684951724544">Sistema occupato</translation>
 <translation id="6308493641021088955">Accesso fornito da <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Salva lin&amp;k con nome...</translation>
@@ -6757,7 +6751,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6965978654500191972">Dispositivo</translation>
 <translation id="6966370001499648704">Stabilisci quali telefoni utilizzi come token di sicurezza</translation>
 <translation id="6967430741871315905">Impossibile controllare se il dispositivo è consentito</translation>
-<translation id="696780070563539690">I siti non possono utilizzare i cookie per conoscere la tua attività di navigazione su siti diversi, ad esempio per personalizzare gli annunci</translation>
+<translation id="696780070563539690">I siti non possono utilizzare i cookie per conoscere la tua attività di navigazione su diversi siti, ad esempio per personalizzare gli annunci</translation>
 <translation id="6968288415730398122">Inserisci la password per configurare il blocco schermo</translation>
 <translation id="6969047215179982698">Disattiva Condivisione nelle vicinanze</translation>
 <translation id="6969216690072714773">Inserisci nuove informazioni o aggiorna informazioni esistenti da associare a questo dispositivo.</translation>
@@ -6838,7 +6832,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7025190659207909717">Gestione del servizio dati mobile</translation>
 <translation id="7025895441903756761">Sicurezza e privacy</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Apri tutti nella finestra di navigazione in &amp;incognito}=1{Apri nella finestra di navigazione in &amp;incognito}other{Apri tutti ({COUNT}) nella finestra di navigazione in &amp;incognito}}</translation>
-<translation id="7028057921476386252">Un genitore o tutore deve autorizzarti ad attivare questa estensione</translation>
 <translation id="7029307918966275733">Crostini non è installato. Per visualizzare i crediti, installa Crostini.</translation>
 <translation id="7029809446516969842">Password</translation>
 <translation id="7030304022046916278">Invia gli URL a Navigazione sicura per controllarli</translation>
@@ -8217,7 +8210,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8251509999076836464">Accoppiamento con <ph name="DEVICE_NAME" /> in corso…</translation>
 <translation id="8251578425305135684">Miniatura rimossa.</translation>
 <translation id="825238165904109940">Mostra sempre URL completi</translation>
-<translation id="8252538334423261825">Impossibile aggiungere l'estensione</translation>
 <translation id="8252569384384439529">Caricamento...</translation>
 <translation id="8253198102038551905">Fai clic su "+" per visualizzare le proprietà della rete</translation>
 <translation id="8255212965098517578">App, notifiche e foto recenti</translation>
@@ -8298,7 +8290,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8322814362483282060">A questa pagina è stato impedito l'accesso al microfono.</translation>
 <translation id="8323167517179506834">Digita un URL</translation>
 <translation id="8323317289166663449">Leggere e modificare tutti i tuoi dati sul computer e su tutti i siti web</translation>
-<translation id="8324784016256120271">I siti possono utilizzare i cookie per conoscere la tua attività di navigazione su siti diversi, ad esempio per personalizzare gli annunci</translation>
+<translation id="8324784016256120271">I siti possono utilizzare i cookie per conoscere la tua attività di navigazione su diversi siti, ad esempio per personalizzare gli annunci</translation>
 <translation id="8325413836429495820">Non possono accedere agli appunti</translation>
 <translation id="8326478304147373412">PKCS #7, catena di certificati</translation>
 <translation id="8327386430364625757">Carattere matematico</translation>

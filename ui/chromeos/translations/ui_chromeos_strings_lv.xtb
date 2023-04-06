@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">Planēta</translation>
 <translation id="2305020378527873881">Sējums <ph name="VOLUME_NAME" /> ir noņemts.</translation>
 <translation id="2307462900900812319">Konfigurēt tīklu</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Nevar atrast paplašinājumu ar tālāk norādīto ID: <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Sazinieties ar administratoru.}zero{Nevar atrast paplašinājumus ar tālāk norādītajiem ID: <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Sazinieties ar administratoru.}one{Nevar atrast paplašinājumus ar tālāk norādītajiem ID: <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Sazinieties ar administratoru.}other{Nevar atrast paplašinājumus ar tālāk norādītajiem ID: <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Sazinieties ar administratoru.}}</translation>
 <translation id="2325650632570794183">Šī tipa fails netiek atbalstīts. Lūdzu, apmeklējiet Chrome interneta veikalu, lai atrastu lietotni, kas var atvērt šī tipa failus.</translation>
 <translation id="2326539130272988168">Bulgāru</translation>
 <translation id="2337715497728194187">Kopīgošana ar virtuālo mašīnu Bruschetta</translation>
@@ -274,6 +275,7 @@
 <translation id="3290356915286466215">Nav aizsargāts</translation>
 <translation id="3291218047831493686">Izveidojiet savienojumu ar šo tīklu, lai mainītu SIM kartes bloķēšanas iestatījumu.</translation>
 <translation id="3293023191599135697">WEP tīkli netiek atbalstīti.</translation>
+<translation id="3295006446256079333">Šis sējums</translation>
 <translation id="3295357220137379386">Ierīce ir aizņemta</translation>
 <translation id="3296763833017966289">Gruzīnu valoda</translation>
 <translation id="3307875152560779385">Ukraiņu</translation>

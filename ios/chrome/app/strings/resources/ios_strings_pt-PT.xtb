@@ -206,7 +206,6 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="2411749908844615428">{count,plural, =1{{count} morada guardada disponível acima do teclado.}other{{count} moradas guardadas disponíveis acima do teclado.}}</translation>
 <translation id="2421004566762153674">Bloquear cookies de terceiros</translation>
 <translation id="2421044535038393232">Continuar a editar</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} palavra-passe comprometida}other{{COUNT} palavras-passe comprometidas}}</translation>
 <translation id="2434405374328098816">Já guardou uma palavra-passe para "<ph name="USERNAME" />" em <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Mostrar palavra-passe</translation>
 <translation id="2451654228769116489">Fixar separador</translation>
@@ -924,7 +923,6 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Separadores recentes</translation>
 <translation id="7006788746334555276">Definições de Conteúdo</translation>
-<translation id="7014087399239955356">A verificar as palavras-passe…</translation>
 <translation id="7029809446516969842">Palavras-passe</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7062545763355031412">Aceitar e mudar de contas</translation>

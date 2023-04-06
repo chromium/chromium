@@ -206,7 +206,6 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2411749908844615428">{count,plural, =1{{count} lagret adresse er tilgjengelig over tastaturet.}other{{count} lagrede adresser er tilgjengelige over tastaturet.}}</translation>
 <translation id="2421004566762153674">Blokkerer informasjonskapsler fra tredjeparter</translation>
 <translation id="2421044535038393232">Fortsett redigeringen</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} passord er utsatt for sikkerhetsbrudd}other{{COUNT} passord er utsatt for sikkerhetsbrudd}}</translation>
 <translation id="2434405374328098816">Du har allerede lagret et passord for «<ph name="USERNAME" />» på <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Vis passord</translation>
 <translation id="2451654228769116489">Fest fanen</translation>
@@ -924,7 +923,6 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Nylige faner</translation>
 <translation id="7006788746334555276">Innholdsinnstillinger</translation>
-<translation id="7014087399239955356">Sjekker passord …</translation>
 <translation id="7029809446516969842">Passord</translation>
 <translation id="7053983685419859001">Blokkér</translation>
 <translation id="7062545763355031412">Godta og bytt konto</translation>

@@ -118,6 +118,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1091767800771861448">Tryk på ESC for at springe over (kun uofficielle builds).</translation>
 <translation id="1093457606523402488">Synlige netværk:</translation>
 <translation id="1095761715416917775">Sørg for, at du altid kan få adgang til dine synkroniserede data</translation>
+<translation id="1095879482467973146">Google Adgangskodeadministrator på nettet</translation>
 <translation id="109647177154844434">Hvis du afinstallerer Parallels Desktop, slettes dit Windows-billede. Dette omfatter dens apps, indstillinger og data. Er du sikker på, at du vil fortsætte?</translation>
 <translation id="1097016918605049747">Denne side kunne ikke oversættes</translation>
 <translation id="1097658378307015415">Før du logger ind, skal du starte en gæstesession for at aktivere netværket <ph name="NETWORK_ID" /></translation>
@@ -1340,7 +1341,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2114820389966440614">Se "Seneste øjeblikke" og andre minder her</translation>
 <translation id="2114896190328250491">Foto af <ph name="NAME" /></translation>
 <translation id="2114995631896158695">Der er ikke indsat et SIM-kort</translation>
-<translation id="2116020356255810305">Aktivér åbning af app ved opstart</translation>
 <translation id="2116619964159595185">Websites opretter normalt forbindelse til Bluetooth-enheder i forbindelse med funktioner som f.eks. konfiguration eller synkronisering af en lavenergibeacon, en sundheds- eller motionstracker eller en smartpære</translation>
 <translation id="2117655453726830283">Næste dias</translation>
 <translation id="2119349053129246860">Åbn i <ph name="APP" /></translation>
@@ -1500,6 +1500,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2252017960592955005">Visningsbeskyttelse (beta)</translation>
 <translation id="225240747099314620">Tillad id'er for beskyttet indhold (genstart af computeren kan være påkrævet)</translation>
 <translation id="2253318212986772520">PPD-filen for <ph name="PRINTER_NAME" /> kunne ikke vises.</translation>
+<translation id="2253927598983295051">Vælg, hvad du vil dele med <ph name="APP_NAME" /></translation>
 <translation id="2255077166240162850">Denne enhed blev låst til brug på et andet domæne eller i en anden tilstand.</translation>
 <translation id="2255317897038918278">Microsoft-tidsstempling</translation>
 <translation id="2256115617011615191">Genstart nu</translation>
@@ -1848,6 +1849,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2532589005999780174">Tilstanden Høj kontrast</translation>
 <translation id="2533649878691950253">Dette websites adgang til din præcise placering blev blokeret, fordi du normalt ikke tillader denne adgang</translation>
 <translation id="253434972992662860">&amp;Pause</translation>
+<translation id="253498598929009420">Websitet vil kunne se indholdet på din skærm</translation>
 <translation id="253557089021624350">Antal aktiviteter, der bruger udvidelsen</translation>
 <translation id="2535799430745250929">Der er intet mobilnetværk</translation>
 <translation id="2537395079978992874"><ph name="ORIGIN" /> kan se og redigere følgende filer og mapper</translation>
@@ -3270,7 +3272,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="380329542618494757">Navn</translation>
 <translation id="3803345858388753269">Videokvalitet</translation>
 <translation id="3803367742635802571">Websites, du besøger, holder muligvis op med at fungere som forventet</translation>
-<translation id="3803583375545057606">Vil du bede din forælder om lov til at aktivere denne udvidelse?</translation>
 <translation id="380408572480438692">Aktiverer registrering af ydelsesdata, der hjælper Google med at forbedre systemet med tiden. Der sendes ingen data, før du indgiver en feedbackrapport (Alt-Shift-I) og medtager ydelsesdata. Du kan altid vende tilbage til dette skærmbillede for at deaktivere registreringen.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (udvidelses-id "<ph name="EXTENSION_ID" />") er ikke tilladt på en loginskærm.</translation>
 <translation id="3807747707162121253">&amp;Annuller</translation>
@@ -3692,7 +3693,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4169535189173047238">Tillad ikke</translation>
 <translation id="4170314459383239649">Ryd ved lukning</translation>
 <translation id="417096670996204801">Vælg en profil</translation>
-<translation id="41725145403849567">Vil du bede din forælder om lov til at tilføje denne udvidelse?</translation>
 <translation id="4175137578744761569">Lyslilla og hvid</translation>
 <translation id="4175737294868205930">Vedvarende lagring</translation>
 <translation id="4176463684765177261">Deaktiveret</translation>
@@ -5106,7 +5106,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Pinkoden skal være på mindst ét tegn}one{Pinkoden skal være på mindst # tegn}other{Pinkoden skal være på mindst # tegn}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> kræver, at du opretter forbindelse til Wi-Fi nu og downloader en opdatering. Du kan også downloade via en forbrugsafregnet forbindelse (du opkræves muligvis et gebyr).</translation>
 <translation id="5476016146231427848">Genstart enheden for at bruge Steam på Chromebook</translation>
-<translation id="5476897066181964657">En forælder eller værge skal give dig lov til at tilføje denne udvidelse</translation>
 <translation id="5481273127572794904">Har ikke tilladelse til at downloade flere filer automatisk</translation>
 <translation id="5481941284378890518">Tilføj printere i nærheden</translation>
 <translation id="5483785310822538350">Tilbagekald adgang til fil og enhed</translation>
@@ -5203,7 +5202,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5555639311269196631">Deaktiver hotspot</translation>
 <translation id="5556459405103347317">Genindlæs</translation>
 <translation id="5558129378926964177">Zoom &amp;ind</translation>
-<translation id="5558247502209241936">Aktivér åbning af app i vindue</translation>
 <translation id="5559311991468302423">Slet adresse</translation>
 <translation id="55601339223879446">Tilpas grænserne for dit skrivebord inden for skærmvisningen</translation>
 <translation id="5561162485081632007">Registrerer og advarer dig om skadelige hændelser, når de opstår</translation>
@@ -6029,7 +6027,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6305607932814307878">Global politik:</translation>
 <translation id="6305702903308659374">Afspil ved normal lydstyrke, selvom ChromeVox taler</translation>
 <translation id="6305909198255586420">Installer ved hjælp af din primære profil</translation>
-<translation id="630750887748244481">Din forælder har deaktiveret "Tilladelser for websites, apps og udvidelser" for Chrome. Det er ikke tilladt at tilføje denne udvidelse.</translation>
 <translation id="6307990684951724544">Systemet er optaget</translation>
 <translation id="6308493641021088955">Login leveres af <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Gem lin&amp;k som...</translation>
@@ -6857,7 +6854,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7025190659207909717">Administration af mobildatatjeneste</translation>
 <translation id="7025895441903756761">Sikkerhed og privatliv</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Åbn alle i &amp;inkognitovindue}=1{Åbn i &amp;inkognitovindue}one{Åbn ({COUNT}) i &amp;inkognitovindue}other{Åbn alle ({COUNT}) i &amp;inkognitovindue}}</translation>
-<translation id="7028057921476386252">En forælder eller værge skal give dig lov til at aktivere denne udvidelse</translation>
 <translation id="7029307918966275733">Crostini er ikke installeret. Installer Crostini for at se krediteringer.</translation>
 <translation id="7029809446516969842">Adgangskoder</translation>
 <translation id="7030304022046916278">Webadresser sendes til tjek i Beskyttet browsing</translation>
@@ -8235,7 +8231,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8251509999076836464">Parrer med <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">Miniaturen blev fjernet.</translation>
 <translation id="825238165904109940">Vis altid komplette webadresser</translation>
-<translation id="8252538334423261825">Udvidelsen kan ikke tilføjes</translation>
 <translation id="8252569384384439529">Uploader…</translation>
 <translation id="8253198102038551905">Klik på "+" for at få vist netværksegenskaber</translation>
 <translation id="8255212965098517578">Seneste billeder, notifikationer og apps</translation>

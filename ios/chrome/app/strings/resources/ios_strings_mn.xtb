@@ -206,7 +206,6 @@
 <translation id="2411749908844615428">{count,plural, =1{Таны гарын дээр хадгалсан {count} хаяг боломжтой байна.}other{Таны гарын дээр хадгалсан {count} хаяг боломжтой байна.}}</translation>
 <translation id="2421004566762153674">Гуравдагч талын күүкиг блоклож байна</translation>
 <translation id="2421044535038393232">Үргэлжлүүлэн засах</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{Алдагдсан {COUNT} нууц үг}other{Алдагдсан {COUNT} нууц үг}}</translation>
 <translation id="2434405374328098816">Та <ph name="WEBSITE" />-д аль хэдийн "<ph name="USERNAME" />"-н нууц үгийг хадгалсан</translation>
 <translation id="2435457462613246316">Нууц үг харуулах</translation>
 <translation id="2451654228769116489">Таб бэхлэх</translation>
@@ -923,7 +922,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Саяхан нээсэн табууд</translation>
 <translation id="7006788746334555276">Агуулгын тохиргоо</translation>
-<translation id="7014087399239955356">Нууц үгнүүдийг шалгаж байна...</translation>
 <translation id="7029809446516969842">Нууц үг</translation>
 <translation id="7053983685419859001">Блоклох</translation>
 <translation id="7062545763355031412">Зөвшөөрч, бүртгэлийг шилжүүлэх</translation>

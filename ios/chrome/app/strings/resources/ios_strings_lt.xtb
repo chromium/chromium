@@ -206,7 +206,6 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 <translation id="2411749908844615428">{count,plural, =1{Virš klaviatūros pasiekiamas {count} išsaugotas adresas.}one{Virš klaviatūros pasiekiamas {count} išsaugotas adresas.}few{Virš klaviatūros pasiekiami {count} išsaugoti adresai.}many{Virš klaviatūros pasiekiama {count} išsaugoto adreso.}other{Virš klaviatūros pasiekiami {count} išsaugotų adresų.}}</translation>
 <translation id="2421004566762153674">Blokuojami trečiosios šalies slapukai</translation>
 <translation id="2421044535038393232">Toliau redaguoti</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} pažeistas slaptažodis}one{{COUNT} pažeistas slaptažodis}few{{COUNT} pažeisti slaptažodžiai}many{{COUNT} pažeisto slaptažodžio}other{{COUNT} pažeistų slaptažodžių}}</translation>
 <translation id="2434405374328098816">Jau išsaugojote <ph name="USERNAME" /> slaptažodį svetainėje <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Rodyti slaptažodį</translation>
 <translation id="2451654228769116489">Prisegti skirtuką</translation>
@@ -924,7 +923,6 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Naujausi skirtukai</translation>
 <translation id="7006788746334555276">Turinio nustatymai</translation>
-<translation id="7014087399239955356">Tikrinami slaptažodžiai…</translation>
 <translation id="7029809446516969842">Slaptažodžiai</translation>
 <translation id="7053983685419859001">Blokuoti</translation>
 <translation id="7062545763355031412">Sutikti ir perjungti paskyras</translation>

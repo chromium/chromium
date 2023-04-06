@@ -178,6 +178,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2218443599109088993">Zoom arrière</translation>
 <translation id="2230173723195178503">Page Web chargée</translation>
 <translation id="2239626343334228536">Effacement des données de navigation…</translation>
+<translation id="22508856139286506">Avertissements ignorés (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Menu → Historique</translation>
 <translation id="2256933947031277845">Votre organisation ne vous autorise à vous connecter qu'avec certains comptes.</translation>
 <translation id="225943865679747347">Code d'erreur : <ph name="ERROR_CODE" /></translation>
@@ -205,7 +206,6 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="2411749908844615428">{count,plural, =1{{count} adresse enregistrée disponible au-dessus de votre clavier.}one{{count} adresse enregistrée disponible au-dessus de votre clavier.}other{{count} adresses enregistrées disponibles au-dessus de votre clavier.}}</translation>
 <translation id="2421004566762153674">Blocage des cookies tiers</translation>
 <translation id="2421044535038393232">Poursuivre les modifications</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} mot de passe compromis}one{{COUNT} mot de passe compromis}other{{COUNT} mots de passe compromis}}</translation>
 <translation id="2434405374328098816">Vous avez déjà enregistré un mot de passe pour "<ph name="USERNAME" />" sur <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Afficher le mot de passe</translation>
 <translation id="2451654228769116489">Épingler l'onglet</translation>
@@ -923,7 +923,6 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Onglets récents</translation>
 <translation id="7006788746334555276">Paramètres de contenu</translation>
-<translation id="7014087399239955356">Vérification des mots de passe…</translation>
 <translation id="7029809446516969842">Mots de passe</translation>
 <translation id="7053983685419859001">Bloquer</translation>
 <translation id="7062545763355031412">Accepter et changer de compte</translation>

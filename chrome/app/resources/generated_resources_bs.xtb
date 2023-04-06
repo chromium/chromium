@@ -1339,7 +1339,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2114820389966440614">Pogledajte "Nedavno istaknuto" i druge uspomene ovdje</translation>
 <translation id="2114896190328250491">Fotografija autora <ph name="NAME" /></translation>
 <translation id="2114995631896158695">SIM kartica nije umetnuta</translation>
-<translation id="2116020356255810305">Omogućavanje pokretanja aplikacije prilikom pokretanja</translation>
 <translation id="2116619964159595185">Web lokacije se obično povezuju s Bluetooth uređajima radi funkcija kao što je postavljanje ili sinhroniziranje signala male potrošnje energije, uređaja za praćenje zdravlja ili fitnesa ili pametne sijalice</translation>
 <translation id="2117655453726830283">Sljedeći slajd</translation>
 <translation id="2119349053129246860">Otvori u aplikaciji <ph name="APP" /></translation>
@@ -3271,7 +3270,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="380329542618494757">Ime</translation>
 <translation id="3803345858388753269">Kvalitet videozapisa</translation>
 <translation id="3803367742635802571">Web lokacije koje posjećujete mogu prestati funkcionirati kao što je predviđeno</translation>
-<translation id="3803583375545057606">Pitati roditelja da omogući ovu ekstenziju?</translation>
 <translation id="380408572480438692">Omogućavanje prikupljanja podataka o performansama će pomoći Googleu da poboljša sistem tokom vremena. Podaci se ne šalju dok vi ne dostavite izvještaj o povratnim informacijama (Alt + Shift + I) u koji ste uključili podatke o performansama. Uvijek se možete vratiti na ovaj ekran da onemogućite prikupljanje.</translation>
 <translation id="3807249107536149332">Ekstenzija <ph name="EXTENSION_NAME" /> (ID ekstenzije "<ph name="EXTENSION_ID" />") nije dozvoljena na ekranu za prijavu.</translation>
 <translation id="3807747707162121253">Otkaži</translation>
@@ -3693,7 +3691,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4169535189173047238">Nemoj dozvoliti</translation>
 <translation id="4170314459383239649">Obriši pri zatvaranju</translation>
 <translation id="417096670996204801">Odaberite profil</translation>
-<translation id="41725145403849567">Pitati roditelja da doda ovu ekstenziju?</translation>
 <translation id="4175137578744761569">Svijetloljubičasta i bijela</translation>
 <translation id="4175737294868205930">Trajna pohrana</translation>
 <translation id="4176463684765177261">Onemogućeno</translation>
@@ -5107,7 +5104,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN mora sadržavati najmanje jedan znak.}one{PIN mora sadržavati najmanje # znak.}few{PIN mora sadržavati najmanje # znaka.}other{PIN mora sadržavati najmanje # znakova.}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> zahtijeva da se sada povežete s WiFi mrežom i preuzmete ažuriranje. Možete ga preuzeti i putem veze s naplatom (mogu nastati troškovi).</translation>
 <translation id="5476016146231427848">Ponovo pokrenite uređaj da koristite Steam na Chromebooku</translation>
-<translation id="5476897066181964657">Roditelj ili staratelj mora reći da možeš dodati ovu ekstenziju</translation>
 <translation id="5481273127572794904">Nije dozvoljeno automatsko preuzimanje više fajlova</translation>
 <translation id="5481941284378890518">Dodaj štampače u blizini</translation>
 <translation id="5483785310822538350">Opozovi pristup fajlu i uređaju</translation>
@@ -5204,7 +5200,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="5555639311269196631">Isključi pristupnu tačku</translation>
 <translation id="5556459405103347317">Učitaj ponovo</translation>
 <translation id="5558129378926964177">Uve&amp;ćaj</translation>
-<translation id="5558247502209241936">Omogućavanje otvaranja aplikacije u prozoru</translation>
 <translation id="5559311991468302423">Izbrišite adresu</translation>
 <translation id="55601339223879446">Podesite granice radne površine unutar ekrana</translation>
 <translation id="5561162485081632007">Otkriva opasne događaje i upozorava vas na njih kada nastupe</translation>
@@ -6030,7 +6025,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6305607932814307878">Globalno pravilo:</translation>
 <translation id="6305702903308659374">Reproduciraj pri normalnoj jačini zvuka kada ChromeVox govori</translation>
 <translation id="6305909198255586420">Instalirajte pomoću primarnog profila</translation>
-<translation id="630750887748244481">Tvoj roditelj je isključio "Odobrenja za web lokacije, aplikacije i ekstenzije" za Chrome. Dodavanje ove ekstenzije nije dozvoljeno.</translation>
 <translation id="6307990684951724544">Sistem je zauzet</translation>
 <translation id="6308493641021088955">Prijavu omogućava <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Sačuvaj lin&amp;k kao...</translation>
@@ -6860,7 +6854,6 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7025190659207909717">Upravljanje uslugom prijenosa podataka na mobilnoj mreži</translation>
 <translation id="7025895441903756761">Sigurnost i privatnost</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Otvori sve u &amp;anonimnom prozoru}=1{Otvori u &amp;anonimnom prozoru}one{Otvori sve ({COUNT}) u &amp;anonimnom prozoru}few{Otvori sve ({COUNT}) u &amp;anonimnom prozoru}other{Otvori sve ({COUNT}) u &amp;anonimnom prozoru}}</translation>
-<translation id="7028057921476386252">Roditelj ili staratelj mora reći da možeš omogućiti ovu ekstenziju</translation>
 <translation id="7029307918966275733">Crostini nije instaliran. Instalirajte Crostini da vidite zahvale.</translation>
 <translation id="7029809446516969842">Lozinke</translation>
 <translation id="7030304022046916278">Šalje URL-ove Sigurnom pregledanju na provjeru</translation>
@@ -8239,7 +8232,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8251509999076836464">Uparivanje s uređajem <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">Sličica je uklonjena.</translation>
 <translation id="825238165904109940">Uvijek prikaži pune URL-ove</translation>
-<translation id="8252538334423261825">Nije moguće dodati ekstenziju</translation>
 <translation id="8252569384384439529">Otpremanje...</translation>
 <translation id="8253198102038551905">Klliknite na "+" da dođete do karakteristika mreže</translation>
 <translation id="8255212965098517578">Nedavne fotografije, obavještenja i aplikacije</translation>

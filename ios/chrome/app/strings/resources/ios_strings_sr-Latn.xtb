@@ -206,7 +206,6 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 <translation id="2411749908844615428">{count,plural, =1{{count} sačuvana adresa je dostupna iznad tastature.}one{{count} sačuvana adresa je dostupna iznad tastature.}few{{count} sačuvane adrese su dostupne iznad tastature.}other{{count} sačuvanih adresa je dostupno iznad tastature.}}</translation>
 <translation id="2421004566762153674">Blokira kolačiće treće strane</translation>
 <translation id="2421044535038393232">Nastavi izmene</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} ugrožena lozinka}one{{COUNT} ugrožena lozinka}few{{COUNT} ugrožene lozinke}other{{COUNT} ugroženih lozinki}}</translation>
 <translation id="2434405374328098816">Već ste sačuvali lozinku za „<ph name="USERNAME" />“ na <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Prikaži lozinku</translation>
 <translation id="2451654228769116489">Zakači karticu</translation>
@@ -924,7 +923,6 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Nedavne kartice</translation>
 <translation id="7006788746334555276">Podešavanja sadržaja</translation>
-<translation id="7014087399239955356">Proveravaju se lozinke…</translation>
 <translation id="7029809446516969842">Lozinke</translation>
 <translation id="7053983685419859001">Blokiraj</translation>
 <translation id="7062545763355031412">Prihvatam, promeni nalog</translation>

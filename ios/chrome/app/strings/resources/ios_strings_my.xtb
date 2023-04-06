@@ -206,7 +206,6 @@
 <translation id="2411749908844615428">{count,plural, =1{သိမ်းထားသော လိပ်စာ {count} ခု သင့်ကီးဘုတ်ပေါ်တွင် ရနိုင်သည်။}other{သိမ်းထားသော လိပ်စာ {count} ခု သင့်ကီးဘုတ်ပေါ်တွင် ရနိုင်သည်။}}</translation>
 <translation id="2421004566762153674">ပြင်ပအဖွဲ့အစည်း၏ ကွတ်ကီးများကို ပိတ်ထားသည်</translation>
 <translation id="2421044535038393232">ဆက်လက်တည်းဖြတ်ရန်</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{ကျိုးပေါက်ထားသည့် စကားဝှက် {COUNT} ခု}other{ကျိုးပေါက်ထားသည့် စကားဝှက် {COUNT} ခု}}</translation>
 <translation id="2434405374328098816"><ph name="WEBSITE" /> တွင် “<ph name="USERNAME" />” အတွက် စကားဝှက်ကို သိမ်းပြီးဖြစ်သည်</translation>
 <translation id="2435457462613246316">စကားဝှက်ကို ပြပါ</translation>
 <translation id="2451654228769116489">တဘ် ပင်ထိုးရန်</translation>
@@ -923,7 +922,6 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">မကြာမီက တဲဘ်များ</translation>
 <translation id="7006788746334555276">အကြောင်းအရာ ဆက်တင်များ</translation>
-<translation id="7014087399239955356">စကားဝှက်များ စစ်ဆေးနေသည်…</translation>
 <translation id="7029809446516969842">စကားဝှက်များ</translation>
 <translation id="7053983685419859001">ပိတ်ဆို့ရန်</translation>
 <translation id="7062545763355031412">လက်ခံပြီး အကောင့်များကိုပြောင်းပါ</translation>

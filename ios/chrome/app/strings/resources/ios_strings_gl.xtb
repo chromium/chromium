@@ -206,7 +206,6 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2411749908844615428">{count,plural, =1{Hai {count} enderezo gardado dispoñible sobre o teclado.}other{Hai {count} enderezos gardados dispoñibles sobre o teclado.}}</translation>
 <translation id="2421004566762153674">Bloqueando cookies de terceiros</translation>
 <translation id="2421044535038393232">Seguir editando</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} contrasinal vulnerado}other{{COUNT} contrasinais vulnerados}}</translation>
 <translation id="2434405374328098816">Xa gardaches un contrasinal de <ph name="USERNAME" /> para <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Mostrar contrasinal</translation>
 <translation id="2451654228769116489">Fixar pestana</translation>
@@ -924,7 +923,6 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Pestanas recentes</translation>
 <translation id="7006788746334555276">Configuración de contido</translation>
-<translation id="7014087399239955356">Comprobando contrasinais...</translation>
 <translation id="7029809446516969842">Contrasinais</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7062545763355031412">Aceptar e cambiar de conta</translation>

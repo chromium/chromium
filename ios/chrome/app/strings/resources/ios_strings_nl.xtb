@@ -206,7 +206,6 @@ Sites mogen geen cookies gebruiken om je browse-activiteit op verschillende site
 <translation id="2411749908844615428">{count,plural, =1{{count} opgeslagen adres beschikbaar boven je toetsenbord.}other{{count} opgeslagen adressen beschikbaar boven je toetsenbord.}}</translation>
 <translation id="2421004566762153674">Cookies van derden blokkeren</translation>
 <translation id="2421044535038393232">Doorgaan met bewerken</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} gehackt wachtwoord}other{{COUNT} gehackte wachtwoorden}}</translation>
 <translation id="2434405374328098816">Je hebt al een wachtwoord voor <ph name="USERNAME" /> opgeslagen op <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Wachtwoord bekijken</translation>
 <translation id="2451654228769116489">Tabblad vastzetten</translation>
@@ -924,7 +923,6 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Recent gebruikte tabbladen</translation>
 <translation id="7006788746334555276">Instellingen voor content</translation>
-<translation id="7014087399239955356">Wachtwoorden checken...</translation>
 <translation id="7029809446516969842">Wachtwoorden</translation>
 <translation id="7053983685419859001">Blokkeren</translation>
 <translation id="7062545763355031412">Accepteren en account wijzigen</translation>

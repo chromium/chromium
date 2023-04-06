@@ -206,7 +206,6 @@
 <translation id="2411749908844615428">{count,plural, =1{មាន​​អាសយដ្ឋាន​ដែល​បាន​រក្សាទុក {count} នៅលើ​ក្ដារចុច​របស់​អ្នក។}other{មាន​​អាសយដ្ឋាន​ដែល​បាន​រក្សាទុក {count} នៅលើ​ក្ដារចុច​របស់​អ្នក។}}</translation>
 <translation id="2421004566762153674">ទប់ស្កាត់​ខូគី​ភាគី​ទីបី</translation>
 <translation id="2421044535038393232">បន្ត​កែ</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{ពាក្យសម្ងាត់ដែល​រងការលុកលុយ {COUNT}}other{ពាក្យសម្ងាត់ដែល​រងការលុកលុយ {COUNT}}}</translation>
 <translation id="2434405374328098816">អ្នកបាន​រក្សាទុក​ពាក្យសម្ងាត់​សម្រាប់ "<ph name="USERNAME" />" នៅ <ph name="WEBSITE" /> រួចហើយ</translation>
 <translation id="2435457462613246316">បង្ហាញពាក្យសម្ងាត់</translation>
 <translation id="2451654228769116489">ខ្ទាស់ផ្ទាំង</translation>
@@ -924,7 +923,6 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">ផ្ទាំងថ្មីៗ</translation>
 <translation id="7006788746334555276">ការកំណត់មាតិកា</translation>
-<translation id="7014087399239955356">កំពុង​ពិនិត្យមើល​ពាក្យសម្ងាត់...</translation>
 <translation id="7029809446516969842">ពាក្យសម្ងាត់</translation>
 <translation id="7053983685419859001">ទប់ស្កាត់</translation>
 <translation id="7062545763355031412">ទទួលយក និងប្តូរគណនី</translation>

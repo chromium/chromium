@@ -206,7 +206,6 @@
 <translation id="2411749908844615428">{count,plural, =1{तुमच्या कीबोर्डच्या वरती सेव्ह केलेला {count} अ‍ॅड्रेस उपलब्ध आहे.}other{तुमच्या कीबोर्डच्या वरती सेव्ह केलेले {count} अ‍ॅड्रेस उपलब्ध आहेत.}}</translation>
 <translation id="2421004566762153674">तृतीय पक्षाच्या कुकी ब्लॉक करत आहे</translation>
 <translation id="2421044535038393232">संपादन करणे सुरू ठेवा</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} धोक्यात असलेला पासवर्ड}other{{COUNT} धोक्यात असलेले पासवर्ड}}</translation>
 <translation id="2434405374328098816">तुम्ही <ph name="WEBSITE" /> वर "<ph name="USERNAME" />" चा पासवर्ड आधीच सेव्ह केला आहे</translation>
 <translation id="2435457462613246316">पासवर्ड दर्शवा</translation>
 <translation id="2451654228769116489">टॅब पिन करा</translation>
@@ -925,7 +924,6 @@
 <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">अलीकडील टॅब</translation>
 <translation id="7006788746334555276">आशय सेटिंग्ज</translation>
-<translation id="7014087399239955356">पासवर्ड तपासत आहे…</translation>
 <translation id="7029809446516969842">पासवर्ड</translation>
 <translation id="7053983685419859001">ब्लॉक करा</translation>
 <translation id="7062545763355031412">स्वीकार करा आणि खाती स्विच करा</translation>

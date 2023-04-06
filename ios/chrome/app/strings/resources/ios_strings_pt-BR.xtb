@@ -178,6 +178,7 @@ Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa sen
 <translation id="2218443599109088993">Diminuir zoom</translation>
 <translation id="2230173723195178503">Página da Web carregada</translation>
 <translation id="2239626343334228536">Limpando dados de navegação…</translation>
+<translation id="22508856139286506">Avisos dispensados (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Menu → Histórico</translation>
 <translation id="2256933947031277845">Sua organização permite que você faça login apenas com determinadas contas.</translation>
 <translation id="225943865679747347">Código de erro: <ph name="ERROR_CODE" /></translation>
@@ -205,7 +206,6 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="2411749908844615428">{count,plural, =1{{count} endereço salvo disponível acima do teclado.}one{{count} endereço salvo disponível acima do teclado.}other{{count} endereços salvos disponíveis acima do teclado.}}</translation>
 <translation id="2421004566762153674">Bloqueando cookies de terceiros</translation>
 <translation id="2421044535038393232">Continuar editando</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} senha comprometida}one{{COUNT} senha comprometida}other{{COUNT} senhas comprometidas}}</translation>
 <translation id="2434405374328098816">Você já salvou uma senha para "<ph name="USERNAME" />" em <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Mostrar senha</translation>
 <translation id="2451654228769116489">Fixar guia</translation>
@@ -923,7 +923,6 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Guias recentes</translation>
 <translation id="7006788746334555276">Configurações de conteúdo</translation>
-<translation id="7014087399239955356">Verificando senhas…</translation>
 <translation id="7029809446516969842">Senhas</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7062545763355031412">Aceitar e alternar entre contas</translation>

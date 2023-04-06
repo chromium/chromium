@@ -206,7 +206,6 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="2411749908844615428">{count,plural, =1{Nad tipkovnico je na voljo {count} shranjen naslov.}one{Nad tipkovnico je na voljo {count} shranjen naslov.}two{Nad tipkovnico sta na voljo {count} shranjena naslova.}few{Nad tipkovnico so na voljo {count} shranjeni naslovi.}other{Nad tipkovnico je na voljo {count} shranjenih naslovov.}}</translation>
 <translation id="2421004566762153674">Blokiranje piškotkov drugih spletnih mest</translation>
 <translation id="2421044535038393232">Nadaljuj urejanje</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} ogroženo geslo}one{{COUNT} ogroženo geslo}two{{COUNT} ogroženi gesli}few{{COUNT} ogrožena gesla}other{{COUNT} ogroženih gesel}}</translation>
 <translation id="2434405374328098816">Na <ph name="WEBSITE" /> ste že shranili geslo za »<ph name="USERNAME" />«.</translation>
 <translation id="2435457462613246316">Pokaži geslo</translation>
 <translation id="2451654228769116489">Pripni zavihek</translation>
@@ -924,7 +923,6 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Nedavni zavihki</translation>
 <translation id="7006788746334555276">Nastavitve vsebine</translation>
-<translation id="7014087399239955356">Preverjanje gesel …</translation>
 <translation id="7029809446516969842">Gesla</translation>
 <translation id="7053983685419859001">Blokiraj</translation>
 <translation id="7062545763355031412">Sprejmi in preklopi račun</translation>

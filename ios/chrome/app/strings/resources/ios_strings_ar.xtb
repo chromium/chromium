@@ -208,7 +208,6 @@
 <translation id="2411749908844615428">{count,plural, =1{يتوفّر عنوان واحد ({count}) محفوظ أعلى لوحة المفاتيح.}zero{يتوفّر {count} عنوان محفوظ أعلى لوحة المفاتيح.}two{يتوفّر عنوانَان ({count}) محفوظان أعلى لوحة المفاتيح.}few{تتوفّر {count} عناوين محفوظة أعلى لوحة المفاتيح.}many{يتوفّر {count} عنوانًا محفوظًا أعلى لوحة المفاتيح.}other{يتوفّر {count} عنوان محفوظ أعلى لوحة المفاتيح.}}</translation>
 <translation id="2421004566762153674">حظر ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
 <translation id="2421044535038393232">متابعة التعديل</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{كلمة مرور واحدة محتمَل تعرّضها للاختراق ({COUNT})}zero{‫{COUNT} كلمة مرور محتمَل تعرّضها للاختراق}two{كلِمتا مرور محتمَل تعرّضهما للاختراق ({COUNT})}few{‫{COUNT} كلمات مرور محتمَل تعرّضها للاختراق}many{‫{COUNT} كلمة مرور محتمَل تعرّضها للاختراق}other{‫{COUNT} كلمة مرور محتمَل تعرّضها للاختراق}}</translation>
 <translation id="2434405374328098816">سبق أن حفظت كلمة مرور لاسم المستخدم "<ph name="USERNAME" />" على <ph name="WEBSITE" />.</translation>
 <translation id="2435457462613246316">عرض كلمة المرور</translation>
 <translation id="2451654228769116489">تثبيت علامة تبويب</translation>
@@ -926,7 +925,6 @@
 <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">علامات التبويب الأخيرة</translation>
 <translation id="7006788746334555276">إعدادات المحتوى</translation>
-<translation id="7014087399239955356">جارٍ التحقّق من كلمات المرور…</translation>
 <translation id="7029809446516969842">كلمات المرور</translation>
 <translation id="7053983685419859001">حظر</translation>
 <translation id="7062545763355031412">قبول الحسابات وتبديلها</translation>

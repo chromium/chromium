@@ -1328,7 +1328,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2114820389966440614">Nieuwe highlights en andere herinneringen hier bekijken</translation>
 <translation id="2114896190328250491">Foto van <ph name="NAME" /></translation>
 <translation id="2114995631896158695">Geen simkaart geplaatst</translation>
-<translation id="2116020356255810305">App openen bij opstarten aanzetten</translation>
 <translation id="2116619964159595185">Sites maken meestal verbinding met bluetooth-apparaten voor functies zoals het instellen of synchroniseren van een Bluetooth Low Energy-beacon, een gezondheids- of fitnesstracker, of een smartlamp</translation>
 <translation id="2117655453726830283">Volgende dia</translation>
 <translation id="2119349053129246860">Openen in <ph name="APP" /></translation>
@@ -3257,7 +3256,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="380329542618494757">Naam</translation>
 <translation id="3803345858388753269">Videokwaliteit</translation>
 <translation id="3803367742635802571">Sites die je bezoekt, werken misschien niet meer zoals bedoeld</translation>
-<translation id="3803583375545057606">Je ouder vragen om deze extensie aan te zetten?</translation>
 <translation id="380408572480438692">Als je prestatiegegevens verzamelt, help je Google het systeem nog beter te maken. Er worden geen gegevens verstuurd totdat je een feedbackrapport (Alt-Shift-I) indient en prestatiegegevens toevoegt. Je kunt op elk moment teruggaan naar dit scherm om de verzameling uit te zetten.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (extensie-ID <ph name="EXTENSION_ID" />) is niet toegestaan op een inlogscherm.</translation>
 <translation id="3807747707162121253">A&amp;nnuleren</translation>
@@ -3678,7 +3676,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4169535189173047238">Niet toestaan</translation>
 <translation id="4170314459383239649">Wissen bij het verlaten</translation>
 <translation id="417096670996204801">Profiel kiezen</translation>
-<translation id="41725145403849567">Je ouder vragen om deze extensie toe te voegen?</translation>
 <translation id="4175137578744761569">Lichtpaars/wit</translation>
 <translation id="4175737294868205930">Permanente opslag</translation>
 <translation id="4176463684765177261">Uitgezet</translation>
@@ -5090,7 +5087,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{De pincode moet ten minste 1 teken bevatten}other{De pincode moet ten minste # tekens bevatten}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> vereist dat je nu verbinding maakt met wifi en een update downloadt. Je kunt de update ook downloaden via een verbinding met datalimiet (er kunnen kosten van toepassing zijn).</translation>
 <translation id="5476016146231427848">Start je apparaat opnieuw op om Steam te gebruiken op je Chromebook</translation>
-<translation id="5476897066181964657">Een ouder of voogd moet aangeven dat je deze extensie mag toevoegen</translation>
 <translation id="5481273127572794904">Geen toestemming om automatisch meerdere bestanden te downloaden</translation>
 <translation id="5481941284378890518">Printers in de buurt toevoegen</translation>
 <translation id="5483785310822538350">Toegang tot bestand en apparaat intrekken</translation>
@@ -5187,7 +5183,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5555639311269196631">Hotspot uitzetten</translation>
 <translation id="5556459405103347317">Opnieuw laden</translation>
 <translation id="5558129378926964177">&amp;Inzoomen</translation>
-<translation id="5558247502209241936">App openen in venster aanzetten</translation>
 <translation id="5559311991468302423">Adres verwijderen</translation>
 <translation id="55601339223879446">De grenzen van je bureaublad aanpassen binnen de weergave</translation>
 <translation id="5561162485081632007">Detecteert en waarschuwt je over gevaarlijke gebeurtenissen als deze plaatsvinden</translation>
@@ -6009,7 +6004,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6305607932814307878">Algemeen beleid:</translation>
 <translation id="6305702903308659374">Afspelen met normaal volume, ook als ChromeVox spreekt</translation>
 <translation id="6305909198255586420">Installeer dit met je primaire profiel</translation>
-<translation id="630750887748244481">Je ouder heeft 'Rechten voor sites, apps en extensies' uitgezet voor Chrome. Deze extensie mag niet worden toegevoegd.</translation>
 <translation id="6307990684951724544">Systeem is bezet</translation>
 <translation id="6308493641021088955">Inloggen mogelijk gemaakt door <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Lin&amp;k opslaan als...</translation>
@@ -6784,7 +6778,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6988094684494323731">De Linux-container wordt gestart</translation>
 <translation id="6988403677482707277">Tabblad verplaatst naar begin van tabbladstrook</translation>
 <translation id="6989123022222588975">Je hebt geen interesses verwijderd</translation>
-<translation id="6990209147952697693">Klassiek Chrome-uiterlijk</translation>
+<translation id="6990209147952697693">Klassieke versie van Chrome</translation>
 <translation id="6991665348624301627">Een bestemming selecteren</translation>
 <translation id="6992554835374084304">Zet verbeterde spellingcontrole aan</translation>
 <translation id="6993000214273684335">Tabblad verwijderd uit naamloze groep - <ph name="GROUP_CONTENTS" /></translation>
@@ -6834,7 +6828,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7025190659207909717">Beheer van mobiele netwerken</translation>
 <translation id="7025895441903756761">Beveiliging en privacy</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Alles openen in &amp;incognitovenster}=1{Openen in &amp;incognitovenster}other{Alles ({COUNT}) openen in &amp;incognitovenster}}</translation>
-<translation id="7028057921476386252">Een ouder of voogd moet aangeven dat je deze extensie mag aanzetten</translation>
 <translation id="7029307918966275733">Crostini is niet geïnstalleerd. Installeer Crostini om credits te bekijken.</translation>
 <translation id="7029809446516969842">Wachtwoorden</translation>
 <translation id="7030304022046916278">Stuurt URL's naar Safe Browsing om deze te checken</translation>
@@ -8210,7 +8203,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8251509999076836464">Koppelen met <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">Miniatuur verwijderd.</translation>
 <translation id="825238165904109940">Altijd volledige URL's tonen</translation>
-<translation id="8252538334423261825">Kan extensie niet toevoegen</translation>
 <translation id="8252569384384439529">Uploaden...</translation>
 <translation id="8253198102038551905">Kik op '+' om netwerkeigenschappen op te halen</translation>
 <translation id="8255212965098517578">Recente foto's, meldingen en apps</translation>

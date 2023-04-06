@@ -206,7 +206,6 @@
 <translation id="2411749908844615428">{count,plural, =1{有 {count} 個可以用嘅地址儲存咗喺鍵盤上面。}other{有 {count} 個可以用嘅地址儲存咗喺鍵盤上面。}}</translation>
 <translation id="2421004566762153674">封鎖第三方 Cookie</translation>
 <translation id="2421044535038393232">繼續編輯</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} 個被盜用的密碼}other{{COUNT} 個被盜用的密碼}}</translation>
 <translation id="2434405374328098816">您已儲存「<ph name="USERNAME" />」在 <ph name="WEBSITE" /> 使用的密碼</translation>
 <translation id="2435457462613246316">顯示密碼</translation>
 <translation id="2451654228769116489">固定分頁</translation>
@@ -514,7 +513,7 @@
 <translation id="452750746583162491">查看您已同步的資料</translation>
 <translation id="4536418791685807335">請嘗試再次登入。</translation>
 <translation id="4540780316273593836">發生錯誤</translation>
-<translation id="4550040941166547650">僅在這部裝置上</translation>
+<translation id="4550040941166547650">只在此裝置上</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{要關閉 {COUNT} 個閒置分頁嗎？}other{要關閉 {COUNT} 個閒置分頁嗎？}}</translation>
 <translation id="457386861538956877">更多語言…</translation>
 <translation id="4587235830039045480">將密碼儲存在您的 Google 帳戶中</translation>
@@ -768,7 +767,7 @@
 <translation id="6193424046394092997">{count,plural, =1{已將書籤加入「{title}」}other{已將書籤加入「{title}」}}</translation>
 <translation id="6196207969502475924">語音搜尋</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{關閉 {COUNT} 個分頁}other{關閉 {COUNT} 個分頁}}</translation>
-<translation id="6210079381482819663"><ph name="THRESHOLD" /> 天以上未使用的分頁會移到這裡。你隨時可以前往<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />進行變更。</translation>
+<translation id="6210079381482819663">已有 <ph name="THRESHOLD" /> 天或以上未使用的分頁會移到此處。您可隨時在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中變更此設定。</translation>
 <translation id="6213567400989743524">已關閉的警告</translation>
 <translation id="6219550825416862075">歡迎回來</translation>
 <translation id="6219688215832490856">永不翻譯</translation>
@@ -922,7 +921,6 @@
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">最近開啟的分頁</translation>
 <translation id="7006788746334555276">內容設定</translation>
-<translation id="7014087399239955356">正在檢查密碼…</translation>
 <translation id="7029809446516969842">密碼</translation>
 <translation id="7053983685419859001">封鎖</translation>
 <translation id="7062545763355031412">接受並切換帳戶</translation>
@@ -1062,7 +1060,7 @@
 <translation id="8059533439631660104">收起嗰個部分。</translation>
 <translation id="8065292699993359127">在 Chrome 中以無痕模式開啟網址</translation>
 <translation id="806745655614357130">分開保留我的資料</translation>
-<translation id="8069394452933076548">針對最近沒有使用的分頁，選擇過多久要移至閒置分頁區塊。</translation>
+<translation id="8069394452933076548">針對最近未使用的分頁，選擇何時要移至閒置分頁部分。</translation>
 <translation id="8073670137947914548">下載完畢</translation>
 <translation id="8073872304774253879">改善搜尋和瀏覽體驗</translation>
 <translation id="8076492880354921740">分頁</translation>
@@ -1207,7 +1205,7 @@
 <translation id="9055772144595778347">無法登入</translation>
 <translation id="9055960261314198756">已關閉「強化保護功能」</translation>
 <translation id="9057972802061533987">無法追蹤，發生錯誤。</translation>
-<translation id="9061495354530850708">在你的 Google 帳戶中</translation>
+<translation id="9061495354530850708">在 Google 帳戶中</translation>
 <translation id="9065203028668620118">編輯</translation>
 <translation id="9068336935206019333">在 Chrome 無痕模式中開啟</translation>
 <translation id="9079935439869366234">全部標示為未讀</translation>

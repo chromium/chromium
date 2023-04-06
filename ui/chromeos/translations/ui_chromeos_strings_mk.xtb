@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">Планета</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> е отстранет.</translation>
 <translation id="2307462900900812319">Конфигурирај мрежа</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Не може да се лоцира екстензија со ID-бројот <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Контактирајте со администраторот.}one{Не може да се лоцираат екстензии со ID-броевите <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Контактирајте со администраторот.}other{Не може да се лоцираат екстензии со ID-броевите <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Контактирајте со администраторот.}}</translation>
 <translation id="2325650632570794183">Овој тип датотека не е поддржан. Посетете ја веб-продавницата на Chrome за да најдете апликација што може да го отвори овој тип датотека.</translation>
 <translation id="2326539130272988168">бугарски</translation>
 <translation id="2337715497728194187">Споделете со Bruschetta</translation>
@@ -274,6 +275,7 @@
 <translation id="3290356915286466215">Незаштитена</translation>
 <translation id="3291218047831493686">Поврзете се на мрежава за да ја промените поставката за заклучување на SIM-картичката</translation>
 <translation id="3293023191599135697">WEP-мрежите не се поддржани</translation>
+<translation id="3295006446256079333">Овој диск</translation>
 <translation id="3295357220137379386">Уредот е зафатен</translation>
 <translation id="3296763833017966289">грузиски</translation>
 <translation id="3307875152560779385">украински</translation>

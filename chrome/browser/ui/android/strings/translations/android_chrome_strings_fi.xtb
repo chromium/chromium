@@ -455,6 +455,7 @@ Yksityiset tilamerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnis
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Lue lisätietoja<ph name="END_LINK" /> suositellusta sisällöstä.</translation>
 <translation id="3495219333887281978">Kirjautumispaneeli avattu puolelle näytölle.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="350276055892098337">Lajittelu: vanhin ensin</translation>
 <translation id="3507132249039706973">Perustason suojaus on päällä</translation>
 <translation id="3509330069915219067">Offline-tilassa. Chrome ei voi tarkistaa päivityksiä.</translation>
 <translation id="3513704683820682405">Lisätty todellisuus</translation>
@@ -575,6 +576,7 @@ Yksityiset tilamerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnis
 <translation id="4177222230309051052">Hae kaikki kirjanmerkkisi</translation>
 <translation id="4177501066905053472">Mainosten aiheet</translation>
 <translation id="4181841719683918333">Kielet</translation>
+<translation id="4188221736490993796">Lajittele Z:sta A:han</translation>
 <translation id="4195643157523330669">Avaa uudelle välilehdelle</translation>
 <translation id="4196597275619698563">Luo kortti</translation>
 <translation id="4198423547019359126">Tallennussijainteja ei ole saatavilla</translation>
@@ -640,6 +642,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="4565377596337484307">Piilota salasana</translation>
 <translation id="4572422548854449519">Kirjaudu hallinnoidulle tilille</translation>
 <translation id="4576892426230499203">Kokeile toista vahvistustapaa</translation>
+<translation id="4577115723294378384">Lajittele A:sta Z:aan</translation>
 <translation id="4578289292431526768">Aloitetaan</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minuutti sitten}other{# minuuttia sitten}}</translation>
 <translation id="4587589328781138893">Sivustot</translation>
@@ -663,6 +666,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="4689792375321623175">Hae kuvaa Googlella <ph name="BEGIN_NEW" />Uusi<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ja <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> muu}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ja <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> muuta}}</translation>
 <translation id="4699172675775169585">Välimuistissa olevat kuvat ja tiedostot</translation>
+<translation id="4710167854527459075">Lajittele: uusin ensin</translation>
 <translation id="4719927025381752090">Tarjoudu kääntämään</translation>
 <translation id="4720023427747327413">Avaa kohteessa <ph name="PRODUCT_NAME" /></translation>
 <translation id="47217992755561375">Katso suositut sivustosi</translation>
@@ -832,6 +836,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5561162485081632007">Havaitsee vaaralliset tapahtumat ja varoittaa niistä etukäteen</translation>
 <translation id="5561549206367097665">Odotetaan verkkoyhteyttä…</translation>
 <translation id="5568069709869097550">Ei voi kirjautua sisään</translation>
+<translation id="557018954714092179">Luo uusi kansio</translation>
 <translation id="5578795271662203820">Etsi tätä kuvaa palvelusta <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Voit valita synkronoitavan sisällön <ph name="BEGIN_LINK1" />asetuksissa<ph name="END_LINK1" />.</translation>
 <translation id="5590372121997663538">Muista tämä tietokone</translation>
@@ -936,6 +941,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="6138832295072039549">Muuta sivustoasetuksia täällä</translation>
 <translation id="6140709049082532940">Parannettu suojaus:</translation>
 <translation id="6140912465461743537">Maa/alue</translation>
+<translation id="6148266338772765473">Jätä linkki pois</translation>
 <translation id="6150320133806434356">Kirjanmerkki tallennettu</translation>
 <translation id="6154478581116148741">Ota näytön lukitus käyttöön asetuksista viedäksesi salasanoja laitteelta.</translation>
 <translation id="6159729262978459665">Tyhjentää kaikkien synkronoitujen laitteiden historian.</translation>
@@ -1027,6 +1033,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6590680911007613645">Varmista, että tallennettava salasana vastaa palvelun (<ph name="SITE" />) salasanaa</translation>
 <translation id="6593061639179217415">Tietokonesivusto</translation>
 <translation id="6594121454516132231">Katso, miten Chrome suojaa sinua sivustojen väliseltä seurannalta verkon pysyessä avoimena.</translation>
+<translation id="6594347733515723558">Lajittelu ja katselu</translation>
 <translation id="6595046016124923392">Kuvat lähetetään Googlelle, jotta näkemiäsi kuvauksia voidaan parantaa.</translation>
 <translation id="6600954340915313787">Kopioitiin Chromeen.</translation>
 <translation id="661266467055912436">Parantaa sinun ja kaikkien verkon käyttäjien suojausta</translation>

@@ -20,6 +20,7 @@
 <translation id="1103523840287552314">Секогаш преведувај <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Префрлете се на отворениот прозорец</translation>
 <translation id="1112015203684611006">Печатењето не успеа.</translation>
+<translation id="1118266931011974190">По <ph name="THRESHOLD" /> дена</translation>
 <translation id="1125564390852150847">Создај нова картичка.</translation>
 <translation id="1126013303640354461">Начините на плаќање и адресите од Google Pay нема да бидат шифрирани. Историјата на прелистување од Chrome нема да се синхронизира.
 Само лицата што ја имаат вашата лозинка може да ги прочитаат шифрираните податоци. Лозинката не се испраќа до Google и тој не ја складира. Ако ја заборавите лозинката или сакате да ја промените поставкава, ќе треба да ја ресетирате синхронизацијата. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
@@ -177,6 +178,7 @@
 <translation id="2218443599109088993">Одзумирај</translation>
 <translation id="2230173723195178503">Веб-страницата е вчитана</translation>
 <translation id="2239626343334228536">Се чистат податоците од прелистувањето…</translation>
+<translation id="22508856139286506">Отфрлени предупредувања (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Мени → Историја</translation>
 <translation id="2256933947031277845">Вашата организација ви дозволува да се најавите само со одредени сметки.</translation>
 <translation id="225943865679747347">Код на грешка: <ph name="ERROR_CODE" /></translation>
@@ -204,7 +206,6 @@
 <translation id="2411749908844615428">{count,plural, =1{{count} зачувана адреса достапна над тастатурата.}one{{count} зачувана адреса достапни над тастатурата.}other{{count} зачувани адреси достапни над тастатурата.}}</translation>
 <translation id="2421004566762153674">Се блокираат колачиња од трети страни</translation>
 <translation id="2421044535038393232">Продолжи со изменување</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} компромитирана лозинка}one{{COUNT} компромитирана лозинка}other{{COUNT} компромитирани лозинки}}</translation>
 <translation id="2434405374328098816">Веќе зачувавте лозинка за „<ph name="USERNAME" />“ на <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Прикажи ја лозинката</translation>
 <translation id="2451654228769116489">Прикачи картичка</translation>
@@ -231,6 +232,7 @@
 <translation id="2626236249646841566">Проверете ја врската и обидете се повторно да се најавите.</translation>
 <translation id="2637313651144986786">Пребарајте ги картичките…</translation>
 <translation id="2647269890314209800">Колачиња во употреба</translation>
+<translation id="2648721026697078500">Никогаш не преместувај</translation>
 <translation id="2648803196158606475">Избриши ги прочитаните</translation>
 <translation id="2653659639078652383">Испрати</translation>
 <translation id="2664621323652615289">Запри</translation>
@@ -346,6 +348,7 @@
 <translation id="3305294846493618482">повеќе</translation>
 <translation id="3311748811247479259">Исклучено</translation>
 <translation id="3324193307694657476">Адреса 2</translation>
+<translation id="3328459813621383194">Преместување неактивни картички</translation>
 <translation id="3328801116991980348">Информации за веб-локација</translation>
 <translation id="3371831930909698441">„Преведи“ е достапна. Достапни се опции на дното на екранот.</translation>
 <translation id="3377063233124932127">Отсега вашите зачувани обележувачи, лозинки и друго се најгоре.</translation>
@@ -510,6 +513,7 @@
 <translation id="452750746583162491">Прегледајте ги синхронизираните податоци</translation>
 <translation id="4536418791685807335">Обидете се да се најавите повторно.</translation>
 <translation id="4540780316273593836">Нешто тргна наопаку</translation>
+<translation id="4550040941166547650">Само на уредов</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Дали да се затвори {COUNT} неактивна картичка?}one{Дали да се затворат {COUNT} неактивна картичка?}other{Дали да се затворат {COUNT} неактивни картички?}}</translation>
 <translation id="457386861538956877">Повеќе…</translation>
 <translation id="4587235830039045480">Зачувајте ја лозинката на вашата сметка на Google</translation>
@@ -763,6 +767,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6193424046394092997">{count,plural, =1{Додаден е обележувач во {title}}one{Додадени се обележувачи во {title}}other{Додадени се обележувачи во {title}}}</translation>
 <translation id="6196207969502475924">Гласовно пребарување</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Затвори {COUNT} картичка}one{Затвори {COUNT} картичка}other{Затвори {COUNT} картички}}</translation>
+<translation id="6210079381482819663">Картичките што не се користат <ph name="THRESHOLD" /> или повеќе дена се преместуваат тука. Ова може да го промените во секое време во <ph name="BEGIN_LINK" />Поставки<ph name="END_LINK" />.</translation>
 <translation id="6213567400989743524">Отфрлени предупредувања</translation>
 <translation id="6219550825416862075">Добре дојдовте назад</translation>
 <translation id="6219688215832490856">Никогаш не преведувај</translation>
@@ -918,7 +923,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Неодамнешни картички</translation>
 <translation id="7006788746334555276">Поставки за содржина</translation>
-<translation id="7014087399239955356">Се проверуваат лозинките…</translation>
 <translation id="7029809446516969842">Лозинки</translation>
 <translation id="7053983685419859001">Блокирај</translation>
 <translation id="7062545763355031412">Прифати и замени ги сметките</translation>
@@ -1058,6 +1062,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8059533439631660104">Го собира делот.</translation>
 <translation id="8065292699993359127">Отворај URL-адреси во Chrome во „Инкогнито“</translation>
 <translation id="806745655614357130">Не поврзувај ги податоците</translation>
+<translation id="8069394452933076548">Изберете кога картичките што не сте ги користеле неодамна да се преместуваат во делот за неактивни картички.</translation>
 <translation id="8073670137947914548">Преземањето заврши</translation>
 <translation id="8073872304774253879">Подобрете ги пребарувањата и прелистувањето</translation>
 <translation id="8076492880354921740">Картички</translation>
@@ -1202,6 +1207,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="9055772144595778347">Не може да се најави</translation>
 <translation id="9055960261314198756">„Подобрената заштита“ е исклучена</translation>
 <translation id="9057972802061533987">Не може да се следи. Нешто тргна наопаку.</translation>
+<translation id="9061495354530850708">Во вашата сметка на Google</translation>
 <translation id="9065203028668620118">Измени</translation>
 <translation id="9068336935206019333">Отвори во „Инкогнито“ на Chrome</translation>
 <translation id="9079935439869366234">Означи ги сите како непрочитани</translation>

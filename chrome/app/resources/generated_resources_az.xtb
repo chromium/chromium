@@ -116,6 +116,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1091767800771861448">Atlamaq üçün Esc basın.</translation>
 <translation id="1093457606523402488">Görünən Şəbəkələr:</translation>
 <translation id="1095761715416917775">Sinxronlaşdırma datasına həmişə girişinizin olduğuna əmin olun</translation>
+<translation id="1095879482467973146">Vebdə Google Parol Meneceri</translation>
 <translation id="109647177154844434">Parallels Desktop ləğv edilsə, Windows şəkli də silinəcək. Buraya onun tətbiqləri, ayarları və datası daxildir. Davam etmək istədiyinizə əminsiniz?</translation>
 <translation id="1097016918605049747">Bu səhifəni tərcümə etmək mümkün olmadı</translation>
 <translation id="1097658378307015415">Hesaba girmədən öncə <ph name="NETWORK_ID" /> şəbəkəsini aktivləşdirmək üçün Qonaq olaraq daxil olun.</translation>
@@ -1323,7 +1324,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2114820389966440614">"Son Vurğulamalar" və digər yaddaşlara burada baxın</translation>
 <translation id="2114896190328250491"><ph name="NAME" /> adlı şəxsin fotosu</translation>
 <translation id="2114995631896158695">SİM kart daxil edilməyib</translation>
-<translation id="2116020356255810305">Başlanğıcda tətbiqin işə salınmasını aktivləşdirin</translation>
 <translation id="2116619964159595185">Saytlar, adətən, aşağı enerji mayakını, sağlamlıq və ya fitnes izləyicisini, yaxud smart işıq lampasını qurmaq və ya sinxronlaşdırmaq kimi xüsusiyyətlər üçün Bluetooth cihazlarına qoşulur</translation>
 <translation id="2117655453726830283">Növbəti slayd</translation>
 <translation id="2119349053129246860"><ph name="APP" /> tətbiqində açın</translation>
@@ -1483,6 +1483,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2252017960592955005">Baxış qorunması (Beta)</translation>
 <translation id="225240747099314620">Qorunan kontent üçün identifikatorlara icazə verin (kompüterin yenidən başladılması tələb oluna bilər)</translation>
 <translation id="2253318212986772520"><ph name="PRINTER_NAME" /> üçün PPD əldə etmək olmur.</translation>
+<translation id="2253927598983295051"><ph name="APP_NAME" /> ilə paylaşılacaq kontenti seçin</translation>
 <translation id="2255077166240162850">Bu cihaz müxtəlif domen və ya rejimlə kilidləndi.</translation>
 <translation id="2255317897038918278">Microsoft Zaman Möhürləməsi</translation>
 <translation id="2256115617011615191">İndi yenidən başladın</translation>
@@ -1831,6 +1832,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2532589005999780174">Yüksək kontrast rejimi</translation>
 <translation id="2533649878691950253">Adətən icazə vermədiyiniz üçün bu saytın dəqiq yerinizi bilməsi bloklanıb</translation>
 <translation id="253434972992662860">Durdurun</translation>
+<translation id="253498598929009420">Sayt ekrandakı kontenti görə biləcək</translation>
 <translation id="253557089021624350">İstifadə edilən artırma sayı</translation>
 <translation id="2535799430745250929">Mobil şəbəkə yoxdur</translation>
 <translation id="2537395079978992874"><ph name="ORIGIN" /> aşağıdakı fayl ilə qovluqlara baxa və redaktə edə bilər</translation>
@@ -3253,7 +3255,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="380329542618494757">Ad</translation>
 <translation id="3803345858388753269">Video Keyfiyyəti</translation>
 <translation id="3803367742635802571">Ziyarət etdiyiniz saytlar nəzərdə tutulduğu kimi fəaliyyətini dayandıra bilər</translation>
-<translation id="3803583375545057606">Artırmanı aktivləşdirmək üçün valideynə müraciət edilsin?</translation>
 <translation id="380408572480438692">Performans datasının toplanmasına icazə vermək Google'a sistemi gəlişdirmək imkanı verir. Geri əlaqə raportu hazırlayana (Alt-Shift-I) və performans datası təqdim edənə qədər heç bir data göndərilmir. Toplamaya qadağa qoymaq üçün buraya istədiyiniz vaxt qayıda bilərsiniz.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (artırma ID'si "<ph name="EXTENSION_ID" />") giriş ekranında icazə verilmir.</translation>
 <translation id="3807747707162121253">Ləğv edin</translation>
@@ -3673,7 +3674,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4169535189173047238">İcazə verməyin</translation>
 <translation id="4170314459383239649">Çıxarkən silin</translation>
 <translation id="417096670996204801">Profil seçin</translation>
-<translation id="41725145403849567">Artırmanı əlavə etmək üçün valideynə müraciət edilsin?</translation>
 <translation id="4175137578744761569">Açıq-bənövşəyi və ağ</translation>
 <translation id="4175737294868205930">Davamlı saxlama yeri</translation>
 <translation id="4176463684765177261">Deaktiv edildi</translation>
@@ -5086,7 +5086,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN minimum bir simvoldan ibarət olmalıdır}other{PIN minimum # simvoldan ibarət olmalıdır}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> sizdən indi Wi-Fi'a qoşulmağınızı və güncəlləməni endirməyinizi tələb edir. Ya da limitli bağlantı vasitəsilə endirin (ödəmə tutula bilər).</translation>
 <translation id="5476016146231427848">Chromebook'da Steam tətbiqindən istifadə etmək üçün cihazı yenidən başladın</translation>
-<translation id="5476897066181964657">Valideyn və ya qəyyum artırmanı əlavə etməyi təsdiqləməlidir</translation>
 <translation id="5481273127572794904">Çoxsaylı faylların avtomatik endirilməsinə icazə verilmədi</translation>
 <translation id="5481941284378890518">Yaxınlıqdakı Printerləri əlavə edin</translation>
 <translation id="5483785310822538350">Fayl və cihaz girişini geri alın</translation>
@@ -5183,7 +5182,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5555639311269196631">Hotspotu deaktiv edin</translation>
 <translation id="5556459405103347317">Yenidən yükləyin</translation>
 <translation id="5558129378926964177">Böyüdün</translation>
-<translation id="5558247502209241936">Tətbiqin pəncərədə açılmasını aktivləşdirin</translation>
 <translation id="5559311991468302423">Ünvanı silin</translation>
 <translation id="55601339223879446">Ekran daxilində masaüstü sərhədlərini nizamlayın</translation>
 <translation id="5561162485081632007">Təhlükəli hadisələr baş verdikdə onları aşkarlayır və sizə xəbərdarlıq edir</translation>
@@ -6007,7 +6005,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6305607932814307878">Qlobal Siyasət:</translation>
 <translation id="6305702903308659374">ChromeVox danışsa belə, normal səs ilə oxudun</translation>
 <translation id="6305909198255586420">Əsas profilinizdən istifadə edərək quraşdırın</translation>
-<translation id="630750887748244481">Valideyniniz Chrome üçün "Saytlar, tətbiqlər və artırmalar üzrə icazələri" deaktiv edib. Bu artırmanı əlavə etməyə icazə verilmir.</translation>
 <translation id="6307990684951724544">Sistem məşğuldur</translation>
 <translation id="6308493641021088955">Giriş <ph name="EXTENSION_NAME" /> tərəfindən təmin edilib</translation>
 <translation id="6308937455967653460">Linkin saxlanma formatı:</translation>
@@ -6833,7 +6830,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7025190659207909717">Mobil data xidmətini idarə edin</translation>
 <translation id="7025895441903756761">Güvənlik və Məxfilik</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Hamısını &amp;Anonim Pəncərədə Açın}=1{&amp;Anonim Pəncərədə Açın}other{Hamısını ({COUNT}) &amp;Anonim Pəncərədə Açın}}</translation>
-<translation id="7028057921476386252">Valideyn və ya qəyyum artırmanı aktivləşdirməyi təsdiqləməlidir</translation>
 <translation id="7029307918966275733">Crostini quraşdırılmayıb. Kreditlərə baxmaq üçün Crostini'ni quraşdırın.</translation>
 <translation id="7029809446516969842">Parollar</translation>
 <translation id="7030304022046916278">URL'ləri yoxlamaq üçün onları Təhlükəsiz Baxışa göndərir</translation>
@@ -8211,7 +8207,6 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8251509999076836464"><ph name="DEVICE_NAME" /> ilə birləşdirilir</translation>
 <translation id="8251578425305135684">Eskiz silindi.</translation>
 <translation id="825238165904109940">Həmişə Tam URL'ləri Göstərin</translation>
-<translation id="8252538334423261825">Artırma əlavə etmək olmur</translation>
 <translation id="8252569384384439529">Yüklənir...</translation>
 <translation id="8253198102038551905">Şəbəkə xüsusiyyətlərini əldə etmək üçün '+' klikləyin</translation>
 <translation id="8255212965098517578">Son fotolar, bildirişlər və tətbiqlər</translation>

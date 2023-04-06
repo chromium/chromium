@@ -206,7 +206,6 @@
 <translation id="2411749908844615428">{count,plural, =1{{count} የተቀመጠ አድራሻ ከቁልፍ ሰሌዳዎ በላይ ይገኛል።}one{{count} የተቀመጠ አድራሻ ከቁልፍ ሰሌዳዎ በላይ ይገኛል።}other{{count} የተቀመጡ አድራሻዎች ከቁልፍ ሰሌዳዎ በላይ ይገኛሉ።}}</translation>
 <translation id="2421004566762153674">የሶስተኛ ወገን ኩኪዎችን ማገድ</translation>
 <translation id="2421044535038393232">አርትዖቱን ቀጥል</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} የተጠለፈ የይለፍ ቃል}one{{COUNT} የተጠለፈ የይለፍ ቃል}other{{COUNT} የተጠለፉ የይለፍ ቃላት}}</translation>
 <translation id="2434405374328098816"><ph name="WEBSITE" /> ላይ ለ«<ph name="USERNAME" />» የይለፍ ቃል አስቀድመው አስቀምጠዋል</translation>
 <translation id="2435457462613246316">የይለፍ ቃል አሳይ</translation>
 <translation id="2451654228769116489">ትርን ሰካ</translation>
@@ -924,7 +923,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">የቅርብ ጊዜ ትሮች</translation>
 <translation id="7006788746334555276">የይዘት ቅንብሮች </translation>
-<translation id="7014087399239955356">የይለፍ ቃላትን በመፈተሽ ላይ…</translation>
 <translation id="7029809446516969842">የይለፍ ቃላት</translation>
 <translation id="7053983685419859001">አግድ</translation>
 <translation id="7062545763355031412">ይቀበሉ እና መለያዎችን ይቀይሩ</translation>

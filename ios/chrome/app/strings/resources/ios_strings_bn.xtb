@@ -206,7 +206,6 @@
 <translation id="2411749908844615428">{count,plural, =1{{count}টি সেভ করা ঠিকানা আপনার কীবোর্ডের উপর দেখানো হবে।}one{{count}টি সেভ করা ঠিকানা আপনার কীবোর্ডের উপর দেখানো হবে।}other{{count}টি সেভ করা ঠিকানা আপনার কীবোর্ডের উপর দেখানো হবে।}}</translation>
 <translation id="2421004566762153674">থার্ড-পার্টি কুকি ব্লক করুন</translation>
 <translation id="2421044535038393232">এডিট করতে থাকুন</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{চুরি হয়ে যাওয়া {COUNT}টি পাসওয়ার্ড}one{চুরি হয়ে যাওয়া {COUNT}টি পাসওয়ার্ড}other{চুরি হয়ে যাওয়া {COUNT}টি পাসওয়ার্ড}}</translation>
 <translation id="2434405374328098816">আপনি আগে থেকেই "<ph name="USERNAME" />"-এর জন্য <ph name="WEBSITE" />-এ পাসওয়ার্ড সেভ করেছেন</translation>
 <translation id="2435457462613246316">পাসওয়ার্ড দেখান</translation>
 <translation id="2451654228769116489">ট্যাব পিন করুন</translation>
@@ -925,7 +924,6 @@
 <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">সাম্প্রতিক ট্যাবগুলি</translation>
 <translation id="7006788746334555276">কন্টেন্ট সেটিংস</translation>
-<translation id="7014087399239955356">পাসওয়ার্ড চেক করা হচ্ছে...</translation>
 <translation id="7029809446516969842">পাসওয়ার্ড</translation>
 <translation id="7053983685419859001">ব্লক করুন</translation>
 <translation id="7062545763355031412">স্বীকার করে অ্যাকাউন্টগুলি সুইচ করুন</translation>

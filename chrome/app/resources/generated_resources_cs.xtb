@@ -118,6 +118,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1091767800771861448">Akci přeskočíte stisknutím klávesy Esc (pouze neoficiální sestavení).</translation>
 <translation id="1093457606523402488">Viditelné sítě:</translation>
 <translation id="1095761715416917775">Zajistěte, abyste k synchronizovaným datům měli vždy přístup</translation>
+<translation id="1095879482467973146">Správce hesel Google na webu</translation>
 <translation id="109647177154844434">Odinstalováním nástroje Parallels Desktop smažete i obraz systému Windows. To zahrnuje i aplikace, nastavení a data. Opravdu chcete pokračovat?</translation>
 <translation id="1097016918605049747">Stránku se nepodařilo přeložit</translation>
 <translation id="1097658378307015415">Chcete-li aktivovat síť <ph name="NETWORK_ID" />, vstupte prosím před přihlášením jako host</translation>
@@ -1329,7 +1330,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2114820389966440614">Zde můžete zobrazit „Výběr nedávných fotek“ a další vzpomínky</translation>
 <translation id="2114896190328250491">Autor fotografie: <ph name="NAME" /></translation>
 <translation id="2114995631896158695">Není vložena žádná SIM karta</translation>
-<translation id="2116020356255810305">Povolit spuštění aplikace po zapnutí</translation>
 <translation id="2116619964159595185">Weby se k zařízením Bluetooth obvykle připojují kvůli funkcím, jako je nastavení nebo synchronizace nízkoenergetických lokátorů, zařízení ke sledování kondice a zdraví nebo chytrých žárovek</translation>
 <translation id="2117655453726830283">Další snímek</translation>
 <translation id="2119349053129246860">Otevřít v aplikaci <ph name="APP" /></translation>
@@ -1489,6 +1489,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2252017960592955005">Ochrana před špehováním (beta)</translation>
 <translation id="225240747099314620">Aktivovat identifikátory chráněného obsahu (může být vyžadován restart počítače)</translation>
 <translation id="2253318212986772520">PPD pro tiskárnu <ph name="PRINTER_NAME" /> se nepodařilo načíst.</translation>
+<translation id="2253927598983295051">Vyberte, co chcete sdílet s aplikací <ph name="APP_NAME" /></translation>
 <translation id="2255077166240162850">Toto zařízení bylo uzamknuto pro jinou doménu nebo režim.</translation>
 <translation id="2255317897038918278">Časové razítko standardu Microsoft</translation>
 <translation id="2256115617011615191">Restartovat</translation>
@@ -1834,6 +1835,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2532589005999780174">Režim vysokého kontrastu</translation>
 <translation id="2533649878691950253">Přístup tohoto webu k vaší přesné poloze byl zablokován, protože ho obvykle nepovolujete</translation>
 <translation id="253434972992662860">&amp;Pozastavit</translation>
+<translation id="253498598929009420">Web bude moci vidět obsah vaší obrazovky</translation>
 <translation id="253557089021624350">Aktivity zabraňující ukončení</translation>
 <translation id="2535799430745250929">Žádná mobilní síť není k dispozici</translation>
 <translation id="2537395079978992874">Web <ph name="ORIGIN" /> může zobrazovat a upravovat následující soubory a složky</translation>
@@ -3256,7 +3258,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="380329542618494757">Název</translation>
 <translation id="3803345858388753269">Kvalita videa</translation>
 <translation id="3803367742635802571">Navštívené weby mohou přestat fungovat podle očekávání</translation>
-<translation id="3803583375545057606">Požádat rodičeo zapnutí tohoto rozšíření?</translation>
 <translation id="380408572480438692">Pokud aktivujete shromažďování údajů o výkonu, pomůžete společnosti Google systém postupně zlepšovat. Žádné údaje nebudou odesílány, dokud neodešlete zprávu se zpětnou vazbou (Alt+Shift+I) a údaje o výkonu v něm neuvedete. Shromažďování dat můžete na této stránce kdykoli deaktivovat.</translation>
 <translation id="3807249107536149332">Rozšíření <ph name="EXTENSION_NAME" /> (ID: <ph name="EXTENSION_ID" />) na přihlašovací obrazovce není povoleno.</translation>
 <translation id="3807747707162121253">Zrušit</translation>
@@ -3677,7 +3678,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4169535189173047238">Nepovolovat</translation>
 <translation id="4170314459383239649">Smazat při ukončení</translation>
 <translation id="417096670996204801">Vybrat profil</translation>
-<translation id="41725145403849567">Požádat rodiče o přidání tohoto rozšíření?</translation>
 <translation id="4175137578744761569">Světle nachová a bílá</translation>
 <translation id="4175737294868205930">Trvalé úložiště</translation>
 <translation id="4176463684765177261">Vypnuto</translation>
@@ -5090,7 +5090,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN musí obsahovat nejméně 1 znak}few{PIN musí obsahovat nejméně # znaky}many{PIN musí obsahovat nejméně # znaku}other{PIN musí obsahovat nejméně # znaků}}</translation>
 <translation id="5474859849784484111">Doména <ph name="MANAGER" /> vyžaduje, abyste se připojili k síti Wi-Fi a stáhli aktualizaci. Případně ji můžete stáhnout přes měřené připojení (mohou být účtovány poplatky).</translation>
 <translation id="5476016146231427848">Pokud chcete používat Steam na Chromebooku, restartujte zařízení</translation>
-<translation id="5476897066181964657">Přidání tohoto rozšíření ti musí schválit rodič nebo zákonný zástupce</translation>
 <translation id="5481273127572794904">Zákaz stahovat automaticky několik souborů</translation>
 <translation id="5481941284378890518">Přidat tiskárny v okolí</translation>
 <translation id="5483785310822538350">Zrušit přístup k souborům a zařízení</translation>
@@ -5187,7 +5186,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5555639311269196631">Vypnout hotspot</translation>
 <translation id="5556459405103347317">Načíst znovu</translation>
 <translation id="5558129378926964177">&amp;Přiblížit</translation>
-<translation id="5558247502209241936">Povolit otevření aplikace v okně</translation>
 <translation id="5559311991468302423">Smazat adresu</translation>
 <translation id="55601339223879446">Úprava ohraničení plochy v rámci obrazovky</translation>
 <translation id="5561162485081632007">Rozpoznává nebezpečné události a upozorňuje vás na ně, když k nim dojde.</translation>
@@ -6010,7 +6008,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6305607932814307878">Globální zásada:</translation>
 <translation id="6305702903308659374">Při hlasové odezvě ChromeVox zachovat normální hlasitost přehrávání</translation>
 <translation id="6305909198255586420">K instalaci použijte svůj primární profil</translation>
-<translation id="630750887748244481">Tvůj rodič pro Chrome vypnul možnost Oprávnění pro weby, aplikace a rozšíření. Přidání tohoto rozšíření není povoleno.</translation>
 <translation id="6307990684951724544">Systém je zaneprázděný</translation>
 <translation id="6308493641021088955">Poskytovatel přihlášení: <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Uložit od&amp;kaz jako...</translation>
@@ -6840,7 +6837,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7025190659207909717">Správa mobilních datových služeb</translation>
 <translation id="7025895441903756761">Zabezpečení a ochrana soukromí</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Otevřít vše v &amp;anonymním okně}=1{Otevřít v &amp;anonymním okně}few{Otevřít vše ({COUNT}) v &amp;anonymním okně}many{Otevřít vše ({COUNT}) v &amp;anonymním okně}other{Otevřít vše ({COUNT}) v &amp;anonymním okně}}</translation>
-<translation id="7028057921476386252">Zapnutí tohoto rozšíření ti musí schválit rodič nebo zákonný zástupce</translation>
 <translation id="7029307918966275733">Plugin Crostini není nainstalován. Chcete-li zobrazit seznam přispěvatelů, nainstalujte Crostini.</translation>
 <translation id="7029809446516969842">Hesla</translation>
 <translation id="7030304022046916278">Odesílá adresy URL ke kontrole ve funkci Bezpečné prohlížení</translation>
@@ -8218,7 +8214,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8251509999076836464">Párování se zařízením <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">Miniatura byla odstraněna.</translation>
 <translation id="825238165904109940">Vždy zobrazovat úplné adresy URL</translation>
-<translation id="8252538334423261825">Rozšíření nelze přidat</translation>
 <translation id="8252569384384439529">Nahrávání...</translation>
 <translation id="8253198102038551905">Vlastnosti sítě otevřete kliknutím na +.</translation>
 <translation id="8255212965098517578">Nedávné fotky, oznámení a aplikace</translation>

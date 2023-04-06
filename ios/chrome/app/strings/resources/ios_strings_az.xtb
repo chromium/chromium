@@ -20,6 +20,7 @@
 <translation id="1103523840287552314">Həmişə <ph name="LANGUAGE" /> dilinə tərcümə edin</translation>
 <translation id="110724200315609752">Açıq Pəncərəyə keçirin</translation>
 <translation id="1112015203684611006">Çap alınmadı.</translation>
+<translation id="1118266931011974190"><ph name="THRESHOLD" /> gün sonra</translation>
 <translation id="1125564390852150847">Yeni panel yaradın.</translation>
 <translation id="1126013303640354461">Google Pay'dən ödəniş metodları və ünvanlar şifrələnməyəcək. Chrome'dan baxış tarixçəsi sinxronlaşdırılmayacaq.
 Yalnız parolunuzu bilən kimsə şifrələnmiş datanızı oxuya bilər. Bu parol Google tərəfindən göndərilmiş və yadda saxlanmır. Parol ifadəsini unutsanız və ya bu ayarı dəyişmək istəsəniz sinxronizasiyanı sıfırlamalısınız. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
@@ -177,6 +178,7 @@ Yalnız parolunuzu bilən kimsə şifrələnmiş datanızı oxuya bilər. Bu par
 <translation id="2218443599109088993">Kiçildin</translation>
 <translation id="2230173723195178503">Veb səhifə yükləndi</translation>
 <translation id="2239626343334228536">Brauzinq datası silinir...</translation>
+<translation id="22508856139286506">İmtina edilmiş xəbərdarlıqlar (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Menyu → Tarixçə</translation>
 <translation id="2256933947031277845">Təşkilatınız yalnız müəyyən hesablarla daxil olmağa icazə verir.</translation>
 <translation id="225943865679747347">Xəta kodu: <ph name="ERROR_CODE" /></translation>
@@ -204,7 +206,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="2411749908844615428">{count,plural, =1{{count} yaddaşda saxlanılmış ünvan klaviaturanızın yuxarısında əlçatandır.}other{{count} yaddaşda saxlanılmış ünvan klaviaturanızın yuxarısında əlçatandır.}}</translation>
 <translation id="2421004566762153674">Üçüncü tərəf kukilərinin bloklanması</translation>
 <translation id="2421044535038393232">Redaktəyə Davam Edin</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} oğurlanmış parol}other{{COUNT} oğurlanmış parol}}</translation>
 <translation id="2434405374328098816">Artıq <ph name="WEBSITE" /> saytında "<ph name="USERNAME" />" üçün parolu yadda saxlamısınız</translation>
 <translation id="2435457462613246316">Parol görünsün</translation>
 <translation id="2451654228769116489">Tabı sancın</translation>
@@ -231,6 +232,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="2626236249646841566">Bağlantını yoxlayın və yenidən daxil olmağa cəhd edin.</translation>
 <translation id="2637313651144986786">Tabları axtarın...</translation>
 <translation id="2647269890314209800">İstifadə edilən kukilər</translation>
+<translation id="2648721026697078500">Heç vaxt köçürməyin</translation>
 <translation id="2648803196158606475">Oxunmuşları Silin</translation>
 <translation id="2653659639078652383">Təqdim edin</translation>
 <translation id="2664621323652615289">Dayandırın</translation>
@@ -346,6 +348,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3305294846493618482">ardı</translation>
 <translation id="3311748811247479259">Deaktiv</translation>
 <translation id="3324193307694657476">Ünvan 2</translation>
+<translation id="3328459813621383194">Fəaliyyətsiz tabları köçürün</translation>
 <translation id="3328801116991980348">Sayt haqqında</translation>
 <translation id="3371831930909698441">Tərcümə əlçatandır. Seçimlər ekranın aşağı hissəsində əlçatandır.</translation>
 <translation id="3377063233124932127">İndi yadda saxladığınız əlfəcinlər, parollar və s. yuxarıdadır.</translation>
@@ -510,6 +513,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="452750746583162491">Sinxronlaşdırılmış datanızı nəzərdən keçirin</translation>
 <translation id="4536418791685807335">Yenidən daxil olmağa cəhd edin.</translation>
 <translation id="4540780316273593836">Xəta baş verdi</translation>
+<translation id="4550040941166547650">Yalnız bu cihazda</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{{COUNT} fəaliyyətsiz tab bağlansın?}other{{COUNT} fəaliyyətsiz tab bağlansın?}}</translation>
 <translation id="457386861538956877">Digər...</translation>
 <translation id="4587235830039045480">Parolu Google Hesabında yadda saxlayın</translation>
@@ -763,6 +767,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6193424046394092997">{count,plural, =1{Buraya əlfəcinlənib: {title}}other{Buraya əlfəcinlənib: {title}}}</translation>
 <translation id="6196207969502475924">Səsli Axtarış</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} Tabı bağlayın}other{{COUNT} Tabı bağlayın}}</translation>
+<translation id="6210079381482819663"><ph name="THRESHOLD" /> gün və ya daha uzun müddət istifadə edilməyən tablar bura köçürülür. <ph name="BEGIN_LINK" />Ayarlarda<ph name="END_LINK" /> dəyişə bilərsiniz.</translation>
 <translation id="6213567400989743524">Qapadılmış Xəbərdarlıqlar</translation>
 <translation id="6219550825416862075">Təkrar xoş gəldiniz</translation>
 <translation id="6219688215832490856">Heç Vaxt Tərcümə Etməyin</translation>
@@ -918,7 +923,6 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Son Tablar</translation>
 <translation id="7006788746334555276">Məzmun Ayarları</translation>
-<translation id="7014087399239955356">Parollar yoxlanılır…</translation>
 <translation id="7029809446516969842">Parollar</translation>
 <translation id="7053983685419859001">Bloklayın</translation>
 <translation id="7062545763355031412">Qəbul edin və hesablar arasında keçid edin</translation>
@@ -1058,6 +1062,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8059533439631660104">Bölməni yığcamlaşdırır.</translation>
 <translation id="8065292699993359127">Keçidləri Chrome'da Anonim rejimdə açın</translation>
 <translation id="806745655614357130">Datamı ayrı saxlayın</translation>
+<translation id="8069394452933076548">Son vaxtlar istifadə edilməyən tabların nə vaxt fəaliyyətsiz tab bölməsinə köçürüləcəyini seçin.</translation>
 <translation id="8073670137947914548">Endirmə tamamlandı</translation>
 <translation id="8073872304774253879">Axtarışları və Brauzer Fəaliyyətini Təkmilləşdirin</translation>
 <translation id="8076492880354921740">Tablar</translation>
@@ -1202,6 +1207,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="9055772144595778347">Daxil ola bilmir</translation>
 <translation id="9055960261314198756">Qabaqcıl Qoruma Deaktivdir</translation>
 <translation id="9057972802061533987">İzləmək olmur. Xəta oldu.</translation>
+<translation id="9061495354530850708">Google Hesabında</translation>
 <translation id="9065203028668620118">Düzəliş edin</translation>
 <translation id="9068336935206019333">Chrome Anonim rejimində açın</translation>
 <translation id="9079935439869366234">Hamısını Oxunmamış kimi Qeyd Edin</translation>

@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2305020378527873881">Svazek <ph name="VOLUME_NAME" /> byl odpojen.</translation>
 <translation id="2307462900900812319">Konfigurovat síť</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Rozšíření s ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> nelze najít. Kontaktujte svého administrátora.}few{Rozšíření s ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> nelze najít. Kontaktujte svého administrátora.}many{Rozšíření s ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> nelze najít. Kontaktujte svého administrátora.}other{Rozšíření s ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> nelze najít. Kontaktujte svého administrátora.}}</translation>
 <translation id="2325650632570794183">Tento typ souboru není podporován. Navštivte prosím Internetový obchod Chrome, kde najdete aplikaci, ve které lze otevřít tento typ souboru.</translation>
 <translation id="2326539130272988168">bulharština</translation>
 <translation id="2337715497728194187">Sdílet s Bruschettou</translation>
@@ -274,6 +275,7 @@
 <translation id="3290356915286466215">Nezabezpečeno</translation>
 <translation id="3291218047831493686">Pokud chcete změnit nastavení zablokování SIM karty, připojte se k této síti</translation>
 <translation id="3293023191599135697">Sítě WEP nejsou podporovány</translation>
+<translation id="3295006446256079333">Tento svazek</translation>
 <translation id="3295357220137379386">Zařízení je zaneprázdněné</translation>
 <translation id="3296763833017966289">gruzínština</translation>
 <translation id="3307875152560779385">ukrajinština</translation>

@@ -1327,7 +1327,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2114820389966440614">“Eng oxirgi muhim suratlar” va boshqa xotiralar shu yerda chiqadi</translation>
 <translation id="2114896190328250491">Rasm muallifi: <ph name="NAME" /></translation>
 <translation id="2114995631896158695">SIM karta joylanmagan</translation>
-<translation id="2116020356255810305">Brauzer ishga tushganda ilovani ochish</translation>
 <translation id="2116619964159595185">Saytlar odatda kam quvvatli mayoqlar, salomatlik yoki fitnes trekerlari, smart chiroq lampalarini sozlash yoki ularni sinxronlash uchun Bluetooth qurilmalarga ulanadi.</translation>
 <translation id="2117655453726830283">Keyingi slayd</translation>
 <translation id="2119349053129246860"><ph name="APP" /> orqali ochish</translation>
@@ -3259,7 +3258,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="380329542618494757">Ism</translation>
 <translation id="3803345858388753269">Video sifati</translation>
 <translation id="3803367742635802571">Siz tashrif buyurgan saytlar toʻgʻri ishlamay qolishi mumkin</translation>
-<translation id="3803583375545057606">Bu kengaytmani yoqish uchun ota-onangizdan ruxsat olinsinmi?</translation>
 <translation id="380408572480438692">Unumdorlik ma’lumotlarini yig‘ish yordamida Google tizim faoliyatiga yaxshilanishlar kiritadi. Ma’lumotlar faqatgina foydalanuvchi fikr-mulohaza jo‘natish (Alt-Shift-I) vaqtida unumdorlik ma’lumotlarini biriktirsa jo‘natiladi. Xohlagan vaqtda bu sahifaga qaytib ma’lumotlarni yig‘ish funksiyasini o‘chirib qo‘yish mumkin.</translation>
 <translation id="3807249107536149332">Kirish ekranida “<ph name="EXTENSION_NAME" />” kengaytmasidan (identifikatori: <ph name="EXTENSION_ID" />) foydalanish taqiqlanadi.</translation>
 <translation id="3807747707162121253">&amp;Bekor qilish</translation>
@@ -3681,7 +3679,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4169535189173047238">Rad etish</translation>
 <translation id="4170314459383239649">Chiqish vaqtida tozalansin</translation>
 <translation id="417096670996204801">Profilni tanlang</translation>
-<translation id="41725145403849567">Bu kengaytmani kiritish uchun ota-onangizdan ruxsat olinsinmi?</translation>
 <translation id="4175137578744761569">Och pushti va oq</translation>
 <translation id="4175737294868205930">Doimiy xotira ombori</translation>
 <translation id="4176463684765177261">O‘chirib qo‘yilgan</translation>
@@ -5095,7 +5092,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN kod kamida bitta belgidan iborat boʻlsin}other{PIN kod kamida # ta belgidan iborat boʻlsin}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> domeni hoziroq Wi-Fi tarmoqqa ulanib, yangilanishni yuklab olishni talab qilmoqda. Yoki trafik hisoblanadigan ulanishdan foydalanib yuklab olish mumkin.</translation>
 <translation id="5476016146231427848">Chromebookda Steam ishlatish uchun qurilmangizni qayta ishga tushiring</translation>
-<translation id="5476897066181964657">Bu kengaytmani kiritish uchun ota-onangiz yoki vasiyingiz ruxsat berishi kerak</translation>
 <translation id="5481273127572794904">Bir nechta faylni avtomatik yuklab olish taqiqlangan</translation>
 <translation id="5481941284378890518">Yaqin-atrofdagi printerlarni qo‘shish</translation>
 <translation id="5483785310822538350">Fayl va qurilmadan ruxsatni olib qo‘yish</translation>
@@ -5192,7 +5188,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5555639311269196631">Hotspotni faolsizlantirish</translation>
 <translation id="5556459405103347317">Qayta yuklash</translation>
 <translation id="5558129378926964177">&amp;Kattalashtirish</translation>
-<translation id="5558247502209241936">Ilovani oynada ochiladigan qilish</translation>
 <translation id="5559311991468302423">Manzilni oʻchirish</translation>
 <translation id="55601339223879446">Ish stoli chegaralarini ekran cheti bilan moslang.</translation>
 <translation id="5561162485081632007">Xavfli tahdidlarni aniqlaydi va sizni ulardan himoya qiladi</translation>
@@ -6018,7 +6013,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6305607932814307878">Global siyosat:</translation>
 <translation id="6305702903308659374">ChromeVox ekrandan o‘qiyotgan bo‘lsa ham ovoz balandligi o‘zgartirilmasin</translation>
 <translation id="6305909198255586420">Asosiy profilingiz orqali oʻrnating</translation>
-<translation id="630750887748244481">Chromedagi “Sayt, ilova va kengaytmalarga ruxsat” ota-onangiz tomonidan faolsizlantirilgan. Bu kengaytmani kiritishga ruxsat berilmagan.</translation>
 <translation id="6307990684951724544">Tizim band</translation>
 <translation id="6308493641021088955"><ph name="EXTENSION_NAME" /> kengaytmasi bilan kirildi</translation>
 <translation id="6308937455967653460">&amp;Havolani saqlash...</translation>
@@ -6844,7 +6838,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7025190659207909717">Mobil internet xizmatini boshqarish</translation>
 <translation id="7025895441903756761">Xavfsizlik va maxfiylik</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Barchasini &amp;inkognito oynasida ochish}=1{&amp;Inkognito oynasida ochish}other{Barchasini ({COUNT}) &amp;inkognito oynasida ochish}}</translation>
-<translation id="7028057921476386252">Bu kengaytmani yoqish uchun ota-onangiz yoki vasiyingiz ruxsat berishi kerak</translation>
 <translation id="7029307918966275733">Crostini oʻrnatilmadi. Mualliflarni koʻrish uchun Crostini tizimini oʻrnating.</translation>
 <translation id="7029809446516969842">Parollar</translation>
 <translation id="7030304022046916278">URL manzillarni Saytlarni xavfsiz kezish tizimi tekshiruviga yuboradi</translation>
@@ -8221,7 +8214,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8251509999076836464"><ph name="DEVICE_NAME" /> qurilmasiga ulanmoqda</translation>
 <translation id="8251578425305135684">Tezkor havola o‘chirildi.</translation>
 <translation id="825238165904109940">Doim butun URL manzillar chiqarilsin</translation>
-<translation id="8252538334423261825">Kengaytma kiritilmadi</translation>
 <translation id="8252569384384439529">Yuklanmoqda…</translation>
 <translation id="8253198102038551905">Tarmoq xususiyatlarini ko‘rish uchun “+” ustiga bosing</translation>
 <translation id="8255212965098517578">Oxirgi suratlar, bildirishnomalar va ilovalar</translation>

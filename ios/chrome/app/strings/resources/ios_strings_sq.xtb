@@ -20,6 +20,7 @@
 <translation id="1103523840287552314">Përkthe gjithmonë nga <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Kalo te dritarja e hapur</translation>
 <translation id="1112015203684611006">Printimi dështoi.</translation>
+<translation id="1118266931011974190">Pas <ph name="THRESHOLD" /> ditësh</translation>
 <translation id="1125564390852150847">Krijo një skedë të re</translation>
 <translation id="1126013303640354461">Mënyrat e pagesës dhe adresat nga Google Pay nuk do të enkriptohen. Historiku i shfletimit nga Chrome nuk do të sinkronizohet.
 Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua të enkriptuara. Fraza e kalimit nuk dërgohet apo ruhet nga Google. Nëse e harron frazën tënde të kalimit apo dëshiron të ndryshosh këtë cilësim, duhet që të rivendosësh sinkronizimin. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
@@ -177,6 +178,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2218443599109088993">Zvogëlo</translation>
 <translation id="2230173723195178503">Faqja e uebit u ngarkua</translation>
 <translation id="2239626343334228536">Të dhënat e shfletimit po pastrohen...</translation>
+<translation id="22508856139286506">Paralajmërimet e hequra (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Menyja → Historiku</translation>
 <translation id="2256933947031277845">Organizata jote të lejon të identifikohesh vetëm me llogari të caktuara.</translation>
 <translation id="225943865679747347">Kodi i gabimit: <ph name="ERROR_CODE" /></translation>
@@ -204,7 +206,6 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="2411749908844615428">{count,plural, =1{{count} adresë e ruajtur e disponueshme mbi tastierën tënde.}other{{count} adresa të ruajtura të disponueshme mbi tastierën tënde.}}</translation>
 <translation id="2421004566762153674">Bllokimi i kukive të palëve të treta</translation>
 <translation id="2421044535038393232">Vazhdo modifikimin</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} fjalëkalim i komprometuar}other{{COUNT} fjalëkalime të komprometuara}}</translation>
 <translation id="2434405374328098816">Ke ruajtur tashmë një fjalëkalim për "<ph name="USERNAME" />" në <ph name="WEBSITE" />.</translation>
 <translation id="2435457462613246316">Shfaq fjalëkalimin</translation>
 <translation id="2451654228769116489">Gozhdo skedën</translation>
@@ -231,6 +232,7 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="2626236249646841566">Kontrollo lidhjen dhe provo të identifikohesh sërish.</translation>
 <translation id="2637313651144986786">Kërko skedat...</translation>
 <translation id="2647269890314209800">Kukit në përdorim</translation>
+<translation id="2648721026697078500">Mos zhvendos asnjëherë</translation>
 <translation id="2648803196158606475">Fshi të lexuarat</translation>
 <translation id="2653659639078652383">Dërgoje</translation>
 <translation id="2664621323652615289">Ndalo</translation>
@@ -346,6 +348,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3305294846493618482">më shumë</translation>
 <translation id="3311748811247479259">Joaktiv</translation>
 <translation id="3324193307694657476">Adresa 2</translation>
+<translation id="3328459813621383194">Skeda të tjera ndërvepruese</translation>
 <translation id="3328801116991980348">Informacionet rreth sajtit</translation>
 <translation id="3371831930909698441">Ofrohet "Përkthe". Opsionet ofrohen pranë fundit të ekranit</translation>
 <translation id="3377063233124932127">Tani faqeshënuesit, fjalëkalimet e ruajtura etj. janë në krye.</translation>
@@ -510,6 +513,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="452750746583162491">Rishiko të dhënat e tua të sinkronizuara</translation>
 <translation id="4536418791685807335">Provo të identifikohesh sërish.</translation>
 <translation id="4540780316273593836">Ndodhi një gabim</translation>
+<translation id="4550040941166547650">. Vetëm në këtë pajisje</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Të mbyllet {COUNT} skedë joaktive?}other{Të mbyllen {COUNT} skeda joaktive?}}</translation>
 <translation id="457386861538956877">Më shumë...</translation>
 <translation id="4587235830039045480">Ruaje fjalëkalimin në "Llogarinë tënde të Google"</translation>
@@ -763,6 +767,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6193424046394092997">{count,plural, =1{U shënua si faqeshënues te {title}}other{U shënuan si faqeshënues te {title}}}</translation>
 <translation id="6196207969502475924">Kërkimi me zë</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Mbyll {COUNT} skedë}other{Mbyll {COUNT} skeda}}</translation>
+<translation id="6210079381482819663">Skedat që nuk përdoren për <ph name="THRESHOLD" /> ditë ose më shumë zhvendosen këtu. Këtë mund ta ndryshosh në çdo kohë te <ph name="BEGIN_LINK" />cilësimet<ph name="END_LINK" />.</translation>
 <translation id="6213567400989743524">Paralajmërimet e hequra</translation>
 <translation id="6219550825416862075">Mirë se u ktheve</translation>
 <translation id="6219688215832490856">Asnjëherë mos përkthe</translation>
@@ -918,7 +923,6 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Skedat e fundit</translation>
 <translation id="7006788746334555276">Cilësimet e përmbajtjes</translation>
-<translation id="7014087399239955356">Po kontrollon fjalëkalimet...</translation>
 <translation id="7029809446516969842">Fjalëkalimet</translation>
 <translation id="7053983685419859001">Bllokoje</translation>
 <translation id="7062545763355031412">Pranoje dhe ndërro llogaritë</translation>
@@ -1058,6 +1062,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8059533439631660104">Mbyll seksionin.</translation>
 <translation id="8065292699993359127">Hap URL-të në Chrome në modalitetin "i fshehtë"</translation>
 <translation id="806745655614357130">Mbaji më vete të dhënat e mia</translation>
+<translation id="8069394452933076548">Zgjidh se kur zhvendosen te seksioni i skedave joaktive skedat që nuk janë përdorur së fundi.</translation>
 <translation id="8073670137947914548">Shkarkimi përfundoi</translation>
 <translation id="8073872304774253879">Përmirëson kërkimet dhe shfletimin</translation>
 <translation id="8076492880354921740">Skedat</translation>
@@ -1202,6 +1207,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="9055772144595778347">Nuk mund të identifikohet</translation>
 <translation id="9055960261314198756">Mbrojtja e përmirësuar është joaktive</translation>
 <translation id="9057972802061533987">Nuk mund të ndiqet. Ndodhi një gabim.</translation>
+<translation id="9061495354530850708">Në "Llogarinë tënde të Google"</translation>
 <translation id="9065203028668620118">Redakto</translation>
 <translation id="9068336935206019333">Hape në modalitetin "e fshehtë" në Chrome</translation>
 <translation id="9079935439869366234">Shëno të gjitha si të palexuara</translation>

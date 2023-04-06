@@ -206,7 +206,6 @@
 <translation id="2411749908844615428">{count,plural, =1{{count} ಉಳಿಸಿದ ವಿಳಾಸ ನಿಮ್ಮ ಕೀಬೋರ್ಡ್‌ನ ಮೇಲ್ಭಾಗದಲ್ಲಿ ಲಭ್ಯವಿದೆ.}one{{count} ಉಳಿಸಿದ ವಿಳಾಸಗಳು ನಿಮ್ಮ ಕೀಬೋರ್ಡ್‌ನ ಮೇಲ್ಭಾಗದಲ್ಲಿ ಲಭ್ಯವಿದೆ.}other{{count} ಉಳಿಸಿದ ವಿಳಾಸಗಳು ನಿಮ್ಮ ಕೀಬೋರ್ಡ್‌ನ ಮೇಲ್ಭಾಗದಲ್ಲಿ ಲಭ್ಯವಿದೆ.}}</translation>
 <translation id="2421004566762153674">ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸುವುದು</translation>
 <translation id="2421044535038393232">ಎಡಿಟ್‌ ಮಾಡುತ್ತಿರಿ</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} ಪಾಸ್‌ವರ್ಡ್ ಅಪಾಯಕ್ಕೀಡಾಗಿದೆ}one{{COUNT} ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಅಪಾಯಕ್ಕೀಡಾಗಿವೆ}other{{COUNT} ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಅಪಾಯಕ್ಕೀಡಾಗಿವೆ}}</translation>
 <translation id="2434405374328098816">ನೀವು ಈಗಾಗಲೇ <ph name="WEBSITE" /> ನಲ್ಲಿ "<ph name="USERNAME" />" ಗೆ ಸಂಬಂಧಿಸಿದ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಉಳಿಸಿದ್ದೀರಿ</translation>
 <translation id="2435457462613246316">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ತೋರಿಸಿ</translation>
 <translation id="2451654228769116489">ಟ್ಯಾಬ್ ಅನ್ನು ಪಿನ್ ಮಾಡಿ</translation>
@@ -924,7 +923,6 @@
 <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">ಇತ್ತೀಚಿನ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="7006788746334555276">ವಿಷಯ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
-<translation id="7014087399239955356">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ…</translation>
 <translation id="7029809446516969842">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="7053983685419859001">ನಿರ್ಬಂಧಿಸು</translation>
 <translation id="7062545763355031412">ಸಮ್ಮತಿಸಿ ಮತ್ತು ಖಾತೆಗಳನ್ನು ಬದಲಾಯಿಸಿ</translation>

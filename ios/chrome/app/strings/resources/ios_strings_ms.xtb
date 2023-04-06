@@ -206,7 +206,6 @@ Tapak tidak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda 
 <translation id="2411749908844615428">{count,plural, =1{{count} alamat yang disimpan tersedia di sebelah atas papan kekunci anda.}other{{count} alamat yang disimpan tersedia di sebelah atas papan kekunci anda.}}</translation>
 <translation id="2421004566762153674">Menyekat kuki pihak ketiga</translation>
 <translation id="2421044535038393232">Teruskan Mengedit</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} Kata Laluan yang Terjejas}other{{COUNT} Kata Laluan yang Terjejas}}</translation>
 <translation id="2434405374328098816">Anda telah pun menyimpan kata laluan untuk "<ph name="USERNAME" />" pada <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Paparkan kata laluan</translation>
 <translation id="2451654228769116489">Semat Tab</translation>
@@ -924,7 +923,6 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Tab Terbaharu</translation>
 <translation id="7006788746334555276">Tetapan Kandungan</translation>
-<translation id="7014087399239955356">Menyemak Kata Laluan…</translation>
 <translation id="7029809446516969842">Kata laluan</translation>
 <translation id="7053983685419859001">Sekat</translation>
 <translation id="7062545763355031412">Terima dan tukar akaun</translation>
