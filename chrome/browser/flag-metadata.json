@@ -5883,11 +5883,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "page-info-about-this-site-non-msbb",
-    "owners": [ "dullweber", "fsenra@google.com" ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "page-info-cookies-subpage",
     "owners": [ "zsalata@google.com", "olesiamarukhno@google.com", "dullweber" ],
     "expiry_milestone": 115

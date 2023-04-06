@@ -2539,11 +2539,6 @@ const char kPageInfoAboutThisSiteNonEnDescription[] =
     "Enable the 'About this site' section in the page info UI in languages "
     "other than English.";
 
-const char kPageInfoAboutThisSiteNonMsbbName[] =
-    "'About this site' for non-MSBB users";
-const char kPageInfoAboutThisSiteNonMsbbDescription[] =
-    "Make 'About this site' section in Page Info available for non-MSBB users.";
-
 const char kPageInfoboutThisPageDescriptionPlaceholderName[] =
     "AboutThisPage description placeholder";
 const char kPageInfoboutThisPageDescriptionPlaceholderDescription[] =

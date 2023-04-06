@@ -60,7 +60,7 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="6" label="kNotShownNonGoogleDSE"/>
   <int value="7" label="kNotShownLocalHost"/>
   <int value="8" label="kNotShownOptimizationGuideNotAllowed"/>
-  <int value="9" label="kShownWithoutMsbb"/>
+  <int value="9" label="kShownWithoutMsbb (deprecated)"/>
   <int value="10" label="kSameTabNavigation"/>
 </enum>
 
