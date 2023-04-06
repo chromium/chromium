@@ -545,7 +545,7 @@ class NetworkingPrivateGetCertificateListsFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void Result(absl::optional<base::Value::Dict> certificate_list);
+  void Result(base::Value::Dict certificate_list);
 };
 
 }  // namespace extensions

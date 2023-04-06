@@ -191,7 +191,7 @@ interface NetworkingPrivate {
 
   // Returns a dictionary of certificate lists.
   GetCertificateLists@17()
-      => (mojo_base.mojom.DictionaryValue? certificates);
+      => (mojo_base.mojom.DictionaryValue certificates);
 
   // Returns true if the ONC network type |type| is enabled.
   EnableNetworkType@18(string type) => (bool enabled);

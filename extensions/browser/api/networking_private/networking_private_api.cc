@@ -852,8 +852,8 @@ NetworkingPrivateGetCertificateListsFunction::Run() {
 }
 
 void NetworkingPrivateGetCertificateListsFunction::Result(
-    absl::optional<base::Value::Dict> certificate_lists) {
-  return Respond(WithArguments(std::move(certificate_lists.value())));
+    base::Value::Dict certificate_lists) {
+  return Respond(WithArguments(std::move(certificate_lists)));
 }
 
 }  // namespace extensions
