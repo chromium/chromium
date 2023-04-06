@@ -839,8 +839,10 @@ void OOPVideoDecoder::AddLogRecord(const MediaLogRecord& event) {
   VLOGF(2);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (media_log_)
-    media_log_->AddLogRecord(std::make_unique<media::MediaLogRecord>(event));
+  // TODO(b/220915557): we should validate |event| before using it since we
+  // can't trust anything coming from the remote decoder.
+  // if (media_log_)
+  //   media_log_->AddLogRecord(std::make_unique<media::MediaLogRecord>(event));
 }
 
 }  // namespace media
