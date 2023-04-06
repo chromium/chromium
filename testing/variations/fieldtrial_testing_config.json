@@ -13281,6 +13281,21 @@
             ]
         }
     ],
+    "UseMultiPlaneFormatForHardwareVideo": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseMultiPlaneFormatForHardwareVideo"
+                    ]
+                }
+            ]
+        }
+    ],
     "UseSimplifiedMessagePumpKqueueLoop": [
         {
             "platforms": [
