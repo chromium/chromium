@@ -167,6 +167,7 @@ class PartialTranslateMediatorTest : public PlatformTest {
           initWithWebStateList:web_state_list_.AsWeakPtr()
         withBaseViewController:base_view_controller_
                    prefService:browser_state_->GetSyncablePrefs()
+          fullscreenController:nullptr
                      incognito:NO];
     mediator_.alertDelegate = fake_alert_controller_;
     mediator_.browserHandler = mock_browser_coordinator_commands_handler_;
@@ -247,6 +248,7 @@ TEST_F(PartialTranslateMediatorTest, IncognitoSupportedSuccess) {
         initWithWebStateList:web_state_list_.AsWeakPtr()
       withBaseViewController:base_view_controller_
                  prefService:browser_state_->GetSyncablePrefs()
+        fullscreenController:nullptr
                    incognito:YES];
   base::HistogramTester histogram_tester;
   LoadPageAndSelectSize(10);
@@ -273,6 +275,7 @@ TEST_F(PartialTranslateMediatorTest, IncognitoNotSupported) {
         initWithWebStateList:web_state_list_.AsWeakPtr()
       withBaseViewController:base_view_controller_
                  prefService:browser_state_->GetSyncablePrefs()
+        fullscreenController:nullptr
                    incognito:YES];
   EXPECT_FALSE([mediator shouldInstallPartialTranslate]);
 }

@@ -42,6 +42,8 @@ class WebState;
 // Note: if `selectedText` is empty, `sourceRect` can be CGRectZero if there was
 // no selection or non zero if the selection contained no text (it could contain
 // an image).
+// Note: sourceRect is in page coordinate and does not take into account the
+// view inset.
 @property(nonatomic, readonly, assign) CGRect sourceRect;
 
 @end

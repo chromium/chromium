@@ -29,6 +29,7 @@ source_set("browser_container") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/alert_coordinator",
+    "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/browser/ui/link_to_text",
     "//ios/chrome/browser/ui/overlays",
     "//ios/chrome/browser/ui/partial_translate",

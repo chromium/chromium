@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/partial_translate/partial_translate_mediator.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
@@ -30,12 +31,15 @@
       chrome_test_util::GetActiveViewController();
   Browser* browser = chrome_test_util::GetMainBrowser();
   WebStateList* webStateList = browser ? browser->GetWebStateList() : nullptr;
+  FullscreenController* fullscreenController =
+      FullscreenController::FromBrowser(browser);
 
   PartialTranslateMediator* partialTranslateMediator =
       [[PartialTranslateMediator alloc]
             initWithWebStateList:webStateList->AsWeakPtr()
           withBaseViewController:viewController
                      prefService:prefService
+            fullscreenController:fullscreenController
                        incognito:incognito];
   BOOL shouldInstallPartialTranslate =
       [partialTranslateMediator shouldInstallPartialTranslate];

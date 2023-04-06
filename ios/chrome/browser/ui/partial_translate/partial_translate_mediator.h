@@ -12,6 +12,7 @@
 
 @protocol BrowserCoordinatorCommands;
 @protocol EditMenuAlertDelegate;
+class FullscreenController;
 class PrefService;
 class WebStateList;
 
@@ -25,6 +26,7 @@ class WebStateList;
 - (instancetype)initWithWebStateList:(base::WeakPtr<WebStateList>)webStateList
               withBaseViewController:(UIViewController*)baseViewController
                          prefService:(PrefService*)prefs
+                fullscreenController:(FullscreenController*)fullscreenController
                            incognito:(BOOL)incognito NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

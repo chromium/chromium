@@ -6,11 +6,31 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/shared_highlighting/ios/parsing_utils.h"
+#import "ios/web/public/ui/crw_web_view_proxy.h"
+#import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+
+CGRect ConvertToBrowserRect(CGRect web_view_rect, web::WebState* web_state) {
+  if (CGRectEqualToRect(web_view_rect, CGRectZero) || !web_state) {
+    return web_view_rect;
+  }
+
+  id<CRWWebViewProxy> web_view_proxy = web_state->GetWebViewProxy();
+  CGFloat zoom_scale = web_view_proxy.scrollViewProxy.zoomScale;
+
+  return CGRectMake((web_view_rect.origin.x * zoom_scale),
+                    (web_view_rect.origin.y * zoom_scale),
+                    (web_view_rect.size.width * zoom_scale),
+                    web_view_rect.size.height * zoom_scale);
+}
+
+}  // namespace
 
 @interface WebSelectionResponse ()
 - (instancetype)initWithSelectedText:(NSString*)selectedText
@@ -39,8 +59,7 @@
   return [[WebSelectionResponse alloc]
       initWithSelectedText:base::SysUTF8ToNSString(*selectedText)
                 sourceView:webState->GetView()
-                sourceRect:shared_highlighting::ConvertToBrowserRect(
-                               sourceRect.value(), webState)
+                sourceRect:ConvertToBrowserRect(sourceRect.value(), webState)
                      valid:YES];
 }
 
