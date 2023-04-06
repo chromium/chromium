@@ -412,6 +412,41 @@ base::CommandLine BuildCommandLineForShimLaunch() {
   return command_line;
 }
 
+// Wrapper around base::mac::LaunchApplication that attempts to retry the launch
+// once, if the initial launch fails. This helps reduce test flakiness on older
+// Mac OS bots (Mac 11 and Mac 10.16).
+void LaunchApplicationWithRetry(const base::FilePath& app_bundle_path,
+                                const base::CommandLine& command_line,
+                                const std::vector<std::string>& url_specs,
+                                base::mac::LaunchApplicationOptions options,
+                                base::mac::LaunchApplicationCallback callback) {
+  base::mac::LaunchApplication(
+      app_bundle_path, command_line, url_specs, options,
+      base::BindOnce(
+          [](const base::FilePath& app_bundle_path,
+             const base::CommandLine& command_line,
+             const std::vector<std::string>& url_specs,
+             base::mac::LaunchApplicationOptions options,
+             base::mac::LaunchApplicationCallback callback,
+             base::expected<NSRunningApplication*, NSError*> result) {
+            if (result.has_value()) {
+              std::move(callback).Run(std::move(result));
+              return;
+            }
+
+            LOG(ERROR) << "Failed to open application with path: "
+                       << app_bundle_path << ", retrying in 100ms";
+            internals::GetShortcutIOTaskRunner()->PostDelayedTask(
+                FROM_HERE,
+                base::BindOnce(&base::mac::LaunchApplication, app_bundle_path,
+                               command_line, url_specs, options,
+                               std::move(callback)),
+                base::Milliseconds(100));
+          },
+          app_bundle_path, command_line, url_specs, options,
+          std::move(callback)));
+}
+
 // Wrapper around base::mac::LaunchApplication. This works around a OS bug
 // where sometimes LaunchApplication returns an error even though the launch did
 // actually succeed, by double checking if any running applications match the
@@ -424,7 +459,7 @@ void LaunchApplicationWithWorkaround(
     base::mac::LaunchApplicationOptions options,
     const std::string& bundle_id,
     base::mac::LaunchApplicationCallback callback) {
-  base::mac::LaunchApplication(
+  LaunchApplicationWithRetry(
       app_bundle_path, command_line, url_specs, options,
       base::BindOnce(
           [](const base::FilePath& app_bundle_path,
@@ -1638,7 +1673,7 @@ void LaunchShimForTesting(const base::FilePath& shim_path,  // IN-TEST
     url_specs.push_back(url.spec());
   }
 
-  base::mac::LaunchApplication(
+  LaunchApplicationWithRetry(
       shim_path, command_line, url_specs, {.activate = false},
       base::BindOnce(
           [](const base::FilePath& shim_path,
