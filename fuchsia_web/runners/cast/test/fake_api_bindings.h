@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef FUCHSIA_WEB_RUNNERS_CAST_FAKE_API_BINDINGS_H_
-#define FUCHSIA_WEB_RUNNERS_CAST_FAKE_API_BINDINGS_H_
+#ifndef FUCHSIA_WEB_RUNNERS_CAST_TEST_FAKE_API_BINDINGS_H_
+#define FUCHSIA_WEB_RUNNERS_CAST_TEST_FAKE_API_BINDINGS_H_
 
 #include <string>
 #include <utility>
@@ -55,4 +55,4 @@ class FakeApiBindingsImpl : public chromium::cast::ApiBindings {
   base::OnceClosure on_expected_port_received_;
 };
 
-#endif  // FUCHSIA_WEB_RUNNERS_CAST_FAKE_API_BINDINGS_H_
+#endif  // FUCHSIA_WEB_RUNNERS_CAST_TEST_FAKE_API_BINDINGS_H_

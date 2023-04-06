@@ -159,32 +159,15 @@ fuchsia_package_installer("cast_runner") {
       ] ]
 }
 
-source_set("cast_runner_test_core") {
-  visibility += [ "//fuchsia_web/runners/cast/test:*" ]
-  testonly = true
-  sources = [
-    "cast/fake_api_bindings.cc",
-    "cast/fake_api_bindings.h",
-    "cast/fake_application_config_manager.cc",
-    "cast/fake_application_config_manager.h",
-  ]
-  deps = [ ":cast_runner_core" ]
-  public_deps = [
-    "./cast/fidl:fidl_hlcpp",
-    "//base",
-    "//url",
-  ]
-}
-
 test("cast_runner_unittests") {
   sources = [ "cast/application_controller_impl_unittest.cc" ]
   deps = [
     ":cast_runner_core",
-    ":cast_runner_test_core",
     "//base",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
     "//fuchsia_web/common/test:test_support",
+    "//fuchsia_web/runners/cast/test:test_support",
     "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
@@ -198,7 +181,6 @@ test("cast_runner_integration_tests") {
   data = [ "cast/testdata" ]
   deps = [
     ":cast_runner_core",
-    ":cast_runner_test_core",
     "//base/test:test_support",
     "//build:chromecast_buildflags",
     "//components/cast/message_port",
@@ -207,6 +189,7 @@ test("cast_runner_integration_tests") {
     "//fuchsia_web/common/test:run_all_integration_tests",
     "//fuchsia_web/common/test:test_support",
     "//fuchsia_web/runners/cast/test:integration",
+    "//fuchsia_web/runners/cast/test:test_support",
     "//net:test_support",
     "//testing/gtest",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.camera3:fuchsia.camera3_hlcpp",
@@ -248,13 +231,13 @@ test("cast_runner_browsertests") {
   data = [ "cast/testdata" ]
   deps = [
     ":cast_runner_core",
-    ":cast_runner_test_core",
     "//base/test:test_support",
     "//components/cast/message_port",
     "//components/cast/message_port:test_message_port_receiver",
     "//content/public/browser",
     "//content/test:test_support",
     "//fuchsia_web/common/test:test_support",
+    "//fuchsia_web/runners/cast/test:test_support",
     "//fuchsia_web/webengine:browsertest_core",
     "//testing/gmock",
     "//testing/gtest",

@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia_web/runners/cast/fake_api_bindings.h"
+#include "fuchsia_web/runners/cast/test/fake_api_bindings.h"
+
+#include <fuchsia/web/cpp/fidl.h>
 
 #include "base/auto_reset.h"
 #include "base/fuchsia/fuchsia_logging.h"
@@ -25,8 +27,9 @@ FakeApiBindingsImpl::RunAndReturnConnectedPort(base::StringPiece name) {
     it = ports_.find(expected_port_name_);
   }
 
-  if (it == ports_.end())
+  if (it == ports_.end()) {
     return {};
+  }
 
   fidl::InterfaceHandle<::fuchsia::web::MessagePort> port =
       std::move(it->second);

@@ -4,6 +4,21 @@
 
 assert(is_fuchsia)
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_api_bindings.cc",
+    "fake_api_bindings.h",
+    "fake_application_config_manager.cc",
+    "fake_application_config_manager.h",
+  ]
+  public_deps = [
+    "//base",
+    "//fuchsia_web/runners/cast/fidl:fidl_hlcpp",
+    "//url",
+  ]
+}
+
 source_set("integration") {
   testonly = true
   public = [
@@ -17,6 +32,7 @@ source_set("integration") {
     "fake_cast_agent.cc",
   ]
   public_deps = [
+    ":test_support",
     "//fuchsia_web/common/test:test_support",
     "//third_party/abseil-cpp:absl",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.camera3:fuchsia.camera3_hlcpp",
@@ -28,7 +44,6 @@ source_set("integration") {
     "//base",
     "//fuchsia_web/common",
     "//fuchsia_web/runners:cast_runner_core",
-    "//fuchsia_web/runners:cast_runner_test_core",
     "//fuchsia_web/runners/cast/fidl:fidl_hlcpp",
     "//media/fuchsia/audio:test_support",
     "//media/fuchsia/audio:test_support_components",

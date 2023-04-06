@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef FUCHSIA_WEB_RUNNERS_CAST_FAKE_APPLICATION_CONFIG_MANAGER_H_
-#define FUCHSIA_WEB_RUNNERS_CAST_FAKE_APPLICATION_CONFIG_MANAGER_H_
+#ifndef FUCHSIA_WEB_RUNNERS_CAST_TEST_FAKE_APPLICATION_CONFIG_MANAGER_H_
+#define FUCHSIA_WEB_RUNNERS_CAST_TEST_FAKE_APPLICATION_CONFIG_MANAGER_H_
 
 #include <map>
 #include <string>
@@ -47,4 +47,4 @@ class FakeApplicationConfigManager
   std::map<std::string, chromium::cast::ApplicationConfig> id_to_config_;
 };
 
-#endif  // FUCHSIA_WEB_RUNNERS_CAST_FAKE_APPLICATION_CONFIG_MANAGER_H_
+#endif  // FUCHSIA_WEB_RUNNERS_CAST_TEST_FAKE_APPLICATION_CONFIG_MANAGER_H_

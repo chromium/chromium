@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia_web/runners/cast/fake_application_config_manager.h"
+#include "fuchsia_web/runners/cast/test/fake_application_config_manager.h"
+
+#include <fuchsia/web/cpp/fidl.h>
 
 #include <string>
 #include <utility>
 
+#include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
-#include "fuchsia_web/runners/cast/cast_component.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 constexpr char FakeApplicationConfigManager::kFakeAgentUrl[] =
     "fuchsia-pkg://fuchsia.com/fake_agent#meta/fake_agent.cmx";

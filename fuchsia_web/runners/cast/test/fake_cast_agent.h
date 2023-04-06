@@ -14,8 +14,8 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_piece.h"
-#include "fuchsia_web/runners/cast/fake_application_config_manager.h"
 #include "fuchsia_web/runners/cast/fidl/fidl/hlcpp/chromium/cast/cpp/fidl.h"
+#include "fuchsia_web/runners/cast/test/fake_application_config_manager.h"
 
 namespace test {
 
