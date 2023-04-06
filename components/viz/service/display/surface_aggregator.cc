@@ -39,6 +39,7 @@
 #include "components/viz/service/display/aggregated_frame.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/renderer_utils.h"
+#include "components/viz/service/display/resolved_frame_data.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_allocation_group.h"
 #include "components/viz/service/surfaces/surface_client.h"
@@ -809,8 +810,7 @@ void SurfaceAggregator::EmitSurfaceContent(
         source.transform_to_root_target, source.filters,
         source.backdrop_filters, source.backdrop_filter_bounds,
         root_content_color_usage_, source.has_transparent_background,
-        source.cache_render_pass,
-        resolved_pass.aggregation().has_damage_from_contributing_content,
+        source.cache_render_pass, resolved_pass.aggregation().has_damage,
         source.generate_mipmap);
 
     MoveMatchingRequests(source.id, &copy_requests, &copy_pass->copy_requests);
@@ -1425,8 +1425,7 @@ void SurfaceAggregator::CopyPasses(const ResolvedFrameData& resolved_frame) {
         transform_to_root_target, source.filters, source.backdrop_filters,
         source.backdrop_filter_bounds, root_content_color_usage_,
         source.has_transparent_background, source.cache_render_pass,
-        resolved_pass.aggregation().has_damage_from_contributing_content,
-        source.generate_mipmap);
+        resolved_pass.aggregation().has_damage, source.generate_mipmap);
 
     if (needs_surface_damage_rect_list_ && resolved_pass.is_root()) {
       AddSurfaceDamageToDamageList(
@@ -1501,9 +1500,12 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
     resolved_pass.aggregation().in_pixel_moving_filter_pass = true;
   }
 
-  if (render_pass.has_damage_from_contributing_content &&
-      !resolved_frame.IsSameFrameAsLastAggregation()) {
-    resolved_pass.aggregation().has_damage_from_contributing_content = true;
+  const FrameDamageType damage_type = resolved_frame.GetFrameDamageType();
+  if (damage_type == FrameDamageType::kFull) {
+    resolved_pass.aggregation().has_damage = true;
+  } else if (damage_type == FrameDamageType::kFrame) {
+    resolved_pass.aggregation().has_damage =
+        render_pass.has_damage_from_contributing_content;
   }
 
   // The damage on the root render pass of the surface comes from damage
@@ -1600,7 +1602,7 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
       }
 
       if (!quad_damage_rect.IsEmpty()) {
-        resolved_pass.aggregation().has_damage_from_contributing_content = true;
+        resolved_pass.aggregation().has_damage = true;
       }
 
       // Only check for root render pass on the root surface.
@@ -1700,16 +1702,15 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
           PrewalkRenderPass(resolved_frame, child_resolved_pass, gfx::Rect(),
                             child_to_root_transform, &resolved_pass, result);
 
-      if (child_resolved_pass.aggregation()
-              .has_damage_from_contributing_content) {
-        resolved_pass.aggregation().has_damage_from_contributing_content = true;
+      if (child_resolved_pass.aggregation().has_damage) {
+        resolved_pass.aggregation().has_damage = true;
       }
     } else {
       // If this the next frame in sequence from last aggregation then per quad
       // damage_rects are valid so add them here. If not, either this is the
       // same frame as last aggregation and there is no damage OR there is
       // already full damage for the surface.
-      if (resolved_frame.IsNextFrameSinceLastAggregation()) {
+      if (damage_type == FrameDamageType::kFrame) {
         auto& per_quad_damage_rect = GetOptionalDamageRectFromQuad(quad);
         DCHECK(per_quad_damage_rect.has_value());
         // The DrawQuad `per_quad_damage_rect` is already in the render pass
@@ -1837,9 +1838,8 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(ResolvedFrameData& resolved_frame,
 
   // If this surface has damage from contributing content, then the render pass
   // embedding this surface does as well.
-  if (parent_pass &&
-      root_resolved_pass.aggregation().has_damage_from_contributing_content) {
-    parent_pass->aggregation().has_damage_from_contributing_content = true;
+  if (parent_pass && root_resolved_pass.aggregation().has_damage) {
+    parent_pass->aggregation().has_damage = true;
   }
 
   if (!damage_rect.IsEmpty()) {
