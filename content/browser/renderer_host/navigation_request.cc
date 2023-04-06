@@ -2078,6 +2078,27 @@ NavigationRequest::~NavigationRequest() {
   TRACE_EVENT_NESTABLE_ASYNC_END0("navigation", "NavigationRequest",
                                   navigation_id_);
 
+  // IMPORTANT NOTE: DO NOT return early from the destructor before this line.
+  // Otherwise, a queued navigation might get stuck in a queueing state forever.
+  // This navigation has finished. See if there is another NavigationRequest
+  // that lives in the associated FrameTreeNode that satisfies these conditions:
+  // - Is currently queued to wait for a pending commit navigation to finish
+  // - Is not the NavigationRequest that is currently being destructed itself
+  // - Is not a failed Back/Forward Cache restore that is waiting to be
+  // restarted as a new navigation (as that navigation is basically inactive).
+  if (NavigationRequest* request = frame_tree_node_->navigation_request()) {
+    if (request->IsQueued() && request != this &&
+        !request->restarting_back_forward_cached_navigation_) {
+      // It might be possible for the pending commit RFH to still exist, e.g. if
+      // the navigation being destructed is an unrelated navigation
+      // (same-document navigation etc). In that case, don't continue the queued
+      // navigation just yet.
+      if (!request->ShouldQueueDueToExistingPendingCommitRFH()) {
+        request->PostResumeCommitTask();
+      }
+    }
+  }
+
   if (loading_mem_tracker_)
     loading_mem_tracker_->Cancel();
   ResetExpectedProcess();
@@ -2161,25 +2182,6 @@ NavigationRequest::~NavigationRequest() {
         rfh->EvictFromBackForwardCacheWithReason(
             BackForwardCacheMetrics::NotRestoredReason::
                 kNavigationCancelledWhileRestoring);
-      }
-    }
-  }
-
-  // This navigation has finished. See if there is another NavigationRequest
-  // that lives in the associated FrameTreeNode that satisfies these conditions:
-  // - Is currently queued to wait for a pending commit navigation to finish
-  // - Is not the NavigationRequest that is currently being destructed itself
-  // - Is not a failed Back/Forward Cache restore that is waiting to be
-  // restarted as a new navigation (as that navigation is basically inactive).
-  if (NavigationRequest* request = frame_tree_node_->navigation_request()) {
-    if (request->IsQueued() && request != this &&
-        !request->restarting_back_forward_cached_navigation_) {
-      // It might be possible for the pending commit RFH to still exist, e.g. if
-      // the navigation being destructed is an unrelated navigation
-      // (same-document navigation etc). In that case, don't continue the queued
-      // navigation just yet.
-      if (!request->ShouldQueueDueToExistingPendingCommitRFH()) {
-        request->ResumeCommit();
       }
     }
   }
@@ -9263,7 +9265,7 @@ bool NavigationRequest::ShouldQueueDueToExistingPendingCommitRFH() const {
   return false;
 }
 
-void NavigationRequest::ResumeCommit() {
+void NavigationRequest::PostResumeCommitTask() {
   DCHECK(ShouldAvoidRedundantNavigationCancellations());
   DCHECK(!ShouldQueueDueToExistingPendingCommitRFH());
   // TODO(crbug.com/1220337): Add some metrics for how often:

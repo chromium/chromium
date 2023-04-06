@@ -1837,8 +1837,9 @@ class CONTENT_EXPORT NavigationRequest
 
   // Called on FrameTreeNode's queued NavigationRequest (if any) when another
   // NavigationRequest associated with the same FrameTreeNode is destroyed and
-  // the queued NavigationRequest can be resumed.
-  void ResumeCommit();
+  // the queued NavigationRequest can be resumed. Will post a task to run the
+  // `resume_commit_closure_` asynchronously.
+  void PostResumeCommitTask();
 
   // Used to detect if the page being navigated to is participating in the
   // related deprecation trial and recording that in NavigationControllerImpl.
