@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/test/gmock_callback_support.h"
@@ -16,7 +17,7 @@
 #include "components/sync/test/fake_synced_session_client_ash.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_sessions/mock_sync_sessions_client.h"
-#include "components/sync_sessions/open_tabs_ui_delegate.h"
+#include "components/sync_sessions/open_tabs_ui_delegate_impl.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_sessions/synced_session.h"
 #include "components/sync_sessions/synced_session_tracker.h"
@@ -65,40 +66,18 @@ class MockSessionSyncService : public sync_sessions::SessionSyncService {
               (syncer::DataTypeController::State state));
 };
 
-// TODO(b/272299505): use a FakeOpenTabsUIDelegate in place of this mock.
-class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
- public:
-  MockOpenTabsUIDelegate() = default;
-  ~MockOpenTabsUIDelegate() override = default;
-
-  MOCK_METHOD(bool,
-              GetAllForeignSessions,
-              (std::vector<const sync_sessions::SyncedSession*> * sessions));
-  MOCK_METHOD(bool,
-              GetForeignTab,
-              (const std::string& tag,
-               const SessionID tab_id,
-               const sessions::SessionTab** tab));
-  MOCK_METHOD(void, DeleteForeignSession, (const std::string& tag));
-  MOCK_METHOD(bool,
-              GetForeignSession,
-              (const std::string& tag,
-               std::vector<const sessions::SessionWindow*>* windows));
-  MOCK_METHOD(bool,
-              GetForeignSessionTabs,
-              (const std::string& tag,
-               std::vector<const sessions::SessionTab*>* tabs));
-  MOCK_METHOD(bool,
-              GetLocalSession,
-              (const sync_sessions::SyncedSession** local));
-};
-
 }  // namespace
 
 class CrosapiSessionSyncNotifierTest : public testing::Test {
  public:
   CrosapiSessionSyncNotifierTest()
-      : synced_session_tracker_(&mock_sync_sessions_client_) {}
+      : synced_session_tracker_(&mock_sync_sessions_client_),
+        open_tabs_ui_delegate_(
+            &mock_sync_sessions_client_,
+            &synced_session_tracker_,
+            base::BindRepeating(
+                &CrosapiSessionSyncNotifierTest::DeleteForeignSessionCallback,
+                base::Unretained(this))) {}
 
   void SetUp() override {
     ON_CALL(mock_session_sync_service_, SubscribeToForeignSessionsChanged(_))
@@ -108,10 +87,6 @@ class CrosapiSessionSyncNotifierTest : public testing::Test {
     ON_CALL(mock_session_sync_service_, GetOpenTabsUIDelegate())
         .WillByDefault(Invoke(
             this, &CrosapiSessionSyncNotifierTest::GetOpenTabsUIDelegate));
-
-    ON_CALL(mock_open_tabs_ui_delegate_, GetAllForeignSessions(_))
-        .WillByDefault(Invoke(
-            this, &CrosapiSessionSyncNotifierTest::GetAllForeignSessions));
 
     // All SessionTabs are considered to have interesting URLs. Allows
     // `SyncedSessionTracker::LookupAllForeignSessions()` to be passed
@@ -139,8 +114,8 @@ class CrosapiSessionSyncNotifierTest : public testing::Test {
     return {};
   }
 
-  testing::NiceMock<MockOpenTabsUIDelegate>* GetOpenTabsUIDelegate() {
-    return &mock_open_tabs_ui_delegate_;
+  sync_sessions::OpenTabsUIDelegate* GetOpenTabsUIDelegate() {
+    return &open_tabs_ui_delegate_;
   }
 
   bool GetAllForeignSessions(
@@ -210,6 +185,10 @@ class CrosapiSessionSyncNotifierTest : public testing::Test {
   void SetPhoneSessionsUpdatedCallback(base::RepeatingClosure callback) {
     fake_synced_session_client_ash_
         .SetOnForeignSyncedPhoneSessionsUpdatedCallback(std::move(callback));
+  }
+
+  void SetDeleteForeignSessionCallback(const base::RepeatingClosure& cb) {
+    delete_foreign_session_callback_ = cb;
   }
 
   syncer::TestSyncService* test_sync_service() {
@@ -317,6 +296,10 @@ class CrosapiSessionSyncNotifierTest : public testing::Test {
     }
   }
 
+  void DeleteForeignSessionCallback(const std::string& tag) {
+    delete_foreign_session_callback_.Run();
+  }
+
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
@@ -324,11 +307,12 @@ class CrosapiSessionSyncNotifierTest : public testing::Test {
   std::unique_ptr<CrosapiSessionSyncNotifier> crosapi_session_sync_notifier_;
   syncer::FakeSyncedSessionClientAsh fake_synced_session_client_ash_;
 
-  sync_sessions::SyncedSessionTracker synced_session_tracker_;
-  testing::NiceMock<MockSessionSyncService> mock_session_sync_service_;
-  testing::NiceMock<MockOpenTabsUIDelegate> mock_open_tabs_ui_delegate_;
   testing::NiceMock<sync_sessions::MockSyncSessionsClient>
       mock_sync_sessions_client_;
+  sync_sessions::SyncedSessionTracker synced_session_tracker_;
+  base::RepeatingClosure delete_foreign_session_callback_;
+  sync_sessions::OpenTabsUIDelegateImpl open_tabs_ui_delegate_;
+  testing::NiceMock<MockSessionSyncService> mock_session_sync_service_;
   std::vector<const sync_sessions::SyncedSession*> foreign_sessions_;
   base::RepeatingClosure foreign_sessions_changed_callback_;
 };
