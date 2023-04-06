@@ -2285,13 +2285,7 @@ void X11Window::OnWindowMapped() {
 
 void X11Window::OnConfigureEvent(const x11::ConfigureNotifyEvent& configure,
                                  bool send_event) {
-  DCHECK_EQ(xwindow_, configure.event);
-
-  // ConfigureNotifyEvent could be received for child windows. Ignore events for
-  // child windows.
-  if (xwindow_ != configure.window) {
-    return;
-  }
+  DCHECK_EQ(xwindow_, configure.window);
 
   if (pending_counter_value_) {
     DCHECK(!configure_counter_value_);

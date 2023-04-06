@@ -742,8 +742,8 @@ class GenXproto(FileWriter):
         # multiple windows. This is a list of all possible window names,
         # ordered from highest to lowest priority.
         WINDOW_NAMES = [
-            'event',
             'window',
+            'event',
             'request_window',
             'owner',
         ]

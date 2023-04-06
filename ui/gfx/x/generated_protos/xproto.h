@@ -1076,7 +1076,7 @@ struct DestroyNotifyEvent {
   Window event{};
   Window window{};
 
-  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&event); }
+  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&window); }
 };
 
 struct UnmapNotifyEvent {
@@ -1087,7 +1087,7 @@ struct UnmapNotifyEvent {
   Window window{};
   uint8_t from_configure{};
 
-  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&event); }
+  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&window); }
 };
 
 struct MapNotifyEvent {
@@ -1098,7 +1098,7 @@ struct MapNotifyEvent {
   Window window{};
   uint8_t override_redirect{};
 
-  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&event); }
+  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&window); }
 };
 
 struct MapRequestEvent {
@@ -1122,7 +1122,7 @@ struct ReparentNotifyEvent {
   int16_t y{};
   uint8_t override_redirect{};
 
-  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&event); }
+  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&window); }
 };
 
 struct ConfigureNotifyEvent {
@@ -1139,7 +1139,7 @@ struct ConfigureNotifyEvent {
   uint16_t border_width{};
   uint8_t override_redirect{};
 
-  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&event); }
+  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&window); }
 };
 
 struct ConfigureRequestEvent {
@@ -1169,7 +1169,7 @@ struct GravityNotifyEvent {
   int16_t x{};
   int16_t y{};
 
-  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&event); }
+  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&window); }
 };
 
 struct ResizeRequestEvent {
@@ -1194,7 +1194,7 @@ struct CirculateEvent {
   Window window{};
   Place place{};
 
-  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&event); }
+  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&window); }
 };
 
 struct PropertyNotifyEvent {
