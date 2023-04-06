@@ -1047,6 +1047,18 @@ std::unique_ptr<views::Widget> AmbientController::CreateWidget(
   return widget;
 }
 
+void AmbientController::OnUiLauncherInitialized(bool success) {
+  if (!success) {
+    // Success = false denotes a case where the screensaver is in a permanent
+    // error state and such that the UI and any further attempts to launch the
+    // UI will also result in this failure.
+    // TODO (b/175142676) Add metrics for cases where success = false.
+    LOG(ERROR) << "AmbientUiLauncher failed to initialize";
+    return;
+  }
+  CreateAndShowWidgets();
+}
+
 void AmbientController::CreateAndShowWidgets() {
   if (ambient_ui_model_.ui_visibility() == AmbientUiVisibility::kPreview) {
     preview_widget_created_at_ = base::Time::Now();
@@ -1122,7 +1134,7 @@ void AmbientController::MaybeStartScreenSaver() {
   Shell::Get()->AddPreTargetHandler(this);
   if (ambient_ui_launcher_) {
     ambient_ui_launcher_->Initialize(
-        base::BindOnce(&AmbientController::CreateAndShowWidgets,
+        base::BindOnce(&AmbientController::OnUiLauncherInitialized,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
     StartRefreshingImages();

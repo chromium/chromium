@@ -1633,14 +1633,11 @@ TEST_F(AmbientControllerTest,
 
 class AmbientControllerForManagedScreensaverTest : public AmbientAshTestBase {
  public:
-  AmbientControllerForManagedScreensaverTest()
-      : photo_source_(std::make_unique<TestAmbientManagedPhotoSource>()) {}
-
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
         ash::features::kAmbientModeManagedScreensaver);
     AmbientAshTestBase::SetUp();
-
+    photo_source_ = std::make_unique<TestAmbientManagedPhotoSource>();
     GetSessionControllerClient()->set_show_lock_screen_views(true);
     CreateTestData();
   }
@@ -1648,6 +1645,7 @@ class AmbientControllerForManagedScreensaverTest : public AmbientAshTestBase {
   void TearDown() override {
     ASSERT_TRUE(temp_dir_.Delete());
     image_file_paths_.clear();
+    photo_source_.reset();
     AmbientAshTestBase::TearDown();
   }
 
@@ -1829,6 +1827,18 @@ TEST_F(AmbientControllerForManagedScreensaverTest,
   ASSERT_TRUE(GetContainerView());
   EXPECT_TRUE(
       GetContainerView()->GetViewByID(AmbientViewID::kAmbientPhotoView));
+}
+
+TEST_F(AmbientControllerForManagedScreensaverTest,
+       AmbientManagedPhotoSourceErrorCase) {
+  SetAmbientModeManagedScreensaverEnabled(/*enabled=*/true);
+  photo_source_.reset();
+  SimulateScreensaverStart();
+
+  // The view will not be created as an initialization callback will be called
+  // with success = false, so the container would be null.
+  ASSERT_FALSE(GetContainerView());
+  EXPECT_TRUE(ambient_controller()->IsShown());
 }
 
 TEST_F(AmbientControllerTest, RendersCorrectViewForVideo) {

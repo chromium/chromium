@@ -245,6 +245,7 @@ class ASH_EXPORT AmbientController
   void CreateUiLauncher();
   void DestroyUiLauncher();
   bool IsUiLauncherActive() const;
+  void OnUiLauncherInitialized(bool success);
 
   AmbientAccessTokenController* access_token_controller_for_testing() {
     return &access_token_controller_;

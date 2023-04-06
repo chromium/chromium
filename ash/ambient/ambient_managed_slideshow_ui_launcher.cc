@@ -34,15 +34,14 @@ AmbientManagedSlideshowUiLauncher::AmbientManagedSlideshowUiLauncher(
 AmbientManagedSlideshowUiLauncher::~AmbientManagedSlideshowUiLauncher() =
     default;
 
-void AmbientManagedSlideshowUiLauncher::Initialize(base::OnceClosure on_done) {
+void AmbientManagedSlideshowUiLauncher::Initialize(
+    InitializationCallback on_done) {
   initialization_callback_ = std::move(on_done);
   if (!AmbientManagedPhotoSource::Get()) {
     LOG(WARNING) << "AmbientManagedPhotoSource not present. Probably "
                     "AmbientManagedPhotoController screen update is being "
                     "started during a shutdown";
-    // TODO(fahadmansoor): Start calling this callback with a boolean to handle
-    // the error case.
-    initialization_callback_.Reset();
+    std::move(initialization_callback_).Run(/*success=*/false);
     return;
   }
   photo_controller_.UpdateImageFilePaths(
@@ -71,7 +70,7 @@ AmbientManagedSlideshowUiLauncher::GetAmbientBackendModel() {
 
 void AmbientManagedSlideshowUiLauncher::OnImagesReady() {
   CHECK(initialization_callback_);
-  std::move(initialization_callback_).Run();
+  std::move(initialization_callback_).Run(/*success=*/true);
 }
 
 bool AmbientManagedSlideshowUiLauncher::IsActive() {
