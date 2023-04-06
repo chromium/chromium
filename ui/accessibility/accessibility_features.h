@@ -138,13 +138,6 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilitySelectToSpeakPrefsMigration);
 // Returns true if AccessibilitySelectToSpeakPrefsMigration enabled.
 AX_BASE_EXPORT bool IsAccessibilitySelectToSpeakPrefsMigrationEnabled();
 
-// Enables AccessibilitySelectToSpeakContextMenuOption.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(
-    kAccessibilitySelectToSpeakContextMenuOption);
-
-// Returns true if AccessibilitySelectToSpeakContextMenuOption is enabled.
-AX_BASE_EXPORT bool IsAccessibilitySelectToSpeakContextMenuOptionEnabled();
-
 // Enables AccessibilitySelectToSpeakHoverTextImprovements.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(
     kAccessibilitySelectToSpeakHoverTextImprovements);

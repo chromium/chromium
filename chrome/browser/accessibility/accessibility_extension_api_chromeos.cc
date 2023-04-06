@@ -263,11 +263,6 @@ AccessibilityPrivateIsFeatureEnabledFunction::Run() {
       enabled = ::features::
           IsExperimentalAccessibilityDictationContextCheckingEnabled();
       break;
-    case accessibility_private::
-        ACCESSIBILITY_FEATURE_SELECTTOSPEAKCONTEXTMENUOPTION:
-      enabled =
-          ::features::IsAccessibilitySelectToSpeakContextMenuOptionEnabled();
-      break;
     case accessibility_private::AccessibilityFeature::
         ACCESSIBILITY_FEATURE_CHROMEVOXTABSDEPRECATION:
       enabled = ::features::IsAccessibilityDeprecateChromeVoxTabsEnabled();

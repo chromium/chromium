@@ -1061,12 +1061,6 @@ const char kAccessibilityChromeVoxPageMigrationDescription[] =
     "This option enables ChromeVox page migration from extension options page"
     "to a Chrome OS settings page.";
 
-const char kAccessibilitySelectToSpeakContextMenuOptionName[] =
-    "Select-To-Speak Context menu option";
-const char kAccessibilitySelectToSpeakContextMenuOptionDescription[] =
-    "This option enables a context menu option that will speak the selected "
-    "text";
-
 const char kAccessibilitySelectToSpeakHoverTextImprovementsName[] =
     "Select-to-Speak Hover Text Improvements";
 const char kAccessibilitySelectToSpeakHoverTextImprovementsDescription[] =
