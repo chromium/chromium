@@ -19,8 +19,6 @@ import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.Log;
 
-import androidx.core.app.NotificationManagerCompat;
-
 /**
  * Implements services offered by the WebAPK to Chrome.
  */
@@ -89,7 +87,9 @@ public class WebApkServiceImpl extends IWebApkApi.Stub {
         Log.w(TAG,
                 "Should NOT reach WebApkServiceImpl#notificationPermissionEnabled() because it is"
                         + " deprecated.");
-        return NotificationManagerCompat.from(mContext).areNotificationsEnabled();
+        NotificationManager notificationManager =
+                (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        return notificationManager.areNotificationsEnabled();
     }
 
     @SuppressLint("NewApi")
