@@ -12,8 +12,10 @@ import '//resources/cr_elements/cr_toast/cr_toast.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import '//resources/cr_elements/cr_toolbar/cr_toolbar.js';
+import '//resources/cr_elements/cr_drawer/cr_drawer.js';
 
 import {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
+import {CrDrawerElement} from '//resources/cr_elements/cr_drawer/cr_drawer.js';
 import {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -27,6 +29,7 @@ interface SuggestInternalsAppElement {
     toast: CrToastElement,
     viewRequestDialog: CrDialogElement,
     viewResponseDialog: CrDialogElement,
+    drawer: CrDrawerElement,
   };
 }
 
@@ -91,6 +94,10 @@ class SuggestInternalsAppElement extends PolymerElement {
         this.suggestionsRequestCompletedListenerId_);
   }
 
+  private onClearClick_() {
+    this.requests_ = [];
+  }
+
   private onClientDataLinkClick_() {
     window.open('http://protoshop/webserver.gws.ClientDataHeader');
   }
@@ -109,6 +116,22 @@ class SuggestInternalsAppElement extends PolymerElement {
     this.$.hardcodeResponseDialog.close();
   }
 
+  private onCopyClick_() {
+    navigator.clipboard.writeText(this.stringifyRequests_())
+        .catch(error => console.error('unable to copy to clipboard:', error));
+  }
+
+  private onDownloadClick_() {
+    const a = document.createElement('a');
+    const file =
+        new Blob([this.stringifyRequests_()], {type: 'application/json'});
+    a.href = URL.createObjectURL(file);
+    const iso = (new Date()).toISOString();
+    iso.replace(/:/g, '').split('.')[0]!;
+    a.download = `suggest_internals_export_${iso}.json`;
+    a.click();
+  }
+
   private onEntityInfoLinkClick_() {
     window.open('http://protoshop/gws.searchbox.chrome.EntityInfo');
   }
@@ -119,6 +142,21 @@ class SuggestInternalsAppElement extends PolymerElement {
 
   private onGroupsInfoLinkClick_() {
     window.open('http://protoshop/gws.searchbox.chrome.GroupsInfo');
+  }
+
+  private onImportFile_(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) {
+      return;
+    }
+
+    this.readFile(file).then((importString: string) => {
+      try {
+        this.requests_ = JSON.parse(importString);
+      } catch (error) {
+        console.error('error during import, invalid json:', error);
+      }
+    });
   }
 
   private onOpenHardcodeResponseDialog_(e: CustomEvent<string>) {
@@ -132,6 +170,10 @@ class SuggestInternalsAppElement extends PolymerElement {
 
   private onOpenViewResponseDialog_() {
     this.$.viewResponseDialog.showModal();
+  }
+
+  private async onPasteClick_() {
+    this.requests_ = JSON.parse(await navigator.clipboard.readText());
   }
 
   private onShowToast_(e: CustomEvent<string>) {
@@ -157,9 +199,33 @@ class SuggestInternalsAppElement extends PolymerElement {
     }
   }
 
+  private readFile(file: File): Promise<string> {
+    return new Promise(resolve => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (reader.readyState === FileReader.DONE) {
+          resolve(reader.result as string);
+        } else {
+          console.error('error importing, unable to read file:', reader.error);
+        }
+      };
+      reader.readAsText(file);
+    });
+  }
+
   private requestFilter_(): (request: Request) => boolean {
     const filter = this.filter_.trim().toLowerCase();
     return request => request.url.url.toLowerCase().includes(filter);
+  }
+
+  private showOutputControls_() {
+    this.$.drawer.openDrawer();
+  }
+
+  private stringifyRequests_() {
+    return JSON.stringify(
+        this.requests_,
+        (_key, value) => typeof value === 'bigint' ? value.toString() : value);
   }
 }
 
