@@ -393,8 +393,7 @@ void TabletModeMultitaskMenu::OnDisplayMetricsChanged(
 
 chromeos::MultitaskMenuView*
 TabletModeMultitaskMenu::GetMultitaskMenuViewForTesting() {
-  return static_cast<TabletModeMultitaskMenuView*>(menu_view_)
-      ->menu_view_base();  // IN-TEST
+  return menu_view_->menu_view_base();  // IN-TEST
 }
 
 }  // namespace ash

@@ -129,11 +129,7 @@ class TabletModeMultitaskMenuEventHandlerTest : public AshTestBase {
 
   chromeos::MultitaskMenuView* GetMultitaskMenuView(
       TabletModeMultitaskMenu* multitask_menu) const {
-    chromeos::MultitaskMenuView* multitask_menu_view =
-        multitask_menu->GetMultitaskMenuViewForTesting();
-    EXPECT_EQ(chromeos::MultitaskMenuView::kViewClassName,
-              multitask_menu_view->GetClassName());
-    return multitask_menu_view;
+    return multitask_menu->GetMultitaskMenuViewForTesting();
   }
 
  protected:

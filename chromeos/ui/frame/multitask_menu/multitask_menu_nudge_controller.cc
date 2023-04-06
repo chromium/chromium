@@ -110,12 +110,12 @@ std::unique_ptr<views::Widget> CreateWidget(aura::Window* window) {
 }  // namespace
 
 MultitaskMenuNudgeController::Delegate::~Delegate() {
-  DCHECK_EQ(this, g_delegate_instance);
+  CHECK_EQ(this, g_delegate_instance);
   g_delegate_instance = nullptr;
 }
 
 MultitaskMenuNudgeController::Delegate::Delegate() {
-  DCHECK_EQ(nullptr, g_delegate_instance);
+  CHECK_EQ(nullptr, g_delegate_instance);
   g_delegate_instance = this;
 }
 
@@ -149,12 +149,15 @@ void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window) {
 
 void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window,
                                                   views::View* anchor_view) {
+  // Delegate could be null if the associated window was created during OOBE.
+  if (!g_delegate_instance) {
+    return;
+  }
+
   if (!chromeos::wm::features::IsWindowLayoutMenuEnabled() ||
       g_suppress_nudge_for_testing || nudge_widget_) {
     return;
   }
-
-  DCHECK(g_delegate_instance);
 
   // If the window is not visible, do not show the nudge.
   if (!window->IsVisible()) {
@@ -209,6 +212,14 @@ void MultitaskMenuNudgeController::OnWindowParentChanged(aura::Window* window,
   }
   DCHECK_EQ(window_, window);
   UpdateWidgetAndPulse();
+}
+
+void MultitaskMenuNudgeController::OnWindowVisibilityChanged(
+    aura::Window* window,
+    bool visible) {
+  if (window == window_ && !visible) {
+    DismissNudge();
+  }
 }
 
 void MultitaskMenuNudgeController::OnWindowBoundsChanged(
