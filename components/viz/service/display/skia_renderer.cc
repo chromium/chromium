@@ -2989,7 +2989,8 @@ void SkiaRenderer::DrawRenderPassQuad(const AggregatedRenderPassDrawQuad* quad,
 
   sk_sp<SkImage> content_image =
       skia_output_surface_->MakePromiseSkImageFromRenderPass(
-          quad->render_pass_id, backing.size, backing.format,
+          quad->render_pass_id, backing.size,
+          SharedImageFormat::SinglePlane(backing.format),
           backing.generate_mipmap, RenderPassBackingSkColorSpace(backing),
           backing.mailbox);
   DLOG_IF(ERROR, !content_image)
@@ -3223,8 +3224,8 @@ void SkiaRenderer::AllocateRenderPassResourceIfNeeded(
   }
 
   auto mailbox = skia_output_surface_->CreateSharedImage(
-      requirements.format, requirements.size, requirements.color_space, usage,
-      gpu::kNullSurfaceHandle);
+      SharedImageFormat::SinglePlane(requirements.format), requirements.size,
+      requirements.color_space, usage, gpu::kNullSurfaceHandle);
   render_pass_backings_.emplace(
       render_pass_id,
       RenderPassBacking({requirements.size, requirements.generate_mipmap,
@@ -3346,8 +3347,8 @@ SkiaRenderer::GetOrCreateRenderPassOverlayBacking(
         gpu::SHARED_IMAGE_USAGE_SCANOUT | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
         gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE | gpu::SHARED_IMAGE_USAGE_RASTER;
     auto mailbox = skia_output_surface_->CreateSharedImage(
-        buffer_format, buffer_size, color_space, kOverlayUsage,
-        gpu::kNullSurfaceHandle);
+        SharedImageFormat::SinglePlane(buffer_format), buffer_size, color_space,
+        kOverlayUsage, gpu::kNullSurfaceHandle);
     overlay_params.render_pass_backing = {buffer_size,
                                           /*generate_mipmap=*/false,
                                           color_space,
@@ -3570,7 +3571,8 @@ void SkiaRenderer::PrepareRenderPassOverlay(
       auto content_image =
           skia_output_surface_->MakePromiseSkImageFromRenderPass(
               quad->render_pass_id, src_quad_backing->size,
-              src_quad_backing->format, src_quad_backing->generate_mipmap,
+              SharedImageFormat::SinglePlane(src_quad_backing->format),
+              src_quad_backing->generate_mipmap,
               RenderPassBackingSkColorSpace(*src_quad_backing),
               src_quad_backing->mailbox);
       if (!content_image) {

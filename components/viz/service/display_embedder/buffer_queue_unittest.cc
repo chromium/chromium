@@ -142,7 +142,7 @@ class MockedSkiaOutputSurface : public FakeSkiaOutputSurface {
  public:
   MockedSkiaOutputSurface() : FakeSkiaOutputSurface(nullptr) {}
   MOCK_METHOD5(CreateSharedImage,
-               gpu::Mailbox(ResourceFormat format,
+               gpu::Mailbox(SharedImageFormat format,
                             const gfx::Size& size,
                             const gfx::ColorSpace& color_space,
                             uint32_t usage,

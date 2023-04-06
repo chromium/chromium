@@ -146,7 +146,8 @@ void BufferQueue::FreeBuffer(std::unique_ptr<AllocatedBuffer> buffer) {
 
 void BufferQueue::AllocateBuffers(size_t n) {
   DCHECK(format_);
-  const ResourceFormat format = GetResourceFormat(format_.value());
+  const SharedImageFormat format =
+      SharedImageFormat::SinglePlane(GetResourceFormat(format_.value()));
 
   constexpr uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                              gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE |

@@ -2352,15 +2352,14 @@ gfx::GpuFenceHandle SkiaOutputSurfaceImplOnGpu::CreateReleaseFenceForGL() {
 
 void SkiaOutputSurfaceImplOnGpu::CreateSharedImage(
     gpu::Mailbox mailbox,
-    ResourceFormat format,
+    SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     uint32_t usage,
     gpu::SurfaceHandle surface_handle) {
-  SharedImageFormat si_format = SharedImageFormat::SinglePlane(format);
   shared_image_factory_->CreateSharedImage(
-      mailbox, si_format, size, color_space, kTopLeft_GrSurfaceOrigin,
-      si_format.HasAlpha() ? kPremul_SkAlphaType : kOpaque_SkAlphaType,
+      mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin,
+      format.HasAlpha() ? kPremul_SkAlphaType : kOpaque_SkAlphaType,
       surface_handle, usage, "SkiaOutputSurface");
   skia_representations_.emplace(mailbox, nullptr);
 }
