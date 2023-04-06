@@ -185,7 +185,7 @@ struct SupportedVideoDecoderConfig {
 
 [Stable, Extensible]
 enum StatusCode {
-  kOk,
+  kOk_DEPRECATED,
   kAborted,
   [Default] kError,
 };

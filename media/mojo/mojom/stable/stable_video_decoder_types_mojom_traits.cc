@@ -803,11 +803,16 @@ media::stable::mojom::StatusCode StructTraits<
       "Unexpected underlying type for media::DecoderStatusTraits::Codes. If "
       "you need to change this assertion, please contact "
       "chromeos-gfx-video@google.com.");
+
+  // When creating an "ok" status, callers are expected to not supply anything
+  // (except possibly the kOk code) which should result in a media::TypedStatus
+  // with no StatusData. That means that we should never get a StatusData with a
+  // kOk code when serializing a DecoderStatus.
+  CHECK_NE(input.code,
+           static_cast<uint16_t>(media::DecoderStatusTraits::Codes::kOk));
+
   if (input.code ==
-      static_cast<uint16_t>(media::DecoderStatusTraits::Codes::kOk)) {
-    return media::stable::mojom::StatusCode::kOk;
-  } else if (input.code == static_cast<uint16_t>(
-                               media::DecoderStatusTraits::Codes::kAborted)) {
+      static_cast<uint16_t>(media::DecoderStatusTraits::Codes::kAborted)) {
     return media::stable::mojom::StatusCode::kAborted;
   }
   return media::stable::mojom::StatusCode::kError;
@@ -914,22 +919,33 @@ absl::optional<media::internal::StatusData> StructTraits<
         "Unexpected type for output_cause.code. If you need to "
         "change this assertion, please contact chromeos-gfx-video@google.com.");
 
-    // TODO(b/215438024): enforce that these checks imply that the
+    // When creating an "ok" status, callers are expected to not supply anything
+    // (except possibly the kOk code) which should result in a
+    // media::TypedStatus<T> with no StatusData. That means that we should never
+    // get a cause with a kOk code when serializing a VaapiStatus or V4L2Status.
+    //
+    // TODO(b/215438024): enforce that the checks on Group() imply that the
     // output_cause.code really corresponds to media::VaapiStatusTraits::Codes
     // or media::V4L2StatusTraits::Codes.
 #if BUILDFLAG(USE_VAAPI)
     CHECK(output_cause.group == media::VaapiStatusTraits::Group());
+    CHECK_NE(output_cause.code, static_cast<media::StatusCodeType>(
+                                    media::VaapiStatusTraits::Codes::kOk));
 #elif BUILDFLAG(USE_V4L2_CODEC)
     CHECK(output_cause.group == media::V4L2StatusTraits::Group());
+    CHECK_NE(output_cause.code, static_cast<media::StatusCodeType>(
+                                    media::V4L2StatusTraits::Codes::kOk));
 #else
     // TODO(b/217970098): allow building the VaapiStatusTraits and
     // V4L2StatusTraits without USE_VAAPI/USE_V4L2_CODEC so these guards could
     // be removed.
     CHECK(false);
 #endif
+    // Let's translate anything other than a VA-API or V4L2 "ok" cause (i.e.,
+    // all of them per the CHECK()s above) to
+    // DecoderStatusTraits::Codes::kFailed.
     output_cause.code = static_cast<media::StatusCodeType>(
-        output_cause.code ? media::DecoderStatusTraits::Codes::kFailed
-                          : media::DecoderStatusTraits::Codes::kOk);
+        media::DecoderStatusTraits::Codes::kFailed);
     output_cause.group = std::string(media::DecoderStatusTraits::Group());
     return output_cause;
   }
@@ -967,11 +983,14 @@ bool StructTraits<media::stable::mojom::StatusDataDataView,
       "you need to change this assertion, please contact "
       "chromeos-gfx-video@google.com.");
 
+  // Note that we don't handle kOk_DEPRECATED here. That's because when creating
+  // an "ok" status, callers are expected to not supply anything (except
+  // possibly the kOk code) which should result in a media::TypedStatus<T> with
+  // no StatusData. That means that we should never get a StatusData with an
+  // "ok" code from the remote end. kOk_DEPRECATED was fine back when
+  // TypedStatus<T>::is_ok() relied on the status code and not on the
+  // presence/absence of a StatusData.
   switch (data.code()) {
-    case media::stable::mojom::StatusCode::kOk:
-      output->code = static_cast<media::StatusCodeType>(
-          media::DecoderStatusTraits::Codes::kOk);
-      break;
     case media::stable::mojom::StatusCode::kAborted:
       output->code = static_cast<media::StatusCodeType>(
           media::DecoderStatusTraits::Codes::kAborted);
@@ -996,6 +1015,27 @@ bool StructTraits<media::stable::mojom::StatusDataDataView,
   if (!data.ReadFrames(&output->frames))
     return false;
 
+  // Ensure that |output|->frames looks like a list of serialized
+  // base::Locations. See media::MediaSerializer<base::Location>.
+  for (const auto& frame : output->frames) {
+    if (!frame.is_dict()) {
+      return false;
+    }
+    const base::Value::Dict& dict = frame.GetDict();
+    if (dict.size() != 2u) {
+      return false;
+    }
+    const std::string* file = dict.FindString(media::StatusConstants::kFileKey);
+    if (!file) {
+      return false;
+    }
+    const absl::optional<int> line =
+        dict.FindInt(media::StatusConstants::kLineKey);
+    if (!line) {
+      return false;
+    }
+  }
+
   if (!data.ReadData(&output->data))
     return false;
 
@@ -1004,6 +1044,13 @@ bool StructTraits<media::stable::mojom::StatusDataDataView,
     return false;
 
   if (cause.has_value()) {
+    // The deserialization of a cause (a StatusData) translates
+    // media::stable::mojom::StatusCodes to media::DecoderStatusTraits::Codes.
+    CHECK(cause->group == media::DecoderStatusTraits::Group());
+    if (cause->code != static_cast<media::StatusCodeType>(
+                           media::DecoderStatusTraits::Codes::kFailed)) {
+      return false;
+    }
     output->cause =
         std::make_unique<media::internal::StatusData>(std::move(*cause));
   }
