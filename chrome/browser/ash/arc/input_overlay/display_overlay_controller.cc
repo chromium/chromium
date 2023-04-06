@@ -12,6 +12,7 @@
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
+#include "ash/wm/window_state.h"
 #include "base/functional/bind.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
@@ -43,7 +44,6 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
-#include "util.h"
 
 namespace arc::input_overlay {
 
