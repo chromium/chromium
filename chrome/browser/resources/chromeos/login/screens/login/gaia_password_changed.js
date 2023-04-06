@@ -276,6 +276,7 @@ class GaiaPasswordChanged extends GaiaPasswordChangedBase {
     if (this.disabled) {
       return;
     }
+    this.disabled = true;
     this.userActed('cancel');
   }
 }
