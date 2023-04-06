@@ -125,6 +125,17 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     return std::move(web_state);
   }
 
+  // Simulates loading the NTP in `web_state_`.
+  void SetNTPAsCurrentURL() {
+    web::FakeNavigationContext navigation_context;
+    navigation_context.SetUrl(GURL("chrome://newtab"));
+    web::FakeWebState* fake_web_state =
+        static_cast<web::FakeWebState*>(web_state_);
+    fake_web_state->SetVisibleURL(GURL("chrome://newtab"));
+    fake_web_state->OnNavigationStarted(&navigation_context);
+    fake_web_state->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  }
+
   void SetupCommandHandlerMocks() {
     omnibox_commands_handler_mock = OCMProtocolMock(@protocol(OmniboxCommands));
     snackbar_commands_handler_mock =
@@ -285,6 +296,7 @@ TEST_F(NewTabPageCoordinatorTest, StartIsStartShowing) {
   // `-ShouldShowStartSurface` is false.
   NewTabPageTabHelper::FromWebState(web_state_)->SetShowStartSurface(false);
   [[coordinator_mock reject] configureStartSurfaceIfNeeded];
+  SetNTPAsCurrentURL();
   [coordinator_ start];
   EXPECT_OCMOCK_VERIFY(coordinator_mock);
   [coordinator_ stop];
@@ -315,6 +327,7 @@ TEST_F(NewTabPageCoordinatorTest, FakeboxTappedMetricLogging) {
       ->OnNavigationStarted(&navigation_context);
   [coordinator_ didNavigateAwayFromNTP];
   ASSERT_FALSE(coordinator_.started);
+  SetNTPAsCurrentURL();
   [coordinator_ start];
   histogram_tester_->ExpectUniqueSample(
       "IOS.ContentSuggestions.ActionOnStartSurface",

@@ -294,6 +294,7 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 
   self.webState = self.browser->GetWebStateList()->GetActiveWebState();
   DCHECK(self.webState);
+  DCHECK(NewTabPageTabHelper::FromWebState(self.webState)->IsActive());
 
   // Start observing WebStateList changes.
   _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
@@ -317,11 +318,8 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
     return;
   }
 
-  NewTabPageTabHelper* NTPHelper =
-      NewTabPageTabHelper::FromWebState(self.webState);
-  if (NTPHelper) {
-    self.selectedFeed = NTPHelper->GetNextNTPFeedType();
-  }
+  self.selectedFeed =
+      NewTabPageTabHelper::FromWebState(self.webState)->GetNextNTPFeedType();
 
   // NOTE: anything that executes below WILL NOT execute for OffTheRecord
   // browsers!

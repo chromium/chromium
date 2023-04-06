@@ -1878,9 +1878,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
         NewTabPageTabHelper::FromWebState(webState);
     if (NTPHelper && NTPHelper->IsActive()) {
       NewTabPageCoordinator* NTPCoordinator = self.ntpCoordinator;
-      // TODO(crbug.com/1411808): The NTP should be started by the mediator or
-      // coordinator layer.
-      [NTPCoordinator start];
       UIViewController* viewController = NTPCoordinator.viewController;
       viewController.view.frame = [self ntpFrameForWebState:webState];
       [viewController.view layoutIfNeeded];

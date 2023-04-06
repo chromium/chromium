@@ -535,15 +535,22 @@ enum class ToolbarKind {
         ->SetEnabled(active);
   }
   self.webUsageEnabled = active;
-  self.viewController.active = active;
-
-  // Stop the NTP on web usage toggle. This happens when clearing browser
-  // data, and forces the NTP to be recreated the next time it is needed.
-  // TODO(crbug.com/906199): Move this to the NewTabPageTabHelper when
-  // WebStateObserver has a webUsage callback.
-  if (!active) {
+  if (active) {
+    // If the NTP was stopped because of a -setActive:NO call, then the NTP
+    // needs to be restarted when -setActive:YES is called subsequently (i.e.
+    // clear browsing data). This should not be needed for any other use case,
+    // but on initial startup this is inevitably called after restoring tabs, so
+    // cannot assert that it has not been started.
+    web::WebState* webState =
+        self.browser->GetWebStateList()->GetActiveWebState();
+    if (webState && NewTabPageTabHelper::FromWebState(webState)->IsActive() &&
+        !self.NTPCoordinator.started) {
+      [self.NTPCoordinator start];
+    }
+  } else {
     [self.NTPCoordinator stop];
   }
+  self.viewController.active = active;
 }
 
 - (void)clearPresentedStateWithCompletion:(ProceduralBlock)completion

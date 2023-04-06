@@ -197,7 +197,6 @@
   if (priceNotificationsTabHelper) {
     priceNotificationsTabHelper->SetPriceNotificationsIPHPresenter(nil);
   }
-  [self.NTPCoordinator stopIfNeeded];
 }
 
 @end

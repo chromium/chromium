@@ -111,6 +111,16 @@
 }
 
 - (void)webStateList:(WebStateList*)webStateList
+    didDetachWebState:(web::WebState*)webState
+              atIndex:(int)atIndex {
+  NewTabPageTabHelper* NTPTabHelper =
+      NewTabPageTabHelper::FromWebState(webState);
+  if (NTPTabHelper->IsActive()) {
+    [self stopNTPIfNeeded];
+  }
+}
+
+- (void)webStateList:(WebStateList*)webStateList
     didInsertWebState:(web::WebState*)webState
               atIndex:(int)index
            activating:(BOOL)activating {
@@ -136,6 +146,12 @@
   // NOTE: webStateSelected expects to always be called with a
   // non-null WebState.
   if (newWebState) {
+    // Activating without inserting an NTP requires starting it in two
+    // scenarios: 1) After doing a batch tab restore (i.e. undo tab removals,
+    // initial startup). 2) After re-activating the Browser and a non-active
+    // WebState is showing the NTP. BrowserCoordinator's -setActive: only starts
+    // the NTP if it is the active view.
+    [self startNTPIfNeededForActiveWebState:newWebState];
     [self.consumer webStateSelected:newWebState];
   }
 }
@@ -145,6 +161,12 @@
     didReplaceWebState:(web::WebState*)oldWebState
           withWebState:(web::WebState*)newWebState
                atIndex:(int)atIndex {
+  NewTabPageTabHelper* NTPTabHelper =
+      NewTabPageTabHelper::FromWebState(oldWebState);
+  if (NTPTabHelper->IsActive()) {
+    [self stopNTPIfNeeded];
+  }
+
   web::WebState* currentWebState = _webStateList->GetActiveWebState();
   // Add `newTab`'s view to the hierarchy if it's the current Tab.
   if (currentWebState == newWebState) {
@@ -156,6 +178,24 @@
 }
 
 #pragma mark - WebStateListObserving helpers (Private)
+
+- (void)startNTPIfNeededForActiveWebState:(web::WebState*)webState {
+  NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
+  if (NTPHelper && NTPHelper->IsActive() && !_ntpCoordinator.started) {
+    [_ntpCoordinator start];
+  }
+}
+
+- (void)stopNTPIfNeeded {
+  for (int i = 0; i < _webStateList->count(); i++) {
+    NewTabPageTabHelper* iterNtpHelper =
+        NewTabPageTabHelper::FromWebState(_webStateList->GetWebStateAt(i));
+    if (iterNtpHelper->IsActive()) {
+      return;
+    }
+  }
+  [_ntpCoordinator stop];
+}
 
 - (void)didInsertActiveWebState:(web::WebState*)newWebState {
   DCHECK(newWebState);
