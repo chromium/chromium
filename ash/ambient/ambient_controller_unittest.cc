@@ -704,12 +704,17 @@ TEST_P(AmbientControllerTestForAnyUiSettings,
       ui::ET_TOUCH_PRESSED, gfx::PointF(), gfx::PointF(), base::TimeTicks(),
       ui::PointerDetails()));
 
+  // External user activity.
+  events.emplace_back(nullptr);
+
   for (const auto& event : events) {
     ShowAmbientScreen();
     FastForwardTiny();
     EXPECT_TRUE(WidgetsVisible());
 
-    if (event.get()->IsMouseEvent()) {
+    if (!event) {
+      ambient_controller()->OnUserActivity(nullptr);
+    } else if (event.get()->IsMouseEvent()) {
       ambient_controller()->OnMouseEvent(event.get()->AsMouseEvent());
     } else if (event.get()->IsTouchEvent()) {
       ambient_controller()->OnTouchEvent(event.get()->AsTouchEvent());

@@ -885,8 +885,10 @@ void LoginDisplayHostMojo::MaybeUpdateOfflineLoginLinkVisibility(
 void LoginDisplayHostMojo::OnUserActivity(const ui::Event* event) {
   // ESC button can be used to hide login dialog when SAML is configured.
   // Prevent reopening it with ESC.
-  if (event->IsKeyEvent() && event->AsKeyEvent()->key_code() == ui::VKEY_ESCAPE)
+  if (event && (event->IsKeyEvent() &&
+                event->AsKeyEvent()->key_code() == ui::VKEY_ESCAPE)) {
     return;
+  }
   scoped_activity_observation_.Reset();
   ShowGaiaDialog(EmptyAccountId());
 }
