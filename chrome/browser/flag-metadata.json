@@ -3030,6 +3030,14 @@
     "expiry_milestone": 115
   },
   {
+    "name": "enable-proto-api-for-classify-url",
+    "owners": [
+      "tju@google.com",
+      "chrome-kids-eng@google.com"
+    ],
+    "expiry_milestone": 117
+  },
+  {
     "name": "enable-pwas-default-offline-page",
     "owners": [ "finnur@google.com", "beverloo@google.com" ],
     "expiry_milestone": 120

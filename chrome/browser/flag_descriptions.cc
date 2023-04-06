@@ -6700,6 +6700,14 @@ const char kLocalWebApprovalsDescription[] =
     "refresh needs to also be enabled.";
 #endif
 
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+const char kEnableProtoApiForClassifyUrlName[] =
+    "Enable Proto API for Classify URL";
+const char kEnableProtoApiForClassifyUrlDescription[] =
+    "Calls to Classify URL RPC will use Protocol Buffer format in resposnes, "
+    "instead of JSON.";
+#endif
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 const char kUseOutOfProcessVideoDecodingName[] =
     "Use out-of-process video decoding (OOP-VD)";

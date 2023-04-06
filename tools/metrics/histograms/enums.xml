@@ -59403,6 +59403,7 @@ from previous Chrome versions.
   <int value="-1385221197"
       label="AllowSignedHTTPExchangeCertsWithoutExtension:enabled"/>
   <int value="-1384426209" label="SharingDeviceRegistration:disabled"/>
+  <int value="-1383674566" label="EnableProtoApiForClassifyUrl:enabled"/>
   <int value="-1383597259" label="SyncUserConsentSeparateType:disabled"/>
   <int value="-1383145700"
       label="AutofillDoNotMigrateUnsupportedLocalCards:enabled"/>
@@ -62177,6 +62178,7 @@ from previous Chrome versions.
   <int value="121911155" label="DesktopPWAsElidedExtensionsMenu:enabled"/>
   <int value="121994167" label="kOmniboxCR23SteadyStateIcons:disabled"/>
   <int value="122959683" label="WebViewJavaJsBridgeMojo:enabled"/>
+  <int value="123008918" label="EnableProtoApiForClassifyUrl:disabled"/>
   <int value="123097915" label="FaviconsFromWebManifest:enabled"/>
   <int value="124590378" label="LensStandalone:disabled"/>
   <int value="125581289" label="WebRtcHWVP8Encoding:disabled"/>

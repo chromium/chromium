@@ -3904,6 +3904,11 @@ extern const char kLocalWebApprovalsName[];
 extern const char kLocalWebApprovalsDescription[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+extern const char kEnableProtoApiForClassifyUrlName[];
+extern const char kEnableProtoApiForClassifyUrlDescription[];
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 extern const char kUseOutOfProcessVideoDecodingName[];
 extern const char kUseOutOfProcessVideoDecodingDescription[];
