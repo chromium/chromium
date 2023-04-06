@@ -278,6 +278,7 @@ bool FrameSinkImpl::DoBeginFrame(const viz::BeginFrameArgs& begin_frame_args) {
     return false;
   }
 
+  TRACE_EVENT0("cc", "slim::FrameSinkImpl::DoBeginFrame");
   viz::CompositorFrame frame;
   base::flat_set<viz::ResourceId> viz_resource_ids;
   viz::HitTestRegionList hit_test_region_list;
@@ -307,7 +308,10 @@ bool FrameSinkImpl::DoBeginFrame(const viz::BeginFrameArgs& begin_frame_args) {
   }
 
   {
-    TRACE_EVENT0("cc", "SubmitCompositorFrame");
+    TRACE_EVENT_WITH_FLOW1("viz,benchmark", "Graphics.Pipeline",
+                           TRACE_ID_GLOBAL(begin_frame_args.trace_id),
+                           TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
+                           "step", "SubmitCompositorFrame");
     frame_sink_->SubmitCompositorFrame(
         local_surface_id_, std::move(frame),
         send_new_hit_test_region_list ? hit_test_region_list_ : absl::nullopt,
@@ -323,6 +327,10 @@ bool FrameSinkImpl::DoBeginFrame(const viz::BeginFrameArgs& begin_frame_args) {
 
 void FrameSinkImpl::SendDidNotProduceFrame(
     const viz::BeginFrameArgs& begin_frame_args) {
+  TRACE_EVENT_WITH_FLOW1("viz,benchmark", "Graphics.Pipeline",
+                         TRACE_ID_GLOBAL(begin_frame_args.trace_id),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
+                         "step", "DidNotProduceFrame");
   frame_sink_->DidNotProduceFrame(viz::BeginFrameAck(begin_frame_args, false));
 }
 
