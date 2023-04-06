@@ -113,7 +113,8 @@ class NetworkStateHandler::ActiveNetworkState {
         activation_state_(network->activation_state()),
         connect_requested_(network->connect_requested()),
         signal_strength_(network->signal_strength()),
-        network_technology_(network->network_technology()) {}
+        network_technology_(network->network_technology()),
+        portal_state_(network->GetPortalState()) {}
 
   bool MatchesNetworkState(const NetworkState* network) {
     return guid_ == network->guid() &&
@@ -122,7 +123,8 @@ class NetworkStateHandler::ActiveNetworkState {
            connect_requested_ == network->connect_requested() &&
            (abs(signal_strength_ - network->signal_strength()) <
             NetworkState::kSignalStrengthChangeThreshold) &&
-           network_technology_ == network->network_technology();
+           network_technology_ == network->network_technology() &&
+           portal_state_ == network->GetPortalState();
   }
 
  private:
@@ -141,6 +143,9 @@ class NetworkStateHandler::ActiveNetworkState {
   // Network technology is indicated in network icons in the UI, so we need to
   // track changes to this value.
   const std::string network_technology_;
+  // Portal state changes affects the network connection state. We want to make
+  // sure the network state gets updated each time the portal state changes.
+  const NetworkState::PortalState portal_state_;
 };
 
 const char NetworkStateHandler::kDefaultCheckPortalList[] =

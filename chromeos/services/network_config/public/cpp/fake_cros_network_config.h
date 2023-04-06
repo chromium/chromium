@@ -112,6 +112,10 @@ class FakeCrosNetworkConfig : public mojom::CrosNetworkConfig {
   // `OnActiveNetworksChanged` for all observers in `observers_`.
   void AddNetworkAndDevice(mojom::NetworkStatePropertiesPtr network);
 
+  // Replaces an existing network in `visible_networks_` list with `network`
+  // and then calls `OnActiveNetworksChanged` for all observers in `observers_`.
+  void UpdateNetworkProperties(mojom::NetworkStatePropertiesPtr network);
+
   // Sets managed properties for a specific guid to
   // `guid_to_managed_properties_`. These properties can be later retrieved by
   // calling `GetManagedProperties`.
