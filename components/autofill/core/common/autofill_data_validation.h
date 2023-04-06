@@ -5,11 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_COMMON_AUTOFILL_DATA_VALIDATION_H_
 #define COMPONENTS_AUTOFILL_CORE_COMMON_AUTOFILL_DATA_VALIDATION_H_
 
-#include <stddef.h>
-
 #include <string>
-#include <vector>
 
+#include "base/containers/span.h"
 
 class GURL;
 
@@ -26,12 +24,13 @@ struct PasswordFormFillData;
 bool IsValidString(const std::string& str);
 bool IsValidString16(const std::u16string& str);
 bool IsValidGURL(const GURL& url);
+bool IsValidOption(const SelectOption& option);
 bool IsValidFormFieldData(const FormFieldData& field);
 bool IsValidFormData(const FormData& form);
 bool IsValidPasswordFormFillData(const PasswordFormFillData& form);
-bool IsValidOptionVector(const std::vector<SelectOption>& v);
-bool IsValidString16Vector(const std::vector<std::u16string>& v);
-bool IsValidFormDataVector(const std::vector<FormData>& v);
+bool IsValidOptionVector(const base::span<const SelectOption>& options);
+bool IsValidString16Vector(const base::span<const std::u16string>& strings);
+bool IsValidFormDataVector(const base::span<const FormData>& forms);
 
 }  // namespace autofill
 

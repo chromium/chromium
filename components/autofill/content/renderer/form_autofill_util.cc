@@ -129,9 +129,11 @@ enum FieldFilterMask {
                                      FILTER_NON_FOCUSABLE_ELEMENTS,
 };
 
-void TruncateString(std::u16string* str, size_t max_length) {
-  if (str->length() > max_length)
-    str->resize(max_length);
+std::u16string TruncateString(std::u16string str, size_t max_length) {
+  if (str.length() > max_length) {
+    str.resize(max_length);
+  }
+  return str;
 }
 
 bool IsOptionElement(const WebElement& element) {
@@ -414,10 +416,12 @@ void AddButtonTitleToList(std::u16string title,
                           ButtonTitleType button_type,
                           ButtonTitleList* list) {
   title = base::CollapseWhitespace(std::move(title), false);
-  if (title.empty())
+  if (title.empty()) {
     return;
-  TruncateString(&title, kMaxLengthForSingleButtonTitle);
-  list->push_back(std::make_pair(std::move(title), button_type));
+  }
+  list->emplace_back(
+      TruncateString(std::move(title), kMaxLengthForSingleButtonTitle),
+      button_type);
 }
 
 // Returns true iff |attribute| contains one of |kButtonFeatures|.
@@ -869,12 +873,13 @@ void RemoveDuplicatesAndLimitTotalLength(ButtonTitleList* result) {
     if (total_length > kMaxLengthForAllButtonTitles) {
       int new_length =
           title.first.length() - (total_length - kMaxLengthForAllButtonTitles);
-      TruncateString(&title.first, new_length);
+      title.first = TruncateString(std::move(title.first), new_length);
     }
     unique_titles.push_back(std::move(title));
 
-    if (total_length >= kMaxLengthForAllButtonTitles)
+    if (total_length >= kMaxLengthForAllButtonTitles) {
       break;
+    }
   }
   *result = std::move(unique_titles);
 }
@@ -991,8 +996,10 @@ void FilterOptionElementsAndGetOptionStrings(
   for (const auto& option_element : option_elements) {
     if (IsOptionElement(option_element)) {
       const WebOptionElement option = option_element.To<WebOptionElement>();
-      options->push_back({.value = option.Value().Utf16(),
-                          .content = option.GetText().Utf16()});
+      options->push_back(
+          {.value = TruncateString(option.Value().Utf16(), kMaxStringLength),
+           .content =
+               TruncateString(option.GetText().Utf16(), kMaxStringLength)});
     }
   }
 }
@@ -1262,7 +1269,7 @@ void FillFormField(const FormFieldData& data,
     if (IsTextInput(input_element) || IsMonthInput(input_element)) {
       // If the maxlength attribute contains a negative value, maxLength()
       // returns the default maxlength value.
-      TruncateString(&value, input_element.MaxLength());
+      value = TruncateString(std::move(value), input_element.MaxLength());
     }
     field->SetAutofillValue(blink::WebString::FromUTF16(value),
                             WebAutofillState::kAutofilled);
@@ -1720,7 +1727,7 @@ bool FormOrFieldsetsToFormData(
     // it is set to kUnknown.
     base::UmaHistogramEnumeration("Autofill.LabelInference.InferredLabelSource",
                                   field.label_source);
-    TruncateString(&field.label, kMaxStringLength);
+    field.label = TruncateString(std::move(field.label), kMaxStringLength);
 
     if (optional_field && *form_control_element == control_element) {
       *optional_field = field;
@@ -2333,9 +2340,7 @@ void WebFormControlElementToFormField(
 
   // Constrain the maximum data length to prevent a malicious site from DOS'ing
   // the browser: http://crbug.com/49332
-  TruncateString(&value, kMaxStringLength);
-
-  field->value = value;
+  field->value = TruncateString(std::move(value), kMaxStringLength);
 
   // If the field was autofilled or the user typed into it, check the value
   // stored in |field_data_manager| against the value property of the DOM
@@ -2352,7 +2357,7 @@ void WebFormControlElementToFormField(
     // The typed value is preserved for all passwords. It is also preserved for
     // potential usernames, as long as the |value| is not deemed acceptable.
     if (field->form_control_type == "password" ||
-        !ScriptModifiedUsernameAcceptable(value, user_input,
+        !ScriptModifiedUsernameAcceptable(field->value, user_input,
                                           field_data_manager)) {
       field->user_input = user_input;
     }
