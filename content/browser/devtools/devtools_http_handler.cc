@@ -61,7 +61,7 @@
 #include "base/android/build_info.h"
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_IOS)
 extern const int kCcompressedProtocolJSON;
 #endif
 
@@ -687,7 +687,7 @@ void DevToolsHttpHandler::OnJsonRequest(
 }
 
 void DevToolsHttpHandler::DecompressAndSendJsonProtocol(int connection_id) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
   NOTREACHED();
 #else
   scoped_refptr<base::RefCountedMemory> bytes =
@@ -703,7 +703,7 @@ void DevToolsHttpHandler::DecompressAndSendJsonProtocol(int connection_id) {
       FROM_HERE, base::BindOnce(&ServerWrapper::SendResponse,
                                 base::Unretained(server_wrapper_.get()),
                                 connection_id, response));
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
 }
 
 void DevToolsHttpHandler::RespondToJsonList(
@@ -736,7 +736,7 @@ void DevToolsHttpHandler::OnDiscoveryPageRequest(int connection_id) {
 
 void DevToolsHttpHandler::OnFrontendResourceRequest(
     int connection_id, const std::string& path) {
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   Send404(connection_id);
 #else
   Send200(connection_id,

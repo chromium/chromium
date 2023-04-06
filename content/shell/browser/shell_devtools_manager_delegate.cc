@@ -215,7 +215,7 @@ scoped_refptr<DevToolsAgentHost> ShellDevToolsManagerDelegate::CreateNewTarget(
 }
 
 std::string ShellDevToolsManagerDelegate::GetDiscoveryPageHTML() {
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return std::string();
 #else
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
@@ -224,7 +224,7 @@ std::string ShellDevToolsManagerDelegate::GetDiscoveryPageHTML() {
 }
 
 bool ShellDevToolsManagerDelegate::HasBundledFrontendResources() {
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return false;
 #else
   return true;

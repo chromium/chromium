@@ -17,7 +17,7 @@ extern const char kDisableSystemFontCheck[];
 extern const char kExposeInternalsForTesting[];
 extern const char kContentShellHostWindowSize[];
 extern const char kContentShellHideToolbar[];
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 extern const char kContentShellDevToolsTabTarget[];
 #endif
 extern const char kIsolatedContextOrigins[];
