@@ -15,7 +15,6 @@
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_property_changed_observer.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
-#include "chromeos/ash/services/hotspot_config/public/cpp/hotspot_enabled_state_provider.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -24,8 +23,7 @@ namespace ash {
 // This class caches hotspot related status and implements methods to get
 // current state and active client count.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
-    : public ShillPropertyChangedObserver,
-      public hotspot_config::HotspotEnabledStateProvider {
+    : public ShillPropertyChangedObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -46,8 +44,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
   // Return the latest hotspot state
   const hotspot_config::mojom::HotspotState& GetHotspotState() const;
 
-  // Returns the reason for hotspot being disabled.
-  const hotspot_config::mojom::DisableReason& GetDisableReason() const;
+  // Returns the reason for hotspot being disabled. nullopt is returned when the
+  // disable reason isn't set
+  const absl::optional<hotspot_config::mojom::DisableReason> GetDisableReason()
+      const;
 
   // Return the latest hotspot active client count
   size_t GetHotspotActiveClientCount() const;
@@ -77,7 +77,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
   hotspot_config::mojom::HotspotState hotspot_state_ =
       hotspot_config::mojom::HotspotState::kDisabled;
 
-  hotspot_config::mojom::DisableReason disable_reason_;
+  absl::optional<hotspot_config::mojom::DisableReason> disable_reason_ =
+      absl::nullopt;
 
   size_t active_client_count_ = 0;
 

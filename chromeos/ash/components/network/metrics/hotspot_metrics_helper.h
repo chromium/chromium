@@ -252,8 +252,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
   bool is_enterprise_managed_ = false;
 
   mojo::Receiver<hotspot_config::mojom::HotspotEnabledStateObserver>
-      hotspot_state_enabled_state_observer_receiver_{this};
-  mojo::Receiver<hotspot_config::mojom::HotspotEnabledStateObserver>
       hotspot_enabled_state_notifier_receiver_{this};
 };
 

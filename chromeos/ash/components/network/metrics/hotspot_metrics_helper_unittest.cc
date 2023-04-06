@@ -61,7 +61,8 @@ class HotspotMetricsHelperTest : public testing::Test {
     hotspot_configuration_handler_->Init(hotspot_controller_.get());
     hotspot_enabled_state_notifier_ =
         std::make_unique<HotspotEnabledStateNotifier>();
-    hotspot_enabled_state_notifier_->Init(hotspot_controller_.get());
+    hotspot_enabled_state_notifier_->Init(hotspot_state_handler_.get(),
+                                          hotspot_controller_.get());
     hotspot_metrics_helper_ = std::make_unique<HotspotMetricsHelper>();
     hotspot_metrics_helper_->Init(
         hotspot_capabilities_provider_.get(), hotspot_state_handler_.get(),
@@ -205,14 +206,15 @@ TEST_F(HotspotMetricsHelperTest, HotspotUsageDurationHistogram) {
   SetHotspotStateInShill(shill::kTetheringStateActive);
   hotspot_controller_->DisableHotspot(
       base::DoNothing(), hotspot_config::mojom::DisableReason::kUserInitiated);
+  SetHotspotStateInShill(shill::kTetheringStateIdle);
   base::RunLoop().RunUntilIdle();
   histogram_tester_.ExpectTimeBucketCount(
       HotspotMetricsHelper::kHotspotUsageDuration, kHotspotUsageTime, 1);
 
-  SetHotspotStateInShill(shill::kTetheringStateIdle);
   // Verifies that the usage duration is logged if hotspot is torn down by
   // internal error.
   hotspot_controller_->EnableHotspot(base::DoNothing());
+  SetHotspotStateInShill(shill::kTetheringStateActive);
   base::RunLoop().RunUntilIdle();
   task_environment_.FastForwardBy(kHotspotUsageTime);
 
@@ -350,7 +352,7 @@ TEST_F(HotspotMetricsHelperTest, HotspotDisableReasonHistogram) {
       HotspotMetricsHelper::kHotspotDisableReasonHistogram,
       HotspotMetricsHelper::HotspotMetricsDisableReason::kUserInitiated, 1);
 
-  SetHotspotStateInShill(shill::kTetheringStateIdle);
+  SetHotspotStateInShill(shill::kTetheringStateActive);
   // Verifies that the disabel reason is logged if hotspot is torn down by
   // internal error.
   base::Value::Dict status_dict;

@@ -250,9 +250,6 @@ void HotspotMetricsHelper::Init(
     LoggedInStateChanged();
   }
 
-  hotspot_state_handler_->ObserveEnabledStateChanges(
-      hotspot_state_enabled_state_observer_receiver_
-          .BindNewPipeAndPassRemote());
   hotspot_enabled_state_notifier->ObserveEnabledStateChanges(
       hotspot_enabled_state_notifier_receiver_.BindNewPipeAndPassRemote());
 }

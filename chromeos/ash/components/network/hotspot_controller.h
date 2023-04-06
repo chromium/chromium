@@ -14,7 +14,6 @@
 #include "chromeos/ash/components/network/hotspot_capabilities_provider.h"
 #include "chromeos/ash/components/network/hotspot_state_handler.h"
 #include "chromeos/ash/components/network/technology_state_controller.h"
-#include "chromeos/ash/services/hotspot_config/public/cpp/hotspot_enabled_state_provider.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-forward.h"
 
 namespace ash {
