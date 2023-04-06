@@ -311,6 +311,44 @@ void ExtensionsMenuModel::Build(Browser* browser) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// FindAndEditSubMenuModel
+
+FindAndEditSubMenuModel::FindAndEditSubMenuModel(
+    ui::SimpleMenuModel::Delegate* delegate,
+    Browser* browser,
+    AppMenuIconController* app_menu_icon_controller)
+    : SimpleMenuModel(delegate),
+      app_menu_icon_controller_(app_menu_icon_controller) {
+  Build(browser);
+}
+
+FindAndEditSubMenuModel::~FindAndEditSubMenuModel() = default;
+
+void FindAndEditSubMenuModel::Build(Browser* browser) {
+  AddItemWithStringIdAndIcon(
+      IDC_FIND, IDS_FIND,
+      ui::ImageModel::FromVectorIcon(
+          kSearchMenuIcon,
+          app_menu_icon_controller_->GetIconColor(absl::nullopt)));
+  AddSeparator(ui::NORMAL_SEPARATOR);
+  AddItemWithStringIdAndIcon(
+      IDC_CUT, IDS_CUT,
+      ui::ImageModel::FromVectorIcon(
+          kCutMenuIcon,
+          app_menu_icon_controller_->GetIconColor(absl::nullopt)));
+  AddItemWithStringIdAndIcon(
+      IDC_COPY, IDS_COPY,
+      ui::ImageModel::FromVectorIcon(
+          kCopyMenuIcon,
+          app_menu_icon_controller_->GetIconColor(absl::nullopt)));
+  AddItemWithStringIdAndIcon(
+      IDC_PASTE, IDS_PASTE,
+      ui::ImageModel::FromVectorIcon(
+          kPasteMenuIcon,
+          app_menu_icon_controller_->GetIconColor(absl::nullopt)));
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // AppMenuModel
 
 // static
@@ -975,16 +1013,25 @@ void AppMenuModel::Build() {
                            kExtensionsMenuItem);
   }
 
-  AddSeparator(ui::LOWER_SEPARATOR);
+  AddSeparator(features::IsChromeRefresh2023() ? ui::NORMAL_SEPARATOR
+                                               : ui::LOWER_SEPARATOR);
   CreateZoomMenu();
-  AddSeparator(ui::UPPER_SEPARATOR);
+  AddSeparator(features::IsChromeRefresh2023() ? ui::NORMAL_SEPARATOR
+                                               : ui::UPPER_SEPARATOR);
 
   AddItemWithStringId(IDC_PRINT, IDS_PRINT);
 
   if (media_router::MediaRouterEnabled(browser()->profile()))
     AddItemWithStringId(IDC_ROUTE_MEDIA, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE);
 
-  AddItemWithStringId(IDC_FIND, IDS_FIND);
+  if (features::IsChromeRefresh2023()) {
+    sub_menus_.push_back(std::make_unique<FindAndEditSubMenuModel>(
+        this, browser_, app_menu_icon_controller_));
+    AddSubMenuWithStringId(IDC_FIND_AND_EDIT_MENU, IDS_FIND_AND_EDIT_MENU,
+                           sub_menus_.back().get());
+  } else {
+    AddItemWithStringId(IDC_FIND, IDS_FIND);
+  }
 
   if (absl::optional<std::u16string> name =
           GetInstallPWAAppMenuItemName(browser_)) {
@@ -1041,11 +1088,18 @@ void AppMenuModel::Build() {
                          sub_menus_.back().get());
   SetElementIdentifierAt(GetIndexOfCommandId(IDC_MORE_TOOLS_MENU).value(),
                          kMoreToolsMenuItem);
-  AddSeparator(ui::LOWER_SEPARATOR);
-  CreateCutCopyPasteMenu();
-  AddSeparator(ui::UPPER_SEPARATOR);
 
-  AddItemWithStringId(IDC_OPTIONS, IDS_SETTINGS);
+  if (!features::IsChromeRefresh2023()) {
+    AddSeparator(ui::LOWER_SEPARATOR);
+    CreateCutCopyPasteMenu();
+    AddSeparator(ui::UPPER_SEPARATOR);
+  }
+
+  if (!features::IsChromeRefresh2023()) {
+    AddItemWithStringId(IDC_OPTIONS, IDS_SETTINGS);
+  } else {
+    AddSeparator(ui::NORMAL_SEPARATOR);
+  }
 // The help submenu is only displayed on official Chrome builds. As the
 // 'About' item has been moved to this submenu, it's reinstated here for
 // Chromium builds.
@@ -1060,8 +1114,14 @@ void AppMenuModel::Build() {
 #endif
 #endif
 
+  if (features::IsChromeRefresh2023()) {
+    AddItemWithStringId(IDC_OPTIONS, IDS_SETTINGS);
+  }
+
   if (browser_defaults::kShowExitMenuItem) {
-    AddSeparator(ui::NORMAL_SEPARATOR);
+    if (!features::IsChromeRefresh2023()) {
+      AddSeparator(ui::NORMAL_SEPARATOR);
+    }
     AddItemWithStringId(IDC_EXIT, IDS_EXIT);
   }
 
@@ -1069,14 +1129,26 @@ void AppMenuModel::Build() {
   // this menu.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (chrome::ShouldDisplayManagedUi(browser_->profile())) {
-    AddSeparator(ui::LOWER_SEPARATOR);
-    const int kIconSize = 18;
-    AddHighlightedItemWithIcon(
-        IDC_SHOW_MANAGEMENT_PAGE,
-        chrome::GetManagedUiMenuItemLabel(browser_->profile()),
-        ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
-                                       ui::kColorMenuItemForegroundHighlighted,
-                                       kIconSize));
+    AddSeparator(features::IsChromeRefresh2023() ? ui::NORMAL_SEPARATOR
+                                                 : ui::LOWER_SEPARATOR);
+    if (!features::IsChromeRefresh2023()) {
+      const int kIconSize = 18;
+      AddHighlightedItemWithIcon(
+          IDC_SHOW_MANAGEMENT_PAGE,
+          chrome::GetManagedUiMenuItemLabel(browser_->profile()),
+          ui::ImageModel::FromVectorIcon(
+              vector_icons::kBusinessIcon,
+              ui::kColorMenuItemForegroundHighlighted, kIconSize));
+    } else {
+      const int kIconSize = 16;
+      AddItemWithIcon(
+          IDC_SHOW_MANAGEMENT_PAGE,
+          chrome::GetManagedUiMenuItemLabel(browser_->profile()),
+          ui::ImageModel::FromVectorIcon(
+              vector_icons::kBusinessChromeRefreshIcon,
+              app_menu_icon_controller_->GetIconColor(absl::nullopt),
+              kIconSize));
+    }
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -1096,9 +1168,10 @@ void AppMenuModel::Build() {
     set_icon(IDC_RECENT_TABS_MENU, kHistoryIcon);
     set_icon(IDC_SHOW_DOWNLOADS, kDownloadMenuIcon);
     set_icon(IDC_BOOKMARKS_MENU, kBookmarksListsMenuIcon);
+    set_icon(IDC_ZOOM_MENU, kZoomInIcon);
     set_icon(IDC_PRINT, kPrintMenuIcon);
     set_icon(IDC_ROUTE_MEDIA, kCastMenuIcon);
-    set_icon(IDC_FIND, kSearchMenuIcon);
+    set_icon(IDC_FIND_AND_EDIT_MENU, kSearchMenuIcon);
     set_icon(IDC_MORE_TOOLS_MENU, kMoreToolsMenuIcon);
     set_icon(IDC_OPTIONS, kSettingsMenuIcon);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -1111,8 +1184,8 @@ void AppMenuModel::Build() {
 }
 
 void AppMenuModel::CreateCutCopyPasteMenu() {
-  // WARNING: Mac does not use the ButtonMenuItemModel, but instead defines the
-  // layout for this menu item in AppMenu.xib. It does, however, use the
+  // WARNING: Mac does not use the ButtonMenuItemModel, but instead defines
+  // the layout for this menu item in AppMenu.xib. It does, however, use the
   // command_id value from AddButtonItem() to identify this special item.
   edit_menu_item_model_ =
       std::make_unique<ui::ButtonMenuItemModel>(IDS_EDIT, this);

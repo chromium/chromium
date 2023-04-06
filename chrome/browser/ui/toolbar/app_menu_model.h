@@ -137,6 +137,23 @@ class ExtensionsMenuModel : public ui::SimpleMenuModel {
   void Build(Browser* browser);
 };
 
+class FindAndEditSubMenuModel : public ui::SimpleMenuModel {
+ public:
+  FindAndEditSubMenuModel(ui::SimpleMenuModel::Delegate* delegate,
+                          Browser* browser,
+                          AppMenuIconController* app_menu_icon_controller);
+
+  FindAndEditSubMenuModel(const FindAndEditSubMenuModel&) = delete;
+  FindAndEditSubMenuModel& operator=(const FindAndEditSubMenuModel&) = delete;
+
+  ~FindAndEditSubMenuModel() override;
+
+ private:
+  void Build(Browser* browser);
+
+  raw_ptr<AppMenuIconController> app_menu_icon_controller_ = nullptr;
+};
+
 // A menu model that builds the contents of the app menu.
 class AppMenuModel : public ui::SimpleMenuModel,
                      public ui::SimpleMenuModel::Delegate,

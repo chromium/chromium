@@ -1177,6 +1177,9 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_FIND" desc="The text label of the Find... menu item">
             &amp;Find...
           </message>
+          <message name="IDS_FIND_AND_EDIT_MENU" desc="The text label of the Find and edit sub menu item">
+            &amp;Find and edit
+          </message>
           <message name="IDS_SAVE_PAGE" desc="The text label of the Save Page As menu item">
             Save page &amp;as...
           </message>
@@ -1262,6 +1265,9 @@ are declared in tools/grit/grit_rule.gni.
           </message>
           <message name="IDS_FIND" desc="In Title Case: The text label of the Find... menu item">
             &amp;Find...
+          </message>
+          <message name="IDS_FIND_AND_EDIT_MENU" desc="In Title Case: The text label of the Find and edit sub menu item">
+            &amp;Find and Edit
           </message>
           <message name="IDS_SAVE_PAGE" desc="In Title Case: The text label of the Save Page As menu item">
             Save Page &amp;As...

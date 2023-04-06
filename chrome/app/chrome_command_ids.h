@@ -148,6 +148,9 @@
 #define IDC_CLOSE_FIND_OR_STOP          37003
 #define IDC_FIND_MENU                   37100
 
+// Find/Edit sub menu
+#define IDC_FIND_AND_EDIT_MENU          37200
+
 // Zoom
 #define IDC_ZOOM_MENU                   38000
 #define IDC_ZOOM_PLUS                   38001
