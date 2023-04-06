@@ -239,9 +239,6 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
 
   // View:
   void OnPaint(gfx::Canvas* canvas) override {
-    if (draw_invisible_)
-      return;
-
     // Draw the handle image.
     canvas->DrawImageInt(
         *image_->ToImageSkia(), kSelectionHandleHorizPadding,
@@ -347,14 +344,6 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
     widget_->GetNativeWindow()->targeter()->SetInsets(insets, insets);
   }
 
-  void SetDrawInvisible(bool draw_invisible) {
-    if (draw_invisible_ == draw_invisible)
-      return;
-    draw_invisible_ = draw_invisible;
-    OnPropertyChanged(&draw_invisible_, kPropertyEffectsPaint);
-  }
-  bool GetDrawInvisible() const { return draw_invisible_; }
-
  private:
   raw_ptr<TouchSelectionControllerImpl> controller_;
 
@@ -370,12 +359,6 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
   // TouchSelectionControllerImpl::OnDragUpdate while dragging the handle.
   gfx::Vector2d drag_offset_;
 
-  // If set to true, the handle will not draw anything, hence providing an empty
-  // widget. We need this because we may want to stop showing the handle while
-  // it is being dragged. Since it is being dragged, we cannot destroy the
-  // handle.
-  bool draw_invisible_ = false;
-
   // Owning widget.
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
@@ -385,7 +368,6 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
 BEGIN_METADATA(TouchSelectionControllerImpl, EditingHandleView, View)
 ADD_READONLY_PROPERTY_METADATA(gfx::SelectionBound::Type, SelectionBoundType)
 ADD_PROPERTY_METADATA(bool, WidgetVisible)
-ADD_PROPERTY_METADATA(bool, DrawInvisible)
 END_METADATA
 
 TouchSelectionControllerImpl::TouchSelectionControllerImpl(
@@ -467,13 +449,6 @@ void TouchSelectionControllerImpl::SelectionChanged() {
     // should not get hidden, since it should still receive touch events.
     // Hence, we are not using |SetHandleBound()| method here.
     dragging_handle_->SetBoundInScreen(screen_bound_focus_clipped, true);
-
-    // Temporary fix for selection handle going outside a window. On a webpage,
-    // the page should scroll if the selection handle is dragged outside the
-    // window. That does not happen currently. So we just hide the handle for
-    // now.
-    // TODO(varunjain): Fix this: crbug.com/269003
-    dragging_handle_->SetDrawInvisible(!ShouldShowHandleFor(focus));
 
     if (dragging_handle_ != cursor_handle_) {
       // The non-dragging-handle might have recently become visible.
