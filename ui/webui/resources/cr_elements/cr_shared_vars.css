@@ -73,8 +73,8 @@ html {
   /* --google-grey-900 + 4% white blended together. */
   --google-grey-900-white-4-percent: #292a2d;
 
-  --google-purple-100-rgb: 233, 210, 253;  /* #e9d2fd */
-  --google-purple-100: rgb(var(--google-purple-100-rgb));
+  --google-purple-200-rgb: 215, 174, 251;  /* #d7aefb */
+  --google-purple-200: rgb(var(--google-purple-200-rgb));
   --google-purple-900-rgb: 104, 29, 168;  /* #681da8 */
   --google-purple-900: rgb(var(--google-purple-900-rgb));
 
@@ -87,6 +87,8 @@ html {
 
   --google-yellow-50-rgb: 254, 247, 224;  /* #fef7e0 */
   --google-yellow-50: rgb(var(--google-yellow-50-rgb));
+  --google-yellow-200-rgb: 253, 226, 147;  /* #fde293 */
+  --google-yellow-200: rgb(var(--google-yellow-200-rgb));
   --google-yellow-300-rgb: 253, 214, 51;  /* #fdd633 */
   --google-yellow-300: rgb(var(--google-yellow-300-rgb));
   --google-yellow-400-rgb: 252, 201, 52;  /* #fcc934 */

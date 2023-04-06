@@ -721,7 +721,7 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
                 : kColorReadAnythingBackgroundLight};
   mixer[kColorReadAnythingBackgroundBlue] = {gfx::kGoogleBlue200};
   mixer[kColorReadAnythingBackgroundDark] = {gfx::kGoogleGrey900};
-  mixer[kColorReadAnythingBackgroundLight] = {gfx::kGoogleGrey050};
+  mixer[kColorReadAnythingBackgroundLight] = {gfx::kGoogleGrey100};
   mixer[kColorReadAnythingBackgroundYellow] = {gfx::kGoogleYellow200};
   mixer[kColorReadAnythingForeground] = {
       dark_mode ? kColorReadAnythingForegroundDark
@@ -730,7 +730,7 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       kColorReadAnythingForegroundLight, kColorReadAnythingBackgroundBlue,
       color_utils::kMinimumReadableContrastRatio);
   mixer[kColorReadAnythingForegroundDark] = {gfx::kGoogleGrey200};
-  mixer[kColorReadAnythingForegroundLight] = {gfx::kGoogleGrey900};
+  mixer[kColorReadAnythingForegroundLight] = {gfx::kGoogleGrey800};
   mixer[kColorReadAnythingForegroundYellow] = ui::PickGoogleColor(
       kColorReadAnythingForegroundLight, kColorReadAnythingBackgroundYellow,
       color_utils::kMinimumReadableContrastRatio);
