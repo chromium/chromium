@@ -244,6 +244,8 @@ source_set("test_support") {
     "model/search/test_search_result.h",
     "views/apps_grid_view_test_api.cc",
     "views/apps_grid_view_test_api.h",
+    "views/pagination_model_transition_waiter.cc",
+    "views/pagination_model_transition_waiter.h",
   ]
 
   deps = [
