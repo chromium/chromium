@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_row_view.h"
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_bubble_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -75,7 +76,9 @@ class PermissionsFlowInteractiveUITest : public InteractiveBrowserTest {
   }
 
  protected:
-  GURL GetURL() { return https_server()->GetURL("a.test", "/title1.html"); }
+  GURL GetURL() {
+    return https_server()->GetURL("a.test", "/permissions/requests.html");
+  }
 
   void SetPermission(ContentSettingsType type, ContentSetting setting) {
     HostContentSettingsMap* map =
@@ -118,4 +121,34 @@ IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
       CheckViewProperty(
           kFirstPermissionRow, &PermissionToggleRowView::GetRowTitleForTesting,
           l10n_util::GetStringUTF16(IDS_SITE_SETTINGS_TYPE_CAMERA)));
+}
+
+// The test requests Notifications permission, clicks Allow on a permission
+// prompt, and verifies that a new entry for Notifications appeared in PageInfo.
+IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
+                       NotificationsPermissionRequestTest) {
+  RunTestSequenceInContext(
+      context(), InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetURL()),
+      // Request permission.
+      ExecuteJs(kWebContentsElementId, "requestNotification()"),
+      WaitForShow(
+          PermissionPromptBubbleView::kPermissionPromptBubbleViewIdentifier),
+      WaitForShow(PermissionPromptBubbleView::kAllowButtonElementId),
+      // We need to call `FlushEvents` here before `PressButton` because a
+      // `view_` variable in PermissionRequestManager is not yet initialized.
+      FlushEvents(),
+      // Permission prompt bubble is shown, click on the Allow button.
+      PressButton(PermissionPromptBubbleView::kAllowButtonElementId),
+      WaitForHide(
+          PermissionPromptBubbleView::kPermissionPromptBubbleViewIdentifier),
+      // Click on the PageInfo icon and verify that the first permission is
+      // Notification.
+      PressButton(kLocationIconElementId),
+      WaitForShow(PageInfoMainView::kPermissionsElementId),
+      NameChildView(PageInfoMainView::kPermissionsElementId,
+                    kFirstPermissionRow, 0),
+      CheckViewProperty(
+          kFirstPermissionRow, &PermissionToggleRowView::GetRowTitleForTesting,
+          l10n_util::GetStringUTF16(IDS_SITE_SETTINGS_TYPE_NOTIFICATIONS)));
 }
