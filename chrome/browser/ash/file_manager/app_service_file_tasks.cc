@@ -246,14 +246,13 @@ void FindAppServiceTasks(Profile* profile,
       apps::AppType::kChromeApp,
       apps::AppType::kExtension,
       apps::AppType::kStandaloneBrowserChromeApp,
-      apps::AppType::kStandaloneBrowserExtension};
+      apps::AppType::kStandaloneBrowserExtension,
+      apps::AppType::kBruschetta,
+      apps::AppType::kCrostini,
+      apps::AppType::kPluginVm,
+  };
   if (ash::features::ShouldArcFileTasksUseAppService()) {
     supported_app_types.push_back(apps::AppType::kArc);
-  }
-  if (ash::features::ShouldGuestOsFileTasksUseAppService()) {
-    supported_app_types.push_back(apps::AppType::kBruschetta);
-    supported_app_types.push_back(apps::AppType::kCrostini);
-    supported_app_types.push_back(apps::AppType::kPluginVm);
   }
   for (auto& launch_entry : intent_launch_info) {
     auto app_type = proxy->AppRegistryCache().GetAppType(launch_entry.app_id);
@@ -356,12 +355,11 @@ void ExecuteAppServiceTask(
 
   DCHECK(task.task_type == TASK_TYPE_WEB_APP ||
          task.task_type == TASK_TYPE_FILE_HANDLER ||
+         task.task_type == TASK_TYPE_BRUSCHETTA_APP ||
+         task.task_type == TASK_TYPE_CROSTINI_APP ||
+         task.task_type == TASK_TYPE_PLUGIN_VM_APP ||
          (ash::features::ShouldArcFileTasksUseAppService() &&
-          task.task_type == TASK_TYPE_ARC_APP) ||
-         (ash::features::ShouldGuestOsFileTasksUseAppService() &&
-          (task.task_type == TASK_TYPE_BRUSCHETTA_APP ||
-           task.task_type == TASK_TYPE_CROSTINI_APP ||
-           task.task_type == TASK_TYPE_PLUGIN_VM_APP)));
+          task.task_type == TASK_TYPE_ARC_APP));
 
   apps::IntentPtr intent = std::make_unique<apps::Intent>(
       apps_util::kIntentActionView, std::move(intent_files));

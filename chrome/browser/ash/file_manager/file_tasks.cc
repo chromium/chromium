@@ -42,7 +42,6 @@
 #include "chrome/browser/ash/file_manager/file_tasks_notifier.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
-#include "chrome/browser/ash/file_manager/guest_os_file_tasks.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_manager/open_with_browser.h"
 #include "chrome/browser/ash/file_manager/url_util.h"
@@ -829,10 +828,9 @@ bool ExecuteFileTask(Profile* profile,
   if (task.task_type == TASK_TYPE_ARC_APP ||
       task.task_type == TASK_TYPE_WEB_APP ||
       task.task_type == TASK_TYPE_FILE_HANDLER ||
-      (ash::features::ShouldGuestOsFileTasksUseAppService() &&
-       (task.task_type == TASK_TYPE_BRUSCHETTA_APP ||
-        task.task_type == TASK_TYPE_CROSTINI_APP ||
-        task.task_type == TASK_TYPE_PLUGIN_VM_APP))) {
+      task.task_type == TASK_TYPE_BRUSCHETTA_APP ||
+      task.task_type == TASK_TYPE_CROSTINI_APP ||
+      task.task_type == TASK_TYPE_PLUGIN_VM_APP) {
     // TODO(petermarshall): Implement GetProfileForExtensionTask in Lacros if
     // necessary, for Chrome Apps.
     extensions::app_file_handler_util::MimeTypeCollector* mime_collector =
@@ -841,15 +839,6 @@ bool ExecuteFileTask(Profile* profile,
         file_urls, base::BindOnce(&ExecuteTaskAfterMimeTypesCollected, profile,
                                   task, file_urls, std::move(done),
                                   base::Owned(mime_collector)));
-    return true;
-  }
-
-  if (!ash::features::ShouldGuestOsFileTasksUseAppService() &&
-      (task.task_type == TASK_TYPE_BRUSCHETTA_APP ||
-       task.task_type == TASK_TYPE_CROSTINI_APP ||
-       task.task_type == TASK_TYPE_PLUGIN_VM_APP)) {
-    DCHECK_EQ(kGuestOsAppActionID, task.action_id);
-    ExecuteGuestOsTask(profile, task, file_urls, std::move(done));
     return true;
   }
 
@@ -947,22 +936,13 @@ void FindExtensionAndAppTasks(Profile* profile,
                               std::unique_ptr<ResultingTasks> resulting_tasks) {
   auto* tasks = &resulting_tasks->tasks;
 
-  // 2. Web tasks file_handlers (View/Open With), Chrome app file_handlers, and
+  // Web tasks file_handlers (View/Open With), Chrome app file_handlers, and
   // extension file_browser_handlers.
   FindAppServiceTasks(profile, entries, file_urls, dlp_source_urls, tasks);
 
-  // 3. Find and append Guest OS tasks directly if Guest OS file tasks aren't
-  // provided by App Service.
-  if (!ash::features::ShouldGuestOsFileTasksUseAppService()) {
-    FindGuestOsTasks(
-        profile, entries, file_urls, tasks,
-        // Done. Apply post-filtering and callback.
-        base::BindOnce(PostProcessFoundTasks, profile, entries,
-                       std::move(callback), std::move(resulting_tasks)));
-  } else {
-    PostProcessFoundTasks(profile, entries, std::move(callback),
-                          std::move(resulting_tasks));
-  }
+  // Done. Apply post-filtering and callback.
+  PostProcessFoundTasks(profile, entries, std::move(callback),
+                        std::move(resulting_tasks));
 }
 
 void FindAllTypesOfTasks(Profile* profile,
