@@ -1542,6 +1542,84 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, LargeMessages) {
   ASSERT_TRUE(RunExtensionTest("messaging/large_messages"));
 }
 
+// Tests that the channel name used in runtime.connect() cannot redirect the
+// message to another event (like onMessage).
+// See https://crbug.com/1430999.
+// NOTE: This is currently an anti-test -- it tests undesirable behavior that we
+// hope to change.
+IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessageChannelName) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Ext",
+           "manifest_version": 3,
+           "version": "0.1"
+         })";
+  static constexpr char kConnectorJs[] =
+      R"(chrome.test.runTests([
+           async function portWithSendMessageName() {
+             let port = chrome.runtime.connect(
+                 {name: 'chrome.runtime.sendMessage'});
+             chrome.test.assertEq('chrome.runtime.sendMessage', port.name);
+             port.onMessage.addListener((msg) => {
+               // TODO(https://crbug.com/1430999): This should be:
+               // chrome.test.assertEq('pong', msg);
+               // chrome.test.succeed();
+               // But currently the message goes to the wrong event. Verify
+               // the incorrect behavior for now by fail()ing if we get a
+               // response.
+               chrome.test.fail('Unexpected reply: ' + msg);
+             });
+             port.postMessage('ping');
+           }
+         ]);)";
+  static constexpr char kConnecteeJs[] =
+      R"(chrome.runtime.onConnect.addListener((port) => {
+           self.port = port;
+           port.onMessage.addListener((msg) => {
+             // TODO(https://crbug.com/1430999): This should be:
+             // chrome.test.assertEq(port.name, 'chrome.runtime.sendMessage');
+             // chrome.test.assertEq(msg, 'ping');
+             // port.postMessage('pong');
+             // But we don't currently get a message here because it goes to
+             // the wrong event. Verify the incorrect behavior for now by
+             // fail()ing if we get a message.
+             chrome.test.fail('Unexpected reply: ' + msg);
+           });
+         });
+         chrome.runtime.onMessage.addListener((msg) => {
+           // TODO(https://crbug.com/1430999): This should be:
+           // chrome.test.fail(`Unexpected onMessage received: ${msg}`);
+           // But currently the message goes here instead of the port.
+           // Verify the incorrect behavior for now.
+           chrome.test.assertEq(msg, 'ping');
+           chrome.test.succeed();
+         });)";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("connector.html"),
+                     R"(<html><script src="connector.js"></script></html>)");
+  test_dir.WriteFile(FILE_PATH_LITERAL("connector.js"), kConnectorJs);
+  test_dir.WriteFile(FILE_PATH_LITERAL("connectee.html"),
+                     R"(<html><script src="connectee.js"></script></html>)");
+  test_dir.WriteFile(FILE_PATH_LITERAL("connectee.js"), kConnecteeJs);
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  ResultCatcher result_catcher;
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), extension->GetResourceURL("connectee.html"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), extension->GetResourceURL("connector.html"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
 class ServiceWorkerMessagingApiTest : public MessagingApiTest {
  protected:
   ~ServiceWorkerMessagingApiTest() override = default;
