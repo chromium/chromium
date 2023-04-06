@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/version_updater/version_updater.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
-#include "components/user_manager/remove_user_delegate.h"
 
 namespace base {
 class Clock;
@@ -32,8 +31,7 @@ class UpdateRequiredView;
 // Controller for the update required screen.
 class UpdateRequiredScreen : public BaseScreen,
                              public VersionUpdater::Delegate,
-                             public NetworkStateHandlerObserver,
-                             public user_manager::RemoveUserDelegate {
+                             public NetworkStateHandlerObserver {
  public:
   using TView = UpdateRequiredView;
 
@@ -84,10 +82,6 @@ class UpdateRequiredScreen : public BaseScreen,
 
   // NetworkStateHandlerObserver:
   void DefaultNetworkChanged(const NetworkState* network) override;
-
-  // user_manager::RemoveUserDelegate:
-  void OnBeforeUserRemoved(const AccountId& account_id) override;
-  void OnUserRemoved(const AccountId& account_id) override;
 
   void RefreshNetworkState();
   void RefreshView(const VersionUpdater::UpdateInfo& update_info);

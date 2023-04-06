@@ -207,6 +207,11 @@ class USER_MANAGER_EXPORT UserManager {
   // reporting. Note, it will verify that the given user isn't the owner, so
   // calling this method for the owner will take no effect. Note, |delegate|
   // can be NULL.
+  // This removes the user from the list synchronously, so the following
+  // function calls should have updated users. However, actual deletion of
+  // a user from a device has more tasks to complete, such as deletion of
+  // cryptohome data, which are asynchronous operations. Currently, there's
+  // no support to observe the completion of such tasks.
   virtual void RemoveUser(const AccountId& account_id,
                           UserRemovalReason reason,
                           RemoveUserDelegate* delegate) = 0;
