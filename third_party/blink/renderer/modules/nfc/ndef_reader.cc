@@ -149,9 +149,9 @@ NDEFReader* NDEFReader::Create(ExecutionContext* context) {
 }
 
 NDEFReader::NDEFReader(ExecutionContext* context)
-    : ExecutionContextLifecycleObserver(context), permission_service_(context) {
-  nfc_proxy_ = NFCProxy::From(*DomWindow());
-}
+    : ExecutionContextLifecycleObserver(context),
+      nfc_proxy_(NFCProxy::From(*DomWindow())),
+      permission_service_(context) {}
 
 NDEFReader::~NDEFReader() = default;
 
