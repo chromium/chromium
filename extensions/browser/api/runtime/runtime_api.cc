@@ -910,8 +910,8 @@ RuntimeGetContextsFunction::GetFrameContexts() {
 
     api::runtime::ExtensionContext context;
     context.context_type = context_type;
-    // TODO(crbug/1426192): Add a real context id.
-    context.context_id = "";
+    context.context_id =
+        ExtensionApiFrameIdMap::GetContextId(host).AsLowercaseString();
     context.tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
     context.window_id =
         sessions::SessionTabHelper::IdForWindowContainingTab(web_contents).id();

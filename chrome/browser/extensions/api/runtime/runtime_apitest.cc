@@ -865,6 +865,8 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest, GetTabContext) {
   int expected_tab_id = ExtensionTabUtil::GetTabId(web_contents);
   int expected_window_id = ExtensionTabUtil::GetWindowIdOfTab(web_contents);
   int expected_frame_id = ExtensionApiFrameIdMap::GetFrameId(new_host);
+  std::string expected_context_id =
+      ExtensionApiFrameIdMap::GetContextId(new_host).AsLowercaseString();
   std::string expected_document_id =
       ExtensionApiFrameIdMap::GetDocumentId(new_host).ToString();
   std::string expected_frame_url = frame_url.spec();
@@ -877,7 +879,7 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest, GetTabContext) {
   static constexpr char kExpectedTemplate[] =
       R"([{
             "contextType": "TAB",
-            "contextId": "",
+            "contextId": "%s",
             "tabId": %d,
             "windowId": %d,
             "frameId": %d,
@@ -886,10 +888,10 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest, GetTabContext) {
             "documentOrigin": "%s",
             "incognito": false
          }])";
-  std::string expected =
-      base::StringPrintf(kExpectedTemplate, expected_tab_id, expected_window_id,
-                         expected_frame_id, expected_document_id.c_str(),
-                         expected_frame_url.c_str(), expected_origin.c_str());
+  std::string expected = base::StringPrintf(
+      kExpectedTemplate, expected_context_id.c_str(), expected_tab_id,
+      expected_window_id, expected_frame_id, expected_document_id.c_str(),
+      expected_frame_url.c_str(), expected_origin.c_str());
   EXPECT_THAT(background_contexts, base::test::IsJson(expected));
 }
 
@@ -921,6 +923,9 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest, GetOffscreenDocumentContext) {
       offscreen_document->web_contents()->GetPrimaryMainFrame();
   int expected_frame_id =
       ExtensionApiFrameIdMap::GetFrameId(offscreen_frame_host);
+  std::string expected_context_id =
+      ExtensionApiFrameIdMap::GetContextId(offscreen_frame_host)
+          .AsLowercaseString();
   std::string expected_document_id =
       ExtensionApiFrameIdMap::GetDocumentId(offscreen_frame_host).ToString();
   std::string expected_frame_url =
@@ -935,7 +940,7 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest, GetOffscreenDocumentContext) {
   static constexpr char kExpectedTemplate[] =
       R"([{
             "contextType": "OFFSCREEN_DOCUMENT",
-            "contextId": "",
+            "contextId": "%s",
             "tabId": -1,
             "windowId": -1,
             "frameId": %d,
@@ -944,9 +949,10 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest, GetOffscreenDocumentContext) {
             "documentOrigin": "%s",
             "incognito": false
          }])";
-  std::string expected = base::StringPrintf(
-      kExpectedTemplate, expected_frame_id, expected_document_id.c_str(),
-      expected_frame_url.c_str(), expected_origin.c_str());
+  std::string expected =
+      base::StringPrintf(kExpectedTemplate, expected_context_id.c_str(),
+                         expected_frame_id, expected_document_id.c_str(),
+                         expected_frame_url.c_str(), expected_origin.c_str());
   EXPECT_THAT(background_contexts, base::test::IsJson(expected));
 }
 
