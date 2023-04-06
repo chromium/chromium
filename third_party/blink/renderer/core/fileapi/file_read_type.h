@@ -11,8 +11,7 @@ enum class FileReadType {
   kReadAsArrayBuffer,
   kReadAsBinaryString,
   kReadAsText,
-  kReadAsDataURL,
-  kReadByClient
+  kReadAsDataURL
 };
 
 }  // namespace blink

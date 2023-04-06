@@ -39,9 +39,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/file_error.h"
-#include "third_party/blink/renderer/core/fileapi/file_read_type.h"
-#include "third_party/blink/renderer/core/fileapi/file_reader_data.h"
-#include "third_party/blink/renderer/core/fileapi/file_reader_loader_client.h"
+#include "third_party/blink/renderer/core/fileapi/file_reader_client.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -52,8 +50,7 @@
 namespace blink {
 
 class BlobDataHandle;
-
-// Reads a Blob's content into memory.
+// Reads a Blob's content and forwards it to the FileReaderClient.
 //
 // Blobs are typically stored on disk, and should be read asynchronously
 // whenever possible. Synchronous loading is implemented to support Web Platform
@@ -67,15 +64,13 @@ class CORE_EXPORT FileReaderLoader : public GarbageCollected<FileReaderLoader>,
  public:
   // If client is given, do the loading asynchronously. Otherwise, load
   // synchronously.
-  FileReaderLoader(FileReadType,
-                   FileReaderLoaderClient*,
+  FileReaderLoader(FileReaderClient*,
                    scoped_refptr<base::SingleThreadTaskRunner>);
   ~FileReaderLoader() override;
 
   void Start(scoped_refptr<BlobDataHandle>);
+  void StartSync(scoped_refptr<BlobDataHandle>);
   void Cancel();
-
-  FileReaderData TakeContents();
 
   // Returns the total bytes received. Bytes ignored by m_rawData won't be
   // counted.
@@ -97,14 +92,13 @@ class CORE_EXPORT FileReaderLoader : public GarbageCollected<FileReaderLoader>,
   void Trace(Visitor* visitor) const { visitor->Trace(client_); }
 
  private:
+  void StartInternal(scoped_refptr<BlobDataHandle>, bool is_sync);
   void Cleanup();
   void Failed(FileErrorCode);
 
-  void OnStartLoading(uint64_t total_bytes);
-  void OnReceivedData(const char* data, unsigned data_length);
-  void OnFinishLoading();
+  bool IsSyncLoad() { return is_sync_; }
 
-  bool IsSyncLoad() const { return !client_; }
+  void OnFinishLoading();
 
   // BlobReaderClient:
   void OnCalculatedSize(uint64_t total_size,
@@ -112,10 +106,7 @@ class CORE_EXPORT FileReaderLoader : public GarbageCollected<FileReaderLoader>,
   void OnComplete(int32_t status, uint64_t data_length) override;
   void OnDataPipeReadable(MojoResult);
 
-  FileReadType read_type_;
-  WeakMember<FileReaderLoaderClient> client_;
-
-  ArrayBufferContents raw_data_;
+  Member<FileReaderClient> client_;
 
   bool finished_loading_ = false;
   uint64_t bytes_loaded_ = 0;
@@ -136,6 +127,8 @@ class CORE_EXPORT FileReaderLoader : public GarbageCollected<FileReaderLoader>,
 #if DCHECK_IS_ON()
   bool started_loading_ = false;
 #endif  // DCHECK_IS_ON()
+
+  bool is_sync_ = false;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
