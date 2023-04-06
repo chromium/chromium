@@ -344,6 +344,8 @@ used when committed.
     audio streams interact
 *   [Autoplay of HTMLMediaElements](media/autoplay.md) - How HTMLMediaElements
     are autoplayed.
+*   [Latency tracing](media/latency_tracing.md) - How to use the
+    `"audio.latency"` tracing category to measure audio latency.
 *   [Piranha Plant](piranha_plant.md) - Future architecture of MediaStreams
 *   [Video Encode Accelerator Tests](media/gpu/veatest_usage.md) - How to
     use the accelerated video encoder test program.
