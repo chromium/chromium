@@ -1,6 +1,0 @@
-Name: libloading
-URL: https://crates.io/crates/libloading
-Description: Bindings around the platform's dynamic library loading primitives with greatly improved memory safety.
-Version: 0.7.3
-Security Critical: no
-License: ISC

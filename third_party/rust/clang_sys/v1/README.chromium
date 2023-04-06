@@ -1,6 +1,0 @@
-Name: clang-sys
-URL: https://crates.io/crates/clang-sys
-Description: Rust bindings for libclang.
-Version: 1.3.0
-Security Critical: no
-License: Apache 2.0
