@@ -43,9 +43,6 @@ exclusions to
 on trybots.
 * [filters/](./filters/) -- filters out tests that shouldn't be
 run in a particular mode.
-* [timeouts.py](./timeouts.py) -- calculates acceptable timeouts for tests by
-analyzing their execution on
-[swarming](https://chromium.googlesource.com/infra/luci/luci-py/+/HEAD/appengine/swarming).
 * [manage.py](./manage.py) -- makes sure the buildbot configuration json is in
 a standardized format.
 
