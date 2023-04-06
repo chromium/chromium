@@ -2913,6 +2913,16 @@ crbug.com/1359555 external/wpt/speculation-rules/prerender/workers.html [ Failur
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-fonts/font-size-adjust-013.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/white-space/pre-wrap-align-center-001.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/white-space/pre-wrap-align-center-002.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/white-space/pre-wrap-align-center-003.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/white-space/pre-wrap-align-end-001.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/white-space/pre-wrap-align-end-002.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/white-space/pre-wrap-align-end-003.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/white-space/pre-wrap-align-left-002.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/white-space/pre-wrap-align-left-003.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/white-space/pre-wrap-align-right-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-box/margin-trim/flex-column-style-change-triggers-layout-block-end.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-box/margin-trim/flex-column-style-change-triggers-layout-block-start.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-box/margin-trim/flex-column-style-change-triggers-layout-block.html [ Failure ]
