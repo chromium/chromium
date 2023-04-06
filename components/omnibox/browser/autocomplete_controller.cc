@@ -1540,14 +1540,17 @@ void AutocompleteController::OnUrlScoringModelDoneForAllMatches(
     }
 
     relevance_heap.emplace(result_.match_at(index)->relevance);
-    output_and_match_index_heap.emplace(std::make_pair(output.value(), index));
+    output_and_match_index_heap.emplace(output.value(), index);
   }
 
   while (!relevance_heap.empty()) {
     // Assign the match with the highest respective model output with the
     // highest relevance score.
     auto match_index = output_and_match_index_heap.top().second;
-    result_.match_at(match_index)->relevance = relevance_heap.top();
+    auto* match = result_.match_at(match_index);
+
+    match->RecordAdditionalInfo("legacy_relevance", match->relevance);
+    match->relevance = relevance_heap.top();
 
     relevance_heap.pop();
     output_and_match_index_heap.pop();
