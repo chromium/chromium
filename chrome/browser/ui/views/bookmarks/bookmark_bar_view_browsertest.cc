@@ -18,6 +18,8 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view_observer.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view_test_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -29,10 +31,12 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/features.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/test/test_event.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/test/button_test_api.h"
@@ -116,6 +120,8 @@ class BookmarkBarNavigationTest : public InProcessBrowserTest {
     // web origin from which the navigation is triggered.
     ASSERT_EQ(absl::nullopt, observer.last_initiator_origin());
   }
+
+  net::EmbeddedTestServer* https_test_server() { return &https_test_server_; }
 
  private:
   net::EmbeddedTestServer https_test_server_;
@@ -321,4 +327,70 @@ IN_PROC_BROWSER_TEST_F(BookmarkBarNavigationTest, ExternalHandlerAllowed) {
               ExternalProtocolHandler::GetBlockState(external_protocol, nullptr,
                                                      browser()->profile()));
   }
+}
+
+class PrerenderBookmarkBarNavigationTest : public BookmarkBarNavigationTest {
+ public:
+  PrerenderBookmarkBarNavigationTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kBookmarkTriggerForPrerender2);
+  }
+
+  content::WebContents* GetActiveWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  void CreateBookmarkButton() {
+    // Populate bookmark bar with a single bookmark.
+    bookmarks::BookmarkModel* model =
+        BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+    bookmarks::test::WaitForBookmarkModelToLoad(model);
+    model->ClearStore();
+    GURL url = https_test_server()->GetURL("/empty.html?prerender");
+    model->AddURL(model->bookmark_bar_node(), 0, u"Example", url);
+  }
+
+  // Currently OnMousePressed will trigger bookmark trigger prerendering,
+  // this function simulates the mousePressed and mouseReleased to trigger
+  // prerendering and its activation.
+  void NavigateToBookmarkByMousePressed() {
+    // Click on the 0th bookmark after setting up a navigation observer that
+    // waits for a single navigation to complete successfully.
+    content::test::PrerenderHostObserver prerender_observer(
+        *GetActiveWebContents(),
+        https_test_server()->GetURL("/empty.html?prerender"));
+    views::LabelButton* button = GetBookmarkButton(0);
+
+    gfx::Point center(10, 10);
+    button->OnMousePressed(ui::MouseEvent(ui::ET_MOUSE_PRESSED, center, center,
+                                          ui::EventTimeForNow(),
+                                          ui::EF_LEFT_MOUSE_BUTTON, 0));
+    button->OnMouseReleased(ui::MouseEvent(ui::ET_MOUSE_RELEASED, center,
+                                           center, ui::EventTimeForNow(),
+                                           ui::EF_LEFT_MOUSE_BUTTON, 0));
+    prerender_observer.WaitForActivation();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Following definitions are equal to content::PrerenderFinalStatus.
+constexpr int kFinalStatusActivated = 0;
+
+IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarNavigationTest,
+                       PrerenderActivation) {
+  base::HistogramTester histogram_tester;
+  // Navigate to an non-empty tab
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server()->GetURL("/empty.html")));
+
+  CreateBookmarkButton();
+  NavigateToBookmarkByMousePressed();
+
+  EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(),
+            https_test_server()->GetURL("/empty.html?prerender"));
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_BookmarkBar",
+      kFinalStatusActivated, 1);
 }

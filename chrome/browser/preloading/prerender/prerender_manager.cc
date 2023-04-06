@@ -332,6 +332,28 @@ void PrerenderManager::DidFinishNavigation(
 }
 
 base::WeakPtr<content::PrerenderHandle>
+PrerenderManager::StartPrerenderBookmark(const GURL& prerendering_url) {
+  if (bookmark_prerender_handle_) {
+    if (bookmark_prerender_handle_->GetInitialPrerenderingUrl() ==
+        prerendering_url) {
+      return bookmark_prerender_handle_->GetWeakPtr();
+    }
+    bookmark_prerender_handle_.reset();
+  }
+
+  // TODO(https://crbug.com/1422819): pass a valid `preloading_attempt` for
+  // Precog.
+  bookmark_prerender_handle_ = web_contents()->StartPrerendering(
+      prerendering_url, content::PrerenderTriggerType::kEmbedder,
+      prerender_utils::kBookmarkBarMetricSuffix,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK),
+      /*preloading_attempt=*/nullptr);
+
+  return bookmark_prerender_handle_ ? bookmark_prerender_handle_->GetWeakPtr()
+                                    : nullptr;
+}
+
+base::WeakPtr<content::PrerenderHandle>
 PrerenderManager::StartPrerenderDirectUrlInput(
     const GURL& prerendering_url,
     content::PreloadingAttempt& preloading_attempt) {
@@ -539,6 +561,8 @@ void PrerenderManager::ResetPrerenderHandlesOnPrimaryPageChanged(
 
     search_prerender_task_.reset();
   }
+
+  bookmark_prerender_handle_.reset();
 }
 
 bool PrerenderManager::ResetSearchPrerenderTaskIfNecessary(

@@ -37,6 +37,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -66,6 +67,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/extensions/extension_metrics.h"
@@ -251,12 +253,14 @@ class BookmarkButton : public BookmarkButtonBase {
   METADATA_HEADER(BookmarkButton);
   BookmarkButton(PressedCallback callback,
                  const GURL& url,
-                 const std::u16string& title)
+                 const std::u16string& title,
+                 const raw_ptr<Browser> browser)
       : BookmarkButtonBase(base::BindRepeating(&BookmarkButton::OnButtonPressed,
                                                base::Unretained(this)),
                            title),
         callback_(std::move(callback)),
-        url_(url) {}
+        url_(url),
+        browser_(browser) {}
   BookmarkButton(const BookmarkButton&) = delete;
   BookmarkButton& operator=(const BookmarkButton&) = delete;
 
@@ -331,6 +335,19 @@ class BookmarkButton : public BookmarkButtonBase {
             duration);
       }
     }
+    if (event.IsOnlyLeftMouseButton()) {
+      // TODO(https://crbug.com/1422819): Cancel the prerendering if the mouse
+      // exits without triggering PressedCallback. Prerender only for https
+      // scheme, and add an enum metric to report the protocol scheme.
+      if (base::FeatureList::IsEnabled(
+              features::kBookmarkTriggerForPrerender2)) {
+        PrerenderManager::CreateForWebContents(
+            browser_->tab_strip_model()->GetActiveWebContents());
+        auto* prerender_manager = PrerenderManager::FromWebContents(
+            browser_->tab_strip_model()->GetActiveWebContents());
+        prerender_manager->StartPrerenderBookmark(*url_);
+      }
+    }
     return result;
   }
 
@@ -345,6 +362,8 @@ class BookmarkButton : public BookmarkButtonBase {
   // Information for metrics.
   absl::optional<base::TimeTicks> mouse_entered_time_;
   bool mouse_has_been_pressed_ = false;
+
+  const raw_ptr<Browser> browser_;
 };
 
 BEGIN_METADATA(BookmarkButton, BookmarkButtonBase)
@@ -1598,13 +1617,12 @@ std::unique_ptr<MenuButton> BookmarkBarView::CreateOverflowButton() {
 
 std::unique_ptr<views::View> BookmarkBarView::CreateBookmarkButton(
     const BookmarkNode* node) {
-  size_t index = node->parent()->GetIndexOf(node).value();
   std::unique_ptr<views::LabelButton> button;
   if (node->is_url()) {
     button = std::make_unique<BookmarkButton>(
         base::BindRepeating(&BookmarkBarView::OnButtonPressed,
                             base::Unretained(this), node),
-        node->url(), node->GetTitle());
+        node->url(), node->GetTitle(), browser());
     button->GetViewAccessibility().OverrideDescription(url_formatter::FormatUrl(
         node->url(), url_formatter::kFormatUrlOmitDefaults,
         base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
@@ -1615,6 +1633,7 @@ std::unique_ptr<views::View> BookmarkBarView::CreateBookmarkButton(
         node->GetTitle());
   }
   ConfigureButton(node, button.get());
+  size_t index = node->parent()->GetIndexOf(node).value();
   bookmark_buttons_.insert(bookmark_buttons_.cbegin() + index, button.get());
   return button;
 }
