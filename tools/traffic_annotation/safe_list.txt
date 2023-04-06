@@ -76,7 +76,6 @@ missing_new_fields,chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.cc
 missing_new_fields,chrome/browser/ash/bruschetta/bruschetta_installer.cc
 missing_new_fields,chrome/browser/ash/customization/customization_document.cc
 missing_new_fields,chrome/browser/ash/customization/customization_wallpaper_downloader.cc
-missing_new_fields,chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_impl.cc
 missing_new_fields,chrome/browser/ash/input_method/ime_service_connector.cc
 missing_new_fields,chrome/browser/ash/login/gaia_reauth_token_fetcher.cc
 missing_new_fields,chrome/browser/ash/login/marketing_backend_connector.cc

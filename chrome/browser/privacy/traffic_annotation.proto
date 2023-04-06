@@ -191,6 +191,9 @@ message NetworkTrafficAnnotation {
 
         USERNAME = 27;
 
+        // Data originating from the content of the current webpage.
+        WEB_CONTENT = 28;
+
         // If none of the below apply, use this and provide
         // more info in the data field.
         OTHER = 999;
