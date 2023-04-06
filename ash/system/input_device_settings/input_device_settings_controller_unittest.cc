@@ -435,8 +435,20 @@ TEST_F(InputDeviceSettingsControllerTest, RecordsMetricsInitialSettings) {
   // Initially expect no user preferences recorded.
   base::HistogramTester histogram_tester;
 
+  // Metrics identifies different devices with device_key, which is constructed
+  // from vendor_id and product_id.
+  ui::InputDevice kKeyboardUsbWithDeviceKey =
+      ui::InputDevice(kSampleKeyboardUsb);
+  kKeyboardUsbWithDeviceKey.vendor_id = 0;
+  kKeyboardUsbWithDeviceKey.product_id = 0;
+
+  ui::InputDevice kKeyboardBluetoothWithDeviceKey =
+      ui::InputDevice(kSampleKeyboardBluetooth);
+  kKeyboardBluetoothWithDeviceKey.vendor_id = 0;
+  kKeyboardBluetoothWithDeviceKey.product_id = 1;
+
   controller_->OnKeyboardListUpdated(
-      {kSampleKeyboardUsb, kSampleKeyboardBluetooth}, {});
+      {kKeyboardUsbWithDeviceKey, kKeyboardBluetoothWithDeviceKey}, {});
 
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Keyboard.ExternalChromeOS.TopRowAreFKeys."
