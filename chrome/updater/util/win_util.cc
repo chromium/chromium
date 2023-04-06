@@ -930,8 +930,12 @@ void StopProcessesUnderPath(const base::FilePath& path,
     process_names_to_cleanup.insert(entry->exe_file());
   }
 
+  const auto deadline = base::TimeTicks::Now() + wait_period;
   for (const auto& exe_file : process_names_to_cleanup) {
-    base::CleanupProcesses(exe_file, wait_period, -1, &path_prefix_filter);
+    const auto wait = deadline - base::TimeTicks::Now();
+    base::CleanupProcesses(exe_file,
+                           wait.is_positive() ? wait : base::Seconds(0), -1,
+                           &path_prefix_filter);
   }
 }
 
