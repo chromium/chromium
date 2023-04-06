@@ -179,6 +179,11 @@ void InputDeviceSettingsProvider::OnTouchpadDisconnected(
   NotifyTouchpadsUpdated();
 }
 
+void InputDeviceSettingsProvider::OnTouchpadSettingsUpdated(
+    const ::ash::mojom::Touchpad& touchpad) {
+  NotifyTouchpadsUpdated();
+}
+
 void InputDeviceSettingsProvider::OnPointingStickConnected(
     const ::ash::mojom::PointingStick& pointing_stick) {
   NotifyPointingSticksUpdated();
@@ -189,12 +194,22 @@ void InputDeviceSettingsProvider::OnPointingStickDisconnected(
   NotifyPointingSticksUpdated();
 }
 
+void InputDeviceSettingsProvider::OnPointingStickSettingsUpdated(
+    const ::ash::mojom::PointingStick& pointing_stick) {
+  NotifyPointingSticksUpdated();
+}
+
 void InputDeviceSettingsProvider::OnMouseConnected(
     const ::ash::mojom::Mouse& mouse) {
   NotifyMiceUpdated();
 }
 
 void InputDeviceSettingsProvider::OnMouseDisconnected(
+    const ::ash::mojom::Mouse& mouse) {
+  NotifyMiceUpdated();
+}
+
+void InputDeviceSettingsProvider::OnMouseSettingsUpdated(
     const ::ash::mojom::Mouse& mouse) {
   NotifyMiceUpdated();
 }
