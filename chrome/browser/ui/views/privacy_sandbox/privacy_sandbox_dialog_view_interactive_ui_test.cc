@@ -48,8 +48,9 @@ class PrivacySandboxDialogViewInteractiveUiTest : public InProcessBrowserTest {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
 
 // TODO(crbug.com/1315979): Flaky on most release builds.
+// TODO(crbug.com/1430490): Broken on macOS
 #if defined(NDEBUG) || BUILDFLAG(IS_CHROMEOS_ASH) || \
-    defined(OZONE_PLATFORM_WAYLAND)
+    defined(OZONE_PLATFORM_WAYLAND) || BUILDFLAG(IS_MAC)
 #define MAYBE_EscapeClosesNotice DISABLED_EscapeClosesNotice
 #else
 #define MAYBE_EscapeClosesNotice EscapeClosesNotice
