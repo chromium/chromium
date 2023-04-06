@@ -44,6 +44,7 @@
 #include "net/base/net_errors.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -279,6 +280,9 @@ class ThreatDetailsTest : public ChromeRenderViewHostTestHarness {
         web_contents()->GetPrimaryMainFrame()->GetGlobalId();
     resource->url = url;
     resource->is_subresource = is_subresource;
+    resource->request_destination =
+        is_subresource ? network::mojom::RequestDestination::kScript
+                       : network::mojom::RequestDestination::kDocument;
     resource->threat_type = threat_type;
     resource->threat_source = threat_source;
     resource->render_process_id = primary_main_frame_id.child_id;
@@ -290,6 +294,8 @@ class ThreatDetailsTest : public ChromeRenderViewHostTestHarness {
     EXPECT_EQ(expected_pb.type(), report_pb.type());
     EXPECT_EQ(expected_pb.url(), report_pb.url());
     EXPECT_EQ(expected_pb.page_url(), report_pb.page_url());
+    EXPECT_EQ(expected_pb.url_request_destination(),
+              report_pb.url_request_destination());
     EXPECT_EQ(expected_pb.referrer_url(), report_pb.referrer_url());
     EXPECT_EQ(expected_pb.did_proceed(), report_pb.did_proceed());
     EXPECT_EQ(expected_pb.has_repeat_visit(), report_pb.has_repeat_visit());
@@ -462,6 +468,7 @@ TEST_F(ThreatDetailsTest, ThreatSubResource) {
   ClientSafeBrowsingReportRequest expected;
   expected.set_type(ClientSafeBrowsingReportRequest::URL_MALWARE);
   expected.set_url(kThreatURL);
+  expected.set_url_request_destination(ClientSafeBrowsingReportRequest::SCRIPT);
   expected.set_page_url(kLandingURL);
   // The referrer is stripped to its origin because it's a cross-origin URL.
   expected.set_referrer_url(
@@ -521,6 +528,7 @@ TEST_F(ThreatDetailsTest, SuspiciousSiteWithReferrerChain) {
   expected.mutable_client_properties()->set_url_api_type(
       ClientSafeBrowsingReportRequest::PVER4_NATIVE);
   expected.set_url(kThreatURL);
+  expected.set_url_request_destination(ClientSafeBrowsingReportRequest::SCRIPT);
   expected.set_page_url(kLandingURL);
   // The referrer is stripped to its origin because it's a cross-origin URL.
   expected.set_referrer_url(
@@ -572,6 +580,7 @@ TEST_F(ThreatDetailsTest, ThreatSubResourceWithOriginalUrl) {
   expected.mutable_client_properties()->set_url_api_type(
       ClientSafeBrowsingReportRequest::PVER4_NATIVE);
   expected.set_url(kThreatURL);
+  expected.set_url_request_destination(ClientSafeBrowsingReportRequest::SCRIPT);
   expected.set_page_url(kLandingURL);
   expected.set_referrer_url("");
   expected.set_did_proceed(false);
@@ -639,6 +648,7 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails) {
   expected.mutable_client_properties()->set_url_api_type(
       ClientSafeBrowsingReportRequest::PVER4_NATIVE);
   expected.set_url(kThreatURL);
+  expected.set_url_request_destination(ClientSafeBrowsingReportRequest::SCRIPT);
   expected.set_page_url(kLandingURL);
   expected.set_referrer_url("");
   expected.set_did_proceed(false);
@@ -756,6 +766,7 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails_MultipleFrames) {
   expected.mutable_client_properties()->set_url_api_type(
       ClientSafeBrowsingReportRequest::PVER4_NATIVE);
   expected.set_url(kThreatURL);
+  expected.set_url_request_destination(ClientSafeBrowsingReportRequest::SCRIPT);
   expected.set_page_url(kLandingURL);
   expected.set_referrer_url("");
   expected.set_did_proceed(false);
@@ -964,6 +975,7 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails_AmbiguousDOM) {
   ClientSafeBrowsingReportRequest expected;
   expected.set_type(ClientSafeBrowsingReportRequest::URL_UNWANTED);
   expected.set_url(kThreatURL);
+  expected.set_url_request_destination(ClientSafeBrowsingReportRequest::SCRIPT);
   expected.set_page_url(kLandingURL);
   expected.set_referrer_url("");
   expected.set_did_proceed(false);
@@ -1175,6 +1187,7 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails_TrimToAdTags) {
   expected.mutable_client_properties()->set_url_api_type(
       ClientSafeBrowsingReportRequest::PVER4_NATIVE);
   expected.set_url(kThreatURL);
+  expected.set_url_request_destination(ClientSafeBrowsingReportRequest::SCRIPT);
   expected.set_page_url(kLandingURL);
   expected.set_referrer_url("");
   expected.set_did_proceed(false);
@@ -1411,6 +1424,7 @@ TEST_F(ThreatDetailsTest, ThreatWithRedirectUrl) {
   expected.mutable_client_properties()->set_url_api_type(
       ClientSafeBrowsingReportRequest::ANDROID_SAFETYNET);
   expected.set_url(kThreatURL);
+  expected.set_url_request_destination(ClientSafeBrowsingReportRequest::SCRIPT);
   expected.set_page_url(kLandingURL);
   expected.set_referrer_url("");
   expected.set_did_proceed(true);
@@ -1488,6 +1502,8 @@ TEST_F(ThreatDetailsTest, ThreatOnMainPageLoadBlocked) {
   ClientSafeBrowsingReportRequest expected;
   expected.set_type(ClientSafeBrowsingReportRequest::URL_MALWARE);
   expected.set_url(kLandingURL);
+  expected.set_url_request_destination(
+      ClientSafeBrowsingReportRequest::DOCUMENT);
   expected.set_page_url(kLandingURL);
   // Note that the referrer policy is not actually enacted here, since that's
   // done in Blink.
@@ -1548,6 +1564,7 @@ TEST_F(ThreatDetailsTest, ThreatWithPendingLoad) {
   expected.mutable_client_properties()->set_url_api_type(
       ClientSafeBrowsingReportRequest::PVER4_NATIVE);
   expected.set_url(kThreatURL);
+  expected.set_url_request_destination(ClientSafeBrowsingReportRequest::SCRIPT);
   expected.set_page_url(kLandingURL);
   // The referrer is stripped to its origin because it's a cross-origin URL.
   expected.set_referrer_url(
@@ -1598,6 +1615,7 @@ TEST_F(ThreatDetailsTest, ThreatOnFreshTab) {
   ClientSafeBrowsingReportRequest expected;
   expected.set_type(ClientSafeBrowsingReportRequest::URL_MALWARE);
   expected.set_url(kThreatURL);
+  expected.set_url_request_destination(ClientSafeBrowsingReportRequest::SCRIPT);
   expected.set_did_proceed(true);
   expected.set_repeat_visit(true);
 
@@ -1644,6 +1662,7 @@ TEST_F(ThreatDetailsTest, HTTPCache) {
   ClientSafeBrowsingReportRequest expected;
   expected.set_type(ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING);
   expected.set_url(kThreatURL);
+  expected.set_url_request_destination(ClientSafeBrowsingReportRequest::SCRIPT);
   expected.set_page_url(kLandingURL);
   expected.set_referrer_url("");
   expected.set_did_proceed(true);
@@ -1725,6 +1744,7 @@ TEST_F(ThreatDetailsTest, HttpsResourceSanitization) {
   ClientSafeBrowsingReportRequest expected;
   expected.set_type(ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING);
   expected.set_url(kThreatURLHttps);
+  expected.set_url_request_destination(ClientSafeBrowsingReportRequest::SCRIPT);
   expected.set_page_url(kLandingURL);
   expected.set_referrer_url("");
   expected.set_did_proceed(true);
@@ -1811,6 +1831,7 @@ TEST_F(ThreatDetailsTest, HTTPCacheNoEntries) {
   expected.mutable_client_properties()->set_url_api_type(
       ClientSafeBrowsingReportRequest::PVER4_NATIVE);
   expected.set_url(kThreatURL);
+  expected.set_url_request_destination(ClientSafeBrowsingReportRequest::SCRIPT);
   expected.set_page_url(kLandingURL);
   expected.set_referrer_url("");
   expected.set_did_proceed(false);
@@ -1870,6 +1891,7 @@ TEST_F(ThreatDetailsTest, HistoryServiceUrls) {
   expected.mutable_client_properties()->set_url_api_type(
       ClientSafeBrowsingReportRequest::PVER4_NATIVE);
   expected.set_url(kThreatURL);
+  expected.set_url_request_destination(ClientSafeBrowsingReportRequest::SCRIPT);
   expected.set_page_url(kLandingURL);
   expected.set_referrer_url("");
   expected.set_did_proceed(true);

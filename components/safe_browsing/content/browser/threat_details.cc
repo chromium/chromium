@@ -34,6 +34,7 @@
 #include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -44,6 +45,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 
 using content::BrowserThread;
@@ -134,6 +136,63 @@ ClientSafeBrowsingReportRequest::ReportType GetReportTypeFromSBThreatType(
       NOTREACHED() << "We should not send report for threat type: "
                    << threat_type;
       return ClientSafeBrowsingReportRequest::UNKNOWN;
+  }
+}
+
+// Helper function that converts mojom::RequestDestination to
+// ClientSafeBrowsingReportRequest::UrlRequestDestination.
+ClientSafeBrowsingReportRequest::UrlRequestDestination
+GetUrlRequestDestinationFromMojomRequestDestination(
+    network::mojom::RequestDestination request_destination) {
+  switch (request_destination) {
+    case network::mojom::RequestDestination::kEmpty:
+      return ClientSafeBrowsingReportRequest::EMPTY;
+    case network::mojom::RequestDestination::kAudio:
+      return ClientSafeBrowsingReportRequest::AUDIO;
+    case network::mojom::RequestDestination::kAudioWorklet:
+      return ClientSafeBrowsingReportRequest::AUDIO_WORKLET;
+    case network::mojom::RequestDestination::kDocument:
+      return ClientSafeBrowsingReportRequest::DOCUMENT;
+    case network::mojom::RequestDestination::kEmbed:
+      return ClientSafeBrowsingReportRequest::EMBED;
+    case network::mojom::RequestDestination::kFont:
+      return ClientSafeBrowsingReportRequest::FONT;
+    case network::mojom::RequestDestination::kFrame:
+      return ClientSafeBrowsingReportRequest::FRAME;
+    case network::mojom::RequestDestination::kIframe:
+      return ClientSafeBrowsingReportRequest::IFRAME;
+    case network::mojom::RequestDestination::kImage:
+      return ClientSafeBrowsingReportRequest::IMAGE;
+    case network::mojom::RequestDestination::kManifest:
+      return ClientSafeBrowsingReportRequest::MANIFEST;
+    case network::mojom::RequestDestination::kObject:
+      return ClientSafeBrowsingReportRequest::OBJECT;
+    case network::mojom::RequestDestination::kPaintWorklet:
+      return ClientSafeBrowsingReportRequest::PAINT_WORKLET;
+    case network::mojom::RequestDestination::kReport:
+      return ClientSafeBrowsingReportRequest::REPORT;
+    case network::mojom::RequestDestination::kScript:
+      return ClientSafeBrowsingReportRequest::SCRIPT;
+    case network::mojom::RequestDestination::kServiceWorker:
+      return ClientSafeBrowsingReportRequest::SERVICE_WORKER;
+    case network::mojom::RequestDestination::kSharedWorker:
+      return ClientSafeBrowsingReportRequest::SHARED_WORKER;
+    case network::mojom::RequestDestination::kStyle:
+      return ClientSafeBrowsingReportRequest::STYLE;
+    case network::mojom::RequestDestination::kTrack:
+      return ClientSafeBrowsingReportRequest::TRACK;
+    case network::mojom::RequestDestination::kVideo:
+      return ClientSafeBrowsingReportRequest::VIDEO;
+    case network::mojom::RequestDestination::kWebBundle:
+      return ClientSafeBrowsingReportRequest::WEB_BUNDLE;
+    case network::mojom::RequestDestination::kWorker:
+      return ClientSafeBrowsingReportRequest::WORKER;
+    case network::mojom::RequestDestination::kXslt:
+      return ClientSafeBrowsingReportRequest::XSLT;
+    case network::mojom::RequestDestination::kFencedframe:
+      return ClientSafeBrowsingReportRequest::FENCED_FRAME;
+    case network::mojom::RequestDestination::kWebIdentity:
+      return ClientSafeBrowsingReportRequest::WEB_IDENTITY;
   }
 }
 
@@ -574,6 +633,9 @@ void ThreatDetails::StartCollection() {
   if (IsReportableUrl(resource_.url)) {
     report_->set_url(resource_.url.spec());
     report_->set_type(GetReportTypeFromSBThreatType(resource_.threat_type));
+    report_->set_url_request_destination(
+        GetUrlRequestDestinationFromMojomRequestDestination(
+            resource_.request_destination));
   }
 
   GURL referrer_url;

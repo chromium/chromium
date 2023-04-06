@@ -1325,6 +1325,63 @@ base::Value::Dict SerializeHashRealTimeExperimentDetails(
   return dict;
 }
 
+std::string UrlRequestDestinationToString(
+    const ClientSafeBrowsingReportRequest::UrlRequestDestination&
+        request_destination) {
+  switch (request_destination) {
+    case ClientSafeBrowsingReportRequest::REQUEST_DESTINATION_UNSPECIFIED:
+      return "REQUEST_DESTINATION_UNSPECIFIED";
+    case ClientSafeBrowsingReportRequest::EMPTY:
+      return "EMPTY";
+    case ClientSafeBrowsingReportRequest::AUDIO:
+      return "AUDIO";
+    case ClientSafeBrowsingReportRequest::AUDIO_WORKLET:
+      return "AUDIO_WORKLET";
+    case ClientSafeBrowsingReportRequest::DOCUMENT:
+      return "DOCUMENT";
+    case ClientSafeBrowsingReportRequest::EMBED:
+      return "EMBED";
+    case ClientSafeBrowsingReportRequest::FONT:
+      return "FONT";
+    case ClientSafeBrowsingReportRequest::FRAME:
+      return "FRAME";
+    case ClientSafeBrowsingReportRequest::IFRAME:
+      return "IFRAME";
+    case ClientSafeBrowsingReportRequest::IMAGE:
+      return "IMAGE";
+    case ClientSafeBrowsingReportRequest::MANIFEST:
+      return "MANIFEST";
+    case ClientSafeBrowsingReportRequest::OBJECT:
+      return "OBJECT";
+    case ClientSafeBrowsingReportRequest::PAINT_WORKLET:
+      return "PAINT_WORKLET";
+    case ClientSafeBrowsingReportRequest::REPORT:
+      return "REPORT";
+    case ClientSafeBrowsingReportRequest::SCRIPT:
+      return "SCRIPT";
+    case ClientSafeBrowsingReportRequest::SERVICE_WORKER:
+      return "SERVICE_WORKER";
+    case ClientSafeBrowsingReportRequest::SHARED_WORKER:
+      return "SHARED_WORKER";
+    case ClientSafeBrowsingReportRequest::STYLE:
+      return "STYLE";
+    case ClientSafeBrowsingReportRequest::TRACK:
+      return "TRACK";
+    case ClientSafeBrowsingReportRequest::VIDEO:
+      return "VIDEO";
+    case ClientSafeBrowsingReportRequest::WEB_BUNDLE:
+      return "WEB_BUNDLE";
+    case ClientSafeBrowsingReportRequest::WORKER:
+      return "WORKER";
+    case ClientSafeBrowsingReportRequest::XSLT:
+      return "XSLT";
+    case ClientSafeBrowsingReportRequest::FENCED_FRAME:
+      return "FENCED_FRAME";
+    case ClientSafeBrowsingReportRequest::WEB_IDENTITY:
+      return "WEB_IDENTITY";
+  }
+}
+
 base::Value::Dict SerializeDownloadWarningAction(
     const ClientSafeBrowsingReportRequest::DownloadWarningAction&
         download_warning_action) {
@@ -1517,6 +1574,11 @@ std::string SerializeCSBRR(const ClientSafeBrowsingReportRequest& report) {
     report_request.Set("hash_real_time_experiment_details",
                        SerializeHashRealTimeExperimentDetails(
                            report.hash_real_time_experiment_details()));
+  }
+  if (report.has_url_request_destination()) {
+    report_request.Set(
+        "url_request_destination",
+        UrlRequestDestinationToString(report.url_request_destination()));
   }
   std::string serialized;
   if (report.SerializeToString(&serialized)) {

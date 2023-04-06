@@ -1463,7 +1463,7 @@ message DownloadMetadata {
 // A Detailed Safebrowsing Report from clients. Chrome safebrowsing reports are
 // only sent by Chrome users who have opted into extended Safe Browsing.
 // This proto is replacing ClientMalwareReportRequest.
-// Next tag: 29
+// Next tag: 30
 message ClientSafeBrowsingReportRequest {
   // Note: A lot of the "optional" fields would make sense to be
   // "required" instead.  However, having them as optional allows the
@@ -1735,6 +1735,68 @@ message ClientSafeBrowsingReportRequest {
   // Only populated for type = HASH_PREFIX_REAL_TIME_EXPERIMENT.
   // TODO(crbug.com/1410253): Deprecate this once the experiment is complete.
   optional HashRealTimeExperimentDetails hash_real_time_experiment_details = 28;
+
+  // The request destination of the |url| fetched. Added to better understand
+  // the protection of cross-site warnings (i.e. warnings triggered when url and
+  // page_url are different). See
+  // https://fetch.spec.whatwg.org/#concept-request-destination for the
+  // definition of each field.
+  // go/skip-sb-images-css-font for details.
+  enum UrlRequestDestination {
+    REQUEST_DESTINATION_UNSPECIFIED = 0;
+    // The destination is unknown or unset.
+    EMPTY = 1;
+    // <audio>
+    AUDIO = 2;
+    // audioWorklet.addModule()
+    AUDIO_WORKLET = 3;
+    // Mainframe URL. |url| and |page_url| should be the same in this case.
+    DOCUMENT = 4;
+    // <embed>
+    EMBED = 5;
+    // CSS' @font-face
+    FONT = 6;
+    // <frame>
+    FRAME = 7;
+    // <iframe>
+    IFRAME = 8;
+    // <img src>
+    IMAGE = 9;
+    // <link rel=manifest>
+    MANIFEST = 10;
+    // <object>
+    OBJECT = 11;
+    // CSS.paintWorklet.addModule()
+    PAINT_WORKLET = 12;
+    // CSP, NEL reports.
+    REPORT = 13;
+    // <script>, importScripts()
+    SCRIPT = 14;
+    // navigator.serviceWorker.register()
+    SERVICE_WORKER = 15;
+    // SharedWorker()
+    SHARED_WORKER = 16;
+    // <link rel=stylesheet>, CSS @import
+    STYLE = 17;
+    // <track>
+    TRACK = 18;
+    // <video>
+    VIDEO = 19;
+    // <script type=webbundle>
+    WEB_BUNDLE = 20;
+    // Worker()
+    WORKER = 21;
+    // <?xml-stylesheet>
+    XSLT = 22;
+    // <fencedframe src="example.com">
+    FENCED_FRAME = 23;
+    // Federated Credential Management requests
+    WEB_IDENTITY = 24;
+  }
+
+  // Only populated for interstitial reports (URL_PHISHING, URL_MALWARE,
+  // URL_UNWANTED and BILLING).
+  optional UrlRequestDestination url_request_destination = 29;
 }
 
 // An HTML Element on the page (eg: iframe, div, script, etc).
