@@ -145,6 +145,15 @@ class CodeSignConfig(object):
         return self._notarization_tool or NotarizationTool.ALTOOL
 
     @property
+    def notarization_tool_path(self):
+        """Returns the path to the notarization tool binary, or None if this
+        Config does not override the default. The default is to invoke the tool
+        via xcrun(1). If a Config does override this value, it must be
+        appropriate for the active Config.notarization_tool.
+        """
+        return None
+
+    @property
     def app_product(self):
         """Returns the product name that is used for the outer .app bundle.
         This is displayed to the user in Finder.

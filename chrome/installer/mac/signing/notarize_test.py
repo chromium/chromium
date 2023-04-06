@@ -110,6 +110,25 @@ class TestSubmitAltool(unittest.TestCase):
         ])
 
     @mock.patch('signing.commands.run_command_output')
+    def test_valid_upload_with_tool_path(self, run_command_output):
+        run_command_output.return_value = plistlib.dumps({
+            'notarization-upload': {
+                'RequestUUID': '42541f28-b8bf-475e-b153-46a6be2b8cc7'
+            },
+        })
+        config = test_config.TestConfigNotarizationToolOverride(
+            notarization_tool=NotarizationTool.ALTOOL)
+        uuid = notarize.submit('/tmp/file.dmg', config)
+
+        self.assertEqual('42541f28-b8bf-475e-b153-46a6be2b8cc7', uuid)
+        run_command_output.assert_called_once_with([
+            '/fun/bin/altool.custom', '--notarize-app', '--file',
+            '/tmp/file.dmg', '--primary-bundle-id', 'test.signing.bundle_id',
+            '--username', '[NOTARY-USER]', '--password', '[NOTARY-PASSWORD]',
+            '--output-format', 'xml'
+        ])
+
+    @mock.patch('signing.commands.run_command_output')
     def test_fail_once_then_succeed(self, run_command_output):
         run_command_output.side_effect = [
             subprocess.CalledProcessError(
@@ -232,6 +251,24 @@ class TestSubmitNotarytool(unittest.TestCase):
             '--output-format', 'plist'
         ], 'hunter2')
 
+    @mock.patch('signing.commands.run_password_command_output')
+    def test_valid_upload_with_tool_path(self, run_password_command_output):
+        run_password_command_output.return_value = plistlib.dumps({
+            'id': '44346a58-41f9-47c4-b63a-f3831732a553',
+            'message': 'Successfully uploaded file',
+            'path': '/tmp/file.dmg'
+        })
+        config = test_config.TestConfigNotarizationToolOverride(
+            notarization_tool=NotarizationTool.NOTARYTOOL)
+        uuid = notarize.submit('/tmp/file.dmg', config)
+
+        self.assertEqual('44346a58-41f9-47c4-b63a-f3831732a553', uuid)
+        run_password_command_output.assert_called_once_with([
+            '/fun/bin/notarytool.custom', 'submit', '/tmp/file.dmg',
+            '--apple-id', '[NOTARY-USER]', '--team-id', '[NOTARY-TEAM]',
+            '--no-wait', '--output-format', 'plist'
+        ], '[NOTARY-PASSWORD]')
+
 
 class TestGetResultAltool(unittest.TestCase):
 
@@ -282,6 +319,32 @@ class TestGetResultAltool(unittest.TestCase):
             'xcrun', 'altool', '--notarization-info', uuid, '--username',
             '[NOTARY-USER]', '--password', '[NOTARY-PASSWORD]',
             '--output-format', 'xml', '--asc-provider', '[NOTARY-ASC-PROVIDER]'
+        ])
+
+    @mock.patch('signing.commands.run_command_output')
+    def test_success_with_tool_path(self, run_command_output):
+        plist_output = plistlib.dumps({
+            'notarization-info': {
+                'Date': '2019-05-20T13:18:35Z',
+                'LogFileURL': 'https://example.com/log.json',
+                'RequestUUID': '4711f98f-d509-43a4-a3da-537e7e885159',
+                'Status': 'success',
+                'Status Code': 0
+            }
+        })
+        run_command_output.return_value = plist_output
+        uuid = '4711f98f-d509-43a4-a3da-537e7e885159'
+        config = test_config.TestConfigNotarizationToolOverride(
+            notarization_tool=NotarizationTool.ALTOOL)
+        result = notarize._get_result_altool(uuid, config)
+        self.assertEqual(notarize.Status.SUCCESS, result.status)
+        self.assertEqual('success', result.status_string)
+        self.assertEqual(plist_output, result.output)
+        self.assertEqual('https://example.com/log.json', result.log_file)
+        run_command_output.assert_called_once_with([
+            '/fun/bin/altool.custom', '--notarization-info', uuid, '--username',
+            '[NOTARY-USER]', '--password', '[NOTARY-PASSWORD]',
+            '--output-format', 'xml'
         ])
 
     @mock.patch('signing.commands.run_command_output')
@@ -482,6 +545,32 @@ class TestGetResultNotarytool(unittest.TestCase):
             'xcrun', 'notarytool', 'info', uuid, '--apple-id', '[NOTARY-USER]',
             '--team-id', '[NOTARY-TEAM]', '--output-format', 'plist'
         ], 'hunter2')
+
+    @mock.patch('signing.commands.run_password_command_output')
+    def test_successs_with_tool_path(self, run_password_command_output):
+        plist_output = plistlib.dumps({
+            'status': 'Accepted',
+            'id': 'a3b64713-289d-4c57-902a-7fb8270665ef',
+            'createdDate': '2022-03-10T23:04:21.192Z',
+            'message': 'Successfully received submission info',
+            'name': 'file.zip'
+        })
+        run_password_command_output.return_value = plist_output
+        uuid = 'a3b64713-289d-4c57-902a-7fb8270665ef'
+        config = test_config.TestConfigNotarizationToolOverride(
+            notarization_tool=NotarizationTool.NOTARYTOOL)
+        result = notarize._get_result_notarytool(uuid, config)
+
+        self.assertEqual(notarize.Status.SUCCESS, result.status)
+        self.assertEqual('Accepted', result.status_string)
+        self.assertEqual(plist_output, result.output)
+        self.assertEqual(None, result.log_file)
+
+        run_password_command_output.assert_called_once_with([
+            '/fun/bin/notarytool.custom', 'info', uuid, '--apple-id',
+            '[NOTARY-USER]', '--team-id', '[NOTARY-TEAM]', '--output-format',
+            'plist'
+        ], '[NOTARY-PASSWORD]')
 
     @mock.patch('signing.commands.run_password_command_output')
     def test_in_progress(self, run_password_command_output):
