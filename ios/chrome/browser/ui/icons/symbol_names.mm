@@ -139,6 +139,7 @@ NSString* const kSunFillSymbol = @"sun.max.fill";
 NSString* const kCalendarSymbol = @"calendar";
 NSString* const kTabsSymbol = @"square.on.square";
 NSString* const kHighlighterSymbol = @"highlighter";
+NSString* const kDocPlaintext = @"doc.plaintext";
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.
