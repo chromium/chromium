@@ -17,6 +17,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -75,7 +76,8 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
     private final TabContentManager mTabContentManager;
     private PropertyModelChangeProcessor mModelChangeProcessor;
     private TabGridDialogCoordinator mTabGridDialogCoordinator;
-    private Supplier<TabGridDialogMediator.DialogController> mTabGridDialogControllerSupplier;
+    private OneshotSupplierImpl<TabGridDialogMediator.DialogController>
+            mTabGridDialogControllerSupplier;
     private TabListCoordinator mTabStripCoordinator;
     private TabGroupUiMediator mMediator;
 
@@ -128,6 +130,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                 mTabContentManager, mTabCreatorManager, mActivity.findViewById(R.id.coordinator),
                 null, null, null, mScrimCoordinator, mTabStripCoordinator.getTabGroupTitleEditor(),
                 mRootView);
+        mTabGridDialogControllerSupplier.set(mTabGridDialogCoordinator);
     }
 
     /**
@@ -154,7 +157,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
             if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(activity)
                     && mScrimCoordinator != null) {
                 mTabGridDialogControllerSupplier =
-                        new Supplier<TabGridDialogMediator.DialogController>() {
+                        new OneshotSupplierImpl<>() {
                             @Override
                             public TabGridDialogMediator.DialogController get() {
                                 initTabGridDialogCoordinator();
