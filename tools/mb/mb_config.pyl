@@ -651,6 +651,7 @@
 
     'chromium.memory.fyi': {
       'linux-ubsan-fyi-rel': 'ubsan_release_bot_reclient',
+      'mac-lsan-fyi-rel': 'asan_lsan_dcheck_disable_nacl_release_bot_reclient',
     },
 
     'chromium.perf': {
@@ -1923,6 +1924,10 @@
 
     'asan_lsan_chromeos_release_bot_dcheck_always_on_reclient': [
       'asan', 'lsan', 'chromeos', 'release_trybot_minimal_symbols_reclient',
+    ],
+
+    'asan_lsan_dcheck_disable_nacl_release_bot_reclient': [
+      'asan', 'lsan', 'dcheck_always_on', 'disable_nacl', 'release_bot_reclient',
     ],
 
     'asan_lsan_debug_bot_reclient': [

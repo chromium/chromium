@@ -7,5 +7,16 @@
       "is_ubsan": true,
       "use_remoteexec": true
     }
+  },
+  "mac-lsan-fyi-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "enable_nacl": false,
+      "is_asan": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "is_lsan": true,
+      "use_remoteexec": true
+    }
   }
 }

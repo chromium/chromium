@@ -4359,6 +4359,27 @@
       }
     },
 
+    # TODO(crbug.com/1320449): Remove this set of test suites when LSan can be
+    # enabled Mac ASan bots. This list will be gradually filled with more tests
+    # until the bot has parity with ASan bots, and the ASan bot can then enable
+    # LSan and the mac-lsan-fyi-rel bot go away.
+    'mac_lsan_fyi_gtests': {
+      'absl_hardening_tests':{},
+      'accessibility_unittests':{},
+      'app_shell_unittests':{},
+      'base_unittests':{},
+      'blink_heap_unittests':{},
+      'blink_platform_unittests':{},
+      'blink_unittests':{},
+      'cc_unittests':{},
+      'components_unittests':{},
+      'content_unittests':{},
+      'crashpad_tests':{},
+      'cronet_unittests':{},
+      'device_unittests':{},
+      'net_unittests':{},
+    },
+
     'mac_specific_chromium_gtests': {
       'power_sampler_unittests': {},
       'sandbox_unittests': {},
