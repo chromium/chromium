@@ -110,6 +110,10 @@ use_goma = false
 chrome_pgo_phase = 0
 symbol_level = 1
 force_enable_raw_ptr_exclusion = true
+# crbug/1396061
+enable_dsyms = false
+# Can't exec Xcode `strip` binary
+enable_stripping = false
 EOF
         ;;
 
