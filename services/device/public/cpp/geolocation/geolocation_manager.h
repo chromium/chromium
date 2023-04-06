@@ -71,6 +71,9 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {
   // Returns the list of permission observers.
   scoped_refptr<PermissionObserverList> GetObserverList() const;
 
+  void AppAttemptsToUseGeolocation();
+  void AppCeasesToUseGeolocation();
+
 #if BUILDFLAG(IS_APPLE)
   // Starts the system level process for watching position updates. These
   // updates will trigger a call to and observers in the |position_observers_|

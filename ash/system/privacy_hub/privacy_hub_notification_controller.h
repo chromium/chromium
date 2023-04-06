@@ -27,6 +27,9 @@ class ASH_EXPORT PrivacyHubNotificationController {
       const PrivacyHubNotificationController&) = delete;
   ~PrivacyHubNotificationController();
 
+  // Gets the singleton instance that lives within `Shell` if available.
+  static PrivacyHubNotificationController* Get();
+
   // Called by any sensor system when a software switch notification for
   // `sensor` should be shown to the user.
   void ShowSoftwareSwitchNotification(Sensor sensor);
@@ -63,6 +66,9 @@ class ASH_EXPORT PrivacyHubNotificationController {
   static constexpr const char kMicrophoneHardwareSwitchNotificationId[] =
       "ash://microphone_hardware_mute";
 
+  static constexpr const char kGeolocationSwitchNotificationId[] =
+      "ash://geolocation_switch";
+
   // Open the Privacy Hub settings page and log that this interaction came from
   // a notification.
   static void OpenPrivacyHubSettingsPage();
@@ -85,9 +91,10 @@ class ASH_EXPORT PrivacyHubNotificationController {
   // - microphone software switch notification
   // - camera software switch notification
   // - microphone and camera combined notification
+  // - geolocation software switch notification
   std::unique_ptr<PrivacyHubNotification> combined_notification_;
-
   std::unique_ptr<PrivacyHubNotification> microphone_hw_switch_notification_;
+  std::unique_ptr<PrivacyHubNotification> geolocation_notification_;
 };
 
 }  // namespace ash

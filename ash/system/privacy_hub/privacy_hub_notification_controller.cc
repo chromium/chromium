@@ -12,9 +12,11 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
+#include "ash/system/privacy_hub/geolocation_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/microphone_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_metrics.h"
 #include "ash/system/privacy_hub/privacy_hub_notification.h"
+#include "ash/system/system_notification_controller.h"
 #include "base/notreached.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "ui/message_center/message_center.h"
@@ -106,9 +108,43 @@ PrivacyHubNotificationController::PrivacyHubNotificationController() {
               base::BindRepeating(
                   PrivacyHubNotificationController::OpenSupportUrl,
                   SensorDisabledNotificationDelegate::Sensor::kMicrophone))});
+
+  auto geolocation_notification_click_delegate =
+      base::MakeRefCounted<PrivacyHubNotificationClickDelegate>(
+          base::BindRepeating([]() {
+            GeolocationPrivacySwitchController::
+                SetAndLogGeolocationPreferenceFromNotification(true);
+          }));
+  geolocation_notification_click_delegate->SetSecondButtonCallback(
+      base::BindRepeating(
+          PrivacyHubNotificationController::OpenSupportUrl,
+          SensorDisabledNotificationDelegate::Sensor::kLocation));
+  geolocation_notification_ = std::make_unique<PrivacyHubNotification>(
+      kGeolocationSwitchNotificationId,
+      NotificationCatalogName::kGeolocationSwitch,
+      PrivacyHubNotificationDescriptor{
+          SensorDisabledNotificationDelegate::SensorSet{Sensor::kLocation},
+          IDS_PRIVACY_HUB_GEOLOCATION_OFF_NOTIFICATION_TITLE,
+          std::vector<int>{
+              IDS_PRIVACY_HUB_TURN_ON_GEOLOCATION_ACTION_BUTTON,
+              IDS_PRIVACY_HUB_TURN_ON_GEOLOCATION_LEARN_MORE_BUTTON},
+          std::vector<int>{
+              IDS_PRIVACY_HUB_GEOLOCATION_OFF_NOTIFICATION_MESSAGE,
+              IDS_PRIVACY_HUB_GEOLOCATION_OFF_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME,
+              IDS_PRIVACY_HUB_GEOLOCATION_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES},
+          std::move(geolocation_notification_click_delegate)});
 }
 
 PrivacyHubNotificationController::~PrivacyHubNotificationController() = default;
+
+// static
+PrivacyHubNotificationController* PrivacyHubNotificationController::Get() {
+  SystemNotificationController* system_notification_controller =
+      Shell::Get()->system_notification_controller();
+  return system_notification_controller
+             ? system_notification_controller->privacy_hub()
+             : nullptr;
+}
 
 void PrivacyHubNotificationController::ShowSoftwareSwitchNotification(
     const Sensor sensor) {
@@ -122,6 +158,10 @@ void PrivacyHubNotificationController::ShowSoftwareSwitchNotification(
     case Sensor::kCamera: {
       AddSensor(sensor);
       combined_notification_->Show();
+      break;
+    }
+    case Sensor::kLocation: {
+      geolocation_notification_->Show();
       break;
     }
     default: {
@@ -146,6 +186,10 @@ void PrivacyHubNotificationController::RemoveSoftwareSwitchNotification(
       }
       break;
     }
+    case Sensor::kLocation: {
+      geolocation_notification_->Hide();
+      break;
+    }
     default: {
       LogInvalidSensor(sensor);
       break;
@@ -161,6 +205,10 @@ void PrivacyHubNotificationController::UpdateSoftwareSwitchNotification(
     }
     case Sensor::kMicrophone: {
       combined_notification_->Update();
+      break;
+    }
+    case Sensor::kLocation: {
+      geolocation_notification_->Update();
       break;
     }
     default: {
@@ -236,7 +284,8 @@ void PrivacyHubNotificationController::OpenSupportUrl(Sensor sensor) {
           privacy_hub_metrics::PrivacyHubLearnMoreSensor::kCamera);
       break;
     case Sensor::kLocation:
-      LOG(DFATAL) << "Location doesn't have a learn more button";
+      privacy_hub_metrics::LogPrivacyHubLearnMorePageOpened(
+          privacy_hub_metrics::PrivacyHubLearnMoreSensor::kGeolocation);
       return;
   }
   NewWindowDelegate::GetPrimary()->OpenUrl(

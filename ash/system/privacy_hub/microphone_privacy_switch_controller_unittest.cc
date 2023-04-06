@@ -746,7 +746,7 @@ TEST_P(PrivacyHubMicrophoneControllerTest, NotificationText) {
     // order of most recently launched.
     EXPECT_EQ(l10n_util::GetStringFUTF16(
                   IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES,
-                  u"app2", u"app1"),
+                  u"app1", u"app2"),
               GetSWSwitchNotification()->message());
   }
 
@@ -826,7 +826,7 @@ TEST_P(PrivacyHubMicrophoneControllerTest, NotificationUpdatedWhenAppClosed) {
     ASSERT_TRUE(notification_ptr);
     EXPECT_EQ(l10n_util::GetStringFUTF16(
                   IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES,
-                  app2, app1),
+                  app1, app2),
               notification_ptr->message());
   }
 

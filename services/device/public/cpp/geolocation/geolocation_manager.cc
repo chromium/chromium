@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
-#include "location_system_permission_status.h"
+
+#include "base/check_op.h"
+#include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 
 namespace device {
 
@@ -55,6 +57,14 @@ void GeolocationManager::NotifyPermissionObservers() {
 scoped_refptr<GeolocationManager::PermissionObserverList>
 GeolocationManager::GetObserverList() const {
   return observers_;
+}
+
+void GeolocationManager::AppAttemptsToUseGeolocation() {
+  system_geolocation_source_->AppAttemptsToUseGeolocation();
+}
+
+void GeolocationManager::AppCeasesToUseGeolocation() {
+  system_geolocation_source_->AppCeasesToUseGeolocation();
 }
 
 SystemGeolocationSource& GeolocationManager::SystemGeolocationSourceForTest() {

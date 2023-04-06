@@ -28,6 +28,16 @@ void LogCameraEnabledFromNotification(bool enabled) {
                             enabled);
 }
 
+void LogGeolocationEnabledFromSettings(bool enabled) {
+  base::UmaHistogramBoolean(kPrivacyHubGeolocationEnabledFromSettingsHistogram,
+                            enabled);
+}
+
+void LogGeolocationEnabledFromNotification(bool enabled) {
+  base::UmaHistogramBoolean(
+      kPrivacyHubGeolocationEnabledFromNotificationHistogram, enabled);
+}
+
 void LogPrivacyHubOpenedFromNotification() {
   base::UmaHistogramEnumeration(kPrivacyHubOpenedHistogram,
                                 PrivacyHubNavigationOrigin::kNotification);
