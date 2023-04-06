@@ -50,6 +50,8 @@ _EXCLUDED_PATHS = (
     r"tools/perf/page_sets/maps_perf_test.*",
     # Test pages for WebRTC telemetry tests.
     r"tools/perf/page_sets/webrtc_cases.*",
+    # Test file compared with generated output.
+    r"tools/polymer/tests/html_to_wrapper/.*.html.ts$",
 )
 
 _EXCLUDED_SET_NO_PARENT_PATHS = (
