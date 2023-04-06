@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "build/build_config.h"
 
 namespace base {
 class Time;
@@ -23,7 +24,11 @@ class COMPONENT_EXPORT(UI_BASE) TimeFormat {
     FORMAT_DURATION,   // Plain duration, e.g. in English: "2 minutes".
     FORMAT_REMAINING,  // Remaining time, e.g. in English: "2 minutes left".
     FORMAT_ELAPSED,    // Elapsed time, e.g. in English: "2 minutes ago".
-    FORMAT_COUNT       // Enum size counter, not a format.  Must be last.
+#if BUILDFLAG(IS_IOS)
+    FORMAT_TITLE_CASE_ELAPSED,  // Elapsed time in title case, e.g. in English:
+                                // "2 Minutes Ago".
+#endif
+    FORMAT_COUNT  // Enum size counter, not a format.  Must be last.
   };
 
   enum Length {

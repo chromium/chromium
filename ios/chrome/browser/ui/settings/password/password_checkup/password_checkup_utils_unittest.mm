@@ -121,8 +121,7 @@ class PasswordCheckupUtilsTest : public PlatformTest {
 // Tests that the correct warning type is returned.
 TEST_F(PasswordCheckupUtilsTest, CheckHighestPriorityWarningType) {
   // Enable Password Checkup feature.
-  base::test::ScopedFeatureList featureList;
-  featureList.InitAndEnableFeature(
+  base::test::ScopedFeatureList feature_list(
       password_manager::features::kIOSPasswordCheckup);
 
   std::vector<CredentialUIEntry> insecure_credentials =
@@ -177,8 +176,7 @@ TEST_F(PasswordCheckupUtilsTest, CheckHighestPriorityWarningType) {
 // warning type of highest priority.
 TEST_F(PasswordCheckupUtilsTest, CheckPasswordCountForWarningType) {
   // Enable Password Checkup feature.
-  base::test::ScopedFeatureList featureList;
-  featureList.InitAndEnableFeature(
+  base::test::ScopedFeatureList feature_list(
       password_manager::features::kIOSPasswordCheckup);
 
   std::vector<CredentialUIEntry> insecure_credentials =
@@ -252,8 +250,15 @@ TEST_F(PasswordCheckupUtilsTest, CheckPasswordCountForWarningType) {
             4);
 }
 
-// Tests that the correct string is returned with the right timestamp.
-TEST_F(PasswordCheckupUtilsTest, ElapsedTimeSinceLastCheck) {
+// Tests that the correct string is returned with the right timestamp when
+// kIOSPasswordCheckup feature is disabled.
+TEST_F(PasswordCheckupUtilsTest,
+       ElapsedTimeSinceLastCheckWithoutkIOSPasswordCheckup) {
+  // Disable Password Checkup feature.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      password_manager::features::kIOSPasswordCheckup);
+
   EXPECT_NSEQ(@"Check never run.", FormatElapsedTimeSinceLastCheck(
                                        manager().GetLastPasswordCheckTime()));
 
@@ -274,6 +279,62 @@ TEST_F(PasswordCheckupUtilsTest, ElapsedTimeSinceLastCheck) {
   EXPECT_NSEQ(
       @"Last checked 5 minutes ago.",
       FormatElapsedTimeSinceLastCheck(manager().GetLastPasswordCheckTime()));
+}
+
+// Tests that the correct string is returned with the right timestamp when
+// kIOSPasswordCheckup feature is enabled.
+TEST_F(PasswordCheckupUtilsTest,
+       ElapsedTimeSinceLastCheckWithkIOSPasswordCheckup) {
+  // Enable Password Checkup feature.
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kIOSPasswordCheckup);
+
+  EXPECT_NSEQ(@"Check never run.", FormatElapsedTimeSinceLastCheck(
+                                       manager().GetLastPasswordCheckTime()));
+
+  base::Time expected1 = base::Time::Now() - base::Seconds(10);
+  browser_state()->GetPrefs()->SetDouble(
+      password_manager::prefs::kLastTimePasswordCheckCompleted,
+      expected1.ToDoubleT());
+
+  EXPECT_NSEQ(@"Checked just now", FormatElapsedTimeSinceLastCheck(
+                                       manager().GetLastPasswordCheckTime()));
+
+  base::Time expected2 = base::Time::Now() - base::Minutes(5);
+  browser_state()->GetPrefs()->SetDouble(
+      password_manager::prefs::kLastTimePasswordCheckCompleted,
+      expected2.ToDoubleT());
+
+  EXPECT_NSEQ(
+      @"Checked 5 minutes ago",
+      FormatElapsedTimeSinceLastCheck(manager().GetLastPasswordCheckTime()));
+}
+
+// Verifies the title case format of elapsed time string with the
+// kIOSPasswordCheckup feature enabled.
+TEST_F(PasswordCheckupUtilsTest, ElapsedTimeSinceLastCheckInTitleCase) {
+  // Enable Password Checkup feature.
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kIOSPasswordCheckup);
+
+  base::Time expected1 = base::Time::Now() - base::Seconds(10);
+  browser_state()->GetPrefs()->SetDouble(
+      password_manager::prefs::kLastTimePasswordCheckCompleted,
+      expected1.ToDoubleT());
+
+  EXPECT_NSEQ(@"Checked Just Now", FormatElapsedTimeSinceLastCheck(
+                                       manager().GetLastPasswordCheckTime(),
+                                       /*use_title_case=*/true));
+
+  base::Time expected2 = base::Time::Now() - base::Minutes(5);
+  browser_state()->GetPrefs()->SetDouble(
+      password_manager::prefs::kLastTimePasswordCheckCompleted,
+      expected2.ToDoubleT());
+
+  EXPECT_NSEQ(
+      @"Checked 5 Minutes Ago",
+      FormatElapsedTimeSinceLastCheck(manager().GetLastPasswordCheckTime(),
+                                      /*use_title_case=*/true));
 }
 
 // Tests that the correct passwords are returned for each warning type.

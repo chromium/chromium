@@ -179,7 +179,8 @@ bool DidPasswordCheckupFail(PasswordCheckState currentState) {
 - (NSString*)formattedElapsedTimeSinceLastCheck {
   absl::optional<base::Time> lastCompletedCheck =
       _passwordCheckManager->GetLastPasswordCheckTime();
-  return password_manager::FormatElapsedTimeSinceLastCheck(lastCompletedCheck);
+  return password_manager::FormatElapsedTimeSinceLastCheck(
+      lastCompletedCheck, /*use_title_case=*/true);
 }
 
 // Computes the error message to display in the error dialog.

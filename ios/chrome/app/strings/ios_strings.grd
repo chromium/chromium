@@ -2977,8 +2977,11 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_PASSWORD_CHECKUP_LAST_COMPLETED_CHECK" desc="Subtitle for Password Checkup cell which shows the timestamp of the last check." meaning="Time when passwords were checked last time.">
         Checked <ph name="TIME">$1<ex>10 minutes ago</ex></ph>
       </message>
-      <message name="IDS_IOS_CHECK_FINISHED_JUST_NOW" desc="Used instead of timestamp when Password Check finished less than 1 minute ago." meaning="Check finished just now.">
+      <message name="IDS_IOS_CHECK_FINISHED_JUST_NOW" desc="Used instead of timestamp when Password Check finished less than 1 minute ago." meaning="[In sentence case] Check finished just now.">
         just now
+      </message>
+      <message name="IDS_IOS_CHECK_FINISHED_JUST_NOW_TITLE_CASE" desc="Used instead of timestamp when Password Check finished less than 1 minute ago." meaning="[In Title Case] Check finished just now.">
+        Just Now
       </message>
       <message name="IDS_IOS_CHECK_NEVER_RUN" desc="Used instead of timestamp when Password Check never ran" meaning="Check never run.">
         Check never run.
