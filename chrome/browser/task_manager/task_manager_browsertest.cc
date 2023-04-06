@@ -311,11 +311,11 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, NavigateAwayFromHungRenderer) {
   // SiteInstance. Then immediately hang the renderer so that title3.html can't
   // load in this process.
   content::WebContentsAddedObserver web_contents_added_observer;
-  int dummy_value = 0;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
+  bool dummy_value;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
       tab1->GetPrimaryMainFrame(),
       "window.open('title3.html', '_blank');\n"
-      "window.domAutomationController.send(55);\n"
+      "window.domAutomationController.send(false);\n"
       "while(1);",
       &dummy_value));
 

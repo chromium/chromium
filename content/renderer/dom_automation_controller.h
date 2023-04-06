@@ -30,7 +30,7 @@ class RenderFrame;
 // following:
 // - Test code:
 //   - DOMMessageQueue class
-//   - ExecuteScriptAndExtractInt/Bool/String functions
+//   - ExecuteScriptAndExtractBool/String functions
 class DomAutomationController : public gin::Wrappable<DomAutomationController>,
                                 public RenderFrameObserver {
  public:

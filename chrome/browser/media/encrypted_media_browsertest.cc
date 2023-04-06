@@ -852,17 +852,12 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, PlatformVerificationTest) {
 IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_MessageTypeTest) {
   TestPlaybackCase(media::kExternalClearKeyMessageTypeTestKeySystem,
                    kNoSessionToLoad, media::kEndedTitle);
-
-  int num_received_message_types = 0;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "window.domAutomationController.send("
-      "document.querySelector('video').receivedMessageTypes.size);",
-      &num_received_message_types));
-
   // Expects 3 message types: 'license-request', 'license-renewal' and
   // 'individualization-request'.
-  EXPECT_EQ(3, num_received_message_types);
+  EXPECT_EQ(3,
+            content::EvalJs(
+                browser()->tab_strip_model()->GetActiveWebContents(),
+                "document.querySelector('video').receivedMessageTypes.size;"));
 }
 
 IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, LoadPersistentLicense) {

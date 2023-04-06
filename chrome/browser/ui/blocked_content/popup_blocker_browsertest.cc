@@ -731,10 +731,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, MultiplePopupsViaPostMessage) {
                      "/popup_blocker/post-message-popup.html")));
   content::WebContents* opener =
       browser()->tab_strip_model()->GetActiveWebContents();
-  int popups = 0;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-      opener, "openPopupsAndReport();", &popups));
-  EXPECT_EQ(1, popups);
+  EXPECT_EQ(1, content::EvalJs(opener, "openPopupsAndReport();"));
 }
 
 // Test that popup blocker can show blocked contents in new foreground tab.

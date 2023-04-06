@@ -2,30 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+let resolve;
+const completionPromise = new Promise((res) => {
+  resolve = res;
+});
+
 var messagesReceived = [];
 
-// Have we received the real message from the sender extension?
-var receivedRealSenderMessage = false;
-
-// Has the c++ code in the browser test asked us for the total count of messages
-// we've received?
-var sendCountAfterSenderMessage = false;
-
 function getMessageCountAfterReceivingRealSenderMessage() {
-  if (receivedRealSenderMessage) {
-    window.domAutomationController.send(messagesReceived.length);
-  } else {
-    sendCountAfterSenderMessage = true;
-  }
+  return completionPromise;
 }
 
 chrome.runtime.onMessageExternal.addListener(function(msg, sender, respond) {
   messagesReceived.push({msg:msg, sender:sender});
   if (msg == 'from_sender') {
-    receivedRealSenderMessage = true;
-    if (sendCountAfterSenderMessage) {
-      window.domAutomationController.send(messagesReceived.length);
-    }
+    resolve(messagesReceived.length);
   }
 });
 

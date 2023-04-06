@@ -395,13 +395,12 @@ void ExpectInterstitialElementHidden(WebContents* tab,
   // Send CMD_TEXT_FOUND to indicate that the 'hidden' class is found, and
   // CMD_TEXT_NOT_FOUND if not.
   std::string command = base::StringPrintf(
-      "window.domAutomationController.send(document.querySelector('#%s')"
+      "document.querySelector('#%s')"
       "    .classList.contains('hidden')"
-      " ? %d : %d);",
+      " ? %d : %d;",
       element_id.c_str(), security_interstitials::CMD_TEXT_FOUND,
       security_interstitials::CMD_TEXT_NOT_FOUND);
-  int result = 0;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(frame, command, &result));
+  int result = content::EvalJs(frame, command).ExtractInt();
   EXPECT_EQ(expect_hidden ? security_interstitials::CMD_TEXT_FOUND
                           : security_interstitials::CMD_TEXT_NOT_FOUND,
             result);
@@ -2488,10 +2487,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestUnsafeContents) {
     EXPECT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
     // In order to check that the image was loaded, check its width.
     // The actual image (Google logo) is 276 pixels wide.
-    int img_width = 0;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-        tab, "window.domAutomationController.send(ImageWidth());", &img_width));
-    EXPECT_EQ(img_width, 276);
+    EXPECT_EQ(276, content::EvalJs(tab, "ImageWidth();"));
     // Check that variable |foo| is set.
     bool js_result = false;
     EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
@@ -2514,10 +2510,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestUnsafeContents) {
     // Previous popup is still open.
     EXPECT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
     // The broken image width is zero.
-    int img_width = 99;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-        tab, "window.domAutomationController.send(ImageWidth());", &img_width));
-    EXPECT_EQ(img_width, 16);
+    EXPECT_EQ(16, content::EvalJs(tab, "ImageWidth();"));
     // Check that variable |foo| is not set.
     bool js_result = false;
     EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
@@ -3806,13 +3799,10 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestUnsafeContentsWithUserException) {
   EXPECT_TRUE(visible_security_state->ran_content_with_cert_errors);
   EXPECT_TRUE(visible_security_state->displayed_content_with_cert_errors);
 
-  int img_width;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-      tab, "window.domAutomationController.send(ImageWidth());", &img_width));
   // In order to check that the image was loaded, we check its width.
   // The actual image (Google logo) is 114 pixels wide, so we assume a good
   // image is greater than 100.
-  EXPECT_GT(img_width, 100);
+  EXPECT_GT(content::EvalJs(tab, "ImageWidth();"), 100);
 
   bool js_result = false;
   EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
@@ -3856,13 +3846,10 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestUnsafeImageWithUserException) {
   EXPECT_TRUE(visible_security_state->displayed_content_with_cert_errors);
   EXPECT_EQ(0u, visible_security_state->cert_status);
 
-  int img_width;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-      tab, "window.domAutomationController.send(ImageWidth());", &img_width));
   // In order to check that the image was loaded, we check its width.
   // The actual image (Google logo) is 114 pixels wide, so we assume a good
   // image is greater than 100.
-  EXPECT_GT(img_width, 100);
+  EXPECT_GT(content::EvalJs(tab, "ImageWidth();"), 100);
 }
 
 // Test that when the browser blocks displaying insecure content (iframes),
@@ -3998,10 +3985,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITestIgnoreCertErrorsBySPKIHTTPS,
   ssl_test_util::CheckAuthenticatedState(tab, AuthState::NONE);
   // In order to check that the image was loaded, check its width.
   // The actual image (Google logo) is 276 pixels wide.
-  int img_width = 0;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-      tab, "window.domAutomationController.send(ImageWidth());", &img_width));
-  EXPECT_GT(img_width, 200);
+  EXPECT_GT(content::EvalJs(tab, "ImageWidth();"), 200);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -4114,14 +4098,12 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, SubframeCertError) {
   content::RenderFrameHost* child =
       content::ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(child);
-  int result = security_interstitials::CMD_ERROR;
   const std::string javascript = base::StringPrintf(
-      "domAutomationController.send("
       "(document.querySelector(\"#proceed-link\") === null) "
-      "? (%d) : (%d))",
+      "? (%d) : (%d)",
       security_interstitials::CMD_TEXT_NOT_FOUND,
       security_interstitials::CMD_TEXT_FOUND);
-  ASSERT_TRUE(content::ExecuteScriptAndExtractInt(child, javascript, &result));
+  int result = content::EvalJs(child, javascript).ExtractInt();
   EXPECT_EQ(security_interstitials::CMD_TEXT_NOT_FOUND, result);
 }
 
@@ -4144,15 +4126,13 @@ IN_PROC_BROWSER_TEST_F(SSLUITestHSTS, TestInterstitialOptionsNonOverridable) {
 
   ASSERT_TRUE(chrome_browser_interstitials::IsShowingSSLInterstitial(tab));
 
-  int result = security_interstitials::CMD_ERROR;
   const std::string javascript = base::StringPrintf(
-      "domAutomationController.send("
       "(document.querySelector(\"#proceed-link\") === null) "
-      "? (%d) : (%d))",
+      "? (%d) : (%d)",
       security_interstitials::CMD_TEXT_NOT_FOUND,
       security_interstitials::CMD_TEXT_FOUND);
-  ASSERT_TRUE(content::ExecuteScriptAndExtractInt(tab->GetPrimaryMainFrame(),
-                                                  javascript, &result));
+  int result =
+      content::EvalJs(tab->GetPrimaryMainFrame(), javascript).ExtractInt();
   EXPECT_EQ(security_interstitials::CMD_TEXT_NOT_FOUND, result);
 }
 

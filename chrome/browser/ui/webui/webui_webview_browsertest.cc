@@ -91,24 +91,20 @@ class DNDToInputNavigationObserver : public content::WebContentsObserver {
 
 int ExecuteHostScriptAndExtractInt(content::WebContents* web_contents,
                                    const std::string& script) {
-  int result;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-      web_contents, "window.domAutomationController.send(" + script + ");",
-      &result));
-  return result;
+  return content::EvalJs(web_contents, script).ExtractInt();
 }
 
 int ExecuteGuestScriptAndExtractInt(content::WebContents* web_contents,
                                     const std::string& web_view_id,
                                     const std::string& script) {
-  int result;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-      web_contents,
-      "document.getElementById('" + web_view_id + "').executeScript({ "
-          "code: '" + script + "' }, function (results) {"
-          " window.domAutomationController.send(results[0]);});",
-      &result));
-  return result;
+  return content::EvalJs(web_contents, "document.getElementById('" +
+                                           web_view_id +
+                                           "').executeScript({ "
+                                           "code: '" +
+                                           script +
+                                           "' }, function (results) {"
+                                           " return results[0]);});")
+      .ExtractInt();
 }
 }  // namespace
 #endif

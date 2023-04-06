@@ -1467,22 +1467,16 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
   ContextMenuWaiter menu_observer;
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
-  int x;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-      tab,
-      "var bounds = document.getElementById('anchor1')"
-      ".getBoundingClientRect();"
-      "domAutomationController.send("
-      "    Math.floor(bounds.left + bounds.width / 2));",
-      &x));
-  int y;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-      tab,
-      "var bounds = document.getElementById('anchor1')"
-      ".getBoundingClientRect();"
-      "domAutomationController.send("
-      "    Math.floor(bounds.top + bounds.height / 2));",
-      &y));
+  int x = content::EvalJs(tab,
+                          "var bounds = document.getElementById('anchor1')"
+                          ".getBoundingClientRect();"
+                          "Math.floor(bounds.left + bounds.width / 2);")
+              .ExtractInt();
+  int y = content::EvalJs(tab,
+                          "var bounds = document.getElementById('anchor1')"
+                          ".getBoundingClientRect();"
+                          "Math.floor(bounds.top + bounds.height / 2);")
+              .ExtractInt();
 
   // Focus in the middle of an anchor element.
   content::SimulateMouseClickAt(tab, /*modifiers=*/0,

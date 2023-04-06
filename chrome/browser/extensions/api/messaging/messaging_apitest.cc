@@ -333,13 +333,12 @@ class ExternallyConnectableMessagingTest : public MessagingApiTest {
   Result CanConnectAndSendMessagesToFrame(content::RenderFrameHost* frame,
                                           const Extension* extension,
                                           const char* message) {
-    int result;
     std::string command = base::StringPrintf(
         "assertions.canConnectAndSendMessages('%s', %s, %s)",
         extension->id().c_str(),
         extension->is_platform_app() ? "true" : "false",
         message ? base::StringPrintf("'%s'", message).c_str() : "undefined");
-    CHECK(content::ExecuteScriptAndExtractInt(frame, command, &result));
+    int result = content::EvalJs(frame, command).ExtractInt();
     return static_cast<Result>(result);
   }
 
@@ -1515,13 +1514,8 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingOnUnload) {
   ASSERT_TRUE(background_host);
   content::WebContents* background_contents = background_host->host_contents();
   ASSERT_TRUE(background_contents);
-  int message_count = -1;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-      background_contents,
-      "window.domAutomationController.send(window.messageCount);",
-      &message_count));
   // There shouldn't be any messages yet.
-  EXPECT_EQ(0, message_count);
+  EXPECT_EQ(0, content::EvalJs(background_contents, "window.messageCount;"));
 
   content::WebContentsDestroyedWatcher destroyed_watcher(
       browser()->tab_strip_model()->GetActiveWebContents());
@@ -1529,11 +1523,7 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingOnUnload) {
   destroyed_watcher.Wait();
   base::RunLoop().RunUntilIdle();
   // The extension should have sent a message from its unload handler.
-  ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-      background_contents,
-      "window.domAutomationController.send(window.messageCount);",
-      &message_count));
-  EXPECT_EQ(1, message_count);
+  EXPECT_EQ(1, content::EvalJs(background_contents, "window.messageCount;"));
 }
 
 // Tests that messages over a certain size are not sent.

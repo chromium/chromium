@@ -597,9 +597,6 @@ void ExecuteScriptAsyncWithoutUserGesture(const ToRenderFrameHost& adapter,
 // execution failed or did not evaluate to the expected type.
 //
 // Deprecated: Use EvalJs().
-[[nodiscard]] bool ExecuteScriptAndExtractInt(const ToRenderFrameHost& adapter,
-                                              const std::string& script,
-                                              int* result);
 [[nodiscard]] bool ExecuteScriptAndExtractBool(const ToRenderFrameHost& adapter,
                                                const std::string& script,
                                                bool* result);

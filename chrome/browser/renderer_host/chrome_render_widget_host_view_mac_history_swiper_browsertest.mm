@@ -119,12 +119,7 @@ class ChromeRenderWidgetHostViewMacHistorySwiperTest
 
   // Returns the value of |query| from Javascript as an int.
   int GetScriptIntValue(const std::string& query) {
-    int value = 0;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-        GetWebContents(),
-        "domAutomationController.send(" + query + ")",
-        &value));
-    return value;
+    return content::EvalJs(GetWebContents(), query).ExtractInt();
   }
 
   // Returns the vertical scroll offset of the current page.

@@ -338,8 +338,7 @@ void JSChecker::GetBoolImpl(const std::string& expression, bool* result) {
 
 void JSChecker::GetIntImpl(const std::string& expression, int* result) {
   CHECK(web_contents_);
-  ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-      web_contents_, WrapSend(expression), result));
+  *result = content::EvalJs(web_contents_, expression).ExtractInt();
 }
 
 void JSChecker::GetStringImpl(const std::string& expression,

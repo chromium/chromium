@@ -332,14 +332,6 @@ base::FilePath MediaRouterIntegrationBrowserTest::GetResourceFile(
   return full_path;
 }
 
-int MediaRouterIntegrationBrowserTest::ExecuteScriptAndExtractInt(
-    const content::ToRenderFrameHost& adapter,
-    const std::string& script) {
-  int result;
-  CHECK(content::ExecuteScriptAndExtractInt(adapter, script, &result));
-  return result;
-}
-
 std::string MediaRouterIntegrationBrowserTest::ExecuteScriptAndExtractString(
     const content::ToRenderFrameHost& adapter,
     const std::string& script) {

@@ -313,13 +313,11 @@ IN_PROC_BROWSER_TEST_F(FramesExtensionBindingsApiTest, FramesBeforeNavigation) {
   // then ask |receiver| for the total message count. It should be 1 since
   // |receiver| should not have received any impersonated messages.
   sender_ready.Reply(receiver->id());
-  int message_count = 0;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-      ProcessManager::Get(profile())
-          ->GetBackgroundHostForExtension(receiver->id())
-          ->host_contents(),
-      "getMessageCountAfterReceivingRealSenderMessage()", &message_count));
-  EXPECT_EQ(1, message_count);
+  EXPECT_EQ(
+      1, content::EvalJs(ProcessManager::Get(profile())
+                             ->GetBackgroundHostForExtension(receiver->id())
+                             ->host_contents(),
+                         "getMessageCountAfterReceivingRealSenderMessage()"));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, TestFreezingChrome) {
@@ -592,10 +590,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // The extension should have been notified about the new tab, and have
   // recorded the result.
-  int result_tab_id = -1;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-      first_tab, "domAutomationController.send(window.tabEventId)",
-      &result_tab_id));
+  int result_tab_id =
+      content::EvalJs(first_tab, "window.tabEventId").ExtractInt();
   EXPECT_EQ(sessions::SessionTabHelper::IdForTab(new_tab).id(), result_tab_id);
 }
 

@@ -31,14 +31,16 @@ int IsEnhancedProtectionMessageVisibleOnInterstitial(
     SafeBrowsingPolicyTest* browser_test) {
   const std::string command = base::StringPrintf(
       "var node = document.getElementById('enhanced-protection-message');"
+      "var result;"
       "if (node) {"
-      "  window.domAutomationController.send(node.offsetWidth > 0 || "
-      "      node.offsetHeight > 0 ? %d : %d);"
+      "  result = node.offsetWidth > 0 || "
+      "      node.offsetHeight > 0 ? %d : %d;"
       "} else {"
       // The node should be present but not visible, so trigger an error
       // by sending false if it's not present.
-      "  window.domAutomationController.send(%d);"
-      "}",
+      "  result = %d;"
+      "}"
+      "result;",
       security_interstitials::CMD_TEXT_FOUND,
       security_interstitials::CMD_TEXT_NOT_FOUND,
       security_interstitials::CMD_ERROR);
@@ -49,10 +51,7 @@ int IsEnhancedProtectionMessageVisibleOnInterstitial(
     ADD_FAILURE() << "Expected interstitial when checking for enhanced "
                      "protection message.";
   }
-  int result = 0;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(tab->GetPrimaryMainFrame(),
-                                                  command, &result));
-  return result;
+  return content::EvalJs(tab->GetPrimaryMainFrame(), command).ExtractInt();
 }
 
 // Test extended reporting is managed by policy.

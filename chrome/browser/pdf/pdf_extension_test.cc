@@ -1065,32 +1065,20 @@ class PDFExtensionScrollTest : public PDFExtensionTest {
   static constexpr float kScrollPositionEpsilon = 2.0f;
 
   static int GetViewportHeight(content::ToRenderFrameHost guest_main_frame) {
-    int viewport_height = 0;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-        guest_main_frame,
-        "window.domAutomationController.send(viewer.viewport.size.height);",
-        &viewport_height));
-    return viewport_height;
+    return content::EvalJs(guest_main_frame, "viewer.viewport.size.height;")
+        .ExtractInt();
   }
 
   static int GetViewportScrollPositionX(
       content::ToRenderFrameHost guest_main_frame) {
-    int position_x = 0;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-        guest_main_frame,
-        "window.domAutomationController.send(viewer.viewport.position.x);",
-        &position_x));
-    return position_x;
+    return content::EvalJs(guest_main_frame, "viewer.viewport.position.x;")
+        .ExtractInt();
   }
 
   static int GetViewportScrollPositionY(
       content::ToRenderFrameHost guest_main_frame) {
-    int position_y = 0;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-        guest_main_frame,
-        "window.domAutomationController.send(viewer.viewport.position.y);",
-        &position_y));
-    return position_y;
+    return content::EvalJs(guest_main_frame, "viewer.viewport.position.y;")
+        .ExtractInt();
   }
 };
 
@@ -2460,15 +2448,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionHitTestTest, DISABLED_MouseLeave) {
   // Verify MouseEnter, MouseLeave received.
   int leave_count = 0;
   do {
-    ASSERT_TRUE(ExecuteScriptAndExtractInt(
-        guest_mainframe, "window.domAutomationController.send(leave_count);",
-        &leave_count));
+    leave_count = EvalJs(guest_mainframe, "leave_count;").ExtractInt();
   } while (!leave_count);
-  int enter_count = 0;
-  ASSERT_TRUE(ExecuteScriptAndExtractInt(
-      guest_mainframe, "window.domAutomationController.send(enter_count);",
-      &enter_count));
-  EXPECT_EQ(1, enter_count);
+  EXPECT_EQ(1, EvalJs(guest_mainframe, "enter_count;"));
 }
 
 IN_PROC_BROWSER_TEST_F(PDFExtensionHitTestTest, ContextMenuCoordinates) {

@@ -14,11 +14,7 @@ namespace ash {
 void ExecuteScriptAndExtractInt(content::WebContents* web_contents,
                                 const std::string& script,
                                 int* result) {
-  ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-      web_contents,
-      base::StringPrintf("window.domAutomationController.send(%s);",
-                         script.c_str()),
-      result));
+  *result = content::EvalJs(web_contents, script).ExtractInt();
 }
 
 void ExecuteScript(content::WebContents* web_contents,

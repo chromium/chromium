@@ -228,23 +228,17 @@ class BaseSelectFileDialogExtensionBrowserTest
     auto* web_contents = content::WebContents::FromRenderFrameHost(frame_host);
     CHECK(web_contents);
 
-    int x;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-        web_contents,
-        "var bounds = document.querySelector('" + selector +
-            "').getBoundingClientRect();"
-            "domAutomationController.send("
-            "    Math.floor(bounds.left + bounds.width / 2));",
-        &x));
+    int x = content::EvalJs(web_contents,
+                            "var bounds = document.querySelector('" + selector +
+                                "').getBoundingClientRect();"
+                                "Math.floor(bounds.left + bounds.width / 2);")
+                .ExtractInt();
 
-    int y;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-        web_contents,
-        "var bounds = document.querySelector('" + selector +
-            "').getBoundingClientRect();"
-            "domAutomationController.send("
-            "    Math.floor(bounds.top + bounds.height / 2));",
-        &y));
+    int y = content::EvalJs(web_contents,
+                            "var bounds = document.querySelector('" + selector +
+                                "').getBoundingClientRect();"
+                                "Math.floor(bounds.top + bounds.height / 2);")
+                .ExtractInt();
 
     LOG(INFO) << "ClickElement " << selector << " (" << x << "," << y << ")";
     constexpr auto kButton = blink::WebMouseEvent::Button::kLeft;
