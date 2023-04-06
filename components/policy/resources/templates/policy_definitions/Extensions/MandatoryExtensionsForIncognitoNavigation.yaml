@@ -12,7 +12,8 @@ features:
   per_profile: true
 future_on:
 - fuchsia
-- chrome_os
+supported_on:
+- chrome_os:114-
 owners:
 - acostinas@google.com
 - suprnet@google.com
