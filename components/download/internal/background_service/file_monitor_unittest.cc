@@ -9,9 +9,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
+#include "base/uuid.h"
 #include "components/download/internal/background_service/driver_entry.h"
 #include "components/download/internal/background_service/entry.h"
 #include "components/download/internal/background_service/file_monitor_impl.h"
@@ -74,10 +74,12 @@ void FileMonitorTest::HardRecoveryResponse(bool result) {
 }
 
 TEST_F(FileMonitorTest, TestDeleteUnknownFiles) {
-  Entry entry1 = test::BuildEntry(DownloadClient::TEST, base::GenerateGUID());
+  Entry entry1 = test::BuildEntry(
+      DownloadClient::TEST, base::Uuid::GenerateRandomV4().AsLowercaseString());
   entry1.target_file_path = CreateTemporaryFile(entry1.guid);
 
-  Entry entry2 = test::BuildEntry(DownloadClient::TEST, base::GenerateGUID());
+  Entry entry2 = test::BuildEntry(
+      DownloadClient::TEST, base::Uuid::GenerateRandomV4().AsLowercaseString());
   entry2.target_file_path = CreateTemporaryFile(entry2.guid);
 
   DriverEntry driver_entry1;
@@ -85,7 +87,7 @@ TEST_F(FileMonitorTest, TestDeleteUnknownFiles) {
   driver_entry1.current_file_path = entry1.target_file_path;
 
   DriverEntry driver_entry2;
-  driver_entry2.guid = base::GenerateGUID();
+  driver_entry2.guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   driver_entry2.current_file_path = CreateTemporaryFile(driver_entry2.guid);
 
   base::FilePath temp_file1 = CreateTemporaryFile("temp1");
@@ -130,11 +132,13 @@ TEST_F(FileMonitorTest, TestDeleteUnknownFiles) {
 }
 
 TEST_F(FileMonitorTest, TestCleanupFilesForCompletedEntries) {
-  Entry entry1 = test::BuildEntry(DownloadClient::TEST, base::GenerateGUID());
+  Entry entry1 = test::BuildEntry(
+      DownloadClient::TEST, base::Uuid::GenerateRandomV4().AsLowercaseString());
   EXPECT_TRUE(
       base::CreateTemporaryFileInDir(download_dir_, &entry1.target_file_path));
 
-  Entry entry2 = test::BuildEntry(DownloadClient::TEST, base::GenerateGUID());
+  Entry entry2 = test::BuildEntry(
+      DownloadClient::TEST, base::Uuid::GenerateRandomV4().AsLowercaseString());
   EXPECT_TRUE(
       base::CreateTemporaryFileInDir(download_dir_, &entry2.target_file_path));
 

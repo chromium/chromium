@@ -60,7 +60,8 @@ struct Entry {
   // The feature that is requesting this download.
   DownloadClient client = DownloadClient::INVALID;
 
-  // A unique GUID that represents this download.  See | base::GenerateGUID()|.
+  // A unique GUID that represents this download.  See
+  // `base::Uuid::GenerateRandomV4().AsLowercaseString()`.
   std::string guid;
 
   // The time when the entry is created.

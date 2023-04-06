@@ -178,7 +178,8 @@ struct DownloadParams {
   // The feature that is requesting this download.
   DownloadClient client;
 
-  // A unique GUID that represents this download.  See |base::GenerateGUID()|.
+  // A unique GUID that represents this download.  See
+  // `base::Uuid::GenerateRandomV4().AsLowercaseString()`.
   std::string guid;
 
   // A callback that will be notified if this download has been accepted and

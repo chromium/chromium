@@ -10,13 +10,13 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
+#include "base/uuid.h"
 #include "components/download/internal/background_service/client_set.h"
 #include "components/download/internal/background_service/config.h"
 #include "components/download/internal/background_service/entry.h"
@@ -217,7 +217,7 @@ class DownloadServiceControllerImplTest : public testing::Test {
   DownloadParams MakeDownloadParams() {
     DownloadParams params;
     params.client = DownloadClient::TEST;
-    params.guid = base::GenerateGUID();
+    params.guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
     params.callback = start_callback_;
     return params;
   }
@@ -409,7 +409,8 @@ TEST_F(DownloadServiceControllerImplTest, SuccessfulInitWithExistingDownload) {
   Entry entry1 = test::BuildBasicEntry();
   Entry entry2 = test::BuildBasicEntry();
   Entry entry3 =
-      test::BuildEntry(DownloadClient::INVALID, base::GenerateGUID());
+      test::BuildEntry(DownloadClient::INVALID,
+                       base::Uuid::GenerateRandomV4().AsLowercaseString());
 
   std::vector<Entry> entries = {entry1, entry2, entry3};
   std::vector<DownloadMetaData> expected_downloads = {
@@ -493,7 +494,8 @@ TEST_F(DownloadServiceControllerImplTest, GetOwnerOfDownload) {
 
   EXPECT_EQ(DownloadClient::TEST, controller_->GetOwnerOfDownload(entry.guid));
   EXPECT_EQ(DownloadClient::INVALID,
-            controller_->GetOwnerOfDownload(base::GenerateGUID()));
+            controller_->GetOwnerOfDownload(
+                base::Uuid::GenerateRandomV4().AsLowercaseString()));
 }
 
 TEST_F(DownloadServiceControllerImplTest, AddDownloadAccepted) {
@@ -1672,7 +1674,7 @@ TEST_F(DownloadServiceControllerImplTest, ExistingExternalDownload) {
   DriverEntry dentry1 =
       BuildDriverEntry(entry2, DriverEntry::State::IN_PROGRESS);
   DriverEntry dentry2;
-  dentry2.guid = base::GenerateGUID();
+  dentry2.guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   dentry2.state = DriverEntry::State::IN_PROGRESS;
 
   std::vector<Entry> entries = {entry1, entry2, entry3};
@@ -1746,7 +1748,7 @@ TEST_F(DownloadServiceControllerImplTest, NewExternalDownload) {
   EXPECT_FALSE(driver_->Find(entry2.guid).value().paused);
 
   DriverEntry dentry2;
-  dentry2.guid = base::GenerateGUID();
+  dentry2.guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   dentry2.state = DriverEntry::State::IN_PROGRESS;
 
   // Simulate a newly created external download.
