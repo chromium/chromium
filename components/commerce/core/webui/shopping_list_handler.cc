@@ -163,44 +163,41 @@ void ShoppingListHandler::UntrackPriceForBookmark(int64_t bookmark_id) {
                      bookmark_model_, false));
 }
 
-void ShoppingListHandler::OnSubscribe(
-    const std::vector<CommerceSubscription>& subscriptions,
-    bool succeeded) {
+void ShoppingListHandler::OnSubscribe(const CommerceSubscription& subscription,
+                                      bool succeeded) {
   if (succeeded) {
-    HandleSubscriptionChange(subscriptions, true);
+    HandleSubscriptionChange(subscription, true);
   }
 }
 
 void ShoppingListHandler::OnUnsubscribe(
-    const std::vector<CommerceSubscription>& subscriptions,
+    const CommerceSubscription& subscription,
     bool succeeded) {
   if (succeeded) {
-    HandleSubscriptionChange(subscriptions, false);
+    HandleSubscriptionChange(subscription, false);
   }
 }
 
 void ShoppingListHandler::HandleSubscriptionChange(
-    const std::vector<CommerceSubscription>& subscriptions,
+    const CommerceSubscription& sub,
     bool is_tracking) {
-  for (auto& sub : subscriptions) {
-    if (sub.id_type != IdentifierType::kProductClusterId) {
-      continue;
-    }
+  if (sub.id_type != IdentifierType::kProductClusterId) {
+    return;
+  }
 
-    uint64_t cluster_id;
-    if (!base::StringToUint64(sub.id, &cluster_id)) {
-      continue;
-    }
+  uint64_t cluster_id;
+  if (!base::StringToUint64(sub.id, &cluster_id)) {
+    return;
+  }
 
-    std::vector<const bookmarks::BookmarkNode*> bookmarks =
-        GetBookmarksWithClusterId(bookmark_model_, cluster_id);
-    for (auto* node : bookmarks) {
-      if (is_tracking) {
-        remote_page_->PriceTrackedForBookmark(
-            BookmarkNodeToMojoProduct(*bookmark_model_, node, locale_));
-      } else {
-        remote_page_->PriceUntrackedForBookmark(node->id());
-      }
+  std::vector<const bookmarks::BookmarkNode*> bookmarks =
+      GetBookmarksWithClusterId(bookmark_model_, cluster_id);
+  for (auto* node : bookmarks) {
+    if (is_tracking) {
+      remote_page_->PriceTrackedForBookmark(
+          BookmarkNodeToMojoProduct(*bookmark_model_, node, locale_));
+    } else {
+      remote_page_->PriceUntrackedForBookmark(node->id());
     }
   }
 }

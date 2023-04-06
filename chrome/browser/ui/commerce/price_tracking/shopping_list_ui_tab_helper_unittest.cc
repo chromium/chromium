@@ -144,14 +144,14 @@ TEST_F(ShoppingListUiTabHelperTest, TestSubscriptionEventsUpdateState) {
   SimulateNavigationCommitted(GURL(kProductUrl));
 
   // First ensure that subscribe is successful.
-  tab_helper_->OnSubscribe({CreateUserTrackedSubscription(kClusterId)}, true);
+  tab_helper_->OnSubscribe(CreateUserTrackedSubscription(kClusterId), true);
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(tab_helper_->IsPriceTracking());
 
   // Now assume the user has unsubscribed again.
   shopping_service_->SetIsSubscribedCallbackValue(false);
-  tab_helper_->OnUnsubscribe({CreateUserTrackedSubscription(kClusterId)}, true);
+  tab_helper_->OnUnsubscribe(CreateUserTrackedSubscription(kClusterId), true);
   base::RunLoop().RunUntilIdle();
 
   ASSERT_FALSE(tab_helper_->IsPriceTracking());

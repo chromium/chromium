@@ -116,17 +116,21 @@ void ShoppingListUiTabHelper::NavigationEntryCommitted(
 }
 
 void ShoppingListUiTabHelper::OnSubscribe(
-    const std::vector<CommerceSubscription>& subscriptions,
+    const CommerceSubscription& subscription,
     bool succeeded) {
-  // TODO(b:265216263): Block events here if the subscription does not match
-  //                    what is on the current page.
-  UpdatePriceTrackingStateFromSubscriptions();
-  UpdatePriceTrackingIconView();
+  HandleSubscriptionChange(subscription);
 }
 
 void ShoppingListUiTabHelper::OnUnsubscribe(
-    const std::vector<CommerceSubscription>& subscriptions,
+    const CommerceSubscription& subscription,
     bool succeeded) {
+  HandleSubscriptionChange(subscription);
+}
+
+void ShoppingListUiTabHelper::HandleSubscriptionChange(
+    const CommerceSubscription& sub) {
+  // TODO(b:265216263): Block events here if the subscription does not match
+  //                    what is on the current page.
   UpdatePriceTrackingStateFromSubscriptions();
   UpdatePriceTrackingIconView();
 }

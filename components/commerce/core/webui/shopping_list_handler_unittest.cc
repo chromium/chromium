@@ -194,7 +194,7 @@ TEST_F(ShoppingListHandlerTest, TestTrackProductSuccess) {
   handler_->TrackPriceForBookmark(product->id());
 
   // Assume the subscription callback fires with a success.
-  handler_->OnSubscribe({CreateUserTrackedSubscription(cluster_id)}, true);
+  handler_->OnSubscribe(CreateUserTrackedSubscription(cluster_id), true);
 
   task_environment_.RunUntilIdle();
 }
@@ -215,7 +215,7 @@ TEST_F(ShoppingListHandlerTest, TestUntrackProductSuccess) {
   handler_->UntrackPriceForBookmark(product->id());
 
   // Assume the subscription callback fires with a success.
-  handler_->OnUnsubscribe({CreateUserTrackedSubscription(cluster_id)}, true);
+  handler_->OnUnsubscribe(CreateUserTrackedSubscription(cluster_id), true);
 
   task_environment_.RunUntilIdle();
 }
@@ -238,7 +238,7 @@ TEST_F(ShoppingListHandlerTest, TestTrackProductFailure) {
   handler_->TrackPriceForBookmark(product->id());
 
   // Assume the subscription callback fires with a failure.
-  handler_->OnUnsubscribe({CreateUserTrackedSubscription(cluster_id)}, false);
+  handler_->OnUnsubscribe(CreateUserTrackedSubscription(cluster_id), false);
 
   task_environment_.RunUntilIdle();
 }
@@ -261,7 +261,7 @@ TEST_F(ShoppingListHandlerTest, TestUntrackProductFailure) {
   handler_->UntrackPriceForBookmark(product->id());
 
   // Assume the subscription callback fires with a failure.
-  handler_->OnUnsubscribe({CreateUserTrackedSubscription(cluster_id)}, false);
+  handler_->OnUnsubscribe(CreateUserTrackedSubscription(cluster_id), false);
 
   task_environment_.RunUntilIdle();
 }
@@ -274,7 +274,7 @@ TEST_F(ShoppingListHandlerTest, PageUpdateForPriceTrackChange) {
   EXPECT_CALL(page_, PriceUntrackedForBookmark(product->id()));
 
   // Assume the plumbing for subscriptions works and fake an unsubscribe event.
-  handler_->OnUnsubscribe({CreateUserTrackedSubscription(123L)}, true);
+  handler_->OnUnsubscribe(CreateUserTrackedSubscription(123L), true);
 
   task_environment_.RunUntilIdle();
 }

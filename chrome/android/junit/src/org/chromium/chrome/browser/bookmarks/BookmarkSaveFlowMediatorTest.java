@@ -26,8 +26,6 @@ import org.chromium.components.commerce.core.SubscriptionType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 
-import java.util.Arrays;
-
 /** Unit tests for {@link BookmarkSaveFlowMediator}. */
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
@@ -65,7 +63,7 @@ public class BookmarkSaveFlowMediatorTest {
                 (int) mPropertyModel.get(
                         BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_START_ICON_RES));
 
-        mMediator.onSubscribe(Arrays.asList(mSubscription), true);
+        mMediator.onSubscribe(mSubscription, true);
         Assert.assertTrue(
                 mPropertyModel.get(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TOGGLED));
         Assert.assertEquals(R.drawable.price_tracking_enabled_filled,
@@ -96,7 +94,7 @@ public class BookmarkSaveFlowMediatorTest {
                 (int) mPropertyModel.get(
                         BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_START_ICON_RES));
 
-        mMediator.onSubscribe(Arrays.asList(clone), true);
+        mMediator.onSubscribe(clone, true);
         Assert.assertTrue(
                 mPropertyModel.get(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TOGGLED));
         Assert.assertEquals(R.drawable.price_tracking_enabled_filled,
@@ -117,7 +115,7 @@ public class BookmarkSaveFlowMediatorTest {
                 (int) mPropertyModel.get(
                         BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_START_ICON_RES));
 
-        mMediator.onUnsubscribe(Arrays.asList(mSubscription), true);
+        mMediator.onUnsubscribe(mSubscription, true);
         Assert.assertFalse(
                 mPropertyModel.get(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TOGGLED));
         Assert.assertEquals(R.drawable.price_tracking_disabled,

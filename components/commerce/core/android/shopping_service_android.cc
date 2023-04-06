@@ -20,6 +20,18 @@ using base::android::ScopedJavaLocalRef;
 
 namespace commerce {
 
+namespace {
+
+ScopedJavaLocalRef<jobject> ToJavaObject(JNIEnv* env,
+                                         const CommerceSubscription& sub) {
+  return Java_ShoppingService_createSubscription(
+      env, static_cast<int>(sub.type), static_cast<int>(sub.id_type),
+      static_cast<int>(sub.management_type),
+      ConvertUTF8ToJavaString(env, sub.id));
+}
+
+}  // namespace
+
 ShoppingServiceAndroid::ShoppingServiceAndroid(ShoppingService* service)
     : shopping_service_(service), weak_ptr_factory_(this) {
   java_ref_.Reset(Java_ShoppingService_create(
@@ -242,34 +254,18 @@ bool ShoppingServiceAndroid::IsSubscribedFromCache(
   return shopping_service_->IsSubscribedFromCache(std::move(sub));
 }
 
-void ShoppingServiceAndroid::OnSubscribe(
-    const std::vector<CommerceSubscription>& subscriptions,
-    bool succeeded) {
+void ShoppingServiceAndroid::OnSubscribe(const CommerceSubscription& sub,
+                                         bool succeeded) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_ShoppingService_onSubscribe(
-      env, java_ref_, ConvertSubscriptionsToJavaList(subscriptions), succeeded);
+  Java_ShoppingService_onSubscribe(env, java_ref_, ToJavaObject(env, sub),
+                                   succeeded);
 }
 
-void ShoppingServiceAndroid::OnUnsubscribe(
-    const std::vector<CommerceSubscription>& subscriptions,
-    bool succeeded) {
+void ShoppingServiceAndroid::OnUnsubscribe(const CommerceSubscription& sub,
+                                           bool succeeded) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_ShoppingService_onUnsubscribe(
-      env, java_ref_, ConvertSubscriptionsToJavaList(subscriptions), succeeded);
-}
-
-ScopedJavaLocalRef<jobject>
-ShoppingServiceAndroid::ConvertSubscriptionsToJavaList(
-    const std::vector<CommerceSubscription>& subscriptions) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> j_subs = nullptr;
-  for (const auto& sub : subscriptions) {
-    j_subs = Java_ShoppingService_createSubscriptionAndAddToList(
-        env, java_ref_, j_subs, static_cast<int>(sub.type),
-        static_cast<int>(sub.id_type), static_cast<int>(sub.management_type),
-        ConvertUTF8ToJavaString(env, sub.id));
-  }
-  return j_subs;
+  Java_ShoppingService_onUnsubscribe(env, java_ref_, ToJavaObject(env, sub),
+                                     succeeded);
 }
 
 bool ShoppingServiceAndroid::IsShoppingListEligible(
