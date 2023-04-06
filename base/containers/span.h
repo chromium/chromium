@@ -242,7 +242,9 @@ class GSL_POINTER span : public internal::ExtentStorage<Extent> {
   using size_type = size_t;
   using difference_type = ptrdiff_t;
   using pointer = T*;
+  using const_pointer = const T*;
   using reference = T&;
+  using const_reference = const T&;
   using iterator = CheckedContiguousIterator<T>;
   // TODO(https://crbug.com/828324): Drop the const_iterator typedef once gMock
   // supports containers without this nested type.
