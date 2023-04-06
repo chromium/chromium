@@ -4969,7 +4969,7 @@ LayoutUnit LayoutBox::ContainingBlockLogicalWidthForPositioned(
                     To<LayoutBox>(containing_block)->ClientLogicalWidth());
   }
 
-  NOTREACHED_NORETURN();
+  return LayoutUnit();
 }
 
 LayoutUnit LayoutBox::ContainingBlockLogicalHeightForPositioned(

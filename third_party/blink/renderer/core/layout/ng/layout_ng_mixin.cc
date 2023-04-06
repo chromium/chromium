@@ -242,8 +242,10 @@ void LayoutNGMixin<Base>::UpdateOutOfFlowBlockLayout() {
                                        container_border_box_logical_height};
   container_builder.SetInitialFragmentGeometry(fragment_geometry);
 
+  // TODO(1229581): Remove this call to determine the static position.
   NGLogicalStaticPosition static_position =
       LayoutBoxUtils::ComputeStaticPositionFromLegacy(*this, border_scrollbar);
+
   // Set correct container for inline containing blocks.
   container_builder.AddOutOfFlowLegacyCandidate(
       NGBlockNode(this), static_position,
