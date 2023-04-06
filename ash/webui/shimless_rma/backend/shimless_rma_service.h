@@ -36,29 +36,22 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
 
   ~ShimlessRmaService() override;
 
+  // mojom::ShimlessRmaService:
   void GetCurrentState(GetCurrentStateCallback callback) override;
   void TransitionPreviousState(
       TransitionPreviousStateCallback callback) override;
-
   void AbortRma(AbortRmaCallback callback) override;
-
   void BeginFinalization(BeginFinalizationCallback callback) override;
-
   void TrackConfiguredNetworks() override;
   void NetworkSelectionComplete(
       NetworkSelectionCompleteCallback callback) override;
-
   void GetCurrentOsVersion(GetCurrentOsVersionCallback callback) override;
   void CheckForOsUpdates(CheckForOsUpdatesCallback callback) override;
   void UpdateOs(UpdateOsCallback callback) override;
   void UpdateOsSkipped(UpdateOsSkippedCallback callback) override;
-  VersionUpdater* GetVersionUpdaterForTesting();
-
   void SetSameOwner(SetSameOwnerCallback callback) override;
   void SetDifferentOwner(SetDifferentOwnerCallback callback) override;
-
   void SetWipeDevice(bool wipe_device, SetWipeDeviceCallback) override;
-
   void ChooseManuallyDisableWriteProtect(
       ChooseManuallyDisableWriteProtectCallback callback) override;
   void ChooseRsuDisableWriteProtect(
@@ -72,29 +65,23 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   void SetRsuDisableWriteProtectCode(
       const std::string& code,
       SetRsuDisableWriteProtectCodeCallback callback) override;
-
   void WriteProtectManuallyDisabled(
       WriteProtectManuallyDisabledCallback callback) override;
-
   void GetWriteProtectDisableCompleteAction(
       GetWriteProtectDisableCompleteActionCallback callback) override;
   void ConfirmManualWpDisableComplete(
       ConfirmManualWpDisableCompleteCallback callback) override;
-
   void GetComponentList(GetComponentListCallback callback) override;
   void SetComponentList(
       const std::vector<::rmad::ComponentsRepairState_ComponentRepairStatus>&
           component_list,
       SetComponentListCallback callback) override;
   void ReworkMainboard(ReworkMainboardCallback callback) override;
-
   void RoFirmwareUpdateComplete(
       RoFirmwareUpdateCompleteCallback callback) override;
-
   void ShutdownForRestock(ShutdownForRestockCallback callback) override;
   void ContinueFinalizationAfterRestock(
       ContinueFinalizationAfterRestockCallback callback) override;
-
   void GetRegionList(GetRegionListCallback callback) override;
   void GetSkuList(GetSkuListCallback callback) override;
   void GetWhiteLabelList(GetWhiteLabelListCallback callback) override;
@@ -111,7 +98,6 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
                             int32_t white_label_index,
                             const std::string& dram_part_number,
                             SetDeviceInformationCallback callback) override;
-
   void GetCalibrationComponentList(
       GetCalibrationComponentListCallback callback) override;
   void GetCalibrationSetupInstructions(
@@ -122,28 +108,22 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   void RunCalibrationStep(RunCalibrationStepCallback callback) override;
   void ContinueCalibration(ContinueCalibrationCallback callback) override;
   void CalibrationComplete(CalibrationCompleteCallback callback) override;
-
   void RetryProvisioning(RetryProvisioningCallback callback) override;
   void ProvisioningComplete(ProvisioningCompleteCallback callback) override;
-
   void RetryFinalization(RetryFinalizationCallback callback) override;
   void FinalizationComplete(FinalizationCompleteCallback callback) override;
-
   void WriteProtectManuallyEnabled(
       WriteProtectManuallyEnabledCallback callback) override;
-
   void GetLog(GetLogCallback callback) override;
   void SaveLog(SaveLogCallback callback) override;
   void GetPowerwashRequired(GetPowerwashRequiredCallback callback) override;
   void LaunchDiagnostics() override;
   void EndRma(rmad::RepairCompleteState::ShutdownMethod shutdown_method,
               EndRmaCallback callback) override;
-
   void CriticalErrorExitToLogin(
       CriticalErrorExitToLoginCallback callback) override;
   void CriticalErrorReboot(CriticalErrorRebootCallback callback) override;
   void ShutDownAfterHardwareError() override;
-
   void ObserveError(
       ::mojo::PendingRemote<mojom::ErrorObserver> observer) override;
   void ObserveOsUpdateProgress(
@@ -189,6 +169,8 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   void OsUpdateProgress(update_engine::Operation operation,
                         double progress,
                         update_engine::ErrorCode error_code);
+
+  VersionUpdater* GetVersionUpdaterForTesting();
 
   // Sends a metric to the platform side when the Diagnostics app is launched.
   void SendMetricOnLaunchDiagnostics();
