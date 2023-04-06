@@ -52,7 +52,7 @@ Polymer({
   attached() {
     const dialogArgs = chrome.getVariableValue('dialogArguments');
     assert(dialogArgs);
-    var args = JSON.parse(dialogArgs);
+    const args = JSON.parse(dialogArgs);
     assert(args);
     assert(args.path);
     assert(args.mid);

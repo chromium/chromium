@@ -72,7 +72,7 @@ Polymer({
 
   /** @private */
   ensureCountDownCalledOftenEnough_() {
-    var nowMs = Date.now();
+    const nowMs = Date.now();
     if (nowMs > this.expirationTime_) {
       // Already expired - no need to keep updating UI.
       this.stopCountDownCalls_();

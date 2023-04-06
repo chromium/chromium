@@ -255,7 +255,7 @@ Polymer({
   /** @private */
   onInstallButtonClick_() {
     assert(this.showInstallButton_(this.state_, this.error_));
-    var diskSize = 0;
+    let diskSize = 0;
     if (this.showDiskSlider_) {
       diskSize = this.diskSizeTicks_[this.$$('#diskSlider').value].value;
     } else {

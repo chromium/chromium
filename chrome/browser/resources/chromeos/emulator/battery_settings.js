@@ -169,7 +169,7 @@ Polymer({
 
   batteryStateChanged(batteryState) {
     // Find the index of the selected battery state.
-    var index = this.batteryStateOptions.indexOf(batteryState);
+    const index = this.batteryStateOptions.indexOf(batteryState);
     if (index < 0) {
       return;
     }
@@ -177,7 +177,7 @@ Polymer({
   },
 
   powerSourcesChanged() {
-    var connectedPowerSources =
+    const connectedPowerSources =
         this.powerSourceOptions.filter(function(source) {
           return source.connected;
         });

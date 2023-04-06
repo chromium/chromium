@@ -12,7 +12,7 @@ cr.define('cr.ArcGraphicsTracing', function() {
      * Initializes internal structures.
      */
     initialize() {
-      var stopOnJank = $('arc-graphics-tracing-stop-on-jank');
+      const stopOnJank = $('arc-graphics-tracing-stop-on-jank');
       stopOnJank.addEventListener('click', function(event) {
         chrome.send('setStopOnJank', [stopOnJank.checked]);
       }, false);
