@@ -63193,6 +63193,7 @@ from previous Chrome versions.
   <int value="693480759" label="PageInfoAboutThisSiteEn:disabled"/>
   <int value="693545401"
       label="AutofillEnableInfoBarAccountIndicationFooter:enabled"/>
+  <int value="693894532" label="LauncherOmniboxPublishLogicLog:enabled"/>
   <int value="694016981" label="query-tiles-more-trending"/>
   <int value="694165544" label="NtpComprehensiveTheming:disabled"/>
   <int value="694376282" label="OmniboxReportAssistedQueryStats:enabled"/>
@@ -64197,6 +64198,7 @@ from previous Chrome versions.
       label="SafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid:disabled"/>
   <int value="1247293682" label="topchrome-md"/>
   <int value="1248222772" label="ZeroCopyTabCapture:disabled"/>
+  <int value="1248486441" label="LauncherOmniboxPublishLogicLog:disabled"/>
   <int value="1249215617" label="SelectToSpeakNavigationControl:enabled"/>
   <int value="1249861983" label="WebViewUseMetricsUploadService:disabled"/>
   <int value="1250071868" label="disable-timezone-tracking-option"/>

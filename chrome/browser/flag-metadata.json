@@ -4806,6 +4806,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "launcher-omnibox-publish-logic-log",
+    "owners": ["chenjih", "tby"],
+    "expiry_milestone": 114
+  },
+  {
     "name": "launcher-system-info-answer-cards",
     "owners": ["laurencom", "wrong", "amandadeacon"],
     "expiry_milestone": 120

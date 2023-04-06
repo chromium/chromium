@@ -33,6 +33,10 @@ BASE_FEATURE(kLauncherSystemInfoAnswerCards,
              "LauncherSystemInfoAnswerCards",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLauncherOmniboxPublishLogicLog,
+             "LauncherOmniboxPublishLogicLog",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsLauncherGameSearchEnabled() {
   return base::FeatureList::IsEnabled(kLauncherGameSearch) ||
          chromeos::features::IsCloudGamingDeviceEnabled();
@@ -56,6 +60,10 @@ bool IsLauncherImageSearchEnabled() {
 
 bool isLauncherSystemInfoAnswerCardsEnabled() {
   return base::FeatureList::IsEnabled(kLauncherSystemInfoAnswerCards);
+}
+
+bool isLauncherOmniboxPublishLogicLogEnabled() {
+  return base::FeatureList::IsEnabled(kLauncherOmniboxPublishLogicLog);
 }
 
 }  // namespace search_features

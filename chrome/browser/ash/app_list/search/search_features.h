@@ -27,12 +27,15 @@ BASE_DECLARE_FEATURE(kLauncherImageSearch);
 
 BASE_DECLARE_FEATURE(kLauncherSystemInfoAnswerCards);
 
+BASE_DECLARE_FEATURE(kLauncherOmniboxPublishLogicLog);
+
 bool IsLauncherGameSearchEnabled();
 bool IsLauncherKeywordExtractionScoringEnabled();
 bool IsLauncherQueryFederatedAnalyticsPHHEnabled();
 bool IsLauncherImageSearchEnabled();
 bool isLauncherFuzzyMatchForOmniboxEnabled();
 bool isLauncherSystemInfoAnswerCardsEnabled();
+bool isLauncherOmniboxPublishLogicLogEnabled();
 
 }  // namespace search_features
 
