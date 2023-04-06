@@ -92,9 +92,9 @@ BASE_EXPORT size_t u16cstrlcpy(char16_t* dst,
   ::base::strlcpy(var_name, (c_str), sizeof(var_name));   \
   ::base::debug::Alias(var_name)
 
-#define DEBUG_ALIAS_FOR_U16CSTR(var_name, c_str, char_count) \
-  char16_t var_name[char_count];                             \
-  ::base::u16cstrlcpy(var_name, (c_str), sizeof(var_name));  \
+#define DEBUG_ALIAS_FOR_U16CSTR(var_name, c_str, char_count)   \
+  char16_t var_name[char_count];                               \
+  ::base::u16cstrlcpy(var_name, (c_str), std::size(var_name)); \
   ::base::debug::Alias(var_name)
 
 // Code folding is a linker optimization whereby the linker identifies functions
