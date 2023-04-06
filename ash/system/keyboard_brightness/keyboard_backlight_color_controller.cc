@@ -103,8 +103,8 @@ void KeyboardBacklightColorController::SetBacklightColor(
     const AccountId& account_id) {
   DisplayBacklightColor(backlight_color);
   SetBacklightColorPref(backlight_color, account_id);
+  SetDisplayType(DisplayType::kStatic, account_id);
   if (features::IsMultiZoneRgbKeyboardEnabled()) {
-    SetDisplayType(DisplayType::kStatic, account_id);
     UpdateAllBacklightZoneColors(backlight_color, account_id);
   }
   MaybeToggleOnKeyboardBrightness();
