@@ -48,6 +48,36 @@ class SidePanelSetOptionsFunction : public SidePanelApiFunction {
   ResponseAction RunFunction() override;
 };
 
+class SidePanelSetPanelBehaviorFunction : public SidePanelApiFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("sidePanel.setPanelBehavior",
+                             SIDEPANEL_SETPANELBEHAVIOR)
+  SidePanelSetPanelBehaviorFunction() = default;
+  SidePanelSetPanelBehaviorFunction(const SidePanelSetPanelBehaviorFunction&) =
+      delete;
+  SidePanelSetPanelBehaviorFunction& operator=(
+      const SidePanelSetPanelBehaviorFunction&) = delete;
+
+ private:
+  ~SidePanelSetPanelBehaviorFunction() override = default;
+  ResponseAction RunFunction() override;
+};
+
+class SidePanelGetPanelBehaviorFunction : public SidePanelApiFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("sidePanel.getPanelBehavior",
+                             SIDEPANEL_GETPANELBEHAVIOR)
+  SidePanelGetPanelBehaviorFunction() = default;
+  SidePanelGetPanelBehaviorFunction(const SidePanelGetPanelBehaviorFunction&) =
+      delete;
+  SidePanelGetPanelBehaviorFunction& operator=(
+      const SidePanelGetPanelBehaviorFunction&) = delete;
+
+ private:
+  ~SidePanelGetPanelBehaviorFunction() override = default;
+  ResponseAction RunFunction() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_SIDE_PANEL_SIDE_PANEL_API_H_

@@ -11,11 +11,19 @@
 #include "chrome/common/extensions/api/side_panel.h"
 #include "chrome/common/extensions/api/side_panel/side_panel_info.h"
 #include "components/sessions/core/session_id.h"
+#include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/pref_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
 namespace {
+
+// Key corresponding to whether the extension's side panel entry (if one exists)
+// should be opened when its icon is clicked in the toolbar.
+constexpr PrefMap kOpenSidePanelOnIconClickPref = {
+    "open_side_panel_on_icon_click", PrefType::kBool,
+    PrefScope::kExtensionSpecific};
 
 api::side_panel::PanelOptions GetPanelOptionsFromManifest(
     const Extension& extension) {
@@ -137,6 +145,23 @@ SidePanelService* SidePanelService::Get(content::BrowserContext* context) {
 
 void SidePanelService::RemoveExtensionOptions(const ExtensionId& id) {
   panels_.erase(id);
+}
+
+bool SidePanelService::GetOpenSidePanelOnIconClick(
+    const ExtensionId& extension_id) {
+  bool open_side_panel_on_icon_click = false;
+  ExtensionPrefs::Get(browser_context_)
+      ->ReadPrefAsBoolean(extension_id, kOpenSidePanelOnIconClickPref,
+                          &open_side_panel_on_icon_click);
+  return open_side_panel_on_icon_click;
+}
+
+void SidePanelService::SetOpenSidePanelOnIconClick(
+    const ExtensionId& extension_id,
+    bool open_side_panel_on_icon_click) {
+  ExtensionPrefs::Get(browser_context_)
+      ->SetBooleanPref(extension_id, kOpenSidePanelOnIconClickPref,
+                       open_side_panel_on_icon_click);
 }
 
 void SidePanelService::AddObserver(Observer* observer) {

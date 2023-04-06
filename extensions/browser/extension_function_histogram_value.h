@@ -1841,6 +1841,8 @@ enum HistogramValue {
   OS_EVENTS_ISEVENTSUPPORTED = 1778,
   OS_EVENTS_STARTCAPTURINGEVENTS = 1779,
   OS_EVENTS_STOPCAPTURINGEVENTS = 1780,
+  SIDEPANEL_SETPANELBEHAVIOR = 1781,
+  SIDEPANEL_GETPANELBEHAVIOR = 1782,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

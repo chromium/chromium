@@ -58,6 +58,15 @@ class SidePanelService : public BrowserContextKeyedAPI,
   // Determine if panel options have been set for extension id. Used in tests.
   bool HasExtensionPanelOptionsForTest(const ExtensionId& id);
 
+  // Returns whether the extension will open its side panel entry when its icon
+  // in the toolbar is clicked.
+  bool GetOpenSidePanelOnIconClick(const ExtensionId& extension_id);
+
+  // Updates whether the extension will open its side panel entry when its icon
+  // in the toolbar is clicked.
+  void SetOpenSidePanelOnIconClick(const ExtensionId& extension_id,
+                                   bool open_side_panel_on_icon_click);
+
   // Adds or removes observers.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

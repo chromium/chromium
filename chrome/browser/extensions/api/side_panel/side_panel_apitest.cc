@@ -41,9 +41,14 @@ IN_PROC_BROWSER_TEST_F(SidePanelApiTest, PermissionMissing) {
   ASSERT_TRUE(RunExtensionTest("side_panel/permission_missing")) << message_;
 }
 
-// Verify chrome.sidePanel.get behavior without side_panel manifest key.
+// Verify chrome.sidePanel.getOptions behavior without side_panel manifest key.
 IN_PROC_BROWSER_TEST_F(SidePanelApiTest, MissingManifestKey) {
   ASSERT_TRUE(RunExtensionTest("side_panel/missing_manifest_key")) << message_;
+}
+
+// Verify chrome.sidePanel.get/setPanelBehavior behavior.
+IN_PROC_BROWSER_TEST_F(SidePanelApiTest, PanelBehavior) {
+  ASSERT_TRUE(RunExtensionTest("side_panel/panel_behavior")) << message_;
 }
 
 class SidePanelApiWithExtensionTest : public SidePanelApiTest {

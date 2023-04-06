@@ -1,0 +1,7 @@
+{
+  "name": "Side Panel PanelBehavior extension",
+  "version": "1.0",
+  "manifest_version": 3,
+  "permissions": ["sidePanel"],
+  "background": {"service_worker": "service_worker.js"}
+}
