@@ -25,15 +25,8 @@ const LayoutObject* AnchorScrollObject(const LayoutObject* layout_object) {
   if (!value)
     return nullptr;
 
-  LayoutBox::NGPhysicalFragmentList containing_block_fragments =
-      layout_object->ContainingBlock()->PhysicalFragments();
-  if (containing_block_fragments.IsEmpty())
-    return nullptr;
-
-  // TODO(crbug.com/1309178): Fix it when the containing block is fragmented or
-  // an inline box.
   const NGPhysicalAnchorQuery* anchor_query =
-      containing_block_fragments.front().AnchorQuery();
+      NGPhysicalAnchorQuery::GetFromLayoutResult(*layout_object);
   if (!anchor_query)
     return nullptr;
 

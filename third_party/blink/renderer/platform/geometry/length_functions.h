@@ -61,8 +61,10 @@ inline LayoutUnit MinimumValueForLength(
   return MinimumValueForLengthInternal(length, maximum_value, anchor_evaluator);
 }
 
-PLATFORM_EXPORT LayoutUnit ValueForLength(const Length&,
-                                          LayoutUnit maximum_value);
+PLATFORM_EXPORT LayoutUnit
+ValueForLength(const Length&,
+               LayoutUnit maximum_value,
+               const Length::AnchorEvaluator* anchor_evaluator = nullptr);
 PLATFORM_EXPORT gfx::SizeF SizeForLengthSize(const LengthSize&,
                                              const gfx::SizeF& box_size);
 PLATFORM_EXPORT gfx::PointF PointForLengthPoint(const LengthPoint&,
