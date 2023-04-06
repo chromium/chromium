@@ -46,6 +46,25 @@ function onVisitsJsonReady(resp: {visitsJson: string}) {
   dumpFileWithJsonContents(data, filename);
 }
 
+/**
+ * The callback to button#context-clusters-dump to save the most recent context
+ * clusters to a file.
+ */
+function onContextClustersDumpRequest() {
+  getProxy().getHandler().getContextClustersJson().then(
+      onContextClustersJsonReady);
+}
+
+/**
+ * The callback when the context clusters JSON string has been prepared.
+ */
+function onContextClustersJsonReady(resp: {contextClustersJson: string}) {
+  const data = resp.contextClustersJson;
+  const filename = 'history_context_clusters_dump.json';
+
+  dumpFileWithJsonContents(data, filename);
+}
+
 function getProxy(): HistoryClustersInternalsBrowserProxy {
   return HistoryClustersInternalsBrowserProxy.getInstance();
 }
@@ -64,6 +83,8 @@ function initialize() {
       .addEventListener('click', onLogMessagesDump);
   getRequiredElement('visits-dump')
       .addEventListener('click', onVisitsDumpRequested);
+  getRequiredElement('context-clusters-dump')
+      .addEventListener('click', onContextClustersDumpRequest);
   getRequiredElement('print-keyword-bag-state')
       .addEventListener('click', onPrintKeywordBagState);
 

@@ -18,6 +18,10 @@ interface PageHandler {
   // callback when JSON string is ready.
   GetVisitsJson() => (string visits_json);
 
+  // Requests for the context clusters to be serialized to JSON.
+  // Will invoke callback when JSON string is ready.
+  GetContextClustersJson() => (string context_clusters_json);
+
   // Requests that the HistoryClustersService prints the keyword bag state to
   // the log messages. These log messages will be sent to the page via
   // `OnLogMessageAdded()`.
