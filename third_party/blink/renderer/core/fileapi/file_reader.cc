@@ -201,7 +201,7 @@ FileReader::FileReader(ExecutionContext* context)
       state_(kEmpty),
       loading_state_(kLoadingStateNone),
       still_firing_events_(false),
-      read_type_(FileReaderLoader::kReadAsBinaryString) {}
+      read_type_(FileReadType::kReadAsBinaryString) {}
 
 FileReader::~FileReader() = default;
 
@@ -233,7 +233,7 @@ void FileReader::readAsArrayBuffer(Blob* blob,
   DVLOG(1) << "reading as array buffer: " << Utf8BlobUUID(blob).data() << " "
            << Utf8FilePath(blob).data();
 
-  ReadInternal(blob, FileReaderLoader::kReadAsArrayBuffer, exception_state);
+  ReadInternal(blob, FileReadType::kReadAsArrayBuffer, exception_state);
 }
 
 void FileReader::readAsBinaryString(Blob* blob,
@@ -242,7 +242,7 @@ void FileReader::readAsBinaryString(Blob* blob,
   DVLOG(1) << "reading as binary: " << Utf8BlobUUID(blob).data() << " "
            << Utf8FilePath(blob).data();
 
-  ReadInternal(blob, FileReaderLoader::kReadAsBinaryString, exception_state);
+  ReadInternal(blob, FileReadType::kReadAsBinaryString, exception_state);
 }
 
 void FileReader::readAsText(Blob* blob,
@@ -253,7 +253,7 @@ void FileReader::readAsText(Blob* blob,
            << Utf8FilePath(blob).data();
 
   encoding_ = encoding;
-  ReadInternal(blob, FileReaderLoader::kReadAsText, exception_state);
+  ReadInternal(blob, FileReadType::kReadAsText, exception_state);
 }
 
 void FileReader::readAsText(Blob* blob, ExceptionState& exception_state) {
@@ -265,11 +265,11 @@ void FileReader::readAsDataURL(Blob* blob, ExceptionState& exception_state) {
   DVLOG(1) << "reading as data URL: " << Utf8BlobUUID(blob).data() << " "
            << Utf8FilePath(blob).data();
 
-  ReadInternal(blob, FileReaderLoader::kReadAsDataURL, exception_state);
+  ReadInternal(blob, FileReadType::kReadAsDataURL, exception_state);
 }
 
 void FileReader::ReadInternal(Blob* blob,
-                              FileReaderLoader::ReadType type,
+                              FileReadType type,
                               ExceptionState& exception_state) {
   // If multiple concurrent read methods are called on the same FileReader,
   // InvalidStateError should be thrown when the state is kLoading.
@@ -368,7 +368,7 @@ V8UnionArrayBufferOrString* FileReader::result() const {
     return nullptr;
   }
 
-  if (read_type_ == FileReaderLoader::kReadAsArrayBuffer) {
+  if (read_type_ == FileReadType::kReadAsArrayBuffer) {
     return MakeGarbageCollected<V8UnionArrayBufferOrString>(
         loader_->ArrayBufferResult());
   }

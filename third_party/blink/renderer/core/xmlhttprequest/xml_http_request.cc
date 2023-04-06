@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/core/fetch/trust_token_to_mojom.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
+#include "third_party/blink/renderer/core/fileapi/file_read_type.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader_client.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
@@ -248,7 +249,7 @@ class XMLHttpRequest::BlobLoader final
   BlobLoader(XMLHttpRequest* xhr, scoped_refptr<BlobDataHandle> handle)
       : xhr_(xhr),
         loader_(MakeGarbageCollected<FileReaderLoader>(
-            FileReaderLoader::kReadByClient,
+            FileReadType::kReadByClient,
             this,
             xhr->GetExecutionContext()->GetTaskRunner(
                 TaskType::kFileReading))) {

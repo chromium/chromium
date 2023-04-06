@@ -63,7 +63,7 @@
 namespace blink {
 
 FileReaderLoader::FileReaderLoader(
-    ReadType read_type,
+    FileReadType read_type,
     FileReaderLoaderClient* client,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : read_type_(read_type),
@@ -125,7 +125,7 @@ void FileReaderLoader::Cancel() {
 }
 
 DOMArrayBuffer* FileReaderLoader::ArrayBufferResult() {
-  DCHECK_EQ(read_type_, kReadAsArrayBuffer);
+  DCHECK_EQ(read_type_, FileReadType::kReadAsArrayBuffer);
   if (array_buffer_result_)
     return array_buffer_result_;
 
@@ -145,8 +145,8 @@ DOMArrayBuffer* FileReaderLoader::ArrayBufferResult() {
 }
 
 String FileReaderLoader::StringResult() {
-  DCHECK_NE(read_type_, kReadAsArrayBuffer);
-  DCHECK_NE(read_type_, kReadByClient);
+  DCHECK_NE(read_type_, FileReadType::kReadAsArrayBuffer);
+  DCHECK_NE(read_type_, FileReadType::kReadByClient);
 
   if (!raw_data_.IsValid() || (error_code_ != FileErrorCode::kOK) ||
       is_raw_data_converted_) {
@@ -154,17 +154,17 @@ String FileReaderLoader::StringResult() {
   }
 
   switch (read_type_) {
-    case kReadAsArrayBuffer:
+    case FileReadType::kReadAsArrayBuffer:
       // No conversion is needed.
       return string_result_;
-    case kReadAsBinaryString:
+    case FileReadType::kReadAsBinaryString:
       SetStringResult(String(static_cast<const char*>(raw_data_.Data()),
                              static_cast<size_t>(bytes_loaded_)));
       break;
-    case kReadAsText:
+    case FileReadType::kReadAsText:
       SetStringResult(ConvertToText());
       break;
-    case kReadAsDataURL:
+    case FileReadType::kReadAsDataURL:
       // Partial data is not supported when reading as data URL.
       if (finished_loading_)
         SetStringResult(ConvertToDataURL());
@@ -224,7 +224,7 @@ void FileReaderLoader::OnStartLoading(uint64_t total_bytes) {
 
   DCHECK(!raw_data_.IsValid());
 
-  if (read_type_ != kReadByClient) {
+  if (read_type_ != FileReadType::kReadByClient) {
     // Check that we can cast to unsigned since we have to do
     // so to call ArrayBuffer's create function.
     // FIXME: Support reading more than the current size limit of ArrayBuffer.
@@ -253,7 +253,7 @@ void FileReaderLoader::OnReceivedData(const char* data, unsigned data_length) {
   if (error_code_ != FileErrorCode::kOK)
     return;
 
-  if (read_type_ == kReadByClient) {
+  if (read_type_ == FileReadType::kReadByClient) {
     bytes_loaded_ += data_length;
 
     if (client_)
@@ -283,7 +283,7 @@ void FileReaderLoader::OnReceivedData(const char* data, unsigned data_length) {
 }
 
 void FileReaderLoader::OnFinishLoading() {
-  if (read_type_ != kReadByClient && raw_data_.IsValid()) {
+  if (read_type_ != FileReadType::kReadByClient && raw_data_.IsValid()) {
     DCHECK_EQ(bytes_loaded_, raw_data_.DataLength());
     is_raw_data_converted_ = false;
   }

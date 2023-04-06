@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/fileapi/file_read_type.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader_client.h"
 #include "third_party/blink/renderer/core/probe/async_task_context.h"
@@ -107,7 +108,7 @@ class CORE_EXPORT FileReader final : public EventTargetWithInlineData,
   class ThrottlingController;
 
   void Terminate();
-  void ReadInternal(Blob*, FileReaderLoader::ReadType, ExceptionState&);
+  void ReadInternal(Blob*, FileReadType, ExceptionState&);
   void FireEvent(const AtomicString& type);
 
   void ExecutePendingRead();
@@ -127,7 +128,7 @@ class CORE_EXPORT FileReader final : public EventTargetWithInlineData,
 
   String blob_type_;
   scoped_refptr<BlobDataHandle> blob_data_handle_;
-  FileReaderLoader::ReadType read_type_;
+  FileReadType read_type_;
   String encoding_;
   probe::AsyncTaskContext async_task_context_;
 

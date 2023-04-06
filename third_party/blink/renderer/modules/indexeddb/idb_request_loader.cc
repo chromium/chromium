@@ -9,6 +9,7 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/fileapi/file_read_type.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_request.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_request_queue_item.h"
@@ -86,7 +87,7 @@ void IDBRequestLoader::StartNextValue() {
   file_reader_loading_ = true;
 #endif  // DCHECK_IS_ON()
   loader_ = MakeGarbageCollected<FileReaderLoader>(
-      FileReaderLoader::kReadByClient, this,
+      FileReadType::kReadByClient, this,
       exection_context->GetTaskRunner(TaskType::kDatabaseAccess));
   loader_->Start(unwrapper.WrapperBlobHandle());
 }

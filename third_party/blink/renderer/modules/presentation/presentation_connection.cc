@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/fileapi/file_error.h"
+#include "third_party/blink/renderer/core/fileapi/file_read_type.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader_client.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -125,7 +126,7 @@ class PresentationConnection::BlobLoader final
              scoped_refptr<base::SingleThreadTaskRunner> task_runner)
       : presentation_connection_(presentation_connection),
         loader_(MakeGarbageCollected<FileReaderLoader>(
-            FileReaderLoader::kReadAsArrayBuffer,
+            FileReadType::kReadAsArrayBuffer,
             this,
             std::move(task_runner))) {
     loader_->Start(std::move(blob_data_handle));

@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/fileapi/file_error.h"
+#include "third_party/blink/renderer/core/fileapi/file_read_type.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -52,7 +53,7 @@ DOMArrayBuffer* FileReaderSync::readAsArrayBuffer(
   DCHECK(blob);
 
   FileReaderLoader* loader = MakeGarbageCollected<FileReaderLoader>(
-      FileReaderLoader::kReadAsArrayBuffer, nullptr, task_runner_);
+      FileReadType::kReadAsArrayBuffer, nullptr, task_runner_);
   StartLoading(*loader, *blob, exception_state);
 
   return loader->ArrayBufferResult();
@@ -63,7 +64,7 @@ String FileReaderSync::readAsBinaryString(Blob* blob,
   DCHECK(blob);
 
   FileReaderLoader* loader = MakeGarbageCollected<FileReaderLoader>(
-      FileReaderLoader::kReadAsBinaryString, nullptr, task_runner_);
+      FileReadType::kReadAsBinaryString, nullptr, task_runner_);
   StartLoading(*loader, *blob, exception_state);
   return loader->StringResult();
 }
@@ -74,7 +75,7 @@ String FileReaderSync::readAsText(Blob* blob,
   DCHECK(blob);
 
   FileReaderLoader* loader = MakeGarbageCollected<FileReaderLoader>(
-      FileReaderLoader::kReadAsText, nullptr, task_runner_);
+      FileReadType::kReadAsText, nullptr, task_runner_);
   loader->SetEncoding(encoding);
   StartLoading(*loader, *blob, exception_state);
   return loader->StringResult();
@@ -85,7 +86,7 @@ String FileReaderSync::readAsDataURL(Blob* blob,
   DCHECK(blob);
 
   FileReaderLoader* loader = MakeGarbageCollected<FileReaderLoader>(
-      FileReaderLoader::kReadAsDataURL, nullptr, task_runner_);
+      FileReadType::kReadAsDataURL, nullptr, task_runner_);
   loader->SetDataType(blob->type());
   StartLoading(*loader, *blob, exception_state);
   return loader->StringResult();

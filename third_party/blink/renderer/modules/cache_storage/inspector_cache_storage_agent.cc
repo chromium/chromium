@@ -20,6 +20,7 @@
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/fileapi/file_read_type.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader_client.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -495,10 +496,10 @@ class CachedResponseFileReaderLoaderClient final
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       scoped_refptr<BlobDataHandle>&& blob,
       std::unique_ptr<RequestCachedResponseCallback>&& callback)
-      : loader_(MakeGarbageCollected<FileReaderLoader>(
-            FileReaderLoader::kReadByClient,
-            this,
-            std::move(task_runner))),
+      : loader_(
+            MakeGarbageCollected<FileReaderLoader>(FileReadType::kReadByClient,
+                                                   this,
+                                                   std::move(task_runner))),
         callback_(std::move(callback)),
         data_(SharedBuffer::Create()),
         keep_alive_(this) {

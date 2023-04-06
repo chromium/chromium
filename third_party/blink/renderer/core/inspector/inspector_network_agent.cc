@@ -59,6 +59,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
+#include "third_party/blink/renderer/core/fileapi/file_read_type.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader_client.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -200,10 +201,10 @@ class InspectorFileReaderLoaderClient final
       base::OnceCallback<void(scoped_refptr<SharedBuffer>)> callback)
       : blob_(std::move(blob)),
         callback_(std::move(callback)),
-        loader_(MakeGarbageCollected<FileReaderLoader>(
-            FileReaderLoader::kReadByClient,
-            this,
-            std::move(task_runner))),
+        loader_(
+            MakeGarbageCollected<FileReaderLoader>(FileReadType::kReadByClient,
+                                                   this,
+                                                   std::move(task_runner))),
         keep_alive_(this) {}
 
   InspectorFileReaderLoaderClient(const InspectorFileReaderLoaderClient&) =

@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/file_error.h"
+#include "third_party/blink/renderer/core/fileapi/file_read_type.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader_client.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -70,17 +71,9 @@ class TextResourceDecoder;
 class CORE_EXPORT FileReaderLoader : public GarbageCollected<FileReaderLoader>,
                                      public mojom::blink::BlobReaderClient {
  public:
-  enum ReadType {
-    kReadAsArrayBuffer,
-    kReadAsBinaryString,
-    kReadAsText,
-    kReadAsDataURL,
-    kReadByClient
-  };
-
   // If client is given, do the loading asynchronously. Otherwise, load
   // synchronously.
-  FileReaderLoader(ReadType,
+  FileReaderLoader(FileReadType,
                    FileReaderLoaderClient*,
                    scoped_refptr<base::SingleThreadTaskRunner>);
   ~FileReaderLoader() override;
@@ -137,7 +130,7 @@ class CORE_EXPORT FileReaderLoader : public GarbageCollected<FileReaderLoader>,
   String ConvertToDataURL();
   void SetStringResult(const String&);
 
-  ReadType read_type_;
+  FileReadType read_type_;
   WeakMember<FileReaderLoaderClient> client_;
   WTF::TextEncoding encoding_;
   String data_type_;

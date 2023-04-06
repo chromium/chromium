@@ -11,6 +11,7 @@ blink_core_sources_fileapi = [
   "file_error.h",
   "file_list.cc",
   "file_list.h",
+  "file_read_type.h",
   "file_reader.cc",
   "file_reader.h",
   "file_reader_loader.cc",

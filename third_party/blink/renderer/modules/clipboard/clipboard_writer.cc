@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/fileapi/file_read_type.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -343,7 +344,7 @@ void ClipboardWriter::WriteToSystem(Blob* blob) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!file_reader_);
   file_reader_ = MakeGarbageCollected<FileReaderLoader>(
-      FileReaderLoader::kReadAsArrayBuffer, this,
+      FileReadType::kReadAsArrayBuffer, this,
       std::move(file_reading_task_runner_));
   file_reader_->Start(blob->GetBlobDataHandle());
 }
