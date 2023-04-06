@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import {assertInstanceof} from 'chrome://resources/js/assert_ts.js';
-import {decorate} from './ui.js';
 import type {CSSResult} from '../../widgets/xf_base.js';
+import {decorate} from './ui.js';
 
 /**
  * Function to be used as event listener for `mouseenter`, it sets the `title`
@@ -188,4 +188,26 @@ export function addCSSPrefixSelector(
     }
   }
   return prefixedCSS;
+}
+
+/**
+ * A util function to get the correct "top" value when calling
+ * <cr-action-menu>'s `showAt` method.
+ *
+ * @param triggerElement The he element which triggers the menu dropdown.
+ * @param marginTop The gap between the trigger element and the menu dialog.
+ */
+export function getCrActionMenuTop(
+    triggerElement: HTMLElement, marginTop: number): number {
+  let top = triggerElement.offsetHeight;
+  let offsetElement: Element|null = triggerElement;
+  // The menu dialog from <cr-action-menu> is "absolute" positioned, we need to
+  // start from the trigger element and go upwards to add all offsetTop from all
+  // offset parents because each level can have its own offsetTop.
+  while (offsetElement instanceof HTMLElement) {
+    top += offsetElement.offsetTop;
+    offsetElement = offsetElement.offsetParent;
+  }
+  top += marginTop;
+  return top;
 }

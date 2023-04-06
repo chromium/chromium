@@ -11,6 +11,8 @@
 import {AnchorAlignment, CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
+import {getCrActionMenuTop} from '../common/js/dom_utils.js';
+
 import {css, CSSResultGroup, customElement, html, property, query, XfBase} from './xf_base.js';
 
 /**
@@ -256,7 +258,7 @@ export class XfSelect extends XfBase {
   private openOptions_() {
     if (!this.expanded) {
       const element: HTMLElement = this.$toggleDropdownButton_!;
-      const top = element.offsetTop + element.offsetHeight + 8;
+      const top = getCrActionMenuTop(element, 8);
       this.$optionsMenu_!.showAt(
           element, {top: top, anchorAlignmentX: AnchorAlignment.AFTER_START});
     }
@@ -272,7 +274,7 @@ export class XfSelect extends XfBase {
   }
 
   /**
-   * Reacs to one of the options being selected. If the selection changed the
+   * React to one of the options being selected. If the selection changed the
    * currently selected option, it updates the value, which prompts
    * re-rendering. It also posts a selection change event. Finally it always
    * closes the option, regardless of change.
