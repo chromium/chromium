@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/shared_storage/services/shared_storage_worklet_messaging_proxy.h"
+#include "third_party/blink/renderer/modules/shared_storage/shared_storage_worklet_messaging_proxy.h"
 
 #include <utility>
 
@@ -11,7 +11,7 @@
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/core/workers/threaded_worklet_object_proxy.h"
-#include "third_party/blink/renderer/modules/shared_storage/services/shared_storage_worklet_thread.h"
+#include "third_party/blink/renderer/modules/shared_storage/shared_storage_worklet_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"

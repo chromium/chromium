@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/shared_storage/services/shared_storage_worklet_global_scope.h"
+#include "third_party/blink/renderer/modules/shared_storage/shared_storage_worklet_global_scope.h"
 
 #include <memory>
 #include <utility>
@@ -22,8 +22,9 @@
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/threaded_messaging_proxy_base.h"
-#include "third_party/blink/renderer/modules/shared_storage/services/shared_storage_operation_definition.h"
-#include "third_party/blink/renderer/modules/shared_storage/services/shared_storage_worklet_thread.h"
+#include "third_party/blink/renderer/modules/shared_storage/shared_storage.h"
+#include "third_party/blink/renderer/modules/shared_storage/shared_storage_operation_definition.h"
+#include "third_party/blink/renderer/modules/shared_storage/shared_storage_worklet_thread.h"
 #include "third_party/blink/renderer/platform/bindings/callback_method_retriever.h"
 
 namespace blink {
@@ -280,17 +281,19 @@ void SharedStorageWorkletGlobalScope::OnConsoleApiMessage(
     mojom::ConsoleMessageLevel level,
     const String& message,
     SourceLocation* location) {
-  client_->ConsoleLog(message.Utf8());
+  client_->ConsoleLog(message);
 
   WorkerOrWorkletGlobalScope::OnConsoleApiMessage(level, message, location);
 }
 
 void SharedStorageWorkletGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(receiver_);
+  visitor->Trace(shared_storage_);
   visitor->Trace(operation_definition_map_);
   visitor->Trace(client_);
   visitor->Trace(private_aggregation_host_);
   WorkletGlobalScope::Trace(visitor);
+  Supplementable<SharedStorageWorkletGlobalScope>::Trace(visitor);
 }
 
 void SharedStorageWorkletGlobalScope::Initialize(
@@ -299,14 +302,21 @@ void SharedStorageWorkletGlobalScope::Initialize(
     bool private_aggregation_permissions_policy_allowed,
     mojo::PendingRemote<mojom::PrivateAggregationHost> private_aggregation_host,
     const absl::optional<std::u16string>& embedder_context) {
-  client_.Bind(std::move(client),
-               GetTaskRunner(blink::TaskType::kMiscPlatformAPI));
+  client_.Bind(
+      CrossVariantMojoAssociatedRemote<
+          mojom::blink::SharedStorageWorkletServiceClientInterfaceBase>(
+          std::move(client)),
+      GetTaskRunner(blink::TaskType::kMiscPlatformAPI));
   private_aggregation_permissions_policy_allowed_ =
       private_aggregation_permissions_policy_allowed;
   if (private_aggregation_host) {
     private_aggregation_host_.Bind(
         std::move(private_aggregation_host),
         GetTaskRunner(blink::TaskType::kMiscPlatformAPI));
+  }
+
+  if (embedder_context) {
+    embedder_context_ = WTF::String(embedder_context->c_str());
   }
 }
 
@@ -452,6 +462,32 @@ void SharedStorageWorkletGlobalScope::RunOperation(
   promise.Then(success_callback, failure_callback);
 }
 
+SharedStorage* SharedStorageWorkletGlobalScope::sharedStorage(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  if (!add_module_finished_) {
+    CHECK(!shared_storage_);
+
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "sharedStorage cannot be accessed during addModule().");
+
+    return nullptr;
+  }
+
+  // As long as `addModule()` has finished, it should be fine to expose
+  // `sharedStorage`: on the browser side, we already enforce that `addModule()`
+  // can only be called once, so there's no way to expose the storage data to
+  // the associated `Document`.
+  if (shared_storage_) {
+    return shared_storage_.Get();
+  }
+
+  shared_storage_ = MakeGarbageCollected<SharedStorage>();
+
+  return shared_storage_.Get();
+}
+
 void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
     const GURL& script_source_url,
     mojom::SharedStorageWorkletService::AddModuleCallback callback,
@@ -459,11 +495,14 @@ void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
     std::string error_message) {
   module_script_downloader_.reset();
 
-  DCHECK(!module_script_loaded_);
-  module_script_loaded_ = true;
+  mojom::SharedStorageWorkletService::AddModuleCallback
+      add_module_finished_callback = std::move(callback).Then(WTF::BindOnce(
+          &SharedStorageWorkletGlobalScope::RecordAddModuleFinished,
+          WrapPersistent(this)));
 
   if (!response_body) {
-    std::move(callback).Run(false, std::string(error_message));
+    std::move(add_module_finished_callback)
+        .Run(false, std::string(error_message));
     return;
   }
 
@@ -488,16 +527,22 @@ void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
       ScriptEvaluationResult::ResultType::kException) {
     v8::Local<v8::Value> exception = result.GetExceptionForWorklet();
 
-    std::move(callback).Run(
-        false, /*error_message=*/ExceptionToString(script_state, exception));
+    std::move(add_module_finished_callback)
+        .Run(false,
+             /*error_message=*/ExceptionToString(script_state, exception));
     return;
   } else if (result.GetResultType() !=
              ScriptEvaluationResult::ResultType::kSuccess) {
-    std::move(callback).Run(false, /*error_message=*/"Internal Failure");
+    std::move(add_module_finished_callback)
+        .Run(false, /*error_message=*/"Internal Failure");
     return;
   }
 
-  std::move(callback).Run(true, /*error_message=*/{});
+  std::move(add_module_finished_callback).Run(true, /*error_message=*/{});
+}
+
+void SharedStorageWorkletGlobalScope::RecordAddModuleFinished() {
+  add_module_finished_ = true;
 }
 
 bool SharedStorageWorkletGlobalScope::PerformCommonOperationChecks(
@@ -507,7 +552,7 @@ bool SharedStorageWorkletGlobalScope::PerformCommonOperationChecks(
   DCHECK(error_message.empty());
   DCHECK_EQ(operation_definition, nullptr);
 
-  if (!module_script_loaded_) {
+  if (!add_module_finished_) {
     // TODO(http://crbug/1249581): if this operation comes while fetching the
     // module script, we might want to queue the operation to be handled later
     // after addModule completes.

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SHARED_STORAGE_SERVICES_SHARED_STORAGE_WORKLET_GLOBAL_SCOPE_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_SHARED_STORAGE_SERVICES_SHARED_STORAGE_WORKLET_GLOBAL_SCOPE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SHARED_STORAGE_SHARED_STORAGE_WORKLET_GLOBAL_SCOPE_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_SHARED_STORAGE_SHARED_STORAGE_WORKLET_GLOBAL_SCOPE_H_
 
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -14,17 +14,19 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
+#include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom-blink.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/modules/shared_storage/services/shared_storage_worklet_global_scope.h"
+#include "third_party/blink/renderer/modules/shared_storage/shared_storage_worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -34,11 +36,13 @@ struct GlobalScopeCreationParams;
 class ModuleScriptDownloader;
 class SharedStorageOperationDefinition;
 class V8NoArgumentConstructor;
+class SharedStorage;
 
 // mojom::SharedStorageWorkletService implementation. Responsible for
 // handling worklet operations. This object lives on the worklet thread.
 class MODULES_EXPORT SharedStorageWorkletGlobalScope final
     : public WorkletGlobalScope,
+      public Supplementable<SharedStorageWorkletGlobalScope>,
       public mojom::SharedStorageWorkletService {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -92,12 +96,25 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
                     const std::vector<uint8_t>& serialized_data,
                     RunOperationCallback callback) override;
 
+  SharedStorage* sharedStorage(ScriptState*, ExceptionState&);
+
+  mojom::blink::SharedStorageWorkletServiceClient*
+  GetSharedStorageWorkletServiceClient() {
+    return client_.get();
+  }
+
+  const absl::optional<String>& embedder_context() const {
+    return embedder_context_;
+  }
+
  private:
   void OnModuleScriptDownloaded(
       const GURL& script_source_url,
       mojom::SharedStorageWorkletService::AddModuleCallback callback,
       std::unique_ptr<std::string> response_body,
       std::string error_message);
+
+  void RecordAddModuleFinished();
 
   // Performs preliminary checks that are common to `RunURLSelectionOperation`
   // `RunOperation`. On success, sets `operation_definition` to the registered
@@ -118,7 +135,7 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
     return network::mojom::RequestDestination::kEmpty;
   }
 
-  bool module_script_loaded_ = false;
+  bool add_module_finished_ = false;
 
   // `receiver_`'s disconnect handler explicitly deletes the worklet thread
   // object that owns this service, thus deleting `this` upon disconnect. To
@@ -128,6 +145,16 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
   HeapMojoReceiver<mojom::SharedStorageWorkletService,
                    SharedStorageWorkletGlobalScope>
       receiver_{this, this};
+
+  // If this worklet is inside a fenced frame or a URN iframe,
+  // `embedder_context_` represents any contextual information written to the
+  // frame's `blink::FencedFrameConfig` by the embedder before navigation to the
+  // config. `embedder_context_` is passed to the worklet upon initialization.
+  absl::optional<String> embedder_context_;
+
+  // The per-global-scope shared storage object. Created on the first access of
+  // `sharedStorage`.
+  Member<SharedStorage> shared_storage_;
 
   // The map from the registered operation names to their definition.
   HeapHashMap<String, Member<SharedStorageOperationDefinition>>
@@ -145,8 +172,8 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
   // In contrast, the `receiver_` doesn't need to be associated. This is a
   // standalone service, so the starting of a worklet operation doesn't have to
   // depend on / preserve the order with messages of other types.
-  HeapMojoAssociatedRemote<mojom::SharedStorageWorkletServiceClient> client_{
-      this};
+  HeapMojoAssociatedRemote<mojom::blink::SharedStorageWorkletServiceClient>
+      client_{this};
 
   // Whether the "private-aggregation" permissions policy is enabled in the
   // worklet.
@@ -168,4 +195,4 @@ struct DowncastTraits<SharedStorageWorkletGlobalScope> {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_SHARED_STORAGE_SERVICES_SHARED_STORAGE_WORKLET_GLOBAL_SCOPE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_SHARED_STORAGE_SHARED_STORAGE_WORKLET_GLOBAL_SCOPE_H_

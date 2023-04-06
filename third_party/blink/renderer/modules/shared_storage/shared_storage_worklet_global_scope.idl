@@ -2,11 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+[
+  Global=SharedStorageWorklet,
+  Exposed=SharedStorageWorklet
+]
 interface SharedStorageWorkletGlobalScope : WorkletGlobalScope {
   [
     ImplementedAs=Register,
     RaisesException
   ] void register(DOMString name, NoArgumentConstructor operationCtor);
+
+  [CallWith=ScriptState, RaisesException]
+  readonly attribute SharedStorage sharedStorage;
 };
 
 // TODO(yaoxia): Figure out whether `urls`'s type can be `FrozenArray` instead
