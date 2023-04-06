@@ -105,11 +105,16 @@ enum class PermissionRequest {
   }
   base::UmaHistogramEnumeration(kPermissionRequestsHistogram, request);
   if (web::features::IsFullscreenAPIEnabled()) {
-    [webView closeAllMediaPresentationsWithCompletionHandler:^{
-      [self displayPromptForPermissions:permissionsRequested
-                    withDecisionHandler:decisionHandler];
-    }];
-    return;
+    if (@available(iOS 16, *)) {
+      if (webView.fullscreenState == WKFullscreenStateInFullscreen ||
+          webView.fullscreenState == WKFullscreenStateEnteringFullscreen) {
+        [webView closeAllMediaPresentationsWithCompletionHandler:^{
+          [self displayPromptForPermissions:permissionsRequested
+                        withDecisionHandler:decisionHandler];
+        }];
+        return;
+      }
+    }
   }
   [self displayPromptForPermissions:permissionsRequested
                 withDecisionHandler:decisionHandler];
