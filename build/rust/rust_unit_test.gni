@@ -77,6 +77,15 @@ template("rust_unit_test") {
     deps = [ ":$_exe_target_name" ]
   }
 
+  # The OUT_DIR for a crate's tests should point to the same OUT_DIR that the
+  # library it's testing used. The `env_out_dir` variable can be used to specify
+  # that directory.
+  if (defined(invoker.env_out_dir)) {
+    _env_out_dir = invoker.env_out_dir
+  } else {
+    _env_out_dir = target_out_dir
+  }
+
   # TODO(crbug.com/1229320): Arrange to run test executables on try bots.
   # TODO(crbug.com/gn/146): Allow Rust executables to depend on C/C++ source
   # sets.
@@ -92,17 +101,10 @@ template("rust_unit_test") {
                              "features",
                              "rustflags",
                              "configs",
-                             "output_name",
                              "crate_name",
                              "crate_root",
+                             "env_out_dir",
                            ])
-
-    if (defined(output_dir) && output_dir != "") {
-      _out_dir = output_dir
-    } else {
-      _out_dir = target_out_dir
-    }
-
     if (!defined(output_name) || output_name == "") {
       output_name = _crate_name
     }
@@ -120,7 +122,8 @@ template("rust_unit_test") {
     if (!defined(rustenv)) {
       rustenv = []
     }
-    rustenv += [ "OUT_DIR=" + rebase_path(_out_dir) ]
+
+    rustenv += [ "OUT_DIR=" + rebase_path(_env_out_dir) ]
     metadata = {
       # Consumed by "rust_unit_tests_group" gni template.
       rust_unit_test_executables = [ _crate_name ]

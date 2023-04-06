@@ -313,60 +313,135 @@ template("single_msvc_toolchain") {
       rustc_windows_args = " -Clinker=$link $rustc_common_args"
 
       tool("rust_staticlib") {
-        rust_outfile = "{{output_dir}}/{{target_output_name}}.lib"
-        depfile = "{{output}}.d"
-        rspfile = "$rust_outfile.rsp"
+        libname = "{{output_dir}}/{{target_output_name}}{{output_extension}}"
+        rspfile = "$libname.rsp"
+        depfile = "$libname.d"
+
+        default_output_extension = ".lib"
+        output_prefix = "lib"
+        default_output_dir = "{{root_out_dir}}"
+        description = "RUST(STATICLIB) {{output}}"
+        outputs = [ libname ]
+
         rspfile_content = "{{rustdeps}} {{externs}}"
-        command = "\"$python_path\" \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_windows_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS RUSTENV {{rustenv}}"
-        description = "RUST $rust_outfile"
+        command = "\"$python_path\" \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_windows_args --emit=dep-info=$depfile,link -o $libname LDFLAGS RUSTENV {{rustenv}}"
         rust_sysroot = rust_sysroot_relative_to_out
-        outputs = [ rust_outfile ]
       }
 
       tool("rust_rlib") {
-        rust_outfile = "{{output_dir}}/lib{{target_output_name}}.rlib"
-        depfile = "{{output}}.d"
+        # We must always prefix with `lib` even if the library already starts
+        # with that prefix or else our stdlib is unable to find libc.rlib (or
+        # actually liblibc.rlib).
+        rlibname =
+            "{{output_dir}}/lib{{target_output_name}}{{output_extension}}"
+        depfile = "$rlibname.d"
 
         # Do not use rsp files in this (common) case because they occupy the
         # ninja main thread, and {{rlibs}} have shorter command lines than
         # fully linked targets.
-        command = "\"$python_path\" \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile -- $rustc_windows_args --emit=dep-info=$depfile,link -o $rust_outfile {{rustdeps}} {{externs}} LDFLAGS RUSTENV {{rustenv}}"
-        description = "RUST $rust_outfile"
+
+        default_output_extension = ".rlib"
+
+        # This is prefixed unconditionally in `rlibname`.
+        # output_prefix = "lib"
+        default_output_dir = "{{root_out_dir}}"
+        description = "RUST {{output}}"
+        outputs = [ rlibname ]
+
+        command = "\"$python_path\" \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile -- $rustc_windows_args --emit=dep-info=$depfile,link -o $rlibname {{rustdeps}} {{externs}} LDFLAGS RUSTENV {{rustenv}}"
         rust_sysroot = rust_sysroot_relative_to_out
-        outputs = [ rust_outfile ]
       }
 
       tool("rust_bin") {
-        rust_outfile = "{{root_out_dir}}/{{target_output_name}}.exe"
-        depfile = "{{output}}.d"
-        rspfile = "$rust_outfile.rsp"
+        exename = "{{output_dir}}/{{target_output_name}}{{output_extension}}"
+        pdbname = "$exename.pdb"
+        rspfile = "$exename.rsp"
+        depfile = "$exename.d"
+        pool = "//build/toolchain:link_pool($default_toolchain)"
+
+        default_output_extension = ".exe"
+        default_output_dir = "{{root_out_dir}}"
+        description = "RUST(BIN) {{output}}"
+        outputs = [
+          # The first entry here is used for dependency tracking.
+          exename,
+          pdbname,
+        ]
+        runtime_outputs = outputs
+
         rspfile_content = "{{rustdeps}} {{externs}}"
-        command = "\"$python_path\" \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_windows_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} $sys_lib_flags RUSTENV {{rustenv}}"
-        description = "RUST $rust_outfile"
+        command = "\"$python_path\" \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_windows_args --emit=dep-info=$depfile,link -o $exename LDFLAGS {{ldflags}} $sys_lib_flags /PDB:$pdbname RUSTENV {{rustenv}}"
         rust_sysroot = rust_sysroot_relative_to_out
-        outputs = [ rust_outfile ]
       }
 
       tool("rust_cdylib") {
-        rust_outfile = "{{output_dir}}/lib{{target_output_name}}.dll"
-        depfile = "{{output}}.d"
-        rspfile = "$rust_outfile.rsp"
+        # E.g. "foo.dll":
+        dllname = "{{output_dir}}/{{target_output_name}}{{output_extension}}"
+        libname = "$dllname.lib"  # e.g. foo.dll.lib
+        pdbname = "$dllname.pdb"
+        rspfile = "$dllname.rsp"
+        depfile = "$dllname.d"
+        pool = "//build/toolchain:link_pool($default_toolchain)"
+
+        default_output_extension = ".dll"
+        default_output_dir = "{{root_out_dir}}"
+        description = "RUST(CDYLIB) {{output}}"
+        outputs = [
+          # The first entry here is used for dependency tracking. Dylibs are
+          # linked into other targets and that linking must be done through
+          # the .lib file, not the .dll file. So the .lib file is the primary
+          # output here.
+          libname,
+          dllname,
+          pdbname,
+        ]
+        runtime_outputs = [
+          dllname,
+          pdbname,
+        ]
+
         rspfile_content = "{{rustdeps}} {{externs}}"
-        command = "\"$python_path\" \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_windows_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} $sys_lib_flags RUSTENV {{rustenv}}"
-        description = "RUST $rust_outfile"
+        command = "\"$python_path\" \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_windows_args --emit=dep-info=$depfile,link -o $dllname LDFLAGS {{ldflags}} $sys_lib_flags /PDB:$pdbname /IMPLIB:$libname RUSTENV {{rustenv}}"
         rust_sysroot = rust_sysroot_relative_to_out
-        outputs = [ rust_outfile ]
+
+        # Since the above commands only updates the .lib file when it changes,
+        # ask Ninja to check if the timestamp actually changed to know if
+        # downstream dependencies should be recompiled.
+        restat = true
       }
 
       tool("rust_macro") {
-        rust_outfile = "{{output_dir}}/{{target_output_name}}.dll"
-        depfile = "{{output}}.d"
-        rspfile = "$rust_outfile.rsp"
+        # E.g. "foo.dll":
+        dllname = "{{output_dir}}/{{target_output_name}}{{output_extension}}"
+        pdbname = "$dllname.pdb"
+        rspfile = "$dllname.rsp"
+        depfile = "$dllname.d"
+        pool = "//build/toolchain:link_pool($default_toolchain)"
+
+        default_output_extension = ".dll"
+        default_output_dir = "{{root_out_dir}}"
+        description = "RUST(MACRO) {{output}}"
+        outputs = [
+          # The first entry here is used for dependency tracking. Proc macros
+          # are consumed as dlls directly, loaded a runtime, so the dll is the
+          # primary output here. If we make a .lib file the primary output, we
+          # end up trying to load the .lib file as a procmacro which fails.
+          #
+          # Since depending on a macro target for linking would fail (it would
+          # try to link primary .dll target) we omit the .lib here entirely.
+          dllname,
+          pdbname,
+        ]
+        runtime_outputs = outputs
+
         rspfile_content = "{{rustdeps}} {{externs}}"
-        command = "\"$python_path\" \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_windows_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} $sys_lib_flags RUSTENV {{rustenv}}"
-        description = "RUST $rust_outfile"
+        command = "\"$python_path\" \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_windows_args --emit=dep-info=$depfile,link -o $dllname LDFLAGS {{ldflags}} $sys_lib_flags /PDB:$pdbname RUSTENV {{rustenv}}"
         rust_sysroot = rust_sysroot_relative_to_out
-        outputs = [ rust_outfile ]
+
+        # Since the above commands only updates the .lib file when it changes,
+        # ask Ninja to check if the timestamp actually changed to know if
+        # downstream dependencies should be recompiled.
+        restat = true
       }
     }
 

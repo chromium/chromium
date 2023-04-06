@@ -76,9 +76,9 @@ import("//build/rust/rust_target.gni")
 #    command line tool help)
 
 template("cargo_crate") {
-  orig_target_name = target_name
+  _orig_target_name = target_name
 
-  _crate_name = orig_target_name
+  _crate_name = _orig_target_name
   if (defined(invoker.crate_name)) {
     _crate_name = invoker.crate_name
   }
@@ -121,7 +121,6 @@ template("cargo_crate") {
                                  "build_sources",
                                  "build_script_inputs",
                                  "build_script_outputs",
-                                 "output_dir",
                                  "unit_test_target",
                                  "target_type",
                                  "configs",
@@ -157,33 +156,31 @@ template("cargo_crate") {
       build_native_rust_unit_tests = true
     }
 
-    # We may generate multiple build rules for the same Cargo crate, as they may
-    # have multiple build configurations: for use from deps, build-deps or
-    # dev-deps. But that would try to build multiple crates with the same name,
-    # colliding on the libcratename.rlib outputs. So if not overridden, we
-    # specify an output_dir for Cargo crates which includes the GN target name
-    # to disambiguate them.
-    if (defined(invoker.output_dir) && invoker.output_dir != "") {
-      output_dir = invoker.output_dir
-    } else {
-      output_dir = "${target_out_dir}/${orig_target_name}"
-    }
-
     # The unit tests for each target, if generated, should be unique as well.
     # a) It needs to be unique even if multiple build targets have the same
     #    `crate_name`, but different target names.
     # b) It needs to be unique even if multiple build targets have the same
     #    `crate_name` and target name, but different epochs.
     _unit_test_unique_target_name = ""
-    if (_crate_name != orig_target_name) {
-      _unit_test_unique_target_name = "${orig_target_name}_"
+    if (_crate_name != _orig_target_name) {
+      _unit_test_unique_target_name = "${_orig_target_name}_"
     }
     _unit_test_unique_epoch = ""
     if (defined(invoker.epoch)) {
       _epoch_str = string_replace(invoker.epoch, ".", "_")
       _unit_test_unique_epoch = "v${_epoch_str}_"
     }
+    if (defined(output_dir) && output_dir != "") {
+      unit_test_output_dir = output_dir
+    }
     unit_test_target = "${_unit_test_unique_target_name}${_crate_name}_${_unit_test_unique_epoch}unittests"
+
+    if ((!defined(output_dir) || output_dir == "") && crate_type == "rlib") {
+      # Cargo crate rlibs can be compiled differently for tests, and must not
+      # collide with the production outputs. This does *not* override the
+      # unit_test_output_dir, which is set above, as that target is not an rlib.
+      output_dir = "$target_out_dir/$_orig_target_name"
+    }
 
     if (defined(invoker.build_root)) {
       # Uh-oh, we have a build script
@@ -197,11 +194,14 @@ template("cargo_crate") {
         test_deps = invoker.dev_deps
       }
 
-      # Re-compute the directory the build script used as its `--out-dir`. This
-      # logic needs to match that in `action("${build_script_name}_output")`.
+      # Another copy of the `_build_script_env_out_dir` from the
+      # `${build_script_name}_output` target, which is where the OUT_DIR will
+      # point when running the build script exe. See the other definition of
+      # `_build_script_target_out_dir` for how this is constructed.
       _build_script_target_out_dir =
           get_label_info(":${build_script_name}_output", "target_out_dir")
-      _build_script_out_dir = "$_build_script_target_out_dir/$orig_target_name"
+      _build_script_env_out_dir =
+          "$_build_script_target_out_dir/$_orig_target_name"
 
       # This... is a bit weird. We generate a file called cargo_flags.rs which
       # does not actually contain Rust code, but instead some flags to add
@@ -209,7 +209,7 @@ template("cargo_crate") {
       # we can include it in the 'sources' line and thus have dependency
       # calculation done correctly. data_deps won't work because targets don't
       # require them to be present until runtime.
-      flags_file = "$_build_script_out_dir/cargo_flags.rs"
+      flags_file = "$_build_script_env_out_dir/cargo_flags.rs"
       rustflags += [ "@" + rebase_path(flags_file, root_build_dir) ]
       sources += [ flags_file ]
       if (defined(invoker.build_script_outputs)) {
@@ -219,17 +219,15 @@ template("cargo_crate") {
         # about the dependency either way.
         foreach(extra_source,
                 filter_include(invoker.build_script_outputs, [ "*.rs" ])) {
-          sources += [ "$_build_script_out_dir/$extra_source" ]
+          sources += [ "$_build_script_env_out_dir/$extra_source" ]
         }
         inputs = []
         foreach(extra_source,
                 filter_exclude(invoker.build_script_outputs, [ "*.rs" ])) {
-          inputs += [ "$_build_script_out_dir/$extra_source" ]
+          inputs += [ "$_build_script_env_out_dir/$extra_source" ]
         }
       }
       deps += [ ":${build_script_name}_output" ]
-    } else {
-      not_needed([ "orig_target_name" ])
     }
   }
 
@@ -241,27 +239,35 @@ template("cargo_crate") {
           ":${build_script_name}($host_toolchain_no_sanitizers)"
       deps = [ build_script_target ]
 
-      _build_script_exe_dir =
-          get_label_info(build_script_target, "root_out_dir")
-      build_script = "$_build_script_exe_dir/${build_script_name}"
+      # The build script output is always in the name-specific output dir. It
+      # may be built with a different toolchain when cross-compiling (the host
+      # toolchain) so we must find the path relative to that.
+      _build_script_target_out_dir =
+          get_label_info(build_script_target, "target_out_dir")
+      _build_script_exe =
+          "$_build_script_target_out_dir/$_orig_target_name/$build_script_name"
       if (is_win) {
-        build_script = "${build_script}.exe"
+        _build_script_exe = "${_build_script_exe}.exe"
       }
 
-      _build_script_out_dir = "$target_out_dir/$orig_target_name"
-      flags_file = "$_build_script_out_dir/cargo_flags.rs"
+      # Unlike the location of _build_script_exe, the OUT_DIR when running the
+      # exe will always be in the target toolchain's output directory, under a
+      # unique directory for the GN target name to avoid collisions from a
+      # single BUILD.gn with multiple build scripts.
+      _build_script_env_out_dir = "$target_out_dir/$_orig_target_name"
+      _flags_file = "$_build_script_env_out_dir/cargo_flags.rs"
 
-      inputs = [ build_script ]
-      outputs = [ flags_file ]
+      inputs = [ _build_script_exe ]
+      outputs = [ _flags_file ]
       args = [
         "--build-script",
-        rebase_path(build_script, root_build_dir),
+        rebase_path(_build_script_exe, root_build_dir),
         "--output",
-        rebase_path(flags_file, root_build_dir),
+        rebase_path(_flags_file, root_build_dir),
         "--rust-prefix",
         rebase_path("${rust_sysroot}/bin"),
         "--out-dir",
-        rebase_path(_build_script_out_dir, root_build_dir),
+        rebase_path(_build_script_env_out_dir, root_build_dir),
         "--src-dir",
         rebase_path(get_path_info(invoker.build_root, "dir"), root_build_dir),
       ]
@@ -279,7 +285,7 @@ template("cargo_crate") {
         args += [ "--generated-files" ]
         args += invoker.build_script_outputs
         foreach(generated_file, invoker.build_script_outputs) {
-          outputs += [ "$_build_script_out_dir/$generated_file" ]
+          outputs += [ "$_build_script_env_out_dir/$generated_file" ]
         }
       }
       if (_rustenv != []) {
@@ -299,6 +305,11 @@ template("cargo_crate") {
         if (defined(invoker.build_deps)) {
           deps = invoker.build_deps
         }
+
+        # An rlib's build script may be built differently for tests and for
+        # production, so they must be in a name specific to the GN target. The
+        # ${build_script_name}_output target looks for the exe in this location.
+        output_dir = "$target_out_dir/$_orig_target_name"
         rustenv = _rustenv
         forward_variables_from(invoker,
                                [
@@ -319,6 +330,11 @@ template("cargo_crate") {
                    "build_script_outputs",
                  ])
     }
+  } else {
+    not_needed([
+                 "_name_specific_output_dir",
+                 "_orig_target_name",
+               ])
   }
 }
 
