@@ -227,7 +227,8 @@ TEST_F(LoginApiUnittest, LaunchManagedGuestSession) {
                     MatchSigninSpecifics(ash::SigninSpecifics())))
       .Times(1);
 
-  RunFunction(new LoginLaunchManagedGuestSessionFunction(), "[]");
+  RunFunction(base::MakeRefCounted<LoginLaunchManagedGuestSessionFunction>(),
+              "[]");
 
   // Test that calling `login.launchManagedGuestSession()` triggered a user
   // activity in the `UserActivityDetector`.
@@ -245,7 +246,8 @@ TEST_F(LoginApiUnittest, LaunchManagedGuestSessionWithPassword) {
               Login(user_context, MatchSigninSpecifics(ash::SigninSpecifics())))
       .Times(1);
 
-  RunFunction(new LoginLaunchManagedGuestSessionFunction(), "[\"password\"]");
+  RunFunction(base::MakeRefCounted<LoginLaunchManagedGuestSessionFunction>(),
+              "[\"password\"]");
 }
 
 // Test that calling `login.launchManagedGuestSession()` returns an error when
@@ -253,7 +255,8 @@ TEST_F(LoginApiUnittest, LaunchManagedGuestSessionWithPassword) {
 TEST_F(LoginApiUnittest, LaunchManagedGuestSessionNoAccounts) {
   ASSERT_EQ(login_api_errors::kNoManagedGuestSessionAccounts,
             RunFunctionAndReturnError(
-                new LoginLaunchManagedGuestSessionFunction(), "[]"));
+                base::MakeRefCounted<LoginLaunchManagedGuestSessionFunction>(),
+                "[]"));
 }
 
 // Test that calling `login.launchManagedGuestSession()` returns an error when
@@ -263,7 +266,8 @@ TEST_F(LoginApiUnittest, LaunchManagedGuestSessionWrongSessionState) {
       session_manager::SessionState::ACTIVE);
   ASSERT_EQ(login_api_errors::kAlreadyActiveSession,
             RunFunctionAndReturnError(
-                new LoginLaunchManagedGuestSessionFunction(), "[]"));
+                base::MakeRefCounted<LoginLaunchManagedGuestSessionFunction>(),
+                "[]"));
 }
 
 // Test that calling `login.launchManagedGuestSession()` returns an error when
@@ -273,7 +277,8 @@ TEST_F(LoginApiUnittest, LaunchManagedGuestSessionSigninInProgress) {
       .WillOnce(Return(true));
   ASSERT_EQ(login_api_errors::kAnotherLoginAttemptInProgress,
             RunFunctionAndReturnError(
-                new LoginLaunchManagedGuestSessionFunction(), "[]"));
+                base::MakeRefCounted<LoginLaunchManagedGuestSessionFunction>(),
+                "[]"));
 }
 
 // Test that calling `login.exitCurrentSession()` with data for the next login
@@ -283,7 +288,7 @@ TEST_F(LoginApiUnittest, ExitCurrentSessionWithData) {
   const std::string data_for_next_login_attempt = "hello world";
 
   RunFunction(
-      new LoginExitCurrentSessionFunction(),
+      base::MakeRefCounted<LoginExitCurrentSessionFunction>(),
       base::StringPrintf(R"(["%s"])", data_for_next_login_attempt.c_str()));
 
   PrefService* local_state = g_browser_process->local_state();
@@ -299,7 +304,7 @@ TEST_F(LoginApiUnittest, ExitCurrentSessionWithNoData) {
   local_state->SetString(prefs::kLoginExtensionApiDataForNextLoginAttempt,
                          "hello world");
 
-  RunFunction(new LoginExitCurrentSessionFunction(), "[]");
+  RunFunction(base::MakeRefCounted<LoginExitCurrentSessionFunction>(), "[]");
 
   ASSERT_EQ("", local_state->GetString(
                     prefs::kLoginExtensionApiDataForNextLoginAttempt));
@@ -316,7 +321,7 @@ TEST_F(LoginApiUnittest, FetchDataForNextLoginAttemptClearsPref) {
                          data_for_next_login_attempt);
 
   absl::optional<base::Value> value = RunFunctionAndReturnValue(
-      new LoginFetchDataForNextLoginAttemptFunction(), "[]");
+      base::MakeRefCounted<LoginFetchDataForNextLoginAttemptFunction>(), "[]");
   ASSERT_EQ(data_for_next_login_attempt, value->GetString());
 
   ASSERT_EQ("", local_state->GetString(
@@ -328,9 +333,9 @@ TEST_F(LoginApiUnittest, FetchDataForNextLoginAttemptClearsPref) {
 TEST_F(LoginApiUnittest, SetDataForNextLoginAttempt) {
   const std::string data_for_next_login_attempt = "hello world";
 
-  absl::optional<base::Value> value =
-      RunFunctionAndReturnValue(new LoginSetDataForNextLoginAttemptFunction(),
-                                "[\"" + data_for_next_login_attempt + "\"]");
+  absl::optional<base::Value> value = RunFunctionAndReturnValue(
+      base::MakeRefCounted<LoginSetDataForNextLoginAttemptFunction>(),
+      "[\"" + data_for_next_login_attempt + "\"]");
 
   PrefService* local_state = g_browser_process->local_state();
   ASSERT_EQ(
@@ -350,7 +355,8 @@ TEST_F(LoginApiUnittest, LockManagedGuestSession) {
 
   EXPECT_CALL(*mock_lock_handler_, RequestLockScreen()).WillOnce(Return());
 
-  RunFunction(new LoginLockManagedGuestSessionFunction(), "[]");
+  RunFunction(base::MakeRefCounted<LoginLockManagedGuestSessionFunction>(),
+              "[]");
 
   // Test that calling `login.lockManagedGuestSession()` triggered a user
   // activity in the `UserActivityDetector`.
@@ -379,9 +385,10 @@ TEST_F(LoginApiUnittest,
 }
 
 TEST_F(LoginApiUnittest, LockManagedGuestSessionNoActiveUser) {
-  ASSERT_EQ(login_api_errors::kNoLockableSession,
-            RunFunctionAndReturnError(
-                new LoginLockManagedGuestSessionFunction(), "[]"));
+  ASSERT_EQ(
+      login_api_errors::kNoLockableSession,
+      RunFunctionAndReturnError(
+          base::MakeRefCounted<LoginLockManagedGuestSessionFunction>(), "[]"));
 }
 
 TEST_F(LoginApiUnittest, LockManagedGuestSessionNotManagedGuestSession) {
@@ -389,9 +396,10 @@ TEST_F(LoginApiUnittest, LockManagedGuestSessionNotManagedGuestSession) {
   fake_chrome_user_manager_->AddUser(account_id);
   fake_chrome_user_manager_->SwitchActiveUser(account_id);
 
-  ASSERT_EQ(login_api_errors::kNoLockableSession,
-            RunFunctionAndReturnError(
-                new LoginLockManagedGuestSessionFunction(), "[]"));
+  ASSERT_EQ(
+      login_api_errors::kNoLockableSession,
+      RunFunctionAndReturnError(
+          base::MakeRefCounted<LoginLockManagedGuestSessionFunction>(), "[]"));
 }
 
 TEST_F(LoginApiUnittest, LockManagedGuestSessionUserCannotLock) {
@@ -399,9 +407,10 @@ TEST_F(LoginApiUnittest, LockManagedGuestSessionUserCannotLock) {
   fake_chrome_user_manager_->SwitchActiveUser(AccountId::FromUserEmail(kEmail));
   fake_chrome_user_manager_->set_current_user_can_lock(false);
 
-  ASSERT_EQ(login_api_errors::kNoLockableSession,
-            RunFunctionAndReturnError(
-                new LoginLockManagedGuestSessionFunction(), "[]"));
+  ASSERT_EQ(
+      login_api_errors::kNoLockableSession,
+      RunFunctionAndReturnError(
+          base::MakeRefCounted<LoginLockManagedGuestSessionFunction>(), "[]"));
 }
 
 TEST_F(LoginApiUnittest, LockManagedGuestSessionSessionNotActive) {
@@ -411,9 +420,10 @@ TEST_F(LoginApiUnittest, LockManagedGuestSessionSessionNotActive) {
   session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::LOCKED);
 
-  ASSERT_EQ(login_api_errors::kSessionIsNotActive,
-            RunFunctionAndReturnError(
-                new LoginLockManagedGuestSessionFunction(), "[]"));
+  ASSERT_EQ(
+      login_api_errors::kSessionIsNotActive,
+      RunFunctionAndReturnError(
+          base::MakeRefCounted<LoginLockManagedGuestSessionFunction>(), "[]"));
 }
 
 TEST_F(LoginApiUnittest, UnlockManagedGuestSession) {
@@ -436,7 +446,8 @@ TEST_F(LoginApiUnittest, UnlockManagedGuestSession) {
         std::move(callback).Run(/*auth_success=*/true);
       });
 
-  RunFunction(new LoginUnlockManagedGuestSessionFunction(), "[\"password\"]");
+  RunFunction(base::MakeRefCounted<LoginUnlockManagedGuestSessionFunction>(),
+              "[\"password\"]");
 
   // Test that calling `login.unlockManagedGuestSession()` triggered a user
   // activity in the `UserActivityDetector`.
@@ -473,10 +484,10 @@ TEST_F(LoginApiUnittest,
 }
 
 TEST_F(LoginApiUnittest, UnlockManagedGuestSessionNoActiveUser) {
-  ASSERT_EQ(
-      login_api_errors::kNoUnlockableSession,
-      RunFunctionAndReturnError(new LoginUnlockManagedGuestSessionFunction(),
-                                "[\"password\"]"));
+  ASSERT_EQ(login_api_errors::kNoUnlockableSession,
+            RunFunctionAndReturnError(
+                base::MakeRefCounted<LoginUnlockManagedGuestSessionFunction>(),
+                "[\"password\"]"));
 }
 
 TEST_F(LoginApiUnittest, UnlockManagedGuestSessionNotManagedGuestSession) {
@@ -484,10 +495,10 @@ TEST_F(LoginApiUnittest, UnlockManagedGuestSessionNotManagedGuestSession) {
   fake_chrome_user_manager_->AddUser(account_id);
   fake_chrome_user_manager_->SwitchActiveUser(account_id);
 
-  ASSERT_EQ(
-      login_api_errors::kNoUnlockableSession,
-      RunFunctionAndReturnError(new LoginUnlockManagedGuestSessionFunction(),
-                                "[\"password\"]"));
+  ASSERT_EQ(login_api_errors::kNoUnlockableSession,
+            RunFunctionAndReturnError(
+                base::MakeRefCounted<LoginUnlockManagedGuestSessionFunction>(),
+                "[\"password\"]"));
 }
 
 TEST_F(LoginApiUnittest, UnlockManagedGuestSessionCannotUnlock) {
@@ -495,10 +506,10 @@ TEST_F(LoginApiUnittest, UnlockManagedGuestSessionCannotUnlock) {
       AddPublicAccountUser(kEmail);
   fake_chrome_user_manager_->SwitchActiveUser(AccountId::FromUserEmail(kEmail));
 
-  ASSERT_EQ(
-      login_api_errors::kNoUnlockableSession,
-      RunFunctionAndReturnError(new LoginUnlockManagedGuestSessionFunction(),
-                                "[\"password\"]"));
+  ASSERT_EQ(login_api_errors::kNoUnlockableSession,
+            RunFunctionAndReturnError(
+                base::MakeRefCounted<LoginUnlockManagedGuestSessionFunction>(),
+                "[\"password\"]"));
 }
 
 TEST_F(LoginApiUnittest, UnlockManagedGuestSessionSessionNotLocked) {
@@ -507,10 +518,10 @@ TEST_F(LoginApiUnittest, UnlockManagedGuestSessionSessionNotLocked) {
   fake_chrome_user_manager_->set_current_user_can_lock(true);
   fake_chrome_user_manager_->SwitchActiveUser(AccountId::FromUserEmail(kEmail));
 
-  ASSERT_EQ(
-      login_api_errors::kSessionIsNotLocked,
-      RunFunctionAndReturnError(new LoginUnlockManagedGuestSessionFunction(),
-                                "[\"password\"]"));
+  ASSERT_EQ(login_api_errors::kSessionIsNotLocked,
+            RunFunctionAndReturnError(
+                base::MakeRefCounted<LoginUnlockManagedGuestSessionFunction>(),
+                "[\"password\"]"));
 }
 
 TEST_F(LoginApiUnittest, UnlockManagedGuestSessionUnlockInProgress) {
@@ -523,10 +534,10 @@ TEST_F(LoginApiUnittest, UnlockManagedGuestSessionUnlockInProgress) {
 
   EXPECT_CALL(*mock_lock_handler_, IsUnlockInProgress()).WillOnce(Return(true));
 
-  ASSERT_EQ(
-      login_api_errors::kAnotherUnlockAttemptInProgress,
-      RunFunctionAndReturnError(new LoginUnlockManagedGuestSessionFunction(),
-                                "[\"password\"]"));
+  ASSERT_EQ(login_api_errors::kAnotherUnlockAttemptInProgress,
+            RunFunctionAndReturnError(
+                base::MakeRefCounted<LoginUnlockManagedGuestSessionFunction>(),
+                "[\"password\"]"));
 }
 
 TEST_F(LoginApiUnittest, UnlockManagedGuestSessionAuthenticationFailed) {
@@ -546,10 +557,10 @@ TEST_F(LoginApiUnittest, UnlockManagedGuestSessionAuthenticationFailed) {
         std::move(callback).Run(/*auth_success=*/false);
       });
 
-  ASSERT_EQ(
-      login_api_errors::kAuthenticationFailed,
-      RunFunctionAndReturnError(new LoginUnlockManagedGuestSessionFunction(),
-                                "[\"password\"]"));
+  ASSERT_EQ(login_api_errors::kAuthenticationFailed,
+            RunFunctionAndReturnError(
+                base::MakeRefCounted<LoginUnlockManagedGuestSessionFunction>(),
+                "[\"password\"]"));
 }
 
 class LoginApiUserSessionUnittest : public LoginApiUnittest {
@@ -828,8 +839,9 @@ class LoginApiSharedSessionUnittest : public LoginApiUnittest {
 
     testing_profile_ = AddPublicAccountUser(kEmail);
 
-    RunFunction(new LoginLaunchSharedManagedGuestSessionFunction(),
-                "[\"" + password + "\"]");
+    RunFunction(
+        base::MakeRefCounted<LoginLaunchSharedManagedGuestSessionFunction>(),
+        "[\"" + password + "\"]");
 
     fake_chrome_user_manager_->set_current_user_can_lock(true);
     fake_chrome_user_manager_->SwitchActiveUser(
@@ -866,7 +878,9 @@ TEST_F(LoginApiSharedSessionUnittest, LaunchSharedManagedGuestSession) {
               Login(_, MatchSigninSpecifics(ash::SigninSpecifics())))
       .WillOnce(SaveArg<0>(&user_context));
 
-  RunFunction(new LoginLaunchSharedManagedGuestSessionFunction(), "[\"foo\"]");
+  RunFunction(
+      base::MakeRefCounted<LoginLaunchSharedManagedGuestSessionFunction>(),
+      "[\"foo\"]");
 
   EXPECT_TRUE(user_context.CanLockManagedGuestSession());
   chromeos::SharedSessionHandler* handler =
@@ -891,7 +905,8 @@ TEST_F(LoginApiSharedSessionUnittest,
   ASSERT_EQ(
       login_api_errors::kDeviceRestrictedManagedGuestSessionNotEnabled,
       RunFunctionAndReturnError(
-          new LoginLaunchSharedManagedGuestSessionFunction(), "[\"foo\"]"));
+          base::MakeRefCounted<LoginLaunchSharedManagedGuestSessionFunction>(),
+          "[\"foo\"]"));
 }
 
 // Test that calling `login.launchSharedManagedGuestSession()` returns an error
@@ -901,7 +916,8 @@ TEST_F(LoginApiSharedSessionUnittest,
   ASSERT_EQ(
       login_api_errors::kNoManagedGuestSessionAccounts,
       RunFunctionAndReturnError(
-          new LoginLaunchSharedManagedGuestSessionFunction(), "[\"foo\"]"));
+          base::MakeRefCounted<LoginLaunchSharedManagedGuestSessionFunction>(),
+          "[\"foo\"]"));
 }
 
 // Test that calling `login.launchSharedManagedGuestSession()` returns an error
@@ -913,7 +929,8 @@ TEST_F(LoginApiSharedSessionUnittest,
   ASSERT_EQ(
       login_api_errors::kLoginScreenIsNotActive,
       RunFunctionAndReturnError(
-          new LoginLaunchSharedManagedGuestSessionFunction(), "[\"foo\"]"));
+          base::MakeRefCounted<LoginLaunchSharedManagedGuestSessionFunction>(),
+          "[\"foo\"]"));
 }
 
 // Test that calling `login.launchSharedManagedGuestSession()` returns an error
@@ -925,7 +942,8 @@ TEST_F(LoginApiSharedSessionUnittest,
   ASSERT_EQ(
       login_api_errors::kAnotherLoginAttemptInProgress,
       RunFunctionAndReturnError(
-          new LoginLaunchSharedManagedGuestSessionFunction(), "[\"foo\"]"));
+          base::MakeRefCounted<LoginLaunchSharedManagedGuestSessionFunction>(),
+          "[\"foo\"]"));
 }
 
 // Test that calling `login.unlockSharedSession()` works.
@@ -939,7 +957,8 @@ TEST_F(LoginApiSharedSessionUnittest, UnlockSharedSession) {
   base::TimeTicks now = base::TimeTicks::Now();
   ui::UserActivityDetector::Get()->set_now_for_test(now);
 
-  RunFunction(new LoginUnlockSharedSessionFunction(), "[\"foo\"]");
+  RunFunction(base::MakeRefCounted<LoginUnlockSharedSessionFunction>(),
+              "[\"foo\"]");
 
   // Test that user activity is triggered.
   EXPECT_EQ(now, ui::UserActivityDetector::Get()->last_activity_time());
@@ -952,8 +971,9 @@ TEST_F(LoginApiSharedSessionUnittest, UnlockSharedSessionNotLocked) {
       AddPublicAccountUser(kEmail);
   fake_chrome_user_manager_->set_current_user_can_lock(true);
   ASSERT_EQ(login_api_errors::kSessionIsNotLocked,
-            RunFunctionAndReturnError(new LoginUnlockSharedSessionFunction(),
-                                      "[\"foo\"]"));
+            RunFunctionAndReturnError(
+                base::MakeRefCounted<LoginUnlockSharedSessionFunction>(),
+                "[\"foo\"]"));
 }
 
 // Test that calling `login.unlockSharedSession()` returns an error when there
@@ -965,8 +985,9 @@ TEST_F(LoginApiSharedSessionUnittest, UnlockSharedSessionNoSharedMGS) {
   session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::LOCKED);
   ASSERT_EQ(login_api_errors::kNoSharedMGSFound,
-            RunFunctionAndReturnError(new LoginUnlockSharedSessionFunction(),
-                                      "[\"foo\"]"));
+            RunFunctionAndReturnError(
+                base::MakeRefCounted<LoginUnlockSharedSessionFunction>(),
+                "[\"foo\"]"));
 }
 
 // Test that calling `login.unlockSharedSession()` returns an error when there
@@ -975,13 +996,14 @@ TEST_F(LoginApiSharedSessionUnittest, UnlockSharedSessionNoSharedSession) {
   SetUpCleanupHandlerMocks();
   LaunchSharedManagedGuestSession("foo");
   EXPECT_CALL(*mock_lock_handler_, RequestLockScreen()).WillOnce(Return());
-  RunFunction(new LoginEndSharedSessionFunction(), "[]");
+  RunFunction(base::MakeRefCounted<LoginEndSharedSessionFunction>(), "[]");
   session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::LOCKED);
 
   ASSERT_EQ(login_api_errors::kSharedSessionIsNotActive,
-            RunFunctionAndReturnError(new LoginUnlockSharedSessionFunction(),
-                                      "[\"foo\"]"));
+            RunFunctionAndReturnError(
+                base::MakeRefCounted<LoginUnlockSharedSessionFunction>(),
+                "[\"foo\"]"));
 }
 
 // Test that calling `login.unlockSharedSession()` returns an error when a
@@ -992,8 +1014,9 @@ TEST_F(LoginApiSharedSessionUnittest, UnlockSharedSessionAuthenticationFailed) {
       session_manager::SessionState::LOCKED);
 
   ASSERT_EQ(login_api_errors::kAuthenticationFailed,
-            RunFunctionAndReturnError(new LoginUnlockSharedSessionFunction(),
-                                      "[\"bar\"]"));
+            RunFunctionAndReturnError(
+                base::MakeRefCounted<LoginUnlockSharedSessionFunction>(),
+                "[\"bar\"]"));
 }
 
 // Test that calling `login.unlockSharedSession()` returns an error when there
@@ -1006,8 +1029,9 @@ TEST_F(LoginApiSharedSessionUnittest, UnlockSharedSessionUnlockFailed) {
   ExpectAuthenticateWithSessionSecret(/*auth_success=*/false);
 
   ASSERT_EQ(login_api_errors::kUnlockFailure,
-            RunFunctionAndReturnError(new LoginUnlockSharedSessionFunction(),
-                                      "[\"foo\"]"));
+            RunFunctionAndReturnError(
+                base::MakeRefCounted<LoginUnlockSharedSessionFunction>(),
+                "[\"foo\"]"));
 }
 
 // Test that calling `login.unlockSharedSession()` returns an error when the
@@ -1019,8 +1043,9 @@ TEST_F(LoginApiSharedSessionUnittest, UnlockSharedSessionCannotUnlock) {
   fake_chrome_user_manager_->set_current_user_can_lock(false);
 
   ASSERT_EQ(login_api_errors::kNoUnlockableSession,
-            RunFunctionAndReturnError(new LoginUnlockSharedSessionFunction(),
-                                      "[\"foo\"]"));
+            RunFunctionAndReturnError(
+                base::MakeRefCounted<LoginUnlockSharedSessionFunction>(),
+                "[\"foo\"]"));
 }
 
 // Test that calling `login.unlockSharedSession()` returns an error when there
@@ -1033,8 +1058,9 @@ TEST_F(LoginApiSharedSessionUnittest, UnlockSharedSessionCleanupInProgress) {
   chromeos::CleanupManagerAsh::Get()->SetIsCleanupInProgressForTesting(true);
 
   ASSERT_EQ(login_api_errors::kCleanupInProgress,
-            RunFunctionAndReturnError(new LoginUnlockSharedSessionFunction(),
-                                      "[\"foo\"]"));
+            RunFunctionAndReturnError(
+                base::MakeRefCounted<LoginUnlockSharedSessionFunction>(),
+                "[\"foo\"]"));
 }
 
 // Test that calling `login.endSharedSession()` clears the user hash and salt
@@ -1231,12 +1257,14 @@ TEST_F(LoginApiSharedSessionUnittest, SharedSessionFlow) {
       session_manager::SessionState::LOCKED);
 
   ASSERT_EQ(login_api_errors::kAuthenticationFailed,
-            RunFunctionAndReturnError(new LoginUnlockSharedSessionFunction(),
-                                      "[\"bar\"]"));
+            RunFunctionAndReturnError(
+                base::MakeRefCounted<LoginUnlockSharedSessionFunction>(),
+                "[\"bar\"]"));
 
   ExpectAuthenticateWithSessionSecret(/*auth_success=*/true);
 
-  RunFunction(new LoginUnlockSharedSessionFunction(), "[\"foo\"]");
+  RunFunction(base::MakeRefCounted<LoginUnlockSharedSessionFunction>(),
+              "[\"foo\"]");
 
   session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::ACTIVE);

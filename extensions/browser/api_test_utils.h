@@ -89,11 +89,11 @@ absl::optional<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
 // RunFunctionWithDelegateAndReturnSingleResult, except with a NULL
 // implementation of the Delegate.
 absl::optional<base::Value> RunFunctionAndReturnSingleResult(
-    ExtensionFunction* function,
+    scoped_refptr<ExtensionFunction> function,
     const std::string& args,
     content::BrowserContext* context);
 absl::optional<base::Value> RunFunctionAndReturnSingleResult(
-    ExtensionFunction* function,
+    scoped_refptr<ExtensionFunction> function,
     const std::string& args,
     content::BrowserContext* context,
     FunctionMode mode);
@@ -101,11 +101,11 @@ absl::optional<base::Value> RunFunctionAndReturnSingleResult(
 // Run |function| with |args| and return the resulting error. Adds an error to
 // the current test if |function| returns a result. Takes ownership of
 // |function|.
-std::string RunFunctionAndReturnError(ExtensionFunction* function,
+std::string RunFunctionAndReturnError(scoped_refptr<ExtensionFunction> function,
                                       const std::string& args,
                                       content::BrowserContext* context,
                                       FunctionMode mode);
-std::string RunFunctionAndReturnError(ExtensionFunction* function,
+std::string RunFunctionAndReturnError(scoped_refptr<ExtensionFunction> function,
                                       const std::string& args,
                                       content::BrowserContext* context);
 
@@ -119,15 +119,15 @@ std::string RunFunctionAndReturnError(ExtensionFunction* function,
 // TODO(aa): I'm concerned that this style won't scale to all the bits and bobs
 // we're going to need to frob for all the different extension functions. But
 // we can refactor when we see what is needed.
-bool RunFunction(ExtensionFunction* function,
+bool RunFunction(scoped_refptr<ExtensionFunction> function,
                  const std::string& args,
                  content::BrowserContext* context,
                  FunctionMode mode = FunctionMode::kNone);
-bool RunFunction(ExtensionFunction* function,
+bool RunFunction(scoped_refptr<ExtensionFunction> function,
                  const std::string& args,
                  std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,
                  FunctionMode mode);
-bool RunFunction(ExtensionFunction* function,
+bool RunFunction(scoped_refptr<ExtensionFunction> function,
                  base::Value::List args,
                  std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,
                  FunctionMode mode);

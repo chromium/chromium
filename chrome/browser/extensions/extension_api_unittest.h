@@ -55,29 +55,31 @@ class ExtensionApiUnittest : public BrowserWithTestWindowTest {
   // Return the function result as a base::Value, if successful, or nullopt on
   // failure.
   absl::optional<base::Value> RunFunctionAndReturnValue(
-      ExtensionFunction* function,
+      scoped_refptr<ExtensionFunction> function,
       const std::string& args);
 
   // Return the function result as a base::Value::Dict, if successful, or
   // nullopt on failure. This will EXPECT-fail if the result is not a
   // base::Value::Dict.
   absl::optional<base::Value::Dict> RunFunctionAndReturnDictionary(
-      ExtensionFunction* function,
+      scoped_refptr<ExtensionFunction> function,
       const std::string& args);
 
   // Return the function result as a base::Value::List, if successful, or
   // nullopt on failure. This will EXPECT-fail if the result is not a list.
   absl::optional<base::Value::List> RunFunctionAndReturnList(
-      ExtensionFunction* function,
+      scoped_refptr<ExtensionFunction> function,
       const std::string& args);
 
   // Return an error thrown from the function, if one exists.
   // This will EXPECT-fail if any result is returned from the function.
-  std::string RunFunctionAndReturnError(ExtensionFunction* function,
-                                        const std::string& args);
+  std::string RunFunctionAndReturnError(
+      scoped_refptr<ExtensionFunction> function,
+      const std::string& args);
 
   // Run the function and ignore any result.
-  void RunFunction(ExtensionFunction* function, const std::string& args);
+  void RunFunction(scoped_refptr<ExtensionFunction> function,
+                   const std::string& args);
 
  private:
   // The Extension used when running API function calls.
