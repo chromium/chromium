@@ -201,6 +201,7 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   void HandleAttributeChanged(const QualifiedName& attr_name,
                               Element*) override;
+  void FinishedParsingTable(HTMLTableElement*) override;
   void HandleValidationMessageVisibilityChanged(
       const Node* form_control) override;
   void HandleEventListenerAdded(const Node& node,
@@ -353,6 +354,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   void HandleValidationMessageVisibilityChangedWithCleanLayout(const Node*);
   void HandleUpdateActiveMenuOptionWithCleanLayout(Node*);
   void HandleEditableTextContentChangedWithCleanLayout(Node*);
+  void UpdateTableRoleWithCleanLayout(Node*);
 
   bool InlineTextBoxAccessibilityEnabled();
 

@@ -2959,6 +2959,26 @@ void AXObjectCacheImpl::HandleAttributeChanged(
     PostNotification(obj, ax::mojom::Event::kAriaAttributeChanged);
 }
 
+void AXObjectCacheImpl::FinishedParsingTable(HTMLTableElement* table) {
+  // The data table heuristic can change from false to true as a table's
+  // children are parsed; but it will never change from true to false.
+  if (AXObject* ax_object = SafeGet(table)) {
+    if (ax_object->RoleValue() == ax::mojom::blink::Role::kLayoutTable) {
+      DeferTreeUpdate(&AXObjectCacheImpl::UpdateTableRoleWithCleanLayout,
+                      table);
+    }
+  }
+}
+
+void AXObjectCacheImpl::UpdateTableRoleWithCleanLayout(Node* table) {
+  if (AXObject* ax_table = Get(table)) {
+    if (ax_table->RoleValue() == ax::mojom::blink::Role::kLayoutTable &&
+        ax_table->IsDataTable()) {
+      HandleRoleChangeWithCleanLayout(table);
+    }
+  }
+}
+
 void AXObjectCacheImpl::HandleAriaExpandedChangeWithCleanLayout(Node* node) {
   if (!node)
     return;
