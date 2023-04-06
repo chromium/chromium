@@ -98447,6 +98447,15 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="The user clicked on the positive button."/>
 </enum>
 
+<enum name="StoreAffiliationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed to start transaction"/>
+  <int value="2" label="Failed to close transaction"/>
+  <int value="3" label="Failed to add set"/>
+  <int value="4" label="Failed to add affiliation"/>
+  <int value="5" label="Failed to add group"/>
+</enum>
+
 <enum name="StreamParserBufferDurationType">
   <summary>
     MSE parsing of WebM buffers may require estimating the duration. &quot;Known

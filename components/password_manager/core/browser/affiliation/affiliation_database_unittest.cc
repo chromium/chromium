@@ -12,6 +12,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/path_service.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
@@ -103,9 +104,13 @@ class AffiliationDatabaseTest : public testing::Test {
   void CloseDatabase() { db_.reset(); }
 
   void StoreInitialTestData() {
-    ASSERT_TRUE(db_->Store(TestEquivalenceClass1(), GroupedFacets()));
-    ASSERT_TRUE(db_->Store(TestEquivalenceClass2(), GroupedFacets()));
-    ASSERT_TRUE(db_->Store(TestEquivalenceClass3(), GroupedFacets()));
+    std::vector<AffiliatedFacetsWithUpdateTime> removed;
+    db_->StoreAndRemoveConflicting(TestEquivalenceClass1(), GroupedFacets(),
+                                   &removed);
+    db_->StoreAndRemoveConflicting(TestEquivalenceClass2(), GroupedFacets(),
+                                   &removed);
+    db_->StoreAndRemoveConflicting(TestEquivalenceClass3(), GroupedFacets(),
+                                   &removed);
   }
 
   AffiliationDatabase& db() { return *db_; }
@@ -119,35 +124,6 @@ class AffiliationDatabaseTest : public testing::Test {
   base::ScopedTempDir temp_directory_;
   std::unique_ptr<AffiliationDatabase> db_;
 };
-
-TEST_F(AffiliationDatabaseTest, Store) {
-  LOG(ERROR) << "During this test, SQL errors (number 19) will be logged to "
-                "the console. This is expected.";
-
-  ASSERT_NO_FATAL_FAILURE(StoreInitialTestData());
-
-  // Verify that duplicate equivalence classes are not allowed to be stored.
-  {
-    sql::test::ScopedErrorExpecter expecter;
-    expecter.ExpectError(SQLITE_CONSTRAINT);
-    AffiliatedFacetsWithUpdateTime duplicate = TestEquivalenceClass1();
-    EXPECT_FALSE(db().Store(duplicate, GroupedFacets()));
-    EXPECT_TRUE(expecter.SawExpectedErrors());
-  }
-
-  // Verify that intersecting equivalence classes are not allowed to be stored.
-  {
-    sql::test::ScopedErrorExpecter expecter;
-    expecter.ExpectError(SQLITE_CONSTRAINT);
-    AffiliatedFacetsWithUpdateTime intersecting;
-    intersecting.facets = {
-        Facet(FacetURI::FromCanonicalSpec(kTestFacetURI3)),
-        Facet(FacetURI::FromCanonicalSpec(kTestFacetURI4)),
-    };
-    EXPECT_FALSE(db().Store(intersecting, GroupedFacets()));
-    EXPECT_TRUE(expecter.SawExpectedErrors());
-  }
-}
 
 TEST_F(AffiliationDatabaseTest, GetAllAffiliationsAndBranding) {
   std::vector<AffiliatedFacetsWithUpdateTime> affiliations;
@@ -288,14 +264,20 @@ TEST_F(AffiliationDatabaseTest, CorruptDBIsRazedThenOpened) {
 // Verify that when the DB becomes corrupt after it has been opened, it gets
 // poisoned so that operations fail silently without side effects.
 TEST_F(AffiliationDatabaseTest, CorruptDBGetsPoisoned) {
-  ASSERT_TRUE(db().Store(TestEquivalenceClass1(), GroupedFacets()));
-
+  base::HistogramTester histogram_tester;
   ASSERT_TRUE(sql::test::CorruptSizeInHeader(db_path()));
 
-  EXPECT_FALSE(db().Store(TestEquivalenceClass2(), GroupedFacets()));
+  std::vector<AffiliatedFacetsWithUpdateTime> removed;
+  db().StoreAndRemoveConflicting(TestEquivalenceClass2(), GroupedFacets(),
+                                 &removed);
   std::vector<AffiliatedFacetsWithUpdateTime> affiliations;
   db().GetAllAffiliationsAndBranding(&affiliations);
   EXPECT_EQ(0u, affiliations.size());
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.AffiliationDatabase.Error", SQLITE_INTERRUPT, 1);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.AffiliationDatabase.StoreResult", 1);
 }
 
 // Verify that all files get deleted.
@@ -543,7 +525,8 @@ TEST_F(AffiliationDatabaseTest, StoreAndRemoveConflictingUpdatesGrouping) {
   };
 
   OpenDatabase();
-  db().Store(affiliation, group);
+  std::vector<AffiliatedFacetsWithUpdateTime> removed;
+  db().StoreAndRemoveConflicting(affiliation, group, &removed);
 
   std::vector<GroupedFacets> groupings = db().GetAllGroups();
   EXPECT_EQ(1u, groupings.size());
@@ -551,7 +534,6 @@ TEST_F(AffiliationDatabaseTest, StoreAndRemoveConflictingUpdatesGrouping) {
               testing::UnorderedElementsAreArray(group.facets));
   EXPECT_THAT(groupings[0].branding_info, testing::Eq(group.branding_info));
 
-  std::vector<AffiliatedFacetsWithUpdateTime> removed;
   db().StoreAndRemoveConflicting(affiliation, GroupedFacets(), &removed);
 
   EXPECT_EQ(0u, db().GetAllGroups().size());

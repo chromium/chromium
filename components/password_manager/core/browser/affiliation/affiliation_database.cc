@@ -16,9 +16,9 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/parameter_pack.h"
 #include "build/build_config.h"
-#include "components/crash/core/common/crash_key.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
@@ -120,11 +120,6 @@ bool EnsureCurrentVersion(sql::Database* db,
   } else {
     return builder->CreateTable(db);
   }
-}
-
-void AddCrashKeys(const std::string& value) {
-  static crash_reporter::CrashKeyString<1024> crash_key("failure-reason");
-  crash_key.Set(value);
 }
 
 }  // namespace
@@ -315,7 +310,7 @@ void AffiliationDatabase::DeleteAffiliationsAndBrandingForFacetURI(
   transaction.Commit();
 }
 
-bool AffiliationDatabase::Store(
+AffiliationDatabase::StoreAffiliationResult AffiliationDatabase::Store(
     const AffiliatedFacetsWithUpdateTime& affiliated_facets,
     const GroupedFacets& group) {
   DCHECK(!affiliated_facets.facets.empty());
@@ -337,8 +332,7 @@ bool AffiliationDatabase::Store(
 
   sql::Transaction transaction(sql_connection_.get());
   if (!transaction.Begin()) {
-    AddCrashKeys("Failed to begin transaction");
-    return false;
+    return StoreAffiliationResult::kFailedToStartTransaction;
   }
 
   statement_parent.BindTime(0, affiliated_facets.last_update_time);
@@ -346,8 +340,7 @@ bool AffiliationDatabase::Store(
   statement_parent.BindString(
       2, group.branding_info.icon_url.possibly_invalid_spec());
   if (!statement_parent.Run()) {
-    AddCrashKeys("Failed to insert new set");
-    return false;
+    return StoreAffiliationResult::kFailedToAddSet;
   }
 
   int64_t eq_class_id = sql_connection_->GetLastInsertRowId();
@@ -359,9 +352,7 @@ bool AffiliationDatabase::Store(
         2, facet.branding_info.icon_url.possibly_invalid_spec());
     statement_child.BindInt64(3, eq_class_id);
     if (!statement_child.Run()) {
-      AddCrashKeys("Failed to insert new affiliation: " +
-                   facet.uri.canonical_spec());
-      return false;
+      return StoreAffiliationResult::kFailedToAddAffiliation;
     }
   }
   for (const Facet& facet : group.facets) {
@@ -370,12 +361,15 @@ bool AffiliationDatabase::Store(
     statement_groups.BindString(1, facet.main_domain);
     statement_groups.BindInt64(2, eq_class_id);
     if (!statement_groups.Run()) {
-      AddCrashKeys("Failed to insert new group: " + facet.uri.canonical_spec());
-      return false;
+      return StoreAffiliationResult::kFailedToAddGroup;
     }
   }
 
-  return transaction.Commit();
+  if (!transaction.Commit()) {
+    return StoreAffiliationResult::kFailedToCloseTransaction;
+  }
+
+  return StoreAffiliationResult::kSuccess;
 }
 
 void AffiliationDatabase::StoreAndRemoveConflicting(
@@ -401,8 +395,9 @@ void AffiliationDatabase::StoreAndRemoveConflicting(
     }
   }
 
-  if (!Store(affiliation, group))
-    NOTREACHED();
+  StoreAffiliationResult result = Store(affiliation, group);
+  UMA_HISTOGRAM_ENUMERATION("PasswordManager.AffiliationDatabase.StoreResult",
+                            result);
 
   transaction.Commit();
 }
@@ -492,6 +487,9 @@ void AffiliationDatabase::UpdatePslExtensions(
 
 void AffiliationDatabase::SQLErrorCallback(int error,
                                            sql::Statement* statement) {
+  sql::UmaHistogramSqliteResult("PasswordManager.AffiliationDatabase.Error",
+                                error);
+
   if (sql::IsErrorCatastrophic(error)) {
     // Normally this will poison the database, causing any subsequent operations
     // to silently fail without any side effects. However, if RazeAndPoison() is
