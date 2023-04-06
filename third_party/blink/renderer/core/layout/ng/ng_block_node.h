@@ -258,10 +258,6 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
  private:
   void PrepareForLayout() const;
 
-  // Runs layout on the underlying LayoutObject and creates a fragment for the
-  // resulting geometry.
-  const NGLayoutResult* RunLegacyLayout(const NGConstraintSpace&) const;
-
   const NGLayoutResult* RunSimplifiedLayout(const NGLayoutAlgorithmParams&,
                                             const NGLayoutResult&) const;
 

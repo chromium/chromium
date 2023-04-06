@@ -41,12 +41,6 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
     const NGConstraintSpace& new_space,
     absl::optional<NGFragmentGeometry>* fragment_geometry);
 
-// Similar to |MaySkipLayout| but for legacy layout roots. Doesn't attempt to
-// pre-compute the geometry of the fragment.
-bool MaySkipLegacyLayout(const NGBlockNode& node,
-                         const NGLayoutResult& cached_layout_result,
-                         const NGConstraintSpace& new_space);
-
 // Returns true if for a given |new_space|, the |cached_layout_result| won't be
 // affected by clearance, or floats, and therefore might be able to skip
 // layout.

@@ -1136,8 +1136,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void ReplaceLayoutResult(const NGLayoutResult*, wtf_size_t index);
 
   void ShrinkLayoutResults(wtf_size_t results_to_keep);
-  void RestoreLegacyLayoutResults(const NGLayoutResult* measure_result,
-                                  const NGLayoutResult* layout_result);
 
   // Perform any finalization needed after all the layout results have been
   // added.

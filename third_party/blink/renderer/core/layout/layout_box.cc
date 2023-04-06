@@ -3301,18 +3301,6 @@ void LayoutBox::ReplaceLayoutResult(const NGLayoutResult* result,
   }
 }
 
-void LayoutBox::RestoreLegacyLayoutResults(
-    const NGLayoutResult* measure_result,
-    const NGLayoutResult* layout_result) {
-  NOT_DESTROYED();
-  DCHECK(!IsLayoutNGObject());
-  measure_result_ = measure_result;
-  if (layout_result)
-    SetLayoutResult(layout_result, 0);
-  else
-    DCHECK(layout_results_.empty());
-}
-
 void LayoutBox::FinalizeLayoutResults() {
   DCHECK(!layout_results_.empty());
   DCHECK(!layout_results_.back()->PhysicalFragment().BreakToken());
