@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/debug/alias.h"
+#include "base/debug/crash_logging.h"
 #include "base/process/memory.h"
 
 namespace chrome {
@@ -21,7 +22,8 @@ FARPROC WINAPI HandleDelayLoadFailureCommon(unsigned reason,
     base::TerminateBecauseOutOfMemory(0);
   }
 
-  DEBUG_ALIAS_FOR_CSTR(dll_name, dll_info->szDll, MAX_PATH);
+  DEBUG_ALIAS_FOR_CSTR(dll_name, dll_info->szDll, 256);
+  SCOPED_CRASH_KEY_STRING256("DelayLoad", "ModuleName", dll_name);
 
   // Deterministically crash here. Returning 0 from the hook would likely result
   // in the process crashing anyway, but in a form that might trigger undefined
