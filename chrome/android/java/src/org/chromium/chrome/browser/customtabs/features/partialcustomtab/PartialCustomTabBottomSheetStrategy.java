@@ -461,8 +461,9 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     protected void setTopMargins(int shadowOffset, int handleOffset) {
         View handleView = mActivity.findViewById(R.id.custom_tabs_handle_view);
         boolean isMaxWidthLandscapeBottomSheet = isMaxWidthLandscapeBottomSheet();
-        int sideOffset =
-                mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_shadow_offset);
+        int sideOffset = shouldHaveNoShadowOffset()
+                ? 0
+                : mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_shadow_offset);
 
         if (ChromeFeatureList.sCctResizableSideSheet.isEnabled()) {
             float maxWidthBottomSheetEv =
