@@ -18,8 +18,8 @@ found in the LICENSE file.
         android:fragment="org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment" />
     <Preference
         android:key="privacy_guide"
-        android:title="@string/prefs_privacy_guide_title"
-        android:summary="@string/prefs_privacy_guide_summary"
+        android:title="@string/privacy_guide_pref_title"
+        android:summary="@string/privacy_guide_pref_summary"
         android:fragment="org.chromium.chrome.browser.privacy_guide.PrivacyGuideFragment" />
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="third_party_cookies"

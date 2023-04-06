@@ -111,7 +111,7 @@ public class PrivacyGuideFragmentTest {
 
     private void launchPrivacyGuide() {
         mSettingsActivityTestRule.startSettingsActivity();
-        onViewWaiting(withText(R.string.prefs_privacy_guide_title));
+        onViewWaiting(withText(R.string.privacy_guide_fragment_title));
     }
 
     private void navigateFromWelcomeToMSBBCard() {
