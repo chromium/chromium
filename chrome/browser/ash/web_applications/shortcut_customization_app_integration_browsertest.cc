@@ -45,7 +45,7 @@ IN_PROC_BROWSER_TEST_P(ShortcutCustomizationAppIntegrationTest,
   const GURL url(ash::kChromeUIShortcutCustomizationAppURL);
   EXPECT_NO_FATAL_FAILURE(
       ExpectSystemWebAppValid(ash::SystemWebAppType::SHORTCUT_CUSTOMIZATION,
-                              url, "Shortcut Customization"));
+                              url, "Keyboard shortcuts"));
 
   histogram_tester_.ExpectBucketCount(
       "Webapp.InstallResult.System.Apps.ShortcutCustomization",

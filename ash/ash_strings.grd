@@ -5717,8 +5717,8 @@ Here are some things you can try to get started.
       </message>
 
       <!-- Shortcut Customization App -->
-      <message name="IDS_ASH_SHORTCUT_CUSTOMIZATION_APP_TITLE" translateable="false" desc="The title of the shortcut customization system web app. Shortcut customization lets users to customize their system shortcuts.">
-        Shortcut Customization
+      <message name="IDS_ASH_SHORTCUT_CUSTOMIZATION_APP_TITLE" desc="The title of the keyboard shortcuts system web app. Keyboard shortcuts lets users to customize their system shortcuts.">
+        Keyboard shortcuts
       </message>
 
       <message name="IDS_ASH_SHIMLESS_RMA_APP_TITLE" translateable="false" desc="The title of shimless RMA flow SWA. Shimless RMA guides repair technicians through step-by-step repair flow.">
