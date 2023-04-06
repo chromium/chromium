@@ -32,14 +32,14 @@
 }
 
 - (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
+  if (!base::FeatureList::IsEnabled(kIOSCustomBrowserEditMenu)) {
+    return;
+  }
   [self addLinkToText:builder];
   [self addPartialTranslate:builder];
 }
 
 - (void)addLinkToText:(id<UIMenuBuilder>)builder {
-  if (!base::FeatureList::IsEnabled(kIOSCustomBrowserEditMenu)) {
-    return;
-  }
   NSString* title = l10n_util::GetNSString(IDS_IOS_SHARE_LINK_TO_TEXT);
   NSString* linkToTextId = @"chromecommand.linktotext";
   UICommand* menuCommand = [UICommand
