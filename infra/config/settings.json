@@ -12,14 +12,6 @@
         "fuchsia": {
             "description": "fuchsia LTS",
             "sheriff_rotation": "fuchsia"
-        },
-        "mac": {
-            "description": "desktop extended stable",
-            "sheriff_rotation": "chrome_browser_release"
-        },
-        "windows": {
-            "description": "desktop extended stable",
-            "sheriff_rotation": "chrome_browser_release"
         }
     }
 }
