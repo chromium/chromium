@@ -2100,6 +2100,36 @@ TEST_F(FormParserTest, NotPasswordField) {
   });
 }
 
+// The parser should avoid identifying ONE_TIME_CODE fields as passwords.
+TEST_F(FormParserTest, OneTimeCodeField) {
+  CheckTestData({
+      {
+          .description_for_logging = "Server hints: ONE_TIME_CODE.",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME, .form_control_type = "text"},
+                  {.form_control_type = "password",
+                   .prediction = {.type = autofill::ONE_TIME_CODE}},
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .form_control_type = "password"},
+              },
+          .fallback_only = false,
+      },
+      {
+          .description_for_logging =
+              "Server hints: ONE_TIME_CODE on only password.",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME, .form_control_type = "text"},
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .form_control_type = "password",
+                   .prediction = {.type = autofill::ONE_TIME_CODE}},
+              },
+          .fallback_only = true,
+      },
+  });
+}
+
 // The parser should avoid identifying NOT_USERNAME fields as usernames.
 TEST_F(FormParserTest, NotUsernameField) {
   CheckTestData({
@@ -2200,6 +2230,38 @@ TEST_F(FormParserTest, NotPasswordFieldDespiteAutocompleteAttribute) {
                    .autocomplete_attribute = "current-password",
                    .form_control_type = "password",
                    .prediction = {.type = autofill::NOT_PASSWORD}},
+              },
+          .fallback_only = true,
+      },
+  });
+}
+
+// The parser should avoid identifying ONE_TIME_CODE fields as passwords.
+TEST_F(FormParserTest, OneTimeCodeFieldDespiteAutocompleteAttribute) {
+  CheckTestData({
+      {
+          .description_for_logging = "Server hints: ONE_TIME_CODE.",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME, .form_control_type = "text"},
+                  {.autocomplete_attribute = "current-password",
+                   .form_control_type = "password",
+                   .prediction = {.type = autofill::ONE_TIME_CODE}},
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .form_control_type = "password"},
+              },
+          .fallback_only = false,
+      },
+      {
+          .description_for_logging =
+              "Server hints: ONE_TIME_CODE on only password.",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME, .form_control_type = "text"},
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .autocomplete_attribute = "current-password",
+                   .form_control_type = "password",
+                   .prediction = {.type = autofill::ONE_TIME_CODE}},
               },
           .fallback_only = true,
       },
