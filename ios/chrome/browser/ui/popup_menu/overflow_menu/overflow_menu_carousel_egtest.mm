@@ -209,7 +209,9 @@ void ResolvePassphraseErrorFromOverflowMenu() {
 }
 
 // Tests non-error destination highlights.
-- (void)testNonErrorDestinationHighlights {
+// TODO(crbug.com/1431012): This test is very flaky. Fails especially on
+// devices.
+- (void)FLAKY_testNonErrorDestinationHighlights {
   if (![ChromeEarlGrey isNewOverflowMenuEnabled]) {
     EARL_GREY_TEST_SKIPPED(kOverflowMenuSkipTestMessage)
   }
