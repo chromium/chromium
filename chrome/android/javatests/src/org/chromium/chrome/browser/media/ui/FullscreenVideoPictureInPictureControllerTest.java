@@ -27,6 +27,7 @@ import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -250,12 +251,18 @@ public class FullscreenVideoPictureInPictureControllerTest {
     }
 
     private void testExitOn(Runnable runnable) throws Throwable {
+        AsyncInitializationActivity.interceptMoveTaskToBackForTesting();
+
         enterFullscreen();
         triggerAutoPiPAndWait();
 
         runnable.run();
 
-        CriteriaHelper.pollUiThread(() -> !mActivity.getLastPictureInPictureModeForTesting());
+        CriteriaHelper.pollUiThread(
+                AsyncInitializationActivity::wasMoveTaskToBackInterceptedForTesting);
+        // This logic would run if we hadn't intercepted moveTaskToBack (which is how PiP gets
+        // exited), so run it now just in case.
+        mActivity.onPictureInPictureModeChanged(false, mActivity.getResources().getConfiguration());
     }
 
     /** A TabObserver that tracks whether a navigation has occurred. */
