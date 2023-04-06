@@ -310,11 +310,12 @@ bool SyncChannel::SyncContext::Push(SyncMessage* sync_msg) {
   base::AutoLock auto_lock(deserializers_lock_);
   if (reject_new_deserializers_)
     return false;
+
   PendingSyncMsg pending(
-      SyncMessage::GetMessageId(*sync_msg), sync_msg->GetReplyDeserializer(),
+      SyncMessage::GetMessageId(*sync_msg), sync_msg->TakeReplyDeserializer(),
       new base::WaitableEvent(base::WaitableEvent::ResetPolicy::MANUAL,
                               base::WaitableEvent::InitialState::NOT_SIGNALED));
-  deserializers_.push_back(pending);
+  deserializers_.push_back(std::move(pending));
   return true;
 }
 
@@ -323,7 +324,6 @@ bool SyncChannel::SyncContext::Pop() {
   {
     base::AutoLock auto_lock(deserializers_lock_);
     PendingSyncMsg& msg = deserializers_.back();
-    msg.deserializer.ClearAndDelete();
     msg.done_event.ClearAndDelete();
     result = msg.send_result;
     deserializers_.pop_back();

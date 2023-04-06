@@ -1216,9 +1216,9 @@ TEST_F(IPCChannelProxyMojoTest, SyncAssociatedInterface) {
   // Now make a classical sync IPC request to the client. It will send a
   // sync associated interface message to us while we wait.
   received_value = 0;
-  std::unique_ptr<IPC::SyncMessage> request(
-      new IPC::SyncMessage(0, 0, IPC::Message::PRIORITY_NORMAL,
-                           new SyncReplyReader(&received_value)));
+  auto request = std::make_unique<IPC::SyncMessage>(
+      0, 0, IPC::Message::PRIORITY_NORMAL,
+      std::make_unique<SyncReplyReader>(&received_value));
   EXPECT_TRUE(proxy()->Send(request.release()));
   EXPECT_EQ(42, received_value);
 
@@ -1255,8 +1255,9 @@ class SimpleTestClientImpl : public IPC::mojom::SimpleTestClient,
   void RequestValue(RequestValueCallback callback) override {
     int32_t response = 0;
     if (use_sync_sender_) {
-      std::unique_ptr<IPC::SyncMessage> reply(new IPC::SyncMessage(
-          0, 0, IPC::Message::PRIORITY_NORMAL, new SyncReplyReader(&response)));
+      auto reply = std::make_unique<IPC::SyncMessage>(
+          0, 0, IPC::Message::PRIORITY_NORMAL,
+          std::make_unique<SyncReplyReader>(&response));
       EXPECT_TRUE(sync_sender_->Send(reply.release()));
     } else {
       DCHECK(driver_);

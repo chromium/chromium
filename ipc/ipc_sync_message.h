@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
@@ -34,13 +36,13 @@ class IPC_MESSAGE_SUPPORT_EXPORT SyncMessage : public Message {
   SyncMessage(int32_t routing_id,
               uint32_t type,
               PriorityValue priority,
-              MessageReplyDeserializer* deserializer);
+              std::unique_ptr<MessageReplyDeserializer> deserializer);
   ~SyncMessage() override;
 
   // Call this to get a deserializer for the output parameters.
-  // Note that this can only be called once, and the caller is responsible
-  // for deleting the deserializer when they're done.
-  MessageReplyDeserializer* GetReplyDeserializer();
+  // Note that this can only be called once, and the caller is takes
+  // ownership of the deserializer..
+  std::unique_ptr<MessageReplyDeserializer> TakeReplyDeserializer();
 
   // Returns true if the message is a reply to the given request id.
   static bool IsMessageReplyTo(const Message& msg, int request_id);
@@ -81,13 +83,16 @@ class IPC_MESSAGE_SUPPORT_EXPORT MessageReplyDeserializer {
 
 // When sending a synchronous message, this structure contains an object
 // that knows how to deserialize the response.
-struct PendingSyncMsg {
-  PendingSyncMsg(int id, MessageReplyDeserializer* d, base::WaitableEvent* e)
-      : id(id), deserializer(d), done_event(e) {}
+struct IPC_MESSAGE_SUPPORT_EXPORT PendingSyncMsg {
+  PendingSyncMsg(int id,
+                 std::unique_ptr<MessageReplyDeserializer> d,
+                 base::WaitableEvent* e);
+  PendingSyncMsg(PendingSyncMsg&& that);
+  ~PendingSyncMsg();
 
   int id;
   bool send_result = false;
-  raw_ptr<MessageReplyDeserializer> deserializer;
+  std::unique_ptr<MessageReplyDeserializer> deserializer;
   raw_ptr<base::WaitableEvent> done_event;
 };
 

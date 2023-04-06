@@ -58,7 +58,7 @@ MessageT<Meta, std::tuple<Ins...>, std::tuple<Outs...>>::MessageT(
           routing.id,
           ID,
           PRIORITY_NORMAL,
-          new ParamDeserializer<Outs...>(std::tie(*outs...))) {
+          std::make_unique<ParamDeserializer<Outs...>>(std::tie(*outs...))) {
   WriteParam(this, std::tie(ins...));
 }
 

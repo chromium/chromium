@@ -122,8 +122,8 @@ bool PepperInProcessRouter::SendToHost(IPC::Message* msg) {
   }
 
   pending_message_id_ = IPC::SyncMessage::GetMessageId(*message);
-  reply_deserializer_.reset(
-      static_cast<IPC::SyncMessage*>(message.get())->GetReplyDeserializer());
+  reply_deserializer_ =
+      static_cast<IPC::SyncMessage*>(message.get())->TakeReplyDeserializer();
   reply_result_ = false;
 
   bool result = host_impl_->GetPpapiHost()->OnMessageReceived(*message);
