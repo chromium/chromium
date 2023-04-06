@@ -38,8 +38,7 @@
 #include "chrome/browser/extensions/updater/local_extension_cache.h"
 #endif
 
-namespace extensions {
-namespace browsertest_util {
+namespace extensions::browsertest_util {
 
 void CreateAndInitializeLocalCache() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -82,5 +81,18 @@ content::WebContents* AddTab(Browser* browser, const GURL& url) {
   return browser->tab_strip_model()->GetActiveWebContents();
 }
 
-}  // namespace browsertest_util
-}  // namespace extensions
+bool DidChangeTitle(content::WebContents& web_contents,
+                    const std::u16string& original_title,
+                    const std::u16string& changed_title) {
+  const std::u16string& title = web_contents.GetTitle();
+  if (title == changed_title) {
+    return true;
+  }
+  if (title == original_title) {
+    return false;
+  }
+  ADD_FAILURE() << "Unexpected page title found:  " << title;
+  return false;
+}
+
+}  // namespace extensions::browsertest_util
