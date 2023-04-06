@@ -15,7 +15,11 @@ class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
 
-// Protocol to access and update data from parent data source object.
+// Protocol to access and update data from parent data source object. Please
+// note that the parent data source is not and should not be responsible for
+// updating the UI in these method calls as that distributes UI update logic
+// across multiple files. `BookmarksFolderChooserSubDataSourceImpl` is
+// responsible for updating the UI after calling these methods.
 @protocol BookmarksFolderChooserParentDataSource <NSObject>
 
 // Called when a bookmark node is deleted from the model.

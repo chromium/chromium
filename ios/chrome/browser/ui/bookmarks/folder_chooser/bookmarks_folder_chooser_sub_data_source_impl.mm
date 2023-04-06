@@ -98,9 +98,12 @@ using bookmarks::BookmarkNode;
         didDeleteNode:(const bookmarks::BookmarkNode*)node
            fromFolder:(const bookmarks::BookmarkNode*)folder {
   [_parentDataSource bookmarkNodeDeleted:node];
+  [_consumer notifyModelUpdated];
 }
 
 - (void)bookmarkModelWillRemoveAllNodes:(const BookmarkModel*)model {
+  // `_consumer` is notified after the nodes are acutally deleted in
+  // `bookmarkModelRemovedAllNodes`.
   [_parentDataSource bookmarkModelWillRemoveAllNodes:model];
 }
 

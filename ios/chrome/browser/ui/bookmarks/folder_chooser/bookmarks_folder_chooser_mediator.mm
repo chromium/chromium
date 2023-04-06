@@ -92,8 +92,10 @@ using bookmarks::BookmarkNode;
 
 - (void)disconnect {
   [_profileDataSource disconnect];
+  _profileDataSource.consumer = nil;
   _profileDataSource = nil;
   [_accountDataSource disconnect];
+  _accountDataSource.consumer = nil;
   _accountDataSource = nil;
   _editedNodes.clear();
   _authService = nullptr;
@@ -167,7 +169,6 @@ using bookmarks::BookmarkNode;
     // The selected folder has been deleted. Unset `_selectedFolderNode`.
     _selectedFolderNode = nil;
   }
-  [_consumer notifyModelUpdated];
 }
 
 - (void)bookmarkModelWillRemoveAllNodes:(const BookmarkModel*)bookmarkModel {
@@ -182,9 +183,7 @@ using bookmarks::BookmarkNode;
     // chooser.
     [_delegate bookmarksFolderChooserMediatorWantsDismissal:self];
   } else if (_selectedFolderNode->HasAncestor(bookmarkModel->root_node())) {
-    // The selected folder will be deleted. Unset `_selectedFolderNode`. The UI
-    // will be updated after the nodes are deleted in
-    // `BookmarksFolderChooserSubDataSourceImpl::bookmarkModelRemovedAllNodes`.
+    // The selected folder will be deleted. Unset `_selectedFolderNode`.
     _selectedFolderNode = nil;
   }
 }

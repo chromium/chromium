@@ -50,7 +50,10 @@ source_set("coordinator_impl") {
 # Contains folder chooser ui implementation.
 source_set("ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
-  visibility = [ ":coordinator_impl" ]
+  visibility = [
+    ":coordinator_impl",
+    ":unit_tests",
+  ]
   sources = [
     "bookmarks_folder_chooser_consumer.h",
     "bookmarks_folder_chooser_mediator.h",
@@ -81,6 +84,28 @@ source_set("ui") {
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "bookmarks_folder_chooser_sub_data_source_impl_unittest.mm" ]
+  deps = [
+    ":ui",
+    "//base/test:test_support",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/test",
+    "//ios/chrome/browser/bookmarks",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:test_support",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test:test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
 }
 
 source_set("eg2_tests") {
