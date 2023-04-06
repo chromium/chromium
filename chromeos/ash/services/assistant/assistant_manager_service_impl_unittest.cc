@@ -188,6 +188,10 @@ class AssistantManagerServiceImplTest : public testing::Test {
 
   FullyInitializedAssistantState& assistant_state() { return assistant_state_; }
 
+  void SetAssistantStateContext(bool enabled) {
+    assistant_state_.SetContextEnabled(enabled);
+  }
+
   FakeServiceContext* fake_service_context() { return service_context_.get(); }
 
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
@@ -753,6 +757,19 @@ TEST_F(AssistantManagerServiceImplTest, ShouldPropagateColorMode) {
 
   ASSERT_TRUE(mojom_service_controller().dark_mode_enabled().has_value());
   EXPECT_TRUE(mojom_service_controller().dark_mode_enabled().value());
+}
+
+TEST_F(AssistantManagerServiceImplTest, ShouldNotCrashRunningAfterStopped) {
+  Start();
+  SetAssistantStateContext(/*enabled=*/false);
+  WaitForState(AssistantManagerService::STARTED);
+
+  // http://crbug.com/1414264: calling Stop() before Running is set, should not
+  // crash.
+  assistant_manager_service()->Stop();
+  mojom_service_controller().SetState(ServiceState::kRunning);
+  WaitForState(AssistantManagerService::RUNNING);
+  RunUntilIdle();
 }
 
 }  // namespace ash::assistant
