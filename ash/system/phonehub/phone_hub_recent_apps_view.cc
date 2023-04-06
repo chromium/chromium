@@ -334,6 +334,11 @@ const char* PhoneHubRecentAppsView::LoadingView::GetClassName() const {
   return "RecentAppLoadingView";
 }
 
+base::WeakPtr<PhoneHubRecentAppsView::LoadingView>
+PhoneHubRecentAppsView::LoadingView::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void PhoneHubRecentAppsView::LoadingView::StartLoadingAnimation() {
   for (size_t i = 0; i < app_loading_icons_.size(); i++) {
     app_loading_icons_[i]->StartLoadingAnimation(
@@ -460,7 +465,7 @@ void PhoneHubRecentAppsView::FadeOutLoadingView() {
 
     views::AnimationBuilder()
         .OnEnded(base::BindOnce(&LoadingView::SetVisible,
-                                base::Unretained(loading_view_), false))
+                                loading_view_->GetWeakPtr(), false))
         .Once()
         .SetOpacity(loading_view_, 1.0f)
         .SetOpacity(recent_app_buttons_view_, 0.0f)
