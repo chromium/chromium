@@ -29,12 +29,13 @@ export interface DocumentMetadata {
   version: string;
 }
 
-/** Enumeration of page fitting types. */
+/** Enumeration of page fitting types and bounding box fitting types. */
 export enum FittingType {
   NONE = 'none',
   FIT_TO_PAGE = 'fit-to-page',
   FIT_TO_WIDTH = 'fit-to-width',
   FIT_TO_HEIGHT = 'fit-to-height',
+  FIT_TO_BOUNDING_BOX = 'fit-to-bounding-box',
 }
 
 export interface NamedDestinationMessageData {
@@ -56,6 +57,13 @@ export enum SaveRequestType {
 export interface Point {
   x: number;
   y: number;
+}
+
+export interface Rect {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
 }
 
 export type ExtendedKeyEvent = KeyboardEvent&{

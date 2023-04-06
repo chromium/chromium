@@ -106,10 +106,15 @@ async function doNavigationUrlTests(
   const viewport = getZoomableViewport(mockWindow, mockSizer, 0, 1);
   viewport.setViewportChangedCallback(mockViewportChangedCallback.callback);
 
-  const paramsParser = new OpenPdfParamsParser(function(_name) {
+  const getNamedDestinationCallback = function(_name: string) {
     return Promise.resolve(
         {messageId: 'getNamedDestination_1', pageNumber: -1});
-  });
+  };
+  const getPageBoundingBoxCallback = function(_page: number) {
+    return Promise.resolve({x: -1, y: -1, width: -1, height: -1});
+  };
+  const paramsParser = new OpenPdfParamsParser(
+      getNamedDestinationCallback, getPageBoundingBoxCallback);
 
   const navigatorDelegate = new MockNavigatorDelegate();
   const navigator =
@@ -138,7 +143,7 @@ chrome.test.runTests([
     const viewport = getZoomableViewport(mockWindow, mockSizer, 0, 1);
     viewport.setViewportChangedCallback(mockCallback.callback);
 
-    const paramsParser = new OpenPdfParamsParser(function(destination) {
+    const getNamedDestinationCallback = function(destination: string) {
       if (destination === 'US') {
         return Promise.resolve(
             {messageId: 'getNamedDestination_1', pageNumber: 0});
@@ -149,7 +154,12 @@ chrome.test.runTests([
         return Promise.resolve(
             {messageId: 'getNamedDestination_3', pageNumber: -1});
       }
-    });
+    };
+    const getPageBoundingBoxCallback = function(_page: number) {
+      return Promise.resolve({x: -1, y: -1, width: -1, height: -1});
+    };
+    const paramsParser = new OpenPdfParamsParser(
+        getNamedDestinationCallback, getPageBoundingBoxCallback);
     const url = 'http://xyz.pdf';
 
     const navigatorDelegate = new MockNavigatorDelegate();

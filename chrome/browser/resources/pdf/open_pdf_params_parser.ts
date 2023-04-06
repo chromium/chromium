@@ -3,16 +3,18 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {FittingType, NamedDestinationMessageData, Point} from './constants.js';
+
+import {FittingType, NamedDestinationMessageData, Point, Rect} from './constants.js';
 import {Size} from './viewport.js';
 
 export interface OpenPdfParams {
+  boundingBox?: Rect;
+  page?: number;
+  position?: Point;
   url?: string;
-  zoom?: number;
   view?: FittingType;
   viewPosition?: number;
-  position?: Point;
-  page?: number;
+  zoom?: number;
 }
 
 export enum ViewMode {
@@ -29,18 +31,26 @@ export enum ViewMode {
 type GetNamedDestinationCallback = (name: string) =>
     Promise<NamedDestinationMessageData>;
 
+type GetPageBoundingBoxCallback = (page: number) => Promise<Rect>;
+
 // Parses the open pdf parameters passed in the url to set initial viewport
 // settings for opening the pdf.
 export class OpenPdfParamsParser {
   private getNamedDestinationCallback_: GetNamedDestinationCallback;
+  private getPageBoundingBoxCallback_: GetPageBoundingBoxCallback;
   private viewportDimensions_?: Size;
 
   /**
    * @param getNamedDestinationCallback Function called to fetch information for
    *     a named destination.
+   * @param getPageBoundingBoxCallback Function called to fetch information for
+   *     a page's bounding box.
    */
-  constructor(getNamedDestinationCallback: GetNamedDestinationCallback) {
+  constructor(
+      getNamedDestinationCallback: GetNamedDestinationCallback,
+      getPageBoundingBoxCallback: GetPageBoundingBoxCallback) {
     this.getNamedDestinationCallback_ = getNamedDestinationCallback;
+    this.getPageBoundingBoxCallback_ = getPageBoundingBoxCallback;
   }
 
   /**
@@ -96,9 +106,12 @@ export class OpenPdfParamsParser {
    * Parse view parameter of open PDF parameters. The PDF should be opened at
    * the specified fitting type mode and position.
    * @param paramValue Params to parse.
+   * @param pageNumber Page number for bounding box, if there is a fit bounding
+   *     box param.
    * @return Map with view parameters (view and viewPosition).
    */
-  private async parseViewParam_(paramValue: string): Promise<OpenPdfParams> {
+  private async parseViewParam_(paramValue: string, pageNumber: number):
+      Promise<OpenPdfParams> {
     const viewModeComponents = paramValue.toLowerCase().split(',');
     if (viewModeComponents.length === 0) {
       return {};
@@ -120,6 +133,11 @@ export class OpenPdfParamsParser {
         acceptsPositionParam = true;
         break;
       case ViewMode.FIT_B:
+        params['view'] = FittingType.FIT_TO_BOUNDING_BOX;
+        // pageNumber is 1-indexed, but PDF Viewer is 0-indexed.
+        params['boundingBox'] =
+            await this.getPageBoundingBoxCallback_(pageNumber - 1);
+        break;
       case ViewMode.FIT_BH:
       case ViewMode.FIT_BV:
         // Not implemented yet, do nothing.
@@ -147,10 +165,12 @@ export class OpenPdfParamsParser {
   /**
    * Parse view parameters which come from nameddest.
    * @param paramValue Params to parse.
+   * @param pageNumber Page number for bounding box, if there is a fit bounding
+   *     box param.
    * @return Map with view parameters.
    */
-  private async parseNameddestViewParam_(paramValue: string):
-      Promise<OpenPdfParams> {
+  private async parseNameddestViewParam_(
+      paramValue: string, pageNumber: number): Promise<OpenPdfParams> {
     const viewModeComponents = paramValue.toLowerCase().split(',');
     const viewMode = viewModeComponents[0];
     const params: OpenPdfParams = {};
@@ -197,7 +217,7 @@ export class OpenPdfParamsParser {
       return params;
     }
 
-    return this.parseViewParam_(paramValue);
+    return this.parseViewParam_(paramValue, pageNumber);
   }
 
   /** Parse the parameters encoded in the fragment of a URL. */
@@ -269,16 +289,23 @@ export class OpenPdfParamsParser {
 
     const urlParams = this.parseUrlParams_(url);
 
+    let pageNumber;
     if (urlParams.has('page')) {
       // |pageNumber| is 1-based, but goToPage() take a zero-based page index.
-      const pageNumber = parseInt(urlParams.get('page')!, 10);
+      pageNumber = parseInt(urlParams.get('page')!, 10);
       if (!Number.isNaN(pageNumber) && pageNumber > 0) {
         params['page'] = pageNumber - 1;
       }
     }
 
+    if (!pageNumber || pageNumber < 1) {
+      pageNumber = 1;
+    }
+
     if (urlParams.has('view')) {
-      Object.assign(params, await this.parseViewParam_(urlParams.get('view')!));
+      Object.assign(
+          params,
+          await this.parseViewParam_(urlParams.get('view')!, pageNumber!));
     }
 
     if (urlParams.has('zoom')) {
@@ -291,12 +318,14 @@ export class OpenPdfParamsParser {
 
       if (data.pageNumber !== -1) {
         params.page = data.pageNumber;
+        pageNumber = data.pageNumber;
       }
 
       if (data.namedDestinationView) {
         Object.assign(
             params,
-            await this.parseNameddestViewParam_(data.namedDestinationView));
+            await this.parseNameddestViewParam_(
+                data.namedDestinationView, pageNumber!));
       }
       return params;
     }

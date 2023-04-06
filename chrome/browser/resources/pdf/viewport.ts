@@ -8,7 +8,7 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {hasKeyModifiers, isRTL} from 'chrome://resources/js/util_ts.js';
 
-import {ExtendedKeyEvent, FittingType, Point} from './constants.js';
+import {ExtendedKeyEvent, FittingType, Point, Rect} from './constants.js';
 import {Gesture, GestureDetector, PinchEventDetail} from './gesture_detector.js';
 import {PdfPluginElement} from './internal_plugin.js';
 import {SwipeDetector, SwipeDirection} from './swipe_detector.js';
@@ -38,6 +38,11 @@ export interface LayoutOptions {
 export interface Size {
   width: number;
   height: number;
+}
+
+interface FittingTypeParams {
+  page: number;
+  boundingBox: Rect;
 }
 
 /** @return The area of the intersection of the rects */
@@ -604,6 +609,11 @@ export class Viewport implements ViewportInterface {
    * Save the current zoom and fitting type.
    */
   saveZoomState() {
+    // Fitting to bounding box does not need to be saved, so set the fitting
+    // type to none.
+    if (this.fittingType_ === FittingType.FIT_TO_BOUNDING_BOX) {
+      this.setFittingType(FittingType.NONE);
+    }
     this.savedZoom_ = this.internalZoom_;
     this.savedFittingType_ = this.fittingType_;
   }
@@ -901,7 +911,11 @@ export class Viewport implements ViewportInterface {
     return Math.max(zoom, 0);
   }
 
-  setFittingType(fittingType: FittingType) {
+  /**
+   * Set the fitting type and fit within the viewport accordingly.
+   * @param params Params required for fitting to the bounding box.
+   */
+  setFittingType(fittingType: FittingType, params?: FittingTypeParams) {
     switch (fittingType) {
       case FittingType.FIT_TO_PAGE:
         this.fitToPage();
@@ -911,6 +925,10 @@ export class Viewport implements ViewportInterface {
         return;
       case FittingType.FIT_TO_HEIGHT:
         this.fitToHeight();
+        return;
+      case FittingType.FIT_TO_BOUNDING_BOX:
+        assert(params);
+        this.fitToBoundingBox_(params.page, params.boundingBox);
         return;
       case FittingType.NONE:
         this.fittingType_ = fittingType;
@@ -1019,6 +1037,56 @@ export class Viewport implements ViewportInterface {
           this.computeFittingZoom_(this.documentDimensions_, true, false)));
       this.updateViewport_();
     });
+  }
+
+  /**
+   * Zoom the viewport so that the bounding box of a page consumes the entire
+   * viewport.
+   * @param page The page to display.
+   * @param boundingBox The bounding box to fit to.
+   */
+  private fitToBoundingBox_(page: number, boundingBox: Rect) {
+    // Ignore invalid bounding boxes, which can occur if the plugin fails to
+    // give a valid box.
+    if (!boundingBox.width || !boundingBox.height) {
+      return;
+    }
+
+    this.fittingType_ = FittingType.FIT_TO_BOUNDING_BOX;
+
+    // Use the smallest zoom that fits the full bounding box on screen.
+    const boundingBoxSize = {
+      width: boundingBox.width,
+      height: boundingBox.height,
+    };
+
+    const zoomFitToWidth =
+        this.computeFittingZoom_(boundingBoxSize, true, false);
+    const zoomFitToHeight =
+        this.computeFittingZoom_(boundingBoxSize, false, true);
+    const newZoom = this.clampZoom_(Math.min(zoomFitToWidth, zoomFitToHeight));
+    this.mightZoom_(() => {
+      this.setZoomInternal_(newZoom);
+    });
+
+    // Calculate the position.
+    const pageInsetDimensions = this.getPageInsetDimensions(page);
+    const viewportSize = this.size;
+    const screenPosition: Point = {
+      x: pageInsetDimensions.x + boundingBox.x,
+      y: pageInsetDimensions.y + boundingBox.y,
+    };
+    // Center the bounding box in the dimension that isn't fully zoomed in.
+    if (newZoom !== zoomFitToWidth) {
+      screenPosition.x -=
+          ((viewportSize.width / newZoom) - boundingBox.width) / 2;
+    }
+    if (newZoom !== zoomFitToHeight) {
+      screenPosition.y -=
+          ((viewportSize.height / newZoom) - boundingBox.height) / 2;
+    }
+    this.setPosition(
+        {x: screenPosition.x * newZoom, y: screenPosition.y * newZoom});
   }
 
   /** Zoom out to the next predefined zoom level. */
@@ -1361,6 +1429,7 @@ export class Viewport implements ViewportInterface {
    */
   handleNavigateToDestination(
       page: number, x: number|undefined, y: number|undefined, zoom: number) {
+    // TODO(crbug.com/1430193): Handle view parameters and fitting types.
     if (zoom) {
       this.setZoom(zoom);
     }

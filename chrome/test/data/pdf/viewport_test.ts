@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FittingType, PAGE_SHADOW, SwipeDirection, Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {FittingType, PAGE_SHADOW, Point, Rect, SwipeDirection, Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 
 import {createMockUnseasonedPdfPluginForTest, getZoomableViewport, MockDocumentDimensions, MockElement, MockSizer, MockUnseasonedPdfPluginElement, MockViewportChangedCallback} from './test_util.js';
@@ -331,6 +331,14 @@ const tests = [
     viewport.setFittingType(FittingType.FIT_TO_HEIGHT);
     chrome.test.assertEq(FittingType.FIT_TO_HEIGHT, viewport.fittingType);
 
+    const documentDimensions = new MockDocumentDimensions();
+    documentDimensions.addPage(0, 0);
+    viewport.setDocumentDimensions(documentDimensions);
+
+    const params = {page: 0, boundingBox: {x: 0, y: 0, width: 1, height: 1}};
+    viewport.setFittingType(FittingType.FIT_TO_BOUNDING_BOX, params);
+    chrome.test.assertEq(FittingType.FIT_TO_BOUNDING_BOX, viewport.fittingType);
+
     viewport.setFittingType(FittingType.NONE);
     chrome.test.assertEq(FittingType.NONE, viewport.fittingType);
 
@@ -622,6 +630,71 @@ const tests = [
     chrome.test.succeed();
   },
 
+  function testFitToBoundingBox() {
+    const mockWindow = new MockElement(100, 100, null);
+    const mockSizer = new MockSizer();
+    const mockCallback = new MockViewportChangedCallback();
+    const viewport = getZoomableViewport(mockWindow, mockSizer, 0, 1);
+    viewport.setViewportChangedCallback(mockCallback.callback);
+    const documentDimensions = new MockDocumentDimensions();
+    documentDimensions.addPage(50, 50);
+    documentDimensions.addPage(50, 100);
+    documentDimensions.addPage(100, 50);
+    documentDimensions.addPage(100, 100);
+    documentDimensions.addPage(200, 200);
+    viewport.setDocumentDimensions(documentDimensions);
+
+    function assertPositionAndZoom(
+        expectedPosition: Point, expectedZoom: number) {
+      chrome.test.assertEq(
+          FittingType.FIT_TO_BOUNDING_BOX, viewport.fittingType);
+      chrome.test.assertTrue(mockCallback.wasCalled);
+      chrome.test.assertEq(expectedPosition, viewport.position);
+      chrome.test.assertEq(expectedZoom, viewport.getZoom());
+    }
+
+    function testForVisibleBoundingBox(
+        page: number, boundingBox: Rect, expectedX: number, expectedY: number,
+        expectedZoom: number) {
+      viewport.setZoom(0.1);
+      mockCallback.reset();
+      viewport.setFittingType(
+          FittingType.FIT_TO_BOUNDING_BOX, {page, boundingBox});
+      assertPositionAndZoom({x: expectedX, y: expectedY}, expectedZoom);
+    }
+
+    // Bounding box is smaller than window size and square.
+    let boundingBox: Rect = {x: 25, y: 25, width: 50, height: 50};
+    testForVisibleBoundingBox(0, boundingBox, 60, 56, 2);
+    testForVisibleBoundingBox(1, boundingBox, 60, 156, 2);
+    testForVisibleBoundingBox(2, boundingBox, 60, 356, 2);
+    testForVisibleBoundingBox(3, boundingBox, 60, 456, 2);
+    testForVisibleBoundingBox(4, boundingBox, 60, 656, 2);
+
+    // Bounding box is smaller than window size with larger width.
+    boundingBox = {x: 20, y: 25, width: 80, height: 50};
+    testForVisibleBoundingBox(2, boundingBox, 31.25, 203.75, 1.25);
+    testForVisibleBoundingBox(3, boundingBox, 31.25, 266.25, 1.25);
+    testForVisibleBoundingBox(4, boundingBox, 31.25, 391.25, 1.25);
+
+    // Bounding box is smaller than window size with larger height.
+    boundingBox = {x: 25, y: 20, width: 50, height: 80};
+    testForVisibleBoundingBox(1, boundingBox, 18.75, 91.25, 1.25);
+    testForVisibleBoundingBox(3, boundingBox, 18.75, 278.75, 1.25);
+    testForVisibleBoundingBox(4, boundingBox, 18.75, 403.75, 1.25);
+
+    // Bounding box is the same size as window size.
+    boundingBox = {x: 0, y: 0, width: 100, height: 100};
+    testForVisibleBoundingBox(3, boundingBox, 5, 203, 1);
+    testForVisibleBoundingBox(4, boundingBox, 5, 303, 1);
+
+    // Bounding box is larger than window size.
+    boundingBox = {x: 10, y: 20, width: 150, height: 150};
+    testForVisibleBoundingBox(
+        4, boundingBox, 10, 215.33333333333331, 0.6666666666666666);
+
+    chrome.test.succeed();
+  },
   async function testPinchZoomInWithGestureEvent() {
     const mockWindow = new MockElement(100, 100, null);
     const viewport = getZoomableViewport(mockWindow, new MockSizer(), 0, 1);
@@ -1694,6 +1767,12 @@ const tests = [
     chrome.test.assertEq(0, viewport.position.y);
     chrome.test.succeed();
   },
+
+  // TODO(crbug.com/1430193): Currently, fit types 'FIT_TO_PAGE',
+  // 'FIT_TO_WIDTH', 'FIT_TO_HEIGHT', and 'FIT_TO_BOUNDING_BOX` do not correctly
+  // navigate to a destination with the correct position and zoom level. Add
+  // checks for position and zoom level for these fit types once fully
+  // supported.
 ];
 
 chrome.test.runTests(tests);

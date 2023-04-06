@@ -37,6 +37,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 
@@ -143,6 +144,7 @@ class PDFiumEngine : public PDFEngine,
   gfx::Rect GetPageBoundsRect(int index) override;
   gfx::Rect GetPageContentsRect(int index) override;
   gfx::Rect GetPageScreenRect(int page_index) const override;
+  gfx::RectF GetPageBoundingBox(int page_index) override;
   void SetGrayscale(bool grayscale) override;
   int GetCharCount(int page_index) override;
   gfx::RectF GetCharBounds(int page_index, int char_index) override;

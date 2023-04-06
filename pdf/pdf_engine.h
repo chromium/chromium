@@ -373,6 +373,9 @@ class PDFEngine {
   // Returns a page's rect in screen coordinates, as well as its surrounding
   // border areas and bottom separator.
   virtual gfx::Rect GetPageScreenRect(int page_index) const = 0;
+  // Return a page's bounding box rectangle, or an empty rectangle if
+  // `page_index` is invalid.
+  virtual gfx::RectF GetPageBoundingBox(int page_index) = 0;
   // Set color / grayscale rendering modes.
   virtual void SetGrayscale(bool grayscale) = 0;
   // Get the number of characters on a given page.
