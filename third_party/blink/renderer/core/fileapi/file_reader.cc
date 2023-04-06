@@ -319,8 +319,6 @@ void FileReader::ExecutePendingRead() {
   loader_ = MakeGarbageCollected<FileReaderLoader>(
       read_type_, this,
       GetExecutionContext()->GetTaskRunner(TaskType::kFileReading));
-  loader_->SetEncoding(encoding_);
-  loader_->SetDataType(blob_type_);
   loader_->Start(blob_data_handle_);
   blob_data_handle_ = nullptr;
 }
@@ -406,10 +404,10 @@ void FileReader::DidFinishLoading() {
 
   if (read_type_ == FileReadType::kReadAsArrayBuffer) {
     result_ = MakeGarbageCollected<V8UnionArrayBufferOrString>(
-        loader_->ArrayBufferResult());
+        loader_->TakeContents().AsDOMArrayBuffer());
   } else {
     result_ = MakeGarbageCollected<V8UnionArrayBufferOrString>(
-        loader_->StringResult());
+        loader_->TakeContents().AsString(read_type_, encoding_, blob_type_));
   }
 
   // When we set m_state to DONE below, we still need to fire

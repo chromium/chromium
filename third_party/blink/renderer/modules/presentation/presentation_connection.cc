@@ -138,7 +138,7 @@ class PresentationConnection::BlobLoader final
   void DidReceiveData() override {}
   void DidFinishLoading() override {
     presentation_connection_->DidFinishLoadingBlob(
-        loader_->ArrayBufferResult());
+        loader_->TakeContents().AsDOMArrayBuffer());
   }
   void DidFail(FileErrorCode error_code) override {
     presentation_connection_->DidFailLoadingBlob(error_code);

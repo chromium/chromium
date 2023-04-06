@@ -40,17 +40,14 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/file_error.h"
 #include "third_party/blink/renderer/core/fileapi/file_read_type.h"
+#include "third_party/blink/renderer/core/fileapi/file_reader_data.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader_client.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
-#include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -78,9 +75,7 @@ class CORE_EXPORT FileReaderLoader : public GarbageCollected<FileReaderLoader>,
   void Start(scoped_refptr<BlobDataHandle>);
   void Cancel();
 
-  DOMArrayBuffer* ArrayBufferResult();
-  String StringResult();
-  ArrayBufferContents TakeContents();
+  FileReaderData TakeContents();
 
   // Returns the total bytes received. Bytes ignored by m_rawData won't be
   // counted.
@@ -96,9 +91,6 @@ class CORE_EXPORT FileReaderLoader : public GarbageCollected<FileReaderLoader>,
   FileErrorCode GetErrorCode() const { return error_code_; }
 
   int32_t GetNetError() const { return net_error_; }
-
-  void SetEncoding(const String&);
-  void SetDataType(const String& data_type) { data_type_ = data_type; }
 
   bool HasFinishedLoading() const { return finished_loading_; }
 
@@ -122,8 +114,6 @@ class CORE_EXPORT FileReaderLoader : public GarbageCollected<FileReaderLoader>,
 
   FileReadType read_type_;
   WeakMember<FileReaderLoaderClient> client_;
-  WTF::TextEncoding encoding_;
-  String data_type_;
 
   ArrayBufferContents raw_data_;
 

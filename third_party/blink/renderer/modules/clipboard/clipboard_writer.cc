@@ -356,7 +356,8 @@ void ClipboardWriter::DidReceiveData() {}
 
 void ClipboardWriter::DidFinishLoading() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DOMArrayBuffer* array_buffer = file_reader_->ArrayBufferResult();
+  DOMArrayBuffer* array_buffer =
+      file_reader_->TakeContents().AsDOMArrayBuffer();
   DCHECK(array_buffer);
 
   self_keep_alive_.Clear();

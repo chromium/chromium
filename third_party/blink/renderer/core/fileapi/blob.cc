@@ -81,9 +81,6 @@ class BlobFileReaderClient : public GarbageCollected<BlobFileReaderClient>,
         resolver_(resolver),
         read_type_(read_type),
         keep_alive_(this) {
-    if (read_type_ == FileReadType::kReadAsText) {
-      loader_->SetEncoding("UTF-8");
-    }
     loader_->Start(std::move(blob_data_handle));
   }
 
@@ -102,11 +99,12 @@ class BlobFileReaderClient : public GarbageCollected<BlobFileReaderClient>,
   }
 
   void DidFinishLoading() override {
+    FileReaderData contents = loader_->TakeContents();
     if (read_type_ == FileReadType::kReadAsText) {
-      String result = loader_->StringResult();
+      String result = std::move(contents).AsText("UTF-8");
       resolver_->Resolve(result);
     } else if (read_type_ == FileReadType::kReadAsArrayBuffer) {
-      DOMArrayBuffer* result = loader_->ArrayBufferResult();
+      DOMArrayBuffer* result = std::move(contents).AsDOMArrayBuffer();
       resolver_->Resolve(result);
     } else {
       NOTREACHED() << "Unknown ReadType supplied to BlobFileReaderClient";

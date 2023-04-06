@@ -340,7 +340,7 @@ void ImageBitmapFactories::ImageBitmapLoader::ContextDestroyed() {
 }
 
 void ImageBitmapFactories::ImageBitmapLoader::DidFinishLoading() {
-  auto contents = loader_->TakeContents();
+  auto contents = loader_->TakeContents().AsArrayBufferContents();
   loader_.Clear();
   if (!contents.IsValid()) {
     RejectPromise(kAllocationFailureImageBitmapRejectionReason);

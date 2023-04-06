@@ -58,7 +58,7 @@ DOMArrayBuffer* FileReaderSync::readAsArrayBuffer(
   if (loader->GetErrorCode() != FileErrorCode::kOK) {
     return nullptr;
   }
-  return loader->ArrayBufferResult();
+  return loader->TakeContents().AsDOMArrayBuffer();
 }
 
 String FileReaderSync::readAsBinaryString(Blob* blob,
@@ -71,7 +71,7 @@ String FileReaderSync::readAsBinaryString(Blob* blob,
   if (loader->GetErrorCode() != FileErrorCode::kOK) {
     return "";
   }
-  return loader->StringResult();
+  return loader->TakeContents().AsBinaryString();
 }
 
 String FileReaderSync::readAsText(Blob* blob,
@@ -81,12 +81,11 @@ String FileReaderSync::readAsText(Blob* blob,
 
   FileReaderLoader* loader = MakeGarbageCollected<FileReaderLoader>(
       FileReadType::kReadAsText, nullptr, task_runner_);
-  loader->SetEncoding(encoding);
   StartLoading(*loader, *blob, exception_state);
   if (loader->GetErrorCode() != FileErrorCode::kOK) {
     return "";
   }
-  return loader->StringResult();
+  return loader->TakeContents().AsText(encoding);
 }
 
 String FileReaderSync::readAsDataURL(Blob* blob,
@@ -95,12 +94,11 @@ String FileReaderSync::readAsDataURL(Blob* blob,
 
   FileReaderLoader* loader = MakeGarbageCollected<FileReaderLoader>(
       FileReadType::kReadAsDataURL, nullptr, task_runner_);
-  loader->SetDataType(blob->type());
   StartLoading(*loader, *blob, exception_state);
   if (loader->GetErrorCode() != FileErrorCode::kOK) {
     return "";
   }
-  return loader->StringResult();
+  return loader->TakeContents().AsDataURL(blob->type());
 }
 
 void FileReaderSync::StartLoading(FileReaderLoader& loader,
