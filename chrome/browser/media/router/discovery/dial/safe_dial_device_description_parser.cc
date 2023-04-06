@@ -29,7 +29,7 @@ std::string ComputeFriendlyName(const std::string& unique_id,
 }
 
 void NotifyParsingError(SafeDialDeviceDescriptionParser::ParseCallback callback,
-                        SafeDialDeviceDescriptionParser::ParsingError error) {
+                        SafeDialDeviceDescriptionParser::ParsingResult error) {
   std::move(callback).Run(ParsedDialDeviceDescription(), error);
 }
 
@@ -56,7 +56,7 @@ void SafeDialDeviceDescriptionParser::OnXmlParsingDone(
   if (!result.has_value() || !result->is_dict()) {
     std::move(callback).Run(
         ParsedDialDeviceDescription(),
-        SafeDialDeviceDescriptionParser::ParsingError::kInvalidXml);
+        SafeDialDeviceDescriptionParser::ParsingResult::kInvalidXml);
     return;
   }
 
@@ -66,7 +66,7 @@ void SafeDialDeviceDescriptionParser::OnXmlParsingDone(
   if (!device_element) {
     NotifyParsingError(
         std::move(callback),
-        SafeDialDeviceDescriptionParser::ParsingError::kInvalidXml);
+        SafeDialDeviceDescriptionParser::ParsingResult::kInvalidXml);
     return;
   }
   DCHECK(unique_device);
@@ -75,16 +75,11 @@ void SafeDialDeviceDescriptionParser::OnXmlParsingDone(
   static constexpr size_t kArraySize = 4U;
   static constexpr std::array<const char* const, kArraySize> kNodeNames{
       {"UDN", "friendlyName", "modelName", "deviceType"}};
-  static constexpr std::array<SafeDialDeviceDescriptionParser::ParsingError,
-                              kArraySize>
-      kParsingErrors{
-          {SafeDialDeviceDescriptionParser::ParsingError::kFailedToReadUdn,
-           SafeDialDeviceDescriptionParser::ParsingError::
-               kFailedToReadFriendlyName,
-           SafeDialDeviceDescriptionParser::ParsingError::
-               kFailedToReadModelName,
-           SafeDialDeviceDescriptionParser::ParsingError::
-               kFailedToReadDeviceType}};
+  static constexpr std::array<ParsingResult, kArraySize> kParsingErrors{
+      {ParsingResult::kFailedToReadUdn,
+       ParsingResult::kFailedToReadFriendlyName,
+       ParsingResult::kFailedToReadModelName,
+       ParsingResult::kFailedToReadDeviceType}};
   const std::array<std::string*, kArraySize> kFields{
       {&device_description.unique_id, &device_description.friendly_name,
        &device_description.model_name, &device_description.device_type}};
@@ -110,8 +105,7 @@ void SafeDialDeviceDescriptionParser::OnXmlParsingDone(
 
   device_description.app_url = app_url;
 
-  std::move(callback).Run(device_description,
-                          SafeDialDeviceDescriptionParser::ParsingError::kNone);
+  std::move(callback).Run(device_description, ParsingResult::kSuccess);
 }
 
 }  // namespace media_router

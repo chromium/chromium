@@ -85,9 +85,9 @@ class SafeDialDeviceDescriptionParserTest : public testing::Test {
   ParsedDialDeviceDescription Parse(
       const std::string& xml,
       const GURL& app_url,
-      SafeDialDeviceDescriptionParser::ParsingError expected_error) {
+      SafeDialDeviceDescriptionParser::ParsingResult expected_result) {
     ParsedDialDeviceDescription device_description;
-    SafeDialDeviceDescriptionParser::ParsingError error;
+    SafeDialDeviceDescriptionParser::ParsingResult result;
     base::RunLoop run_loop;
     SafeDialDeviceDescriptionParser parser;
     parser.Parse(
@@ -95,16 +95,16 @@ class SafeDialDeviceDescriptionParserTest : public testing::Test {
         base::BindOnce(
             [](base::RepeatingClosure quit_loop,
                ParsedDialDeviceDescription* out_device_description,
-               SafeDialDeviceDescriptionParser::ParsingError* out_error,
+               SafeDialDeviceDescriptionParser::ParsingResult* out_result,
                const ParsedDialDeviceDescription& device_description,
-               SafeDialDeviceDescriptionParser::ParsingError error) {
+               SafeDialDeviceDescriptionParser::ParsingResult result) {
               *out_device_description = device_description;
-              *out_error = error;
+              *out_result = result;
               quit_loop.Run();
             },
-            run_loop.QuitClosure(), &device_description, &error));
+            run_loop.QuitClosure(), &device_description, &result));
     run_loop.Run();
-    EXPECT_EQ(static_cast<int>(expected_error), static_cast<int>(error));
+    EXPECT_EQ(static_cast<int>(expected_result), static_cast<int>(result));
     return device_description;
   }
 
@@ -115,7 +115,7 @@ class SafeDialDeviceDescriptionParserTest : public testing::Test {
 
 TEST_F(SafeDialDeviceDescriptionParserTest, TestInvalidXml) {
   ParsedDialDeviceDescription device_description = Parse(
-      "", GURL(), SafeDialDeviceDescriptionParser::ParsingError::kInvalidXml);
+      "", GURL(), SafeDialDeviceDescriptionParser::ParsingResult::kInvalidXml);
   EXPECT_TRUE(device_description.unique_id.empty());
 }
 
@@ -123,8 +123,9 @@ TEST_F(SafeDialDeviceDescriptionParserTest, TestParse) {
   std::string xml_text(kDeviceDescriptionWithService);
 
   GURL app_url("http://www.myapp.com");
-  ParsedDialDeviceDescription device_description = Parse(
-      xml_text, app_url, SafeDialDeviceDescriptionParser::ParsingError::kNone);
+  ParsedDialDeviceDescription device_description =
+      Parse(xml_text, app_url,
+            SafeDialDeviceDescriptionParser::ParsingResult::kSuccess);
   EXPECT_EQ("urn:dial-multiscreen-org:device:dial:1",
             device_description.device_type);
   EXPECT_EQ("eureka9019", device_description.friendly_name);
@@ -141,8 +142,9 @@ TEST_F(SafeDialDeviceDescriptionParserTest, TestParseWithSpecialCharacter) {
   std::string xml_text(kDeviceDescriptionWithService);
   xml_text = Replace(xml_text, old_name, new_name);
 
-  ParsedDialDeviceDescription device_description = Parse(
-      xml_text, GURL(), SafeDialDeviceDescriptionParser::ParsingError::kNone);
+  ParsedDialDeviceDescription device_description =
+      Parse(xml_text, GURL(),
+            SafeDialDeviceDescriptionParser::ParsingResult::kSuccess);
   EXPECT_EQ("urn:dial-multiscreen-org:device:dial:1",
             device_description.device_type);
   EXPECT_EQ("Samsung LED40\'s", device_description.friendly_name);
@@ -160,8 +162,9 @@ TEST_F(SafeDialDeviceDescriptionParserTest,
   xml_text = Replace(xml_text, friendly_name, "");
   xml_text = Replace(xml_text, model_name, "");
 
-  ParsedDialDeviceDescription device_description = Parse(
-      xml_text, GURL(), SafeDialDeviceDescriptionParser::ParsingError::kNone);
+  ParsedDialDeviceDescription device_description =
+      Parse(xml_text, GURL(),
+            SafeDialDeviceDescriptionParser::ParsingResult::kSuccess);
   EXPECT_TRUE(device_description.friendly_name.empty());
   EXPECT_TRUE(device_description.model_name.empty());
 }
@@ -172,8 +175,9 @@ TEST_F(SafeDialDeviceDescriptionParserTest, TestParseWithoutFriendlyName) {
   std::string xml_text(kDeviceDescriptionWithoutService);
   xml_text = Replace(xml_text, friendly_name, "");
 
-  ParsedDialDeviceDescription device_description = Parse(
-      xml_text, GURL(), SafeDialDeviceDescriptionParser::ParsingError::kNone);
+  ParsedDialDeviceDescription device_description =
+      Parse(xml_text, GURL(),
+            SafeDialDeviceDescriptionParser::ParsingResult::kSuccess);
   EXPECT_EQ("urn:dial-multiscreen-org:device:dial:1",
             device_description.device_type);
   EXPECT_EQ("Eureka Dongle [4b0f]", device_description.friendly_name);

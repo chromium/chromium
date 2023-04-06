@@ -26,18 +26,21 @@ class DataDecoder;
 // Section 2.3 Device description.
 class SafeDialDeviceDescriptionParser {
  public:
-  enum class ParsingError {
-    kNone = 0,
-    kInvalidXml = 1,
-    kFailedToReadUdn = 2,
-    kFailedToReadFriendlyName = 3,
-    kFailedToReadModelName = 4,
-    kFailedToReadDeviceType = 5,
-    kMissingUniqueId = 6,
-    kMissingFriendlyName = 7,
-    kMissingAppUrl = 8,
-    kInvalidAppUrl = 9,
-    kUtilityProcessError = 10,
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused. This class must stay in sync with
+  // the UMA enum MediaRouterDeviceDescriptionParsingResult.
+  enum class ParsingResult {
+    kSuccess = 0,
+    kInvalidXml,
+    kFailedToReadUdn,
+    kFailedToReadFriendlyName,
+    kFailedToReadModelName,
+    kFailedToReadDeviceType,
+    kMissingUniqueId,
+    kMissingFriendlyName,
+    kMissingAppUrl,
+    kInvalidAppUrl,
+    kUtilityProcessError,
     kMaxValue = kUtilityProcessError,
   };
 
@@ -56,7 +59,7 @@ class SafeDialDeviceDescriptionParser {
   // description.
   using ParseCallback = base::OnceCallback<void(
       const ParsedDialDeviceDescription& device_description,
-      ParsingError parsing_error)>;
+      ParsingResult parsing_result)>;
 
   // Parses the device description in |xml_text| in a utility process.
   // If the parsing succeeds, invokes callback with a valid

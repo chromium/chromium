@@ -15,11 +15,4 @@ void DialMediaRouteProviderMetrics::RecordCreateRouteResult(
                             DialCreateRouteResult::kCount);
 }
 
-// static
-void DialMediaRouteProviderMetrics::RecordParseMessageResult(
-    DialParseMessageResult result) {
-  UMA_HISTOGRAM_ENUMERATION(kHistogramDialParseMessageResult, result,
-                            DialParseMessageResult::kCount);
-}
-
 }  // namespace media_router
