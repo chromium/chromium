@@ -370,12 +370,13 @@ public abstract class PartialCustomTabBaseStrategy
         // the toolbar. Outer frame |R.id.custom_tabs_handle_view| is not suitable since it
         // covers the entire client area for rendering outline shadow around the CCT.
         View dragBar = handleView.findViewById(R.id.drag_bar);
-        GradientDrawable dragBarBackground = (GradientDrawable) dragBar.getBackground();
-        adjustCornerRadius(dragBarBackground, toolbarCornerRadius);
+        GradientDrawable dragBarBackground = getDragBarBackground();
+        if (dragBar.getBackground() instanceof InsetDrawable) resetCoordinatorLayoutInsets();
 
         if (shouldDrawDividerLine()) {
             drawDividerLine(toolbar);
         } else {
+            adjustCornerRadius(dragBarBackground, toolbarCornerRadius);
             dragBar.setBackground(dragBarBackground);
         }
 
@@ -386,12 +387,12 @@ public abstract class PartialCustomTabBaseStrategy
         mActivity.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
     }
 
-    protected void drawDividerLine(
+    protected void drawDividerLineBase(
             int leftInset, int topInset, int rightInset, CustomTabToolbar toolbar) {
         View handleView = mActivity.findViewById(R.id.custom_tabs_handle_view);
         View dragBar = handleView.findViewById(R.id.drag_bar);
         GradientDrawable cctBackground = (GradientDrawable) handleView.getBackground();
-        GradientDrawable dragBarBackground = (GradientDrawable) dragBar.getBackground();
+        GradientDrawable dragBarBackground = getDragBarBackground();
         int width =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_outline_width);
 
@@ -401,6 +402,32 @@ public abstract class PartialCustomTabBaseStrategy
         dragBar.setBackground(new InsetDrawable(dragBarBackground, width, width, width, 0));
         getCoordinatorLayout().setBackground(
                 new InsetDrawable(cctBackground, leftInset, topInset, rightInset, 0));
+    }
+
+    protected GradientDrawable getDragBarBackground() {
+        View dragBar = mActivity.findViewById(R.id.drag_bar);
+        // Check if the current dragBar background is the InsetDrawable used in conjunction with
+        // the divider line
+        if (dragBar.getBackground() instanceof InsetDrawable) {
+            InsetDrawable insetDrawable = (InsetDrawable) dragBar.getBackground();
+            return (GradientDrawable) insetDrawable.getDrawable();
+        } else {
+            return (GradientDrawable) dragBar.getBackground();
+        }
+    }
+
+    protected void resetCoordinatorLayoutInsets() {
+        ViewGroup coordinatorLayout = getCoordinatorLayout();
+        // Get the insets of the CoordinatorLayout
+        int insetLeft = coordinatorLayout.getPaddingLeft();
+        int insetTop = coordinatorLayout.getPaddingTop();
+        int insetRight = coordinatorLayout.getPaddingRight();
+        int insetBottom = coordinatorLayout.getPaddingBottom();
+
+        // Set the CoordinatorLayout to a new InsetDrawable with insets all offset back to 0.
+        InsetDrawable newDrawable = new InsetDrawable(coordinatorLayout.getBackground(), -insetLeft,
+                -insetTop, -insetRight, -insetBottom);
+        coordinatorLayout.setBackground(newDrawable);
     }
 
     protected boolean isFullscreen() {
