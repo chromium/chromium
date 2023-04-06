@@ -596,4 +596,21 @@ TEST_F(ArcBluetoothBridgeTest, WriteMissingCharacteristicFailsGracefully) {
   run_loop.Run();
 }
 
+TEST_F(ArcBluetoothBridgeTest, SetDiscoverabilityAndTimeout) {
+  // Setting discoverable without setting the timeout first is not allowed
+  arc_bluetooth_bridge_->SetAdapterProperty(
+      mojom::BluetoothProperty::NewAdapterScanMode(
+          mojom::BluetoothScanMode::CONNECTABLE_DISCOVERABLE));
+  ASSERT_FALSE(adapter_->IsDiscoverable());
+
+  // Setting discoverable after setting the timeout is OK
+  // Timeout of zero is OK
+  arc_bluetooth_bridge_->SetAdapterProperty(
+      mojom::BluetoothProperty::NewDiscoveryTimeout(0));
+  arc_bluetooth_bridge_->SetAdapterProperty(
+      mojom::BluetoothProperty::NewAdapterScanMode(
+          mojom::BluetoothScanMode::CONNECTABLE_DISCOVERABLE));
+  ASSERT_TRUE(adapter_->IsDiscoverable());
+}
+
 }  // namespace arc
