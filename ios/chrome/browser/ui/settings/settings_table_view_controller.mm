@@ -100,6 +100,7 @@
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/language/language_settings_mediator.h"
 #import "ios/chrome/browser/ui/settings/language/language_settings_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_utils.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_coordinator.h"
 #import "ios/chrome/browser/ui/settings/price_notifications/price_notifications_coordinator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_coordinator.h"
@@ -129,9 +130,6 @@
 #endif
 
 namespace {
-
-// The size of trailing symbol icons for unsafe state.
-NSInteger kTrailingSymbolImagePointSize = 22;
 
 // Key used for storing NSUserDefault entry to keep track of the last timestamp
 // we've shown the default browser blue dot promo.
@@ -400,6 +398,12 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
   self.navigationItem.largeTitleDisplayMode =
       UINavigationItemLargeTitleDisplayModeAlways;
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  // Update the `_safetyCheckItem` icon when returning to this view controller.
+  [self updateSafetyCheckItemTrailingIcon];
 }
 
 #pragma mark SettingsRootTableViewController
@@ -900,11 +904,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       kColorfulBackgroundSymbolCornerRadius;
   // Check if an issue state should be shown for updates.
   if (!IsAppUpToDate() && PreviousSafetyCheckIssueFound()) {
-    // TODO(crbug.com/1406540): Incorporate the new insecure types.
-    UIImage* unSafeIconImage = DefaultSymbolTemplateWithPointSize(
-        kWarningFillSymbol, kTrailingSymbolImagePointSize);
-    _safetyCheckItem.trailingImage = unSafeIconImage;
-    _safetyCheckItem.trailingImageTintColor = [UIColor colorNamed:kRedColor];
+    [self updateSafetyCheckItemTrailingIcon];
   }
 
   return _safetyCheckItem;
@@ -1563,17 +1563,33 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   return !_passwordCheckManager->GetInsecureCredentials().empty();
 }
 
-// Displays a red issue state on `_safetyCheckItem` if there is a reamining
-// issue for any of the checks.
-- (void)setSafetyCheckIssueStateUnsafe:(BOOL)isUnsafe {
-  if (isUnsafe && PreviousSafetyCheckIssueFound()) {
-    UIImage* unSafeIconImage = DefaultSymbolTemplateWithPointSize(
-        kWarningFillSymbol, kTrailingSymbolImagePointSize);
-    _safetyCheckItem.trailingImage = unSafeIconImage;
-    _safetyCheckItem.trailingImageTintColor = [UIColor colorNamed:kRedColor];
-  } else {
+// Displays a warning icon in the `_safetyCheckItem` if there is a reamining
+// issue for any of the safety checks.
+- (void)updateSafetyCheckItemTrailingIcon {
+  if (!_safetyCheckItem) {
+    return;
+  }
+
+  if (!PreviousSafetyCheckIssueFound()) {
     _safetyCheckItem.trailingImage = nil;
     _safetyCheckItem.trailingImageTintColor = nil;
+    return;
+  }
+
+  if (!IsAppUpToDate()) {
+    _safetyCheckItem.warningState = WarningState::kSevereWarning;
+  } else if ([self hasPasswordIssuesRemaining]) {
+    password_manager::WarningType warningType = GetWarningOfHighestPriority(
+        _passwordCheckManager->GetInsecureCredentials());
+    if (warningType ==
+        password_manager::WarningType::kCompromisedPasswordsWarning) {
+      _safetyCheckItem.warningState = WarningState::kSevereWarning;
+    } else {
+      // Severe warning is of higher priority than a regular warning. Only show
+      // the regular warning icon if there isn't any severe warning existing for
+      // another part of the Safety Check module.
+      _safetyCheckItem.warningState = WarningState::kWarning;
+    }
   }
   [self reconfigureCellsForItems:@[ _safetyCheckItem ]];
 }
@@ -2024,7 +2040,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   // Settings may have been dismissed in the meantime as the callback is
   // asynchronous. There is no UI to update in that case.
   if (!_settingsAreDismissed) {
-    [self setSafetyCheckIssueStateUnsafe:[self hasPasswordIssuesRemaining]];
+    [self updateSafetyCheckItemTrailingIcon];
   }
 }
 
@@ -2032,7 +2048,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   // Settings may have been dismissed in the meantime as the callback is
   // asynchronous. There is no UI to update in that case.
   if (!_settingsAreDismissed) {
-    [self setSafetyCheckIssueStateUnsafe:[self hasPasswordIssuesRemaining]];
+    [self updateSafetyCheckItemTrailingIcon];
   }
 }
 

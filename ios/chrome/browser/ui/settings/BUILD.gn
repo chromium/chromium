@@ -178,6 +178,7 @@ source_set("settings") {
     "//ios/chrome/browser/ui/settings/language:language",
     "//ios/chrome/browser/ui/settings/language:language_ui",
     "//ios/chrome/browser/ui/settings/password",
+    "//ios/chrome/browser/ui/settings/password/password_checkup:password_checkup_utils",
     "//ios/chrome/browser/ui/settings/password/password_details",
     "//ios/chrome/browser/ui/settings/password/password_details:password_details_ui",
     "//ios/chrome/browser/ui/settings/price_notifications",
