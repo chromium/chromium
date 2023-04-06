@@ -2,20 +2,44 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/command_line.h"
+#include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/task_environment.h"
-#include "base/test/test_timeouts.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#include "base/test/test_suite.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace {
+
+class LevelDbTestSuite : public base::TestSuite {
+ public:
+  LevelDbTestSuite(int argc, char** argv) : base::TestSuite(argc, argv) {}
+
+  LevelDbTestSuite(const LevelDbTestSuite&) = delete;
+  LevelDbTestSuite& operator=(const LevelDbTestSuite&) = delete;
+
+  ~LevelDbTestSuite() override = default;
+
+  void Initialize() override {
+    base::TestSuite::Initialize();
+    task_environment_.emplace();
+  }
+
+  void Shutdown() override {
+    task_environment_.reset();
+    base::TestSuite::Shutdown();
+  }
+
+ private:
+  // Chromium's leveldb::Env uses PostTask.
+  absl::optional<base::test::TaskEnvironment> task_environment_;
+};
+
+}  // namespace
 
 int main(int argc, char** argv) {
-  testing::InitGoogleTest(&argc, argv);
-  testing::InitGoogleMock(&argc, argv);
+  LevelDbTestSuite test_suite(argc, argv);
 
-  // Chromium's leveldb::Env uses PostTask.
-  base::CommandLine::Init(argc, argv);
-  TestTimeouts::Initialize();
-  base::test::TaskEnvironment task_environment;
-
-  return RUN_ALL_TESTS();
+  // Many tests reuse the same database path and so must run serially.
+  return base::LaunchUnitTestsSerially(
+      argc, argv,
+      base::BindOnce(&LevelDbTestSuite::Run, base::Unretained(&test_suite)));
 }

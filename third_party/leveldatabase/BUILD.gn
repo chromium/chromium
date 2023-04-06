@@ -181,87 +181,87 @@ static_library("leveldb_static") {
   }
 }
 
+test("env_chromium_unittests") {
+  sources = [ "env_chromium_unittest.cc" ]
+  deps = [
+    ":leveldatabase",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
+static_library("leveldb_testutil") {
+  testonly = true
+  visibility = [ ":*" ]
+
+  sources = [
+    "src/util/testutil.cc",
+    "src/util/testutil.h",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  public_deps = [
+    ":leveldb_static",
+    "//third_party/googletest:gmock",
+    "//third_party/googletest:gtest",
+  ]
+  deps = [ "//base" ]
+}
+
+test("leveldb_unittests") {
+  sources = [
+    # The project's tests.
+    "src/db/autocompact_test.cc",
+    "src/db/corruption_test.cc",
+    "src/db/db_test.cc",
+    "src/db/dbformat_test.cc",
+    "src/db/filename_test.cc",
+    "src/db/log_test.cc",
+    "src/db/recovery_test.cc",
+    "src/db/skiplist_test.cc",
+    "src/db/version_edit_test.cc",
+    "src/db/version_set_test.cc",
+    "src/db/write_batch_test.cc",
+    "src/helpers/memenv/memenv_test.cc",
+    "src/issues/issue178_test.cc",
+    "src/issues/issue200_test.cc",
+    "src/issues/issue320_test.cc",
+    "src/table/filter_block_test.cc",
+    "src/table/table_test.cc",
+    "src/util/arena_test.cc",
+    "src/util/bloom_test.cc",
+    "src/util/cache_test.cc",
+    "src/util/coding_test.cc",
+    "src/util/crc32c_test.cc",
+    "src/util/env_test.cc",
+    "src/util/hash_test.cc",
+    "src/util/logging_test.cc",
+    "src/util/no_destructor_test.cc",
+    "src/util/status_test.cc",
+
+    # Custom main() needed by Chromium's leveldb::Env.
+    "leveldb_unittest_main.cc",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  if (is_win) {
+    # util\cache_test.cc(167): warning C4018: '<': signed/unsigned mismatch
+    # util\cache_test.cc(171): warning C4018: '<': signed/unsigned mismatch
+    cflags = [ "/wd4018" ]  # Signed/unsigned mismatch in comparison.
+  }
+
+  deps = [
+    ":leveldb_testutil",
+    "//base",
+    "//base/test:test_support",
+  ]
+}
+
 if (!is_ios && !is_android) {
-  test("env_chromium_unittests") {
-    sources = [ "env_chromium_unittest.cc" ]
-    deps = [
-      ":leveldatabase",
-      "//base/test:test_support",
-      "//testing/gtest",
-    ]
-  }
-
-  static_library("leveldb_testutil") {
-    testonly = true
-    visibility = [ ":*" ]
-
-    sources = [
-      "src/util/testutil.cc",
-      "src/util/testutil.h",
-    ]
-
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-
-    public_deps = [
-      ":leveldb_static",
-      "//third_party/googletest:gmock",
-      "//third_party/googletest:gtest",
-    ]
-    deps = [ "//base" ]
-  }
-
-  test("leveldb_unittests") {
-    sources = [
-      # The project's tests.
-      "src/db/autocompact_test.cc",
-      "src/db/corruption_test.cc",
-      "src/db/db_test.cc",
-      "src/db/dbformat_test.cc",
-      "src/db/filename_test.cc",
-      "src/db/log_test.cc",
-      "src/db/recovery_test.cc",
-      "src/db/skiplist_test.cc",
-      "src/db/version_edit_test.cc",
-      "src/db/version_set_test.cc",
-      "src/db/write_batch_test.cc",
-      "src/helpers/memenv/memenv_test.cc",
-      "src/issues/issue178_test.cc",
-      "src/issues/issue200_test.cc",
-      "src/issues/issue320_test.cc",
-      "src/table/filter_block_test.cc",
-      "src/table/table_test.cc",
-      "src/util/arena_test.cc",
-      "src/util/bloom_test.cc",
-      "src/util/cache_test.cc",
-      "src/util/coding_test.cc",
-      "src/util/crc32c_test.cc",
-      "src/util/env_test.cc",
-      "src/util/hash_test.cc",
-      "src/util/logging_test.cc",
-      "src/util/no_destructor_test.cc",
-      "src/util/status_test.cc",
-
-      # Custom main() needed by Chromium's leveldb::Env.
-      "leveldb_unittest_main.cc",
-    ]
-
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-
-    if (is_win) {
-      # util\cache_test.cc(167): warning C4018: '<': signed/unsigned mismatch
-      # util\cache_test.cc(171): warning C4018: '<': signed/unsigned mismatch
-      cflags = [ "/wd4018" ]  # Signed/unsigned mismatch in comparison.
-    }
-
-    deps = [
-      ":leveldb_testutil",
-      "//base",
-      "//base/test:test_support",
-    ]
-  }
-
   test("leveldb_db_bench") {
     sources = [
       "src/benchmarks/db_bench.cc",
