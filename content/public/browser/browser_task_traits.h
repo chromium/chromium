@@ -7,7 +7,6 @@
 
 #include "base/task/task_traits.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/browser_thread.h"
 
 namespace content {
 

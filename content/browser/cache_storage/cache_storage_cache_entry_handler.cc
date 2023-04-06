@@ -10,7 +10,7 @@
 #include "content/browser/cache_storage/background_fetch_cache_entry_handler_impl.h"
 #include "content/browser/cache_storage/cache_storage.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/filter/source_stream.h"
 #include "services/network/public/cpp/source_stream_to_data_pipe.h"

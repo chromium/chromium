@@ -11,7 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/net/network_diagnostics/fake_host_resolver.h"
 #include "chrome/browser/ash/net/network_diagnostics/fake_network_context.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"

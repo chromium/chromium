@@ -14,7 +14,7 @@
 #include "chromeos/crosapi/mojom/video_capture.mojom.h"
 #include "content/browser/media/capture/receiver_media_to_crosapi_adapter.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/device_service.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"

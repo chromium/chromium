@@ -14,7 +14,7 @@
 #include "base/timer/timer.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/common/features.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
 
 namespace {

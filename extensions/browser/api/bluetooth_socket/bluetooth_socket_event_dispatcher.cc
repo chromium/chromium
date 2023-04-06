@@ -8,7 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_socket.h"
 #include "extensions/browser/api/bluetooth_socket/bluetooth_api_socket.h"

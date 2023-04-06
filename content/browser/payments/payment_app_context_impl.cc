@@ -9,7 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "content/browser/payments/payment_manager.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 
 namespace content {
 

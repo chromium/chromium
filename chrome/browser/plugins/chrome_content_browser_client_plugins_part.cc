@@ -20,7 +20,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pepper_permission_util.h"
 #include "components/version_info/version_info.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"

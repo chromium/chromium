@@ -18,7 +18,7 @@
 #include "base/task/task_traits.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_launcher.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_launcher_utils.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
