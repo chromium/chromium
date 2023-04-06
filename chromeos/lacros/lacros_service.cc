@@ -90,6 +90,7 @@
 #include "chromeos/crosapi/mojom/speech_recognition.mojom.h"
 #include "chromeos/crosapi/mojom/sync.mojom.h"
 #include "chromeos/crosapi/mojom/task_manager.mojom.h"
+#include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/crosapi/mojom/timezone.mojom.h"
 #include "chromeos/crosapi/mojom/tts.mojom.h"
@@ -490,6 +491,10 @@ LacrosService::LacrosService()
   ConstructRemote<crosapi::mojom::TaskManager,
                   &crosapi::mojom::Crosapi::BindTaskManager,
                   Crosapi::MethodMinVersions::kBindTaskManagerMinVersion>();
+  ConstructRemote<
+      crosapi::mojom::TelemetryEventService,
+      &Crosapi::BindTelemetryEventService,
+      Crosapi::MethodMinVersions::kBindTelemetryEventServiceMinVersion>();
   ConstructRemote<
       crosapi::mojom::TelemetryProbeService,
       &crosapi::mojom::Crosapi::BindTelemetryProbeService,
