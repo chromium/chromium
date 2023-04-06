@@ -320,15 +320,15 @@ GURL GetQueryUrl(const std::u16string& text_query,
 
 // Creates a dictionary to hold the parameters for a deletion.
 // `url` may be empty, indicating a time-range deletion.
-base::Value CreateDeletion(const std::string& min_time,
-                           const std::string& max_time,
-                           const GURL& url) {
-  base::Value deletion(base::Value::Type::DICT);
-  deletion.SetStringKey("type", "CHROME_HISTORY");
+base::Value::Dict CreateDeletion(const std::string& min_time,
+                                 const std::string& max_time,
+                                 const GURL& url) {
+  base::Value::Dict deletion;
+  deletion.Set("type", "CHROME_HISTORY");
   if (url.is_valid())
-    deletion.SetStringKey("url", url.spec());
-  deletion.SetStringKey("min_timestamp_usec", min_time);
-  deletion.SetStringKey("max_timestamp_usec", max_time);
+    deletion.Set("url", url.spec());
+  deletion.Set("min_timestamp_usec", min_time);
+  deletion.Set("max_timestamp_usec", max_time);
   return deletion;
 }
 
