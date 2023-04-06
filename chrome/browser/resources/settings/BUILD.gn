@@ -448,4 +448,6 @@ build_webui("build") {
     optimize_webui_excludes =
         [ "chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js" ]
   }
+
+  enable_source_maps = enable_webui_inline_sourcemaps
 }
