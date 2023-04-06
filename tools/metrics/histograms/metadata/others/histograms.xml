@@ -9045,7 +9045,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OSCrypt.AppBoundEncryption.Decrypt.ResultCode" enum="Hresult"
-    expires_after="M115">
+    expires_after="M118">
   <owner>wfh@chromium.org</owner>
   <owner>nparker@chromium.org</owner>
   <summary>
@@ -9056,7 +9056,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OSCrypt.AppBoundEncryption.Decrypt.ResultLastError"
-    enum="WinGetLastError" expires_after="M115">
+    enum="WinGetLastError" expires_after="M118">
   <owner>wfh@chromium.org</owner>
   <owner>nparker@chromium.org</owner>
   <summary>
@@ -9067,7 +9067,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OSCrypt.AppBoundEncryption.Decrypt.Time" units="ms"
-    expires_after="M115">
+    expires_after="M118">
   <owner>wfh@chromium.org</owner>
   <owner>nparker@chromium.org</owner>
   <summary>
@@ -9078,7 +9078,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OSCrypt.AppBoundEncryption.Encrypt.ResultCode" enum="Hresult"
-    expires_after="M115">
+    expires_after="M118">
   <owner>wfh@chromium.org</owner>
   <owner>nparker@chromium.org</owner>
   <summary>
@@ -9090,7 +9090,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OSCrypt.AppBoundEncryption.Encrypt.ResultLastError"
-    enum="WinGetLastError" expires_after="M115">
+    enum="WinGetLastError" expires_after="M118">
   <owner>wfh@chromium.org</owner>
   <owner>nparker@chromium.org</owner>
   <summary>
@@ -9103,7 +9103,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OSCrypt.AppBoundEncryption.Encrypt.Time" units="ms"
-    expires_after="M115">
+    expires_after="M118">
   <owner>wfh@chromium.org</owner>
   <owner>nparker@chromium.org</owner>
   <summary>
