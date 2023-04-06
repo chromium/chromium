@@ -655,9 +655,11 @@ SequenceManagerImpl::SelectNextTaskImpl(LazyNow& lazy_now,
         *main_thread_only().task_execution_stack.rbegin();
     NotifyWillProcessTask(&executing_task, &lazy_now);
 
-    // Maybe invalidate the delayed task handle. |pending_task| is guaranteed to
-    // be valid here (not canceled).
-    executing_task.pending_task.WillRunTask();
+    // Maybe invalidate the delayed task handle. If already invalidated, then
+    // don't run this task.
+    if (!executing_task.pending_task.WillRunTask()) {
+      executing_task.pending_task.task = DoNothing();
+    }
 
     return SelectedTask(
         executing_task.pending_task,

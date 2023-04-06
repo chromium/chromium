@@ -86,11 +86,14 @@ bool Task::IsCanceled() const {
   return delayed_task_handle_delegate_.WasInvalidated();
 }
 
-void Task::WillRunTask() {
-  if (!delayed_task_handle_delegate_)
-    return;
-
-  delayed_task_handle_delegate_->WillRunTask();
+bool Task::WillRunTask() {
+  if (delayed_task_handle_delegate_.WasInvalidated()) {
+    return false;
+  }
+  if (delayed_task_handle_delegate_) {
+    delayed_task_handle_delegate_->WillRunTask();
+  }
+  return true;
 }
 
 TimeTicks WakeUp::earliest_time() const {
