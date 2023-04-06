@@ -1587,9 +1587,10 @@ bool GpuImageDecodeCache::OnMemoryDump(
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "GpuImageDecodeCache::OnMemoryDump");
 
+  std::string dump_name = base::StringPrintf(
+      "cc/image_memory/cache_0x%" PRIXPTR, reinterpret_cast<uintptr_t>(this));
+
   if (args.level_of_detail == MemoryDumpLevelOfDetail::BACKGROUND) {
-    std::string dump_name = base::StringPrintf(
-        "cc/image_memory/cache_0x%" PRIXPTR, reinterpret_cast<uintptr_t>(this));
     MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(dump_name);
     dump->AddScalar(MemoryAllocatorDump::kNameSize,
                     MemoryAllocatorDump::kUnitsBytes, working_set_bytes_);
@@ -1605,8 +1606,7 @@ bool GpuImageDecodeCache::OnMemoryDump(
     // If we have discardable decoded data, dump this here.
     if (image_data->decode.data()) {
       std::string discardable_dump_name = base::StringPrintf(
-          "cc/image_memory/cache_0x%" PRIXPTR "/discardable/image_%d",
-          reinterpret_cast<uintptr_t>(this), image_id);
+          "%s/discardable/image_%d", dump_name.c_str(), image_id);
       MemoryAllocatorDump* dump =
           image_data->decode.data()->CreateMemoryAllocatorDump(
               discardable_dump_name.c_str(), pmd);
@@ -1621,36 +1621,56 @@ bool GpuImageDecodeCache::OnMemoryDump(
 
     // If we have an uploaded image (that is actually on the GPU, not just a
     // CPU wrapper), upload it here.
-    if (image_data->HasUploadedData() &&
-        image_data->mode == DecodedDataMode::kGpu) {
-      size_t discardable_size = image_data->size;
-      auto* context_support = context_->ContextSupport();
-      // If the discardable system has deleted this out from under us, log a
-      // size of 0 to match software discardable.
-      if (image_data->yuva_pixmap_info.has_value() &&
-          context_support->ThreadsafeDiscardableTextureIsDeletedForTracing(
-              image_data->upload.gl_y_id()) &&
-          context_support->ThreadsafeDiscardableTextureIsDeletedForTracing(
-              image_data->upload.gl_u_id()) &&
-          context_support->ThreadsafeDiscardableTextureIsDeletedForTracing(
-              image_data->upload.gl_v_id())) {
-        discardable_size = 0;
-      } else if (context_support
-                     ->ThreadsafeDiscardableTextureIsDeletedForTracing(
-                         image_data->upload.gl_id())) {
-        discardable_size = 0;
-      }
+    if (image_data->HasUploadedData()) {
+      switch (image_data->mode) {
+        case DecodedDataMode::kGpu: {
+          size_t discardable_size = image_data->size;
+          auto* context_support = context_->ContextSupport();
+          // If the discardable system has deleted this out from under us, log a
+          // size of 0 to match software discardable.
+          if (image_data->yuva_pixmap_info.has_value() &&
+              context_support->ThreadsafeDiscardableTextureIsDeletedForTracing(
+                  image_data->upload.gl_y_id()) &&
+              context_support->ThreadsafeDiscardableTextureIsDeletedForTracing(
+                  image_data->upload.gl_u_id()) &&
+              context_support->ThreadsafeDiscardableTextureIsDeletedForTracing(
+                  image_data->upload.gl_v_id())) {
+            discardable_size = 0;
+          } else if (context_support
+                         ->ThreadsafeDiscardableTextureIsDeletedForTracing(
+                             image_data->upload.gl_id())) {
+            discardable_size = 0;
+          }
 
-      std::string gpu_dump_base_name = base::StringPrintf(
-          "cc/image_memory/cache_0x%" PRIXPTR "/gpu/image_%d",
-          reinterpret_cast<uintptr_t>(this), image_id);
-      size_t locked_size =
-          image_data->upload.is_locked() ? discardable_size : 0u;
-      if (image_data->yuva_pixmap_info.has_value()) {
-        MemoryDumpYUVImage(pmd, image_data, gpu_dump_base_name, locked_size);
-      } else {
-        AddTextureDump(pmd, gpu_dump_base_name, discardable_size,
-                       image_data->upload.gl_id(), locked_size);
+          std::string gpu_dump_base_name = base::StringPrintf(
+              "%s/gpu/image_%d", dump_name.c_str(), image_id);
+          size_t locked_size =
+              image_data->upload.is_locked() ? discardable_size : 0u;
+          if (image_data->yuva_pixmap_info.has_value()) {
+            MemoryDumpYUVImage(pmd, image_data, gpu_dump_base_name,
+                               locked_size);
+          } else {
+            AddTextureDump(pmd, gpu_dump_base_name, discardable_size,
+                           image_data->upload.gl_id(), locked_size);
+          }
+        } break;
+        case DecodedDataMode::kTransferCache: {
+          // TODO(lizeb): Include the right ID to link it with the GPU-side
+          // resource.
+          size_t size = image_data->size;
+          std::string uploaded_dump_name = base::StringPrintf(
+              "%s/gpu/image_%d", dump_name.c_str(),
+              image_data->upload.transfer_cache_id().value());
+          MemoryAllocatorDump* dump =
+              pmd->CreateAllocatorDump(uploaded_dump_name);
+          dump->AddScalar(MemoryAllocatorDump::kNameSize,
+                          MemoryAllocatorDump::kUnitsBytes, size);
+        } break;
+
+        case DecodedDataMode::kCpu:
+          // Not uploaded in this case.
+          NOTREACHED();
+          break;
       }
     }
   }
