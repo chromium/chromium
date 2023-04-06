@@ -6679,3 +6679,6 @@ crbug.com/1427239 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/cs
 crbug.com/1427239 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/massive-element-right-of-viewport-offscreen-new.html [ Failure Pass ]
 crbug.com/1427239 [ Mac ] virtual/view-transition/external/wpt/css/css-view-transitions/massive-element-right-and-left-of-viewport-partially-onscreen-new.html [ Failure Pass ]
 crbug.com/1427239 [ Mac ] virtual/view-transition/external/wpt/css/css-view-transitions/massive-element-right-of-viewport-offscreen-new.html [ Failure Pass ]
+
+# Sheriff 2023-04-05
+crbug.com/1414955 [ Fuchsia ] paint/invalidation/selection/selection-in-composited-scrolling-container.html [ Failure ]
