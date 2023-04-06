@@ -15,6 +15,8 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "ui/base/ui_base_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
+GEN('#include "ash/constants/ash_features.h"');
+GEN('#include "chromeos/constants/chromeos_features.h"');
 
 var ShortcutCustomizationAppBrowserTest = class extends PolymerTest {
   get browsePreload() {
@@ -25,7 +27,11 @@ var ShortcutCustomizationAppBrowserTest = class extends PolymerTest {
     return {
       enabled: [
         'features::kShortcutCustomizationApp',
-        'features::kShortcutCustomization'
+        'features::kShortcutCustomization',
+        // TODO(b/276493795): Remove jelly and
+        // shortcut-customization-jelly after the Jelly experiment is launched.
+        'chromeos::features::kJelly',
+        'ash::features::kShortcutCustomizationJelly',
       ]
     };
   }
