@@ -125,16 +125,6 @@ void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
             console_->GetWrapper(Isolate()).ToLocalChecked())
       .Check();
 
-  if (private_aggregation_host) {
-    private_aggregation_ = std::make_unique<PrivateAggregation>(
-        *client, private_aggregation_permissions_policy_allowed_,
-        *private_aggregation_host, *this);
-    global
-        ->Set(context, gin::StringToSymbol(Isolate(), "privateAggregation"),
-              private_aggregation_->GetWrapper(Isolate()).ToLocalChecked())
-        .Check();
-  }
-
   global
       ->Set(context, gin::StringToSymbol(Isolate(), "register"),
             gin::CreateFunctionTemplate(
@@ -157,12 +147,22 @@ void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
   DCHECK(error_message.empty());
 
   // After the module script execution, create and expose the shared storage
-  // object.
+  // and private aggregation object.
   shared_storage_ = std::make_unique<SharedStorage>(client, embedder_context_);
   context->Global()
       ->Set(context, gin::StringToSymbol(Isolate(), "sharedStorage"),
             shared_storage_->GetWrapper(Isolate()).ToLocalChecked())
       .Check();
+
+  if (private_aggregation_host) {
+    private_aggregation_ = std::make_unique<PrivateAggregation>(
+        *client, private_aggregation_permissions_policy_allowed_,
+        *private_aggregation_host, *this);
+    global
+        ->Set(context, gin::StringToSymbol(Isolate(), "privateAggregation"),
+              private_aggregation_->GetWrapper(Isolate()).ToLocalChecked())
+        .Check();
+  }
 
   std::move(callback).Run(true, {});
 }

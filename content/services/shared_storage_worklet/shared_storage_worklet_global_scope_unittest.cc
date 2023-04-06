@@ -710,6 +710,21 @@ TEST_F(SharedStorageAddModuleTest,
   EXPECT_FALSE(test_client()->observed_record_use_counter_call());
 }
 
+TEST_F(SharedStorageAddModuleTest,
+       RunPrivateAggregationInOutermostScope_ErrorThrown) {
+  // The operation will not be run.
+  EXPECT_CALL(*mock_private_aggregation_host(), SendHistogramReport).Times(0);
+
+  SimulateAddModule(R"(
+    privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+  )");
+
+  EXPECT_FALSE(success());
+  EXPECT_EQ(error_message(),
+            "https://example.test/:2 Uncaught ReferenceError: "
+            "privateAggregation is not defined.");
+}
+
 class SharedStorageRunOperationTest
     : public SharedStorageWorkletGlobalScopeTest {
  public:
