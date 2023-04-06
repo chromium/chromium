@@ -66,9 +66,18 @@ std::string ACMatchClassificationsAsString(
   return position_string;
 }
 
+// Use a test fixture to ensure that any scoped settings that are set during the
+// test are cleared after the test is terminated.
+class TitledUrlMatchUtilsTest : public testing::Test {
+ protected:
+  void TearDown() override {
+    RichAutocompletionParams::ClearParamsForTesting();
+  }
+};
+
 }  // namespace
 
-TEST(TitledUrlMatchUtilsTest, TitledUrlMatchToAutocompleteMatch) {
+TEST_F(TitledUrlMatchUtilsTest, TitledUrlMatchToAutocompleteMatch) {
   std::u16string input_text(u"goo");
   std::u16string match_title(u"Google Search");
   GURL match_url("https://www.google.com/");
@@ -150,7 +159,7 @@ AutocompleteMatch BuildTestAutocompleteMatch(
                                            classifier, input, fixed_up_input);
 }
 
-TEST(TitledUrlMatchUtilsTest, DoTrimHttpScheme) {
+TEST_F(TitledUrlMatchUtilsTest, DoTrimHttpScheme) {
   GURL match_url("http://www.facebook.com/");
   AutocompleteMatch autocomplete_match =
       BuildTestAutocompleteMatch("face", match_url, {{11, 15}});
@@ -171,7 +180,7 @@ TEST(TitledUrlMatchUtilsTest, DoTrimHttpScheme) {
   EXPECT_TRUE(autocomplete_match.allowed_to_be_default_match);
 }
 
-TEST(TitledUrlMatchUtilsTest, DontTrimHttpSchemeIfInputHasScheme) {
+TEST_F(TitledUrlMatchUtilsTest, DontTrimHttpSchemeIfInputHasScheme) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature({omnibox::kRichAutocompletion});
   RichAutocompletionParams::ClearParamsForTesting();
@@ -196,7 +205,7 @@ TEST(TitledUrlMatchUtilsTest, DontTrimHttpSchemeIfInputHasScheme) {
   EXPECT_FALSE(autocomplete_match.allowed_to_be_default_match);
 }
 
-TEST(TitledUrlMatchUtilsTest, DoTrimHttpsScheme) {
+TEST_F(TitledUrlMatchUtilsTest, DoTrimHttpsScheme) {
   GURL match_url("https://www.facebook.com/");
   AutocompleteMatch autocomplete_match =
       BuildTestAutocompleteMatch("face", match_url, {{12, 16}});
@@ -217,7 +226,7 @@ TEST(TitledUrlMatchUtilsTest, DoTrimHttpsScheme) {
   EXPECT_TRUE(autocomplete_match.allowed_to_be_default_match);
 }
 
-TEST(TitledUrlMatchUtilsTest, DontTrimHttpsSchemeIfInputHasScheme) {
+TEST_F(TitledUrlMatchUtilsTest, DontTrimHttpsSchemeIfInputHasScheme) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature({omnibox::kRichAutocompletion});
   RichAutocompletionParams::ClearParamsForTesting();
@@ -242,7 +251,7 @@ TEST(TitledUrlMatchUtilsTest, DontTrimHttpsSchemeIfInputHasScheme) {
   EXPECT_FALSE(autocomplete_match.allowed_to_be_default_match);
 }
 
-TEST(TitledUrlMatchUtilsTest, EmptyInlineAutocompletion) {
+TEST_F(TitledUrlMatchUtilsTest, EmptyInlineAutocompletion) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature({omnibox::kBookmarkPaths});
   // The search term matches the title but not the URL. Since there is no URL
@@ -298,7 +307,7 @@ TEST(TitledUrlMatchUtilsTest, EmptyInlineAutocompletion) {
   EXPECT_TRUE(autocomplete_match.inline_autocompletion.empty());
 }
 
-TEST(TitledUrlMatchUtilsTest, PathsInContentsAndDescription) {
+TEST_F(TitledUrlMatchUtilsTest, PathsInContentsAndDescription) {
   scoped_refptr<FakeAutocompleteProvider> provider =
       new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_BOOKMARK);
   TestSchemeClassifier classifier;

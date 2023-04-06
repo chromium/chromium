@@ -310,6 +310,8 @@ void ShortcutsProviderTest::TearDown() {
   provider_ = nullptr;
   client_.reset();
   task_environment_.RunUntilIdle();
+  scoped_feature_list_.Reset();
+  RichAutocompletionParams::ClearParamsForTesting();
 }
 
 int ShortcutsProviderTest::CalculateAggregateScore(
