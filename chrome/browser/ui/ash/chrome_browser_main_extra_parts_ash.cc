@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/window_properties.h"
@@ -17,6 +18,7 @@
 #include "base/command_line.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
+#include "chrome/browser/ash/arc/util/arc_window_watcher.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/game_mode/game_mode_controller.h"
 #include "chrome/browser/ash/geolocation/system_geolocation_source.h"
@@ -148,6 +150,11 @@ void ChromeBrowserMainExtraPartsAsh::PreCreateMainMessageLoop() {
 }
 
 void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
+  if (base::FeatureList::IsEnabled(arc::kEnableArcIdleManager)) {
+    // Early init so that later objects can rely on this one.
+    arc_window_watcher_ = std::make_unique<ash::ArcWindowWatcher>();
+  }
+
   // NetworkConnect handles the network connection state machine for the UI.
   network_connect_delegate_ = std::make_unique<NetworkConnectDelegate>();
   ash::NetworkConnect::Initialize(network_connect_delegate_.get());
@@ -407,6 +414,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
     ash::NetworkConnect::Shutdown();
   network_connect_delegate_.reset();
   user_profile_loaded_observer_.reset();
+  arc_window_watcher_.reset();
 }
 
 class ChromeBrowserMainExtraPartsAsh::UserProfileLoadedObserver

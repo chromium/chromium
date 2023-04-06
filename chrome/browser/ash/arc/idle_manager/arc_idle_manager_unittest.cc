@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/arc/idle_manager/arc_cpu_throttle_observer.h"
 #include "chrome/browser/ash/arc/idle_manager/arc_display_power_observer.h"
 #include "chrome/browser/ash/arc/idle_manager/arc_on_battery_observer.h"
+#include "chrome/browser/ash/arc/util/arc_window_watcher.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "content/public/test/browser_task_environment.h"
@@ -43,6 +44,8 @@ class ArcIdleManagerTest : public testing::Test {
 
     // Order matters: TestingProfile must be after ArcServiceManager.
     testing_profile_ = std::make_unique<TestingProfile>();
+
+    arc_window_watcher_ = std::make_unique<ash::ArcWindowWatcher>();
 
     arc_idle_manager_ =
         ArcIdleManager::GetForBrowserContextForTesting(testing_profile_.get());
@@ -76,6 +79,7 @@ class ArcIdleManagerTest : public testing::Test {
 
   void TearDown() override {
     DestroyPowerInstance();
+    arc_window_watcher_.reset();
     testing_profile_.reset();
     arc_service_manager_.reset();
     chromeos::PowerManagerClient::Shutdown();
@@ -157,6 +161,7 @@ class ArcIdleManagerTest : public testing::Test {
   std::unique_ptr<TestingProfile> testing_profile_;
 
   std::unique_ptr<FakePowerInstance> power_instance_;
+  std::unique_ptr<ash::ArcWindowWatcher> arc_window_watcher_;
 
   ArcIdleManager* arc_idle_manager_;
   size_t interactive_enabled_counter_ = 0;
