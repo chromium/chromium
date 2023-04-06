@@ -191,7 +191,7 @@ class DenseSet {
   }
 
   // Returns a raw bitmask. Useful for serialization.
-  base::span<const Word, kNumWords> data() const { return words_; }
+  constexpr base::span<const Word, kNumWords> data() const { return words_; }
 
   friend bool operator==(const DenseSet& a, const DenseSet& b) {
     return a.words_ == b.words_;

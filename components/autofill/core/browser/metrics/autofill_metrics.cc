@@ -2656,12 +2656,16 @@ void AutofillMetrics::FormInteractionsUkmLogger::
     return;
   }
 
+  static_assert(form_events.data().size() == 2U,
+                "If you add a new form event, you need to create a new "
+                "AutofillFormEvents metric in Autofill2.FormSummary");
   ukm::builders::Autofill2_FormSummary builder(source_id_);
   builder
       .SetFormSessionIdentifier(
           AutofillMetrics::FormGlobalIdToHash64Bit(form_structure.global_id()))
       .SetFormSignature(HashFormSignature(form_structure.form_signature()))
-      .SetAutofillFormEvents(form_events.to_uint64())
+      .SetAutofillFormEvents(form_events.data()[0])
+      .SetAutofillFormEvents2(form_events.data()[1])
       .SetIsInMainframe(is_in_any_main_frame)
       .SetWasSubmitted(!form_submitted_timestamp.is_null())
       .SetSampleRate(1);

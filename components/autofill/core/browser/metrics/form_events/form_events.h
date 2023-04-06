@@ -153,7 +153,11 @@ enum FormEvent {
   // The selected credit card suggestion did not have metadata.
   FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SELECTED = 61,
 
-  NUM_FORM_EVENTS,
+  // The number of events is temporarily rounded up to 64 to prepare the code
+  // for passing this threshold (UKM events are uploaded as uint64 blocks of a
+  // bit mask). Once we pass the 64 threshold, this should reflect the real last
+  // value.
+  NUM_FORM_EVENTS = 64,
 };
 
 }  // namespace autofill::autofill_metrics

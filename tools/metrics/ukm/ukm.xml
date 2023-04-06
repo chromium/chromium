@@ -3220,7 +3220,14 @@ be describing additional metrics about the same event.
       Some of the events are triggered separately for address and credit card
       forms, e.g. if all the fillable fields in the credit card forms were
       filled. New form events can be added over time and a form can have
-      multiple form events.
+      multiple form events. This bit vector stored only events 0..63.
+    </summary>
+  </metric>
+  <metric name="AutofillFormEvents2">
+    <summary>
+      A bit vector of some autofill form events that records a funnel of this
+      autofill form. This contains the entries 64...127 shifted right by 64
+      bits.
     </summary>
   </metric>
   <metric name="FormSessionIdentifier">
