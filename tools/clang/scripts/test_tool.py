@@ -81,7 +81,7 @@ def _ApplyTool(tools_clang_scripts_directory, tool_to_test, tool_path,
     processes.append(subprocess.Popen(args, stdout=subprocess.PIPE))
 
     if apply_edits:
-      if len(extract_edits_path) == 0:
+      if not extract_edits_path:
         args = [
             'python',
             os.path.join(tools_clang_scripts_directory, 'extract_edits.py')
