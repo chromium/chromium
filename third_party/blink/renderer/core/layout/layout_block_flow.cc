@@ -47,7 +47,6 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_spanner_placeholder.h"
-#include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
@@ -89,8 +88,7 @@ LayoutBlockFlow::~LayoutBlockFlow() = default;
 LayoutBlockFlow* LayoutBlockFlow::CreateAnonymous(
     Document* document,
     scoped_refptr<const ComputedStyle> style) {
-  LayoutBlockFlow* layout_block_flow =
-      LayoutObjectFactory::CreateBlockFlow(*document, *style);
+  auto* layout_block_flow = MakeGarbageCollected<LayoutNGBlockFlow>(nullptr);
   layout_block_flow->SetDocumentForAnonymous(document);
   layout_block_flow->SetStyle(style);
   return layout_block_flow;

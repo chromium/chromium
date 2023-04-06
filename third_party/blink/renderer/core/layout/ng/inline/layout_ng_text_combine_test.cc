@@ -1542,4 +1542,33 @@ LayoutNGBlockFlow DIV id="root" style="text-combine-upright: all;"
             ToSimpleLayoutTree(*GetLayoutObjectByElementId("root")));
 }
 
+TEST_F(LayoutNGTextCombineTest, InHorizontal) {
+  InsertStyleElement(
+      "div { writing-mode: horizontal-tb; }"
+      "tcy { text-combine-upright: all; }");
+  SetBodyInnerHTML("<div><tcy id=sample>ab</tcy></div>");
+  const auto& sample_layout_object = *GetLayoutObjectByElementId("sample");
+
+  EXPECT_EQ(R"DUMP(
+LayoutInline TCY id="sample"
+  +--LayoutText #text "ab"
+)DUMP",
+            ToSimpleLayoutTree(sample_layout_object));
+}
+
+TEST_F(LayoutNGTextCombineTest, InVertical) {
+  InsertStyleElement(
+      "div { writing-mode: vertical-rl; }"
+      "tcy { text-combine-upright: all; }");
+  SetBodyInnerHTML("<div><tcy id=sample>ab</tcy></div>");
+  const auto& sample_layout_object = *GetLayoutObjectByElementId("sample");
+
+  EXPECT_EQ(R"DUMP(
+LayoutInline TCY id="sample"
+  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutText #text "ab"
+)DUMP",
+            ToSimpleLayoutTree(sample_layout_object));
+}
+
 }  // namespace blink

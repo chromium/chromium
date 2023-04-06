@@ -24,7 +24,6 @@
 #include "third_party/blink/renderer/core/html/html_details_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
-#include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -45,7 +44,7 @@ LayoutObject* HTMLSummaryElement::CreateLayoutObject(
       display == EDisplay::kLayoutCustom ||
       display == EDisplay::kInlineLayoutCustom)
     return LayoutObject::CreateObject(this, style);
-  return LayoutObjectFactory::CreateBlockFlow(*this, style);
+  return LayoutObject::CreateBlockFlowOrListItem(this, style);
 }
 
 HTMLDetailsElement* HTMLSummaryElement::DetailsElement() const {

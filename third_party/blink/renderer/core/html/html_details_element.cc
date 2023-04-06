@@ -37,8 +37,7 @@
 #include "third_party/blink/renderer/core/html/html_summary_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
-#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
-#include "third_party/blink/renderer/core/layout/layout_object_factory.h"
+#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -79,7 +78,7 @@ void HTMLDetailsElement::DispatchPendingEvent(
 
 LayoutObject* HTMLDetailsElement::CreateLayoutObject(
     const ComputedStyle& style) {
-  return LayoutObjectFactory::CreateBlockFlow(*this, style);
+  return LayoutObject::CreateBlockFlowOrListItem(this, style);
 }
 
 // Creates shadow DOM:

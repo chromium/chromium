@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/generated_children.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
-#include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
@@ -337,7 +336,7 @@ void FirstLetterPseudoElement::DetachLayoutTree(bool performing_reattach) {
 LayoutObject* FirstLetterPseudoElement::CreateLayoutObject(
     const ComputedStyle& style) {
   if (UNLIKELY(!style.InitialLetter().IsNormal())) {
-    return LayoutObjectFactory::CreateBlockFlow(*this, style);
+    return LayoutObject::CreateBlockFlowOrListItem(this, style);
   }
 
   return PseudoElement::CreateLayoutObject(style);
