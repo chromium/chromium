@@ -1,0 +1,14 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("scene_state_header") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  sources = [
+    "scene_state.h",
+    "scene_state_browser_agent.h",
+  ]
+
+  public_deps = [ "//ios/chrome/browser/ui/main:scene_state_header" ]
+}
