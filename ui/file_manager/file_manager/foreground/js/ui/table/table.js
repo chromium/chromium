@@ -439,20 +439,21 @@ export class Table {
 
   normalizeColumns() {
     this.columnModel.normalizeWidths(this.clientWidth);
+    dispatchSimpleEvent(this, 'column-resize-end', /*bubbles=*/ true);
   }
 }
 
-  Table.prototype.__proto__ = HTMLDivElement.prototype;
+Table.prototype.__proto__ = HTMLDivElement.prototype;
 
 
-  /**
-   * Whether the table or one of its descendents has focus. This is necessary
-   * because table contents can contain controls that can be focused, and for
-   * some purposes (e.g., styling), the table can still be conceptually focused
-   * at that point even though it doesn't actually have the page focus.
-   * @type {boolean}
-   */
-  Table.prototype.hasElementFocus;
-  Object.defineProperty(
-      Table.prototype, 'hasElementFocus',
-      getPropertyDescriptor('hasElementFocus', PropertyKind.BOOL_ATTR));
+/**
+ * Whether the table or one of its descendants has focus. This is necessary
+ * because table contents can contain controls that can be focused, and for
+ * some purposes (e.g., styling), the table can still be conceptually focused
+ * at that point even though it doesn't actually have the page focus.
+ * @type {boolean}
+ */
+Table.prototype.hasElementFocus;
+Object.defineProperty(
+    Table.prototype, 'hasElementFocus',
+    getPropertyDescriptor('hasElementFocus', PropertyKind.BOOL_ATTR));
