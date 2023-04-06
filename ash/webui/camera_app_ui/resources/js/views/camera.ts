@@ -836,12 +836,39 @@ export class Camera extends View implements CameraViewUI {
     ChromeHelper.getInstance().maybeTriggerSurvey();
   }
 
-  async onTimeLapseCaptureDone({timeLapseSaver}: TimeLapseResult):
-      Promise<void> {
-    // TODO(b/236800499): Send perf metrics, trigger survey.
+  async onTimeLapseCaptureDone(
+      {autoStopped, duration, everPaused, resolution, speed, timeLapseSaver}:
+          TimeLapseResult): Promise<void> {
+    if (autoStopped) {
+      this.showLowStorageDialog(LowStorageDialogType.AUTO_STOP);
+    }
     nav.open(ViewName.FLASH);
-    await this.resultSaver.finishSaveVideo(timeLapseSaver);
-    nav.close(ViewName.FLASH);
+    state.set(PerfEvent.TIME_LAPSE_CAPTURE_POST_PROCESSING, true);
+    try {
+      metrics.sendCaptureEvent({
+        recordType: metrics.RecordType.TIME_LAPSE,
+        facing: this.getFacing(),
+        duration,
+        everPaused,
+        resolution,
+        shutterType: this.shutterType,
+        resolutionLevel: this.cameraManager.getVideoResolutionLevel(resolution),
+        aspectRatioSet: this.cameraManager.getAspectRatioSet(resolution),
+        timeLapseSpeed: speed,
+      });
+      await this.resultSaver.finishSaveVideo(timeLapseSaver);
+      state.set(
+          PerfEvent.TIME_LAPSE_CAPTURE_POST_PROCESSING, false,
+          {resolution, facing: this.getFacing()});
+    } catch (e) {
+      state.set(
+          PerfEvent.TIME_LAPSE_CAPTURE_POST_PROCESSING, false,
+          {hasError: true});
+      throw e;
+    } finally {
+      nav.close(ViewName.FLASH);
+    }
+    ChromeHelper.getInstance().maybeTriggerSurvey();
   }
 
   override layout(): void {
