@@ -4563,6 +4563,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebAppManifestImmediateUpdatingName,
      flag_descriptions::kWebAppManifestImmediateUpdatingDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kWebAppManifestImmediateUpdating)},
+    {"web-app-sync-generated-icon-fix",
+     flag_descriptions::kWebAppSyncGeneratedIconFixName,
+     flag_descriptions::kWebAppSyncGeneratedIconFixDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kWebAppSyncGeneratedIconFix)},
 #endif  // !BUILDFLAG(IS_ANDROID)
     {"use-sync-sandbox", flag_descriptions::kSyncSandboxName,
      flag_descriptions::kSyncSandboxDescription, kOsAll,

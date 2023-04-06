@@ -4638,6 +4638,13 @@ const char kWebAppManifestImmediateUpdatingDescription[] =
     "soon as a change has been detected instead of waiting for all app windows "
     "to be closed.";
 
+const char kWebAppSyncGeneratedIconFixName[] =
+    "Web App Sync Generated Icon Unprompted Updating";
+const char kWebAppSyncGeneratedIconFixDescription[] =
+    "Allows web apps installed via sync to update their icons without prompting"
+    "during a manifest update if the icons were generated, indictative of"
+    "network errors during the sync install.";
+
 const char kWebAuthenticationPermitEnterpriseAttestationName[] =
     "Web Authentication Enterprise Attestation";
 const char kWebAuthenticationPermitEnterpriseAttestationDescription[] =
