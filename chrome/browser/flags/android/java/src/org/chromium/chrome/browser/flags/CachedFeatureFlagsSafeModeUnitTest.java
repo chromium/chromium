@@ -10,14 +10,13 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
-import org.chromium.base.task.test.ShadowPostTask;
+import org.chromium.base.task.test.PausedExecutorTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.CachedFlagsSafeMode.Behavior;
 
@@ -30,9 +29,10 @@ import java.util.Arrays;
  * {@link CachedFlagsSafeMode}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {ShadowPostTask.class})
-@LooperMode(LooperMode.Mode.LEGACY)
 public class CachedFeatureFlagsSafeModeUnitTest {
+    @Rule
+    public PausedExecutorTestRule mExecutorRule = new PausedExecutorTestRule();
+
     private static final String CRASHY_FEATURE = "CrashyFeature";
     private static final String OK_FEATURE = "OkFeature";
     private static final boolean CRASHY_FEATURE_DEFAULT = false;
@@ -588,7 +588,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
                 Arrays.asList(BOOL_PARAM, INT_PARAM, DOUBLE_PARAM, STRING_PARAM));
 
         CachedFeatureFlags.onEndCheckpoint();
-        // Async task writing values should have run synchronously because of ShadowPostTask.
+        mExecutorRule.runAllBackgroundAndUi();
+
         assertTrue(CachedFlagsSafeMode.getSafeValuePreferences().contains(
                 "Chrome.Flags.CachedFlag.CrashyFeature"));
 
