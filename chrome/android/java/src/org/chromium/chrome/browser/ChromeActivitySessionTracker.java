@@ -56,7 +56,8 @@ public class ChromeActivitySessionTracker {
     @SuppressLint("StaticFieldLeak")
     private static ChromeActivitySessionTracker sInstance;
 
-    private final PowerBroadcastReceiver mPowerBroadcastReceiver = new PowerBroadcastReceiver();
+    private final OmahaServiceStartDelayer mOmahaServiceStartDelayer =
+            new OmahaServiceStartDelayer();
     private final Map<Activity, Supplier<TabModelSelector>> mTabModelSelectorSuppliers =
             new HashMap<>();
 
@@ -167,7 +168,7 @@ public class ChromeActivitySessionTracker {
             ChromeLocalizationUtils.recordUiLanguageStatus();
             updateAcceptLanguages();
             mVariationsSession.start();
-            mPowerBroadcastReceiver.onForegroundSessionStart();
+            mOmahaServiceStartDelayer.onForegroundSessionStart();
             AppHooks.get().getChimeDelegate().startSession();
             ReadingListBridge.onStartChromeForeground();
             PasswordManagerLifecycleHelper.getInstance().onStartForegroundSession();
@@ -190,7 +191,7 @@ public class ChromeActivitySessionTracker {
         UmaUtils.recordBackgroundTimeWithNative();
         ProfileManagerUtils.flushPersistentDataForAllProfiles();
         mIsStarted = false;
-        mPowerBroadcastReceiver.onForegroundSessionEnd();
+        mOmahaServiceStartDelayer.onForegroundSessionEnd();
 
         IntentHandler.clearPendingReferrer();
         IntentHandler.clearPendingIncognitoUrl();
@@ -272,10 +273,10 @@ public class ChromeActivitySessionTracker {
     }
 
     /**
-     * @return The PowerBroadcastReceiver for the browser process.
+     * @return The {@link OmahaServiceStartDelayer} for the browser process.
      */
     @VisibleForTesting
-    public PowerBroadcastReceiver getPowerBroadcastReceiverForTesting() {
-        return mPowerBroadcastReceiver;
+    public OmahaServiceStartDelayer getOmahaServiceStartDelayerForTesting() {
+        return mOmahaServiceStartDelayer;
     }
 }

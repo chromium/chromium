@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.PowerBroadcastReceiver.ServiceRunnable;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -22,34 +22,30 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
-/** Test suite for verifying PowerBroadcastReceiver is initialized. */
+/** Test suite for verifying {@link OmahaServiceStartDelayer} is initialized. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class PowerBroadcastReceiverIntegrationTest {
+@Batch(Batch.PER_CLASS)
+public class OmahaServiceStartDelayerIntegrationTest {
     @Rule
     public final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
 
     @Test
     @SmallTest
-    @Feature({"Omaha", "Sync"})
-    public void testEnsurePowerBroadcastReceiverRegisteredWhenLaunched() throws Exception {
+    @Feature({"Omaha"})
+    public void testEnsureOmahaServiceStartDelayerIsInitializedWhenLaunched() throws Exception {
         final CallbackHelper callback = new CallbackHelper();
-        PowerBroadcastReceiver receiver = TestThreadUtils.runOnUiThreadBlocking(
+        OmahaServiceStartDelayer receiver = TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> ChromeActivitySessionTracker.getInstance()
-                                   .getPowerBroadcastReceiverForTesting());
-        receiver.setServiceRunnableForTests(new ServiceRunnable() {
-            @Override
-            public void post() {
-                callback.notifyCalled();
-            }
-        });
+                                   .getOmahaServiceStartDelayerForTesting());
+        receiver.setOmahaRunnableForTesting(() -> callback.notifyCalled());
         mActivityTestRule.startMainActivityOnBlankPage();
         try {
             callback.waitForFirst();
         } catch (TimeoutException e) {
-            Assert.fail("PowerBroadReceiver never initialized");
+            Assert.fail("OmahaServiceStartDelayer never initialized");
         }
     }
 }
