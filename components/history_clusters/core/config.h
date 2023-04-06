@@ -356,6 +356,16 @@ struct Config {
   // Whether to the icon or menu item.
   bool hide_visits_icon = true;
 
+  // The `kUseUrlForDisplayCache` feature and child params.
+
+  // Whether to use a cache to store the site engagement scores per host. Used
+  // in both the old (OnDeviceClusteringBackend) and new
+  // (ContextClustererHistoryServiceObserver) clustering paths.
+  bool use_url_for_display_cache = false;
+
+  // The max number of URLs that should be stored in the URL for display cache.
+  int url_for_display_cache_size = 100;
+
   // Lonely features without child params.
 
   // Enables debug info in non-user-visible surfaces, like Chrome Inspector.

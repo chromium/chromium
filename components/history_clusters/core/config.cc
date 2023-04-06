@@ -380,6 +380,16 @@ Config::Config() {
         internal::kHideVisits, "hide_visits_icon", hide_visits_icon);
   }
 
+  // The `kUseUrlForDisplayCache` feature and child params.
+  {
+    use_url_for_display_cache =
+        base::FeatureList::IsEnabled(internal::kUseUrlForDisplayCache);
+
+    url_for_display_cache_size = GetFieldTrialParamByFeatureAsInt(
+        internal::kUseUrlForDisplayCache, "url_for_display_cache_size",
+        url_for_display_cache_size);
+  }
+
   // Lonely features without child params.
   {
     non_user_visible_debug =
