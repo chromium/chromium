@@ -5,7 +5,9 @@
 import 'chrome://resources/ash/common/smb_shares/add_smb_share_dialog.js';
 import './strings.m.js';
 
+import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
@@ -25,4 +27,11 @@ Polymer({
   onDialogClose_() {
     chrome.send('dialogClose');
   },
+});
+
+window.addEventListener('load', () => {
+  const jellyEnabled = loadTimeData.getBoolean('isJelly');
+  const theme = jellyEnabled ? 'refresh23' : 'legacy';
+  document.documentElement.setAttribute('theme', theme);
+  startColorChangeUpdater();
 });
