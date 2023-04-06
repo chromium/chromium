@@ -19,6 +19,7 @@ import '../settings_vars.css.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {flush, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -79,7 +80,8 @@ export class SettingsAddressEditDialogElement extends
 
       isAccountAddress_: {
         type: Boolean,
-        computed: 'isAddressStoredInAccount_(address)',
+        computed: 'isAddressStoredInAccount_(address, accountInfo)',
+        value: false,
       },
 
       /**
@@ -117,6 +119,8 @@ export class SettingsAddressEditDialogElement extends
 
   override connectedCallback(): void {
     super.connectedCallback();
+
+    assert(this.address);
 
     this.countryInfo_.getCountryList().then(countryList => {
       this.countries_ = countryList;
@@ -289,9 +293,14 @@ export class SettingsAddressEditDialogElement extends
     return !country.countryCode;
   }
 
-  private isAddressStoredInAccount_(address: AddressEntry): boolean {
-    return address.metadata !== undefined &&
-        address.metadata.source === AddressSource.ACCOUNT;
+  private isAddressStoredInAccount_(): boolean {
+    if (this.address.guid) {
+      return this.address.metadata !== undefined &&
+          this.address.metadata.source === AddressSource.ACCOUNT;
+    }
+
+    return this.accountInfo !== undefined &&
+        this.accountInfo.isEligibleForAddressAccountStorage;
   }
 
   /**

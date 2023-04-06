@@ -12,8 +12,8 @@ import {assertArrayEquals, assertEquals, assertFalse, assertGT, assertTrue} from
 import {eventToPromise, whenAttributeIs, isVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {AutofillManagerExpectations, createAddressEntry, createEmptyAddressEntry, TestAutofillManager} from './passwords_and_autofill_fake_data.js';
-import {createAutofillSection, initiateRemoving, initiateEditing, CountryDetailManagerTestImpl, createAddressDialog, createRemoveAddressDialog, expectEvent} from './autofill_section_test_utils.js';
+import {AutofillManagerExpectations, createAddressEntry, createEmptyAddressEntry, STUB_USER_ACCOUNT_INFO, TestAutofillManager} from './passwords_and_autofill_fake_data.js';
+import {createAutofillSection, initiateRemoving, initiateEditing, CountryDetailManagerTestImpl, createAddressDialog, createRemoveAddressDialog, expectEvent, openAddressDialog} from './autofill_section_test_utils.js';
 // clang-format on
 
 suite('AutofillSectionUiTest', function() {
@@ -43,7 +43,7 @@ suite('AutofillSectionUiTest', function() {
     const autofillManager = new TestAutofillManager();
     autofillManager.data.addresses = [address, accountAddress];
     autofillManager.data.accountInfo = {
-      email: 'stub-user@example.com',
+      ...STUB_USER_ACCOUNT_INFO,
       isSyncEnabledForAutofillProfiles: true,
     };
     AutofillManagerImpl.setInstance(autofillManager);
@@ -53,8 +53,6 @@ suite('AutofillSectionUiTest', function() {
     await autofillManager.whenCalled('getAddressList');
 
     await flushTasks();
-
-    // await Promise.resolve();
 
     {
       const dialog = await initiateRemoving(section, 0);
@@ -82,8 +80,7 @@ suite('AutofillSectionUiTest', function() {
 
     // Imitate disabling sync.
     changeListener(autofillManager.data.addresses, [], [], {
-      email: 'stub-user@example.com',
-      isSyncEnabledForAutofillProfiles: false,
+      ...STUB_USER_ACCOUNT_INFO,
     });
 
     {
@@ -126,7 +123,7 @@ suite('AutofillSectionUiTest', function() {
     await flushTasks();
 
     changeListener(autofillManager.data.addresses, [], [], {
-      email: 'stub-user@example.com',
+      ...STUB_USER_ACCOUNT_INFO,
       isSyncEnabledForAutofillProfiles: true,
     });
 
@@ -260,7 +257,7 @@ suite('AutofillSectionAddressTests', function() {
     const autofillManager = new TestAutofillManager();
     autofillManager.data.addresses = [createAddressEntry()];
     autofillManager.data.accountInfo = {
-      email: 'stub-user@example.com',
+      ...STUB_USER_ACCOUNT_INFO,
       isSyncEnabledForAutofillProfiles: true,
     };
     AutofillManagerImpl.setInstance(autofillManager);
@@ -280,10 +277,7 @@ suite('AutofillSectionAddressTests', function() {
     const changeListener =
         autofillManager.lastCallback.setPersonalDataManagerListener!;
 
-    changeListener(autofillManager.data.addresses, [], [], {
-      email: 'stub-user@example.com',
-      isSyncEnabledForAutofillProfiles: false,
-    });
+    changeListener(autofillManager.data.addresses, [], [], STUB_USER_ACCOUNT_INFO);
     assertTrue(
         isVisible(addressList.children[0]!.querySelector('[icon*=cloud-off]')),
         'Sync is disabled, the local indicator should be visible.');
@@ -603,6 +597,38 @@ suite('AutofillSectionAddressTests', function() {
 
       dialog.$.cancelButton.click();
     });
+  });
+
+  test('verifySyncSourceNoticeForNewAddress', async () => {
+    const section = await createAutofillSection([], {}, {
+      email: 'stub-user@example.com',
+      isSyncEnabledForAutofillProfiles: true,
+      isEligibleForAddressAccountStorage: false,
+    });
+
+    const dialog = await openAddressDialog(section);
+
+    assertTrue(
+        !isVisible(dialog.$.accountSourceNotice),
+        'account notice should be invisible for non-account address');
+
+    document.body.removeChild(section);
+  });
+
+  test('verifyAccountSourceNoticeForNewAddress', async () => {
+    const section = await createAutofillSection([], {}, {
+      email: 'stub-user@example.com',
+      isSyncEnabledForAutofillProfiles: true,
+      isEligibleForAddressAccountStorage: true,
+    });
+
+    const dialog = await openAddressDialog(section);
+
+    assertTrue(
+        isVisible(dialog.$.accountSourceNotice),
+        'account notice should be visible as the user is eligible');
+
+    document.body.removeChild(section);
   });
 });
 
