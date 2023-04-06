@@ -194,8 +194,11 @@ void NavigationControllerImpl::SetEventListener(
 
   // Send the current navigation state to the listener immediately.
   waiting_for_navigation_event_ack_ = true;
+  previous_navigation_state_ = GetVisibleNavigationState();
+  fuchsia::web::NavigationState initial_state;
+  DiffNavigationEntries({}, previous_navigation_state_, &initial_state);
   navigation_listener_->OnNavigationStateChanged(
-      GetVisibleNavigationState(), [this]() {
+      std::move(initial_state), [this]() {
         waiting_for_navigation_event_ack_ = false;
         MaybeSendNavigationEvent();
       });
