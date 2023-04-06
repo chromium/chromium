@@ -229,7 +229,32 @@ suite('WallpaperSelectedTest', function() {
   });
 
   test(
-      'shows daily refresh option on the google photos album view',
+      'shows daily refresh option on non-empty google photos album view',
+      async () => {
+        personalizationStore.data.wallpaper.currentSelected =
+            wallpaperProvider.currentWallpaper;
+        personalizationStore.data.wallpaper.loading.selected = false;
+
+        const album_id = 'test_album_id';
+        wallpaperSelectedElement = initElement(WallpaperSelected, {
+          'path': Paths.GOOGLE_PHOTOS_COLLECTION,
+          'googlePhotosAlbumId': album_id,
+        });
+        await waitAfterNextRender(wallpaperSelectedElement);
+
+        const dailyRefresh =
+            wallpaperSelectedElement.shadowRoot!.getElementById(
+                dailyRefreshButtonId);
+        assertTrue(!!dailyRefresh);
+
+        const refreshWallpaper =
+            wallpaperSelectedElement.shadowRoot!.getElementById(
+                'refreshWallpaper');
+        assertTrue(refreshWallpaper!.hidden);
+      });
+
+  test(
+      'hides daily refresh option on empty google photos album view',
       async () => {
         personalizationStore.data.wallpaper.currentSelected =
             wallpaperProvider.currentWallpaper;
@@ -244,7 +269,7 @@ suite('WallpaperSelectedTest', function() {
         const dailyRefresh =
             wallpaperSelectedElement.shadowRoot!.getElementById(
                 dailyRefreshButtonId);
-        assertTrue(!!dailyRefresh);
+        assertTrue(dailyRefresh!.hidden);
 
         const refreshWallpaper =
             wallpaperSelectedElement.shadowRoot!.getElementById(
