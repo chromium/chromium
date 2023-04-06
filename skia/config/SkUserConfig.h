@@ -225,6 +225,9 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_USE_LEGACY_MIPMAP_BUILDER
 
+#define SK_USE_LEGACY_XFERMODE_SPRITE_BLITTERS
+#define SK_USE_LEGACY_XFERMODE_SHADER_BLITTERS
+
 // Use the original std::vector based serializer
 // Remove when new streaming support operations has been verified.
 // #define SK_SUPPORT_LEGACY_STRIKE_SERIALIZATION
