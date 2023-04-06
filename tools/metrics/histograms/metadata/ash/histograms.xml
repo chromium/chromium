@@ -4681,6 +4681,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.PrivacyIndicators.Source" enum="PrivacyIndicatorsSource"
+    expires_after="2023-09-19">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Record the source that use privacy indicators. Emitted when there's a client
+    calling into the function that updates the privacy indicators.
+  </summary>
+</histogram>
+
 <histogram name="Ash.PrivacyIndicators.{Icon}.AnimationSmoothness" units="%"
     expires_after="2023-09-19">
   <owner>leandre@chromium.org</owner>

@@ -69,6 +69,16 @@ class ASH_EXPORT PrivacyIndicatorsNotificationDelegate
   absl::optional<int> launch_settings_button_index_;
 };
 
+// This enum contains all the sources that use privacy indicators. This enum is
+// used for metrics collection. Note to keep in sync with enum in
+// tools/metrics/histograms/enums.xml.
+enum class PrivacyIndicatorsSource {
+  kApps = 0,
+  kLinuxVm = 1,
+  kScreenCapture = 2,
+  kMaxValue = kScreenCapture
+};
+
 // Updates privacy indicators, including:
 // * Updates camera and microphone access indicators for
 //   `PrivacyIndicatorsTrayItemView`(s) across all status area widgets.
@@ -80,7 +90,8 @@ void ASH_EXPORT UpdatePrivacyIndicators(
     absl::optional<std::u16string> app_name,
     bool is_camera_used,
     bool is_microphone_used,
-    scoped_refptr<PrivacyIndicatorsNotificationDelegate> delegate);
+    scoped_refptr<PrivacyIndicatorsNotificationDelegate> delegate,
+    PrivacyIndicatorsSource source);
 
 // Get the id of the privacy indicators notification associated with `app_id`.
 std::string ASH_EXPORT

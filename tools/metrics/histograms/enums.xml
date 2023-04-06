@@ -85635,6 +85635,12 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="1" label="Notification"/>
 </enum>
 
+<enum name="PrivacyIndicatorsSource">
+  <int value="0" label="Apps"/>
+  <int value="1" label="Linux VM"/>
+  <int value="2" label="Screen Capture"/>
+</enum>
+
 <enum name="PrivacyIndicatorsType">
   <int value="2" label="Camera is in use"/>
   <int value="4" label="Microphone is in use"/>

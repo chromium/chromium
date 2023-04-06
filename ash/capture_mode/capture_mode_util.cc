@@ -508,7 +508,8 @@ void MaybeUpdateCaptureModePrivacyIndicators() {
       /*app_name=*/
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAPTURE_MODE_BUTTON_LABEL),
       is_camera_used, is_microphone_used, /*delegate=*/
-      base::MakeRefCounted<PrivacyIndicatorsNotificationDelegate>());
+      base::MakeRefCounted<PrivacyIndicatorsNotificationDelegate>(),
+      PrivacyIndicatorsSource::kScreenCapture);
 }
 
 ui::ColorProvider* GetColorProviderForNativeTheme() {

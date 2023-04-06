@@ -18,6 +18,7 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "base/functional/callback_forward.h"
+#include "base/metrics/histogram_functions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/message_center.h"
@@ -216,10 +217,13 @@ void ASH_EXPORT UpdatePrivacyIndicators(
     absl::optional<std::u16string> app_name,
     bool is_camera_used,
     bool is_microphone_used,
-    scoped_refptr<PrivacyIndicatorsNotificationDelegate> delegate) {
+    scoped_refptr<PrivacyIndicatorsNotificationDelegate> delegate,
+    PrivacyIndicatorsSource source) {
   ModifyPrivacyIndicatorsNotification(app_id, app_name, is_camera_used,
                                       is_microphone_used, delegate);
   UpdatePrivacyIndicatorsView(app_id, is_camera_used, is_microphone_used);
+
+  base::UmaHistogramEnumeration("Ash.PrivacyIndicators.Source", source);
 }
 
 std::string GetPrivacyIndicatorsNotificationId(const std::string& app_id) {
