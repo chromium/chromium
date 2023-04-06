@@ -23,7 +23,7 @@ class NavigationEntryScreenshotCache;
 // The screenshot is captured for the leaving page when the navigation is about
 // to commit (see `CommitDeferringCondition`), subsequently stashed into the
 // `NavigationEntry` that this screenshot is captured for. The capture is done
-// on the browser thread. The pixel data includes sensitive cross-origin data,
+// in the browser process. The pixel data includes sensitive cross-origin data,
 // so it must never be leaked to a renderer process.
 //
 // The screenshot is taken out of the `NavigationEntry` when it will be used for

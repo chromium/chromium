@@ -47,7 +47,7 @@ class StoragePartitionImplMap;
 //
 // TODO(https://crbug.com/1179776): Make BrowserContextImpl to implement
 // BrowserContext, instead of being a member.
-class BrowserContextImpl {
+class CONTENT_EXPORT BrowserContextImpl {
  public:
   static BrowserContextImpl* From(BrowserContext* self);
   ~BrowserContextImpl();

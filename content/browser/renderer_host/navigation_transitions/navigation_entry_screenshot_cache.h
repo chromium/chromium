@@ -5,12 +5,8 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_NAVIGATION_TRANSITIONS_NAVIGATION_ENTRY_SCREENSHOT_CACHE_H_
 #define CONTENT_BROWSER_RENDERER_HOST_NAVIGATION_TRANSITIONS_NAVIGATION_ENTRY_SCREENSHOT_CACHE_H_
 
-#include <memory>
-
 #include "base/containers/flat_set.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/safe_ref.h"
-#include "base/no_destructor.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_manager.h"
 #include "content/common/content_export.h"
@@ -91,16 +87,6 @@ class CONTENT_EXPORT NavigationEntryScreenshotCache
   void EvictScreenshotsUntilUnderBudgetOrEmpty() override;
   void Purge() override;
   bool IsEmpty() const override;
-
-  // `NavigationEntryScreenshotManager` is owned by `BrowserContextImpl` which
-  // is not content-exported. The manager is exposed through the cache only for
-  // testing.
-  //
-  // TODO(liuwilliam): Add CONTENT_EXPORT to `BrowserContextImpl`. It is fine
-  // because `BrowserContextImpl` is not exposed as a content-public API.
-  base::SafeRef<NavigationEntryScreenshotManager> GetManagerForTesting() {
-    return manager_->GetSafeRef();
-  }
 
  private:
   // Tracks the unique IDs of the navigation entries, for which we have captured
