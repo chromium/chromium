@@ -8,6 +8,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_transpose_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_type.h"
@@ -41,6 +42,13 @@ MLOperand* BuildConv2d(
     const MLOperand* input,
     const MLOperand* filter,
     const MLConv2dOptions* options = MLConv2dOptions::Create());
+
+MLOperand* BuildConvTranspose2d(V8TestingScope& scope,
+                                MLGraphBuilder* builder,
+                                const MLOperand* input,
+                                const MLOperand* filter,
+                                const MLConvTranspose2dOptions* options =
+                                    MLConvTranspose2dOptions::Create());
 
 MLOperand* BuildLeakyRelu(
     V8TestingScope& scope,

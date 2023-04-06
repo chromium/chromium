@@ -1169,6 +1169,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constant
 [Worker]     method constructor
 [Worker]     method conv2d
+[Worker]     method convTranspose2d
 [Worker]     method div
 [Worker]     method gemm
 [Worker]     method hardSwish

@@ -24,6 +24,7 @@ class MODULES_EXPORT MLOperator final : public GarbageCollected<MLOperator> {
     kClamp,
     kConcat,
     kConv2d,
+    kConvTranspose2d,
     kAdd,
     kSub,
     kMul,

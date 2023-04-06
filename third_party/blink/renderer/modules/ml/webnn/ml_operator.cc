@@ -18,6 +18,8 @@ String MLOperator::OperatorKindToString(MLOperator::OperatorKind kind) {
       return "concat";
     case MLOperator::OperatorKind::kConv2d:
       return "conv2d";
+    case MLOperator::OperatorKind::kConvTranspose2d:
+      return "convTranspose2d";
     case MLOperator::OperatorKind::kAdd:
       return "add";
     case MLOperator::OperatorKind::kSub:
