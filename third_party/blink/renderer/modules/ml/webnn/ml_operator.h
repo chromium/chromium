@@ -17,7 +17,7 @@ namespace blink {
 class MLGraphBuilder;
 class MLOperand;
 
-class MODULES_EXPORT MLOperator final : public GarbageCollected<MLOperator> {
+class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
  public:
   enum class OperatorKind {
     // Keep the order as the same as build methods of MLGraphBuilder.
@@ -99,6 +99,25 @@ class MODULES_EXPORT MLOperator final : public GarbageCollected<MLOperator> {
   HeapVector<Member<const MLOperand>> outputs_;
 };
 
+class MODULES_EXPORT MLPadOperator : public MLOperator {
+ public:
+  MLPadOperator(MLGraphBuilder* builder,
+                const Vector<uint32_t>& beginning_padding,
+                const Vector<uint32_t>& ending_padding,
+                const bindings::DictionaryBase* options = nullptr);
+
+  MLPadOperator(const MLPadOperator&) = delete;
+  MLPadOperator& operator=(const MLPadOperator&) = delete;
+
+  ~MLPadOperator();
+
+  const Vector<uint32_t>& BeginningPadding() const;
+  const Vector<uint32_t>& EndingPadding() const;
+
+ private:
+  Vector<uint32_t> beginning_padding_;
+  Vector<uint32_t> ending_padding_;
+};
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_OPERATOR_H_

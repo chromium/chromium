@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
@@ -752,6 +753,47 @@ xnn_status DefineXnnNodeForLeakyRelu(
   return xnn_status_success;
 }
 
+xnn_status DefineXnnNodeForPad(xnn_subgraph_t subgraph,
+                               const MLOperator* pad,
+                               const OperandValueIdMap& operand_value_id_map,
+                               String& error_message) {
+  const MLPadOperator* pad_operator = static_cast<const MLPadOperator*>(pad);
+  const uint32_t input_id =
+      GetOperatorInputValueId(pad_operator, operand_value_id_map);
+  const uint32_t output_id =
+      GetOperatorOutputValueId(pad_operator, operand_value_id_map);
+  const MLPadOptions* options =
+      static_cast<const MLPadOptions*>(pad_operator->Options());
+  CHECK(options);
+  if (options->mode() != V8MLPaddingMode::Enum::kConstant) {
+    error_message = "XNNPACK only supports constant padding mode.";
+    return xnn_status_unsupported_parameter;
+  }
+
+  const Vector<uint32_t> beginning_padding = pad_operator->BeginningPadding();
+  Vector<size_t> pre_paddings(beginning_padding.size());
+  base::ranges::transform(
+      beginning_padding, pre_paddings.begin(),
+      [](uint32_t p) { return base::checked_cast<size_t>(p); });
+  const Vector<uint32_t> ending_padding = pad_operator->EndingPadding();
+  Vector<size_t> post_paddings(ending_padding.size());
+  base::ranges::transform(
+      ending_padding, post_paddings.begin(),
+      [](uint32_t p) { return base::checked_cast<size_t>(p); });
+
+  float padding_value = options->value();
+  const uint32_t flags = 0;
+  // XNNPACK will memcpy the content of `pre_paddings` and `post_paddings`
+  // vectors to its internal structure, so it is safe to release `pre_paddings`
+  // and `post_padding` vectors after this call. Please refer to the
+  // implementation at:
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/xnnpack/src/src/subgraph/static-constant-pad.c;l=245
+  XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_static_constant_pad(
+      subgraph, pre_paddings.data(), post_paddings.data(), padding_value,
+      input_id, output_id, flags));
+  return xnn_status_success;
+}
+
 xnn_status DefineXnnNodeForPool2d(xnn_subgraph_t subgraph,
                                   const MLOperator* pool2d,
                                   const OperandValueIdMap& operand_value_id_map,
@@ -1106,6 +1148,10 @@ xnn_status DefineXnnNode(xnn_subgraph_t subgraph,
       break;
     case MLOperator::OperatorKind::kHardSwish:
       XNN_CHECK_STATUS(DefineXnnNodeForHardSwish(
+          subgraph, ml_operator, operand_value_id_map, error_message));
+      break;
+    case MLOperator::OperatorKind::kPad:
+      XNN_CHECK_STATUS(DefineXnnNodeForPad(
           subgraph, ml_operator, operand_value_id_map, error_message));
       break;
     // Define XNNPACK Node for pool2d operators.

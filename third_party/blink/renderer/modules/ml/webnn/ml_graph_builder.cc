@@ -1437,18 +1437,18 @@ MLActivation* MLGraphBuilder::leakyRelu(const MLLeakyReluOptions* options,
 }
 
 MLOperand* MLGraphBuilder::pad(const MLOperand* input,
-                               const Vector<uint32_t>& beginningPadding,
-                               const Vector<uint32_t>& endingPadding,
+                               const Vector<uint32_t>& beginning_padding,
+                               const Vector<uint32_t>& ending_padding,
                                const MLPadOptions* options,
                                ExceptionState& exception_state) {
   const auto input_rank = input->Dimensions().size();
-  if (beginningPadding.size() != input_rank) {
+  if (beginning_padding.size() != input_rank) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
                                       "The length of beginningPadding must be "
                                       "equal to the rank of the input tensor.");
     return nullptr;
   }
-  if (endingPadding.size() != input_rank) {
+  if (ending_padding.size() != input_rank) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
                                       "The length of endingPadding must be "
                                       "equal to the rank of the input tensor.");
@@ -1468,7 +1468,7 @@ MLOperand* MLGraphBuilder::pad(const MLOperand* input,
   for (wtf_size_t i = 0; i < input_rank; i++) {
     auto checked_output_size =
         base::MakeCheckedNum<uint32_t>(input->Dimensions()[i]) +
-        beginningPadding[i] + endingPadding[i];
+        beginning_padding[i] + ending_padding[i];
     if (!checked_output_size.AssignIfValid(&output_shape[i])) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataError,
@@ -1477,8 +1477,8 @@ MLOperand* MLGraphBuilder::pad(const MLOperand* input,
     }
   }
 
-  auto* pad = MakeGarbageCollected<MLOperator>(
-      this, MLOperator::OperatorKind::kPad, options);
+  auto* pad = MakeGarbageCollected<MLPadOperator>(this, beginning_padding,
+                                                  ending_padding, options);
   String error_message;
   // According to WebNN spec
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-pad, the output

@@ -103,4 +103,21 @@ void MLOperator::Connect(HeapVector<Member<const MLOperand>> inputs,
   is_connected_ = true;
 }
 
+MLPadOperator::MLPadOperator(MLGraphBuilder* builder,
+                             const Vector<uint32_t>& beginning_padding,
+                             const Vector<uint32_t>& ending_padding,
+                             const bindings::DictionaryBase* options)
+    : MLOperator(builder, MLOperator::OperatorKind::kPad, options),
+      beginning_padding_(beginning_padding),
+      ending_padding_(ending_padding) {}
+
+MLPadOperator::~MLPadOperator() = default;
+
+const Vector<uint32_t>& MLPadOperator::BeginningPadding() const {
+  return beginning_padding_;
+}
+
+const Vector<uint32_t>& MLPadOperator::EndingPadding() const {
+  return ending_padding_;
+}
 }  // namespace blink
