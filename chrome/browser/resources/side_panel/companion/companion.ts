@@ -33,7 +33,13 @@ function initialize() {
 
 // Handler for postMessage() calls from the embedded iframe.
 function onCompanionMessageEvent(event: MessageEvent) {
-  if (event.origin !== loadTimeData.getString('companion_origin')) {
+  // Because the |companion_origin| string has a trailing slash that can cause
+  // failures when doing a string comparison, convert the string to a URL and
+  // compare the origin to prevent failures when origins are the same but
+  // strings differ.
+  const validOrigin =
+      new URL(loadTimeData.getString('companion_origin')).origin;
+  if (validOrigin !== event.origin) {
     return;
   }
 
