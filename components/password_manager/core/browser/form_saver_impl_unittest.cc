@@ -333,9 +333,9 @@ TEST_F(FormSaverImplTest, Blocklist) {
   observed.username_element = u"user";
   observed.password_value = u"12345";
   observed.password_element = u"password";
-  observed.all_possible_usernames = {{AlternativeElement::Value(u"user2"),
-                                      autofill::FieldRendererId(1),
-                                      AlternativeElement::Name(u"field")}};
+  observed.all_alternative_usernames = {{AlternativeElement::Value(u"user2"),
+                                         autofill::FieldRendererId(1),
+                                         AlternativeElement::Name(u"field")}};
   observed.url = GURL("https://www.example.com/foobar");
 
   PasswordForm blocklisted =

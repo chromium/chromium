@@ -723,12 +723,12 @@ void VotesUploader::SetKnownValueFlag(
   }
 }
 
-bool VotesUploader::FindUsernameInOtherPossibleUsernames(
+bool VotesUploader::FindUsernameInOtherAlternativeUsernames(
     const PasswordForm& match,
     const std::u16string& username) {
   DCHECK(!username_correction_vote_);
 
-  for (const AlternativeElement& element : match.all_possible_usernames) {
+  for (const AlternativeElement& element : match.all_alternative_usernames) {
     if (element.value == username) {
       username_correction_vote_ = match;
       username_correction_vote_->username_element = element.name;
@@ -746,7 +746,7 @@ bool VotesUploader::FindCorrectedUsernameElement(
     return false;
   for (const PasswordForm* match : matches) {
     if ((match->password_value == password) &&
-        FindUsernameInOtherPossibleUsernames(*match, username)) {
+        FindUsernameInOtherAlternativeUsernames(*match, username)) {
       return true;
     }
   }

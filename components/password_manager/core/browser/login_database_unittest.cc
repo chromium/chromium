@@ -1381,7 +1381,7 @@ TEST_F(LoginDatabaseTest, UpdateLogin) {
 
   form.action = GURL("http://accounts.google.com/login");
   form.password_value = u"my_new_password";
-  form.all_possible_usernames.emplace_back(
+  form.all_alternative_usernames.emplace_back(
       AlternativeElement::Value(u"my_new_username"),
       autofill::FieldRendererId(),
       AlternativeElement::Name(u"new_username_id"));
@@ -1426,7 +1426,7 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithoutPassword) {
   EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
 
   form.action = GURL("http://accounts.google.com/login");
-  form.all_possible_usernames.emplace_back(
+  form.all_alternative_usernames.emplace_back(
       AlternativeElement::Value(u"my_new_username"),
       autofill::FieldRendererId(),
       AlternativeElement::Name(u"new_username_id"));

@@ -82,9 +82,9 @@ void CopyFieldPropertiesMasks(const FormData& from, FormData* to) {
 }
 
 // Filter sensitive information, duplicates and |username_value| out from
-// |form->all_possible_usernames|.
-void SanitizePossibleUsernames(PasswordForm* form) {
-  auto& usernames = form->all_possible_usernames;
+// |form->all_alternative_usernames|.
+void SanitizeAlternativeUsernames(PasswordForm* form) {
+  auto& usernames = form->all_alternative_usernames;
 
   // Deduplicate.
   std::sort(usernames.begin(), usernames.end());
@@ -299,7 +299,7 @@ void PasswordSaveManagerImpl::Save(const FormData* observed_form,
   }
 
   if (IsNewLogin()) {
-    SanitizePossibleUsernames(&pending_credentials_);
+    SanitizeAlternativeUsernames(&pending_credentials_);
     pending_credentials_.date_created = base::Time::Now();
   }
 
@@ -583,8 +583,8 @@ PasswordForm PasswordSaveManagerImpl::BuildPendingCredentials(
   pending_credentials.date_last_used = base::Time::Now();
   pending_credentials.form_has_autofilled_value =
       parsed_submitted_form.form_has_autofilled_value;
-  pending_credentials.all_possible_passwords =
-      parsed_submitted_form.all_possible_passwords;
+  pending_credentials.all_alternative_passwords =
+      parsed_submitted_form.all_alternative_passwords;
   CopyFieldPropertiesMasks(submitted_form, &pending_credentials.form_data);
 
   // If we're dealing with an API-driven provisionally saved form, then take

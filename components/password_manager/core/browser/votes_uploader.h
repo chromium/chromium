@@ -121,9 +121,9 @@ class VotesUploader {
       const PasswordForm& pending_credentials,
       const PasswordForm& form_to_upload);
 
-  // Searches for |username| in |all_possible_usernames| of |matches|. If the
-  // username value is found in |all_possible_usernames| and the password value
-  // of the match is equal to |password|, the match is saved to
+  // Searches for |username| in |all_alternative_usernames| of |matches|. If the
+  // username value is found in |all_alternative_usernames| and the password
+  // value of the match is equal to |password|, the match is saved to
   // |username_correction_vote_| and the method returns true.
   bool FindCorrectedUsernameElement(
       const std::vector<const PasswordForm*>& matches,
@@ -244,10 +244,10 @@ class VotesUploader {
                          const std::vector<const PasswordForm*>& best_matches,
                          autofill::FormStructure* form_to_upload);
 
-  // Searches for |username| in |all_possible_usernames| of |match|. If the
+  // Searches for |username| in |all_alternative_usernames| of |match|. If the
   // username value is found, the match is saved to |username_correction_vote_|
   // and the function returns true.
-  bool FindUsernameInOtherPossibleUsernames(const PasswordForm& match,
+  bool FindUsernameInOtherAlternativeUsernames(const PasswordForm& match,
                                             const std::u16string& username);
 
   bool StartUploadRequest(
@@ -294,7 +294,7 @@ class VotesUploader {
   UsernameChangeState username_change_state_ = UsernameChangeState::kUnchanged;
 
   // If the user typed username that doesn't match any saved credentials, but
-  // matches an entry from |all_possible_usernames| of a saved credential,
+  // matches an entry from |all_alternative_usernames| of a saved credential,
   // |username_correction_vote_| stores the credential with matched username.
   // The matched credential is copied to |username_correction_vote_|, but
   // |username_correction_vote_.username_element| is set to the name of the
