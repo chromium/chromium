@@ -41,7 +41,7 @@ message ChromeUserPopulation {
 
   // The finch active groups this user belongs to (if any). Active group is
   // defined by finch trial name and group name. Trial name and group name are
-  // concatenated with separator "|", e.g. "PingOnlyTrial|DefaultGroup".
+  // concatenated with separator ".", e.g. "PingOnlyTrial.DefaultGroup".
   repeated string finch_active_groups = 4;
 
   // Whether and how the current Chrome profile is being managed.
