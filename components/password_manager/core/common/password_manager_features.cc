@@ -267,6 +267,11 @@ BASE_FEATURE(kUnifiedPasswordManagerErrorMessages,
              "UnifiedPasswordManagerErrorMessages",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables showing the warning about UPM migrating local passwords.
+BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsMigrationWarning,
+             "UnifiedPasswordManagerLocalPasswordsMigrationWarning",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the built-in sync functionality in PasswordSyncBridge becomes
 // unused, meaning that SyncService/SyncEngine will no longer download or
 // upload changes to/from the Sync server. Instead, an external Android-specific
