@@ -507,6 +507,11 @@ SkColor ThemeService::GetPolicyThemeColor() const {
   return profile_->GetPrefs()->GetInteger(prefs::kPolicyThemeColor);
 }
 
+ThemeService::BrowserColorScheme ThemeService::GetBrowserColorScheme() const {
+  return static_cast<BrowserColorScheme>(
+      profile_->GetPrefs()->GetInteger(prefs::kBrowserColorScheme));
+}
+
 // static
 void ThemeService::DisableThemePackForTesting() {
   g_dont_write_theme_pack_for_testing = true;
