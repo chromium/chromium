@@ -5227,13 +5227,28 @@ if (!is_android) {
       data_deps = [
         ":telemetry_perf_tests_base",
         "//tools/perf/:perf${telemetry_target_suffix}",
-
-        # Add all the binaries since other Telemetry-based tests use split
-        # targets, but perf tests have had issues migrating. This is not done
-        # in //tools/perf:perf since non-performance tests use it such as
-        # telememtry_perf_unittests.
-        "//tools/perf/chrome_telemetry_build:all_chrome_android_targets_for_perf_testing",
       ]
+
+      # Needed by startup.mobile benchmark.
+      data_deps += [ "//chrome/android/webapk/shell_apk:maps_go_webapk" ]
+
+      if (telemetry_target_suffix == "_android_clank_chrome") {
+        # Depending on Android version, either Chrome.apk or Monochrome.apk can
+        # be selected. See ChromeBackendSettings.GetApkName method in
+        # catapult/telemetry/telemetry/internal/backends/android_browser_backend_settings.py.
+        data_deps += [ "//tools/perf/:perf_android_clank_monochrome" ]
+      }
+
+      if (telemetry_target_suffix == "_android_webview" &&
+          enable_chrome_android_internal) {
+        # This suffix is used by all webview tests. Several different webview
+        # APKs can be used, depending on the platform.
+        data_deps += [
+          "//tools/perf/:perf_android_clank_monochrome",
+          "//tools/perf/:perf_android_clank_trichrome_webview_bundle",
+          "//tools/perf/:perf_android_clank_webview",
+        ]
+      }
     }
   }
 
