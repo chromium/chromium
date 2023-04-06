@@ -99,6 +99,43 @@ IpczDriverHandle CreateTransportForMojoEndpoint(
   return ObjectBase::ReleaseAsHandle(std::move(transport));
 }
 
+#if BUILDFLAG(IS_WIN)
+// Helper function on Windows platform to open the remote client process given a
+// handle to a connected named pipe. It may return an invalid process object if
+// either the handle does not refer to a named pipe or the handle refers to a
+// named pipe that is not connected.
+base::Process OpenRemoteProcess(
+    const MojoInvitationTransportEndpoint& endpoint) {
+  base::ProcessId remote_process_id = 0;
+  // Extract the handle to the connected named pipe from mojo invitation
+  // transport endpoint.
+  HANDLE handle =
+      LongToHandle(static_cast<long>(endpoint.platform_handles[0].value));
+  // Try to get the remote client process id given the extracted handle via
+  // GetNamedPipeClientProcessId API.
+  if ((!GetNamedPipeClientProcessId(handle, &remote_process_id) ||
+       remote_process_id == base::Process::Current().Pid())) {
+    DVLOG(2) << "Failed to get remote process id via the connected named pipe";
+    return base::Process();
+  }
+
+  if (remote_process_id == 0) {
+    DVLOG(2) << "Remote process id is invalid";
+    return base::Process();
+  }
+
+  // Try to open the remote process.
+  base::Process remote_process =
+      base::Process::OpenWithAccess(remote_process_id, PROCESS_DUP_HANDLE);
+  if (!remote_process.IsValid()) {
+    DVLOG(2) << "Remote process is invalid";
+    return base::Process();
+  }
+
+  return remote_process;
+}
+#endif
+
 }  // namespace
 
 Invitation::Invitation() = default;
@@ -222,6 +259,17 @@ MojoResult Invitation::Send(
   // For now, the concept of an elevated process is only meaningful on Windows.
   DCHECK(!is_peer_elevated);
 #endif
+
+#if BUILDFLAG(IS_WIN)
+  // On Windows, if `remote_process` is invalid when sending invitation, that
+  // usually means the required remote process is not set in advance by sender,
+  // in such case, rely on the connected named pipe to get the remote process
+  // id, then open and set the remote process.
+  if (!remote_process.IsValid()) {
+    remote_process = OpenRemoteProcess(*transport_endpoint);
+  }
+#endif
+
   IpczDriverHandle transport = CreateTransportForMojoEndpoint(
       {.source = config.is_broker ? Transport::kBroker : Transport::kNonBroker,
        .destination = is_isolated ? Transport::kBroker : Transport::kNonBroker},
