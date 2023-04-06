@@ -145,8 +145,6 @@ class INVALIDATION_EXPORT PerUserTopicSubscriptionManager {
 
   const std::string project_id_;
 
-  const bool migrate_prefs_;
-
   // Subscription or unsubscription requests that are either scheduled or
   // started, but not finished yet.
   std::map<Topic, std::unique_ptr<SubscriptionEntry>> pending_subscriptions_;
