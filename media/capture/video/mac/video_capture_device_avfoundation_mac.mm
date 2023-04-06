@@ -306,8 +306,6 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   DCHECK(![_captureSession isRunning]);
   DCHECK(_mainThreadTaskRunner->BelongsToCurrentThread());
 
-  _frameWidth = width;
-  _frameHeight = height;
   _frameRate = frameRate;
   _bestCaptureFormat.reset(
       media::FindBestCaptureFormat([_captureDevice formats], width, height,

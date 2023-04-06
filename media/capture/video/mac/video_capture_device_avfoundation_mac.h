@@ -89,8 +89,6 @@ CAPTURE_EXPORT
                 AVCapturePhotoCaptureDelegate> {
  @private
   // The following attributes are set via -setCaptureHeight:width:frameRate:.
-  int _frameWidth;
-  int _frameHeight;
   float _frameRate;
 
   // The capture format that best matches the above attributes.
