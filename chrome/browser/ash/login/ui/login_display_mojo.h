@@ -30,8 +30,7 @@ class LoginDisplayMojo : public LoginDisplay,
   void UpdateChallengeResponseAuthAvailability(const AccountId& account_id);
 
   // LoginDisplay:
-  void Init(const user_manager::UserList& filtered_users,
-            bool show_guest) override;
+  void Init(const user_manager::UserList& filtered_users) override;
   void SetUIEnabled(bool is_enabled) override;
 
   // user_manager::UserManager::Observer:

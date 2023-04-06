@@ -55,8 +55,7 @@ void LoginDisplayMojo::UpdateChallengeResponseAuthAvailability(
       account_id, enable_challenge_response);
 }
 
-void LoginDisplayMojo::Init(const user_manager::UserList& filtered_users,
-                            bool show_guest) {
+void LoginDisplayMojo::Init(const user_manager::UserList& filtered_users) {
   host_->SetUserCount(filtered_users.size());
   host_->UpdateAddUserButtonStatus();
   auto* client = LoginScreenClientImpl::Get();
@@ -72,7 +71,6 @@ void LoginDisplayMojo::Init(const user_manager::UserList& filtered_users,
   user_selection_screen->Init(filtered_users);
   LoginScreen::Get()->GetModel()->SetUserList(
       user_selection_screen->UpdateAndReturnUserListForAsh());
-  LoginScreen::Get()->SetAllowLoginAsGuest(show_guest);
   user_selection_screen->SetUsersLoaded(true /*loaded*/);
 
   if (user_manager::UserManager::IsInitialized()) {

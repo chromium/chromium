@@ -462,8 +462,11 @@ void ExistingUserController::UpdateLoginDisplay(
   } else {
     sync_token_checkers_.reset();
   }
-  bool show_guest = user_manager->IsGuestSessionAllowed();
-  GetLoginDisplay()->Init(login_users, show_guest);
+  if (LoginScreen::Get()) {
+    LoginScreen::Get()->SetAllowLoginAsGuest(
+        user_manager->IsGuestSessionAllowed());
+  }
+  GetLoginDisplay()->Init(login_users);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

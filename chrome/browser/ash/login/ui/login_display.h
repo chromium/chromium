@@ -22,7 +22,7 @@ class LoginDisplay {
 
   // Initializes login UI with the user pods based on list of known users and
   // guest, new user pods if those are enabled.
-  virtual void Init(const user_manager::UserList& users, bool show_guest) = 0;
+  virtual void Init(const user_manager::UserList& users) = 0;
 
   // Changes enabled state of the UI.
   virtual void SetUIEnabled(bool is_enabled) = 0;
