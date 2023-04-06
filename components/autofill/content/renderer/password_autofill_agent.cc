@@ -1525,7 +1525,10 @@ void PasswordAutofillAgent::TouchToFillClosed(bool show_virtual_keyboard) {
   // elements' SuggestedValue(), which Touch To Fill does not set.
   auto focused_input_element =
       autofill_agent_->focused_element().DynamicTo<WebInputElement>();
-  CHECK(!focused_input_element.IsNull());
+  if (focused_input_element.IsNull()) {
+    return;
+  }
+
   WebInputElement username_element;
   WebInputElement password_element;
   PasswordInfo* password_info = nullptr;
