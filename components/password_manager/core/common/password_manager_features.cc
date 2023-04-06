@@ -113,7 +113,7 @@ BASE_FEATURE(kIOSPasswordUISplit,
 // Enables password saving and filling in cross-origin iframes on IOS.
 BASE_FEATURE(kIOSPasswordManagerCrossOriginIframeSupport,
              "IOSPasswordManagerCrossOriginIframeSupport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables displaying and managing compromised, weak and reused credentials in
 // the Password Manager.
