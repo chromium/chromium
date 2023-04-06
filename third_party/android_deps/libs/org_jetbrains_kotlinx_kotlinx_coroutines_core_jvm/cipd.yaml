@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:2@1.6.1.cr1
+# cipd create --pkg-def cipd.yaml -tag version:2@1.6.4.cr1
 package: chromium/third_party/android_deps/libs/org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm
 description: "kotlinx-coroutines-core"
 data:
-- file: kotlinx-coroutines-core-jvm-1.6.1.jar
+- file: kotlinx-coroutines-core-jvm-1.6.4.jar
