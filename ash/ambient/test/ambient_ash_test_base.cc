@@ -22,6 +22,7 @@
 #include "ash/ambient/ui/ambient_background_image_view.h"
 #include "ash/ambient/ui/ambient_container_view.h"
 #include "ash/ambient/ui/ambient_info_view.h"
+#include "ash/ambient/ui/ambient_slideshow_peripheral_ui.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/ambient/ui/jitter_calculator.h"
 #include "ash/ambient/ui/media_string_view.h"
@@ -449,6 +450,12 @@ PhotoView* AmbientAshTestBase::GetPhotoView() {
 AmbientInfoView* AmbientAshTestBase::GetAmbientInfoView() {
   return static_cast<AmbientInfoView*>(
       GetContainerView()->GetViewByID(kAmbientInfoView));
+}
+
+AmbientSlideshowPeripheralUi*
+AmbientAshTestBase::GetAmbientSlideshowPeripheralUi() {
+  return static_cast<AmbientSlideshowPeripheralUi*>(
+      GetContainerView()->GetViewByID(kAmbientSlideshowPeripheralUi));
 }
 
 AmbientAnimationView* AmbientAshTestBase::GetAmbientAnimationView() {

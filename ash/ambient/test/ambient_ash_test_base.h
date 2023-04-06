@@ -182,6 +182,7 @@ class AmbientAshTestBase : public AshTestBase {
   PhotoView* GetPhotoView();
   AmbientAnimationView* GetAmbientAnimationView();
   AmbientInfoView* GetAmbientInfoView();
+  AmbientSlideshowPeripheralUi* GetAmbientSlideshowPeripheralUi();
 
   const std::map<int, ::ambient::PhotoCacheEntry>& GetCachedFiles();
   const std::map<int, ::ambient::PhotoCacheEntry>& GetBackupCachedFiles();

@@ -56,7 +56,8 @@ void AmbientManagedSlideshowUiLauncher::UpdateImageFilePaths(
 }
 
 std::unique_ptr<views::View> AmbientManagedSlideshowUiLauncher::CreateView() {
-  return std::make_unique<PhotoView>(delegate_);
+  return std::make_unique<PhotoView>(delegate_,
+                                     /*peripheral_ui_visible=*/false);
 }
 
 void AmbientManagedSlideshowUiLauncher::Finalize() {
@@ -67,6 +68,7 @@ AmbientBackendModel*
 AmbientManagedSlideshowUiLauncher::GetAmbientBackendModel() {
   return photo_controller_.ambient_backend_model();
 }
+
 void AmbientManagedSlideshowUiLauncher::OnImagesReady() {
   CHECK(initialization_callback_);
   std::move(initialization_callback_).Run();

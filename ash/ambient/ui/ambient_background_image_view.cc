@@ -7,11 +7,10 @@
 #include <memory>
 
 #include "ash/ambient/ambient_constants.h"
-#include "ash/ambient/ui/ambient_info_view.h"
-#include "ash/ambient/ui/ambient_shield_view.h"
+#include "ash/ambient/ui/ambient_slideshow_peripheral_ui.h"
+#include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/ambient/ui/jitter_calculator.h"
-#include "ash/ambient/ui/media_string_view.h"
 #include "ash/ambient/util/ambient_util.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
@@ -38,9 +37,6 @@
 namespace ash {
 
 namespace {
-
-// Appearance.
-constexpr int kMediaStringMarginDip = 32;
 
 gfx::ImageSkia ResizeImage(const gfx::ImageSkia& image,
                            const gfx::Size& view_size) {
@@ -156,24 +152,6 @@ void AmbientBackgroundImageView::OnViewBoundsChanged(
     SetResizedImage(related_image_view_, related_image_unscaled_);
 }
 
-MediaStringView::Settings AmbientBackgroundImageView::GetSettings() {
-  return MediaStringView::Settings(
-      {/*icon_light_mode_color=*/ambient::util::GetColor(
-           GetColorProvider(), kColorAshIconColorPrimary,
-           /*dark_mode_enabled=*/false),
-       /*icon_dark_mode_color=*/
-       ambient::util::GetColor(GetColorProvider(), kColorAshIconColorPrimary,
-                               /*dark_mode_enabled=*/true),
-       /*text_light_mode_color=*/
-       ambient::util::GetColor(GetColorProvider(), kColorAshTextColorPrimary,
-                               /*dark_mode_enabled=*/false),
-       /*text_dark_mode_color=*/
-       ambient::util::GetColor(GetColorProvider(), kColorAshTextColorPrimary,
-                               /*dark_mode_enabled=*/true),
-       /*text_shadow_elevation=*/
-       ambient::util::kDefaultTextShadowElevation});
-}
-
 void AmbientBackgroundImageView::UpdateImage(
     const gfx::ImageSkia& image,
     const gfx::ImageSkia& related_image,
@@ -184,7 +162,7 @@ void AmbientBackgroundImageView::UpdateImage(
   is_portrait_ = is_portrait;
   topic_type_ = type;
 
-  UpdateGlanceableInfoPosition();
+  ambient_peripheral_ui_->UpdateGlanceableInfoPosition();
 
   const bool has_change = UpdateRelatedImageViewVisibility();
 
@@ -202,7 +180,7 @@ void AmbientBackgroundImageView::UpdateImageDetails(
     const std::u16string& related_details) {
   details_ = details;
   related_details_ = related_details;
-  ambient_info_view_->UpdateImageDetails(
+  ambient_peripheral_ui_->UpdateImageDetails(
       details, MustShowPairs() ? related_details : std::u16string());
 }
 
@@ -258,46 +236,9 @@ void AmbientBackgroundImageView::InitLayout() {
                                    kUnboundedScaleToZero);
   observed_views_.AddObservation(related_image_view_);
 
-
-  AddChildView(std::make_unique<AmbientShieldView>());
-
-  ambient_info_view_ =
-      AddChildView(std::make_unique<AmbientInfoView>(delegate_));
-
-  gfx::Insets shadow_insets =
-      gfx::ShadowValue::GetMargin(ambient::util::GetTextShadowValues(nullptr));
-
-  // Inits the media string view. The media string view is positioned on the
-  // right-top corner of the container.
-  views::View* media_string_view_container_ =
-      AddChildView(std::make_unique<views::View>());
-  views::BoxLayout* media_string_layout =
-      media_string_view_container_->SetLayoutManager(
-          std::make_unique<views::BoxLayout>(
-              views::BoxLayout::Orientation::kVertical));
-  media_string_layout->set_main_axis_alignment(
-      views::BoxLayout::MainAxisAlignment::kStart);
-  media_string_layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kEnd);
-  media_string_layout->set_inside_border_insets(
-      gfx::Insets::TLBR(kMediaStringMarginDip + shadow_insets.top(), 0, 0,
-                        kMediaStringMarginDip + shadow_insets.right()));
-  media_string_view_ = media_string_view_container_->AddChildView(
-      std::make_unique<MediaStringView>(this));
-  media_string_view_->SetVisible(false);
-}
-
-void AmbientBackgroundImageView::UpdateGlanceableInfoPosition() {
-  gfx::Vector2d jitter = glanceable_info_jitter_calculator_->Calculate();
-  gfx::Transform transform;
-  transform.Translate(jitter);
-  ambient_info_view_->SetTextTransform(transform);
-
-  if (media_string_view_->GetVisible()) {
-    gfx::Transform media_string_transform;
-    media_string_transform.Translate(-jitter.x(), -jitter.y());
-    media_string_view_->layer()->SetTransform(media_string_transform);
-  }
+  ambient_peripheral_ui_ =
+      AddChildView(std::make_unique<AmbientSlideshowPeripheralUi>(
+          delegate_, glanceable_info_jitter_calculator_));
 }
 
 void AmbientBackgroundImageView::UpdateLayout() {
@@ -348,6 +289,10 @@ void AmbientBackgroundImageView::SetResizedImage(
   // landscape to portrait when device is in portrait orientation because we
   // only show one photo. Call ResetImageSize() to trigger UpdateImageOrigin().
   image_view->ResetImageSize();
+}
+
+void AmbientBackgroundImageView::SetPeripheralUiVisibility(bool visibile) {
+  ambient_peripheral_ui_->SetVisible(visibile);
 }
 
 bool AmbientBackgroundImageView::MustShowPairs() const {

@@ -16,6 +16,7 @@
 #include "ash/ambient/test/test_ambient_managed_photo_source.h"
 #include "ash/ambient/ui/ambient_container_view.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
+#include "ash/ambient/ui/photo_view.h"
 #include "ash/assistant/assistant_interaction_controller_impl.h"
 #include "ash/assistant/model/assistant_interaction_model.h"
 #include "ash/constants/ambient_theme.h"
@@ -1693,6 +1694,11 @@ TEST_F(AmbientControllerForManagedScreensaverTest,
   ASSERT_TRUE(GetContainerView());
   EXPECT_TRUE(
       GetContainerView()->GetViewByID(AmbientViewID::kAmbientPhotoView));
+
+  // Peripheral Ui is always hidden in managed screeensaver mode
+  EXPECT_FALSE(GetAmbientSlideshowPeripheralUi()->GetVisible())
+      << "Peripheral Ui should be hidden in managed mode";
+
   GetEventGenerator()->ClickLeftButton();
   EXPECT_FALSE(ambient_controller()->IsShown());
   FastForwardToLockScreenTimeout();
@@ -1746,6 +1752,7 @@ TEST_F(AmbientControllerForManagedScreensaverTest,
   ASSERT_TRUE(GetContainerView());
   EXPECT_TRUE(
       GetContainerView()->GetViewByID(AmbientViewID::kAmbientPhotoView));
+  EXPECT_TRUE(GetAmbientSlideshowPeripheralUi()->GetVisible());
   UnlockScreen();
   EXPECT_FALSE(ambient_controller()->IsShown());
 }

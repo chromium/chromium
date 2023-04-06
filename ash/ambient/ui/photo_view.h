@@ -35,7 +35,9 @@ class ASH_EXPORT PhotoView : public views::View,
  public:
   METADATA_HEADER(PhotoView);
 
-  explicit PhotoView(AmbientViewDelegateImpl* delegate);
+  explicit PhotoView(AmbientViewDelegateImpl* delegate,
+                     bool peripheral_ui_visible = true);
+
   PhotoView(const PhotoView&) = delete;
   PhotoView& operator=(PhotoView&) = delete;
   ~PhotoView() override;
@@ -62,6 +64,9 @@ class ASH_EXPORT PhotoView : public views::View,
   bool NeedToAnimateTransition() const;
 
   gfx::ImageSkia GetVisibleImageForTesting();
+
+  // Flag to set the peripheral ui visibility, true by default.
+  const bool peripheral_ui_visible_ = true;
 
   // Note that we should be careful when using |delegate_|, as there is no
   // strong guarantee on the life cycle.
