@@ -1128,7 +1128,7 @@ void PinManager::NotifyDelete(const Id id, const Path& path) {
 }
 
 void PinManager::OnUnmounted() {
-  LOG(ERROR) << "DriveFS got unmounted";
+  VLOG(1) << "Unmounted DriveFS";
 }
 
 void PinManager::OnFilesChanged(const std::vector<mojom::FileChange>& changes) {
@@ -1167,7 +1167,7 @@ void PinManager::OnFileCreated(const mojom::FileChange& event) {
 
   if (id == Id::kNone) {
     // Ignore spurious event (b/268419828).
-    LOG(ERROR) << "Ignored " << Quote(event) << ": Spurious event";
+    VLOG(2) << "Ignored " << Quote(event) << ": Spurious event";
     return;
   }
 
