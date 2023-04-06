@@ -40410,7 +40410,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 15
+          "shards": 10
         },
         "test_id_prefix": "ninja://:wpt_tests_isolate_content_shell/"
       },
