@@ -61,6 +61,10 @@ if (is_android || is_chromeos) {
     } else {
       android_static_analysis = "on"
     }
+
+    # Build incremental targets whenever possible.
+    # See //build/android/incremental_install/README.md for more details.
+    incremental_install = false
   }
 
   # Avoid typos when setting android_static_analysis in args.gn.
@@ -70,18 +74,6 @@ if (is_android || is_chromeos) {
   # This configuration has not bot coverage and has broken multiple times.
   # Warn against it.
   assert(!(enable_chrome_android_internal && skip_secondary_abi_for_cq))
-
-  declare_args() {
-    # Android API level for 32 bits platforms
-    android32_ndk_api_level = default_min_sdk_version
-
-    # Android API level for 64 bits platforms
-    if (default_min_sdk_version < 21) {
-      android64_ndk_api_level = 21
-    } else {
-      android64_ndk_api_level = default_min_sdk_version
-    }
-  }
 
   if (enable_chrome_android_internal) {
     import("//clank/config.gni")
@@ -171,6 +163,17 @@ if (is_android || is_chromeos) {
     android_ndk_version = default_android_ndk_version
     android_ndk_major_version = default_android_ndk_major_version
 
+    # Android API level for 32 bits platforms
+    android32_ndk_api_level = default_min_sdk_version
+
+    # Android API level for 64 bits platforms
+    android64_ndk_api_level = default_min_sdk_version
+
+    if (default_min_sdk_version < 21) {
+      # Android did not support 64 bit before API 21.
+      android64_ndk_api_level = 21
+    }
+
     android_sdk_root = default_android_sdk_root
     android_sdk_version = default_android_sdk_version
     android_sdk_build_tools_version = default_android_sdk_build_tools_version
@@ -204,17 +207,13 @@ if (is_android || is_chromeos) {
 
     # Java debug on Android. Having this on enables multidexing, and turning it
     # off will enable proguard.
-    is_java_debug = is_debug
+    is_java_debug = is_debug || incremental_install
 
     # Mark APKs as android:debuggable="true".
     debuggable_apks = !is_official_build
 
     # Set to false to disable the Errorprone compiler.
     use_errorprone_java_compiler = android_static_analysis != "off"
-
-    # Build incremental targets whenever possible.
-    # See //build/android/incremental_install/README.md for more details.
-    incremental_install = false
 
     # When true, updates all android_aar_prebuilt() .info files during gn gen.
     # Refer to android_aar_prebuilt() for more details.
@@ -284,6 +283,9 @@ if (is_android || is_chromeos) {
     enable_trace_event_bytecode_rewriting =
         !is_java_debug && android_channel != "stable"
   }
+
+  assert(!incremental_install || is_java_debug,
+         "incremental_install=true && is_java_debug=false is not supported.")
 
   # Host stuff -----------------------------------------------------------------
 
