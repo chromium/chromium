@@ -1975,12 +1975,10 @@ void BookmarkBarView::UpdateAppearanceForTheme() {
 
   const SkColor color = color_provider->GetColor(kColorBookmarkBarForeground);
   other_bookmarks_button_->SetEnabledTextColors(color);
-  if (!base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)) {
-    other_bookmarks_button_->SetImageModel(
-        views::Button::STATE_NORMAL,
-        chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kNormal,
-                                      kColorBookmarkFolderIcon));
-  }
+  other_bookmarks_button_->SetImageModel(
+      views::Button::STATE_NORMAL,
+      chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kNormal,
+                                    kColorBookmarkFolderIcon));
 
   managed_bookmarks_button_->SetEnabledTextColors(color);
   managed_bookmarks_button_->SetImageModel(
