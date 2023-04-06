@@ -74203,6 +74203,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="166" label="Lock Screen"/>
   <int value="167" label="WebAppSettings App Launch"/>
   <int value="168" label="EOL Incentive"/>
+  <int value="169" label="Hotspot"/>
 </enum>
 
 <enum name="NotificationDatabaseStatus">
