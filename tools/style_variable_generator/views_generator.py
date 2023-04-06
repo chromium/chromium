@@ -57,7 +57,7 @@ class ViewsStyleGenerator(CSSStyleGenerator):
 
         return globals
 
-    def ShouldResolveBlendedColors(self):
+    def DefaultPreblend(self):
         # CSSGenerator sets this to false, we set it back to true since
         # views does not do runtime blends.
         return True

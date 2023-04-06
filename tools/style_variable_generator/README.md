@@ -94,6 +94,25 @@ NOTE: The typescript generator extends the css generator, as such the css that
 the typescript file generates will respect the prefix option defined in
 options.css.prefix.
 
+**Preblend**
+
+```
+{
+    options: {
+        CSS: {
+            preblend: true
+        }
+    },
+    colors: {
+        color: 'blend(black, rgba(255, 255, 255, .3))'
+    }
+}
+```
+
+By default the css generator will output blends as `color-mix` calls. However
+when preblend is specified as true this is ignored and all blends are preblended
+at compile time and their final rgb value is outputted to the css.
+
 **Dark mode selector**
 
 `--generator-option 'dark_mode_selector=html[dark]'`

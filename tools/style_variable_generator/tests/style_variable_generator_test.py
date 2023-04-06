@@ -279,6 +279,18 @@ class BlendStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
                                self.expected_output_file)
 
 
+class PreBlendStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
+    def setUp(self):
+        self.generator = CSSStyleGenerator()
+        self.AddJSONFilesToModel(
+            ['colors_test_palette.json5', 'preblend_colors_test.json5'])
+        self.expected_output_file = 'preblend_colors_test_expected.css'
+
+    def testColorTestJSON(self):
+        self.assertEqualToFile(self.generator.Render(),
+                               self.expected_output_file)
+
+
 class InvertedStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
     def setUp(self):
         self.generator = CSSStyleGenerator()
