@@ -9,12 +9,12 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/download/network/network_status_listener_impl.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/download/public/task/mock_task_manager.h"
@@ -84,7 +84,7 @@ class AutoResumptionHandlerTest : public testing::Test {
                         bool allow_metered,
                         bool has_target_file_path = true) {
     ON_CALL(*download, GetGuid())
-        .WillByDefault(ReturnRefOfCopy(base::GenerateGUID()));
+        .WillByDefault(ReturnRefOfCopy(base::GenerateUuid()));
     ON_CALL(*download, GetURL())
         .WillByDefault(ReturnRefOfCopy(GURL("http://example.com/foo")));
     ON_CALL(*download, GetState()).WillByDefault(Return(state));
