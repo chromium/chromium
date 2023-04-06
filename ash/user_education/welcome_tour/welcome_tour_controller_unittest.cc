@@ -5,6 +5,7 @@
 #include "ash/user_education/welcome_tour/welcome_tour_controller.h"
 
 #include <map>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/session/test_session_controller_client.h"
@@ -14,6 +15,10 @@
 #include "ash/user_education/user_education_ash_test_base.h"
 #include "ash/user_education/user_education_constants.h"
 #include "ash/user_education/user_education_types.h"
+#include "ash/user_education/welcome_tour/mock_welcome_tour_controller_observer.h"
+#include "ash/user_education/welcome_tour/welcome_tour_controller_observer.h"
+#include "base/functional/callback.h"
+#include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/account_id/account_id.h"
 #include "components/user_education/common/help_bubble.h"
@@ -32,7 +37,22 @@ using testing::ElementsAre;
 using testing::Eq;
 using testing::Field;
 using testing::Pair;
+using testing::StrictMock;
 using user_education::TutorialDescription;
+
+// Actions ---------------------------------------------------------------------
+
+// TODO(http://b/277094923): Try to promote to //base/test/gmock_move_support.h.
+// Existing support is limited in that the gMock framework provides const-only
+// access to `args` for all except the last action. This action lessens the
+// effect of that limitation by supporting multiple moves at a time.
+template <size_t... I, typename... T>
+auto MoveArgs(T*... out) {
+  return [out...](auto&&... args) {
+    // Assigns the Ith-indexed value from `args` to `out` parameters by move.
+    ([&]() { *out = std::move(std::get<I>(std::tie(args...))); }(), ...);
+  };
+}
 
 // Matchers --------------------------------------------------------------------
 
@@ -101,8 +121,9 @@ TEST_F(WelcomeTourControllerTest, GetTutorialDescriptions) {
 }
 
 // Verifies that the Welcome Tour tutorial is started when the primary user
-// session is first activated and then never again.
-TEST_F(WelcomeTourControllerTest, StartsTutorial) {
+// session is first activated and then never again, as well as that start/end
+// events are propagated to observers appropriately.
+TEST_F(WelcomeTourControllerTest, StartsTutorialAndPropagatesEvents) {
   AccountId primary_account_id = AccountId::FromUserEmail("primary@test");
   AccountId secondary_account_id = AccountId::FromUserEmail("secondary@test");
 
@@ -110,6 +131,12 @@ TEST_F(WelcomeTourControllerTest, StartsTutorial) {
   auto* user_education_delegate = this->user_education_delegate();
   ASSERT_TRUE(user_education_delegate);
   EXPECT_CALL(*user_education_delegate, StartTutorial).Times(0);
+
+  // Observe the `WelcomeTourController` for start/end events.
+  StrictMock<MockWelcomeTourControllerObserver> observer;
+  base::ScopedObservation<WelcomeTourController, WelcomeTourControllerObserver>
+      observation{&observer};
+  observation.Observe(WelcomeTourController::Get());
 
   // Add a primary and secondary user session. This should *not* trigger the
   // Welcome Tour tutorial to start.
@@ -119,14 +146,19 @@ TEST_F(WelcomeTourControllerTest, StartsTutorial) {
       secondary_account_id.GetUserEmail());
 
   // Activate the primary user session. This *should* trigger the Welcome Tour
-  // tutorial to start.
+  // tutorial to start as well as notify observers. Note that completed/aborted
+  // callbacks are cached for later verification.
+  base::OnceClosure ended_callbacks[2u];
   EXPECT_CALL(*user_education_delegate,
               StartTutorial(Eq(primary_account_id),
                             Eq(TutorialId::kWelcomeTourPrototype1),
                             Eq(ui::ElementContext()), /*completed_callback=*/_,
-                            /*aborted_callback=*/_));
+                            /*aborted_callback=*/_))
+      .WillOnce(MoveArgs<3, 4>(&ended_callbacks[0u], &ended_callbacks[1u]));
+  EXPECT_CALL(observer, OnWelcomeTourStarted);
   session_controller_client->SetSessionState(SessionState::ACTIVE);
   testing::Mock::VerifyAndClearExpectations(user_education_delegate);
+  testing::Mock::VerifyAndClearExpectations(&observer);
 
   // Disallow any unexpected tutorial starts.
   EXPECT_CALL(*user_education_delegate, StartTutorial).Times(0);
@@ -140,6 +172,16 @@ TEST_F(WelcomeTourControllerTest, StartsTutorial) {
   // trigger the Welcome Tour tutorial to start.
   session_controller_client->SetSessionState(SessionState::LOCKED);
   session_controller_client->SetSessionState(SessionState::ACTIVE);
+
+  // Verify that the same event is propagated to observers regardless of whether
+  // user education services in the browser indicate the tour was completed or
+  // aborted.
+  for (base::OnceClosure& ended_callback : ended_callbacks) {
+    ASSERT_FALSE(ended_callback.is_null());
+    EXPECT_CALL(observer, OnWelcomeTourEnded);
+    std::move(ended_callback).Run();
+    testing::Mock::VerifyAndClearExpectations(&observer);
+  }
 }
 
 }  // namespace ash

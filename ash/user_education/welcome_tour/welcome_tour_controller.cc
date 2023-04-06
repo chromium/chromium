@@ -11,6 +11,7 @@
 #include "ash/user_education/user_education_controller.h"
 #include "ash/user_education/user_education_types.h"
 #include "ash/user_education/user_education_util.h"
+#include "ash/user_education/welcome_tour/welcome_tour_controller_observer.h"
 #include "base/check_op.h"
 #include "components/user_education/common/tutorial_description.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -41,6 +42,16 @@ WelcomeTourController::~WelcomeTourController() {
 // static
 WelcomeTourController* WelcomeTourController::Get() {
   return g_instance;
+}
+
+void WelcomeTourController::AddObserver(
+    WelcomeTourControllerObserver* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void WelcomeTourController::RemoveObserver(
+    WelcomeTourControllerObserver* observer) {
+  observer_list_.RemoveObserver(observer);
 }
 
 // TODO(http://b/275616974): Implement tutorial descriptions.
@@ -124,11 +135,50 @@ void WelcomeTourController::MaybeStartTutorial() {
   session_observation_.Reset();
 
   // TODO(http://b/275616974): Use production context after registering views.
+  // NOTE: It is theoretically possible for the tutorial to outlive `this`
+  // controller during the destruction sequence.
   UserEducationController::Get()->StartTutorial(
       UserEducationPrivateApiKey(), TutorialId::kWelcomeTourPrototype1,
       ui::ElementContext(),
-      /*completed_callback=*/base::DoNothing(),
-      /*aborted_callback=*/base::DoNothing());
+      /*completed_callback=*/
+      base::BindOnce(&WelcomeTourController::OnWelcomeTourEnded,
+                     weak_ptr_factory_.GetWeakPtr()),
+      /*aborted_callback=*/
+      base::BindOnce(&WelcomeTourController::OnWelcomeTourEnded,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  // The attempt to start the tutorial above is guaranteed to succeed or crash.
+  // If this line of code is reached, the tutorial has indeed been started.
+  OnWelcomeTourStarted();
+}
+
+// TODO(http://b/277091650): Show scrim.
+// TODO(http://b/277091006): Stabilize app launches.
+// TODO(http://b/277091067): Stabilize apps in launcher.
+// TODO(http://b/277091443): Stabilize apps in shelf.
+// TODO(http://b/277091733): Stabilize continue section in launcher.
+// TODO(http://b/277091715): Stabilize pods in shelf.
+// TODO(http://b/277091619): Stabilize wallpaper.
+// TODO(http://b/277091643): Stabilize notifications.
+// TODO(http://b/277091624): Stabilize nudges/toasts.
+void WelcomeTourController::OnWelcomeTourStarted() {
+  for (auto& observer : observer_list_) {
+    observer.OnWelcomeTourStarted();
+  }
+}
+// TODO(http://b/277091650): Hide scrim.
+// TODO(http://b/277091006): Restore app launches.
+// TODO(http://b/277091067): Restore apps in launcher.
+// TODO(http://b/277091443): Restore apps in shelf.
+// TODO(http://b/277091733): Restore continue section in launcher.
+// TODO(http://b/277091715): Restore pods in shelf.
+// TODO(http://b/277091619): Restore wallpaper.
+// TODO(http://b/277091643): Restore notifications.
+// TODO(http://b/277091624): Restore nudges/toasts.
+void WelcomeTourController::OnWelcomeTourEnded() {
+  for (auto& observer : observer_list_) {
+    observer.OnWelcomeTourEnded();
+  }
 }
 
 }  // namespace ash
