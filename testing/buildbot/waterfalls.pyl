@@ -4443,14 +4443,14 @@
         'skip_merge_script': True,
         'use_swarming': False,
         'mixins': [
-          'chromeos-kevin-skylab',
           'limited_capacity_bot',
+          'long_skylab_timeout',
         ],
         'test_suites': {
           # There should be the same gtests here as on the normal kevin bot,
           # but mixing test types on a single bot is not supported in Skylab
           # yet.
-          'skylab_gpu_telemetry_tests': 'gpu_fyi_chromeos_release_telemetry_tests',
+          'skylab_gpu_telemetry_tests': 'gpu_fyi_chromeos_release_telemetry_tests_skylab',
         },
       },
       'GPU FYI Android arm Builder': {},

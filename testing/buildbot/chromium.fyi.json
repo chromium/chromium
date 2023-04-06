@@ -31755,7 +31755,7 @@
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin64-public/R114-15410.0.0",
-        "name": "lacros_all_tast_tests KEVIN_PUBLIC_LKGM",
+        "name": "lacros_all_tast_tests KEVIN64_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -31765,7 +31765,7 @@
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
         "timeout_sec": 10800,
-        "variant_id": "KEVIN_PUBLIC_LKGM"
+        "variant_id": "KEVIN64_PUBLIC_LKGM"
       }
     ]
   },
@@ -31815,7 +31815,7 @@
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin64-public/R114-15410.0.0",
-        "name": "lacros_all_tast_tests KEVIN_PUBLIC_LKGM",
+        "name": "lacros_all_tast_tests KEVIN64_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -31825,7 +31825,7 @@
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
         "timeout_sec": 10800,
-        "variant_id": "KEVIN_PUBLIC_LKGM"
+        "variant_id": "KEVIN64_PUBLIC_LKGM"
       }
     ]
   },
