@@ -109,11 +109,13 @@ robolectric_library("junit") {
   deps = [
     ":java",
     ":test_java",
+    "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/android:chrome_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/ui/android/fast_checkout:java",
+    "//chrome/test/android:chrome_java_test_support_common",
     "//components/browser_ui/bottomsheet/android:java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",

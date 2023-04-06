@@ -7,6 +7,7 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   deps = [
     "//base:jni_java",
+    "//chrome/browser/flags:java",
     "//components/autofill/android:autofill_payments_java_resources",
     "//components/autofill/android:main_autofill_java",
     "//components/browser_ui/bottomsheet/android:java",

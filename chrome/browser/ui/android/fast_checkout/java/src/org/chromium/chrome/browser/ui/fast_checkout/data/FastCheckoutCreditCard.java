@@ -8,6 +8,7 @@ import android.content.Context;
 import android.util.ArrayMap;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.fast_checkout.R;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.url.GURL;
@@ -21,8 +22,11 @@ public class FastCheckoutCreditCard {
     // Mappings from name: chrome/browser/ui/autofill/autofill_popup_controller_utils.cc
     // Mappings to resource: chrome/browser/android/resource_id.h
     private static final Map<String, Integer> sResourceMap;
+    private static final Map<String, Integer> sResourceMetadataMap;
     static {
         Map<String, Integer> map = new ArrayMap<>();
+        Map<String, Integer> metadataMap = new ArrayMap<>();
+
         map.put("americanExpressCC", R.drawable.amex_card);
         map.put("dinersCC", R.drawable.diners_card);
         map.put("discoverCC", R.drawable.discover_card);
@@ -35,7 +39,22 @@ public class FastCheckoutCreditCard {
         map.put("unionPayCC", R.drawable.unionpay_card);
         map.put("visaCC", R.drawable.visa_card);
         map.put("googlePay", R.drawable.google_pay);
+
+        metadataMap.put("americanExpressCC", R.drawable.amex_metadata_card);
+        metadataMap.put("dinersCC", R.drawable.diners_metadata_card);
+        metadataMap.put("discoverCC", R.drawable.discover_metadata_card);
+        metadataMap.put("eloCC", R.drawable.elo_metadata_card);
+        metadataMap.put("genericCC", R.drawable.ic_metadata_credit_card);
+        metadataMap.put("jcbCC", R.drawable.jcb_metadata_card);
+        metadataMap.put("masterCardCC", R.drawable.mc_metadata_card);
+        metadataMap.put("mirCC", R.drawable.mir_metadata_card);
+        metadataMap.put("troyCC", R.drawable.troy_metadata_card);
+        metadataMap.put("unionPayCC", R.drawable.unionpay_metadata_card);
+        metadataMap.put("visaCC", R.drawable.visa_metadata_card);
+        metadataMap.put("googlePay", R.drawable.google_pay);
+
         sResourceMap = map;
+        sResourceMetadataMap = metadataMap;
     }
     private final String mGUID;
     private final String mOrigin;
@@ -178,10 +197,16 @@ public class FastCheckoutCreditCard {
 
     public int getIssuerIconDrawableId() {
         String issuerIconDrawable = getIssuerIconString();
-        if (sResourceMap.containsKey(issuerIconDrawable)) {
-            return sResourceMap.get(issuerIconDrawable);
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
+            if (sResourceMetadataMap.containsKey(issuerIconDrawable)) {
+                return sResourceMetadataMap.get(issuerIconDrawable);
+            }
         } else {
-            return R.drawable.ic_credit_card_black;
+            if (sResourceMap.containsKey(issuerIconDrawable)) {
+                return sResourceMap.get(issuerIconDrawable);
+            }
         }
+        return R.drawable.ic_credit_card_black;
     }
 }
