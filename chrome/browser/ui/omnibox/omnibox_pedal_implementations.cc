@@ -1951,7 +1951,8 @@ const gfx::VectorIcon& GetSharingHubVectorIcon() {
   return features::IsChromeRefresh2023() ? omnibox::kShareMacChromeRefreshIcon
                                          : omnibox::kShareMacIcon;
 #elif BUILDFLAG(IS_WIN)
-  return omnibox::kShareWinIcon;
+  return features::IsChromeRefresh2023() ? omnibox::kShareWinChromeRefreshIcon
+                                         : omnibox::kShareWinIcon;
 #elif BUILDFLAG(IS_LINUX)
   return features::IsChromeRefresh2023() ? omnibox::kShareLinuxChromeRefreshIcon
                                          : omnibox::kShareIcon;

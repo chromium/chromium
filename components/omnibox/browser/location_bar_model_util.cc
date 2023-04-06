@@ -30,7 +30,9 @@ const gfx::VectorIcon& GetSecurityVectorIcon(
     case security_state::SECURE: {
       return use_updated_connection_security_indicators
                  ? vector_icons::kHttpsValidArrowIcon
-                 : vector_icons::kHttpsValidIcon;
+                 : (features::IsChromeRefresh2023()
+                        ? omnibox::kSecurePageInfoChromeRefreshIcon
+                        : vector_icons::kHttpsValidIcon);
     }
     case security_state::SECURE_WITH_POLICY_INSTALLED_CERT:
       return features::IsChromeRefresh2023()
