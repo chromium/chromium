@@ -35,6 +35,7 @@ source_set("cells") {
   deps = [
     ":public",
     "//components/autofill/core/browser",
+    "//components/password_manager/core/common:features",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/features",
@@ -43,6 +44,7 @@ source_set("cells") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/authentication:authentication_constants",
     "//ios/chrome/browser/ui/icons",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/table_view:cells_constants",

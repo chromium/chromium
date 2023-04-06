@@ -56,7 +56,6 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
-#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
@@ -176,70 +175,6 @@ bool AreStoresEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
       AreStoresEqual<base::span<const password_manager::CredentialUIEntry>>,
       &password_manager::AffiliatedGroup::GetCredentials,
       &password_manager::AffiliatedGroup::GetCredentials);
-}
-
-// The size of trailing symbol icons for safe/insecure state. Used when
-// kIOSPasswordCheckup feature is disabled.
-constexpr NSInteger kTrailingSymbolSizeWithoutCheckup = 18;
-
-// The size of trailing symbol icons for safe/insecure state. Used when
-// kIOSPasswordCheckup feature is enabled.
-constexpr NSInteger kTrailingSymbolSize = 22;
-
-// Returns the correct trailing symbol size depending on whether
-// kIOSPasswordCheckup is enabled or not.
-NSInteger GetTrailingSymbolSize() {
-  return IsPasswordCheckupEnabled() ? kTrailingSymbolSize
-                                    : kTrailingSymbolSizeWithoutCheckup;
-}
-
-// Helper method to get the right trailing image for the Password Check cell
-// depending on the check state.
-UIImage* GetPasswordCheckStatusTrailingImage(
-    PasswordCheckUIState passwordCheckState) {
-  switch (passwordCheckState) {
-    case PasswordCheckStateUnmutedCompromisedPasswords:
-      return DefaultSymbolTemplateWithPointSize(IsPasswordCheckupEnabled()
-                                                    ? kErrorCircleFillSymbol
-                                                    : kWarningFillSymbol,
-                                                GetTrailingSymbolSize());
-    case PasswordCheckStateReusedPasswords:
-    case PasswordCheckStateWeakPasswords:
-    case PasswordCheckStateDismissedWarnings:
-      return DefaultSymbolTemplateWithPointSize(kErrorCircleFillSymbol,
-                                                GetTrailingSymbolSize());
-    case PasswordCheckStateSafe:
-      return DefaultSymbolTemplateWithPointSize(kCheckmarkCircleFillSymbol,
-                                                GetTrailingSymbolSize());
-    case PasswordCheckStateDefault:
-    case PasswordCheckStateRunning:
-    case PasswordCheckStateDisabled:
-    case PasswordCheckStateError:
-      return nil;
-  }
-}
-
-// Helper method to get the right tint color for the Password Check cell's
-// trailing image depending on the check state.
-UIColor* GetPasswordCheckStatusTrailingImageTintColor(
-    PasswordCheckUIState passwordCheckState) {
-  switch (passwordCheckState) {
-    case PasswordCheckStateUnmutedCompromisedPasswords:
-      return [UIColor
-          colorNamed:IsPasswordGroupingEnabled() ? kRed500Color : kRedColor];
-    case PasswordCheckStateReusedPasswords:
-    case PasswordCheckStateWeakPasswords:
-    case PasswordCheckStateDismissedWarnings:
-      return [UIColor colorNamed:kYellow500Color];
-    case PasswordCheckStateSafe:
-      return [UIColor
-          colorNamed:IsPasswordCheckupEnabled() ? kGreen500Color : kGreenColor];
-    case PasswordCheckStateDefault:
-    case PasswordCheckStateRunning:
-    case PasswordCheckStateDisabled:
-    case PasswordCheckStateError:
-      return nil;
-  }
 }
 
 }  // namespace
@@ -1444,10 +1379,8 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
   if (!_passwordProblemsItem)
     return;
 
-  _passwordProblemsItem.trailingImage =
-      GetPasswordCheckStatusTrailingImage(state);
-  _passwordProblemsItem.trailingImageTintColor =
-      GetPasswordCheckStatusTrailingImageTintColor(state);
+  _passwordProblemsItem.trailingImage = nil;
+  _passwordProblemsItem.trailingImageTintColor = nil;
   _passwordProblemsItem.enabled = !self.editing;
   _passwordProblemsItem.indicatorHidden = YES;
   _passwordProblemsItem.infoButtonHidden = YES;
@@ -1486,18 +1419,30 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
           base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
               IDS_IOS_PASSWORD_CHECKUP_COMPROMISED_COUNT,
               self.insecurePasswordsCount));
+      _passwordProblemsItem.warningState = WarningState::kSevereWarning;
+
+      // The red tint color for the compromised password warning here depends on
+      // the Password Grouping feature (which will be enabled before Password
+      // Checkup). Overriding the tint color set by setting the item's warning
+      // state to make sure it is the correct one for the Password Grouping
+      // feature. TODO(crbug.com/1406871): Remove line when kIOSPasswordCheckup
+      // is enabled by default.
+      _passwordProblemsItem.trailingImageTintColor = [UIColor
+          colorNamed:IsPasswordGroupingEnabled() ? kRed500Color : kRedColor];
       break;
     }
     case PasswordCheckStateReusedPasswords: {
       _passwordProblemsItem.detailText = l10n_util::GetNSStringF(
           IDS_IOS_PASSWORD_CHECKUP_REUSED_COUNT,
           base::NumberToString16(self.insecurePasswordsCount));
+      _passwordProblemsItem.warningState = WarningState::kWarning;
       break;
     }
     case PasswordCheckStateWeakPasswords: {
       _passwordProblemsItem.detailText = base::SysUTF16ToNSString(
           l10n_util::GetPluralStringFUTF16(IDS_IOS_PASSWORD_CHECKUP_WEAK_COUNT,
                                            self.insecurePasswordsCount));
+      _passwordProblemsItem.warningState = WarningState::kWarning;
       break;
     }
     case PasswordCheckStateDismissedWarnings: {
@@ -1505,6 +1450,7 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
           base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
               IDS_IOS_PASSWORD_CHECKUP_DISMISSED_COUNT,
               self.insecurePasswordsCount));
+      _passwordProblemsItem.warningState = WarningState::kWarning;
       break;
     }
     case PasswordCheckStateSafe: {
@@ -1513,6 +1459,7 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
               ? [self.delegate formattedElapsedTimeSinceLastCheck]
               : base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
                     IDS_IOS_PASSWORD_CHECKUP_COMPROMISED_COUNT, 0));
+      _passwordProblemsItem.warningState = WarningState::kSafe;
       break;
     }
     case PasswordCheckStateDefault:

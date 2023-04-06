@@ -74,22 +74,6 @@ namespace {
 // The size of leading symbol icons.
 constexpr NSInteger kLeadingSymbolImagePointSize = 22;
 
-// The size of trailing symbol icons. Used when kIOSPasswordCheckup feature is
-// disabled.
-constexpr NSInteger kTrailingSymbolImagePointSizeWithoutCheckup = 18;
-
-// The size of trailing symbol icons. Used when kIOSPasswordCheckup feature is
-// enabled.
-constexpr NSInteger kTrailingSymbolImagePointSize = 22;
-
-// Returns the correct trailing symbol size depending on whether
-// kIOSPasswordCheckup is enabled or not.
-NSInteger GetTrailingSymbolSize() {
-  return IsPasswordCheckupEnabled()
-             ? kTrailingSymbolImagePointSize
-             : kTrailingSymbolImagePointSizeWithoutCheckup;
-}
-
 constexpr char kSafetyCheckMetricsUpdates[] =
     "Settings.SafetyCheck.UpdatesResult";
 constexpr char kSafetyCheckMetricsPasswords[] =
@@ -153,58 +137,6 @@ bool IsPasswordCheckItemTappable(
     case PasswordCheckRowStateDisabled:
     case PasswordCheckRowStateError:
       return false;
-  }
-}
-
-// Sets up the given item's trailing icon and its tint color depending on the
-// `item_state`.
-void SetUpTrailingIconImage(SettingsCheckItem* item,
-                            ItemWarningState item_state) {
-  NSString* symbol_name;
-  NSString* color_name;
-  switch (item_state) {
-    case ItemWarningState::kSafe:
-      symbol_name = kCheckmarkCircleFillSymbol;
-      color_name = IsPasswordCheckupEnabled() ? kGreen500Color : kGreenColor;
-      break;
-    case ItemWarningState::kWarning:
-      symbol_name = kErrorCircleFillSymbol;
-      color_name = kYellow500Color;
-      break;
-    case ItemWarningState::kSevereWarning:
-      symbol_name = IsPasswordCheckupEnabled() ? kErrorCircleFillSymbol
-                                               : kWarningFillSymbol;
-      color_name = IsPasswordCheckupEnabled() ? kRed500Color : kRedColor;
-      break;
-  }
-  item.trailingImage =
-      DefaultSymbolTemplateWithPointSize(symbol_name, GetTrailingSymbolSize());
-  item.trailingImageTintColor = [UIColor colorNamed:color_name];
-}
-
-// Sets up the trailing icon image of the password check item depending on the
-// `password_check_row_state`.
-void SetUpTrailingIconImageOfPasswordCheckItem(
-    SettingsCheckItem* password_check_item,
-    PasswordCheckRowStates password_check_row_state) {
-  switch (password_check_row_state) {
-    case PasswordCheckRowStateSafe:
-      SetUpTrailingIconImage(password_check_item, ItemWarningState::kSafe);
-      break;
-    case PasswordCheckRowStateUnmutedCompromisedPasswords:
-      SetUpTrailingIconImage(password_check_item,
-                             ItemWarningState::kSevereWarning);
-      break;
-    case PasswordCheckRowStateReusedPasswords:
-    case PasswordCheckRowStateWeakPasswords:
-    case PasswordCheckRowStateDismissedWarnings:
-      SetUpTrailingIconImage(password_check_item, ItemWarningState::kWarning);
-      break;
-    case PasswordCheckRowStateDefault:
-    case PasswordCheckRowStateRunning:
-    case PasswordCheckRowStateDisabled:
-    case PasswordCheckRowStateError:
-      return;
   }
 }
 
@@ -1129,16 +1061,15 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
       break;
     }
     case UpdateCheckRowStateUpToDate: {
-      SetUpTrailingIconImage(self.updateCheckItem, ItemWarningState::kSafe);
       self.updateCheckItem.detailText =
           GetNSString(IDS_IOS_SETTINGS_SAFETY_CHECK_UPDATES_UP_TO_DATE_DESC);
+      self.updateCheckItem.warningState = WarningState::kSafe;
       break;
     }
     case UpdateCheckRowStateOutOfDate: {
-      SetUpTrailingIconImage(self.updateCheckItem,
-                             ItemWarningState::kSevereWarning);
       self.updateCheckItem.detailText =
           GetNSString(IDS_IOS_SETTINGS_SAFETY_CHECK_UPDATES_OUT_OF_DATE_DESC);
+      self.updateCheckItem.warningState = WarningState::kSevereWarning;
       self.updateCheckItem.accessoryType =
           UITableViewCellAccessoryDisclosureIndicator;
       break;
@@ -1190,9 +1121,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
   // Reset state to prevent conflicts.
   ResetSettingsCheckItem(self.passwordCheckItem);
 
-  // Set the trailing icon image and the accessory type.
-  SetUpTrailingIconImageOfPasswordCheckItem(self.passwordCheckItem,
-                                            self.passwordCheckRowState);
+  // Set the accessory type.
   if (IsPasswordCheckItemTappable(self.passwordCheckRowState)) {
     self.passwordCheckItem.accessoryType =
         UITableViewCellAccessoryDisclosureIndicator;
@@ -1220,7 +1149,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
       self.passwordCheckItem.detailText =
           base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
               IDS_IOS_PASSWORD_CHECKUP_COMPROMISED_COUNT, 0));
-      SetUpTrailingIconImage(self.passwordCheckItem, ItemWarningState::kSafe);
+      self.passwordCheckItem.warningState = WarningState::kSafe;
       break;
     }
     case PasswordCheckRowStateUnmutedCompromisedPasswords: {
@@ -1234,6 +1163,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
           base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
               IDS_IOS_PASSWORD_CHECKUP_COMPROMISED_COUNT,
               compromisedPasswordCount));
+      self.passwordCheckItem.warningState = WarningState::kSevereWarning;
       break;
     }
     case PasswordCheckRowStateReusedPasswords: {
@@ -1243,6 +1173,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
       self.passwordCheckItem.detailText =
           l10n_util::GetNSStringF(IDS_IOS_PASSWORD_CHECKUP_REUSED_COUNT,
                                   base::NumberToString16(reusedPasswordCount));
+      self.passwordCheckItem.warningState = WarningState::kWarning;
       break;
     }
     case PasswordCheckRowStateWeakPasswords: {
@@ -1252,6 +1183,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
       self.passwordCheckItem.detailText =
           base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
               IDS_IOS_PASSWORD_CHECKUP_WEAK_COUNT, weakPasswordCount));
+      self.passwordCheckItem.warningState = WarningState::kWarning;
       break;
     }
     case PasswordCheckRowStateDismissedWarnings: {
@@ -1261,6 +1193,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
       self.passwordCheckItem.detailText =
           base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
               IDS_IOS_PASSWORD_CHECKUP_DISMISSED_COUNT, dismissedWarningCount));
+      self.passwordCheckItem.warningState = WarningState::kWarning;
       break;
     }
     case PasswordCheckRowStateDisabled:
@@ -1301,10 +1234,9 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
       break;
     }
     case SafeBrowsingCheckRowStateSafe: {
-      SetUpTrailingIconImage(self.safeBrowsingCheckItem,
-                             ItemWarningState::kSafe);
       self.safeBrowsingCheckItem.detailText =
           [self safeBrowsingCheckItemDetailText];
+      self.safeBrowsingCheckItem.warningState = WarningState::kSafe;
       if (safe_browsing::GetSafeBrowsingState(*self.userPrefService) ==
           safe_browsing::SafeBrowsingState::STANDARD_PROTECTION) {
         self.safeBrowsingCheckItem.accessoryType =
@@ -1313,12 +1245,11 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
       break;
     }
     case SafeBrowsingCheckRowStateUnsafe: {
-      SetUpTrailingIconImage(self.safeBrowsingCheckItem,
-                             ItemWarningState::kSevereWarning);
-      self.safeBrowsingCheckItem.accessoryType =
-          UITableViewCellAccessoryDisclosureIndicator;
       self.safeBrowsingCheckItem.detailText = GetNSString(
           IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_DISABLED_DESC);
+      self.safeBrowsingCheckItem.warningState = WarningState::kSevereWarning;
+      self.safeBrowsingCheckItem.accessoryType =
+          UITableViewCellAccessoryDisclosureIndicator;
       break;
     }
   }

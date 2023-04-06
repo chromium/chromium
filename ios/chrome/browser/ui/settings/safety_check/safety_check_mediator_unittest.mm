@@ -83,21 +83,8 @@ typedef NS_ENUM(NSInteger, SafetyCheckItemType) {
   TimestampFooterItem,
 };
 
-// The size of trailing symbol icons when kIOSPasswordCheckup feature is
-// disabled.
-NSInteger kTrailingSymbolImagePointSizeWithoutCheckup = 18;
-
-// The size of trailing symbol icons when kIOSPasswordCheckup feature is
-// enabled.
+// The size of trailing symbol icons.
 NSInteger kTrailingSymbolImagePointSize = 22;
-
-// Returns the correct trailing symbol size depending on whether
-// kIOSPasswordCheckup is enabled or not.
-NSInteger GetTrailingSymbolSize() {
-  return IsPasswordCheckupEnabled()
-             ? kTrailingSymbolImagePointSize
-             : kTrailingSymbolImagePointSizeWithoutCheckup;
-}
 
 // Registers account preference that will be used for Safe Browsing.
 PrefService* SetPrefService() {
@@ -111,21 +98,21 @@ PrefService* SetPrefService() {
 // The image when the state is safe.
 UIImage* SafeImage() {
   return DefaultSymbolTemplateWithPointSize(kCheckmarkCircleFillSymbol,
-                                            GetTrailingSymbolSize());
+                                            kTrailingSymbolImagePointSize);
 }
 
 // The image when there are reused passwords, weak passwords or dismissed
 // compromised password warnings.
 UIImage* WarningImage() {
   return DefaultSymbolTemplateWithPointSize(kErrorCircleFillSymbol,
-                                            GetTrailingSymbolSize());
+                                            kTrailingSymbolImagePointSize);
 }
 
 // The image when the state is unsafe.
 UIImage* UnsafeImage() {
   return DefaultSymbolTemplateWithPointSize(
       IsPasswordCheckupEnabled() ? kErrorCircleFillSymbol : kWarningFillSymbol,
-      GetTrailingSymbolSize());
+      kTrailingSymbolImagePointSize);
 }
 
 // The color when the state is safe.

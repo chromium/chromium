@@ -50,7 +50,6 @@ source_set("password_checkup_ui") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/common/ui/colors",

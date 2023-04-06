@@ -773,8 +773,8 @@ TEST_F(PasswordManagerViewControllerTest, FilterItems) {
 TEST_F(PasswordManagerViewControllerTest,
        PasswordCheckStateDisabledWithoutKIOSPasswordCheckup) {
   // Disable Password Checkup feature.
-  base::test::ScopedFeatureList featureList;
-  featureList.InitAndDisableFeature(
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
       password_manager::features::kIOSPasswordCheckup);
 
   AddSavedForm1();
@@ -810,8 +810,7 @@ TEST_F(PasswordManagerViewControllerTest,
 TEST_F(PasswordManagerViewControllerTest,
        PasswordCheckStateDisabledWithKIOSPasswordCheckup) {
   // Enable Password Checkup feature.
-  base::test::ScopedFeatureList featureList;
-  featureList.InitAndEnableFeature(
+  base::test::ScopedFeatureList feature_list(
       password_manager::features::kIOSPasswordCheckup);
 
   AddSavedForm1();
@@ -847,8 +846,8 @@ TEST_F(PasswordManagerViewControllerTest,
 TEST_F(PasswordManagerViewControllerTest,
        PasswordCheckStateDefaultWithoutKIOSPasswordCheckup) {
   // Disable Password Checkup feature.
-  base::test::ScopedFeatureList featureList;
-  featureList.InitAndDisableFeature(
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
       password_manager::features::kIOSPasswordCheckup);
 
   AddSavedForm1();
@@ -884,8 +883,7 @@ TEST_F(PasswordManagerViewControllerTest,
 TEST_F(PasswordManagerViewControllerTest,
        PasswordCheckStateDefaultWithKIOSPasswordCheckup) {
   // Enable Password Checkup feature.
-  base::test::ScopedFeatureList featureList;
-  featureList.InitAndEnableFeature(
+  base::test::ScopedFeatureList feature_list(
       password_manager::features::kIOSPasswordCheckup);
 
   AddSavedForm1();
@@ -921,8 +919,8 @@ TEST_F(PasswordManagerViewControllerTest,
 TEST_F(PasswordManagerViewControllerTest,
        PasswordCheckStateSafeWithoutKIOSPasswordCheckup) {
   // Disable Password Checkup feature.
-  base::test::ScopedFeatureList featureList;
-  featureList.InitAndDisableFeature(
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
       password_manager::features::kIOSPasswordCheckup);
 
   AddSavedForm1();
@@ -939,6 +937,8 @@ TEST_F(PasswordManagerViewControllerTest,
   EXPECT_TRUE(checkPassword.enabled);
   EXPECT_TRUE(checkPassword.indicatorHidden);
   EXPECT_TRUE(checkPassword.trailingImage);
+  EXPECT_TRUE([checkPassword.trailingImageTintColor
+      isEqual:[UIColor colorNamed:kGreenColor]]);
   EXPECT_FALSE(checkPassword.accessoryType);
 
   SetEditing(true);
@@ -958,8 +958,7 @@ TEST_F(PasswordManagerViewControllerTest,
 TEST_F(PasswordManagerViewControllerTest,
        PasswordCheckStateSafeWithKIOSPasswordCheckup) {
   // Enable Password Checkup feature.
-  base::test::ScopedFeatureList featureList;
-  featureList.InitAndEnableFeature(
+  base::test::ScopedFeatureList feature_list(
       password_manager::features::kIOSPasswordCheckup);
 
   AddSavedForm1();
@@ -980,6 +979,8 @@ TEST_F(PasswordManagerViewControllerTest,
   EXPECT_TRUE(checkPassword.enabled);
   EXPECT_TRUE(checkPassword.indicatorHidden);
   EXPECT_TRUE(checkPassword.trailingImage);
+  EXPECT_TRUE([checkPassword.trailingImageTintColor
+      isEqual:[UIColor colorNamed:kGreen500Color]]);
   EXPECT_TRUE(checkPassword.accessoryType);
 
   SetEditing(true);
@@ -1001,10 +1002,12 @@ TEST_F(PasswordManagerViewControllerTest,
 TEST_F(
     PasswordManagerViewControllerTest,
     PasswordCheckStateUnmutedCompromisedPasswordsWithoutKIOSPasswordCheckup) {
-  // Disable Password Checkup feature.
-  base::test::ScopedFeatureList featureList;
-  featureList.InitAndDisableFeature(
-      password_manager::features::kIOSPasswordCheckup);
+  // Disable Password Checkup and enable Password Grouping features (Password
+  // Grouping is needed to get the right trailing image tint color).
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{password_manager::features::kPasswordsGrouping},
+      /*disabled_features=*/{password_manager::features::kIOSPasswordCheckup});
 
   AddSavedInsecureForm(InsecureType::kLeaked);
   ChangePasswordCheckState(PasswordCheckStateUnmutedCompromisedPasswords);
@@ -1019,6 +1022,8 @@ TEST_F(
   EXPECT_TRUE(checkPassword.enabled);
   EXPECT_TRUE(checkPassword.indicatorHidden);
   EXPECT_TRUE(checkPassword.trailingImage);
+  EXPECT_TRUE([checkPassword.trailingImageTintColor
+      isEqual:[UIColor colorNamed:kRed500Color]]);
   EXPECT_TRUE(checkPassword.accessoryType);
 
   SetEditing(true);
@@ -1039,10 +1044,13 @@ TEST_F(
 // kIOSPasswordCheckup feature enabled.
 TEST_F(PasswordManagerViewControllerTest,
        PasswordCheckStateUnmutedCompromisedPasswordsWithKIOSPasswordCheckup) {
-  // Enable Password Checkup feature.
-  base::test::ScopedFeatureList featureList;
-  featureList.InitAndEnableFeature(
-      password_manager::features::kIOSPasswordCheckup);
+  // Enable Password Checkup and Password Grouping features (Password Grouping
+  // is needed to get the right trailing image tint color).
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{password_manager::features::kIOSPasswordCheckup,
+                            password_manager::features::kPasswordsGrouping},
+      /*disabled_features=*/{});
 
   AddSavedInsecureForm(InsecureType::kLeaked);
   ChangePasswordCheckState(PasswordCheckStateUnmutedCompromisedPasswords);
@@ -1059,6 +1067,8 @@ TEST_F(PasswordManagerViewControllerTest,
   EXPECT_TRUE(checkPassword.enabled);
   EXPECT_TRUE(checkPassword.indicatorHidden);
   EXPECT_TRUE(checkPassword.trailingImage);
+  EXPECT_TRUE([checkPassword.trailingImageTintColor
+      isEqual:[UIColor colorNamed:kRed500Color]]);
   EXPECT_TRUE(checkPassword.accessoryType);
 
   SetEditing(true);
@@ -1078,8 +1088,7 @@ TEST_F(PasswordManagerViewControllerTest,
 // Test verifies reused state of password check cell.
 TEST_F(PasswordManagerViewControllerTest, PasswordCheckStateReusedPasswords) {
   // Enable Password Checkup feature.
-  base::test::ScopedFeatureList featureList;
-  featureList.InitAndEnableFeature(
+  base::test::ScopedFeatureList feature_list(
       password_manager::features::kIOSPasswordCheckup);
 
   AddSavedInsecureForm(InsecureType::kReused);
@@ -1100,6 +1109,8 @@ TEST_F(PasswordManagerViewControllerTest, PasswordCheckStateReusedPasswords) {
   EXPECT_TRUE(checkPassword.enabled);
   EXPECT_TRUE(checkPassword.indicatorHidden);
   EXPECT_TRUE(checkPassword.trailingImage);
+  EXPECT_TRUE([checkPassword.trailingImageTintColor
+      isEqual:[UIColor colorNamed:kYellow500Color]]);
   EXPECT_TRUE(checkPassword.accessoryType);
 
   SetEditing(true);
@@ -1119,8 +1130,7 @@ TEST_F(PasswordManagerViewControllerTest, PasswordCheckStateReusedPasswords) {
 // Test verifies weak state of password check cell.
 TEST_F(PasswordManagerViewControllerTest, PasswordCheckStateWeakPasswords) {
   // Enable Password Checkup feature.
-  base::test::ScopedFeatureList featureList;
-  featureList.InitAndEnableFeature(
+  base::test::ScopedFeatureList feature_list(
       password_manager::features::kIOSPasswordCheckup);
 
   AddSavedInsecureForm(InsecureType::kWeak);
@@ -1138,6 +1148,8 @@ TEST_F(PasswordManagerViewControllerTest, PasswordCheckStateWeakPasswords) {
   EXPECT_TRUE(checkPassword.enabled);
   EXPECT_TRUE(checkPassword.indicatorHidden);
   EXPECT_TRUE(checkPassword.trailingImage);
+  EXPECT_TRUE([checkPassword.trailingImageTintColor
+      isEqual:[UIColor colorNamed:kYellow500Color]]);
   EXPECT_TRUE(checkPassword.accessoryType);
 
   SetEditing(true);
@@ -1158,8 +1170,7 @@ TEST_F(PasswordManagerViewControllerTest, PasswordCheckStateWeakPasswords) {
 TEST_F(PasswordManagerViewControllerTest,
        PasswordCheckStateDismissedPasswords) {
   // Enable Password Checkup feature.
-  base::test::ScopedFeatureList featureList;
-  featureList.InitAndEnableFeature(
+  base::test::ScopedFeatureList feature_list(
       password_manager::features::kIOSPasswordCheckup);
 
   AddSavedInsecureForm(InsecureType::kLeaked, /*is_muted=*/true);
@@ -1177,6 +1188,8 @@ TEST_F(PasswordManagerViewControllerTest,
   EXPECT_TRUE(checkPassword.enabled);
   EXPECT_TRUE(checkPassword.indicatorHidden);
   EXPECT_TRUE(checkPassword.trailingImage);
+  EXPECT_TRUE([checkPassword.trailingImageTintColor
+      isEqual:[UIColor colorNamed:kYellow500Color]]);
   EXPECT_TRUE(checkPassword.accessoryType);
 
   SetEditing(true);
@@ -1198,8 +1211,8 @@ TEST_F(PasswordManagerViewControllerTest,
 TEST_F(PasswordManagerViewControllerTest,
        PasswordCheckStateRunningWithoutKIOSPasswordCheckup) {
   // Disable Password Checkup feature.
-  base::test::ScopedFeatureList featureList;
-  featureList.InitAndDisableFeature(
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
       password_manager::features::kIOSPasswordCheckup);
 
   AddSavedForm1();
@@ -1236,8 +1249,8 @@ TEST_F(PasswordManagerViewControllerTest,
 TEST_F(PasswordManagerViewControllerTest,
        PasswordCheckStateRunningWithKIOSPasswordCheckup) {
   // Enable Password Checkup and Password Grouping features.
-  base::test::ScopedFeatureList featureList;
-  featureList.InitWithFeatures(
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
       /*enabled_features=*/{password_manager::features::kIOSPasswordCheckup,
                             password_manager::features::kPasswordsGrouping},
       /*disabled_features=*/{});
@@ -1277,8 +1290,8 @@ TEST_F(PasswordManagerViewControllerTest,
 TEST_F(PasswordManagerViewControllerTest,
        PasswordCheckStateErrorWithoutKIOSPasswordCheckup) {
   // Disable Password Checkup feature.
-  base::test::ScopedFeatureList featureList;
-  featureList.InitAndDisableFeature(
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
       password_manager::features::kIOSPasswordCheckup);
 
   AddSavedForm1();
@@ -1316,8 +1329,7 @@ TEST_F(PasswordManagerViewControllerTest,
 TEST_F(PasswordManagerViewControllerTest,
        PasswordCheckStateErrorWithKIOSPasswordCheckup) {
   // Enable Password Checkup feature.
-  base::test::ScopedFeatureList featureList;
-  featureList.InitAndEnableFeature(
+  base::test::ScopedFeatureList feature_list(
       password_manager::features::kIOSPasswordCheckup);
 
   AddSavedForm1();
