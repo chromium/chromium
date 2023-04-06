@@ -1325,8 +1325,8 @@ void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {
       break;
     case ui::ET_GESTURE_SCROLL_UPDATE:
       if (touch_dragging_ && drag_state_ != DragState::kNone) {
-        if (is_drag_and_drop_enabled) {
-          MaybeStartDrag(event->location());
+        if (is_drag_and_drop_enabled && MaybeStartDrag(event->location())) {
+          event->SetHandled();
         } else {
           grid_delegate_->UpdateDragFromItem(/*is_touch=*/true, *event);
           event->SetHandled();

@@ -6,6 +6,7 @@
 
 #include "ash/app_list/model/app_list_test_model.h"
 #include "ash/app_list/test/app_list_test_helper.h"
+#include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/drag_drop/drag_drop_controller.h"
@@ -81,6 +82,12 @@ class AppListItemViewTest : public AshTestBase,
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 INSTANTIATE_TEST_SUITE_P(All, AppListItemViewTest, testing::Bool());
+
+using AppListItemViewTestWithDragDropController = AppListItemViewTest;
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AppListItemViewTestWithDragDropController,
+                         testing::Values(true));
 
 TEST_P(AppListItemViewTest, NewInstallDot) {
   AppListItem* item = CreateAppListItem("Google Buzz");
@@ -291,6 +298,48 @@ TEST_P(AppListItemViewTest, AppItemReleaseTouchBeforeDragStartWithLongPress) {
   EXPECT_FALSE(view->FireTouchDragTimerForTest());
   EXPECT_FALSE(IsIconScaled(view));
   MaybeCheckDragStartedOnControllerCount(0);
+}
+
+TEST_P(AppListItemViewTestWithDragDropController,
+       TouchDragAppRemovedDoesNotCrash) {
+  CreateAppListItem("TestItem 1");
+  CreateAppListItem("TestItem 2");
+
+  auto* helper = GetAppListTestHelper();
+  helper->ShowAppList();
+
+  auto* apps_grid_view = helper->GetScrollableAppsGridView();
+  AppListItemView* view = apps_grid_view->GetItemViewAt(0);
+  const std::string kDraggedItemId = view->item()->id();
+  auto* generator = GetEventGenerator();
+  ASSERT_EQ(GetDragState(view), AppListItemView::DragState::kNone);
+
+  const views::ViewModelT<AppListItemView>* view_model =
+      apps_grid_view->view_model();
+  EXPECT_EQ(view_model->view_size(), 2u);
+
+  gfx::Point from = view->GetBoundsInScreen().CenterPoint();
+  generator->MoveTouch(from);
+  generator->PressTouch();
+  view->FireTouchDragTimerForTest();
+  EXPECT_EQ(GetDragState(view), AppListItemView::DragState::kInitialized);
+
+  // Make sure that the item view is deleted after releasing the drag. This
+  // should occur within the same thread as the events to force the crash.
+  ShellTestApi().drag_drop_controller()->SetLoopClosureForTesting(
+      base::BindLambdaForTesting([&]() {
+        drag_started_on_controller_++;
+        GetEventGenerator()->ReleaseTouch();
+        GetAppListTestHelper()->model()->DeleteItem(kDraggedItemId);
+      }),
+      base::DoNothing());
+
+  generator->MoveTouch(
+      apps_grid_view->GetItemViewAt(1)->GetIconBoundsInScreen().CenterPoint());
+
+  EXPECT_EQ(view_model->view_size(), 1u);
+  EXPECT_FALSE(GetAppListTestHelper()->model()->FindItem(kDraggedItemId));
+  MaybeCheckDragStartedOnControllerCount(1);
 }
 
 }  // namespace ash
