@@ -276,6 +276,10 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
           : nullptr;
 
   ash::bluetooth_config::Initialize(delegate);
+
+  // Create geolocation manager
+  g_browser_process->SetGeolocationManager(
+      ash::SystemGeolocationSource::CreateGeolocationManagerOnAsh());
 }
 
 void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
@@ -334,10 +338,6 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
 
   // Initialize TabScrubberChromeOS after the Ash Shell has been initialized.
   TabScrubberChromeOS::GetInstance();
-
-  // Create geolocation manager
-  g_browser_process->SetGeolocationManager(
-      ash::SystemGeolocationSource::CreateGeolocationManagerOnAsh());
 
   if (ash::features::IsAmbientModeManagedScreensaverEnabled()) {
     screensaver_images_policy_handler_ =
