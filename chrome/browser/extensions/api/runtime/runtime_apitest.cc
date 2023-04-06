@@ -664,6 +664,13 @@ class RuntimeGetContextsApiTest : public ExtensionApiTest {
   std::vector<api::runtime::ExtensionContext> GetContextStructs(
       base::StringPiece filter) {
     base::Value value = GetContexts(filter);
+    return ContextValueToContextStructs(value);
+  }
+
+  // Converts the given `value` into a vector of strongly-typed
+  // `ExtensionContext`s. Expects the value to properly convert.
+  std::vector<api::runtime::ExtensionContext> ContextValueToContextStructs(
+      const base::Value& value) {
     if (!value.is_list()) {
       ADD_FAILURE() << "Invalid return value: " << value;
       return {};
@@ -943,6 +950,193 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest, GetOffscreenDocumentContext) {
   EXPECT_THAT(background_contexts, base::test::IsJson(expected));
 }
 
-// TODO(crbug/1426192): Add tests for popups, incognito, etc.
+// Tests the behavior of `runtime.getContexts()` with a split-mode incognito
+// extension. In split mode, the extension should only be able to access data
+// about its own process's contexts.
+IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest,
+                       RetrievingIncognitoContexts_SplitMode) {
+  // Load up a split-mode extension.
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Split mode extension",
+           "version": "0.1",
+           "manifest_version": 3,
+           "incognito": "split",
+           "background": {"service_worker": "background.js"}
+         })";
+
+  // Since we need to wait for the incognito profile's separate service worker
+  // to start, our bootstrapping code in LoadExtension() doesn't automatically
+  // handle it for us. Include a separate "ready" message.
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
+                     "chrome.test.sendMessage('ready');");
+  test_dir.WriteFile(FILE_PATH_LITERAL("regular.html"), "<html>Regular</html>");
+  test_dir.WriteFile(FILE_PATH_LITERAL("incognito.html"),
+                     "<html>Incognito</html>");
+
+  ExtensionTestMessageListener ready_listener("ready");
+  const Extension* extension =
+      LoadExtension(test_dir.UnpackedPath(), {.allow_in_incognito = true});
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+
+  // Open a tab on-the-record to one of the extension's pages.
+  GURL regular_url = extension->GetResourceURL("regular.html");
+  content::RenderFrameHost* regular_host =
+      ui_test_utils::NavigateToURL(browser(), regular_url);
+  ASSERT_TRUE(regular_host);
+
+  // Open up an incognito tab to another extension page, and wait for the
+  // incognito version of the extension to start up.
+  ready_listener.Reset();
+  GURL incognito_url = extension->GetResourceURL("incognito.html");
+  Browser* incognito_browser = OpenURLOffTheRecord(profile(), incognito_url);
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+
+  // A helper method to retrieve the contexts for the given `profile`.
+  auto run_get_contexts_in_profile = [extension](Profile* profile) {
+    static constexpr char kScript[] =
+        R"((async () => {
+             chrome.test.sendScriptResult(
+                 await chrome.runtime.getContexts({}));
+           })();)";
+    return BackgroundScriptExecutor::ExecuteScript(
+        profile, extension->id(), kScript,
+        BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+  };
+
+  {
+    // Verify the on-the-record contexts. There should be a single background
+    // context and the on-the-record tab.
+    base::Value regular_results = run_get_contexts_in_profile(profile());
+    std::vector<api::runtime::ExtensionContext> contexts =
+        ContextValueToContextStructs(regular_results);
+    EXPECT_THAT(contexts, testing::UnorderedElementsAre(
+                              GetBackgroundMatcher(),
+                              GetFrameMatcher(api::runtime::CONTEXT_TYPE_TAB,
+                                              regular_url)));
+  }
+  {
+    // Now verify the incognito contexts. Here, too, there should be a single
+    // background context and tab, but it should be the incognito tab.
+    base::Value incognito_results =
+        run_get_contexts_in_profile(incognito_browser->profile());
+    std::vector<api::runtime::ExtensionContext> contexts =
+        ContextValueToContextStructs(incognito_results);
+    EXPECT_THAT(contexts, testing::UnorderedElementsAre(
+                              GetBackgroundMatcher(),
+                              GetFrameMatcher(api::runtime::CONTEXT_TYPE_TAB,
+                                              incognito_url)));
+  }
+}
+
+// Tests the behavior of `runtime.getContexts()` with a spanning-mode incognito
+// extension.
+IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest,
+                       RetrievingIncognitoContexts_SpanningMode) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // Load up a spanning mode extension. See comment below for why we have
+  // a web accessible resource.
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Split mode extension",
+           "version": "0.1",
+           "manifest_version": 3,
+           "incognito": "spanning",
+           "web_accessible_resources": [{
+             "resources": ["incognito.html"],
+             "matches": ["*://example.com/*"]
+           }],
+           "background": {"service_worker": "background.js"}
+         })";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
+                     "// Intentionally blank");
+  test_dir.WriteFile(FILE_PATH_LITERAL("regular.html"), "<html>Regular</html>");
+  test_dir.WriteFile(FILE_PATH_LITERAL("incognito.html"),
+                     "<html>Incognito</html>");
+
+  const Extension* extension =
+      LoadExtension(test_dir.UnpackedPath(), {.allow_in_incognito = true});
+  ASSERT_TRUE(extension);
+
+  // Open an on-the-record tab to an extension page.
+  GURL regular_url = extension->GetResourceURL("regular.html");
+  content::RenderFrameHost* regular_host =
+      ui_test_utils::NavigateToURL(browser(), regular_url);
+  ASSERT_TRUE(regular_host);
+
+  // Now, the tricky part. Spanning mode extensions aren't, typically, allowed
+  // to open contexts in an incognito profile (which means all contexts just
+  // open in the same profile). There's one exception to this: an embedded web-
+  // accessible iframe in an incognito tab. Make it so.
+  GURL incognito_url = extension->GetResourceURL("incognito.html");
+  Browser* incognito_browser = OpenURLOffTheRecord(
+      profile(), embedded_test_server()->GetURL("example.com", "/simple.html"));
+  // Inject a script to add an iframe and navigate it to the extension's
+  // web-accessible resource.
+  content::RenderFrameHost* incognito_main_frame =
+      incognito_browser->tab_strip_model()
+          ->GetActiveWebContents()
+          ->GetPrimaryMainFrame();
+  static constexpr char kNavigateTemplate[] =
+      R"(let frame = document.createElement('iframe');
+         frame.src = '%s';
+         frame.onload = () => { domAutomationController.send('success'); };
+         frame.onerror = (e) => {
+           domAutomationController.send('failure: ' + e.toString());
+         };
+         document.body.appendChild(frame);)";
+
+  std::string navigation_result;
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      incognito_main_frame,
+      base::StringPrintf(kNavigateTemplate, incognito_url.spec().c_str()),
+      &navigation_result));
+  EXPECT_EQ("success", navigation_result);
+
+  // Verify the frame loaded properly by checking both the URL and the content.
+  content::RenderFrameHost* incognito_extension_frame =
+      content::ChildFrameAt(incognito_main_frame, 0);
+  ASSERT_TRUE(incognito_extension_frame);
+  EXPECT_EQ(incognito_url, incognito_extension_frame->GetLastCommittedURL());
+  std::string incognito_frame_content;
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      incognito_extension_frame,
+      "domAutomationController.send(document.body.textContent);",
+      &incognito_frame_content));
+  EXPECT_EQ("Incognito", incognito_frame_content);
+
+  // A helper method to retrieve the contexts for the given `profile`.
+  auto run_get_contexts_in_profile = [extension](Profile* profile) {
+    static constexpr char kScript[] =
+        R"((async () => {
+             chrome.test.sendScriptResult(
+                 await chrome.runtime.getContexts({}));
+           })();)";
+    return BackgroundScriptExecutor::ExecuteScript(
+        profile, extension->id(), kScript,
+        BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+  };
+
+  {
+    // Verify the results for the on-the-record profile. Since the extension
+    // is in spanning mode, this is effectively the only instance of the
+    // extension. It should see the background context and the on-the-record
+    // tab, but not the embedded frame.
+    base::Value regular_results = run_get_contexts_in_profile(profile());
+    std::vector<api::runtime::ExtensionContext> contexts =
+        ContextValueToContextStructs(regular_results);
+    EXPECT_THAT(contexts, testing::UnorderedElementsAre(
+                              GetBackgroundMatcher(),
+                              GetFrameMatcher(api::runtime::CONTEXT_TYPE_TAB,
+                                              regular_url)));
+  }
+}
 
 }  // namespace extensions
