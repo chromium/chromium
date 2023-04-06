@@ -6227,6 +6227,18 @@ You can manage this account’s settings by installing the Family Link app on yo
   <message name="IDS_PARENT_ACCESS_EXTENSION_APPROVALS_BEFORE_SUBTITLE" desc="Text indicating that a parent must approve the extension for the supervised user to gain access.">
     Your parent or guardian has to say it’s OK for you to use this extension
   </message>
+  <message name="IDS_PARENT_ACCESS_EXTENSION_APPROVALS_AFTER_TITLE" desc="Title for the dialog asking a parent if they would like to allow an extension for a supervised user.">
+    <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph> wants to use this extension:
+  </message>
+  <message name="IDS_PARENT_ACCESS_EXTENSION_PERMISSIONS_HEADER" desc="Header that comes before a list of extension permissions.">
+    It can:
+  </message>
+  <message name="IDS_PARENT_ACCESS_EXTENSION_PERMISSION_SHOW_DETAILS" desc="Text for a button that shows details for an extension permission.">
+    Show details
+  </message>
+  <message name="IDS_PARENT_ACCESS_EXTENSION_PERMISSION_HIDE_DETAILS" desc="Text for a button that hides details for an extension permission.">
+    Hide details
+  </message>
 
   <!-- Strings shared among supervised user experiences -->
   <message name="IDS_SUPERVISED_USER_ERROR_TITLE" desc="Title for the UI shown to supervised users when an error has occurred.">

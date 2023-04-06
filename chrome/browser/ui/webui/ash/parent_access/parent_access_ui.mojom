@@ -75,6 +75,20 @@ struct ExtensionApprovalsParams {
 
   // The child's name to be displayed to the parent.
   mojo_base.mojom.String16 child_display_name;
+
+  // Localized messages indicating the permissions requirements for an
+  // extension.
+  ExtensionPermissions permissions;
+};
+
+struct ExtensionPermissions {
+  // List of permissions for the extension.
+  array<mojo_base.mojom.String16> permissions;
+
+  // Details about each permission. Each permission will have a corresponding
+  // entry at the same index in the details array. If there are no details to
+  // be displayed, it will have an empty value.
+  array<mojo_base.mojom.String16> details;
 };
 
 union FlowTypeParams {

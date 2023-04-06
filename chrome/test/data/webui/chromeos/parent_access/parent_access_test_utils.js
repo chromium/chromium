@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ExtensionApprovalsParams, ParentAccessParams, ParentAccessParams_FlowType, WebApprovalsParams} from 'chrome://parent-access/parent_access_ui.mojom-webui.js';
+import {ExtensionApprovalsParams, ExtensionPermissions, ParentAccessParams, ParentAccessParams_FlowType, WebApprovalsParams} from 'chrome://parent-access/parent_access_ui.mojom-webui.js';
 
 function strToMojoString16(str) {
   return {data: str.split('').map(ch => ch.charCodeAt(0))};
@@ -23,17 +23,54 @@ export function buildWebApprovalsParams() {
 }
 
 /**
- * @param {boolean} isDisabled If the disabled UI should be shown.
+ * @param {boolean=} isDisabled If the disabled UI should be shown.
+ * @param {boolean=} hasDetails If the permission should have details.
  * @returns {ParentAccessParams}
  */
-export function buildExtensionApprovalsParams(isDisabled) {
+export function buildExtensionApprovalsParamsWithPermissions(
+    isDisabled = false, hasDetails = false) {
   const parentAccessParams = new ParentAccessParams();
   parentAccessParams.flowType = ParentAccessParams_FlowType.kExtensionAccess;
   parentAccessParams.isDisabled = isDisabled;
+
   const extensionApprovalsParams = new ExtensionApprovalsParams();
   extensionApprovalsParams.extensionName = strToMojoString16('Extension name');
   extensionApprovalsParams.iconPngBytes = [];
   extensionApprovalsParams.childDisplayName = strToMojoString16('Child Name');
+
+  const permissions = new ExtensionPermissions();
+  permissions.permissions = [strToMojoString16('permission')];
+  if (hasDetails) {
+    permissions.details = [strToMojoString16('details')];
+  } else {
+    permissions.details = [];
+  }
+  extensionApprovalsParams.permissions = permissions;
+
+  parentAccessParams.flowTypeParams = {extensionApprovalsParams};
+  return parentAccessParams;
+}
+
+/**
+ * @param {boolean=} isDisabled If the disabled UI should be shown.
+ * @returns {ParentAccessParams}
+ */
+export function buildExtensionApprovalsParamsWithoutPermissions(
+    isDisabled = false) {
+  const parentAccessParams = new ParentAccessParams();
+  parentAccessParams.flowType = ParentAccessParams_FlowType.kExtensionAccess;
+  parentAccessParams.isDisabled = isDisabled;
+
+  const extensionApprovalsParams = new ExtensionApprovalsParams();
+  extensionApprovalsParams.extensionName = strToMojoString16('Extension name');
+  extensionApprovalsParams.iconPngBytes = [];
+  extensionApprovalsParams.childDisplayName = strToMojoString16('Child Name');
+
+  const permissions = new ExtensionPermissions();
+  permissions.permissions = [];
+  permissions.details = [];
+  extensionApprovalsParams.permissions = permissions;
+
   parentAccessParams.flowTypeParams = {extensionApprovalsParams};
   return parentAccessParams;
 }

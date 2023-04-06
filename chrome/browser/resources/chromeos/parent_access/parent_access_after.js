@@ -7,6 +7,7 @@ import './flows/local_web_approvals_after.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {ExtensionApprovalsAfter} from './flows/extension_approvals_after.js';
 import {LocalWebApprovalsAfterElement} from './flows/local_web_approvals_after.js';
 import {ParentAccessScreenInterface} from './parent_access_screen.js';
 import {ParentAccessParams_FlowType, ParentAccessResult} from './parent_access_ui.mojom-webui.js';
@@ -44,6 +45,10 @@ class ParentAccessAfter extends PolymerElement {
       case ParentAccessParams_FlowType.kWebsiteAccess:
         this.shadowRoot.querySelector('#after-screen-body')
             .appendChild(new LocalWebApprovalsAfterElement());
+        return;
+      case ParentAccessParams_FlowType.kExtensionAccess:
+        this.shadowRoot.querySelector('#after-screen-body')
+            .appendChild(new ExtensionApprovalsAfter());
         return;
       default:
         return;

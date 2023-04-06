@@ -1,0 +1,78 @@
+<style>
+  #content {
+    color: var(--cros-color-primary);
+    display: flex;
+    flex-direction: column;
+  }
+
+  #title {
+    font-family: var(--cros-font-family-google-sans);
+    font-size: 24px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    margin-top: 16px;
+  }
+
+  #subtitle {
+    align-items: center;
+    color: var(--cros-color-secondary);
+    display: flex;
+    font: var(--cros-body-1-font);
+    margin-top: 8px;
+  }
+
+  #extension-title {
+    align-items: center;
+    display: flex;
+    margin-top: 16px;
+  }
+
+  #extension-icon {
+    height: 32px;
+    margin-inline-end: 16px;
+    width: 32px;
+  }
+
+  #extension-name {
+    font-family: var(--cros-font-family-google-sans);
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0;
+  }
+
+  #extension-permissions-container {
+    flex-grow: 1;
+    margin: 4px 8px 0 48px;
+    overflow-y: scroll;
+  }
+
+  #permissions-header {
+    color: var(--cros-color-secondary);
+    font: var(--cros-body-2-font);
+    margin: 8px 8px 0 48px;
+  }
+</style>
+
+<div part="content" id="content">
+  <h1 id="title">[[title]]</h1>
+  <template is="dom-if" if="[[subtitle]]">
+    <div id="subtitle">[[subtitle]]</div>
+  </template>
+  <div id="extension-title">
+    <img id="extension-icon" src="[[extensionIconSrc]]" alt=""></img>
+    <h2 id="extension-name">[[extensionName]]</h2>
+  </div>
+  <template is="dom-if" if="[[extensionPermissions.length]]">
+    <span id="permissions-header">
+      $i18n{extensionApprovalsPermissionsHeader}
+    </span>
+    <div id="extension-permissions-container">
+      <template is="dom-repeat" items="[[extensionPermissions]]">
+        <extension-permission
+          permission="[[item]]"
+          detail="[[getPermissionDetail(index)]]">
+        </extension-permission>
+      </template>
+    </div>
+  </template>
+</div>
