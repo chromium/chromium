@@ -22,7 +22,8 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.ntp.NewTabPage;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
@@ -60,7 +61,8 @@ public class StartSurfaceOnTabletTest {
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         StartSurfaceTestUtils.waitForTabModel(mActivityTestRule.getActivity());
 
-        verifyTabCountAndActiveTabUrl(mActivityTestRule.getActivity(), 1, TAB_URL);
+        verifyTabCountAndActiveTabUrl(
+                mActivityTestRule.getActivity(), 1, TAB_URL, false /* expectHomeSurfaceUiShown */);
     }
 
     @Test
@@ -73,7 +75,8 @@ public class StartSurfaceOnTabletTest {
         StartSurfaceTestUtils.waitForTabModel(mActivityTestRule.getActivity());
 
         // Verifies that a NTP is created and set as the current Tab.
-        verifyTabCountAndActiveTabUrl(mActivityTestRule.getActivity(), 2, UrlConstants.NTP_URL);
+        verifyTabCountAndActiveTabUrl(mActivityTestRule.getActivity(), 2, UrlConstants.NTP_URL,
+                true /* expectHomeSurfaceUiShown */);
     }
 
     @Test
@@ -91,7 +94,8 @@ public class StartSurfaceOnTabletTest {
 
         // Verifies that the existing non active NTP is skipped in Tab restoring, and a new NTP is
         // created and set as the active Tab.
-        verifyTabCountAndActiveTabUrl(mActivityTestRule.getActivity(), 2, UrlConstants.NTP_URL);
+        verifyTabCountAndActiveTabUrl(mActivityTestRule.getActivity(), 2, UrlConstants.NTP_URL,
+                true /* expectHomeSurfaceUiShown */);
     }
 
     @Test
@@ -109,14 +113,19 @@ public class StartSurfaceOnTabletTest {
 
         // Verifies that no new NTP is created, and the existing NTP is reused and set as the
         // current Tab.
-        verifyTabCountAndActiveTabUrl(mActivityTestRule.getActivity(), 2, modifiedNtpUrl);
+        verifyTabCountAndActiveTabUrl(mActivityTestRule.getActivity(), 2, modifiedNtpUrl,
+                true /* expectHomeSurfaceUiShown */);
     }
 
-    private void verifyTabCountAndActiveTabUrl(ChromeTabbedActivity cta, int tabCount, String url) {
+    private void verifyTabCountAndActiveTabUrl(
+            ChromeTabbedActivity cta, int tabCount, String url, boolean expectHomeSurfaceUiShown) {
         Assert.assertEquals(tabCount, cta.getCurrentTabModel().getCount());
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertTrue(TextUtils.equals(
-                    url, TabModelUtils.getCurrentTab(cta.getCurrentTabModel()).getUrl().getSpec()));
-        });
+        Tab tab = StartSurfaceTestUtils.getCurrentTabFromUIThread(cta);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { Assert.assertTrue(TextUtils.equals(url, tab.getUrl().getSpec())); });
+        if (expectHomeSurfaceUiShown) {
+            Assert.assertTrue(
+                    ((NewTabPage) tab.getNativePage()).isSingleTabCardVisibleForTesting());
+        }
     }
 }

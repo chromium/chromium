@@ -65,6 +65,10 @@ public class SingleTabSwitcherOnTabletMediator {
         mPropertyModel.set(IS_VISIBLE, true);
     }
 
+    boolean isVisible() {
+        return mPropertyModel.get(IS_VISIBLE);
+    }
+
     /**
      * Update the favicon of the single tab switcher.
      */

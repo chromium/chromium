@@ -1070,10 +1070,11 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     }
 
     /**
-     * Show the module when the current new tab page is been used as the home surface.
+     * Shows the home surface UI on this NTP.
+     * TODO(crbug.com/1430906): Investigate better solution to show Home surface UI on NTP upon
+     * creation.
      */
-    @VisibleForTesting
-    void showHomeSurfaceUI() {
+    public void showHomeSurfaceUi() {
         if (mSingleTabSwitcherCoordinator == null) {
             initializeSingleTabCard();
         }
@@ -1122,6 +1123,13 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         if (mSingleTabSwitcherCoordinator != null) {
             mSingleTabSwitcherCoordinator.setVisibility(isVisible);
         }
+    }
+
+    @VisibleForTesting
+    public boolean isSingleTabCardVisibleForTesting() {
+        if (mSingleTabSwitcherCoordinator == null) return false;
+
+        return mSingleTabSwitcherCoordinator.isVisible();
     }
 
     /* Destroy the single tab card on the {@link NewTabPageLayout}. */

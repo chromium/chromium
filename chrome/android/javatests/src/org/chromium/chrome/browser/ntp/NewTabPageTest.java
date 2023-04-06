@@ -816,7 +816,7 @@ public class NewTabPageTest {
         NewTabPage ntp = (NewTabPage) newTab.getNativePage();
         NewTabPageLayout ntpLayout = ntp.getNewTabPageLayout();
 
-        TestThreadUtils.runOnUiThreadBlocking(ntp::showHomeSurfaceUI);
+        TestThreadUtils.runOnUiThreadBlocking(ntp::showHomeSurfaceUi);
 
         View singleTabCardView = ntpLayout.findViewById(R.id.single_tab_view);
         assertEquals("The single tab card is still invisible after initialization.", View.VISIBLE,
@@ -849,7 +849,7 @@ public class NewTabPageTest {
         NewTabPage ntp = (NewTabPage) newTab.getNativePage();
         NewTabPageLayout ntpLayout = ntp.getNewTabPageLayout();
 
-        TestThreadUtils.runOnUiThreadBlocking(ntp::showHomeSurfaceUI);
+        TestThreadUtils.runOnUiThreadBlocking(ntp::showHomeSurfaceUi);
 
         ViewGroup singleTabCardViewContainer =
                 ntpLayout.findViewById(R.id.tab_switcher_module_container);
@@ -880,7 +880,7 @@ public class NewTabPageTest {
         NewTabPage ntp = (NewTabPage) newTab.getNativePage();
         NewTabPageLayout ntpLayout = ntp.getNewTabPageLayout();
 
-        TestThreadUtils.runOnUiThreadBlocking(ntp::showHomeSurfaceUI);
+        TestThreadUtils.runOnUiThreadBlocking(ntp::showHomeSurfaceUi);
 
         ViewGroup singleTabCardViewContainer =
                 ntpLayout.findViewById(R.id.tab_switcher_module_container);
