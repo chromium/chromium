@@ -20,7 +20,17 @@
 #endif
 
 namespace {
-bool g_is_early_singleton_feature_ = false;
+
+constexpr char kEarlySingletonForceEnabledGroup[] = "Enabled_Forced3";
+constexpr char kEarlySingletonEnabledGroup[] = "Enabled3";
+constexpr char kEarlySingletonDisabledMergeGroup[] = "Disabled_Merge3";
+constexpr char kEarlySingletonDefaultGroup[] = "Default3";
+
+#if BUILDFLAG(IS_WIN)
+constexpr char kEarlySingletonDisabledGroup[] = "Disabled3";
+#endif  // BUILDFLAG(IS_WIN)
+
+const char* g_early_singleton_feature_group_ = nullptr;
 ChromeProcessSingleton* g_chrome_process_singleton_ = nullptr;
 
 #if BUILDFLAG(IS_WIN)
@@ -40,21 +50,31 @@ std::string GetMachineGUID() {
   return machine_guid;
 }
 
-bool EnrollMachineInEarlySingletonFeature() {
+const char* EnrollMachineInEarlySingletonFeature() {
   // Run experiment on early channels only.
   const version_info::Channel channel = chrome::GetChannel();
   if (channel != version_info::Channel::CANARY &&
       channel != version_info::Channel::DEV &&
       channel != version_info::Channel::UNKNOWN) {
-    return false;
+    return kEarlySingletonDefaultGroup;
   }
 
   const std::string machine_guid = GetMachineGUID();
-  if (machine_guid.empty())
-    return false;
+  if (machine_guid.empty()) {
+    return kEarlySingletonDefaultGroup;
+  }
 
-  // Enroll 50% of the population.
-  return base::Hash(machine_guid + "EarlyProcessSingleton") % 2 == 0;
+  switch (base::Hash(machine_guid + "EarlyProcessSingleton") % 3) {
+    case 0:
+      return kEarlySingletonEnabledGroup;
+    case 1:
+      return kEarlySingletonDisabledGroup;
+    case 2:
+      return kEarlySingletonDisabledMergeGroup;
+    default:
+      NOTREACHED();
+      return kEarlySingletonDefaultGroup;
+  }
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -128,27 +148,41 @@ ChromeProcessSingleton* ChromeProcessSingleton::GetInstance() {
 // static
 void ChromeProcessSingleton::SetupEarlySingletonFeature(
     const base::CommandLine& command_line) {
-  if (command_line.HasSwitch(switches::kEnableEarlyProcessSingleton))
-    g_is_early_singleton_feature_ = true;
+  DCHECK(!g_early_singleton_feature_group_);
+  if (command_line.HasSwitch(switches::kEnableEarlyProcessSingleton)) {
+    g_early_singleton_feature_group_ = kEarlySingletonForceEnabledGroup;
+    return;
+  }
 
 #if BUILDFLAG(IS_WIN)
-  if (!g_is_early_singleton_feature_)
-    g_is_early_singleton_feature_ = EnrollMachineInEarlySingletonFeature();
+  g_early_singleton_feature_group_ = EnrollMachineInEarlySingletonFeature();
+#else
+  g_early_singleton_feature_group_ = kEarlySingletonDefaultGroup;
 #endif
 }
 
+// static
 void ChromeProcessSingleton::RegisterEarlySingletonFeature() {
+  DCHECK(g_early_singleton_feature_group_);
   // The synthetic trial needs to use kCurrentLog to ensure that UMA report will
   // be generated from the metrics log that is open at the time of registration.
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      "EarlyProcessSingleton",
-      g_is_early_singleton_feature_ ? "Enabled2" : "Disabled2",
+      "EarlyProcessSingleton", g_early_singleton_feature_group_,
       variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }
 
 // static
 bool ChromeProcessSingleton::IsEarlySingletonFeatureEnabled() {
-  return g_is_early_singleton_feature_;
+  return g_early_singleton_feature_group_ == kEarlySingletonEnabledGroup ||
+         g_early_singleton_feature_group_ == kEarlySingletonForceEnabledGroup;
+}
+
+// static
+bool ChromeProcessSingleton::ShouldMergeMetrics() {
+  // This should not be called when the early singleton feature is enabled.
+  DCHECK(g_early_singleton_feature_group_ && !IsEarlySingletonFeatureEnabled());
+
+  return g_early_singleton_feature_group_ == kEarlySingletonDisabledMergeGroup;
 }
 
 bool ChromeProcessSingleton::NotificationCallback(

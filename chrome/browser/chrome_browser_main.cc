@@ -136,6 +136,7 @@
 #include "components/metrics/expired_histogram_util.h"
 #include "components/metrics/metrics_reporting_default_state.h"
 #include "components/metrics/metrics_service.h"
+#include "components/metrics/persistent_histograms.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/nacl/browser/nacl_browser.h"
 #include "components/nacl/common/buildflags.h"
@@ -1404,6 +1405,21 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
     UMA_HISTOGRAM_ENUMERATION("Chrome.ProcessSingleton.NotifyResult",
                               notify_result_,
                               ProcessSingleton::kNumNotifyResults);
+
+    // If `notify_result_` is not PROCESS_NONE, this process will exit.
+    // Conditionally defer browser metrics (which is how metrics are reported
+    // when the early singleton feature is enabled) to verify whether the
+    // metrics reporting mechanism has an impact on the metrics. If
+    // ShouldMergeMetrics() returns false, the metrics will instead be sent in
+    // an independent log in some future session.
+    if (ChromeProcessSingleton::ShouldMergeMetrics() &&
+        notify_result_ != ProcessSingleton::PROCESS_NONE) {
+      base::FilePath user_data_dir;
+      if (base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
+        DeferBrowserMetrics(user_data_dir);
+      }
+    }
+
     switch (notify_result_) {
       case ProcessSingleton::PROCESS_NONE:
         // No process already running, fall through to starting a new one.

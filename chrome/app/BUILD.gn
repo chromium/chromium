@@ -184,6 +184,7 @@ static_library("test_support") {
     "//base",
     "//build:chromeos_buildflags",
     "//chrome/browser",
+    "//chrome/browser:buildflags",
     "//chrome/browser/policy:path_parser",
     "//chrome/child",
     "//chrome/common",

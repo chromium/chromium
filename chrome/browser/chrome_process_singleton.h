@@ -74,6 +74,7 @@ class ChromeProcessSingleton {
   static void SetupEarlySingletonFeature(const base::CommandLine& command_line);
   static void RegisterEarlySingletonFeature();
   static bool IsEarlySingletonFeatureEnabled();
+  static bool ShouldMergeMetrics();
 
  private:
   bool NotificationCallback(const base::CommandLine& command_line,
