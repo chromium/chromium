@@ -35,6 +35,7 @@ These commands don't necessarily have anything to do with each other.
 import logging
 import optparse
 import sys
+from concurrent.futures import ThreadPoolExecutor
 
 # pylint: disable=cyclic-import; `rebaseline_cl -> rebaseline` false positive
 from blinkpy.common.host import Host
@@ -71,6 +72,7 @@ class BlinkTool(Host):
     def __init__(self, path):
         super(BlinkTool, self).__init__()
         self._path = path
+        io_pool = ThreadPoolExecutor(max_workers=RebaselineCL.MAX_WORKERS)
         self.commands = [
             AnalyzeBaselines(),
             CrashLog(),
@@ -80,7 +82,7 @@ class BlinkTool(Host):
             PrintBaselines(),
             PrintExpectations(),
             Rebaseline(),
-            RebaselineCL(self),
+            RebaselineCL(self, io_pool),
             UpdateMetadata(self),
         ]
         self.help_command = HelpCommand(tool=self)

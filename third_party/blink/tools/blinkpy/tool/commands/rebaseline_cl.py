@@ -4,14 +4,18 @@
 """A command to fetch new baselines from try jobs for the current CL."""
 
 import collections
+import contextlib
 import itertools
 import json
 import logging
 import optparse
 import re
+from concurrent.futures import Executor
+from typing import Dict, List, Optional
 
 from blinkpy.common.net.git_cl import GitCL, TryJobStatus
 from blinkpy.common.net.rpc import Build, RPCError
+from blinkpy.common.net.web_test_results import WebTestResults
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.tool.commands.build_resolver import (
     BuildResolver,
@@ -62,7 +66,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         type='int',
         help='Patchset number to fetch results from.')
 
-    def __init__(self, tool):
+    def __init__(self, tool, io_pool: Optional[Executor] = None):
         super(RebaselineCL, self).__init__(options=[
             self.only_changed_tests_option,
             self.no_trigger_jobs_option,
@@ -91,6 +95,13 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             self.results_directory_option,
         ])
         self._tool = tool
+        # Use a separate thread pool for parallel network I/O in the main
+        # process because `message_pool.get(...)` must know all tasks in
+        # advance; it has no API for submitting new tasks after the pool runs.
+        # Also, because communication is asynchronous (callback-based), a worker
+        # cannot return a value for a specific task without a custom tracking
+        # mechanism.
+        self._io_pool = io_pool
         self.git_cl = None
         self._builders = []
 
@@ -136,6 +147,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         build_resolver = BuildResolver(
             self._tool.web,
             self.git_cl,
+            self._io_pool,
             can_trigger_jobs=(options.trigger_jobs and not self._dry_run))
         builds = [Build(builder) for builder in self.selected_try_bots]
         try:
@@ -194,8 +206,8 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
 
         if options.fill_missing:
             self.fill_in_missing_results(test_baseline_set)
-
-        return self.rebaseline(options, test_baseline_set)
+        with self._io_pool or contextlib.nullcontext():
+            return self.rebaseline(options, test_baseline_set)
 
     def check_ok_to_run(self):
         unstaged_baselines = self.unstaged_baselines()
@@ -212,7 +224,10 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             return set(self._builders)
         return self._tool.builders.builders_for_rebaselining()
 
-    def _fetch_results(self, jobs):
+    def _fetch_results(
+        self,
+        build_statuses: Dict[Build, TryJobStatus],
+    ) -> Dict[Build, List[WebTestResults]]:
         """Fetches results for all of the given builds.
 
         There should be a one-to-one correspondence between Builds, supported
@@ -221,17 +236,15 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         baselines are deduped, an old baseline may be kept for the platform
         that's missing results.
 
-        Args:
-            jobs: A dict mapping Build objects to TryJobStatus objects.
-
         Returns:
             A dict mapping Builds to lists of WebTestResults for all completed
             jobs.
         """
         results_fetcher = self._tool.results_fetcher
         builds_to_results = collections.defaultdict(list)
+        build_steps = []
 
-        for build, status in jobs.items():
+        for build, status in build_statuses.items():
             if status == TryJobStatus('COMPLETED', 'SUCCESS'):
                 _log.debug('No baselines to download for passing %r build %s.',
                            build.builder_name, build.build_number
@@ -245,10 +258,15 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                 continue
 
             step_names = results_fetcher.get_layout_test_step_names(build)
-            for step_name in step_names:
-                results = results_fetcher.gather_results(build, step_name)
-                if len(results) > 0:
-                    builds_to_results[build].append(results)
+            build_steps.extend((build, step_name) for step_name in step_names)
+
+        map_fn = self._io_pool.map if self._io_pool else map
+        step_results = map_fn(
+            lambda build_step: results_fetcher.gather_results(*build_step),
+            build_steps)
+        for (build, _), results in zip(build_steps, step_results):
+            if len(results) > 0:
+                builds_to_results[build].append(results)
         return builds_to_results
 
     def _make_test_baseline_set_from_file(self, filename, builds_to_results):

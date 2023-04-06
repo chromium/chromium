@@ -28,6 +28,8 @@
 
 import functools
 import logging
+import threading
+
 import requests
 
 from blinkpy.common.net.network_transaction import NetworkTransaction
@@ -35,10 +37,29 @@ from blinkpy.common.net.network_transaction import NetworkTransaction
 _log = logging.getLogger(__name__)
 
 
-class Web(object):
-
+class Web:
     def __init__(self):
-        self.session = requests.Session()
+        # Map each thread ID to a per-thread session object so that `Web` is
+        # thread-safe. This should automatically make the rest of the RPC stack
+        # built on `Web` thread-safe.
+        #
+        # Persisting the sessions keeps the underlying connections alive, which
+        # is critical for performance. Too many connections can cause network
+        # throttling. See crbug.com/1394451#c8 for an example.
+        self._sessions = {}
+        # Guard access to the session map.
+        # From https://google.github.io/styleguide/pyguide.html#218-threading:
+        #   > Do not rely on the atomicity of built-in types.
+        self._session_access = threading.Lock()
+
+    @property
+    def session(self) -> requests.Session:
+        thread_id = threading.current_thread().ident
+        with self._session_access:
+            session = self._sessions.get(thread_id)
+            if not session:
+                session = self._sessions[thread_id] = requests.Session()
+            return session
 
     def get_binary(self, url, return_none_on_404=False):
         make_request = functools.partial(self.request_and_read,
