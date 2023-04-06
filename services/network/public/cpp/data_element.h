@@ -10,6 +10,7 @@
 
 #include <limits>
 #include <memory>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -143,6 +144,13 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) DataElementFile final {
 // Represents part of an upload body. This is a union of various types defined
 // above. See them for details.
 class COMPONENT_EXPORT(NETWORK_CPP_BASE) DataElement {
+ private:
+  using Variant = absl::variant<absl::monostate,
+                                DataElementBytes,
+                                DataElementDataPipe,
+                                DataElementChunkedDataPipe,
+                                DataElementFile>;
+
  public:
   using Tag = mojom::DataElementDataView::Tag;
 
@@ -151,7 +159,8 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) DataElement {
   // and replaced with a valid value as soon as possible.
   DataElement();
 
-  template <typename T>
+  template <typename T,
+            typename = std::enable_if_t<std::is_constructible_v<Variant, T>>>
   explicit DataElement(T&& t) : variant_(std::forward<T>(t)) {}
   DataElement(const DataElement&) = delete;
   DataElement& operator=(const DataElement&) = delete;
@@ -193,12 +202,7 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) DataElement {
   }
 
  private:
-  absl::variant<absl::monostate,
-                DataElementBytes,
-                DataElementDataPipe,
-                DataElementChunkedDataPipe,
-                DataElementFile>
-      variant_;
+  Variant variant_;
 };
 
 }  // namespace network
