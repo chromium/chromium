@@ -67,8 +67,14 @@ source_set("event_manager") {
   ]
 
   deps = [
+    ":event_router",
     "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/common/chromeos/extensions",
+    "//chromeos/crosapi/mojom",
     "//content/public/browser",
+    "//extensions/common",
   ]
 
   public_deps = [ "//extensions/browser" ]
