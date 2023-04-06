@@ -31,8 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FILEAPI_FILE_READER_LOADER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FILEAPI_FILE_READER_LOADER_H_
 
-#include <memory>
-
 #include "base/dcheck_is_on.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -57,7 +55,6 @@
 namespace blink {
 
 class BlobDataHandle;
-class TextResourceDecoder;
 
 // Reads a Blob's content into memory.
 //
@@ -105,10 +102,7 @@ class CORE_EXPORT FileReaderLoader : public GarbageCollected<FileReaderLoader>,
 
   bool HasFinishedLoading() const { return finished_loading_; }
 
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(array_buffer_result_);
-    visitor->Trace(client_);
-  }
+  void Trace(Visitor* visitor) const { visitor->Trace(client_); }
 
  private:
   void Cleanup();
@@ -126,23 +120,12 @@ class CORE_EXPORT FileReaderLoader : public GarbageCollected<FileReaderLoader>,
   void OnComplete(int32_t status, uint64_t data_length) override;
   void OnDataPipeReadable(MojoResult);
 
-  String ConvertToText();
-  String ConvertToDataURL();
-  void SetStringResult(const String&);
-
   FileReadType read_type_;
   WeakMember<FileReaderLoaderClient> client_;
   WTF::TextEncoding encoding_;
   String data_type_;
 
   ArrayBufferContents raw_data_;
-  bool is_raw_data_converted_ = false;
-
-  Member<DOMArrayBuffer> array_buffer_result_;
-  String string_result_;
-
-  // The decoder used to decode the text data.
-  std::unique_ptr<TextResourceDecoder> decoder_;
 
   bool finished_loading_ = false;
   uint64_t bytes_loaded_ = 0;

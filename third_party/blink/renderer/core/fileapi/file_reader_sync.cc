@@ -55,7 +55,9 @@ DOMArrayBuffer* FileReaderSync::readAsArrayBuffer(
   FileReaderLoader* loader = MakeGarbageCollected<FileReaderLoader>(
       FileReadType::kReadAsArrayBuffer, nullptr, task_runner_);
   StartLoading(*loader, *blob, exception_state);
-
+  if (loader->GetErrorCode() != FileErrorCode::kOK) {
+    return nullptr;
+  }
   return loader->ArrayBufferResult();
 }
 
@@ -66,6 +68,9 @@ String FileReaderSync::readAsBinaryString(Blob* blob,
   FileReaderLoader* loader = MakeGarbageCollected<FileReaderLoader>(
       FileReadType::kReadAsBinaryString, nullptr, task_runner_);
   StartLoading(*loader, *blob, exception_state);
+  if (loader->GetErrorCode() != FileErrorCode::kOK) {
+    return "";
+  }
   return loader->StringResult();
 }
 
@@ -78,6 +83,9 @@ String FileReaderSync::readAsText(Blob* blob,
       FileReadType::kReadAsText, nullptr, task_runner_);
   loader->SetEncoding(encoding);
   StartLoading(*loader, *blob, exception_state);
+  if (loader->GetErrorCode() != FileErrorCode::kOK) {
+    return "";
+  }
   return loader->StringResult();
 }
 
@@ -89,6 +97,9 @@ String FileReaderSync::readAsDataURL(Blob* blob,
       FileReadType::kReadAsDataURL, nullptr, task_runner_);
   loader->SetDataType(blob->type());
   StartLoading(*loader, *blob, exception_state);
+  if (loader->GetErrorCode() != FileErrorCode::kOK) {
+    return "";
+  }
   return loader->StringResult();
 }
 

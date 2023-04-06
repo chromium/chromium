@@ -133,6 +133,7 @@ class CORE_EXPORT FileReader final : public EventTargetWithInlineData,
   probe::AsyncTaskContext async_task_context_;
 
   Member<FileReaderLoader> loader_;
+  Member<V8UnionArrayBufferOrString> result_ = nullptr;
   Member<DOMException> error_;
   absl::optional<base::ElapsedTimer> last_progress_notification_time_;
 };

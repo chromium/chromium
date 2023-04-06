@@ -307,6 +307,7 @@ void FileReader::ReadInternal(Blob* blob,
   state_ = kLoading;
   loading_state_ = kLoadingStatePending;
   error_ = nullptr;
+  result_ = nullptr;
   DCHECK(ThrottlingController::From(context));
   ThrottlingController::PushReader(context, this);
 }
@@ -368,12 +369,7 @@ V8UnionArrayBufferOrString* FileReader::result() const {
     return nullptr;
   }
 
-  if (read_type_ == FileReadType::kReadAsArrayBuffer) {
-    return MakeGarbageCollected<V8UnionArrayBufferOrString>(
-        loader_->ArrayBufferResult());
-  }
-  return MakeGarbageCollected<V8UnionArrayBufferOrString>(
-      loader_->StringResult());
+  return result_.Get();
 }
 
 void FileReader::Terminate() {
@@ -382,6 +378,7 @@ void FileReader::Terminate() {
     loader_ = nullptr;
   }
   state_ = kDone;
+  result_ = nullptr;
   loading_state_ = kLoadingStateNone;
 }
 
@@ -406,6 +403,14 @@ void FileReader::DidFinishLoading() {
   if (loading_state_ == kLoadingStateAborted)
     return;
   DCHECK_EQ(loading_state_, kLoadingStateLoading);
+
+  if (read_type_ == FileReadType::kReadAsArrayBuffer) {
+    result_ = MakeGarbageCollected<V8UnionArrayBufferOrString>(
+        loader_->ArrayBufferResult());
+  } else {
+    result_ = MakeGarbageCollected<V8UnionArrayBufferOrString>(
+        loader_->StringResult());
+  }
 
   // When we set m_state to DONE below, we still need to fire
   // the load and loadend events. To avoid GC to collect this FileReader, we
@@ -482,6 +487,7 @@ void FileReader::FireEvent(const AtomicString& type) {
 void FileReader::Trace(Visitor* visitor) const {
   visitor->Trace(error_);
   visitor->Trace(loader_);
+  visitor->Trace(result_);
   EventTargetWithInlineData::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   FileReaderLoaderClient::Trace(visitor);

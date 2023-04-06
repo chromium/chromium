@@ -62,6 +62,87 @@
 
 namespace blink {
 
+namespace {
+
+DOMArrayBuffer* ToDOMArrayBuffer(ArrayBufferContents raw_data) {
+  return DOMArrayBuffer::Create(std::move(raw_data));
+}
+
+String ToDataURL(ArrayBufferContents raw_data, const String& data_type = "") {
+  StringBuilder builder;
+  builder.Append("data:");
+
+  if (!raw_data.IsValid() || !raw_data.DataLength()) {
+    return builder.ToString();
+  }
+
+  if (data_type.empty()) {
+    // Match Firefox in defaulting to application/octet-stream when the MIME
+    // type is unknown. See https://crbug.com/48368.
+    builder.Append("application/octet-stream");
+  } else {
+    builder.Append(data_type);
+  }
+  builder.Append(";base64,");
+
+  Vector<char> out;
+  Base64Encode(
+      base::make_span(static_cast<const uint8_t*>(raw_data.Data()),
+                      base::checked_cast<unsigned>(raw_data.DataLength())),
+      out);
+  builder.Append(out.data(), out.size());
+
+  return builder.ToString();
+}
+
+String ToBinaryString(ArrayBufferContents raw_data) {
+  CHECK(raw_data.IsValid());
+  return String(static_cast<const char*>(raw_data.Data()),
+                static_cast<size_t>(raw_data.DataLength()));
+}
+
+static inline String ToTextString(ArrayBufferContents raw_data,
+                                  const WTF::TextEncoding& encoding) {
+  if (!raw_data.IsValid() || !raw_data.DataLength()) {
+    return "";
+  }
+  // Decode the data.
+  // The File API spec says that we should use the supplied encoding if it is
+  // valid. However, we choose to ignore this requirement in order to be
+  // consistent with how WebKit decodes the web content: always has the BOM
+  // override the provided encoding.
+  // FIXME: consider supporting incremental decoding to improve the perf.
+  StringBuilder builder;
+  auto decoder = TextResourceDecoder(TextResourceDecoderOptions(
+      TextResourceDecoderOptions::kPlainTextContent,
+      encoding.IsValid() ? encoding : UTF8Encoding()));
+  builder.Append(decoder.Decode(static_cast<const char*>(raw_data.Data()),
+                                static_cast<size_t>(raw_data.DataLength())));
+
+  builder.Append(decoder.Flush());
+
+  return builder.ToString();
+}
+
+String ToString(ArrayBufferContents raw_data,
+                FileReadType read_type,
+                const WTF::TextEncoding& encoding,
+                const String& data_type) {
+  switch (read_type) {
+    case FileReadType::kReadAsBinaryString:
+      return ToBinaryString(std::move(raw_data));
+    case FileReadType::kReadAsText:
+      return ToTextString(std::move(raw_data), std::move(encoding));
+    case FileReadType::kReadAsDataURL:
+      return ToDataURL(std::move(raw_data), std::move(data_type));
+    default:
+      NOTREACHED();
+  }
+  return "";
+}
+
+}  // namespace
+
 FileReaderLoader::FileReaderLoader(
     FileReadType read_type,
     FileReaderLoaderClient* client,
@@ -126,65 +207,30 @@ void FileReaderLoader::Cancel() {
 
 DOMArrayBuffer* FileReaderLoader::ArrayBufferResult() {
   DCHECK_EQ(read_type_, FileReadType::kReadAsArrayBuffer);
-  if (array_buffer_result_)
-    return array_buffer_result_;
 
-  // If the loading is not started or an error occurs, return an empty result.
-  if (!raw_data_.IsValid() || error_code_ != FileErrorCode::kOK)
-    return nullptr;
+  // In practice, no clients are making those calls for partial data.
+  // In case partial data is interesting, clients will use kReadByClient.
+  CHECK(finished_loading_);
 
-  if (!finished_loading_) {
-    return DOMArrayBuffer::Create(raw_data_.Data(),
-                                  base::checked_cast<size_t>(bytes_loaded_));
-  }
-
-  array_buffer_result_ = DOMArrayBuffer::Create(std::move(raw_data_));
-  DCHECK_EQ(raw_data_.DataLength(), 0u);
-  raw_data_.Reset();
-  return array_buffer_result_;
+  return ToDOMArrayBuffer(std::move(raw_data_));
 }
 
 String FileReaderLoader::StringResult() {
   DCHECK_NE(read_type_, FileReadType::kReadAsArrayBuffer);
   DCHECK_NE(read_type_, FileReadType::kReadByClient);
 
-  if (!raw_data_.IsValid() || (error_code_ != FileErrorCode::kOK) ||
-      is_raw_data_converted_) {
-    return string_result_;
-  }
+  // In practice, no clients are making those calls for partial data.
+  // In case partial data is interesting, clients will use kReadByClient.
+  CHECK(finished_loading_);
 
-  switch (read_type_) {
-    case FileReadType::kReadAsArrayBuffer:
-      // No conversion is needed.
-      return string_result_;
-    case FileReadType::kReadAsBinaryString:
-      SetStringResult(String(static_cast<const char*>(raw_data_.Data()),
-                             static_cast<size_t>(bytes_loaded_)));
-      break;
-    case FileReadType::kReadAsText:
-      SetStringResult(ConvertToText());
-      break;
-    case FileReadType::kReadAsDataURL:
-      // Partial data is not supported when reading as data URL.
-      if (finished_loading_)
-        SetStringResult(ConvertToDataURL());
-      break;
-    default:
-      NOTREACHED();
-  }
-
-  if (finished_loading_) {
-    DCHECK(is_raw_data_converted_);
-    raw_data_.Reset();
-  }
-  return string_result_;
+  return ToString(std::move(raw_data_), read_type_, encoding_, data_type_);
 }
 
 ArrayBufferContents FileReaderLoader::TakeContents() {
   if (!raw_data_.IsValid() || error_code_ != FileErrorCode::kOK)
     return ArrayBufferContents();
 
-  DCHECK(finished_loading_);
+  CHECK(finished_loading_);
   ArrayBufferContents contents = std::move(raw_data_);
   return contents;
 }
@@ -202,10 +248,6 @@ void FileReaderLoader::Cleanup() {
   // If we get any error, we do not need to keep a buffer around.
   if (error_code_ != FileErrorCode::kOK) {
     raw_data_.Reset();
-    string_result_ = "";
-    is_raw_data_converted_ = true;
-    decoder_.reset();
-    array_buffer_result_ = nullptr;
   }
 }
 
@@ -276,7 +318,6 @@ void FileReaderLoader::OnReceivedData(const char* data, unsigned data_length) {
   memcpy(static_cast<char*>(raw_data_.Data()) + bytes_loaded_, data,
          data_length);
   bytes_loaded_ += data_length;
-  is_raw_data_converted_ = false;
 
   if (client_)
     client_->DidReceiveData();
@@ -285,7 +326,6 @@ void FileReaderLoader::OnReceivedData(const char* data, unsigned data_length) {
 void FileReaderLoader::OnFinishLoading() {
   if (read_type_ != FileReadType::kReadByClient && raw_data_.IsValid()) {
     DCHECK_EQ(bytes_loaded_, raw_data_.DataLength());
-    is_raw_data_converted_ = false;
   }
 
   finished_loading_ = true;
@@ -385,61 +425,6 @@ void FileReaderLoader::OnDataPipeReadable(MojoResult result) {
       return;
     }
   }
-}
-
-String FileReaderLoader::ConvertToText() {
-  if (!bytes_loaded_)
-    return "";
-
-  // Decode the data.
-  // The File API spec says that we should use the supplied encoding if it is
-  // valid. However, we choose to ignore this requirement in order to be
-  // consistent with how WebKit decodes the web content: always has the BOM
-  // override the provided encoding.
-  // FIXME: consider supporting incremental decoding to improve the perf.
-  StringBuilder builder;
-  if (!decoder_) {
-    decoder_ = std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
-        TextResourceDecoderOptions::kPlainTextContent,
-        encoding_.IsValid() ? encoding_ : UTF8Encoding()));
-  }
-  builder.Append(decoder_->Decode(static_cast<const char*>(raw_data_.Data()),
-                                  static_cast<size_t>(bytes_loaded_)));
-
-  if (finished_loading_)
-    builder.Append(decoder_->Flush());
-
-  return builder.ToString();
-}
-
-String FileReaderLoader::ConvertToDataURL() {
-  StringBuilder builder;
-  builder.Append("data:");
-
-  if (!bytes_loaded_)
-    return builder.ToString();
-
-  if (data_type_.empty()) {
-    // Match Firefox in defaulting to application/octet-stream when the MIME
-    // type is unknown. See https://crbug.com/48368.
-    builder.Append("application/octet-stream");
-  } else {
-    builder.Append(data_type_);
-  }
-  builder.Append(";base64,");
-
-  Vector<char> out;
-  Base64Encode(base::make_span(static_cast<const uint8_t*>(raw_data_.Data()),
-                               base::checked_cast<unsigned>(bytes_loaded_)),
-               out);
-  builder.Append(out.data(), out.size());
-
-  return builder.ToString();
-}
-
-void FileReaderLoader::SetStringResult(const String& result) {
-  is_raw_data_converted_ = true;
-  string_result_ = result;
 }
 
 }  // namespace blink
