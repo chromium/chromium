@@ -98,7 +98,6 @@ mojom::MouseSettingsPtr GetMouseSettingsFromPrefs(
 }
 
 mojom::MouseSettingsPtr RetrieveMouseSettings(
-    PrefService* pref_service,
     const mojom::Mouse& mouse,
     const base::Value::Dict& settings_dict) {
   mojom::MouseSettingsPtr settings = mojom::MouseSettings::New();
@@ -211,8 +210,7 @@ void MousePrefHandlerImpl::InitializeMouseSettings(PrefService* pref_service,
   ForceMouseSettingPersistence force_persistence;
 
   if (settings_dict) {
-    mouse->settings =
-        RetrieveMouseSettings(pref_service, *mouse, *settings_dict);
+    mouse->settings = RetrieveMouseSettings(*mouse, *settings_dict);
   } else if (Shell::Get()->input_device_tracker()->WasDevicePreviouslyConnected(
                  InputDeviceTracker::InputDeviceCategory::kMouse,
                  mouse->device_key)) {

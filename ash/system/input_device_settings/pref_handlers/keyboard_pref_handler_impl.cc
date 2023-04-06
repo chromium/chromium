@@ -138,7 +138,6 @@ mojom::KeyboardSettingsPtr GetKeyboardSettingsFromGlobalPrefs(
 }
 
 mojom::KeyboardSettingsPtr RetrieveKeyboardSettings(
-    PrefService* pref_service,
     const mojom::KeyboardPolicies& keyboard_policies,
     const mojom::Keyboard& keyboard,
     const base::Value::Dict& settings_dict) {
@@ -263,8 +262,8 @@ void KeyboardPrefHandlerImpl::InitializeKeyboardSettings(
   ForceKeyboardSettingPersistence force_persistence;
 
   if (settings_dict) {
-    keyboard->settings = RetrieveKeyboardSettings(
-        pref_service, keyboard_policies, *keyboard, *settings_dict);
+    keyboard->settings =
+        RetrieveKeyboardSettings(keyboard_policies, *keyboard, *settings_dict);
   } else if (Shell::Get()->input_device_tracker()->WasDevicePreviouslyConnected(
                  InputDeviceTracker::InputDeviceCategory::kKeyboard,
                  keyboard->device_key)) {
