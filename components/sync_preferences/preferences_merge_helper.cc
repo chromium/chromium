@@ -50,21 +50,25 @@ base::Value MergePreference(const PrefModelAssociatorClient* client,
                             const base::Value& server_value) {
   if (client) {
     if (client->IsMergeableListPreference(pref_name)) {
+      if (!server_value.is_list()) {
+        // Server value is corrupt or missing, keep pref value unchanged.
+        // TODO(crbug.com/1430854): Investigate in which scenarios can the value
+        // be corrupt.
+        return local_value.Clone();
+      }
       if (local_value.is_none()) {
         return server_value.Clone();
-      }
-      if (server_value.is_none()) {
-        return local_value.Clone();
       }
       return base::Value(
           MergeListValues(local_value.GetList(), server_value.GetList()));
     }
     if (client->IsMergeableDictionaryPreference(pref_name)) {
+      if (!server_value.is_dict()) {
+        // Server value is corrupt or missing, keep pref value unchanged.
+        return local_value.Clone();
+      }
       if (local_value.is_none()) {
         return server_value.Clone();
-      }
-      if (server_value.is_none()) {
-        return local_value.Clone();
       }
       return base::Value(
           MergeDictionaryValues(local_value.GetDict(), server_value.GetDict()));
