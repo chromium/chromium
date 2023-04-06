@@ -13,6 +13,7 @@
 
 #include <base/logging.h>
 #include "base/containers/span.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
@@ -190,9 +191,16 @@ void SyncStatusTracker::RemoveNode(const Node* node) {
   if (node->id) {
     id_to_leaf_.erase(node->id);
   }
+  DCHECK(node->children.size() == 0);
   parent->children.erase(node->path_part);
   Node* grandparent = parent->parent;
   while (grandparent && parent->IsLeaf()) {
+    if (parent->id) {
+      LOG(ERROR)
+          << "Ancestor nodes should not have ids or be tracked in id_to_leaf_";
+      base::debug::DumpWithoutCrashing();
+      id_to_leaf_.erase(parent->id);
+    }
     grandparent->children.erase(parent->path_part);
     parent = grandparent;
     grandparent = grandparent->parent;
@@ -212,7 +220,13 @@ void SyncStatusTracker::SetNodeState(Node* const node,
                                      const SyncStatus status,
                                      const int64_t transferred = 0,
                                      const int64_t total = 0) {
-  const NodeState& delta = node->state.Set(status, transferred, total);
+  if (!node) {
+    LOG(ERROR) << "Node is a null pointer.";
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
+
+  const NodeState delta = node->state.Set(status, transferred, total);
   node->last_update = base::Time::Now();
 
   // Nothing to do if there were no changes.

@@ -147,6 +147,8 @@ class DriveFsHost::MountState : public DriveFsSession,
   }
 
   void DispatchBatchIndividualSyncEvents() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(host_->sequence_checker_);
+
     if (!base::FeatureList::IsEnabled(ash::features::kFilesInlineSyncStatus)) {
       return;
     }
@@ -179,6 +181,8 @@ class DriveFsHost::MountState : public DriveFsSession,
   }
 
   void OnSyncingStatusUpdate(mojom::SyncingStatusPtr status) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(host_->sequence_checker_);
+
     if (base::FeatureList::IsEnabled(ash::features::kFilesInlineSyncStatus)) {
       ResetThrottleTimer();
 
