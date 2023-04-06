@@ -13,15 +13,22 @@ import '../../controls/settings_toggle_button.js';
 
 import {getHotspotConfig} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.js';
 import {HotspotAllowStatus, HotspotInfo, HotspotState, SetHotspotConfigResult} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js';
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import {routes} from '../os_settings_routes.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
+import {Route} from '../router.js';
 
 import {getTemplate} from './hotspot_subpage.html.js';
 
-const SettingsHotspotSubpageElementBase = I18nMixin(PolymerElement);
+const SettingsHotspotSubpageElementBase =
+    DeepLinkingMixin(RouteObserverMixin(PrefsMixin(I18nMixin(PolymerElement))));
 
 class SettingsHotspotSubpageElement extends SettingsHotspotSubpageElementBase {
   static get is() {
@@ -61,12 +68,30 @@ class SettingsHotspotSubpageElement extends SettingsHotspotSubpageElementBase {
           };
         },
       },
+
+      /**
+       * Used by DeepLinkingMixin to focus this page's deep links.
+       */
+      supportedSettingIds: {
+        type: Object,
+        value: () => new Set<Setting>(
+            [Setting.kHotspotOnOff, Setting.kHotspotAutoDisabled]),
+      },
     };
   }
 
   hotspotInfo: HotspotInfo|undefined;
   private isHotspotToggleOn_: boolean;
   private autoDisableVirtualPref_: chrome.settingsPrivate.PrefObject<boolean>;
+
+  override currentRouteChanged(route: Route, _oldRoute?: Route) {
+    // Does not apply to this page.
+    if (route !== routes.HOTSPOT_DETAIL) {
+      return;
+    }
+
+    this.attemptDeepLink();
+  }
 
   private onHotspotInfoChanged_(
       newValue: HotspotInfo, _oldValue: HotspotInfo|undefined): void {

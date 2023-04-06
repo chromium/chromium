@@ -26,7 +26,8 @@
       disabled="[[isToggleDisabled_(hotspotInfo.allowStatus,
           hotspotInfo.state)]]"
       on-change="onHotspotToggleChange_"
-      aria-label="$i18n{hotspotToggleA11yLabel}">
+      aria-label="$i18n{hotspotToggleA11yLabel}"
+      deep-link-focus-id$="[[Setting.kHotspotOnOff]]">
   </cr-toggle>
 </div>
 <div id="hotspotConfigurationRow" class="settings-box two-line">
@@ -38,7 +39,7 @@
       </div>
     </div>
   </div>
-  <cr-button id="configureButton" 
+  <cr-button id="configureButton"
       hidden$="[[!showHotspotAutoDisableToggle_(hotspotInfo)]]"
       on-click="onHotspotConfigureTap_">
     $i18n{hotspotConfigureButton}
@@ -50,7 +51,8 @@
       label="$i18n{hotspotAutoDisableLabel}"
       sub-label="$i18n{hotspotAutoDisableSublabel}"
       pref="{{autoDisableVirtualPref_}}"
-      on-change="onAutoDisableChange_">
+      on-change="onAutoDisableChange_"
+      deep-link-focus-id$="[[Setting.kHotspotAutoDisabled]]">
   </settings-toggle-button>
 </template>
 <div id="connectedDeviceCountRow"

@@ -4,13 +4,14 @@
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
-import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {Router, routes, settingMojom} from 'chrome://os-settings/chromeos/os_settings.js';
 import {setHotspotConfigForTesting} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.js';
 import {HotspotAllowStatus, HotspotControlResult, HotspotState, SetHotspotConfigResult} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js';
 import {FakeHotspotConfig} from 'chrome://resources/ash/common/hotspot/fake_hotspot_config.js';
+import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 suite('HotspotSubpageTest', function() {
@@ -34,7 +35,7 @@ suite('HotspotSubpageTest', function() {
    * @param {URLSearchParams=} opt_urlParams
    * @return {!Promise}
    */
-  function init() {
+  function init(opt_urlParams) {
     PolymerTest.clearBody();
     hotspotSubpage = document.createElement('settings-hotspot-subpage');
     document.body.appendChild(hotspotSubpage);
@@ -60,7 +61,7 @@ suite('HotspotSubpageTest', function() {
       },
     });
 
-    Router.getInstance().navigateTo(routes.HOTSPOT_DETAIL);
+    Router.getInstance().navigateTo(routes.HOTSPOT_DETAIL, opt_urlParams);
     return flushAsync();
   }
 
@@ -262,4 +263,33 @@ suite('HotspotSubpageTest', function() {
         configureButton.click();
         await Promise.all([showHotspotConfigDialogEvent, flushTasks()]);
       });
+
+  test('Deep link to hotspot on/off toggle', async function() {
+    const params = new URLSearchParams();
+    params.append('settingId', settingMojom.Setting.kHotspotOnOff);
+    await init(params);
+
+    const deepLinkElement =
+        hotspotSubpage.shadowRoot.querySelector('#enableHotspotToggle');
+    await waitAfterNextRender(hotspotSubpage);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'On startup enable/disable Hotspot toggle should be focused for ' +
+            'settingId=30.');
+  });
+
+  test('Deep link to auto disable hotspot toggle', async function() {
+    const params = new URLSearchParams();
+    params.append('settingId', settingMojom.Setting.kHotspotAutoDisabled);
+    await init(params);
+
+    const deepLinkElement =
+        hotspotSubpage.shadowRoot.querySelector('#hotspotAutoDisableToggle')
+            .shadowRoot.querySelector('cr-toggle');
+    await waitAfterNextRender(hotspotSubpage);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'On startup auto turn off hotspot toggle should be focused for ' +
+            'settingId=31.');
+  });
 });
