@@ -158,15 +158,25 @@ void DidGenerateCacheableMetadataInCacheStorageOnUI(
     const GURL& url,
     base::Time expected_response_time,
     mojo_base::BigBuffer data,
+    const url::Origin& cache_storage_origin,
     const std::string& cache_storage_cache_name,
     int render_process_id,
-    const blink::StorageKey& storage_key,
     storage::mojom::CacheStorageControl* cache_storage_control_for_testing,
     mojo::ReportBadMessageCallback bad_message_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto* render_process_host = RenderProcessHost::FromID(render_process_id);
   if (!render_process_host)
     return;
+
+  // We cannot trust the renderer to give us the correct origin here.  Validate
+  // it against the ChildProcessSecurityPolicy.
+  bool origin_allowed =
+      ChildProcessSecurityPolicyImpl::GetInstance()->CanAccessDataForOrigin(
+          render_process_id, cache_storage_origin);
+  if (!origin_allowed) {
+    std::move(bad_message_callback).Run("Bad cache_storage origin.");
+    return;
+  }
 
   int64_t trace_id = blink::cache_storage::CreateTraceId();
   TRACE_EVENT_WITH_FLOW1(
@@ -183,9 +193,12 @@ void DidGenerateCacheableMetadataInCacheStorageOnUI(
           : render_process_host->GetStoragePartition()
                 ->GetCacheStorageControl();
 
+  // TODO(https://crbug.com/1199077): `CodeCacheHostImpl` will need to get the
+  // real StorageKey somehow.
   cache_storage_control->AddReceiver(
       cross_origin_embedder_policy, mojo::NullRemote(),
-      storage::BucketLocator::ForDefaultBucket(storage_key),
+      storage::BucketLocator::ForDefaultBucket(
+          blink::StorageKey::CreateFirstParty(cache_storage_origin)),
       storage::mojom::CacheStorageOwner::kCacheAPI,
       remote.BindNewPipeAndPassReceiver());
 
@@ -225,11 +238,10 @@ void AddCodeCacheReceiver(
     scoped_refptr<GeneratedCodeCacheContext> context,
     int render_process_id,
     const net::NetworkIsolationKey& nik,
-    const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver,
     CodeCacheHostImpl::ReceiverSet::CodeCacheHostReceiverHandler handler) {
-  auto host = std::make_unique<CodeCacheHostImpl>(render_process_id, context,
-                                                  nik, storage_key);
+  auto host =
+      std::make_unique<CodeCacheHostImpl>(render_process_id, context, nik);
   auto* raw_host = host.get();
   auto id = receiver_set->Add(std::move(host), std::move(receiver));
   if (handler)
@@ -251,7 +263,6 @@ CodeCacheHostImpl::ReceiverSet::~ReceiverSet() = default;
 void CodeCacheHostImpl::ReceiverSet::Add(
     int render_process_id,
     const net::NetworkIsolationKey& nik,
-    const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver,
     CodeCacheHostReceiverHandler handler) {
   if (!receiver_set_) {
@@ -266,15 +277,14 @@ void CodeCacheHostImpl::ReceiverSet::Add(
       generated_code_cache_context_, FROM_HERE,
       base::BindOnce(&AddCodeCacheReceiver, receiver_set_.get(),
                      generated_code_cache_context_, render_process_id, nik,
-                     storage_key, std::move(receiver), std::move(handler)));
+                     std::move(receiver), std::move(handler)));
 }
 
 void CodeCacheHostImpl::ReceiverSet::Add(
     int render_process_id,
     const net::NetworkIsolationKey& nik,
-    const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver) {
-  Add(render_process_id, nik, storage_key, std::move(receiver),
+  Add(render_process_id, nik, std::move(receiver),
       CodeCacheHostReceiverHandler());
 }
 
@@ -285,12 +295,10 @@ void CodeCacheHostImpl::ReceiverSet::Clear() {
 CodeCacheHostImpl::CodeCacheHostImpl(
     int render_process_id,
     scoped_refptr<GeneratedCodeCacheContext> generated_code_cache_context,
-    const net::NetworkIsolationKey& nik,
-    const blink::StorageKey& storage_key)
+    const net::NetworkIsolationKey& nik)
     : render_process_id_(render_process_id),
       generated_code_cache_context_(std::move(generated_code_cache_context)),
-      network_isolation_key_(nik),
-      storage_key_(storage_key) {
+      network_isolation_key_(nik) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
@@ -367,14 +375,15 @@ void CodeCacheHostImpl::DidGenerateCacheableMetadataInCacheStorage(
     const GURL& url,
     base::Time expected_response_time,
     mojo_base::BigBuffer data,
+    const url::Origin& cache_storage_origin,
     const std::string& cache_storage_cache_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&DidGenerateCacheableMetadataInCacheStorageOnUI, url,
                      expected_response_time, std::move(data),
-                     cache_storage_cache_name, render_process_id_, storage_key_,
-                     cache_storage_control_for_testing_,
+                     cache_storage_origin, cache_storage_cache_name,
+                     render_process_id_, cache_storage_control_for_testing_,
                      mojo::GetBadMessageCallback()));
 }
 

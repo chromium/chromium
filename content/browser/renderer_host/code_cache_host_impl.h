@@ -17,11 +17,14 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 
 class GURL;
+
+namespace url {
+class Origin;
+}
 
 namespace content {
 
@@ -49,12 +52,10 @@ class CONTENT_EXPORT CodeCacheHostImpl : public blink::mojom::CodeCacheHost {
         mojo::UniqueReceiverSet<blink::mojom::CodeCacheHost>&)>;
     void Add(int render_process_id,
              const net::NetworkIsolationKey& nik,
-             const blink::StorageKey& storage_key,
              mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver,
              CodeCacheHostReceiverHandler handler);
     void Add(int render_process_id,
              const net::NetworkIsolationKey& nik,
-             const blink::StorageKey& storage_key,
              mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver);
     void Clear();
 
@@ -71,8 +72,7 @@ class CONTENT_EXPORT CodeCacheHostImpl : public blink::mojom::CodeCacheHost {
   CodeCacheHostImpl(
       int render_process_id,
       scoped_refptr<GeneratedCodeCacheContext> generated_code_cache_context,
-      const net::NetworkIsolationKey& nik,
-      const blink::StorageKey& storage_key);
+      const net::NetworkIsolationKey& nik);
 
   CodeCacheHostImpl(const CodeCacheHostImpl&) = delete;
   CodeCacheHostImpl& operator=(const CodeCacheHostImpl&) = delete;
@@ -97,6 +97,7 @@ class CONTENT_EXPORT CodeCacheHostImpl : public blink::mojom::CodeCacheHost {
       const GURL& url,
       base::Time expected_response_time,
       mojo_base::BigBuffer data,
+      const url::Origin& cache_storage_origin,
       const std::string& cache_storage_cache_name) override;
 
   // Helpers.
@@ -117,9 +118,6 @@ class CONTENT_EXPORT CodeCacheHostImpl : public blink::mojom::CodeCacheHost {
   scoped_refptr<GeneratedCodeCacheContext> generated_code_cache_context_;
 
   const net::NetworkIsolationKey network_isolation_key_;
-
-  // The storage key for the document that created this CodeCache.
-  const blink::StorageKey storage_key_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

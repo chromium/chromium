@@ -199,7 +199,7 @@ void ServiceWorkerHost::CreateCodeCacheHost(
             storage_partition->GetGeneratedCodeCacheContext());
   }
   code_cache_host_receivers_->Add(version_->embedded_worker()->process_id(),
-                                  GetNetworkIsolationKey(), version_->key(),
+                                  GetNetworkIsolationKey(),
                                   std::move(receiver));
 }
 
