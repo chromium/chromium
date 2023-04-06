@@ -14,6 +14,8 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
+import android.widget.FrameLayout;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
@@ -78,12 +80,14 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger.SurfaceType;
+import org.chromium.chrome.features.tasks.SingleTabSwitcherCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -127,6 +131,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     protected final NewTabPageManagerImpl mNewTabPageManager;
     protected final TileGroup.Delegate mTileGroupDelegate;
     private final boolean mIsTablet;
+    private boolean mShownAsHomeSurface;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final NewTabPageUma mNewTabPageUma;
     private final ContextMenuManager mContextMenuManager;
@@ -159,6 +164,10 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     private final Supplier<Toolbar> mToolbarSupplier;
     private final TabModelSelector mTabModelSelector;
     private final TemplateUrlService mTemplateUrlService;
+
+    private SingleTabSwitcherCoordinator mSingleTabSwitcherCoordinator;
+    private ViewGroup mSingleTabCardContainer;
+    private final Activity mActivity;
 
     @Nullable
     private SearchResumptionModuleCoordinator mSearchResumptionModuleCoordinator;
@@ -348,6 +357,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         mConstructedTimeNs = System.nanoTime();
         TraceEvent.begin(TAG);
 
+        mActivity = activity;
         mActivityTabProvider = activityTabProvider;
         mActivityLifecycleDispatcher = lifecycleDispatcher;
         mTab = tab;
@@ -382,11 +392,19 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                 // Showing the NTP is only meaningful when the page has been loaded already.
                 if (mIsLoaded) recordNTPShown();
                 mNewTabPageLayout.onSwitchToForeground();
+                // We update the visibility of the single tab card to false here rather than
+                // in function onHidden in order to keep the new tab page's thumbnail unchanged
+                // in the grid tab switcher. Otherwise, it would show a blank space instead of
+                // single tab car in the thumbnail.
+                if (!mShownAsHomeSurface && mSingleTabSwitcherCoordinator != null) {
+                    setSingleTabCardVisibility(false);
+                }
             }
 
             @Override
             public void onHidden(Tab tab, @TabHidingType int type) {
                 if (mIsLoaded) recordNTPHidden();
+                mShownAsHomeSurface = false;
             }
 
             @Override
@@ -898,6 +916,9 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         if (mSearchResumptionModuleCoordinator != null) {
             mSearchResumptionModuleCoordinator.destroy();
         }
+        if (mSingleTabSwitcherCoordinator != null) {
+            destroySingleTabCard();
+        }
         mIsDestroyed = true;
     }
 
@@ -1008,6 +1029,21 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                 .getActionDelegateForTesting(); // IN-TEST
     }
 
+    @VisibleForTesting
+    TabObserver getTabObserverForTesting() {
+        return mTabObserver;
+    }
+
+    @VisibleForTesting
+    void setShownAsHomeSurfaceForTesting(boolean shownAsHomeSurface) {
+        mShownAsHomeSurface = shownAsHomeSurface;
+    }
+
+    @VisibleForTesting
+    boolean getShownAsHomeSurfaceForTesting() {
+        return mShownAsHomeSurface;
+    }
+
     /**
      * @param isTopMargin True to return the top margin; False to return bottom margin.
      * @return The top margin or bottom margin of the logo.
@@ -1031,5 +1067,68 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                 SearchResumptionModuleUtils.mayCreateSearchResumptionModule(mNewTabPageLayout,
                         provider, mTabModelSelector.getCurrentModel(), mTab, profile,
                         R.id.search_resumption_module_container_stub);
+    }
+
+    /**
+     * Show the module when the current new tab page is been used as the home surface.
+     */
+    @VisibleForTesting
+    void showHomeSurfaceUI() {
+        if (mSingleTabSwitcherCoordinator == null) {
+            initializeSingleTabCard();
+        }
+    }
+
+    /**
+     * Initialize the single tab card.
+     */
+    private void initializeSingleTabCard() {
+        if (mTabModelSelector.isTabStateInitialized()) {
+            initializeSingleTabCardImpl();
+        } else {
+            TabModelSelectorObserver tabModelSelectorObserver = new TabModelSelectorObserver() {
+                @Override
+                public void onTabStateInitialized() {
+                    initializeSingleTabCardImpl();
+                    mTabModelSelector.removeObserver(this);
+                }
+            };
+            mTabModelSelector.addObserver(tabModelSelectorObserver);
+        }
+    }
+
+    /**
+     * Show the module when the current new tab page is been used as the home surface.
+     */
+    private void initializeSingleTabCardImpl() {
+        Tab mostRecentTab =
+                TabModelUtils.getMostRecentTab(mTabModelSelector.getModel(false), mTab.getId());
+        if (mostRecentTab == null) {
+            return;
+        }
+        mSingleTabCardContainer = (FrameLayout) ((ViewStub) mNewTabPageLayout.findViewById(
+                                                         R.id.tab_switcher_module_container_stub))
+                                          .inflate();
+        mSingleTabSwitcherCoordinator = new SingleTabSwitcherCoordinator(
+                mActivity, mSingleTabCardContainer, mTabModelSelector, true, mostRecentTab);
+        mSingleTabSwitcherCoordinator.initWithNative();
+        setSingleTabCardVisibility(true);
+    }
+
+    /* Set the visibility of the single tab card.
+     * @param isVisible Whether the single tab card is visible or not.
+     */
+    void setSingleTabCardVisibility(boolean isVisible) {
+        if (mSingleTabSwitcherCoordinator != null) {
+            mSingleTabSwitcherCoordinator.setVisibility(isVisible);
+        }
+    }
+
+    /* Destroy the single tab card on the {@link NewTabPageLayout}. */
+    @VisibleForTesting
+    void destroySingleTabCard() {
+        mSingleTabCardContainer.removeAllViews();
+        setSingleTabCardVisibility(false);
+        mSingleTabSwitcherCoordinator = null;
     }
 }

@@ -63,6 +63,13 @@ found in the LICENSE file.
         android:inflatedId="@+id/tile_grid_placeholder"
         android:layout="@layout/new_tab_page_tile_grid_placeholder" />
 
+    <!-- Single tab card -->
+    <ViewStub
+        android:id="@+id/tab_switcher_module_container_stub"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout="@layout/tab_switcher_module_container" />
+
     <ViewStub
         android:id="@+id/search_resumption_module_container_stub"
         android:layout_width="match_parent"
