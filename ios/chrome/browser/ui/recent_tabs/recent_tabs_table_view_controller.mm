@@ -278,12 +278,27 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 // Returns YES if the user cannot turn on sync for enterprise policy reasons.
 - (BOOL)isSyncDisabledByAdministrator {
   DCHECK(self.syncService);
-  bool syncDisabledPolicy = self.syncService->GetDisableReasons().Has(
-      syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
+  if (self.syncService->GetDisableReasons().Has(
+          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
+    // Return YES if the SyncDisabled policy is enabled.
+    return YES;
+  }
+
   PrefService* prefService = self.browserState->GetPrefs();
-  bool syncTypesDisabledPolicy =
-      IsManagedSyncDataType(prefService, SyncSetupService::kSyncOpenTabs);
-  return syncDisabledPolicy || syncTypesDisabledPolicy;
+  DCHECK(prefService);
+  if (IsManagedSyncDataType(prefService, SyncSetupService::kSyncOpenTabs)) {
+    // Return YES if the data type is disabled by the SyncTypesListDisabled
+    // policy.
+    return YES;
+  }
+
+  DCHECK(self.browserState);
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForBrowserState(self.browserState);
+  DCHECK(authService);
+  // Return NO is sign-in is disabled by the BrowserSignin policy.
+  return authService->GetServiceStatus() ==
+         AuthenticationService::ServiceStatus::SigninDisabledByPolicy;
 }
 
 #pragma mark - SyncObserverModelBridge

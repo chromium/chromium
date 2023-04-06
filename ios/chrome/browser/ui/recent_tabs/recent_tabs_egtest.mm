@@ -12,6 +12,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 #import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
+#import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
@@ -444,6 +445,26 @@ GURL TestPageURL() {
   [SigninEarlGreyUI verifySigninPromoNotVisible];
 
   // Check that the 'Other Devices' section is managed.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
+                                IDS_IOS_RECENT_TABS_DISABLED_BY_ORGANIZATION)),
+                            grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
+}
+
+// Tests that the sign-in promo isn't shown and the 'Other Devices' section has
+// the managed notice footer when sign-in is disabled by the BrowserSignin
+// policy.
+- (void)testSignInDisabledByPolicy {
+  policy_test_utils::SetPolicy(static_cast<int>(BrowserSigninMode::kDisabled),
+                               policy::key::kBrowserSignin);
+
+  OpenRecentTabsPanel();
+
+  // Check that the sign-in promo is not visible.
+  [SigninEarlGreyUI verifySigninPromoNotVisible];
+
+  // Check that the 'Other Devices' section has the managed notice.
   [[EarlGrey selectElementWithMatcher:
                  grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
                                 IDS_IOS_RECENT_TABS_DISABLED_BY_ORGANIZATION)),
