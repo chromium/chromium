@@ -92,6 +92,7 @@ void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
           std::fabs(details.scroll_x_hint())) {
         return;
       }
+      is_drag_active_ = false;
       if (details.scroll_y_hint() > 0 &&
           HitTestRect(active_window, screen_location)) {
         // We may need to recreate `multitask_menu_` on the new active window.
@@ -120,6 +121,7 @@ void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
       }
       break;
     case ui::ET_GESTURE_SCROLL_END:
+    case ui::ET_GESTURE_END:
       // If an unsupported gesture is sent, make sure we reset `is_drag_active_`
       // to stop consuming events.
       if (is_drag_active_ && multitask_menu_) {
@@ -138,9 +140,12 @@ void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
       MaybeCreateMultitaskMenu(active_window);
       multitask_menu_->Animate(details.velocity_y() > 0);
       event->SetHandled();
-      is_drag_active_ = false;
       break;
     default:
+      if (is_drag_active_ && multitask_menu_) {
+        // Do not reset `is_drag_active_` to handle until the gesture ends.
+        event->SetHandled();
+      }
       break;
   }
 }
