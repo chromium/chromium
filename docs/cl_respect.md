@@ -98,8 +98,10 @@ though you may have addressed that comment in a new patchset, don't submit the
 CL until you have their LGTM, unless the reviewer gave the OK to do so (e.g.
 when the reviewer delegates the reviewing task to someone else). If you need to
 land a CL urgently and one of your reviewers isn't available (e.g. OOO), submit
-your CL, and send your reviewer a note to show that you've considered their
-opinions & are willing to act on their additional comments in a followup CL.
+your CL, and send your reviewer a note; in the note, be sure to include the
+reason why you had to land the CL, and show that you've considered their
+opinions & are ready to promptly act on their additional comments in a followup
+CL.
 
 #### What to do if it's going wrong
 
