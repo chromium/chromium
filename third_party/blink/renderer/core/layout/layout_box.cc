@@ -129,7 +129,6 @@ static const unsigned kBackgroundObscurationTestMaxDepth = 4;
 struct SameSizeAsLayoutBox : public LayoutBoxModelObject {
   LayoutRect frame_rect;
   LayoutSize previous_size;
-  LayoutUnit intrinsic_content_logical_height;
   LayoutRectOutsets margin_box_outsets;
   MinMaxSizes intrinsic_logical_widths;
   LayoutUnit intrinsic_logical_widths_initial_block_size;
@@ -476,7 +475,6 @@ void LayoutBoxRareData::Trace(Visitor* visitor) const {
 
 LayoutBox::LayoutBox(ContainerNode* node)
     : LayoutBoxModelObject(node),
-      intrinsic_content_logical_height_(-1),
       intrinsic_logical_widths_initial_block_size_(LayoutUnit::Min()) {
   SetIsBox();
   if (blink::IsA<HTMLLegendElement>(node))
@@ -4146,12 +4144,6 @@ void LayoutBox::ComputeMarginsForDirection(MarginDirection flow_direction,
 DISABLE_CFI_PERF
 void LayoutBox::UpdateLogicalHeight() {
   NOT_DESTROYED();
-  if (!HasOverrideLogicalHeight()) {
-    // If we have an override height, our children will have sized themselves
-    // relative to our override height, which would make our intrinsic size
-    // incorrect (too big).
-    intrinsic_content_logical_height_ = ContentLogicalHeight();
-  }
 
   LogicalExtentComputedValues computed_values;
   ComputeLogicalHeight(computed_values);
@@ -4177,11 +4169,6 @@ void LayoutBox::ComputeLogicalHeight(
       // <textarea>'s intrinsic size should ignore scrollbar existence.
       if (!IsTextArea()) {
         height += ComputeLogicalScrollbars().BlockSum();
-      }
-      // FIXME: The logical height of the inner editor box should have been
-      // added before calling ComputeLogicalHeight to avoid this hack.
-      if (IsTextControl()) {
-        SetIntrinsicContentLogicalHeight(default_height);
       }
     } else if (ShouldApplySizeContainment()) {
       height = BorderAndPaddingLogicalHeight() +

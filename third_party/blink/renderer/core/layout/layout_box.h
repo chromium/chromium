@@ -1311,12 +1311,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return StyleRef().IsHorizontalWritingMode() ? IntrinsicSize().Height()
                                                 : IntrinsicSize().Width();
   }
-  // TODO(1229581): Remove this function, and intrinsic_content_logical_height_.
-  virtual LayoutUnit IntrinsicContentLogicalHeight() const {
-    NOT_DESTROYED();
-    NOTREACHED();
-    return LayoutUnit();
-  }
 
   // Whether or not the element shrinks to its intrinsic width (rather than
   // filling the width of a containing block). HTML4 buttons, <select>s,
@@ -1732,12 +1726,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     NOT_DESTROYED();
     if (IsFloating())
       RemoveFloatingOrPositionedChildFromBlockLists();
-  }
-
-  void SetIntrinsicContentLogicalHeight(
-      LayoutUnit intrinsic_content_logical_height) const {
-    NOT_DESTROYED();
-    intrinsic_content_logical_height_ = intrinsic_content_logical_height;
   }
 
   bool CanRenderBorderImage() const;
@@ -2218,11 +2206,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
  private:
   // Previous value of frame_size_, updated after paint invalidation.
   LayoutSize previous_size_;
-
-  // Our intrinsic height, used for min-height: min-content etc. Maintained by
-  // updateLogicalHeight. This is logicalHeight() before it is clamped to
-  // min/max.
-  mutable LayoutUnit intrinsic_content_logical_height_;
 
  protected:
   MinMaxSizes intrinsic_logical_widths_;
