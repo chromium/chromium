@@ -460,10 +460,7 @@ VideoDecoder::Result H264Decoder::StartNewFrame(
   struct v4l2_ext_controls ext_ctrls = {
       .count = (sizeof(ctrls) / sizeof(ctrls[0])), .controls = ctrls};
 
-  if (!v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, &ext_ctrls)) {
-    VLOG(4) << "VIDIOC_S_EXT_CTRLS failed.";
-    return VideoDecoder::kError;
-  }
+  v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, &ext_ctrls);
 
   memset(v4l2_decode_param->dpb, 0, sizeof(v4l2_decode_param->dpb));
   size_t i = 0;
@@ -646,10 +643,7 @@ VideoDecoder::Result H264Decoder::FinishFrame(
   struct v4l2_ext_controls ext_ctrls = {
       .count = (sizeof(ctrls) / sizeof(ctrls[0])), .controls = ctrls};
 
-  if (!v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, &ext_ctrls)) {
-    VLOG(4) << "VIDIOC_S_EXT_CTRLS failed.";
-    return VideoDecoder::kError;
-  }
+  v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, &ext_ctrls);
 
   // Picture is a reference picture.
   // H.264 section 8.2.4.
@@ -713,10 +707,7 @@ VideoDecoder::Result H264Decoder::FinishFrame(
       return VideoDecoder::kError;
     }
 
-    if (!v4l2_ioctl_->MediaRequestIocQueue(OUTPUT_queue_)) {
-      VLOG(4) << "MEDIA_REQUEST_IOC_QUEUE failed.";
-      return VideoDecoder::kError;
-    }
+    v4l2_ioctl_->MediaRequestIocQueue(OUTPUT_queue_);
 
     // If the outputted picture is not a reference picture, it doesn't have
     // to remain in the DPB and can be removed.
@@ -846,10 +837,8 @@ VideoDecoder::Result H264Decoder::DecodeNextFrame(std::vector<uint8_t>& y_plane,
     return VideoDecoder::kEOStream;
 
   uint32_t buffer_id;
-  if (!v4l2_ioctl_->DQBuf(CAPTURE_queue_, &buffer_id)) {
-    VLOG(4) << "VIDIOC_DQBUF failed for CAPTURE queue";
-    return VideoDecoder::kError;
-  }
+  v4l2_ioctl_->DQBuf(CAPTURE_queue_, &buffer_id);
+
   // Keeps track of which indices are currently dequeued in the
   // CAPTURE queue. This will be used to determine which indices
   // can/cannot be refreshed.
@@ -879,16 +868,11 @@ VideoDecoder::Result H264Decoder::DecodeNextFrame(std::vector<uint8_t>& y_plane,
     CAPTURE_queue_->QueueBufferId(reusable_buffer_slot);
   }
 
-  if (!v4l2_ioctl_->DQBuf(OUTPUT_queue_, &buffer_id)) {
-    VLOG(4) << "VIDIOC_DQBUF failed for OUTPUT queue.";
-    return VideoDecoder::kError;
-  }
+  v4l2_ioctl_->DQBuf(OUTPUT_queue_, &buffer_id);
+
   CHECK_EQ(buffer_id, uint32_t(0)) << "OUTPUT Queue Index not zero";
 
-  if (!v4l2_ioctl_->MediaRequestIocReinit(OUTPUT_queue_)) {
-    VLOG(4) << "MEDIA_REQUEST_IOC_REINIT failed.";
-    return VideoDecoder::kError;
-  }
+  v4l2_ioctl_->MediaRequestIocReinit(OUTPUT_queue_);
 
   return VideoDecoder::kOk;
 }
