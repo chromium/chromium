@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/exported/web_shared_storage_worklet_thread_impl.h"
 
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
+#include "third_party/blink/renderer/core/workers/threaded_worklet_object_proxy.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
