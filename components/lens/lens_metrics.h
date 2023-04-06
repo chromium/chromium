@@ -10,6 +10,13 @@ namespace lens {
 // Histogram for recording ambient search queries.
 constexpr char kAmbientSearchQueryHistogramName[] = "Search.Ambient.Query";
 
+// Histogram for recording camera open events.
+constexpr char kSearchCameraOpenHistogramName[] = "Search.Image.Camera.Open";
+
+// Histogram for recording camera result events.
+constexpr char kSearchCameraResultHistogramName[] =
+    "Search.Image.Camera.Result";
+
 // Histogram for recording the capture result of Lens Region Search. See enum
 // below for types of results.
 constexpr char kLensRegionSearchCaptureResultHistogramName[] =
@@ -23,6 +30,27 @@ constexpr char kLensRegionSearchRegionViewportProportionHistogramName[] =
 // Histogram for recording the aspect ratio of the captured region.
 constexpr char kLensRegionSearchRegionAspectRatioHistogramName[] =
     "Search.RegionSearch.Lens.RegionAspectRatio";
+
+// Needs to be kept in sync with CameraOpenEntryPoint enum in
+// tools/metrics/histograms/enums.xml.
+enum class CameraOpenEntryPoint {
+  OMNIBOX = 0,
+  NEW_TAB_PAGE = 1,
+  WIDGET = 2,
+  TASKS_SURFACE = 3,
+  KEYBOARD = 4,
+  kMaxValue = KEYBOARD
+};
+
+// Needs to be kept in sync with CameraResult enum in
+// tools/metrics/histograms/enums.xml.
+enum class CameraResult {
+  SUCCESS_CAMERA = 0,
+  SUCCESS_GALLERY_IMAGE = 1,
+  SUCCESS_QR_CODE = 2,
+  DISMISSED = 3,
+  kMaxValue = DISMISSED
+};
 
 // Needs to be kept in sync with AmbientSearchEntryPoint enum in
 // tools/metrics/histograms/enums.xml.
@@ -70,6 +98,12 @@ enum class LensRegionSearchCaptureResult {
 
 // Record an ambient search query along with the entry point that initiated.
 extern void RecordAmbientSearchQuery(AmbientSearchEntryPoint entry_point);
+
+// Record a camera open event with the entry point.
+extern void RecordCameraOpen(CameraOpenEntryPoint entry_point);
+
+// Record a camera result.
+extern void RecordCameraResult(CameraResult result);
 
 }  // namespace lens
 

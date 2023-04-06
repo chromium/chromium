@@ -12,6 +12,8 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/elements/extended_touch_target_button.h"
+#import "ios/chrome/browser/ui/lens/lens_availability.h"
+#import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_views.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_views_utils.h"
 #import "ios/chrome/common/button_configuration_util.h"
@@ -35,6 +37,9 @@
 // The search stack view that is displayed by this view.
 @property(nonatomic, weak) UIStackView* searchStackView;
 
+// The text field that this view is an accessory to.
+@property(nonatomic, weak) UITextField* textField;
+
 // Called when a keyboard shortcut button is pressed.
 - (void)keyboardButtonPressed:(NSString*)title;
 // Creates a button shortcut for `title`.
@@ -52,13 +57,15 @@
 - (instancetype)initWithButtons:(NSArray<NSString*>*)buttonTitles
                        delegate:(id<OmniboxAssistiveKeyboardDelegate>)delegate
                     pasteTarget:(id<UIPasteConfigurationSupporting>)pasteTarget
-             templateURLService:(TemplateURLService*)templateURLService {
+             templateURLService:(TemplateURLService*)templateURLService
+                      textField:(UITextField*)textField {
   self = [super initWithFrame:CGRectZero
                inputViewStyle:UIInputViewStyleKeyboard];
   if (self) {
     _buttonTitles = buttonTitles;
     _delegate = delegate;
     _pasteTarget = pasteTarget;
+    _textField = textField;
     self.translatesAutoresizingMaskIntoConstraints = NO;
     self.allowsSelfSizing = YES;
     self.templateURLService = templateURLService;
@@ -189,6 +196,17 @@
   UIButton* button = base::mac::ObjCCastStrict<UIButton>(sender);
   [[UIDevice currentDevice] playInputClick];
   [_delegate keyPressed:[button currentTitle]];
+}
+
+- (void)didMoveToWindow {
+  [super didMoveToWindow];
+  if (!self.window || ![self.textField isFirstResponder]) {
+    return;
+  }
+  // Log the Lens support status when the keyboard is opened.
+  lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
+      LensEntrypoint::Keyboard,
+      [self isGoogleSearchEngine:self.templateURLService]);
 }
 
 #pragma mark - Setters

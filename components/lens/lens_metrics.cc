@@ -8,6 +8,14 @@
 
 namespace lens {
 
+void RecordCameraOpen(CameraOpenEntryPoint entry_point) {
+  base::UmaHistogramEnumeration(kSearchCameraOpenHistogramName, entry_point);
+}
+
+void RecordCameraResult(CameraResult result) {
+  base::UmaHistogramEnumeration(kSearchCameraResultHistogramName, result);
+}
+
 void RecordAmbientSearchQuery(AmbientSearchEntryPoint entry_point) {
   base::UmaHistogramEnumeration(kAmbientSearchQueryHistogramName, entry_point);
 }
