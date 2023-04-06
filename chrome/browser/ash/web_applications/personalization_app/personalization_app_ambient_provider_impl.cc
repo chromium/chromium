@@ -31,6 +31,7 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/ash/web_applications/personalization_app/ambient_video_albums.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager_factory.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_metrics.h"
@@ -143,20 +144,54 @@ void PersonalizationAppAmbientProviderImpl::SetAmbientModeEnabled(
 }
 
 void PersonalizationAppAmbientProviderImpl::SetAnimationTheme(
-    ash::AmbientTheme animation_theme) {
+    ash::AmbientTheme to_theme) {
   PrefService* pref_service = profile_->GetPrefs();
   DCHECK(pref_service);
-  LogAmbientModeTheme(animation_theme);
+  LogAmbientModeTheme(to_theme);
+  AmbientUiSettings orig_settings = GetCurrentUiSettings();
+  AmbientTheme from_theme = orig_settings.theme();
+  if (from_theme == to_theme) {
+    return;
+  }
+
   // Attempt to retrieve the previously selected video. If not, fallback to the
-  // default video. Only applicable when |animation_theme| is
-  // |AmbientTheme::kVideo|.
-  AmbientUiSettings(animation_theme, GetCurrentUiSettings().video().value_or(
-                                         AmbientVideo::kNewMexico))
+  // default video. Only applicable when target theme is `AmbientTheme::kVideo`.
+  AmbientUiSettings(to_theme,
+                    orig_settings.video().value_or(kDefaultAmbientVideo))
       .WriteToPrefService(*pref_service);
+
+  // `kVideo` theme is special and automatically means a switch to the `kVideo`
+  // topic source. None of the other topic sources are possible with this theme.
+  //
+  // If `settings_` is null, the next call to `FetchSettingsAndAlbums()` will
+  // broadcast the `OnTopicSourceChanged()` call that's being done here.
+  if (settings_ && (to_theme == AmbientTheme::kVideo ||
+                    from_theme == AmbientTheme::kVideo)) {
+    OnTopicSourceChanged();
+  }
 }
 
 void PersonalizationAppAmbientProviderImpl::SetTopicSource(
     ash::AmbientModeTopicSource topic_source) {
+  AmbientTheme current_theme = GetCurrentUiSettings().theme();
+  // The presence of the `kVideo` theme in pref automatically means the `kVideo`
+  // topic source is active. `settings_` should be kept as the server's view of
+  // the user's ambient settings, and `SetAnimationTheme(kVideo)` already
+  // broadcasts an `OnTopicSourceChanged()`, so there's no work to do here.
+  if (current_theme == AmbientTheme::kVideo) {
+    if (topic_source != AmbientModeTopicSource::kVideo) {
+      LOG(ERROR) << "Cannot set topic source to "
+                 << static_cast<int>(topic_source) << " for video theme";
+    }
+    return;
+  }
+
+  if (topic_source == AmbientModeTopicSource::kVideo) {
+    LOG(ERROR) << "Video topic source does not apply to theme "
+               << ToString(current_theme);
+    return;
+  }
+
   // If this is an Art gallery album page, will select art gallery topic source.
   if (topic_source == ash::AmbientModeTopicSource::kArtGallery) {
     MaybeUpdateTopicSource(topic_source);
@@ -230,12 +265,30 @@ void PersonalizationAppAmbientProviderImpl::SetAlbumSelected(
       break;
     }
     case AmbientModeTopicSource::kVideo:
-      NOTIMPLEMENTED();
+      if (!selected) {
+        DVLOG(4) << "Exactly one video must be selected at all times. Setting "
+                    "the desired video to selected==true automatically "
+                    "unselects all other videos.";
+        return;
+      }
+      absl::optional<AmbientVideo> video = FindAmbientVideoByAlbumId(id);
+      if (!video) {
+        ambient_receiver_.ReportBadMessage("Invalid album id.");
+        return;
+      }
+      // Even if the current `AmbientTheme` is not `kVideo`, pref storage can
+      // still be updated with the requested video, and it will be applied
+      // if/when the user selects the video theme later.
+      PrefService* pref_service = profile_->GetPrefs();
+      DCHECK(pref_service);
+      AmbientUiSettings(GetCurrentUiSettings().theme(), *video)
+          .WriteToPrefService(*pref_service);
       break;
   }
 
   UpdateSettings();
   OnTopicSourceChanged();
+  OnAlbumsChanged();
 }
 
 void PersonalizationAppAmbientProviderImpl::SetPageViewed() {
@@ -298,8 +351,8 @@ void PersonalizationAppAmbientProviderImpl::OnTopicSourceChanged() {
   // previews.
   OnPreviewsFetched(std::vector<GURL>());
   if (features::IsPersonalizationJellyEnabled() ||
-      settings_->topic_source == AmbientModeTopicSource::kGooglePhotos ||
-      settings_->topic_source == AmbientModeTopicSource::kVideo) {
+      GetCurrentTopicSource() == AmbientModeTopicSource::kGooglePhotos ||
+      GetCurrentTopicSource() == AmbientModeTopicSource::kVideo) {
     if (is_updating_backend_) {
       // Once settings updated, fetch preview images.
       needs_update_previews_ = true;
@@ -309,7 +362,7 @@ void PersonalizationAppAmbientProviderImpl::OnTopicSourceChanged() {
     }
   }
 
-  ambient_observer_remote_->OnTopicSourceChanged(settings_->topic_source);
+  ambient_observer_remote_->OnTopicSourceChanged(GetCurrentTopicSource());
 }
 
 void PersonalizationAppAmbientProviderImpl::OnAlbumsChanged() {
@@ -349,6 +402,12 @@ void PersonalizationAppAmbientProviderImpl::OnAlbumsChanged() {
     albums.emplace_back(std::move(album));
   }
 
+  // Video:
+  AppendAmbientVideoAlbums(
+      /*currently_selected_video*/ GetCurrentUiSettings().video().value_or(
+          kDefaultAmbientVideo),
+      albums);
+
   ambient_observer_remote_->OnAlbumsChanged(std::move(albums));
 }
 
@@ -363,8 +422,8 @@ bool PersonalizationAppAmbientProviderImpl::IsAmbientModeEnabled() {
   return pref_service->GetBoolean(ash::ambient::prefs::kAmbientModeEnabled);
 }
 
-AmbientUiSettings
-PersonalizationAppAmbientProviderImpl::GetCurrentUiSettings() {
+AmbientUiSettings PersonalizationAppAmbientProviderImpl::GetCurrentUiSettings()
+    const {
   PrefService* pref_service = profile_->GetPrefs();
   DCHECK(pref_service);
   return AmbientUiSettings::ReadFromPrefService(*pref_service);
@@ -374,6 +433,8 @@ void PersonalizationAppAmbientProviderImpl::UpdateSettings() {
   DCHECK(IsAmbientModeEnabled())
       << "Ambient mode must be enabled to update settings";
   DCHECK(settings_);
+  DCHECK_NE(settings_->topic_source, AmbientModeTopicSource::kVideo)
+      << "Ambient backend is not aware of the video topic source";
 
   // Prevent fetch settings callback changing `settings_` and `personal_albums_`
   // while updating.
@@ -528,6 +589,9 @@ void PersonalizationAppAmbientProviderImpl::SyncSettingsAndAlbums() {
 
 void PersonalizationAppAmbientProviderImpl::MaybeUpdateTopicSource(
     ash::AmbientModeTopicSource topic_source) {
+  DCHECK_NE(settings_->topic_source, AmbientModeTopicSource::kVideo)
+      << "Video topic source should automatically get set via the video "
+         "AmbientTheme. Should not be reflected in the server.";
   // If the setting is the same, no need to update.
   if (settings_->topic_source != topic_source) {
     settings_->topic_source = topic_source;
@@ -616,6 +680,16 @@ void PersonalizationAppAmbientProviderImpl::OnAmbientUiVisibilityChanged(
     ash::AmbientUiVisibility visibility) {
   if (ambient_observer_remote_.is_bound()) {
     ambient_observer_remote_->OnAmbientUiVisibilityChanged(visibility);
+  }
+}
+
+AmbientModeTopicSource
+PersonalizationAppAmbientProviderImpl::GetCurrentTopicSource() const {
+  if (GetCurrentUiSettings().theme() == AmbientTheme::kVideo) {
+    return AmbientModeTopicSource::kVideo;
+  } else {
+    DCHECK(settings_);
+    return settings_->topic_source;
   }
 }
 
