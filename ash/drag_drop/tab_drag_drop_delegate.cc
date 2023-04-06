@@ -184,6 +184,12 @@ void TabDragDropDelegate::OnWindowDestroying(aura::Window* window) {
 void TabDragDropDelegate::OnNewBrowserWindowCreated(
     const gfx::Point& location_in_screen,
     aura::Window* new_window) {
+  // `source_window_` could reset to nullptr during the drag.
+  if (!source_window_) {
+    DCHECK(!new_window);
+    return;
+  }
+
   auto is_lacros = IsLacrosWindow(source_window_);
 
   // https://crbug.com/1286203:

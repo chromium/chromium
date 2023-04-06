@@ -62,6 +62,7 @@ class CrosapiNewWindowDelegate : public ash::NewWindowDelegate {
 
     // aura::WindowObserver overrides.
     void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
+    void OnWindowDestroying(aura::Window* window) override;
 
     // WMHelper::ExoWindowObserver overrides.
     void OnExoWindowCreated(aura::Window* window) override;

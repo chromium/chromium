@@ -85,6 +85,11 @@ void CrosapiNewWindowDelegate::WindowObserver::OnWindowVisibilityChanged(
   }
 }
 
+void CrosapiNewWindowDelegate::WindowObserver::OnWindowDestroying(
+    aura::Window* window) {
+  observed_windows_.RemoveObservation(window);
+}
+
 void CrosapiNewWindowDelegate::WindowObserver::SetWindowID(
     const std::string& window_id) {
   window_id_ = window_id;
