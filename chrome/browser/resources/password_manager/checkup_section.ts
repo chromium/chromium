@@ -301,7 +301,8 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
       return 'checkup_result_banner_error';
     }
 
-    if (this.computeIsCheckRunning_()) {
+    if (this.computeIsCheckRunning_() ||
+        this.status_.state === CheckState.NO_PASSWORDS) {
       return 'checkup_result_banner_running';
     }
     if (this.computeIsCheckSuccessful_()) {
