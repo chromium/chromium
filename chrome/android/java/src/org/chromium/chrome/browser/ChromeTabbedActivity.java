@@ -191,6 +191,7 @@ import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.chrome.browser.usage_stats.UsageStatsService;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurface;
+import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceDelegate;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
@@ -1312,6 +1313,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     };
                 }
                 mTabModelOrchestrator.loadState(ignoreIncognitoFiles, onStandardActiveIndexRead);
+                mTabModelOrchestrator.setSkipSavingNonActiveNtps(skipSavingNonActiveNtps());
             }
 
             mInactivityTracker.register(this.getLifecycleDispatcher());
@@ -3091,5 +3093,13 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         assert mInactivityTracker != null;
         return ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
                 isTablet(), getIntent(), mTabModelSelector, mInactivityTracker);
+    }
+
+    /**
+     * Returns whether to skip saving non-active Ntps on tablet. Note: if a NTP is the last active
+     * Tab, it won't be skipped.
+     */
+    private boolean skipSavingNonActiveNtps() {
+        return StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(isTablet());
     }
 }
