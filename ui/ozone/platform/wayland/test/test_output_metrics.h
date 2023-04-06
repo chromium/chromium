@@ -21,6 +21,11 @@ struct TestOutputMetrics {
   // Creates a test metrics object with physical and logical bounds set to
   // `bounds`.
   explicit TestOutputMetrics(const gfx::Rect& bounds);
+  TestOutputMetrics(const TestOutputMetrics&) = delete;
+  TestOutputMetrics& operator=(const TestOutputMetrics&) = delete;
+  TestOutputMetrics(TestOutputMetrics&&);
+  TestOutputMetrics& operator=(TestOutputMetrics&&);
+  virtual ~TestOutputMetrics();
 
   // Output metrics
   gfx::Size wl_physical_size = gfx::Size(800, 600);
@@ -35,6 +40,7 @@ struct TestOutputMetrics {
   // AuraOutput metrics
   int64_t aura_display_id;
   gfx::Insets aura_logical_insets;
+  float aura_device_scale_factor = 1;
   wl_output_transform aura_logical_transform = WL_OUTPUT_TRANSFORM_NORMAL;
 };
 

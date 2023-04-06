@@ -19,4 +19,10 @@ TestOutputMetrics::TestOutputMetrics(const gfx::Rect& bounds)
       xdg_logical_origin(bounds.origin()),
       aura_display_id(display_id_counter++) {}
 
+TestOutputMetrics::TestOutputMetrics(TestOutputMetrics&&) = default;
+
+TestOutputMetrics& TestOutputMetrics::operator=(TestOutputMetrics&&) = default;
+
+TestOutputMetrics::~TestOutputMetrics() = default;
+
 }  // namespace wl

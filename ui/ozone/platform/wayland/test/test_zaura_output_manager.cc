@@ -6,6 +6,7 @@
 
 #include <aura-shell-server-protocol.h>
 
+#include "base/bit_cast.h"
 #include "ui/base/wayland/wayland_display_util.h"
 #include "ui/ozone/platform/wayland/test/test_output_metrics.h"
 
@@ -51,6 +52,11 @@ void TestZAuraOutputManager::SendOutputMetrics(
   zaura_output_manager_send_insets(resource(), output_resource, insets.top(),
                                    insets.left(), insets.bottom(),
                                    insets.right());
+
+  const int32_t bit_cast_value =
+      base::bit_cast<uint32_t>(metrics.aura_device_scale_factor);
+  zaura_output_manager_send_device_scale_factor(resource(), output_resource,
+                                                bit_cast_value);
 
   zaura_output_manager_send_logical_transform(resource(), output_resource,
                                               metrics.aura_logical_transform);

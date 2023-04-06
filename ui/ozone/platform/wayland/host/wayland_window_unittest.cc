@@ -474,6 +474,7 @@ TEST_P(WaylandWindowTest, SetDecorationInsets) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     auto* output = server->output();
     output->SetScale(kHiDpiScale);
+    output->SetDeviceScaleFactor(kHiDpiScale);
     output->Flush();
   });
 
@@ -2362,6 +2363,7 @@ TEST_P(WaylandWindowTest, ToplevelWindowUpdateWindowScale) {
     auto* output2 =
         server->CreateAndInitializeOutput(wl::TestOutputMetrics({1920, 1080}));
     output2->SetScale(2);
+    output2->SetDeviceScaleFactor(2);
   });
   WaitForAllDisplaysReady();
 
@@ -2422,6 +2424,7 @@ TEST_P(WaylandWindowTest, WaylandPopupSurfaceScale) {
     auto* output2 = server->CreateAndInitializeOutput(
         wl::TestOutputMetrics({1920, 0, 1920, 1080}));
     output2->SetScale(2);
+    output2->SetDeviceScaleFactor(2);
   });
   WaitForAllDisplaysReady();
 
@@ -2560,7 +2563,9 @@ TEST_P(WaylandWindowTest, WaylandPopupInitialBufferScale) {
                   server->GetObject<wl::TestOutput>(secondary_output_id);
               // Update scale factors first.
               main_output->SetScale(main_output_scale);
+              main_output->SetDeviceScaleFactor(main_output_scale);
               secondary_output->SetScale(secondary_output_scale);
+              secondary_output->SetDeviceScaleFactor(secondary_output_scale);
 
               main_output->Flush();
               secondary_output->Flush();
@@ -2619,6 +2624,7 @@ TEST_P(WaylandWindowTest, WaylandPopupInitialBufferUsesParentScale) {
     auto* output2 = server->CreateAndInitializeOutput(
         wl::TestOutputMetrics({1921, 0, 1920, 1080}));
     output2->SetScale(2);
+    output2->SetDeviceScaleFactor(2);
   });
   WaitForAllDisplaysReady();
 
@@ -2753,6 +2759,7 @@ TEST_P(WaylandWindowTest, GetPreferredOutput) {
     wl::TestOutput* output2 = server->GetObject<wl::TestOutput>(wl_output2_id);
     // Pretend that the output2 has scale factor equals to 2 now.
     output2->SetScale(2);
+    output2->SetDeviceScaleFactor(2);
     output2->Flush();
   });
 
@@ -2772,6 +2779,7 @@ TEST_P(WaylandWindowTest, GetPreferredOutput) {
     wl::TestOutput* output1 = server->GetObject<wl::TestOutput>(wl_output1_id);
     // Now, the output1 changes its scale factor to 2 as well.
     output1->SetScale(2);
+    output1->SetDeviceScaleFactor(2);
     output1->Flush();
   });
 
@@ -2782,6 +2790,7 @@ TEST_P(WaylandWindowTest, GetPreferredOutput) {
     wl::TestOutput* output1 = server->GetObject<wl::TestOutput>(wl_output1_id);
     // Now, the output1 changes its scale factor back to 1.
     output1->SetScale(1);
+    output1->SetDeviceScaleFactor(1);
     output1->Flush();
   });
 
@@ -2793,6 +2802,7 @@ TEST_P(WaylandWindowTest, GetPreferredOutput) {
     // All outputs have scale factor of 1. window_ prefers the output that
     // it entered first again.
     output2->SetScale(1);
+    output2->SetDeviceScaleFactor(1);
     output2->Flush();
   });
 
@@ -2905,6 +2915,7 @@ TEST_P(WaylandWindowTest, GetChildrenPreferredOutput) {
     wl::TestOutput* output2 = server->GetObject<wl::TestOutput>(wl_output2_id);
     // Now, the output2 changes its scale factor to 2.
     output2->SetScale(2);
+    output2->SetDeviceScaleFactor(2);
     output2->Flush();
   });
 
@@ -4500,15 +4511,20 @@ INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
 INSTANTIATE_TEST_SUITE_P(
     XdgVersionStableTestWithAuraShell,
     WaylandWindowTest,
-    Values(wl::ServerConfig{
-        .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}));
+    Values(wl::ServerConfig{.enable_aura_shell =
+                                wl::EnableAuraShellProtocol::kEnabled},
+           wl::ServerConfig{
+               .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled,
+               .use_aura_output_manager = true}));
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandSubsurfaceTest,
                          Values(wl::ServerConfig{}));
 INSTANTIATE_TEST_SUITE_P(
     XdgVersionStableTestWithAuraShell,
     WaylandSubsurfaceTest,
-    Values(wl::ServerConfig{
-        .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}));
-
+    Values(wl::ServerConfig{.enable_aura_shell =
+                                wl::EnableAuraShellProtocol::kEnabled},
+           wl::ServerConfig{
+               .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled,
+               .use_aura_output_manager = true}));
 }  // namespace ui
