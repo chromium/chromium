@@ -39,7 +39,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
   scoped_refptr<SharedDictionaryStorage> GetStorage(
       const net::NetworkIsolationKey& network_isolation_key);
 
-  // TODO(crbug.com/1413922): Add a method to delete dictonaries when the user
+  // TODO(crbug.com/1413922): Add a method to delete dictionaries when the user
   // clears the browsing data (BrowsingDataRemover::DATA_TYPE_CACHE and
   // DATA_TYPE_SITE_DATA).
 
