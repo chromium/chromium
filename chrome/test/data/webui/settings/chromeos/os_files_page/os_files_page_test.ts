@@ -4,46 +4,49 @@
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
-import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-import {assert} from 'chrome://resources/ash/common/assert.js';
-import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
+import {OsSettingsFilesPageElement} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {Router, routes, SettingsToggleButtonElement} from 'chrome://os-settings/chromeos/os_settings.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+suite('<os-settings-files-page>', () => {
+  let filesPage: OsSettingsFilesPageElement;
 
-suite('FilesPageTests', function() {
-  /** @type {SettingsFilesPageElement} */
-  let filesPage = null;
-
-  setup(function() {
+  setup(() => {
     loadTimeData.overrideValues({
       showOfficeSettings: false,
     });
-    PolymerTest.clearBody();
     filesPage = document.createElement('os-settings-files-page');
     document.body.appendChild(filesPage);
     flush();
   });
 
-  teardown(function() {
+  teardown(() => {
     filesPage.remove();
     Router.getInstance().resetRouteForTesting();
   });
 
   test('Disconnect Google Drive account,pref disabled/enabled', async () => {
     // The default state of the pref is disabled.
-    const disconnectGoogleDrive = assert(
-        filesPage.shadowRoot.querySelector('#disconnectGoogleDriveAccount'));
+    const disconnectGoogleDrive =
+        filesPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#disconnectGoogleDriveAccount');
+    assert(disconnectGoogleDrive);
     assertFalse(disconnectGoogleDrive.checked);
 
-    disconnectGoogleDrive.shadowRoot.querySelector('cr-toggle').click();
+    disconnectGoogleDrive.shadowRoot!.querySelector('cr-toggle')!.click();
     flush();
     assertTrue(disconnectGoogleDrive.checked);
   });
 
   test('Smb Shares, Navigates to SMB_SHARES route on click', async () => {
-    const smbShares = assert(filesPage.shadowRoot.querySelector('#smbShares'));
+    const smbShares =
+        filesPage.shadowRoot!.querySelector<HTMLElement>('#smbShares');
+    assert(smbShares);
 
     smbShares.click();
     flush();
@@ -51,7 +54,7 @@ suite('FilesPageTests', function() {
   });
 
   test('Office row is hidden when showOfficeSettings is false', async () => {
-    assertEquals(null, filesPage.shadowRoot.querySelector('#office'));
+    assertEquals(null, filesPage.shadowRoot!.querySelector('#office'));
   });
 
   test('Deep link to disconnect Google Drive', async () => {
@@ -62,8 +65,9 @@ suite('FilesPageTests', function() {
     flush();
 
     const deepLinkElement =
-        filesPage.shadowRoot.querySelector('#disconnectGoogleDriveAccount')
-            .shadowRoot.querySelector('cr-toggle');
+        filesPage.shadowRoot!.querySelector('#disconnectGoogleDriveAccount')!
+            .shadowRoot!.querySelector('cr-toggle');
+    assert(deepLinkElement);
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
@@ -71,23 +75,24 @@ suite('FilesPageTests', function() {
   });
 
   suite('with showOfficeSettings enabled', () => {
-    setup(function() {
+    setup(() => {
       loadTimeData.overrideValues({
         showOfficeSettings: true,
       });
-      PolymerTest.clearBody();
       filesPage = document.createElement('os-settings-files-page');
       document.body.appendChild(filesPage);
       flush();
     });
 
-    teardown(function() {
+    teardown(() => {
       filesPage.remove();
       Router.getInstance().resetRouteForTesting();
     });
 
     test('Navigates to OFFICE route on click', async () => {
-      const officeRow = assert(filesPage.shadowRoot.querySelector('#office'));
+      const officeRow =
+          filesPage.shadowRoot!.querySelector<HTMLElement>('#office');
+      assert(officeRow);
 
       officeRow.click();
       flush();

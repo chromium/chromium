@@ -115,6 +115,7 @@ export {SettingsTextToSpeechPageElement} from './os_a11y_page/text_to_speech_pag
 export {SettingsTtsSubpageElement} from './os_a11y_page/tts_subpage.js';
 export {SettingsGoogleDriveSubpageElement} from './os_files_page/google_drive_subpage.js';
 export {SettingsOfficePageElement} from './os_files_page/office_page.js';
+export {OsSettingsFilesPageElement} from './os_files_page/os_files_page.js';
 export {LanguagesBrowserProxyImpl} from './os_languages_page/languages_browser_proxy.js';
 export {InputsShortcutReminderState, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from './os_languages_page/languages_metrics_proxy.js';
 export {OsSettingsSmartInputsPageElement} from './os_languages_page/smart_inputs_page.js';
