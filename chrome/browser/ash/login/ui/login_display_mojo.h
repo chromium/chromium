@@ -37,8 +37,6 @@ class LoginDisplayMojo : public LoginDisplay,
   // user_manager::UserManager::Observer:
   void OnUserImageChanged(const user_manager::User& user) override;
 
-  void ShowOwnerPod(const AccountId& owner);
-
  private:
   void OnPinCanAuthenticate(const AccountId& account_id, bool can_authenticate);
 

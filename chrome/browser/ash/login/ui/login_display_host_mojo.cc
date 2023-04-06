@@ -10,6 +10,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen.h"
+#include "ash/public/cpp/login_screen_model.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/system/model/enterprise_domain_model.h"
@@ -130,6 +131,35 @@ bool IsLazyWebUILoadingEnabled() {
 
   // Enable for dev builds.
   return true;
+}
+
+void ShowOwnerPod(const AccountId& owner) {
+  const user_manager::User* device_owner =
+      user_manager::UserManager::Get()->FindUser(owner);
+  CHECK(device_owner);
+
+  std::vector<LoginUserInfo> user_info_list;
+  LoginUserInfo user_info;
+  user_info.basic_user_info.type = device_owner->GetType();
+  user_info.basic_user_info.account_id = device_owner->GetAccountId();
+  user_info.basic_user_info.display_name =
+      base::UTF16ToUTF8(device_owner->GetDisplayName());
+  user_info.basic_user_info.display_email = device_owner->display_email();
+  user_info.basic_user_info.avatar =
+      UserSelectionScreen::BuildAshUserAvatarForUser(*device_owner);
+  user_info.auth_type = proximity_auth::mojom::AuthType::OFFLINE_PASSWORD;
+  user_info.is_signed_in = device_owner->is_logged_in();
+  user_info.is_device_owner = true;
+  user_info.can_remove = false;
+  user_info_list.push_back(user_info);
+
+  LoginScreen::Get()->GetModel()->SetUserList(user_info_list);
+  LoginScreen::Get()->SetAllowLoginAsGuest(false);
+  LoginScreen::Get()->EnableAddUserButton(false);
+
+  // Disable PIN.
+  LoginScreen::Get()->GetModel()->SetPinEnabledForUser(owner,
+                                                       /*enabled=*/false);
 }
 
 }  // namespace
@@ -477,7 +507,7 @@ void LoginDisplayHostMojo::VerifyOwnerForKiosk(base::OnceClosure on_success) {
   owner_verified_callback_ = std::move(on_success);
   owner_account_id_ = user_manager::UserManager::Get()->GetOwnerAccountId();
   CHECK(owner_account_id_.is_valid());
-  login_display_->ShowOwnerPod(owner_account_id_);
+  ShowOwnerPod(owner_account_id_);
   HideOobeDialog();
 }
 
