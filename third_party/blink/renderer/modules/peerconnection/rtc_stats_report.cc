@@ -1273,9 +1273,6 @@ class RTCStatsReportIterationSource final
       if (v8_stat) {
         break;
       }
-      LOG(WARNING) << "Skipping stat for id=" << rtc_stats->id()
-                   << " as there is no conversion to that stat type "
-                   << rtc_stats->type();
       rtc_stats = report_->NextStats();
     }
     if (!rtc_stats) {
