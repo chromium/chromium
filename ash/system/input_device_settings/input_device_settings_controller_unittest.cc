@@ -65,10 +65,27 @@ class FakeKeyboardPrefHandler : public KeyboardPrefHandler {
     keyboard->settings = mojom::KeyboardSettings::New();
     num_keyboard_settings_initialized_++;
   }
+
+  void InitializeLoginScreenKeyboardSettings(
+      PrefService* local_state,
+      const AccountId& account_id,
+      const mojom::KeyboardPolicies& keyboard_policies,
+      mojom::Keyboard* keyboard) override {
+    num_login_screen_keyboard_settings_initialized_++;
+  }
+
   void UpdateKeyboardSettings(PrefService* pref_service,
                               const mojom::KeyboardPolicies& keyboard_policies,
                               const mojom::Keyboard& keyboard) override {
     num_keyboard_settings_updated_++;
+  }
+
+  void UpdateLoginScreenKeyboardSettings(
+      PrefService* local_state,
+      const AccountId& account_id,
+      const mojom::KeyboardPolicies& keyboard_policies,
+      const mojom::Keyboard& keyboard) override {
+    num_login_screen_keyboard_settings_updated_++;
   }
 
   uint32_t num_keyboard_settings_initialized() {
@@ -79,9 +96,19 @@ class FakeKeyboardPrefHandler : public KeyboardPrefHandler {
     return num_keyboard_settings_updated_;
   }
 
+  uint32_t num_login_screen_keyboard_settings_initialized() {
+    return num_login_screen_keyboard_settings_initialized_;
+  }
+
+  uint32_t num_login_screen_keyboard_settings_updated() {
+    return num_login_screen_keyboard_settings_updated_;
+  }
+
  private:
   uint32_t num_keyboard_settings_initialized_ = 0;
   uint32_t num_keyboard_settings_updated_ = 0;
+  uint32_t num_login_screen_keyboard_settings_initialized_ = 0;
+  uint32_t num_login_screen_keyboard_settings_updated_ = 0;
 };
 
 class FakeInputDeviceSettingsControllerObserver
