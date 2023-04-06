@@ -45,6 +45,7 @@ extern const char kInstallReplacementAndroidAppCannotInstallApp[];
 extern const char kInstallReplacementAndroidAppInvalidContextError[];
 extern const char kInstallReplacementAndroidAppNotFromWebstoreError[];
 extern const char kParentPermissionFailedError[];
+extern const char kChromeAppsDeprecated[];
 
 }  // namespace extension_management_api_constants
 

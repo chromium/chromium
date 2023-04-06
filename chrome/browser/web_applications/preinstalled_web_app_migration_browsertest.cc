@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/ssl_test_utils.h"
+#include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
@@ -85,7 +87,10 @@ namespace web_app {
 class PreinstalledWebAppMigrationBrowserTest
     : public extensions::ExtensionBrowserTest {
  public:
-  PreinstalledWebAppMigrationBrowserTest() {
+  PreinstalledWebAppMigrationBrowserTest()
+      : enable_chrome_apps_(
+            &extensions::testing::g_enable_chrome_apps_for_testing,
+            true) {
     PreinstalledWebAppManager::SkipStartupForTesting();
     PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
     disable_external_extensions_scope_ =
@@ -283,6 +288,9 @@ class PreinstalledWebAppMigrationBrowserTest
   absl::optional<base::AutoReset<bool>> disable_external_extensions_scope_;
   std::unique_ptr<extensions::ExtensionCacheFake> test_extension_cache_;
   OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
+
+ private:
+  base::AutoReset<bool> enable_chrome_apps_;
 };
 
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
@@ -532,9 +540,15 @@ static constexpr char kPlatformAppId[] = "dgbbhfbocdphnnabneckobeifilidpmj";
 class PreinstalledWebAppMigratePlatformAppBrowserTest
     : public PreinstalledWebAppMigrationBrowserTest {
  public:
-  PreinstalledWebAppMigratePlatformAppBrowserTest() {
+  PreinstalledWebAppMigratePlatformAppBrowserTest()
+      : enable_chrome_apps_(
+            &extensions::testing::g_enable_chrome_apps_for_testing,
+            true) {
     uninstall_and_replace_ = kPlatformAppId;
   }
+
+ private:
+  base::AutoReset<bool> enable_chrome_apps_;
 };
 
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigratePlatformAppBrowserTest,

@@ -44,6 +44,9 @@ base::FeatureParam<std::string> kChromeAppAllowlist{
 }  // namespace
 
 namespace extensions {
+namespace testing {
+bool g_enable_chrome_apps_for_testing = false;
+}
 
 bool IsExtensionBlockedByPolicy(content::BrowserContext* context,
                                 const std::string& extension_id) {
@@ -116,6 +119,10 @@ bool ClearExternalExtensionUninstalled(content::BrowserContext* context,
     BUILDFLAG(IS_FUCHSIA)
 bool IsExtensionUnsupportedDeprecatedApp(content::BrowserContext* context,
                                          const std::string& extension_id) {
+  if (testing::g_enable_chrome_apps_for_testing) {
+    return false;
+  }
+
   if (extension_id == extensions::kWebStoreAppId)
     return false;
 

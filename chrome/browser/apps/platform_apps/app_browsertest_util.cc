@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/apps/chrome_app_delegate.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
+#include "chrome/browser/web_applications/extension_status_utils.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
@@ -48,7 +49,10 @@ namespace extensions {
 
 namespace utils = api_test_utils;
 
-PlatformAppBrowserTest::PlatformAppBrowserTest() {
+PlatformAppBrowserTest::PlatformAppBrowserTest()
+    : enable_chrome_apps_(
+          &extensions::testing::g_enable_chrome_apps_for_testing,
+          true) {
   ChromeAppDelegate::DisableExternalOpenForTesting();
 }
 
@@ -71,8 +75,8 @@ void PlatformAppBrowserTest::SetUpOnMainThread() {
   // are mojo messages that will call back into Profile creation through the
   // media router.
   media_router_ = std::make_unique<media_router::MockMediaRouter>();
-  ON_CALL(*media_router_, RegisterMediaSinksObserver(testing::_))
-      .WillByDefault(testing::Return(true));
+  ON_CALL(*media_router_, RegisterMediaSinksObserver(::testing::_))
+      .WillByDefault(::testing::Return(true));
 
   CastConfigControllerMediaRouter::SetMediaRouterForTest(media_router_.get());
 #endif

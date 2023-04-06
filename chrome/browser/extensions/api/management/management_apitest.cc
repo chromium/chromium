@@ -4,6 +4,7 @@
 
 #include <map>
 
+#include "base/auto_reset.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_tags.h"
 #include "base/test/scoped_feature_list.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -29,6 +31,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_utils.h"
 #include "extensions/browser/api/management/management_api.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_registry.h"
@@ -47,7 +50,7 @@ using extensions::mojom::ManifestLocation;
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Find a browser other than |browser|.
 Browser* FindOtherBrowser(Browser* browser) {
   Browser* found = nullptr;
@@ -58,7 +61,16 @@ Browser* FindOtherBrowser(Browser* browser) {
   }
   return found;
 }
+
+bool ExpectChromeAppsDefaultEnabled() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_FUCHSIA)
+  return false;
+#else
+  return true;
 #endif
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace
 
@@ -68,7 +80,11 @@ class ExtensionManagementApiTest
     : public extensions::ExtensionApiTest,
       public testing::WithParamInterface<ContextType> {
  public:
-  ExtensionManagementApiTest() : ExtensionApiTest(GetParam()) {}
+  ExtensionManagementApiTest()
+      : ExtensionApiTest(GetParam()),
+        enable_chrome_apps_(
+            &extensions::testing::g_enable_chrome_apps_for_testing,
+            true) {}
   ~ExtensionManagementApiTest() override = default;
   ExtensionManagementApiTest& operator=(const ExtensionManagementApiTest&) =
       delete;
@@ -125,6 +141,9 @@ class ExtensionManagementApiTest
 
   // Maps installed extension names to their IDs.
   std::map<std::string, std::string> extension_ids_;
+
+ protected:
+  base::AutoReset<bool> enable_chrome_apps_;
 };
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
@@ -477,10 +496,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, ManagementPolicyProhibited) {
                                {.custom_arg = "runProhibitedTests"}));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // TODO(crbug.com/1288199): Run these tests on Chrome OS with both Ash and
 // Lacros processes active.
-// Chrome apps are not supported on windows, mac, or linux.
 
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, LaunchPanelApp) {
   // Load an extension that calls launchApp() on any app that gets
@@ -578,7 +596,63 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, LaunchTabApp) {
   Browser* app_browser = FindOtherBrowser(browser());
   ASSERT_TRUE(app_browser->is_type_app());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest,
+                       NoLaunchPanelAppsDeprecated) {
+  extensions::testing::g_enable_chrome_apps_for_testing = false;
+  // Load an extension that calls launchApp() on any app that gets
+  // installed.
+  ExtensionTestMessageListener launcher_loaded("launcher loaded");
+  ASSERT_TRUE(LoadExtension(
+      test_data_dir_.AppendASCII("management/launch_on_install")));
+  ASSERT_TRUE(launcher_loaded.WaitUntilSatisfied());
+
+  // Load an app with app.launch.container = "panel". This is a chrome app, so
+  // it shouldn't be launched where that functionality has been deprecated.
+  ExtensionTestMessageListener launched_app("launched app");
+  ExtensionTestMessageListener chrome_apps_error("got_chrome_apps_error");
+  ASSERT_TRUE(
+      LoadExtension(test_data_dir_.AppendASCII("management/launch_app_panel"),
+                    {.context_type = ContextType::kFromManifest}));
+  if (ExpectChromeAppsDefaultEnabled()) {
+    EXPECT_TRUE(launched_app.WaitUntilSatisfied());
+    EXPECT_FALSE(chrome_apps_error.was_satisfied());
+  } else {
+    EXPECT_TRUE(chrome_apps_error.WaitUntilSatisfied());
+    EXPECT_FALSE(launched_app.was_satisfied());
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, NoLaunchTabAppDeprecated) {
+  extensions::testing::g_enable_chrome_apps_for_testing = false;
+  // Load an extension that calls launchApp() on any app that gets
+  // installed.
+  ExtensionTestMessageListener launcher_loaded("launcher loaded");
+  ASSERT_TRUE(LoadExtension(
+      test_data_dir_.AppendASCII("management/launch_on_install")));
+  ASSERT_TRUE(launcher_loaded.WaitUntilSatisfied());
+
+  // Code below assumes that the test starts with a single browser window
+  // hosting one tab.
+  ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+
+  // Load an app with app.launch.container = "tab". This is a chrome app, so
+  // it shouldn't be launched where that functionality has been deprecated.
+  ExtensionTestMessageListener launched_app("launched app");
+  ExtensionTestMessageListener chrome_apps_error("got_chrome_apps_error");
+  ASSERT_TRUE(
+      LoadExtension(test_data_dir_.AppendASCII("management/launch_app_tab"),
+                    {.context_type = ContextType::kFromManifest}));
+  if (ExpectChromeAppsDefaultEnabled()) {
+    EXPECT_TRUE(launched_app.WaitUntilSatisfied());
+    EXPECT_FALSE(chrome_apps_error.was_satisfied());
+  } else {
+    EXPECT_TRUE(chrome_apps_error.WaitUntilSatisfied());
+    EXPECT_FALSE(launched_app.was_satisfied());
+  }
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Flaky on MacOS: crbug.com/915339
 #if BUILDFLAG(IS_MAC)

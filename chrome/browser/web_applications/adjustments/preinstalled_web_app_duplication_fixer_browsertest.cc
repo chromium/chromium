@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/adjustments/preinstalled_web_app_duplication_fixer.h"
 
+#include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/adjustments/web_app_adjustments.h"
+#include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
@@ -53,7 +55,10 @@ class PreinstalledWebAppDuplicationFixerBrowserTest
     return "kbmnembihfiondgfjekmnmcbddelicoi";
   }
 
-  PreinstalledWebAppDuplicationFixerBrowserTest() {
+  PreinstalledWebAppDuplicationFixerBrowserTest()
+      : enable_chrome_apps_(
+            &extensions::testing::g_enable_chrome_apps_for_testing,
+            true) {
     PreinstalledWebAppManager::SkipStartupForTesting();
     PreinstalledWebAppDuplicationFixer::SkipStartupForTesting();
     std::vector<base::test::FeatureRef> enabled_features{
@@ -213,6 +218,9 @@ class PreinstalledWebAppDuplicationFixerBrowserTest
   ScopedTestingPreinstalledAppData preinstalled_app_data_;
   base::HistogramTester histogram_tester_;
   OsIntegrationManager::ScopedSuppressForTesting os_hooks_supress_;
+
+ private:
+  base::AutoReset<bool> enable_chrome_apps_;
 };
 
 IN_PROC_BROWSER_TEST_P(PreinstalledWebAppDuplicationFixerBrowserTest,

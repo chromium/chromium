@@ -433,7 +433,7 @@ ChromeManagementAPIDelegate::ChromeManagementAPIDelegate() = default;
 
 ChromeManagementAPIDelegate::~ChromeManagementAPIDelegate() = default;
 
-void ChromeManagementAPIDelegate::LaunchAppFunctionDelegate(
+bool ChromeManagementAPIDelegate::LaunchAppFunctionDelegate(
     const extensions::Extension* extension,
     content::BrowserContext* context) const {
   // Look at prefs to find the right launch container.
@@ -448,7 +448,7 @@ void ChromeManagementAPIDelegate::LaunchAppFunctionDelegate(
     BUILDFLAG(IS_FUCHSIA)
   if (extensions::IsExtensionUnsupportedDeprecatedApp(profile,
                                                       extension->id())) {
-    return;
+    return false;
   }
 #endif
   if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
@@ -470,6 +470,7 @@ void ChromeManagementAPIDelegate::LaunchAppFunctionDelegate(
 
   extensions::RecordAppLaunchType(extension_misc::APP_LAUNCH_EXTENSION_API,
                                   extension->GetType());
+  return true;
 }
 
 GURL ChromeManagementAPIDelegate::GetFullLaunchURL(

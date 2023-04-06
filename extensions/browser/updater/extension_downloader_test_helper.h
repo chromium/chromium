@@ -24,7 +24,7 @@ namespace extensions {
 const extern net::BackoffEntry::Policy kZeroBackoffPolicy;
 
 class MockExtensionDownloaderDelegate
-    : public testing::NiceMock<ExtensionDownloaderDelegate> {
+    : public ::testing::NiceMock<ExtensionDownloaderDelegate> {
  public:
   MockExtensionDownloaderDelegate();
 

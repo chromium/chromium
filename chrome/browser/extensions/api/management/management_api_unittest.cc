@@ -852,9 +852,11 @@ class TestManagementAPIDelegate : public ManagementAPIDelegate {
   TestManagementAPIDelegate() = default;
   ~TestManagementAPIDelegate() override = default;
 
-  void LaunchAppFunctionDelegate(
+  bool LaunchAppFunctionDelegate(
       const Extension* extension,
-      content::BrowserContext* context) const override {}
+      content::BrowserContext* context) const override {
+    return false;
+  }
   GURL GetFullLaunchURL(const Extension* extension) const override {
     return GURL();
   }

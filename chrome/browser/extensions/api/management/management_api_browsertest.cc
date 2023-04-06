@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/auto_reset.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/web_applications/extension_status_utils.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
@@ -32,6 +34,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/notification_types.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/test/extension_test_message_listener.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -42,6 +45,20 @@
 namespace keys = extension_management_api_constants;
 
 namespace extensions {
+namespace {
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+bool ExpectChromeAppsDefaultEnabled() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_FUCHSIA)
+  return false;
+#else
+  return true;
+#endif
+}
+#endif
+
+}  // namespace
 
 namespace test_utils = api_test_utils;
 
@@ -75,15 +92,21 @@ using ContextType = ExtensionBrowserTest::ContextType;
 
 class ExtensionManagementApiTestWithBackgroundType
     : public ExtensionManagementApiBrowserTest,
-      public testing::WithParamInterface<ContextType> {
+      public ::testing::WithParamInterface<ContextType> {
  public:
   ExtensionManagementApiTestWithBackgroundType()
-      : ExtensionManagementApiBrowserTest(GetParam()) {}
+      : ExtensionManagementApiBrowserTest(GetParam()),
+        enable_chrome_apps_(
+            &extensions::testing::g_enable_chrome_apps_for_testing,
+            true) {}
   ~ExtensionManagementApiTestWithBackgroundType() override = default;
   ExtensionManagementApiTestWithBackgroundType(
       const ExtensionManagementApiTestWithBackgroundType&) = delete;
   ExtensionManagementApiTestWithBackgroundType& operator=(
       const ExtensionManagementApiTestWithBackgroundType&) = delete;
+
+ private:
+  base::AutoReset<bool> enable_chrome_apps_;
 };
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
@@ -110,10 +133,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
   ASSERT_TRUE(listener2.WaitUntilSatisfied());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // TODO(crbug.com/1288199): Run these tests on Chrome OS with both Ash and
 // Lacros processes active.
-// Chrome apps are not supported on windows, mac, or linux.
 
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
                        LaunchApp) {
@@ -130,6 +152,31 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
   ASSERT_TRUE(listener1.WaitUntilSatisfied());
   ASSERT_TRUE(listener2.WaitUntilSatisfied());
 }
+
+IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
+                       NoLaunchAppDeprecated) {
+  extensions::testing::g_enable_chrome_apps_for_testing = false;
+  const Extension* packaged_app =
+      LoadExtension(test_data_dir_.AppendASCII("management/packaged_app"),
+                    {.context_type = ContextType::kFromManifest});
+  ASSERT_TRUE(packaged_app);
+  EXPECT_TRUE(packaged_app->is_app());
+
+  ExtensionTestMessageListener error("got_chrome_apps_error");
+  ExtensionTestMessageListener launched("app_launched");
+  ASSERT_TRUE(
+      LoadExtension(test_data_dir_.AppendASCII("management/launch_app")));
+  if (ExpectChromeAppsDefaultEnabled()) {
+    EXPECT_TRUE(launched.WaitUntilSatisfied());
+    EXPECT_FALSE(error.was_satisfied());
+  } else {
+    EXPECT_TRUE(error.WaitUntilSatisfied());
+    EXPECT_FALSE(launched.was_satisfied());
+  }
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
                        NoDemoModeAppLaunchSourceReported) {
@@ -173,7 +220,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
       "DemoMode.AppLaunchSource",
       ash::DemoSession::AppLaunchSource::kExtensionApi, 1);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // TODO(crbug.com/1288199): Run these tests on Chrome OS with both Ash and
 // Lacros processes active.
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
@@ -187,7 +236,34 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
   ASSERT_TRUE(listener1.WaitUntilSatisfied());
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
+                       NoLaunchAppFromBackgroundDeprecated) {
+  extensions::testing::g_enable_chrome_apps_for_testing = false;
+  const Extension* packaged_app =
+      LoadExtension(test_data_dir_.AppendASCII("management/packaged_app"),
+                    {.context_type = ContextType::kFromManifest});
+  ASSERT_TRUE(packaged_app);
+  EXPECT_TRUE(packaged_app->is_app());
+
+  // Also verify launching from background does not work. This helper is not an
+  // app.
+  ExtensionTestMessageListener error("got_chrome_apps_error");
+  ExtensionTestMessageListener launched_failure("not_launched");
+  ExtensionTestMessageListener success("success");
+  ASSERT_TRUE(LoadExtension(
+      test_data_dir_.AppendASCII("management/launch_app_from_background")));
+  if (ExpectChromeAppsDefaultEnabled()) {
+    EXPECT_TRUE(success.WaitUntilSatisfied());
+    EXPECT_FALSE(error.was_satisfied());
+    EXPECT_FALSE(launched_failure.was_satisfied());
+  } else {
+    EXPECT_TRUE(error.WaitUntilSatisfied());
+    EXPECT_TRUE(launched_failure.WaitUntilSatisfied());
+    EXPECT_FALSE(success.was_satisfied());
+  }
+}
+
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
                        SelfUninstall) {

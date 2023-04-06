@@ -65,8 +65,9 @@ class ManagementAPIDelegate {
   using InstallOrLaunchWebAppCallback =
       base::OnceCallback<void(InstallOrLaunchWebAppResult)>;
 
-  // Launches the app |extension|.
-  virtual void LaunchAppFunctionDelegate(
+  // Launches the app |extension|. Returns `false` if the launch was blocked due
+  // to chrome apps deprecation, and `true` if it succeeded.
+  virtual bool LaunchAppFunctionDelegate(
       const Extension* extension,
       content::BrowserContext* context) const = 0;
 
