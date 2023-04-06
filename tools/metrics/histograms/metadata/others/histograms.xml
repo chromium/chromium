@@ -11024,6 +11024,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ReportingAndNEL.TimeInitializeDB" units="ms"
+    expires_after="2023-09-10">
+  <owner>yhirano@chromium.org</owner>
+  <owner>src/net/reporting/OWNERS</owner>
+  <summary>
+    The time (ms) taken to initialize the Reporting and NEL DB. This is recorded
+    when the DB is initialized, which typically occurs upon the first network
+    request after startup.
+  </summary>
+</histogram>
+
 <histogram name="Reset.ChromeOS.PowerwashDialogShown"
     enum="PowerwashDialogViewType" expires_after="M77">
   <owner>merkulova@chromium.org</owner>
