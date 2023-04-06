@@ -1980,7 +1980,7 @@
   {
     "name": "enable-code-based-rbd",
     "owners": [ "chrome-shopping@google.com" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 116
   },
   {
     "name": "enable-command-line-on-non-rooted-devices",
