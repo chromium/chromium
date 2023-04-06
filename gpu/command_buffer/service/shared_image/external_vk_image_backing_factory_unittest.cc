@@ -404,10 +404,14 @@ TEST_P(ExternalVkImageBackingFactoryWithFormatTest, Basic) {
     ASSERT_TRUE(scoped_write_access);
     EXPECT_TRUE(begin_semaphores.empty());
 
-    auto* surface = scoped_write_access->surface(/*plane_index=*/0);
-    ASSERT_TRUE(surface);
-    EXPECT_EQ(size.width(), surface->width());
-    EXPECT_EQ(size.height(), surface->height());
+    for (int plane = 0; plane < format.NumberOfPlanes(); ++plane) {
+      auto* surface = scoped_write_access->surface(plane);
+      ASSERT_TRUE(surface);
+
+      auto plane_size = format.GetPlaneSize(plane, size);
+      EXPECT_EQ(plane_size.width(), surface->width());
+      EXPECT_EQ(plane_size.height(), surface->height());
+    }
 
     // Handle end state and semaphores.
     auto end_state = scoped_write_access->TakeEndState();
@@ -433,13 +437,16 @@ TEST_P(ExternalVkImageBackingFactoryWithFormatTest, Basic) {
         &begin_semaphores, &end_semaphores);
     ASSERT_TRUE(scoped_read_access);
 
-    auto* promise_texture =
-        scoped_read_access->promise_image_texture(/*plane_index=*/0);
-    ASSERT_TRUE(promise_texture);
-    GrBackendTexture backend_texture = promise_texture->backendTexture();
-    EXPECT_TRUE(backend_texture.isValid());
-    EXPECT_EQ(size.width(), backend_texture.width());
-    EXPECT_EQ(size.height(), backend_texture.height());
+    for (int plane = 0; plane < format.NumberOfPlanes(); ++plane) {
+      auto* promise_texture = scoped_read_access->promise_image_texture(plane);
+      ASSERT_TRUE(promise_texture);
+      GrBackendTexture backend_texture = promise_texture->backendTexture();
+      EXPECT_TRUE(backend_texture.isValid());
+
+      auto plane_size = format.GetPlaneSize(plane, size);
+      EXPECT_EQ(plane_size.width(), backend_texture.width());
+      EXPECT_EQ(plane_size.height(), backend_texture.height());
+    }
 
     // Handle end state and semaphores.
     if (auto end_state = scoped_read_access->TakeEndState()) {
@@ -469,9 +476,11 @@ TEST_P(ExternalVkImageBackingFactoryWithFormatTest, Basic) {
         SharedImageRepresentation::AllowUnclearedAccess::kNo);
     ASSERT_TRUE(scoped_access);
 
-    auto texture = gl_representation->GetTexturePassthrough(/*plane_index=*/0);
-    ASSERT_TRUE(texture);
-    EXPECT_NE(texture->service_id(), 0u);
+    for (int plane = 0; plane < format.NumberOfPlanes(); ++plane) {
+      auto texture = gl_representation->GetTexturePassthrough(plane);
+      ASSERT_TRUE(texture);
+      EXPECT_NE(texture->service_id(), 0u);
+    }
   } else {
     auto gl_representation =
         shared_image_representation_factory_.ProduceGLTexture(mailbox);
@@ -481,9 +490,11 @@ TEST_P(ExternalVkImageBackingFactoryWithFormatTest, Basic) {
         SharedImageRepresentation::AllowUnclearedAccess::kNo);
     ASSERT_TRUE(scoped_access);
 
-    auto* texture = gl_representation->GetTexture(/*plane_index=*/0);
-    ASSERT_TRUE(texture);
-    EXPECT_NE(texture->service_id(), 0u);
+    for (int plane = 0; plane < format.NumberOfPlanes(); ++plane) {
+      auto* texture = gl_representation->GetTexture(plane);
+      ASSERT_TRUE(texture);
+      EXPECT_NE(texture->service_id(), 0u);
+    }
   }
 }
 
@@ -526,7 +537,9 @@ const auto kSharedImageFormats =
     ::testing::Values(viz::SinglePlaneFormat::kRGBA_8888,
                       viz::SinglePlaneFormat::kBGRA_8888,
                       viz::SinglePlaneFormat::kR_8,
-                      viz::SinglePlaneFormat::kRG_88);
+                      viz::SinglePlaneFormat::kRG_88,
+                      viz::MultiPlaneFormat::kNV12,
+                      viz::MultiPlaneFormat::kYV12);
 
 INSTANTIATE_TEST_SUITE_P(,
                          ExternalVkImageBackingFactoryWithFormatTest,

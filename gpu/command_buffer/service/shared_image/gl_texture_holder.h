@@ -17,6 +17,10 @@ class SharedContextState;
 // validating or passthrough command decoder.
 class GLTextureHolder {
  public:
+  // Returns the equivalent ResourceFormat for plane specified by `plane_index`.
+  static viz::ResourceFormat GetPlaneFormat(viz::SharedImageFormat format,
+                                            int plane_index);
+
   GLTextureHolder(viz::ResourceFormat format,
                   const gfx::Size& size,
                   bool is_passthrough,

@@ -18,6 +18,7 @@
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace gpu {
 
@@ -182,7 +183,14 @@ bool ExternalVkImageBackingFactory::IsSupported(
     GrContextType gr_context_type,
     base::span<const uint8_t> pixel_data) {
   if (format.is_multi_plane()) {
-    return false;
+    if (gmb_type != gfx::EMPTY_BUFFER) {
+      return false;
+    }
+
+    if (format != viz::MultiPlaneFormat::kNV12 &&
+        format != viz::MultiPlaneFormat::kYV12) {
+      return false;
+    }
   }
 
   // ALPHA_8 is only used by UI and should never need GL/Vulkan interop.
@@ -193,15 +201,11 @@ bool ExternalVkImageBackingFactory::IsSupported(
     return false;
   }
 
-  // TODO: remove it when below formats are converted to multi plane shared
-  // image formats.
 #if BUILDFLAG(IS_LINUX)
-  switch (format.resource_format()) {
-    case viz::YUV_420_BIPLANAR:
-    case viz::YUVA_420_TRIPLANAR:
-      return false;
-    default:
-      break;
+  if (format.IsLegacyMultiplanar()) {
+    // ExternalVkImageBacking doesn't work properly with external sampler
+    // multi-planar formats on Linux, see https://crbug.com/1394888.
+    return false;
   }
 #endif
 

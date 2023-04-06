@@ -28,27 +28,6 @@
 #include "ui/gl/scoped_make_current.h"
 
 namespace gpu {
-namespace {
-
-viz::ResourceFormat GetPlaneFormat(viz::SharedImageFormat format,
-                                   int plane_index) {
-  DCHECK(format.IsValidPlaneIndex(plane_index));
-  if (format.is_single_plane()) {
-    return format.resource_format();
-  }
-
-  if (format == viz::MultiPlaneFormat::kNV12) {
-    return plane_index == 0 ? viz::ResourceFormat::RED_8
-                            : viz::ResourceFormat::RG_88;
-  } else if (format == viz::MultiPlaneFormat::kYV12) {
-    return viz::ResourceFormat::RED_8;
-  }
-
-  NOTREACHED();
-  return viz::ResourceFormat::RGBA_8888;
-}
-
-}  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
 // GLTextureImageBacking
@@ -279,8 +258,8 @@ void GLTextureImageBacking::InitializeGLTexture(
   int num_planes = format().NumberOfPlanes();
   textures_.reserve(num_planes);
   for (int plane = 0; plane < num_planes; ++plane) {
-    textures_.emplace_back(GetPlaneFormat(format(), plane),
-                           format().GetPlaneSize(plane, size()),
+    auto plane_format = GLTextureHolder::GetPlaneFormat(format(), plane);
+    textures_.emplace_back(plane_format, format().GetPlaneSize(plane, size()),
                            is_passthrough_, progress_reporter);
     textures_[plane].Initialize(format_info[plane],
                                 framebuffer_attachment_angle, pixel_data,
