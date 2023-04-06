@@ -9,11 +9,11 @@
 #import "base/files/file_util.h"
 #import "base/files/scoped_temp_dir.h"
 #import "base/functional/callback_helpers.h"
-#import "base/guid.h"
 #import "base/run_loop.h"
 #import "base/sequence_checker.h"
 #import "base/test/bind.h"
 #import "base/test/gmock_callback_support.h"
+#import "base/uuid.h"
 #import "components/download/internal/background_service/test/background_download_test_base.h"
 #import "components/download/public/background_service/download_params.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
@@ -67,7 +67,7 @@ class BackgroundDownloadTaskHelperTest
 // TODO(crbug/1367306): Re-enable the test.
 TEST_F(BackgroundDownloadTaskHelperTest, DISABLED_DownloadComplete) {
   base::RunLoop loop;
-  std::string guid = base::GenerateGUID();
+  std::string guid = base::GenerateUuid();
   Download("/test", guid,
            base::BindLambdaForTesting([&](bool success,
                                           const base::FilePath& file_path,
@@ -94,7 +94,7 @@ TEST_F(BackgroundDownloadTaskHelperTest, DISABLED_DownloadComplete) {
 TEST_F(BackgroundDownloadTaskHelperTest,
        DISABLED_DownloadErrorNonSuccessHttpCode) {
   base::RunLoop loop;
-  std::string guid = base::GenerateGUID();
+  std::string guid = base::GenerateUuid();
   Download("/notfound", guid,
            base::BindLambdaForTesting([&](bool success,
                                           const base::FilePath& file_path,
@@ -111,7 +111,7 @@ TEST_F(BackgroundDownloadTaskHelperTest,
 // TODO(crbug/1367306): Re-enable the test.
 TEST_F(BackgroundDownloadTaskHelperTest, DISABLED_DataURL) {
   base::RunLoop loop;
-  std::string guid = base::GenerateGUID();
+  std::string guid = base::GenerateUuid();
   DownloadParams params;
   params.request_params.url = GURL("data:text/plain;base64,Q2hyb21pdW0=");
   helper()->StartDownload(
