@@ -423,15 +423,15 @@ void SetUpTrailingIconAndAccessoryType(
       static_cast<ItemType>([model itemTypeForIndexPath:indexPath]);
   switch (itemType) {
     case ItemTypeCompromisedPasswords:
-      [self.handler showPasswordIssuesWithWarningType:
-                        WarningType::kCompromisedPasswordsWarning];
+      [self showPasswordIssuesWithWarningType:WarningType::
+                                                  kCompromisedPasswordsWarning];
       break;
     case ItemTypeReusedPasswords:
-      [self.handler showPasswordIssuesWithWarningType:
-                        WarningType::kReusedPasswordsWarning];
+      [self showPasswordIssuesWithWarningType:WarningType::
+                                                  kReusedPasswordsWarning];
       break;
     case ItemTypeWeakPasswords:
-      [self.handler
+      [self
           showPasswordIssuesWithWarningType:WarningType::kWeakPasswordsWarning];
       break;
     case ItemTypePasswordCheckupTimestamp:
@@ -668,6 +668,14 @@ void SetUpTrailingIconAndAccessoryType(
   [self updateWeakPasswordsItem];
   [self updatePasswordCheckupTimestampText];
   [self updateCheckPasswordsButtonItem];
+}
+
+// Opens the Password Issues list for the given `warningType` and resets the
+// navigation bar background color to what it was before getting to the
+// PasswordCheckupViewController.
+- (void)showPasswordIssuesWithWarningType:(WarningType)warningType {
+  [self.handler showPasswordIssuesWithWarningType:warningType];
+  [self updateNavigationBarBackgroundColorForDismissal:YES];
 }
 
 @end
