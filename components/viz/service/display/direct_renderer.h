@@ -205,7 +205,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   struct RenderPassRequirements {
     gfx::Size size;
     bool generate_mipmap = false;
-    ResourceFormat format;
+    SharedImageFormat format;
     gfx::ColorSpace color_space;
     // Render pass wants scanout
     bool is_scanout = false;
@@ -324,7 +324,8 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   gfx::ColorSpace CurrentRenderPassColorSpace() const;
   gfx::ColorSpace RenderPassColorSpace(
       const AggregatedRenderPass* render_pass) const;
-  ResourceFormat GetColorSpaceResourceFormat(gfx::ColorSpace color_space) const;
+  SharedImageFormat GetColorSpaceSharedImageFormat(
+      gfx::ColorSpace color_space) const;
   // Return the SkColorSpace for rendering to the current render pass. Unlike
   // CurrentRenderPassColorSpace, this color space has the value of
   // CurrentFrameSDRWhiteLevel incorporated into it.

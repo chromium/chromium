@@ -776,7 +776,8 @@ DirectRenderer::CalculateRenderPassRequirements(
     requirements.size = surface_size_for_swap_buffers();
     requirements.generate_mipmap = false;
     requirements.color_space = reshape_color_space();
-    requirements.format = GetResourceFormat(reshape_buffer_format());
+    requirements.format = SharedImageFormat::SinglePlane(
+        GetResourceFormat(reshape_buffer_format()));
 
     // All root render pass backings allocated by the renderer needs to
     // eventually go into some composition tree. Other things that own/allocate
@@ -791,20 +792,21 @@ DirectRenderer::CalculateRenderPassRequirements(
     // processing promoting a quad as an underlay. If the format we picked does
     // not have alpha bits, we ned to change to one that does.
     if (render_pass->has_transparent_background &&
-        AlphaBits(requirements.format) == 0) {
+        requirements.format.HasAlpha() == 0) {
       requirements.format =
-          GetColorSpaceResourceFormat(requirements.color_space);
+          GetColorSpaceSharedImageFormat(requirements.color_space);
     }
 #endif
   } else {
     requirements.size = CalculateTextureSizeForRenderPass(render_pass);
     requirements.generate_mipmap = render_pass->generate_mipmap;
     requirements.color_space = RenderPassColorSpace(render_pass);
-    requirements.format = GetColorSpaceResourceFormat(requirements.color_space);
+    requirements.format =
+        GetColorSpaceSharedImageFormat(requirements.color_space);
   }
 
   if (render_pass->has_transparent_background) {
-    DCHECK_GT(AlphaBits(requirements.format), 0);
+    DCHECK(requirements.format.HasAlpha());
   }
 
   return requirements;
@@ -1118,7 +1120,7 @@ gfx::ColorSpace DirectRenderer::CurrentRenderPassColorSpace() const {
   return RenderPassColorSpace(current_frame()->current_render_pass);
 }
 
-ResourceFormat DirectRenderer::GetColorSpaceResourceFormat(
+SharedImageFormat DirectRenderer::GetColorSpaceSharedImageFormat(
     gfx::ColorSpace color_space) const {
   // TODO(penghuang): check supported format correctly.
   gpu::Capabilities caps;
@@ -1127,12 +1129,12 @@ ResourceFormat DirectRenderer::GetColorSpaceResourceFormat(
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // TODO(crbug.com/1317015): add support RGBA_F16 in LaCrOS.
   auto format = color_space.IsHDR()
-                    ? RGBA_1010102
-                    : PlatformColor::BestSupportedTextureResourceFormat(caps);
+                    ? SinglePlaneFormat::kRGBA_1010102
+                    : PlatformColor::BestSupportedTextureFormat(caps);
 #else
   auto format = color_space.IsHDR()
-                    ? RGBA_F16
-                    : PlatformColor::BestSupportedTextureResourceFormat(caps);
+                    ? SinglePlaneFormat::kRGBA_F16
+                    : PlatformColor::BestSupportedTextureFormat(caps);
 #endif
   return format;
 }
