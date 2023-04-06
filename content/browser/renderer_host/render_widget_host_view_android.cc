@@ -544,7 +544,10 @@ bool RenderWidgetHostViewAndroid::ScreenStateChangeHandler::
     if (pending_screen_state_.is_fullscreen) {
       pending_screen_state_.any_non_rotation_size_changed = true;
     }
-    rwhva_->SynchronizeVisualProperties(deadline_policy, absl::nullopt);
+    rwhva_->SynchronizeVisualProperties(
+        deadline_policy, absl::nullopt,
+        /*reuse_current_local_surface_id=*/false,
+        /*ignore_ack=*/true);
   }
 
   current_screen_state_.CopyDefinedAttributes(pending_screen_state_);
