@@ -1790,13 +1790,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS) && (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) \
-    || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA))
-  { key::kChromeAppsEnabled,
-    extensions::pref_names::kChromeAppsEnabled,
-    base::Value::Type::BOOLEAN },
-#endif
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   { key::kChromeAppsWebViewPermissiveBehaviorAllowed,
     extensions::pref_names::kChromeAppsWebViewPermissiveBehaviorAllowed,

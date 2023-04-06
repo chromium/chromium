@@ -126,10 +126,6 @@ bool IsExtensionUnsupportedDeprecatedApp(content::BrowserContext* context,
   if (extension_id == extensions::kWebStoreAppId)
     return false;
 
-  const auto* prefs = Profile::FromBrowserContext(context)->GetPrefs();
-  if (prefs->GetBoolean(pref_names::kChromeAppsEnabled))
-    return false;
-
   auto* registry = ExtensionRegistry::Get(context);
   // May be nullptr in unit tests.
   if (!registry)

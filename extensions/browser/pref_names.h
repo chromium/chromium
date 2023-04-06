@@ -113,14 +113,6 @@ extern const char kPinnedExtensions[];
 // on the next start of the browser.
 extern const char kStorageGarbageCollect[];
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_FUCHSIA)
-// A preference for whether Chrome Apps should be allowed. The default depends
-// on the ChromeAppsDeprecation feature flag, and this pref can extend support
-// for Chrome Apps by enterprise policy.
-extern const char kChromeAppsEnabled[];
-#endif
-
 // A preference for an enterprise policy which is a temporary workaround for
 // behaviour changes to <webview>.
 extern const char kChromeAppsWebViewPermissiveBehaviorAllowed[];
