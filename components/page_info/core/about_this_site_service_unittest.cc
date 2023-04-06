@@ -251,6 +251,68 @@ TEST_P(AboutThisSiteServiceTest, LocalHosts) {
                        AboutThisSiteInteraction::kNotShownLocalHost, 3);
 }
 
+// Tests the local creation of the Diner URL for navigation.
+TEST_P(AboutThisSiteServiceTest, CreateMoreAboutUrlForNavigation) {
+  auto url =
+      service()->CreateMoreAboutUrlForNavigation(GURL("https://foo.com"));
+  EXPECT_EQ(url,
+            "https://www.google.com/search?"
+            "q=About+https%3A%2F%2Ffoo.com%2F"
+            "&tbm=ilp&ctx=chrome_nav");
+}
+
+// Tests the local creation of the Diner URL for navigation with anchor.
+TEST_P(AboutThisSiteServiceTest, CreateMoreAboutUrlForNavigationWithAnchor) {
+  auto url = service()->CreateMoreAboutUrlForNavigation(
+      GURL("https://foo.com#anchor"));
+  EXPECT_EQ(url,
+            "https://www.google.com/search?"
+            "q=About+https%3A%2F%2Ffoo.com%2F%23anchor"
+            "&tbm=ilp&ctx=chrome_nav");
+}
+
+// Tests the local creation of the Diner URL for navigation from an origin with
+// path.
+TEST_P(AboutThisSiteServiceTest, CreateMoreAboutUrlForNavigationWithPath) {
+  auto url = service()->CreateMoreAboutUrlForNavigation(
+      GURL("https://foo.com/index.html"));
+  EXPECT_EQ(url,
+            "https://www.google.com/search?"
+            "q=About+https%3A%2F%2Ffoo.com%2Findex.html"
+            "&tbm=ilp&ctx=chrome_nav");
+}
+
+// Tests the local creation of the Diner URL for navigation from an invalid
+// origin.
+TEST_P(AboutThisSiteServiceTest, CreateMoreAboutUrlForNavigationInvalid) {
+  auto url = service()->CreateMoreAboutUrlForNavigation(
+      GURL("https://127.0.0.1/index.html"));
+  EXPECT_EQ(url,
+            "https://www.google.com/search?"
+            "q=About+https%3A%2F%2F127.0.0.1%2F"
+            "&tbm=ilp&ctx=chrome_nav");
+}
+
+// Tests the local creation of the Diner URL for navigation from an invalid
+// origin (blank).
+TEST_P(AboutThisSiteServiceTest, CreateMoreAboutUrlForNavigationInvalidBlank) {
+  auto url = service()->CreateMoreAboutUrlForNavigation(GURL("about:blank"));
+  EXPECT_EQ(url,
+            "https://www.google.com/search?"
+            "q=About+"
+            "&tbm=ilp&ctx=chrome_nav");
+}
+
+// Tests the local creation of the Diner URL for navigation from an invalid
+// origin (file).
+TEST_P(AboutThisSiteServiceTest, CreateMoreAboutUrlForNavigationInvalidFile) {
+  auto url = service()->CreateMoreAboutUrlForNavigation(GURL("file:///a/b/c"));
+  EXPECT_EQ(url,
+            "https://www.google.com/search?"
+            "q=About+file%3A%2F%2F%2F"
+            "&tbm=ilp&ctx=chrome_nav");
+}
+
 class AboutThisSiteNonMsbbUsersNotAllowedServiceTest
     : public AboutThisSiteServiceTest {};
 

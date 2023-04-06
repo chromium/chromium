@@ -77,7 +77,9 @@ class AboutThisSiteService : public KeyedService {
       const GURL& url,
       ukm::SourceId source_id) const;
 
+  // TODO(crbug.com/1412109): Remove this method upon cleaning non-MSBB support
   static GURL CreateMoreAboutUrl(const GURL& url);
+  static GURL CreateMoreAboutUrlForNavigation(const GURL& url);
   static void OnAboutThisSiteRowClicked(bool with_description);
   static void OnOpenedDirectlyFromSidePanel();
   static void OnSameTabNavigation();

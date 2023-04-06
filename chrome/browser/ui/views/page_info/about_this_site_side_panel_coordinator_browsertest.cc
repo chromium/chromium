@@ -26,6 +26,7 @@ using ::testing::_;
 namespace {
 const char kRegularUrl1[] = "a.test";
 const char kRegularUrl2[] = "b.test";
+const char kInvalidUrl[] = "127.0.0.1";
 const char kAboutThisSiteUrl[] = "c.test";
 }  // namespace
 
@@ -148,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(AboutThisSiteKeepSidePanelOpenBrowserTest,
   std::string kAboutThisSiteRegularUrl2 = base::StringPrintf(
       "https://www.google.com/search?"
       "q=About+%s"
-      "&tbm=ilp&ctx=chrome",
+      "&tbm=ilp&ctx=chrome_nav",
       base::EscapeQueryParamValue(kRegularGURL2.spec(), true).c_str());
 
   EXPECT_TRUE(side_panel_coordinator()->GetCurrentSidePanelEntryForTesting());
@@ -156,6 +157,42 @@ IN_PROC_BROWSER_TEST_F(AboutThisSiteKeepSidePanelOpenBrowserTest,
                 ->GetCurrentSidePanelEntryForTesting()
                 ->GetOpenInNewTabURL(),
             kAboutThisSiteRegularUrl2);
+}
+
+IN_PROC_BROWSER_TEST_F(AboutThisSiteKeepSidePanelOpenBrowserTest,
+                       ShowSameTabNavWithInvalidOrigin) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), CreateUrl(kRegularUrl1)));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+
+  // Test showing the side panel.
+  ShowAboutThisSiteSidePanel(web_contents(), CreateUrl(kAboutThisSiteUrl));
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kAboutThisSite);
+
+  // Check that side panel remains open on navigation to an invalid url with a
+  // path
+  GURL kInvalidGURL = CreateUrl(kInvalidUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(kInvalidGURL.spec() + "/index.html")));
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kAboutThisSite);
+
+  // Check that the diner url was updated with the invalid origin but with an
+  // empty path.
+  std::string kAboutThisSiteInvalidUrl = base::StringPrintf(
+      "https://www.google.com/search?"
+      "q=About+%s"
+      "&tbm=ilp&ctx=chrome_nav",
+      base::EscapeQueryParamValue(kInvalidGURL.GetWithEmptyPath().spec(), true)
+          .c_str());
+
+  EXPECT_TRUE(side_panel_coordinator()->GetCurrentSidePanelEntryForTesting());
+  EXPECT_EQ(side_panel_coordinator()
+                ->GetCurrentSidePanelEntryForTesting()
+                ->GetOpenInNewTabURL(),
+            kAboutThisSiteInvalidUrl);
 }
 
 IN_PROC_BROWSER_TEST_F(AboutThisSiteKeepSidePanelOpenBrowserTest,

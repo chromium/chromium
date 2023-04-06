@@ -143,6 +143,7 @@ absl::optional<proto::SiteInfo> AboutThisSiteService::GetAboutThisSiteInfo(
   return absl::nullopt;
 }
 
+// TODO(crbug.com/1412109): Remove this method upon cleaning non-msbb support
 // static
 GURL AboutThisSiteService::CreateMoreAboutUrl(const GURL& url) {
   GURL more_about_url = GURL("https://www.google.com/search");
@@ -150,6 +151,25 @@ GURL AboutThisSiteService::CreateMoreAboutUrl(const GURL& url) {
       net::AppendQueryParameter(more_about_url, "q", "About " + url.spec());
   more_about_url = net::AppendQueryParameter(more_about_url, "tbm", "ilp");
   more_about_url = net::AppendQueryParameter(more_about_url, "ctx", "chrome");
+
+  return more_about_url;
+}
+
+// static
+GURL AboutThisSiteService::CreateMoreAboutUrlForNavigation(const GURL& url) {
+  GURL more_about_url = GURL("https://www.google.com/search");
+
+  // Strip paths of invalid urls
+  const std::string url_spec =
+      optimization_guide::IsValidURLForURLKeyedHint(url)
+          ? url.spec()
+          : url.GetWithEmptyPath().spec();
+
+  more_about_url =
+      net::AppendQueryParameter(more_about_url, "q", "About " + url_spec);
+  more_about_url = net::AppendQueryParameter(more_about_url, "tbm", "ilp");
+  more_about_url =
+      net::AppendQueryParameter(more_about_url, "ctx", "chrome_nav");
 
   return more_about_url;
 }
