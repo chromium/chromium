@@ -350,6 +350,40 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Storage.Buckets.Parameters.Durability"
+    enum="StorageBucketDurabilityParameter" expires_after="2024-04-01">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>The requested durability for a bucket when it is open()ed.</summary>
+</histogram>
+
+<histogram name="Storage.Buckets.Parameters.Expiration" units="minutes"
+    expires_after="2024-04-01">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    The expiration time for a bucket, in minutes, if provided when it is
+    open()ed. If not provided, the underflow bucket is used.
+  </summary>
+</histogram>
+
+<histogram name="Storage.Buckets.Parameters.Persisted"
+    enum="StorageBucketPersistedParameter" expires_after="2024-04-01">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>The requested persistence for a bucket when it is open()ed.</summary>
+</histogram>
+
+<histogram name="Storage.Buckets.Parameters.QuotaKb" units="KB"
+    expires_after="2024-04-01">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    The requested quota for a bucket, in kB, if provided. If not provided, the
+    underflow bucket is used. Logged when the bucket is open()ed.
+  </summary>
+</histogram>
+
 <histogram name="Storage.FileSystemAccess.PersistedPermissions.Age.{Type}"
     units="ms" expires_after="2024-05-01">
   <owner>asully@chromium.org</owner>

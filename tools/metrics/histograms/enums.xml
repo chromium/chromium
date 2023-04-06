@@ -98385,6 +98385,18 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
       label="Storage access allowed by the top-level version of the API"/>
 </enum>
 
+<enum name="StorageBucketDurabilityParameter">
+  <int value="0" label="Not provided"/>
+  <int value="1" label="Relaxed"/>
+  <int value="2" label="Strict"/>
+</enum>
+
+<enum name="StorageBucketPersistedParameter">
+  <int value="0" label="Not provided"/>
+  <int value="1" label="Not persisted"/>
+  <int value="2" label="Persisted"/>
+</enum>
+
 <enum name="StoragePartitionRemoverTasks">
   <int value="1" label="kSynchronous"/>
   <int value="2" label="kCookies"/>
