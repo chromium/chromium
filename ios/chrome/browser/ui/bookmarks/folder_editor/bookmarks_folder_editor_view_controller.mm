@@ -83,13 +83,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // The action sheet coordinator, if one is currently being shown.
 @property(nonatomic, strong) ActionSheetCoordinator* actionSheetCoordinator;
 
-// `bookmarkModel` must not be NULL and must be loaded.
-- (instancetype)initWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
-                     syncSetupService:(SyncSetupService*)syncSetupService
-                          syncService:(syncer::SyncService*)syncService
-                              browser:(Browser*)browser
-    NS_DESIGNATED_INITIALIZER;
-
 // Enables or disables the save button depending on the state of the form.
 - (void)updateSaveButtonState;
 
@@ -114,63 +107,33 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @synthesize titleItem = _titleItem;
 @synthesize parentFolderItem = _parentFolderItem;
 
-#pragma mark - Class methods
-
-+ (instancetype)
-    folderCreatorWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
-                      parentFolder:(const BookmarkNode*)parentFolder
-                           browser:(Browser*)browser
-                  syncSetupService:(SyncSetupService*)syncSetupService
-                       syncService:(syncer::SyncService*)syncService {
-  DCHECK(browser);
-  DCHECK(parentFolder);
-  BookmarksFolderEditorViewController* folderCreator =
-      [[self alloc] initWithBookmarkModel:bookmarkModel
-                         syncSetupService:syncSetupService
-                              syncService:syncService
-                                  browser:browser];
-  folderCreator.parentFolder = parentFolder;
-  folderCreator.folder = NULL;
-  folderCreator.editingExistingFolder = NO;
-  return folderCreator;
-}
-
-+ (instancetype)
-    folderEditorWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
-                           folder:(const BookmarkNode*)folder
-                          browser:(Browser*)browser
-                 syncSetupService:(SyncSetupService*)syncSetupService
-                      syncService:(syncer::SyncService*)syncService {
-  DCHECK(folder);
-  DCHECK(!bookmarkModel->is_permanent_node(folder));
-  DCHECK(browser);
-  BookmarksFolderEditorViewController* folderEditor =
-      [[self alloc] initWithBookmarkModel:bookmarkModel
-                         syncSetupService:syncSetupService
-                              syncService:syncService
-                                  browser:browser];
-  folderEditor.parentFolder = folder->parent();
-  folderEditor.folder = folder;
-  folderEditor.browserState =
-      browser->GetBrowserState()->GetOriginalChromeBrowserState();
-  folderEditor.editingExistingFolder = YES;
-  return folderEditor;
-}
-
 #pragma mark - Initialization
 
 - (instancetype)initWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
+                           folderNode:(const BookmarkNode*)folder
+                     parentFolderNode:(const BookmarkNode*)parentFolder
                      syncSetupService:(SyncSetupService*)syncSetupService
                           syncService:(syncer::SyncService*)syncService
                               browser:(Browser*)browser {
   DCHECK(bookmarkModel);
   DCHECK(bookmarkModel->loaded());
+  // Both of these can't be `nullptr`.
+  DCHECK(parentFolder || folder)
+      << "parentFolder: " << parentFolder << ", folder: " << folder;
+  if (folder) {
+    DCHECK(!bookmarkModel->is_permanent_node(folder));
+  }
   DCHECK(browser);
+
   UITableViewStyle style = ChromeTableViewStyle();
   self = [super initWithStyle:style];
   if (self) {
     _bookmarkModel = bookmarkModel;
+    _folder = folder;
+    _parentFolder = parentFolder ? parentFolder : _folder->parent();
+    _editingExistingFolder = _folder != nullptr;
     _browser = browser->AsWeakPtr();
+    _browserState = browser->GetBrowserState()->GetOriginalChromeBrowserState();
     // Set up the bookmark model oberver.
     _modelBridge.reset(new BookmarkModelBridge(self, _bookmarkModel));
     _syncObserverModelBridge.reset(new SyncObserverBridge(self, syncService));
@@ -179,13 +142,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return self;
 }
 
-- (void)dealloc {
-  _titleItem.delegate = nil;
-}
-
 - (void)disconnect {
-  _modelBridge = nil;
-  _syncObserverModelBridge = nil;
+  _browserState = nullptr;
+  _bookmarkModel = nullptr;
+  _modelBridge = nullptr;
+  _folder = nullptr;
+  _parentFolder = nullptr;
+  _syncObserverModelBridge = nullptr;
+  _syncSetupService = nullptr;
+  _titleItem.delegate = nil;
 }
 
 #pragma mark - Public
@@ -458,11 +423,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 #pragma mark - Private
-
-- (void)setParentFolder:(const BookmarkNode*)parentFolder {
-  DCHECK(parentFolder);
-  _parentFolder = parentFolder;
-}
 
 - (void)updateEditingState {
   if (![self isViewLoaded]) {
