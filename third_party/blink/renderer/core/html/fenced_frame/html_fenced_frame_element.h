@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_config.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
+#include "third_party/blink/renderer/core/html/html_iframe_element_sandbox.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -71,6 +72,8 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   explicit HTMLFencedFrameElement(Document& document);
   ~HTMLFencedFrameElement() override;
   void Trace(Visitor* visitor) const override;
+
+  DOMTokenList* sandbox() const;
 
   // HTMLFrameOwnerElement overrides.
   void DisconnectContentFrame() override;
@@ -208,6 +211,7 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   bool size_set_after_freeze_ = false;
   // Attributes that are modeled off of their iframe equivalents
   AtomicString allow_;
+  Member<HTMLIFrameElementSandbox> sandbox_;
 
   friend class FencedFrameMPArchDelegate;
   friend class FencedFrameShadowDOMDelegate;

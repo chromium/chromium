@@ -320,6 +320,11 @@ void FencedFrame::DidChangeFramePolicy(const blink::FramePolicy& frame_policy) {
   FrameTreeNode* inner_root = frame_tree_->root();
   const blink::FramePolicy& current_frame_policy =
       inner_root->pending_frame_policy();
+  // Observe that the sandbox flags sent from the renderer are currently
+  // ignored. The `sandbox` attribute on `HTMLFencedFrameElement` may only
+  // cause embedder-initiated navigations to fail for now---in the renderer.
+  // TODO(crbug.com/1347953): Handle sandbox flags for fenced frames properly
+  // in the browser, allowing us to use non-fixed sets of sandbox flags.
   inner_root->SetPendingFramePolicy(blink::FramePolicy(
       current_frame_policy.sandbox_flags, frame_policy.container_policy,
       current_frame_policy.required_document_policy));

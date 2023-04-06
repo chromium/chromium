@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/html/html_iframe_element_sandbox.h"
 
+#include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
+#include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -52,8 +54,12 @@ bool IsTokenSupported(const AtomicString& token) {
 
 }  // namespace
 
-HTMLIFrameElementSandbox::HTMLIFrameElementSandbox(HTMLIFrameElement* element)
-    : DOMTokenList(*element, html_names::kSandboxAttr) {}
+HTMLIFrameElementSandbox::HTMLIFrameElementSandbox(
+    HTMLFrameOwnerElement* element)
+    : DOMTokenList(*element, html_names::kSandboxAttr) {
+  DCHECK(IsA<HTMLIFrameElement>(element) ||
+         IsA<HTMLFencedFrameElement>(element));
+}
 
 bool HTMLIFrameElementSandbox::ValidateTokenValue(
     const AtomicString& token_value,

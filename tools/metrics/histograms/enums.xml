@@ -42053,6 +42053,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4538" label="GamepadTouchSurfaceId"/>
   <int value="4539" label="GamepadTouchPosition"/>
   <int value="4540" label="GamepadTouchSurfaceDimension"/>
+  <int value="4541" label="SandboxViaFencedFrame"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
