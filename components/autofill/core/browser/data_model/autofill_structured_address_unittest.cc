@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <map>
+#include <memory>
 #include <ostream>
 #include <string>
 #include <vector>
@@ -13,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map.h"
@@ -640,6 +642,157 @@ TEST(AutofillStructuredAddress, TestGetCommonCountryForMerge) {
   EXPECT_EQ(country1.GetCommonCountryForMerge(country2), u"");
   EXPECT_EQ(country2.GetCommonCountryForMerge(country1), u"");
 }
+
+struct HasNewerStreetAddressPrecedenceInMergingTestCase {
+  // State and parameterization of feature
+  // `kAutofillConvergeToExtremeLengthStreetAddress`.
+  enum class FeatureState {
+    kDisabled = 0,
+    kShorter = 1,
+    kLonger = 2
+  } feature_state;
+  std::u16string old_street_address_name, new_street_address_name;
+  VerificationStatus old_street_address_status, new_street_address_status;
+  bool expect_newer_precedence;
+};
+
+class HasNewerStreetAddressPrecedenceInMergingTest
+    : public testing::TestWithParam<
+          HasNewerStreetAddressPrecedenceInMergingTestCase> {
+ public:
+  HasNewerStreetAddressPrecedenceInMergingTest() {
+    using TestFeatureState =
+        HasNewerStreetAddressPrecedenceInMergingTestCase::FeatureState;
+    HasNewerStreetAddressPrecedenceInMergingTestCase test_case = GetParam();
+    if (test_case.feature_state != TestFeatureState::kDisabled) {
+      scoped_feature_list_.InitAndEnableFeatureWithParameters(
+          features::kAutofillConvergeToExtremeLengthStreetAddress,
+          {{features::kAutofillConvergeToLonger.name,
+            test_case.feature_state == TestFeatureState::kLonger ? "true"
+                                                                 : "false"}});
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kAutofillConvergeToExtremeLengthStreetAddress);
+    }
+    country_code_ = std::make_unique<CountryCodeNode>(nullptr);
+    country_code_->SetValue(u"US", VerificationStatus::kParsed);
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<CountryCodeNode> country_code_;
+};
+
+// Tests the logging of which street name (old or new) was chosen during merging
+// when the feature `kAutofillConvergeToExtremeLengthStreetAddress` is enabled.
+TEST_P(HasNewerStreetAddressPrecedenceInMergingTest,
+       HasNewerStreetAddressPrecedenceInMergingTestCase) {
+  HasNewerStreetAddressPrecedenceInMergingTestCase test_case = GetParam();
+  StreetAddressNode old_street(country_code_.get());
+  StreetAddressNode new_street(country_code_.get());
+  old_street.SetValue(test_case.old_street_address_name,
+                      test_case.old_street_address_status);
+  new_street.SetValue(test_case.new_street_address_name,
+                      test_case.new_street_address_status);
+
+  old_street.MergeWithComponent(new_street);
+  EXPECT_EQ(old_street.GetValue() == new_street.GetValue(),
+            test_case.expect_newer_precedence);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    StreetAddressConvergenceTest,
+    HasNewerStreetAddressPrecedenceInMergingTest,
+    testing::Values(
+        // When the feature is disabled, always prefer the newer value.
+        HasNewerStreetAddressPrecedenceInMergingTestCase{
+            .feature_state = HasNewerStreetAddressPrecedenceInMergingTestCase::
+                FeatureState::kDisabled,
+            .old_street_address_name = u"205 Main Street",
+            .new_street_address_name = u"205 Main St",
+            .old_street_address_status = VerificationStatus::kParsed,
+            .new_street_address_status = VerificationStatus::kParsed,
+            .expect_newer_precedence = true},
+        HasNewerStreetAddressPrecedenceInMergingTestCase{
+            .feature_state = HasNewerStreetAddressPrecedenceInMergingTestCase::
+                FeatureState::kDisabled,
+            .old_street_address_name = u"205 Main St",
+            .new_street_address_name = u"205 Main Street",
+            .old_street_address_status = VerificationStatus::kParsed,
+            .new_street_address_status = VerificationStatus::kParsed,
+            .expect_newer_precedence = true},
+        HasNewerStreetAddressPrecedenceInMergingTestCase{
+            .feature_state = HasNewerStreetAddressPrecedenceInMergingTestCase::
+                FeatureState::kDisabled,
+            .old_street_address_name = u"205 Main St",
+            .new_street_address_name = u"205 Main Street",
+            .old_street_address_status = VerificationStatus::kUserVerified,
+            .new_street_address_status = VerificationStatus::kParsed,
+            .expect_newer_precedence = false},
+        // Converge to longer --> prefer the new one.
+        HasNewerStreetAddressPrecedenceInMergingTestCase{
+            .feature_state = HasNewerStreetAddressPrecedenceInMergingTestCase::
+                FeatureState::kLonger,
+            .old_street_address_name = u"205 Main St",
+            .new_street_address_name = u"205 Main Street",
+            .old_street_address_status = VerificationStatus::kParsed,
+            .new_street_address_status = VerificationStatus::kParsed,
+            .expect_newer_precedence = true},
+        // Converge to longer --> prefer the old one.
+        HasNewerStreetAddressPrecedenceInMergingTestCase{
+            .feature_state = HasNewerStreetAddressPrecedenceInMergingTestCase::
+                FeatureState::kLonger,
+            .old_street_address_name = u"205 Main Street",
+            .new_street_address_name = u"205 Main St",
+            .old_street_address_status = VerificationStatus::kParsed,
+            .new_street_address_status = VerificationStatus::kParsed,
+            .expect_newer_precedence = false},
+        // Converge to longer, but prefer the new one, having better status.
+        HasNewerStreetAddressPrecedenceInMergingTestCase{
+            .feature_state = HasNewerStreetAddressPrecedenceInMergingTestCase::
+                FeatureState::kLonger,
+            .old_street_address_name = u"205 Main Street",
+            .new_street_address_name = u"205 Main St",
+            .old_street_address_status = VerificationStatus::kParsed,
+            .new_street_address_status = VerificationStatus::kUserVerified,
+            .expect_newer_precedence = true},
+        // Converge to shorter --> prefer the new one.
+        HasNewerStreetAddressPrecedenceInMergingTestCase{
+            .feature_state = HasNewerStreetAddressPrecedenceInMergingTestCase::
+                FeatureState::kShorter,
+            .old_street_address_name = u"205 Main Street",
+            .new_street_address_name = u"205 Main St",
+            .old_street_address_status = VerificationStatus::kParsed,
+            .new_street_address_status = VerificationStatus::kParsed,
+            .expect_newer_precedence = true},
+        // Converge to shorter --> prefer the old one.
+        HasNewerStreetAddressPrecedenceInMergingTestCase{
+            .feature_state = HasNewerStreetAddressPrecedenceInMergingTestCase::
+                FeatureState::kShorter,
+            .old_street_address_name = u"205 Main St",
+            .new_street_address_name = u"205 Main Street",
+            .old_street_address_status = VerificationStatus::kParsed,
+            .new_street_address_status = VerificationStatus::kParsed,
+            .expect_newer_precedence = false},
+        // Converge to shorter, but prefer the old one, having better status.
+        HasNewerStreetAddressPrecedenceInMergingTestCase{
+            .feature_state = HasNewerStreetAddressPrecedenceInMergingTestCase::
+                FeatureState::kShorter,
+            .old_street_address_name = u"205 Main Street",
+            .new_street_address_name = u"205 Main St",
+            .old_street_address_status = VerificationStatus::kUserVerified,
+            .new_street_address_status = VerificationStatus::kParsed,
+            .expect_newer_precedence = false},
+        // Equivalent post rewriting, same status, same length --> prefer the
+        // old one.
+        HasNewerStreetAddressPrecedenceInMergingTestCase{
+            .feature_state = HasNewerStreetAddressPrecedenceInMergingTestCase::
+                FeatureState::kShorter,
+            .old_street_address_name = u"205 Main Street Av",
+            .new_street_address_name = u"205 Main St Avenue",
+            .old_street_address_status = VerificationStatus::kParsed,
+            .new_street_address_status = VerificationStatus::kParsed,
+            .expect_newer_precedence = false}));
 
 struct MergeStatesWithCanonicalNamesTestCase {
   std::string older_state;

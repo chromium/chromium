@@ -2745,6 +2745,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Autofill.NewerStreetAddressWithSameStatusIsChosen"
+    enum="Boolean" expires_after="2023-09-13">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logs whether a street address merge operation favored the new or old address
+    because of the feature `kAutofillConvergeToExtremeLengthStreetAddress`.
+  </summary>
+</histogram>
+
 <histogram
     name="Autofill.NumberOfAutofilledFieldsAtSubmission.{AcceptanceStatus}"
     units="fields" expires_after="M120">
