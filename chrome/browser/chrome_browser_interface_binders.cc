@@ -979,7 +979,8 @@ void PopulateChromeWebUIFrameBinders(
       ash::ShortcutCustomizationAppUI,
       ash::printing::printing_manager::PrintManagementUI,
 #endif
-      NewTabPageUI, OmniboxPopupUI, BookmarksSidePanelUI>(map);
+      NewTabPageUI, OmniboxPopupUI, BookmarksSidePanelUI, CustomizeChromeUI>(
+      map);
 
   RegisterWebUIControllerInterfaceBinder<
       new_tab_page::mojom::PageHandlerFactory, NewTabPageUI>(map);
