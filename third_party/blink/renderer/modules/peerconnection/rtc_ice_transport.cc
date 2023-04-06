@@ -41,6 +41,7 @@ const char* kIceRoleControllingStr = "controlling";
 const char* kIceRoleControlledStr = "controlled";
 
 RTCIceCandidate* ConvertToRtcIceCandidate(const cricket::Candidate& candidate) {
+  // The "" mid and sdpMLineIndex 0 are wrong, see https://crbug.com/1385446
   return RTCIceCandidate::Create(MakeGarbageCollected<RTCIceCandidatePlatform>(
       String::FromUTF8(webrtc::SdpSerializeCandidate(candidate)), "", 0));
 }
@@ -191,6 +192,11 @@ void RTCIceTransport::OnGatheringStateChanged(
   }
   gathering_state_ = new_state;
   DispatchEvent(*Event::Create(event_type_names::kGatheringstatechange));
+}
+void RTCIceTransport::OnCandidateGathered(
+    const cricket::Candidate& parsed_candidate) {
+  RTCIceCandidate* candidate = ConvertToRtcIceCandidate(parsed_candidate);
+  local_candidates_.push_back(candidate);
 }
 
 void RTCIceTransport::OnStateChanged(webrtc::IceTransportState new_state) {
