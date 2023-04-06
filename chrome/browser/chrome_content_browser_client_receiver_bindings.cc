@@ -365,7 +365,7 @@ void ChromeContentBrowserClient::ExposeInterfacesToRenderer(
 #endif  // defined(ARCH_CPU_X86_64)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  for (auto* ep : extra_parts_) {
+  for (auto& ep : extra_parts_) {
     ep->ExposeInterfacesToRenderer(registry, associated_registry,
                                    render_process_host);
   }
