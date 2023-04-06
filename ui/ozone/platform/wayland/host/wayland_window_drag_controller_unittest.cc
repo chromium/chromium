@@ -1293,6 +1293,7 @@ TEST_P(WaylandWindowDragControllerTest, CursorPositionIsUpdatedOnMotion) {
     auto* output2 =
         server->CreateAndInitializeOutput(wl::TestOutputMetrics(kOutputBounds));
     output2->SetScale(2);
+    output2->SetDeviceScaleFactor(2);
   });
 
   WaitForAllDisplaysReady();
@@ -1671,7 +1672,10 @@ INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
 INSTANTIATE_TEST_SUITE_P(
     XdgVersionStableTestWithAuraShell,
     WaylandWindowDragControllerTest,
-    Values(wl::ServerConfig{
-        .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}));
+    Values(wl::ServerConfig{.enable_aura_shell =
+                                wl::EnableAuraShellProtocol::kEnabled},
+           wl::ServerConfig{
+               .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled,
+               .use_aura_output_manager = true}));
 
 }  // namespace ui

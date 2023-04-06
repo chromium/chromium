@@ -488,6 +488,7 @@ TEST_P(WaylandScreenTest, GetAcceleratedWidgetAtScreenPoint) {
   // Update scale.
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     server->output()->SetScale(2);
+    server->output()->SetDeviceScaleFactor(2);
     server->output()->Flush();
   });
 
@@ -917,6 +918,7 @@ TEST_P(WaylandScreenTest, SetWindowScale) {
     // get the new scale and update scale of their buffers.  The default UI
     // scale equals the output scale.
     output->SetScale(kTripleScale);
+    server->output()->SetDeviceScaleFactor(kTripleScale);
     output->Flush();
   });
 
@@ -938,6 +940,7 @@ TEST_P(WaylandScreenTest, SetWindowScale) {
   EXPECT_NE(kForcedUIScale, kDoubleScale);
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     server->output()->SetScale(kDoubleScale);
+    server->output()->SetDeviceScaleFactor(kDoubleScale);
     server->output()->Flush();
   });
 
@@ -977,6 +980,7 @@ TEST_P(WaylandScreenTest, SetWindowScaleWithoutEnteredOutput) {
   // accordingly.
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     server->output()->SetScale(2);
+    server->output()->SetDeviceScaleFactor(2);
     server->output()->Flush();
   });
 
@@ -1087,7 +1091,6 @@ TEST_P(WaylandAuraShellScreenTest, OutputPropertyChanges) {
   const gfx::Insets expected_inset = kExpectedBounds.InsetsFrom(kNewWorkArea);
   PostToServerAndWait([expected_inset](wl::TestWaylandServerThread* server) {
     auto* output = server->output();
-    ASSERT_TRUE(output->GetAuraOutput());
     output->SetLogicalInsets(expected_inset);
     output->Flush();
   });
@@ -1107,6 +1110,7 @@ TEST_P(WaylandAuraShellScreenTest, OutputPropertyChanges) {
   PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
     auto* output = server->output();
     output->SetLogicalSize(scaled_logical_size);
+    output->SetDeviceScaleFactor(kNewScaleValue);
     output->Flush();
   });
 
@@ -1181,8 +1185,8 @@ TEST_P(WaylandAuraShellScreenTest,
       gfx::ScaleToRoundedSize(kPhysicalSize, 0.5);
   PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
     auto* output = server->output();
-    ASSERT_TRUE(output->GetAuraOutput());
     output->SetLogicalSize(scaled_logical_size);
+    output->SetDeviceScaleFactor(2);
     output->SetLogicalInsets(kInsets);
     // Display panel's natural orientation is in portrait, so it needs a
     // transform of 90 degrees to be in landscape.
@@ -1271,6 +1275,7 @@ TEST_P(WaylandAuraShellScreenTest, UseCorrectScreenBeforeEnterEvent) {
             wl::TestOutputMetrics({GetRightX(output1), 0, 800, 600}));
         // Scale Factor 2.
         output2->SetLogicalSize({400, 300});
+        output2->SetDeviceScaleFactor(2);
         ASSERT_TRUE(output2);
       });
 
@@ -1300,13 +1305,19 @@ INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
 INSTANTIATE_TEST_SUITE_P(
     XdgVersionStableTestWithAuraShell,
     WaylandScreenTest,
-    Values(wl::ServerConfig{
-        .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}));
+    Values(wl::ServerConfig{.enable_aura_shell =
+                                wl::EnableAuraShellProtocol::kEnabled},
+           wl::ServerConfig{
+               .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled,
+               .use_aura_output_manager = true}));
 
 INSTANTIATE_TEST_SUITE_P(
     XdgVersionStableTest,
     WaylandAuraShellScreenTest,
-    Values(wl::ServerConfig{
-        .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}));
+    Values(wl::ServerConfig{.enable_aura_shell =
+                                wl::EnableAuraShellProtocol::kEnabled},
+           wl::ServerConfig{
+               .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled,
+               .use_aura_output_manager = true}));
 
 }  // namespace ui
