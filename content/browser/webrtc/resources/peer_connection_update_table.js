@@ -115,6 +115,13 @@ export class PeerConnectionUpdateTable {
     } else if (update.type === 'setConfiguration') {
       // Update the configuration that is displayed at the top.
       peerConnectionElement.firstChild.children[2].textContent = update.value;
+    } else if (['transceiverAdded',
+        'transceiverModified'].includes(update.type)) {
+      // Show the transceiver index.
+      const indexLine = update.value.split('\n', 3)[2];
+      if (indexLine.startsWith('getTransceivers()[')) {
+        type += ' ' + indexLine.substring(17, indexLine.length - 2);
+      }
     } else if (['iceconnectionstatechange', 'connectionstatechange',
         'signalingstatechange'].includes(update.type)) {
       const fieldName = {
