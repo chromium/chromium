@@ -45,7 +45,8 @@ class PageInfoMainView : public views::View,
   // The width of the column size for permissions and chosen object icons.
   static constexpr int kIconColumnWidth = 16;
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCookieButtonElementId);
-
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMainLayoutElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPermissionsElementId);
   // Container view that fills the bubble width for button rows. Supports
   // updating the layout.
   class ContainerView : public views::View {
@@ -79,6 +80,10 @@ class PageInfoMainView : public views::View,
 
   // ChosenObjectViewObserver:
   void OnChosenObjectDeleted(const PageInfoUI::ChosenObjectInfo& info) override;
+
+  int GetVisiblePermissionsCountForTesting() const {
+    return toggle_rows_.size();
+  }
 
  protected:
   // TODO(olesiamarukhno): Was used for tests, will update it after redesigning

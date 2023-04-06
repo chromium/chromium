@@ -96,3 +96,7 @@ gfx::Size PageInfoRowView::CalculatePreferredSize() const {
   width = std::max(width, PageInfoViewFactory::kMinBubbleWidth);
   return gfx::Size(width, views::View::GetHeightForWidth(width));
 }
+
+const std::u16string& PageInfoRowView::GetTitleForTesting() {
+  return title_->GetText();
+}
