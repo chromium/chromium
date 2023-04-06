@@ -124,43 +124,40 @@ function initializeOobe() {
 /**
  * ----------- OOBE Execution Begins -----------
  */
-(function() {
-// Ensure that there is a global error listener when OOBE starts.
-// This error listener is added in the main HTML document.
-assert(window.OobeErrorStore, 'OobeErrorStore not present on global object!');
+function startOobe() {
+  // Ensure that there is a global error listener when OOBE starts.
+  // This error listener is added in the main HTML document.
+  assert(window.OobeErrorStore, 'OobeErrorStore not present on global object!');
 
-// Update localized strings at the document level.
-Oobe.updateDocumentLocalizedStrings();
+  // Update localized strings at the document level.
+  Oobe.updateDocumentLocalizedStrings();
 
-prepareGlobalValues(window);
+  prepareGlobalValues(window);
 
-// Add common screens to the document.
-addScreensToMainContainer(commonScreensList);
-traceExecution(TraceEvent.COMMON_SCREENS_ADDED);
+  // Add common screens to the document.
+  addScreensToMainContainer(commonScreensList);
+  traceExecution(TraceEvent.COMMON_SCREENS_ADDED);
 
-// Add OOBE or LOGIN screens to the document.
-const isOobeFlow = loadTimeData.getBoolean('isOobeFlow');
-if (isOobeFlow) {
-  addScreensToMainContainer(oobeScreensList);
-  traceExecution(TraceEvent.OOBE_SCREENS_ADDED);
-} else {
-  addScreensToMainContainer(loginScreensList);
-  traceExecution(TraceEvent.LOGIN_SCREENS_ADDED);
+  // Add OOBE or LOGIN screens to the document.
+  const isOobeFlow = loadTimeData.getBoolean('isOobeFlow');
+  addScreensToMainContainer(isOobeFlow ? oobeScreensList : loginScreensList);
+  traceExecution(TraceEvent.REMAINING_SCREENS_ADDED);
+
+  // The default is to have the class 'oobe-display' in <body> for the OOBE
+  // flow. For the 'Add Person' flow, we remove it.
+  if (!isOobeFlow) {
+    document.body.classList.remove('oobe-display');
+  } else {
+    assert(
+        document.body.classList.contains('oobe-display'),
+        'The body of the document must contain oobe-display as a class for the OOBE flow!');
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeOobe);
+  } else {
+    initializeOobe();
+  }
 }
 
-// The default is to have the class 'oobe-display' in <body> for the OOBE
-// flow. For the 'Add Person' flow, we remove it.
-if (!isOobeFlow) {
-  document.body.classList.remove('oobe-display');
-} else {
-  assert(
-      document.body.classList.contains('oobe-display'),
-      'The body of the document must contain oobe-display as a class for the OOBE flow!');
-}
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initializeOobe);
-} else {
-  initializeOobe();
-}
-})();
+startOobe();

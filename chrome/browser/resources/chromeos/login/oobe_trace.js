@@ -6,11 +6,20 @@
  * @fileoverview
  * OOBE Tracing Utilities
  *
- * This file contain utilities for measuring OOBE's frontend load timings. When
- * this file is first imported, it assumes the existence of an object in the
- * global object (window) that contains the timestamp  of when OOBE started.
- * This value ('window.oobeInitializationBeginTimestamp'), is set by another
- * script (oobe_trace_start.js) that runs as the first thing in OOBE.
+ * This file contain utilities for measuring OOBE's frontend load timings using
+ * the Performance API. The timestamps are created using performance.now() which
+ * provides us with the number of milliseconds since `performance.timeOrigin`.
+ *
+ * For a typical web page, running `performance.now()` as the first script in
+ * the page gives values that are close enough to zero (typically less than a
+ * few dozen milliseconds) that `timeOrigin` is a reliable reference for timing
+ * the execution of scripts. In a WebUI like OOBE, this is not the case. That is
+ * because `performance.timeOrigin` is set when the BrowserContext is created,
+ * which happens much earlier than the first JavaScript instruction. For OOBE,
+ * running `performance.now()` as the first thing in the page reports ~ 1000ms.
+ *
+ * In order to account for this discrepancy, OOBE executes oobe_trace_start.js
+ * as its first script to set the `FIRST_INSTRUCTION` TraceEvent.
  *
  * For now, the results are written into 'window' as 'oobeTraceLogs'. In the
  * future, these values will be available directly from the OOBE debugger and
@@ -18,13 +27,14 @@
  */
 
 import {assert} from '//resources/ash/common/assert.js';
-assert(window.oobeInitializationBeginTimestamp);
+
+import {loadTimeData} from './i18n_setup.js';
 
 export const TraceEvent = {
+  FIRST_INSTRUCTION: 'FIRST_INSTRUCTION',
   FIRST_LINE_AFTER_IMPORTS: 'FIRST_LINE_AFTER_IMPORTS',
   COMMON_SCREENS_ADDED: 'COMMON_SCREENS_ADDED',
-  OOBE_SCREENS_ADDED: 'OOBE_SCREENS_ADDED',
-  LOGIN_SCREENS_ADDED: 'LOGIN_SCREENS_ADDED',
+  REMAINING_SCREENS_ADDED: 'REMAINING_SCREENS_ADDED',
   DOM_CONTENT_LOADED: 'DOM_CONTENT_LOADED',
   OOBE_INITIALIZED: 'OOBE_INITIALIZED',
   FIRST_SCREEN_SHOWN: 'FIRST_SCREEN_SHOWN',
@@ -37,14 +47,18 @@ export const TraceEvent = {
 const eventLogs = [];
 window.oobeTraceLogs = eventLogs;
 
+class EventEntry {
+  constructor(traceEventName) {
+    assert(traceEventName in TraceEvent);
+    this.name = traceEventName;
+    this.delta = performance.now();
+  }
+}
 
-function createEventEntry(traceEvent) {
-  assert(traceEvent in TraceEvent);
-  const currentTimestamp = new Date();
-  const delta = currentTimestamp - window.oobeInitializationBeginTimestamp;
-  const eventEntry = {};
-  eventEntry[traceEvent] = delta;
-  return eventEntry;
+if (window.oobeInitializationBeginTimestamp) {
+  const oobeTimeOrigin = new EventEntry(TraceEvent.FIRST_INSTRUCTION);
+  oobeTimeOrigin.delta = window.oobeInitializationBeginTimestamp;
+  eventLogs.push(oobeTimeOrigin);
 }
 
 let firstScreenShownEventLogged = false;
@@ -52,8 +66,7 @@ let welcomeAnimationPlayEventLogged = false;
 let firstOobeLottieEventLogged = false;
 
 export function traceExecution(traceEvent) {
-  const eventEntry = createEventEntry(traceEvent);
-  eventLogs.push(eventEntry);
+  eventLogs.push(new EventEntry(traceEvent));
 }
 
 export function traceFirstScreenShown() {
@@ -90,13 +103,45 @@ export function traceOobeLottieExecution() {
 let scheduledLastOobeLottieTrace = null;
 function maybeTraceLastOobeLottieInitialization() {
   // Amount of time to wait until logging the last OOBE Lottie Initialization.
-  const LAST_OOBE_LOTTIE_TIMEOUT_MSECS = 5 * 1000;
+  const LAST_OOBE_LOTTIE_TIMEOUT_MSECS = 3 * 1000;
 
   if (scheduledLastOobeLottieTrace) {
     clearTimeout(scheduledLastOobeLottieTrace);
   }
 
-  const entry = createEventEntry(TraceEvent.LAST_OOBE_LOTTIE_INITIALIZED);
-  scheduledLastOobeLottieTrace =
-    setTimeout(() => eventLogs.push(entry), LAST_OOBE_LOTTIE_TIMEOUT_MSECS);
+  const entry = new EventEntry(TraceEvent.LAST_OOBE_LOTTIE_INITIALIZED);
+  scheduledLastOobeLottieTrace = setTimeout(() => {
+    eventLogs.push(entry);
+    maybePrintTraces();
+  }, LAST_OOBE_LOTTIE_TIMEOUT_MSECS);
+}
+
+// Maybe output the timings to the console to be parsed when the command line
+// switch 'oobe-print-frontend-timings' is present. More details can be found in
+// go/oobe-frontend-trace-timings
+function maybePrintTraces() {
+  if (!loadTimeData.getBoolean('printFrontendTimings')) {
+    return;
+  }
+
+  const EventPrintOrder = [
+    TraceEvent.FIRST_INSTRUCTION,
+    TraceEvent.FIRST_LINE_AFTER_IMPORTS,
+    TraceEvent.COMMON_SCREENS_ADDED,
+    TraceEvent.REMAINING_SCREENS_ADDED,
+    TraceEvent.DOM_CONTENT_LOADED,
+    TraceEvent.OOBE_INITIALIZED,
+    TraceEvent.FIRST_SCREEN_SHOWN,
+    TraceEvent.FIRST_OOBE_LOTTIE_INITIALIZED,
+    TraceEvent.LAST_OOBE_LOTTIE_INITIALIZED,
+    TraceEvent.WELCOME_ANIMATION_PLAYING,
+  ];
+
+  let output = 'OOBE_TRACE_BEGIN_';
+  for (const eventName of EventPrintOrder) {
+    const matchingEvent = eventLogs.find(e => e.name === eventName);
+    output += matchingEvent ? matchingEvent.delta + ';' : 'NaN;';
+  }
+  output += '_OOBE_TRACE_END';
+  console.error(output);
 }

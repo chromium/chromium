@@ -791,6 +791,10 @@ const char kOobeForceTabletFirstRun[] = "oobe-force-tablet-first-run";
 const char kOobeLargeScreenSpecialScaling[] =
     "oobe-large-screen-special-scaling";
 
+// When present, prints the time it takes for OOBE's frontend to load.
+// See go/oobe-frontend-trace-timings for details.
+const char kOobePrintFrontendLoadTimings[] = "oobe-print-frontend-load-timings";
+
 // Specifies directory for screenshots taken with OOBE UI Debugger.
 const char kOobeScreenshotDirectory[] = "oobe-screenshot-dir";
 
