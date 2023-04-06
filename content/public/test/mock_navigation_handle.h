@@ -229,6 +229,13 @@ class MockNavigationHandle : public NavigationHandle {
   CommitDeferringCondition* GetCommitDeferringConditionForTesting() override {
     return nullptr;
   }
+
+  blink::RuntimeFeatureStateContext& GetMutableRuntimeFeatureStateContext()
+      override {
+    return runtime_feature_state_context_;
+  }
+  // End of NavigationHandle implementation.
+
   void set_url(const GURL& url) { url_ = url; }
   void set_previous_primary_main_frame_url(
       const GURL& previous_primary_main_frame_url) {
@@ -348,6 +355,7 @@ class MockNavigationHandle : public NavigationHandle {
   absl::optional<blink::LocalFrameToken> initiator_frame_token_;
   int initiator_process_id_ = ChildProcessHost::kInvalidUniqueID;
   bool was_started_from_context_menu_ = false;
+  blink::RuntimeFeatureStateContext runtime_feature_state_context_;
 
   base::WeakPtrFactory<MockNavigationHandle> weak_factory_{this};
 };

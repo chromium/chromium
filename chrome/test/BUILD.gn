@@ -3247,6 +3247,7 @@ if (!is_android) {
         "../browser/ui/views/web_apps/pwa_confirmation_bubble_view_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_confirmation_view_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_identity_update_confirmation_view_browsertest.cc",
+        "../browser/user_bypass/user_bypass_web_contents_observer_browsertest.cc",
       ]
 
       if (is_win) {

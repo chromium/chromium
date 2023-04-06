@@ -1806,6 +1806,8 @@ static_library("browser") {
     "usb/web_usb_chooser.h",
     "usb/web_usb_histograms.cc",
     "usb/web_usb_histograms.h",
+    "user_bypass/user_bypass_web_contents_observer.cc",
+    "user_bypass/user_bypass_web_contents_observer.h",
     "video_tutorials/video_tutorial_service_factory.cc",
     "video_tutorials/video_tutorial_service_factory.h",
     "visibility_timer_tab_helper.cc",

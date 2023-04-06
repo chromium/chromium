@@ -32,6 +32,7 @@ MockNavigationHandle::MockNavigationHandle(const GURL& url,
                                     : true) {
   redirect_chain_.push_back(url);
   proxy_server_ = net::ProxyServer::Direct();
+  runtime_feature_state_context_ = blink::RuntimeFeatureStateContext();
 }
 
 MockNavigationHandle::~MockNavigationHandle() = default;

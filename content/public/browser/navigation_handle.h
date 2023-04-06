@@ -28,6 +28,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-forward.h"
 #include "third_party/blink/public/common/navigation/impression.h"
+#include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom-forward.h"
@@ -625,6 +626,21 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // represented by the FrameTreeNode being previously discarded by the browser.
   // This can be used as soon as the navigation begins.
   virtual bool ExistingDocumentWasDiscarded() const = 0;
+
+  // Returns a mutable reference to a blink::RuntimeFeatureStateContext object,
+  // which exposes the getters and setters for Blink Runtime-Enabled Features to
+  // the browser process. Any feature set using the RuntimeFeatureStateContext
+  // before navigation commit will be communicated back to the renderer process.
+  //
+  // This function should be used from
+  // `WebContentsObserver::ReadyToCommitNavigation()` or earlier. It cannot be
+  // called after `READY_TO_COMMIT`.
+  //
+  // NOTE: These feature changes will apply to the "to-be-created" document and
+  // cleared on redirects i.e. any RFSC's alterations prior to the final URL
+  // will be lost.
+  virtual blink::RuntimeFeatureStateContext&
+  GetMutableRuntimeFeatureStateContext() = 0;
 };
 
 }  // namespace content

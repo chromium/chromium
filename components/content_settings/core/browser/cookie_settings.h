@@ -97,6 +97,26 @@ class CookieSettings : public CookieSettingsBase,
   // This should only be called on the UI thread.
   void SetCookieSetting(const GURL& primary_url, ContentSetting setting);
 
+  // Represents the TTL of each User Bypass entries.
+  static constexpr base::TimeDelta kUserBypassEntriesTTL = base::Days(90);
+
+  // Sets the cookie setting to allow for the |first_party_url|.
+  void SetCookieSettingForUserBypass(const GURL& first_party_url);
+
+  // Determines the current state of User Bypass for the given
+  // |first_party_url|. This method only takes into consideration the hard-coded
+  // default and user-specified values of cookie setting.
+  //
+  // Notes:
+  // - Storage partitioning could be enabled by default even when third-party
+  // cookies are allowed.
+  // - Also, user bypass as of now is only integrated with the runtime feature
+  // of the top-level frame.
+  // - Cases like WebUIs, allowlisted internal apps, and extension iframes are
+  // usually being exempted from storage partitioning or are allowlisted. Thus,
+  // not covered by user bypass at this state of art.
+  bool IsStoragePartitioningBypassEnabled(const GURL& first_party_url);
+
   // Resets the cookie setting for the given url.
   //
   // This should only be called on the UI thread.

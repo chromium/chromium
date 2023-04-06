@@ -429,9 +429,13 @@ class CONTENT_EXPORT NavigationRequest
 #endif
   base::SafeRef<NavigationHandle> GetSafeRef() override;
   bool ExistingDocumentWasDiscarded() const override;
+  blink::RuntimeFeatureStateContext& GetMutableRuntimeFeatureStateContext()
+      override;
+  // End of NavigationHandle implementation.
 
-  // mojom::NavigationRendererCancellationListener implementation
+  // mojom::NavigationRendererCancellationListener implementation:
   void RendererCancellationWindowEnded() override;
+  // End of mojom::NavigationRendererCancellationListener implementation.
 
   void RegisterCommitDeferringConditionForTesting(
       std::unique_ptr<CommitDeferringCondition> condition);
@@ -1080,18 +1084,13 @@ class CONTENT_EXPORT NavigationRequest
   // for a ViewTransition.
   void SetViewTransitionState(blink::ViewTransitionState view_transition_state);
 
-  // Returns a mutable reference to a blink::RuntimeFeatureStateContext object,
-  // which exposes the getters and setters for Blink Runtime-Enabled Features to
-  // the browser process. Any feature set using the RuntimeFeatureStateContext
-  // before navigation commit will be communicated back to the renderer process.
+  // Returns a const reference to a blink::RuntimeFeatureStateContext (RFSC)
+  // object. Once the commit params are sent to the renderer we no longer allow
+  // write access to the RFSC, but read access is still available.
   //
-  // This function should not be called once the navigation has been committed.
-  // NOTE: these feature changes will apply to the "to-be-created" document.
-  blink::RuntimeFeatureStateContext& GetMutableRuntimeFeatureStateContext();
-
-  // Returns a const reference to a blink::RuntimeFeatureStateContext object.
-  // Once the commit params are sent to the renderer we no longer allow write
-  // access to the RFSC, but read access is still available.
+  // Note: This method has another
+  // version, `GetMutableRuntimeFeatureStateContext()`, accessible via
+  // NavigationHandle and will return a mutable reference to the RFSC.
   const blink::RuntimeFeatureStateContext& GetRuntimeFeatureStateContext();
 
   BrowsingContextGroupSwap browsing_context_group_swap() const {
