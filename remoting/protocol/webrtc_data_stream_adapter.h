@@ -56,6 +56,7 @@ class WebrtcDataStreamAdapter : public MessagePipe,
   void OnStateChange() override;
   void OnMessage(const webrtc::DataBuffer& buffer) override;
   void OnBufferedAmountChange(uint64_t previous_amount) override;
+  bool IsOkToCallOnTheNetworkThread() override;
 
   // Helpers for calling EventHandler methods asynchronously.
   // webrtc::DataChannelObserver can be called synchronously mid-operation

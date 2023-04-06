@@ -144,6 +144,10 @@ void WebrtcDataStreamAdapter::OnBufferedAmountChange(uint64_t previous_amount) {
                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
+bool WebrtcDataStreamAdapter::IsOkToCallOnTheNetworkThread() {
+  return true;
+}
+
 void WebrtcDataStreamAdapter::InvokeOpenEvent() {
   event_handler_->OnMessagePipeOpen();
 }
