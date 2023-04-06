@@ -103,6 +103,8 @@ void ModelTypeController::InitModelTypeController(
     // * AUTOFILL_WALLET_DATA: Can be removed from here once the corresponding
     //   feature flag has been cleaned up (crbug.com/1413724).
     // All other data types listed here will likely have to be migrated.
+    // TODO(crbug.com/1430471): PRINTERS_AUTHORIZATION_SERVERS should probably
+    // just support transport mode, since PRINTERS also supports it.
     static constexpr ModelTypeSet kLegacyTypes(
         BOOKMARKS, PREFERENCES, PASSWORDS, AUTOFILL_PROFILE, AUTOFILL,
         AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_METADATA, AUTOFILL_WALLET_OFFER,
@@ -111,7 +113,8 @@ void ModelTypeController::InitModelTypeController(
         HISTORY_DELETE_DIRECTIVES, DICTIONARY, PRIORITY_PREFERENCES, PRINTERS,
         READING_LIST, USER_EVENTS, WIFI_CONFIGURATIONS, WEB_APPS,
         OS_PREFERENCES, OS_PRIORITY_PREFERENCES, WORKSPACE_DESK, HISTORY,
-        SAVED_TAB_GROUP, POWER_BOOKMARK, NIGORI);
+        PRINTERS_AUTHORIZATION_SERVERS, SAVED_TAB_GROUP, POWER_BOOKMARK,
+        NIGORI);
     CHECK(kLegacyTypes.Has(type()))
         << ModelTypeToDebugString(type())
         << " must support running in transport mode!";
