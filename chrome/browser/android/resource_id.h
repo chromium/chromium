@@ -84,6 +84,8 @@ LINK_RESOURCE_ID(IDR_AUTOFILL_CC_TROY, R.drawable.troy_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_UNIONPAY, R.drawable.unionpay_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_VISA, R.drawable.visa_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY, R.drawable.google_pay)
+LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_CAPITALONE,
+                 R.drawable.capitalone_metadata_card)
 // Use DECLARE_RESOURCE_ID here as these resources are used for android only.
 DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_CC_SCAN_NEW,
                     R.drawable.ic_photo_camera_black)
