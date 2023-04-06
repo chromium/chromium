@@ -1091,15 +1091,107 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
-                       GetUsbBusInfo_NoFeatureFlagEnabledError) {
-  // If the permission is not enabled, the method isn't defined
-  // on `chrome.os.telemetry`.
+                       GetUsbBusInfo_Error) {
+  // Configure FakeProbeService.
+  {
+    auto fake_service_impl = std::make_unique<FakeProbeService>();
+    fake_service_impl->SetExpectedLastRequestedCategories(
+        {crosapi::mojom::ProbeCategoryEnum::kBus});
+
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
-      function getUsbBusInfo() {
-        chrome.test.assertThrows(() => { chrome.os.telemetry.getUsbBusInfo(); },
-          [], "chrome.os.telemetry.getUsbBusInfo is not a function");
+      async function getUsbBusInfo() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getUsbBusInfo(),
+            'Error: API internal error'
+        );
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
 
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
+                       GetUsbBusInfo_Success) {
+  // Configure FakeProbeService.
+  {
+    auto telemetry_info = crosapi::mojom::ProbeTelemetryInfo::New();
+    {
+      std::vector<crosapi::mojom::ProbeUsbBusInterfaceInfoPtr> interfaces;
+      interfaces.push_back(crosapi::mojom::ProbeUsbBusInterfaceInfo::New(
+          crosapi::mojom::UInt8Value::New(42),
+          crosapi::mojom::UInt8Value::New(41),
+          crosapi::mojom::UInt8Value::New(43),
+          crosapi::mojom::UInt8Value::New(44), "MyDriver"));
+
+      auto fwupd_version = crosapi::mojom::ProbeFwupdFirmwareVersionInfo::New(
+          "MyVersion", crosapi::mojom::ProbeFwupdVersionFormat::kPair);
+
+      auto usb_bus_info = crosapi::mojom::ProbeUsbBusInfo::New();
+      usb_bus_info->class_id = crosapi::mojom::UInt8Value::New(45);
+      usb_bus_info->subclass_id = crosapi::mojom::UInt8Value::New(46);
+      usb_bus_info->protocol_id = crosapi::mojom::UInt8Value::New(47);
+      usb_bus_info->vendor_id = crosapi::mojom::UInt16Value::New(48);
+      usb_bus_info->product_id = crosapi::mojom::UInt16Value::New(49);
+      usb_bus_info->interfaces = std::move(interfaces);
+      usb_bus_info->fwupd_firmware_version_info = std::move(fwupd_version);
+      usb_bus_info->version = crosapi::mojom::ProbeUsbVersion::kUsb3;
+      usb_bus_info->spec_speed = crosapi::mojom::ProbeUsbSpecSpeed::k20Gbps;
+
+      auto bus_info =
+          crosapi::mojom::ProbeBusInfo::NewUsbBusInfo(std::move(usb_bus_info));
+
+      std::vector<crosapi::mojom::ProbeBusInfoPtr> input;
+      input.push_back(std::move(bus_info));
+
+      telemetry_info->bus_result =
+          crosapi::mojom::ProbeBusResult::NewBusDevicesInfo(std::move(input));
+    }
+
+    auto fake_service_impl = std::make_unique<FakeProbeService>();
+    fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
+    fake_service_impl->SetExpectedLastRequestedCategories(
+        {crosapi::mojom::ProbeCategoryEnum::kBus});
+
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function getUsbBusInfo() {
+        const result = await chrome.os.telemetry.getUsbBusInfo();
+        chrome.test.assertEq(
+          // The dictionary members are ordered lexicographically by the Unicode
+          // codepoints that comprise their identifiers.
+          {
+            "devices": [
+              {
+                "classId": 45,
+                "fwupdFirmwareVersionInfo": {
+                  "version": "MyVersion",
+                  "version_format":"pair"
+                },
+                "interfaces": [
+                  {
+                    "classId": 41,
+                    "driver": "MyDriver",
+                    "interfaceNumber": 42,
+                    "protocolId": 44,
+                    "subclassId": 43
+                  }
+                ],
+                "productId": 49,
+                "protocolId": 47,
+                "spec_speed": "n20Gbps",
+                "subclassId": 46,
+                "vendorId": 48,
+                "version": "usb3"
+              }
+            ]
+          }, result);
         chrome.test.succeed();
       }
     ]);
@@ -1330,126 +1422,6 @@ IN_PROC_BROWSER_TEST_F(
         chrome.test.assertEq("COOL-LAPTOP-CHROME", result.modelName);
         chrome.test.assertEq(null, result.serialNumber);
         chrome.test.assertEq("sku15", result.skuNumber);
-        chrome.test.succeed();
-      }
-    ]);
-  )");
-}
-
-class PendingApprovalTelemetryExtensionTelemetryApiBrowserTest
-    : public TelemetryExtensionTelemetryApiBrowserTest {
- public:
-  PendingApprovalTelemetryExtensionTelemetryApiBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kTelemetryExtensionPendingApprovalApi);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionTelemetryApiBrowserTest,
-                       GetUsbBusInfo_Error) {
-  // Configure FakeProbeService.
-  {
-    auto fake_service_impl = std::make_unique<FakeProbeService>();
-    fake_service_impl->SetExpectedLastRequestedCategories(
-        {crosapi::mojom::ProbeCategoryEnum::kBus});
-
-    SetServiceForTesting(std::move(fake_service_impl));
-  }
-
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      async function getUsbBusInfo() {
-        await chrome.test.assertPromiseRejects(
-            chrome.os.telemetry.getUsbBusInfo(),
-            'Error: API internal error'
-        );
-        chrome.test.succeed();
-      }
-    ]);
-  )");
-}
-
-IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionTelemetryApiBrowserTest,
-                       GetUsbBusInfo_Success) {
-  // Configure FakeProbeService.
-  {
-    auto telemetry_info = crosapi::mojom::ProbeTelemetryInfo::New();
-    {
-      std::vector<crosapi::mojom::ProbeUsbBusInterfaceInfoPtr> interfaces;
-      interfaces.push_back(crosapi::mojom::ProbeUsbBusInterfaceInfo::New(
-          crosapi::mojom::UInt8Value::New(42),
-          crosapi::mojom::UInt8Value::New(41),
-          crosapi::mojom::UInt8Value::New(43),
-          crosapi::mojom::UInt8Value::New(44), "MyDriver"));
-
-      auto fwupd_version = crosapi::mojom::ProbeFwupdFirmwareVersionInfo::New(
-          "MyVersion", crosapi::mojom::ProbeFwupdVersionFormat::kPair);
-
-      auto usb_bus_info = crosapi::mojom::ProbeUsbBusInfo::New();
-      usb_bus_info->class_id = crosapi::mojom::UInt8Value::New(45);
-      usb_bus_info->subclass_id = crosapi::mojom::UInt8Value::New(46);
-      usb_bus_info->protocol_id = crosapi::mojom::UInt8Value::New(47);
-      usb_bus_info->vendor_id = crosapi::mojom::UInt16Value::New(48);
-      usb_bus_info->product_id = crosapi::mojom::UInt16Value::New(49);
-      usb_bus_info->interfaces = std::move(interfaces);
-      usb_bus_info->fwupd_firmware_version_info = std::move(fwupd_version);
-      usb_bus_info->version = crosapi::mojom::ProbeUsbVersion::kUsb3;
-      usb_bus_info->spec_speed = crosapi::mojom::ProbeUsbSpecSpeed::k20Gbps;
-
-      auto bus_info =
-          crosapi::mojom::ProbeBusInfo::NewUsbBusInfo(std::move(usb_bus_info));
-
-      std::vector<crosapi::mojom::ProbeBusInfoPtr> input;
-      input.push_back(std::move(bus_info));
-
-      telemetry_info->bus_result =
-          crosapi::mojom::ProbeBusResult::NewBusDevicesInfo(std::move(input));
-    }
-
-    auto fake_service_impl = std::make_unique<FakeProbeService>();
-    fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
-    fake_service_impl->SetExpectedLastRequestedCategories(
-        {crosapi::mojom::ProbeCategoryEnum::kBus});
-
-    SetServiceForTesting(std::move(fake_service_impl));
-  }
-
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      async function getUsbBusInfo() {
-        const result = await chrome.os.telemetry.getUsbBusInfo();
-        chrome.test.assertEq(
-          // The dictionary members are ordered lexicographically by the Unicode
-          // codepoints that comprise their identifiers.
-          {
-            "devices": [
-              {
-                "classId": 45,
-                "fwupdFirmwareVersionInfo": {
-                  "version": "MyVersion",
-                  "version_format":"pair"
-                },
-                "interfaces": [
-                  {
-                    "classId": 41,
-                    "driver": "MyDriver",
-                    "interfaceNumber": 42,
-                    "protocolId": 44,
-                    "subclassId": 43
-                  }
-                ],
-                "productId": 49,
-                "protocolId": 47,
-                "spec_speed": "n20Gbps",
-                "subclassId": 46,
-                "vendorId": 48,
-                "version": "usb3"
-              }
-            ]
-          }, result);
         chrome.test.succeed();
       }
     ]);
