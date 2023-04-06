@@ -25,6 +25,7 @@ namespace ash {
 namespace {
 
 constexpr int kAlpha20 = SK_AlphaOPAQUE * 0.2f;
+constexpr int kAlpha25 = SK_AlphaOPAQUE * 0.25f;
 constexpr int kAlpha40 = SK_AlphaOPAQUE * 0.4f;
 constexpr int kAlpha60 = SK_AlphaOPAQUE * 0.6f;
 constexpr int kAlpha80 = SK_AlphaOPAQUE * 0.8f;
@@ -601,6 +602,8 @@ void AddAshColorMixer(ui::ColorProvider* provider,
   mixer[kColorAshFolderItemCountBackgroundColor] =
       use_dark_color ? ui::ColorTransform(gfx::kGoogleBlue300)
                      : ui::ColorTransform(gfx::kGoogleBlue600);
+  mixer[kColorAshPhantomWindowBackgroundColor] =
+      ui::SetAlpha(cros_tokens::kCrosSysPrimary, kAlpha25);
 
   mixer[ui::kColorToggleButtonThumbOn] = {cros_tokens::kCrosSysOnPrimary};
   mixer[ui::kColorToggleButtonThumbOff] = {cros_tokens::kCrosSysOnSecondary};

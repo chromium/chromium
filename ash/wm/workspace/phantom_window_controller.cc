@@ -59,7 +59,7 @@ constexpr int kMaximizeCueHeight = 36;
 constexpr int kMaximizeCueHorizontalInsets = 16;
 constexpr int kMaximizeCueVerticalInsets = 8;
 
-constexpr int kPhantomWindowCornerRadius = 4;
+constexpr int kPhantomWindowCornerRadius = 12;
 constexpr gfx::Insets kPhantomWindowInsets(8);
 
 // The move up factor of starting y-position from the target position for
@@ -208,7 +208,8 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreatePhantomWidget(
   phantom_widget->SetContentsView(
       views::Builder<views::View>()
           .SetBackground(views::CreateThemedRoundedRectBackground(
-              kColorAshShieldAndBase20, kPhantomWindowCornerRadius))
+              kColorAshPhantomWindowBackgroundColor,
+              kPhantomWindowCornerRadius))
           .SetBorder(std::make_unique<views::HighlightBorder>(
               kPhantomWindowCornerRadius,
               chromeos::features::IsJellyrollEnabled()
