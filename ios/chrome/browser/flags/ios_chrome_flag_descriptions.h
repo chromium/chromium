@@ -27,6 +27,11 @@ extern const char kAddToHomeScreenDescription[];
 extern const char kAppStoreRatingName[];
 extern const char kAppStoreRatingDescription[];
 
+// Title and description for the flag to enable save of profiles in Google
+// Account.
+extern const char kAutofillAccountProfilesStorageName[];
+extern const char kAutofillAccountProfilesStorageDescription[];
+
 // Title and description for the flag to enable compatibility with GAS profiles.
 extern const char kAutofillAccountProfilesUnionViewName[];
 extern const char kAutofillAccountProfilesUnionViewDescription[];

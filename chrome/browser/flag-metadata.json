@@ -469,6 +469,11 @@
     "expiry_milestone": 113
   },
   {
+      "name": "autofill-account-profiles-storage",
+      "owners": [ "vidhanj", "koerber" ],
+      "expiry_milestone": 120
+  },
+  {
       "name": "autofill-account-profiles-union-view",
       "owners": [ "vidhanj", "koerber" ],
       "expiry_milestone": 120
