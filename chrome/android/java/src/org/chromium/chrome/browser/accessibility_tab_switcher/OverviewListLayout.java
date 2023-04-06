@@ -83,10 +83,10 @@ public class OverviewListLayout extends Layout
 
         if (container == null || mTabModelWrapper.getParent() != null) return;
 
-        // Use grid_tab_switcher_view_holder to hold the list layout on tablets.
+        // Use full-screen tab_switcher_view_holder to hold the list layout on tablets.
         ViewGroup overviewList =
                 DeviceFormFactor.isNonMultiDisplayContextOnTablet(mTabModelWrapper.getContext())
-                ? (ViewGroup) container.findViewById(R.id.grid_tab_switcher_view_holder)
+                ? (ViewGroup) container.findViewById(R.id.tab_switcher_view_holder)
                 : (ViewGroup) container.findViewById(R.id.overview_list_layout_holder);
         overviewList.setVisibility(View.VISIBLE);
         overviewList.addView(mTabModelWrapper);

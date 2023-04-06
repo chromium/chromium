@@ -385,7 +385,7 @@ public class TabUiTestHelper {
      */
     public static int getTabSwitcherParentId(Context context) {
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
-            return R.id.grid_tab_switcher_view_holder;
+            return R.id.tab_switcher_view_holder;
         }
 
         if (getIsStartSurfaceEnabledFromUIThread(context)

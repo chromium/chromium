@@ -1922,7 +1922,7 @@ public class TabGridDialogTest {
                             == bottomControls.getImportantForAccessibility());
         }
         if (isTablet(cta)) {
-            View tabSwitcherViewHolder = cta.findViewById(R.id.grid_tab_switcher_view_holder);
+            View tabSwitcherViewHolder = cta.findViewById(R.id.tab_switcher_view_holder);
             assertEquals(isDialogShowing,
                     IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
                             == tabSwitcherViewHolder.getImportantForAccessibility());
@@ -1944,7 +1944,7 @@ public class TabGridDialogTest {
     private void verifyGlobalUndoBarAndClick() {
         // Verify that the dialog undo bar is showing and the default undo bar is hidden.
         int expectedParent = isTablet(mActivityTestRule.getActivity())
-                ? R.id.grid_tab_switcher_view_holder
+                ? R.id.tab_switcher_view_holder
                 : R.id.bottom_container;
         onViewWaiting(allOf(
                 withId(R.id.snackbar), isDescendantOfA(withId(expectedParent)), isDisplayed()));

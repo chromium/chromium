@@ -700,7 +700,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             CompositorViewHolder compositorViewHolder = getCompositorViewHolderSupplier().get();
 
             // clang-format off
-            ViewGroup tabSwitcherViewHolder = findViewById(R.id.grid_tab_switcher_view_holder);
+            ViewGroup tabSwitcherViewHolder = findViewById(R.id.tab_switcher_view_holder);
             mLayoutManager = new LayoutManagerChromeTablet(compositorViewHolder, mContentContainer,
                 mStartSurfaceSupplier, mTabSwitcherSupplier, getTabContentManagerSupplier(),
                 mRootUiCoordinator::getTopUiThemeColorProvider, mJankTracker,
@@ -857,8 +857,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         ViewGroup containerView = compositorViewHolder;
         // Inflate view holder for polish GTS.
         containerView =
-                (ViewGroup) ((ViewStub) findViewById(R.id.grid_tab_switcher_view_holder_stub))
-                        .inflate();
+                (ViewGroup) ((ViewStub) findViewById(R.id.tab_switcher_view_holder_stub)).inflate();
         // Set view in toolbar manager to set toolbar stub.
         getToolbarManager().setTabSwitcherFullScreenView(containerView);
 

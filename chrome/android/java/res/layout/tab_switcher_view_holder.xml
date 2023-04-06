@@ -7,7 +7,7 @@ found in the LICENSE file.
 
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/grid_tab_switcher_view_holder"
+    android:id="@+id/tab_switcher_view_holder"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:visibility="gone"
