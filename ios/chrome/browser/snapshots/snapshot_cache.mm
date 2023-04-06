@@ -214,45 +214,6 @@ void ConvertAndSaveGreyImage(NSString* snapshot_id,
   base::mac::SetBackupExclusion(image_path);
 }
 
-void MigrateSnapshotsWithIDs(const base::FilePath& old_cache_directory,
-                             const base::FilePath& new_cache_directory,
-                             NSSet<NSString*>* snapshot_ids,
-                             ImageScale snapshot_scale) {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::WILL_BLOCK);
-
-  if (old_cache_directory.empty() ||
-      old_cache_directory == new_cache_directory ||
-      !base::DirectoryExists(old_cache_directory)) {
-    return;
-  }
-
-  DCHECK(base::DirectoryExists(new_cache_directory));
-  for (NSString* snapshot_id in snapshot_ids) {
-    for (const ImageType image_type : kImageTypes) {
-      const base::FilePath old_image_path = ImagePath(
-          snapshot_id, image_type, snapshot_scale, old_cache_directory);
-      const base::FilePath new_image_path = ImagePath(
-          snapshot_id, image_type, snapshot_scale, new_cache_directory);
-
-      // Only migrate snapshots which are needed.
-      if (!base::PathExists(old_image_path) || base::PathExists(new_image_path))
-        continue;
-
-      if (!base::Move(old_image_path, new_image_path)) {
-        DLOG(ERROR) << "Error migrating file: "
-                    << old_image_path.AsUTF8Unsafe();
-      }
-    }
-  }
-
-  // Remove the old source folder.
-  if (!base::DeletePathRecursively(old_cache_directory)) {
-    DLOG(ERROR) << "Error deleting snapshots folder during migration: "
-                << old_cache_directory.AsUTF8Unsafe();
-  }
-}
-
 void DeleteImageWithSnapshotID(const base::FilePath& cache_directory,
                                NSString* snapshot_id,
                                ImageScale snapshot_scale) {
@@ -521,17 +482,6 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
 - (base::FilePath)greyImagePathForSnapshotID:(NSString*)snapshotID {
   return ImagePath(snapshotID, IMAGE_TYPE_GREYSCALE, _snapshotsScale,
                    _cacheDirectory);
-}
-
-- (void)migrateSnapshotsWithIDs:(NSSet<NSString*>*)snapshotIDs
-                 fromSourcePath:(const base::FilePath&)sourcePath {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (!_taskRunner)
-    return;
-
-  _taskRunner->PostTask(
-      FROM_HERE, base::BindOnce(&MigrateSnapshotsWithIDs, sourcePath,
-                                _cacheDirectory, snapshotIDs, _snapshotsScale));
 }
 
 - (void)purgeCacheOlderThan:(const base::Time&)date
