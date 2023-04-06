@@ -1447,6 +1447,14 @@ const FeatureEntry::FeatureVariation kLocalWebApprovalsVariations[] = {
 };
 #endif
 
+const FeatureEntry::FeatureParam kChromeRefresh2023Level1[] = {{"level", "1"}};
+
+// "Enabled" is equivalent to "Enabled with Omnibox", therefore we don't need to
+// make a separate variation for it.
+const FeatureEntry::FeatureVariation kChromeRefresh2023Variations[] = {
+    {"without Omnibox", kChromeRefresh2023Level1,
+     std::size(kChromeRefresh2023Level1), nullptr}};
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 const FeatureEntry::FeatureParam
@@ -5771,10 +5779,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kOmniboxSuggestionHeightVariations,
                                     "Uniform Omnibox Suggest Heights")},
 
-    {"omnibox-cr23-umbrella", flag_descriptions::kOmniboxCr23UmbrellaName,
-     flag_descriptions::kOmniboxCr23UmbrellaDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(omnibox::kCr2023Umbrella)},
-
     {"omnibox-cr23-expanded-state-height",
      flag_descriptions::kOmniboxCR23ExpandedStateHeightName,
      flag_descriptions::kOmniboxCR23ExpandedStateHeightDescription, kOsDesktop,
@@ -8102,7 +8106,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"chrome-refresh-2023", flag_descriptions::kChromeRefresh2023Name,
      flag_descriptions::kChromeRefresh2023Description, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kChromeRefresh2023)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kChromeRefresh2023,
+                                    kChromeRefresh2023Variations,
+                                    "ChromeRefresh2023")},
 
     {"enable-first-party-sets", flag_descriptions::kEnableFirstPartySetsName,
      flag_descriptions::kEnableFirstPartySetsDescription, kOsAll,

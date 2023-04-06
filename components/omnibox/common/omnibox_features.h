@@ -107,7 +107,6 @@ BASE_DECLARE_FEATURE(kExpandedStateShape);
 // popup).
 BASE_DECLARE_FEATURE(kOmniboxAssistantVoiceSearch);
 
-BASE_DECLARE_FEATURE(kCr2023Umbrella);
 BASE_DECLARE_FEATURE(kOmniboxCR23SteadyStateIcons);
 BASE_DECLARE_FEATURE(kOmniboxSteadyStateBackgroundColor);
 // These feature params are located here, as opposed to omnibox_field_trial.h,

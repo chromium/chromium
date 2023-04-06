@@ -688,24 +688,26 @@ const base::FeatureParam<int> OmniboxFieldTrial::kRichSuggestionVerticalMargin(
     4);
 
 bool OmniboxFieldTrial::IsChromeRefreshIconsEnabled() {
-  return base::FeatureList::IsEnabled(omnibox::kCr2023Umbrella) ||
+  return features::GetChromeRefresh2023Level() ==
+             features::ChromeRefresh2023Level::kLevel2 ||
          base::FeatureList::IsEnabled(omnibox::kOmniboxCR23SteadyStateIcons);
 }
 
 bool OmniboxFieldTrial::IsGM3TextStyleEnabled() {
-  return base::FeatureList::IsEnabled(omnibox::kCr2023Umbrella) ||
+  return features::GetChromeRefresh2023Level() ==
+             features::ChromeRefresh2023Level::kLevel2 ||
          base::FeatureList::IsEnabled(omnibox::kOmniboxSteadyStateTextStyle);
 }
 
 // In order to control the value of this "font size" param via Finch, the
 // `kOmniboxSteadyStateTextStyle` feature flag must be enabled.
 //
-// Enabling only the `kCr2023Umbrella` flag, while leaving the
+// Enabling `ChromeRefresh2023` Level 2 while leaving the
 // `kOmniboxSteadyStateTextStyle` flag disabled, will result in the param being
 // locked to its default value and ignoring any overrides provided via Finch.
 //
-// If neither `kCr2023Umbrella` nor `kOmniboxSteadyStateTextStyle` are enabled,
-// then this "font size" param will have zero effect on Chrome UI.
+// If neither `ChromeRefresh2023` Level 2 nor `kOmniboxSteadyStateTextStyle` are
+// enabled, then this "font size" param will have zero effect on Chrome UI.
 const base::FeatureParam<int> OmniboxFieldTrial::kFontSizeTouchUI(
     &omnibox::kOmniboxSteadyStateTextStyle,
     "OmniboxFontSizeTouchUI",
@@ -714,12 +716,12 @@ const base::FeatureParam<int> OmniboxFieldTrial::kFontSizeTouchUI(
 // In order to control the value of this "font size" param via Finch, the
 // `kOmniboxSteadyStateTextStyle` feature flag must be enabled.
 //
-// Enabling only the `kCr2023Umbrella` flag, while leaving the
+// Enabling `ChromeRefresh2023` Level 2 while leaving the
 // `kOmniboxSteadyStateTextStyle` flag disabled, will result in the param being
 // locked to its default value and ignoring any overrides provided via Finch.
 //
-// If neither `kCr2023Umbrella` nor `kOmniboxSteadyStateTextStyle` are enabled,
-// then this "font size" param will have zero effect on Chrome UI.
+// If neither `ChromeRefresh2023` Level 2 nor `kOmniboxSteadyStateTextStyle` are
+// enabled, then this "font size" param will have zero effect on Chrome UI.
 const base::FeatureParam<int> OmniboxFieldTrial::kFontSizeNonTouchUI(
     &omnibox::kOmniboxSteadyStateTextStyle,
     "OmniboxFontSizeNonTouchUI",
