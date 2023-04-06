@@ -52,12 +52,13 @@ constexpr char kAppIdSeparator = '/';
 // components/arc/intent_helper/intent_constants.h) to a file task action ID
 // (see chrome/browser/ash/file_manager/file_tasks.h).
 std::string ArcActionToFileTaskActionId(const std::string& action) {
-  if (action == arc::kIntentActionView)
+  if (action == arc::kIntentActionView) {
     return kActionIdView;
-  else if (action == arc::kIntentActionSend)
+  } else if (action == arc::kIntentActionSend) {
     return kActionIdSend;
-  else if (action == arc::kIntentActionSendMultiple)
+  } else if (action == arc::kIntentActionSendMultiple) {
     return kActionIdSendMultiple;
+  }
   NOTREACHED() << "Unhandled ARC action \"" << action << "\"";
   return "";
 }
@@ -66,12 +67,15 @@ std::string ArcActionToFileTaskActionId(const std::string& action) {
 // HandleUrlList has been updated to take a string action rather than an
 // ArcActionType.
 arc::mojom::ActionType FileTaskActionIdToArcActionType(const std::string& id) {
-  if (id == kActionIdView)
+  if (id == kActionIdView) {
     return arc::mojom::ActionType::VIEW;
-  if (id == kActionIdSend)
+  }
+  if (id == kActionIdSend) {
     return arc::mojom::ActionType::SEND;
-  if (id == kActionIdSendMultiple)
+  }
+  if (id == kActionIdSendMultiple) {
     return arc::mojom::ActionType::SEND_MULTIPLE;
+  }
   NOTREACHED() << "Unhandled file task action ID \"" << id << "\"";
   return arc::mojom::ActionType::VIEW;
 }
@@ -144,8 +148,9 @@ void OnArcHandlerList(Profile* profile,
   std::vector<arc::mojom::IntentHandlerInfoPtr> handlers_filtered =
       arc::ArcIntentHelperBridge::FilterOutIntentHelper(std::move(handlers));
   std::vector<arc::ArcIntentHelperBridge::ActivityName> activity_names;
-  for (const arc::mojom::IntentHandlerInfoPtr& handler : handlers_filtered)
+  for (const arc::mojom::IntentHandlerInfoPtr& handler : handlers_filtered) {
     activity_names.emplace_back(handler->package_name, handler->activity_name);
+  }
 
   intent_helper_bridge->GetActivityIcons(
       activity_names,
@@ -163,8 +168,9 @@ void OnArcIconLoaded(
 
   for (const arc::mojom::IntentHandlerInfoPtr& handler : handlers) {
     std::string action(arc::kIntentActionView);
-    if (handler->action.has_value())
+    if (handler->action.has_value()) {
       action = *handler->action;
+    }
     std::string name(handler->name);
     if (action == arc::kIntentActionSend ||
         action == arc::kIntentActionSendMultiple) {

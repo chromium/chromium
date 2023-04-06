@@ -241,8 +241,9 @@ void VolumeManager::Initialize() {
 
   // Subscribe to DriveIntegrationService.
   drive_integration_service_->AddObserver(this);
-  if (drive_integration_service_->IsMounted())
+  if (drive_integration_service_->IsMounted()) {
     DoMountEvent(Volume::CreateForDrive(GetDriveMountPointPath()));
+  }
 
   // Subscribe to DiskMountManager.
   disk_mount_manager_->AddObserver(this);
@@ -319,14 +320,17 @@ void VolumeManager::Shutdown() {
   documents_provider_root_manager_.reset();
 
   if (storage_monitor::StorageMonitor* const p =
-          storage_monitor::StorageMonitor::GetInstance())
+          storage_monitor::StorageMonitor::GetInstance()) {
     p->RemoveObserver(this);
+  }
 
-  if (drive_integration_service_)
+  if (drive_integration_service_) {
     drive_integration_service_->RemoveObserver(this);
+  }
 
-  if (file_system_provider_service_)
+  if (file_system_provider_service_) {
     file_system_provider_service_->RemoveObserver(this);
+  }
 
   // Unsubscribe from ARC file system events.
   if (base::FeatureList::IsEnabled(arc::kMediaViewFeature) &&
@@ -334,8 +338,9 @@ void VolumeManager::Shutdown() {
     // TODO(crbug.com/672829): We need nullptr check here because
     // ArcSessionManager may or may not be alive at this point.
     if (arc::ArcSessionManager* const session_manager =
-            arc::ArcSessionManager::Get())
+            arc::ArcSessionManager::Get()) {
       session_manager->RemoveObserver(this);
+    }
   }
 }
 
@@ -383,8 +388,9 @@ base::WeakPtr<Volume> VolumeManager::FindVolumeFromPath(
   for (const auto& volume : mounted_volumes_) {
     DCHECK(volume);
     const base::FilePath& volume_mount_path = volume->mount_path();
-    if (path == volume_mount_path || volume_mount_path.IsParent(path))
+    if (path == volume_mount_path || volume_mount_path.IsParent(path)) {
       return volume->AsWeakPtr();
+    }
   }
 
   return nullptr;
@@ -395,9 +401,10 @@ void VolumeManager::AddSshfsCrostiniVolume(
     const base::FilePath& remote_mount_path) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Ignore if volume already exists.
-  if (!DoMountEvent(
-          Volume::CreateForSshfsCrostini(sshfs_mount_path, remote_mount_path)))
+  if (!DoMountEvent(Volume::CreateForSshfsCrostini(sshfs_mount_path,
+                                                   remote_mount_path))) {
     return;
+  }
 
   // Listen for crostini container shutdown and remove volume.
   crostini::CrostiniManager::GetForProfile(profile_)
@@ -406,8 +413,9 @@ void VolumeManager::AddSshfsCrostiniVolume(
           base::BindOnce(&VolumeManager::RemoveSshfsCrostiniVolume,
                          weak_ptr_factory_.GetWeakPtr(), sshfs_mount_path,
                          base::BindOnce([](bool result) {
-                           if (!result)
+                           if (!result) {
                              LOG(ERROR) << "Failed to remove sshfs mount";
+                           }
                          })));
 }
 
@@ -560,8 +568,9 @@ void VolumeManager::OnAutoMountableDiskEvent(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Disregard hidden devices.
-  if (disk.is_hidden())
+  if (disk.is_hidden()) {
     return;
+  }
 
   switch (event) {
     case ash::disks::DiskMountManager::DISK_ADDED:
@@ -587,8 +596,9 @@ void VolumeManager::OnAutoMountableDiskEvent(
       }
 
       // Notify to observers.
-      for (auto& observer : observers_)
+      for (auto& observer : observers_) {
         observer.OnDiskAdded(disk, mounting);
+      }
 
       return;
     }
@@ -600,8 +610,9 @@ void VolumeManager::OnAutoMountableDiskEvent(
       }
 
       // Notify to observers.
-      for (auto& observer : observers_)
+      for (auto& observer : observers_) {
         observer.OnDiskRemoved(disk);
+      }
 
       return;
   }
@@ -616,12 +627,14 @@ void VolumeManager::OnDeviceEvent(
   DVLOG(1) << "OnDeviceEvent: " << event << ", " << device_path;
   switch (event) {
     case ash::disks::DiskMountManager::DEVICE_ADDED:
-      for (auto& observer : observers_)
+      for (auto& observer : observers_) {
         observer.OnDeviceAdded(device_path);
+      }
       return;
     case ash::disks::DiskMountManager::DEVICE_REMOVED: {
-      for (auto& observer : observers_)
+      for (auto& observer : observers_) {
         observer.OnDeviceRemoved(device_path);
+      }
       return;
     }
     case ash::disks::DiskMountManager::DEVICE_SCANNED:
@@ -638,8 +651,9 @@ void VolumeManager::OnMountEvent(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Network storage is responsible for doing its own mounting.
-  if (mount_info.mount_type == ash::MountType::kNetworkStorage)
+  if (mount_info.mount_type == ash::MountType::kNetworkStorage) {
     return;
+  }
 
   // Notify a mounting/unmounting event to observers.
   const ash::disks::Disk* const disk =
@@ -773,9 +787,10 @@ void VolumeManager::OnRenameEvent(
           GetExternalStorageAccessMode(profile_), base::DoNothing());
 
       bool successfully_renamed = error == ash::RenameError::kSuccess;
-      for (auto& observer : observers_)
+      for (auto& observer : observers_) {
         observer.OnRenameCompleted(device_path, device_label,
                                    successfully_renamed);
+      }
 
       return;
   }
@@ -816,8 +831,9 @@ void VolumeManager::OnProvidedFileSystemMount(
   DoMountEvent(std::move(volume), mount_error);
 
   // The FSP is not added to chrome::storage if mounting failed.
-  if (error != base::File::FILE_OK)
+  if (error != base::File::FILE_OK) {
     return;
+  }
 
   // Get the FuseBoxDaemon instance.
   if (!fusebox_daemon_) {
@@ -865,8 +881,9 @@ void VolumeManager::ConvertFuseBoxFSPVolumeIdToFSPIfNeeded(
 
   static const base::FilePath::CharType kFuseBoxFSPVolumeIdPrefix[] =
       FILE_PATH_LITERAL("fuseboxprovided:fsp:");
-  if (!base::StartsWith(*volume_id, kFuseBoxFSPVolumeIdPrefix))
+  if (!base::StartsWith(*volume_id, kFuseBoxFSPVolumeIdPrefix)) {
     return;
+  }
 
   int prefix = strlen(kFuseBoxFSPVolumeIdPrefix);
   *volume_id = volume_id->substr(prefix).insert(0, "provided:");
@@ -938,8 +955,9 @@ void VolumeManager::OnArcPlayStoreEnabledChanged(bool enabled) {
   DCHECK(base::FeatureList::IsEnabled(arc::kMediaViewFeature));
   DCHECK(arc::IsArcAllowedForProfile(profile_));
 
-  if (enabled == arc_volumes_mounted_)
+  if (enabled == arc_volumes_mounted_) {
     return;
+  }
 
   // Need to mount all roots declared in in arc_media_view_util.cc.
   if (enabled) {
@@ -1003,10 +1021,13 @@ void VolumeManager::OnExternalStorageReadOnlyChanged() {
 
 void VolumeManager::OnRemovableStorageAttached(
     const storage_monitor::StorageInfo& info) {
-  if (!storage_monitor::StorageInfo::IsMTPDevice(info.device_id()))
+  if (!storage_monitor::StorageInfo::IsMTPDevice(info.device_id())) {
     return;
-  if (profile_->GetPrefs()->GetBoolean(disks::prefs::kExternalStorageDisabled))
+  }
+  if (profile_->GetPrefs()->GetBoolean(
+          disks::prefs::kExternalStorageDisabled)) {
     return;
+  }
 
   // Resolve mtp storage name and get MtpStorageInfo.
   std::string storage_name;
@@ -1050,8 +1071,10 @@ void VolumeManager::DoAttachMtpStorage(
 
   // Assign a fresh volume ID based on the volume name.
   std::string label = base_name;
-  for (int i = 2; mounted_volumes_.count(kMtpVolumeIdPrefix + label) != 0; ++i)
+  for (int i = 2; mounted_volumes_.count(kMtpVolumeIdPrefix + label) != 0;
+       ++i) {
     label = base_name + base::StringPrintf(" (%d)", i);
+  }
 
   // Register the MTP storage device with chrome::storage.
   auto* mount_points = storage::ExternalMountPoints::GetSystemInstance();
@@ -1112,16 +1135,19 @@ void VolumeManager::DoAttachMtpStorage(
 
 void VolumeManager::OnRemovableStorageDetached(
     const storage_monitor::StorageInfo& info) {
-  if (!storage_monitor::StorageInfo::IsMTPDevice(info.device_id()))
+  if (!storage_monitor::StorageInfo::IsMTPDevice(info.device_id())) {
     return;
+  }
 
   Volumes::const_iterator it = mounted_volumes_.begin();
   for (const Volumes::const_iterator end = mounted_volumes_.end();; ++it) {
-    if (it == end)
+    if (it == end) {
       return;
+    }
     DCHECK(*it);
-    if ((*it)->source_path().value() == info.location())
+    if ((*it)->source_path().value() == info.location()) {
       break;
+    }
   }
 
   // Unmount the MTP storage device in files app.
@@ -1291,8 +1317,9 @@ void VolumeManager::OnDiskMountManagerRefreshed(bool success) {
   // To check the condition correctly in DoMountEvent, we care about the order.
   std::vector<bool> done(archives.size(), false);
   for (size_t i = 0; i < archives.size(); ++i) {
-    if (done[i])
+    if (done[i]) {
       continue;
+    }
 
     std::vector<std::unique_ptr<Volume>> chain;
     // done[x] = true means archives[x] is null and that volume is in |chain|.
@@ -1323,8 +1350,9 @@ void VolumeManager::OnStorageMonitorInitialized() {
 
   const std::vector<storage_monitor::StorageInfo> storages =
       storage_monitor::StorageMonitor::GetInstance()->GetAllAvailableStorages();
-  for (const storage_monitor::StorageInfo& storage : storages)
+  for (const storage_monitor::StorageInfo& storage : storages) {
     OnRemovableStorageAttached(storage);
+  }
 
   storage_monitor::StorageMonitor::GetInstance()->AddObserver(this);
 }
@@ -1349,8 +1377,9 @@ bool VolumeManager::DoMountEvent(std::unique_ptr<Volume> volume_ptr,
         break;
       }
     }
-    if (!from_current_profile)
+    if (!from_current_profile) {
       return false;
+    }
   }
 
   // Filter out removable disks if forbidden by policy for this profile.
@@ -1383,8 +1412,9 @@ bool VolumeManager::DoMountEvent(std::unique_ptr<Volume> volume_ptr,
     DCHECK_EQ(&volume, it->get());
   }
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnVolumeMounted(error, volume);
+  }
 
   return inserted;
 }
@@ -1397,13 +1427,15 @@ void VolumeManager::DoUnmountEvent(Volumes::const_iterator it,
   // OnVolumeMounted() will access it.
   const Volume& volume = **it;
   Volumes::node_type node_to_delete;
-  if (error == ash::MountError::kSuccess)
+  if (error == ash::MountError::kSuccess) {
     node_to_delete = mounted_volumes_.extract(std::move(it));
+  }
 
   VLOG_IF(1, node_to_delete) << "Removed volume '" << volume.volume_id() << "'";
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnVolumeUnmounted(error, volume);
+  }
 }
 
 base::FilePath VolumeManager::GetDriveMountPointPath() const {
@@ -1431,14 +1463,16 @@ void VolumeManager::OnSshfsCrostiniUnmountCallback(
     // wasn't mounted or unmounted out of band.
     DoUnmountEvent(
         *Volume::CreateForSshfsCrostini(sshfs_mount_path, base::FilePath()));
-    if (callback)
+    if (callback) {
       std::move(callback).Run(true);
+    }
     return;
   }
 
   LOG(ERROR) << "Cannot unmount '" << sshfs_mount_path << "'";
-  if (callback)
+  if (callback) {
     std::move(callback).Run(false);
+  }
 }
 
 void VolumeManager::OnSftpGuestOsUnmountCallback(
@@ -1455,15 +1489,17 @@ void VolumeManager::OnSftpGuestOsUnmountCallback(
     // know them at unmount so leave them blank.
     DoUnmountEvent(*Volume::CreateForSftpGuestOs("", sftp_mount_path,
                                                  base::FilePath(), vm_type));
-    if (callback)
+    if (callback) {
       std::move(callback).Run(true);
+    }
     return;
   }
 
   LOG(ERROR) << "Cannot unmount SFTP path '" << sftp_mount_path
              << "': " << error;
-  if (callback)
+  if (callback) {
     std::move(callback).Run(false);
+  }
 }
 
 }  // namespace file_manager

@@ -61,8 +61,9 @@ OpenOperationResult FolderInMyFiles::Open(const base::FilePath& file) {
   const auto& it =
       base::ranges::find(files_, file.BaseName(), &base::FilePath::BaseName);
   EXPECT_FALSE(it == files_.end());
-  if (it == files_.end())
+  if (it == files_.end()) {
     return platform_util::OPEN_FAILED_PATH_NOT_FOUND;
+  }
 
   const base::FilePath& path = *it;
   base::RunLoop run_loop;
@@ -173,8 +174,9 @@ base::WeakPtr<file_manager::Volume> InstallFileSystemProviderChromeApp(
   CHECK(volume_manager);
   base::WeakPtr<file_manager::Volume> volume;
   for (auto& v : volume_manager->GetVolumeList()) {
-    if (v->file_system_id() == kFileSystemProviderFilesystemId)
+    if (v->file_system_id() == kFileSystemProviderFilesystemId) {
       volume = v;
+    }
   }
 
   CHECK(volume);

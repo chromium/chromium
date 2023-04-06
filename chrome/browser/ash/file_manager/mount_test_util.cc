@@ -58,8 +58,9 @@ void WaitUntilDriveMountPointIsAdded(Profile* profile) {
   DCHECK(integration_service);
   DCHECK(integration_service->is_enabled());
 
-  if (integration_service->IsMounted())
+  if (integration_service->IsMounted()) {
     return;
+  }
 
   DriveMountPointWaiter mount_point_waiter(integration_service);
   VLOG(1) << "Waiting for drive mount point to get mounted.";

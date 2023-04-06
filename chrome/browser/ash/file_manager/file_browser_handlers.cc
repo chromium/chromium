@@ -318,8 +318,9 @@ void FileBrowserHandlerExecutor::SetupHandlerHostFileAccessPermissions(
       FileBrowserHandler::FindForActionId(extension_.get(), action_id_);
   for (FileDefinitionList::const_iterator iter = file_definition_list->begin();
        iter != file_definition_list->end(); ++iter) {
-    if (!action)
+    if (!action) {
       continue;
+    }
     if (action->CanRead()) {
       content::ChildProcessSecurityPolicy::GetInstance()->GrantReadFile(
           handler_pid, iter->absolute_path);
@@ -339,8 +340,9 @@ bool ExecuteFileBrowserHandler(Profile* profile,
                                const std::vector<FileSystemURL>& file_urls,
                                file_tasks::FileTaskFinishedCallback done) {
   // Forbid calling undeclared handlers.
-  if (!FileBrowserHandler::FindForActionId(extension, action_id))
+  if (!FileBrowserHandler::FindForActionId(extension, action_id)) {
     return false;
+  }
 
   // The executor object will be self deleted on completion.
   (new FileBrowserHandlerExecutor(profile, extension, action_id))

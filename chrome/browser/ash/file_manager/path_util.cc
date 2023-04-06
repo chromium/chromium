@@ -154,19 +154,24 @@ bool ShouldMountPrimaryUserDownloads(Profile* profile) {
 //   "drive/foo.txt"
 base::FilePath ExtractLegacyDrivePath(const base::FilePath& path) {
   std::vector<base::FilePath::StringType> components = path.GetComponents();
-  if (components.size() < 3)
+  if (components.size() < 3) {
     return base::FilePath();
-  if (components[0] != FILE_PATH_LITERAL("/"))
+  }
+  if (components[0] != FILE_PATH_LITERAL("/")) {
     return base::FilePath();
-  if (components[1] != FILE_PATH_LITERAL("special"))
+  }
+  if (components[1] != FILE_PATH_LITERAL("special")) {
     return base::FilePath();
+  }
   static const base::FilePath::CharType kPrefix[] = FILE_PATH_LITERAL("drive");
-  if (components[2].compare(0, std::size(kPrefix) - 1, kPrefix) != 0)
+  if (components[2].compare(0, std::size(kPrefix) - 1, kPrefix) != 0) {
     return base::FilePath();
+  }
 
   base::FilePath drive_path = drive::util::GetDriveGrandRootPath();
-  for (size_t i = 3; i < components.size(); ++i)
+  for (size_t i = 3; i < components.size(); ++i) {
     drive_path = drive_path.Append(components[i]);
+  }
   return drive_path;
 }
 
@@ -209,8 +214,9 @@ std::string GetFsUuidForRemovableMedia(const std::string& volume_name) {
       ash::disks::DiskMountManager::GetInstance()->FindDiskBySourcePath(
           source_path);
   std::string fs_uuid = disk == nullptr ? std::string() : disk->fs_uuid();
-  if (fs_uuid.empty())
+  if (fs_uuid.empty()) {
     LOG(WARNING) << "No UUID is found for volume name: " << volume_name;
+  }
   return fs_uuid;
 }
 
@@ -315,12 +321,14 @@ base::FilePath GetDownloadsFolderForProfile(Profile* profile) {
   storage::ExternalMountPoints* const mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
   base::FilePath path;
-  if (mount_points->GetRegisteredPath(mount_point_name, &path))
+  if (mount_points->GetRegisteredPath(mount_point_name, &path)) {
     return path.AppendASCII(kFolderNameDownloads);
+  }
 
   // Return $HOME/Downloads as Download folder.
-  if (ShouldMountPrimaryUserDownloads(profile))
+  if (ShouldMountPrimaryUserDownloads(profile)) {
     return DownloadPrefs::GetDefaultDownloadDirectory();
+  }
 
   // Return <cryptohome>/MyFiles/Downloads if it feature is enabled.
   return profile->GetPath()
@@ -335,12 +343,14 @@ base::FilePath GetMyFilesFolderForProfile(Profile* profile) {
   storage::ExternalMountPoints* const mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
   base::FilePath path;
-  if (mount_points->GetRegisteredPath(mount_point_name, &path))
+  if (mount_points->GetRegisteredPath(mount_point_name, &path)) {
     return path;
+  }
 
   // Return $HOME/Downloads as MyFiles folder.
-  if (ShouldMountPrimaryUserDownloads(profile))
+  if (ShouldMountPrimaryUserDownloads(profile)) {
     return DownloadPrefs::GetDefaultDownloadDirectory();
+  }
 
   // Return <cryptohome>/MyFiles.
   return profile->GetPath().AppendASCII(kFolderNameMyFiles);
@@ -710,8 +720,9 @@ bool ConvertPathToArcUrl(const base::FilePath& path,
   // Obtain the primary profile. This information is required because currently
   // only the file systems for the primary profile is exposed to ARC.
   Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
-  if (!primary_profile)
+  if (!primary_profile) {
     return false;
+  }
 
   // Convert paths under primary profile's Downloads directory.
   base::FilePath primary_downloads =
@@ -738,8 +749,9 @@ bool ConvertPathToArcUrl(const base::FilePath& path,
           .AppendRelativePath(path, &relative_path)) {
     const std::string volume_name =
         ExtractVolumeNameFromRelativePathForRemovableMedia(relative_path);
-    if (volume_name.empty())
+    if (volume_name.empty()) {
       return false;
+    }
     const std::string fs_uuid = GetFsUuidForRemovableMedia(volume_name);
     // Replace the volume name in the relative path with the UUID.
     // When no UUID is found for the volume, use the predefined one for testing.
@@ -1033,8 +1045,9 @@ bool ExtractMountNameFileSystemNameFullPath(const base::FilePath& absolute_path,
   storage::ExternalMountPoints* mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
   base::FilePath virtual_path;
-  if (!mount_points->GetVirtualPath(absolute_path, &virtual_path))
+  if (!mount_points->GetVirtualPath(absolute_path, &virtual_path)) {
     return false;
+  }
   // |virtual_path| format is: <mount_name>/<full_path>, and
   // |file_system_name| == |mount_name|, except for 'removable' and 'archive',
   // |mount_name| is the first two segments, |file_system_name| is the second.

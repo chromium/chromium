@@ -198,8 +198,9 @@ void FindAppServiceTasks(Profile* profile,
   // App Service uses the file extension in the URL for file_handlers for Web
   // Apps.
 #if DCHECK_IS_ON()
-  for (const GURL& url : file_urls)
+  for (const GURL& url : file_urls) {
     DCHECK(url.is_valid());
+  }
 #endif  // DCHECK_IS_ON()
 
   // WebApps only have full support for files backed by inodes, so tasks
@@ -278,15 +279,17 @@ void FindAppServiceTasks(Profile* profile,
       web_app::OsIntegrationManager& os_integration_manager =
           provider->os_integration_manager();
       if (!os_integration_manager.IsFileHandlingAPIAvailable(
-              launch_entry.app_id))
+              launch_entry.app_id)) {
         continue;
+      }
     }
 
     if (app_type == apps::AppType::kChromeApp ||
         app_type == apps::AppType::kExtension) {
       if (profile->IsOffTheRecord() &&
-          !extensions::util::IsIncognitoEnabled(launch_entry.app_id, profile))
+          !extensions::util::IsIncognitoEnabled(launch_entry.app_id, profile)) {
         continue;
+      }
     }
 
     if ((app_type == apps::AppType::kBruschetta ||

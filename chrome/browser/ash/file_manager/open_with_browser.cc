@@ -55,8 +55,9 @@ constexpr const base::FilePath::CharType* kFileExtensionsViewableInBrowser[] = {
 // Returns true if |file_path| is viewable in the browser (ex. HTML file).
 bool IsViewableInBrowser(const base::FilePath& file_path) {
   for (size_t i = 0; i < std::size(kFileExtensionsViewableInBrowser); i++) {
-    if (file_path.MatchesExtension(kFileExtensionsViewableInBrowser[i]))
+    if (file_path.MatchesExtension(kFileExtensionsViewableInBrowser[i])) {
       return true;
+    }
   }
   return false;
 }
@@ -78,8 +79,9 @@ bool OpenNewTab(const GURL& url) {
 // Note that an alternate url is a URL to open a hosted document.
 GURL ReadUrlFromGDocAsync(const base::FilePath& file_path) {
   GURL url = drive::util::ReadUrlFromGDocFile(file_path);
-  if (url.is_empty())
+  if (url.is_empty()) {
     url = net::FilePathToFileURL(file_path);
+  }
   return url;
 }
 
@@ -95,15 +97,17 @@ void OpenGDocUrlFromFile(const base::FilePath& file_path) {
 void OpenHostedDriveFsFile(const base::FilePath& file_path,
                            drive::FileError error,
                            drivefs::mojom::FileMetadataPtr metadata) {
-  if (error != drive::FILE_ERROR_OK)
+  if (error != drive::FILE_ERROR_OK) {
     return;
+  }
   if (drivefs::IsLocal(metadata->type)) {
     OpenGDocUrlFromFile(file_path);
     return;
   }
   GURL hosted_url(metadata->alternate_url);
-  if (!hosted_url.is_valid())
+  if (!hosted_url.is_valid()) {
     return;
+  }
 
   OpenNewTab(hosted_url);
 }
@@ -123,8 +127,9 @@ bool OpenFileWithBrowser(Profile* profile,
       (action_id == "view-in-browser" && file_path.Extension() == "")) {
     // Use external file URL if it is provided for the file system.
     GURL page_url = ash::FileSystemURLToExternalFileURL(file_system_url);
-    if (page_url.is_empty())
+    if (page_url.is_empty()) {
       page_url = net::FilePathToFileURL(file_path);
+    }
 
     OpenNewTab(page_url);
     return true;

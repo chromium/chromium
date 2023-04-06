@@ -1056,8 +1056,9 @@ TEST_F(VolumeManagerTest, ExternalStorageDisabledPolicyMultiProfile) {
   bool has_volume_mounted = false;
   for (size_t i = 0; i < main_observer.events().size(); ++i) {
     if (main_observer.events()[i].type ==
-        LoggingObserver::Event::VOLUME_MOUNTED)
+        LoggingObserver::Event::VOLUME_MOUNTED) {
       has_volume_mounted = true;
+    }
   }
   EXPECT_TRUE(has_volume_mounted);
 
@@ -1065,8 +1066,9 @@ TEST_F(VolumeManagerTest, ExternalStorageDisabledPolicyMultiProfile) {
   has_volume_mounted = false;
   for (size_t i = 0; i < secondary_observer.events().size(); ++i) {
     if (secondary_observer.events()[i].type ==
-        LoggingObserver::Event::VOLUME_MOUNTED)
+        LoggingObserver::Event::VOLUME_MOUNTED) {
       has_volume_mounted = true;
+    }
   }
   EXPECT_FALSE(has_volume_mounted);
 

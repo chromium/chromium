@@ -167,8 +167,9 @@ std::string ParseFilesAppActionId(const std::string& action_id) {
 // Returns true if path_mime_set contains a Google document.
 bool ContainsGoogleDocument(const std::vector<extensions::EntryInfo>& entries) {
   for (const auto& it : entries) {
-    if (drive::util::HasHostedDocumentExtension(it.path))
+    if (drive::util::HasHostedDocumentExtension(it.path)) {
       return true;
+    }
   }
   return false;
 }
@@ -177,8 +178,9 @@ bool ContainsGoogleDocument(const std::vector<extensions::EntryInfo>& entries) {
 void KeepOnlyFileManagerInternalTasks(std::vector<FullTaskDescriptor>* tasks) {
   std::vector<FullTaskDescriptor> filtered;
   for (FullTaskDescriptor& task : *tasks) {
-    if (IsFilesAppId(task.task_descriptor.app_id))
+    if (IsFilesAppId(task.task_descriptor.app_id)) {
       filtered.push_back(std::move(task));
+    }
   }
   tasks->swap(filtered);
 }
@@ -225,8 +227,9 @@ void AdjustTasksForMediaApp(const std::vector<extensions::EntryInfo>& entries,
   };
 
   const auto media_app_task = task_for_app(web_app::kMediaAppId);
-  if (media_app_task == tasks->end())
+  if (media_app_task == tasks->end()) {
     return;
+  }
 
   // TOOD(crbug/1071289): For a while is_file_extension_match would always be
   // false for System Web App manifests, even when specifying extension matches.
@@ -240,14 +243,16 @@ void AdjustTasksForMediaApp(const std::vector<extensions::EntryInfo>& entries,
   DCHECK(!media_app_task->is_generic_file_handler);
 
   // Otherwise, build a new list with Media App at the front.
-  if (media_app_task == tasks->begin())
+  if (media_app_task == tasks->begin()) {
     return;
+  }
 
   std::vector<FullTaskDescriptor> new_tasks;
   new_tasks.push_back(*media_app_task);
   for (auto it = tasks->begin(); it != tasks->end(); ++it) {
-    if (it != media_app_task)
+    if (it != media_app_task) {
       new_tasks.push_back(std::move(*it));
+    }
   }
   std::swap(*tasks, new_tasks);
 }
@@ -292,8 +297,9 @@ Profile* GetProfileForExtensionTask(Profile* profile,
 
   // Outside guest sessions, if the task is handled by a platform app, launch
   // the handler in the original profile.
-  if (extension.is_platform_app())
+  if (extension.is_platform_app()) {
     return profile->GetOriginalProfile();
+  }
   return profile;
 }
 
@@ -323,8 +329,9 @@ void PostProcessFoundTasks(Profile* profile,
   AdjustTasksForMediaApp(entries, &resulting_tasks->tasks);
 
   // Google documents can only be handled by internal handlers.
-  if (ContainsGoogleDocument(entries))
+  if (ContainsGoogleDocument(entries)) {
     KeepOnlyFileManagerInternalTasks(&resulting_tasks->tasks);
+  }
 
   std::set<std::string> disabled_actions;
 
@@ -363,8 +370,9 @@ void PostProcessFoundTasks(Profile* profile,
     }
   }
 
-  if (!disabled_actions.empty())
+  if (!disabled_actions.empty()) {
     RemoveFileManagerInternalActions(disabled_actions, &resulting_tasks->tasks);
+  }
 
   ChooseAndSetDefaultTask(profile, entries, resulting_tasks.get());
   std::move(callback).Run(std::move(resulting_tasks));
@@ -469,20 +477,27 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
 // Converts a string to a TaskType. Returns TASK_TYPE_UNKNOWN on error.
 TaskType StringToTaskType(const std::string& str) {
-  if (str == kFileBrowserHandlerTaskType)
+  if (str == kFileBrowserHandlerTaskType) {
     return TASK_TYPE_FILE_BROWSER_HANDLER;
-  if (str == kFileHandlerTaskType)
+  }
+  if (str == kFileHandlerTaskType) {
     return TASK_TYPE_FILE_HANDLER;
-  if (str == kArcAppTaskType)
+  }
+  if (str == kArcAppTaskType) {
     return TASK_TYPE_ARC_APP;
-  if (str == kBruschettaAppTaskType)
+  }
+  if (str == kBruschettaAppTaskType) {
     return TASK_TYPE_BRUSCHETTA_APP;
-  if (str == kCrostiniAppTaskType)
+  }
+  if (str == kCrostiniAppTaskType) {
     return TASK_TYPE_CROSTINI_APP;
-  if (str == kWebAppTaskType)
+  }
+  if (str == kWebAppTaskType) {
     return TASK_TYPE_WEB_APP;
-  if (str == kPluginVmAppTaskType)
+  }
+  if (str == kPluginVmAppTaskType) {
     return TASK_TYPE_PLUGIN_VM_APP;
+  }
   return TASK_TYPE_UNKNOWN;
 }
 
@@ -573,8 +588,9 @@ void UpdateDefaultTask(Profile* profile,
                        const std::set<std::string>& suffixes,
                        const std::set<std::string>& mime_types) {
   PrefService* pref_service = profile->GetPrefs();
-  if (!pref_service)
+  if (!pref_service) {
     return;
+  }
 
   std::string task_id = TaskDescriptorToId(task_descriptor);
   if (ash::features::ShouldArcFileTasksUseAppService() &&
@@ -646,8 +662,9 @@ bool GetDefaultTaskFromPrefs(const PrefService& pref_service,
 
   const std::string* task_id = suffix_task_prefs.FindString(lower_suffix);
 
-  if (!task_id || task_id->empty())
+  if (!task_id || task_id->empty()) {
     return false;
+  }
 
   VLOG(1) << "Found suffix default handler: " << *task_id;
   return ParseTaskID(*task_id, task_out);
@@ -682,12 +699,14 @@ bool ParseTaskID(const std::string& task_id, TaskDescriptor* task) {
     return true;
   }
 
-  if (result.size() != 3)
+  if (result.size() != 3) {
     return false;
+  }
 
   TaskType task_type = StringToTaskType(result[1]);
-  if (task_type == TASK_TYPE_UNKNOWN)
+  if (task_type == TASK_TYPE_UNKNOWN) {
     return false;
+  }
 
   task->app_id = result[0];
   task->task_type = task_type;
@@ -840,8 +859,9 @@ bool ExecuteFileTask(Profile* profile,
     const Extension* extension = extensions::ExtensionRegistry::Get(profile)
                                      ->enabled_extensions()
                                      .GetByID(task.app_id);
-    if (!extension)
+    if (!extension) {
       return false;
+    }
 
     Profile* extension_task_profile =
         GetProfileForExtensionTask(profile, *extension);
@@ -1109,8 +1129,9 @@ bool IsHtmlFile(const base::FilePath& path) {
   constexpr const char* kHtmlExtensions[] = {".htm", ".html", ".mhtml",
                                              ".xht", ".xhtm", ".xhtml"};
   for (const char* extension : kHtmlExtensions) {
-    if (path.MatchesExtension(extension))
+    if (path.MatchesExtension(extension)) {
       return true;
+    }
   }
   return false;
 }
@@ -1119,8 +1140,9 @@ bool IsOfficeFile(const base::FilePath& path) {
   constexpr const char* kOfficeExtensions[] = {".doc",  ".docx", ".xls",
                                                ".xlsx", ".ppt",  ".pptx"};
   for (const char* extension : kOfficeExtensions) {
-    if (path.MatchesExtension(extension))
+    if (path.MatchesExtension(extension)) {
       return true;
+    }
   }
   return false;
 }

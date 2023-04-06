@@ -197,8 +197,9 @@ class FileManagerFileAPIUtilTest : public ::testing::Test {
 // Passes the |result| to the |output| pointer.
 void PassFileChooserFileInfoList(FileChooserFileInfoList* output,
                                  FileChooserFileInfoList result) {
-  for (const auto& file : result)
+  for (const auto& file : result) {
     output->push_back(file->Clone());
+  }
 }
 
 TEST_F(FileManagerFileAPIUtilTest,

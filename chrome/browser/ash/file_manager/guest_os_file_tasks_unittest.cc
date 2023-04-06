@@ -64,12 +64,14 @@ class GuestOsFileTasksTest : public testing::Test {
     base::Value::Dict app;
     app.Set("container_name", "penguin");
     base::Value::List mime_list;
-    for (const auto& mime : mimes)
+    for (const auto& mime : mimes) {
       mime_list.Append(mime);
+    }
     app.Set("mime_types", std::move(mime_list));
     base::Value::List extension_list;
-    for (const auto& extension : extensions)
+    for (const auto& extension : extensions) {
       extension_list.Append(extension);
+    }
     app.Set("extensions", std::move(extension_list));
     base::Value::Dict name_dict;
     name_dict.Set("", name);

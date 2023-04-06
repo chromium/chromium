@@ -206,8 +206,9 @@ bool IsUnderNonNativeLocalPath(Profile* profile, const base::FilePath& path) {
   storage::FileSystemURL filesystem_url =
       GetFileSystemContextForSourceURL(profile, GetFileManagerURL())
           ->CrackURLInFirstPartyContext(url);
-  if (!filesystem_url.is_valid())
+  if (!filesystem_url.is_valid()) {
     return false;
+  }
 
   return IsNonNativeFileSystemType(filesystem_url.type());
 }
@@ -224,8 +225,9 @@ bool IsDriveLocalPath(Profile* profile, const base::FilePath& path) {
   storage::FileSystemURL filesystem_url =
       GetFileSystemContextForSourceURL(profile, GetFileManagerURL())
           ->CrackURLInFirstPartyContext(url);
-  if (!filesystem_url.is_valid())
+  if (!filesystem_url.is_valid()) {
     return false;
+  }
 
   return filesystem_url.type() == storage::kFileSystemTypeDriveFs;
 }
