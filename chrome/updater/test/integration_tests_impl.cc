@@ -457,7 +457,8 @@ void ExpectNoCrashes(UpdaterScope scope) {
   EXPECT_TRUE(base::CreateDirectory(dest_dir));
 
   base::FileEnumerator it(*database_path, true, base::FileEnumerator::FILES,
-                          FILE_PATH_LITERAL("*.dmp"));
+                          FILE_PATH_LITERAL("*.dmp"),
+                          base::FileEnumerator::FolderSearchPolicy::ALL);
   int count = 0;
   for (base::FilePath name = it.Next(); !name.empty(); name = it.Next()) {
     VLOG(0) << __func__ << "Copying " << name << " to: " << dest_dir;
