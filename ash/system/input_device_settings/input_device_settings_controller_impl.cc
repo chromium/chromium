@@ -266,16 +266,25 @@ void InputDeviceSettingsControllerImpl::RefreshAllDeviceSettings() {
   for (const auto& [id, touchpad] : touchpads_) {
     touchpad_pref_handler_->InitializeTouchpadSettings(active_pref_service_,
                                                        touchpad.get());
+    if (active_pref_service_) {
+      metrics_manager_->RecordTouchpadInitialMetrics(*touchpad);
+    }
     DispatchTouchpadSettingsChanged(id);
   }
   for (const auto& [id, mouse] : mice_) {
     mouse_pref_handler_->InitializeMouseSettings(active_pref_service_,
                                                  mouse.get());
+    if (active_pref_service_) {
+      metrics_manager_->RecordMouseInitialMetrics(*mouse);
+    }
     DispatchMouseSettingsChanged(id);
   }
   for (const auto& [id, pointing_stick] : pointing_sticks_) {
     pointing_stick_pref_handler_->InitializePointingStickSettings(
         active_pref_service_, pointing_stick.get());
+    if (active_pref_service_) {
+      metrics_manager_->RecordPointingStickInitialMetrics(*pointing_stick);
+    }
     DispatchPointingStickSettingsChanged(id);
   }
 }
@@ -653,6 +662,9 @@ void InputDeviceSettingsControllerImpl::OnTouchpadListUpdated(
     auto mojom_touchpad = BuildMojomTouchpad(touchpad);
     touchpad_pref_handler_->InitializeTouchpadSettings(active_pref_service_,
                                                        mojom_touchpad.get());
+    if (active_pref_service_) {
+      metrics_manager_->RecordTouchpadInitialMetrics(*mojom_touchpad);
+    }
     touchpads_.insert_or_assign(touchpad.id, std::move(mojom_touchpad));
     DispatchTouchpadConnected(touchpad.id);
   }
@@ -669,6 +681,9 @@ void InputDeviceSettingsControllerImpl::OnMouseListUpdated(
     auto mojom_mouse = BuildMojomMouse(mouse);
     mouse_pref_handler_->InitializeMouseSettings(active_pref_service_,
                                                  mojom_mouse.get());
+    if (active_pref_service_) {
+      metrics_manager_->RecordMouseInitialMetrics(*mojom_mouse);
+    }
     mice_.insert_or_assign(mouse.id, std::move(mojom_mouse));
     DispatchMouseConnected(mouse.id);
   }
@@ -685,6 +700,10 @@ void InputDeviceSettingsControllerImpl::OnPointingStickListUpdated(
     auto mojom_pointing_stick = BuildMojomPointingStick(pointing_stick);
     pointing_stick_pref_handler_->InitializePointingStickSettings(
         active_pref_service_, mojom_pointing_stick.get());
+    if (active_pref_service_) {
+      metrics_manager_->RecordPointingStickInitialMetrics(
+          *mojom_pointing_stick);
+    }
     pointing_sticks_.insert_or_assign(pointing_stick.id,
                                       std::move(mojom_pointing_stick));
     DispatchPointingStickConnected(pointing_stick.id);
