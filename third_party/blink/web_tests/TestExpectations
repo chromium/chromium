@@ -6687,6 +6687,7 @@ crbug.com/1430357 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/cs
 
 # Sheriff 2023-04-05
 crbug.com/1430215 external/wpt/dom/events/scrolling/scrollend-event-fired-to-window.html [ Failure Pass ]
+crbug.com/1430986 http/tests/inspector-protocol/tracing/page-load-metrics.js [ Failure Pass Timeout ]
 
 # Sheriff 2023-04-06
 crbug.com/1362106 [ Linux ] media/video-source-error-no-candidate.html [ Failure Pass ]
