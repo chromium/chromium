@@ -1480,6 +1480,7 @@ data/service_worker/fetch_event_respond_with_fetch.js
 data/service_worker/fetch_event_response_via_cache.js
 data/service_worker/fetch_event_set_in_install_event.js
 data/service_worker/fetch_event_set_in_install_event.js.mock-http-headers
+data/service_worker/fetch_event_with_handle_event_property.js
 data/service_worker/fetch_event_worker_clients.js
 data/service_worker/fetch_from_page.html
 data/service_worker/fetch_from_service_worker.html
