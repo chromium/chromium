@@ -167,6 +167,7 @@ void WebAppDataRetriever::OnGetWebPageMetadata(
     int last_committed_nav_entry_unique_id,
     webapps::mojom::WebPageMetadataPtr web_page_metadata) {
   if (ShouldStopRetrieval()) {
+    CallCallbackOnError(webapps::InstallableStatusCode::RENDERER_CANCELLED);
     return;
   }
 
@@ -205,6 +206,7 @@ void WebAppDataRetriever::OnGetWebPageMetadata(
 void WebAppDataRetriever::OnDidPerformInstallableCheck(
     const webapps::InstallableData& data) {
   if (ShouldStopRetrieval()) {
+    CallCallbackOnError(webapps::InstallableStatusCode::RENDERER_CANCELLED);
     return;
   }
 
@@ -229,6 +231,7 @@ void WebAppDataRetriever::OnIconsDownloaded(
     IconsMap icons_map,
     DownloadedIconsHttpResults icons_http_results) {
   if (ShouldStopRetrieval()) {
+    CallCallbackOnError(webapps::InstallableStatusCode::RENDERER_CANCELLED);
     return;
   }
 
