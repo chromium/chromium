@@ -681,6 +681,55 @@ void BrowserDataBackMigrator::OnMarkMigrationComplete() {
   InvokeCallback({TaskStatus::kSucceeded});
 }
 
+void BrowserDataBackMigrator::CancelMigration(
+    BackMigrationCanceledCallback canceled_callback) {
+  LOG(WARNING) << "BrowserDataBackMigrator::CancelMigration() is called.";
+
+  canceled_callback_ = std::move(canceled_callback);
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+      base::BindOnce(&BrowserDataBackMigrator::FailedMigrationCleanUp,
+                     ash_profile_dir_),
+      base::BindOnce(&BrowserDataBackMigrator::OnFailedMigrationCleanUp,
+                     weak_factory_.GetWeakPtr()));
+}
+
+// static
+BrowserDataBackMigrator::TaskResult
+BrowserDataBackMigrator::FailedMigrationCleanUp(
+    const base::FilePath& ash_profile_dir) {
+  LOG(WARNING) << "Running FailedMigrationCleanUp()";
+
+  auto delete_lacros_dir_result =
+      BrowserDataBackMigrator::DeleteLacrosDir(ash_profile_dir);
+  auto delete_tmp_dir_result =
+      BrowserDataBackMigrator::DeleteTmpDir(ash_profile_dir);
+
+  if (delete_lacros_dir_result.status != TaskStatus::kSucceeded) {
+    return delete_lacros_dir_result;
+  }
+
+  if (delete_tmp_dir_result.status != TaskStatus::kSucceeded) {
+    return delete_tmp_dir_result;
+  }
+
+  return {TaskStatus::kSucceeded};
+}
+
+void BrowserDataBackMigrator::OnFailedMigrationCleanUp(
+    BrowserDataBackMigrator::TaskResult result) {
+  if (result.status != TaskStatus::kSucceeded) {
+    LOG(ERROR) << "FailedMigrationCleanUp() failed.";
+  } else {
+    LOG(WARNING) << "Backward migration cancellation completed successfully";
+  }
+  // TODO(b/272017148): Add UMA metrics.
+  std::move(canceled_callback_).Run();
+}
+
 // static
 bool BrowserDataBackMigrator::MergeCommonExtensionsDataFiles(
     const base::FilePath& ash_profile_dir,

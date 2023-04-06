@@ -83,6 +83,7 @@ class BrowserDataBackMigrator {
   using BackMigrationFinishedCallback =
       base::OnceCallback<void(BrowserDataBackMigrator::Result)>;
   using BackMigrationProgressCallback = base::RepeatingCallback<void(int)>;
+  using BackMigrationCanceledCallback = base::OnceClosure;
 
   explicit BrowserDataBackMigrator(const base::FilePath& ash_profile_dir,
                                    const std::string& user_id_hash,
@@ -122,6 +123,10 @@ class BrowserDataBackMigrator {
       const AccountId& account_id,
       const std::string& user_id_hash,
       crosapi::browser_util::PolicyInitState policy_init_state);
+
+  // CancelMigration is called when the user chooses to cancel the migration
+  // from OOBE and it cleans up the in-progress migration.
+  void CancelMigration(BackMigrationCanceledCallback canceled_callback);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserDataBackMigratorTest, PreMigrationCleanUp);
@@ -163,6 +168,7 @@ class BrowserDataBackMigrator {
   bool running_ = false;
   BackMigrationProgressCallback progress_callback_;
   BackMigrationFinishedCallback finished_callback_;
+  BackMigrationCanceledCallback canceled_callback_;
 
   void SetProgress(MigrationStep step);
 
@@ -221,6 +227,14 @@ class BrowserDataBackMigrator {
 
   // Called as a reply to `MarkMigrationComplete()`.
   void OnMarkMigrationComplete();
+
+  // Calls `DeleteLacrosDir()` and `DeleteTmpDir()` to clean up residual Lacros
+  // data upon failed migration that was canceled by the user.
+  static TaskResult FailedMigrationCleanUp(
+      const base::FilePath& ash_profile_dir);
+
+  // Called as a reply to `FailedMigrationCleanUp()`.
+  void OnFailedMigrationCleanUp(TaskResult result);
 
   // For `target_dir` copy subdirectories belonging to extensions that are in
   // both Chromes from `lacros_default_profile_dir` to `tmp_user_dir`.

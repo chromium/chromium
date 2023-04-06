@@ -15,11 +15,14 @@
 #include "base/json/json_writer.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/crosapi/browser_data_back_migrator_metrics.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
@@ -72,11 +75,15 @@ enum class FilesSetup {
   kMaxValue = kBothChromes,
 };
 
+void CreateDirectoryForTesting(const base::FilePath& directory_path) {
+  ASSERT_TRUE(base::CreateDirectory(directory_path));
+}
+
 void CreateDirectoryAndFile(const base::FilePath& directory_path,
                             const char* file_path,
                             const char* file_content,
                             int file_size) {
-  ASSERT_TRUE(base::CreateDirectory(directory_path));
+  CreateDirectoryForTesting(directory_path);
   ASSERT_TRUE(base::WriteFile(directory_path.Append(file_path),
                               base::StringPiece(file_content, file_size)));
 }
@@ -339,7 +346,13 @@ class BrowserDataBackMigratorTest : public testing::Test {
     // During backward migration, `tmp_profile_dir_` is created in
     // `MergeSplitItems`, but we don't want to call that in tests so we generate
     // it ourselves.
-    ASSERT_TRUE(base::CreateDirectory(tmp_profile_dir_));
+    CreateDirectoryForTesting(tmp_profile_dir_);
+  }
+
+  void CreateLacrosDirectory() {
+    // This directory is created during forward migration and parts of backward
+    // migration code rely on its existence, i.e. do nothing if it is not found.
+    CreateDirectoryForTesting(lacros_default_profile_dir_);
   }
 
   void SetupLocalStorageLevelDBFiles(
@@ -448,6 +461,8 @@ class BrowserDataBackMigratorTest : public testing::Test {
   std::string kAshOnlyStateStoreKey;
   std::string kLacrosOnlyStateStoreKey;
   std::string kBothChromesStateStoreKey;
+
+  TestingPrefServiceSimple pref_service_;
 };
 
 class BrowserDataBackMigratorFilesSetupTest
@@ -464,7 +479,7 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
 
 TEST_F(BrowserDataBackMigratorTest, PreMigrationCleanUp) {
   // Create the temporary directory to make sure it is deleted during cleanup.
-  ASSERT_TRUE(base::CreateDirectory(tmp_profile_dir_));
+  CreateTemporaryDirectory();
 
   base::HistogramTester histogram_tester;
 
@@ -944,6 +959,30 @@ TEST_F(BrowserDataBackMigratorTest,
       merged_prefs.GetDict().FindByDottedPath(kOtherLacrosPreference);
   ASSERT_TRUE(other_lacros_preference);
   ASSERT_EQ(other_lacros_preference->GetInt(), kLacrosPrefValue);
+}
+
+// Checks that upon canceling migration, the temporary directory Lacros user
+//  directory and the are deleted.
+TEST_F(BrowserDataBackMigratorTest, CancelMigration) {
+  base::test::TaskEnvironment task_environment;
+  const std::string user_id_hash = "abcd";
+
+  CreateTemporaryDirectory();
+  CreateLacrosDirectory();
+
+  EXPECT_TRUE(base::PathExists(tmp_profile_dir_));
+  EXPECT_TRUE(base::PathExists(lacros_default_profile_dir_));
+
+  std::unique_ptr<BrowserDataBackMigrator> migrator =
+      std::make_unique<BrowserDataBackMigrator>(ash_profile_dir_, user_id_hash,
+                                                &pref_service_);
+
+  base::test::TestFuture<void> cancellation_completed;
+  migrator->CancelMigration(cancellation_completed.GetCallback());
+  ASSERT_TRUE(cancellation_completed.Wait());
+
+  EXPECT_FALSE(base::PathExists(tmp_profile_dir_));
+  EXPECT_FALSE(base::PathExists(lacros_default_profile_dir_));
 }
 
 TEST_P(BrowserDataBackMigratorFilesSetupTest,
