@@ -22,11 +22,6 @@ import org.chromium.build.annotations.DoNotClassMerge;
 import org.chromium.chrome.browser.commerce.PriceUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
-import org.chromium.chrome.browser.page_annotations.BuyableProductPageAnnotation;
-import org.chromium.chrome.browser.page_annotations.PageAnnotation;
-import org.chromium.chrome.browser.page_annotations.PageAnnotationUtils;
-import org.chromium.chrome.browser.page_annotations.PageAnnotationsServiceFactory;
-import org.chromium.chrome.browser.page_annotations.ProductPriceUpdatePageAnnotation;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.proto.ShoppingPersistedTabData.ShoppingPersistedTabDataProto;
@@ -89,10 +84,6 @@ public class ShoppingPersistedTabData extends PersistedTabData {
 
     @VisibleForTesting
     public static final long NO_PRICE_KNOWN = -1;
-
-    @VisibleForTesting
-    protected static PageAnnotationsServiceFactory sPageAnnotationsServiceFactory =
-            new PageAnnotationsServiceFactory();
 
     private static boolean sPriceTrackingWithOptimizationGuideForTesting;
 
@@ -502,53 +493,44 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                             return;
                         }
 
-                        if (isPriceTrackingWithOptimizationGuideEnabled()) {
-                            OptimizationGuideBridgeFactoryHolder.sOptimizationGuideBridgeFactory
-                                    .create()
-                                    .canApplyOptimization(tab.getUrl(),
-                                            HintsProto.OptimizationType.PRICE_TRACKING,
-                                            (decision, metadata) -> {
-                                                if (tab.isDestroyed()) {
-                                                    supplierCallback.onResult(null);
-                                                    return;
-                                                }
-                                                if (decision != OptimizationGuideDecision.TRUE) {
-                                                    ShoppingPersistedTabData res =
-                                                            getEmptyShoppingPersistedTabData(tab);
-                                                    res.logPriceDropMetrics(
-                                                            METRICS_IDENTIFIER_PREFIX);
-                                                    supplierCallback.onResult(res);
-                                                    return;
-                                                }
-                                                try {
-                                                    PriceTrackingData priceTrackingDataProto =
-                                                            PriceTrackingData.parseFrom(
-                                                                    metadata.getValue());
-                                                    ShoppingPersistedTabData sptd =
-                                                            ShoppingPersistedTabData.from(tab);
-                                                    sptd.parsePriceTrackingDataProto(
-                                                            tab, priceTrackingDataProto, previous);
-                                                    sptd.logPriceDropMetrics(
-                                                            METRICS_IDENTIFIER_PREFIX);
-                                                    supplierCallback.onResult(sptd);
-                                                } catch (InvalidProtocolBufferException e) {
-                                                    Log.i(TAG,
-                                                            String.format(Locale.US,
-                                                                    "There was a problem "
-                                                                            + "parsing "
-                                                                            + "PriceTracking"
-                                                                            + "DataProto. "
-                                                                            + "Details %s.",
-                                                                    e));
-                                                    supplierCallback.onResult(null);
-                                                }
-                                            });
-                        } else {
-                            sPageAnnotationsServiceFactory.getForLastUsedProfile().getAnnotations(
-                                    tab.getUrl(), (result) -> {
-                                        supplierCallback.onResult(build(tab, result, previous));
-                                    });
-                        }
+                        OptimizationGuideBridgeFactoryHolder.sOptimizationGuideBridgeFactory
+                                .create()
+                                .canApplyOptimization(tab.getUrl(),
+                                        HintsProto.OptimizationType.PRICE_TRACKING,
+                                        (decision, metadata) -> {
+                                            if (tab.isDestroyed()) {
+                                                supplierCallback.onResult(null);
+                                                return;
+                                            }
+                                            if (decision != OptimizationGuideDecision.TRUE) {
+                                                ShoppingPersistedTabData res =
+                                                        getEmptyShoppingPersistedTabData(tab);
+                                                res.logPriceDropMetrics(METRICS_IDENTIFIER_PREFIX);
+                                                supplierCallback.onResult(res);
+                                                return;
+                                            }
+                                            try {
+                                                PriceTrackingData priceTrackingDataProto =
+                                                        PriceTrackingData.parseFrom(
+                                                                metadata.getValue());
+                                                ShoppingPersistedTabData sptd =
+                                                        ShoppingPersistedTabData.from(tab);
+                                                sptd.parsePriceTrackingDataProto(
+                                                        tab, priceTrackingDataProto, previous);
+                                                sptd.logPriceDropMetrics(METRICS_IDENTIFIER_PREFIX);
+                                                supplierCallback.onResult(sptd);
+                                            } catch (InvalidProtocolBufferException e) {
+                                                Log.i(TAG,
+                                                        String.format(Locale.US,
+                                                                "There was a problem "
+                                                                        + "parsing "
+                                                                        + "PriceTracking"
+                                                                        + "DataProto. "
+                                                                        + "Details %s.",
+                                                                e));
+                                                supplierCallback.onResult(null);
+                                            }
+                                        });
                     });
                 },
                 ShoppingPersistedTabData.class, callback);
@@ -634,49 +616,6 @@ public class ShoppingPersistedTabData extends PersistedTabData {
      */
     public void disableSaving() {
         mIsTabSaveEnabledSupplier.set(false);
-    }
-
-    private static ShoppingPersistedTabData build(
-            Tab tab, List<PageAnnotation> annotations, PriceDataSnapshot previousPricingData) {
-        ShoppingPersistedTabData res = ShoppingPersistedTabData.from(tab);
-        @FoundBuyableProductAnnotation
-        int foundBuyableProductAnnotation = FoundBuyableProductAnnotation.NOT_FOUND;
-
-        BuyableProductPageAnnotation buyableProduct =
-                PageAnnotationUtils.getAnnotation(annotations, BuyableProductPageAnnotation.class);
-
-        ProductPriceUpdatePageAnnotation productPriceUpdate = PageAnnotationUtils.getAnnotation(
-                annotations, ProductPriceUpdatePageAnnotation.class);
-
-        if (buyableProduct != null && productPriceUpdate != null) {
-            res.setPriceMicros(productPriceUpdate.getNewPriceMicros());
-            res.setPreviousPriceMicros(productPriceUpdate.getOldPriceMicros());
-            res.setCurrencyCode(productPriceUpdate.getCurrencyCode());
-            res.setLastUpdatedMs(System.currentTimeMillis());
-            res.setMainOfferId(buyableProduct.getOfferId());
-            res.setPriceDropGurl(tab.getUrl());
-            foundBuyableProductAnnotation = FoundBuyableProductAnnotation.FOUND_WITH_PRICE_UPDATE;
-        } else if (buyableProduct != null) {
-            res.setPriceMicros(buyableProduct.getCurrentPriceMicros(), previousPricingData);
-            res.setCurrencyCode(buyableProduct.getCurrencyCode());
-            res.setLastUpdatedMs(System.currentTimeMillis());
-            res.setMainOfferId(buyableProduct.getOfferId());
-            res.setPriceDropGurl(tab.getUrl());
-            foundBuyableProductAnnotation = FoundBuyableProductAnnotation.FOUND;
-        }
-
-        RecordHistogram.recordEnumeratedHistogram(
-                "Tabs.ShoppingPersistedTabData.FoundBuyableProductAnnotation",
-                foundBuyableProductAnnotation, FoundBuyableProductAnnotation.NUM_ENTRIES);
-        // Only persist this ShoppingPersistedTabData if it was correctly populated from the
-        // response
-        if (foundBuyableProductAnnotation == FoundBuyableProductAnnotation.FOUND
-                || foundBuyableProductAnnotation
-                        == FoundBuyableProductAnnotation.FOUND_WITH_PRICE_UPDATE) {
-            res.enableSaving();
-            return res;
-        }
-        return null;
     }
 
     @VisibleForTesting
