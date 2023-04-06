@@ -10329,7 +10329,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderSessionHistoryBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderSessionHistoryBrowserTest,
-                       NoPredictionDueToBfcache) {
+                       // Disabled. See https://crbug.com/1431057.
+                       DISABLED_NoPredictionDueToBfcache) {
   const GURL url1 = GetUrl("/title1.html");
   const GURL url2 = GetCrossSiteUrl("/title2.html");
   ASSERT_TRUE(NavigateToURL(shell(), url1));
