@@ -804,14 +804,21 @@ std::u16string Browser::GetWindowTitleFromWebContents(
     return app_controller_ ? app_controller_->GetAppShortName()
                            : base::UTF8ToUTF16(app_name());
   }
-
   // Include the app name in window titles for tabbed browser windows when
-  // requested with |include_app_name|.
+  // requested with |include_app_name|. Exception: On Lacros, when the OS is
+  // collecting window titles to render for desk overview mode, this function
+  // would get called with include_app_name=true. In this case,
+  // include_app_name=true would be ignored and no app name would be included
+  // in the title string that is to be returned. So always set
+  // `include_app_name` to false.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  include_app_name = false;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   return ((is_type_normal() || is_type_popup()) && include_app_name)
              ? l10n_util::GetStringFUTF16(IDS_BROWSER_WINDOW_TITLE_FORMAT,
                                           title)
              : title;
-#endif
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 // static
