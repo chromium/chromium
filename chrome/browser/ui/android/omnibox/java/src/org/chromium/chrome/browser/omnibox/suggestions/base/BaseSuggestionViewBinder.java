@@ -75,9 +75,8 @@ public final class BaseSuggestionViewBinder<T extends View>
                     view, model.get(SuggestionCommonProperties.LAYOUT_DIRECTION));
         } else if (SuggestionCommonProperties.COLOR_SCHEME == propertyKey) {
             updateColorScheme(model, view);
-        } else if (DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED == propertyKey) {
-            roundSuggestionViewCorners(model, view);
-        } else if (DropdownCommonProperties.BG_TOP_CORNER_ROUNDED == propertyKey) {
+        } else if (DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED == propertyKey
+                || DropdownCommonProperties.BG_TOP_CORNER_ROUNDED == propertyKey) {
             roundSuggestionViewCorners(model, view);
         } else if (DropdownCommonProperties.TOP_MARGIN == propertyKey) {
             updateMargin(model, view);
@@ -344,11 +343,16 @@ public final class BaseSuggestionViewBinder<T extends View>
 
         // TODO(crbug.com/1418077): This should be part of BaseSuggestionView.
         // Move this once we reconcile Pedals with Base.
-        var outlineProvider =
-                new RoundedCornerOutlineProvider(view.getResources().getDimensionPixelSize(
-                        R.dimen.omnibox_suggestion_bg_round_corner_radius));
-        outlineProvider.setRoundingEdges(true, roundTopEdge, true, roundBottomEdge);
-        view.setOutlineProvider(outlineProvider);
+        var outlineProvider = view.getOutlineProvider();
+        if (outlineProvider == null || !(outlineProvider instanceof RoundedCornerOutlineProvider)) {
+            outlineProvider =
+                    new RoundedCornerOutlineProvider(view.getResources().getDimensionPixelSize(
+                            R.dimen.omnibox_suggestion_bg_round_corner_radius));
+            view.setOutlineProvider(outlineProvider);
+        }
+        RoundedCornerOutlineProvider roundedCornerOutlineProvider =
+                (RoundedCornerOutlineProvider) outlineProvider;
+        roundedCornerOutlineProvider.setRoundingEdges(true, roundTopEdge, true, roundBottomEdge);
         view.setClipToOutline(true);
     }
 
