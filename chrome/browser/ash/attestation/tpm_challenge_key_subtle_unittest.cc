@@ -439,6 +439,11 @@ class KioskTpmChallengeKeySubtleTest : public TpmChallengeKeySubtleTestBase {
     LoginState::Get()->SetLoggedInState(LoginState::LOGGED_IN_ACTIVE,
                                         LoginState::LOGGED_IN_USER_KIOSK);
   }
+
+  void TearDown() override {
+    LoginState::Shutdown();
+    TpmChallengeKeySubtleTestBase::TearDown();
+  }
 };
 
 TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest,
