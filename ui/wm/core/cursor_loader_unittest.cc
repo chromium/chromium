@@ -9,7 +9,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/aura/client/cursor_shape_client.h"
-#include "ui/aura/test/aura_test_base.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
@@ -25,7 +24,6 @@ namespace wm {
 
 namespace {
 
-using CursorLoaderTest = ::aura::test::AuraTestBase;
 using ::ui::mojom::CursorType;
 
 SkBitmap GetTestBitmap() {
@@ -36,18 +34,17 @@ SkBitmap GetTestBitmap() {
 
 }  // namespace
 
-TEST_F(CursorLoaderTest, InvisibleCursor) {
-  auto* cursor_loader =
-      static_cast<CursorLoader*>(aura::client::GetCursorShapeClient());
+TEST(CursorLoaderTest, InvisibleCursor) {
+  CursorLoader cursor_loader;
   ui::Cursor invisible_cursor(CursorType::kNone);
-  cursor_loader->SetPlatformCursor(&invisible_cursor);
+  cursor_loader.SetPlatformCursor(&invisible_cursor);
 
   EXPECT_EQ(
       invisible_cursor.platform(),
       ui::CursorFactory::GetInstance()->GetDefaultCursor(CursorType::kNone));
 }
 
-TEST_F(CursorLoaderTest, GetCursorData) {
+TEST(CursorLoaderTest, GetCursorData) {
   // Make sure we always use the fallback cursors, so the test works the same
   // in all platforms.
   CursorLoader cursor_loader(/*use_platform_cursors=*/false);
@@ -104,7 +101,7 @@ TEST_F(CursorLoaderTest, GetCursorData) {
 }
 
 // Test the cursor image cache when fallbacks for system cursors are used.
-TEST_F(CursorLoaderTest, ImageCursorCache) {
+TEST(CursorLoaderTest, ImageCursorCache) {
   display::Display display = display::Display::GetDefaultDisplay();
   CursorLoader cursor_loader(/*use_platform_cursors=*/false);
   cursor_loader.SetDisplay(display);

@@ -80,10 +80,10 @@ void CursorLoader::SetPlatformCursor(ui::Cursor* cursor) {
   DCHECK(cursor);
 
   // The platform cursor was already set via WebCursor::GetNativeCursor.
-  if (cursor->type() == CursorType::kCustom)
+  if (cursor->type() == CursorType::kCustom) {
     return;
-  cursor->set_image_scale_factor(use_platform_cursors_ ? scale_
-                                                       : resource_scale_);
+  }
+
   cursor->SetPlatformCursor(CursorFromType(cursor->type()));
 }
 
@@ -93,13 +93,19 @@ absl::optional<ui::CursorData> CursorLoader::GetCursorData(
   if (type == CursorType::kNone)
     return ui::CursorData();
 
-  if (type == CursorType::kCustom)
-    return ui::CursorData({cursor.custom_bitmap()}, cursor.custom_hotspot());
+  if (type == CursorType::kCustom) {
+    return ui::CursorData({cursor.custom_bitmap()}, cursor.custom_hotspot(),
+                          cursor.image_scale_factor());
+  }
 
   if (use_platform_cursors_) {
     auto cursor_data = factory_->GetCursorData(type);
     if (cursor_data) {
-      return cursor_data;
+      // TODO(https://crbug.com/1193775): consider either passing `scale_` to
+      // `CursorFactory::GetCursorData`, or relying on having called
+      // `CursorFactory::SetDeviceScaleFactor`, instead of appending it here.
+      return ui::CursorData(std::move(cursor_data->bitmaps),
+                            std::move(cursor_data->hotspot), scale_);
     }
   }
 

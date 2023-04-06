@@ -819,7 +819,7 @@ void VideoRecordingWatcher::UpdateCursorOverlayNow(
   DCHECK_NE(cursor.type(), ui::mojom::CursorType::kNull);
 
   absl::optional<ui::CursorData> cursor_data =
-      aura::client::GetCursorShapeClient()->GetCursorData(cursor);
+      aura::client::GetCursorShapeClient().GetCursorData(cursor);
   if (!cursor_data)
     return;
 
@@ -832,7 +832,7 @@ void VideoRecordingWatcher::UpdateCursorOverlayNow(
 
   const gfx::RectF cursor_overlay_bounds = GetCursorOverlayBounds(
       window_being_recorded_, location, cursor_data->hotspot,
-      cursor.image_scale_factor(), cursor_image);
+      cursor_data->scale_factor, cursor_image);
 
   if (cursor != last_cursor_) {
     last_cursor_ = cursor;

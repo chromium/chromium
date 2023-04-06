@@ -25,7 +25,7 @@ class AURA_EXPORT CursorShapeClient {
 };
 
 AURA_EXPORT void SetCursorShapeClient(CursorShapeClient* client);
-AURA_EXPORT CursorShapeClient* GetCursorShapeClient();
+AURA_EXPORT const CursorShapeClient& GetCursorShapeClient();
 
 }  // namespace aura::client
 

@@ -3135,10 +3135,11 @@ String Internals::getCurrentCursorInfo() {
     result.AppendNumber(bitmap.width());
     result.Append('x');
     result.AppendNumber(bitmap.height());
-  }
-  if (cursor.image_scale_factor() != 1) {
-    result.Append(" scale=");
-    result.AppendNumber(cursor.image_scale_factor(), 8);
+
+    if (cursor.image_scale_factor() != 1.0f) {
+      result.Append(" scale=");
+      result.AppendNumber(cursor.image_scale_factor(), 8);
+    }
   }
 
   return result.ToString();

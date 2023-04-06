@@ -19,7 +19,9 @@ namespace ui {
 struct COMPONENT_EXPORT(UI_BASE_CURSOR) CursorData {
  public:
   CursorData();
-  CursorData(std::vector<SkBitmap> bitmaps, gfx::Point hotspot);
+  CursorData(std::vector<SkBitmap> bitmaps,
+             gfx::Point hotspot,
+             float scale_factor = 1.0f);
   CursorData(const CursorData&);
   ~CursorData();
 
@@ -28,6 +30,10 @@ struct COMPONENT_EXPORT(UI_BASE_CURSOR) CursorData {
   // of images, so a bigger number is expected.
   std::vector<SkBitmap> bitmaps;
   gfx::Point hotspot;
+  // `scale_factor` cannot be zero, since it will be either the device scale
+  // factor or the image scale factor for custom cursors. In both cases, the
+  // code is checked for a minimum value at its origin.
+  float scale_factor = 1.0f;
 };
 
 // Ref-counted cursor that supports both default and custom cursors.
@@ -77,8 +83,9 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) Cursor {
   // Only used for custom cursors:
   SkBitmap custom_bitmap_;
   gfx::Point custom_hotspot_;
-
-  // The scale factor for the cursor bitmap.
+  // Scale factor of `custom_bitmap_`. When creating the platform cursor, the
+  // bitmap will be scaled to the device scale factor taking into account this
+  // value.
   float image_scale_factor_ = 1.0f;
 };
 
