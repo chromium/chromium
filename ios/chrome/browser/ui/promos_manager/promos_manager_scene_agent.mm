@@ -26,9 +26,10 @@
 @implementation PromosManagerSceneAgent
 
 - (instancetype)initWithCommandDispatcher:(CommandDispatcher*)dispatcher {
-  if ([super init])
+  self = [super init];
+  if (self) {
     _dispatcher = dispatcher;
-
+  }
   return self;
 }
 

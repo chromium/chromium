@@ -23,7 +23,8 @@
 @implementation DefaultBrowserSceneAgent
 
 - (instancetype)initWithCommandDispatcher:(CommandDispatcher*)dispatcher {
-  if ([super init]) {
+  self = [super init];
+  if (self) {
     _dispatcher = dispatcher;
     if (NonModalPromosEnabled()) {
       _nonModalScheduler = [[DefaultBrowserPromoNonModalScheduler alloc] init];

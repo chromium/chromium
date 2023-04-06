@@ -38,7 +38,9 @@
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser {
-  if ([super initWithBaseViewController:navigationController browser:browser]) {
+  self = [super initWithBaseViewController:navigationController
+                                   browser:browser];
+  if (self) {
     _baseNavigationController = navigationController;
   }
   return self;
