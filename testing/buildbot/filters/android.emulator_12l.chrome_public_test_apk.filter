@@ -72,9 +72,3 @@
 
 # crbug.com/1430319
 -org.chromium.chrome.browser.ntp.NewTabPageTest.testRecordHistogramHomeButtonClick_Ntp
-
-# crbug.com/1430856
--org.chromium.chrome.browser.media.ui.FullscreenVideoPictureInPictureControllerTest.testExitOnCloseTab
--org.chromium.chrome.browser.media.ui.FullscreenVideoPictureInPictureControllerTest.testExitOnCrash
--org.chromium.chrome.browser.media.ui.FullscreenVideoPictureInPictureControllerTest.testExitOnLeaveFullscreen
--org.chromium.chrome.browser.media.ui.FullscreenVideoPictureInPictureControllerTest.testExitPipOnPortalActivation
