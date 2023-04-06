@@ -768,6 +768,23 @@ TypeConverter<IdentityProviderConfigPtr, blink::IdentityProviderConfig>::
     login_hint->id = "";
     login_hint->is_required = false;
   }
+
+  if (blink::RuntimeEnabledFeatures::FedCmAuthzEnabled()) {
+    if (provider.hasScope()) {
+      mojo_provider->scope = provider.scope();
+    }
+    if (provider.hasResponseType()) {
+      mojo_provider->responseType = provider.responseType();
+    }
+    if (provider.hasParams()) {
+      HashMap<String, String> params;
+      for (const auto& pair : provider.params()) {
+        params.Set(pair.first, pair.second);
+      }
+      mojo_provider->params = std::move(params);
+    }
+  }
+
   mojo_provider->login_hint = std::move(login_hint);
   return mojo_provider;
 }

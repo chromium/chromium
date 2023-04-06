@@ -325,6 +325,17 @@ class WebIdMDocsBrowserTest : public WebIdBrowserTest {
   }
 };
 
+class WebIdAuthzBrowserTest : public WebIdBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    std::vector<base::test::FeatureRef> features;
+    features.push_back(features::kFedCmAuthz);
+    scoped_feature_list_.InitWithFeatures(features, {});
+
+    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+  }
+};
+
 // Verify a standard login flow with IdP sign-in page.
 IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, FullLoginFlow) {
   idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
@@ -526,6 +537,34 @@ IN_PROC_BROWSER_TEST_F(WebIdMDocsBrowserTest, MDocs) {
     )";
 
   EXPECT_EQ("test-mdoc", EvalJs(shell(), script));
+}
+
+// Verify a standard login flow with IdP sign-in page.
+IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, PopUpWindowAuthzFlow) {
+  idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
+
+  std::string script = R"(
+        (async () => {
+          var x = (await navigator.credentials.get({
+            identity: {
+              providers: [{
+                configURL: ')" +
+                       BaseIdpUrl() + R"(',
+                clientId: 'client_id_1',
+                nonce: '12345',
+                scope: ['name', 'email', 'calendar.readonly'],
+                responseType: ['id_token', 'code'],
+                params: {
+                  'foo': 'bar',
+                }
+              }]
+            }
+          }));
+          return x.token;
+        }) ()
+    )";
+
+  EXPECT_EQ(std::string(kToken), EvalJs(shell(), script));
 }
 
 }  // namespace content
