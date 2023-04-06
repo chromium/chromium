@@ -106,6 +106,7 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
 
   void InitializePolicyHandler();
   void OnKeyboardPoliciesChanged();
+  void OnMousePoliciesChanged();
 
   base::ObserverList<InputDeviceSettingsController::Observer> observers_;
 

@@ -193,9 +193,12 @@ void InputDeviceSettingsControllerImpl::Init() {
 }
 
 void InputDeviceSettingsControllerImpl::InitializePolicyHandler() {
-  policy_handler_ =
-      std::make_unique<InputDeviceSettingsPolicyHandler>(base::BindRepeating(
+  policy_handler_ = std::make_unique<InputDeviceSettingsPolicyHandler>(
+      base::BindRepeating(
           &InputDeviceSettingsControllerImpl::OnKeyboardPoliciesChanged,
+          base::Unretained(this)),
+      base::BindRepeating(
+          &InputDeviceSettingsControllerImpl::OnMousePoliciesChanged,
           base::Unretained(this)));
 
   // Only initialize the policy handler when in an active user session.
@@ -282,6 +285,10 @@ void InputDeviceSettingsControllerImpl::OnKeyboardPoliciesChanged() {
     observer.OnKeyboardPoliciesUpdated(policy_handler_->keyboard_policies());
   }
   ScheduleDeviceSettingsRefresh();
+}
+
+void InputDeviceSettingsControllerImpl::OnMousePoliciesChanged() {
+  // TODO(dpad): Reinitialize mouse settings and inform observers.
 }
 
 const mojom::KeyboardPolicies&

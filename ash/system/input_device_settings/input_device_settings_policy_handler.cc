@@ -43,8 +43,10 @@ mojom::InputDeviceSettingsPolicyPtr GetBooleanPreferencePolicy(
 }  // namespace
 
 InputDeviceSettingsPolicyHandler::InputDeviceSettingsPolicyHandler(
-    EnterprisePolicyCallback keyboard_policy_callback)
-    : keyboard_policy_callback_(std::move(keyboard_policy_callback)) {}
+    EnterprisePolicyCallback keyboard_policy_callback,
+    EnterprisePolicyCallback mouse_policy_callback)
+    : keyboard_policy_callback_(std::move(keyboard_policy_callback)),
+      mouse_policy_callback_(std::move(mouse_policy_callback)) {}
 InputDeviceSettingsPolicyHandler::~InputDeviceSettingsPolicyHandler() = default;
 
 void InputDeviceSettingsPolicyHandler::Initialize(PrefService* pref_service) {
@@ -76,7 +78,12 @@ void InputDeviceSettingsPolicyHandler::RefreshKeyboardPolicies(bool notify) {
 }
 
 void InputDeviceSettingsPolicyHandler::RefreshMousePolicies(bool notify) {
-  // TODO(dpad): Implement retrieval of policy status.
+  mouse_policies_.swap_right_policy = GetBooleanPreferencePolicy(
+      pref_change_registrar_.prefs(), prefs::kPrimaryMouseButtonRight);
+
+  if (notify) {
+    mouse_policy_callback_.Run();
+  }
 }
 
 void InputDeviceSettingsPolicyHandler::OnKeyboardPoliciesChanged(
