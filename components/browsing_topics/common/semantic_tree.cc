@@ -4,1862 +4,444 @@
 
 #include "components/browsing_topics/common/semantic_tree.h"
 
-#include <vector>
-
-#include "base/containers/fixed_flat_map.h"
-#include "base/no_destructor.h"
 #include "components/strings/grit/components_strings.h"
 
 namespace browsing_topics {
 
 namespace {
-// Stores a taxonomy version and a localized name message id for a topic
 
-struct SemanticTreeTaxonomyInformation {
-  SemanticTreeTaxonomyInformation(int taxonomy_version,
-                                  int localized_name_message_id)
-      : taxonomy_version(taxonomy_version),
-        localized_name_message_id(localized_name_message_id) {}
-  SemanticTreeTaxonomyInformation(
-      const SemanticTreeTaxonomyInformation& other) = default;
-  ~SemanticTreeTaxonomyInformation() = default;
-  const int taxonomy_version;
-  const int localized_name_message_id;
+const uint16_t kChildToParent[] = {
+    0,   1,   1,   1,   1,   1,   1,   7,   1,   1,   1,   1,   12,  12,  12,
+    12,  12,  12,  12,  12,  12,  12,  1,   23,  23,  23,  23,  23,  23,  23,
+    23,  23,  23,  33,  33,  33,  23,  23,  23,  23,  40,  1,   1,   1,   1,
+    45,  45,  45,  48,  45,  45,  45,  1,   53,  53,  53,  0,   57,  57,  57,
+    57,  57,  62,  62,  62,  62,  62,  62,  62,  62,  62,  62,  62,  62,  62,
+    62,  76,  62,  57,  57,  57,  57,  57,  83,  57,  0,   86,  86,  88,  88,
+    88,  88,  88,  88,  88,  86,  86,  97,  86,  0,   100, 100, 0,   103, 104,
+    103, 106, 103, 103, 103, 110, 110, 103, 103, 114, 103, 103, 117, 103, 103,
+    103, 103, 103, 103, 103, 0,   126, 126, 126, 129, 129, 129, 129, 126, 126,
+    126, 126, 137, 126, 126, 140, 140, 140, 140, 140, 140, 140, 140, 0,   149,
+    150, 149, 149, 153, 149, 155, 149, 149, 158, 158, 158, 158, 158, 149, 164,
+    164, 164, 164, 164, 149, 149, 0,   172, 173, 173, 175, 176, 173, 172, 0,
+    180, 180, 180, 183, 183, 183, 183, 183, 183, 183, 183, 183, 180, 180, 180,
+    0,   196, 196, 196, 196, 196, 201, 201, 196, 196, 196, 0,   207, 207, 207,
+    207, 207, 207, 207, 0,   215, 215, 215, 215, 215, 215, 215, 215, 215, 215,
+    0,   226, 227, 227, 227, 227, 231, 227, 227, 227, 226, 236, 236, 0,   239,
+    239, 241, 0,   243, 243, 243, 243, 243, 243, 0,   250, 250, 250, 0,   254,
+    255, 255, 255, 258, 258, 258, 254, 0,   263, 263, 265, 265, 265, 265, 265,
+    263, 0,   272, 272, 0,   275, 275, 275, 0,   279, 279, 281, 279, 279, 279,
+    279, 279, 279, 0,   289, 289, 289, 292, 289, 289, 289, 289, 289, 0,   299,
+    299, 299, 299, 299, 299, 299, 299, 299, 299, 299, 299, 299, 312, 299, 299,
+    299, 299, 299, 299, 299, 299, 299, 299, 299, 299, 299, 299, 299, 299, 299,
+    299, 0,   332, 332, 332, 332, 332, 332, 332, 332, 332, 332, 332, 332, 344,
+    344, 344, 344, 332,
 };
 
-// Stores information for a topic's node in the semantic tree:
-// the topic's parent and taxonomy information (version(s) and name(s))
-struct SemanticTreeNodeInformation {
-  SemanticTreeNodeInformation(
-      const absl::optional<Topic>& parent_topic,
-      const std::vector<SemanticTreeTaxonomyInformation>& taxonomy_information)
-      : parent_topic(parent_topic),
-        taxonomy_information(taxonomy_information) {}
-  SemanticTreeNodeInformation(const SemanticTreeNodeInformation& other) =
-      default;
-  ~SemanticTreeNodeInformation() = default;
-  const absl::optional<Topic> parent_topic;
-  const std::vector<SemanticTreeTaxonomyInformation> taxonomy_information;
-};
+constexpr size_t kNumTopics = std::size(kChildToParent);
+constexpr Topic kNullTopic = Topic(0);
 
-constexpr size_t kSemanticTreeSize = 349;
+static_assert(kNumTopics == 349);
+static_assert(IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_349 -
+                  IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_1 + 1 ==
+              kNumTopics);
+// These asserts also have a side-effect of preventing unused resource
+// removal from removing them.
+#define ASSERT_RESOURCE_ID(num)                                              \
+  static_assert(IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_##num -      \
+                    IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_1 + 1 == \
+                num)
+ASSERT_RESOURCE_ID(2);
+ASSERT_RESOURCE_ID(3);
+ASSERT_RESOURCE_ID(4);
+ASSERT_RESOURCE_ID(5);
+ASSERT_RESOURCE_ID(6);
+ASSERT_RESOURCE_ID(7);
+ASSERT_RESOURCE_ID(8);
+ASSERT_RESOURCE_ID(9);
+ASSERT_RESOURCE_ID(10);
+ASSERT_RESOURCE_ID(11);
+ASSERT_RESOURCE_ID(12);
+ASSERT_RESOURCE_ID(13);
+ASSERT_RESOURCE_ID(14);
+ASSERT_RESOURCE_ID(15);
+ASSERT_RESOURCE_ID(16);
+ASSERT_RESOURCE_ID(17);
+ASSERT_RESOURCE_ID(18);
+ASSERT_RESOURCE_ID(19);
+ASSERT_RESOURCE_ID(20);
+ASSERT_RESOURCE_ID(21);
+ASSERT_RESOURCE_ID(22);
+ASSERT_RESOURCE_ID(23);
+ASSERT_RESOURCE_ID(24);
+ASSERT_RESOURCE_ID(25);
+ASSERT_RESOURCE_ID(26);
+ASSERT_RESOURCE_ID(27);
+ASSERT_RESOURCE_ID(28);
+ASSERT_RESOURCE_ID(29);
+ASSERT_RESOURCE_ID(30);
+ASSERT_RESOURCE_ID(31);
+ASSERT_RESOURCE_ID(32);
+ASSERT_RESOURCE_ID(33);
+ASSERT_RESOURCE_ID(34);
+ASSERT_RESOURCE_ID(35);
+ASSERT_RESOURCE_ID(36);
+ASSERT_RESOURCE_ID(37);
+ASSERT_RESOURCE_ID(38);
+ASSERT_RESOURCE_ID(39);
+ASSERT_RESOURCE_ID(40);
+ASSERT_RESOURCE_ID(41);
+ASSERT_RESOURCE_ID(42);
+ASSERT_RESOURCE_ID(43);
+ASSERT_RESOURCE_ID(44);
+ASSERT_RESOURCE_ID(45);
+ASSERT_RESOURCE_ID(46);
+ASSERT_RESOURCE_ID(47);
+ASSERT_RESOURCE_ID(48);
+ASSERT_RESOURCE_ID(49);
+ASSERT_RESOURCE_ID(50);
+ASSERT_RESOURCE_ID(51);
+ASSERT_RESOURCE_ID(52);
+ASSERT_RESOURCE_ID(53);
+ASSERT_RESOURCE_ID(54);
+ASSERT_RESOURCE_ID(55);
+ASSERT_RESOURCE_ID(56);
+ASSERT_RESOURCE_ID(57);
+ASSERT_RESOURCE_ID(58);
+ASSERT_RESOURCE_ID(59);
+ASSERT_RESOURCE_ID(60);
+ASSERT_RESOURCE_ID(61);
+ASSERT_RESOURCE_ID(62);
+ASSERT_RESOURCE_ID(63);
+ASSERT_RESOURCE_ID(64);
+ASSERT_RESOURCE_ID(65);
+ASSERT_RESOURCE_ID(66);
+ASSERT_RESOURCE_ID(67);
+ASSERT_RESOURCE_ID(68);
+ASSERT_RESOURCE_ID(69);
+ASSERT_RESOURCE_ID(70);
+ASSERT_RESOURCE_ID(71);
+ASSERT_RESOURCE_ID(72);
+ASSERT_RESOURCE_ID(73);
+ASSERT_RESOURCE_ID(74);
+ASSERT_RESOURCE_ID(75);
+ASSERT_RESOURCE_ID(76);
+ASSERT_RESOURCE_ID(77);
+ASSERT_RESOURCE_ID(78);
+ASSERT_RESOURCE_ID(79);
+ASSERT_RESOURCE_ID(80);
+ASSERT_RESOURCE_ID(81);
+ASSERT_RESOURCE_ID(82);
+ASSERT_RESOURCE_ID(83);
+ASSERT_RESOURCE_ID(84);
+ASSERT_RESOURCE_ID(85);
+ASSERT_RESOURCE_ID(86);
+ASSERT_RESOURCE_ID(87);
+ASSERT_RESOURCE_ID(88);
+ASSERT_RESOURCE_ID(89);
+ASSERT_RESOURCE_ID(90);
+ASSERT_RESOURCE_ID(91);
+ASSERT_RESOURCE_ID(92);
+ASSERT_RESOURCE_ID(93);
+ASSERT_RESOURCE_ID(94);
+ASSERT_RESOURCE_ID(95);
+ASSERT_RESOURCE_ID(96);
+ASSERT_RESOURCE_ID(97);
+ASSERT_RESOURCE_ID(98);
+ASSERT_RESOURCE_ID(99);
+ASSERT_RESOURCE_ID(100);
+ASSERT_RESOURCE_ID(101);
+ASSERT_RESOURCE_ID(102);
+ASSERT_RESOURCE_ID(103);
+ASSERT_RESOURCE_ID(104);
+ASSERT_RESOURCE_ID(105);
+ASSERT_RESOURCE_ID(106);
+ASSERT_RESOURCE_ID(107);
+ASSERT_RESOURCE_ID(108);
+ASSERT_RESOURCE_ID(109);
+ASSERT_RESOURCE_ID(110);
+ASSERT_RESOURCE_ID(111);
+ASSERT_RESOURCE_ID(112);
+ASSERT_RESOURCE_ID(113);
+ASSERT_RESOURCE_ID(114);
+ASSERT_RESOURCE_ID(115);
+ASSERT_RESOURCE_ID(116);
+ASSERT_RESOURCE_ID(117);
+ASSERT_RESOURCE_ID(118);
+ASSERT_RESOURCE_ID(119);
+ASSERT_RESOURCE_ID(120);
+ASSERT_RESOURCE_ID(121);
+ASSERT_RESOURCE_ID(122);
+ASSERT_RESOURCE_ID(123);
+ASSERT_RESOURCE_ID(124);
+ASSERT_RESOURCE_ID(125);
+ASSERT_RESOURCE_ID(126);
+ASSERT_RESOURCE_ID(127);
+ASSERT_RESOURCE_ID(128);
+ASSERT_RESOURCE_ID(129);
+ASSERT_RESOURCE_ID(130);
+ASSERT_RESOURCE_ID(131);
+ASSERT_RESOURCE_ID(132);
+ASSERT_RESOURCE_ID(133);
+ASSERT_RESOURCE_ID(134);
+ASSERT_RESOURCE_ID(135);
+ASSERT_RESOURCE_ID(136);
+ASSERT_RESOURCE_ID(137);
+ASSERT_RESOURCE_ID(138);
+ASSERT_RESOURCE_ID(139);
+ASSERT_RESOURCE_ID(140);
+ASSERT_RESOURCE_ID(141);
+ASSERT_RESOURCE_ID(142);
+ASSERT_RESOURCE_ID(143);
+ASSERT_RESOURCE_ID(144);
+ASSERT_RESOURCE_ID(145);
+ASSERT_RESOURCE_ID(146);
+ASSERT_RESOURCE_ID(147);
+ASSERT_RESOURCE_ID(148);
+ASSERT_RESOURCE_ID(149);
+ASSERT_RESOURCE_ID(150);
+ASSERT_RESOURCE_ID(151);
+ASSERT_RESOURCE_ID(152);
+ASSERT_RESOURCE_ID(153);
+ASSERT_RESOURCE_ID(154);
+ASSERT_RESOURCE_ID(155);
+ASSERT_RESOURCE_ID(156);
+ASSERT_RESOURCE_ID(157);
+ASSERT_RESOURCE_ID(158);
+ASSERT_RESOURCE_ID(159);
+ASSERT_RESOURCE_ID(160);
+ASSERT_RESOURCE_ID(161);
+ASSERT_RESOURCE_ID(162);
+ASSERT_RESOURCE_ID(163);
+ASSERT_RESOURCE_ID(164);
+ASSERT_RESOURCE_ID(165);
+ASSERT_RESOURCE_ID(166);
+ASSERT_RESOURCE_ID(167);
+ASSERT_RESOURCE_ID(168);
+ASSERT_RESOURCE_ID(169);
+ASSERT_RESOURCE_ID(170);
+ASSERT_RESOURCE_ID(171);
+ASSERT_RESOURCE_ID(172);
+ASSERT_RESOURCE_ID(173);
+ASSERT_RESOURCE_ID(174);
+ASSERT_RESOURCE_ID(175);
+ASSERT_RESOURCE_ID(176);
+ASSERT_RESOURCE_ID(177);
+ASSERT_RESOURCE_ID(178);
+ASSERT_RESOURCE_ID(179);
+ASSERT_RESOURCE_ID(180);
+ASSERT_RESOURCE_ID(181);
+ASSERT_RESOURCE_ID(182);
+ASSERT_RESOURCE_ID(183);
+ASSERT_RESOURCE_ID(184);
+ASSERT_RESOURCE_ID(185);
+ASSERT_RESOURCE_ID(186);
+ASSERT_RESOURCE_ID(187);
+ASSERT_RESOURCE_ID(188);
+ASSERT_RESOURCE_ID(189);
+ASSERT_RESOURCE_ID(190);
+ASSERT_RESOURCE_ID(191);
+ASSERT_RESOURCE_ID(192);
+ASSERT_RESOURCE_ID(193);
+ASSERT_RESOURCE_ID(194);
+ASSERT_RESOURCE_ID(195);
+ASSERT_RESOURCE_ID(196);
+ASSERT_RESOURCE_ID(197);
+ASSERT_RESOURCE_ID(198);
+ASSERT_RESOURCE_ID(199);
+ASSERT_RESOURCE_ID(200);
+ASSERT_RESOURCE_ID(201);
+ASSERT_RESOURCE_ID(202);
+ASSERT_RESOURCE_ID(203);
+ASSERT_RESOURCE_ID(204);
+ASSERT_RESOURCE_ID(205);
+ASSERT_RESOURCE_ID(206);
+ASSERT_RESOURCE_ID(207);
+ASSERT_RESOURCE_ID(208);
+ASSERT_RESOURCE_ID(209);
+ASSERT_RESOURCE_ID(210);
+ASSERT_RESOURCE_ID(211);
+ASSERT_RESOURCE_ID(212);
+ASSERT_RESOURCE_ID(213);
+ASSERT_RESOURCE_ID(214);
+ASSERT_RESOURCE_ID(215);
+ASSERT_RESOURCE_ID(216);
+ASSERT_RESOURCE_ID(217);
+ASSERT_RESOURCE_ID(218);
+ASSERT_RESOURCE_ID(219);
+ASSERT_RESOURCE_ID(220);
+ASSERT_RESOURCE_ID(221);
+ASSERT_RESOURCE_ID(222);
+ASSERT_RESOURCE_ID(223);
+ASSERT_RESOURCE_ID(224);
+ASSERT_RESOURCE_ID(225);
+ASSERT_RESOURCE_ID(226);
+ASSERT_RESOURCE_ID(227);
+ASSERT_RESOURCE_ID(228);
+ASSERT_RESOURCE_ID(229);
+ASSERT_RESOURCE_ID(230);
+ASSERT_RESOURCE_ID(231);
+ASSERT_RESOURCE_ID(232);
+ASSERT_RESOURCE_ID(233);
+ASSERT_RESOURCE_ID(234);
+ASSERT_RESOURCE_ID(235);
+ASSERT_RESOURCE_ID(236);
+ASSERT_RESOURCE_ID(237);
+ASSERT_RESOURCE_ID(238);
+ASSERT_RESOURCE_ID(239);
+ASSERT_RESOURCE_ID(240);
+ASSERT_RESOURCE_ID(241);
+ASSERT_RESOURCE_ID(242);
+ASSERT_RESOURCE_ID(243);
+ASSERT_RESOURCE_ID(244);
+ASSERT_RESOURCE_ID(245);
+ASSERT_RESOURCE_ID(246);
+ASSERT_RESOURCE_ID(247);
+ASSERT_RESOURCE_ID(248);
+ASSERT_RESOURCE_ID(249);
+ASSERT_RESOURCE_ID(250);
+ASSERT_RESOURCE_ID(251);
+ASSERT_RESOURCE_ID(252);
+ASSERT_RESOURCE_ID(253);
+ASSERT_RESOURCE_ID(254);
+ASSERT_RESOURCE_ID(255);
+ASSERT_RESOURCE_ID(256);
+ASSERT_RESOURCE_ID(257);
+ASSERT_RESOURCE_ID(258);
+ASSERT_RESOURCE_ID(259);
+ASSERT_RESOURCE_ID(260);
+ASSERT_RESOURCE_ID(261);
+ASSERT_RESOURCE_ID(262);
+ASSERT_RESOURCE_ID(263);
+ASSERT_RESOURCE_ID(264);
+ASSERT_RESOURCE_ID(265);
+ASSERT_RESOURCE_ID(266);
+ASSERT_RESOURCE_ID(267);
+ASSERT_RESOURCE_ID(268);
+ASSERT_RESOURCE_ID(269);
+ASSERT_RESOURCE_ID(270);
+ASSERT_RESOURCE_ID(271);
+ASSERT_RESOURCE_ID(272);
+ASSERT_RESOURCE_ID(273);
+ASSERT_RESOURCE_ID(274);
+ASSERT_RESOURCE_ID(275);
+ASSERT_RESOURCE_ID(276);
+ASSERT_RESOURCE_ID(277);
+ASSERT_RESOURCE_ID(278);
+ASSERT_RESOURCE_ID(279);
+ASSERT_RESOURCE_ID(280);
+ASSERT_RESOURCE_ID(281);
+ASSERT_RESOURCE_ID(282);
+ASSERT_RESOURCE_ID(283);
+ASSERT_RESOURCE_ID(284);
+ASSERT_RESOURCE_ID(285);
+ASSERT_RESOURCE_ID(286);
+ASSERT_RESOURCE_ID(287);
+ASSERT_RESOURCE_ID(288);
+ASSERT_RESOURCE_ID(289);
+ASSERT_RESOURCE_ID(290);
+ASSERT_RESOURCE_ID(291);
+ASSERT_RESOURCE_ID(292);
+ASSERT_RESOURCE_ID(293);
+ASSERT_RESOURCE_ID(294);
+ASSERT_RESOURCE_ID(295);
+ASSERT_RESOURCE_ID(296);
+ASSERT_RESOURCE_ID(297);
+ASSERT_RESOURCE_ID(298);
+ASSERT_RESOURCE_ID(299);
+ASSERT_RESOURCE_ID(300);
+ASSERT_RESOURCE_ID(301);
+ASSERT_RESOURCE_ID(302);
+ASSERT_RESOURCE_ID(303);
+ASSERT_RESOURCE_ID(304);
+ASSERT_RESOURCE_ID(305);
+ASSERT_RESOURCE_ID(306);
+ASSERT_RESOURCE_ID(307);
+ASSERT_RESOURCE_ID(308);
+ASSERT_RESOURCE_ID(309);
+ASSERT_RESOURCE_ID(310);
+ASSERT_RESOURCE_ID(311);
+ASSERT_RESOURCE_ID(312);
+ASSERT_RESOURCE_ID(313);
+ASSERT_RESOURCE_ID(314);
+ASSERT_RESOURCE_ID(315);
+ASSERT_RESOURCE_ID(316);
+ASSERT_RESOURCE_ID(317);
+ASSERT_RESOURCE_ID(318);
+ASSERT_RESOURCE_ID(319);
+ASSERT_RESOURCE_ID(320);
+ASSERT_RESOURCE_ID(321);
+ASSERT_RESOURCE_ID(322);
+ASSERT_RESOURCE_ID(323);
+ASSERT_RESOURCE_ID(324);
+ASSERT_RESOURCE_ID(325);
+ASSERT_RESOURCE_ID(326);
+ASSERT_RESOURCE_ID(327);
+ASSERT_RESOURCE_ID(328);
+ASSERT_RESOURCE_ID(329);
+ASSERT_RESOURCE_ID(330);
+ASSERT_RESOURCE_ID(331);
+ASSERT_RESOURCE_ID(332);
+ASSERT_RESOURCE_ID(333);
+ASSERT_RESOURCE_ID(334);
+ASSERT_RESOURCE_ID(335);
+ASSERT_RESOURCE_ID(336);
+ASSERT_RESOURCE_ID(337);
+ASSERT_RESOURCE_ID(338);
+ASSERT_RESOURCE_ID(339);
+ASSERT_RESOURCE_ID(340);
+ASSERT_RESOURCE_ID(341);
+ASSERT_RESOURCE_ID(342);
+ASSERT_RESOURCE_ID(343);
+ASSERT_RESOURCE_ID(344);
+ASSERT_RESOURCE_ID(345);
+ASSERT_RESOURCE_ID(346);
+ASSERT_RESOURCE_ID(347);
+ASSERT_RESOURCE_ID(348);
+ASSERT_RESOURCE_ID(349);
 
-// Get the mapping of topic to information such as its parent topic,
-// valid taxonomy, and message id for its localized name string
-const base::
-    fixed_flat_map<Topic, SemanticTreeNodeInformation, kSemanticTreeSize>&
-    GetSemanticTreeInternal() {
-  static const base::NoDestructor<base::fixed_flat_map<
-      Topic, SemanticTreeNodeInformation, kSemanticTreeSize>>
-      kSemanticTreeMap(base::MakeFixedFlatMapSorted<
-                       Topic, SemanticTreeNodeInformation>(
-          {{Topic(1),
-            SemanticTreeNodeInformation(
-                absl::nullopt,
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_1)})},
-           {Topic(2),
-            SemanticTreeNodeInformation(
-                Topic(1),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_2)})},
-           {Topic(3),
-            SemanticTreeNodeInformation(
-                Topic(1),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_3)})},
-           {Topic(4),
-            SemanticTreeNodeInformation(
-                Topic(1),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_4)})},
-           {Topic(5),
-            SemanticTreeNodeInformation(
-                Topic(1),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_5)})},
-           {Topic(6),
-            SemanticTreeNodeInformation(
-                Topic(1),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_6)})},
-           {Topic(7),
-            SemanticTreeNodeInformation(
-                Topic(1),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_7)})},
-           {Topic(8),
-            SemanticTreeNodeInformation(
-                Topic(7),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_8)})},
-           {Topic(9),
-            SemanticTreeNodeInformation(
-                Topic(1),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_9)})},
-           {Topic(10),
-            SemanticTreeNodeInformation(
-                Topic(1),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_10)})},
-           {Topic(11),
-            SemanticTreeNodeInformation(
-                Topic(1),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_11)})},
-           {Topic(12),
-            SemanticTreeNodeInformation(
-                Topic(1),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_12)})},
-           {Topic(13),
-            SemanticTreeNodeInformation(
-                Topic(12),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_13)})},
-           {Topic(14),
-            SemanticTreeNodeInformation(
-                Topic(12),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_14)})},
-           {Topic(15),
-            SemanticTreeNodeInformation(
-                Topic(12),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_15)})},
-           {Topic(16),
-            SemanticTreeNodeInformation(
-                Topic(12),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_16)})},
-           {Topic(17),
-            SemanticTreeNodeInformation(
-                Topic(12),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_17)})},
-           {Topic(18),
-            SemanticTreeNodeInformation(
-                Topic(12),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_18)})},
-           {Topic(19),
-            SemanticTreeNodeInformation(
-                Topic(12),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_19)})},
-           {Topic(20),
-            SemanticTreeNodeInformation(
-                Topic(12),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_20)})},
-           {Topic(21),
-            SemanticTreeNodeInformation(
-                Topic(12),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_21)})},
-           {Topic(22),
-            SemanticTreeNodeInformation(
-                Topic(12),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_22)})},
-           {Topic(23),
-            SemanticTreeNodeInformation(
-                Topic(1),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_23)})},
-           {Topic(24),
-            SemanticTreeNodeInformation(
-                Topic(23),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_24)})},
-           {Topic(25),
-            SemanticTreeNodeInformation(
-                Topic(23),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_25)})},
-           {Topic(26),
-            SemanticTreeNodeInformation(
-                Topic(23),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_26)})},
-           {Topic(27),
-            SemanticTreeNodeInformation(
-                Topic(23),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_27)})},
-           {Topic(28),
-            SemanticTreeNodeInformation(
-                Topic(23),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_28)})},
-           {Topic(29),
-            SemanticTreeNodeInformation(
-                Topic(23),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_29)})},
-           {Topic(30),
-            SemanticTreeNodeInformation(
-                Topic(23),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_30)})},
-           {Topic(31),
-            SemanticTreeNodeInformation(
-                Topic(23),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_31)})},
-           {Topic(32),
-            SemanticTreeNodeInformation(
-                Topic(23),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_32)})},
-           {Topic(33),
-            SemanticTreeNodeInformation(
-                Topic(23),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_33)})},
-           {Topic(34),
-            SemanticTreeNodeInformation(
-                Topic(33),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_34)})},
-           {Topic(35),
-            SemanticTreeNodeInformation(
-                Topic(33),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_35)})},
-           {Topic(36),
-            SemanticTreeNodeInformation(
-                Topic(33),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_36)})},
-           {Topic(37),
-            SemanticTreeNodeInformation(
-                Topic(23),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_37)})},
-           {Topic(38),
-            SemanticTreeNodeInformation(
-                Topic(23),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_38)})},
-           {Topic(39),
-            SemanticTreeNodeInformation(
-                Topic(23),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_39)})},
-           {Topic(40),
-            SemanticTreeNodeInformation(
-                Topic(23),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_40)})},
-           {Topic(41),
-            SemanticTreeNodeInformation(
-                Topic(40),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_41)})},
-           {Topic(42),
-            SemanticTreeNodeInformation(
-                Topic(1),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_42)})},
-           {Topic(43),
-            SemanticTreeNodeInformation(
-                Topic(1),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_43)})},
-           {Topic(44),
-            SemanticTreeNodeInformation(
-                Topic(1),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_44)})},
-           {Topic(45),
-            SemanticTreeNodeInformation(
-                Topic(1),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_45)})},
-           {Topic(46),
-            SemanticTreeNodeInformation(
-                Topic(45),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_46)})},
-           {Topic(47),
-            SemanticTreeNodeInformation(
-                Topic(45),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_47)})},
-           {Topic(48),
-            SemanticTreeNodeInformation(
-                Topic(45),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_48)})},
-           {Topic(49),
-            SemanticTreeNodeInformation(
-                Topic(48),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_49)})},
-           {Topic(50),
-            SemanticTreeNodeInformation(
-                Topic(45),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_50)})},
-           {Topic(51),
-            SemanticTreeNodeInformation(
-                Topic(45),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_51)})},
-           {Topic(52),
-            SemanticTreeNodeInformation(
-                Topic(45),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_52)})},
-           {Topic(53),
-            SemanticTreeNodeInformation(
-                Topic(1),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_53)})},
-           {Topic(54),
-            SemanticTreeNodeInformation(
-                Topic(53),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_54)})},
-           {Topic(55),
-            SemanticTreeNodeInformation(
-                Topic(53),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_55)})},
-           {Topic(56),
-            SemanticTreeNodeInformation(
-                Topic(53),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_56)})},
-           {Topic(57),
-            SemanticTreeNodeInformation(
-                absl::nullopt,
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_57)})},
-           {Topic(58),
-            SemanticTreeNodeInformation(
-                Topic(57),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_58)})},
-           {Topic(59),
-            SemanticTreeNodeInformation(
-                Topic(57),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_59)})},
-           {Topic(60),
-            SemanticTreeNodeInformation(
-                Topic(57),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_60)})},
-           {Topic(61),
-            SemanticTreeNodeInformation(
-                Topic(57),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_61)})},
-           {Topic(62),
-            SemanticTreeNodeInformation(
-                Topic(57),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_62)})},
-           {Topic(63),
-            SemanticTreeNodeInformation(
-                Topic(62),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_63)})},
-           {Topic(64),
-            SemanticTreeNodeInformation(
-                Topic(62),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_64)})},
-           {Topic(65),
-            SemanticTreeNodeInformation(
-                Topic(62),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_65)})},
-           {Topic(66),
-            SemanticTreeNodeInformation(
-                Topic(62),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_66)})},
-           {Topic(67),
-            SemanticTreeNodeInformation(
-                Topic(62),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_67)})},
-           {Topic(68),
-            SemanticTreeNodeInformation(
-                Topic(62),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_68)})},
-           {Topic(69),
-            SemanticTreeNodeInformation(
-                Topic(62),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_69)})},
-           {Topic(70),
-            SemanticTreeNodeInformation(
-                Topic(62),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_70)})},
-           {Topic(71),
-            SemanticTreeNodeInformation(
-                Topic(62),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_71)})},
-           {Topic(72),
-            SemanticTreeNodeInformation(
-                Topic(62),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_72)})},
-           {Topic(73),
-            SemanticTreeNodeInformation(
-                Topic(62),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_73)})},
-           {Topic(74),
-            SemanticTreeNodeInformation(
-                Topic(62),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_74)})},
-           {Topic(75),
-            SemanticTreeNodeInformation(
-                Topic(62),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_75)})},
-           {Topic(76),
-            SemanticTreeNodeInformation(
-                Topic(62),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_76)})},
-           {Topic(77),
-            SemanticTreeNodeInformation(
-                Topic(76),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_77)})},
-           {Topic(78),
-            SemanticTreeNodeInformation(
-                Topic(62),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_78)})},
-           {Topic(79),
-            SemanticTreeNodeInformation(
-                Topic(57),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_79)})},
-           {Topic(80),
-            SemanticTreeNodeInformation(
-                Topic(57),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_80)})},
-           {Topic(81),
-            SemanticTreeNodeInformation(
-                Topic(57),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_81)})},
-           {Topic(82),
-            SemanticTreeNodeInformation(
-                Topic(57),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_82)})},
-           {Topic(83),
-            SemanticTreeNodeInformation(
-                Topic(57),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_83)})},
-           {Topic(84),
-            SemanticTreeNodeInformation(
-                Topic(83),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_84)})},
-           {Topic(85),
-            SemanticTreeNodeInformation(
-                Topic(57),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_85)})},
-           {Topic(86),
-            SemanticTreeNodeInformation(
-                absl::nullopt,
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_86)})},
-           {Topic(87),
-            SemanticTreeNodeInformation(
-                Topic(86),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_87)})},
-           {Topic(88),
-            SemanticTreeNodeInformation(
-                Topic(86),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_88)})},
-           {Topic(89),
-            SemanticTreeNodeInformation(
-                Topic(88),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_89)})},
-           {Topic(90),
-            SemanticTreeNodeInformation(
-                Topic(88),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_90)})},
-           {Topic(91),
-            SemanticTreeNodeInformation(
-                Topic(88),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_91)})},
-           {Topic(92),
-            SemanticTreeNodeInformation(
-                Topic(88),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_92)})},
-           {Topic(93),
-            SemanticTreeNodeInformation(
-                Topic(88),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_93)})},
-           {Topic(94),
-            SemanticTreeNodeInformation(
-                Topic(88),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_94)})},
-           {Topic(95),
-            SemanticTreeNodeInformation(
-                Topic(88),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_95)})},
-           {Topic(96),
-            SemanticTreeNodeInformation(
-                Topic(86),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_96)})},
-           {Topic(97),
-            SemanticTreeNodeInformation(
-                Topic(86),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_97)})},
-           {Topic(98),
-            SemanticTreeNodeInformation(
-                Topic(97),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_98)})},
-           {Topic(99),
-            SemanticTreeNodeInformation(
-                Topic(86),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_99)})},
-           {Topic(100),
-            SemanticTreeNodeInformation(
-                absl::nullopt,
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_100)})},
-           {Topic(101),
-            SemanticTreeNodeInformation(
-                Topic(100),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_101)})},
-           {Topic(102),
-            SemanticTreeNodeInformation(
-                Topic(100),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_102)})},
-           {Topic(103),
-            SemanticTreeNodeInformation(
-                absl::nullopt,
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_103)})},
-           {Topic(104),
-            SemanticTreeNodeInformation(
-                Topic(103),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_104)})},
-           {Topic(105),
-            SemanticTreeNodeInformation(
-                Topic(104),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_105)})},
-           {Topic(106),
-            SemanticTreeNodeInformation(
-                Topic(103),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_106)})},
-           {Topic(107),
-            SemanticTreeNodeInformation(
-                Topic(106),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_107)})},
-           {Topic(108),
-            SemanticTreeNodeInformation(
-                Topic(103),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_108)})},
-           {Topic(109),
-            SemanticTreeNodeInformation(
-                Topic(103),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_109)})},
-           {Topic(110),
-            SemanticTreeNodeInformation(
-                Topic(103),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_110)})},
-           {Topic(111),
-            SemanticTreeNodeInformation(
-                Topic(110),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_111)})},
-           {Topic(112),
-            SemanticTreeNodeInformation(
-                Topic(110),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_112)})},
-           {Topic(113),
-            SemanticTreeNodeInformation(
-                Topic(103),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_113)})},
-           {Topic(114),
-            SemanticTreeNodeInformation(
-                Topic(103),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_114)})},
-           {Topic(115),
-            SemanticTreeNodeInformation(
-                Topic(114),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_115)})},
-           {Topic(116),
-            SemanticTreeNodeInformation(
-                Topic(103),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_116)})},
-           {Topic(117),
-            SemanticTreeNodeInformation(
-                Topic(103),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_117)})},
-           {Topic(118),
-            SemanticTreeNodeInformation(
-                Topic(117),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_118)})},
-           {Topic(119),
-            SemanticTreeNodeInformation(
-                Topic(103),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_119)})},
-           {Topic(120),
-            SemanticTreeNodeInformation(
-                Topic(103),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_120)})},
-           {Topic(121),
-            SemanticTreeNodeInformation(
-                Topic(103),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_121)})},
-           {Topic(122),
-            SemanticTreeNodeInformation(
-                Topic(103),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_122)})},
-           {Topic(123),
-            SemanticTreeNodeInformation(
-                Topic(103),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_123)})},
-           {Topic(124),
-            SemanticTreeNodeInformation(
-                Topic(103),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_124)})},
-           {Topic(125),
-            SemanticTreeNodeInformation(
-                Topic(103),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_125)})},
-           {Topic(126),
-            SemanticTreeNodeInformation(
-                absl::nullopt,
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_126)})},
-           {Topic(127),
-            SemanticTreeNodeInformation(
-                Topic(126),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_127)})},
-           {Topic(128),
-            SemanticTreeNodeInformation(
-                Topic(126),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_128)})},
-           {Topic(129),
-            SemanticTreeNodeInformation(
-                Topic(126),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_129)})},
-           {Topic(130),
-            SemanticTreeNodeInformation(
-                Topic(129),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_130)})},
-           {Topic(131),
-            SemanticTreeNodeInformation(
-                Topic(129),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_131)})},
-           {Topic(132),
-            SemanticTreeNodeInformation(
-                Topic(129),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_132)})},
-           {Topic(133),
-            SemanticTreeNodeInformation(
-                Topic(129),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_133)})},
-           {Topic(134),
-            SemanticTreeNodeInformation(
-                Topic(126),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_134)})},
-           {Topic(135),
-            SemanticTreeNodeInformation(
-                Topic(126),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_135)})},
-           {Topic(136),
-            SemanticTreeNodeInformation(
-                Topic(126),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_136)})},
-           {Topic(137),
-            SemanticTreeNodeInformation(
-                Topic(126),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_137)})},
-           {Topic(138),
-            SemanticTreeNodeInformation(
-                Topic(137),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_138)})},
-           {Topic(139),
-            SemanticTreeNodeInformation(
-                Topic(126),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_139)})},
-           {Topic(140),
-            SemanticTreeNodeInformation(
-                Topic(126),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_140)})},
-           {Topic(141),
-            SemanticTreeNodeInformation(
-                Topic(140),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_141)})},
-           {Topic(142),
-            SemanticTreeNodeInformation(
-                Topic(140),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_142)})},
-           {Topic(143),
-            SemanticTreeNodeInformation(
-                Topic(140),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_143)})},
-           {Topic(144),
-            SemanticTreeNodeInformation(
-                Topic(140),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_144)})},
-           {Topic(145),
-            SemanticTreeNodeInformation(
-                Topic(140),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_145)})},
-           {Topic(146),
-            SemanticTreeNodeInformation(
-                Topic(140),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_146)})},
-           {Topic(147),
-            SemanticTreeNodeInformation(
-                Topic(140),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_147)})},
-           {Topic(148),
-            SemanticTreeNodeInformation(
-                Topic(140),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_148)})},
-           {Topic(149),
-            SemanticTreeNodeInformation(
-                absl::nullopt,
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_149)})},
-           {Topic(150),
-            SemanticTreeNodeInformation(
-                Topic(149),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_150)})},
-           {Topic(151),
-            SemanticTreeNodeInformation(
-                Topic(150),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_151)})},
-           {Topic(152),
-            SemanticTreeNodeInformation(
-                Topic(149),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_152)})},
-           {Topic(153),
-            SemanticTreeNodeInformation(
-                Topic(149),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_153)})},
-           {Topic(154),
-            SemanticTreeNodeInformation(
-                Topic(153),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_154)})},
-           {Topic(155),
-            SemanticTreeNodeInformation(
-                Topic(149),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_155)})},
-           {Topic(156),
-            SemanticTreeNodeInformation(
-                Topic(155),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_156)})},
-           {Topic(157),
-            SemanticTreeNodeInformation(
-                Topic(149),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_157)})},
-           {Topic(158),
-            SemanticTreeNodeInformation(
-                Topic(149),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_158)})},
-           {Topic(159),
-            SemanticTreeNodeInformation(
-                Topic(158),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_159)})},
-           {Topic(160),
-            SemanticTreeNodeInformation(
-                Topic(158),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_160)})},
-           {Topic(161),
-            SemanticTreeNodeInformation(
-                Topic(158),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_161)})},
-           {Topic(162),
-            SemanticTreeNodeInformation(
-                Topic(158),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_162)})},
-           {Topic(163),
-            SemanticTreeNodeInformation(
-                Topic(158),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_163)})},
-           {Topic(164),
-            SemanticTreeNodeInformation(
-                Topic(149),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_164)})},
-           {Topic(165),
-            SemanticTreeNodeInformation(
-                Topic(164),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_165)})},
-           {Topic(166),
-            SemanticTreeNodeInformation(
-                Topic(164),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_166)})},
-           {Topic(167),
-            SemanticTreeNodeInformation(
-                Topic(164),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_167)})},
-           {Topic(168),
-            SemanticTreeNodeInformation(
-                Topic(164),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_168)})},
-           {Topic(169),
-            SemanticTreeNodeInformation(
-                Topic(164),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_169)})},
-           {Topic(170),
-            SemanticTreeNodeInformation(
-                Topic(149),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_170)})},
-           {Topic(171),
-            SemanticTreeNodeInformation(
-                Topic(149),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_171)})},
-           {Topic(172),
-            SemanticTreeNodeInformation(
-                absl::nullopt,
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_172)})},
-           {Topic(173),
-            SemanticTreeNodeInformation(
-                Topic(172),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_173)})},
-           {Topic(174),
-            SemanticTreeNodeInformation(
-                Topic(173),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_174)})},
-           {Topic(175),
-            SemanticTreeNodeInformation(
-                Topic(173),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_175)})},
-           {Topic(176),
-            SemanticTreeNodeInformation(
-                Topic(175),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_176)})},
-           {Topic(177),
-            SemanticTreeNodeInformation(
-                Topic(176),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_177)})},
-           {Topic(178),
-            SemanticTreeNodeInformation(
-                Topic(173),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_178)})},
-           {Topic(179),
-            SemanticTreeNodeInformation(
-                Topic(172),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_179)})},
-           {Topic(180),
-            SemanticTreeNodeInformation(
-                absl::nullopt,
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_180)})},
-           {Topic(181),
-            SemanticTreeNodeInformation(
-                Topic(180),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_181)})},
-           {Topic(182),
-            SemanticTreeNodeInformation(
-                Topic(180),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_182)})},
-           {Topic(183),
-            SemanticTreeNodeInformation(
-                Topic(180),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_183)})},
-           {Topic(184),
-            SemanticTreeNodeInformation(
-                Topic(183),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_184)})},
-           {Topic(185),
-            SemanticTreeNodeInformation(
-                Topic(183),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_185)})},
-           {Topic(186),
-            SemanticTreeNodeInformation(
-                Topic(183),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_186)})},
-           {Topic(187),
-            SemanticTreeNodeInformation(
-                Topic(183),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_187)})},
-           {Topic(188),
-            SemanticTreeNodeInformation(
-                Topic(183),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_188)})},
-           {Topic(189),
-            SemanticTreeNodeInformation(
-                Topic(183),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_189)})},
-           {Topic(190),
-            SemanticTreeNodeInformation(
-                Topic(183),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_190)})},
-           {Topic(191),
-            SemanticTreeNodeInformation(
-                Topic(183),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_191)})},
-           {Topic(192),
-            SemanticTreeNodeInformation(
-                Topic(183),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_192)})},
-           {Topic(193),
-            SemanticTreeNodeInformation(
-                Topic(180),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_193)})},
-           {Topic(194),
-            SemanticTreeNodeInformation(
-                Topic(180),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_194)})},
-           {Topic(195),
-            SemanticTreeNodeInformation(
-                Topic(180),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_195)})},
-           {Topic(196),
-            SemanticTreeNodeInformation(
-                absl::nullopt,
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_196)})},
-           {Topic(197),
-            SemanticTreeNodeInformation(
-                Topic(196),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_197)})},
-           {Topic(198),
-            SemanticTreeNodeInformation(
-                Topic(196),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_198)})},
-           {Topic(199),
-            SemanticTreeNodeInformation(
-                Topic(196),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_199)})},
-           {Topic(200),
-            SemanticTreeNodeInformation(
-                Topic(196),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_200)})},
-           {Topic(201),
-            SemanticTreeNodeInformation(
-                Topic(196),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_201)})},
-           {Topic(202),
-            SemanticTreeNodeInformation(
-                Topic(201),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_202)})},
-           {Topic(203),
-            SemanticTreeNodeInformation(
-                Topic(201),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_203)})},
-           {Topic(204),
-            SemanticTreeNodeInformation(
-                Topic(196),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_204)})},
-           {Topic(205),
-            SemanticTreeNodeInformation(
-                Topic(196),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_205)})},
-           {Topic(206),
-            SemanticTreeNodeInformation(
-                Topic(196),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_206)})},
-           {Topic(207),
-            SemanticTreeNodeInformation(
-                absl::nullopt,
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_207)})},
-           {Topic(208),
-            SemanticTreeNodeInformation(
-                Topic(207),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_208)})},
-           {Topic(209),
-            SemanticTreeNodeInformation(
-                Topic(207),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_209)})},
-           {Topic(210),
-            SemanticTreeNodeInformation(
-                Topic(207),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_210)})},
-           {Topic(211),
-            SemanticTreeNodeInformation(
-                Topic(207),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_211)})},
-           {Topic(212),
-            SemanticTreeNodeInformation(
-                Topic(207),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_212)})},
-           {Topic(213),
-            SemanticTreeNodeInformation(
-                Topic(207),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_213)})},
-           {Topic(214),
-            SemanticTreeNodeInformation(
-                Topic(207),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_214)})},
-           {Topic(215),
-            SemanticTreeNodeInformation(
-                absl::nullopt,
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_215)})},
-           {Topic(216),
-            SemanticTreeNodeInformation(
-                Topic(215),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_216)})},
-           {Topic(217),
-            SemanticTreeNodeInformation(
-                Topic(215),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_217)})},
-           {Topic(218),
-            SemanticTreeNodeInformation(
-                Topic(215),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_218)})},
-           {Topic(219),
-            SemanticTreeNodeInformation(
-                Topic(215),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_219)})},
-           {Topic(220),
-            SemanticTreeNodeInformation(
-                Topic(215),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_220)})},
-           {Topic(221),
-            SemanticTreeNodeInformation(
-                Topic(215),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_221)})},
-           {Topic(222),
-            SemanticTreeNodeInformation(
-                Topic(215),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_222)})},
-           {Topic(223),
-            SemanticTreeNodeInformation(
-                Topic(215),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_223)})},
-           {Topic(224),
-            SemanticTreeNodeInformation(
-                Topic(215),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_224)})},
-           {Topic(225),
-            SemanticTreeNodeInformation(
-                Topic(215),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_225)})},
-           {Topic(226),
-            SemanticTreeNodeInformation(
-                absl::nullopt,
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_226)})},
-           {Topic(227),
-            SemanticTreeNodeInformation(
-                Topic(226),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_227)})},
-           {Topic(228),
-            SemanticTreeNodeInformation(
-                Topic(227),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_228)})},
-           {Topic(229),
-            SemanticTreeNodeInformation(
-                Topic(227),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_229)})},
-           {Topic(230),
-            SemanticTreeNodeInformation(
-                Topic(227),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_230)})},
-           {Topic(231),
-            SemanticTreeNodeInformation(
-                Topic(227),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_231)})},
-           {Topic(232),
-            SemanticTreeNodeInformation(
-                Topic(231),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_232)})},
-           {Topic(233),
-            SemanticTreeNodeInformation(
-                Topic(227),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_233)})},
-           {Topic(234),
-            SemanticTreeNodeInformation(
-                Topic(227),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_234)})},
-           {Topic(235),
-            SemanticTreeNodeInformation(
-                Topic(227),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_235)})},
-           {Topic(236),
-            SemanticTreeNodeInformation(
-                Topic(226),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_236)})},
-           {Topic(237),
-            SemanticTreeNodeInformation(
-                Topic(236),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_237)})},
-           {Topic(238),
-            SemanticTreeNodeInformation(
-                Topic(236),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_238)})},
-           {Topic(239),
-            SemanticTreeNodeInformation(
-                absl::nullopt,
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_239)})},
-           {Topic(240),
-            SemanticTreeNodeInformation(
-                Topic(239),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_240)})},
-           {Topic(241),
-            SemanticTreeNodeInformation(
-                Topic(239),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_241)})},
-           {Topic(242),
-            SemanticTreeNodeInformation(
-                Topic(241),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_242)})},
-           {Topic(243),
-            SemanticTreeNodeInformation(
-                absl::nullopt,
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_243)})},
-           {Topic(244),
-            SemanticTreeNodeInformation(
-                Topic(243),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_244)})},
-           {Topic(245),
-            SemanticTreeNodeInformation(
-                Topic(243),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_245)})},
-           {Topic(246),
-            SemanticTreeNodeInformation(
-                Topic(243),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_246)})},
-           {Topic(247),
-            SemanticTreeNodeInformation(
-                Topic(243),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_247)})},
-           {Topic(248),
-            SemanticTreeNodeInformation(
-                Topic(243),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_248)})},
-           {Topic(249),
-            SemanticTreeNodeInformation(
-                Topic(243),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_249)})},
-           {Topic(250),
-            SemanticTreeNodeInformation(
-                absl::nullopt,
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_250)})},
-           {Topic(251),
-            SemanticTreeNodeInformation(
-                Topic(250),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_251)})},
-           {Topic(252),
-            SemanticTreeNodeInformation(
-                Topic(250),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_252)})},
-           {Topic(253),
-            SemanticTreeNodeInformation(
-                Topic(250),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_253)})},
-           {Topic(254),
-            SemanticTreeNodeInformation(
-                absl::nullopt,
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_254)})},
-           {Topic(255),
-            SemanticTreeNodeInformation(
-                Topic(254),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_255)})},
-           {Topic(256),
-            SemanticTreeNodeInformation(
-                Topic(255),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_256)})},
-           {Topic(257),
-            SemanticTreeNodeInformation(
-                Topic(255),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_257)})},
-           {Topic(258),
-            SemanticTreeNodeInformation(
-                Topic(255),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_258)})},
-           {Topic(259),
-            SemanticTreeNodeInformation(
-                Topic(258),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_259)})},
-           {Topic(260),
-            SemanticTreeNodeInformation(
-                Topic(258),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_260)})},
-           {Topic(261),
-            SemanticTreeNodeInformation(
-                Topic(258),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_261)})},
-           {Topic(262),
-            SemanticTreeNodeInformation(
-                Topic(254),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_262)})},
-           {Topic(263),
-            SemanticTreeNodeInformation(
-                absl::nullopt,
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_263)})},
-           {Topic(264),
-            SemanticTreeNodeInformation(
-                Topic(263),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_264)})},
-           {Topic(265),
-            SemanticTreeNodeInformation(
-                Topic(263),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_265)})},
-           {Topic(266),
-            SemanticTreeNodeInformation(
-                Topic(265),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_266)})},
-           {Topic(267),
-            SemanticTreeNodeInformation(
-                Topic(265),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_267)})},
-           {Topic(268),
-            SemanticTreeNodeInformation(
-                Topic(265),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_268)})},
-           {Topic(269),
-            SemanticTreeNodeInformation(
-                Topic(265),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_269)})},
-           {Topic(270),
-            SemanticTreeNodeInformation(
-                Topic(265),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_270)})},
-           {Topic(271),
-            SemanticTreeNodeInformation(
-                Topic(263),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_271)})},
-           {Topic(272),
-            SemanticTreeNodeInformation(
-                absl::nullopt,
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_272)})},
-           {Topic(273),
-            SemanticTreeNodeInformation(
-                Topic(272),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_273)})},
-           {Topic(274),
-            SemanticTreeNodeInformation(
-                Topic(272),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_274)})},
-           {Topic(275),
-            SemanticTreeNodeInformation(
-                absl::nullopt,
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_275)})},
-           {Topic(276),
-            SemanticTreeNodeInformation(
-                Topic(275),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_276)})},
-           {Topic(277),
-            SemanticTreeNodeInformation(
-                Topic(275),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_277)})},
-           {Topic(278),
-            SemanticTreeNodeInformation(
-                Topic(275),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_278)})},
-           {Topic(279),
-            SemanticTreeNodeInformation(
-                absl::nullopt,
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_279)})},
-           {Topic(280),
-            SemanticTreeNodeInformation(
-                Topic(279),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_280)})},
-           {Topic(281),
-            SemanticTreeNodeInformation(
-                Topic(279),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_281)})},
-           {Topic(282),
-            SemanticTreeNodeInformation(
-                Topic(281),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_282)})},
-           {Topic(283),
-            SemanticTreeNodeInformation(
-                Topic(279),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_283)})},
-           {Topic(284),
-            SemanticTreeNodeInformation(
-                Topic(279),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_284)})},
-           {Topic(285),
-            SemanticTreeNodeInformation(
-                Topic(279),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_285)})},
-           {Topic(286),
-            SemanticTreeNodeInformation(
-                Topic(279),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_286)})},
-           {Topic(287),
-            SemanticTreeNodeInformation(
-                Topic(279),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_287)})},
-           {Topic(288),
-            SemanticTreeNodeInformation(
-                Topic(279),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_288)})},
-           {Topic(289),
-            SemanticTreeNodeInformation(
-                absl::nullopt,
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_289)})},
-           {Topic(290),
-            SemanticTreeNodeInformation(
-                Topic(289),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_290)})},
-           {Topic(291),
-            SemanticTreeNodeInformation(
-                Topic(289),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_291)})},
-           {Topic(292),
-            SemanticTreeNodeInformation(
-                Topic(289),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_292)})},
-           {Topic(293),
-            SemanticTreeNodeInformation(
-                Topic(292),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_293)})},
-           {Topic(294),
-            SemanticTreeNodeInformation(
-                Topic(289),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_294)})},
-           {Topic(295),
-            SemanticTreeNodeInformation(
-                Topic(289),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_295)})},
-           {Topic(296),
-            SemanticTreeNodeInformation(
-                Topic(289),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_296)})},
-           {Topic(297),
-            SemanticTreeNodeInformation(
-                Topic(289),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_297)})},
-           {Topic(298),
-            SemanticTreeNodeInformation(
-                Topic(289),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_298)})},
-           {Topic(299),
-            SemanticTreeNodeInformation(
-                absl::nullopt,
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_299)})},
-           {Topic(300),
-            SemanticTreeNodeInformation(
-                Topic(299),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_300)})},
-           {Topic(301),
-            SemanticTreeNodeInformation(
-                Topic(299),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_301)})},
-           {Topic(302),
-            SemanticTreeNodeInformation(
-                Topic(299),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_302)})},
-           {Topic(303),
-            SemanticTreeNodeInformation(
-                Topic(299),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_303)})},
-           {Topic(304),
-            SemanticTreeNodeInformation(
-                Topic(299),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_304)})},
-           {Topic(305),
-            SemanticTreeNodeInformation(
-                Topic(299),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_305)})},
-           {Topic(306),
-            SemanticTreeNodeInformation(
-                Topic(299),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_306)})},
-           {Topic(307),
-            SemanticTreeNodeInformation(
-                Topic(299),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_307)})},
-           {Topic(308),
-            SemanticTreeNodeInformation(
-                Topic(299),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_308)})},
-           {Topic(309),
-            SemanticTreeNodeInformation(
-                Topic(299),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_309)})},
-           {Topic(310),
-            SemanticTreeNodeInformation(
-                Topic(299),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_310)})},
-           {Topic(311),
-            SemanticTreeNodeInformation(
-                Topic(299),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_311)})},
-           {Topic(312),
-            SemanticTreeNodeInformation(
-                Topic(299),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_312)})},
-           {Topic(313),
-            SemanticTreeNodeInformation(
-                Topic(312),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_313)})},
-           {Topic(314),
-            SemanticTreeNodeInformation(
-                Topic(299),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_314)})},
-           {Topic(315),
-            SemanticTreeNodeInformation(
-                Topic(299),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_315)})},
-           {Topic(316),
-            SemanticTreeNodeInformation(
-                Topic(299),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_316)})},
-           {Topic(317),
-            SemanticTreeNodeInformation(
-                Topic(299),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_317)})},
-           {Topic(318),
-            SemanticTreeNodeInformation(
-                Topic(299),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_318)})},
-           {Topic(319),
-            SemanticTreeNodeInformation(
-                Topic(299),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_319)})},
-           {Topic(320),
-            SemanticTreeNodeInformation(
-                Topic(299),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_320)})},
-           {Topic(321),
-            SemanticTreeNodeInformation(
-                Topic(299),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_321)})},
-           {Topic(322),
-            SemanticTreeNodeInformation(
-                Topic(299),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_322)})},
-           {Topic(323),
-            SemanticTreeNodeInformation(
-                Topic(299),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_323)})},
-           {Topic(324),
-            SemanticTreeNodeInformation(
-                Topic(299),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_324)})},
-           {Topic(325),
-            SemanticTreeNodeInformation(
-                Topic(299),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_325)})},
-           {Topic(326),
-            SemanticTreeNodeInformation(
-                Topic(299),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_326)})},
-           {Topic(327),
-            SemanticTreeNodeInformation(
-                Topic(299),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_327)})},
-           {Topic(328),
-            SemanticTreeNodeInformation(
-                Topic(299),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_328)})},
-           {Topic(329),
-            SemanticTreeNodeInformation(
-                Topic(299),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_329)})},
-           {Topic(330),
-            SemanticTreeNodeInformation(
-                Topic(299),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_330)})},
-           {Topic(331),
-            SemanticTreeNodeInformation(
-                Topic(299),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_331)})},
-           {Topic(332),
-            SemanticTreeNodeInformation(
-                absl::nullopt,
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_332)})},
-           {Topic(333),
-            SemanticTreeNodeInformation(
-                Topic(332),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_333)})},
-           {Topic(334),
-            SemanticTreeNodeInformation(
-                Topic(332),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_334)})},
-           {Topic(335),
-            SemanticTreeNodeInformation(
-                Topic(332),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_335)})},
-           {Topic(336),
-            SemanticTreeNodeInformation(
-                Topic(332),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_336)})},
-           {Topic(337),
-            SemanticTreeNodeInformation(
-                Topic(332),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_337)})},
-           {Topic(338),
-            SemanticTreeNodeInformation(
-                Topic(332),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_338)})},
-           {Topic(339),
-            SemanticTreeNodeInformation(
-                Topic(332),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_339)})},
-           {Topic(340),
-            SemanticTreeNodeInformation(
-                Topic(332),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_340)})},
-           {Topic(341),
-            SemanticTreeNodeInformation(
-                Topic(332),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_341)})},
-           {Topic(342),
-            SemanticTreeNodeInformation(
-                Topic(332),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_342)})},
-           {Topic(343),
-            SemanticTreeNodeInformation(
-                Topic(332),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_343)})},
-           {Topic(344),
-            SemanticTreeNodeInformation(
-                Topic(332),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_344)})},
-           {Topic(345),
-            SemanticTreeNodeInformation(
-                Topic(344),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_345)})},
-           {Topic(346),
-            SemanticTreeNodeInformation(
-                Topic(344),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_346)})},
-           {Topic(347),
-            SemanticTreeNodeInformation(
-                Topic(344),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_347)})},
-           {Topic(348),
-            SemanticTreeNodeInformation(
-                Topic(344),
-                {SemanticTreeTaxonomyInformation(
-                    1, IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_348)})},
-           {Topic(349),
-            SemanticTreeNodeInformation(
-                Topic(332),
-                {SemanticTreeTaxonomyInformation(
-                    1,
-                    IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_349)})}}));
-
-  return *kSemanticTreeMap;
+bool IsTopicValid(Topic topic) {
+  int i = static_cast<int>(topic);
+  return i > 0 && i <= static_cast<int>(kNumTopics);
 }
 
-void GetDescendantTopicsHelper(
-    const Topic& topic,
-    const std::map<Topic, std::vector<Topic>>& parent_child_map,
-    std::set<Topic>& result) {
-  auto parent_child_it = parent_child_map.find(topic);
-  if (parent_child_it == parent_child_map.end()) {
-    return;
-  }
+Topic GetParentTopic(Topic topic) {
+  return Topic(kChildToParent[static_cast<int>(topic) - 1]);
+}
 
-  const std::vector<Topic>& child_topics = parent_child_it->second;
-  for (const Topic& child_topic : child_topics) {
-    if (result.contains(child_topic)) {
-      continue;
+bool IsAncestorTopic(Topic src, Topic target) {
+  while (src != kNullTopic) {
+    src = GetParentTopic(src);
+    if (src == target) {
+      return true;
     }
-    result.insert(child_topic);
-    GetDescendantTopicsHelper(child_topic, parent_child_map, result);
   }
+  return false;
 }
 }  // namespace
 
 SemanticTree::SemanticTree() = default;
 SemanticTree::~SemanticTree() = default;
 
-void SemanticTree::InitializeParentToChildTopicMap() {
-  std::map<Topic, std::vector<Topic>> parent_to_child_topic_map;
-  for (const auto& [child, node_info] : GetSemanticTreeInternal()) {
-    if (node_info.parent_topic.has_value()) {
-      parent_to_child_topic_map[node_info.parent_topic.value()].emplace_back(
-          child);
+std::vector<Topic> SemanticTree::GetDescendantTopics(const Topic& topic) {
+  std::vector<Topic> ret;
+  for (size_t i = 0; i < kNumTopics; ++i) {
+    Topic cur_topic = Topic(i + 1);
+    if (IsAncestorTopic(cur_topic, topic)) {
+      ret.push_back(cur_topic);
     }
   }
-  parent_to_child_topic_map_.emplace(std::move(parent_to_child_topic_map));
-}
-
-std::set<Topic> SemanticTree::GetDescendantTopics(const Topic& topic) {
-  if (!parent_to_child_topic_map_.has_value()) {
-    InitializeParentToChildTopicMap();
-  }
-  std::set<Topic> descendant_topics;
-  GetDescendantTopicsHelper(topic, parent_to_child_topic_map_.value(),
-                            descendant_topics);
-  return descendant_topics;
+  return ret;
 }
 
 std::vector<Topic> SemanticTree::GetAncestorTopics(const Topic& topic) {
   std::vector<Topic> ancestor_topics;
-  base::fixed_flat_map<Topic, SemanticTreeNodeInformation,
-                       kSemanticTreeSize>::const_iterator tree_node_it =
-      GetSemanticTreeInternal().find(topic);
-  while (tree_node_it != GetSemanticTreeInternal().end()) {
-    const SemanticTreeNodeInformation& node_info = tree_node_it->second;
-    if (!node_info.parent_topic.has_value()) {
-      break;
+
+  if (IsTopicValid(topic)) {
+    Topic cur_topic = GetParentTopic(topic);
+    while (cur_topic != kNullTopic) {
+      ancestor_topics.push_back(cur_topic);
+      cur_topic = GetParentTopic(cur_topic);
     }
-    ancestor_topics.emplace_back(node_info.parent_topic.value());
-    tree_node_it =
-        GetSemanticTreeInternal().find(node_info.parent_topic.value());
   }
   return ancestor_topics;
 }
@@ -1867,18 +449,11 @@ std::vector<Topic> SemanticTree::GetAncestorTopics(const Topic& topic) {
 absl::optional<int> SemanticTree::GetLocalizedNameMessageId(
     const Topic& topic,
     int taxonomy_version) {
-  base::fixed_flat_map<Topic, SemanticTreeNodeInformation,
-                       kSemanticTreeSize>::const_iterator tree_node_it =
-      GetSemanticTreeInternal().find(topic);
-  if (tree_node_it == GetSemanticTreeInternal().end()) {
+  if (!IsTopicValid(topic) || taxonomy_version != 1) {
     return absl::nullopt;
   }
-  for (const SemanticTreeTaxonomyInformation& taxonomy_info :
-       tree_node_it->second.taxonomy_information) {
-    if (taxonomy_info.taxonomy_version == taxonomy_version) {
-      return taxonomy_info.localized_name_message_id;
-    }
-  }
-  return absl::nullopt;
+  return IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_1 +
+         static_cast<int>(topic) - 1;
 }
+
 }  // namespace browsing_topics
