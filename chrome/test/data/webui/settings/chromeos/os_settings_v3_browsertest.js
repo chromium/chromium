@@ -200,12 +200,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
   mocha.run();
 });
 
-[[
-  'AccessibilityPage',
-  'os_a11y_page_tests.js',
-  {enabled: ['features::kPdfOcr']},
-],
- ['AboutPage', 'os_about_page_tests.js'],
+[['AboutPage', 'os_about_page_tests.js'],
  ['ApnDetailDialog', 'apn_detail_dialog_tests.js'],
  [
    'ApnSubpage', 'apn_subpage_tests.js',
@@ -417,6 +412,11 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['NetworkProxySection', 'network_proxy_section_test.js'],
  ['NetworkDeviceInfoDialog', 'network_device_info_dialog_test.js'],
  ['OncMojoTest', 'onc_mojo_test.js'],
+ [
+   'OsA11yPage',
+   'os_a11y_page/os_a11y_page_tests.js',
+   {enabled: ['features::kPdfOcr']},
+ ],
  [
    'OsA11yPageAudioAndCaptionsPage',
    'os_a11y_page/audio_and_captions_page_tests.js',

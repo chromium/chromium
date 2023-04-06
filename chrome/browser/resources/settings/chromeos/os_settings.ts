@@ -150,6 +150,7 @@ export {getReceiveManager, observeReceiveManager, setReceiveManagerForTesting} f
 export {dataUsageStringToEnum, NearbyShareDataUsage} from './nearby_share_page/types.js';
 export {ChromeVoxSubpageBrowserProxy, ChromeVoxSubpageBrowserProxyImpl} from './os_a11y_page/chromevox_subpage_browser_proxy.js';
 export {ManageA11yPageBrowserProxy, ManageA11yPageBrowserProxyImpl} from './os_a11y_page/manage_a11y_page_browser_proxy.js';
+export {OsSettingsA11yPageElement} from './os_a11y_page/os_a11y_page.js';
 export {OsA11yPageBrowserProxy, OsA11yPageBrowserProxyImpl} from './os_a11y_page/os_a11y_page_browser_proxy.js';
 export {SelectToSpeakSubpageBrowserProxy, SelectToSpeakSubpageBrowserProxyImpl} from './os_a11y_page/select_to_speak_subpage_browser_proxy.js';
 export {SwitchAccessSubpageBrowserProxy, SwitchAccessSubpageBrowserProxyImpl} from './os_a11y_page/switch_access_subpage_browser_proxy.js';

@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {OsA11yPageBrowserProxy} from 'chrome://os-settings/chromeos/os_settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-/** @implements {OsA11yPageBrowserProxy} */
-export class TestOsA11yPageBrowserProxy extends TestBrowserProxy {
+export class TestOsA11yPageBrowserProxy extends TestBrowserProxy implements
+    OsA11yPageBrowserProxy {
   constructor() {
     super([
       'a11yPageReady',
