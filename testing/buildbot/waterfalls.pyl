@@ -5371,17 +5371,6 @@
           'gtest_tests': 'chromium_linux_gtests',
         },
       },
-      'mac-lsan-fyi-rel': {
-        'mixins': [
-          'mac_x64',
-        ],
-        'test_suites': {
-          'gtest_tests': 'mac_lsan_fyi_gtests',
-        },
-        'args': [
-          '--test-launcher-print-test-stdio=always',
-        ],
-      },
     },
   },
   {
