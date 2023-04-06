@@ -11,6 +11,7 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -2048,7 +2049,11 @@ void DesksController::CleanUpClosedAppWindowsTask(
     // logic. However, the desk controller has waited for the app window to
     // close cleanly before this.
     if (widget) {
-      widget->CloseNow();
+      // TODO(b/276351837): Remove this ARC check once we have a better way of
+      // closing ARC++ windows.
+      if (!IsArcWindow(window)) {
+        widget->CloseNow();
+      }
     } else {
       // If the window does not have a widget, we add it to the
       // `widgetless_windows` tracker to check back on later.
