@@ -1556,6 +1556,33 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </token>
 </histogram>
 
+<histogram
+    name="ChromeOS.Inputs.TouchscreenUsage.Temporary.{TimePeriod}.{Mode}"
+    units="ms" expires_after="2024-01-31">
+<!-- TODO(b/270610982): Remove excess time periods once an optimal time period has been selected. -->
+
+  <owner>wmahon@google.com</owner>
+  <owner>chromeos-tango@google.com</owner>
+  <summary>
+    Records touchscreen usage time in {Mode}. A usage session is defined as a
+    set of subsequent touches where each touch occurred less than {TimePeriod}
+    after the previous.
+  </summary>
+  <token key="TimePeriod">
+    <variant name="1Minute"/>
+    <variant name="3Minutes"/>
+    <variant name="5Minutes"/>
+    <variant name="5Seconds"/>
+    <variant name="10Minutes"/>
+    <variant name="15Seconds"/>
+    <variant name="30Seconds"/>
+  </token>
+  <token key="Mode">
+    <variant name="ClamshellMode"/>
+    <variant name="TabletMode"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.Intents.IntentPickerAction"
     enum="IntentPickerDialogAction" expires_after="2023-10-01">
   <owner>tsergeant@chromium.org</owner>
