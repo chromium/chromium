@@ -454,18 +454,18 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
       switch (self.passwordCheckRowState) {
         case PasswordCheckRowStateDefault:   // No tap action.
         case PasswordCheckRowStateRunning:   // No tap action.
-        case PasswordCheckRowStateSafe:      // No tap action.
         case PasswordCheckRowStateDisabled:  // i tap: Show error popover.
         case PasswordCheckRowStateError:     // i tap: Show error popover.
           break;
-        // TODO(crbug.com/1406540): Handle the new states (reused, weak and
-        // dismissed).
+        case PasswordCheckRowStateSafe:
         case PasswordCheckRowStateReusedPasswords:
         case PasswordCheckRowStateWeakPasswords:
         case PasswordCheckRowStateDismissedWarnings:
         case PasswordCheckRowStateUnmutedCompromisedPasswords:  // Go to
                                                                 // password
-                                                                // issues page.
+                                                                // issues or
+                                                                // password
+                                                                // checkup page.
           base::RecordAction(
               base::UserMetricsAction("Settings.SafetyCheck.ManagePasswords"));
           base::UmaHistogramEnumeration(
@@ -473,7 +473,12 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
               SafetyCheckInteractions::kPasswordsManage);
           password_manager::LogPasswordCheckReferrer(
               password_manager::PasswordCheckReferrer::kSafetyCheck);
-          [self.handler showPasswordIssuesPage];
+
+          if (IsPasswordCheckupEnabled()) {
+            [self.handler showPasswordCheckupPage];
+          } else {
+            [self.handler showPasswordIssuesPage];
+          }
           break;
       }
       break;
@@ -507,7 +512,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
     case UpdateItemType:
       return self.updateCheckRowState == UpdateCheckRowStateOutOfDate;
     case PasswordItemType:
-      return FoundInsecurePasswords(self.passwordCheckRowState);
+      return IsPasswordCheckItemTappable(self.passwordCheckRowState);
     case CheckStartItemType:
       return YES;
     case SafeBrowsingItemType:

@@ -790,7 +790,7 @@ TEST_F(SafetyCheckMediatorTest, UpdateNonclickableUpToDate) {
   EXPECT_FALSE([mediator_ isItemClickable:updateItem]);
 }
 
-TEST_F(SafetyCheckMediatorTest, PasswordClickableUnsafe) {
+TEST_F(SafetyCheckMediatorTest, PasswordClickableUnmutedCompromisedPasswords) {
   mediator_.passwordCheckRowState =
       PasswordCheckRowStateUnmutedCompromisedPasswords;
   [mediator_ reconfigurePasswordCheckItem];
@@ -799,12 +799,75 @@ TEST_F(SafetyCheckMediatorTest, PasswordClickableUnsafe) {
   EXPECT_TRUE([mediator_ isItemClickable:passwordItem]);
 }
 
+// When in safe state, the password check item is non clickable when the
+// kIOSPasswordCheckup feature is disabled.
 TEST_F(SafetyCheckMediatorTest, PasswordNonclickableSafe) {
+  // Disable Password Checkup feature.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      password_manager::features::kIOSPasswordCheckup);
+
   mediator_.passwordCheckRowState = PasswordCheckRowStateSafe;
   [mediator_ reconfigurePasswordCheckItem];
   TableViewItem* passwordItem = [[TableViewItem alloc]
       initWithType:SafetyCheckItemType::PasswordItemType];
   EXPECT_FALSE([mediator_ isItemClickable:passwordItem]);
+}
+
+// When in safe state, the password check item is clickable when the
+// kIOSPasswordCheckup feature is enabled.
+TEST_F(SafetyCheckMediatorTest, PasswordClickableSafe) {
+  // Enable Password Checkup feature.
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kIOSPasswordCheckup);
+
+  mediator_.passwordCheckRowState = PasswordCheckRowStateSafe;
+  [mediator_ reconfigurePasswordCheckItem];
+  TableViewItem* passwordItem = [[TableViewItem alloc]
+      initWithType:SafetyCheckItemType::PasswordItemType];
+  EXPECT_TRUE([mediator_ isItemClickable:passwordItem]);
+}
+
+// Reused passwords are only available when the kIOSPasswordCheckup feature is
+// enabled.
+TEST_F(SafetyCheckMediatorTest, PasswordClickableReusedPasswords) {
+  // Enable Password Checkup feature.
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kIOSPasswordCheckup);
+
+  mediator_.passwordCheckRowState = PasswordCheckRowStateReusedPasswords;
+  [mediator_ reconfigurePasswordCheckItem];
+  TableViewItem* passwordItem = [[TableViewItem alloc]
+      initWithType:SafetyCheckItemType::PasswordItemType];
+  EXPECT_TRUE([mediator_ isItemClickable:passwordItem]);
+}
+
+// Weak passwords are only available when the kIOSPasswordCheckup feature is
+// enabled.
+TEST_F(SafetyCheckMediatorTest, PasswordClickableWeakPasswords) {
+  // Enable Password Checkup feature.
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kIOSPasswordCheckup);
+
+  mediator_.passwordCheckRowState = PasswordCheckRowStateWeakPasswords;
+  [mediator_ reconfigurePasswordCheckItem];
+  TableViewItem* passwordItem = [[TableViewItem alloc]
+      initWithType:SafetyCheckItemType::PasswordItemType];
+  EXPECT_TRUE([mediator_ isItemClickable:passwordItem]);
+}
+
+// Dismissed warnings are only available when the kIOSPasswordCheckup feature is
+// enabled.
+TEST_F(SafetyCheckMediatorTest, PasswordClickableDismissedWarnings) {
+  // Enable Password Checkup feature.
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kIOSPasswordCheckup);
+
+  mediator_.passwordCheckRowState = PasswordCheckRowStateDismissedWarnings;
+  [mediator_ reconfigurePasswordCheckItem];
+  TableViewItem* passwordItem = [[TableViewItem alloc]
+      initWithType:SafetyCheckItemType::PasswordItemType];
+  EXPECT_TRUE([mediator_ isItemClickable:passwordItem]);
 }
 
 TEST_F(SafetyCheckMediatorTest, SafeBrowsingNonClickableDefault) {
