@@ -98,13 +98,6 @@ html[screen=gaia-signin] {
   }
 }
 
-#welcome-backdrop {
-  visibility: hidden;
-}
-
-html.simon-enabled #welcome-backdrop {
-  visibility: visible;
-}
 button {
   font-family: inherit;
   outline: none;
@@ -215,16 +208,14 @@ Styles related to the `md-screen-container`
 
 #top-header-bar {
   display: none;
+  min-height: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
   z-index: 1;
 }
 
 .oobe-display #top-header-bar {
-  display: block;
-}
-
-.top-header-bar-strip {
   display: flex;
   justify-content: flex-end;
-  min-height: 0;
-  width: 100%;
 }

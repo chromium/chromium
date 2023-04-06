@@ -24,10 +24,6 @@
   <!-- OOBE Start Script -->
   <script type="module" src="./oobe.js"></script>
 </head>
-<if expr="_google_chrome">
-  <img id="welcome-backdrop" src="internal_assets/welcome_backdrop.svg" aria-hidden="true">
-</if>
-
 <custom-style>
   <style include="oobe-flex-layout-styles"></style>
 </custom-style>
@@ -48,12 +44,10 @@
     </div>
   </div>
   <div id="top-header-bar">
-    <div class="top-header-bar-strip">
-      <div id="version-labels" hidden>
-        <div id="version"></div>
-        <div id="asset-id"></div>
-        <div id="bluetooth-name" hidden></div>
-      </div>
+    <div id="version-labels" hidden>
+      <div id="version"></div>
+      <div id="asset-id"></div>
+      <div id="bluetooth-name" hidden></div>
     </div>
   </div>
 </body>
