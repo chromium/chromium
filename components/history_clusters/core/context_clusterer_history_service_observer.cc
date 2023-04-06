@@ -110,6 +110,13 @@ InProgressCluster::InProgressCluster() = default;
 InProgressCluster::~InProgressCluster() = default;
 InProgressCluster::InProgressCluster(const InProgressCluster&) = default;
 
+CachedEngagementScore::CachedEngagementScore(float score,
+                                             base::Time expiry_time)
+    : score(score), expiry_time(expiry_time) {}
+CachedEngagementScore::~CachedEngagementScore() = default;
+CachedEngagementScore::CachedEngagementScore(const CachedEngagementScore&) =
+    default;
+
 ContextClustererHistoryServiceObserver::ContextClustererHistoryServiceObserver(
     history::HistoryService* history_service,
     TemplateURLService* template_url_service,
@@ -118,6 +125,7 @@ ContextClustererHistoryServiceObserver::ContextClustererHistoryServiceObserver(
     : history_service_(history_service),
       template_url_service_(template_url_service),
       optimization_guide_decider_(optimization_guide_decider),
+      engagement_score_cache_(GetConfig().engagement_score_cache_size),
       engagement_score_provider_(engagement_score_provider),
       clock_(base::DefaultClock::GetInstance()) {
   if (history_service_) {
@@ -435,9 +443,31 @@ ContextClustererHistoryServiceObserver::CreateClusterVisit(
       ComputeURLForDisplay(cluster_visit.normalized_url);
   if (engagement_score_provider_) {
     cluster_visit.engagement_score =
-        engagement_score_provider_->GetScore(cluster_visit.normalized_url);
+        GetEngagementScore(cluster_visit.normalized_url);
   }
   return cluster_visit;
+}
+
+float ContextClustererHistoryServiceObserver::GetEngagementScore(
+    const GURL& normalized_url) {
+  if (!GetConfig().use_engagement_score_cache) {
+    return engagement_score_provider_->GetScore(normalized_url);
+  }
+
+  std::string visit_host = normalized_url.host();
+  auto it = engagement_score_cache_.Peek(visit_host);
+  if (it != engagement_score_cache_.end() &&
+      it->second.expiry_time > clock_->Now()) {
+    return it->second.score;
+  }
+
+  float score = engagement_score_provider_->GetScore(normalized_url);
+  engagement_score_cache_.Put(
+      visit_host,
+      CachedEngagementScore(
+          score,
+          clock_->Now() + GetConfig().engagement_score_cache_refresh_duration));
+  return score;
 }
 
 void ContextClustererHistoryServiceObserver::OverrideClockForTesting(

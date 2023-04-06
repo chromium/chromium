@@ -148,10 +148,14 @@ class TestSiteEngagementScoreProvider
 
   double GetScore(const GURL& url) const override {
     ++count_get_score_invocations_;
-    return 0;
+    return static_cast<double>(count_get_score_invocations_);
   }
 
   double GetTotalEngagementPoints() const override { return 1; }
+
+  size_t num_get_score_invocations() const {
+    return count_get_score_invocations_;
+  }
 
  private:
   mutable size_t count_get_score_invocations_ = 0;
@@ -255,6 +259,13 @@ class ContextClustererHistoryServiceObserverTest : public testing::Test {
 
   // Returns the current time of this task environment's mock clock.
   base::Time Now() { return task_environment_.GetMockClock()->Now(); }
+
+  // Returns the number of times engagement score provider has been invoked.
+  size_t num_get_score_invocations() const {
+    return engagement_score_provider_
+               ? engagement_score_provider_->num_get_score_invocations()
+               : 0;
+  }
 
  protected:
   std::unique_ptr<MockHistoryService> history_service_;
@@ -511,11 +522,28 @@ TEST_F(ContextClustererHistoryServiceObserverTest,
   EXPECT_FALSE(updated_cluster_visit.normalized_url.is_empty());
   EXPECT_FALSE(updated_cluster_visit.url_for_deduping.is_empty());
   EXPECT_FALSE(updated_cluster_visit.url_for_display.empty());
+  EXPECT_GT(updated_cluster_visit.engagement_score, 0);
+  EXPECT_EQ(1u, num_get_score_invocations());
 
   histogram_tester.ExpectTotalCount(
       "History.Clusters.ContextClusterer.VisitProcessingLatency.UrlVisited", 1);
   histogram_tester.ExpectTotalCount(
       "History.Clusters.ContextClusterer.DbLatency.UpdateClusterVisit", 1);
+
+  // Visit the same host. We only expect for the engagement score provider to be
+  // called once.
+  EXPECT_CALL(*history_service_,
+              UpdateClusterVisit(_, base::test::IsNotNullCallback(), _))
+      .WillOnce(
+          DoAll(SaveArg<0>(&updated_cluster_visit),
+                Invoke(history_service_.get(),
+                       &MockHistoryService::RunUpdateClusterVisitCallback)));
+
+  VisitURL(GURL("https://example.com/123"), 1, base::Time::FromTimeT(123),
+           history::kInvalidVisitID, history::kInvalidVisitID,
+           /*is_synced_visit=*/true);
+
+  EXPECT_EQ(1u, num_get_score_invocations());
 }
 
 TEST_F(ContextClustererHistoryServiceObserverTest,
