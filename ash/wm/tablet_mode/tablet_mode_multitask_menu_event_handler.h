@@ -44,8 +44,6 @@ class TabletModeMultitaskMenuEventHandler : public ui::EventHandler {
   }
 
  private:
-  bool CanProcessEvent(aura::Window* window) const;
-
   void MaybeCreateMultitaskMenu(aura::Window* active_window);
 
   // True while a drag to open or close the menu is in progress. Needed since a

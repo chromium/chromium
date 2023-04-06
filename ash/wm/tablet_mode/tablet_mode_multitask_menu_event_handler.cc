@@ -40,8 +40,8 @@ bool HitTestRect(aura::Window* window, const gfx::PointF& screen_location) {
 
 }  // namespace
 
-TabletModeMultitaskMenuEventHandler::TabletModeMultitaskMenuEventHandler() {
-  multitask_cue_ = std::make_unique<TabletModeMultitaskCue>();
+TabletModeMultitaskMenuEventHandler::TabletModeMultitaskMenuEventHandler()
+    : multitask_cue_(std::make_unique<TabletModeMultitaskCue>()) {
   Shell::Get()->AddPreTargetHandler(this);
 }
 
@@ -56,8 +56,8 @@ TabletModeMultitaskMenuEventHandler::~TabletModeMultitaskMenuEventHandler() {
 // static
 bool TabletModeMultitaskMenuEventHandler::CanShowMenu(aura::Window* window) {
   auto* window_state = WindowState::Get(window);
-  return !window_state->IsFloated() && window_state->CanMaximize() &&
-         window_state->CanResize();
+  return window_state->CanMaximize() && window_state->CanResize() &&
+         !window_state->IsFloated() && !window_state->IsPinned();
 }
 
 void TabletModeMultitaskMenuEventHandler::ShowMultitaskMenu(
@@ -148,20 +148,6 @@ void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
       }
       break;
   }
-}
-
-bool TabletModeMultitaskMenuEventHandler::CanProcessEvent(
-    aura::Window* window) const {
-  if (!window) {
-    return false;
-  }
-
-  // If the multitask menu is shown, we can always drag the menu.
-  if (multitask_menu_) {
-    return true;
-  }
-
-  return CanShowMenu(window);
 }
 
 void TabletModeMultitaskMenuEventHandler::MaybeCreateMultitaskMenu(

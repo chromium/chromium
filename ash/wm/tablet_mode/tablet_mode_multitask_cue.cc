@@ -166,7 +166,8 @@ void TabletModeMultitaskCue::OnWindowActivated(ActivationReason reason,
 void TabletModeMultitaskCue::OnPostWindowStateTypeChange(
     WindowState* window_state,
     chromeos::WindowStateType old_type) {
-  if (window_state->IsFloated()) {
+  if (!TabletModeMultitaskMenuEventHandler::CanShowMenu(
+          window_state->window())) {
     DismissCue();
   }
 }

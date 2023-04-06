@@ -15,6 +15,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_multitask_cue.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
+#include "ash/wm/window_util.h"
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -272,6 +273,17 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest,
   generator->PressTouchId(1, gfx::Point(right_bounds.CenterPoint().x(), 0));
   generator->MoveTouchId(gfx::Point(0, 150), 0);
   generator->MoveTouchId(gfx::Point(0, 150), 1);
+}
+
+// Tests that the multitask menu cannot be shown while in pinned state.
+TEST_F(TabletModeMultitaskMenuEventHandlerTest, SwipeDownInPinnedWindow) {
+  // Create and pin a window.
+  std::unique_ptr<aura::Window> pinned_window = CreateAppWindow();
+  wm::ActivateWindow(pinned_window.get());
+  window_util::PinWindow(pinned_window.get(), /*trusted=*/true);
+
+  GenerateScroll(pinned_window->bounds().CenterPoint().x(), 0, 150);
+  EXPECT_FALSE(GetMultitaskMenu());
 }
 
 // Tests that swipe down outside the menu doesn't crash. Test for b/266742428.
