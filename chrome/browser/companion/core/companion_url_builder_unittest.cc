@@ -173,15 +173,11 @@ TEST_F(CompanionUrlBuilderTest, WithTextQuery) {
   EXPECT_TRUE(net::GetValueForKeyInQuery(companion_url, "url", &value));
   EXPECT_EQ(value, page_url.spec());
 
+  EXPECT_TRUE(net::GetValueForKeyInQuery(companion_url, "q", &value));
+  EXPECT_EQ(value, kTextQuery);
+
   EXPECT_TRUE(net::GetValueForKeyInQuery(companion_url, "origin", &value));
   EXPECT_EQ(value, kOrigin);
-
-  // Deserialize the query param into protobuf.
-  companion::proto::CompanionUrlParams proto =
-      DeserializeCompanionRequest(companion_url);
-
-  EXPECT_EQ(proto.page_url(), page_url.spec());
-  EXPECT_EQ(proto.search_query(), kTextQuery);
 }
 
 TEST_F(CompanionUrlBuilderTest, WithoutTextQuery) {
@@ -192,15 +188,10 @@ TEST_F(CompanionUrlBuilderTest, WithoutTextQuery) {
   EXPECT_TRUE(net::GetValueForKeyInQuery(companion_url, "url", &value));
   EXPECT_EQ(value, page_url.spec());
 
+  EXPECT_FALSE(net::GetValueForKeyInQuery(companion_url, "q", &value));
+
   EXPECT_TRUE(net::GetValueForKeyInQuery(companion_url, "origin", &value));
   EXPECT_EQ(value, kOrigin);
-
-  // Deserialize the query param into protobuf.
-  companion::proto::CompanionUrlParams proto =
-      DeserializeCompanionRequest(companion_url);
-
-  EXPECT_EQ(proto.page_url(), page_url.spec());
-  EXPECT_EQ(proto.search_query(), std::string());
 }
 
 }  // namespace companion

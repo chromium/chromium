@@ -24,6 +24,8 @@ message PromoState {
 // URL query params for the companion URL request.
 // Next ID: 6
 message CompanionUrlParams {
+  reserved 5;
+
   // URL of the main contents. Empty, if MSBB is off.
   string page_url = 1;
 
@@ -35,8 +37,4 @@ message CompanionUrlParams {
 
   // Whether user is not already signed in and allowed to sign in.
   bool signin_allowed_and_required = 4;
-
-  // A query provided by the Chrome client via the context menu entry point
-  // "Search Google for...".
-  string search_query = 5;
 }

@@ -25,6 +25,8 @@ inline constexpr char kCompanionRequestQueryParameterKey[] = "companion_query";
 inline constexpr char kUrlQueryParameterKey[] = "url";
 // Query parameter for the Chrome WebUI origin.
 inline constexpr char kOriginQueryParameterKey[] = "origin";
+// Query parameter for the search text query.
+inline constexpr char kTextQueryParameterKey[] = "q";
 // Query parameter value for the Chrome WebUI origin. This needs to be different
 // from the WebUI URL constant because it does not include the last '/'.
 inline constexpr char kOriginQueryParameterValue[] =
@@ -78,9 +80,6 @@ GURL CompanionUrlBuilder::BuildCompanionURL(GURL page_url,
 
   url_params.set_has_msbb_enabled(is_msbb_enabled);
   url_params.set_signin_allowed_and_required(signin_delegate_->AllowedSignin());
-  if (!text_query.empty()) {
-    url_params.set_search_query(text_query);
-  }
 
   companion::proto::PromoState* promo_state = url_params.mutable_promo_state();
   promo_state->set_signin_promo_denial_count(
@@ -106,6 +105,11 @@ GURL CompanionUrlBuilder::BuildCompanionURL(GURL page_url,
   if (is_msbb_enabled && IsValidPageURLForCompanion(page_url)) {
     url_with_query_params = net::AppendOrReplaceQueryParameter(
         url_with_query_params, kUrlQueryParameterKey, page_url.spec());
+  }
+
+  if (!text_query.empty()) {
+    url_with_query_params = net::AppendOrReplaceQueryParameter(
+        url_with_query_params, kTextQueryParameterKey, text_query);
   }
 
   return url_with_query_params;
