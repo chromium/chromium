@@ -21,7 +21,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
                                 base::i18n::IsRTL() ? false : true);
   if (base::FeatureList::IsEnabled(companion::features::kSidePanelCompanion)) {
     registry->RegisterBooleanPref(
-        prefs::kSidePanelCompanionEntryPinnedToToolbar, true);
+        prefs::kSidePanelCompanionEntryPinnedToToolbar, true,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   }
 }
 
