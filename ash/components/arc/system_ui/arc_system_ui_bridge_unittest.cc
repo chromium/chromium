@@ -174,4 +174,23 @@ TEST_F(ArcSystemUIBridgeTest, SendOverlayColor) {
             system_ui_instance_.theme_style());
 }
 
+TEST_F(ArcSystemUIBridgeTest, OnConnectionReady_NeutralToSpritzConversion) {
+  base::test::ScopedFeatureList features(chromeos::features::kJelly);
+
+  EXPECT_FALSE(system_ui_instance_.dark_theme_status());
+  ash::ColorPaletteSeed seed;
+  seed.color_mode = ui::ColorProviderManager::ColorMode::kLight;
+  seed.scheme = ash::ColorScheme::kNeutral;
+  seed.seed_color = SK_ColorCYAN;
+  test_palette_->SetSeed(seed);
+
+  // When the connection is ready, bridge will read the current seed from the
+  // ColorPaletteController.
+  bridge_->OnConnectionReady();
+  EXPECT_FALSE(system_ui_instance_.dark_theme_status());
+  EXPECT_EQ(static_cast<uint32_t>(SK_ColorCYAN),
+            system_ui_instance_.source_color());
+  EXPECT_EQ(mojom::ThemeStyleType::SPRITZ, system_ui_instance_.theme_style());
+}
+
 }  // namespace arc

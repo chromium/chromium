@@ -49,9 +49,7 @@ mojom::ThemeStyleType ToThemeStyle(ash::ColorScheme scheme) {
     case ash::ColorScheme::kTonalSpot:
       return mojom::ThemeStyleType::TONAL_SPOT;
     case ash::ColorScheme::kNeutral:
-      LOG(WARNING)
-          << "Neutral not implemented in Android. Fall back to Tonal Spot.";
-      return mojom::ThemeStyleType::TONAL_SPOT;
+      return mojom::ThemeStyleType::SPRITZ;
     case ash::ColorScheme::kExpressive:
       return mojom::ThemeStyleType::EXPRESSIVE;
     case ash::ColorScheme::kVibrant:
