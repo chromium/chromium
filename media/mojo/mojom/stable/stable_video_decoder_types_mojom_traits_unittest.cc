@@ -69,4 +69,160 @@ TEST(StableVideoDecoderTypesMojomTraitsTest, NegativeDecoderBufferDuration) {
       serialized_decoder_buffer, &deserialized_decoder_buffer));
 }
 
+TEST(StableVideoDecoderTypesMojomTraitsTest, ValidSupportedVideoDecoderConfig) {
+  stable::mojom::SupportedVideoDecoderConfigPtr
+      mojom_supported_video_decoder_config =
+          stable::mojom::SupportedVideoDecoderConfig::New();
+  mojom_supported_video_decoder_config->profile_min =
+      VideoCodecProfile::AV1PROFILE_MIN;
+  mojom_supported_video_decoder_config->profile_max =
+      VideoCodecProfile::AV1PROFILE_MAX;
+  mojom_supported_video_decoder_config->coded_size_min = gfx::Size(16, 32);
+  mojom_supported_video_decoder_config->coded_size_max = gfx::Size(1280, 720);
+  mojom_supported_video_decoder_config->allow_encrypted = true;
+  mojom_supported_video_decoder_config->require_encrypted = false;
+
+  std::vector<uint8_t> serialized_supported_video_decoder_config =
+      stable::mojom::SupportedVideoDecoderConfig::Serialize(
+          &mojom_supported_video_decoder_config);
+
+  SupportedVideoDecoderConfig deserialized_supported_video_decoder_config;
+  ASSERT_TRUE(stable::mojom::SupportedVideoDecoderConfig::Deserialize(
+      serialized_supported_video_decoder_config,
+      &deserialized_supported_video_decoder_config));
+
+  EXPECT_EQ(deserialized_supported_video_decoder_config.profile_min,
+            mojom_supported_video_decoder_config->profile_min);
+  EXPECT_EQ(deserialized_supported_video_decoder_config.profile_max,
+            mojom_supported_video_decoder_config->profile_max);
+  EXPECT_EQ(deserialized_supported_video_decoder_config.coded_size_min,
+            mojom_supported_video_decoder_config->coded_size_min);
+  EXPECT_EQ(deserialized_supported_video_decoder_config.coded_size_max,
+            mojom_supported_video_decoder_config->coded_size_max);
+  EXPECT_EQ(deserialized_supported_video_decoder_config.allow_encrypted,
+            mojom_supported_video_decoder_config->allow_encrypted);
+  EXPECT_EQ(deserialized_supported_video_decoder_config.require_encrypted,
+            mojom_supported_video_decoder_config->require_encrypted);
+}
+
+TEST(StableVideoDecoderTypesMojomTraitsTest,
+     SupportedVideoConfigWithUnknownMinProfile) {
+  stable::mojom::SupportedVideoDecoderConfigPtr
+      mojom_supported_video_decoder_config =
+          stable::mojom::SupportedVideoDecoderConfig::New();
+  mojom_supported_video_decoder_config->profile_min =
+      VideoCodecProfile::VIDEO_CODEC_PROFILE_UNKNOWN;
+  mojom_supported_video_decoder_config->profile_max =
+      VideoCodecProfile::AV1PROFILE_MAX;
+  mojom_supported_video_decoder_config->coded_size_min = gfx::Size(16, 32);
+  mojom_supported_video_decoder_config->coded_size_max = gfx::Size(1280, 720);
+  mojom_supported_video_decoder_config->allow_encrypted = true;
+  mojom_supported_video_decoder_config->require_encrypted = false;
+
+  std::vector<uint8_t> serialized_supported_video_decoder_config =
+      stable::mojom::SupportedVideoDecoderConfig::Serialize(
+          &mojom_supported_video_decoder_config);
+
+  SupportedVideoDecoderConfig deserialized_supported_video_decoder_config;
+  ASSERT_FALSE(stable::mojom::SupportedVideoDecoderConfig::Deserialize(
+      serialized_supported_video_decoder_config,
+      &deserialized_supported_video_decoder_config));
+}
+
+TEST(StableVideoDecoderTypesMojomTraitsTest,
+     SupportedVideoConfigWithUnknownMaxProfile) {
+  stable::mojom::SupportedVideoDecoderConfigPtr
+      mojom_supported_video_decoder_config =
+          stable::mojom::SupportedVideoDecoderConfig::New();
+  mojom_supported_video_decoder_config->profile_min =
+      VideoCodecProfile::AV1PROFILE_MIN;
+  mojom_supported_video_decoder_config->profile_max =
+      VideoCodecProfile::VIDEO_CODEC_PROFILE_UNKNOWN;
+  mojom_supported_video_decoder_config->coded_size_min = gfx::Size(16, 32);
+  mojom_supported_video_decoder_config->coded_size_max = gfx::Size(1280, 720);
+  mojom_supported_video_decoder_config->allow_encrypted = true;
+  mojom_supported_video_decoder_config->require_encrypted = false;
+
+  std::vector<uint8_t> serialized_supported_video_decoder_config =
+      stable::mojom::SupportedVideoDecoderConfig::Serialize(
+          &mojom_supported_video_decoder_config);
+
+  SupportedVideoDecoderConfig deserialized_supported_video_decoder_config;
+  ASSERT_FALSE(stable::mojom::SupportedVideoDecoderConfig::Deserialize(
+      serialized_supported_video_decoder_config,
+      &deserialized_supported_video_decoder_config));
+}
+
+TEST(StableVideoDecoderTypesMojomTraitsTest,
+     SupportedVideoConfigWithMaxProfileLessThanMinProfile) {
+  stable::mojom::SupportedVideoDecoderConfigPtr
+      mojom_supported_video_decoder_config =
+          stable::mojom::SupportedVideoDecoderConfig::New();
+  mojom_supported_video_decoder_config->profile_min =
+      VideoCodecProfile::AV1PROFILE_MAX;
+  mojom_supported_video_decoder_config->profile_max =
+      VideoCodecProfile::AV1PROFILE_MIN;
+  mojom_supported_video_decoder_config->coded_size_min = gfx::Size(16, 32);
+  mojom_supported_video_decoder_config->coded_size_max = gfx::Size(1280, 720);
+  mojom_supported_video_decoder_config->allow_encrypted = true;
+  mojom_supported_video_decoder_config->require_encrypted = false;
+
+  std::vector<uint8_t> serialized_supported_video_decoder_config =
+      stable::mojom::SupportedVideoDecoderConfig::Serialize(
+          &mojom_supported_video_decoder_config);
+
+  SupportedVideoDecoderConfig deserialized_supported_video_decoder_config;
+  ASSERT_FALSE(stable::mojom::SupportedVideoDecoderConfig::Deserialize(
+      serialized_supported_video_decoder_config,
+      &deserialized_supported_video_decoder_config));
+}
+
+TEST(StableVideoDecoderTypesMojomTraitsTest,
+     SupportedVideoConfigWithMaxCodedSizeLessThanMinCodedSize) {
+  stable::mojom::SupportedVideoDecoderConfigPtr
+      mojom_supported_video_decoder_config =
+          stable::mojom::SupportedVideoDecoderConfig::New();
+  mojom_supported_video_decoder_config->profile_min =
+      VideoCodecProfile::AV1PROFILE_MIN;
+  mojom_supported_video_decoder_config->profile_max =
+      VideoCodecProfile::AV1PROFILE_MAX;
+  mojom_supported_video_decoder_config->coded_size_min = gfx::Size(1280, 720);
+  mojom_supported_video_decoder_config->coded_size_max = gfx::Size(16, 32);
+  mojom_supported_video_decoder_config->allow_encrypted = true;
+  mojom_supported_video_decoder_config->require_encrypted = false;
+
+  std::vector<uint8_t> serialized_supported_video_decoder_config =
+      stable::mojom::SupportedVideoDecoderConfig::Serialize(
+          &mojom_supported_video_decoder_config);
+
+  SupportedVideoDecoderConfig deserialized_supported_video_decoder_config;
+  ASSERT_FALSE(stable::mojom::SupportedVideoDecoderConfig::Deserialize(
+      serialized_supported_video_decoder_config,
+      &deserialized_supported_video_decoder_config));
+}
+
+TEST(StableVideoDecoderTypesMojomTraitsTest,
+     SupportedVideoDecoderConfigWithInconsistentEncryptionFields) {
+  stable::mojom::SupportedVideoDecoderConfigPtr
+      mojom_supported_video_decoder_config =
+          stable::mojom::SupportedVideoDecoderConfig::New();
+  mojom_supported_video_decoder_config->profile_min =
+      VideoCodecProfile::AV1PROFILE_MIN;
+  mojom_supported_video_decoder_config->profile_max =
+      VideoCodecProfile::AV1PROFILE_MAX;
+  mojom_supported_video_decoder_config->coded_size_min = gfx::Size(16, 32);
+  mojom_supported_video_decoder_config->coded_size_max = gfx::Size(1280, 720);
+  mojom_supported_video_decoder_config->allow_encrypted = false;
+  mojom_supported_video_decoder_config->require_encrypted = true;
+
+  std::vector<uint8_t> serialized_supported_video_decoder_config =
+      stable::mojom::SupportedVideoDecoderConfig::Serialize(
+          &mojom_supported_video_decoder_config);
+
+  SupportedVideoDecoderConfig deserialized_supported_video_decoder_config;
+  ASSERT_FALSE(stable::mojom::SupportedVideoDecoderConfig::Deserialize(
+      serialized_supported_video_decoder_config,
+      &deserialized_supported_video_decoder_config));
+}
+
 }  // namespace media
