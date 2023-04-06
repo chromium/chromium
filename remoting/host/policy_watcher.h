@@ -173,15 +173,15 @@ class PolicyWatcher : public policy::PolicyService::Observer {
   // The set of policy values to use if a policy has not been explicitly set.
   base::Value::Dict default_values_;
 
-  raw_ptr<policy::PolicyService> policy_service_;
-
   // Order of fields below is important to ensure destruction takes object
   // dependencies into account:
+  // - |policy_service_| may be |owned_policy_service_|.
   // - |owned_policy_service_| uses |owned_policy_provider_|
   // - |owned_policy_provider_| uses |owned_schema_registry_|
   std::unique_ptr<policy::SchemaRegistry> owned_schema_registry_;
   std::unique_ptr<policy::ConfigurationPolicyProvider> owned_policy_provider_;
   std::unique_ptr<policy::PolicyService> owned_policy_service_;
+  raw_ptr<policy::PolicyService> policy_service_;
 
 #if BUILDFLAG(IS_WIN)
   // |policy_key_| relies on |policy_service_| to notify the host of policy
