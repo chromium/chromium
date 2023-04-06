@@ -19,6 +19,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/tag.h"
+#include "chrome/updater/test_scope.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -83,6 +84,14 @@ TEST(Util, GetTagArgsForCommandLine) {
   EXPECT_EQ(result.tag_args->apps[0].app_name, "Chrome");
   EXPECT_EQ(result.tag_args->apps[0].encoded_installer_data,
             "%7B%22homepage%22%3A%22http%3A%2F%2Fwww.google.com%");
+}
+
+TEST(Util, GetCrashDatabasePath) {
+  absl::optional<base::FilePath> crash_database_path(
+      GetCrashDatabasePath(GetTestScope()));
+  ASSERT_TRUE(crash_database_path);
+  EXPECT_EQ(crash_database_path->BaseName().value(),
+            FILE_PATH_LITERAL("Crashpad"));
 }
 
 }  // namespace updater

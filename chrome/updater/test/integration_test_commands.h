@@ -64,6 +64,7 @@ class IntegrationTestCommands
   virtual void ExpectVersionNotActive(const std::string& version) const = 0;
   virtual void Uninstall() const = 0;
   virtual void InstallApp(const std::string& app_id) const = 0;
+  virtual void ExpectNoCrashes() const = 0;
   virtual void CopyLog() const = 0;
   virtual void SetupFakeUpdaterHigherVersion() const = 0;
   virtual void SetupFakeUpdaterLowerVersion() const = 0;

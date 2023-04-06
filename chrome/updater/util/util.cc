@@ -136,18 +136,18 @@ absl::optional<base::FilePath> GetUpdaterExecutablePath(UpdaterScope scope) {
   return path->Append(GetExecutableRelativePath());
 }
 
+absl::optional<base::FilePath> GetCrashDatabasePath(UpdaterScope scope) {
+  const absl::optional<base::FilePath> path(
+      GetVersionedInstallDirectory(scope));
+  return path ? absl::optional<base::FilePath>(path->AppendASCII("Crashpad"))
+              : absl::nullopt;
+}
+
 absl::optional<base::FilePath> EnsureCrashDatabasePath(UpdaterScope scope) {
-  const absl::optional<base::FilePath> path =
-      GetVersionedInstallDirectory(scope);
-  if (!path) {
-    return absl::nullopt;
-  }
-  base::FilePath database_path = path->AppendASCII("Crashpad");
-  if (!base::CreateDirectory(database_path)) {
-    LOG(ERROR) << "Failed to create path to Crashpad database.";
-    return absl::nullopt;
-  }
-  return database_path;
+  const absl::optional<base::FilePath> database_path(
+      GetCrashDatabasePath(scope));
+  return database_path && base::CreateDirectory(*database_path) ? database_path
+                                                                : absl::nullopt;
 }
 
 TagParsingResult::TagParsingResult() = default;

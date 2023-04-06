@@ -79,6 +79,10 @@ absl::optional<base::FilePath> GetUpdaterExecutablePath(UpdaterScope scope);
 // "updater.exe" on Win.
 base::FilePath GetExecutableRelativePath();
 
+// Returns the path to the crashpad database directory. The directory is not
+// created if it does not exist.
+absl::optional<base::FilePath> GetCrashDatabasePath(UpdaterScope scope);
+
 // Returns the path to the crashpad database, creating it if it does not exist.
 absl::optional<base::FilePath> EnsureCrashDatabasePath(UpdaterScope scope);
 

@@ -30,6 +30,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
  public:
   IntegrationTestCommandsUser() = default;
 
+  void ExpectNoCrashes() const override {
+    updater::test::ExpectNoCrashes(updater_scope_);
+  }
+
   void PrintLog() const override { updater::test::PrintLog(updater_scope_); }
 
   void CopyLog() const override {
