@@ -994,6 +994,7 @@ extern const char kRestartInBackground[];
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 extern const char kAnimationPolicy[];
 extern const char kSecurityKeyPermitAttestation[];
+extern const char kCWSInfoTimestamp[];
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

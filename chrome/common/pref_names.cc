@@ -2941,6 +2941,13 @@ const char kAnimationPolicy[] = "settings.a11y.animation_policy";
 // A list of URLs (for U2F) or domains (for webauthn) that automatically permit
 // direct attestation of a Security Key.
 const char kSecurityKeyPermitAttestation[] = "securitykey.permit_attestation";
+
+// Records the last time the CWS Info Service downloaded information about
+// currently installed extensions from the Chrome Web Store, successfully
+// compared it with the information stored in extension_prefs and updated the
+// latter if necessary. The timestamp therefore represents the "freshness" of
+// the CWS information saved.
+const char kCWSInfoTimestamp[] = "extensions.cws_info_timestamp";
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

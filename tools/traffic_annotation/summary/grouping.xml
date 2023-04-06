@@ -289,6 +289,7 @@ after discussions on the right group.
       <annotation id="bookmarks_image_fetcher"/>
       <annotation id="screensaver_image_downloader"/>
       <annotation id="back_navigation_cache_query"/>
+      <annotation id="cws_info_service"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
