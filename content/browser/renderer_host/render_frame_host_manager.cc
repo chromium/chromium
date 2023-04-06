@@ -1962,6 +1962,8 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
           UrlInfo(UrlInfoInit(destination_effective_url)
                       .WithOriginIsolationRequest(
                           destination_url_info.origin_isolation_request)
+                      .WithCOOPSiteIsolation(
+                          destination_url_info.requests_coop_isolation())
                       .WithWebExposedIsolationInfo(
                           destination_url_info.web_exposed_isolation_info)))) {
     return BrowsingContextGroupSwap::CreateSecuritySwap();

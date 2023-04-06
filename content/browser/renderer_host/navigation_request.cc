@@ -3723,9 +3723,6 @@ UrlInfo NavigationRequest::GetUrlInfo() {
         UrlInfo::OriginIsolationRequest::kRequiresOriginKeyedProcess;
   }
 
-  if (ShouldRequestSiteIsolationForCOOP())
-    isolation_flags |= UrlInfo::OriginIsolationRequest::kCOOP;
-
   auto isolation_request =
       static_cast<UrlInfo::OriginIsolationRequest>(isolation_flags);
 
@@ -3734,6 +3731,7 @@ UrlInfo NavigationRequest::GetUrlInfo() {
 
   UrlInfoInit url_info_init(GetURL());
   url_info_init.WithOriginIsolationRequest(isolation_request)
+      .WithCOOPSiteIsolation(ShouldRequestSiteIsolationForCOOP())
       .WithWebExposedIsolationInfo(web_exposed_isolation_info)
       .WithIsPdf(is_pdf_);
 

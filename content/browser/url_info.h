@@ -60,9 +60,6 @@ struct CONTENT_EXPORT UrlInfo {
     // kOriginAgentCluster is,  then OAC will be logical only, i.e. implemented
     // in the renderer via a separate AgentCluster.
     kRequiresOriginKeyedProcess = (1 << 1),
-    // The Cross-Origin-Opener-Policy header has triggered a hint to turn on
-    // site isolation for `url`'s site.
-    kCOOP = (1 << 2)
   };
 
   // For isolated sandboxed iframes, when per-document mode is used, we
@@ -96,11 +93,11 @@ struct CONTENT_EXPORT UrlInfo {
             OriginIsolationRequest::kRequiresOriginKeyedProcess);
   }
 
-  // Returns whether this UrlInfo is requesting isolation in response to the
-  // Cross-Origin-Opener-Policy header.
-  bool requests_coop_isolation() const {
-    return (origin_isolation_request & OriginIsolationRequest::kCOOP);
-  }
+  // Returns whether this UrlInfo is requesting site isolation for its site in
+  // response to the Cross-Origin-Opener-Policy header. See
+  // https://chromium.googlesource.com/chromium/src/+/main/docs/process_model_and_site_isolation.md#Partial-Site-Isolation
+  // for details.
+  bool requests_coop_isolation() const { return is_coop_isolation_requested; }
 
   // Returns whether this UrlInfo is for a page that should be cross-origin
   // isolated.
@@ -109,13 +106,17 @@ struct CONTENT_EXPORT UrlInfo {
   GURL url;
 
   // This field indicates whether the URL is requesting additional process
-  // isolation during the current navigation (e.g., via OriginAgentCluster or
-  // COOP response headers).  If URL did not request any isolation, this will
-  // be set to kNone. This field is only relevant (1) during a navigation
-  // request, (2) up to the point where the origin is placed into a
-  // SiteInstance.  Other than these cases, this should be set to kNone.
+  // isolation during the current navigation (e.g., via OriginAgentCluster).  If
+  // URL did not request any isolation, this will be set to kNone. This field is
+  // only relevant (1) during a navigation request, (2) up to the point where
+  // the origin is placed into a SiteInstance.  Other than these cases, this
+  // should be set to kNone.
   OriginIsolationRequest origin_isolation_request =
       OriginIsolationRequest::kNone;
+
+  // True if the Cross-Origin-Opener-Policy header has triggered a hint to turn
+  // on site isolation for `url`'s site.
+  bool is_coop_isolation_requested = false;
 
   // This allows overriding the origin of |url| for process assignment purposes
   // in certain very special cases. Namely, if |url| represents a resource
@@ -196,6 +197,7 @@ class CONTENT_EXPORT UrlInfoInit {
 
   UrlInfoInit& WithOriginIsolationRequest(
       UrlInfo::OriginIsolationRequest origin_isolation_request);
+  UrlInfoInit& WithCOOPSiteIsolation(bool requests_coop_isolation);
   UrlInfoInit& WithOrigin(const url::Origin& origin);
   UrlInfoInit& WithSandbox(bool is_sandboxed);
   UrlInfoInit& WithUniqueSandboxId(int unique_sandbox_id);
@@ -216,6 +218,7 @@ class CONTENT_EXPORT UrlInfoInit {
   GURL url_;
   UrlInfo::OriginIsolationRequest origin_isolation_request_ =
       UrlInfo::OriginIsolationRequest::kNone;
+  bool requests_coop_isolation_ = false;
   absl::optional<url::Origin> origin_;
   bool is_sandboxed_ = false;
   int64_t unique_sandbox_id_ = UrlInfo::kInvalidUniqueSandboxId;

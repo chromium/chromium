@@ -18,6 +18,7 @@ UrlInfo::UrlInfo(const UrlInfo& other) = default;
 UrlInfo::UrlInfo(const UrlInfoInit& init)
     : url(init.url_),
       origin_isolation_request(init.origin_isolation_request_),
+      is_coop_isolation_requested(init.requests_coop_isolation_),
       origin(init.origin_),
       is_sandboxed(init.is_sandboxed_),
       unique_sandbox_id(init.unique_sandbox_id_),
@@ -54,6 +55,7 @@ UrlInfoInit::UrlInfoInit(const GURL& url) : url_(url) {}
 UrlInfoInit::UrlInfoInit(const UrlInfo& base)
     : url_(base.url),
       origin_isolation_request_(base.origin_isolation_request),
+      requests_coop_isolation_(base.is_coop_isolation_requested),
       origin_(base.origin),
       is_sandboxed_(base.is_sandboxed),
       unique_sandbox_id_(base.unique_sandbox_id),
@@ -66,6 +68,11 @@ UrlInfoInit::~UrlInfoInit() = default;
 UrlInfoInit& UrlInfoInit::WithOriginIsolationRequest(
     UrlInfo::OriginIsolationRequest origin_isolation_request) {
   origin_isolation_request_ = origin_isolation_request;
+  return *this;
+}
+
+UrlInfoInit& UrlInfoInit::WithCOOPSiteIsolation(bool requests_coop_isolation) {
+  requests_coop_isolation_ = requests_coop_isolation;
   return *this;
 }
 
