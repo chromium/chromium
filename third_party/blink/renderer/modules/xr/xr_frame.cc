@@ -209,9 +209,6 @@ XRCPUDepthInformation* XRFrame::getDepthInformation(
   return session_->GetCpuDepthInformation(this, exception_state);
 }
 
-// Return an XRPose that has a transform of basespace_from_space, while
-// accounting for the base pose matrix of this frame. If computing a transform
-// isn't possible, return nullptr.
 XRPose* XRFrame::getPose(XRSpace* space,
                          XRSpace* basespace,
                          ExceptionState& exception_state) {
