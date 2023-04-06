@@ -599,13 +599,6 @@ WebUIController* NewWebUI<ash::eche_app::EcheAppUI>(WebUI* web_ui,
 }
 
 template <>
-WebUIController* NewWebUI<ash::FilesInternalsUI>(WebUI* web_ui,
-                                                 const GURL& url) {
-  return new ash::FilesInternalsUI(
-      web_ui, std::make_unique<ChromeFilesInternalsUIDelegate>(web_ui));
-}
-
-template <>
 WebUIController* NewWebUI<ash::OSFeedbackUI>(WebUI* web_ui, const GURL& url) {
   Profile* profile = Profile::FromWebUI(web_ui);
   return new ash::OSFeedbackUI(
@@ -993,8 +986,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<ash::ConnectivityDiagnosticsUI>;
   if (url.host_piece() == ash::kChromeUIGuestOSInstallerHost)
     return &NewWebUI<ash::GuestOSInstallerUI>;
-  if (url.host_piece() == ash::kChromeUIFilesInternalsHost)
-    return &NewWebUI<ash::FilesInternalsUI>;
   if (url.host_piece() == ash::kChromeUIHelpAppHost)
     return &NewComponentUI<ash::HelpAppUI, ash::ChromeHelpAppUIDelegate>;
   if (url.host_piece() == chrome::kChromeUIMobileSetupHost)
