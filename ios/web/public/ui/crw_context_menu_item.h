@@ -25,6 +25,9 @@
 // Callback to execute on user tap.
 @property(readonly, strong) ProceduralBlock action;
 
+// A sub menu to display, can be nil.
+@property(readonly, strong) NSArray<CRWContextMenuItem*>* subMenu;
+
 // Static ctor helpers.
 + (CRWContextMenuItem*)itemWithID:(NSString*)ID
                             title:(NSString*)title
@@ -34,6 +37,11 @@
                             title:(NSString*)title
                             image:(UIImage*)image
                            action:(ProceduralBlock)action;
+
++ (CRWContextMenuItem*)itemWithID:(NSString*)ID
+                            title:(NSString*)title
+                          subMenu:(NSArray<CRWContextMenuItem*>*)subMenu;
+
 @end
 
 #endif  // IOS_WEB_PUBLIC_UI_CRW_CONTEXT_MENU_ITEM_H_
