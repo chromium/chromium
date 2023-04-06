@@ -84,7 +84,7 @@ var PersonalizationAppComponentBrowserTest = class extends PolymerTest {
 ].forEach(test => registerTest(...test));
 
 function registerTest(testName, module, caseName) {
-  const className = `PersonalizationApp${testName}`;
+  const className = `PersonalizationAppComponent${testName}`;
   this[className] = class extends PersonalizationAppComponentBrowserTest {
     /** @override */
     get browsePreload() {
