@@ -33,3 +33,6 @@
 # https://crbug.com/1417242
 -org.chromium.content.browser.accessibility.WebContentsAccessibilityTreeTest.test_listMarkerStylesCustom
 -org.chromium.content.browser.accessibility.WebContentsAccessibilityTreeTest.test_scrollableOverflow
+
+# https://crbug.com/1431322
+-org.chromium.content.browser.accessibility.WebContentsAccessibilityTest.testNodeInfoCache_BoundingBoxUpdatesOnWindowResize
