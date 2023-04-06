@@ -49,6 +49,7 @@ public class AddressEditor extends EditorBase<AutofillAddress> {
     private final Map<Integer, EditorFieldModel> mAddressFields = new HashMap<>();
     private final Set<CharSequence> mPhoneNumbers = new HashSet<>();
     private final boolean mSaveToDisk;
+    private final boolean mIsUpdate;
     private final boolean mIsMigrationToAccount;
     private final PhoneNumberUtil.CountryAwareFormatTextWatcher mPhoneFormatter;
     private final CountryAwarePhoneNumberValidator mPhoneValidator;
@@ -110,11 +111,13 @@ public class AddressEditor extends EditorBase<AutofillAddress> {
      * Builds an address editor.
      *
      * @param saveToDisk Whether to save changes to disk after editing.
+     * @param isUpdate Whether an existing address profile is being edited.
      * @param isMigrationToAccount Whether this editor is shown during address profile migration to
      *         Google account.
      */
-    public AddressEditor(boolean saveToDisk, boolean isMigrationToAccount) {
+    public AddressEditor(boolean saveToDisk, boolean isUpdate, boolean isMigrationToAccount) {
         mSaveToDisk = saveToDisk;
+        mIsUpdate = isUpdate;
         mIsMigrationToAccount = isMigrationToAccount;
         mPhoneFormatter = new PhoneNumberUtil.CountryAwareFormatTextWatcher();
         mPhoneValidator = new CountryAwarePhoneNumberValidator(true);

@@ -75,7 +75,7 @@ public class SaveUpdateAddressProfilePrompt {
 
         mEditorDialog = new EditorDialog(activity, /*deleteRunnable=*/null, browserProfile);
         mEditorDialog.setShouldTriggerDoneCallbackBeforeCloseAnimation(true);
-        mAddressEditor = new AddressEditor(/*saveToDisk=*/false, isMigrationToAccount);
+        mAddressEditor = new AddressEditor(/*saveToDisk=*/false, isUpdate, isMigrationToAccount);
         mAddressEditor.setEditorDialog(mEditorDialog);
         AutofillAddress autofillAddress = new AutofillAddress(activity, autofillProfile);
         mDialogView.findViewById(R.id.edit_button).setOnClickListener(v -> {
