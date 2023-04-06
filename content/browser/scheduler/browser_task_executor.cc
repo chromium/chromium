@@ -12,7 +12,6 @@
 #include "base/task/deferred_sequenced_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_traits_extension.h"
 #include "base/threading/threading_features.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -81,7 +80,7 @@ BaseBrowserTaskExecutor::~BaseBrowserTaskExecutor() = default;
 
 scoped_refptr<base::SingleThreadTaskRunner>
 BaseBrowserTaskExecutor::GetTaskRunner(BrowserThread::ID identifier,
-                                       const base::TaskTraits& traits) const {
+                                       const BrowserTaskTraits& traits) const {
   const QueueType queue_type = GetQueueType(traits);
 
   switch (identifier) {
@@ -98,41 +97,30 @@ BaseBrowserTaskExecutor::GetTaskRunner(BrowserThread::ID identifier,
 
 // static
 QueueType BaseBrowserTaskExecutor::GetQueueType(
-    const base::TaskTraits& traits) {
-  if (traits.extension_id() == BrowserTaskTraitsExtension::kExtensionId) {
-    const BrowserTaskTraitsExtension extension =
-        traits.GetExtension<BrowserTaskTraitsExtension>();
+    const BrowserTaskTraits& traits) {
+  switch (traits.task_type()) {
+    case BrowserTaskType::kUserInput:
+      if (base::FeatureList::IsEnabled(
+              features::kBrowserPrioritizeInputQueue)) {
+        return QueueType::kUserInput;
+      }
+      // Defer to traits.priority() below.
+      break;
 
-    const BrowserTaskType task_type = extension.task_type();
-    DCHECK_LT(task_type, BrowserTaskType::kBrowserTaskType_Last);
+    case BrowserTaskType::kNavigationNetworkResponse:
+      if (base::FeatureList::IsEnabled(
+              ::features::kNavigationNetworkResponseQueue)) {
+        return QueueType::kNavigationNetworkResponse;
+      }
+      // Defer to traits.priority() below.
+      break;
 
-    switch (task_type) {
-      case BrowserTaskType::kUserInput:
-        if (base::FeatureList::IsEnabled(
-                features::kBrowserPrioritizeInputQueue)) {
-          return QueueType::kUserInput;
-        }
-        // Defer to traits.priority() below.
-        break;
+    case BrowserTaskType::kServiceWorkerStorageControlResponse:
+      return QueueType::kServiceWorkerStorageControlResponse;
 
-      case BrowserTaskType::kNavigationNetworkResponse:
-        if (base::FeatureList::IsEnabled(
-                ::features::kNavigationNetworkResponseQueue)) {
-          return QueueType::kNavigationNetworkResponse;
-        }
-        // Defer to traits.priority() below.
-        break;
-
-      case BrowserTaskType::kServiceWorkerStorageControlResponse:
-        return QueueType::kServiceWorkerStorageControlResponse;
-
-      case BrowserTaskType::kDefault:
-        // Defer to traits.priority() below.
-        break;
-
-      case BrowserTaskType::kBrowserTaskType_Last:
-        NOTREACHED();
-    }
+    case BrowserTaskType::kDefault:
+      // Defer to traits.priority() below.
+      break;
   }
 
   switch (traits.priority()) {

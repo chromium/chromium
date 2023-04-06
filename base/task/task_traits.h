@@ -15,7 +15,6 @@
 #include "base/base_export.h"
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/task/task_traits_extension.h"
 #include "base/traits_bag.h"
 #include "build/build_config.h"
 
@@ -145,8 +144,8 @@ enum class ThreadPolicy : uint8_t {
   // - The TaskPriority is BEST_EFFORT.
   // - Background thread priority is supported by the platform (see
   //   environment_config_unittest.cc).
-  // - No extension trait (e.g. BrowserThread) is used.
-  // - ThreadPoolInstance::Shutdown() hadn't been called when the task started running.
+  // - ThreadPoolInstance::Shutdown() hadn't been called when the task started
+  // running.
   //       (Remaining TaskShutdownBehavior::BLOCK_SHUTDOWN tasks use foreground
   //        threads during shutdown regardless of TaskPriority)
   // Otherwise, it runs on a normal priority thread.
@@ -234,13 +233,11 @@ class BASE_EXPORT TaskTraits {
   // };
   template <class... ArgTypes,
             class CheckArgumentsAreValid = std::enable_if_t<
-                trait_helpers::AreValidTraits<ValidTrait, ArgTypes...>::value ||
-                trait_helpers::AreValidTraitsForExtension<ArgTypes...>::value>>
+                trait_helpers::AreValidTraits<ValidTrait, ArgTypes...>::value>>
+  // TaskTraits are intended to be implicitly-constructable (eg {}).
+  // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr TaskTraits(ArgTypes... args)
-      : extension_(trait_helpers::GetTaskTraitsExtension(
-            trait_helpers::AreValidTraits<ValidTrait, ArgTypes...>{},
-            args...)),
-        priority_(
+      : priority_(
             trait_helpers::GetEnum<TaskPriority, TaskPriority::USER_BLOCKING>(
                 args...)),
         shutdown_behavior_(
@@ -268,9 +265,9 @@ class BASE_EXPORT TaskTraits {
 
   // TODO(eseckler): Default the comparison operator once C++20 arrives.
   bool operator==(const TaskTraits& other) const {
-    static_assert(sizeof(TaskTraits) == 14,
+    static_assert(sizeof(TaskTraits) == 5,
                   "Update comparison operator when TaskTraits change");
-    return extension_ == other.extension_ && priority_ == other.priority_ &&
+    return priority_ == other.priority_ &&
            shutdown_behavior_ == other.shutdown_behavior_ &&
            thread_policy_ == other.thread_policy_ &&
            may_block_ == other.may_block_ &&
@@ -312,23 +309,12 @@ class BASE_EXPORT TaskTraits {
     return with_base_sync_primitives_;
   }
 
-  uint8_t extension_id() const { return extension_.extension_id; }
-
-  // Access the extension data by parsing it into the provided extension type.
-  // See task_traits_extension.h for requirements on the extension type.
-  template <class TaskTraitsExtension>
-  const TaskTraitsExtension GetExtension() const {
-    DCHECK_EQ(TaskTraitsExtension::kExtensionId, extension_.extension_id);
-    return TaskTraitsExtension::Parse(extension_);
-  }
-
  private:
   // This bit is set in |priority_|, |shutdown_behavior_| and |thread_policy_|
   // when the value was set explicitly.
   static constexpr uint8_t kIsExplicitFlag = 0x80;
 
   // Ordered for packing.
-  TaskTraitsExtensionStorage extension_;
   TaskPriority priority_;
   uint8_t shutdown_behavior_;
   uint8_t thread_policy_;

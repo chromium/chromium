@@ -21,8 +21,7 @@
 // The BrowserTaskExecutor's job is to map base::TaskTraits to actual task
 // queues for the browser process.
 //
-// We actually have three TaskExecutors:
-// * BrowserTaskExecutor registered for BrowserTaskTraitsExtension.
+// We actually have two TaskExecutors:
 // * BrowserTaskExecutor::UIThreadExecutor registered with UI thread TLS.
 // * BrowserTaskExecutor::IOThreadExecutor registered with IO thread TLS.
 //
@@ -44,14 +43,14 @@ class CONTENT_EXPORT BaseBrowserTaskExecutor {
   // |traits|) -- ref. crbug.com/1026641.
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
       BrowserThread::ID identifier,
-      const base::TaskTraits& traits) const;
+      const BrowserTaskTraits& traits) const;
 
   // Helper to match a QueueType from TaskTraits.
   // TODO(1026641): Take BrowserTaskTraits as a parameter when getting off the
   // need to support base::TaskTraits currently passed to this class in its role
   // as a base::TaskExecutor.
-  static content::BrowserTaskQueues::QueueType GetQueueType(
-      const base::TaskTraits& traits);
+  static BrowserTaskQueues::QueueType GetQueueType(
+      const BrowserTaskTraits& traits);
 
  protected:
   scoped_refptr<BrowserUIThreadScheduler::Handle> browser_ui_thread_handle_;

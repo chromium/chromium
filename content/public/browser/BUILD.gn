@@ -87,7 +87,6 @@ source_set("browser_sources") {
     "browser_plugin_guest_delegate.h",
     "browser_plugin_guest_manager.cc",
     "browser_plugin_guest_manager.h",
-    "browser_task_traits.cc",
     "browser_task_traits.h",
     "browser_thread.h",
     "browser_url_handler.h",

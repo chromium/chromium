@@ -22,10 +22,6 @@ scoped_refptr<internal::JobTaskSource> CreateJobTaskSource(
   DCHECK(ThreadPoolInstance::Get())
       << "Hint: if this is in a unit test, you're likely merely missing a "
          "base::test::TaskEnvironment member in your fixture.\n";
-  // ThreadPool is implicitly the destination for PostJob(). Extension traits
-  // cannot be used.
-  DCHECK_EQ(traits.extension_id(),
-            TaskTraitsExtensionStorage::kInvalidExtensionId);
 
   return base::MakeRefCounted<internal::JobTaskSource>(
       from_here, traits, std::move(worker_task),
