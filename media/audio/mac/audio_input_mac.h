@@ -23,14 +23,14 @@
 namespace media {
 
 class AudioBus;
-class AudioManagerMac;
+class AudioIOStreamClient;
 
 // Implementation of AudioInputStream for macOS using the Audio Queue service
 // in Audio Toolbox. Design reflects PCMQueueOutAudioOutputStream.
 class PCMQueueInAudioInputStream : public AudioInputStream {
  public:
   // Parameters as per AudioManager::MakeAudioInputStream.
-  PCMQueueInAudioInputStream(AudioManagerMac* manager,
+  PCMQueueInAudioInputStream(AudioIOStreamClient* client,
                              const AudioParameters& params);
 
   PCMQueueInAudioInputStream(const PCMQueueInAudioInputStream&) = delete;
@@ -90,7 +90,7 @@ class PCMQueueInAudioInputStream : public AudioInputStream {
   void CheckInputStartupSuccess();
 
   // Manager that owns this stream, used for closing down.
-  raw_ptr<AudioManagerMac> manager_;
+  raw_ptr<AudioIOStreamClient> client_;
   // We use the callback mostly to periodically supply the recorded audio data.
   raw_ptr<AudioInputCallback> callback_;
   // Structure that holds the stream format details such as bitrate.
