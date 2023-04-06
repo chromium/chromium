@@ -27,13 +27,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_WORD_BREAK_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_WORD_BREAK_H_
 
-#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text.h"
+#include "third_party/blink/renderer/core/layout/layout_text.h"
 
 namespace blink {
 
 class HTMLWBRElement;
 
-class LayoutWordBreak : public LayoutNGText {
+class LayoutWordBreak : public LayoutText {
  public:
   explicit LayoutWordBreak(HTMLWBRElement& node);
 

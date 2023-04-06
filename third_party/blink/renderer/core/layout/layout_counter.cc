@@ -497,7 +497,7 @@ String GenerateCounterText(const CounterStyle* counter_style, int value) {
 
 LayoutCounter::LayoutCounter(PseudoElement& pseudo,
                              const CounterContentData& counter)
-    : LayoutNGText(nullptr, StringImpl::empty_),
+    : LayoutText(nullptr, StringImpl::empty_),
       counter_(counter),
       counter_node_(nullptr),
       next_for_same_counter_(nullptr) {
@@ -511,7 +511,7 @@ void LayoutCounter::Trace(Visitor* visitor) const {
   visitor->Trace(counter_);
   visitor->Trace(counter_node_);
   visitor->Trace(next_for_same_counter_);
-  LayoutNGText::Trace(visitor);
+  LayoutText::Trace(visitor);
 }
 
 void LayoutCounter::WillBeDestroyed() {
@@ -522,7 +522,7 @@ void LayoutCounter::WillBeDestroyed() {
   }
   if (View())
     View()->RemoveLayoutCounter();
-  LayoutNGText::WillBeDestroyed();
+  LayoutText::WillBeDestroyed();
 }
 
 String LayoutCounter::OriginalText() const {

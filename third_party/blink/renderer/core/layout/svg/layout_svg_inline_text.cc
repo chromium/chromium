@@ -50,13 +50,13 @@ static String NormalizeWhitespace(String string) {
 }
 
 LayoutSVGInlineText::LayoutSVGInlineText(Node* n, String string)
-    : LayoutNGText(n, NormalizeWhitespace(std::move(string))),
+    : LayoutText(n, NormalizeWhitespace(std::move(string))),
       scaling_factor_(1) {}
 
 void LayoutSVGInlineText::TextDidChange() {
   NOT_DESTROYED();
   SetTextInternal(NormalizeWhitespace(GetText()));
-  LayoutNGText::TextDidChange();
+  LayoutText::TextDidChange();
   LayoutNGSVGText::NotifySubtreeStructureChanged(
       this, layout_invalidation_reason::kTextChanged);
 
@@ -67,7 +67,7 @@ void LayoutSVGInlineText::TextDidChange() {
 void LayoutSVGInlineText::StyleDidChange(StyleDifference diff,
                                          const ComputedStyle* old_style) {
   NOT_DESTROYED();
-  LayoutNGText::StyleDidChange(diff, old_style);
+  LayoutText::StyleDidChange(diff, old_style);
   UpdateScaledFont();
 
   const bool new_collapse = StyleRef().ShouldCollapseWhiteSpaces();
@@ -89,7 +89,7 @@ void LayoutSVGInlineText::StyleDidChange(StyleDifference diff,
 }
 
 bool LayoutSVGInlineText::IsFontFallbackValid() const {
-  return LayoutNGText::IsFontFallbackValid() && ScaledFont().IsFallbackValid();
+  return LayoutText::IsFontFallbackValid() && ScaledFont().IsFallbackValid();
 }
 
 void LayoutSVGInlineText::InvalidateSubtreeLayoutForFontUpdates() {
@@ -98,7 +98,7 @@ void LayoutSVGInlineText::InvalidateSubtreeLayoutForFontUpdates() {
     LayoutNGSVGText::NotifySubtreeStructureChanged(
         this, layout_invalidation_reason::kFontsChanged);
   }
-  LayoutNGText::InvalidateSubtreeLayoutForFontUpdates();
+  LayoutText::InvalidateSubtreeLayoutForFontUpdates();
 }
 
 PhysicalRect LayoutSVGInlineText::PhysicalLinesBoundingBox() const {

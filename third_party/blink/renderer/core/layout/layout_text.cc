@@ -51,7 +51,6 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/line/abstract_inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/line/glyph_overflow.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_abstract_inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
@@ -88,6 +87,7 @@ struct SameSizeAsLayoutText : public LayoutObject {
   float widths[4];
   String text;
   LogicalOffset previous_starting_point;
+  NGInlineItemSpan inline_items;
   wtf_size_t first_fragment_item_index_;
 };
 
@@ -190,14 +190,14 @@ LayoutText::LayoutText(Node* node, String str)
 }
 
 void LayoutText::Trace(Visitor* visitor) const {
+  visitor->Trace(inline_items_);
   LayoutObject::Trace(visitor);
 }
 
 LayoutText* LayoutText::CreateEmptyAnonymous(
     Document& doc,
     scoped_refptr<const ComputedStyle> style) {
-  LayoutText* text =
-      MakeGarbageCollected<LayoutNGText>(nullptr, StringImpl::empty_);
+  auto* text = MakeGarbageCollected<LayoutText>(nullptr, StringImpl::empty_);
   text->SetDocumentForAnonymous(&doc);
   text->SetStyle(std::move(style));
   return text;
@@ -207,8 +207,8 @@ LayoutText* LayoutText::CreateAnonymousForFormattedText(
     Document& doc,
     scoped_refptr<const ComputedStyle> style,
     String text) {
-  LayoutText* layout_text =
-      MakeGarbageCollected<LayoutNGText>(nullptr, std::move(text));
+  auto* layout_text =
+      MakeGarbageCollected<LayoutText>(nullptr, std::move(text));
   layout_text->SetDocumentForAnonymous(&doc);
   layout_text->SetStyleInternal(std::move(style));
   return layout_text;

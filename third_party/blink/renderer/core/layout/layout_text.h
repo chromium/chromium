@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_span.h"
 #include "third_party/blink/renderer/core/layout/text_run_constructor.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
@@ -91,6 +92,11 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   const char* GetName() const override {
     NOT_DESTROYED();
     return "LayoutText";
+  }
+
+  bool IsLayoutNGObject() const override {
+    NOT_DESTROYED();
+    return true;
   }
 
   bool IsTextFragment() const {
@@ -324,13 +330,13 @@ class CORE_EXPORT LayoutText : public LayoutObject {
     has_bidi_control_items_ = false;
   }
 
-  virtual const NGInlineItemSpan* GetNGInlineItems() const {
+  const NGInlineItemSpan* GetNGInlineItems() const {
     NOT_DESTROYED();
-    return nullptr;
+    return &inline_items_;
   }
-  virtual NGInlineItemSpan* GetNGInlineItems() {
+  NGInlineItemSpan* GetNGInlineItems() {
     NOT_DESTROYED();
-    return nullptr;
+    return &inline_items_;
   }
 
   void InvalidateSubtreeLayoutForFontUpdates() override;
@@ -453,14 +459,13 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   // inserted or removed).
   unsigned lines_dirty_ : 1;
 
-  // Used by LayoutNGText. Whether the NGInlineItems associated with this
-  // object are valid. Set after layout and cleared whenever the LayoutText is
-  // modified.
+  // Whether the NGInlineItems associated with this object are valid. Set after
+  // layout and cleared whenever the LayoutText is modified.
   // Functionally the inverse equivalent of lines_dirty_ for LayoutNG.
   unsigned valid_ng_items_ : 1;
 
-  // Used by LayoutNGText. Whether there is any BidiControl type NGInlineItem
-  // associated with this object. Set after layout when associating items.
+  // Whether there is any BidiControl type NGInlineItem associated with this
+  // object. Set after layout when associating items.
   unsigned has_bidi_control_items_ : 1;
 
   unsigned contains_reversed_text_ : 1;
@@ -489,6 +494,8 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   // This is mutable for paint invalidation.
   mutable LogicalOffset previous_logical_starting_point_ =
       UninitializedLogicalStartingPoint();
+
+  NGInlineItemSpan inline_items_;
 
   // The index of the first fragment item associated with this object in
   // |NGFragmentItems::Items()|. Zero means there are no such item.
