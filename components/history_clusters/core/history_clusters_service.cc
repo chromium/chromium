@@ -106,25 +106,8 @@ HistoryClustersService::KeywordMap DictToKeywordsCache(
 
   return keyword_map;
 }
+
 }  // namespace
-
-VisitDeletionObserver::VisitDeletionObserver(
-    HistoryClustersService* history_clusters_service)
-    : history_clusters_service_(history_clusters_service) {}
-
-VisitDeletionObserver::~VisitDeletionObserver() = default;
-
-void VisitDeletionObserver::AttachToHistoryService(
-    history::HistoryService* history_service) {
-  DCHECK(history_service);
-  history_service_observation_.Observe(history_service);
-}
-
-void VisitDeletionObserver::OnURLsDeleted(
-    history::HistoryService* history_service,
-    const history::DeletionInfo& deletion_info) {
-  history_clusters_service_->ClearKeywordCache();
-}
 
 HistoryClustersService::HistoryClustersService(
     const std::string& application_locale,
@@ -140,7 +123,6 @@ HistoryClustersService::HistoryClustersService(
           GetConfig().is_journeys_enabled_no_locale_check &&
           IsApplicationLocaleSupportedByJourneys(application_locale)),
       history_service_(history_service),
-      visit_deletion_observer_(this),
       context_clusterer_observer_(history_service,
                                   template_url_service,
                                   optimization_guide_decider,
@@ -154,7 +136,7 @@ HistoryClustersService::HistoryClustersService(
   }
 
   if (history_service_) {
-    visit_deletion_observer_.AttachToHistoryService(history_service);
+    history_service_observation_.Observe(history_service);
   }
 
   backend_ = FileClusteringBackend::CreateIfEnabled();
@@ -339,10 +321,14 @@ void HistoryClustersService::UpdateClusters() {
     update_clusters_task_ =
         std::make_unique<HistoryClustersServiceTaskUpdateClusterTriggerability>(
             weak_ptr_factory_.GetWeakPtr(), backend_.get(), history_service_,
+            received_synced_visit_since_last_update_,
             base::BindOnce(
                 &RecordUpdateClustersLatencyHistogram,
                 "History.Clusters.Backend.UpdateClusterTriggerability.Total",
                 base::ElapsedTimer()));
+
+    // Reset state for next iteration.
+    received_synced_visit_since_last_update_ = false;
   } else {
     update_clusters_task_ =
         std::make_unique<HistoryClustersServiceTaskUpdateClusters>(
@@ -410,6 +396,21 @@ void HistoryClustersService::PrintKeywordBagStateToLogMessage() const {
   NotifyDebugMessage(GetDebugJSONForKeywordMap(all_keywords_cache_));
 
   NotifyDebugMessage("-- Printing Keyword Bags Done --");
+}
+
+void HistoryClustersService::OnURLVisited(
+    history::HistoryService* history_service,
+    const history::URLRow& url_row,
+    const history::VisitRow& visit_row) {
+  if (!visit_row.originator_cache_guid.empty()) {
+    received_synced_visit_since_last_update_ = true;
+  }
+}
+
+void HistoryClustersService::OnURLsDeleted(
+    history::HistoryService* history_service,
+    const history::DeletionInfo& deletion_info) {
+  ClearKeywordCache();
 }
 
 void HistoryClustersService::StartKeywordCacheRefresh() {
