@@ -501,9 +501,10 @@ void CrossThreadMediaSourceAttachment::Unregister() {
 
     // The only expected caller is a MediaSourceRegistryImpl on the main thread
     // (or possibly on the worker thread, if MediaSourceInWorkers is enabled).
-    DCHECK(IsMainThread() ||
-           RuntimeEnabledFeatures::MediaSourceInWorkersEnabled(
-               registered_media_source_->GetExecutionContext()));
+    // The |registered_media_source_|'s context might be in the process of being
+    // destructed, so we cannot easily DCHECK thread assumptions here: part of
+    // that verification would access a potentially destroyed context while
+    // checking if the OT has enabled MSEIW.
 
     registered_media_source_ = nullptr;
   }
