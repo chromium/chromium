@@ -200,14 +200,14 @@ suite('AppListTest', () => {
     assertTrue(apps.appList.length >= 1);
     const appInfo = apps.appList[0]!;
 
-    const openInWindow = contextMenu.querySelector<HTMLElement>(
-                             '#openInWindow') as CrCheckboxElement;
+    const openInWindow =
+        contextMenu.querySelector<CrCheckboxElement>('#openInWindow');
     assertTrue(!!openInWindow);
     assertEquals(openInWindow.hidden, !appInfo.isLocallyInstalled);
     assertEquals(openInWindow.checked, appInfo.openInWindow);
 
-    const launchOnStartup = contextMenu.querySelector<HTMLElement>(
-                                '#launchOnStartup') as CrCheckboxElement;
+    const launchOnStartup =
+        contextMenu.querySelector<CrCheckboxElement>('#launchOnStartup');
     assertTrue(!!launchOnStartup);
     assertEquals(launchOnStartup.hidden, !appInfo.mayShowRunOnOsLoginMode);
 
@@ -274,8 +274,8 @@ suite('AppListTest', () => {
     assertTrue(apps.appList.length >= 1);
     const contextMenu = appItem.shadowRoot!.querySelector('cr-action-menu');
     assertTrue(!!contextMenu);
-    const openInWindow = contextMenu.querySelector<HTMLElement>(
-                             '#openInWindow') as CrCheckboxElement;
+    const openInWindow =
+        contextMenu.querySelector<CrCheckboxElement>('#openInWindow');
     assertTrue(!!openInWindow);
     assertFalse(openInWindow.checked);
     assertFalse(apps.appList[0]!.openInWindow);
@@ -314,8 +314,8 @@ suite('AppListTest', () => {
     assertTrue(apps.appList.length >= 1);
     const contextMenu = appItem.shadowRoot!.querySelector('cr-action-menu');
     assertTrue(!!contextMenu);
-    const launchOnStartup = contextMenu.querySelector<HTMLElement>(
-                                '#launchOnStartup') as CrCheckboxElement;
+    const launchOnStartup =
+        contextMenu.querySelector<CrCheckboxElement>('#launchOnStartup');
     assertTrue(!!launchOnStartup);
     assertFalse(launchOnStartup.checked);
     assertEquals(apps.appList[0]!.runOnOsLoginMode, RunOnOsLoginMode.kNotRun);
@@ -355,8 +355,8 @@ suite('AppListTest', () => {
 
     const contextMenu = appItem.shadowRoot!.querySelector('cr-action-menu');
     assertTrue(!!contextMenu);
-    const launchOnStartup = contextMenu.querySelector<HTMLElement>(
-                                '#launchOnStartup') as CrCheckboxElement;
+    const launchOnStartup =
+        contextMenu.querySelector<CrCheckboxElement>('#launchOnStartup');
     assertTrue(!!launchOnStartup);
     assertFalse(launchOnStartup.checked);
     assertEquals(apps.appList[1]!.runOnOsLoginMode, RunOnOsLoginMode.kNotRun);
