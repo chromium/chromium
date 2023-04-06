@@ -751,7 +751,6 @@ const char kListValueChange[] = "List value change";
 const char kListStyleTypeChange[] = "List style type change";
 const char kCounterStyleChange[] = "Counter style change";
 const char kImageChanged[] = "Image changed";
-const char kLineBoxesChanged[] = "Line boxes changed";
 const char kSliderValueChanged[] = "Slider value changed";
 const char kAncestorMarginCollapsing[] = "Ancestor margin collapsing";
 const char kFieldsetChanged[] = "Fieldset changed";

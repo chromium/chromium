@@ -3648,8 +3648,6 @@ void LayoutObject::WillBeDestroyed() {
     }
   }
 
-  SetAncestorLineBoxDirty(false);
-
   ClearLayoutRootIfNeeded();
 
   // Remove this object as ImageResourceObserver.
