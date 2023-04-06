@@ -10,13 +10,13 @@
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/memory/ptr_util.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/metrics_util.h"
@@ -292,7 +292,7 @@ const SendTabToSelfEntry* SendTabToSelfBridge::AddEntry(
     return mru_entry_;
   }
 
-  std::string guid = base::GenerateGUID();
+  std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
 
   // Assure that we don't have a guid collision.
   DCHECK_EQ(GetEntryByGUID(guid), nullptr);
