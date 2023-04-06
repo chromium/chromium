@@ -237,17 +237,11 @@ void MediaHost::Stop() {
 }
 
 void MediaHost::ResumeInternalMediaPlayer() {
-  if (!libassistant_media_controller_) {
-    return;
-  }
-  libassistant_media_controller_->ResumeInternalMediaPlayer();
+  libassistant_media_controller().ResumeInternalMediaPlayer();
 }
 
 void MediaHost::PauseInternalMediaPlayer() {
-  if (!libassistant_media_controller_) {
-    return;
-  }
-  libassistant_media_controller_->PauseInternalMediaPlayer();
+  libassistant_media_controller().PauseInternalMediaPlayer();
 }
 
 void MediaHost::SetRelatedInfoEnabled(bool enable) {
@@ -257,6 +251,13 @@ void MediaHost::SetRelatedInfoEnabled(bool enable) {
     StopObservingMediaController();
     ResetMediaState();
   }
+}
+
+libassistant::mojom::MediaController&
+MediaHost::libassistant_media_controller() {
+  // Initialize must be called first.
+  DCHECK(libassistant_media_controller_);
+  return *libassistant_media_controller_;
 }
 
 void MediaHost::UpdateMediaState(
@@ -270,18 +271,12 @@ void MediaHost::UpdateMediaState(
     return;
   }
 
-  if (!libassistant_media_controller_) {
-    return;
-  }
-  libassistant_media_controller_->SetExternalPlaybackState(
+  libassistant_media_controller().SetExternalPlaybackState(
       std::move(media_state));
 }
 
 void MediaHost::ResetMediaState() {
-  if (!libassistant_media_controller_) {
-    return;
-  }
-  libassistant_media_controller_->SetExternalPlaybackState(
+  libassistant_media_controller().SetExternalPlaybackState(
       libassistant::mojom::MediaState::New());
 }
 

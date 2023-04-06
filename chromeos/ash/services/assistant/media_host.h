@@ -56,6 +56,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) MediaHost {
   class LibassistantMediaDelegate;
   class ChromeosMediaStateObserver;
 
+  libassistant::mojom::MediaController& libassistant_media_controller();
+
   void UpdateMediaState(const base::UnguessableToken& media_session_id,
                         libassistant::mojom::MediaStatePtr media_state);
   void ResetMediaState();

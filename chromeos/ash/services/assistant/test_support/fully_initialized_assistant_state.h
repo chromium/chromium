@@ -24,8 +24,6 @@ class FullyInitializedAssistantState : public AssistantState {
 
   void SetAssistantEnabled(bool enabled);
 
-  void SetContextEnabled(bool enabled);
-
  private:
   void InitializeAllValues();
 };
