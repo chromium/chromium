@@ -16,10 +16,10 @@ import {QueueMode} from '../common/tts_types.js';
 import {ChromeVoxRange} from './chromevox_range.js';
 import {ChromeVoxState} from './chromevox_state.js';
 import {CommandHandlerInterface} from './command_handler_interface.js';
+import {PointerHandler} from './event/pointer_handler.js';
 import {EventSource} from './event_source.js';
 import {GestureInterface} from './gesture_interface.js';
 import {Output} from './output/output.js';
-import {PointerHandler} from './pointer_handler.js';
 import {UserActionMonitor} from './user_action_monitor.js';
 
 const RoleType = chrome.automation.RoleType;

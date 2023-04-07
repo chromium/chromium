@@ -5,19 +5,19 @@
 /**
  * @fileoverview Handles automation from ChromeVox's current range.
  */
-import {AutomationPredicate} from '../../common/automation_predicate.js';
-import {AutomationUtil} from '../../common/automation_util.js';
-import {constants} from '../../common/constants.js';
-import {CursorRange} from '../../common/cursors/range.js';
-import {ChromeVoxEvent, CustomAutomationEvent} from '../common/custom_automation_event.js';
-import {Msgs} from '../common/msgs.js';
+import {AutomationPredicate} from '../../../common/automation_predicate.js';
+import {AutomationUtil} from '../../../common/automation_util.js';
+import {constants} from '../../../common/constants.js';
+import {CursorRange} from '../../../common/cursors/range.js';
+import {ChromeVoxEvent, CustomAutomationEvent} from '../../common/custom_automation_event.js';
+import {Msgs} from '../../common/msgs.js';
+import {ChromeVoxRange, ChromeVoxRangeObserver} from '../chromevox_range.js';
+import {FocusBounds} from '../focus_bounds.js';
+import {Output} from '../output/output.js';
+import {OutputCustomEvent} from '../output/output_types.js';
 
 import {BaseAutomationHandler} from './base_automation_handler.js';
-import {ChromeVoxRange, ChromeVoxRangeObserver} from './chromevox_range.js';
 import {DesktopAutomationHandler} from './desktop_automation_handler.js';
-import {FocusBounds} from './focus_bounds.js';
-import {Output} from './output/output.js';
-import {OutputCustomEvent} from './output/output_types.js';
 
 const AutomationEvent = chrome.automation.AutomationEvent;
 const AutomationNode = chrome.automation.AutomationNode;

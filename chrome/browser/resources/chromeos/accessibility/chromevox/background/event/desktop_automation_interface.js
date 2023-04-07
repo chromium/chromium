@@ -5,8 +5,9 @@
 /**
  * @fileoverview Interface to prevent circular dependencies.
  */
+import {TextEditHandler} from '../editing/editing.js';
+
 import {BaseAutomationHandler} from './base_automation_handler.js';
-import {TextEditHandler} from './editing/editing.js';
 
 export class DesktopAutomationInterface extends BaseAutomationHandler {
   /** @type {TextEditHandler} */

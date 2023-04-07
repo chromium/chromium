@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-GEN_INCLUDE(['../testing/chromevox_e2e_test_base.js']);
+GEN_INCLUDE(['../../testing/chromevox_e2e_test_base.js']);
 
-GEN_INCLUDE(['../testing/fake_objects.js']);
+GEN_INCLUDE(['../../testing/fake_objects.js']);
 
 /**
  * Test fixture for DesktopAutomationHandler.
@@ -19,10 +19,10 @@ ChromeVoxDesktopAutomationHandlerTest = class extends ChromeVoxE2ETest {
         'ChromeVoxState', '/chromevox/background/chromevox_state.js');
     await importModule(
         'DesktopAutomationHandler',
-        '/chromevox/background/desktop_automation_handler.js');
+        '/chromevox/background/event/desktop_automation_handler.js');
     await importModule(
         'DesktopAutomationInterface',
-        '/chromevox/background/desktop_automation_interface.js');
+        '/chromevox/background/event/desktop_automation_interface.js');
     await importModule(
         'CustomAutomationEvent',
         '/chromevox/common/custom_automation_event.js');

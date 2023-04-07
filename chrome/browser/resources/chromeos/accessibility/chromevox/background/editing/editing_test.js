@@ -24,12 +24,12 @@ ChromeVoxEditingTest = class extends ChromeVoxE2ETest {
         'BrailleTranslatorManager',
         '/chromevox/background/braille/braille_translator_manager.js');
     await importModule(
-        'DesktopAutomationInterface',
-        '/chromevox/background/desktop_automation_interface.js');
-    await importModule(
         'EditableLine', '/chromevox/background/editing/editable_line.js');
     await importModule(
         'TextEditHandler', '/chromevox/background/editing/editing.js');
+    await importModule(
+        'DesktopAutomationInterface',
+        '/chromevox/background/event/desktop_automation_interface.js');
     await importModule(
         ['BrailleKeyEvent', 'BrailleKeyCommand'],
         '/chromevox/common/braille/braille_key_types.js');

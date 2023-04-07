@@ -6,19 +6,19 @@
  * @fileoverview ChromeVox pointer handler. A pointer, in this context, is
  * either user touch or mouse input.
  */
-import {AsyncUtil} from '../../common/async_util.js';
-import {AutomationPredicate} from '../../common/automation_predicate.js';
-import {EventGenerator} from '../../common/event_generator.js';
-import {CustomAutomationEvent} from '../common/custom_automation_event.js';
-import {EarconId} from '../common/earcon_id.js';
-import {SettingsManager} from '../common/settings_manager.js';
-import {QueueMode} from '../common/tts_types.js';
+import {AsyncUtil} from '../../../common/async_util.js';
+import {AutomationPredicate} from '../../../common/automation_predicate.js';
+import {EventGenerator} from '../../../common/event_generator.js';
+import {CustomAutomationEvent} from '../../common/custom_automation_event.js';
+import {EarconId} from '../../common/earcon_id.js';
+import {SettingsManager} from '../../common/settings_manager.js';
+import {QueueMode} from '../../common/tts_types.js';
+import {ChromeVox} from '../chromevox.js';
+import {ChromeVoxRange} from '../chromevox_range.js';
+import {Output} from '../output/output.js';
 
 import {BaseAutomationHandler} from './base_automation_handler.js';
-import {ChromeVox} from './chromevox.js';
-import {ChromeVoxRange} from './chromevox_range.js';
 import {DesktopAutomationInterface} from './desktop_automation_interface.js';
-import {Output} from './output/output.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
 const AutomationEvent = chrome.automation.AutomationEvent;
