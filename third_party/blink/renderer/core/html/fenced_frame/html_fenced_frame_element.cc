@@ -415,20 +415,7 @@ void HTMLFencedFrameElement::RemovedFrom(ContainerNode& node) {
 
 void HTMLFencedFrameElement::ParseAttribute(
     const AttributeModificationParams& params) {
-  if (params.name == html_names::kSrcAttr) {
-    if (config_) {
-      DCHECK(config_->url());
-      GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::blink::ConsoleMessageSource::kJavaScript,
-          mojom::blink::ConsoleMessageLevel::kWarning,
-          "Changing the `src` attribute on a fenced frame has no effect after "
-          "it has already been installed a config with a specified url."));
-      return;
-    }
-
-    KURL url = GetNonEmptyURLAttribute(html_names::kSrcAttr);
-    Navigate(url);
-  } else if (params.name == html_names::kSandboxAttr) {
+  if (params.name == html_names::kSandboxAttr) {
     sandbox_->DidUpdateAttributeValue(params.old_value, params.new_value);
 
     network::mojom::blink::WebSandboxFlags current_flags =
@@ -467,10 +454,6 @@ void HTMLFencedFrameElement::ParseAttribute(
   }
 }
 
-bool HTMLFencedFrameElement::IsURLAttribute(const Attribute& attribute) const {
-  return attribute.GetName() == html_names::kSrcAttr;
-}
-
 bool HTMLFencedFrameElement::IsPresentationAttribute(
     const QualifiedName& name) const {
   if (name == html_names::kWidthAttr || name == html_names::kHeightAttr)
@@ -506,7 +489,7 @@ void HTMLFencedFrameElement::Navigate(
   // prerendering. If this function is called while prerendering we won't have a
   // delegate and will bail early, but this should still be correct since,
   // post-activation, CreateDelegateAndNavigate will be run which will navigate
-  // to the most current src.
+  // to the most current config.
   if (!frame_delegate_)
     return;
 
@@ -646,7 +629,7 @@ void HTMLFencedFrameElement::CreateDelegateAndNavigate() {
   // prerendering, but we should only actually create the delegate once. Note,
   // this will also mean that we skip calling Navigate() again, but the result
   // should still be correct since the first Navigate call will use the
-  // up-to-date src.
+  // up-to-date config.
   if (frame_delegate_)
     return;
   if (GetDocument().IsPrerendering()) {
@@ -660,8 +643,6 @@ void HTMLFencedFrameElement::CreateDelegateAndNavigate() {
 
   if (config_) {
     NavigateToConfig();
-  } else {
-    Navigate(GetNonEmptyURLAttribute(html_names::kSrcAttr));
   }
 }
 
