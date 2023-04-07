@@ -17,7 +17,7 @@
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_switches.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
-#include "chrome/browser/nearby_sharing/proto/timestamp.pb.h"
+#include "chromeos/ash/components/nearby/common/proto/timestamp.pb.h"
 #include "crypto/aead.h"
 #include "crypto/ec_private_key.h"
 #include "crypto/ec_signature_creator.h"

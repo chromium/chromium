@@ -7,15 +7,16 @@ import("//third_party/protobuf/proto_library.gni")
 assert(is_chromeos, "Nearby Share is CrOS only")
 
 proto_library("proto") {
+  proto_in_dir = "//"
   sources = [
     "certificate_rpc.proto",
     "contact_rpc.proto",
     "device_rpc.proto",
     "encrypted_metadata.proto",
-    "field_mask.proto",
     "rpc_resources.proto",
-    "timestamp.proto",
   ]
+
+  link_deps = [ "//chromeos/ash/components/nearby/common/proto" ]
 }
 
 proto_library("tachyon_proto") {

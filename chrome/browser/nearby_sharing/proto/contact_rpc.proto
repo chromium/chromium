@@ -12,7 +12,7 @@ package nearbyshare.proto;
 
 option optimize_for = LITE_RUNTIME;
 
-import "rpc_resources.proto";
+import "chrome/browser/nearby_sharing/proto/rpc_resources.proto";
 
 // Request to list ContactRecord of a user.
 message ListContactPeopleRequest {

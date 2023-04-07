@@ -120,7 +120,7 @@ std::vector<NearbySharePrivateCertificate> CreatePrivateCertificates(
   return certs;
 }
 
-base::Time TimestampToTime(nearbyshare::proto::Timestamp timestamp) {
+base::Time TimestampToTime(ash::nearby::proto::Timestamp timestamp) {
   return base::Time::UnixEpoch() + base::Seconds(timestamp.seconds()) +
          base::Nanoseconds(timestamp.nanos());
 }
