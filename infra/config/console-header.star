@@ -197,6 +197,11 @@ HEADER = headers.header(
                     alt = "Chromium GPU console",
                 ),
                 headers.link(
+                    text = "memory.fyi",
+                    url = "/p/{}/g/chromium.memory.fyi".format(settings.project),
+                    alt = "Chromium Memory FYI console",
+                ),
+                headers.link(
                     text = "packager",
                     url = "/p/{}/g/chromium.packager".format(settings.project),
                     alt = "Chromium Packager console",
