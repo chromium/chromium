@@ -28,9 +28,6 @@ namespace ash {
 
 namespace {
 
-// The default number of pages defined in the PaginationModel.
-constexpr int kDefaultTotalPages = -1;
-
 // Attributes of arrow buttons.
 constexpr int kArrowButtonIconSize = 20;
 constexpr ui::ColorId kArrowButtonColorId = cros_tokens::kCrosSysSecondary;
@@ -43,6 +40,17 @@ constexpr int kIndicatorStrokeWidth = 1;
 constexpr int kIndicatorSpacing = 2;
 constexpr ui::ColorId kIndicatorColorId = cros_tokens::kCrosSysPrimary;
 constexpr int kMaxNumVisibleIndicators = 5;
+
+// Get the width of the indicator container.
+int GetIndicatorContainerWidth(int total_pages) {
+  if (total_pages <= 0) {
+    return 0;
+  }
+
+  const int visible_num = std::min(total_pages, kMaxNumVisibleIndicators);
+  return visible_num * kIndicatorButtonSize +
+         (visible_num - 1) * kIndicatorSpacing;
+}
 
 // A structure holds the info needed by interpolation.
 template <typename T>
@@ -314,8 +322,8 @@ PaginationView::PaginationView(PaginationModel* model, Orientation orientation)
   indicator_scroll_view_->SetVerticalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
 
-  if (model_->total_pages() != kDefaultTotalPages) {
-    TotalPagesChanged(kDefaultTotalPages, model_->total_pages());
+  if (model_->total_pages() > 0) {
+    TotalPagesChanged(0, model_->total_pages());
   }
 
   if (model_->is_valid_page(model_->selected_page())) {
@@ -327,11 +335,9 @@ PaginationView::~PaginationView() = default;
 
 gfx::Size PaginationView::CalculatePreferredSize() const {
   const int total_pages = model_->total_pages();
-  const int visible_num = std::min(total_pages, kMaxNumVisibleIndicators);
   // Initialize container size with indicator container size.
-  int container_size = visible_num * kIndicatorButtonSize +
-                       (visible_num - 1) * kIndicatorSpacing;
-  if (total_pages > visible_num) {
+  int container_size = GetIndicatorContainerWidth(total_pages);
+  if (total_pages > kMaxNumVisibleIndicators) {
     // If the number of total pages exceeds visible maximum, add arrow buttons.
     container_size += 2 * (kArrowButtonIconSize + kArrowIndicatorSpacing);
   }
@@ -363,10 +369,8 @@ void PaginationView::Layout() {
 
   // Set the indicator container.
   indicator_container_->SizeToPreferredSize();
-  const int visible_num =
-      std::min(model_->total_pages(), kMaxNumVisibleIndicators);
-  const int scroll_view_size = visible_num * kIndicatorButtonSize +
-                               (visible_num - 1) * kIndicatorSpacing;
+  const int scroll_view_size =
+      GetIndicatorContainerWidth(model_->total_pages());
   if (horizontal) {
     indicator_scroll_view_->SetBounds(offset, 0, scroll_view_size,
                                       kIndicatorButtonSize);
@@ -561,7 +565,12 @@ void PaginationView::SelectedPageChanged(int old_selected, int new_selected) {
 
 void PaginationView::TotalPagesChanged(int previous_page_count,
                                        int new_page_count) {
-  DCHECK_NE(previous_page_count, new_page_count);
+  previous_page_count = std::max(0, previous_page_count);
+  new_page_count = std::max(0, new_page_count);
+  if (previous_page_count == new_page_count) {
+    return;
+  }
+
   if (previous_page_count < new_page_count) {
     // Add more indicators at the end of container.
     for (int i = previous_page_count; i < new_page_count; i++) {
