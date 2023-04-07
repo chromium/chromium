@@ -9,6 +9,8 @@
 #include "content/public/browser/navigation_handle.h"
 #include "url/gurl.h"
 
+namespace user_bypass {
+
 UserBypassWebContentsObserver::UserBypassWebContentsObserver(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
@@ -43,3 +45,5 @@ void UserBypassWebContentsObserver::ReadyToCommitNavigation(
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(UserBypassWebContentsObserver);
+
+}  // namespace user_bypass

@@ -12,6 +12,8 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
+namespace user_bypass {
+
 // Helps set the storage partitioning blink runtime feature state based on the
 // available user-specified cookie setting entries for bypass. The state change
 // are made to take effect before the top level frame's navigation commits.
@@ -48,4 +50,5 @@ class UserBypassWebContentsObserver
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
+}  // namespace user_bypass
 #endif  // CHROME_BROWSER_USER_BYPASS_USER_BYPASS_WEB_CONTENTS_OBSERVER_H_

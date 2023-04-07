@@ -19,13 +19,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+namespace user_bypass {
+
 namespace {
 constexpr char kUserBypassEnabledHost[] = "a.test";
 constexpr char kUserBypassDisabledHost[] = "b.test";
 constexpr char kArbitraryPage[] = "/title1.html";
 }  // anonymous namespace
-
-namespace content {
 
 class UserBypassWebContentsObserverBrowserTest : public PlatformBrowserTest {
  public:
@@ -56,7 +56,7 @@ class UserBypassWebContentsObserverBrowserTest : public PlatformBrowserTest {
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 
-  WebContents* GetActiveWebContents() {
+  content::WebContents* GetActiveWebContents() {
     return chrome_test_utils::GetActiveWebContents(this);
   }
 
@@ -133,4 +133,4 @@ IN_PROC_BROWSER_TEST_F(UserBypassWebContentsObserverBrowserTest,
       GetActiveWebContents()->GetPrimaryMainFrame()));
 }
 
-}  // namespace content
+}  // namespace user_bypass
