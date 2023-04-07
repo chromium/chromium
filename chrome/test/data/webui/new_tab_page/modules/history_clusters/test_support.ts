@@ -2,31 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Annotation, SearchQuery, URLVisit} from 'chrome://new-tab-page/history_cluster_types.mojom-webui.js';
+import {SearchQuery, URLVisit} from 'chrome://new-tab-page/history_cluster_types.mojom-webui.js';
 import {LAYOUT_1_MIN_IMAGE_VISITS, LAYOUT_1_MIN_VISITS, MIN_RELATED_SEARCHES} from 'chrome://new-tab-page/lazy_load.js';
 
-export function createVisit(
-    visitId: bigint, normalizedUrl: string, urlForDisplay: string,
-    pageTitle: string, hasUrlKeyedImage: boolean, relativeDate: string = '',
-    annotations: Annotation[] = []): URLVisit {
-  return {
-    visitId: visitId,
-    normalizedUrl: {url: normalizedUrl},
-    urlForDisplay: urlForDisplay,
-    pageTitle: pageTitle,
-    titleMatchPositions: [],
-    urlForDisplayMatchPositions: [],
-    duplicates: [],
-    relativeDate: relativeDate,
-    annotations: annotations,
-    debugInfo: {},
-    rawVisitData: {
-      url: {url: ''},
-      visitTime: {internalValue: BigInt(0)},
-    },
-    hasUrlKeyedImage: hasUrlKeyedImage,
-    isKnownToSync: true,
-  };
+export function createVisit(overrides?: Partial<URLVisit>): URLVisit {
+  return Object.assign(
+      {
+        visitId: BigInt(1),
+        normalizedUrl: {url: 'https://www.foo.com'},
+        urlForDisplay: 'www.foo.com',
+        pageTitle: 'Test Title',
+        titleMatchPositions: [],
+        urlForDisplayMatchPositions: [],
+        duplicates: [],
+        relativeDate: '',
+        annotations: [],
+        debugInfo: {},
+        rawVisitData: {
+          url: {url: ''},
+          visitTime: {internalValue: BigInt(0)},
+        },
+        hasUrlKeyedImage: false,
+        isKnownToSync: true,
+      },
+      overrides);
 }
 
 export const GOOGLE_SEARCH_BASE_URL = 'https://www.google.com/search';
@@ -38,15 +37,22 @@ export function createSampleVisits(
   const result: URLVisit[] = [];
 
   // Create SRP visit.
-  result.push(createVisit(
-      BigInt(0), `${GOOGLE_SEARCH_BASE_URL}?q=foo`, 'www.google.com', 'SRP',
-      false));
+  result.push(createVisit({
+    visitId: BigInt(0),
+    normalizedUrl: {url: `${GOOGLE_SEARCH_BASE_URL}?q=foo`},
+    urlForDisplay: 'www.google.com',
+    pageTitle: 'SRP',
+  }));
 
   // Create general visits.
   for (let i = 1; i <= numVisits; i++) {
-    result.push(createVisit(
-        BigInt(i), `https://www.foo.com/${i}`, `www.foo.com/${i}`,
-        `Test Title ${i}`, i <= numImageVisits));
+    result.push(createVisit({
+      visitId: BigInt(i),
+      normalizedUrl: {url: `https://www.foo.com/${i}`},
+      urlForDisplay: `www.foo.com/${i}`,
+      pageTitle: `Test Title ${i}`,
+      hasUrlKeyedImage: i <= numImageVisits,
+    }));
   }
   return result;
 }
