@@ -1473,37 +1473,6 @@ TEST_P(FormDataImporterTest,
   ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(*form_structure);
 }
 
-// A maximum of two address profiles are imported per form.
-// This test is flaky for an unknown reason.
-// TODO(crbug.com/1297212): Understand flakiness.
-TEST_P(FormDataImporterTest,
-       DISABLED_ImportAddressProfiles_ThreeValidProfilesSameForm) {
-  TypeValuePairs profile_type_value_pairs = GetDefaultProfileTypeValuePairs();
-
-  TypeValuePairs second_profile_type_value_pairs =
-      GetSecondProfileTypeValuePairs();
-
-  TypeValuePairs third_profile_type_value_pairs =
-      GetThirdProfileTypeValuePairs();
-
-  // Merge the type value pairs into one and construct the corresponding form
-  // structure.
-  profile_type_value_pairs.insert(profile_type_value_pairs.end(),
-                                  second_profile_type_value_pairs.begin(),
-                                  second_profile_type_value_pairs.end());
-  profile_type_value_pairs.insert(profile_type_value_pairs.end(),
-                                  third_profile_type_value_pairs.begin(),
-                                  third_profile_type_value_pairs.end());
-
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructFormStructureFromTypeValuePairs(profile_type_value_pairs);
-
-  // Extract from the form structure and verify that only the first two profiles
-  // are extracted.
-  ExtractAddressProfilesAndVerifyExpectation(
-      *form_structure, {ConstructDefaultProfile(), ConstructSecondProfile()});
-}
-
 TEST_P(FormDataImporterTest, ImportAddressProfiles_SameProfileWithConflict) {
   TypeValuePairs initial_type_value_pairs{
       {NAME_FULL, kDefaultFullName},
