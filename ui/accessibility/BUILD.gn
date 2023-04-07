@@ -135,8 +135,6 @@ component("accessibility_internal") {
     "ax_computed_node_data.cc",
     "ax_computed_node_data.h",
     "ax_coordinate_system.h",
-    "ax_dummy_tree_manager.cc",
-    "ax_dummy_tree_manager.h",
     "ax_event_generator.cc",
     "ax_event_generator.h",
     "ax_export.h",
@@ -183,6 +181,8 @@ component("accessibility_internal") {
     "ax_tree_update_util.h",
     "null_ax_action_target.cc",
     "null_ax_action_target.h",
+    "single_ax_tree_manager.cc",
+    "single_ax_tree_manager.h",
   ]
 
   deps = [
@@ -239,8 +239,6 @@ static_library("test_support") {
   sources = [
     "test_ax_node_helper.cc",
     "test_ax_node_helper.h",
-    "test_ax_tree_manager.cc",
-    "test_ax_tree_manager.h",
     "test_ax_tree_update.cc",
     "test_ax_tree_update.h",
     "test_ax_tree_update_json_reader.cc",

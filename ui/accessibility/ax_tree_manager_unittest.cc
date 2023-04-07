@@ -7,7 +7,7 @@
 #include "ui/accessibility/ax_serializable_tree.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_update.h"
-#include "ui/accessibility/test_ax_tree_manager.h"
+#include "ui/accessibility/single_ax_tree_manager.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,7 +25,7 @@ TEST(AXTreeManagerTest, ConstructFromInitialState) {
   initial_state.nodes.push_back(root);
   initial_state.has_tree_data = true;
 
-  TestAXTreeManager manager(std::make_unique<AXSerializableTree>());
+  SingleAXTreeManager manager(std::make_unique<AXSerializableTree>());
 
   manager.Initialize(initial_state);
 
@@ -107,9 +107,9 @@ TEST(AXTreeManagerTest, GetRootManagerUnserializedParent) {
 
   // Create the managers. We don't `Initialize` the middle manager to test the
   // scenario where the parent manager is not serialized yet.
-  TestAXTreeManager first_manager(std::make_unique<AXSerializableTree>());
+  SingleAXTreeManager first_manager(std::make_unique<AXSerializableTree>());
   first_manager.Initialize(first_state);
-  TestAXTreeManager last_manager(std::make_unique<AXSerializableTree>());
+  SingleAXTreeManager last_manager(std::make_unique<AXSerializableTree>());
   last_manager.Initialize(last_state);
 
   ASSERT_EQ(first_manager.GetRootManager(), &first_manager);
@@ -189,11 +189,11 @@ TEST(AXTreeManagerTest, GetRootManagerAndIsRoot) {
   generic_container_5.AddChildTreeId(last_state.tree_data.tree_id);
 
   // Create the managers.
-  TestAXTreeManager first_manager(std::make_unique<AXSerializableTree>());
+  SingleAXTreeManager first_manager(std::make_unique<AXSerializableTree>());
   first_manager.Initialize(first_state);
-  TestAXTreeManager middle_manager(std::make_unique<AXSerializableTree>());
+  SingleAXTreeManager middle_manager(std::make_unique<AXSerializableTree>());
   middle_manager.Initialize(middle_state);
-  TestAXTreeManager last_manager(std::make_unique<AXSerializableTree>());
+  SingleAXTreeManager last_manager(std::make_unique<AXSerializableTree>());
   last_manager.Initialize(last_state);
 
   ASSERT_EQ(first_manager.GetRootManager(), &first_manager);

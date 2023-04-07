@@ -18,14 +18,14 @@
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_id.h"
-#include "ui/accessibility/test_ax_tree_manager.h"
+#include "ui/accessibility/single_ax_tree_manager.h"
 
 namespace ui {
 
 namespace {
 
 class AXComputedNodeDataTest : public ::testing::Test,
-                               public TestAXTreeManager {
+                               public SingleAXTreeManager {
  public:
   AXComputedNodeDataTest();
   ~AXComputedNodeDataTest() override;
@@ -146,7 +146,7 @@ void AXComputedNodeDataTest::SetUp() {
   root_node_ = tree->root();
   ASSERT_EQ(root_.id, root_node_->id());
 
-  // `SetTree` is defined in our `TestAXTreeManager` superclass and it passes
+  // `SetTree` is defined in our `SingleAXTreeManager` superclass and it passes
   // ownership of the created AXTree to the manager.
   SetTree(std::move(tree));
 }

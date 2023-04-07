@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_ACCESSIBILITY_TEST_AX_TREE_MANAGER_H_
-#define UI_ACCESSIBILITY_TEST_AX_TREE_MANAGER_H_
+#ifndef UI_ACCESSIBILITY_SINGLE_AX_TREE_MANAGER_H_
+#define UI_ACCESSIBILITY_SINGLE_AX_TREE_MANAGER_H_
 
 #include <memory>
 
@@ -16,29 +16,28 @@ namespace ui {
 
 class AXNode;
 struct AXTreeUpdate;
-struct TestAXTreeUpdateNode;
 
-// A basic implementation of AXTreeManager that can be used in tests.
+// A basic implementation of AXTreeManager that supports a single tree,
+// and doesn't perform any walking across multiple trees.
 //
-// For simplicity, this class supports only a single tree and doesn't perform
-// any walking across multiple trees.
-class TestAXTreeManager : public AXTreeManager {
+// This class can be used in tests.
+class AX_EXPORT SingleAXTreeManager : public AXTreeManager {
  public:
   // This constructor does not create an empty AXTree. Call "SetTree" if you
   // need to manage a specific tree. Useful when you need to test for the
   // situation when no AXTree has been loaded yet.
-  TestAXTreeManager();
+  SingleAXTreeManager();
 
   // Takes ownership of |tree|.
-  explicit TestAXTreeManager(std::unique_ptr<AXTree> tree);
+  explicit SingleAXTreeManager(std::unique_ptr<AXTree> tree);
 
-  ~TestAXTreeManager() override;
+  ~SingleAXTreeManager() override;
 
-  TestAXTreeManager(const TestAXTreeManager& manager) = delete;
-  TestAXTreeManager& operator=(const TestAXTreeManager& manager) = delete;
+  SingleAXTreeManager(const SingleAXTreeManager& manager) = delete;
+  SingleAXTreeManager& operator=(const SingleAXTreeManager& manager) = delete;
 
-  TestAXTreeManager(TestAXTreeManager&& manager);
-  TestAXTreeManager& operator=(TestAXTreeManager&& manager);
+  SingleAXTreeManager(SingleAXTreeManager&& manager);
+  SingleAXTreeManager& operator=(SingleAXTreeManager&& manager);
 
   void DestroyTree();
   AXTree* GetTree() const;
@@ -48,9 +47,6 @@ class TestAXTreeManager : public AXTreeManager {
 
   // Creates and set the tree by a given AXTreeUpdate instance.
   AXTree* Init(AXTreeUpdate tree_update);
-
-  // Set the tree by a given TestAXTreeUpdateNode instance.
-  AXTree* Init(const TestAXTreeUpdateNode& tree_update_root);
 
   // Convenience functions to initialize directly from a few AXNodeData objects.
   AXTree* Init(const AXNodeData& node1,
@@ -119,4 +115,4 @@ class TestAXTreeManager : public AXTreeManager {
 
 }  // namespace ui
 
-#endif  // UI_ACCESSIBILITY_TEST_AX_TREE_MANAGER_H_
+#endif  // UI_ACCESSIBILITY_SINGLE_AX_TREE_MANAGER_H_

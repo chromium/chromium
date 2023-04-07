@@ -18,8 +18,8 @@
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_update.h"
+#include "ui/accessibility/single_ax_tree_manager.h"
 #include "ui/accessibility/test_ax_node_helper.h"
-#include "ui/accessibility/test_ax_tree_manager.h"
 
 namespace ui {
 
@@ -51,7 +51,7 @@ constexpr AXNodeID EMPTY_PARAGRAPH_ID = 19;
 
 class TestAXRangeScreenRectDelegate : public AXRangeRectDelegate {
  public:
-  explicit TestAXRangeScreenRectDelegate(TestAXTreeManager* tree_manager)
+  explicit TestAXRangeScreenRectDelegate(SingleAXTreeManager* tree_manager)
       : tree_manager_(tree_manager) {}
   virtual ~TestAXRangeScreenRectDelegate() = default;
   TestAXRangeScreenRectDelegate(const TestAXRangeScreenRectDelegate& delegate) =
@@ -98,10 +98,10 @@ class TestAXRangeScreenRectDelegate : public AXRangeRectDelegate {
   }
 
  private:
-  const raw_ptr<TestAXTreeManager> tree_manager_;
+  const raw_ptr<SingleAXTreeManager> tree_manager_;
 };
 
-class AXRangeTest : public ::testing::Test, public TestAXTreeManager {
+class AXRangeTest : public ::testing::Test, public SingleAXTreeManager {
  public:
   const std::u16string EMPTY = u"";
   const std::u16string NEWLINE = u"\n";

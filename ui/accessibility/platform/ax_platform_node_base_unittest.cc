@@ -41,7 +41,28 @@ TEST_F(AXPlatformNodeTest, GetHypertext) {
   // ++++StaticText "text1" #2
   // ++++StaticText "text2" #3
   // ++++StaticText "text3" #4
-  AXTree* tree = Init({Role::kRootWebArea, {{"text1"}, {"text2"}, {"text3"}}});
+  AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
+
+  AXNodeData item1, item2, item3;
+  item1.id = 2;
+  item1.role = ax::mojom::Role::kStaticText;
+  item1.SetName("text1");
+  item2.id = 3;
+  item2.role = ax::mojom::Role::kStaticText;
+  item2.SetName("text2");
+  item3.id = 4;
+  item3.role = ax::mojom::Role::kStaticText;
+  item3.SetName("text3");
+
+  root_data.child_ids = {item1.id, item2.id, item3.id};
+
+  AXTreeUpdate update;
+  update.root_id = 1;
+  update.nodes = {root_data, item1, item2, item3};
+
+  AXTree* tree = Init(update);
 
   // Set an AXMode on the AXPlatformNode as some platforms (auralinux) use it to
   // determine if it should enable accessibility.
@@ -73,11 +94,42 @@ TEST_F(AXPlatformNodeTest, GetHypertextIgnoredContainerSiblings) {
   // ++++StaticText "text2" #5
   // ++genericContainer IGNORED #6
   // ++++StaticText "text3" #7
-  AXTree* tree =
-      Init({Role::kRootWebArea,
-            {{Role::kGenericContainer, State::kIgnored, {{"text1"}}},
-             {Role::kGenericContainer, State::kIgnored, {{"text2"}}},
-             {Role::kGenericContainer, State::kIgnored, {{"text3"}}}}});
+  AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
+  root_data.child_ids = {2, 4, 6};
+
+  AXNodeData container1, container2, container3;
+  container1.id = 2;
+  container1.role = ax::mojom::Role::kGenericContainer;
+  container1.AddState(ax::mojom::State::kIgnored);
+  container1.child_ids = {3};
+  container2.id = 4;
+  container2.role = ax::mojom::Role::kGenericContainer;
+  container2.AddState(ax::mojom::State::kIgnored);
+  container2.child_ids = {5};
+  container3.id = 6;
+  container3.role = ax::mojom::Role::kGenericContainer;
+  container3.AddState(ax::mojom::State::kIgnored);
+  container3.child_ids = {7};
+
+  AXNodeData item1, item2, item3;
+  item1.id = 3;
+  item1.role = ax::mojom::Role::kStaticText;
+  item1.SetName("text1");
+  item2.id = 5;
+  item2.role = ax::mojom::Role::kStaticText;
+  item2.SetName("text2");
+  item3.id = 7;
+  item3.role = ax::mojom::Role::kStaticText;
+  item3.SetName("text3");
+
+  AXTreeUpdate update;
+  update.root_id = 1;
+  update.nodes = {root_data, container1, container2, container3,
+                  item1,     item2,      item3};
+
+  AXTree* tree = Init(update);
 
   // Set an AXMode on the AXPlatformNode as some platforms (auralinux) use it to
   // determine if it should enable accessibility.
@@ -111,8 +163,36 @@ TEST_F(AXPlatformNodeTest, GetTextContentIgnoresInvisibleAndIgnored) {
   // ++kGroup
   // ++++kStaticText "d"
   // ++++kStaticText "e"
-  AXTree* tree =
-      Init({Role::kGroup, {{"a"}, {"b"}, {Role::kGroup, {{"d"}, {"e"}}}}});
+
+  AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kGroup;
+  root_data.child_ids = {2, 3, 4};
+
+  AXNodeData item1, item2, group1, item3, item4;
+  item1.id = 2;
+  item1.role = ax::mojom::Role::kStaticText;
+  item1.SetName("a");
+  item2.id = 3;
+  item2.role = ax::mojom::Role::kStaticText;
+  item2.SetName("b");
+
+  group1.id = 4;
+  group1.role = ax::mojom::Role::kGroup;
+  group1.child_ids = {5, 6};
+
+  item3.id = 5;
+  item3.role = ax::mojom::Role::kStaticText;
+  item3.SetName("d");
+  item4.id = 6;
+  item4.role = ax::mojom::Role::kStaticText;
+  item4.SetName("e");
+
+  AXTreeUpdate update;
+  update.root_id = 1;
+  update.nodes = {root_data, item1, item2, group1, item3, item4};
+
+  AXTree* tree = Init(update);
   auto* root = static_cast<AXPlatformNodeBase*>(
       TestAXNodeWrapper::GetOrCreate(tree, tree->root())->ax_platform_node());
 
@@ -527,9 +607,30 @@ TEST_F(AXPlatformNodeTest, HypertextOffsetFromEndpoint) {
   // ++++kLink
   // ++++++kStaticText "link"
   // ++++++kStaticText "link#2"
-  AXTree* tree =
-      Init({Role::kRootWebArea,
-            {{Role::kParagraph, {{Role::kLink, {{"link"}, {"link#2"}}}}}}});
+  AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
+  root_data.child_ids = {2};
+
+  AXNodeData container1, link1, item1, item2;
+  container1.id = 2;
+  container1.role = ax::mojom::Role::kParagraph;
+  container1.child_ids = {3};
+  link1.id = 3;
+  link1.role = ax::mojom::Role::kLink;
+  link1.child_ids = {4, 5};
+  item1.id = 4;
+  item1.role = ax::mojom::Role::kStaticText;
+  item1.SetName("link");
+  item2.id = 5;
+  item2.role = ax::mojom::Role::kStaticText;
+  item2.SetName("link#2");
+
+  AXTreeUpdate update;
+  update.root_id = 1;
+  update.nodes = {root_data, container1, link1, item1, item2};
+
+  AXTree* tree = Init(update);
   auto* root = static_cast<AXPlatformNodeBase*>(
       TestAXNodeWrapper::GetOrCreate(tree, tree->root())->ax_platform_node());
 

@@ -12,8 +12,8 @@
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_serializable_tree.h"
+#include "ui/accessibility/ax_tree_observer.h"
 #include "ui/accessibility/ax_tree_serializer.h"
-#include "ui/accessibility/test_ax_tree_manager.h"
 
 namespace ui {
 
