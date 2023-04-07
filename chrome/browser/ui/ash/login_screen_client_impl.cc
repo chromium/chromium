@@ -35,7 +35,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "components/session_manager/core/session_manager.h"
-#include "components/user_manager/remove_user_delegate.h"
 #include "components/user_manager/user_names.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 
@@ -245,8 +244,7 @@ void LoginScreenClientImpl::RemoveUser(const AccountId& account_id) {
   ProfileMetrics::LogProfileDeleteUser(
       ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
   user_manager::UserManager::Get()->RemoveUser(
-      account_id, user_manager::UserRemovalReason::LOCAL_USER_INITIATED,
-      /*delegate=*/nullptr);
+      account_id, user_manager::UserRemovalReason::LOCAL_USER_INITIATED);
   if (ash::LoginDisplayHost::default_host())
     ash::LoginDisplayHost::default_host()->UpdateAddUserButtonStatus();
 }

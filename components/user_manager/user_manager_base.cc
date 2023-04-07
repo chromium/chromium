@@ -29,7 +29,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/known_user.h"
-#include "components/user_manager/remove_user_delegate.h"
 #include "components/user_manager/user_directory_integrity_manager.h"
 #include "components/user_manager/user_type.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -346,8 +345,7 @@ void UserManagerBase::OnSessionStarted() {
 }
 
 void UserManagerBase::RemoveUser(const AccountId& account_id,
-                                 UserRemovalReason reason,
-                                 RemoveUserDelegate* delegate) {
+                                 UserRemovalReason reason) {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
 
   UserDirectoryIntegrityManager integrity_manager(GetLocalState());
@@ -358,20 +356,16 @@ void UserManagerBase::RemoveUser(const AccountId& account_id,
     return;
   }
 
-  RemoveUserInternal(account_id, reason, delegate);
+  RemoveUserInternal(account_id, reason);
 }
 
 void UserManagerBase::RemoveUserInternal(const AccountId& account_id,
-                                         UserRemovalReason reason,
-                                         RemoveUserDelegate* delegate) {
-  RemoveNonOwnerUserInternal(account_id, reason, delegate);
+                                         UserRemovalReason reason) {
+  RemoveNonOwnerUserInternal(account_id, reason);
 }
 
 void UserManagerBase::RemoveNonOwnerUserInternal(AccountId account_id,
-                                                 UserRemovalReason reason,
-                                                 RemoveUserDelegate* delegate) {
-  if (delegate)
-    delegate->OnBeforeUserRemoved(account_id);
+                                                 UserRemovalReason reason) {
   NotifyUserToBeRemoved(account_id);
   AsyncRemoveCryptohome(account_id);
   RemoveUserFromList(account_id);
@@ -379,9 +373,6 @@ void UserManagerBase::RemoveNonOwnerUserInternal(AccountId account_id,
   // |account_id_copy| instead if needed.
 
   NotifyUserRemoved(account_id, reason);
-
-  if (delegate)
-    delegate->OnUserRemoved(account_id);
 }
 
 void UserManagerBase::RemoveUserFromList(const AccountId& account_id) {
@@ -1290,8 +1281,7 @@ void UserManagerBase::RemoveLegacySupervisedUser(const AccountId& account_id) {
     // FindUser(account_id) returns nullptr and CanUserBeRemoved() returns
     // false. This is why we call RemoveUserInternal() directly instead of
     // RemoveUser().
-    RemoveUserInternal(account_id, UserRemovalReason::UNKNOWN,
-                       /*delegate=*/nullptr);
+    RemoveUserInternal(account_id, UserRemovalReason::UNKNOWN);
     base::UmaHistogramEnumeration(kLegacySupervisedUsersHistogramName,
                                   LegacySupervisedUserStatus::kLSUDeleted);
   } else {

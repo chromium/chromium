@@ -64,11 +64,11 @@ bool RemoveUsersIfNeeded() {
   // change underneath us if we used a reference).
   const user_manager::UserList user_list = user_manager->GetUsers();
 
-  for (user_manager::User* user : user_list)
+  for (user_manager::User* user : user_list) {
     user_manager->RemoveUser(
         user->GetAccountId(),
-        user_manager::UserRemovalReason::REMOTE_ADMIN_INITIATED,
-        /*delegate=*/nullptr);
+        user_manager::UserRemovalReason::REMOTE_ADMIN_INITIATED);
+  }
 
   // Revert to default value after removal is done.
   local_state->ClearPref(prefs::kRemoveUsersRemoteCommand);

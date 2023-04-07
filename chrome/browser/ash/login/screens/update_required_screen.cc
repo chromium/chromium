@@ -432,8 +432,7 @@ void UpdateRequiredScreen::DeleteUsersData() {
   for (user_manager::User* user : user_list) {
     user_manager->RemoveUser(user->GetAccountId(),
                              user_manager::UserRemovalReason::
-                                 LOCAL_USER_INITIATED_ON_REQUIRED_UPDATE,
-                             /*delegate=*/nullptr);
+                                 LOCAL_USER_INITIATED_ON_REQUIRED_UPDATE);
   }
 
   // TODO(b/277159583): Here we check the user list, but the exact

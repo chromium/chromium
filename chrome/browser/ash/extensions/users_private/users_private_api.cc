@@ -243,8 +243,7 @@ ExtensionFunction::ResponseAction UsersPrivateRemoveUserFunction::Run() {
                                                        canonical_email);
   user_manager::UserManager::Get()->RemoveUser(
       AccountId::FromUserEmail(parameters->email),
-      user_manager::UserRemovalReason::LOCAL_USER_INITIATED,
-      /*delegate=*/nullptr);
+      user_manager::UserRemovalReason::LOCAL_USER_INITIATED);
   return RespondNow(WithArguments(removed));
 }
 

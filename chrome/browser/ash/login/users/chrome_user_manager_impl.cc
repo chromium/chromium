@@ -101,7 +101,6 @@
 #include "components/proxy_config/proxy_prefs.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/known_user.h"
-#include "components/user_manager/remove_user_delegate.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_image/user_image.h"
 #include "components/user_manager/user_manager.h"
@@ -563,13 +562,12 @@ user_manager::UserList ChromeUserManagerImpl::GetUnlockUsers() const {
 
 void ChromeUserManagerImpl::RemoveUserInternal(
     const AccountId& account_id,
-    user_manager::UserRemovalReason reason,
-    user_manager::RemoveUserDelegate* delegate) {
+    user_manager::UserRemovalReason reason) {
   CrosSettings* cros_settings = CrosSettings::Get();
 
   auto callback =
       base::BindOnce(&ChromeUserManagerImpl::RemoveUserInternal,
-                     weak_factory_.GetWeakPtr(), account_id, reason, delegate);
+                     weak_factory_.GetWeakPtr(), account_id, reason);
 
   // Ensure the value of owner email has been fetched.
   if (CrosSettingsProvider::TRUSTED !=
@@ -590,7 +588,7 @@ void ChromeUserManagerImpl::RemoveUserInternal(
   if (!user_added_removed_reporter_intialized_) {
     CacheRemovedUser(account_id.GetUserEmail(), reason);
   }
-  RemoveNonOwnerUserInternal(account_id, reason, delegate);
+  RemoveNonOwnerUserInternal(account_id, reason);
 }
 
 void ChromeUserManagerImpl::CacheRemovedUser(

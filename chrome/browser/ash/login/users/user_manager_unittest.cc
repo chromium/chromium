@@ -38,7 +38,6 @@
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
-#include "components/user_manager/remove_user_delegate.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -63,31 +62,6 @@ AccountId CreateDeviceLocalKioskAppAccountId(const std::string& account_id) {
 }  // namespace
 
 static constexpr char kEmail[] = "user@example.com";
-
-class UnittestRemoveUserDelegate : public user_manager::RemoveUserDelegate {
- public:
-  explicit UnittestRemoveUserDelegate(const AccountId& expected_account_id)
-      : expected_account_id_(expected_account_id) {}
-
-  bool HasBeforeUserRemoved() const { return has_before_user_removed_; }
-
-  bool HasUserRemoved() const { return has_user_removed_; }
-
-  void OnBeforeUserRemoved(const AccountId& account_id) override {
-    has_before_user_removed_ = true;
-    EXPECT_EQ(expected_account_id_, account_id);
-  }
-
-  void OnUserRemoved(const AccountId& account_id) override {
-    has_user_removed_ = true;
-    EXPECT_EQ(expected_account_id_, account_id);
-  }
-
- private:
-  const AccountId expected_account_id_;
-  bool has_before_user_removed_;
-  bool has_user_removed_;
-};
 
 class UserManagerObserverTest : public user_manager::UserManager::Observer {
  public:
@@ -420,8 +394,7 @@ TEST_F(UserManagerTest, RemoveUser) {
 
   // Removing logged-in account is unacceptable.
   user_manager->RemoveUser(account_id0_at_invalid_domain_,
-                           user_manager::UserRemovalReason::UNKNOWN,
-                           /*delegate=*/nullptr);
+                           user_manager::UserRemovalReason::UNKNOWN);
   EXPECT_EQ(2U, user_manager->GetUsers().size());
 
   // Recreate the user manager to log out all accounts.
@@ -443,13 +416,10 @@ TEST_F(UserManagerTest, RemoveUser) {
   }
   ASSERT_TRUE(user_to_remove);
   ASSERT_EQ(account_id0_at_invalid_domain_, user_to_remove->GetAccountId());
-  UnittestRemoveUserDelegate delegate(account_id0_at_invalid_domain_);
   // Pass the account id of the user to be removed from the user list to verify
   // that a reference to the account id will not be used after user removal.
   user_manager->RemoveUser(user_to_remove->GetAccountId(),
-                           user_manager::UserRemovalReason::UNKNOWN, &delegate);
-  EXPECT_TRUE(delegate.HasBeforeUserRemoved());
-  EXPECT_TRUE(delegate.HasUserRemoved());
+                           user_manager::UserRemovalReason::UNKNOWN);
   EXPECT_EQ(1, observer_test.OnUserToBeRemovedCallCount());
   EXPECT_EQ(1, observer_test.OnUserRemovedCallCount());
   EXPECT_EQ(1U, user_manager->GetUsers().size());
@@ -457,8 +427,7 @@ TEST_F(UserManagerTest, RemoveUser) {
   // Removing owner account is unacceptable.
   observer_test.ResetCallCounts();
   user_manager->RemoveUser(owner_account_id_at_invalid_domain_,
-                           user_manager::UserRemovalReason::UNKNOWN,
-                           /*delegate=*/nullptr);
+                           user_manager::UserRemovalReason::UNKNOWN);
   EXPECT_EQ(0, observer_test.OnUserToBeRemovedCallCount());
   EXPECT_EQ(0, observer_test.OnUserRemovedCallCount());
   EXPECT_EQ(1U, user_manager->GetUsers().size());

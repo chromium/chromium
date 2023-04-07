@@ -285,10 +285,9 @@ void FakeChromeUserManager::SwitchActiveUser(const AccountId& account_id) {
 
 void FakeChromeUserManager::OnSessionStarted() {}
 
-void FakeChromeUserManager::RemoveUser(
-    const AccountId& account_id,
-    user_manager::UserRemovalReason reason,
-    user_manager::RemoveUserDelegate* delegate) {}
+void FakeChromeUserManager::RemoveUser(const AccountId& account_id,
+                                       user_manager::UserRemovalReason reason) {
+}
 
 void FakeChromeUserManager::RemoveUserFromList(const AccountId& account_id) {
   WallpaperControllerClientImpl* const wallpaper_client =
