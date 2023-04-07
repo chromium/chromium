@@ -74,6 +74,7 @@ struct UserSeenOffer {
 };
 
 extern const int64_t kUnknownSubscriptionTimestamp;
+extern const uint64_t kInvalidSubscriptionId;
 
 struct CommerceSubscription {
   // The CommerceSubscription instantiation outside of this subscriptions/

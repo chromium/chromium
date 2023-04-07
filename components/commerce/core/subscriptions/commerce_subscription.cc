@@ -32,6 +32,7 @@ UserSeenOffer& UserSeenOffer::operator=(const UserSeenOffer&) = default;
 UserSeenOffer::~UserSeenOffer() = default;
 
 const int64_t kUnknownSubscriptionTimestamp = 0;
+const uint64_t kInvalidSubscriptionId = 0;
 
 CommerceSubscription::CommerceSubscription(
     SubscriptionType type,

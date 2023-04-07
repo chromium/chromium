@@ -6,6 +6,7 @@
 
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -129,10 +130,12 @@ void ShoppingListUiTabHelper::OnUnsubscribe(
 
 void ShoppingListUiTabHelper::HandleSubscriptionChange(
     const CommerceSubscription& sub) {
-  // TODO(b:265216263): Block events here if the subscription does not match
-  //                    what is on the current page.
-  UpdatePriceTrackingStateFromSubscriptions();
-  UpdatePriceTrackingIconView();
+  if (sub.id_type == IdentifierType::kProductClusterId &&
+      sub.id == base::NumberToString(
+                    cluster_id_for_page_.value_or(kInvalidSubscriptionId))) {
+    UpdatePriceTrackingStateFromSubscriptions();
+    UpdatePriceTrackingIconView();
+  }
 }
 
 void ShoppingListUiTabHelper::SetShoppingServiceForTesting(
