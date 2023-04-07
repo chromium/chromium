@@ -108630,6 +108630,7 @@ others/histograms.xml -->
   <int value="3" label="Card authorization token is empty"/>
   <int value="4" label="Blocked by strike database"/>
   <int value="5" label="User opted in from settings"/>
+  <int value="6" label="User already opted into FIDO auth, no need to offer"/>
 </enum>
 
 <enum name="WebBluetoothConnectGATTOutcome">

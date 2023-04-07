@@ -626,9 +626,22 @@ void CreditCardAccessManager::OnCvcAuthenticationComplete(
 
 #if BUILDFLAG(IS_ANDROID)
 bool CreditCardAccessManager::ShouldOfferFidoAuth() const {
+  if (!unmask_details_.offer_fido_opt_in &&
+      unmask_details_.fido_request_options.has_value()) {
+    // Server instructed the client to not offer fido because the client is
+    // already opted in. This can be verified with the presence of request
+    // options in the server response.
+    autofill_metrics::LogWebauthnOptInPromoNotOfferedReason(
+        autofill_metrics::WebauthnOptInPromoNotOfferedReason::kAlreadyOptedIn);
+    return false;
+  }
+
   if (!unmask_details_.offer_fido_opt_in) {
     // If the server thinks FIDO opt-in is not required for this user, then we
-    // won't offer the FIDO opt-in checkbox on the card unmask dialog.
+    // won't offer the FIDO opt-in checkbox on the card unmask dialog. Since the
+    // client is not opted-in and device is eligible, this could mean that the
+    // server does not have a valid key for this device or the server is in a
+    // bad state.
     autofill_metrics::LogWebauthnOptInPromoNotOfferedReason(
         autofill_metrics::WebauthnOptInPromoNotOfferedReason::
             kUnmaskDetailsOfferFidoOptInFalse);
@@ -876,9 +889,20 @@ bool CreditCardAccessManager::ShouldOfferFidoOptInDialog(
   // We should not offer FIDO opt-in dialog on mobile.
   return false;
 #else
+  if (!unmask_details_.offer_fido_opt_in &&
+      unmask_details_.fido_request_options.has_value()) {
+    // Server instructed the client to not offer fido because the client is
+    // already opted in. This can be verified with the presence of request
+    // options in the server response.
+    autofill_metrics::LogWebauthnOptInPromoNotOfferedReason(
+        autofill_metrics::WebauthnOptInPromoNotOfferedReason::kAlreadyOptedIn);
+    return false;
+  }
 
   // If this card is not eligible for offering FIDO opt-in, we should not offer
-  // the FIDO opt-in dialog.
+  // the FIDO opt-in dialog. Since the client is not opted-in and device is
+  // eligible, this could mean that the server does not have a valid key for
+  // this device or the server is in a bad state.
   if (!unmask_details_.offer_fido_opt_in) {
     autofill_metrics::LogWebauthnOptInPromoNotOfferedReason(
         autofill_metrics::WebauthnOptInPromoNotOfferedReason::
