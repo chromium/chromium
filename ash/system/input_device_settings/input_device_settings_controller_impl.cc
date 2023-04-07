@@ -26,6 +26,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/chromeos/events/keyboard_capability.h"
@@ -140,8 +141,10 @@ void RecordSetMouseSetttingsValidMetric(bool is_valid) {
       "ChromeOS.Settings.Device.Mouse.SetSettingsSucceeded", is_valid);
 }
 
-InputDeviceSettingsControllerImpl::InputDeviceSettingsControllerImpl()
-    : keyboard_pref_handler_(std::make_unique<KeyboardPrefHandlerImpl>()),
+InputDeviceSettingsControllerImpl::InputDeviceSettingsControllerImpl(
+    PrefService* local_state)
+    : local_state_(local_state),
+      keyboard_pref_handler_(std::make_unique<KeyboardPrefHandlerImpl>()),
       touchpad_pref_handler_(std::make_unique<TouchpadPrefHandlerImpl>()),
       mouse_pref_handler_(std::make_unique<MousePrefHandlerImpl>()),
       pointing_stick_pref_handler_(
@@ -151,12 +154,14 @@ InputDeviceSettingsControllerImpl::InputDeviceSettingsControllerImpl()
 }
 
 InputDeviceSettingsControllerImpl::InputDeviceSettingsControllerImpl(
+    PrefService* local_state,
     std::unique_ptr<KeyboardPrefHandler> keyboard_pref_handler,
     std::unique_ptr<TouchpadPrefHandler> touchpad_pref_handler,
     std::unique_ptr<MousePrefHandler> mouse_pref_handler,
     std::unique_ptr<PointingStickPrefHandler> pointing_stick_pref_handler,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : keyboard_pref_handler_(std::move(keyboard_pref_handler)),
+    : local_state_(local_state),
+      keyboard_pref_handler_(std::move(keyboard_pref_handler)),
       touchpad_pref_handler_(std::move(touchpad_pref_handler)),
       mouse_pref_handler_(std::move(mouse_pref_handler)),
       pointing_stick_pref_handler_(std::move(pointing_stick_pref_handler)),
@@ -232,6 +237,7 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
     return;
   }
   active_pref_service_ = pref_service;
+  active_account_id_ = Shell::Get()->session_controller()->GetActiveAccountId();
   InitializePolicyHandler();
 
   // Device settings must be refreshed when the user pref service is updated,
@@ -255,12 +261,7 @@ void InputDeviceSettingsControllerImpl::ScheduleDeviceSettingsRefresh() {
 void InputDeviceSettingsControllerImpl::RefreshAllDeviceSettings() {
   settings_refresh_pending_ = false;
   for (const auto& [id, keyboard] : keyboards_) {
-    keyboard_pref_handler_->InitializeKeyboardSettings(
-        active_pref_service_, policy_handler_->keyboard_policies(),
-        keyboard.get());
-    if (active_pref_service_) {
-      metrics_manager_->RecordKeyboardInitialMetrics(*keyboard);
-    }
+    InitializeKeyboardSettings(keyboard.get());
     DispatchKeyboardSettingsChanged(id);
   }
   for (const auto& [id, touchpad] : touchpads_) {
@@ -286,6 +287,49 @@ void InputDeviceSettingsControllerImpl::RefreshAllDeviceSettings() {
       metrics_manager_->RecordPointingStickInitialMetrics(*pointing_stick);
     }
     DispatchPointingStickSettingsChanged(id);
+  }
+  RefreshStoredLoginScreenKeyboardSettings();
+}
+
+void InputDeviceSettingsControllerImpl::
+    RefreshStoredLoginScreenKeyboardSettings() {
+  if (!local_state_ || !active_account_id_.has_value()) {
+    return;
+  }
+
+  // Our map of keyboards is sorted so iterating in reverse order guarantees
+  // that we'll select the most recently connected device.
+  auto external_iter = base::ranges::find(
+      keyboards_.rbegin(), keyboards_.rend(), /*value=*/true,
+      [](const auto& keyboard) { return keyboard.second->is_external; });
+  auto internal_iter = base::ranges::find(
+      keyboards_.rbegin(), keyboards_.rend(), /*value=*/false,
+      [](const auto& keyboard) { return keyboard.second->is_external; });
+
+  if (external_iter != keyboards_.rend()) {
+    auto& external_keyboard = *external_iter->second;
+    keyboard_pref_handler_->UpdateLoginScreenKeyboardSettings(
+        local_state_, active_account_id_.value(),
+        policy_handler_->keyboard_policies(), external_keyboard);
+  }
+
+  if (internal_iter != keyboards_.rend()) {
+    auto& internal_keyboard = *internal_iter->second;
+    keyboard_pref_handler_->UpdateLoginScreenKeyboardSettings(
+        local_state_, active_account_id_.value(),
+        policy_handler_->keyboard_policies(), internal_keyboard);
+  }
+}
+
+void InputDeviceSettingsControllerImpl::OnLoginScreenFocusedPodChanged(
+    const AccountId& account_id) {
+  active_account_id_ = account_id;
+
+  for (const auto& [id, keyboard] : keyboards_) {
+    keyboard_pref_handler_->InitializeLoginScreenKeyboardSettings(
+        local_state_, account_id, policy_handler_->keyboard_policies(),
+        keyboard.get());
+    DispatchKeyboardSettingsChanged(id);
   }
 }
 
@@ -422,6 +466,8 @@ void InputDeviceSettingsControllerImpl::SetKeyboardSettings(
       DispatchKeyboardSettingsChanged(device_id);
     }
   }
+
+  RefreshStoredLoginScreenKeyboardSettings();
 }
 
 void InputDeviceSettingsControllerImpl::SetTouchpadSettings(
@@ -640,12 +686,7 @@ void InputDeviceSettingsControllerImpl::OnKeyboardListUpdated(
     // Get initial settings from the pref manager and generate our local
     // storage of the device.
     auto mojom_keyboard = BuildMojomKeyboard(keyboard);
-    keyboard_pref_handler_->InitializeKeyboardSettings(
-        active_pref_service_, policy_handler_->keyboard_policies(),
-        mojom_keyboard.get());
-    if (active_pref_service_) {
-      metrics_manager_->RecordKeyboardInitialMetrics(*mojom_keyboard);
-    }
+    InitializeKeyboardSettings(mojom_keyboard.get());
     keyboards_.insert_or_assign(keyboard.id, std::move(mojom_keyboard));
     DispatchKeyboardConnected(keyboard.id);
   }
@@ -653,6 +694,8 @@ void InputDeviceSettingsControllerImpl::OnKeyboardListUpdated(
   for (const auto id : keyboard_ids_to_remove) {
     DispatchKeyboardDisconnectedAndEraseFromList(id);
   }
+
+  RefreshStoredLoginScreenKeyboardSettings();
 }
 
 void InputDeviceSettingsControllerImpl::OnTouchpadListUpdated(
@@ -712,6 +755,28 @@ void InputDeviceSettingsControllerImpl::OnPointingStickListUpdated(
   for (const auto id : pointing_stick_ids_to_remove) {
     DispatchPointingStickDisconnectedAndEraseFromList(id);
   }
+}
+
+void InputDeviceSettingsControllerImpl::InitializeKeyboardSettings(
+    mojom::Keyboard* keyboard) {
+  if (active_pref_service_) {
+    keyboard_pref_handler_->InitializeKeyboardSettings(
+        active_pref_service_, policy_handler_->keyboard_policies(), keyboard);
+    metrics_manager_->RecordKeyboardInitialMetrics(*keyboard);
+    return;
+  }
+
+  // Ensure `keyboard.settings` is left in a valid state. This state occurs
+  // during OOBE setup and when signing in a new user.
+  if (!active_account_id_.has_value() || !local_state_) {
+    keyboard_pref_handler_->InitializeWithDefaultKeyboardSettings(
+        policy_handler_->keyboard_policies(), keyboard);
+    return;
+  }
+
+  keyboard_pref_handler_->InitializeLoginScreenKeyboardSettings(
+      local_state_, active_account_id_.value(),
+      policy_handler_->keyboard_policies(), keyboard);
 }
 
 }  // namespace ash

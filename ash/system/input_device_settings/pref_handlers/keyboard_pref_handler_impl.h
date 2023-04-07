@@ -45,6 +45,10 @@ class ASH_EXPORT KeyboardPrefHandlerImpl : public KeyboardPrefHandler {
       const AccountId& account_id,
       const mojom::KeyboardPolicies& keyboard_policies,
       const mojom::Keyboard& keyboard) override;
+
+  void InitializeWithDefaultKeyboardSettings(
+      const mojom::KeyboardPolicies& keyboard_policies,
+      mojom::Keyboard* keyboard) override;
 };
 
 }  // namespace ash

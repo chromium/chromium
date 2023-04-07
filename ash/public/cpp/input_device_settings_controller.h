@@ -12,6 +12,8 @@
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "base/observer_list_types.h"
 
+class AccountId;
+
 namespace ash {
 
 // An interface, implemented by ash, which allows chrome to retrieve and update
@@ -90,6 +92,9 @@ class ASH_PUBLIC_EXPORT InputDeviceSettingsController {
   virtual void SetPointingStickSettings(
       DeviceId id,
       mojom::PointingStickSettingsPtr settings) = 0;
+
+  // Used to configure device settings on the login screen.
+  virtual void OnLoginScreenFocusedPodChanged(const AccountId& account_id) = 0;
 
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;

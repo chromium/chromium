@@ -1265,7 +1265,7 @@ void Shell::Init(
   //  - `KeyboardModifierMetricsRecorder`
   //  - `InputDeviceSettingsDispatcher`
   input_device_settings_controller_ =
-      std::make_unique<InputDeviceSettingsControllerImpl>();
+      std::make_unique<InputDeviceSettingsControllerImpl>(local_state_);
   input_device_tracker_ = std::make_unique<InputDeviceTracker>();
   input_device_settings_dispatcher_ =
       std::make_unique<InputDeviceSettingsDispatcher>(

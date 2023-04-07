@@ -52,6 +52,12 @@ class ASH_EXPORT KeyboardPrefHandler {
       const AccountId& account_id,
       const mojom::KeyboardPolicies& keyboard_policies,
       const mojom::Keyboard& keyboard) = 0;
+
+  // Updates the `settings` member of the `mojom::Keyboard` object using
+  // default settings.
+  virtual void InitializeWithDefaultKeyboardSettings(
+      const mojom::KeyboardPolicies& keyboard_policies,
+      mojom::Keyboard* keyboard) = 0;
 };
 
 }  // namespace ash

@@ -415,4 +415,10 @@ void KeyboardPrefHandlerImpl::UpdateLoginScreenKeyboardSettings(
                    settings_dict)));
 }
 
+void KeyboardPrefHandlerImpl::InitializeWithDefaultKeyboardSettings(
+    const mojom::KeyboardPolicies& keyboard_policies,
+    mojom::Keyboard* keyboard) {
+  keyboard->settings = GetDefaultKeyboardSettings(keyboard_policies, *keyboard);
+}
+
 }  // namespace ash
