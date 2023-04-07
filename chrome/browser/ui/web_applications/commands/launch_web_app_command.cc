@@ -145,7 +145,8 @@ base::Value LaunchWebApp(apps::AppLaunchParams params,
   }
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback), browser, web_contents, container));
+      base::BindOnce(std::move(callback), browser,
+                     base::UnsafeDanglingUntriaged(web_contents), container));
   return base::Value(std::move(debug_value));
 }
 
