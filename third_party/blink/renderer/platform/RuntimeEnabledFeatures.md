@@ -1,6 +1,6 @@
 # Runtime Enabled Features
 ## Overview
-Runtime flags enable Blink developers the ability to control access Chromium users have to new features they implement. Features that are hidden behind a runtime flag are known as Runtime Enabled Features. It is a requirement of the Blink Launch Process to implement new web exposed features behind a runtime flag until an Intent To Ship has been approved. Additionally, all changes with non-trivial compatibility risk [should be guarded](/docs/flag_guarding_guidelines.md) by a Runtime Enabled Feature (or other base::Feature) so that they can be disabled quickly.
+Runtime flags enable Blink to control access to new features. Features that are hidden behind a runtime flag are known as Runtime Enabled Features. It is a requirement of the Blink Launch Process to implement new web exposed features behind a runtime flag until an Intent To Ship has been approved. Additionally, all changes with non-trivial compatibility risk [should be guarded](/docs/flag_guarding_guidelines.md) by a Runtime Enabled Feature (or other base::Feature) so that they can be disabled quickly.
 
 ## Adding A Runtime Enabled Feature
 Runtime Enabled Features are defined in runtime_enabled_features.json5 in alphabetical order. Add your feature's flag to [runtime_enabled_features.json5] and the rest will be generated for you automatically.
