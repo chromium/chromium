@@ -462,7 +462,7 @@ class SVG {
   static addText(svg, x, y, fontSize, textContent, anchor, transform) {
     const lines = textContent.split('\n');
     for (let i = 0; i < lines.length; ++i) {
-      var text = document.createElementNS(svgNS, 'text');
+      const text = document.createElementNS(svgNS, 'text');
       text.setAttributeNS(null, 'x', x);
       text.setAttributeNS(null, 'y', y);
       text.setAttributeNS(null, 'fill', 'black');
@@ -726,8 +726,8 @@ class EventBands {
     const autoDetectRange = !attributes ||
         typeof attributes.minValue == 'undefined' ||
         typeof attributes.maxValue == 'undefined';
-    for (var i = 0; i < sources.length; ++i) {
-      var source = sources[i];
+    for (let i = 0; i < sources.length; ++i) {
+      const source = sources[i];
       let eventIndex = source.getFirstAfter(this.minTimestamp);
       if (eventIndex < 0 || source.events[eventIndex][1] > this.maxTimestamp) {
         eventIndicesForAll.push([]);
@@ -737,7 +737,7 @@ class EventBands {
         minValue = source.events[eventIndex][2];
         maxValue = source.events[eventIndex][2];
       }
-      var eventIndices = [];
+      const eventIndices = [];
       while (eventIndex >= 0 &&
              source.events[eventIndex][1] <= this.maxTimestamp) {
         eventIndices.push(eventIndex);
@@ -777,9 +777,9 @@ class EventBands {
 
     // Render now.
     const height = chart.bottom - chart.top;
-    for (var i = 0; i < sources.length; ++i) {
-      var source = sources[i];
-      var eventIndices = eventIndicesForAll[i];
+    for (let i = 0; i < sources.length; ++i) {
+      const source = sources[i];
+      const eventIndices = eventIndicesForAll[i];
       if (eventIndices.length == 0) {
         continue;
       }
@@ -1085,7 +1085,7 @@ class EventBands {
         this.updateToolTipForGlobalEvents_(event, svg, eventTimestamp, yOffset);
     if (yOffset == this.verticalGap) {
       // Find band for this mouse event.
-      for (var i = 0; i < this.bands.length; ++i) {
+      for (let i = 0; i < this.bands.length; ++i) {
         if (this.bands[i].top <= eventY && this.bands[i].bottom > eventY) {
           yOffset = this.updateToolTipForBand_(
               event, svg, eventTimestamp, this.bands[i].band, yOffset);
@@ -1094,7 +1094,7 @@ class EventBands {
       }
 
       // Find chart for this mouse event.
-      for (var i = 0; i < this.charts.length; ++i) {
+      for (let i = 0; i < this.charts.length; ++i) {
         if (this.charts[i].top <= eventY && this.charts[i].bottom > eventY) {
           yOffset = this.updateToolTipForChart_(
               event, svg, eventTimestamp, this.charts[i], yOffset);
@@ -1269,8 +1269,8 @@ class EventBands {
       const entriesToShow = [];
       while (index >= 0) {
         const attributes = eventBand.getEventAttributes(index);
-        var eventTimestamp = eventBand.events[index][1];
-        var entryToShow = {};
+        const eventTimestamp = eventBand.events[index][1];
+        const entryToShow = {};
         entryToShow.color = attributes.color;
         if (eventBand.events[index].length > 2) {
           entryToShow.text = attributes.name + ' ' + eventBand.events[index][2];
@@ -1294,7 +1294,7 @@ class EventBands {
         entriesToShow[entriesToShow.length - 1].color = bandColor;
       }
       for (let i = 0; i < entriesToShow.length; ++i) {
-        var entryToShow = entriesToShow[i];
+        const entryToShow = entriesToShow[i];
         yOffset += this.lineHeight;
         SVG.addCircle(
             svg, this.iconOffset, yOffset - this.iconRadius, this.iconRadius, 1,
@@ -1326,15 +1326,15 @@ class EventBands {
     for (let i = 0; i < chart.sourcesWithBounds.length; ++i) {
       const sourceWithBounds = chart.sourcesWithBounds[i];
 
-      var color;
-      var text;
+      let color;
+      let text;
       if (sourceWithBounds.perValue) {
         // Tooltip per value
         const index = sourceWithBounds.source.getLastBefore(eventTimestamp);
         if (index < 0) {
           continue;
         }
-        var event = sourceWithBounds.source.events[index];
+        const event = sourceWithBounds.source.events[index];
         color = sourceWithBounds.attributes[event[2]].color;
         text = sourceWithBounds.attributes[event[2]].name;
       } else {
@@ -1498,7 +1498,7 @@ class CpuDetailedInfoView extends DetailedInfoView {
     }
 
     // The same thread might be executed on different CPU cores. Sort events.
-    for (var tid in eventsPerTid) {
+    for (const tid in eventsPerTid) {
       eventsPerTid[tid].events.sort(function(a, b) {
         return a[1] - b[1];
       });
@@ -1508,9 +1508,9 @@ class CpuDetailedInfoView extends DetailedInfoView {
     const threadsPerPid = {};
     const pids = [];
     let totalTime = 0;
-    for (var tid in eventsPerTid) {
+    for (const tid in eventsPerTid) {
       const thread = eventsPerTid[tid];
-      var pid = overviewBand.model.system.threads[tid].pid;
+      const pid = overviewBand.model.system.threads[tid].pid;
       if (!(pid in threadsPerPid)) {
         pids.push(pid);
         threadsPerPid[pid] = {};
@@ -1543,9 +1543,9 @@ class CpuDetailedInfoView extends DetailedInfoView {
     bands.setWidth(totalWidth);
 
     for (let i = 0; i < pids.length; i++) {
-      var pid = pids[i];
+      const pid = pids[i];
       const threads = threadsPerPid[pid].threads;
-      var processName;
+      let processName;
       if (pid in overviewBand.model.system.threads) {
         processName = overviewBand.model.system.threads[pid].name;
       } else {
@@ -1578,7 +1578,7 @@ class CpuDetailedInfoView extends DetailedInfoView {
       bands.nextYOffset += (processInfoHeight + padding);
 
       for (let j = 0; j < threads.length; j++) {
-        var tid = threads[j].tid;
+        const tid = threads[j].tid;
         bands.addBand(
             new Events(eventsPerTid[tid].events, 0, 1), cpuBandHeight, padding);
         const threadName = overviewBand.model.system.threads[tid].name;

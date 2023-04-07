@@ -769,12 +769,12 @@ function adjustTopMargin() {
 
   const doc = appWindow.contentWindow.document;
   const headers = doc.getElementsByClassName('header');
-  for (var i = 0; i < headers.length; i++) {
+  for (let i = 0; i < headers.length; i++) {
     headers[i].style.marginTop = -decorationHeight + 'px';
   }
 
   const authPages = doc.getElementsByClassName('section-active-directory-auth');
-  for (var i = 0; i < authPages.length; i++) {
+  for (let i = 0; i < authPages.length; i++) {
     authPages[i].style.marginTop = -decorationHeight + 'px';
   }
 }
@@ -1051,13 +1051,7 @@ chrome.app.runtime.onLaunched.addListener(function() {
     sendNativeMessage('requestWindowBounds');
   };
 
-  const onWindowCreated = function(createdWindow) {
-    appWindow = createdWindow;
-    appWindow.contentWindow.onload = onAppContentLoad;
-    appWindow.onClosed.addListener(onWindowClosed);
-  };
-
-  var onWindowClosed = function() {
+  const onWindowClosed = function() {
     appWindow = null;
 
     // Turn off event processing.
@@ -1071,6 +1065,12 @@ chrome.app.runtime.onLaunched.addListener(function() {
     // would not be unloaded.
     port.disconnect();
     port = null;
+  };
+
+  const onWindowCreated = function(createdWindow) {
+    appWindow = createdWindow;
+    appWindow.contentWindow.onload = onAppContentLoad;
+    appWindow.onClosed.addListener(onWindowClosed);
   };
 
   const options = {

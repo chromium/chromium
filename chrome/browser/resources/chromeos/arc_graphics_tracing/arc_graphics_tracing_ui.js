@@ -148,7 +148,7 @@ function setGraphicBuffersModel(model) {
   const chromeBands =
       new EventBands(chromeTitle, 'arc-events-band', resolution, 0, duration);
   chromeBands.setWidth(chromeBands.timestampToOffset(duration));
-  for (var i = 0; i < model.chrome.buffers.length; i++) {
+  for (let i = 0; i < model.chrome.buffers.length; i++) {
     chromeBands.addBand(
         new Events(model.chrome.buffers[i], 500, 599), topBandHeight,
         topBandPadding);
@@ -193,10 +193,10 @@ function setGraphicBuffersModel(model) {
 
   const allActivityJanks = [];
   const allActivityCustomEvents = [];
-  for (var i = 0; i < model.views.length; i++) {
+  for (let i = 0; i < model.views.length; i++) {
     const view = model.views[i];
-    var activityTitleText;
-    var icon;
+    let activityTitleText;
+    let icon;
     if (model.tasks && view.task_id in model.tasks) {
       activityTitleText =
           model.tasks[view.task_id].title + ' - ' + view.activity;
@@ -247,7 +247,7 @@ function setGraphicBuffersModel(model) {
     const inputBands =
         new EventBands(inputTitle, 'arc-events-band', resolution, 0, duration);
     inputBands.setWidth(inputBands.timestampToOffset(duration));
-    for (var i = 0; i < model.input.buffers.length; i++) {
+    for (let i = 0; i < model.input.buffers.length; i++) {
       inputBands.addBand(
           new Events(model.input.buffers[i], 700, 799), topBandHeight,
           topBandPadding);
@@ -287,10 +287,10 @@ function setGraphicBuffersModel(model) {
   // Add all janks
   timeRulerBands.addGlobal(chromeJanks, 'circle' /* renderType */);
   timeRulerBands.addGlobal(androidJanks, 'circle' /* renderType */);
-  for (var i = 0; i < allActivityJanks.length; ++i) {
+  for (let i = 0; i < allActivityJanks.length; ++i) {
     timeRulerBands.addGlobal(allActivityJanks[i], 'circle' /* renderType */);
   }
-  for (var i = 0; i < allActivityCustomEvents.length; ++i) {
+  for (let i = 0; i < allActivityCustomEvents.length; ++i) {
     timeRulerBands.addGlobal(
         allActivityCustomEvents[i], 'circle' /* renderType */);
   }
@@ -311,7 +311,7 @@ function setGraphicBuffersModel(model) {
   }
   // Add janks and custom events labels.
   const rotationY = timeRulerEventHeight + timeRulerBands.fontSize;
-  for (var i = 0; i < timeRulerBands.globalEvents.length; ++i) {
+  for (let i = 0; i < timeRulerBands.globalEvents.length; ++i) {
     const globalEvents = timeRulerBands.globalEvents[i];
     if (globalEvents == timeMarkEvents ||
         globalEvents == timeRulerBands.vsyncEvents) {
@@ -323,7 +323,7 @@ function setGraphicBuffersModel(model) {
       index = globalEvents.getNextEvent(index, 1 /* direction */);
       const eventType = event[0];
       const attributes = eventAttributes[eventType];
-      var text;
+      let text;
       if (eventType == 600 /* kCustomEvent */) {
         text = event[2];
       } else {

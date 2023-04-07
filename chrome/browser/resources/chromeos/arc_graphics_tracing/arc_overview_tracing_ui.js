@@ -675,7 +675,7 @@ function addFPSHistograms(parent, anchor, timeBasedView) {
         let barHeight = 0;
         if (timeBasedView) {
           barHeight = maxBarHeight * basketTimeValues[b] / basketTimeValueMax;
-          var basketInfo = '';
+          let basketInfo = '';
           if (b == 0) {
             basketInfo =
                 'Frame time <= ' + (1000.0 / basketMinFPSs[b]).toFixed(1) +
@@ -694,7 +694,7 @@ function addFPSHistograms(parent, anchor, timeBasedView) {
               totalTime.toFixed(1).toString() + ' sec)';
         } else {
           barHeight = maxBarHeight * basketCountValues[b] / basketCountValueMax;
-          var basketInfo = '';
+          let basketInfo = '';
           if (b == 0) {
             basketInfo = 'Frame FPS >= ' + basketMinFPSs[b].toString();
           } else {

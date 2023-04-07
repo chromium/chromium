@@ -149,7 +149,7 @@ function updateInFlightOperations(inFlightOperations) {
   // Reset the table. Remove children in reverse order. Otherwides each
   // existingNodes[i] changes as a side effect of removeChild.
   const existingNodes = container.childNodes;
-  for (var i = existingNodes.length - 1; i >= 0; i--) {
+  for (let i = existingNodes.length - 1; i >= 0; i--) {
     const node = existingNodes[i];
     if (node.className == 'in-flight-operation') {
       container.removeChild(node);
@@ -157,7 +157,7 @@ function updateInFlightOperations(inFlightOperations) {
   }
 
   // Add in-flight operations.
-  for (var i = 0; i < inFlightOperations.length; i++) {
+  for (let i = 0; i < inFlightOperations.length; i++) {
     const operation = inFlightOperations[i];
     const tr = document.createElement('tr');
     tr.className = 'in-flight-operation';

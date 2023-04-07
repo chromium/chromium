@@ -18,7 +18,7 @@ import {DataSeries} from './line_chart/data_series.js';
  *   user: number,
  * }}
  */
-export var GeneralCpuType;
+export let GeneralCpuType;
 
 /**
  * For info page.
@@ -29,7 +29,7 @@ export var GeneralCpuType;
  *   used: number,
  * }}
  */
-export var GeneralMemoryType;
+export let GeneralMemoryType;
 
 /**
  * For info page.
@@ -40,7 +40,7 @@ export var GeneralMemoryType;
  *   total: number,
  * }}
  */
-export var GeneralZramType;
+export let GeneralZramType;
 
 /**
  * @typedef {{
@@ -49,12 +49,12 @@ export var GeneralZramType;
  *   zram: GeneralZramType,
  * }}
  */
-export var GeneralInfoType;
+export let GeneralInfoType;
 
 /**
  * @typedef {Array<!DataSeries>|null}
  */
-export var CpuDataSeriesSet;
+export let CpuDataSeriesSet;
 
 /**
  * @typedef {{
@@ -64,7 +64,7 @@ export var CpuDataSeriesSet;
  *   pswpout: !DataSeries
  * }}
  */
-export var MemoryDataSeriesSet;
+export let MemoryDataSeriesSet;
 
 /**
  * @typedef {{
@@ -75,7 +75,7 @@ export var MemoryDataSeriesSet;
  *   numWrites: !DataSeries
  * }}
  */
-export var ZramDataSeriesSet;
+export let ZramDataSeriesSet;
 
 /**
  * @typedef {{
@@ -84,9 +84,9 @@ export var ZramDataSeriesSet;
  *   zram: ZramDataSeriesSet,
  * }}
  */
-export var DataSeriesSet;
+export let DataSeriesSet;
 
 /**
  * @typedef {{value: number, timestamp: number}}
  */
-export var CounterType;
+export let CounterType;

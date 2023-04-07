@@ -79,7 +79,7 @@ export class DeviceTable extends HTMLTableElement {
   }
 
   checkMutedDevice() {
-    var hasMuted = false;
+    let hasMuted = false;
     for (const item of Object.values(this.devices)) {
       const device = item as DeviceData;
       if (device.isMuted) {
@@ -94,7 +94,7 @@ export class DeviceTable extends HTMLTableElement {
   }
 
   checkInactiveDevice() {
-    var allInactive = true;
+    let allInactive = true;
     for (const item of Object.values(this.devices)) {
       const device = item as DeviceData;
       if (device.isActive) {

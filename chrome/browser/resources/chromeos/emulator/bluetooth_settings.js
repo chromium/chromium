@@ -234,7 +234,7 @@ Polymer({
     let exists = false;
     const addressRegex = RegExp('^([\\da-fA-F]{2}:){5}[\\da-fA-F]{2}$');
     if (addressRegex.test(val)) {
-      for (var i = 0; i < this.predefinedDevices.length; ++i) {
+      for (let i = 0; i < this.predefinedDevices.length; ++i) {
         if (this.predefinedDevices[i].address == val) {
           exists = true;
           break;
@@ -242,7 +242,7 @@ Polymer({
       }
 
       if (!exists) {
-        for (var i = 0; i < this.devices.length; ++i) {
+        for (let i = 0; i < this.devices.length; ++i) {
           if (this.devices[i].address == val && i != this.currentEditIndex) {
             exists = true;
             break;
@@ -270,7 +270,7 @@ Polymer({
     const val = input.value;
     let exists = false;
 
-    for (var i = 0; i < this.predefinedDevices.length; ++i) {
+    for (let i = 0; i < this.predefinedDevices.length; ++i) {
       if (this.predefinedDevices[i].path == val) {
         exists = true;
         break;
@@ -278,7 +278,7 @@ Polymer({
     }
 
     if (!exists) {
-      for (var i = 0; i < this.devices.length; ++i) {
+      for (let i = 0; i < this.devices.length; ++i) {
         if (this.devices[i].path == val && i != this.currentEditIndex) {
           exists = true;
           break;
@@ -383,7 +383,7 @@ Polymer({
         predefined ? this.predefinedDevices[index] : this.devices[index];
 
     if (event.target.checked) {
-      var devicePath = (predefined ? 'predefinedDevices.' : 'devices.');
+      let devicePath = (predefined ? 'predefinedDevices.' : 'devices.');
       devicePath += index.toString();
       this.set(devicePath + '.discoverable', true);
 
@@ -391,13 +391,13 @@ Polymer({
       chrome.send('requestBluetoothPair', [device]);
       this.devicePaths[device.path] = {predefined: predefined, index: index};
 
-      var devicePath = (predefined ? 'predefinedDevices.' : 'devices.');
+      devicePath = (predefined ? 'predefinedDevices.' : 'devices.');
       devicePath += index.toString();
       this.set(devicePath + '.paired', false);
     } else {
       chrome.send('removeBluetoothDevice', [device.path]);
 
-      var devicePath = (predefined ? 'predefinedDevices.' : 'devices.');
+      let devicePath = (predefined ? 'predefinedDevices.' : 'devices.');
       devicePath += index.toString();
       this.set(devicePath + '.discoverable', false);
     }
