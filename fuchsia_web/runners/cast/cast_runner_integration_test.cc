@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <chromium/cast/cpp/fidl.h>
 #include <fuchsia/camera3/cpp/fidl.h>
 #include <fuchsia/legacymetrics/cpp/fidl.h>
 #include <fuchsia/media/cpp/fidl.h>
@@ -45,7 +46,6 @@
 #include "fuchsia_web/common/test/url_request_rewrite_test_util.h"
 #include "fuchsia_web/runners/cast/cast_runner.h"
 #include "fuchsia_web/runners/cast/cast_runner_switches.h"
-#include "fuchsia_web/runners/cast/fidl/fidl/hlcpp/chromium/cast/cpp/fidl.h"
 #include "fuchsia_web/runners/cast/test/cast_runner_features.h"
 #include "fuchsia_web/runners/cast/test/cast_runner_launcher.h"
 #include "fuchsia_web/runners/cast/test/fake_api_bindings.h"

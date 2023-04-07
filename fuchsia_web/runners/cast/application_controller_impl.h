@@ -5,13 +5,12 @@
 #ifndef FUCHSIA_WEB_RUNNERS_CAST_APPLICATION_CONTROLLER_IMPL_H_
 #define FUCHSIA_WEB_RUNNERS_CAST_APPLICATION_CONTROLLER_IMPL_H_
 
+#include <chromium/cast/cpp/fidl.h>
 #include <fuchsia/diagnostics/cpp/fidl.h>
 #include <fuchsia/media/sessions2/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>
 #include <lib/fidl/cpp/interface_request.h>
-
-#include "fuchsia_web/runners/cast/fidl/fidl/hlcpp/chromium/cast/cpp/fidl.h"
 
 class ApplicationControllerImpl final
     : public chromium::cast::ApplicationController {

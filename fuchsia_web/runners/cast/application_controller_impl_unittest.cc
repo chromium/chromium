@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <chromium/cast/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl_test_base.h>
 #include <lib/fidl/cpp/binding.h>
+
 #include <string>
 #include <utility>
 
@@ -13,7 +15,6 @@
 #include "base/test/test_future.h"
 #include "fuchsia_web/common/test/fit_adapter.h"
 #include "fuchsia_web/runners/cast/application_controller_impl.h"
-#include "fuchsia_web/runners/cast/fidl/fidl/hlcpp/chromium/cast/cpp/fidl.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

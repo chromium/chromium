@@ -5,8 +5,10 @@
 #ifndef FUCHSIA_WEB_RUNNERS_CAST_CAST_RUNNER_H_
 #define FUCHSIA_WEB_RUNNERS_CAST_CAST_RUNNER_H_
 
+#include <chromium/cast/cpp/fidl.h>
 #include <fuchsia/component/runner/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
+
 #include <memory>
 #include <set>
 #include <vector>
@@ -16,7 +18,6 @@
 #include "base/fuchsia/startup_context.h"
 #include "base/functional/callback.h"
 #include "fuchsia_web/runners/cast/cast_component.h"
-#include "fuchsia_web/runners/cast/fidl/fidl/hlcpp/chromium/cast/cpp/fidl.h"
 #include "fuchsia_web/runners/cast/pending_cast_component.h"
 #include "fuchsia_web/runners/common/web_content_runner.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

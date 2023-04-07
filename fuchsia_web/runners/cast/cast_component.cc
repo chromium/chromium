@@ -4,8 +4,10 @@
 
 #include "fuchsia_web/runners/cast/cast_component.h"
 
+#include <chromium/cast/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
+
 #include <algorithm>
 #include <string>
 #include <utility>
@@ -21,7 +23,6 @@
 #include "components/cast/message_port/platform_message_port.h"
 #include "fuchsia_web/runners/cast/cast_runner.h"
 #include "fuchsia_web/runners/cast/cast_streaming.h"
-#include "fuchsia_web/runners/cast/fidl/fidl/hlcpp/chromium/cast/cpp/fidl.h"
 #include "fuchsia_web/runners/common/web_component.h"
 
 namespace {
