@@ -261,6 +261,21 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
   if (net::IsHostnameNonUnique(tentative_resource_request.url.host())) {
     RecordNavigationRequestSecurityLevel(
         NavigationRequestSecurityLevel::kNonUniqueHostname);
+
+    // For HTTPS-Upgrades, skip attempting to upgrade non-routable IP address
+    // literals (i.e., RFC1918/4193) as they can't get publicly-trusted
+    // certificates.
+    //
+    // HTTPS-First Mode does not exempt these hosts in order to ensure that
+    // Chrome shows the HTTP interstitial before navigation to them.
+    // Potentially, these could fast-fail instead and skip directly to the
+    // interstitial.
+    if (base::FeatureList::IsEnabled(features::kHttpsUpgrades) &&
+        !http_interstitial_enabled_ &&
+        tentative_resource_request.url.HostIsIPAddress()) {
+      std::move(callback).Run({});
+      return;
+    }
   }
 
   // Check whether this host would be upgraded to HTTPS by HSTS. This requires a
