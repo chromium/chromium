@@ -53,6 +53,7 @@ const tests = [
   ['SearchResultBoldingTest', 'search_result_bolding_test.js'],
   ['ShortcutCustomizationApp', 'shortcut_customization_test.js'],
   ['ShortcutSearchHandlerTest', 'shortcut_search_handler_test.js'],
+  ['ShortcutsPageTest', 'shortcuts_page_test.js'],
   ['ShortcutUtils', 'shortcut_utils_test.js'],
   ['TextAcceleratorTest', 'text_accelerator_test.js'],
 ];

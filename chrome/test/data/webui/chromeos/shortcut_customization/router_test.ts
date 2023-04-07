@@ -32,6 +32,18 @@ suite('RouterTest', function() {
         window.location.href);
   });
 
+  test('Reset route test', async () => {
+    Router.resetInstanceForTesting(new Router());
+    const url = new URL('chrome://shortcut-customization');
+    url.searchParams.append('testParam', 'testValue');
+    Router.getInstance().navigateTo(url);
+    assertEquals(
+        'chrome://shortcut-customization/?testParam=testValue',
+        window.location.href);
+    Router.getInstance().resetRoute();
+    assertEquals('chrome://shortcut-customization/', window.location.href);
+  });
+
   test('Observer test', async () => {
     Router.resetInstanceForTesting(new Router());
     const router = Router.getInstance();

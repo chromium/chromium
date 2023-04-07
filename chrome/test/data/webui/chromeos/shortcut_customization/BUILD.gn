@@ -35,6 +35,7 @@ ts_library("build_ts") {
     "shortcut_customization_test.ts",
     "shortcut_customization_test_util.ts",
     "shortcut_search_handler_test.ts",
+    "shortcuts_page_test.ts",
     "shortcut_utils_test.ts",
     "text_accelerator_test.ts",
   ]

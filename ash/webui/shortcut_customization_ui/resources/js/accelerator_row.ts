@@ -66,6 +66,7 @@ export class AcceleratorRowElement extends PolymerElement {
       action: {
         type: Number,
         value: 0,
+        reflectToAttribute: true,
       },
 
       source: {

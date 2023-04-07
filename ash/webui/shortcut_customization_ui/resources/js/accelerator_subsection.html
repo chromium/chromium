@@ -8,6 +8,15 @@
     height: 48px;
   }
 
+  accelerator-row {
+    /**
+     * scroll-margin-top is used to position this element when it's scrolled
+     * to the top of the page by shortcuts-page when a search result is
+     * selected. Without this, the element would be hidden by the toolbar.
+     */
+    scroll-margin-top: var(--navigation-view-panel-toolbar-height);
+  }
+
   accelerator-row:not(:last-of-type) {
     border-bottom: var(--cr-separator-line);
   }

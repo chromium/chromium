@@ -454,41 +454,45 @@ export const CycleTabsTextSearchResult: MojoSearchResult = {
   relevanceScore: 0.95,
 };
 
-// The following code is used to add fake accelerator entries for each icon.
-// When useFakeProvider is true, this will display all available icons for
-// the purposes of debugging.
-const createFakeMojoAccelInfo = (keyDisplay: string): MojoAcceleratorInfo => {
-  return {
-    type: AcceleratorType.kDefault,
-    state: AcceleratorState.kEnabled,
-    locked: true,
-    layoutProperties: {
-      standardAccelerator: {
-        keyDisplay: stringToMojoString16(keyDisplay),
-        accelerator: {
-          modifiers: 0,
-          keyCode: 0,
-          keyState: 0,
-          timeStamp: fakeTimestamp,
-        },
-      },
-      textAccelerator: undefined,
-    },
-  };
-};
-
-const createFakeMojoLayoutInfo =
-    (description: string, action: number): MojoLayoutInfo => {
+export const createFakeMojoAccelInfo =
+    (keyDisplay: string = 'a'): MojoAcceleratorInfo => {
       return {
-        category: AcceleratorCategory.kBrowser,
-        subCategory: AcceleratorSubcategory.kTabs,
-        description: stringToMojoString16(description),
-        style: LayoutStyle.kDefault,
-        source: AcceleratorSource.kAmbient,
-        action,
+        type: AcceleratorType.kDefault,
+        state: AcceleratorState.kEnabled,
+        locked: true,
+        layoutProperties: {
+          standardAccelerator: {
+            keyDisplay: stringToMojoString16(keyDisplay),
+            accelerator: {
+              modifiers: 0,
+              keyCode: 0,
+              keyState: 0,
+              timeStamp: fakeTimestamp,
+            },
+          },
+          textAccelerator: undefined,
+        },
       };
     };
 
+export const createFakeMojoLayoutInfo =
+    (description: string, action: number,
+     category: AcceleratorCategory = AcceleratorCategory.kBrowser,
+     source: AcceleratorSource = AcceleratorSource.kAmbient):
+        MojoLayoutInfo => {
+          return {
+            category,
+            subCategory: AcceleratorSubcategory.kTabs,
+            description: stringToMojoString16(description),
+            style: LayoutStyle.kDefault,
+            source,
+            action,
+          };
+        };
+
+// The following code is used to add fake accelerator entries for each icon.
+// When useFakeProvider is true, this will display all available icons for
+// the purposes of debugging.
 const icons = Object.keys(keyToIconNameMap);
 
 for (const [index, iconName] of icons.entries()) {
