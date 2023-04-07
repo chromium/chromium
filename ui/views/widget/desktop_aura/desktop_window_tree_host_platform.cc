@@ -683,6 +683,9 @@ bool DesktopWindowTreeHostPlatform::ShouldWindowContentsBeTransparent() const {
 }
 
 void DesktopWindowTreeHostPlatform::FrameTypeChanged() {
+  if (!native_widget_delegate_) {
+    return;
+  }
   Widget::FrameType new_type =
       native_widget_delegate_->AsWidget()->frame_type();
   if (new_type == Widget::FrameType::kDefault) {
