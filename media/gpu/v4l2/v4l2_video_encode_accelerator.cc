@@ -51,27 +51,6 @@
     SetErrorState(x);                        \
   } while (0)
 
-#define IOCTL_OR_ERROR_RETURN_VALUE(type, arg, value, type_str) \
-  do {                                                          \
-    if (device_->Ioctl(type, arg) != 0) {                       \
-      VPLOGF(1) << "ioctl() failed: " << type_str;              \
-      NOTIFY_ERROR(kPlatformFailureError);                      \
-      return value;                                             \
-    }                                                           \
-  } while (0)
-
-#define IOCTL_OR_ERROR_RETURN(type, arg) \
-  IOCTL_OR_ERROR_RETURN_VALUE(type, arg, ((void)0), #type)
-
-#define IOCTL_OR_ERROR_RETURN_FALSE(type, arg) \
-  IOCTL_OR_ERROR_RETURN_VALUE(type, arg, false, #type)
-
-#define IOCTL_OR_LOG_ERROR(type, arg)              \
-  do {                                             \
-    if (device_->Ioctl(type, arg) != 0)            \
-      VPLOGF(1) << "ioctl() failed: " << #type;    \
-  } while (0)
-
 namespace {
 const uint8_t kH264StartCode[] = {0, 0, 0, 1};
 const size_t kH264StartCodeSize = sizeof(kH264StartCode);
@@ -279,7 +258,12 @@ bool V4L2VideoEncodeAccelerator::Initialize(
   struct v4l2_capability caps;
   memset(&caps, 0, sizeof(caps));
   const __u32 kCapsRequired = V4L2_CAP_VIDEO_M2M_MPLANE | V4L2_CAP_STREAMING;
-  IOCTL_OR_ERROR_RETURN_FALSE(VIDIOC_QUERYCAP, &caps);
+  if (device_->Ioctl(VIDIOC_QUERYCAP, &caps) != 0) {
+    VPLOGF(1) << "ioctl() failed: VIDIOC_QUERYCAP";
+    NOTIFY_ERROR(kPlatformFailureError);
+    return false;
+  }
+
   if ((caps.capabilities & kCapsRequired) != kCapsRequired) {
     MEDIA_LOG(ERROR, media_log.get())
         << "caps check failed: 0x" << std::hex << caps.capabilities;
@@ -1297,7 +1281,11 @@ void V4L2VideoEncodeAccelerator::PumpBitstreamBuffers() {
       struct v4l2_encoder_cmd cmd;
       memset(&cmd, 0, sizeof(cmd));
       cmd.cmd = V4L2_ENC_CMD_START;
-      IOCTL_OR_ERROR_RETURN(VIDIOC_ENCODER_CMD, &cmd);
+      if (device_->Ioctl(VIDIOC_ENCODER_CMD, &cmd) != 0) {
+        VPLOGF(1) << "ioctl() failed: VIDIOC_ENCODER_CMD";
+        NOTIFY_ERROR(kPlatformFailureError);
+        return;
+      }
     }
   }
 
@@ -1537,25 +1525,6 @@ void V4L2VideoEncodeAccelerator::DevicePollTask(bool poll_device) {
                                 weak_this_));
 }
 
-void V4L2VideoEncodeAccelerator::NotifyError(Error error) {
-  // Note that NotifyError() must be called from SetErrorState() only, so that
-  // NotifyError() will not be called twice.
-  VLOGF(1) << "error=" << error;
-  DCHECK(child_task_runner_);
-
-  if (child_task_runner_->RunsTasksInCurrentSequence()) {
-    if (client_) {
-      client_->NotifyError(error);
-      client_ptr_factory_.reset();
-    }
-    return;
-  }
-
-  // Called on encoder_task_runner_.
-  child_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&Client::NotifyError, client_, error));
-}
-
 void V4L2VideoEncodeAccelerator::SetErrorState(Error error) {
   // We can touch encoder_state_ only if this is the encoder thread or the
   // encoder thread isn't running.
@@ -1568,8 +1537,11 @@ void V4L2VideoEncodeAccelerator::SetErrorState(Error error) {
 
   // Post NotifyError only if we are already initialized, as the API does
   // not allow doing so before that.
-  if (encoder_state_ != kError && encoder_state_ != kUninitialized)
-    NotifyError(error);
+  if (encoder_state_ != kError && encoder_state_ != kUninitialized) {
+    CHECK(child_task_runner_);
+    child_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&Client::NotifyError, client_, error));
+  }
 
   encoder_state_ = kError;
 }
@@ -1624,7 +1596,11 @@ void V4L2VideoEncodeAccelerator::RequestEncodingParametersChangeTask(
     // frame"; hence we provide the reciprocal of the framerate here.
     parms.parm.output.timeperframe.numerator = 1;
     parms.parm.output.timeperframe.denominator = framerate;
-    IOCTL_OR_ERROR_RETURN(VIDIOC_S_PARM, &parms);
+    if (device_->Ioctl(VIDIOC_S_PARM, &parms) != 0) {
+      VPLOGF(1) << "ioctl() failed: VIDIOC_S_PARM";
+      NOTIFY_ERROR(kPlatformFailureError);
+      return;
+    }
   }
 
   current_bitrate_ = bitrate;
@@ -1741,8 +1717,17 @@ bool V4L2VideoEncodeAccelerator::ApplyCrop() {
     memset(&crop, 0, sizeof(crop));
     crop.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
     crop.c = visible_rect;
-    IOCTL_OR_ERROR_RETURN_FALSE(VIDIOC_S_CROP, &crop);
-    IOCTL_OR_ERROR_RETURN_FALSE(VIDIOC_G_CROP, &crop);
+    if (device_->Ioctl(VIDIOC_S_CROP, &crop) != 0) {
+      VPLOGF(1) << "ioctl() failed: VIDIOC_S_CROP";
+      NOTIFY_ERROR(kPlatformFailureError);
+      return false;
+    }
+    if (device_->Ioctl(VIDIOC_G_CROP, &crop) != 0) {
+      VPLOGF(1) << "ioctl() failed: VIDIOC_G_CROP";
+      NOTIFY_ERROR(kPlatformFailureError);
+      return false;
+    }
+
     visible_rect = crop.c;
   }
 
