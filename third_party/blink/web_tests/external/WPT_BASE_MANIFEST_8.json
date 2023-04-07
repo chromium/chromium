@@ -2974,6 +2974,13 @@
     },
     "css-position": {
      "crashtests": {
+      "inline-containing-block-crash.html": [
+       "db385e38d18bc5478ce58f46ab016c812e4d7fc8",
+       [
+        null,
+        {}
+       ]
+      ],
       "position-absolute-crash-014.html": [
        "a169a7b9498f4f014f9feb6ba64300f186f92776",
        [
@@ -268912,11 +268919,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "f320650c76d864579cc33867b83bd04e888a6eb4",
+     "e37041b94f616eac59512a3fe8006d1ec7565ba1",
      []
     ],
     "mtime.json": [
-     "a54278ee7e8d8f3abb367c7de58176fd6250e9b1",
+     "6612aefff2d3c679b0209866a8e45948a19cd990",
      []
     ]
    },
@@ -287004,12 +287011,28 @@
         "acf472249fb8abf6fb69cd21c8c72f9fc3a88092",
         []
        ],
+       "flexbox-column-inline-end-expected.txt": [
+        "cbf0ee9d42e9e808ae6bcdb815f51aa56f5c8726",
+        []
+       ],
+       "flexbox-column-inline-end.html.ini": [
+        "3507fb4e0cfb565160f0be55c1fb0ba9229065ac",
+        []
+       ],
        "flexbox-column-multi-line-block-start-expected.txt": [
         "ff439b422e932677ebb0d69a2d579d75f297c3fa",
         []
        ],
        "flexbox-column-multi-line-block-start.html.ini": [
         "95bd28e828154d7d9df3888cb8cc0a156b1545d1",
+        []
+       ],
+       "flexbox-column-multi-line-inline-end-expected.txt": [
+        "996713014ca75f4cf1cd6b84633d1614fad1e134",
+        []
+       ],
+       "flexbox-column-multi-line-inline-end.html.ini": [
+        "c8e1834793db927031b1443a73cf82d86558f210",
         []
        ],
        "flexbox-row-block-start-expected.txt": [
@@ -287020,12 +287043,28 @@
         "698ce340da867b1a44809638e911c01da5961ac2",
         []
        ],
+       "flexbox-row-inline-end-expected.txt": [
+        "72e40978824dc2f30ddfe90063d0825d77ad4fa9",
+        []
+       ],
+       "flexbox-row-inline-end.html.ini": [
+        "e43c3fe58c89a388c53c38f797d485ecaa6913a7",
+        []
+       ],
        "flexbox-row-multi-line-block-start-expected.txt": [
         "2b9363e8f9ebcae0811fabd6289960a058f23212",
         []
        ],
        "flexbox-row-multi-line-block-start.html.ini": [
         "e2fea32ba8a1eab0e0d0591f38d7f72c1445340e",
+        []
+       ],
+       "flexbox-row-multi-line-inline-end-expected.txt": [
+        "856ae4a19a290244d9bc1ee93ac50ac0388ab6af",
+        []
+       ],
+       "flexbox-row-multi-line-inline-end.html.ini": [
+        "b6d8f156fd37f493cbe04c3cf532cf448e64d7b3",
         []
        ]
       },
@@ -308376,7 +308415,7 @@
        []
       ],
       "mask-with-rotation.svg.ini": [
-       "2f4b4a323942550cf252b86e2b7cd415ea546f35",
+       "faa4ec037066982d603bfaeb7226b2eba7de9b1f",
        []
       ],
       "reference": {
@@ -319900,11 +319939,11 @@
        []
       ],
       "pre-wrap-align-center-002.html.ini": [
-       "e795096990cc6dab477f06bc5f6366af80c2842b",
+       "2e7b54459296f4fd494f355c6a35fe3fad2d22e5",
        []
       ],
       "pre-wrap-align-center-003.html.ini": [
-       "cdc9e5ba512ea78ac7d8c22850a4bad1ec476972",
+       "8738c2fda853ce0d8f01300d8efe1a0054132bd6",
        []
       ],
       "pre-wrap-align-end-001.html.ini": [
@@ -322310,6 +322349,10 @@
       "76c77e5bd03c3a801f13a7cbf344d91f73657b9e",
       []
      ],
+     "3d-rendering-context-and-fixpos.html.ini": [
+      "1f4d4ad54b7a7794b1947e54b3bfca28e306bc46",
+      []
+     ],
      "3d-scene-with-iframe-001-ref.html": [
       "d984f8a6e9d6f9c221affc07628f8b353dccb010",
       []
@@ -322708,6 +322751,10 @@
      ],
      "preserve3d-and-flattening-002.html.ini": [
       "e4d46ead9136c13c6033481d5f3e8fd09047883c",
+      []
+     ],
+     "preserve3d-and-flattening-z-order-005.html.ini": [
+      "4213558575242110a545f45c46c0513103bb6fe2",
       []
      ],
      "preserve3d-and-flattening-z-order-008.html.ini": [
@@ -325617,6 +325664,10 @@
       ],
       "kind-of-widget-fallback-input-search-text-border-top-color-001.html.ini": [
        "1b6035bf619946ac7293be42e2d5f3c2c0f37091",
+       []
+      ],
+      "kind-of-widget-fallback-input-search-text-border-top-style-001.html.ini": [
+       "b8989649989330670d42de6c6dde8435a7c8b401",
        []
       ],
       "kind-of-widget-fallback-input-submit-background-clip-001.html.ini": [
@@ -432184,6 +432235,13 @@
        {}
       ]
      ],
+     "anchor-getComputedStyle.html": [
+      "cce571c4d0d395073449981dceb1aaffe071c3ea",
+      [
+       null,
+       {}
+      ]
+     ],
      "anchor-name-001.html": [
       "a7b4b01ff472b1488f2de50ddf7cadbda7ca34b9",
       [
@@ -434403,8 +434461,22 @@
          {}
         ]
        ],
+       "flexbox-column-inline-end.html": [
+        "9bf43356f228f8ee6d37a4c64ea0bca4aadf2a64",
+        [
+         null,
+         {}
+        ]
+       ],
        "flexbox-column-multi-line-block-start.html": [
         "517619db49be1a7f42a7a48eea731dac1aeca008",
+        [
+         null,
+         {}
+        ]
+       ],
+       "flexbox-column-multi-line-inline-end.html": [
+        "4d3d5b5326cfcc301323226f5203bd91f440107e",
         [
          null,
          {}
@@ -434424,8 +434496,22 @@
          {}
         ]
        ],
+       "flexbox-row-inline-end.html": [
+        "2c20625ed3811c861598d1d752afdf314043612d",
+        [
+         null,
+         {}
+        ]
+       ],
        "flexbox-row-multi-line-block-start.html": [
         "c3190e1a93fff9b744f7834b8e2457e330296b0a",
+        [
+         null,
+         {}
+        ]
+       ],
+       "flexbox-row-multi-line-inline-end.html": [
+        "8a59bc417175d6569876ecbb135d25cede0731b0",
         [
          null,
          {}
