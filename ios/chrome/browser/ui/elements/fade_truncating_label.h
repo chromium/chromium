@@ -25,6 +25,9 @@ typedef enum {
 // Whether the text being displayed should be treated as a URL.
 @property(nonatomic, assign) BOOL displayAsURL;
 
+// Line spacing used when drawing multiple lines.
+@property(nonatomic, assign) CGFloat lineSpacing;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_ELEMENTS_FADE_TRUNCATING_LABEL_H_
