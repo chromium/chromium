@@ -31,18 +31,18 @@ inline jclass org_chromium_components_omnibox_action_OmniboxAction_clazz(
 }  // namespace
 
 base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxPedal(
+    JNIEnv* env,
     const std::u16string& hint,
     OmniboxPedalId pedal_id) {
-  JNIEnv* env = base::android::AttachCurrentThread();
   return base::android::ScopedJavaGlobalRef(Java_OmniboxPedal_Constructor(
       env, base::android::ConvertUTF16ToJavaString(env, hint),
       static_cast<int32_t>(pedal_id)));
 }
 
 base::android::ScopedJavaGlobalRef<jobject> BuildHistoryClustersAction(
+    JNIEnv* env,
     const std::u16string& hint,
     const std::string& query) {
-  JNIEnv* env = base::android::AttachCurrentThread();
   return base::android::ScopedJavaGlobalRef(
       Java_HistoryClustersAction_Constructor(
           env, base::android::ConvertUTF16ToJavaString(env, hint),
@@ -50,9 +50,9 @@ base::android::ScopedJavaGlobalRef<jobject> BuildHistoryClustersAction(
 }
 
 base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxActionInSuggest(
+    JNIEnv* env,
     const std::u16string& hint,
     const std::string& serialized_action) {
-  JNIEnv* env = base::android::AttachCurrentThread();
   return base::android::ScopedJavaGlobalRef(Java_OmniboxActionInSuggest_build(
       env, base::android::ConvertUTF16ToJavaString(env, hint),
       base::android::ToJavaByteArray(env, serialized_action)));
@@ -64,15 +64,17 @@ base::android::ScopedJavaLocalRef<jobjectArray> ToJavaOmniboxActionsList(
     const std::vector<scoped_refptr<OmniboxAction>>& actions) {
   jclass clazz =
       org_chromium_components_omnibox_action_OmniboxAction_clazz(env);
-  // Fires if OmniboxPedal is not part of this build target.
+  // Fires if OmniboxAction is not part of this build target.
   DCHECK(clazz);
   base::android::ScopedJavaLocalRef<jobjectArray> jactions(
       env, env->NewObjectArray(actions.size(), clazz, nullptr));
   base::android::CheckException(env);
 
   for (size_t index = 0; index < actions.size(); index++) {
-    env->SetObjectArrayElement(jactions.obj(), index,
-                               actions[index]->GetJavaObject().obj());
+    auto jobj = actions[index]->GetOrCreateJavaObject(env);
+    if (jobj) {
+      env->SetObjectArrayElement(jactions.obj(), index, jobj.obj());
+    }
   }
 
   return jactions;

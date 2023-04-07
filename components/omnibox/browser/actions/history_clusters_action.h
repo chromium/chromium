@@ -57,9 +57,8 @@ class HistoryClustersAction : public OmniboxAction {
   const gfx::VectorIcon& GetVectorIcon() const override;
 #endif
 #if BUILDFLAG(IS_ANDROID)
-  base::android::ScopedJavaGlobalRef<jobject> GetJavaObject() const override;
-
-  void CreateOrUpdateJavaObject(const std::string& query);
+  base::android::ScopedJavaLocalRef<jobject> GetOrCreateJavaObject(
+      JNIEnv* env) const override;
 #endif
 
  private:
@@ -73,7 +72,7 @@ class HistoryClustersAction : public OmniboxAction {
   std::string query_;
 
 #if BUILDFLAG(IS_ANDROID)
-  base::android::ScopedJavaGlobalRef<jobject> j_omnibox_action_;
+  mutable base::android::ScopedJavaGlobalRef<jobject> j_omnibox_action_;
 #endif
 };
 

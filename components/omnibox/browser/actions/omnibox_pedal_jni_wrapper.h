@@ -8,14 +8,17 @@
 #include <vector>
 
 base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxPedal(
+    JNIEnv* env,
     const std::u16string& hint,
     OmniboxPedalId pedal_id);
 
 base::android::ScopedJavaGlobalRef<jobject> BuildHistoryClustersAction(
+    JNIEnv* env,
     const std::u16string& hint,
     const std::string& query);
 
 base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxActionInSuggest(
+    JNIEnv* env,
     const std::u16string& hint,
     const std::string& serialized_action);
 

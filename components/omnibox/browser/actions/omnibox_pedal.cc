@@ -230,11 +230,7 @@ bool OmniboxPedal::SynonymGroup::IsValid() const {
 OmniboxPedal::OmniboxPedal(OmniboxPedalId id, LabelStrings strings, GURL url)
     : OmniboxAction(strings, url),
       id_(id),
-      verbatim_synonym_group_(false, true, 0) {
-#if BUILDFLAG(IS_ANDROID)
-  CreateOrUpdateJavaObject();
-#endif
-}
+      verbatim_synonym_group_(false, true, 0) {}
 
 /* static */ const OmniboxPedal* OmniboxPedal::FromAction(
     const OmniboxAction* action) {
@@ -252,9 +248,6 @@ void OmniboxPedal::OnLoaded() {
 
 void OmniboxPedal::SetNavigationUrl(const GURL& url) {
   url_ = url;
-#if BUILDFLAG(IS_ANDROID)
-  CreateOrUpdateJavaObject();
-#endif
 }
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
@@ -325,13 +318,12 @@ OmniboxActionId OmniboxPedal::ActionId() const {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-base::android::ScopedJavaGlobalRef<jobject> OmniboxPedal::GetJavaObject()
-    const {
-  return j_omnibox_action_;
-}
-
-void OmniboxPedal::CreateOrUpdateJavaObject() {
-  j_omnibox_action_.Reset(BuildOmniboxPedal(strings_.hint, PedalId()));
+base::android::ScopedJavaLocalRef<jobject> OmniboxPedal::GetOrCreateJavaObject(
+    JNIEnv* env) const {
+  if (!j_omnibox_action_) {
+    j_omnibox_action_.Reset(BuildOmniboxPedal(env, strings_.hint, PedalId()));
+  }
+  return base::android::ScopedJavaLocalRef<jobject>(j_omnibox_action_);
 }
 #endif
 

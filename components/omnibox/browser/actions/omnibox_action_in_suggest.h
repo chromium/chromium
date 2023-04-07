@@ -15,8 +15,8 @@ class OmniboxActionInSuggest : public OmniboxAction {
   explicit OmniboxActionInSuggest(omnibox::ActionInfo action_info);
 
 #if BUILDFLAG(IS_ANDROID)
-  base::android::ScopedJavaGlobalRef<jobject> GetJavaObject() const override;
-  void CreateOrUpdateJavaObject(const std::string& query);
+  base::android::ScopedJavaLocalRef<jobject> GetOrCreateJavaObject(
+      JNIEnv* env) const override;
 #endif
 
   void RecordActionShown(size_t position, bool executed) const override;
@@ -28,7 +28,7 @@ class OmniboxActionInSuggest : public OmniboxAction {
 
   omnibox::ActionInfo action_info_{};
 #if BUILDFLAG(IS_ANDROID)
-  base::android::ScopedJavaGlobalRef<jobject> j_omnibox_action_;
+  mutable base::android::ScopedJavaGlobalRef<jobject> j_omnibox_action_;
 #endif
 };
 
