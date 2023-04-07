@@ -3336,6 +3336,21 @@
             ]
         }
     ],
+    "CrOSLateBootAudioHFPOffload": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220520",
+                    "enable_features": [
+                        "CrOSLateBootAudioHFPOffload"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSLateBootMediaDynamicCgroup": [
         {
             "platforms": [
