@@ -35,6 +35,7 @@ namespace net {
 // above for meaningful changes and the practical utility of being able to
 // cache results when they're not expected to change.
 class NET_EXPORT CachingCertVerifier : public CertVerifier,
+                                       public CertVerifier::Observer,
                                        public CertDatabase::Observer {
  public:
   // Creates a CachingCertVerifier that will use |verifier| to perform the
@@ -54,13 +55,17 @@ class NET_EXPORT CachingCertVerifier : public CertVerifier,
              std::unique_ptr<Request>* out_req,
              const NetLogWithSource& net_log) override;
   void SetConfig(const Config& config) override;
+  void AddObserver(CertVerifier::Observer* observer) override;
+  void RemoveObserver(CertVerifier::Observer* observer) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(CachingCertVerifierTest, CacheHit);
   FRIEND_TEST_ALL_PREFIXES(CachingCertVerifierTest, CacheHitCTResultsCached);
-  FRIEND_TEST_ALL_PREFIXES(CachingCertVerifierTest, Visitor);
-  FRIEND_TEST_ALL_PREFIXES(CachingCertVerifierTest, AddsEntries);
   FRIEND_TEST_ALL_PREFIXES(CachingCertVerifierTest, DifferentCACerts);
+  FRIEND_TEST_ALL_PREFIXES(CachingCertVerifierCacheClearingTest,
+                           CacheClearedSyncVerification);
+  FRIEND_TEST_ALL_PREFIXES(CachingCertVerifierCacheClearingTest,
+                           CacheClearedAsyncVerification);
 
   // CachedResult contains the result of a certificate verification.
   struct NET_EXPORT_PRIVATE CachedResult {
@@ -117,6 +122,9 @@ class NET_EXPORT CachingCertVerifier : public CertVerifier,
                         base::Time start_time,
                         const CertVerifyResult& verify_result,
                         int error);
+
+  // CertVerifier::Observer methods:
+  void OnCertVerifierChanged() override;
 
   // CertDatabase::Observer methods:
   void OnCertDBChanged() override;

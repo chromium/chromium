@@ -64,6 +64,8 @@ class FailsTestCertVerifier : public CertVerifier {
     return ERR_FAILED;
   }
   void SetConfig(const Config& config) override {}
+  void AddObserver(Observer* observer) override {}
+  void RemoveObserver(Observer* observer) override {}
 };
 
 // A mock CTPolicyEnforcer that returns a custom verification result.

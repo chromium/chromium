@@ -42,6 +42,7 @@ namespace {
 internal::CertVerifierServiceImpl* GetNewCertVerifierImpl(
     mojom::CertVerifierServiceParams* impl_params,
     mojo::PendingReceiver<mojom::CertVerifierService> receiver,
+    mojo::PendingRemote<mojom::CertVerifierServiceClient> client,
     mojom::CertVerifierCreationParamsPtr creation_params,
     const net::ChromeRootStoreData* root_store_data,
     scoped_refptr<CertNetFetcherURLLoader>* out_cert_net_fetcher) {
@@ -70,9 +71,9 @@ internal::CertVerifierServiceImpl* GetNewCertVerifierImpl(
     *out_cert_net_fetcher = cert_net_fetcher;
 
   // The service will delete itself upon disconnection.
-  return new internal::CertVerifierServiceImpl(std::move(cert_verifier),
-                                               std::move(receiver),
-                                               std::move(cert_net_fetcher));
+  return new internal::CertVerifierServiceImpl(
+      std::move(cert_verifier), std::move(receiver), std::move(client),
+      std::move(cert_net_fetcher));
 }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
@@ -114,16 +115,17 @@ CertVerifierServiceFactoryImpl::~CertVerifierServiceFactoryImpl() = default;
 
 void CertVerifierServiceFactoryImpl::GetNewCertVerifier(
     mojo::PendingReceiver<mojom::CertVerifierService> receiver,
+    mojo::PendingRemote<mojom::CertVerifierServiceClient> client,
     mojom::CertVerifierCreationParamsPtr creation_params) {
   net::ChromeRootStoreData* root_store_data = nullptr;
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   root_store_data = base::OptionalToPtr(root_store_data_);
 #endif
 
-  internal::CertVerifierServiceImpl* service_impl =
-      GetNewCertVerifierImpl(service_params_.get(), std::move(receiver),
-                             std::move(creation_params), root_store_data,
-                             /*out_cert_net_fetcher=*/nullptr);
+  internal::CertVerifierServiceImpl* service_impl = GetNewCertVerifierImpl(
+      service_params_.get(), std::move(receiver), std::move(client),
+      std::move(creation_params), root_store_data,
+      /*out_cert_net_fetcher=*/nullptr);
 
   verifier_services_.insert(service_impl);
   service_impl->SetCertVerifierServiceFactory(weak_factory_.GetWeakPtr());
@@ -136,10 +138,11 @@ void CertVerifierServiceFactoryImpl::GetServiceParamsForTesting(
 
 void CertVerifierServiceFactoryImpl::GetNewCertVerifierForTesting(
     mojo::PendingReceiver<mojom::CertVerifierService> receiver,
+    mojo::PendingRemote<mojom::CertVerifierServiceClient> client,
     mojom::CertVerifierCreationParamsPtr creation_params,
     scoped_refptr<CertNetFetcherURLLoader>* cert_net_fetcher_ptr) {
   GetNewCertVerifierImpl(service_params_.get(), std::move(receiver),
-                         std::move(creation_params),
+                         std::move(client), std::move(creation_params),
                          /*root_store_data=*/nullptr, cert_net_fetcher_ptr);
 }
 

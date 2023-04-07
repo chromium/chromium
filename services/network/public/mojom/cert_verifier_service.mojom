@@ -21,6 +21,7 @@ struct RequestParams {
 
 // Temporary config struct--this should eventually be deleted as the network
 // service has no reason to know about this config.
+// TODO(https://crbug.com/1427326): remove this.
 struct CertVerifierConfig {
   bool enable_rev_checking;
   bool require_rev_checking_local_anchors;
@@ -62,6 +63,14 @@ interface CertVerifierService {
   // Sets the config for the underlying CertVerifier. Can serialize very large
   // net::CertVerifier::Config's due to the CRLSet.
   SetConfig(CertVerifierConfig config);
+};
+
+// Receives events from the CertVerifierService.
+interface CertVerifierServiceClient {
+  // Called when the certificate verifier changes internal configuration.
+  // Observers can use this method to invalidate caches that incorporate
+  // previous trust decisions.
+  OnCertVerifierChanged();
 };
 
 // An interface for a CertVerifierService to pass results to the client of the

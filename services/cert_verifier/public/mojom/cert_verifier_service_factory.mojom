@@ -68,9 +68,10 @@ struct ChromeRootStoreInfo {
 // CertVerifierService's, which have their own underlying CertVerifier's
 // underneath.
 interface CertVerifierServiceFactory {
-  // Gets a new CertVerifierFactory, which //net code can interface with using
+  // Gets a new CertVerifierService, which //net code can interface with using
   // cert_verifier::MojoCertVerifier.
   GetNewCertVerifier(pending_receiver<CertVerifierService> receiver,
+                     pending_remote<CertVerifierServiceClient> client,
                      CertVerifierCreationParams? creation_params);
 
   // Returns the parameters that the service was configured with.

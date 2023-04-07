@@ -113,4 +113,12 @@ void CertVerifierWithTrustAnchors::SetConfig(const Config& config) {
       orig_config_, trust_anchors_, untrusted_authorities_));
 }
 
+void CertVerifierWithTrustAnchors::AddObserver(Observer* observer) {
+  delegate_->AddObserver(observer);
+}
+
+void CertVerifierWithTrustAnchors::RemoveObserver(Observer* observer) {
+  delegate_->RemoveObserver(observer);
+}
+
 }  // namespace network

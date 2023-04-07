@@ -481,9 +481,17 @@ TrialComparisonCertVerifier::TrialComparisonCertVerifier(
           primary_verify_proc_factory)),
       trial_verifier_(std::make_unique<MultiThreadedCertVerifier>(
           trial_verify_proc,
-          trial_verify_proc_factory)) {}
+          trial_verify_proc_factory)) {
+  primary_verifier_->AddObserver(this);
+  primary_reverifier_->AddObserver(this);
+  trial_verifier_->AddObserver(this);
+}
 
-TrialComparisonCertVerifier::~TrialComparisonCertVerifier() = default;
+TrialComparisonCertVerifier::~TrialComparisonCertVerifier() {
+  primary_verifier_->RemoveObserver(this);
+  primary_reverifier_->RemoveObserver(this);
+  trial_verifier_->RemoveObserver(this);
+}
 
 int TrialComparisonCertVerifier::Verify(const RequestParams& params,
                                         CertVerifyResult* verify_result,
@@ -513,9 +521,21 @@ void TrialComparisonCertVerifier::SetConfig(const Config& config) {
   trial_verifier_->SetConfig(config);
 
   // Notify all in-process jobs that the underlying configuration has changed.
-  for (auto& job : jobs_) {
-    job->OnConfigChanged();
-  }
+  NotifyJobsOfConfigChange();
+}
+
+void TrialComparisonCertVerifier::AddObserver(
+    CertVerifier::Observer* observer) {
+  // Let primary_verifier_ handle the observer lists rather than creating
+  // another one in TrialComparisonCertVerifier. From the perspective of the
+  // caller, the primary_verifier is the only one that it would care about
+  // changes to.
+  primary_verifier_->AddObserver(observer);
+}
+
+void TrialComparisonCertVerifier::RemoveObserver(
+    CertVerifier::Observer* observer) {
+  primary_verifier_->RemoveObserver(observer);
 }
 
 void TrialComparisonCertVerifier::UpdateChromeRootStoreData(
@@ -526,11 +546,10 @@ void TrialComparisonCertVerifier::UpdateChromeRootStoreData(
   primary_reverifier_->UpdateChromeRootStoreData(cert_net_fetcher,
                                                  root_store_data);
   trial_verifier_->UpdateChromeRootStoreData(cert_net_fetcher, root_store_data);
-  // Treat a possible proc change as a configuration change. Notify all
-  // in-process jobs that the underlying configuration has changed.
-  for (auto& job : jobs_) {
-    job->OnConfigChanged();
-  }
+  // The TrialComparisonCertVerifier is registered as an observer of the
+  // underlying verifiers, and so the OnCertVerifierChanged method should be
+  // triggered to call NotifyJobsOfConfigChange, so it isn't explicitly called
+  // here.
 }
 
 void TrialComparisonCertVerifier::RemoveJob(Job* job_ptr) {
@@ -539,6 +558,16 @@ void TrialComparisonCertVerifier::RemoveJob(Job* job_ptr) {
   auto it = jobs_.find(job_ptr);
   DCHECK(it != jobs_.end());
   jobs_.erase(it);
+}
+
+void TrialComparisonCertVerifier::NotifyJobsOfConfigChange() {
+  for (auto& job : jobs_) {
+    job->OnConfigChanged();
+  }
+}
+
+void TrialComparisonCertVerifier::OnCertVerifierChanged() {
+  NotifyJobsOfConfigChange();
 }
 
 }  // namespace net

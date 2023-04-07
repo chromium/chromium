@@ -39,6 +39,7 @@ TestCertVerifierServiceFactoryImpl::~TestCertVerifierServiceFactoryImpl() =
 
 void TestCertVerifierServiceFactoryImpl::GetNewCertVerifier(
     mojo::PendingReceiver<mojom::CertVerifierService> receiver,
+    mojo::PendingRemote<mojom::CertVerifierServiceClient> client,
     mojom::CertVerifierCreationParamsPtr creation_params) {
   if (!delegate_) {
     InitDelegate();
@@ -46,6 +47,7 @@ void TestCertVerifierServiceFactoryImpl::GetNewCertVerifier(
 
   GetNewCertVerifierParams params;
   params.receiver = std::move(receiver);
+  params.client = std::move(client);
   params.creation_params = std::move(creation_params);
 
   captured_params_.push_front(std::move(params));
@@ -79,6 +81,7 @@ void TestCertVerifierServiceFactoryImpl::ReleaseNextCertVerifierParams() {
   GetNewCertVerifierParams params = std::move(captured_params_.back());
   captured_params_.pop_back();
   delegate_remote_->GetNewCertVerifier(std::move(params.receiver),
+                                       std::move(params.client),
                                        std::move(params.creation_params));
 }
 

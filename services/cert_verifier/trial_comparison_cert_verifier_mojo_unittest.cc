@@ -11,6 +11,7 @@
 #include "net/cert/cert_verify_proc.h"
 #include "net/cert/cert_verify_proc_builtin.h"
 #include "net/cert/cert_verify_result.h"
+#include "net/cert/mock_cert_verifier.h"
 #include "net/der/encode_values.h"
 #include "net/der/parse_values.h"
 #include "net/net_buildflags.h"
@@ -128,6 +129,28 @@ class NotCalledProcFactory : public net::CertVerifyProcFactory {
  protected:
   ~NotCalledProcFactory() override = default;
 };
+
+class SwapWithNewProcFactory : public net::CertVerifyProcFactory {
+ public:
+  explicit SwapWithNewProcFactory(scoped_refptr<net::CertVerifyProc> new_proc)
+      : verify_proc_(std::move(new_proc)) {}
+
+  scoped_refptr<net::CertVerifyProc> CreateCertVerifyProc(
+      scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
+      const net::ChromeRootStoreData* root_store_data) override {
+    return verify_proc_;
+  }
+
+ protected:
+  ~SwapWithNewProcFactory() override = default;
+
+  scoped_refptr<net::CertVerifyProc> verify_proc_;
+};
+
+scoped_refptr<net::CertVerifyProcFactory> SwapWithNotCalledProcFactory() {
+  return base::MakeRefCounted<SwapWithNewProcFactory>(
+      base::MakeRefCounted<NotCalledCertVerifyProc>());
+}
 
 }  // namespace
 
@@ -251,4 +274,25 @@ TEST(TrialComparisonCertVerifierMojoTest, SendReportDebugInfo) {
 
   EXPECT_EQ(time, report.debug_info->trial_verification_time);
   EXPECT_EQ("20190927221108Z", report.debug_info->trial_der_verification_time);
+}
+
+TEST(TrialComparisonCertVerifierMojoTest, ObserverIsCalledOnCRSUpdate) {
+  base::test::TaskEnvironment scoped_task_environment;
+
+  mojo::PendingRemote<
+      cert_verifier::mojom::TrialComparisonCertVerifierReportClient>
+      report_client_remote;
+  FakeReportClient report_client(
+      report_client_remote.InitWithNewPipeAndPassReceiver());
+  cert_verifier::TrialComparisonCertVerifierMojo tccvm(
+      true, {}, std::move(report_client_remote),
+      base::MakeRefCounted<NotCalledCertVerifyProc>(),
+      SwapWithNotCalledProcFactory(),
+      base::MakeRefCounted<NotCalledCertVerifyProc>(),
+      SwapWithNotCalledProcFactory());
+
+  net::CertVerifierObserverCounter observer_(&tccvm);
+  EXPECT_EQ(observer_.change_count(), 0u);
+  tccvm.UpdateChromeRootStoreData(nullptr, nullptr);
+  EXPECT_EQ(observer_.change_count(), 1u);
 }

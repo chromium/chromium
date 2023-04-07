@@ -107,6 +107,14 @@ int MockCertVerifier::Verify(const RequestParams& params,
   return ERR_IO_PENDING;
 }
 
+void MockCertVerifier::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void MockCertVerifier::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void MockCertVerifier::AddResultForCert(scoped_refptr<X509Certificate> cert,
                                         const CertVerifyResult& verify_result,
                                         int rv) {
@@ -125,6 +133,12 @@ void MockCertVerifier::ClearRules() {
   rules_.clear();
 }
 
+void MockCertVerifier::SimulateOnCertVerifierChanged() {
+  for (Observer& observer : observers_) {
+    observer.OnCertVerifierChanged();
+  }
+}
+
 int MockCertVerifier::VerifyImpl(const RequestParams& params,
                                  CertVerifyResult* verify_result) {
   for (const Rule& rule : rules_) {
@@ -141,6 +155,17 @@ int MockCertVerifier::VerifyImpl(const RequestParams& params,
   verify_result->verified_cert = params.certificate();
   verify_result->cert_status = MapNetErrorToCertStatus(default_result_);
   return default_result_;
+}
+
+CertVerifierObserverCounter::CertVerifierObserverCounter(
+    CertVerifier* verifier) {
+  obs_.Observe(verifier);
+}
+
+CertVerifierObserverCounter::~CertVerifierObserverCounter() = default;
+
+void CertVerifierObserverCounter::OnCertVerifierChanged() {
+  change_count_++;
 }
 
 }  // namespace net

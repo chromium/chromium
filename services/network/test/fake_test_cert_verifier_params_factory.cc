@@ -28,10 +28,13 @@ FakeTestCertVerifierParamsFactory::~FakeTestCertVerifierParamsFactory() =
 mojom::CertVerifierServiceRemoteParamsPtr
 FakeTestCertVerifierParamsFactory::GetCertVerifierParams() {
   mojo::PendingRemote<cert_verifier::mojom::CertVerifierService> cv_remote;
+  mojo::PendingReceiver<cert_verifier::mojom::CertVerifierServiceClient>
+      cv_client;
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<FakeTestCertVerifierParamsFactory>(),
       cv_remote.InitWithNewPipeAndPassReceiver());
-  return mojom::CertVerifierServiceRemoteParams::New(std::move(cv_remote));
+  return mojom::CertVerifierServiceRemoteParams::New(std::move(cv_remote),
+                                                     std::move(cv_client));
 }
 
 void FakeTestCertVerifierParamsFactory::Verify(

@@ -210,6 +210,18 @@ class WrappedTestingCertVerifier : public net::CertVerifier {
       return;
     g_cert_verifier_for_testing->SetConfig(config);
   }
+  void AddObserver(Observer* observer) override {
+    if (!g_cert_verifier_for_testing) {
+      return;
+    }
+    g_cert_verifier_for_testing->AddObserver(observer);
+  }
+  void RemoveObserver(Observer* observer) override {
+    if (!g_cert_verifier_for_testing) {
+      return;
+    }
+    g_cert_verifier_for_testing->RemoveObserver(observer);
+  }
 };
 
 // Predicate function to determine if the given |domain| matches the
@@ -2198,6 +2210,8 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
     // process.
     cert_verifier = std::make_unique<cert_verifier::MojoCertVerifier>(
         std::move(params_->cert_verifier_params->cert_verifier_service),
+        std::move(params_->cert_verifier_params
+                      ->cert_verifier_service_client_receiver),
         std::move(url_loader_factory_for_cert_net_fetcher),
         base::BindRepeating(
             &NetworkContext::CreateURLLoaderFactoryForCertNetFetcher,

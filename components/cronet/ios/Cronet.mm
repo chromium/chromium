@@ -86,6 +86,8 @@ class TestCertVerifier : public net::CertVerifier {
     return net::OK;
   }
   void SetConfig(const Config& config) override {}
+  void AddObserver(Observer* observer) override {}
+  void RemoveObserver(Observer* observer) override {}
 };
 
 // net::HTTPProtocolHandlerDelegate for Cronet.

@@ -19,6 +19,7 @@
 #include "net/cert/cert_verify_proc.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/ev_root_ca_metadata.h"
+#include "net/cert/mock_cert_verifier.h"
 #include "net/cert/trial_comparison_cert_verifier_util.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
@@ -344,6 +345,21 @@ class TrialComparisonCertVerifierTest : public TestWithTaskEnvironment {
   scoped_refptr<X509Certificate> lets_encrypt_isrg_x1_;
   base::HistogramTester histograms_;
 };
+
+TEST_F(TrialComparisonCertVerifierTest, ObserverIsCalledOnCRSUpdate) {
+  std::vector<TrialReportInfo> reports;
+  TrialComparisonCertVerifier verifier(
+      base::MakeRefCounted<NotCalledCertVerifyProc>(),
+      SwapWithNotCalledProcFactory(),
+      base::MakeRefCounted<NotCalledCertVerifyProc>(),
+      SwapWithNotCalledProcFactory(),
+      base::BindRepeating(&RecordTrialReport, &reports));
+
+  CertVerifierObserverCounter observer_(&verifier);
+  EXPECT_EQ(observer_.change_count(), 0u);
+  verifier.UpdateChromeRootStoreData(nullptr, nullptr);
+  EXPECT_EQ(observer_.change_count(), 1u);
+}
 
 TEST_F(TrialComparisonCertVerifierTest, InitiallyDisallowed) {
   CertVerifyResult dummy_result;

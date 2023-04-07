@@ -14,6 +14,7 @@
 #include "net/base/test_completion_callback.h"
 #include "net/cert/cert_verify_proc.h"
 #include "net/cert/cert_verify_result.h"
+#include "net/cert/mock_cert_verifier.h"
 #include "net/cert/x509_certificate.h"
 #include "net/log/net_log_with_source.h"
 #include "net/test/cert_test_util.h"
@@ -299,15 +300,21 @@ TEST_F(MultiThreadedCertVerifierTest, ConvertsConfigToFlags) {
 
 // Tests swapping in new Chrome Root Store Data.
 TEST_F(MultiThreadedCertVerifierTest, VerifyProcChangeChromeRootStore) {
+  CertVerifierObserverCounter observer_counter(verifier_.get());
+
   base::FilePath certs_dir = GetTestCertsDirectory();
   scoped_refptr<X509Certificate> test_cert(
       ImportCertFromFile(certs_dir, "ok_cert.pem"));
   ASSERT_TRUE(test_cert);
 
+  EXPECT_EQ(observer_counter.change_count(), 0u);
+
   EXPECT_CALL(*mock_new_verify_proc_, VerifyInternal(_, _, _, _, _, _, _, _, _))
       .WillRepeatedly(
           DoAll(SetCertVerifyRevokedResult(), Return(ERR_CERT_REVOKED)));
   verifier_->UpdateChromeRootStoreData(nullptr, nullptr);
+
+  EXPECT_EQ(observer_counter.change_count(), 1u);
 
   CertVerifyResult verify_result;
   TestCompletionCallback callback;

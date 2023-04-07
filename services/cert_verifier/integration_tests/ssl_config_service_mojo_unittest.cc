@@ -46,10 +46,12 @@ class SSLConfigServiceMojoTestWithCertVerifier : public testing::Test {
 
   network::mojom::NetworkContextParamsPtr CreateNetworkContextParams() {
     mojo::PendingRemote<mojom::CertVerifierService> cv_service_remote;
+    mojo::PendingReceiver<mojom::CertVerifierServiceClient> cv_service_client;
 
     // Create a cert verifier service.
     cert_verifier_service_impl_.GetNewCertVerifierForTesting(
         cv_service_remote.InitWithNewPipeAndPassReceiver(),
+        cv_service_client.InitWithNewPipeAndPassRemote(),
         mojom::CertVerifierCreationParams::New(),
         &cert_net_fetcher_url_loader_);
 
@@ -57,7 +59,7 @@ class SSLConfigServiceMojoTestWithCertVerifier : public testing::Test {
         network::mojom::NetworkContextParams::New();
     params->cert_verifier_params =
         network::mojom::CertVerifierServiceRemoteParams::New(
-            std::move(cv_service_remote));
+            std::move(cv_service_remote), std::move(cv_service_client));
     // Use a fixed proxy config, to avoid dependencies on local network
     // configuration.
     params->initial_proxy_config =

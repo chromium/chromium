@@ -380,9 +380,13 @@ void CoalescingCertVerifier::Request::OnJobAbort() {
 
 CoalescingCertVerifier::CoalescingCertVerifier(
     std::unique_ptr<CertVerifier> verifier)
-    : verifier_(std::move(verifier)) {}
+    : verifier_(std::move(verifier)) {
+  verifier_->AddObserver(this);
+}
 
-CoalescingCertVerifier::~CoalescingCertVerifier() = default;
+CoalescingCertVerifier::~CoalescingCertVerifier() {
+  verifier_->RemoveObserver(this);
+}
 
 int CoalescingCertVerifier::Verify(
     const RequestParams& params,
@@ -424,13 +428,17 @@ int CoalescingCertVerifier::Verify(
 }
 
 void CoalescingCertVerifier::SetConfig(const CertVerifier::Config& config) {
-  ++config_id_;
   verifier_->SetConfig(config);
 
-  for (auto& job : joinable_jobs_) {
-    inflight_jobs_.emplace_back(std::move(job.second));
-  }
-  joinable_jobs_.clear();
+  IncrementGenerationAndMakeCurrentJobsUnjoinable();
+}
+
+void CoalescingCertVerifier::AddObserver(Observer* observer) {
+  verifier_->AddObserver(observer);
+}
+
+void CoalescingCertVerifier::RemoveObserver(Observer* observer) {
+  verifier_->RemoveObserver(observer);
 }
 
 CoalescingCertVerifier::Job* CoalescingCertVerifier::FindJob(
@@ -457,6 +465,17 @@ void CoalescingCertVerifier::RemoveJob(Job* job) {
   DCHECK(inflight_it != inflight_jobs_.end());
   inflight_jobs_.erase(inflight_it);
   return;
+}
+
+void CoalescingCertVerifier::IncrementGenerationAndMakeCurrentJobsUnjoinable() {
+  for (auto& job : joinable_jobs_) {
+    inflight_jobs_.emplace_back(std::move(job.second));
+  }
+  joinable_jobs_.clear();
+}
+
+void CoalescingCertVerifier::OnCertVerifierChanged() {
+  IncrementGenerationAndMakeCurrentJobsUnjoinable();
 }
 
 }  // namespace net

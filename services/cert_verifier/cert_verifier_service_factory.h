@@ -43,6 +43,7 @@ class CertVerifierServiceFactoryImpl
   // mojom::CertVerifierServiceFactory implementation:
   void GetNewCertVerifier(
       mojo::PendingReceiver<mojom::CertVerifierService> receiver,
+      mojo::PendingRemote<mojom::CertVerifierServiceClient> client,
       mojom::CertVerifierCreationParamsPtr creation_params) override;
   void GetServiceParamsForTesting(
       GetServiceParamsForTestingCallback callback) override;
@@ -52,6 +53,7 @@ class CertVerifierServiceFactoryImpl
   // CertNetFetcherURLLoader is in use.
   void GetNewCertVerifierForTesting(
       mojo::PendingReceiver<mojom::CertVerifierService> receiver,
+      mojo::PendingRemote<mojom::CertVerifierServiceClient> client,
       mojom::CertVerifierCreationParamsPtr creation_params,
       scoped_refptr<CertNetFetcherURLLoader>* cert_net_fetcher_ptr);
 

@@ -85,6 +85,8 @@ class FailingCertVerifier : public net::CertVerifier {
     return net::ERR_CERT_INVALID;
   }
   void SetConfig(const Config& config) override {}
+  void AddObserver(Observer* observer) override {}
+  void RemoveObserver(Observer* observer) override {}
 };
 
 // Implements net::StreamSocket interface on top of P2PStreamSocket to be passed

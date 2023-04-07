@@ -766,19 +766,6 @@ namespace {
 cert_verifier::mojom::CertVerifierServiceFactory*
     g_cert_verifier_service_factory_for_testing = nullptr;
 
-mojo::PendingRemote<cert_verifier::mojom::CertVerifierService>
-GetNewCertVerifierServiceRemote(
-    cert_verifier::mojom::CertVerifierServiceFactory*
-        cert_verifier_service_factory,
-    cert_verifier::mojom::CertVerifierCreationParamsPtr creation_params) {
-  mojo::PendingRemote<cert_verifier::mojom::CertVerifierService>
-      cert_verifier_remote;
-  cert_verifier_service_factory->GetNewCertVerifier(
-      cert_verifier_remote.InitWithNewPipeAndPassReceiver(),
-      std::move(creation_params));
-  return cert_verifier_remote;
-}
-
 void RunInProcessCertVerifierServiceFactory(
     cert_verifier::mojom::CertVerifierServiceParamsPtr params,
     mojo::PendingReceiver<cert_verifier::mojom::CertVerifierServiceFactory>
@@ -849,10 +836,18 @@ GetCertVerifierServiceFactory() {
 network::mojom::CertVerifierServiceRemoteParamsPtr GetCertVerifierParams(
     cert_verifier::mojom::CertVerifierCreationParamsPtr
         cert_verifier_creation_params) {
+  mojo::PendingRemote<cert_verifier::mojom::CertVerifierService>
+      cert_verifier_remote;
+  mojo::PendingReceiver<cert_verifier::mojom::CertVerifierServiceClient>
+      cert_verifier_client;
+
+  GetCertVerifierServiceFactory()->GetNewCertVerifier(
+      cert_verifier_remote.InitWithNewPipeAndPassReceiver(),
+      cert_verifier_client.InitWithNewPipeAndPassRemote(),
+      std::move(cert_verifier_creation_params));
+
   return network::mojom::CertVerifierServiceRemoteParams::New(
-      GetNewCertVerifierServiceRemote(
-          GetCertVerifierServiceFactory(),
-          std::move(cert_verifier_creation_params)));
+      std::move(cert_verifier_remote), std::move(cert_verifier_client));
 }
 
 void SetCertVerifierServiceFactoryForTesting(
