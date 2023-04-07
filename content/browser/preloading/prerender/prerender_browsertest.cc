@@ -10329,8 +10329,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderSessionHistoryBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderSessionHistoryBrowserTest,
-                       // Disabled. See https://crbug.com/1431057.
-                       DISABLED_NoPredictionDueToBfcache) {
+                       NoPredictionDueToBfcache) {
+  if (!BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    GTEST_SKIP()
+        << "This test assumes the back navigation is restoring from bfcache.";
+  }
+
   const GURL url1 = GetUrl("/title1.html");
   const GURL url2 = GetCrossSiteUrl("/title2.html");
   ASSERT_TRUE(NavigateToURL(shell(), url1));
@@ -10339,7 +10343,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderSessionHistoryBrowserTest,
   base::HistogramTester histogram_tester;
 
   PredictBackNavigation();
-  // This test assumes this is restoring from bfcache.
   PerformBackNavigation();
 
   histogram_tester.ExpectUniqueSample(
