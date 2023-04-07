@@ -5,12 +5,16 @@
     font-size: 14.6px; /* closely resembles the omnibox input font size. */
   }
 
-  :host([can-show-secondary-matches][has-secondary-matches]) {
+  /**
+   * Show the secondary side if it can be shown and is currently available to be
+   * shown.
+   */
+  :host([can-show-secondary-side][has-secondary-side]) {
     --cr-realbox-secondary-side-display: block;
   }
 </style>
 <cr-realbox-dropdown id="matches" result="[[result_]]"
-    has-secondary-matches="{{hasSecondaryMatches}}"
-    can-show-secondary-matches="[[canShowSecondaryMatches]]"
+    can-show-secondary-side="[[canShowSecondarySide]]"
+    has-secondary-side="{{hasSecondarySide}}"
     on-dom-change="onResultRepaint_">
 </cr-realbox-dropdown>
