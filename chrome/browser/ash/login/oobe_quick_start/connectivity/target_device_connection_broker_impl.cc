@@ -43,6 +43,10 @@ constexpr uint8_t kEndpointInfoDeviceType = 8;
 // Boolean field indicating to Smart Setup whether the client is Quick Start.
 constexpr uint8_t kEndpointInfoIsQuickStart = 1;
 
+// Boolean field indicating whether the target device supports LSKF
+// verification.
+constexpr uint8_t kEndpointInfoPreferTargetUserVerification = 0;
+
 constexpr size_t kMaxEndpointInfoDisplayNameLength = 18;
 
 // The Advertising Id field has a fixed width of 10 bytes, but contains a
@@ -258,18 +262,20 @@ void TargetDeviceConnectionBrokerImpl::OnStopFastPairAdvertising(
 // The EndpointInfo consists of the following fields:
 // - EndpointInfo version number, 1 byte
 // - Display name, max 18 bytes (see GetEndpointInfoDisplayNameBytes())
-// - Advertisement data, 13 bytes, base64 encoded:
+// - Advertisement data, 60 bytes, base64 encoded:
 //   - Verification Style, byte[0]
 //   - Device Type, byte[1]
 //   - Advertising Id, byte[2-11], 10 UTF-8 bytes. (See RandomSessionId)
 //   - isQuickStart, byte[12], =1 for Quick Start.
+//   - preferTargetUserVerification, byte[13], =0 for ChromeOS.
+//   - Pad with zeros to 60 bytes. Extra space reserved for futureproofing.
 std::vector<uint8_t> TargetDeviceConnectionBrokerImpl::GenerateEndpointInfo() {
   std::string session_id = random_session_id_.ToString();
   std::vector<uint8_t> display_name_bytes =
       GetEndpointInfoDisplayNameBytes(random_session_id_);
 
   std::vector<uint8_t> advertisement_data;
-  advertisement_data.reserve(13);
+  advertisement_data.reserve(60);
   advertisement_data.push_back(kEndpointInfoVerificationStyle);
   advertisement_data.push_back(kEndpointInfoDeviceType);
   advertisement_data.insert(advertisement_data.end(), session_id.begin(),
@@ -281,6 +287,11 @@ std::vector<uint8_t> TargetDeviceConnectionBrokerImpl::GenerateEndpointInfo() {
     advertisement_data.push_back(0);
   }
   advertisement_data.push_back(kEndpointInfoIsQuickStart);
+  advertisement_data.push_back(kEndpointInfoPreferTargetUserVerification);
+  while (advertisement_data.size() < 60) {
+    // Reserve 60 bytes for the advertisement data for futureproofing.
+    advertisement_data.push_back(0);
+  }
   std::vector<uint8_t> advertisement_data_b64 =
       Base64EncodeOmitPadding(advertisement_data);
 

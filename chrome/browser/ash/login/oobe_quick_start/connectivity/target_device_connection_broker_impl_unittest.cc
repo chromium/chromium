@@ -501,14 +501,13 @@ TEST_P(TargetDeviceConnectionBrokerImplEndpointInfoTest, GenerateEndpointInfo) {
   // before proceeding.
   std::vector<uint8_t> advertising_info = Base64DecodeForgiving(
       base::span<uint8_t>(endpoint_info.begin() + i, endpoint_info.end()));
+  ASSERT_EQ(advertising_info.size(), 60u);
   i = 0;
 
-  ASSERT_GT(advertising_info.size(), i);
   uint8_t verification_style = advertising_info[i];
   EXPECT_EQ(kEndpointInfoVerificationStyle, verification_style);
   i++;
 
-  ASSERT_GT(advertising_info.size(), i);
   uint8_t device_type = advertising_info[i];
   EXPECT_EQ(kEndpointInfoDeviceType, device_type);
   i++;
@@ -516,7 +515,6 @@ TEST_P(TargetDeviceConnectionBrokerImplEndpointInfoTest, GenerateEndpointInfo) {
   // Parse the RandomSessionId. The field is fixed-width, but contains a string
   // that may not occupy the full length, in which case there will be a null
   // terminator.
-  ASSERT_GE(advertising_info.size(), i + kEndpointInfoRandomSessionIdLength);
   std::string session_id = GetRandomSessionId().ToString();
   for (size_t k = i; k < i + kEndpointInfoRandomSessionIdLength; k++) {
     if (advertising_info[k] == 0) {
@@ -526,12 +524,12 @@ TEST_P(TargetDeviceConnectionBrokerImplEndpointInfoTest, GenerateEndpointInfo) {
   }
   i += kEndpointInfoRandomSessionIdLength;
 
-  ASSERT_GT(advertising_info.size(), i);
   uint8_t is_quick_start = advertising_info[i];
   EXPECT_EQ(1u, is_quick_start);
+  i++;
 
-  // There should be no more endpoint info after the isQuickStart field.
-  EXPECT_EQ(advertising_info.size(), i + 1);
+  uint8_t prefer_target_user_verification = advertising_info[i];
+  EXPECT_EQ(0u, prefer_target_user_verification);
 }
 
 INSTANTIATE_TEST_SUITE_P(TargetDeviceConnectionBrokerImplTest,
