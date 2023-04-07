@@ -335,7 +335,6 @@
                     },
                     "enable_features": [
                         "RequestDesktopSiteExceptions",
-                        "RequestDesktopSiteExceptionsDowngrade",
                         "RequestDesktopSitePerSiteIph"
                     ],
                     "disable_features": [
@@ -353,13 +352,27 @@
                     },
                     "enable_features": [
                         "RequestDesktopSiteExceptions",
-                        "RequestDesktopSiteExceptionsDowngrade",
                         "RequestDesktopSitePerSiteIph"
                     ],
                     "disable_features": [
                         "RequestDesktopSiteDefaults",
                         "RequestDesktopSiteDefaultsControl",
                         "RequestDesktopSiteDefaultsDowngrade"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AndroidRdsDomainSettingsDowngrade": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RequestDesktopSiteExceptionsDowngrade"
                     ]
                 }
             ]
