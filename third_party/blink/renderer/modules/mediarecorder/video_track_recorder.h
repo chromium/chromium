@@ -62,6 +62,7 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     kH264,
 #endif
+    kAv1,
     kLast
   };
 
@@ -302,7 +303,7 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
       bool allow_vea_encoder,
       scoped_refptr<media::VideoFrame> frame,
       base::TimeTicks capture_time);
-  void OnError();
+  void OnHardwareEncoderError();
 
   void ConnectToTrack(const VideoCaptureDeliverFrameCB& callback);
   void DisconnectFromTrack();

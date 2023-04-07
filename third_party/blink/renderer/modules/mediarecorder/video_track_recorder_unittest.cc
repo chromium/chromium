@@ -13,6 +13,7 @@
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
+#include "media/media_buildflags.h"
 #include "media/video/mock_gpu_video_accelerator_factories.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -62,10 +63,13 @@ const TestFrameType kTestFrameTypes[] = {TestFrameType::kNv12GpuMemoryBuffer,
                                          TestFrameType::kI420};
 
 const VideoTrackRecorder::CodecId kTrackRecorderTestCodec[] = {
-    VideoTrackRecorder::CodecId::kVp8, VideoTrackRecorder::CodecId::kVp9
+    VideoTrackRecorder::CodecId::kVp8,
+    VideoTrackRecorder::CodecId::kVp9,
 #if BUILDFLAG(RTC_USE_H264)
-    ,
-    VideoTrackRecorder::CodecId::kH264
+    VideoTrackRecorder::CodecId::kH264,
+#endif
+#if BUILDFLAG(ENABLE_LIBAOM)
+    VideoTrackRecorder::CodecId::kAv1,
 #endif
 };
 const gfx::Size kTrackRecorderTestSize[] = {
@@ -86,6 +90,10 @@ constexpr media::VideoCodec MediaVideoCodecFromCodecId(
 #if BUILDFLAG(RTC_USE_H264)
     case VideoTrackRecorder::CodecId::kH264:
       return media::VideoCodec::kH264;
+#endif
+#if BUILDFLAG(ENABLE_LIBAOM)
+    case VideoTrackRecorder::CodecId::kAv1:
+      return media::VideoCodec::kAV1;
 #endif
     default:
       return media::VideoCodec::kUnknown;
@@ -197,7 +205,7 @@ class VideoTrackRecorderTest
   }
 
   void OnFailed() { FAIL(); }
-  void OnError() { video_track_recorder_->OnError(); }
+  void OnError() { video_track_recorder_->OnHardwareEncoderError(); }
 
   bool CanEncodeAlphaChannel() {
     bool result;

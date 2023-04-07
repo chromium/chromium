@@ -64,6 +64,8 @@ VideoTrackRecorder::CodecId CodecIdFromMediaVideoCodec(media::VideoCodec id) {
     case media::VideoCodec::kH264:
       return VideoTrackRecorder::CodecId::kH264;
 #endif
+    case media::VideoCodec::kAV1:
+      return VideoTrackRecorder::CodecId::kAv1;
     default:
       return VideoTrackRecorder::CodecId::kLast;
   }
@@ -81,6 +83,8 @@ media::VideoCodec MediaVideoCodecFromCodecId(VideoTrackRecorder::CodecId id) {
     case VideoTrackRecorder::CodecId::kH264:
       return media::VideoCodec::kH264;
 #endif
+    case VideoTrackRecorder::CodecId::kAv1:
+      return media::VideoCodec::kAV1;
     case VideoTrackRecorder::CodecId::kLast:
       return media::VideoCodec::kUnknown;
   }
@@ -133,6 +137,9 @@ VideoTrackRecorder::CodecProfile VideoStringToCodecProfile(
       return {codec_id, profile, level};
   }
 #endif
+  if (codecs_str.Find("av1") != kNotFound) {
+    codec_id = VideoTrackRecorder::CodecId::kAv1;
+  }
   return VideoTrackRecorder::CodecProfile(codec_id);
 }
 
@@ -167,7 +174,7 @@ bool MediaRecorderHandler::CanSupportMimeType(const String& type,
     return false;
 
   // Both |video| and |audio| support empty |codecs|; |type| == "video" supports
-  // vp8, vp9, h264 and avc1 or opus; |type| = "audio", supports opus or pcm
+  // vp8, vp9, h264, avc1, av1 or opus; |type| = "audio", supports opus or pcm
   // (little-endian 32-bit float).
   // http://www.webmproject.org/docs/container Sec:"HTML5 Video Type Parameters"
   static const char* const kVideoCodecs[] = {
@@ -177,6 +184,7 @@ bool MediaRecorderHandler::CanSupportMimeType(const String& type,
     "h264",
     "avc1",
 #endif
+    "av1",
     "opus",
     "pcm"
   };
@@ -491,6 +499,7 @@ String MediaRecorderHandler::ActualMimeType() {
     switch (video_codec_profile_.codec_id) {
       case VideoTrackRecorder::CodecId::kVp8:
       case VideoTrackRecorder::CodecId::kVp9:
+      case VideoTrackRecorder::CodecId::kAv1:
         mime_type.Append("video/webm;codecs=");
         break;
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -522,6 +531,9 @@ String MediaRecorderHandler::ActualMimeType() {
         }
         break;
 #endif
+      case VideoTrackRecorder::CodecId::kAv1:
+        mime_type.Append("av1");
+        break;
       case VideoTrackRecorder::CodecId::kLast:
         DCHECK_NE(audio_codec_id_, AudioTrackRecorder::CodecId::kLast);
     }

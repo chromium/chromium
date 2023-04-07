@@ -1306,6 +1306,7 @@ _CONFIG = [
             'std::data',
             # TODO(crbug.com/960665): Remove base::queue once it is replaced with a WTF equivalent.
             'base::queue',
+            'base::ClampMul',
             'base::MakeFixedFlatMap',
             'base::SharedMemory',
             'base::StringPiece',
