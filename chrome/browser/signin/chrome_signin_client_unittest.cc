@@ -303,6 +303,7 @@ bool IsAlwaysAllowedSignoutSources(
     case signin_metrics::ProfileSignout::kAccountReconcilorReconcile:
     case signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu:
     case signin_metrics::ProfileSignout::kAccountEmailUpdated:
+    case signin_metrics::ProfileSignout::kSigninManagerUpdateUPA:
       return false;
 
     case signin_metrics::ProfileSignout::kAccountRemovedFromDevice:
@@ -450,10 +451,11 @@ const signin_metrics::ProfileSignout kSignoutSources[] = {
         kUserClickedSignoutFromClearBrowsingDataPage,
     signin_metrics::ProfileSignout::kGaiaCookieUpdated,
     signin_metrics::ProfileSignout::kAccountReconcilorReconcile,
+    signin_metrics::ProfileSignout::kSigninManagerUpdateUPA,
 };
 // kNumberOfObsoleteSignoutSources should be updated when a ProfileSignout
 // value is deprecated.
-const int kNumberOfObsoleteSignoutSources = 5;
+const int kNumberOfObsoleteSignoutSources = 6;
 static_assert(std::size(kSignoutSources) + kNumberOfObsoleteSignoutSources ==
                   static_cast<int>(signin_metrics::ProfileSignout::kMaxValue) +
                       1,

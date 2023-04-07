@@ -52,7 +52,7 @@ enum class ProfileSignout {
   kForceSignoutAlwaysAllowedForTest = 11,
   // User cleared account cookies when there's no sync consent, which has caused
   // sign out.
-  kUserDeletedAccountCookies = 12,
+  // Deprecated (re-numbered in M114): kUserDeletedAccountCookies = 12,
   // Signout triggered by MobileIdentityConsistency rollback.
   // Deprecated: kMobileIdentityConsistencyRollback = 13,
   // Sign-out when the account id migration to Gaia ID did not finish,
@@ -81,9 +81,14 @@ enum class ProfileSignout {
   kGaiaCookieUpdated = 22,
   // Profile Signout during reconciliation.
   kAccountReconcilorReconcile = 23,
+  // Signin manager updates the unconsented primary account.
+  kSigninManagerUpdateUPA = 24,
+  // User cleared account cookies when there's no sync consent, which has caused
+  // sign out.
+  kUserDeletedAccountCookies = 25,
 
   // Keep this as the last enum.
-  kMaxValue = kAccountReconcilorReconcile
+  kMaxValue = kUserDeletedAccountCookies
 };
 
 // Enum values used for use with "AutoLogin.Reverse" histograms.

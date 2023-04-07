@@ -95373,7 +95373,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="11" label="[Tests] Force sign-out">
     Signout is forced. Used only for tests.
   </int>
-  <int value="12" label="User deleted account cookies">
+  <int value="12"
+      label="(Obsolete) User deleted account cookies. Deprecated in M114">
     User cleared account cookies when there's no sync consent, which has caused
     sign out.
   </int>
@@ -95420,6 +95421,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   </int>
   <int value="23" label="AccountReconcilor Reconcile">
     The reconcilor cleared the signin primary account during reconcilation.
+  </int>
+  <int value="24" label="SigninManager UpdateUnconsentedPrimaryAccount">
+    SigninManager decides to clear the prrimary (includes web sign out).
+  </int>
+  <int value="25" label="User deleted account cookies">
+    User cleared account cookies when there's no sync consent, which has caused
+    sign out.
   </int>
 </enum>
 
