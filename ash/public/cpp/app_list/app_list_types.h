@@ -372,8 +372,9 @@ enum class AppListSearchResultType {
   kZeroStateApp,           // App recommendations for zero-state / recent apps.
   kImageSearch,            // Local image search result.
   kSystemInfo,             // System Info search result.
+  kZeroStateDesksAdminTemplate,  // Admin templates search results.
   // Add new values here.
-  kMaxValue = kSystemInfo,
+  kMaxValue = kZeroStateDesksAdminTemplate,
 };
 
 ASH_PUBLIC_EXPORT bool IsAppListSearchResultAnApp(

@@ -101,6 +101,8 @@ void LogContinueMetrics(const std::vector<Result>& results) {
       case ash::SearchResultType::HELP_APP_UPDATES:
         ++help_app_count;
         break;
+      case ash::SearchResultType::ZERO_STATE_DESKS_ADMIN_TEMPLATE:
+        break;
       default:
         NOTREACHED() << static_cast<int>(result.type);
     }

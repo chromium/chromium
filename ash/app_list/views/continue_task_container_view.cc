@@ -267,10 +267,16 @@ void ContinueTaskContainerView::Update() {
   num_results_ = std::min(kMaxFilesForContinueSection, tasks.size());
 
   num_file_results_ = 0;
+  num_desks_admin_template_results_ = 0;
   for (size_t i = 0; i < num_results_; ++i) {
     if (tasks[i]->result_type() == AppListSearchResultType::kZeroStateFile ||
         tasks[i]->result_type() == AppListSearchResultType::kZeroStateDrive) {
       ++num_file_results_;
+    }
+
+    if (tasks[i]->result_type() ==
+        AppListSearchResultType::kZeroStateDesksAdminTemplate) {
+      ++num_desks_admin_template_results_;
     }
   }
 

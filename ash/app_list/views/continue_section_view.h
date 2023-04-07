@@ -106,6 +106,9 @@ class ASH_EXPORT ContinueSectionView : public views::View,
   // section.
   bool HasMinimumFilesToShow() const;
 
+  // Whether there is at least 1 admin template.
+  bool HasDesksAdminTemplates() const;
+
   // Displays a toast with a privacy notice for the user in place of the
   // continue section. The user can accept the notice to display the continue
   // section in the launcher.
