@@ -63,7 +63,6 @@ public class TabSelectionEditorMenu implements ListMenu, OnItemClickListener,
             Context context, TabSelectionEditorActionViewLayout actionViewLayout) {
         mContext = context;
         mActionViewLayout = actionViewLayout;
-        mActionViewLayout.setActionViewLayoutDelegate(this);
 
         mModelList = new ModelList();
         mAdapter = new ModelListAdapter(mModelList) {
@@ -85,6 +84,7 @@ public class TabSelectionEditorMenu implements ListMenu, OnItemClickListener,
         mListView.setOnItemClickListener(this);
 
         mActionViewLayout.setListMenuButtonDelegate(() -> this);
+        mActionViewLayout.setActionViewLayoutDelegate(this);
     }
 
     private void registerItemTypes() {
