@@ -165,7 +165,7 @@ void PersonalizationAppWallpaperProviderImpl::GetWallpaperAsJpegBytes(
   // user's wallpaper is being set.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::TaskPriority::USER_VISIBLE,
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&GetPreviewWallpaper), std::move(callback));
 }
