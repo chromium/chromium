@@ -104,11 +104,6 @@ const std::string& HoldingSpaceClientImpl::AddItemOfType(
   return GetHoldingSpaceKeyedService(profile_)->AddItemOfType(type, file_path);
 }
 
-void HoldingSpaceClientImpl::AddScreenCapture(HoldingSpaceItem::Type type,
-                                              const base::FilePath& file_path) {
-  GetHoldingSpaceKeyedService(profile_)->AddScreenCapture(type, file_path);
-}
-
 void HoldingSpaceClientImpl::CopyImageToClipboard(const HoldingSpaceItem& item,
                                                   SuccessCallback callback) {
   holding_space_metrics::RecordItemAction(

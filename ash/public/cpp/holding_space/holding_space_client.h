@@ -34,12 +34,6 @@ class ASH_PUBLIC_EXPORT HoldingSpaceClient {
   virtual const std::string& AddItemOfType(HoldingSpaceItem::Type type,
                                            const base::FilePath& file_path) = 0;
 
-  // TODO(http://b/274477308): Remove one-off API.
-  // Adds a screen capture item backed by the provided `file_path`.
-  // NOTE: `type` must refer to a screen capture type.
-  virtual void AddScreenCapture(HoldingSpaceItem::Type type,
-                                const base::FilePath& file_path) = 0;
-
   // Attempts to copy the contents of the image file backing the specified
   // holding space `item` to the clipboard. If the backing file is not suspected
   // to contain image data, this method will abort early. Success is returned

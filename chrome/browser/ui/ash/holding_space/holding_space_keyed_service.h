@@ -122,12 +122,6 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
   // Adds a scanned item backed by the provided absolute file path.
   void AddScan(const base::FilePath& file_path);
 
-  // TODO(http://b/274477308): Remove one-off API.
-  // Adds a screen capture item of the specified `type` backed by the provided
-  // absolute file path. NOTE: `type` must refer to a screen capture type.
-  void AddScreenCapture(HoldingSpaceItem::Type type,
-                        const base::FilePath& file_path);
-
   // Replaces the existing suggestions with `suggestions`. The order among
   // `suggestions` is respected, which means that if a suggestion A is in front
   // of a suggestion B in the given array, after calling this function, the

@@ -28,8 +28,6 @@ class HoldingSpaceClientImpl : public HoldingSpaceClient {
   void AddDiagnosticsLog(const base::FilePath& file_path) override;
   const std::string& AddItemOfType(HoldingSpaceItem::Type type,
                                    const base::FilePath& file_path) override;
-  void AddScreenCapture(HoldingSpaceItem::Type type,
-                        const base::FilePath& file_path) override;
   void CopyImageToClipboard(const HoldingSpaceItem&, SuccessCallback) override;
   base::FilePath CrackFileSystemUrl(const GURL& file_system_url) const override;
   bool IsDriveDisabled() const override;
