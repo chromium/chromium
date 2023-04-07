@@ -309,7 +309,7 @@ const char kCodeBasedRuleDiscountCouponDeletionTimeParam[] =
 const base::FeatureParam<base::TimeDelta>
     kCodeBasedRuleDiscountCouponDeletionTime{
         &commerce::kCodeBasedRBD, kCodeBasedRuleDiscountCouponDeletionTimeParam,
-        base::Seconds(10)};
+        base::Seconds(6)};
 
 const char kRevertIconOnFailureParam[] =
     "shopping-list-revert-page-action-icon-on-failure";
