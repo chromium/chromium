@@ -438,15 +438,6 @@ FYI_BUILDERS = {
 # issues, please contact johnchen@chromium.org.
 BUILDERS = {
     'android-builder-perf': {
-        'additional_compile_targets': [
-            'microdump_stackwalk',
-            'system_webview_google_apk',
-            'android_tools',
-            'dump_syms',
-            'push_apps_to_background_apk',
-            'system_webview_apk',
-            'system_webview_shell_apk',
-        ],
         'tests': [
             {
                 'name': 'resource_sizes_monochrome_minimal_apks',
@@ -498,15 +489,6 @@ BUILDERS = {
         False,
     },
     'android-builder-perf-pgo': {
-        'additional_compile_targets': [
-            'microdump_stackwalk',
-            'system_webview_google_apk',
-            'android_tools',
-            'dump_syms',
-            'push_apps_to_background_apk',
-            'system_webview_apk',
-            'system_webview_shell_apk',
-        ],
         'dimension': {
             'cpu': 'x86',
             'os': 'Ubuntu-18.04',
@@ -516,14 +498,6 @@ BUILDERS = {
         False,
     },
     'android_arm64-builder-perf': {
-        'additional_compile_targets': [
-            'microdump_stackwalk',
-            'system_webview_google_apk',
-            'android_tools',
-            'push_apps_to_background_apk',
-            'system_webview_apk',
-            'system_webview_shell_apk',
-        ],
         'tests': [
             {
                 'name': 'resource_sizes_monochrome_minimal_apks',
@@ -583,14 +557,6 @@ BUILDERS = {
         False,
     },
     'android_arm64-builder-perf-pgo': {
-        'additional_compile_targets': [
-            'microdump_stackwalk',
-            'system_webview_google_apk',
-            'android_tools',
-            'push_apps_to_background_apk',
-            'system_webview_apk',
-            'system_webview_shell_apk',
-        ],
         'dimension': {
             'cpu': 'x86',
             'os': 'Ubuntu-18.04',
