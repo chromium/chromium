@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -19,10 +20,12 @@
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
-#include "ash/wm/snap_group/snap_group_lock_button.h"
+#include "ash/wm/snap_group/snap_group_expanded_menu_view.h"
+#include "ash/wm/snap_group/snap_group_lock_or_unlock_button.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
+#include "ash/wm/splitview/split_view_divider_view.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "ash/wm/workspace/multi_window_resize_controller.h"
@@ -60,6 +63,49 @@ gfx::Rect split_view_divider_bounds_in_screen() {
 
 const gfx::Rect work_area_bounds() {
   return display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+}
+
+IconButton* kebab_button() {
+  SplitViewDividerView* divider_view =
+      split_view_divider()->divider_view_for_testing();
+  CHECK(divider_view);
+  return divider_view->kebab_button_for_testing();
+}
+
+views::Widget* snap_group_expanded_menu_widget() {
+  SplitViewDividerView* divider_view =
+      split_view_divider()->divider_view_for_testing();
+  CHECK(divider_view);
+  return divider_view->snap_group_expanded_menu_widget_for_testing();
+}
+
+SnapGroupExpandedMenuView* snap_group_expanded_menu_view() {
+  SplitViewDividerView* divider_view =
+      split_view_divider()->divider_view_for_testing();
+  CHECK(divider_view);
+  return divider_view->snap_group_expanded_menu_view_for_testing();
+}
+
+IconButton* swap_windows_button() {
+  DCHECK(snap_group_expanded_menu_view());
+  return snap_group_expanded_menu_view()->swap_windows_button_for_testing();
+}
+
+IconButton* update_primary_window_button() {
+  DCHECK(snap_group_expanded_menu_view());
+  return snap_group_expanded_menu_view()
+      ->update_primary_window_button_for_testing();
+}
+
+IconButton* update_secondary_window_button() {
+  DCHECK(snap_group_expanded_menu_view());
+  return snap_group_expanded_menu_view()
+      ->update_secondary_window_button_for_testing();
+}
+
+SnapGroupLockOrUnlockButton* unlock_button() {
+  DCHECK(snap_group_expanded_menu_view());
+  return snap_group_expanded_menu_view()->unlock_button_for_testing();
 }
 
 }  // namespace
@@ -265,6 +311,7 @@ class SnapGroupEntryPointArm1Test : public SnapGroupTest {
     EXPECT_TRUE(split_view_divider());
     EXPECT_EQ(0.5f, *WindowState::Get(window1)->snap_ratio());
     EXPECT_EQ(0.5f, *WindowState::Get(window2)->snap_ratio());
+    EXPECT_TRUE(kebab_button());
   }
 
  private:
@@ -460,7 +507,7 @@ TEST_F(SnapGroupEntryPointArm1Test, NotShowOverviewIfEmpty) {
 }
 
 // Tests that the hit area of the split view divider can be outside of its
-// bounds with the extra insets with a value of `kSplitViewDividerExtraInset`.
+// bounds with the extra insets whose value is `kSplitViewDividerExtraInset`.
 TEST_F(SnapGroupEntryPointArm1Test, SplitViewDividerEnlargedHitArea) {
   std::unique_ptr<aura::Window> w1(CreateTestWindow());
   std::unique_ptr<aura::Window> w2(CreateTestWindow());
@@ -480,6 +527,31 @@ TEST_F(SnapGroupEntryPointArm1Test, SplitViewDividerEnlargedHitArea) {
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
   EXPECT_EQ(split_view_divider_bounds_in_screen().CenterPoint(),
             cached_divider_center_point + move_vector);
+}
+
+// Tests that the snap group expanded menu with four buttons will show on mouse
+// cliked on the kebab button and hide when clicking again.
+TEST_F(SnapGroupEntryPointArm1Test, ExpandedMenuViewTest) {
+  std::unique_ptr<aura::Window> w1(CreateTestWindow());
+  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+  SnapTwoTestWindowsInArm1(w1.get(), w2.get(), /*horizontal=*/true);
+
+  gfx::Rect kebab_button_bounds_in_screen = kebab_button()->GetBoundsInScreen();
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(kebab_button_bounds_in_screen.CenterPoint());
+  event_generator->PressLeftButton();
+  event_generator->ReleaseLeftButton();
+  EXPECT_TRUE(snap_group_expanded_menu_widget());
+  EXPECT_TRUE(snap_group_expanded_menu_view());
+  EXPECT_TRUE(swap_windows_button());
+  EXPECT_TRUE(update_primary_window_button());
+  EXPECT_TRUE(update_secondary_window_button());
+  EXPECT_TRUE(unlock_button());
+
+  event_generator->PressLeftButton();
+  event_generator->ReleaseLeftButton();
+  EXPECT_FALSE(snap_group_expanded_menu_widget());
+  EXPECT_FALSE(snap_group_expanded_menu_view());
 }
 
 // A test fixture that tests the user-initiated snap group entry point. This
@@ -572,7 +644,7 @@ class SnapGroupEntryPointArm2Test : public SnapGroupTest {
  private:
   // Verifies that the icon image and the tooltip of the lock button gets
   // updated correctly based on the `locked` state.
-  void VerifyLockButton(bool locked, SnapGroupLockButton* lock_button) {
+  void VerifyLockButton(bool locked, SnapGroupLockOrUnlockButton* lock_button) {
     const SkColor color =
         lock_button->GetColorProvider()->GetColor(kColorAshIconColorPrimary);
     const gfx::ImageSkia locked_icon_image =

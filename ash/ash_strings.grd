@@ -5628,6 +5628,18 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SNAP_GROUP_CLICK_TO_UNLOCK_WINDOWS" desc="Click to unlock the locked windows.">
         Unlock the windows
       </message>
+      <message name="IDS_ASH_SNAP_GROUP_MORE_OPTIONS" desc="Click to see more options.">
+        More options
+      </message>
+      <message name="IDS_ASH_SNAP_GROUP_SWAP_WINDOWS" desc="Swap the windows in the snap group.">
+        Swap the windows
+      </message>
+      <message name="IDS_ASH_SNAP_GROUP_UPDATE_LEFT_WINDOW" desc="Update the left window in the snap group in horizontal screen orientation.">
+        Update the left window
+      </message>
+      <message name="IDS_ASH_SNAP_GROUP_UPDATE_RIGHT_WINDOW" desc="Update the right window in the snap group in horizontal screen orientation.">
+        Update the right window
+      </message>
 
       <!-- Switch Between TABLET/LAPTOP MODE-->
       <message name="IDS_ASH_SWITCH_TO_TABLET_MODE" desc="Alert of switching to tablet mode.">

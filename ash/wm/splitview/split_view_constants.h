@@ -86,6 +86,9 @@ constexpr float kMinDividerPositionRatio = 0.15f;
 // make it easier to handle located event.
 constexpr gfx::Insets kSplitViewDividerExtraInset = gfx::Insets::VH(0, -2);
 
+// Corner radius for the expanded menu that shows on toggling the kebab button.
+constexpr int kExpandedMenuRoundedCornerRadius = 20;
+
 }  // namespace ash
 
 #endif  // ASH_WM_SPLITVIEW_SPLIT_VIEW_CONSTANTS_H_

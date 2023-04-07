@@ -66,13 +66,22 @@ bool SnapGroupController::RemoveSnapGroup(SnapGroup* snap_group) {
 
 bool SnapGroupController::RemoveSnapGroupContainingWindow(
     aura::Window* window) {
-  if (window_to_snap_group_map_.find(window) ==
-      window_to_snap_group_map_.end()) {
+  SnapGroup* snap_group = GetSnapGroupForGivenWindow(window);
+  if (snap_group == nullptr) {
     return false;
   }
 
-  SnapGroup* snap_group = window_to_snap_group_map_.find(window)->second;
   return RemoveSnapGroup(snap_group);
+}
+
+SnapGroup* SnapGroupController::GetSnapGroupForGivenWindow(
+    aura::Window* window) {
+  if (window_to_snap_group_map_.find(window) ==
+      window_to_snap_group_map_.end()) {
+    return nullptr;
+  }
+
+  return window_to_snap_group_map_.find(window)->second;
 }
 
 bool SnapGroupController::IsArm1AutomaticallyLockEnabled() const {

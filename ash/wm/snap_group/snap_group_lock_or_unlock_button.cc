@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/snap_group/snap_group_lock_button.h"
+#include "ash/wm/snap_group/snap_group_lock_or_unlock_button.h"
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -10,6 +10,8 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/wm/snap_group/snap_group_constants.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
+#include "ash/wm/splitview/split_view_controller.h"
+#include "ash/wm/splitview/split_view_divider.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -19,10 +21,11 @@
 
 namespace ash {
 
-SnapGroupLockButton::SnapGroupLockButton(aura::Window* window1,
-                                         aura::Window* window2)
-    : ImageButton(base::BindRepeating(&SnapGroupLockButton::OnLockButtonPressed,
-                                      base::Unretained(this))),
+SnapGroupLockOrUnlockButton::SnapGroupLockOrUnlockButton(aura::Window* window1,
+                                                         aura::Window* window2)
+    : ImageButton(
+          base::BindRepeating(&SnapGroupLockOrUnlockButton::OnLockButtonPressed,
+                              base::Unretained(this))),
       window1_(window1),
       window2_(window2) {
   SetImageHorizontalAlignment(ALIGN_CENTER);
@@ -34,9 +37,9 @@ SnapGroupLockButton::SnapGroupLockButton(aura::Window* window1,
   RefreshLockButton();
 }
 
-SnapGroupLockButton::~SnapGroupLockButton() = default;
+SnapGroupLockOrUnlockButton::~SnapGroupLockOrUnlockButton() = default;
 
-void SnapGroupLockButton::OnLockButtonPressed() {
+void SnapGroupLockOrUnlockButton::OnLockButtonPressed() {
   DCHECK(window1_);
   DCHECK(window2_);
   SnapGroupController* snap_group_controller =
@@ -53,7 +56,7 @@ void SnapGroupLockButton::OnLockButtonPressed() {
   RefreshLockButton();
 }
 
-void SnapGroupLockButton::RefreshLockButton() {
+void SnapGroupLockOrUnlockButton::RefreshLockButton() {
   const bool locked =
       Shell::Get()->snap_group_controller()->AreWindowsInSnapGroup(window1_,
                                                                    window2_);
@@ -67,7 +70,7 @@ void SnapGroupLockButton::RefreshLockButton() {
              : IDS_ASH_SNAP_GROUP_CLICK_TO_LOCK_WINDOWS));
 }
 
-BEGIN_METADATA(SnapGroupLockButton, views::ImageButton)
+BEGIN_METADATA(SnapGroupLockOrUnlockButton, views::ImageButton)
 END_METADATA
 
 }  // namespace ash

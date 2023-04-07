@@ -2640,15 +2640,6 @@ void SplitViewController::OnWindowSnapped(
     UpdateSnappedBounds(window == primary_window_ ? secondary_window_
                                                   : primary_window_);
   }
-
-  if (state_ == State::kBothSnapped &&
-      ShouldAutomaticallyGroupOnWindowsSnappedInClamshell()) {
-    SnapGroupController* snap_group_controller =
-        Shell::Get()->snap_group_controller();
-    snap_group_controller->AddSnapGroup(primary_window_, secondary_window_);
-    DCHECK(snap_group_controller->AreWindowsInSnapGroup(primary_window_,
-                                                        secondary_window_));
-  }
 }
 
 void SplitViewController::OnSnappedWindowDetached(aura::Window* window,
