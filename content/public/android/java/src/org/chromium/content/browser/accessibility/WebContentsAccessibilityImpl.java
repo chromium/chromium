@@ -317,7 +317,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             @Override
             public void onDisabled() {
                 assert mNativeObj != 0 : "Native code is not initialized, but disable was called.";
-
+                assert ContentFeatureList.isEnabled(
+                        ContentFeatureList.AUTO_DISABLE_ACCESSIBILITY_V2)
+                    : "Disable was called, but Auto-disable accessibility is not enabled.";
                 // If the Auto-disable timer has expired, begin disabling the renderer, and clearing
                 // the Java-side caches.
                 // TODO(mschillaci): This will not re-enable for a Blink event. Fix.
