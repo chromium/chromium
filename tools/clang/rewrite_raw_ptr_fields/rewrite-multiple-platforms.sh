@@ -3,9 +3,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# IMPORTANT! Before running this script you have to run
-# `rm -r ~/scratch && mkdir ~/scratch` first
-#
+# IMPORTANT! This script relies on "${HOME}/scratch/". This directory
+# is made when it runs (and must not exist at runtime) and is left
+# behind at termination (for you to save off or remove).
 #
 # For more fine-grained instructions, see:
 # https://docs.google.com/document/d/1chTvr3fSofQNV_PDPEHRyUgcJCQBgTDOOBriW9gIm9M/edit?ts=5e9549a2#heading=h.fjdnrdg1gcty
@@ -24,6 +24,11 @@ REWRITER_SRC_DIR=$(dirname $SCRIPT_PATH)
 
 COMPILE_DIRS=.
 EDIT_DIRS=.
+SCRATCH_DIR="${HOME}/scratch/"
+
+# Make the scratch dir, relying on mkdir's natural fail-on-existing
+# behavior (and prior `set -e` of this script).
+mkdir "${SCRATCH_DIR}"
 
 # Save llvm-build as it is about to be overwritten.
 mv third_party/llvm-build third_party/llvm-build-upstream
