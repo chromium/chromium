@@ -2202,7 +2202,7 @@
         'swarming': {
           'dimension_sets': [
             {
-              'cores': 8,
+              'cores': '8',
             },
           ],
         },
@@ -3973,7 +3973,7 @@
         'swarming': {
           'dimension_sets': [
             {
-              'cores': 8,
+              'cores': '8',
             },
           ],
         },
