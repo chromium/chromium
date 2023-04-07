@@ -153,6 +153,11 @@ enum FormEvent {
   // The selected credit card suggestion did not have metadata.
   FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SELECTED = 61,
 
+  // Reserved so that the serialized DenseSet<FormEvent> are representable as
+  // int64_t. Such conversions uint64_t -> int64_t happen when serializing a
+  // DenseSet<FormEvent> and passing it to a UKM builder.
+  FORM_EVENT_RESERVED_NOT_FOR_USE = 63,
+
   // The number of events is temporarily rounded up to 64 to prepare the code
   // for passing this threshold (UKM events are uploaded as uint64 blocks of a
   // bit mask). Once we pass the 64 threshold, this should reflect the real last
