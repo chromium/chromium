@@ -10,7 +10,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/system/phonehub/onboarding_view.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
-#include "ash/system/phonehub/phone_hub_nudge_controller.h"
 #include "ash/system/phonehub/phone_hub_ui_controller.h"
 #include "ash/system/phonehub/phone_status_view.h"
 #include "ash/system/status_area_widget.h"
@@ -113,10 +112,6 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
     return ui_controller_.get();
   }
 
-  PhoneHubNudgeController* phone_hub_nudge_controller_for_testing() {
-    return phone_hub_nudge_controller_.get();
-  }
-
  private:
   FRIEND_TEST_ALL_PREFIXES(PhoneHubTrayTest, SafeAccessToHeaderView);
 
@@ -167,9 +162,6 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   // Controls the main content view displayed in the bubble based on the current
   // PhoneHub state.
   std::unique_ptr<PhoneHubUiController> ui_controller_;
-
-  // Controls the behavior of a nudge shown to eligible users.
-  std::unique_ptr<PhoneHubNudgeController> phone_hub_nudge_controller_;
 
   // The bubble that appears after clicking the tray button.
   std::unique_ptr<TrayBubbleWrapper> bubble_;
