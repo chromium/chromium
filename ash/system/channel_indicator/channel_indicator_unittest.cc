@@ -4,7 +4,6 @@
 
 #include "ash/system/channel_indicator/channel_indicator.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -17,7 +16,6 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test_shell_delegate.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/version_info/channel.h"
 #include "ui/views/controls/image_view.h"
@@ -44,10 +42,6 @@ class ChannelIndicatorViewTest
 
   // AshTestBase:
   void SetUp() override {
-    // Need this feature enabled in order for the `ChannelIndicatorView` to be
-    // instantiated.
-    feature_list_.InitAndEnableFeature(features::kReleaseTrackUi);
-
     // Instantiate a `TestShellDelegate` with the channel set to our param.
     std::unique_ptr<TestShellDelegate> shell_delegate =
         std::make_unique<TestShellDelegate>();
@@ -78,9 +72,6 @@ class ChannelIndicatorViewTest
     }
     return is_squished;
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Run the `Visible` test below for each value of version_info::Channel.

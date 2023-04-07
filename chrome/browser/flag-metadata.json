@@ -6401,11 +6401,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "release-track-ui",
-    "owners": [ "rtinkoff", "cros-status-area-eng@google.com" ],
-    "expiry_milestone": 114
-  },
-  {
     "name": "remove-crash-infobar",
     "owners": [ "justincohen", "bling-flags@google.com"],
     "expiry_milestone": 115

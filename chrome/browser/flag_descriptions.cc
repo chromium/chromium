@@ -6127,10 +6127,6 @@ const char kReleaseNotesNotificationAllChannelsName[] =
 const char kReleaseNotesNotificationAllChannelsDescription[] =
     "Enables the release notes notification for all ChromeOS channels";
 
-const char kReleaseTrackUiName[] = "Release track system tray UI";
-const char kReleaseTrackUiDescription[] =
-    "Enables the release track UI in the system tray";
-
 extern const char kRenderArcNotificationsByChromeName[] =
     "Render ARC notifications by ChromeOS";
 extern const char kRenderArcNotificationsByChromeDescription[] =

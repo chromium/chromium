@@ -3522,9 +3522,6 @@ extern const char kQsRevampDescription[];
 extern const char kReleaseNotesNotificationAllChannelsName[];
 extern const char kReleaseNotesNotificationAllChannelsDescription[];
 
-extern const char kReleaseTrackUiName[];
-extern const char kReleaseTrackUiDescription[];
-
 extern const char kRenderArcNotificationsByChromeName[];
 extern const char kRenderArcNotificationsByChromeDescription[];
 
