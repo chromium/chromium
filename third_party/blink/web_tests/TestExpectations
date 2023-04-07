@@ -6705,3 +6705,6 @@ crbug.com/1431236 external/wpt/long-animation-frame/tentative/loaf-user-callback
 crbug.com/1416265 external/wpt/js-self-profiling/class-names.https.html [ Crash Pass ]
 crbug.com/1416265 external/wpt/js-self-profiling/cross-origin-script-no-cors.sub.html [ Crash Pass ]
 crbug.com/1416271 external/wpt/js-self-profiling/time-domain.window.html [ Crash Failure Pass ]
+
+# Flake 2023-04-07
+crbug.com/1431272 [ Win ] external/wpt/cookies/attributes/domain.sub.html [ Timeout Pass ]
