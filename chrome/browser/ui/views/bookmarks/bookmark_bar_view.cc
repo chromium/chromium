@@ -304,7 +304,10 @@ class BookmarkButton : public BookmarkButtonBase {
   }
 
   void OnMouseEntered(const ui::MouseEvent& event) override {
+    // Reset source information for taking metrics for following mouse events.
     mouse_entered_time_ = base::TimeTicks::Now();
+    mouse_has_been_pressed_ = false;
+
     base::UmaHistogramEnumeration(
         "Prerender.Experimental.BookmarkUrlButtonEvent",
         PreloadBookmarkMetricsEvent::kMouseOver);
