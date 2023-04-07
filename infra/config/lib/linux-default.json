@@ -1,6 +1,7 @@
 {
   "ci": {
-    "linux-rel-jammy-dev": "Ubuntu-22.04"
+    "linux-rel-jammy-dev": "Ubuntu-22.04",
+    "linux-ssd-rel-dev": "Ubuntu-22.04"
   },
   "try": {
     "linux-rel": "Ubuntu-22.04",
