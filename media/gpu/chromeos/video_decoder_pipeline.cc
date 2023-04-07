@@ -715,8 +715,6 @@ void VideoDecoderPipeline::OnFrameConverted(scoped_refptr<VideoFrame> frame) {
     return;
   }
 
-  // Flag that the video frame is capable of being put in an overlay.
-  frame->metadata().allow_overlay = true;
   // Flag that the video frame was decoded in a power efficient way.
   frame->metadata().power_efficient = true;
 

@@ -43,12 +43,11 @@ CroStatus::Or<scoped_refptr<VideoFrame>> DefaultCreateFrame(
   if (!frame)
     return CroStatus::Codes::kFailedToCreateVideoFrame;
 
-  if (use_protected) {
-    media::VideoFrameMetadata frame_metadata;
-    frame_metadata.protected_video = true;
-    frame_metadata.hw_protected = true;
-    frame->set_metadata(frame_metadata);
-  }
+  // A SCANOUT usage was requested for the allocated |frame|, so there's a
+  // possibility that it can be promoted to overlay, mark it so.
+  frame->metadata().allow_overlay = true;
+  frame->metadata().protected_video = use_protected;
+  frame->metadata().hw_protected = use_protected;
   return frame;
 }
 
@@ -141,18 +140,8 @@ scoped_refptr<VideoFrame> PlatformVideoFramePool::GetFrame() {
       base::BindOnce(&PlatformVideoFramePool::OnFrameReleasedThunk, weak_this_,
                      parent_task_runner_, std::move(origin_frame)));
 
-  // Clear all metadata before returning to client, in case origin frame has any
-  // unrelated metadata.
-  wrapped_frame->clear_metadata();
-
-  // We need to put this metadata in the wrapped frame if we are in protected
-  // mode.
-  if (use_protected_) {
-    media::VideoFrameMetadata frame_metadata;
-    frame_metadata.protected_video = true;
-    frame_metadata.hw_protected = true;
-    wrapped_frame->set_metadata(frame_metadata);
-  }
+  DCHECK_EQ(wrapped_frame->metadata().protected_video, use_protected_);
+  DCHECK_EQ(wrapped_frame->metadata().hw_protected, use_protected_);
 
   return wrapped_frame;
 }

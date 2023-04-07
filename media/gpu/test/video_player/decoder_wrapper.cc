@@ -378,6 +378,9 @@ void DecoderWrapper::OnFrameReadyTask(scoped_refptr<VideoFrame> video_frame) {
   DVLOGF(4) << current_frame_index_;
   DCHECK_CALLED_ON_VALID_SEQUENCE(worker_sequence_checker_);
   DCHECK(video_frame->metadata().power_efficient);
+  DCHECK_EQ(
+      video_frame->metadata().allow_overlay,
+      decoder_wrapper_config_.implementation != DecoderImplementation::kVDVDA);
 
   frame_renderer_->RenderFrame(video_frame);
 
