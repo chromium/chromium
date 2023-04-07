@@ -60,7 +60,10 @@ void TestCertVerifierServiceFactoryImpl::GetServiceParamsForTesting(
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 void TestCertVerifierServiceFactoryImpl::UpdateChromeRootStore(
-    mojom::ChromeRootStorePtr new_root_store) {}
+    mojom::ChromeRootStorePtr new_root_store,
+    UpdateChromeRootStoreCallback callback) {
+  std::move(callback).Run();
+}
 
 void TestCertVerifierServiceFactoryImpl::GetChromeRootStoreInfo(
     GetChromeRootStoreInfoCallback callback) {

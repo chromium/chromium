@@ -78,9 +78,10 @@ interface CertVerifierServiceFactory {
   GetServiceParamsForTesting() => (CertVerifierServiceParams service_params);
 
   // Updates the ChromeRootStore used by the CertVerifierServiceFactory with a
-  // new version.
+  // new version. The callback will be run once the update has been processed
+  // (regardless if it was updated successfully or the update was ignored.)
   [EnableIf=is_chrome_root_store_supported]
-  UpdateChromeRootStore(ChromeRootStore new_root_store);
+  UpdateChromeRootStore(ChromeRootStore new_root_store) => ();
 
   // Returns information about the current Chrome Root Store.
   [EnableIf=is_chrome_root_store_supported]

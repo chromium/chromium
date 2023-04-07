@@ -54,7 +54,8 @@ class TestCertVerifierServiceFactoryImpl
       GetServiceParamsForTestingCallback callback) override;
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-  void UpdateChromeRootStore(mojom::ChromeRootStorePtr new_root_store) override;
+  void UpdateChromeRootStore(mojom::ChromeRootStorePtr new_root_store,
+                             UpdateChromeRootStoreCallback callback) override;
   void GetChromeRootStoreInfo(GetChromeRootStoreInfoCallback callback) override;
 #endif
 

@@ -154,7 +154,12 @@ TEST(CertVerifierServiceFactoryTest, GetNewCertVerifierWithUpdatedRootStore) {
       cv_service_factory_remote.BindNewPipeAndPassReceiver());
 
   // Feed factory the new Chrome Root Store.
-  cv_service_factory_impl.UpdateChromeRootStore(std::move(root_store_ptr));
+  {
+    base::RunLoop update_run_loop;
+    cv_service_factory_impl.UpdateChromeRootStore(
+        std::move(root_store_ptr), update_run_loop.QuitClosure());
+    update_run_loop.Run();
+  }
 
   mojo::Remote<mojom::CertVerifierService> cv_service_remote;
   DummyCVServiceClient cv_service_client;
@@ -261,7 +266,12 @@ TEST(CertVerifierServiceFactoryTest, UpdateExistingCertVerifierWithRootStore) {
           base::as_bytes(base::make_span(proto_serialized)));
 
   // Feed factory the new Chrome Root Store.
-  cv_service_factory_impl.UpdateChromeRootStore(std::move(root_store_ptr));
+  {
+    base::RunLoop update_run_loop;
+    cv_service_factory_impl.UpdateChromeRootStore(
+        std::move(root_store_ptr), update_run_loop.QuitClosure());
+    update_run_loop.Run();
+  }
 
   // Try request, it should succeed.
   {
@@ -322,7 +332,12 @@ TEST(CertVerifierServiceFactoryTest, OldRootStoreUpdateIgnored) {
       cv_service_factory_remote.BindNewPipeAndPassReceiver());
 
   // Feed factory the new Chrome Root Store.
-  cv_service_factory_impl.UpdateChromeRootStore(std::move(root_store_ptr));
+  {
+    base::RunLoop update_run_loop;
+    cv_service_factory_impl.UpdateChromeRootStore(
+        std::move(root_store_ptr), update_run_loop.QuitClosure());
+    update_run_loop.Run();
+  }
 
   mojo::Remote<mojom::CertVerifierService> cv_service_remote;
   DummyCVServiceClient cv_service_client;
@@ -392,7 +407,12 @@ TEST(CertVerifierServiceFactoryTest, BadRootStoreUpdateIgnored) {
       cv_service_factory_remote.BindNewPipeAndPassReceiver());
 
   // Feed factory the new Chrome Root Store.
-  cv_service_factory_impl.UpdateChromeRootStore(std::move(root_store_ptr));
+  {
+    base::RunLoop update_run_loop;
+    cv_service_factory_impl.UpdateChromeRootStore(
+        std::move(root_store_ptr), update_run_loop.QuitClosure());
+    update_run_loop.Run();
+  }
 
   mojo::Remote<mojom::CertVerifierService> cv_service_remote;
   DummyCVServiceClient cv_service_client;
@@ -442,8 +462,12 @@ TEST(CertVerifierServiceFactoryTest, BadRootStoreUpdateIgnored) {
           base::as_bytes(base::make_span(proto_serialized)));
 
   // Feed factory the new Chrome Root Store.
-  cv_service_factory_impl.UpdateChromeRootStore(
-      std::move(invalid_root_store_ptr));
+  {
+    base::RunLoop update_run_loop;
+    cv_service_factory_impl.UpdateChromeRootStore(
+        std::move(invalid_root_store_ptr), update_run_loop.QuitClosure());
+    update_run_loop.Run();
+  }
 
   {
     base::RunLoop request_completed_run_loop;
@@ -476,8 +500,12 @@ TEST(CertVerifierServiceFactoryTest, BadRootStoreUpdateIgnored) {
           base::as_bytes(base::make_span(proto_serialized)));
 
   // Feed factory the new Chrome Root Store.
-  cv_service_factory_impl.UpdateChromeRootStore(
-      std::move(empty_root_store_ptr));
+  {
+    base::RunLoop update_run_loop;
+    cv_service_factory_impl.UpdateChromeRootStore(
+        std::move(empty_root_store_ptr), update_run_loop.QuitClosure());
+    update_run_loop.Run();
+  }
 
   {
     base::RunLoop request_completed_run_loop;
@@ -537,7 +565,12 @@ TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithUpdatedRootStore) {
       cv_service_factory_remote.BindNewPipeAndPassReceiver());
 
   // Feed factory the new Chrome Root Store.
-  cv_service_factory_impl.UpdateChromeRootStore(std::move(root_store_ptr));
+  {
+    base::RunLoop update_run_loop;
+    cv_service_factory_impl.UpdateChromeRootStore(
+        std::move(root_store_ptr), update_run_loop.QuitClosure());
+    update_run_loop.Run();
+  }
 
   cert_verifier::mojom::ChromeRootStoreInfoPtr info_ptr;
   base::RunLoop request_completed_run_loop;

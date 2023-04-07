@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -148,7 +149,11 @@ void CertVerifierServiceFactoryImpl::GetNewCertVerifierForTesting(
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 void CertVerifierServiceFactoryImpl::UpdateChromeRootStore(
-    mojom::ChromeRootStorePtr new_root_store) {
+    mojom::ChromeRootStorePtr new_root_store,
+    UpdateChromeRootStoreCallback callback) {
+  // Ensure the callback is run regardless which return path is used.
+  base::ScopedClosureRunner scoped_callback_runner(std::move(callback));
+
   if (new_root_store->serialized_proto_root_store.size() == 0) {
     LOG(ERROR) << "Empty serialized RootStore proto";
     return;
