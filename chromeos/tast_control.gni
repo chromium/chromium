@@ -326,6 +326,12 @@ tast_disabled_tests_from_chrome_all = [
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
+if (!is_official_build) {
+  # b/274341001: By design, ui.ChromeCrashEarly.strict fails on non-official
+  # builds.
+  tast_disabled_tests_from_chrome_all += [ "ui.ChromeCrashEarly.strict" ]
+}
+
 # To create filters to be used on specific builders add them like this:
 # tast_disabled_tests_from_lacros_example = [ "lacros.Basic" ]
 # and add the name (i.e. 'tast_disabled_tests_from_lacros_example') to the
