@@ -391,6 +391,8 @@
   E_CPONLY(kColorTextfieldForegroundPlaceholder) \
   E_CPONLY(kColorTextfieldSelectionBackground) \
   E_CPONLY(kColorTextfieldSelectionForeground) \
+  E_CPONLY(kColorTextfieldOutline) \
+  E_CPONLY(kColorTextfieldDisabledOutline) \
   E_CPONLY(kColorTextfieldInvalidOutline) \
   E_CPONLY(kColorThrobber) \
   E_CPONLY(kColorThrobberPreconnect) \

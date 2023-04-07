@@ -240,6 +240,7 @@ Textfield::Textfield()
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                 GetCornerRadius());
   FocusRing::Install(this);
+  FocusRing::Get(this)->SetOutsetFocusRingDisabled();
 
 #if !BUILDFLAG(IS_MAC)
   // Do not map accelerators on Mac. E.g. They might not reflect custom
@@ -293,6 +294,7 @@ void Textfield::SetReadOnly(bool read_only) {
     SetColor(GetTextColor());
     UpdateBackgroundColor();
   }
+  UpdateBorder();
   OnPropertyChanged(&read_only_, kPropertyEffectsPaint);
 }
 
@@ -2493,6 +2495,7 @@ void Textfield::UpdateBackgroundColor() {
 void Textfield::UpdateBorder() {
   auto border = std::make_unique<views::FocusableBorder>();
   const LayoutProvider* provider = LayoutProvider::Get();
+  border->SetColorId(ui::kColorTextfieldOutline);
   border->SetInsets(gfx::Insets::TLBR(
       extra_insets_.top() +
           provider->GetDistanceMetric(DISTANCE_CONTROL_VERTICAL_TEXT_PADDING),
@@ -2504,6 +2507,8 @@ void Textfield::UpdateBorder() {
                                   DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING)));
   if (invalid_) {
     border->SetColorId(ui::kColorTextfieldInvalidOutline);
+  } else if (!GetEnabled() || GetReadOnly()) {
+    border->SetColorId(ui::kColorTextfieldDisabledOutline);
   }
   border->SetCornerRadius(GetCornerRadius());
   View::SetBorder(std::move(border));
@@ -2810,6 +2815,7 @@ void Textfield::OnCursorBlinkTimerFired() {
 void Textfield::OnEnabledChanged() {
   if (GetInputMethod())
     GetInputMethod()->OnTextInputTypeChanged(this);
+  UpdateBorder();
 }
 
 void Textfield::DropDraggedText(
