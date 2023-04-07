@@ -45,7 +45,37 @@
         "text": "10% off",
         "languageCode": "en-US"
       }
+    },
+    {
+      "_comment": "Use case for: FetchCodeBasedDiscountWorkerBrowserTest.SimulateServerFlagIsOffByNotReturningTheRBDWithCodeType",
+      "merchantIdentifier": {
+        "cartUrl": "https://www.merchant3.com/cart",
+        "merchantId": "10048"
+      },
+      "couponDiscounts": [
+        {
+          "type": "FREE_LISTING_WITH_CODE",
+          "description": {
+            "title": "Save 10% on Running shoes.",
+            "languageCode": "en-US"
+          },
+          "couponCode": "SAVE10",
+          "couponId": "1",
+          "expiryTimeSec": 1635204293
+        }
+      ],
+      "overallDiscountInfo": {
+        "text": "10% off",
+        "languageCode": "en-US"
+      }
+    },
+    {
+      "_comment": "Use case for: FetchCodeBasedDiscountWorkerBrowserTest.SimulateServerFlagIsOffByNotReturningTheRBDWithCodeType",
+      "merchantIdentifier": {
+        "cartUrl": "https://www.merchant4.com/cart",
+        "merchantId": "10049"
+      }
     }
   ],
-  "_comment": "cartUrl needs to be unique. Next cartUrl is https://www.merchant3.com/cart."
+  "_comment": "cartUrl needs to be unique. Next cartUrl is https://www.merchant5.com/cart."
 }
