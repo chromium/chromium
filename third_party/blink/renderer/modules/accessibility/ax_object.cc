@@ -6397,7 +6397,6 @@ bool AXObject::RequestShowContextMenuAction() {
 }
 
 bool AXObject::RequestExpandAction() {
-  // TODO(accessibility): Handle AOM event dispatching if needed.
   if (ui::SupportsArrowKeysForExpandCollapse(RoleValue())) {
     return OnNativeKeyboardAction(ax::mojom::blink::Action::kExpand);
   }
@@ -6405,7 +6404,6 @@ bool AXObject::RequestExpandAction() {
 }
 
 bool AXObject::RequestCollapseAction() {
-  // TODO(accessibility): Handle AOM event dispatching if needed.
   if (ui::SupportsArrowKeysForExpandCollapse(RoleValue())) {
     return OnNativeKeyboardAction(ax::mojom::blink::Action::kCollapse);
   }
