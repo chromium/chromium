@@ -19,7 +19,7 @@ public interface AccountPickerBottomSheetStrings {
         return R.string.signin_account_picker_bottom_sheet_subtitle;
     }
     /** Returns the cancel button string for the bottom sheet dialog. */
-    default @StringRes int getCancelButton() {
+    default @StringRes int getDismissButton() {
         return R.string.signin_account_picker_dismiss_button;
     }
 }
