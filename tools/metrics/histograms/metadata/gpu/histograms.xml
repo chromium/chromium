@@ -1196,6 +1196,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.RasterDecoder.TimeToFlush" units="microseconds"
+    expires_after="2023-08-01">
+  <owner>sky@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Time it takes for RasterDecoderImpl::FlushSurfaces() to complete. Recorded
+    for the first 100 flushes.
+  </summary>
+</histogram>
+
 <histogram name="Gpu.Rasterization.Raster.MSAASampleCountLog2" units="count"
     expires_after="2023-06-04">
   <owner>penghuang@chromium.org</owner>

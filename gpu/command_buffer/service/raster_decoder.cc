@@ -20,6 +20,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -714,12 +715,20 @@ class RasterDecoderImpl final : public RasterDecoder,
   void DoClearPaintCacheINTERNAL();
 
   void FlushSurface(SkiaImageRepresentation::ScopedWriteAccess* access) {
+    static int flush_count = 0;
+    const base::TimeTicks start = base::TimeTicks::Now();
     int num_planes = access->representation()->format().NumberOfPlanes();
     auto end_state = access->TakeEndState();
     for (int plane_index = 0; plane_index < num_planes; plane_index++) {
       auto* surface = access->surface(plane_index);
       DCHECK(surface);
       surface->flush({}, end_state.get());
+    }
+    if (flush_count < 100) {
+      ++flush_count;
+      base::UmaHistogramCustomMicrosecondsTimes(
+          "GPU.RasterDecoder.TimeToFlush", base::TimeTicks::Now() - start,
+          base::Microseconds(1), base::Seconds(1), 100);
     }
   }
 
