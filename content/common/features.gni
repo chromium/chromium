@@ -3,10 +3,11 @@
 # found in the LICENSE file.
 
 import("//build/config/chromecast_build.gni")
+import("//build/config/features.gni")
 
 declare_args() {
   # Whether or not to use external popup menu.
-  use_external_popup_menu = is_android || is_mac
+  use_external_popup_menu = is_android || (is_apple && use_blink)
 
   # Whether to perform critical memory pressure handling when in foreground (if
   # false, critical memory pressure is treated like moderate pressure in foreground).
