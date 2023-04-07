@@ -16,6 +16,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -39,6 +40,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_result.h"
+#include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
 #include "components/omnibox/browser/omnibox_log.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -61,7 +63,6 @@
 #include "ui/base/webui/resource_path.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/base/window_open_disposition_utils.h"
-#include "ui/gfx/vector_icon_types.h"
 #include "ui/resources/grit/webui_resources.h"
 
 namespace {
@@ -351,6 +352,116 @@ std::string GetBase64UrlVariations(Profile* profile) {
   return variations_base64url;
 }
 
+// TODO(crbug.com/1431513): Consider inheriting from `ChromeOmniboxClient`
+//  to avoid reimplementation of methods like `OnBookmarkLaunched`.
+class RealboxOmniboxClient : public OmniboxClient {
+ public:
+  explicit RealboxOmniboxClient(Profile* profile,
+                                content::WebContents* web_contents);
+  ~RealboxOmniboxClient() override;
+
+  // OmniboxClient:
+  std::unique_ptr<AutocompleteProviderClient> CreateAutocompleteProviderClient()
+      override;
+  bool IsPasteAndGoEnabled() const override;
+  SessionID GetSessionID() const override;
+  bookmarks::BookmarkModel* GetBookmarkModel() override;
+  TemplateURLService* GetTemplateURLService() override;
+  const AutocompleteSchemeClassifier& GetSchemeClassifier() const override;
+  AutocompleteClassifier* GetAutocompleteClassifier() override;
+  bool ShouldDefaultTypedNavigationsToHttps() const override;
+  int GetHttpsPortForTesting() const override;
+  bool IsUsingFakeHttpsForHttpsUpgradeTesting() const override;
+  gfx::Image GetSizedIcon(const gfx::VectorIcon& vector_icon_type,
+                          SkColor vector_icon_color) const override;
+  gfx::Image GetFaviconForPageUrl(
+      const GURL& page_url,
+      FaviconFetchedCallback on_favicon_fetched) override;
+  void OnBookmarkLaunched() override;
+  void OnURLOpenedFromOmnibox(OmniboxLog* log) override;
+
+ private:
+  raw_ptr<Profile> profile_;
+  raw_ptr<content::WebContents> web_contents_;
+  ChromeAutocompleteSchemeClassifier scheme_classifier_;
+};
+
+RealboxOmniboxClient::RealboxOmniboxClient(Profile* profile,
+                                           content::WebContents* web_contents)
+    : profile_(profile),
+      web_contents_(web_contents),
+      scheme_classifier_(ChromeAutocompleteSchemeClassifier(profile)) {}
+
+RealboxOmniboxClient::~RealboxOmniboxClient() = default;
+
+std::unique_ptr<AutocompleteProviderClient>
+RealboxOmniboxClient::CreateAutocompleteProviderClient() {
+  return std::make_unique<ChromeAutocompleteProviderClient>(profile_);
+}
+
+bool RealboxOmniboxClient::IsPasteAndGoEnabled() const {
+  return false;
+}
+
+SessionID RealboxOmniboxClient::GetSessionID() const {
+  return sessions::SessionTabHelper::IdForTab(web_contents_);
+}
+
+bookmarks::BookmarkModel* RealboxOmniboxClient::GetBookmarkModel() {
+  return BookmarkModelFactory::GetForBrowserContext(profile_);
+}
+
+TemplateURLService* RealboxOmniboxClient::GetTemplateURLService() {
+  return TemplateURLServiceFactory::GetForProfile(profile_);
+}
+
+const AutocompleteSchemeClassifier& RealboxOmniboxClient::GetSchemeClassifier()
+    const {
+  return scheme_classifier_;
+}
+
+AutocompleteClassifier* RealboxOmniboxClient::GetAutocompleteClassifier() {
+  return AutocompleteClassifierFactory::GetForProfile(profile_);
+}
+
+bool RealboxOmniboxClient::ShouldDefaultTypedNavigationsToHttps() const {
+  return false;
+}
+
+int RealboxOmniboxClient::GetHttpsPortForTesting() const {
+  return 0;
+}
+
+bool RealboxOmniboxClient::IsUsingFakeHttpsForHttpsUpgradeTesting() const {
+  return false;
+}
+
+gfx::Image RealboxOmniboxClient::GetSizedIcon(
+    const gfx::VectorIcon& vector_icon_type,
+    SkColor vector_icon_color) const {
+  return gfx::Image();
+}
+
+gfx::Image RealboxOmniboxClient::GetFaviconForPageUrl(
+    const GURL& page_url,
+    FaviconFetchedCallback on_favicon_fetched) {
+  return gfx::Image();
+}
+
+void RealboxOmniboxClient::OnBookmarkLaunched() {
+  RecordBookmarkLaunch(BookmarkLaunchLocation::kOmnibox,
+                       profile_metrics::GetBrowserProfileType(profile_));
+}
+
+void RealboxOmniboxClient::OnURLOpenedFromOmnibox(OmniboxLog* log) {
+  if (auto* search_prefetch_service =
+          SearchPrefetchServiceFactory::GetForProfile(profile_)) {
+    search_prefetch_service->OnURLOpenedFromOmnibox(log);
+  }
+  predictors::AutocompleteActionPredictorFactory::GetForProfile(profile_)
+      ->OnOmniboxOpenedUrl(*log);
+}
+
 }  // namespace
 
 // static
@@ -543,6 +654,20 @@ RealboxHandler::RealboxHandler(
       page_handler_(this, std::move(pending_page_handler)) {
   controller_emitter_observation_.Observe(
       AutocompleteControllerEmitter::GetForBrowserContext(profile_));
+
+  edit_model_ = std::make_unique<OmniboxEditModel>(
+      /*view=*/nullptr, /*edit_model_delegate=*/this,
+      std::make_unique<RealboxOmniboxClient>(profile_, web_contents_));
+  edit_model_->set_autocomplete_controller(
+      std::make_unique<AutocompleteController>(
+          std::make_unique<ChromeAutocompleteProviderClient>(profile_),
+          AutocompleteClassifier::DefaultOmniboxProviders()));
+
+  AutocompleteControllerEmitter* emitter =
+      AutocompleteControllerEmitter::GetForBrowserContext(profile_);
+  if (emitter) {
+    autocomplete_controller()->AddObserver(emitter);
+  }
 }
 
 RealboxHandler::~RealboxHandler() = default;
@@ -554,25 +679,14 @@ void RealboxHandler::SetPage(
 
 void RealboxHandler::QueryAutocomplete(const std::u16string& input,
                                        bool prevent_inline_autocomplete) {
-  if (!autocomplete_controller_) {
-    autocomplete_controller_ = std::make_unique<AutocompleteController>(
-        std::make_unique<ChromeAutocompleteProviderClient>(profile_),
-        AutocompleteClassifier::DefaultOmniboxProviders());
-
-    AutocompleteControllerEmitter* emitter =
-        AutocompleteControllerEmitter::GetForBrowserContext(profile_);
-    if (emitter) {
-      autocomplete_controller_->AddObserver(emitter);
-    }
-  }
-
   // TODO(tommycli): We use the input being empty as a signal we are requesting
   // on-focus suggestions. It would be nice if we had a more explicit signal.
   bool is_on_focus = input.empty();
 
   // Early exit if a query is already in progress for on focus inputs.
-  if (!autocomplete_controller_->done() && is_on_focus)
+  if (!autocomplete_controller()->done() && is_on_focus) {
     return;
+  }
 
   if (time_user_first_modified_realbox_.is_null() && !is_on_focus)
     time_user_first_modified_realbox_ = base::TimeTicks::Now();
@@ -591,14 +705,11 @@ void RealboxHandler::QueryAutocomplete(const std::u16string& input,
   autocomplete_input.set_prefer_keyword(false);
   autocomplete_input.set_allow_exact_keyword_match(false);
 
-  autocomplete_controller_->Start(autocomplete_input);
+  autocomplete_controller()->Start(autocomplete_input);
 }
 
 void RealboxHandler::StopAutocomplete(bool clear_result) {
-  if (!autocomplete_controller_)
-    return;
-
-  autocomplete_controller_->Stop(clear_result);
+  autocomplete_controller()->Stop(clear_result);
 
   if (clear_result)
     time_user_first_modified_realbox_ = base::TimeTicks();
@@ -614,141 +725,28 @@ void RealboxHandler::OpenAutocompleteMatch(
     bool ctrl_key,
     bool meta_key,
     bool shift_key) {
-  if (!autocomplete_controller_ ||
-      autocomplete_controller_->result().size() <= line) {
+  if (line >= autocomplete_controller()->result().size()) {
+    NOTREACHED();
     return;
   }
-
-  AutocompleteMatch match(autocomplete_controller_->result().match_at(line));
-  // If an action takes over the whole match, it will be the primary action.
-  const OmniboxAction* action = match.GetPrimaryAction();
-  if (action && action->TakesOverMatch()) {
-    return ExecuteAction(line, base::TimeTicks::Now(), mouse_button, alt_key,
-                         ctrl_key, meta_key, shift_key);
-  }
-
-  if (match.destination_url != url) {
-    // TODO(https://crbug.com/1020025): this could be malice or staleness.
-    // Either way: don't navigate.
-    return;
-  }
-
-  // TODO(crbug.com/1041129): The following logic for recording Omnibox metrics
-  // is largely copied from SearchTabHelper::OpenAutocompleteMatch(). Make sure
-  // any changes here is reflected there until one code path is obsolete.
-
-  const auto now = base::TimeTicks::Now();
-  base::TimeDelta elapsed_time_since_first_autocomplete_query =
-      now - time_user_first_modified_realbox_;
-  autocomplete_controller_
-      ->UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
-          elapsed_time_since_first_autocomplete_query, &match);
-
-  LOCAL_HISTOGRAM_BOOLEAN("Omnibox.EventCount", true);
-
-  UMA_HISTOGRAM_MEDIUM_TIMES("Omnibox.FocusToOpenTimeAnyPopupState3",
-                             time_elapsed_since_last_focus);
-
-  if (ui::PageTransitionTypeIncludingQualifiersIs(match.transition,
-                                                  ui::PAGE_TRANSITION_TYPED)) {
-    navigation_metrics::RecordOmniboxURLNavigation(match.destination_url);
-  }
-  // The following histogram should be recorded for both TYPED and pasted
-  // URLs, but should still exclude reloads.
-  if (ui::PageTransitionTypeIncludingQualifiersIs(match.transition,
-                                                  ui::PAGE_TRANSITION_TYPED) ||
-      ui::PageTransitionTypeIncludingQualifiersIs(match.transition,
-                                                  ui::PAGE_TRANSITION_LINK)) {
-    net::cookie_util::RecordCookiePortOmniboxHistograms(match.destination_url);
-  }
-
-  SuggestionAnswer::LogAnswerUsed(match.answer);
-
-  TemplateURLService* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(profile_);
-  if (template_url_service &&
-      template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
-          match.destination_url)) {
-    // Note: will always be false for the realbox.
-    UMA_HISTOGRAM_BOOLEAN("Omnibox.Search.OffTheRecord",
-                          profile_->IsOffTheRecord());
-    base::RecordAction(
-        base::UserMetricsAction("OmniboxDestinationURLIsSearchOnDSP"));
-  }
-
-  AutocompleteMatch::LogSearchEngineUsed(match, template_url_service);
-
-  auto* bookmark_model = BookmarkModelFactory::GetForBrowserContext(profile_);
-  if (bookmark_model->IsBookmarked(match.destination_url)) {
-    RecordBookmarkLaunch(BookmarkLaunchLocation::kOmnibox,
-                         profile_metrics::GetBrowserProfileType(profile_));
-  }
-
-  const AutocompleteInput& input = autocomplete_controller_->input();
-  WindowOpenDisposition disposition = ui::DispositionFromClick(
+  const base::TimeTicks timestamp = base::TimeTicks::Now();
+  const WindowOpenDisposition disposition = ui::DispositionFromClick(
       /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
       shift_key);
-
-  base::TimeDelta default_time_delta = base::Milliseconds(-1);
-
-  if (time_user_first_modified_realbox_.is_null())
-    elapsed_time_since_first_autocomplete_query = default_time_delta;
-
-  base::TimeDelta elapsed_time_since_last_change_to_default_match =
-      !autocomplete_controller_->last_time_default_match_changed().is_null()
-          ? now - autocomplete_controller_->last_time_default_match_changed()
-          : default_time_delta;
-
-  OmniboxLog log(
-      /*text=*/input.focus_type() !=
-              metrics::OmniboxFocusType::INTERACTION_DEFAULT
-          ? std::u16string()
-          : input.text(),
-      /*just_deleted_text=*/input.prevent_inline_autocomplete(),
-      /*input_type=*/input.type(),
-      /*in_keyword_mode=*/false,
-      /*entry_method=*/metrics::OmniboxEventProto::INVALID,
-      /*is_popup_open=*/are_matches_showing,
-      /*selected_index=*/line,
-      /*disposition=*/disposition,
-      /*is_paste_and_go=*/false,
-      /*tab_id=*/sessions::SessionTabHelper::IdForTab(web_contents_),
-      /*current_page_classification=*/metrics::OmniboxEventProto::NTP_REALBOX,
-      /*elapsed_time_since_user_first_modified_omnibox=*/
-      elapsed_time_since_first_autocomplete_query,
-      /*completed_length=*/match.allowed_to_be_default_match
-          ? match.inline_autocompletion.length()
-          : std::u16string::npos,
-      /*elapsed_time_since_last_change_to_default_match=*/
-      elapsed_time_since_last_change_to_default_match,
-      /*result=*/autocomplete_controller_->result(), match.destination_url,
-      /*is_incognito=*/profile_->IsOffTheRecord());
-  autocomplete_controller_->AddProviderAndTriggeringLogs(&log);
-
-  OmniboxEventGlobalTracker::GetInstance()->OnURLOpened(&log);
-
-  if (auto* search_prefetch_service =
-          SearchPrefetchServiceFactory::GetForProfile(profile_)) {
-    search_prefetch_service->OnURLOpenedFromOmnibox(&log, web_contents_);
-  }
-  predictors::AutocompleteActionPredictorFactory::GetForProfile(profile_)
-      ->OnOmniboxOpenedUrl(log);
-
-  web_contents_->OpenURL(
-      content::OpenURLParams(match.destination_url, content::Referrer(),
-                             disposition, match.transition, false));
+  edit_model_->OpenSelection(OmniboxPopupSelection(line), timestamp,
+                             disposition);
 }
 
 void RealboxHandler::OnNavigationLikely(
     uint8_t line,
     omnibox::mojom::NavigationPredictor navigation_predictor) {
-  if (!autocomplete_controller_ ||
-      autocomplete_controller_->result().size() <= line) {
+  if (autocomplete_controller()->result().size() <= line) {
+    NOTREACHED();
     return;
   }
   if (auto* search_prefetch_service =
           SearchPrefetchServiceFactory::GetForProfile(profile_)) {
-    AutocompleteMatch match(autocomplete_controller_->result().match_at(line));
+    AutocompleteMatch match(autocomplete_controller()->result().match_at(line));
     search_prefetch_service->OnNavigationLikely(
         line, match, navigation_predictor, web_contents_);
   }
@@ -765,36 +763,32 @@ void RealboxHandler::OpenURL(const GURL& destination_url,
                              const AutocompleteMatch&,
                              const AutocompleteMatch&,
                              IDNA2008DeviationCharacter) {
-  web_contents_->OpenURL(content::OpenURLParams(
-      destination_url, content::Referrer(), disposition, transition, false));
+  // TODO(crbug.com/1431513): Cull this method and simplify base interfaces.
+  NOTREACHED();
 }
 
 void RealboxHandler::DeleteAutocompleteMatch(uint8_t line) {
-  if (!autocomplete_controller_ ||
-      autocomplete_controller_->result().size() <= line ||
-      !autocomplete_controller_->result().match_at(line).SupportsDeletion()) {
+  if (autocomplete_controller()->result().size() <= line ||
+      !autocomplete_controller()->result().match_at(line).SupportsDeletion()) {
+    NOTREACHED();
     return;
   }
 
-  const auto& match = autocomplete_controller_->result().match_at(line);
+  const auto& match = autocomplete_controller()->result().match_at(line);
   if (match.SupportsDeletion()) {
-    autocomplete_controller_->Stop(false);
-    autocomplete_controller_->DeleteMatch(match);
+    autocomplete_controller()->Stop(false);
+    autocomplete_controller()->DeleteMatch(match);
   }
 }
 
 void RealboxHandler::ToggleSuggestionGroupIdVisibility(
     int32_t suggestion_group_id) {
-  if (!autocomplete_controller_) {
-    return;
-  }
-
   const auto& group_id = omnibox::GroupIdForNumber(suggestion_group_id);
   DCHECK_NE(omnibox::GROUP_INVALID, group_id);
   const bool current_visibility =
-      autocomplete_controller_->result().IsSuggestionGroupHidden(
+      autocomplete_controller()->result().IsSuggestionGroupHidden(
           profile_->GetPrefs(), group_id);
-  autocomplete_controller_->result().SetSuggestionGroupHidden(
+  autocomplete_controller()->result().SetSuggestionGroupHidden(
       profile_->GetPrefs(), group_id, !current_visibility);
 }
 
@@ -805,35 +799,26 @@ void RealboxHandler::ExecuteAction(uint8_t line,
                                    bool ctrl_key,
                                    bool meta_key,
                                    bool shift_key) {
-  if (!autocomplete_controller_ ||
-      autocomplete_controller_->result().size() <= line) {
+  if (line >= autocomplete_controller()->result().size()) {
+    NOTREACHED();
     return;
   }
-
+  const WindowOpenDisposition disposition = ui::DispositionFromClick(
+      /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
+      shift_key);
   const AutocompleteMatch& match =
-      autocomplete_controller_->result().match_at(line);
-  const OmniboxAction* action = match.GetPrimaryAction();
-  if (action) {
-    WindowOpenDisposition disposition = ui::DispositionFromClick(
-        /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
-        shift_key);
-    // TODO(tommycli): Add recording of action shown in the realbox when the
-    // user uses the realbox to go somewhere OTHER than executing an action.
-    action->RecordActionShown(line, /*executed=*/true);
-    OmniboxAction::ExecutionContext context(
-        *(autocomplete_controller_->autocomplete_provider_client()),
-        base::BindOnce(&RealboxHandler::OpenURL,
-                       weak_ptr_factory_.GetWeakPtr()),
-        match_selection_timestamp, disposition);
-    action->Execute(context);
-  } else if (match.has_tab_match.value_or(false)) {
-    WindowOpenDisposition disposition = WindowOpenDisposition::SWITCH_TO_TAB;
-    ui::PageTransition transition = ui::PageTransitionFromInt(
-        match.transition | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
-    web_contents_->OpenURL(
-        content::OpenURLParams(match.destination_url, content::Referrer(),
-                               disposition, transition, false));
-  }
+      autocomplete_controller()->result().match_at(line);
+  // Realbox currently only supports one action button and gives preference to
+  // actions over tab switch, but the omnibox shows tab switch button first.
+  // This disparity can be eliminated once realbox supports multiple
+  // actions on a button row.
+  const bool has_action = match.GetPrimaryAction() != nullptr;
+  DCHECK(has_action || match.has_tab_match.value_or(false));
+  OmniboxPopupSelection selection(
+      line, has_action
+                ? OmniboxPopupSelection::LineState::FOCUSED_BUTTON_ACTION
+                : OmniboxPopupSelection::LineState::FOCUSED_BUTTON_TAB_SWITCH);
+  edit_model_->OpenSelection(selection, match_selection_timestamp, disposition);
 }
 
 void RealboxHandler::OnResultChanged(AutocompleteController* controller,
@@ -843,7 +828,7 @@ void RealboxHandler::OnResultChanged(AutocompleteController* controller,
   }
 
   // Update the omnibox if the controller does not belong to the realbox.
-  if (controller != autocomplete_controller_.get()) {
+  if (controller != autocomplete_controller()) {
     if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup)) {
       page_->OmniboxAutocompleteResultChanged(CreateAutocompleteResult(
           controller->input().text(), controller->result(),
@@ -855,20 +840,121 @@ void RealboxHandler::OnResultChanged(AutocompleteController* controller,
 
   // Update the realbox only if the controller belongs to the realbox.
   page_->AutocompleteResultChanged(CreateAutocompleteResult(
-      autocomplete_controller_->input().text(),
-      autocomplete_controller_->result(),
+      autocomplete_controller()->input().text(),
+      autocomplete_controller()->result(),
       BookmarkModelFactory::GetForBrowserContext(profile_),
       profile_->GetPrefs()));
 
-  if (autocomplete_controller_->done()) {
+  if (autocomplete_controller()->done()) {
     if (SearchPrefetchService* search_prefetch_service =
             SearchPrefetchServiceFactory::GetForProfile(profile_)) {
       search_prefetch_service->OnResultChanged(
-          web_contents_, autocomplete_controller_->result());
+          web_contents_, autocomplete_controller()->result());
     }
   }
 }
 
 void RealboxHandler::SelectMatchAtLine(size_t old_line, size_t new_line) {
   page_->SelectMatchAtLine(new_line);
+}
+
+// OmniboxEditModelDelegate:
+void RealboxHandler::OnAutocompleteAccept(
+    const GURL& destination_url,
+    TemplateURLRef::PostContent* post_content,
+    WindowOpenDisposition disposition,
+    ui::PageTransition transition,
+    AutocompleteMatchType::Type match_type,
+    base::TimeTicks match_selection_timestamp,
+    bool destination_url_entered_without_scheme,
+    const std::u16string& text,
+    const AutocompleteMatch& match,
+    const AutocompleteMatch& alternative_nav_match,
+    IDNA2008DeviationCharacter deviation_char_in_hostname) {
+  destination_url_ = destination_url;
+  post_content_ = post_content;
+  disposition_ = disposition;
+  transition_ = transition;
+  match_selection_timestamp_ = match_selection_timestamp;
+  destination_url_entered_without_scheme_ =
+      destination_url_entered_without_scheme;
+
+  web_contents_->OpenURL(content::OpenURLParams(
+      destination_url_, content::Referrer(), disposition_, transition_, false));
+}
+
+void RealboxHandler::OnInputInProgress(bool in_progress) {}
+
+void RealboxHandler::OnChanged() {}
+
+void RealboxHandler::OnPopupVisibilityChanged() {}
+
+LocationBarModel* RealboxHandler::GetLocationBarModel() {
+  return this;
+}
+
+const LocationBarModel* RealboxHandler::GetLocationBarModel() const {
+  return this;
+}
+
+// LocationBarModel:
+// Note, the implementation here is mostly not needed but the
+// `OmniboxEditModelDelegate` implementation currently needs to
+// provide a full working instance and some parts are used.
+std::u16string RealboxHandler::GetFormattedFullURL() const {
+  return u"";
+}
+
+std::u16string RealboxHandler::GetURLForDisplay() const {
+  return u"";
+}
+
+GURL RealboxHandler::GetURL() const {
+  return GURL();
+}
+
+security_state::SecurityLevel RealboxHandler::GetSecurityLevel() const {
+  return security_state::SecurityLevel::NONE;
+}
+
+net::CertStatus RealboxHandler::GetCertStatus() const {
+  return 0;
+}
+
+metrics::OmniboxEventProto::PageClassification
+RealboxHandler::GetPageClassification(OmniboxFocusSource focus_source,
+                                      bool is_prefetch) {
+  return metrics::OmniboxEventProto::NTP_REALBOX;
+}
+
+const gfx::VectorIcon& RealboxHandler::GetVectorIcon() const {
+  return vector_icon_;
+}
+
+std::u16string RealboxHandler::GetSecureDisplayText() const {
+  return u"";
+}
+
+std::u16string RealboxHandler::GetSecureAccessibilityText() const {
+  return u"";
+}
+
+bool RealboxHandler::ShouldDisplayURL() const {
+  return false;
+}
+
+bool RealboxHandler::IsOfflinePage() const {
+  return false;
+}
+
+bool RealboxHandler::ShouldPreventElision() const {
+  return false;
+}
+
+bool RealboxHandler::ShouldUseUpdatedConnectionSecurityIndicators() const {
+  return false;
+}
+
+AutocompleteController* RealboxHandler::autocomplete_controller() const {
+  return edit_model_->autocomplete_controller();
 }

@@ -356,7 +356,7 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
   if (web_contents) {
     if (auto* search_prefetch_service =
             SearchPrefetchServiceFactory::GetForProfile(profile_)) {
-      search_prefetch_service->OnURLOpenedFromOmnibox(&log, web_contents);
+      search_prefetch_service->OnURLOpenedFromOmnibox(&log);
     }
 
     // Record the value if prerender for search suggestion was not started.
