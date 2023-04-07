@@ -21,9 +21,7 @@ namespace {
 // thread with either `success_callback` or `failure_callback`.
 void PrepareFileToAnalyze(
     base::FilePath file_path,
-    base::OnceCallback<void(base::File file,
-                            base::File temp_file,
-                            base::File temp_file2)> success_callback,
+    base::OnceCallback<void(base::File file)> success_callback,
     base::OnceCallback<void(safe_browsing::ArchiveAnalysisResult reason)>
         failure_callback) {
   base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
@@ -38,45 +36,8 @@ void PrepareFileToAnalyze(
     return;
   }
 
-  base::FilePath temp_path, temp_path2;
-  base::File temp_file, temp_file2;
-  if (base::CreateTemporaryFile(&temp_path)) {
-    temp_file.Initialize(
-        temp_path, (base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_READ |
-                    base::File::FLAG_WRITE | base::File::FLAG_WIN_TEMPORARY |
-                    base::File::FLAG_DELETE_ON_CLOSE));
-  }
-
-  if (base::CreateTemporaryFile(&temp_path2)) {
-    temp_file2.Initialize(
-        temp_path2, (base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_READ |
-                     base::File::FLAG_WRITE | base::File::FLAG_WIN_TEMPORARY |
-                     base::File::FLAG_DELETE_ON_CLOSE));
-  }
-
-  if (!temp_file.IsValid()) {
-    DLOG(ERROR) << "Could not open temp file: " << temp_path.value();
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            std::move(failure_callback),
-            safe_browsing::ArchiveAnalysisResult::kFailedToOpenTempFile));
-    return;
-  }
-
-  if (!temp_file2.IsValid()) {
-    DLOG(ERROR) << "Could not open temp file: " << temp_path2.value();
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            std::move(failure_callback),
-            safe_browsing::ArchiveAnalysisResult::kFailedToOpenTempFile));
-    return;
-  }
-
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(success_callback), std::move(file),
-                                std::move(temp_file), std::move(temp_file2)));
+      FROM_HERE, base::BindOnce(std::move(success_callback), std::move(file)));
 }
 
 }  // namespace
@@ -135,13 +96,14 @@ void SandboxedSevenZipAnalyzer::ReportFileFailure(
   }
 }
 
-void SandboxedSevenZipAnalyzer::AnalyzeFile(base::File file,
-                                            base::File temp_file,
-                                            base::File temp_file2) {
+void SandboxedSevenZipAnalyzer::AnalyzeFile(base::File file) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (remote_analyzer_) {
+    mojo::PendingRemote<chrome::mojom::TemporaryFileGetter>
+        temp_file_getter_remote =
+            temp_file_getter_.GetRemoteTemporaryFileGetter();
     remote_analyzer_->AnalyzeSevenZipFile(
-        std::move(file), std::move(temp_file), std::move(temp_file2),
+        std::move(file), std::move(temp_file_getter_remote),
         base::BindOnce(&SandboxedSevenZipAnalyzer::AnalyzeFileDone,
                        GetWeakPtr()));
   } else {
