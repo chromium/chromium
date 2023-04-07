@@ -164,6 +164,42 @@ bool VideoEncodeAccelerator::Config::HasSpatialLayer() const {
   return spatial_layers.size() > 1u;
 }
 
+void VideoEncodeAccelerator::Client::NotifyError(Error error) {
+  NOTREACHED() << "NotifyError() must be implemented if it doesn't "
+               << "implement NotifyErrorStatus()";
+}
+
+void VideoEncodeAccelerator::Client::NotifyErrorStatus(
+    const EncoderStatus& status) {
+  CHECK(!status.is_ok());
+  VideoEncodeAccelerator::Error error =
+      VideoEncodeAccelerator::Error::kPlatformFailureError;
+  switch (status.code()) {
+    case EncoderStatus::Codes::kOk:
+      NOTREACHED();
+      break;
+    case EncoderStatus::Codes::kEncoderInitializeNeverCompleted:
+    case EncoderStatus::Codes::kEncoderInitializeTwice:
+      error = VideoEncodeAccelerator::Error::kIllegalStateError;
+      break;
+    case EncoderStatus::Codes::kEncoderUnsupportedProfile:
+    case EncoderStatus::Codes::kEncoderUnsupportedCodec:
+    case EncoderStatus::Codes::kEncoderUnsupportedConfig:
+    case EncoderStatus::Codes::kEncoderInitializationError:
+    case EncoderStatus::Codes::kUnsupportedFrameFormat:
+      error = VideoEncodeAccelerator::Error::kInvalidArgumentError;
+      break;
+    case EncoderStatus::Codes::kEncoderFailedEncode:
+    case EncoderStatus::Codes::kEncoderFailedFlush:
+    case EncoderStatus::Codes::kEncoderMojoConnectionError:
+    case EncoderStatus::Codes::kScalingError:
+    case EncoderStatus::Codes::kFormatConversionError:
+      error = VideoEncodeAccelerator::Error::kPlatformFailureError;
+      break;
+  }
+  NotifyError(error);
+}
+
 void VideoEncodeAccelerator::Client::NotifyEncoderInfoChange(
     const VideoEncoderInfo& info) {
   // Do nothing if a client doesn't use the info.

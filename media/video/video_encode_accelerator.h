@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "media/base/bitrate.h"
+#include "media/base/encoder_status.h"
 #include "media/base/media_export.h"
 #include "media/base/svc_scalability_mode.h"
 #include "media/base/video_bitrate_allocation.h"
@@ -350,7 +351,9 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
     // Error notification callback. Note that errors in Initialize() will not be
     // reported here, but will instead be indicated by a false return value
     // there.
-    virtual void NotifyError(Error error) = 0;
+    virtual void NotifyError(Error error);
+
+    virtual void NotifyErrorStatus(const EncoderStatus& status);
 
     // Call VideoEncoderInfo of the VEA is changed.
     virtual void NotifyEncoderInfoChange(const VideoEncoderInfo& info);
