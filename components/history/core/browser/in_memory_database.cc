@@ -103,8 +103,6 @@ bool InMemoryDatabase::InitFromDisk(const base::FilePath& history_name) {
     // Unable to get data from the history database. This is OK, the file may
     // just not exist yet.
   }
-  UMA_HISTOGRAM_COUNTS_1M("History.InMemoryDBKeywordURLItemCount",
-                          db_.GetLastChangeCount());
 
   // Copy search terms to memory.
   if (!db_.Execute(
@@ -113,8 +111,6 @@ bool InMemoryDatabase::InitFromDisk(const base::FilePath& history_name) {
     // Unable to get data from the history database. This is OK, the file may
     // just not exist yet.
   }
-  UMA_HISTOGRAM_COUNTS_1M("History.InMemoryDBKeywordTermsCount",
-                          db_.GetLastChangeCount());
 
   // Detach from the history database on disk.
   if (!db_.Execute("DETACH history")) {
