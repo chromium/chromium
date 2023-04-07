@@ -136,6 +136,36 @@ TEST_F(WebStateDelegateBridgeTest, GetJavaScriptDialogPresenter) {
   EXPECT_TRUE([delegate_ javaScriptDialogPresenterRequested]);
 }
 
+// Tests `HandlePermissionsDecisionRequest` forwarding.
+TEST_F(WebStateDelegateBridgeTest, HandlePermissionsDecisionRequest) {
+  __block bool callback_called = false;
+  EXPECT_FALSE([delegate_ permissionsRequestHandled]);
+  EXPECT_FALSE([delegate_ webState]);
+  bool useHandlerAnswerTheRequest = bridge_->HandlePermissionsDecisionRequest(
+      &fake_web_state_, @[], ^(bool allow) {
+        EXPECT_TRUE(allow);
+        callback_called = true;
+      });
+  EXPECT_TRUE([delegate_ permissionsRequestHandled]);
+  EXPECT_EQ(&fake_web_state_, [delegate_ webState]);
+  EXPECT_TRUE(useHandlerAnswerTheRequest);
+  EXPECT_TRUE(callback_called);
+}
+
+// Tests `HandlePermissionsDecisionRequest` forwarding to delegate which does
+// not implement `webState:handlePermissions:decisionHandler:` method.
+TEST_F(WebStateDelegateBridgeTest,
+       HandlePermissionsDecisionRequestWithNoDelegateMethod) {
+  __block bool callback_called = false;
+  bool useHandlerAnswerTheRequest =
+      empty_delegate_bridge_->HandlePermissionsDecisionRequest(
+          nullptr, @[], ^(bool allow) {
+            callback_called = true;
+          });
+  EXPECT_FALSE(useHandlerAnswerTheRequest);
+  EXPECT_FALSE(callback_called);
+}
+
 // Tests `OnAuthRequired` forwarding.
 TEST_F(WebStateDelegateBridgeTest, OnAuthRequired) {
   EXPECT_FALSE([delegate_ authenticationRequested]);
