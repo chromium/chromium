@@ -432,8 +432,8 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
         try {
             Method method = Activity.class.getMethod("getLaunchedFromPackage");
             return (String) method.invoke(mActivity);
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException
-                | RuntimeException e) {
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            Log.e(TAG, "Reflection failure: " + e);
             assert false : "Activity.getLaunchedFromPackage() failed.";
         }
         return null;

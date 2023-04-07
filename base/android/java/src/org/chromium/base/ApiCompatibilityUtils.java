@@ -53,6 +53,8 @@ import java.util.List;
  * validation errors on low Android versions.
  */
 public class ApiCompatibilityUtils {
+    private static final String TAG = "ApiCompatUtil";
+
     private ApiCompatibilityUtils() {
     }
 
@@ -331,7 +333,8 @@ public class ApiCompatibilityUtils {
             int mode = field.getInt(null);
             method.invoke(options, mode);
         } catch (IllegalAccessException | InvocationTargetException | NoSuchFieldException
-                | NoSuchMethodException | RuntimeException e) {
+                | NoSuchMethodException e) {
+            Log.e(TAG, "Reflection failure: " + e);
             assert false : "PendingIntent from background activity may fail to run.";
         }
     }
