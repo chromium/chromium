@@ -8,6 +8,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
@@ -34,7 +36,7 @@ class ScreenshotShareSheetMediator {
     private final Context mContext;
     private final Runnable mSaveRunnable;
     private final Runnable mCloseDialogRunnable;
-    private final Callback<Runnable> mInstallCallback;
+    private final @Nullable Callback<Runnable> mInstallCallback;
     private final ChromeOptionShareCallback mChromeOptionShareCallback;
     private final WindowAndroid mWindowAndroid;
     private final String mShareUrl;
@@ -54,7 +56,7 @@ class ScreenshotShareSheetMediator {
     ScreenshotShareSheetMediator(Context context, PropertyModel propertyModel,
             Runnable closeDialogRunnable, Runnable saveRunnable, WindowAndroid windowAndroid,
             String shareUrl, ChromeOptionShareCallback chromeOptionShareCallback,
-            Callback<Runnable> installCallback) {
+            @Nullable Callback<Runnable> installCallback) {
         mCloseDialogRunnable = closeDialogRunnable;
         mSaveRunnable = saveRunnable;
         mContext = context;
@@ -63,6 +65,8 @@ class ScreenshotShareSheetMediator {
         mShareUrl = shareUrl;
         mChromeOptionShareCallback = chromeOptionShareCallback;
         mInstallCallback = installCallback;
+        mModel.set(ScreenshotShareSheetViewProperties.SCREENSHOT_EDIT_DISABLED,
+                mInstallCallback == null);
         mModel.set(ScreenshotShareSheetViewProperties.NO_ARG_OPERATION_LISTENER,
                 operation -> { performNoArgOperation(operation); });
     }
@@ -87,6 +91,7 @@ class ScreenshotShareSheetMediator {
                     ScreenshotShareSheetMetrics.ScreenshotShareSheetAction.DELETE);
             mCloseDialogRunnable.run();
         } else if (NoArgOperation.INSTALL == operation) {
+            assert mInstallCallback != null;
             ScreenshotShareSheetMetrics.logScreenshotAction(
                     ScreenshotShareSheetMetrics.ScreenshotShareSheetAction.EDIT);
             mInstallCallback.onResult(mCloseDialogRunnable);

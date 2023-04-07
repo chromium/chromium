@@ -20,14 +20,17 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeCustomShareAction;
 import org.chromium.chrome.browser.share.ChromeProvidedSharingOptionsProviderBase;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
+import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.ShareContentTypeHelper;
 import org.chromium.chrome.browser.share.ShareContentTypeHelper.ContentType;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator;
+import org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleCoordinator.LinkToggleState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
+import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -43,6 +46,8 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
             "SharingHubAndroid.AndroidShareHighlightText.WithLink";
     private static final String USER_ACTION_SHARE_HIGHLIGHT_TEXT_WITHOUT_LINK =
             "SharingHubAndroid.AndroidShareHighlightText.WithoutLink";
+    private static final String USER_ACTION_LONG_SCREENSHOT_NO_EDITOR_SELECTED =
+            "SharingHubAndroid.LongScreenshotSelected.NoEditor";
     private static final Integer MAX_ACTION_SUPPORTED = 5;
 
     private final ChromeShareExtras mChromeShareExtras;
@@ -136,11 +141,23 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
         return null;
     }
 
-    // TODO(https://crbug/1410201): Support long screenshot.
     @Nullable
     @Override
     protected FirstPartyOption createLongScreenshotsFirstPartyOption() {
-        return null;
+        return new FirstPartyOptionBuilder(ContentType.LINK_PAGE_VISIBLE, ContentType.TEXT,
+                ContentType.HIGHLIGHTED_TEXT, ContentType.IMAGE)
+                .setDetailedContentTypesToDisableFor(DetailedContentType.WEB_NOTES)
+                .setIcon(R.drawable.long_screenshot, R.string.sharing_long_screenshot)
+                .setFeatureNameForMetrics(USER_ACTION_LONG_SCREENSHOT_NO_EDITOR_SELECTED)
+                .setDisableForMultiWindow(true)
+                .setOnClickCallback((view) -> {
+                    mFeatureEngagementTracker.notifyEvent(EventConstants.SHARE_SCREENSHOT_SELECTED);
+                    LongScreenshotsCoordinator coordinator =
+                            LongScreenshotsCoordinator.create(mActivity, mTabProvider.get(), mUrl,
+                                    mChromeOptionShareCallback, mBottomSheetController, null);
+                    coordinator.captureScreenshot();
+                })
+                .build();
     }
 
     @Override

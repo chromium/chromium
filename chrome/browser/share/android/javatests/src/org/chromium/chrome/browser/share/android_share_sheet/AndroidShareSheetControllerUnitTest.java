@@ -214,8 +214,9 @@ public class AndroidShareSheetControllerUnitTest {
         Assert.assertNotNull("Custom action is empty.",
                 intent.getParcelableArrayExtra(INTENT_EXTRA_CHOOSER_CUSTOM_ACTIONS));
 
-        assertCustomActions(intent, R.string.print_share_activity_title,
-                R.string.send_tab_to_self_share_activity_title, R.string.qr_code_share_icon_label);
+        assertCustomActions(intent, R.string.sharing_long_screenshot,
+                R.string.print_share_activity_title, R.string.send_tab_to_self_share_activity_title,
+                R.string.qr_code_share_icon_label);
     }
 
     @Test
@@ -322,8 +323,8 @@ public class AndroidShareSheetControllerUnitTest {
         mController.showShareSheet(params, chromeShareExtras, 1L);
 
         Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
-        assertCustomActions(intent, R.string.send_tab_to_self_share_activity_title,
-                R.string.qr_code_share_icon_label);
+        assertCustomActions(intent, R.string.sharing_long_screenshot,
+                R.string.send_tab_to_self_share_activity_title, R.string.qr_code_share_icon_label);
     }
 
     @Test
@@ -402,8 +403,8 @@ public class AndroidShareSheetControllerUnitTest {
                 "\"highlight\"\n " + JUnitTestGURLs.TEXT_FRAGMENT_URL,
                 shareIntent.getStringExtra(Intent.EXTRA_TEXT));
 
-        assertCustomActions(chooserIntent, R.string.send_tab_to_self_share_activity_title,
-                R.string.qr_code_share_icon_label);
+        assertCustomActions(chooserIntent, R.string.sharing_long_screenshot,
+                R.string.send_tab_to_self_share_activity_title, R.string.qr_code_share_icon_label);
 
         // Toggle the modify action again, link is removed from text.
         runModifyActionFromChooserIntent(chooserIntent);
@@ -411,6 +412,8 @@ public class AndroidShareSheetControllerUnitTest {
         Intent shareIntent2 = chooserIntent2.getParcelableExtra(Intent.EXTRA_INTENT);
         Assert.assertEquals("Text being shared is different.", "highlight",
                 shareIntent2.getStringExtra(Intent.EXTRA_TEXT));
+
+        assertCustomActions(chooserIntent2, R.string.sharing_long_screenshot);
 
         // Toggle the modify action again, link is reattached with the text.
         runModifyActionFromChooserIntent(chooserIntent2);

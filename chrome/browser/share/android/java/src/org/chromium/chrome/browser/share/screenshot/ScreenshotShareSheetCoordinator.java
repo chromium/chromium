@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.share.screenshot;
 import android.content.Context;
 import android.graphics.Bitmap;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.ui.base.WindowAndroid;
@@ -40,7 +42,8 @@ public class ScreenshotShareSheetCoordinator {
     public ScreenshotShareSheetCoordinator(Context context, Bitmap screenshot,
             Runnable closeDialogRunnable, ScreenshotShareSheetView screenshotShareSheetView,
             WindowAndroid windowAndroid, String shareUrl,
-            ChromeOptionShareCallback shareSheetCallback, Callback<Runnable> installCallback) {
+            ChromeOptionShareCallback shareSheetCallback,
+            @Nullable Callback<Runnable> installCallback) {
         ArrayList<PropertyKey> allProperties =
                 new ArrayList<>(Arrays.asList(ScreenshotShareSheetViewProperties.ALL_KEYS));
         mModel = new PropertyModel(allProperties);

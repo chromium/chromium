@@ -40,7 +40,6 @@ found in the LICENSE file.
                 android:layout_height="56dp"
                 android:layout_marginStart="36dp"
                 android:layout_marginEnd="36dp"
-                android:weightSum="4"
                 android:orientation="horizontal"
                 android:gravity="bottom"
                 android:layout_gravity="start|bottom">

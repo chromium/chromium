@@ -62,4 +62,9 @@ class ScreenshotShareSheetView extends FrameLayout {
         Drawable drawable = new BitmapDrawable(bitmap);
         screenshotImageView.setImageDrawable(drawable);
     }
+
+    public void setEditButtonDisabled(boolean disabled) {
+        View editButton = findViewById(R.id.edit);
+        editButton.setVisibility(disabled ? View.GONE : View.VISIBLE);
+    }
 }
