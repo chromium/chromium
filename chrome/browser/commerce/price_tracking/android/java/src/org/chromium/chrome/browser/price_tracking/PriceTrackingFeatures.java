@@ -20,8 +20,6 @@ public class PriceTrackingFeatures {
     @VisibleForTesting
     public static final String PRICE_TRACKING_PARAM = "enable_price_tracking";
     @VisibleForTesting
-    public static final String PRICE_NOTIFICATION_PARAM = "enable_price_notification";
-    @VisibleForTesting
     public static final String ALLOW_DISABLE_PRICE_ANNOTATIONS_PARAM =
             "allow_disable_price_annotations";
     @VisibleForTesting
@@ -44,17 +42,6 @@ public class PriceTrackingFeatures {
     }
 
     /**
-     * @return whether or not price tracking notifications are enabled.
-     */
-    public static boolean getPriceTrackingNotificationsEnabled() {
-        if (FeatureList.isInitialized()) {
-            return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                    ChromeFeatureList.COMMERCE_PRICE_TRACKING, PRICE_NOTIFICATION_PARAM, false);
-        }
-        return false;
-    }
-
-    /**
      * @return Whether the price tracking feature is eligible to work. Now it is used to determine
      *         whether the menu item "track prices" is visible and whether the tab has {@link
      *         TabProperties#SHOPPING_PERSISTED_TAB_DATA_FETCHER}.
@@ -70,14 +57,7 @@ public class PriceTrackingFeatures {
      * @return Whether the price tracking feature is enabled and available for use.
      */
     public static boolean isPriceTrackingEnabled() {
-        return getPriceTrackingEnabled() || getPriceTrackingNotificationsEnabled();
-    }
-
-    /**
-     * @return Whether the price drop notification is eligible to work.
-     */
-    public static boolean isPriceDropNotificationEligible() {
-        return isPriceTrackingEligible() && getPriceTrackingNotificationsEnabled();
+        return getPriceTrackingEnabled();
     }
 
     private static boolean isSignedIn() {

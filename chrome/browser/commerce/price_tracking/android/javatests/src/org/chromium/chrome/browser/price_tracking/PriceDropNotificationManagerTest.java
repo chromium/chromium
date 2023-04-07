@@ -42,6 +42,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
+import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -68,8 +69,7 @@ import org.chromium.components.commerce.core.ShoppingService;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         "enable-features=" + ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study",
         "force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:enable_price_notification/true"
-            + "/user_managed_notification_max_number/2"})
+        "force-fieldtrial-params=Study.Group:user_managed_notification_max_number/2"})
 @Features.DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
 public class PriceDropNotificationManagerTest {
     // clang-format on
@@ -115,6 +115,7 @@ public class PriceDropNotificationManagerTest {
         PriceDropNotificationManagerImpl.setBookmarkModelForTesting(mMockBookmarkModel);
         ShoppingServiceFactory.setShoppingServiceForTesting(mMockShoppingService);
         Profile.setLastUsedProfileForTesting(mMockProfile);
+        ShoppingFeatures.setShoppingListEligibleForTesting(true);
     }
 
     @After
@@ -123,6 +124,7 @@ public class PriceDropNotificationManagerTest {
             mPriceDropNotificationManager.deleteChannelForTesting();
         }
         PriceDropNotificationManagerImpl.setNotificationManagerForTesting(null);
+        ShoppingFeatures.setShoppingListEligibleForTesting(null);
     }
 
     private void verifyClickIntent(Intent intent) {
@@ -144,8 +146,7 @@ public class PriceDropNotificationManagerTest {
     @MediumTest
     public void testCanPostNotification_FeatureDisabled() {
         mMockNotificationManager.setNotificationsEnabled(true);
-        PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(false);
-        assertFalse(PriceTrackingFeatures.isPriceTrackingEligible());
+        ShoppingFeatures.setShoppingListEligibleForTesting(false);
         assertFalse(mPriceDropNotificationManager.canPostNotification());
         assertFalse(mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded());
     }
@@ -164,7 +165,6 @@ public class PriceDropNotificationManagerTest {
     @MediumTest
     public void testCanPostNotificaton() {
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
-        assertTrue(PriceTrackingFeatures.isPriceTrackingEligible());
         mMockNotificationManager.setNotificationsEnabled(true);
         assertTrue(mPriceDropNotificationManager.areAppNotificationsEnabled());
 

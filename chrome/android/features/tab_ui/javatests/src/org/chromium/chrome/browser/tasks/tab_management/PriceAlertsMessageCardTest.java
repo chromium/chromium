@@ -53,6 +53,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
@@ -84,7 +85,7 @@ import java.io.IOException;
 public class PriceAlertsMessageCardTest {
     // clang-format on
     private static final String BASE_PARAMS =
-            "force-fieldtrial-params=Study.Group:enable_price_notification/true"
+            "force-fieldtrial-params=Study.Group:enable_price_tracking/true"
             + "/implicit_subscriptions_enabled/true";
     private static final String ACTION_APP_NOTIFICATION_SETTINGS =
             "android.settings.APP_NOTIFICATION_SETTINGS";
@@ -110,6 +111,7 @@ public class PriceAlertsMessageCardTest {
         mMockNotificationManager = new MockNotificationManagerProxy();
         PriceDropNotificationManagerImpl.setNotificationManagerForTesting(mMockNotificationManager);
         mPriceDropNotificationManager = PriceDropNotificationManagerFactory.create();
+        ShoppingFeatures.setShoppingListEligibleForTesting(true);
 
         mActivityTestRule.startMainActivityOnBlankPage();
         CriteriaHelper.pollUiThread(
@@ -123,6 +125,7 @@ public class PriceAlertsMessageCardTest {
         }
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(null);
         PriceDropNotificationManagerImpl.setNotificationManagerForTesting(null);
+        ShoppingFeatures.setShoppingListEligibleForTesting(null);
         ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
         Intents.release();
     }
@@ -132,7 +135,6 @@ public class PriceAlertsMessageCardTest {
     @CommandLineFlags.Add({BASE_PARAMS})
     public void testMessageCardShowing() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        assertTrue(PriceTrackingFeatures.isPriceDropNotificationEligible());
         assertTrue(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
 
         enterTabSwitcher(cta);
@@ -145,7 +147,6 @@ public class PriceAlertsMessageCardTest {
     @CommandLineFlags.Add({BASE_PARAMS})
     public void testMessageCardNotShowing_MessageDisabled() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        assertTrue(PriceTrackingFeatures.isPriceDropNotificationEligible());
         PriceTrackingUtilities.disablePriceAlertsMessageCard();
         assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
 
@@ -158,7 +159,6 @@ public class PriceAlertsMessageCardTest {
     @CommandLineFlags.Add({BASE_PARAMS})
     public void testMessageCardNotShowing_InIncognito() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        assertTrue(PriceTrackingFeatures.isPriceDropNotificationEligible());
         assertTrue(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
 
         createTabs(cta, true, 1);
@@ -169,26 +169,11 @@ public class PriceAlertsMessageCardTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:enable_price_notification/false"
-            + "/implicit_subscriptions_enabled/true"})
-    public void
-    testMessageCardNotShowing_NotificationParameterDisabled() {
-        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        assertFalse(PriceTrackingFeatures.isPriceDropNotificationEligible());
-        assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
-
-        enterTabSwitcher(cta);
-        onView(withId(R.id.large_message_card_item)).check(doesNotExist());
-    }
-
-    @Test
-    @MediumTest
-    @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:enable_price_notification/true"
+    @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:enable_price_tracking/true"
             + "/implicit_subscriptions_enabled/false"})
     public void
     testMessageCardNotShowing_ImplicitSubscriptionsParameterDisabled() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        assertTrue(PriceTrackingFeatures.isPriceDropNotificationEligible());
         assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
 
         enterTabSwitcher(cta);

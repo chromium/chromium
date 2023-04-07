@@ -77,7 +77,6 @@ import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorInProd
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadLaterIPHController;
@@ -809,10 +808,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     private void initCommerceSubscriptionsService() {
-        if (!PriceTrackingFeatures.getPriceTrackingNotificationsEnabled()) {
-            return;
-        }
-
         CommerceSubscriptionsServiceFactory factory = new CommerceSubscriptionsServiceFactory();
         mCommerceSubscriptionsService = factory.getForLastUsedProfile();
         mCommerceSubscriptionsService.initDeferredStartupForActivity(
