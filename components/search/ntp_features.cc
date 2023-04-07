@@ -316,7 +316,7 @@ const char kNtpDriveModuleCacheMaxAgeSParam[] =
 const char kNtpDriveModuleExperimentGroupParam[] =
     "NtpDriveModuleExperimentGroupParam";
 const char kNtpHistoryClustersModuleDataParam[] =
-    "NtpRecipeTasksModuleDataParam";
+    "NtpHistoryClustersModuleDataParam";
 const char kNtpMiddleSlotPromoDismissalParam[] =
     "NtpMiddleSlotPromoDismissalParam";
 const char kNtpPhotosModuleDataParam[] = "NtpPhotosModuleDataParam";
