@@ -22,6 +22,12 @@
     max-height: 100%;
     max-width: 100%;
   }
+
+  :host([is-image-cover_]) #page-image {
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+  }
 </style>
 
 <template is="dom-if" if="[[imageUrl_]]">

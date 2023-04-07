@@ -89,7 +89,12 @@ Config::Config() {
   }
 
   // The `kJourneysImages` feature.
-  { images = base::FeatureList::IsEnabled(internal::kJourneysImages); }
+  {
+    images = base::FeatureList::IsEnabled(internal::kJourneysImages);
+
+    images_cover = GetFieldTrialParamByFeatureAsBool(
+        internal::kJourneysImages, "JourneysImagesCover", images_cover);
+  }
 
   // The `kPersistedClusters` feature and child params.
   {

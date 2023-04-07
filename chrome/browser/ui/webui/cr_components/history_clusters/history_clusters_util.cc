@@ -49,6 +49,8 @@ void HistoryClustersUtil::PopulateSource(content::WebUIDataSource* source,
   source->AddString(
       "chromeRefresh2023Attribute",
       features::IsChromeRefresh2023() ? "chrome-refresh-2023" : "");
+  source->AddBoolean("isHistoryClustersImageCover",
+                     history_clusters::GetConfig().images_cover);
 
   static constexpr webui::LocalizedString kHistoryClustersStrings[] = {
       {"actionMenuDescription", IDS_HISTORY_CLUSTERS_ACTION_MENU_DESCRIPTION},
