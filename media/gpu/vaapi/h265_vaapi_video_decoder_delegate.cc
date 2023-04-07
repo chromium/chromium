@@ -249,37 +249,23 @@ DecodeStatus H265VaapiVideoDecoderDelegate::SubmitFrameMetadata(
                     (std::size(checker.scaling_list_dc_coef_32x32) / 3 ==
                      std::size(iq_matrix_buf.ScalingListDC32x32)),
                 "Mismatched HEVC scaling list matrix sizes");
-
-  for (int i = 0; i < H265ScalingListData::kNumScalingListMatrices; ++i) {
-    for (int j = 0; j < H265ScalingListData::kScalingListSizeId0Count; ++j)
-      iq_matrix_buf.ScalingList4x4[i][j] = scaling_list.scaling_list_4x4[i][j];
-  }
-
-  for (int i = 0; i < H265ScalingListData::kNumScalingListMatrices; ++i) {
-    for (int j = 0; j < H265ScalingListData::kScalingListSizeId1To3Count; ++j)
-      iq_matrix_buf.ScalingList8x8[i][j] = scaling_list.scaling_list_8x8[i][j];
-  }
-
-  for (int i = 0; i < H265ScalingListData::kNumScalingListMatrices; ++i) {
-    for (int j = 0; j < H265ScalingListData::kScalingListSizeId1To3Count; ++j)
-      iq_matrix_buf.ScalingList16x16[i][j] =
-          scaling_list.scaling_list_16x16[i][j];
-  }
-
-  for (int i = 0; i < H265ScalingListData::kNumScalingListMatrices; i += 3) {
-    for (int j = 0; j < H265ScalingListData::kScalingListSizeId1To3Count; ++j)
-      iq_matrix_buf.ScalingList32x32[i / 3][j] =
-          scaling_list.scaling_list_32x32[i][j];
-  }
-
-  for (int i = 0; i < H265ScalingListData::kNumScalingListMatrices; ++i)
-    iq_matrix_buf.ScalingListDC16x16[i] =
-        scaling_list.scaling_list_dc_coef_16x16[i];
-
-  for (int i = 0; i < H265ScalingListData::kNumScalingListMatrices; i += 3) {
-    iq_matrix_buf.ScalingListDC32x32[i / 3] =
-        scaling_list.scaling_list_dc_coef_32x32[i];
-  }
+  memcpy(iq_matrix_buf.ScalingList4x4, scaling_list.scaling_list_4x4,
+         sizeof(iq_matrix_buf.ScalingList4x4));
+  memcpy(iq_matrix_buf.ScalingList8x8, scaling_list.scaling_list_8x8,
+         sizeof(iq_matrix_buf.ScalingList8x8));
+  memcpy(iq_matrix_buf.ScalingList16x16, scaling_list.scaling_list_16x16,
+         sizeof(iq_matrix_buf.ScalingList16x16));
+  memcpy(iq_matrix_buf.ScalingList32x32[0], scaling_list.scaling_list_32x32[0],
+         sizeof(iq_matrix_buf.ScalingList32x32[0]));
+  memcpy(iq_matrix_buf.ScalingList32x32[1], scaling_list.scaling_list_32x32[3],
+         sizeof(iq_matrix_buf.ScalingList32x32[1]));
+  memcpy(iq_matrix_buf.ScalingListDC16x16,
+         scaling_list.scaling_list_dc_coef_16x16,
+         sizeof(iq_matrix_buf.ScalingListDC16x16));
+  iq_matrix_buf.ScalingListDC32x32[0] =
+      scaling_list.scaling_list_dc_coef_32x32[0];
+  iq_matrix_buf.ScalingListDC32x32[1] =
+      scaling_list.scaling_list_dc_coef_32x32[3];
 
   return vaapi_wrapper_->SubmitBuffer(VAIQMatrixBufferType, &iq_matrix_buf)
              ? DecodeStatus::kOk
