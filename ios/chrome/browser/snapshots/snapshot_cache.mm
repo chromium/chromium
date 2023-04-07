@@ -27,6 +27,7 @@
 #import "base/threading/scoped_blocking_call.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/snapshots/features.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache_observer.h"
 #import "ios/chrome/browser/snapshots/snapshot_lru_cache.h"
 #import "ios/chrome/browser/tabs/features.h"
@@ -163,6 +164,8 @@ UIImage* ReadImageForSnapshotIDFromDisk(NSString* snapshot_id,
 void WriteImageToDisk(UIImage* image, const base::FilePath& file_path) {
   if (!image)
     return;
+  // CGImage should exist, otherwise UIImageJPEG(PNG)Representation returns nil.
+  CHECK(image.CGImage);
 
   base::FilePath directory = file_path.DirName();
   if (!base::DirectoryExists(directory)) {
@@ -177,8 +180,14 @@ void WriteImageToDisk(UIImage* image, const base::FilePath& file_path) {
   NSString* path = base::SysUTF8ToNSString(file_path.AsUTF8Unsafe());
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
-  [UIImageJPEGRepresentation(image, kJPEGImageQuality) writeToFile:path
-                                                        atomically:YES];
+  NSData* data = UIImageJPEGRepresentation(image, kJPEGImageQuality);
+  if (!data && base::FeatureList::IsEnabled(kPDFSnapshot)) {
+    // Use UIImagePNGRepresentation instead when ImageJPEGRepresentation returns
+    // nil. It happens when the underlying CGImageRef contains data in an
+    // unsupported bitmap format.
+    data = UIImagePNGRepresentation(image);
+  }
+  [data writeToFile:path atomically:YES];
 
   // Encrypt the snapshot file (mostly for Incognito, but can't hurt to
   // always do it).
