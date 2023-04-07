@@ -123,6 +123,7 @@
 #include "ash/system/audio/display_speaker_controller.h"
 #include "ash/system/bluetooth/bluetooth_device_status_ui_handler.h"
 #include "ash/system/bluetooth/bluetooth_notification_controller.h"
+#include "ash/system/bluetooth/bluetooth_state_cache.h"
 #include "ash/system/brightness/brightness_controller_chromeos.h"
 #include "ash/system/brightness_control_delegate.h"
 #include "ash/system/camera/autozoom_controller_impl.h"
@@ -1573,6 +1574,7 @@ void Shell::Init(
           user_activity_detector_.get(), std::move(fingerprint));
   video_activity_notifier_ =
       std::make_unique<VideoActivityNotifier>(video_detector_.get());
+  bluetooth_state_cache_ = std::make_unique<BluetoothStateCache>();
   bluetooth_device_status_ui_handler_ =
       std::make_unique<BluetoothDeviceStatusUiHandler>();
   bluetooth_notification_controller_ =

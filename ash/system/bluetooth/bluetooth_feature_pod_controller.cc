@@ -11,7 +11,9 @@
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "ash/public/cpp/hats_bluetooth_revamp_trigger.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/bluetooth/bluetooth_state_cache.h"
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
@@ -35,9 +37,9 @@ using bluetooth_config::mojom::DeviceConnectionState;
 
 BluetoothSystemState GetInitialSystemState() {
   if (features::IsQsRevampEnabled()) {
-    // Ensure the feature tile is visible while waiting for the async mojo query
-    // in the constructor. This simplifies the initial QS layout.
-    return BluetoothSystemState::kEnabled;
+    // Synchronously query the initial state so the feature tile doesn't flash
+    // with the wrong state. See b/266996235
+    return Shell::Get()->bluetooth_state_cache()->system_state();
   } else {
     return BluetoothSystemState::kUnavailable;
   }
