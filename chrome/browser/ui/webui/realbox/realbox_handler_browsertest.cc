@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(RealboxSearchPreloadBrowserTest, SearchPreloadSuccess) {
   content::test::PrerenderHostRegistryObserver registry_observer(
       *GetWebContents());
 
-  std::string input_query = "pre";
+  std::string input_query = "prerender";
   std::string search_terms = "prerender";
   AddNewSuggestionRule(input_query, {search_terms}, /*prefetch_index=*/0,
                        /*prerender_index=*/0);
