@@ -98,7 +98,7 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | check_platform_shortcut_and_icon | Site |  | 7 | Implemented | The icon of the platform shortcut (on the desktop) is correct | cliffordcheng@, doc |
 | check_run_on_os_login_disabled | Site |  | 107 | Implemented | Check run on os login is disabled. | phillis@ |
 | check_run_on_os_login_enabled | Site |  | 106 | Implemented | Check run on os login is enabled. | phillis@ |
-| check_tab_created |  |  | 22 | Implemented | A tab was created in a chrome browser window |  |
+| check_tab_created | Number |  | 22 | Implemented | A given number of tabs were created in a chrome browser window |  |
 | check_tab_not_created |  |  | 94 | Implemented | A tab was not created by the last state change action | cliffordcheng@, P1 |
 | check_user_cannot_set_run_on_os_login | Site | check_user_cannot_set_run_on_os_login_app_settings($1) & check_user_cannot_set_run_on_os_login_app_home($1) | 159 | Parameterized | Check an user is unable to change the run on os login state from UI surfaces due to policy.  | dibyapal@ |
 | check_user_cannot_set_run_on_os_login_app_settings | Site | | 158 | Implemented | Check user can't change the app's run_on_os_login state from the app settings page. | |

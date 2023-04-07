@@ -348,7 +348,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckInstallIconNotShown();
   void CheckLaunchIconShown();
   void CheckLaunchIconNotShown();
-  void CheckTabCreated();
+  void CheckTabCreated(Number number);
   void CheckTabNotCreated();
   void CheckCustomToolbar();
   void CheckNoToolbar();
