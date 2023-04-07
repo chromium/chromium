@@ -3532,10 +3532,7 @@ void WebFrameWidgetImpl::InjectGestureScrollEvent(
     if (injected_type == WebInputEvent::Type::kGestureScrollBegin) {
       gesture_event->data.scroll_begin.scrollable_area_element_id =
           scrollable_area_element_id.GetInternalValue();
-      gesture_event->data.scroll_begin.main_thread_hit_tested_reasons =
-          device == WebGestureDevice::kScrollbar
-              ? cc::MainThreadScrollingReason::kScrollbarScrolling
-              : cc::MainThreadScrollingReason::kFailedHitTest;
+      gesture_event->data.scroll_begin.main_thread_hit_tested = true;
     }
 
     // Notifies TestWebFrameWidget of the injected event. Does nothing outside

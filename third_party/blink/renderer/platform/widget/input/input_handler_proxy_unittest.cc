@@ -317,25 +317,25 @@ WebTouchPoint CreateWebTouchPoint(WebTouchPoint::State state,
   return point;
 }
 
-const cc::InputHandler::ScrollStatus kImplThreadScrollState{
+const cc::InputHandler::ScrollStatus kImplThreadScrollState(
     cc::InputHandler::ScrollThread::SCROLL_ON_IMPL_THREAD,
-    cc::MainThreadScrollingReason::kNotScrollingOnMain};
+    cc::MainThreadScrollingReason::kNotScrollingOnMain);
 
-const cc::InputHandler::ScrollStatus kRequiresMainThreadHitTestState{
+const cc::InputHandler::ScrollStatus kRequiresMainThreadHitTestState(
     cc::InputHandler::ScrollThread::SCROLL_ON_IMPL_THREAD,
     cc::MainThreadScrollingReason::kNotScrollingOnMain,
-    cc::MainThreadScrollingReason::kNonFastScrollableRegion};
+    /*needs_main_thread_hit_test=*/true);
 
 constexpr auto kSampleMainThreadScrollingReason =
     cc::MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects;
 
-const cc::InputHandler::ScrollStatus kMainThreadScrollState{
+const cc::InputHandler::ScrollStatus kMainThreadScrollState(
     cc::InputHandler::ScrollThread::SCROLL_ON_MAIN_THREAD,
-    kSampleMainThreadScrollingReason};
+    kSampleMainThreadScrollingReason);
 
-const cc::InputHandler::ScrollStatus kScrollIgnoredScrollState{
+const cc::InputHandler::ScrollStatus kScrollIgnoredScrollState(
     cc::InputHandler::ScrollThread::SCROLL_IGNORED,
-    cc::MainThreadScrollingReason::kNotScrollingOnMain};
+    cc::MainThreadScrollingReason::kNotScrollingOnMain);
 
 }  // namespace
 
@@ -2041,8 +2041,7 @@ class UnifiedScrollingInputHandlerProxyTest : public testing::Test {
         WebInputEvent::Type::kGestureScrollBegin, WebInputEvent::kNoModifiers,
         TimeForInputEvents(), WebGestureDevice::kTouchpad);
     gsb->data.scroll_begin.scrollable_area_element_id = 0;
-    gsb->data.scroll_begin.main_thread_hit_tested_reasons =
-        cc::MainThreadScrollingReason::kNotScrollingOnMain;
+    gsb->data.scroll_begin.main_thread_hit_tested = false;
     gsb->data.scroll_begin.delta_x_hint = 0;
     gsb->data.scroll_begin.delta_y_hint = 10;
     gsb->data.scroll_begin.pointer_count = 0;
@@ -2087,8 +2086,7 @@ class UnifiedScrollingInputHandlerProxyTest : public testing::Test {
   }
 
   bool MainThreadHitTestInProgress() const {
-    return input_handler_proxy_.scroll_begin_main_thread_hit_test_reasons_ !=
-           cc::MainThreadScrollingReason::kNotScrollingOnMain;
+    return input_handler_proxy_.hit_testing_scroll_begin_on_main_thread_;
   }
 
   void BeginFrame() {
@@ -2268,9 +2266,7 @@ TEST_F(UnifiedScrollingInputHandlerProxyTest, MainThreadHitTestEvent) {
         mock_input_handler_,
         ScrollBegin(
             AllOf(Property(&ScrollState::target_element_id, Eq(ElementId())),
-                  Property(
-                      &ScrollState::main_thread_hit_tested_reasons,
-                      Eq(cc::MainThreadScrollingReason::kNotScrollingOnMain))),
+                  Property(&ScrollState::is_main_thread_hit_tested, Eq(false))),
             _))
         .WillOnce(Return(kRequiresMainThreadHitTestState));
     DispatchEvent(ScrollBegin());
@@ -2287,9 +2283,7 @@ TEST_F(UnifiedScrollingInputHandlerProxyTest, MainThreadHitTestEvent) {
         mock_input_handler_,
         ScrollBegin(
             AllOf(Property(&ScrollState::target_element_id, Eq(kHitTestResult)),
-                  Property(&ScrollState::main_thread_hit_tested_reasons,
-                           Eq(cc::MainThreadScrollingReason::
-                                  kNonFastScrollableRegion))),
+                  Property(&ScrollState::is_main_thread_hit_tested, Eq(true))),
             _))
         .Times(1);
 
@@ -3754,8 +3748,7 @@ TEST_P(InputHandlerProxyMainThreadScrollingReasonTest,
   VERIFY_AND_RESET_MOCKS();
 
   gesture_.data.scroll_begin.scrollable_area_element_id = 1;
-  gesture_.data.scroll_begin.main_thread_hit_tested_reasons =
-      cc::MainThreadScrollingReason::kNonFastScrollableRegion;
+  gesture_.data.scroll_begin.main_thread_hit_tested = true;
 
   EXPECT_CALL(mock_input_handler_, ScrollBegin(_, _))
       .WillOnce(testing::Return(kImplThreadScrollState));
@@ -3772,7 +3765,7 @@ TEST_P(InputHandlerProxyMainThreadScrollingReasonTest,
   VERIFY_AND_RESET_MOCKS();
 
   EXPECT_MAIN_THREAD_WHEEL_SCROLL_SAMPLE(
-      cc::MainThreadScrollingReason::kNonFastScrollableRegion);
+      cc::MainThreadScrollingReason::kFailedHitTest);
 }
 
 TEST_P(InputHandlerProxyMainThreadScrollingReasonTest,
