@@ -7,11 +7,14 @@ import argparse
 import io
 import logging
 import optparse
+import pathlib
+import urllib.parse
 from typing import Iterator, List, Optional, Tuple
 
 from blinkpy.common import path_finder
 from blinkpy.common.host import Host
 from blinkpy.tool.commands.command import Command
+from blinkpy.w3c.wpt_manifest import WPTManifest
 
 path_finder.bootstrap_wpt_imports()
 from tools.lint import lint as wptlint
@@ -56,6 +59,14 @@ class MetadataEmptySection(MetadataRule):
     A section without keys or subsections has no effect and should be removed.
     The (sub)tests represented by empty sections default to enabled and
     all-pass.
+    """
+
+
+class MetadataUnknownTest(MetadataRule):
+    name = 'META-UNKNOWN-TEST'
+    description = 'Test ID does not exist: %(test)r'
+    to_fix = """
+    Check that the top-level section headings are not misspelled.
     """
 
 
@@ -106,21 +117,21 @@ class LintWPT(Command):
 
     def check_metadata(self, repo_root: str, path: str,
                        metadata_file: io.BytesIO) -> List[LintError]:
-        if not self._is_metadata_file(repo_root, path):
+        # TODO(crbug.com/1406669): Check `__dir__.ini` too for relevant rules.
+        manifest = self._manifest(repo_root)
+        if not self._is_metadata_file(manifest, path):
             return []
         try:
             ast = wptmanifest.parse(metadata_file)
         except wptmanifest.parser.ParseError as error:
             context = {'detail': error.detail}
             return [MetadataBadSyntax.error(path, context, error.line)]
-        errors = []
-        for check in [
-                self._check_metadata_sorted,
-                self._check_metadata_nonempty_sections,
-                # TODO(crbug.com/1406669): Implement remaining rules.
-        ]:
-            errors.extend(check(path, ast))
-        return errors
+        return [
+            *self._check_metadata_sorted(path, ast),
+            *self._check_metadata_nonempty_sections(path, ast),
+            *self._check_metadata_valid_test_ids(path, ast, manifest),
+            # TODO(crbug.com/1406669): Implement remaining rules.
+        ]
 
     def _check_metadata_sorted(self, path: str,
                                node: wptnode.Node) -> Iterator[LintError]:
@@ -156,11 +167,28 @@ class LintWPT(Command):
         for child in node.children:
             yield from self._check_metadata_nonempty_sections(path, child)
 
-    def _is_metadata_file(self, repo_root: str, path: str) -> bool:
-        test_path, extension = self._fs.splitext(path)
+    def _check_metadata_valid_test_ids(
+        self,
+        path: str,
+        node: wptnode.Node,
+        manifest: WPTManifest,
+    ) -> Iterator[LintError]:
+        for child in node.children:
+            if isinstance(child, wptnode.DataNode):
+                assert child.data
+                # Intentionally replaces the basename in `path`.
+                test_id = urllib.parse.urljoin(
+                    pathlib.Path(path).as_posix(), child.data)
+                if not manifest.is_test_url(test_id):
+                    yield MetadataUnknownTest.error(path, {'test': test_id})
+
+    def _manifest(self, repo_root: str) -> WPTManifest:
         wpt_dir = self._fs.normpath(
             self._fs.relpath(repo_root, self._finder.path_from_web_tests()))
-        manifest = self._default_port.wpt_manifest(wpt_dir)
+        return self._default_port.wpt_manifest(wpt_dir)
+
+    def _is_metadata_file(self, manifest: WPTManifest, path: str) -> bool:
+        test_path, extension = self._fs.splitext(path)
         return extension == '.ini' and manifest.is_test_file(test_path)
 
 

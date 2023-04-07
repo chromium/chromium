@@ -36,11 +36,13 @@ class LintWPTTest(LoggingTestCase):
                             'd933fd981d4a33ba82fb2b000234859bdda1494e',
                             [None, {}],
                         ],
-                        'multiglob.https.any.js': [
-                            'd6498c3e388e0c637830fa080cca78b0ab0e5305',
-                            ['dir/multiglob.https.any.html', {}],
-                            ['dir/multiglob.https.any.worker.html', {}],
-                        ],
+                        'dir': {
+                            'multiglob.https.any.js': [
+                                'd6498c3e388e0c637830fa080cca78b0ab0e5305',
+                                ['dir/multiglob.https.any.html', {}],
+                                ['dir/multiglob.https.any.worker.html', {}],
+                            ],
+                        },
                         'variant.html': [
                             'b8db5972284d1ac6bbda0da81621d9bca5d04ee7',
                             ['variant.html?foo=bar/abc', {}],
@@ -169,3 +171,28 @@ class LintWPTTest(LoggingTestCase):
         self.assertEqual(
             description,
             "Empty section can be removed: '[variant.html?foo=baz]'")
+
+    def test_metadata_nonexistent_test(self):
+        error1, error2 = self._check_metadata(
+            """\
+            [multiglob.https.any.html]
+              expected: ERROR
+            [multiglob.https.any.serviceworker.html]
+              expected: ERROR
+            [multiglob.https.any.sharedworker.html]
+              expected: ERROR
+            [multiglob.https.any.worker.html]
+              expected: ERROR
+            """, 'dir/multiglob.https.any.js.ini')
+        name, description, path, _ = error1
+        self.assertEqual(name, 'META-UNKNOWN-TEST')
+        self.assertEqual(path, 'dir/multiglob.https.any.js.ini')
+        self.assertEqual(
+            description, 'Test ID does not exist: '
+            "'dir/multiglob.https.any.serviceworker.html'")
+        name, description, path, _ = error2
+        self.assertEqual(name, 'META-UNKNOWN-TEST')
+        self.assertEqual(path, 'dir/multiglob.https.any.js.ini')
+        self.assertEqual(
+            description, 'Test ID does not exist: '
+            "'dir/multiglob.https.any.sharedworker.html'")
