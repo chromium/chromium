@@ -14,9 +14,7 @@
 
 namespace {
 
-constexpr CGFloat customImageWidth = 60;
-constexpr CGFloat customImageHeight = 60;
-constexpr CGFloat customSpacingBeforeImageIfNoNavigationBar = 36;
+constexpr CGFloat customSpacingBeforeImageIfNoNavigationBar = 24;
 constexpr CGFloat customSpacingAfterImage = 24;
 
 }  // namespace
@@ -24,9 +22,8 @@ constexpr CGFloat customSpacingAfterImage = 24;
 @implementation FeedSignInPromoViewController
 
 - (void)viewDidLoad {
+  self.image = [UIImage imageNamed:@"sign_in_promo_logo"];
   self.imageHasFixedSize = YES;
-  self.customSpacingBeforeImageIfNoNavigationBar =
-      customSpacingBeforeImageIfNoNavigationBar;
   self.customSpacingAfterImage = customSpacingAfterImage;
   self.showDismissBarButton = NO;
   self.topAlignedLayout = YES;
@@ -40,30 +37,22 @@ constexpr CGFloat customSpacingAfterImage = 24;
   self.secondaryActionString =
       l10n_util::GetNSString(IDS_IOS_FEED_CARD_SIGN_IN_PROMO_CANCEL_BUTTON);
 
-  self.image = [self signInLogo];
+  if (@available(iOS 15, *)) {
+    self.titleTextStyle = UIFontTextStyleTitle2;
+    self.customSpacingBeforeImageIfNoNavigationBar =
+        customSpacingBeforeImageIfNoNavigationBar;
+    self.customSpacingAfterImage = 1;
+    self.topAlignedLayout = YES;
+  }
 
   [super viewDidLoad];
 }
 
 #pragma mark - ConfirmationAlertViewController
 
-- (void)updateStylingForSecondaryTitleLabel:(UILabel*)secondaryTitleLabel {
-  secondaryTitleLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-  secondaryTitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-}
-
-#pragma mark - Private
-
-// Creates and configures the logo image.
-- (UIImage*)signInLogo {
-  UIImage* logo = [UIImage imageNamed:@"sign_in_promo_logo"];
-  UIImageView* logoImageView = [[UIImageView alloc] initWithImage:logo];
-  logoImageView.frame = CGRectMake(0, 0, customImageWidth, customImageHeight);
-  logoImageView.center = logoImageView.superview.center;
-  logoImageView.contentMode = UIViewContentModeScaleAspectFit;
-  logoImageView.translatesAutoresizingMaskIntoConstraints = NO;
-  return logo;
+- (void)customizeSecondaryTitle:(UITextView*)secondaryTitle {
+  secondaryTitle.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  secondaryTitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
 }
 
 @end
