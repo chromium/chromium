@@ -57,6 +57,7 @@ class DOMStorageContextWrapperTest : public testing::Test {
     auto* security_policy = ChildProcessSecurityPolicyImpl::GetInstance();
     security_policy->Remove(kTestProcessIdOrigin1);
     security_policy->Remove(kTestProcessIdOrigin2);
+    security_policy->ClearIsolatedOriginsForTesting();
   }
 
  protected:
