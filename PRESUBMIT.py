@@ -1542,6 +1542,30 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       False,
       [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
     ),
+    BanRule(
+      r'CrossThreadPersistent<',
+      (
+        'Do not use blink::CrossThreadPersistent, but '
+        'blink::CrossThreadHandle. It is harder to mis-use.',
+        'More info: '
+        'https://docs.google.com/document/d/1GIT0ysdQ84sGhIo1r9EscF_fFt93lmNVM_q4vvHj2FQ/edit#heading=h.3e4d6y61tgs',
+        'Please contact platform-architecture-dev@ before adding new instances.'
+      ),
+      False,
+      []
+    ),
+    BanRule(
+      r'CrossThreadWeakPersistent<',
+      (
+        'Do not use blink::CrossThreadWeakPersistent, but '
+        'blink::CrossThreadWeakHandle. It is harder to mis-use.',
+        'More info: '
+        'https://docs.google.com/document/d/1GIT0ysdQ84sGhIo1r9EscF_fFt93lmNVM_q4vvHj2FQ/edit#heading=h.3e4d6y61tgs',
+        'Please contact platform-architecture-dev@ before adding new instances.'
+      ),
+      False,
+      []
+    ),
 )
 
 _BANNED_MOJOM_PATTERNS : Sequence[BanRule] = (
