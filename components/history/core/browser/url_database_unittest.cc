@@ -224,9 +224,9 @@ TEST_F(URLDatabaseTest, KeywordSearchTerms_Prefix) {
   auto enumerator_1 = CreateKeywordSearchTermVisitEnumerator(keyword_id, u"f");
   ASSERT_TRUE(enumerator_1);
   KeywordSearchTermVisitList matches;
-  GetAutocompleteSearchTermsFromEnumerator(
-      *enumerator_1, /*count=*/SIZE_MAX, /*ignore_duplicate_visits=*/false,
-      SearchTermRankingPolicy::kRecency, &matches);
+  GetAutocompleteSearchTermsFromEnumerator(*enumerator_1, /*count=*/SIZE_MAX,
+                                           SearchTermRankingPolicy::kRecency,
+                                           &matches);
   ASSERT_EQ(2U, matches.size());
   EXPECT_EQ(u"Food", matches[0]->term);
   EXPECT_EQ(u"food", matches[0]->normalized_term);
@@ -243,8 +243,7 @@ TEST_F(URLDatabaseTest, KeywordSearchTerms_Prefix) {
   ASSERT_TRUE(enumerator_2);
   matches.clear();
   GetAutocompleteSearchTermsFromEnumerator(
-      *enumerator_2, /*count=*/1U, /*ignore_duplicate_visits=*/false,
-      SearchTermRankingPolicy::kRecency, &matches);
+      *enumerator_2, /*count=*/1U, SearchTermRankingPolicy::kRecency, &matches);
   ASSERT_EQ(1U, matches.size());
   EXPECT_EQ(u"Food", matches[0]->term);
   EXPECT_EQ(u"food", matches[0]->normalized_term);
@@ -267,9 +266,9 @@ TEST_F(URLDatabaseTest, KeywordSearchTerms_Prefix) {
   auto enumerator_3 = CreateKeywordSearchTermVisitEnumerator(keyword_id, u"f");
   ASSERT_TRUE(enumerator_3);
   matches.clear();
-  GetAutocompleteSearchTermsFromEnumerator(
-      *enumerator_3, /*count=*/SIZE_MAX, /*ignore_duplicate_visits=*/false,
-      SearchTermRankingPolicy::kRecency, &matches);
+  GetAutocompleteSearchTermsFromEnumerator(*enumerator_3, /*count=*/SIZE_MAX,
+                                           SearchTermRankingPolicy::kRecency,
+                                           &matches);
   ASSERT_EQ(0U, matches.size());
 
   ASSERT_FALSE(GetKeywordSearchTermRow(foo_url_3_id, &keyword_search_term_row));
@@ -327,9 +326,9 @@ TEST_F(URLDatabaseTest, KeywordSearchTerms_ZeroPrefix) {
   auto enumerator_1 = CreateKeywordSearchTermVisitEnumerator(keyword_id);
   ASSERT_TRUE(enumerator_1);
   KeywordSearchTermVisitList matches;
-  GetAutocompleteSearchTermsFromEnumerator(
-      *enumerator_1, /*count=*/SIZE_MAX, /*ignore_duplicate_visits=*/true,
-      SearchTermRankingPolicy::kFrecency, &matches);
+  GetAutocompleteSearchTermsFromEnumerator(*enumerator_1, /*count=*/SIZE_MAX,
+                                           SearchTermRankingPolicy::kFrecency,
+                                           &matches);
   ASSERT_EQ(2U, matches.size());
   EXPECT_EQ(u"FOO", matches[0]->term);
   EXPECT_EQ(u"foo", matches[0]->normalized_term);
@@ -345,9 +344,9 @@ TEST_F(URLDatabaseTest, KeywordSearchTerms_ZeroPrefix) {
   auto enumerator_2 = CreateKeywordSearchTermVisitEnumerator(keyword_id);
   ASSERT_TRUE(enumerator_2);
   matches.clear();
-  GetAutocompleteSearchTermsFromEnumerator(
-      *enumerator_2, /*count=*/1U, /*ignore_duplicate_visits=*/true,
-      SearchTermRankingPolicy::kFrecency, &matches);
+  GetAutocompleteSearchTermsFromEnumerator(*enumerator_2, /*count=*/1U,
+                                           SearchTermRankingPolicy::kFrecency,
+                                           &matches);
   ASSERT_EQ(1U, matches.size());
   EXPECT_EQ(u"FOO", matches[0]->term);
   EXPECT_EQ(u"foo", matches[0]->normalized_term);
@@ -371,9 +370,9 @@ TEST_F(URLDatabaseTest, KeywordSearchTerms_ZeroPrefix) {
   auto enumerator_3 = CreateKeywordSearchTermVisitEnumerator(keyword_id);
   ASSERT_TRUE(enumerator_3);
   matches.clear();
-  GetAutocompleteSearchTermsFromEnumerator(
-      *enumerator_3, /*count=*/SIZE_MAX, /*ignore_duplicate_visits=*/true,
-      SearchTermRankingPolicy::kFrecency, &matches);
+  GetAutocompleteSearchTermsFromEnumerator(*enumerator_3, /*count=*/SIZE_MAX,
+                                           SearchTermRankingPolicy::kFrecency,
+                                           &matches);
   ASSERT_EQ(0U, matches.size());
 
   ASSERT_FALSE(GetKeywordSearchTermRow(foo_url_3_id, &keyword_search_term_row));
@@ -517,9 +516,9 @@ TEST_F(URLDatabaseTest, DeleteURLDeletesKeywordSearchTermVisit) {
   auto enumerator = CreateKeywordSearchTermVisitEnumerator(1, u"visit");
   ASSERT_TRUE(enumerator);
   matches.clear();
-  GetAutocompleteSearchTermsFromEnumerator(
-      *enumerator, /*count=*/SIZE_MAX, /*ignore_duplicate_visits=*/false,
-      SearchTermRankingPolicy::kRecency, &matches);
+  GetAutocompleteSearchTermsFromEnumerator(*enumerator, /*count=*/SIZE_MAX,
+                                           SearchTermRankingPolicy::kRecency,
+                                           &matches);
   ASSERT_EQ(0U, matches.size());
 }
 

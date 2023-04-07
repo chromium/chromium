@@ -599,9 +599,9 @@ class InMemoryHistoryBackendTest : public HistoryBackendTestBase {
     auto enumerator =
         url_db->CreateKeywordSearchTermVisitEnumerator(keyword_id, prefix);
     KeywordSearchTermVisitList matching_terms;
-    GetAutocompleteSearchTermsFromEnumerator(
-        *enumerator, /*count=*/SIZE_MAX, /*ignore_duplicate_visits=*/true,
-        SearchTermRankingPolicy::kRecency, &matching_terms);
+    GetAutocompleteSearchTermsFromEnumerator(*enumerator, /*count=*/SIZE_MAX,
+                                             SearchTermRankingPolicy::kRecency,
+                                             &matching_terms);
     return matching_terms.size();
   }
 

@@ -204,8 +204,8 @@ void LocalHistoryZeroSuggestProvider::QueryURLDatabase(
       template_url_service->GetDefaultSearchProvider()->id());
   if (enumerator) {
     history::GetAutocompleteSearchTermsFromEnumerator(
-        *enumerator, max_matches_, /*ignore_duplicate_visits=*/true,
-        history::SearchTermRankingPolicy::kFrecency, &results);
+        *enumerator, max_matches_, history::SearchTermRankingPolicy::kFrecency,
+        &results);
   }
   DCHECK_LE(results.size(), max_matches_);
   base::UmaHistogramTimes(
