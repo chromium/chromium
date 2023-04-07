@@ -23,6 +23,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
@@ -9369,6 +9370,23 @@ std::unique_ptr<WebUIImpl> NavigationRequest::CreateWebUIIfNeeded(
       WebUIControllerFactoryRegistry::GetInstance()
           ->CreateWebUIControllerForURL(web_ui.get(), GetURL()));
   if (!controller) {
+    return nullptr;
+  }
+
+  // If we have assigned (zero or more) bindings to the NavigationEntry in
+  // the past, make sure we're not granting it different bindings than it
+  // had before. If so, note it and don't give it any bindings, to avoid a
+  // potential privilege escalation.
+  if (bindings() != FrameNavigationEntry::kInvalidBindings &&
+      bindings() != web_ui->GetBindings()) {
+    RecordAction(base::UserMetricsAction("ProcessSwapBindingsMismatch_RVHM"));
+    base::WeakPtr<NavigationRequest> self = GetWeakPtr();
+    web_ui.reset();
+    // Resetting the WebUI may indirectly call content's embedders and delete
+    // `this`. There are no known occurrences of it, so we assume this never
+    // happen and crash immediately if it does, because there are no easy ways
+    // to recover.
+    CHECK(self);
     return nullptr;
   }
 

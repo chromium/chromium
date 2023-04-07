@@ -1349,7 +1349,8 @@ RenderFrameHostManager::GetFrameHostForNavigation(
         std::unique_ptr<WebUIImpl> web_ui =
             request->CreateWebUIIfNeeded(render_frame_host_.get());
         if (web_ui) {
-          render_frame_host_->MaybeSetWebUI(*request, std::move(web_ui));
+          render_frame_host_->SetWebUI(*request, std::move(web_ui));
+          CHECK(render_frame_host_->web_ui());
         }
         if (render_frame_host_->IsRenderFrameLive()) {
           render_frame_host_->web_ui()->WebUIRenderFrameCreated(
@@ -1434,9 +1435,9 @@ RenderFrameHostManager::GetFrameHostForNavigation(
       std::unique_ptr<WebUIImpl> web_ui =
           request->CreateWebUIIfNeeded(speculative_render_frame_host_.get());
       if (web_ui) {
-        notify_webui_of_rf_creation =
-            speculative_render_frame_host_->MaybeSetWebUI(*request,
-                                                          std::move(web_ui));
+        notify_webui_of_rf_creation = true;
+        speculative_render_frame_host_->SetWebUI(*request, std::move(web_ui));
+        CHECK(speculative_render_frame_host_->web_ui());
       }
     }
 

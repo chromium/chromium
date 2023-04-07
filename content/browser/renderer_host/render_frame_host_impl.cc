@@ -10048,8 +10048,8 @@ bool RenderFrameHostImpl::IsFocused() {
          focused_rfh->IsDescendantOfWithinFrameTree(this);
 }
 
-bool RenderFrameHostImpl::MaybeSetWebUI(NavigationRequest& request,
-                                        std::unique_ptr<WebUIImpl> new_web_ui) {
+void RenderFrameHostImpl::SetWebUI(NavigationRequest& request,
+                                   std::unique_ptr<WebUIImpl> new_web_ui) {
   // This function should only be called to set a WebUI object. To clear an
   // existing WebUI object, call `ClearWebUI()` instead.
   CHECK(new_web_ui);
@@ -10067,23 +10067,6 @@ bool RenderFrameHostImpl::MaybeSetWebUI(NavigationRequest& request,
 
   web_ui_ = std::move(new_web_ui);
 
-  // If we have assigned (zero or more) bindings to the NavigationEntry in
-  // the past, make sure we're not granting it different bindings than it
-  // had before. If so, note it and don't give it any bindings, to avoid a
-  // potential privilege escalation.
-  int entry_bindings = request.bindings();
-  if (entry_bindings != FrameNavigationEntry::kInvalidBindings &&
-      web_ui_->GetBindings() != entry_bindings) {
-    RecordAction(base::UserMetricsAction("ProcessSwapBindingsMismatch_RVHM"));
-    base::WeakPtr<RenderFrameHostImpl> self = GetWeakPtr();
-    ClearWebUI();
-    // `ClearWebUI()` may indirectly call content's embedders and delete this.
-    // There are no known occurrences of it, so we assume this never happen and
-    // crash immediately if it does, because there are no easy ways to recover.
-    CHECK(self);
-    return false;
-  }
-
   // It is not expected for GuestView to be able to navigate to WebUI.
   DCHECK(!GetProcess()->IsForGuestsOnly());
 
@@ -10099,8 +10082,6 @@ bool RenderFrameHostImpl::MaybeSetWebUI(NavigationRequest& request,
   // have had any bindings. Verify that and grant the required bindings.
   DCHECK_EQ(BINDINGS_POLICY_NONE, GetEnabledBindings());
   AllowBindings(web_ui_->GetBindings());
-
-  return true;
 }
 
 void RenderFrameHostImpl::ClearWebUI() {

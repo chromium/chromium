@@ -1490,11 +1490,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // addition, its associated RenderWidgetHost has to be focused.
   bool IsFocused();
 
-  // Tries to set `new_web_ui` as the WebUI for this RenderFrameHost, which is
-  // based on the provided `request`'s URL. Returns true if the WebUI can be
-  // used by this RenderFrameHost.
-  bool MaybeSetWebUI(NavigationRequest& request,
-                     std::unique_ptr<WebUIImpl> new_web_ui);
+  // Sets `new_web_ui` as the WebUI for this RenderFrameHost, which is based on
+  // the provided `request`'s URL.
+  void SetWebUI(NavigationRequest& request,
+                std::unique_ptr<WebUIImpl> new_web_ui);
 
   // Destroys WebUI instance and resets related data.
   // This indirectly calls content's embedders and may have arbitrary side
