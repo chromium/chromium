@@ -34,6 +34,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/offscreen_document_host.h"
+#include "extensions/browser/process_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_channel.h"
@@ -744,6 +745,14 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest,
   // only one).
   base::Value contexts = GetContexts("{}");
 
+  ProcessManager* process_manager = ProcessManager::Get(profile());
+  std::vector<WorkerId> workers =
+      process_manager->GetServiceWorkersForExtension(extension().id());
+  ASSERT_EQ(1u, workers.size());
+  base::Uuid expected_context_id =
+      ProcessManager::Get(profile())->GetContextIdForWorker(workers[0]);
+  EXPECT_TRUE(expected_context_id.is_valid());
+
   // Note: fields of `documentId`, `documentUrl`, and `documentOrigin` are
   // undefined (service worker contexts don't have an associated document).
   // `tabId`, `frameId`, and `windowId` are -1 for consistency with other
@@ -751,13 +760,15 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest,
   static constexpr char kExpected[] =
       R"([{
             "contextType": "BACKGROUND",
-            "contextId": "",
+            "contextId": "%s",
             "tabId": -1,
             "windowId": -1,
             "frameId": -1,
             "incognito": false
          }])";
-  EXPECT_THAT(contexts, base::test::IsJson(kExpected));
+  std::string expected_contents = base::StringPrintf(
+      kExpected, expected_context_id.AsLowercaseString().c_str());
+  EXPECT_THAT(contexts, base::test::IsJson(expected_contents));
 
   // Now, wait for the extension worker to terminate and verify that no
   // no contexts are retrieved.

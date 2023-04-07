@@ -44,6 +44,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
+#include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
@@ -1807,6 +1808,56 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, HostedAppAlerts) {
       hosted_app_title,
       js_dialog_manager->GetTitle(
           new_tab, new_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin()));
+}
+
+// Tests retrieving a context ID for a given extension's service worker.
+IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, GetWorkerContextId) {
+  // Load up a basic extension.
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Worker Extension",
+           "manifest_version": 3,
+           "version": "0.1",
+           "background": {"service_worker": "background.js"}
+         })";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
+                     "// Intentionally blank");
+
+  const Extension* extension = LoadExtension(
+      test_dir.UnpackedPath(), {.wait_for_registration_stored = true});
+
+  ProcessManager* process_manager = ProcessManager::Get(profile());
+  ASSERT_TRUE(process_manager);
+
+  WorkerId first_worker_id;
+  {
+    // There should be exactly one service worker running.
+    std::vector<WorkerId> workers =
+        process_manager->GetServiceWorkersForExtension(extension->id());
+    ASSERT_EQ(1u, workers.size());
+    first_worker_id = workers[0];
+    // Verify we can retrieve a valid context ID for the worker.
+    base::Uuid context_id =
+        process_manager->GetContextIdForWorker(first_worker_id);
+    EXPECT_TRUE(context_id.is_valid());
+  }
+
+  // Stop the service worker.
+  browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
+                                                             extension->id());
+
+  {
+    // There should no longer be a worker running.
+    std::vector<WorkerId> workers =
+        process_manager->GetServiceWorkersForExtension(extension->id());
+    EXPECT_EQ(0u, workers.size());
+    // The context ID should be cleared out (returning an empty / invalid one).
+    base::Uuid context_id =
+        process_manager->GetContextIdForWorker(first_worker_id);
+    EXPECT_FALSE(context_id.is_valid());
+  }
 }
 
 }  // namespace extensions

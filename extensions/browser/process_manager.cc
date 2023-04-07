@@ -963,6 +963,7 @@ void ProcessManager::UnregisterExtension(const std::string& extension_id) {
 
 void ProcessManager::RegisterServiceWorker(const WorkerId& worker_id) {
   all_extension_workers_.Add(worker_id);
+  worker_context_ids_[worker_id] = base::Uuid::GenerateRandomV4();
 
   // Observe the RenderProcessHost for cleaning up on process shutdown.
   int render_process_id = worker_id.render_process_id;
@@ -1039,6 +1040,7 @@ void ProcessManager::HandleCloseExtensionHost(ExtensionHost* host) {
 void ProcessManager::UnregisterServiceWorker(const WorkerId& worker_id) {
   // TODO(lazyboy): DCHECK that |worker_id| exists in |all_extension_workers_|.
   all_extension_workers_.Remove(worker_id);
+  worker_context_ids_.erase(worker_id);
   for (auto& observer : observer_list_)
     observer.OnServiceWorkerUnregistered(worker_id);
 }
@@ -1050,6 +1052,12 @@ bool ProcessManager::HasServiceWorker(const WorkerId& worker_id) const {
 std::vector<WorkerId> ProcessManager::GetServiceWorkersForExtension(
     const ExtensionId& extension_id) const {
   return all_extension_workers_.GetAllForExtension(extension_id);
+}
+
+base::Uuid ProcessManager::GetContextIdForWorker(
+    const WorkerId& worker_id) const {
+  auto iter = worker_context_ids_.find(worker_id);
+  return iter != worker_context_ids_.end() ? iter->second : base::Uuid();
 }
 
 std::vector<WorkerId> ProcessManager::GetAllWorkersIdsForTesting() {

@@ -19,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/uuid.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/devtools_agent_host_observer.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -241,6 +242,10 @@ class ProcessManager : public KeyedService,
   std::vector<WorkerId> GetServiceWorkersForExtension(
       const ExtensionId& extension_id) const;
 
+  // Returns the context ID for the given `worker_id`, if `worker_id` is
+  // registered in the process manager. Otherwise, returns an empty base::Uuid.
+  base::Uuid GetContextIdForWorker(const WorkerId& worker_id) const;
+
   bool startup_background_hosts_created_for_test() const {
     return startup_background_hosts_created_;
   }
@@ -364,6 +369,9 @@ class ProcessManager : public KeyedService,
   // Contains all active extension Service Worker information for all
   // extensions.
   WorkerIdSet all_extension_workers_;
+  // Maps worker IDs to extension context IDs (as used in the runtime API) for
+  // running workers.
+  std::map<WorkerId, base::Uuid> worker_context_ids_;
 
   BackgroundPageDataMap background_page_data_;
 

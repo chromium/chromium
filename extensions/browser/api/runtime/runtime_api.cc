@@ -847,8 +847,10 @@ RuntimeGetContextsFunction::GetWorkerContext() {
 
   api::runtime::ExtensionContext context;
   context.context_type = api::runtime::CONTEXT_TYPE_BACKGROUND;
-  // TODO(crbug/1426192): Add a real context id.
-  context.context_id = "";
+  base::Uuid context_id =
+      process_manager->GetContextIdForWorker(active_workers[0]);
+  CHECK(context_id.is_valid());
+  context.context_id = context_id.AsLowercaseString();
   context.tab_id = extension_misc::kUnknownTabId;
   context.window_id = extension_misc::kUnknownWindowId;
   // TODO(devlin): Add extension_misc::kUnknownFrameId and use it here?
