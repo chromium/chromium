@@ -627,6 +627,12 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         mLocationBarBackground = background;
     }
 
+    @VisibleForTesting
+    void setOptionalButtonCoordinatorForTesting(
+            OptionalButtonCoordinator optionalButtonCoordinator) {
+        mOptionalButton = optionalButtonCoordinator;
+    }
+
     @SuppressLint("RtlHardcoded")
     private boolean layoutLocationBar(int containerWidth) {
         TraceEvent.begin("ToolbarPhone.layoutLocationBar");
@@ -1317,7 +1323,12 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         // Translate to draw end toolbar buttons.
         ViewUtils.translateCanvasToView(this, mToolbarButtonsContainer, canvas);
 
-        if (mOptionalButton != null && mOptionalButton.getViewVisibility() != View.GONE) {
+        // Draw the optional button if visible. We check for both visibility and width because in
+        // some cases (e.g. the first frame of the showing animation) the view may be visible with a
+        // width of zero. Calling draw in this state results in drawing the inner ImageButton when
+        // it's not supposed to. (See https://crbug.com/1422176 for an example of this happening).
+        if (mOptionalButton != null && mOptionalButton.getViewVisibility() != View.GONE
+                && mOptionalButton.getViewWidth() != 0) {
             canvas.save();
             ViewUtils.translateCanvasToView(
                     mToolbarButtonsContainer, mOptionalButton.getViewForDrawing(), canvas);
