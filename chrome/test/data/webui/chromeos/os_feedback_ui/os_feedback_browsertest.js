@@ -56,8 +56,9 @@ const debug_suites_list = [
   'shareDataPageTest',
 ];
 
+// TODO(crbug.com/1401615): Flaky.
 TEST_F(
-    'OSFeedbackBrowserTest', 'All', function() {
+    'OSFeedbackBrowserTest', 'DISABLED_All', function() {
       assertDeepEquals(
           debug_suites_list, test_suites_list,
           'List of registered tests suites and debug suites do not match.\n' +
