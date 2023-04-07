@@ -814,6 +814,12 @@ const char kWebAuthnLastOperationWasNativeAPI[] =
 const char kEasyUnlockHardlockState[] = "easy_unlock.hardlock_state";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 04/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kBentoBarEnabled[] = "ash.bento_bar.enabled";
+const char kUserHasUsedDesksRecently[] = "ash.user_has_used_desks_recently";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1103,6 +1109,12 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(IS_WIN)
   registry->RegisterBooleanPref(kWebAuthnLastOperationWasNativeAPI, false);
 #endif
+
+// Deprecated 04/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterBooleanPref(kBentoBarEnabled, false);
+  registry->RegisterBooleanPref(kUserHasUsedDesksRecently, false);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace
@@ -2140,6 +2152,12 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 #if BUILDFLAG(IS_WIN)
   profile_prefs->ClearPref(kWebAuthnLastOperationWasNativeAPI);
 #endif
+
+// Added 04/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  profile_prefs->ClearPref(kBentoBarEnabled);
+  profile_prefs->ClearPref(kUserHasUsedDesksRecently);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

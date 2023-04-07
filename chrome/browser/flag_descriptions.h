@@ -348,9 +348,6 @@ extern const char kBackForwardCacheDescription[];
 extern const char kEnableBackForwardCacheForScreenReaderName[];
 extern const char kEnableBackForwardCacheForScreenReaderDescription[];
 
-extern const char kBentoBarName[];
-extern const char kBentoBarDescription[];
-
 extern const char kBiometricReauthForPasswordFillingName[];
 extern const char kBiometricReauthForPasswordFillingDescription[];
 

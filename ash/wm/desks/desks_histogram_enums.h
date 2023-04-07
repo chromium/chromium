@@ -46,7 +46,7 @@ enum class DesksSwitchSource {
   kWindowActivated = 4,
   kDeskSwitchTouchpad = 5,
   kUserSwitch = 6,
-  kPersistentDesksBar = 7,
+  // kPersistentDesksBar = 7,  // Deprecated, feature has been deleted.
   kLaunchTemplate = 8,
   kIndexedDeskSwitchShortcut = 9,
   kRemovalUndone = 10,

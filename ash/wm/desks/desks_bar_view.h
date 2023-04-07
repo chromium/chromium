@@ -27,7 +27,6 @@ class DeskDragProxy;
 class DeskMiniView;
 class ExpandedDesksBarButton;
 class OverviewGrid;
-class PersistentDesksBarVerticalDotsButton;
 class ScrollArrowButton;
 class ZeroStateDefaultDeskButton;
 class ZeroStateIconButton;
@@ -228,8 +227,8 @@ class ASH_EXPORT DesksBarView : public views::View,
   // and the ExpandedDesksBarButton on the desk bar's state.
   void UpdateDeskButtonsVisibility();
 
-  // Udates the visibility of the `default_desk_button_` and
-  // `vertical_dots_button_` on the desks bar's state.
+  // Udates the visibility of the `default_desk_button_` on the desks bar's
+  // state.
   // TODO(conniekxu): Remove `UpdateDeskButtonsVisibility`, replace it with this
   // function, and rename this function by removing the prefix CrOSNext.
   void UpdateDeskButtonsVisibilityCrOSNext();
@@ -377,11 +376,6 @@ class ASH_EXPORT DesksBarView : public views::View,
   DeskMiniView* drag_view_ = nullptr;
   // Drag proxy for the dragged desk.
   std::unique_ptr<DeskDragProxy> drag_proxy_;
-
-  // A circular button which when clicked will open the context menu of the
-  // persistent desks bar. Note that this button will only be created when
-  // persistent desks bar should be shown.
-  PersistentDesksBarVerticalDotsButton* vertical_dots_button_ = nullptr;
 
   // ScrollView callback subscriptions.
   base::CallbackListSubscription on_contents_scrolled_subscription_;

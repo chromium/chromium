@@ -646,11 +646,6 @@ const char kEnableBackForwardCacheForScreenReaderDescription[] =
     "If enabled, allow pages to enter back/forward cache even if a screen "
     "reader is in use. The page might still not be cached for other reasons.";
 
-const char kBentoBarName[] = "Persistent desks bar";
-const char kBentoBarDescription[] =
-    "Showing a persistent desks bar at the top of the screen in clamshell mode "
-    "when there are more than one desk.";
-
 const char kBiometricReauthForPasswordFillingName[] =
     "Biometric reauth for password filling";
 const char kBiometricReauthForPasswordFillingDescription[] =

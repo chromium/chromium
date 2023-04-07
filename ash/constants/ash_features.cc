@@ -234,10 +234,6 @@ BASE_FEATURE(kAvatarsCloudMigration,
              "AvatarsCloudMigration",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the persistent desks bar at the top of the screen in clamshell mode
-// when there are more than one desk.
-BASE_FEATURE(kBentoBar, "BentoBar", base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables or disables the usage of fixed Bluetooth A2DP packet size to improve
 // audio performance in noisy environment.
 BASE_FEATURE(kBluetoothFixA2dpPacketSize,
@@ -2499,10 +2495,6 @@ bool IsBackgroundBlurEnabled() {
 #else
   return enabled_by_feature_flag;
 #endif
-}
-
-bool IsBentoBarEnabled() {
-  return base::FeatureList::IsEnabled(kBentoBar);
 }
 
 bool IsBluetoothQualityReportEnabled() {

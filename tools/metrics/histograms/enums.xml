@@ -25711,7 +25711,8 @@ Called by update_debug_scenarios.py.-->
   <int value="4" label="Window on desk activated"/>
   <int value="5" label="Desk-switch 4-finger touchpad swipe"/>
   <int value="6" label="User switch in a multi-profile session"/>
-  <int value="7" label="User switch through the persistent desks bar"/>
+  <int value="7"
+      label="DEPRECATED: User switch through the persistent desks bar"/>
   <int value="8" label="User switch by launching a template"/>
   <int value="9" label="User switch via indexed keyboard shorcuts"/>
   <int value="10" label="User switch by restoring removed desk"/>
@@ -42432,7 +42433,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="15" label="Camera App"/>
   <int value="16" label="Capture Mode"/>
   <int value="17" label="Chrome Labs"/>
-  <int value="18" label="Bento Bar"/>
+  <int value="18" label="DEPRECATED: Bento Bar"/>
   <int value="19" label="Quick Answers"/>
   <int value="20" label="What's New"/>
   <int value="21" label="Connectivity Diagnostics"/>
@@ -62349,7 +62350,6 @@ from previous Chrome versions.
   <int value="222184258"
       label="AutofillEnforceMinRequiredFieldsForHeuristics:disabled"/>
   <int value="223075555" label="DisallowManagedProfileSignout:enabled"/>
-  <int value="223573347" label="BentoBar:disabled"/>
   <int value="223591010" label="CastMediaRouteProvider:enabled"/>
   <int value="223662457" label="BackgroundLoadingForDownloads:enabled"/>
   <int value="224019823" label="CompositeAfterPaint:enabled"/>
@@ -64770,7 +64770,6 @@ from previous Chrome versions.
       label="ChromeHomePersonalizedOmniboxSuggestions:disabled"/>
   <int value="1568172566"
       label="OmniboxOnDeviceHeadProviderNonIncognito:disabled"/>
-  <int value="1569982806" label="BentoBar:enabled"/>
   <int value="1570178909" label="NewOverviewLayout:enabled"/>
   <int value="1571640975" label="EcheLauncherIconsInMoreAppsButton:enabled"/>
   <int value="1571998166" label="DetectingHeavyPages:disabled"/>
@@ -78122,7 +78121,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Going from home launcher to overview"/>
   <int value="4" label="Pressing overview button"/>
   <int value="5" label="Long pressing overview button in split view mode"/>
-  <int value="6" label="Going from Bento bar to overview"/>
+  <int value="6" label="DEPRECATED: Going from Bento bar to overview"/>
   <int value="7" label="Three fingers swiping up on the trackpad"/>
   <int value="8" label="Entering overview through dev tools"/>
   <int value="9" label="Entering overview in tests"/>
