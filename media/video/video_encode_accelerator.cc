@@ -180,6 +180,7 @@ void VideoEncodeAccelerator::Client::NotifyErrorStatus(
       break;
     case EncoderStatus::Codes::kEncoderInitializeNeverCompleted:
     case EncoderStatus::Codes::kEncoderInitializeTwice:
+    case EncoderStatus::Codes::kEncoderIllegalState:
       error = VideoEncodeAccelerator::Error::kIllegalStateError;
       break;
     case EncoderStatus::Codes::kEncoderUnsupportedProfile:
@@ -194,6 +195,7 @@ void VideoEncodeAccelerator::Client::NotifyErrorStatus(
     case EncoderStatus::Codes::kEncoderMojoConnectionError:
     case EncoderStatus::Codes::kScalingError:
     case EncoderStatus::Codes::kFormatConversionError:
+    case EncoderStatus::Codes::kEncoderHardwareDriverError:
       error = VideoEncodeAccelerator::Error::kPlatformFailureError;
       break;
   }
