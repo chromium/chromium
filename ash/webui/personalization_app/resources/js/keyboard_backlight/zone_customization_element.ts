@@ -101,6 +101,8 @@ export class ZoneCustomizationElement extends WithPersonalizationStore {
 
   showModal() {
     this.$.dialog.showModal();
+    // Scroll to the top of the page to view the zone customization dialog.
+    window.scrollTo(0, 0);
   }
 
   private computeZoneIdxs_(): number[] {
