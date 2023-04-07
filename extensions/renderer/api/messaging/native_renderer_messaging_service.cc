@@ -298,10 +298,13 @@ void NativeRendererMessagingService::DispatchOnConnectToScriptContext(
 
   // First, determine the event we'll use to connect.
   std::string target_extension_id = script_context->GetExtensionID();
+  // TODO(devlin): Isolate `is_external` logic. It's duplicated in
+  // messaging_service.cc.
   bool is_external =
-      (info.source_endpoint.type == MessagingEndpoint::Type::kExtension ||
-       info.source_endpoint.type == MessagingEndpoint::Type::kTab) &&
-      info.source_endpoint.extension_id != target_extension_id;
+      info.source_endpoint.type == MessagingEndpoint::Type::kWebPage ||
+      ((info.source_endpoint.type == MessagingEndpoint::Type::kExtension ||
+        info.source_endpoint.type == MessagingEndpoint::Type::kContentScript) &&
+       info.source_endpoint.extension_id != target_extension_id);
   std::string event_name;
   if (info.source_endpoint.type == MessagingEndpoint::Type::kNativeApp) {
     event_name = messaging_util::kOnConnectNativeEvent;

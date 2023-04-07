@@ -19,10 +19,12 @@ struct MessagingEndpoint {
   enum class Type {
     // An extension.
     kExtension = 0,
-    // A web page or a content script or a hosted app.
-    kTab = 1,
+    // A web page or a hosted app.
+    kWebPage = 1,
+    // A content script.
+    kContentScript = 2,
     // A native application.
-    kNativeApp = 2,
+    kNativeApp = 3,
 
     // This item must be equal to the last actual enum item.
     kLast = kNativeApp,

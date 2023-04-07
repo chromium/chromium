@@ -283,7 +283,7 @@ void MessageService::OpenChannelToExtension(
   DCHECK(source_port_id.is_opener);
   DCHECK(!target_extension_id.empty());
   DCHECK(source_endpoint.extension_id.has_value() ||
-         source_endpoint.type == MessagingEndpoint::Type::kTab ||
+         source_endpoint.type == MessagingEndpoint::Type::kWebPage ||
          source_endpoint.type == MessagingEndpoint::Type::kNativeApp);
   DCHECK_EQ(source_endpoint.native_app_name.has_value(),
             source_endpoint.type == MessagingEndpoint::Type::kNativeApp);
@@ -300,7 +300,8 @@ void MessageService::OpenChannelToExtension(
   MaybeDisableBackForwardCacheForMessaging(source_render_frame_host);
 
   if (!opener_port) {
-    DCHECK(source_endpoint.type == MessagingEndpoint::Type::kTab ||
+    DCHECK(source_endpoint.type == MessagingEndpoint::Type::kContentScript ||
+           source_endpoint.type == MessagingEndpoint::Type::kWebPage ||
            source_endpoint.type == MessagingEndpoint::Type::kExtension);
     opener_port = ExtensionMessagePort::CreateForEndpoint(
         weak_factory_.GetWeakPtr(), source_port_id,
@@ -319,14 +320,21 @@ void MessageService::OpenChannelToExtension(
     return;
   }
 
-  bool is_web_connection = false;
-
-  if ((source_endpoint.type == MessagingEndpoint::Type::kTab ||
+  bool is_web_connection =
+      source_endpoint.type == MessagingEndpoint::Type::kWebPage;
+  bool is_external_extension_connection =
+      (source_endpoint.type == MessagingEndpoint::Type::kContentScript ||
        source_endpoint.type == MessagingEndpoint::Type::kExtension) &&
-      source_endpoint.extension_id != target_extension_id) {
+      source_endpoint.extension_id != target_extension_id;
+
+  if (is_web_connection || is_external_extension_connection) {
     // It's an external connection. Check the externally_connectable manifest
     // key if it's present. If it's not, we allow connection from any extension
     // but not webpages.
+    // TODO(devlin): We should just use ExternallyConnectableInfo::Get() here.
+    // We don't currently because we don't synthesize externally-connectable
+    // information (so that it's always present, even for extensions that don't
+    // have an explicit key); we should.
     ExternallyConnectableInfo* externally_connectable =
         static_cast<ExternallyConnectableInfo*>(
             target_extension->GetManifestData(
@@ -334,15 +342,15 @@ void MessageService::OpenChannelToExtension(
     bool is_externally_connectable = false;
 
     if (externally_connectable) {
-      if (source_endpoint.extension_id) {
-        // The source was an extension or a content script. Check that the
+      if (is_external_extension_connection) {
+        DCHECK(source_endpoint.extension_id);
+        // The source was another extension or a content script. Check that the
         // extension ID matches.
         is_externally_connectable =
             externally_connectable->IdCanConnect(*source_endpoint.extension_id);
       } else {
         DCHECK(source_render_frame_host);
-
-        is_web_connection = true;
+        DCHECK(is_web_connection);
 
         // Check that the web page URL matches.
         is_externally_connectable = externally_connectable->matches.MatchesURL(
@@ -350,7 +358,7 @@ void MessageService::OpenChannelToExtension(
       }
     } else {
       // Default behaviour. Any extension or content script, no webpages.
-      is_externally_connectable = source_endpoint.extension_id.has_value();
+      is_externally_connectable = is_external_extension_connection;
     }
 
     if (!is_externally_connectable) {
@@ -694,10 +702,14 @@ void MessageService::OpenChannelImpl(BrowserContext* browser_context,
   // built using the connect framework (see messaging.js).
   if (target_extension) {
     events::HistogramValue histogram_value = events::UNKNOWN;
+    // TODO(devlin): We should isolate these external checks; they happen both
+    // here and in `OpenChannelToExtension()`.
     bool is_external =
-        (params->source_endpoint.type == MessagingEndpoint::Type::kExtension ||
-         params->source_endpoint.type == MessagingEndpoint::Type::kTab) &&
-        params->source_endpoint.extension_id != params->target_extension_id;
+        params->source_endpoint.type == MessagingEndpoint::Type::kWebPage ||
+        ((params->source_endpoint.type == MessagingEndpoint::Type::kExtension ||
+          params->source_endpoint.type ==
+              MessagingEndpoint::Type::kContentScript) &&
+         params->source_endpoint.extension_id != params->target_extension_id);
     if (params->source_endpoint.type == MessagingEndpoint::Type::kNativeApp) {
       histogram_value = events::RUNTIME_ON_CONNECT_NATIVE;
     } else if (params->channel_name == "chrome.runtime.onRequest") {
