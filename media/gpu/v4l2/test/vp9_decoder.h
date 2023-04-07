@@ -49,8 +49,7 @@ class Vp9Decoder : public VideoDecoder {
  private:
   Vp9Decoder(std::unique_ptr<IvfParser> ivf_parser,
              std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
-             std::unique_ptr<V4L2Queue> OUTPUT_queue,
-             std::unique_ptr<V4L2Queue> CAPTURE_queue);
+             gfx::Size display_resolution);
 
   // Reads next frame from IVF stream and its size into |vp9_frame_header|
   // and |size| respectively.

@@ -39,9 +39,16 @@ uint32_t FileFourccToDriverFourcc(uint32_t header_fourcc) {
 VideoDecoder::VideoDecoder(std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
                            std::unique_ptr<V4L2Queue> OUTPUT_queue,
                            std::unique_ptr<V4L2Queue> CAPTURE_queue)
-    : v4l2_ioctl_(std::move(v4l2_ioctl)),
+    : needs_init(true),
+      v4l2_ioctl_(std::move(v4l2_ioctl)),
       OUTPUT_queue_(std::move(OUTPUT_queue)),
       CAPTURE_queue_(std::move(CAPTURE_queue)) {}
+
+VideoDecoder::VideoDecoder(std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
+                           gfx::Size display_resolution)
+    : needs_init(false),
+      v4l2_ioctl_(std::move(v4l2_ioctl)),
+      display_resolution_(display_resolution) {}
 
 VideoDecoder::~VideoDecoder() = default;
 
@@ -141,6 +148,58 @@ void VideoDecoder::Initialize(bool resolution_changed) {
   OUTPUT_queue_->set_media_request_fd(media_request_fd);
 
   v4l2_ioctl_->StreamOn(OUTPUT_queue_->type());
+  v4l2_ioctl_->StreamOn(CAPTURE_queue_->type());
+}
+
+void VideoDecoder::CreateOUTPUTQueue(uint32_t compressed_fourcc) {
+  // TODO(stevecho): might need to consider using more than 1 file descriptor
+  // (fd) & buffer with the output queue for 4K60 requirement.
+  // https://buganizer.corp.google.com/issues/202214561#comment31
+  OUTPUT_queue_ = std::make_unique<V4L2Queue>(
+      V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE, display_resolution_, V4L2_MEMORY_MMAP,
+      kNumberOfBuffersInOutputQueue);
+  OUTPUT_queue_->set_fourcc(compressed_fourcc);
+
+  // TODO(stevecho): remove VIDIOC_ENUM_FRAMESIZES ioctl call
+  //   after b/193237015 is resolved.
+  if (!v4l2_ioctl_->EnumFrameSizes(OUTPUT_queue_->fourcc())) {
+    LOG(INFO) << "EnumFrameSizes for OUTPUT queue failed.";
+  }
+
+  v4l2_ioctl_->SetFmt(OUTPUT_queue_);
+  v4l2_ioctl_->ReqBufs(OUTPUT_queue_);
+  v4l2_ioctl_->QueryAndMmapQueueBuffers(OUTPUT_queue_);
+
+  int media_request_fd;
+  v4l2_ioctl_->MediaIocRequestAlloc(&media_request_fd);
+
+  OUTPUT_queue_->set_media_request_fd(media_request_fd);
+
+  v4l2_ioctl_->StreamOn(OUTPUT_queue_->type());
+}
+
+void VideoDecoder::CreateCAPTUREQueue(uint32_t num_buffers) {
+  // TODO(stevecho): enable V4L2_MEMORY_DMABUF memory for CAPTURE queue.
+  // |num_planes| represents separate memory buffers, not planes for Y, U, V.
+  // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/pixfmt-v4l2-mplane.html#c.V4L.v4l2_plane_pix_format
+  CAPTURE_queue_ = std::make_unique<V4L2Queue>(
+      V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE, gfx::Size(0, 0), V4L2_MEMORY_MMAP,
+      num_buffers);
+
+  NegotiateCAPTUREFormat();
+
+  LOG_ASSERT(gfx::Rect(CAPTURE_queue_->resolution())
+                 .Contains(gfx::Rect(OUTPUT_queue_->resolution())))
+      << "Display size is not contained within the coded size. DRC?";
+
+  v4l2_ioctl_->ReqBufs(CAPTURE_queue_);
+  v4l2_ioctl_->QueryAndMmapQueueBuffers(CAPTURE_queue_);
+  // Only 1 CAPTURE buffer is needed for 1st key frame decoding. Remaining
+  // CAPTURE buffers will be queued after that.
+  if (!v4l2_ioctl_->QBuf(CAPTURE_queue_, 0)) {
+    LOG(FATAL) << "VIDIOC_QBUF failed for CAPTURE queue.";
+  }
+
   v4l2_ioctl_->StreamOn(CAPTURE_queue_->type());
 }
 

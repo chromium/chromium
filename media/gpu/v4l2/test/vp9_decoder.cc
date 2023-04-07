@@ -25,6 +25,7 @@
 namespace media {
 
 namespace v4l2_test {
+constexpr uint32_t kDriverCodecFourcc = V4L2_PIX_FMT_VP9_FRAME;
 
 constexpr uint32_t kNumberOfBuffersInCaptureQueue = 10;
 
@@ -137,11 +138,8 @@ static void FillV4L2VP9ProbsParams(
 
 Vp9Decoder::Vp9Decoder(std::unique_ptr<IvfParser> ivf_parser,
                        std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
-                       std::unique_ptr<V4L2Queue> OUTPUT_queue,
-                       std::unique_ptr<V4L2Queue> CAPTURE_queue)
-    : VideoDecoder::VideoDecoder(std::move(v4l2_ioctl),
-                                 std::move(OUTPUT_queue),
-                                 std::move(CAPTURE_queue)),
+                       gfx::Size display_resolution)
+    : VideoDecoder::VideoDecoder(std::move(v4l2_ioctl), display_resolution),
       ivf_parser_(std::move(ivf_parser)),
       vp9_parser_(
           std::make_unique<Vp9Parser>(/*parsing_compressed_header=*/true)),
@@ -165,8 +163,6 @@ Vp9Decoder::~Vp9Decoder() = default;
 // static
 std::unique_ptr<Vp9Decoder> Vp9Decoder::Create(
     const base::MemoryMappedFile& stream) {
-  constexpr uint32_t kDriverCodecFourcc = V4L2_PIX_FMT_VP9_FRAME;
-
   VLOG(2) << "Attempting to create decoder with codec "
           << media::FourccToString(kDriverCodecFourcc);
 
@@ -197,28 +193,12 @@ std::unique_ptr<Vp9Decoder> Vp9Decoder::Create(
     return nullptr;
   }
 
-  LOG(INFO) << "Ivf file header: " << file_header.width << " x "
-            << file_header.height;
+  gfx::Size display_resolution =
+      gfx::Size(file_header.width, file_header.height);
+  LOG(INFO) << "Ivf file header: " << display_resolution.ToString();
 
-  // TODO(stevecho): might need to consider using more than 1 file descriptor
-  // (fd) & buffer with the output queue for 4K60 requirement.
-  // https://buganizer.corp.google.com/issues/202214561#comment31
-  auto OUTPUT_queue = std::make_unique<V4L2Queue>(
-      V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE,
-      gfx::Size(file_header.width, file_header.height), V4L2_MEMORY_MMAP,
-      kNumberOfBuffersInOutputQueue);
-  OUTPUT_queue->set_fourcc(kDriverCodecFourcc);
-
-  // TODO(stevecho): enable V4L2_MEMORY_DMABUF memory for CAPTURE queue.
-  // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/pixfmt-v4l2-mplane.html#c.V4L.v4l2_plane_pix_format
-  auto CAPTURE_queue = std::make_unique<V4L2Queue>(
-      V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE,
-      gfx::Size(file_header.width, file_header.height), V4L2_MEMORY_MMAP,
-      kNumberOfBuffersInCaptureQueue);
-
-  return base::WrapUnique(
-      new Vp9Decoder(std::move(ivf_parser), std::move(v4l2_ioctl),
-                     std::move(OUTPUT_queue), std::move(CAPTURE_queue)));
+  return base::WrapUnique(new Vp9Decoder(
+      std::move(ivf_parser), std::move(v4l2_ioctl), display_resolution));
 }
 
 std::set<int> Vp9Decoder::RefreshReferenceSlots(
@@ -467,6 +447,10 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame(std::vector<uint8_t>& y_plane,
       break;
   }
 
+  if (!OUTPUT_queue_) {
+    CreateOUTPUTQueue(kDriverCodecFourcc);
+  }
+
   VLOG_IF(2, !frame_hdr.show_frame) << "not displaying frame";
   last_decoded_frame_visible_ = frame_hdr.show_frame;
 
@@ -505,6 +489,10 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame(std::vector<uint8_t>& y_plane,
   v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, &ext_ctrls);
 
   v4l2_ioctl_->MediaRequestIocQueue(OUTPUT_queue_);
+
+  if (!CAPTURE_queue_) {
+    CreateCAPTUREQueue(kNumberOfBuffersInCaptureQueue);
+  }
 
   uint32_t buffer_id;
   v4l2_ioctl_->DQBuf(CAPTURE_queue_, &buffer_id);
