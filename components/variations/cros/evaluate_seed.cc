@@ -21,47 +21,73 @@ namespace variations::evaluate_seed {
 namespace {
 constexpr char kSafeSeedSwitch[] = "use-safe-seed";
 constexpr char kEnterpriseEnrolledSwitch[] = "enterprise-enrolled";
-const char kFakeVariationsChannel[] = "fake-variations-channel";
 }  // namespace
 
-// Get the active channel, if applicable.
-Study::Channel GetChannel(const base::CommandLine* command_line) {
-  std::string channel;
-  if (command_line->HasSwitch(kFakeVariationsChannel)) {
-    channel = command_line->GetSwitchValueASCII(kFakeVariationsChannel);
-  }
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  else if (base::SysInfo::GetLsbReleaseValue(crosapi::kChromeOSReleaseTrack,
-                                             &channel)) {
-    // do nothing; we successfully got channel.
-  }
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  else {
-    // We didn't get the channel.
-    return Study::UNKNOWN;
-  }
-
-  return ConvertProductChannelToStudyChannel(crosapi::ChannelToEnum(channel));
+base::Version CrosVariationsServiceClient::GetVersionForSimulation() {
+  // TODO(mutexlox): Get the version that will be used on restart instead of
+  // the current version IF this is necessary. (We may not need simulations for
+  // early-boot experiments.)
+  // See ChromeVariationsServiceClient::GetVersionForSimulation.
+  return version_info::GetVersion();
 }
 
-std::unique_ptr<ClientFilterableState> GetClientFilterableState(
-    const base::CommandLine* command_line) {
-  bool enterprise_enrolled = command_line->HasSwitch(kEnterpriseEnrolledSwitch);
+scoped_refptr<network::SharedURLLoaderFactory>
+CrosVariationsServiceClient::GetURLLoaderFactory() {
+  // Do not load any data on CrOS early boot. This function is only called to
+  // fetch a new seed, and we should not fetch new seeds in evaluate_seed.
+  return nullptr;
+}
 
-  // TODO(b/263975722): Fill in the rest of ClientFilterableState.
+network_time::NetworkTimeTracker*
+CrosVariationsServiceClient::GetNetworkTimeTracker() {
+  // Do not load any data on CrOS early boot; evaluate_seed should not load new
+  // seeds.
+  return nullptr;
+}
+
+bool CrosVariationsServiceClient::OverridesRestrictParameter(
+    std::string* parameter) {
+  // TODO(b/263975722): Implement.
+  return false;
+}
+
+// Get the active channel, if applicable.
+version_info::Channel CrosVariationsServiceClient::GetChannel() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  std::string channel;
+  if (base::SysInfo::GetLsbReleaseValue(crosapi::kChromeOSReleaseTrack,
+                                        &channel)) {
+    return crosapi::ChannelToEnum(channel);
+  }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return version_info::Channel::UNKNOWN;
+}
+
+bool CrosVariationsServiceClient::IsEnterprise() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kEnterpriseEnrolledSwitch);
+}
+
+std::unique_ptr<ClientFilterableState> GetClientFilterableState() {
+  CrosVariationsServiceClient client;
+
+  // TODO(b/263975722): Properly use VariationsServiceClient and
+  // VariationsFieldTrialCreator::GetClientFilterableStateForVersion.
   auto state = std::make_unique<ClientFilterableState>(
       base::BindOnce([](bool enrolled) { return enrolled; },
-                     enterprise_enrolled),
+                     client.IsEnterprise()),
       base::BindOnce([] { return base::flat_set<uint64_t>(); }));
 
-  state->channel = GetChannel(command_line);
+  state->channel =
+      ConvertProductChannelToStudyChannel(client.GetChannelForVariations());
+  state->form_factor = client.GetCurrentFormFactor();
+
   return state;
 }
 
-absl::optional<SafeSeed> GetSafeSeedData(const base::CommandLine* command_line,
-                                         FILE* stream) {
+absl::optional<SafeSeed> GetSafeSeedData(FILE* stream) {
   featured::SeedDetails safe_seed;
-  if (command_line->HasSwitch(kSafeSeedSwitch)) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(kSafeSeedSwitch)) {
     // Read safe seed from |stream|.
     std::string safe_seed_data;
     if (!base::ReadStreamToString(stream, &safe_seed_data)) {
@@ -78,15 +104,14 @@ absl::optional<SafeSeed> GetSafeSeedData(const base::CommandLine* command_line,
   return SafeSeed{false, safe_seed};
 }
 
-int EvaluateSeedMain(const base::CommandLine* command_line, FILE* stream) {
-  absl::optional<SafeSeed> safe_seed = GetSafeSeedData(command_line, stream);
+int EvaluateSeedMain(FILE* stream) {
+  absl::optional<SafeSeed> safe_seed = GetSafeSeedData(stream);
   if (!safe_seed.has_value()) {
     LOG(ERROR) << "Failed to read seed from stdin";
     return EXIT_FAILURE;
   }
 
-  std::unique_ptr<ClientFilterableState> state =
-      GetClientFilterableState(command_line);
+  std::unique_ptr<ClientFilterableState> state = GetClientFilterableState();
 
   // TODO(b/263975722): Implement this binary.
   (void)state;

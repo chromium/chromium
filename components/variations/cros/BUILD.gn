@@ -42,6 +42,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//build:branding_buildflags",
+    "//build/config/chromebox_for_meetings:buildflags",
     "//components/test:test_support",
     "//components/variations",
     "//testing/gmock",

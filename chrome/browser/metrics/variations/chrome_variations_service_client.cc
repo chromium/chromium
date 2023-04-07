@@ -7,7 +7,6 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "build/config/chromebox_for_meetings/buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/metrics/variations/google_groups_updater_service_factory.h"
@@ -92,15 +91,6 @@ bool ChromeVariationsServiceClient::OverridesRestrictParameter(
   return true;
 #else
   return false;
-#endif
-}
-
-variations::Study::FormFactor
-ChromeVariationsServiceClient::GetCurrentFormFactor() {
-#if BUILDFLAG(PLATFORM_CFM)
-  return variations::Study::MEET_DEVICE;
-#else
-  return variations::VariationsServiceClient::GetCurrentFormFactor();
 #endif
 }
 

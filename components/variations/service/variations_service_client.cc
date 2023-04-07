@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/system/sys_info.h"
+#include "build/config/chromebox_for_meetings/buildflags.h"
 #include "components/variations/variations_switches.h"
 #include "ui/base/device_form_factor.h"
 
@@ -34,6 +35,9 @@ version_info::Channel VariationsServiceClient::GetChannelForVariations() {
 }
 
 Study::FormFactor VariationsServiceClient::GetCurrentFormFactor() {
+#if BUILDFLAG(PLATFORM_CFM)
+  return variations::Study::MEET_DEVICE;
+#else
   switch (ui::GetDeviceFormFactor()) {
     case ui::DEVICE_FORM_FACTOR_PHONE:
       return Study::PHONE;
@@ -44,6 +48,7 @@ Study::FormFactor VariationsServiceClient::GetCurrentFormFactor() {
   }
   NOTREACHED();
   return Study::DESKTOP;
+#endif  // BUILDFLAG(PLATFORM_CFM)
 }
 
 std::unique_ptr<SeedResponse>
