@@ -207,4 +207,14 @@ void ArcWindowWatcher::BroadcastArcWindowDisplay(const std::string& pkg_name) {
   }
 }
 
+bool ArcWindowWatcher::HasCountObserver(
+    ArcWindowCountObserver* observer) const {
+  return arc_window_count_observers_.HasObserver(observer);
+}
+
+bool ArcWindowWatcher::HasDisplayObserver(
+    ArcWindowDisplayObserver* observer) const {
+  return arc_window_display_observers_.HasObserver(observer);
+}
+
 }  // namespace ash

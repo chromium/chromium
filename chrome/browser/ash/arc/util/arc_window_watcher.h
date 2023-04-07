@@ -72,6 +72,10 @@ class ArcWindowWatcher : public aura::EnvObserver {
   void OnTrackerRemoved(Tracker* tracker, aura::Window* arc_window);
   void OnArcWindowRemoved();
 
+  // Query existence of a particular observer, by type.
+  bool HasCountObserver(ArcWindowCountObserver* observer) const;
+  bool HasDisplayObserver(ArcWindowDisplayObserver* observer) const;
+
  private:
   base::ObserverList<ArcWindowCountObserver> arc_window_count_observers_;
   base::ObserverList<ArcWindowDisplayObserver> arc_window_display_observers_;

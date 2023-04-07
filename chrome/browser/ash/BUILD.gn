@@ -4907,6 +4907,7 @@ source_set("unit_tests") {
     "arc/idle_manager/arc_on_battery_observer_unittest.cc",
     "arc/idle_manager/arc_throttle_test_observer.cc",
     "arc/idle_manager/arc_throttle_test_observer.h",
+    "arc/idle_manager/arc_window_observer_unittest.cc",
     "arc/input_method_manager/arc_input_method_manager_service_unittest.cc",
     "arc/input_method_manager/arc_input_method_state_unittest.cc",
     "arc/input_method_manager/input_connection_impl_unittest.cc",
