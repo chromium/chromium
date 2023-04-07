@@ -1344,18 +1344,10 @@ RenderFrameHostManager::GetFrameHostForNavigation(
         // and at ReadyToCommit time. The first call would have created the
         // WebUI instance and since the initial about:blank has not committed
         // a navigation, the else branch would be taken. Explicit check for
-        // web_ui_ is required, otherwise we will allocate a new instance
+        // `web_ui()` is required, otherwise we will allocate a new instance
         // unnecessarily here.
-        std::unique_ptr<WebUIImpl> web_ui =
+        notify_webui_of_rf_creation =
             request->CreateWebUIIfNeeded(render_frame_host_.get());
-        if (web_ui) {
-          render_frame_host_->SetWebUI(*request, std::move(web_ui));
-          CHECK(render_frame_host_->web_ui());
-        }
-        if (render_frame_host_->IsRenderFrameLive()) {
-          render_frame_host_->web_ui()->WebUIRenderFrameCreated(
-              render_frame_host_.get());
-        }
       }
     }
 
@@ -1432,13 +1424,8 @@ RenderFrameHostManager::GetFrameHostForNavigation(
     if (WebUIControllerFactoryRegistry::GetInstance()->UseWebUIForURL(
             browser_context, request->common_params().url) &&
         request->state() < NavigationRequest::CANCELING) {
-      std::unique_ptr<WebUIImpl> web_ui =
+      notify_webui_of_rf_creation =
           request->CreateWebUIIfNeeded(speculative_render_frame_host_.get());
-      if (web_ui) {
-        notify_webui_of_rf_creation = true;
-        speculative_render_frame_host_->SetWebUI(*request, std::move(web_ui));
-        CHECK(speculative_render_frame_host_->web_ui());
-      }
     }
 
     navigation_rfh = speculative_render_frame_host_.get();
@@ -1494,6 +1481,17 @@ RenderFrameHostManager::GetFrameHostForNavigation(
       navigation_rfh->SetPolicyContainerForEarlyCommitAfterCrash(
           current_frame_host()->policy_container_host()->Clone());
 
+      if (request->HasWebUI()) {
+        // If a WebUI has been created for the NavigationRequest, set it on the
+        // RenderFrameHost picked for the navigation. Note that there is a
+        // similar WebUI handling near the end of this function to cover the
+        // non-early commit cases, which won't run if we already run this code
+        // because `HasWebUI()` will return false after we take the WebUI from
+        // the NavigationRequest here.
+        navigation_rfh->SetWebUI(*request, request->TakeWebUI());
+        CHECK(navigation_rfh->web_ui());
+      }
+
       CommitPending(
           std::move(speculative_render_frame_host_), nullptr,
           request->browsing_context_group_swap().ShouldClearProxiesOnCommit());
@@ -1539,10 +1537,17 @@ RenderFrameHostManager::GetFrameHostForNavigation(
     }
   }
 
-  // If a WebUI was created in a speculative RenderFrameHost or a new
-  // RenderFrame was created then the WebUI never interacted with the
-  // RenderFrame. Notify using WebUIRenderFrameCreated.
+  if (request->HasWebUI()) {
+    // If a WebUI has been created for the NavigationRequest, set it on the
+    // RenderFrameHost picked for the navigation.
+    navigation_rfh->SetWebUI(*request, request->TakeWebUI());
+    CHECK(navigation_rfh->web_ui());
+  }
   if (notify_webui_of_rf_creation && navigation_rfh->web_ui()) {
+    CHECK(navigation_rfh->IsRenderFrameLive());
+    // If a WebUI was created in a speculative RenderFrameHost, or a new
+    // RenderFrame was created for an existing WebUI, then the WebUI never
+    // interacted with the RenderFrame. Notify using WebUIRenderFrameCreated.
     navigation_rfh->web_ui()->WebUIRenderFrameCreated(navigation_rfh);
   }
 

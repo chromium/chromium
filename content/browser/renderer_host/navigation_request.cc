@@ -9343,8 +9343,7 @@ bool NavigationRequest::GetIsThirdPartyCookiesUserBypassEnabled() {
   return GetParentFrame()->GetIsThirdPartyCookiesUserBypassEnabled();
 }
 
-std::unique_ptr<WebUIImpl> NavigationRequest::CreateWebUIIfNeeded(
-    RenderFrameHostImpl* frame_host) {
+bool NavigationRequest::CreateWebUIIfNeeded(RenderFrameHostImpl* frame_host) {
   TRACE_EVENT2("content", "NavigationRequest::CreateWebUI", "frame_host",
                frame_host, "url", GetURL());
   WebUI::TypeID new_web_ui_type =
@@ -9352,8 +9351,9 @@ std::unique_ptr<WebUIImpl> NavigationRequest::CreateWebUIIfNeeded(
           frame_host->GetSiteInstance()->GetBrowserContext(), GetURL());
   if (new_web_ui_type == WebUI::kNoWebUI) {
     // The navigation doesn't need a WebUI.
-    return nullptr;
+    return false;
   }
+  CHECK(!web_ui_);
 
   // We reuse WebUI on navigations with the same WebUI type where we use the
   // same RFH, so don't create a new one if there is already an existing WebUI
@@ -9362,15 +9362,17 @@ std::unique_ptr<WebUIImpl> NavigationRequest::CreateWebUIIfNeeded(
   // if the WebUI type differs.
   if (frame_host->web_ui()) {
     CHECK_EQ(new_web_ui_type, frame_host->web_ui_type());
-    return nullptr;
+    return false;
   }
 
-  std::unique_ptr<WebUIImpl> web_ui = std::make_unique<WebUIImpl>(frame_host);
+  web_ui_ = std::make_unique<WebUIImpl>(frame_host);
+
   std::unique_ptr<WebUIController> controller(
       WebUIControllerFactoryRegistry::GetInstance()
-          ->CreateWebUIControllerForURL(web_ui.get(), GetURL()));
+          ->CreateWebUIControllerForURL(web_ui_.get(), GetURL()));
   if (!controller) {
-    return nullptr;
+    // TODO(https://crbug.com/1220337): Make this a CHECK instead.
+    return false;
   }
 
   // If we have assigned (zero or more) bindings to the NavigationEntry in
@@ -9378,20 +9380,20 @@ std::unique_ptr<WebUIImpl> NavigationRequest::CreateWebUIIfNeeded(
   // had before. If so, note it and don't give it any bindings, to avoid a
   // potential privilege escalation.
   if (bindings() != FrameNavigationEntry::kInvalidBindings &&
-      bindings() != web_ui->GetBindings()) {
+      bindings() != web_ui_->GetBindings()) {
     RecordAction(base::UserMetricsAction("ProcessSwapBindingsMismatch_RVHM"));
     base::WeakPtr<NavigationRequest> self = GetWeakPtr();
-    web_ui.reset();
+    web_ui_.reset();
     // Resetting the WebUI may indirectly call content's embedders and delete
     // `this`. There are no known occurrences of it, so we assume this never
     // happen and crash immediately if it does, because there are no easy ways
     // to recover.
     CHECK(self);
-    return nullptr;
+    return false;
   }
 
-  web_ui->SetController(std::move(controller));
-  return web_ui;
+  web_ui_->SetController(std::move(controller));
+  return true;
 }
 
 }  // namespace content

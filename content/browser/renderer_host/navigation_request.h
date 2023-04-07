@@ -1174,10 +1174,17 @@ class CONTENT_EXPORT NavigationRequest
     resume_commit_closure_ = std::move(closure);
   }
 
-  // Creates a WebUI object for this navigation which will later be saved in
-  // `frame_host`. If no WebUI applies, returns null.
-  std::unique_ptr<WebUIImpl> CreateWebUIIfNeeded(
-      RenderFrameHostImpl* frame_host);
+  // Creates a WebUI object for this navigation and saves it in `web_ui_`. Later
+  // on, the WebUI created will be moved to `frame_host`. Returns true if and
+  // only if a WebUI object is successfully created and saved.
+  bool CreateWebUIIfNeeded(RenderFrameHostImpl* frame_host);
+
+  bool HasWebUI() { return !!web_ui_; }
+
+  std::unique_ptr<WebUIImpl> TakeWebUI() {
+    CHECK(HasWebUI());
+    return std::move(web_ui_);
+  }
 
  private:
   friend class NavigationRequestTest;
@@ -2542,6 +2549,11 @@ class CONTENT_EXPORT NavigationRequest
   // See `RenderFrameHostImpl::CookieChangeListener`.
   std::unique_ptr<RenderFrameHostImpl::CookieChangeListener>
       cookie_change_listener_;
+
+  // The WebUI object to be used for this navigation. When a RenderFrameHost has
+  // been picked for the navigation, the WebUI object will be moved to be owned
+  // by the RenderFrameHost.
+  std::unique_ptr<WebUIImpl> web_ui_;
 
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 };
