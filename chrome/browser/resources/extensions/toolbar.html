@@ -95,18 +95,18 @@
 <div id="devDrawer" expanded$="[[expanded_]]">
   <div id="buttonStrip">
     <cr-button hidden$="[[!canLoadUnpacked]]" id="loadUnpacked"
-        on-click="onLoadUnpackedTap_">
+        on-click="onLoadUnpackedClick_">
       $i18n{toolbarLoadUnpacked}
     </cr-button>
-    <cr-button id="packExtensions" on-click="onPackTap_">
+    <cr-button id="packExtensions" on-click="onPackClick_">
       $i18n{toolbarPack}
     </cr-button>
-    <cr-button id="updateNow" on-click="onUpdateNowTap_"
+    <cr-button id="updateNow" on-click="onUpdateNowClick_"
         title="$i18n{toolbarUpdateNowTooltip}">
       $i18n{toolbarUpdateNow}
     </cr-button>
 <if expr="chromeos_ash">
-    <cr-button id="kioskExtensions" on-click="onKioskTap_"
+    <cr-button id="kioskExtensions" on-click="onKioskClick_"
         hidden$="[[!kioskEnabled]]">
       $i18n{manageKioskApp}
     </cr-button>

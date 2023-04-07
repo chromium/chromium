@@ -158,7 +158,7 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
         this.data.runtimeErrors.length > 0;
   }
 
-  private onRemoveTap_() {
+  private onRemoveClick_() {
     this.delegate.deleteItem(this.data.id);
   }
 
@@ -167,7 +167,7 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
     this.$.enableToggle.checked = this.isEnabled_();
   }
 
-  private onErrorsTap_() {
+  private onErrorsClick_() {
     if (this.data.installWarnings && this.data.installWarnings.length > 0) {
       this.fire_('show-install-warnings', this.data.installWarnings);
       return;
@@ -176,7 +176,7 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
     navigation.navigateTo({page: Page.ERRORS, extensionId: this.data.id});
   }
 
-  private onDetailsTap_() {
+  private onDetailsClick_() {
     navigation.navigateTo({page: Page.DETAILS, extensionId: this.data.id});
   }
 
@@ -184,15 +184,15 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
     return sortViews(this.data.views)[0];
   }
 
-  private onInspectTap_() {
+  private onInspectClick_() {
     this.delegate.inspectItemView(this.data.id, this.firstInspectView_);
   }
 
-  private onExtraInspectTap_() {
+  private onExtraInspectClick_() {
     navigation.navigateTo({page: Page.DETAILS, extensionId: this.data.id});
   }
 
-  private onReloadTap_() {
+  private onReloadClick_() {
     // Don't reload if in the middle of an update.
     if (this.isReloading_) {
       return;
@@ -219,7 +219,7 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
             });
   }
 
-  private onRepairTap_() {
+  private onRepairClick_() {
     this.delegate.repairItem(this.data.id);
   }
 

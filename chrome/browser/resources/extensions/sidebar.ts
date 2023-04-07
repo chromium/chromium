@@ -57,7 +57,7 @@ export class ExtensionsSidebarElement extends PolymerElement {
     this.$.sectionMenu.select(selectIndex);
   }
 
-  private onLinkTap_(e: Event) {
+  private onLinkClick_(e: Event) {
     e.preventDefault();
     navigation.navigateTo(
         {page: ((e.target as HTMLElement).dataset['path'] as Page)});
@@ -65,7 +65,7 @@ export class ExtensionsSidebarElement extends PolymerElement {
         new CustomEvent('close-drawer', {bubbles: true, composed: true}));
   }
 
-  private onMoreExtensionsTap_() {
+  private onMoreExtensionsClick_() {
     chrome.metricsPrivate.recordUserAction('Options_GetMoreExtensions');
   }
 }

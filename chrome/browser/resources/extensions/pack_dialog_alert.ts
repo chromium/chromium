@@ -84,11 +84,11 @@ export class ExtensionsPackDialogAlertElement extends PolymerElement {
     return this.confirmLabel_ ? 'cancel-button' : 'action-button';
   }
 
-  private onCancelTap_() {
+  private onCancelClick_() {
     this.$.dialog.cancel();
   }
 
-  private onConfirmTap_() {
+  private onConfirmClick_() {
     // The confirm button should only be available in WARNING state.
     assert(this.model.status === chrome.developerPrivate.PackStatus.WARNING);
     this.$.dialog.close();

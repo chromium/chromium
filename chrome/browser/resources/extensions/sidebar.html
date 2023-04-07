@@ -59,19 +59,19 @@
 <iron-selector id="sectionMenu">
   <!-- Values for "data-path" attribute must match the "Page" enum. -->
   <a class="section-item" id="sectionsExtensions" href="/"
-      on-click="onLinkTap_" data-path="items-list">
+      on-click="onLinkClick_" data-path="items-list">
     $i18n{sidebarExtensions}
     <paper-ripple></paper-ripple>
   </a>
   <a class="section-item" id="sections-site-permissions"
       hidden="[[!enableEnhancedSiteControls]]"
-      href="/sitePermissions" on-click="onLinkTap_"
+      href="/sitePermissions" on-click="onLinkClick_"
       data-path="site-permissions">
     $i18n{sitePermissions}
     <paper-ripple></paper-ripple>
   </a>
   <a class="section-item" id="sectionsShortcuts" href="/shortcuts"
-      on-click="onLinkTap_" data-path="keyboard-shortcuts">
+      on-click="onLinkClick_" data-path="keyboard-shortcuts">
     $i18n{keyboardShortcuts}
     <paper-ripple></paper-ripple>
   </a>
@@ -79,7 +79,7 @@
 <div>
   <div class="separator"></div>
   <a class="section-item" id="more-extensions" target="_blank"
-      href="$i18n{getMoreExtensionsUrl}" on-click="onMoreExtensionsTap_">
+      href="$i18n{getMoreExtensionsUrl}" on-click="onMoreExtensionsClick_">
     <span>$i18n{openChromeWebStore}</span>
     <div class="cr-icon icon-external"></div>
     <paper-ripple></paper-ripple>

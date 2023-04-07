@@ -78,7 +78,7 @@ export class ActivityLogHistoryItemElement extends PolymerElement {
         });
   }
 
-  private onDeleteTap_(e: Event) {
+  private onDeleteClick_(e: Event) {
     e.stopPropagation();
     this.dispatchEvent(new CustomEvent('delete-activity-log-item', {
       bubbles: true,
@@ -87,7 +87,7 @@ export class ActivityLogHistoryItemElement extends PolymerElement {
     }));
   }
 
-  private onExpandTap_() {
+  private onExpandClick_() {
     if (this.isExpandable_) {
       this.set('data.expanded', !this.data.expanded);
     }

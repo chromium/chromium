@@ -161,7 +161,7 @@ export class ExtensionsActivityLogElement extends
     }
   }
 
-  private onCloseButtonTap_() {
+  private onCloseButtonClick_() {
     if ((this.extensionInfo as ActivityLogExtensionPlaceholder).isPlaceholder) {
       navigation.navigateTo({page: Page.LIST});
     } else {

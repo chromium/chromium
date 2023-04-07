@@ -390,7 +390,7 @@ export class ExtensionsManagerElement extends PolymerElement {
     this.filter = event.detail;
   }
 
-  private onMenuButtonTap_() {
+  private onMenuButtonClick_() {
     this.showDrawer_ = true;
     setTimeout(() => {
       this.shadowRoot!.querySelector('cr-drawer')!.openDrawer();
@@ -691,7 +691,7 @@ export class ExtensionsManagerElement extends PolymerElement {
   }
 
   // <if expr="chromeos_ash">
-  private onKioskTap_() {
+  private onKioskClick_() {
     this.showKioskDialog_ = true;
   }
 

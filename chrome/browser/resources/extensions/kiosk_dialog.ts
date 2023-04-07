@@ -106,7 +106,7 @@ export class ExtensionsKioskDialogElement extends
     return this.errorAppId_ + ' ' + errorMessage;
   }
 
-  private onAddAppTap_() {
+  private onAddAppClick_() {
     assert(this.addAppInput_);
     this.kioskBrowserProxy_.addKioskApp(this.addAppInput_);
     this.addAppInput_ = null;
@@ -116,7 +116,7 @@ export class ExtensionsKioskDialogElement extends
     this.errorAppId_ = null;
   }
 
-  private onAutoLaunchButtonTap_(event: DomRepeatEvent<KioskApp>) {
+  private onAutoLaunchButtonClick_(event: DomRepeatEvent<KioskApp>) {
     const app = event.model.item;
     if (app.autoLaunch) {  // If the app is originally set to
                            // auto-launch.
@@ -136,21 +136,21 @@ export class ExtensionsKioskDialogElement extends
     }
   }
 
-  private onBailoutDialogCancelTap_() {
+  private onBailoutDialogCancelClick_() {
     this.$.bailout.checked = false;
     this.$.confirmDialog.cancel();
   }
 
-  private onBailoutDialogConfirmTap_() {
+  private onBailoutDialogConfirmClick_() {
     this.kioskBrowserProxy_.setDisableBailoutShortcut(true);
     this.$.confirmDialog.close();
   }
 
-  private onDoneTap_() {
+  private onDoneClick_() {
     this.$.dialog.close();
   }
 
-  private onDeleteAppTap_(event: DomRepeatEvent<KioskApp>) {
+  private onDeleteAppClick_(event: DomRepeatEvent<KioskApp>) {
     this.kioskBrowserProxy_.removeKioskApp(event.model.item.id);
   }
 

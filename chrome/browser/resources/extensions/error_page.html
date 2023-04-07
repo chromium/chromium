@@ -116,10 +116,10 @@
   <div class="page-content">
     <div id="heading" class="cr-title-text">
       <cr-icon-button class="icon-arrow-back no-overlap" id="closeButton"
-          aria-label="$i18n{back}" on-click="onCloseButtonTap_">
+          aria-label="$i18n{back}" on-click="onCloseButtonClick_">
       </cr-icon-button>
       <span role="heading" aria-level="2">$i18n{errorsPageHeading}</span>
-      <cr-button on-click="onClearAllTap_" hidden="[[!entries_.length]]">
+      <cr-button on-click="onClearAllClick_" hidden="[[!entries_.length]]">
         $i18n{clearAll}
       </cr-button>
     </div>
@@ -167,7 +167,7 @@
                   <ul class="stack-trace-container"
                       on-keydown="onStackKeydown_">
                     <template is="dom-repeat" items="[[item.stackTrace]]">
-                      <li on-click="onStackFrameTap_"
+                      <li on-click="onStackFrameClick_"
                           tabindex$="[[getStackFrameTabIndex_(item,
                               selectedStackFrame_)]]"
                           hidden="[[!shouldDisplayFrame_(item.url)]]"
