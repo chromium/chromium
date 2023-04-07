@@ -83,10 +83,6 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   IFACEMETHODIMP_(ULONG) Release() override;
   IFACEMETHODIMP QueryInterface(REFIID riid, void** ppv) override;
 
-  // Preloads dlls required for encoding. Returns true if all required dlls are
-  // correctly loaded.
-  static bool PreSandboxInitialization();
-
   enum class DriverVendor { kOther, kNvidia, kIntel, kAMD };
 
  protected:

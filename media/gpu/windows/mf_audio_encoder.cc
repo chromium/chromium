@@ -72,8 +72,6 @@ constexpr DWORD kStreamId = 0;
 constexpr int kMinSamplesForOutput = kSamplesPerFrame * 3;
 constexpr int kMinSamplesForFlush = kSamplesPerFrame * 2;
 
-constexpr const wchar_t kMfPlatDllName[] = L"mfplat.dll";
-
 EncoderStatus::Codes ValidateInputOptions(const AudioEncoder::Options& options,
                                           ChannelLayout* channel_layout,
                                           int* bitrate) {
@@ -358,17 +356,6 @@ MFAudioEncoder::PendingData::PendingData(std::unique_ptr<AudioBus>&& audio_bus,
       done_cb(std::move(done_cb)) {}
 MFAudioEncoder::PendingData::PendingData(PendingData&&) = default;
 MFAudioEncoder::PendingData::~PendingData() = default;
-
-// static
-bool MFAudioEncoder::PreSandboxInitialization() {
-  if (!LoadLibrary(kMfPlatDllName)) {
-    PLOG(ERROR) << "MFAudioEncoder fatal error: could not LoadLibrary: "
-                << kMfPlatDllName;
-    return false;
-  }
-
-  return true;
-}
 
 MFAudioEncoder::MFAudioEncoder(
     scoped_refptr<base::SequencedTaskRunner> task_runner)

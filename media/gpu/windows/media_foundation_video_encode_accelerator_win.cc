@@ -95,11 +95,6 @@ constexpr uint8_t kAV1MinQuantizer = 10;
 // //third_party/webrtc/media/engine/webrtc_video_engine.h.
 constexpr uint8_t kAV1MaxQuantizer = 56;
 
-constexpr const wchar_t* const kMediaFoundationVideoEncoderDLLs[] = {
-    L"mf.dll",
-    L"mfplat.dll",
-};
-
 static const CLSID kIntelAV1HybridEncoderCLSID = {
     0x62c053ce,
     0x5357,
@@ -290,13 +285,6 @@ uint32_t EnumerateHardwareEncoders(VideoCodec codec,
     return 0;
   }
 
-  for (const wchar_t* mfdll : kMediaFoundationVideoEncoderDLLs) {
-    if (!::GetModuleHandle(mfdll)) {
-      DLOG(ERROR) << mfdll << " is required for encoding";
-      return 0;
-    }
-  }
-
   if (!InitializeMediaFoundation())
     return 0;
 
@@ -475,6 +463,10 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfiles() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   SupportedProfiles profiles;
+
+  if (!InitializeMediaFoundation()) {
+    return profiles;
+  }
 
   for (auto codec : {VideoCodec::kH264, VideoCodec::kVP9, VideoCodec::kAV1,
                      VideoCodec::kHEVC}) {
@@ -884,17 +876,6 @@ void MediaFoundationVideoEncodeAccelerator::Destroy() {
 
 bool MediaFoundationVideoEncodeAccelerator::IsGpuFrameResizeSupported() {
   return true;
-}
-
-// static
-bool MediaFoundationVideoEncodeAccelerator::PreSandboxInitialization() {
-  bool result = true;
-  for (const wchar_t* mfdll : kMediaFoundationVideoEncoderDLLs) {
-    if (::LoadLibrary(mfdll) == nullptr) {
-      result = false;
-    }
-  }
-  return result;
 }
 
 bool MediaFoundationVideoEncodeAccelerator::ActivateAsyncEncoder(

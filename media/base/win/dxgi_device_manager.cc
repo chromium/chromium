@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "media/base/win/mf_helpers.h"
+#include "media/base/win/mf_initializer.h"
 
 namespace media {
 
@@ -60,9 +61,7 @@ Microsoft::WRL::ComPtr<ID3D11Device> DXGIDeviceScopedHandle::GetDevice() {
 }
 
 scoped_refptr<DXGIDeviceManager> DXGIDeviceManager::Create(CHROME_LUID luid) {
-  if (!::GetModuleHandle(L"mfplat.dll") && !::LoadLibrary(L"mfplat.dll")) {
-    // The MF DXGI Device manager is not supported when mfplat.dll isn't
-    // available.
+  if (!InitializeMediaFoundation()) {
     DLOG(ERROR) << "MF DXGI Device Manager is not available";
     return nullptr;
   }

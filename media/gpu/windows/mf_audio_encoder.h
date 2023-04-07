@@ -52,11 +52,6 @@ class AudioParameters;
 // number of samples have been provided. This resets when `Flush()` is called.
 class MEDIA_GPU_EXPORT MFAudioEncoder : public AudioEncoder {
  public:
-  // Loads the necessary DLLs for the correct version of Windows. Will return
-  // false on Windows N SKUs. Subsequent calls to `Initialize()` will return
-  // errors if this fails.
-  static bool PreSandboxInitialization();
-
   explicit MFAudioEncoder(scoped_refptr<base::SequencedTaskRunner> task_runner);
   MFAudioEncoder(const MFAudioEncoder&) = delete;
   MFAudioEncoder& operator=(const MFAudioEncoder&) = delete;
