@@ -1222,17 +1222,33 @@ chromium-metrics-reviews@google.com.
   <token key="CardMetadataVisible" variants="Autofill.CardMetadataVisible"/>
 </histogram>
 
-<histogram name="Autofill.CreditCard.{CardIssuer}.ShownWithMetadata"
+<histogram name="Autofill.CreditCard.{CardIssuer}.{FormEventWithMetadata}"
     enum="Boolean" expires_after="2024-03-01">
   <owner>vishwasuppoor@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
-    Emits true if a {CardIssuer} was shown with metadata in Autofill
-    suggestions. Emits false if every {CardIssuer} was shown without metadata in
-    Autofill suggestions. Only cards with issuer ids are considered. It is
-    emitted every time Autofill suggestions are shown.
+    Emits true if a {CardIssuer}:
+
+    1. shown in Autofill suggestions had metadata
+
+    2. selected from Autofill suggestions had metadata
+
+    Emits false if:
+
+    1. every {CardIssuer} shown in Autofill suggestions did not have metadata
+
+    2. a {CardIssuer} selected from Autofill suggestions did not have metadata
+
+    It is emitted every time Autofill suggestions shown or selected have an
+    issuer id.
   </summary>
   <token key="CardIssuer" variants="Autofill.CreditCardIssuerId"/>
+  <token key="FormEventWithMetadata">
+    <variant name="SelectedWithMetadata"
+        summary="A card with issuer id was selected"/>
+    <variant name="ShownWithMetadata"
+        summary="A card with issuer id was shown"/>
+  </token>
 </histogram>
 
 <histogram name="Autofill.CreditCardFillingInfoBar"

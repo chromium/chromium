@@ -111,13 +111,25 @@ CardMetadataLoggingContext GetMetadataLoggingContext(
   return metadata_logging_context;
 }
 
-void LogCardWithMetadataShownMetric(const CardMetadataLoggingContext& context) {
+void LogCardWithMetadataFormEventMetric(
+    CardMetadataLoggingEvent event,
+    const CardMetadataLoggingContext& context) {
   for (const auto& [issuer, has_metadata] :
        context.issuer_to_metadata_availability) {
-    base::UmaHistogramBoolean("Autofill.CreditCard." +
-                                  GetCardIssuerIdSuffix(issuer) +
-                                  ".ShownWithMetadata",
-                              has_metadata);
+    switch (event) {
+      case CardMetadataLoggingEvent::kShown:
+        base::UmaHistogramBoolean("Autofill.CreditCard." +
+                                      GetCardIssuerIdSuffix(issuer) +
+                                      ".ShownWithMetadata",
+                                  has_metadata);
+        break;
+      case CardMetadataLoggingEvent::kSelected:
+        base::UmaHistogramBoolean("Autofill.CreditCard." +
+                                      GetCardIssuerIdSuffix(issuer) +
+                                      ".SelectedWithMetadata",
+                                  has_metadata);
+        break;
+    }
   }
 }
 
