@@ -916,16 +916,15 @@ void BookmarkModel::ResetDateFolderModified(const BookmarkNode* node) {
 std::vector<TitledUrlMatch> BookmarkModel::GetBookmarksMatching(
     const std::u16string& query,
     size_t max_count,
-    query_parser::MatchingAlgorithm matching_algorithm,
-    bool match_ancestor_titles) {
+    query_parser::MatchingAlgorithm matching_algorithm) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!loaded_) {
     return {};
   }
 
-  return titled_url_index_->GetResultsMatching(
-      query, max_count, matching_algorithm, match_ancestor_titles);
+  return titled_url_index_->GetResultsMatching(query, max_count,
+                                               matching_algorithm);
 }
 
 void BookmarkModel::ClearStore() {
@@ -1023,7 +1022,6 @@ void BookmarkModel::DoneLoading(std::unique_ptr<BookmarkLoadDetails> details) {
   const base::TimeDelta load_duration =
       base::TimeTicks::Now() - details->load_start();
   metrics::RecordTimeToLoadAtStartup(load_duration);
-  titled_url_index_->RecordMemoryUsage();
 
   // Notify our direct observers.
   for (BookmarkModelObserver& observer : observers_) {

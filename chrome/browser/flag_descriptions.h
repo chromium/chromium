@@ -1166,9 +1166,6 @@ extern const char kOmniboxAdaptNarrowTabletWindowsDescription[];
 extern const char kOmniboxAssistantVoiceSearchName[];
 extern const char kOmniboxAssistantVoiceSearchDescription[];
 
-extern const char kOmniboxBookmarkPathsName[];
-extern const char kOmniboxBookmarkPathsDescription[];
-
 extern const char kOmniboxCacheSuggestionResourcesName[];
 extern const char kOmniboxCacheSuggestionResourcesDescription[];
 

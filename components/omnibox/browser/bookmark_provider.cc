@@ -22,7 +22,6 @@
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/scoring_functor.h"
 #include "components/omnibox/browser/titled_url_match_utils.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
@@ -141,46 +140,10 @@ void BookmarkProvider::DoAutocomplete(const AutocompleteInput& input) {
 std::vector<TitledUrlMatch> BookmarkProvider::GetMatchesWithBookmarkPaths(
     const AutocompleteInput& input,
     size_t kMaxBookmarkMatches) {
-  // Determining whether the |kBookmarkPaths| feature had, or would have had, an
-  // impact for counterfactual logging is expensive as it requires invoking
-  // |BookmarkModel::GetBookmarksMatching()| twice. Therefore, the param
-  // |kBookmarkPathsCounterfactual| determines whether to counterfactual log:
-  // - When empty, counterfactual logging won't occur.
-  // - When set to "control" counterfactual logging will occur like usual; i.e.
-  //   path matched bookmarks won't be returned but will be compared to
-  //   determine if the feature triggered.
-  // - When set to "enabled", counterfactual logging will occur and path matched
-  //   bookmarks will be returned.
-  std::string counterfactual =
-      OmniboxFieldTrial::kBookmarkPathsCounterfactual.Get();
-
-  bool match_paths = base::FeatureList::IsEnabled(omnibox::kBookmarkPaths) &&
-                     counterfactual != "control";
-
   query_parser::MatchingAlgorithm matching_algorithm =
       GetMatchingAlgorithm(input);
-
-  if (counterfactual.empty()) {
-    return local_or_syncable_bookmark_model_->GetBookmarksMatching(
-        input.text(), kMaxBookmarkMatches, matching_algorithm, match_paths);
-  }
-
-  std::vector<TitledUrlMatch> matches_without_paths =
-      local_or_syncable_bookmark_model_->GetBookmarksMatching(
-          input.text(), kMaxBookmarkMatches, matching_algorithm);
-  std::vector<TitledUrlMatch> matches_with_paths =
-      local_or_syncable_bookmark_model_->GetBookmarksMatching(
-          input.text(), kMaxBookmarkMatches, matching_algorithm, true);
-  DCHECK_LE(matches_without_paths.size(), matches_with_paths.size());
-
-  // It's unnecessary to compare the matches themselves because all
-  // |matches_without_paths| should be contained in |matches_with_paths|.
-  if (matches_without_paths.size() != matches_with_paths.size()) {
-    client_->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
-        OmniboxTriggeredFeatureService::Feature::kBookmarkPaths);
-  }
-
-  return match_paths ? matches_with_paths : matches_without_paths;
+  return local_or_syncable_bookmark_model_->GetBookmarksMatching(
+      input.text(), kMaxBookmarkMatches, matching_algorithm);
 }
 
 query_parser::MatchingAlgorithm BookmarkProvider::GetMatchingAlgorithm(

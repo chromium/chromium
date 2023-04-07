@@ -3885,38 +3885,6 @@
             ]
         }
     ],
-    "DesktopOmniboxBookmarkPaths": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "BookmarkLimitNumNodesForBookmarkSearchCount": "500",
-                        "OmniboxBookmarkPathsUiDynamicReplaceUrl": "true",
-                        "ShortBookmarkSuggestionsByTotalInputLengthThreshold": "3"
-                    },
-                    "enable_features": [
-                        "BookmarkApproximateNodeMatch",
-                        "BookmarkIndexPaths",
-                        "BookmarkLimitNumNodesForBookmarkSearch",
-                        "BookmarkTypedUrlsMap",
-                        "OmniboxBookmarkPaths",
-                        "OmniboxShortBookmarkSuggestionsByTotalInputLength"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopOmniboxDriveDenoise": [
         {
             "platforms": [

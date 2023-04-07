@@ -2073,12 +2073,6 @@ const char kOmniboxAssistantVoiceSearchDescription[] =
     "When enabled, use Assistant for omnibox voice query recognition instead of"
     " Android's built-in voice recognition service. Only works on Android.";
 
-const char kOmniboxBookmarkPathsName[] = "Omnibox Bookmark Paths";
-const char kOmniboxBookmarkPathsDescription[] =
-    "Allows inputs to match with bookmark paths. E.g. 'planets jupiter' can "
-    "suggest a bookmark titled 'Jupiter' with URL "
-    "'en.wikipedia.org/wiki/Jupiter' located in a path containing 'planet.'";
-
 const char kOmniboxCacheSuggestionResourcesName[] =
     "Omnibox cache suggestion resources";
 const char kOmniboxCacheSuggestionResourcesDescription[] =

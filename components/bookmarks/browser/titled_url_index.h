@@ -16,7 +16,6 @@
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "components/bookmarks/browser/titled_url_node_sorter.h"
-#include "components/bookmarks/common/bookmark_features.h"
 #include "components/query_parser/query_parser.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -46,10 +45,6 @@ class TitledUrlIndex {
 
   ~TitledUrlIndex();
 
-  // Records to UMA histograms sizes of `index_` and `path_index_`; called once
-  // at startup.
-  void RecordMemoryUsage() const;
-
   void SetNodeSorter(std::unique_ptr<TitledUrlNodeSorter> sorter);
 
   // Invoked when a title/URL pair has been added to the model.
@@ -64,15 +59,14 @@ class TitledUrlIndex {
   // Invoked when a folder has been removed from the model.
   void RemovePath(const TitledUrlNode* node);
 
-  // Returns up to |max_count| of matches containing each term from the text
-  // |query| in either the title, URL, or, if |match_ancestor_titles| is true,
-  // the titles of ancestor nodes. |matching_algorithm| determines the algorithm
-  // used by QueryParser internally to parse |query|.
+  // Returns up to `max_count` of matches containing each term from the text
+  // `query` in either the title, URL, or the titles of ancestor nodes.
+  // `matching_algorithm` determines the algorithm used by QueryParser
+  // internally to parse `query`.
   std::vector<TitledUrlMatch> GetResultsMatching(
       const std::u16string& query,
       size_t max_count,
-      query_parser::MatchingAlgorithm matching_algorithm,
-      bool match_ancestor_titles);
+      query_parser::MatchingAlgorithm matching_algorithm);
 
   // Returns a normalized version of the UTF16 string `text`.  If it fails to
   // normalize the string, returns `text` itself as a best-effort.
@@ -95,16 +89,14 @@ class TitledUrlIndex {
       const TitledUrlNodes& nodes,
       const query_parser::QueryNodeVector& query_nodes,
       const std::vector<std::u16string>& query_terms,
-      size_t max_count,
-      bool match_ancestor_titles);
+      size_t max_count);
 
   // Finds |query_nodes| matches in |node| and returns a TitledUrlMatch
   // containing |node| and the matches.
   absl::optional<TitledUrlMatch> MatchTitledUrlNodeWithQuery(
       const TitledUrlNode* node,
       const query_parser::QueryNodeVector& query_nodes,
-      const std::vector<std::u16string>& query_terms,
-      bool match_ancestor_titles);
+      const std::vector<std::u16string>& query_terms);
 
   // Return matches for the specified |terms|. This is an intersection of each
   // term's matches.
@@ -164,13 +156,6 @@ class TitledUrlIndex {
   std::map<std::u16string, size_t> path_index_;
 
   std::unique_ptr<TitledUrlNodeSorter> sorter_;
-
-  // Cached as a member variables as they're read up to 3000 times per omnibox
-  // keystroke and `IsEnabled()` is too expensive to call that frequently.
-  const bool approximate_node_match_ =
-      base::FeatureList::IsEnabled(kApproximateNodeMatch);
-  const bool index_paths_ =
-      base::FeatureList::IsEnabled(bookmarks::kIndexPaths);
 };
 
 }  // namespace bookmarks

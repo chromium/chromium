@@ -19,7 +19,7 @@ class OmniboxTriggeredFeatureService {
   // corresponding entry should be added in the UMA histograms.
   enum class Feature {
     kRichAutocompletion = 0,
-    kBookmarkPaths = 1,
+    // kBookmarkPaths = 1,  // Obsolete, launched and logging code removed.
     kShortBookmarkSuggestionsByTotalInputLength = 2,
     kFuzzyUrlSuggestions = 3,
     kHistoryClusterSuggestion = 4,

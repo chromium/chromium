@@ -927,13 +927,6 @@ const base::FeatureParam<int>
         "ShortBookmarkSuggestionsByTotalInputLengthThreshold",
         3);
 
-// Bookmark paths.
-
-const base::FeatureParam<std::string> kBookmarkPathsCounterfactual(
-    &omnibox::kBookmarkPaths,
-    "OmniboxBookmarkPathsCounterfactual",
-    "");
-
 // Shortcut Expanding
 
 bool IsShortcutExpandingEnabled() {

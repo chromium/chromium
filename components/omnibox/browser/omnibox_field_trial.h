@@ -544,9 +544,6 @@ extern const base::FeatureParam<bool>
 extern const base::FeatureParam<int>
     kShortBookmarkSuggestionsByTotalInputLengthThreshold;
 
-// Bookmark paths.
-extern const base::FeatureParam<std::string> kBookmarkPathsCounterfactual;
-
 // Shortcut Expanding.
 bool IsShortcutExpandingEnabled();
 

@@ -16,7 +16,6 @@
 #include "components/omnibox/browser/history_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/url_prefix.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "components/query_parser/snippet.h"
 #include "components/url_formatter/url_formatter.h"
 
@@ -75,11 +74,8 @@ AutocompleteMatch TitledUrlMatchToAutocompleteMatch(
 
   // Display the URL only if the input matches the URL but not the path.
   // Otherwise, display the path, even if the input matches both or neither.
-  // Except if kBookmarkPaths is disabled, in which case, always display the
-  // URL.
-  bool show_path = base::FeatureList::IsEnabled(omnibox::kBookmarkPaths) &&
-                   (titled_url_match.has_ancestor_match ||
-                    titled_url_match.url_match_positions.empty());
+  bool show_path = titled_url_match.has_ancestor_match ||
+                   titled_url_match.url_match_positions.empty();
   match.contents = show_path ? path : formatted_url;
   // The path can become stale (when the bookmark is moved). So persist the URL
   // instead when creating shortcuts.

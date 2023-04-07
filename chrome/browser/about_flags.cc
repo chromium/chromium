@@ -1591,28 +1591,6 @@ constexpr FeatureEntry::FeatureVariation kOmniboxInspireMeVariants[] = {
      std::size(kOmniboxInspireMeWith10Mixed), nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
-const FeatureEntry::FeatureParam kOmniboxBookmarkPathsReplaceTitle[] = {
-    {"OmniboxBookmarkPathsUiReplaceTitle", "true"}};
-const FeatureEntry::FeatureParam kOmniboxBookmarkPathsReplaceUrl[] = {
-    {"OmniboxBookmarkPathsUiReplaceUrl", "true"}};
-const FeatureEntry::FeatureParam kOmniboxBookmarkPathsAppendAfterTitle[] = {
-    {"OmniboxBookmarkPathsUiAppendAfterTitle", "true"}};
-const FeatureEntry::FeatureParam kOmniboxBookmarkPathsDynamicReplaceUrl[] = {
-    {"OmniboxBookmarkPathsUiDynamicReplaceUrl", "true"}};
-
-const FeatureEntry::FeatureVariation kOmniboxBookmarkPathsVariations[] = {
-    {"Default UI (Title - URL)", {}, 0, nullptr},
-    {"Replace title (Path/Title - URL)", kOmniboxBookmarkPathsReplaceTitle,
-     std::size(kOmniboxBookmarkPathsReplaceTitle), nullptr},
-    {"Replace URL (Title - Path)", kOmniboxBookmarkPathsReplaceUrl,
-     std::size(kOmniboxBookmarkPathsReplaceUrl), nullptr},
-    {"Append after title (Title : Path - URL)",
-     kOmniboxBookmarkPathsAppendAfterTitle,
-     std::size(kOmniboxBookmarkPathsAppendAfterTitle), nullptr},
-    {"Dynamic Replace URL (Title - Path|URL)",
-     kOmniboxBookmarkPathsDynamicReplaceUrl,
-     std::size(kOmniboxBookmarkPathsDynamicReplaceUrl), nullptr}};
-
 const FeatureEntry::FeatureParam kOmniboxSquareSuggestionIconFavicons[] = {
     {"OmniboxSquareSuggestIconIcons", "true"}};
 const FeatureEntry::FeatureParam kOmniboxSquareSuggestionIconAnswers[] = {
@@ -5752,12 +5730,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxKeepSecondaryZeroSuggestName,
      flag_descriptions::kOmniboxKeepSecondaryZeroSuggestDescription, kOsAll,
      FEATURE_VALUE_TYPE(omnibox::kKeepSecondaryZeroSuggest)},
-
-    {"omnibox-bookmark-paths", flag_descriptions::kOmniboxBookmarkPathsName,
-     flag_descriptions::kOmniboxBookmarkPathsDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kBookmarkPaths,
-                                    kOmniboxBookmarkPathsVariations,
-                                    "OmniboxBundledExperimentV1")},
 
     {"omnibox-short-bookmark-suggestions",
      flag_descriptions::kOmniboxShortBookmarkSuggestionsName,
