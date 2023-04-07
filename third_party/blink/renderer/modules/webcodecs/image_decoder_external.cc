@@ -119,7 +119,8 @@ ScriptPromise ImageDecoderExternal::isTypeSupported(ScriptState* script_state,
 ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
                                            const ImageDecoderInit* init,
                                            ExceptionState& exception_state)
-    : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
+    : ActiveScriptWrappable<ImageDecoderExternal>({}),
+      ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
       script_state_(script_state),
       tracks_(MakeGarbageCollected<ImageTrackList>(this)),
       completed_property_(

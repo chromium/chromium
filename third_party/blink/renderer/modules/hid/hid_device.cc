@@ -200,6 +200,7 @@ HIDDevice::HIDDevice(ServiceInterface* parent,
                      device::mojom::blink::HidDeviceInfoPtr info,
                      ExecutionContext* context)
     : ExecutionContextLifecycleObserver(context),
+      ActiveScriptWrappable<HIDDevice>({}),
       parent_(parent),
       connection_(context),
       receiver_(this, context) {

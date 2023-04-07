@@ -24,6 +24,7 @@ BeforeInstallPromptEvent::BeforeInstallPromptEvent(
     mojo::PendingReceiver<mojom::blink::AppBannerEvent> event_receiver,
     const Vector<String>& platforms)
     : Event(name, Bubbles::kNo, Cancelable::kYes),
+      ActiveScriptWrappable<BeforeInstallPromptEvent>({}),
       ExecutionContextClient(&context),
       banner_service_remote_(&context),
       receiver_(this, &context),
@@ -44,6 +45,7 @@ BeforeInstallPromptEvent::BeforeInstallPromptEvent(
     const AtomicString& name,
     const BeforeInstallPromptEventInit* init)
     : Event(name, init),
+      ActiveScriptWrappable<BeforeInstallPromptEvent>({}),
       ExecutionContextClient(execution_context),
       banner_service_remote_(execution_context),
       receiver_(this, execution_context) {

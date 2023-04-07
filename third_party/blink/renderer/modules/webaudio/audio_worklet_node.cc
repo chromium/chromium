@@ -39,7 +39,9 @@ AudioWorkletNode::AudioWorkletNode(
     const AudioWorkletNodeOptions* options,
     const Vector<CrossThreadAudioParamInfo> param_info_list,
     MessagePort* node_port)
-    : AudioNode(context), node_port_(node_port) {
+    : AudioNode(context),
+      ActiveScriptWrappable<AudioWorkletNode>({}),
+      node_port_(node_port) {
   HeapHashMap<String, Member<AudioParam>> audio_param_map;
   HashMap<String, scoped_refptr<AudioParamHandler>> param_handler_map;
   for (const auto& param_info : param_info_list) {

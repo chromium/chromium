@@ -30,7 +30,6 @@ namespace blink {
 
 using mojom::blink::PermissionName;
 using mojom::blink::PermissionService;
-using mojom::blink::PermissionStatus;
 using mojom::blink::UsageBreakdownPtr;
 
 namespace {
@@ -229,12 +228,13 @@ void StorageManager::PermissionServiceConnectionError() {
   permission_service_.reset();
 }
 
-void StorageManager::PermissionRequestComplete(ScriptPromiseResolver* resolver,
-                                               PermissionStatus status) {
+void StorageManager::PermissionRequestComplete(
+    ScriptPromiseResolver* resolver,
+    mojom::blink::PermissionStatus status) {
   if (!resolver->GetExecutionContext() ||
       resolver->GetExecutionContext()->IsContextDestroyed())
     return;
-  resolver->Resolve(status == PermissionStatus::GRANTED);
+  resolver->Resolve(status == mojom::blink::PermissionStatus::GRANTED);
 }
 
 void StorageManager::StartObserving() {

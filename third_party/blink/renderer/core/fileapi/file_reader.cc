@@ -197,7 +197,8 @@ FileReader* FileReader::Create(ExecutionContext* context) {
 }
 
 FileReader::FileReader(ExecutionContext* context)
-    : ExecutionContextLifecycleObserver(context),
+    : ActiveScriptWrappable<FileReader>({}),
+      ExecutionContextLifecycleObserver(context),
       state_(kEmpty),
       loading_state_(kLoadingStateNone),
       still_firing_events_(false),

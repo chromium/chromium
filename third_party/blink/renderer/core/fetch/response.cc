@@ -559,7 +559,10 @@ Response::Response(ExecutionContext* context, FetchResponseData* response)
 Response::Response(ExecutionContext* context,
                    FetchResponseData* response,
                    Headers* headers)
-    : Body(context), response_(response), headers_(headers) {}
+    : ActiveScriptWrappable<Response>({}),
+      Body(context),
+      response_(response),
+      headers_(headers) {}
 
 bool Response::HasBody() const {
   return response_->InternalBuffer();

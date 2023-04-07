@@ -101,7 +101,8 @@ IDBDatabase::IDBDatabase(
     mojo::PendingAssociatedReceiver<mojom::blink::IDBDatabaseCallbacks>
         callbacks_receiver,
     mojo::PendingRemote<mojom::blink::ObservedFeature> connection_lifetime)
-    : ExecutionContextLifecycleObserver(context),
+    : ActiveScriptWrappable<IDBDatabase>({}),
+      ExecutionContextLifecycleObserver(context),
       backend_(std::move(backend)),
       connection_lifetime_(std::move(connection_lifetime)),
       event_queue_(

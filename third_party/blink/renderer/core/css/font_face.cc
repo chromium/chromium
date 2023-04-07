@@ -243,7 +243,8 @@ FontFace* FontFace::Create(Document* document,
 FontFace::FontFace(ExecutionContext* context,
                    const StyleRuleFontFace* style_rule,
                    bool is_user_style)
-    : ExecutionContextClient(context),
+    : ActiveScriptWrappable<FontFace>({}),
+      ExecutionContextClient(context),
       style_rule_(style_rule),
       status_(kUnloaded),
       is_user_style_(is_user_style) {}
@@ -251,7 +252,10 @@ FontFace::FontFace(ExecutionContext* context,
 FontFace::FontFace(ExecutionContext* context,
                    const AtomicString& family,
                    const FontFaceDescriptors* descriptors)
-    : ExecutionContextClient(context), family_(family), status_(kUnloaded) {
+    : ActiveScriptWrappable<FontFace>({}),
+      ExecutionContextClient(context),
+      family_(family),
+      status_(kUnloaded) {
   SetPropertyFromString(context, descriptors->style(),
                         AtRuleDescriptorID::FontStyle);
   SetPropertyFromString(context, descriptors->weight(),

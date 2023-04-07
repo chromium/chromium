@@ -99,6 +99,7 @@ HTMLImageElement::HTMLImageElement(Document& document,
 
 HTMLImageElement::HTMLImageElement(Document& document, bool created_by_parser)
     : HTMLElement(html_names::kImgTag, document),
+      ActiveScriptWrappable<HTMLImageElement>({}),
       image_loader_(MakeGarbageCollected<HTMLImageLoader>(this)),
       image_device_pixel_ratio_(1.0f),
       source_(nullptr),

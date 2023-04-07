@@ -113,7 +113,8 @@ MediaSource* MediaSource::Create(ExecutionContext* context) {
 }
 
 MediaSource::MediaSource(ExecutionContext* context)
-    : ExecutionContextLifecycleObserver(context),
+    : ActiveScriptWrappable<MediaSource>({}),
+      ExecutionContextLifecycleObserver(context),
       ready_state_(ReadyState::kClosed),
       async_event_queue_(
           MakeGarbageCollected<EventQueue>(GetExecutionContext(),

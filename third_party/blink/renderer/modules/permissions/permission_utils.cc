@@ -32,7 +32,6 @@ namespace blink {
 using MojoPermissionDescriptor = mojom::blink::PermissionDescriptor;
 using mojom::blink::PermissionDescriptorPtr;
 using mojom::blink::PermissionName;
-using mojom::blink::PermissionStatus;
 
 void ConnectToPermissionService(
     ExecutionContext* execution_context,
@@ -41,13 +40,13 @@ void ConnectToPermissionService(
       std::move(receiver));
 }
 
-String PermissionStatusToString(PermissionStatus status) {
+String PermissionStatusToString(mojom::blink::PermissionStatus status) {
   switch (status) {
-    case PermissionStatus::GRANTED:
+    case mojom::blink::PermissionStatus::GRANTED:
       return "granted";
-    case PermissionStatus::DENIED:
+    case mojom::blink::PermissionStatus::DENIED:
       return "denied";
-    case PermissionStatus::ASK:
+    case mojom::blink::PermissionStatus::ASK:
       return "prompt";
   }
   NOTREACHED();

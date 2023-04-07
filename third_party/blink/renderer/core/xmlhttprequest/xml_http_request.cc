@@ -295,7 +295,8 @@ XMLHttpRequest* XMLHttpRequest::Create(ExecutionContext* context) {
 XMLHttpRequest::XMLHttpRequest(ExecutionContext* context,
                                v8::Isolate* isolate,
                                scoped_refptr<const DOMWrapperWorld> world)
-    : ExecutionContextLifecycleObserver(context),
+    : ActiveScriptWrappable<XMLHttpRequest>({}),
+      ExecutionContextLifecycleObserver(context),
       progress_event_throttle_(
           MakeGarbageCollected<XMLHttpRequestProgressEventThrottle>(this)),
       isolate_(isolate),

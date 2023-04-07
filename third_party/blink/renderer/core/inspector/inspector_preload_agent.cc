@@ -13,8 +13,6 @@
 
 namespace blink {
 
-using protocol::Response;
-
 namespace {
 
 absl::optional<protocol::Preload::RuleSetErrorType> GetProtocolRuleSetErrorType(
@@ -246,13 +244,13 @@ void InspectorPreloadAgent::SpeculationCandidatesUpdated(
 
 protocol::Response InspectorPreloadAgent::enable() {
   EnableInternal();
-  return Response::Success();
+  return protocol::Response::Success();
 }
 
 protocol::Response InspectorPreloadAgent::disable() {
   enabled_.Clear();
   instrumenting_agents_->RemoveInspectorPreloadAgent(this);
-  return Response::Success();
+  return protocol::Response::Success();
 }
 
 void InspectorPreloadAgent::EnableInternal() {

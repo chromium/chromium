@@ -84,6 +84,8 @@ class MODULES_EXPORT MediaStreamTrack
   static MediaStreamTrack* FromTransferredState(ScriptState* script_state,
                                                 const TransferredValues& data);
 
+  MediaStreamTrack();
+
   // MediaStreamTrack.idl
   virtual String kind() const = 0;
   virtual String id() const = 0;

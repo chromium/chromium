@@ -191,7 +191,8 @@ MutationObserver* MutationObserver::Create(ScriptState* script_state,
 
 MutationObserver::MutationObserver(ExecutionContext* execution_context,
                                    Delegate* delegate)
-    : ExecutionContextLifecycleStateObserver(execution_context),
+    : ActiveScriptWrappable<MutationObserver>({}),
+      ExecutionContextLifecycleStateObserver(execution_context),
       delegate_(delegate) {
   priority_ = g_observer_priority++;
   UpdateStateIfNeeded();

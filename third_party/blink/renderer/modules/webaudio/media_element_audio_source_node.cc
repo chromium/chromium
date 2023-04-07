@@ -46,7 +46,9 @@ namespace blink {
 MediaElementAudioSourceNode::MediaElementAudioSourceNode(
     AudioContext& context,
     HTMLMediaElement& media_element)
-    : AudioNode(context), media_element_(&media_element) {
+    : AudioNode(context),
+      ActiveScriptWrappable<MediaElementAudioSourceNode>({}),
+      media_element_(&media_element) {
   SetHandler(MediaElementAudioSourceHandler::Create(*this, media_element));
 }
 

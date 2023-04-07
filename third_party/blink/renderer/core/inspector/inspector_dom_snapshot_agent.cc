@@ -47,7 +47,6 @@
 
 namespace blink {
 using protocol::Maybe;
-using protocol::Response;
 
 namespace {
 
@@ -234,22 +233,24 @@ void InspectorDOMSnapshotAgent::Restore() {
     EnableAndReset();
 }
 
-Response InspectorDOMSnapshotAgent::enable() {
+protocol::Response InspectorDOMSnapshotAgent::enable() {
   if (!enabled_.Get())
     EnableAndReset();
-  return Response::Success();
+  return protocol::Response::Success();
 }
 
-Response InspectorDOMSnapshotAgent::disable() {
-  if (!enabled_.Get())
-    return Response::ServerError("DOM snapshot agent hasn't been enabled.");
+protocol::Response InspectorDOMSnapshotAgent::disable() {
+  if (!enabled_.Get()) {
+    return protocol::Response::ServerError(
+        "DOM snapshot agent hasn't been enabled.");
+  }
   enabled_.Clear();
   origin_url_map_.reset();
   instrumenting_agents_->RemoveInspectorDOMSnapshotAgent(this);
-  return Response::Success();
+  return protocol::Response::Success();
 }
 
-Response InspectorDOMSnapshotAgent::getSnapshot(
+protocol::Response InspectorDOMSnapshotAgent::getSnapshot(
     std::unique_ptr<protocol::Array<String>> style_filter,
     protocol::Maybe<bool> include_event_listeners,
     protocol::Maybe<bool> include_paint_order,
@@ -261,7 +262,7 @@ Response InspectorDOMSnapshotAgent::getSnapshot(
         computed_styles) {
   Document* document = inspected_frames_->Root()->GetDocument();
   if (!document)
-    return Response::ServerError("Document is not available");
+    return protocol::Response::ServerError("Document is not available");
   LegacyDOMSnapshotAgent legacySupport(dom_debugger_agent_,
                                        origin_url_map_.get());
   return legacySupport.GetSnapshot(
@@ -285,7 +286,7 @@ protocol::Response InspectorDOMSnapshotAgent::captureSnapshot(
 
   auto* main_window = inspected_frames_->Root()->DomWindow();
   if (!main_window)
-    return Response::ServerError("Document is not available");
+    return protocol::Response::ServerError("Document is not available");
 
   // Update layout before traversal of document so that we inspect a
   // current and consistent state of all trees.
@@ -302,7 +303,7 @@ protocol::Response InspectorDOMSnapshotAgent::captureSnapshot(
     const CSSPropertyID id =
         UnresolvedCSSPropertyID(main_window, property_name);
     if (id == CSSPropertyID::kInvalid || id == CSSPropertyID::kVariable)
-      return Response::InvalidParams("invalid CSS property");
+      return protocol::Response::InvalidParams("invalid CSS property");
     const auto& property = CSSProperty::Get(ResolveCSSPropertyID(id));
     css_property_filter_->push_back(&property);
   }
@@ -336,7 +337,7 @@ protocol::Response InspectorDOMSnapshotAgent::captureSnapshot(
   documents_.reset();
   css_value_cache_.clear();
   style_cache_.clear();
-  return Response::Success();
+  return protocol::Response::Success();
 }
 
 int InspectorDOMSnapshotAgent::AddString(const String& string) {

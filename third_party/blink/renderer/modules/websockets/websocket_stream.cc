@@ -436,7 +436,8 @@ WebSocketStream* WebSocketStream::CreateInternal(
 
 WebSocketStream::WebSocketStream(ExecutionContext* execution_context,
                                  ScriptState* script_state)
-    : ExecutionContextLifecycleObserver(execution_context),
+    : ActiveScriptWrappable<WebSocketStream>({}),
+      ExecutionContextLifecycleObserver(execution_context),
       script_state_(script_state),
       connection_resolver_(
           MakeGarbageCollected<ScriptPromiseResolver>(script_state)),

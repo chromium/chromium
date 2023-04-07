@@ -73,7 +73,8 @@ template <typename Traits>
 DecoderTemplate<Traits>::DecoderTemplate(ScriptState* script_state,
                                          const InitType* init,
                                          ExceptionState& exception_state)
-    : ReclaimableCodec(ReclaimableCodec::CodecType::kDecoder,
+    : ActiveScriptWrappable<DecoderTemplate<Traits>>({}),
+      ReclaimableCodec(ReclaimableCodec::CodecType::kDecoder,
                        ExecutionContext::From(script_state)),
       script_state_(script_state),
       state_(V8CodecState::Enum::kUnconfigured),

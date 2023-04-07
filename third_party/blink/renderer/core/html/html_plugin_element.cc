@@ -127,6 +127,7 @@ HTMLPlugInElement::HTMLPlugInElement(const QualifiedName& tag_name,
                                      Document& doc,
                                      const CreateElementFlags flags)
     : HTMLFrameOwnerElement(tag_name, doc),
+      ActiveScriptWrappable<HTMLPlugInElement>({}),
       is_delaying_load_event_(false),
       // needs_plugin_update_(!IsCreatedByParser) allows HTMLObjectElement to
       // delay EmbeddedContentView updates until after all children are

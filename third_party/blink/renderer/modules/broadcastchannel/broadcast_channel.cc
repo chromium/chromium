@@ -212,7 +212,8 @@ BroadcastChannel::BroadcastChannel(
     mojo::PendingAssociatedReceiver<mojom::blink::BroadcastChannelClient>
         receiver,
     mojo::PendingAssociatedRemote<mojom::blink::BroadcastChannelClient> remote)
-    : ExecutionContextLifecycleObserver(execution_context),
+    : ActiveScriptWrappable<BroadcastChannel>({}),
+      ExecutionContextLifecycleObserver(execution_context),
       name_(name),
       feature_handle_for_scheduler_(
           execution_context->GetScheduler()->RegisterFeature(

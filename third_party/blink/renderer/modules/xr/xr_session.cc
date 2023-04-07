@@ -344,7 +344,8 @@ XRSession::XRSession(
     device::mojom::blink::XRSessionDeviceConfigPtr device_config,
     bool sensorless_session,
     XRSessionFeatureSet enabled_features)
-    : xr_(xr),
+    : ActiveScriptWrappable<XRSession>({}),
+      xr_(xr),
       mode_(mode),
       environment_integration_(
           mode == device::mojom::blink::XRSessionMode::kImmersiveAr),

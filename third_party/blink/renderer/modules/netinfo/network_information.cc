@@ -273,7 +273,8 @@ NetworkInformation* NetworkInformation::connection(NavigatorBase& navigator) {
 }
 
 NetworkInformation::NetworkInformation(NavigatorBase& navigator)
-    : Supplement<NavigatorBase>(navigator),
+    : ActiveScriptWrappable<NetworkInformation>({}),
+      Supplement<NavigatorBase>(navigator),
       ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
       web_holdback_console_message_shown_(false),
       context_stopped_(false) {

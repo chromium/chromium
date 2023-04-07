@@ -25,7 +25,6 @@
 namespace blink {
 
 using mojom::blink::PermissionService;
-using mojom::blink::PermissionStatus;
 
 // static
 const char WakeLock::kSupplementName[] = "WakeLock";
@@ -184,18 +183,19 @@ void WakeLock::DoRequest(V8WakeLockType::Enum type,
                         WrapPersistent(this), type)));
 }
 
-void WakeLock::DidReceivePermissionResponse(V8WakeLockType::Enum type,
-                                            ScriptPromiseResolver* resolver,
-                                            PermissionStatus status) {
+void WakeLock::DidReceivePermissionResponse(
+    V8WakeLockType::Enum type,
+    ScriptPromiseResolver* resolver,
+    mojom::blink::PermissionStatus status) {
   // https://w3c.github.io/screen-wake-lock/#the-request-method
-  DCHECK(status == PermissionStatus::GRANTED ||
-         status == PermissionStatus::DENIED);
+  DCHECK(status == mojom::blink::PermissionStatus::GRANTED ||
+         status == mojom::blink::PermissionStatus::DENIED);
   // 8.2. If state is "denied", then:
   // 8.2.1. Queue a global task on the screen wake lock task source given
   //        document's relevant global object to reject promise with a
   //        "NotAllowedError" DOMException.
   // 8.2.2. Abort these steps.
-  if (status != PermissionStatus::GRANTED) {
+  if (status != mojom::blink::PermissionStatus::GRANTED) {
     resolver->Reject(V8ThrowDOMException::CreateOrDie(
         resolver->GetScriptState()->GetIsolate(),
         DOMExceptionCode::kNotAllowedError,

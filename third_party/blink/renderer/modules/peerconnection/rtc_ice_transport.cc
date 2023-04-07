@@ -92,7 +92,8 @@ RTCIceTransport::RTCIceTransport(
     scoped_refptr<base::SingleThreadTaskRunner> host_thread,
     std::unique_ptr<IceTransportAdapterCrossThreadFactory> adapter_factory,
     RTCPeerConnection* peer_connection)
-    : ExecutionContextLifecycleObserver(context),
+    : ActiveScriptWrappable<RTCIceTransport>({}),
+      ExecutionContextLifecycleObserver(context),
       peer_connection_(peer_connection) {
   DCHECK(context);
   DCHECK(proxy_thread);

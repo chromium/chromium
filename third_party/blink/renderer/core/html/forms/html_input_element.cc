@@ -125,6 +125,7 @@ const int kDefaultSize = 20;
 HTMLInputElement::HTMLInputElement(Document& document,
                                    const CreateElementFlags flags)
     : TextControlElement(html_names::kInputTag, document),
+      LazyActiveScriptWrappable<HTMLInputElement>({}),
       size_(kDefaultSize),
       has_dirty_value_(false),
       is_checked_(false),

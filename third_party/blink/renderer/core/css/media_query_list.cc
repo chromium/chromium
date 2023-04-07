@@ -36,7 +36,8 @@ namespace blink {
 MediaQueryList::MediaQueryList(ExecutionContext* context,
                                MediaQueryMatcher* matcher,
                                MediaQuerySet* media)
-    : ExecutionContextLifecycleObserver(context),
+    : ActiveScriptWrappable<MediaQueryList>({}),
+      ExecutionContextLifecycleObserver(context),
       matcher_(matcher),
       media_(media),
       matches_dirty_(true),

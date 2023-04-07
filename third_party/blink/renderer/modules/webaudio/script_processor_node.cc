@@ -31,6 +31,7 @@
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable_creation_key.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -92,7 +93,7 @@ ScriptProcessorNode::ScriptProcessorNode(BaseAudioContext& context,
                                          uint32_t buffer_size,
                                          uint32_t number_of_input_channels,
                                          uint32_t number_of_output_channels)
-    : AudioNode(context) {
+    : AudioNode(context), ActiveScriptWrappable<ScriptProcessorNode>({}) {
   // Regardless of the allowed buffer sizes, we still need to process at the
   // granularity of the AudioNode.
   if (buffer_size < context.GetDeferredTaskHandler().RenderQuantumFrames()) {

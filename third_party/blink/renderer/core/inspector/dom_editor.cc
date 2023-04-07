@@ -44,8 +44,6 @@
 
 namespace blink {
 
-using protocol::Response;
-
 class DOMEditor::RemoveChildAction final : public InspectorHistory::Action {
  public:
   RemoveChildAction(ContainerNode* parent_node, Node* node)
@@ -413,7 +411,7 @@ bool DOMEditor::SetNodeValue(Node* node,
       MakeGarbageCollected<SetNodeValueAction>(node, value), exception_state);
 }
 
-static Response ToResponse(ExceptionState& exception_state) {
+static protocol::Response ToResponse(ExceptionState& exception_state) {
   if (exception_state.HadException()) {
     String name_prefix = IsDOMExceptionCode(exception_state.Code())
                              ? DOMException::GetErrorName(
@@ -421,48 +419,51 @@ static Response ToResponse(ExceptionState& exception_state) {
                                    " "
                              : g_empty_string;
     String msg = name_prefix + exception_state.Message();
-    return Response::ServerError(msg.Utf8());
+    return protocol::Response::ServerError(msg.Utf8());
   }
-  return Response::Success();
+  return protocol::Response::Success();
 }
 
-Response DOMEditor::InsertBefore(ContainerNode* parent_node,
-                                 Node* node,
-                                 Node* anchor_node) {
+protocol::Response DOMEditor::InsertBefore(ContainerNode* parent_node,
+                                           Node* node,
+                                           Node* anchor_node) {
   DummyExceptionStateForTesting exception_state;
   InsertBefore(parent_node, node, anchor_node, exception_state);
   return ToResponse(exception_state);
 }
 
-Response DOMEditor::RemoveChild(ContainerNode* parent_node, Node* node) {
+protocol::Response DOMEditor::RemoveChild(ContainerNode* parent_node,
+                                          Node* node) {
   DummyExceptionStateForTesting exception_state;
   RemoveChild(parent_node, node, exception_state);
   return ToResponse(exception_state);
 }
 
-Response DOMEditor::SetAttribute(Element* element,
-                                 const String& name,
-                                 const String& value) {
+protocol::Response DOMEditor::SetAttribute(Element* element,
+                                           const String& name,
+                                           const String& value) {
   DummyExceptionStateForTesting exception_state;
   SetAttribute(element, name, value, exception_state);
   return ToResponse(exception_state);
 }
 
-Response DOMEditor::RemoveAttribute(Element* element, const String& name) {
+protocol::Response DOMEditor::RemoveAttribute(Element* element,
+                                              const String& name) {
   DummyExceptionStateForTesting exception_state;
   RemoveAttribute(element, name, exception_state);
   return ToResponse(exception_state);
 }
 
-Response DOMEditor::SetOuterHTML(Node* node,
-                                 const String& html,
-                                 Node** new_node) {
+protocol::Response DOMEditor::SetOuterHTML(Node* node,
+                                           const String& html,
+                                           Node** new_node) {
   DummyExceptionStateForTesting exception_state;
   SetOuterHTML(node, html, new_node, exception_state);
   return ToResponse(exception_state);
 }
 
-Response DOMEditor::SetNodeValue(Node* parent_node, const String& value) {
+protocol::Response DOMEditor::SetNodeValue(Node* parent_node,
+                                           const String& value) {
   DummyExceptionStateForTesting exception_state;
   SetNodeValue(parent_node, value, exception_state);
   return ToResponse(exception_state);

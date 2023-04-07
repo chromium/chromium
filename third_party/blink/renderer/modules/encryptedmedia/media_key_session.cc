@@ -38,6 +38,7 @@
 #include "third_party/blink/public/platform/web_encrypted_media_key_information.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
+#include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable_creation_key.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -403,7 +404,8 @@ MediaKeySession::MediaKeySession(ScriptState* script_state,
                                  MediaKeys* media_keys,
                                  WebEncryptedMediaSessionType session_type,
                                  const MediaKeysConfig& config)
-    : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
+    : ActiveScriptWrappable<MediaKeySession>({}),
+      ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
       async_event_queue_(
           MakeGarbageCollected<EventQueue>(GetExecutionContext(),
                                            TaskType::kMediaElementEvent)),

@@ -36,7 +36,8 @@ ResizeObserver* ResizeObserver::Create(LocalDOMWindow* window,
 
 ResizeObserver::ResizeObserver(V8ResizeObserverCallback* callback,
                                LocalDOMWindow* window)
-    : ExecutionContextClient(window),
+    : ActiveScriptWrappable<ResizeObserver>({}),
+      ExecutionContextClient(window),
       callback_(callback),
       skipped_observations_(false) {
   DCHECK(callback_);
@@ -47,7 +48,8 @@ ResizeObserver::ResizeObserver(V8ResizeObserverCallback* callback,
 }
 
 ResizeObserver::ResizeObserver(Delegate* delegate, LocalDOMWindow* window)
-    : ExecutionContextClient(window),
+    : ActiveScriptWrappable<ResizeObserver>({}),
+      ExecutionContextClient(window),
       delegate_(delegate),
       skipped_observations_(false) {
   DCHECK(delegate_);

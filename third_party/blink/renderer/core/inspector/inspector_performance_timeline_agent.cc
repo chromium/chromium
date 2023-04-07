@@ -113,8 +113,6 @@ BuildProtocolEvent(String frame_id,
 
 }  // namespace
 
-using protocol::Response;
-
 InspectorPerformanceTimelineAgent::InspectorPerformanceTimelineAgent(
     InspectedFrames* inspected_frames)
     : inspected_frames_(inspected_frames),
@@ -169,7 +167,8 @@ protocol::Response InspectorPerformanceTimelineAgent::enable(
         PerformanceEntry::ToEntryTypeEnum(type_atomic);
     if (type_enum == PerformanceEntry::EntryType::kInvalid ||
         (type_enum & kSupportedTypes) != type_enum) {
-      return Response::InvalidParams("Unknown or unsupported entry type");
+      return protocol::Response::InvalidParams(
+          "Unknown or unsupported entry type");
     }
 
     // Gather buffered entries for types that haven't been enabled previously
@@ -187,13 +186,13 @@ protocol::Response InspectorPerformanceTimelineAgent::enable(
   for (auto& event : buffered_events)
     GetFrontend()->timelineEventAdded(std::move(event));
 
-  return Response::Success();
+  return protocol::Response::Success();
 }
 
 protocol::Response InspectorPerformanceTimelineAgent::disable() {
   enabled_types_.Clear();
   instrumenting_agents_->RemoveInspectorPerformanceTimelineAgent(this);
-  return Response::Success();
+  return protocol::Response::Success();
 }
 
 bool InspectorPerformanceTimelineAgent::IsEnabled() const {

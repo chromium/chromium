@@ -75,6 +75,7 @@ PaymentResponse::PaymentResponse(
     PaymentStateResolver* payment_state_resolver,
     const String& request_id)
     : ExecutionContextClient(ExecutionContext::From(script_state)),
+      ActiveScriptWrappable<PaymentResponse>({}),
       request_id_(request_id),
       method_name_(response->method_name),
       shipping_address_(shipping_address),

@@ -110,6 +110,7 @@ DedicatedWorker::DedicatedWorker(
     base::FunctionRef<DedicatedWorkerMessagingProxy*(DedicatedWorker*)>
         context_proxy_factory)
     : AbstractWorker(context),
+      ActiveScriptWrappable<DedicatedWorker>({}),
       script_request_url_(script_request_url),
       options_(options),
       context_proxy_(context_proxy_factory(this)),

@@ -44,7 +44,6 @@
 
 namespace blink {
 
-using mojom::blink::PermissionStatus;
 using mojom::blink::PermissionService;
 
 // This class deals with all the Blob promises and executes the write
@@ -338,11 +337,12 @@ void ClipboardPromise::HandleWriteText(const String& data) {
                     WrapPersistent(this)));
 }
 
-void ClipboardPromise::HandleReadWithPermission(PermissionStatus status) {
+void ClipboardPromise::HandleReadWithPermission(
+    mojom::blink::PermissionStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!GetExecutionContext())
     return;
-  if (status != PermissionStatus::GRANTED) {
+  if (status != mojom::blink::PermissionStatus::GRANTED) {
     script_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotAllowedError, "Read permission denied."));
     return;
@@ -425,11 +425,12 @@ void ClipboardPromise::OnRead(Blob* blob) {
   ReadNextRepresentation();
 }
 
-void ClipboardPromise::HandleReadTextWithPermission(PermissionStatus status) {
+void ClipboardPromise::HandleReadTextWithPermission(
+    mojom::blink::PermissionStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!GetExecutionContext())
     return;
-  if (status != PermissionStatus::GRANTED) {
+  if (status != mojom::blink::PermissionStatus::GRANTED) {
     script_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotAllowedError, "Read permission denied."));
     return;
@@ -473,11 +474,12 @@ void ClipboardPromise::HandlePromiseBlobsWrite(
   WriteNextRepresentation();
 }
 
-void ClipboardPromise::HandleWriteWithPermission(PermissionStatus status) {
+void ClipboardPromise::HandleWriteWithPermission(
+    mojom::blink::PermissionStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!GetExecutionContext())
     return;
-  if (status != PermissionStatus::GRANTED) {
+  if (status != mojom::blink::PermissionStatus::GRANTED) {
     script_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotAllowedError, "Write permission denied."));
     return;
@@ -506,11 +508,12 @@ void ClipboardPromise::HandleWriteWithPermission(PermissionStatus status) {
       script_state_, ScriptPromise::All(script_state_, promise_list), this);
 }
 
-void ClipboardPromise::HandleWriteTextWithPermission(PermissionStatus status) {
+void ClipboardPromise::HandleWriteTextWithPermission(
+    mojom::blink::PermissionStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!GetExecutionContext())
     return;
-  if (status != PermissionStatus::GRANTED) {
+  if (status != mojom::blink::PermissionStatus::GRANTED) {
     script_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotAllowedError, "Write permission denied."));
     return;

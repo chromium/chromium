@@ -203,7 +203,8 @@ MediaRecorder::MediaRecorder(ExecutionContext* context,
                              MediaStream* stream,
                              const MediaRecorderOptions* options,
                              ExceptionState& exception_state)
-    : ExecutionContextLifecycleObserver(context),
+    : ActiveScriptWrappable<MediaRecorder>({}),
+      ExecutionContextLifecycleObserver(context),
       stream_(stream),
       mime_type_(options->mimeType()) {
   if (context->IsContextDestroyed()) {

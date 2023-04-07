@@ -66,7 +66,8 @@ void MojoWatcher::ContextDestroyed() {
 
 MojoWatcher::MojoWatcher(ExecutionContext* context,
                          V8MojoWatchCallback* callback)
-    : ExecutionContextLifecycleObserver(context),
+    : ActiveScriptWrappable<MojoWatcher>({}),
+      ExecutionContextLifecycleObserver(context),
       task_runner_(context->GetTaskRunner(TaskType::kInternalDefault)),
       callback_(callback) {}
 

@@ -76,7 +76,8 @@ ReadableStreamDefaultReader::ReadableStreamDefaultReader(
     ScriptState* script_state,
     ReadableStream* stream,
     ExceptionState& exception_state)
-    : ExecutionContextClient(ExecutionContext::From(script_state)) {
+    : ActiveScriptWrappable<ReadableStreamDefaultReader>({}),
+      ExecutionContextClient(ExecutionContext::From(script_state)) {
   // https://streams.spec.whatwg.org/#default-reader-constructor
   // 1. Perform ? SetUpReadableStreamDefaultReader(this, stream).
   SetUpDefaultReader(script_state, this, stream, exception_state);

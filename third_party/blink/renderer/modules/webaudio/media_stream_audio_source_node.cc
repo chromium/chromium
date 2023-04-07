@@ -41,6 +41,7 @@ MediaStreamAudioSourceNode::MediaStreamAudioSourceNode(
     MediaStreamTrack* audio_track,
     std::unique_ptr<AudioSourceProvider> audio_source_provider)
     : AudioNode(context),
+      ActiveScriptWrappable<MediaStreamAudioSourceNode>({}),
       audio_track_(audio_track),
       media_stream_(media_stream) {
   SetHandler(MediaStreamAudioSourceHandler::Create(

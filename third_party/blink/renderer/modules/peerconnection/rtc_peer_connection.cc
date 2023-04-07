@@ -583,7 +583,8 @@ RTCPeerConnection::RTCPeerConnection(
     bool encoded_insertable_streams,
     GoogMediaConstraints* media_constraints,
     ExceptionState& exception_state)
-    : ExecutionContextLifecycleObserver(context),
+    : ActiveScriptWrappable<RTCPeerConnection>({}),
+      ExecutionContextLifecycleObserver(context),
       pending_local_description_(nullptr),
       current_local_description_(nullptr),
       pending_remote_description_(nullptr),

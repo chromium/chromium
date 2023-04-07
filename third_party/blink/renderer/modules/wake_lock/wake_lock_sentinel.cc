@@ -16,7 +16,8 @@ namespace blink {
 WakeLockSentinel::WakeLockSentinel(ScriptState* script_state,
                                    V8WakeLockType::Enum type,
                                    WakeLockManager* manager)
-    : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
+    : ActiveScriptWrappable<WakeLockSentinel>({}),
+      ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
       manager_(manager),
       type_(type) {}
 

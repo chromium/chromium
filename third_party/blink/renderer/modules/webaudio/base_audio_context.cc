@@ -88,7 +88,8 @@ namespace blink {
 // Constructor for rendering to the audio hardware.
 BaseAudioContext::BaseAudioContext(Document* document,
                                    enum ContextType context_type)
-    : ExecutionContextLifecycleStateObserver(document->GetExecutionContext()),
+    : ActiveScriptWrappable<BaseAudioContext>({}),
+      ExecutionContextLifecycleStateObserver(document->GetExecutionContext()),
       InspectorHelperMixin(*AudioGraphTracer::FromDocument(*document),
                            String()),
       destination_node_(nullptr),

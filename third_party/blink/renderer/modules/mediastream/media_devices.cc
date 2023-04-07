@@ -365,7 +365,8 @@ MediaDevices* MediaDevices::mediaDevices(Navigator& navigator) {
 }
 
 MediaDevices::MediaDevices(Navigator& navigator)
-    : Supplement<Navigator>(navigator),
+    : ActiveScriptWrappable<MediaDevices>({}),
+      Supplement<Navigator>(navigator),
       ExecutionContextLifecycleObserver(navigator.DomWindow()),
       stopped_(false),
       dispatcher_host_(navigator.GetExecutionContext()),

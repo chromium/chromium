@@ -199,6 +199,7 @@ void ServiceWorker::ContextDestroyed() {
 ServiceWorker::ServiceWorker(ExecutionContext* execution_context,
                              WebServiceWorkerObjectInfo info)
     : AbstractWorker(execution_context),
+      ActiveScriptWrappable<ServiceWorker>({}),
       url_(info.url),
       state_(info.state),
       host_(execution_context),

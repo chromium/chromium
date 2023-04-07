@@ -30,6 +30,7 @@
 
 #include "base/feature_list.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable_creation_key.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event_queue.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -86,7 +87,8 @@ IDBTransaction::IDBTransaction(
     mojom::IDBTransactionMode mode,
     mojom::IDBTransactionDurability durability,
     IDBDatabase* db)
-    : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
+    : ActiveScriptWrappable<IDBTransaction>({}),
+      ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
       transaction_backend_(std::move(transaction_backend)),
       id_(id),
       database_(db),
@@ -129,7 +131,8 @@ IDBTransaction::IDBTransaction(
     IDBDatabase* db,
     IDBOpenDBRequest* open_db_request,
     const IDBDatabaseMetadata& old_metadata)
-    : ExecutionContextLifecycleObserver(execution_context),
+    : ActiveScriptWrappable<IDBTransaction>({}),
+      ExecutionContextLifecycleObserver(execution_context),
       transaction_backend_(std::move(transaction_backend)),
       id_(id),
       database_(db),
