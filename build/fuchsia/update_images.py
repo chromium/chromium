@@ -215,7 +215,6 @@ def main():
   parser.add_argument(
       '--allow-override',
       default=True,
-      action=argparse.BooleanOptionalAction,
       type=bool,
       help='Whether sdk_override.txt can be used for fetching the image, if '
       'it exists.')
