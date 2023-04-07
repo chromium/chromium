@@ -26,6 +26,8 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
 
   mixer[kColorBadgeBackground] = {kColorSysTonalContainer};
   mixer[kColorBadgeForeground] = {kColorSysOnTonalContainer};
+  mixer[kColorBadgeInCocoaMenuBackground] = {kColorSysPrimary};
+  mixer[kColorBadgeInCocoaMenuForeground] = {kColorSysOnPrimary};
   mixer[kColorButtonBackground] = {kColorSysSurface};
   mixer[kColorButtonBackgroundPressed] =
       GetResultingPaintColor({kColorSysStatePressed}, {kColorButtonBackground});

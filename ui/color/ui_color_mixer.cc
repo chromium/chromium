@@ -31,6 +31,8 @@ void AddUiColorMixer(ColorProvider* provider,
                       color_utils::kMinimumVisibleContrastRatio);
   mixer[kColorBadgeForeground] =
       GetColorWithMaxContrast(kColorButtonBackgroundProminent);
+  mixer[kColorBadgeInCocoaMenuBackground] = {kColorBadgeBackground};
+  mixer[kColorBadgeInCocoaMenuForeground] = {kColorBadgeForeground};
   mixer[kColorBubbleBackground] = {kColorPrimaryBackground};
   mixer[kColorBubbleBorder] = {kColorMidground};
   mixer[kColorBubbleBorderShadowLarge] = {SetAlpha(kColorShadowBase, 0x1A)};
