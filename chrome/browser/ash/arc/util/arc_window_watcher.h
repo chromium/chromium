@@ -31,6 +31,13 @@ class ArcWindowWatcher : public aura::EnvObserver {
     virtual void OnArcWindowCountChanged(uint32_t count) = 0;
   };
 
+  class ArcWindowDisplayObserver : public base::CheckedObserver {
+   public:
+    // Notifies that a new window is display. This is guaranteed to happen
+    // after the count is updated.
+    virtual void OnArcWindowDisplayed(const std::string& pkg_name) = 0;
+  };
+
   // Returns the single ArcWindowWatcher instance.
   static ArcWindowWatcher* instance() { return instance_; }
 
@@ -48,10 +55,17 @@ class ArcWindowWatcher : public aura::EnvObserver {
 
   void AddObserver(ArcWindowCountObserver* observer);
   void RemoveObserver(ArcWindowCountObserver* observer);
-  bool HasObservers() const;
+
+  // Manage the list of arc-window-display observers.
+  void AddObserver(ArcWindowDisplayObserver* observer);
+  void RemoveObserver(ArcWindowDisplayObserver* observer);
 
   // Notifies observers of a change in window count
   void BroadcastArcWindowCount(uint32_t count);
+
+  // Notifies observers that a window got a package name, i.e.,
+  // it was displayed by Android.
+  void BroadcastArcWindowDisplay(const std::string& pkg_name);
 
   // Nudging from trackers to maintain internal collection.
   void OnArcWindowAdded();
@@ -60,6 +74,7 @@ class ArcWindowWatcher : public aura::EnvObserver {
 
  private:
   base::ObserverList<ArcWindowCountObserver> arc_window_count_observers_;
+  base::ObserverList<ArcWindowDisplayObserver> arc_window_display_observers_;
 
   // Some are arc windows, some are unknown.
   TrackerList trackers_;

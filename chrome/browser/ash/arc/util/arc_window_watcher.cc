@@ -44,6 +44,19 @@ class Tracker : public aura::WindowObserver {
 
   ~Tracker() override { window_->RemoveObserver(this); }
 
+  void OnPackageNameChanged() {
+    if (display_reported_) {
+      // Must not do this more than once
+      return;
+    }
+    const auto* pkg_name = arc_window_->GetProperty(ash::kArcPackageNameKey);
+    if (!pkg_name || pkg_name->empty()) {
+      return;
+    }
+    display_reported_ = true;
+    ash::ArcWindowWatcher::instance()->BroadcastArcWindowDisplay(*pkg_name);
+  }
+
   void MaybeTagArcWindow() {
     if (!ash::IsArcWindow(window_)) {
       return;
@@ -63,6 +76,9 @@ class Tracker : public aura::WindowObserver {
                                const void* key,
                                intptr_t old) override {
     if (arc_window_) {
+      if (key == ash::kArcPackageNameKey) {
+        OnPackageNameChanged();
+      }
       return;
     }
 
@@ -82,6 +98,7 @@ class Tracker : public aura::WindowObserver {
   aura::Window* window_;
   aura::Window* arc_window_ =
       nullptr;  // set to window_ when we know it is ARC.
+  bool display_reported_ = false;
 };
 
 }  // namespace
@@ -169,13 +186,24 @@ void ArcWindowWatcher::RemoveObserver(ArcWindowCountObserver* observer) {
   arc_window_count_observers_.RemoveObserver(observer);
 }
 
-bool ArcWindowWatcher::HasObservers() const {
-  return !arc_window_count_observers_.empty();
-}
-
 void ArcWindowWatcher::BroadcastArcWindowCount(uint32_t count) {
   for (auto& observer : arc_window_count_observers_) {
     observer.OnArcWindowCountChanged(count);
+  }
+}
+
+// Manage the list of arc-window-display observers.
+void ArcWindowWatcher::AddObserver(ArcWindowDisplayObserver* observer) {
+  arc_window_display_observers_.AddObserver(observer);
+}
+
+void ArcWindowWatcher::RemoveObserver(ArcWindowDisplayObserver* observer) {
+  arc_window_display_observers_.RemoveObserver(observer);
+}
+
+void ArcWindowWatcher::BroadcastArcWindowDisplay(const std::string& pkg_name) {
+  for (auto& observer : arc_window_display_observers_) {
+    observer.OnArcWindowDisplayed(pkg_name);
   }
 }
 

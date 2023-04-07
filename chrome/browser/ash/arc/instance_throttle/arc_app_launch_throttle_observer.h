@@ -9,8 +9,10 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
+#include "chrome/browser/ash/arc/util/arc_window_watcher.h"
 #include "chrome/browser/ash/throttle_observer.h"
 
 namespace content {
@@ -21,9 +23,11 @@ namespace arc {
 
 // This class observes ARC app launches and sets its state to active while an
 // app is being launched.
-class ArcAppLaunchThrottleObserver : public ash::ThrottleObserver,
-                                     public ArcAppListPrefs::Observer,
-                                     public AppLaunchObserver {
+class ArcAppLaunchThrottleObserver
+    : public ash::ThrottleObserver,
+      public ArcAppListPrefs::Observer,
+      public ash::ArcWindowWatcher::ArcWindowDisplayObserver,
+      public AppLaunchObserver {
  public:
   ArcAppLaunchThrottleObserver();
 
@@ -48,10 +52,21 @@ class ArcAppLaunchThrottleObserver : public ash::ThrottleObserver,
                      const std::string& intent,
                      int32_t session_id) override;
 
+  // ash::ArcWindowWatcher::ArcWindowDisplayObserver
+  void OnArcWindowDisplayed(const std::string& package_name) override;
+
  private:
   void OnLaunchedOrRequestExpired(const std::string& name);
 
   std::set<std::string> current_requests_;
+
+  base::ScopedObservation<ash::ArcWindowWatcher,
+                          ash::ArcWindowWatcher::ArcWindowDisplayObserver>
+      window_display_observation_{this};
+
+  base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>
+      task_creation_observation_{this};
+
   // Must go last.
   base::WeakPtrFactory<ArcAppLaunchThrottleObserver> weak_ptr_factory_{this};
 };
