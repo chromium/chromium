@@ -286,6 +286,37 @@ TEST_F(CalendarMonthViewTest, TodayInMonth) {
   EXPECT_EQ(3, bottom / (bottom - top));
 }
 
+// Regression test for b/276840405.
+// Test the `CalendarMonthView` with time zone Central European Summer Time
+// (Oslo) on a DST starting month.
+TEST_F(CalendarMonthViewTest, OsloTimeDSTMonth) {
+  // Create a monthview based on Apr,1st 2023. DST starts from 02:00 on Mar
+  // 26th in 2023 with Central European Summer Time (Oslo).
+  //
+  // 26, 27, 28, 29, 30, 31, 1
+  //  2,  3,  4,  5,  6,  7,  8
+  //  9, 10, 11, 12, 13, 14, 15
+  // 16, 17, 18, 19, 20, 21, 22
+  // 23, 24, 25, 26, 27, 28, 29
+  // 30,  1,  2,  3,  4,  5,  6
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("1 Apr 2023 10:00 GMT", &date));
+
+  // Sets the timezone to "Oslo";
+  ash::system::ScopedTimezoneSettings timezone_settings(u"Europe/Oslo");
+  CreateMonthView(date);
+
+  // Check some dates in this month view.
+  EXPECT_EQ(
+      u"26",
+      static_cast<views::LabelButton*>(month_view()->children()[0])->GetText());
+  EXPECT_EQ(u"25",
+            static_cast<views::LabelButton*>(month_view()->children()[30])
+                ->GetText());
+  EXPECT_EQ(u"1", static_cast<views::LabelButton*>(month_view()->children()[36])
+                      ->GetText());
+}
+
 class CalendarMonthViewFetchTest : public AshTestBase {
  public:
   CalendarMonthViewFetchTest()
@@ -344,15 +375,17 @@ class CalendarMonthViewFetchTest : public AshTestBase {
   int EventsNumberOfDay(const char* day, SingleDayEventList* events) {
     base::Time day_base = calendar_test_utils::GetTimeFromString(day);
 
-    if (events)
+    if (events) {
       events->clear();
+    }
 
     return calendar_model_->EventsNumberOfDay(day_base, events);
   }
 
   int EventsNumberOfDay(base::Time day, SingleDayEventList* events) {
-    if (events)
+    if (events) {
       events->clear();
+    }
 
     return calendar_model_->EventsNumberOfDay(day, events);
   }
