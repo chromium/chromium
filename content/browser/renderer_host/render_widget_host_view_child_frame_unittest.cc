@@ -33,6 +33,7 @@
 #include "content/public/test/fake_frame_widget.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_web_contents_factory.h"
 #include "content/test/mock_render_widget_host_delegate.h"
 #include "content/test/mock_widget.h"
 #include "content/test/test_render_view_host.h"
@@ -106,33 +107,26 @@ class MockFrameConnector : public CrossProcessFrameConnector {
   bool can_bubble_ = true;
 };
 
-class RenderWidgetHostViewChildFrameTest : public testing::Test {
+class RenderWidgetHostViewChildFrameTest
+    : public RenderViewHostImplTestHarness {
  public:
   RenderWidgetHostViewChildFrameTest() {}
 
   void SetUp() override {
-    browser_context_ = std::make_unique<TestBrowserContext>();
+    RenderViewHostImplTestHarness::SetUp();
 
-// ImageTransportFactory doesn't exist on Android.
-#if !BUILDFLAG(IS_ANDROID)
-    ImageTransportFactory::SetFactory(
-        std::make_unique<TestImageTransportFactory>());
-#endif
-
-    process_host_ =
-        std::make_unique<MockRenderProcessHost>(browser_context_.get());
+    process_host_ = std::make_unique<MockRenderProcessHost>(browser_context());
     site_instance_group_ =
         base::WrapRefCounted(SiteInstanceGroup::CreateForTesting(
-            browser_context_.get(), process_host_.get()));
+            browser_context(), process_host_.get()));
     int32_t routing_id = process_host_->GetNextRoutingID();
     sink_ = &process_host_->sink();
 
-    web_contents_ = TestWebContents::Create(
-        browser_context_.get(),
-        SiteInstanceImpl::Create(browser_context_.get()));
-
+    // Create a RenderWidgetHostImpl which will be associated with an
+    // RenderWidgetHostViewChildFrame, to simulate what would be done for an
+    // OOPIF.
     widget_host_ = RenderWidgetHostImpl::Create(
-        /*frame_tree=*/&web_contents_->GetPrimaryFrameTree(), &delegate_,
+        /*frame_tree=*/&contents()->GetPrimaryFrameTree(), &delegate_,
         site_instance_group_->GetSafeRef(), routing_id,
         /*hidden=*/false, /*renderer_initiated_creation=*/false,
         std::make_unique<FrameTokenMessageQueue>());
@@ -165,21 +159,13 @@ class RenderWidgetHostViewChildFrameTest : public testing::Test {
     if (view_)
       view_->Destroy();
     widget_host_.reset();
-    web_contents_.reset();
     site_instance_group_.reset();
     process_host_->Cleanup();
     delete test_frame_connector_;
 
     process_host_.reset();
 
-    browser_context_.reset();
-
-    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
-        FROM_HERE, browser_context_.release());
-    base::RunLoop().RunUntilIdle();
-#if !BUILDFLAG(IS_ANDROID)
-    ImageTransportFactory::Terminate();
-#endif
+    RenderViewHostImplTestHarness::TearDown();
   }
 
   viz::SurfaceId GetSurfaceId() const {
@@ -191,12 +177,8 @@ class RenderWidgetHostViewChildFrameTest : public testing::Test {
   }
 
  protected:
-  BrowserTaskEnvironment task_environment_;
-
-  std::unique_ptr<BrowserContext> browser_context_;
   std::unique_ptr<MockRenderProcessHost> process_host_;
   scoped_refptr<SiteInstanceGroup> site_instance_group_;
-  std::unique_ptr<WebContentsImpl> web_contents_;
   raw_ptr<IPC::TestSink> sink_ = nullptr;
   MockRenderWidgetHostDelegate delegate_;
   MockWidget widget_;
