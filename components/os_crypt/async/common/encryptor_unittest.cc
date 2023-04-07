@@ -11,9 +11,11 @@
 #include "base/test/gtest_util.h"
 #include "build/build_config.h"
 #include "components/os_crypt/async/common/encryptor.h"
+#include "components/os_crypt/async/common/encryptor.mojom.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "crypto/random.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -122,7 +124,7 @@ class EncryptorTestBase : public ::testing::Test {
   static Encryptor::Key GenerateRandomAES256TestKey() {
     return Encryptor::Key(
         GenerateRandomTestKey(Encryptor::Key::kAES256GCMKeySize),
-        Encryptor::Key::Algorithm::kAES256GCM);
+        mojom::Algorithm::kAES256GCM);
   }
 };
 
@@ -459,9 +461,8 @@ TEST_F(EncryptorTestBase, AlgorithmDecryptCompatibility) {
   // "v10" is the OSCrypt tag for data encrypted with Algorithm::kAES256GCM. See
   // `kEncryptionVersionPrefix` in os_crypt_win.cc.
   constexpr char kEncryptionVersionPrefix[] = "v10";
-  key_ring.emplace(
-      kEncryptionVersionPrefix,
-      Encryptor::Key(random_key, Encryptor::Key::Algorithm::kAES256GCM));
+  key_ring.emplace(kEncryptionVersionPrefix,
+                   Encryptor::Key(random_key, mojom::Algorithm::kAES256GCM));
 
   // Construct an Encryptor with the same key that was used by OSCrypt to
   // encrypt the data.
@@ -488,9 +489,8 @@ TEST_F(EncryptorTestBase, AlgorithmEncryptCompatibility) {
   // "v10" is the OSCrypt tag for data encrypted with Algorithm::kAES256GCM. See
   // `kEncryptionVersionPrefix` in os_crypt_win.cc.
   constexpr char kEncryptionVersionPrefix[] = "v10";
-  key_ring.emplace(
-      kEncryptionVersionPrefix,
-      Encryptor::Key(random_key, Encryptor::Key::Algorithm::kAES256GCM));
+  key_ring.emplace(kEncryptionVersionPrefix,
+                   Encryptor::Key(random_key, mojom::Algorithm::kAES256GCM));
 
   // Construct an Encryptor with this key. The encryption provider tag will be
   // "v10" to match OSCrypt's encryption. Encrypt the data.
@@ -521,5 +521,64 @@ TEST_F(EncryptorTestBase, AlgorithmEncryptCompatibility) {
 }
 
 #endif  // BUILDFLAG(IS_WIN)
+
+class EncryptorTraitsTest : public EncryptorTestBase {};
+
+TEST_F(EncryptorTraitsTest, TraitsRoundTrip) {
+  {
+    std::vector<uint8_t> test_key1(Encryptor::Key::kAES256GCMKeySize);
+    crypto::RandBytes(test_key1);
+
+    std::vector<uint8_t> test_key2(Encryptor::Key::kAES256GCMKeySize);
+    crypto::RandBytes(test_key2);
+
+    Encryptor::KeyRing key_ring;
+    key_ring.emplace("TEST1",
+                     Encryptor::Key(test_key1, mojom::Algorithm::kAES256GCM));
+    key_ring.emplace("TEST2",
+                     Encryptor::Key(test_key2, mojom::Algorithm::kAES256GCM));
+
+    Encryptor encryptor = GetEncryptor(std::move(key_ring), "TEST1");
+
+    Encryptor roundtripped;
+
+    EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Encryptor>(
+        encryptor, roundtripped));
+
+    EXPECT_EQ(roundtripped.provider_for_encryption_, "TEST1");
+    EXPECT_EQ(roundtripped.keys_.size(), 2U);
+
+    EXPECT_EQ(roundtripped.keys_.at("TEST1"),
+              Encryptor::Key(test_key1, mojom::Algorithm::kAES256GCM));
+    EXPECT_EQ(roundtripped.keys_.at("TEST2"),
+              Encryptor::Key(test_key2, mojom::Algorithm::kAES256GCM));
+  }
+
+  {
+    Encryptor encryptor = GetEncryptor();
+    Encryptor roundtripped;
+
+    EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Encryptor>(
+        encryptor, roundtripped));
+    EXPECT_TRUE(roundtripped.keys_.empty());
+    EXPECT_TRUE(roundtripped.provider_for_encryption_.empty());
+  }
+
+  {
+    Encryptor::KeyRing key_ring;
+    key_ring.emplace("TEST", GenerateRandomAES256TestKey());
+
+    Encryptor encryptor = GetEncryptor(std::move(key_ring), "TEST");
+
+    // Reach into the encryptor and change the key length to an invalid length
+    // for the kAES256GCM algorithm.
+    encryptor.keys_.at("TEST").key_.resize(8u);
+    Encryptor roundtripped;
+
+    // Mojo will fail gracefully to serialize this bad Encryptor.
+    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<mojom::Encryptor>(
+        encryptor, roundtripped));
+  }
+}
 
 }  // namespace os_crypt_async
