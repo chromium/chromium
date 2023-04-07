@@ -45,7 +45,6 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewAshImpl
 
   MediaNotificationViewAshImpl(MediaNotificationContainer* container,
                                base::WeakPtr<MediaNotificationItem> item,
-                               std::unique_ptr<views::View> dismiss_button,
                                NotificationTheme theme,
                                MediaDisplayPage media_display_page);
   MediaNotificationViewAshImpl(const MediaNotificationViewAshImpl&) = delete;
