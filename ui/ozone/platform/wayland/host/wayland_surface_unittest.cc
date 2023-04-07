@@ -54,8 +54,12 @@ INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
 INSTANTIATE_TEST_SUITE_P(
     XdgVersionStableTestWithAuraShell,
     WaylandSurfaceTest,
-    ::testing::Values(wl::ServerConfig{
-        .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}));
+    ::testing::Values(
+        wl::ServerConfig{
+            .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled},
+        wl::ServerConfig{
+            .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled,
+            .use_aura_output_manager = true}));
 
 }  // namespace
 }  // namespace ui

@@ -47,7 +47,6 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_spanner_placeholder.h"
-#include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
@@ -89,8 +88,7 @@ LayoutBlockFlow::~LayoutBlockFlow() = default;
 LayoutBlockFlow* LayoutBlockFlow::CreateAnonymous(
     Document* document,
     scoped_refptr<const ComputedStyle> style) {
-  LayoutBlockFlow* layout_block_flow =
-      LayoutObjectFactory::CreateBlockFlow(*document, *style);
+  auto* layout_block_flow = MakeGarbageCollected<LayoutNGBlockFlow>(nullptr);
   layout_block_flow->SetDocumentForAnonymous(document);
   layout_block_flow->SetStyle(style);
   return layout_block_flow;
@@ -185,28 +183,6 @@ bool LayoutBlockFlow::CanContainFirstFormattedLine() const {
   // https://drafts.csswg.org/css-text-3/#text-indent-property
   return !IsAnonymousBlock() || !PreviousSibling() || IsFlexItemIncludingNG() ||
          IsGridItemIncludingNG();
-}
-
-LayoutUnit LayoutBlockFlow::FirstLineBoxBaseline() const {
-  NOT_DESTROYED();
-  if (!ChildrenInline())
-    return LayoutBlock::FirstLineBoxBaseline();
-  if (const absl::optional<LayoutUnit> baseline =
-          FirstLineBoxBaselineOverride())
-    return *baseline;
-  return EmptyLineBaseline(IsHorizontalWritingMode() ? kHorizontalLine
-                                                     : kVerticalLine);
-}
-
-LayoutUnit LayoutBlockFlow::InlineBlockBaseline(
-    LineDirectionMode line_direction) const {
-  NOT_DESTROYED();
-  if (!ChildrenInline())
-    return LayoutBlock::InlineBlockBaseline(line_direction);
-  if (const absl::optional<LayoutUnit> baseline =
-          InlineBlockBaselineOverride(line_direction))
-    return *baseline;
-  return EmptyLineBaseline(line_direction);
 }
 
 void LayoutBlockFlow::WillBeDestroyed() {

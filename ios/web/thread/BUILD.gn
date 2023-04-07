@@ -16,8 +16,5 @@ source_set("thread") {
     deps += [ "//ios/web/content:threads" ]
   }
 
-  sources = [
-    "web_task_traits.cc",
-    "web_thread.cc",
-  ]
+  sources = [ "web_thread.cc" ]
 }

@@ -245,42 +245,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Clients.Ads.AdDensity.MaxPercentByArea" units="%"
-    expires_after="2021-10-04">
-  <owner>justinmron@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <summary>
-    The page's maximum ad density by area over its lifecycle as a percent from
-    0-100. The density measurement is throttled in page load metrics propagation
-    from renderer to browser and in the ads page load metrics observer, this may
-    lead to inaccurate maximum density. Recorded at the time a page is
-    destroyed.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Clients.Ads.AdDensity.MaxPercentByHeight" units="%"
-    expires_after="2021-10-04">
-  <owner>justinmron@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <summary>
-    The page's maximum ad density by height over its lifecycle as a percent from
-    0-100. The density measurement is throttled in page load metrics propagation
-    from renderer to browser and in the ads page load metrics observer, this may
-    lead to inaccurate maximum density. Recorded at the time a page is
-    destroyed.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Clients.Ads.AdDensity.Recorded" enum="Boolean"
-    expires_after="2021-03-28">
-  <owner>justinmron@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <summary>
-    Whether the ad density was recorded on the page for both density by area and
-    density by height. Recorded at the time a page is destroyed.
-  </summary>
-</histogram>
-
 <histogram name="PageLoad.Clients.Ads.AllPages.NonAdNetworkBytes" units="KB"
     expires_after="2023-09-03">
   <owner>alexmt@chromium.org</owner>
@@ -317,22 +281,6 @@ chromium-metrics-reviews@google.com.
     load. Only recorded for pages with non-zero total bytes, including those
     without an ad frame and pages with no ad resources. Recorded when the page
     is destroyed.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Clients.Ads.FrameCounts.IgnoredByRestrictedAdTagging"
-    enum="BooleanIgnored" expires_after="2021-08-09">
-  <owner>johnidel@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <summary>
-    Records whether a frame that was created by ad script was ignored by
-    restricted AdTagging heuristics. This can occur if the frame was navigated
-    same-domain to the top-level page and did not have a matching blocklist
-    rule, or if the frame was navigated to an allowlist rule. If a frame is
-    initially ignored then later considered an ad, this is recorded twice for
-    that frame. For ignored frames, this is recorded at the time they would have
-    been initially tracked for metrics. For non-ignored frames, this is recorded
-    when the frame is destroyed, or when the page is destroyed/navigated.
   </summary>
 </histogram>
 
@@ -1306,6 +1254,43 @@ chromium-metrics-reviews@google.com.
     The time from navigation start to the first contentful paint of third-party
     (in respect to scheme://eTLD+1) frames on pages. Note that this can be
     significantly delayed due to lazy loading.
+
+    Note also that all of the PageLoad.Clients.ThirdParty.Frames metrics will
+    only be recorded for the first kMaxRecordedFrames (50) active iframe
+    RenderFrameHosts (at any given time).
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.ThirdParty.Frames.Opaque.NavigationToFirstContentfulPaint"
+    units="ms" expires_after="2023-09-03">
+  <owner>awillia@chromium.org</owner>
+  <owner>djmitche@chromium.org</owner>
+  <summary>
+    The time from navigation start to the first contentful paint of third-party
+    opaque origin frames on pages. Note that this metric is only collected when
+    the top-level origin is not opaque. Also, this metric can be significantly
+    delayed due to lazy loading.
+
+    Note also that all of the PageLoad.Clients.ThirdParty.Frames metrics will
+    only be recorded for the first kMaxRecordedFrames (50) active iframe
+    RenderFrameHosts (at any given time).
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.ThirdParty.Frames.Opaque.NavigationToLargestContentfulPaint"
+    units="ms" expires_after="2023-09-03">
+  <owner>awillia@chromium.org</owner>
+  <owner>djmitche@chromium.org</owner>
+  <summary>
+    The time from navigation start to the largest contentful paint of
+    third-party opaque origin frames on pages. Note that this metric is only
+    collected when the top-level origin is not opaque.
+
+    Note also that all of the PageLoad.Clients.ThirdParty.Frames metrics will
+    only be recorded for the first kMaxRecordedFrames (50) active iframe
+    RenderFrameHosts (at any given time).
   </summary>
 </histogram>
 

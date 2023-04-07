@@ -185,32 +185,11 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideInternalsPageBrowserTest,
   EXPECT_TRUE(logger->ShouldEnableDebugLogs());
 }
 
-IN_PROC_BROWSER_TEST_F(OptimizationGuideInternalsPageBrowserTest,
-                       DebugLogEnabledOnCommandLineSwitch) {
-  auto* logger =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
-          ->GetOptimizationGuideLogger();
-  EXPECT_FALSE(logger->ShouldEnableDebugLogs());
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      optimization_guide::switches::kDebugLoggingEnabled);
-  // With the command-line switch, debug logs should get enabled.
-  EXPECT_TRUE(logger->ShouldEnableDebugLogs());
-}
-
 // Verifies log message is added when internals page is open.
 IN_PROC_BROWSER_TEST_F(OptimizationGuideInternalsPageBrowserTest,
                        InternalsPageOpen) {
-  auto* logger =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
-          ->GetOptimizationGuideLogger();
-  EXPECT_FALSE(logger->ShouldEnableDebugLogs());
-
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      optimization_guide::switches::kDebugLoggingEnabled);
-
-  EXPECT_TRUE(logger->ShouldEnableDebugLogs());
-
   NavigateToInternalsPage();
+
   content::WebContents* internals_page_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -239,16 +218,6 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideInternalsPageBrowserTest,
 // Verifies downloaded models are added when #models page is open.
 IN_PROC_BROWSER_TEST_F(OptimizationGuideInternalsPageBrowserTest,
                        InternalsModelsPageOpen) {
-  auto* logger =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
-          ->GetOptimizationGuideLogger();
-  EXPECT_FALSE(logger->ShouldEnableDebugLogs());
-
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      optimization_guide::switches::kDebugLoggingEnabled);
-
-  EXPECT_TRUE(logger->ShouldEnableDebugLogs());
-
   base::FilePath src_dir;
   base::PathService::Get(chrome::DIR_TEST_DATA, &src_dir);
 
@@ -263,6 +232,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideInternalsPageBrowserTest,
       }));
 
   NavigateToInternalsPage();
+
   TriggerModelDownloadForOptimizationTarget(
       optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
 

@@ -843,7 +843,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="306573536155379004">Juego iniciado.</translation>
 <translation id="3068991664510324412">Juegos de ordenador y videojuegos</translation>
 <translation id="3080254622891793721">Gráfico</translation>
-<translation id="3081538120861307764">Para medir el rendimiento de un anuncio, se comparten algunos tipos de datos entre sitios, como la hora del día en la que se te mostró un anuncio.</translation>
+<translation id="3081538120861307764">Para medir el rendimiento de un anuncio, se comparten algunos tipos de datos limitados entre sitios, como la hora del día en la que se te mostró un anuncio.</translation>
 <translation id="3082007635241601060">Permite que Google use tus carritos para encontrar descuentos personalizados cuando estén disponibles</translation>
 <translation id="3086579638707268289">Se está vigilando tu actividad en la Web</translation>
 <translation id="3087734570205094154">Inferior</translation>
@@ -1223,7 +1223,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4023431997072828269">Se está usando una conexión no segura para enviar este formulario, por lo que otros usuarios podrán ver tu información.</translation>
 <translation id="4025913568718019429">Botón Gestionar configuración de privacidad de cuenta de Google: pulsa Intro para ir a la configuración de privacidad de tu cuenta de Google</translation>
 <translation id="4030383055268325496">&amp;Deshacer acción de añadir</translation>
-<translation id="4030545038933060179">Cuando la opción está activada, una lista de temas basada en tu historial de navegación reciente se muestra aquí.</translation>
+<translation id="4030545038933060179">Cuando la opción está activada, aquí se muestra una lista de temas basada en tu historial de navegación reciente.</translation>
 <translation id="4031179711345676612">Micrófono permitido</translation>
 <translation id="4040350669425716613">Universidades</translation>
 <translation id="4047351652147966654">18x24 pulgadas</translation>
@@ -1233,7 +1233,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4063924980214801036">Usa el desbloqueo del dispositivo para confirmar las tarjetas más rápido</translation>
 <translation id="4067098466788473230">Subvenciones y becas para estudiantes</translation>
 <translation id="4067947977115446013">Añade una dirección válida</translation>
-<translation id="4070790659619547722">Con la medición de anuncios, se comparten algunos tipos de datos entre sitios para medir el rendimiento de sus anuncios, como la hora del día en la que se te mostró un anuncio.</translation>
+<translation id="4070790659619547722">Con la medición de anuncios, se comparten algunos tipos de datos limitados entre sitios para medir el rendimiento de sus anuncios, como la hora del día en la que se te mostró un anuncio.</translation>
 <translation id="4072193657607981494">Cargando políticas</translation>
 <translation id="4072486802667267160">Se ha producido un error al procesar el pedido. Vuelve a intentarlo.</translation>
 <translation id="4073376909608563327">No se ha podido usar el desbloqueo del dispositivo</translation>
@@ -1340,6 +1340,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4274173425554582601">Informática y electrónica</translation>
 <translation id="4275830172053184480">Reiniciar tu dispositivo</translation>
 <translation id="4277028893293644418">Cambiar contraseña</translation>
+<translation id="4277937682389409325">Dirección local</translation>
 <translation id="4278390842282768270">Permitido</translation>
 <translation id="4281998142035485137">{0,plural, =1{¿Abrir archivo confidencial?}other{¿Abrir archivos confidenciales?}}</translation>
 <translation id="4282346679996504092">Las alertas de este producto se han desactivado y se ha quitado el marcador</translation>
@@ -2781,7 +2782,7 @@ Más información:
 <translation id="7773005668374414287">Mismo orden boca arriba</translation>
 <translation id="7785790577395078482">este tablet</translation>
 <translation id="7786368602962652765">Un campo obligatorio está vacío. Rellénalo antes de guardar.</translation>
-<translation id="7790488044432570133">Los sitios que visites pueden solicitar a Chrome información que les ayude a medir el rendimiento de sus anuncios. Chrome permite que los sitios recojan algunos tipos de datos, como la hora del día en la que se te mostró un anuncio.</translation>
+<translation id="7790488044432570133">Los sitios que visites pueden solicitar a Chrome información que les ayude a medir el rendimiento de sus anuncios. Chrome permite que los sitios recojan algunos tipos de datos limitados, como la hora del día en la que se te mostró un anuncio.</translation>
 <translation id="7791011319128895129">Sin publicar</translation>
 <translation id="7791196057686275387">Envolver</translation>
 <translation id="7791543448312431591">Añadir</translation>

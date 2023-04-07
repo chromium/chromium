@@ -11,6 +11,7 @@
 
 #include "base/lazy_instance.h"
 #include "base/unguessable_token.h"
+#include "base/uuid.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/frame_type.h"
 #include "content/public/browser/global_routing_id.h"
@@ -121,6 +122,10 @@ class ExtensionApiFrameIdMap {
   // Get the extension API document ID for the document of |navigation_handle|.
   static DocumentId GetDocumentId(content::NavigationHandle* navigation_handle);
 
+  // Gets the context ID (as used in `runtime.getContexts()`) for the given
+  // `render_frame_host`).
+  static base::Uuid GetContextId(content::RenderFrameHost* render_frame_host);
+
   // Get the extension API frame type for the current document of |rfh|.
   static api::extension_types::FrameType GetFrameType(
       content::RenderFrameHost* rfh);
@@ -171,12 +176,14 @@ class ExtensionApiFrameIdMap {
     ~ExtensionDocumentUserData() override;
 
     const DocumentId& document_id() const { return document_id_; }
+    const base::GUID& context_id() const { return context_id_; }
 
    private:
     friend content::DocumentUserData<ExtensionDocumentUserData>;
     DOCUMENT_USER_DATA_KEY_DECL();
 
     DocumentId document_id_;
+    base::Uuid context_id_;
   };
 
   ExtensionApiFrameIdMap();

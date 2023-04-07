@@ -105,8 +105,9 @@ class OpenWithBrowserBrowserTest
   bool startup_browser() const { return GetParam().startup_browser; }
 
   Profile* profile() const {
-    if (browser())
+    if (browser()) {
       return browser()->profile();
+    }
     return ProfileManager::GetActiveUserProfile();
   }
 

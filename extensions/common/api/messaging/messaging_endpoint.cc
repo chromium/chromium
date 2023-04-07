@@ -36,8 +36,10 @@ const char* ConvertMessagingSourceTypeToString(
   switch (type) {
     case MessagingEndpoint::Type::kExtension:
       return "Extension";
-    case MessagingEndpoint::Type::kTab:
-      return "Tab";
+    case MessagingEndpoint::Type::kWebPage:
+      return "WebPage";
+    case MessagingEndpoint::Type::kContentScript:
+      return "ContentScript";
     case MessagingEndpoint::Type::kNativeApp:
       return "NativeApp";
   }
@@ -49,7 +51,8 @@ base::debug::ScopedCrashKeyString CreateExtensionIdOrNativeAppNameScopedKey(
     const MessagingEndpoint& endpoint) {
   switch (endpoint.type) {
     case MessagingEndpoint::Type::kExtension:
-    case MessagingEndpoint::Type::kTab:
+    case MessagingEndpoint::Type::kContentScript:
+    case MessagingEndpoint::Type::kWebPage:
       return base::debug::ScopedCrashKeyString(
           GetMessagingSourceExtensionIdCrashKey(),
           endpoint.extension_id.value_or("<base::nullopt>"));
@@ -80,7 +83,7 @@ MessagingEndpoint MessagingEndpoint::ForExtension(ExtensionId extension_id) {
 MessagingEndpoint MessagingEndpoint::ForContentScript(
     ExtensionId extension_id) {
   MessagingEndpoint messaging_endpoint;
-  messaging_endpoint.type = MessagingEndpoint::Type::kTab;
+  messaging_endpoint.type = MessagingEndpoint::Type::kContentScript;
   messaging_endpoint.extension_id = std::move(extension_id);
   return messaging_endpoint;
 }
@@ -88,7 +91,7 @@ MessagingEndpoint MessagingEndpoint::ForContentScript(
 // static
 MessagingEndpoint MessagingEndpoint::ForWebPage() {
   MessagingEndpoint messaging_endpoint;
-  messaging_endpoint.type = MessagingEndpoint::Type::kTab;
+  messaging_endpoint.type = MessagingEndpoint::Type::kWebPage;
   return messaging_endpoint;
 }
 

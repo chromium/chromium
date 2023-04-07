@@ -92,6 +92,7 @@ class PaymentAppContextImpl;
 class PrefetchURLLoaderService;
 class PrivateAggregationManager;
 class PushMessagingContext;
+class ResourceCacheManager;
 class QuotaContext;
 class SharedStorageWorkletHostManager;
 class SharedWorkerServiceImpl;
@@ -273,6 +274,7 @@ class CONTENT_EXPORT StoragePartitionImpl
 
   storage::SharedStorageManager* GetSharedStorageManager() override;
   PrivateAggregationManager* GetPrivateAggregationManager();
+  ResourceCacheManager* GetResourceCacheManager();
 
   // blink::mojom::DomStorage interface.
   void OpenLocalStorage(
@@ -681,6 +683,8 @@ class CONTENT_EXPORT StoragePartitionImpl
       shared_storage_worklet_host_manager_;
 
   std::unique_ptr<PrivateAggregationManager> private_aggregation_manager_;
+
+  std::unique_ptr<ResourceCacheManager> resource_cache_manager_;
 
   // ReceiverSet for DomStorage, using the
   // ChildProcessSecurityPolicyImpl::Handle as the binding context type. The

@@ -110,10 +110,12 @@ export {TetherConnectionDialogElement} from './internet_page/tether_connection_d
 export {KeyboardShortcutBanner} from './keyboard_shortcut_banner/keyboard_shortcut_banner.js';
 export {SettingsAudioAndCaptionsPageElement} from './os_a11y_page/audio_and_captions_page.js';
 export {SettingsKeyboardAndTextInputPageElement} from './os_a11y_page/keyboard_and_text_input_page.js';
+export {SettingsManageA11yPageElement} from './os_a11y_page/manage_a11y_page.js';
 export {SettingsTextToSpeechPageElement} from './os_a11y_page/text_to_speech_page.js';
 export {SettingsTtsSubpageElement} from './os_a11y_page/tts_subpage.js';
 export {SettingsGoogleDriveSubpageElement} from './os_files_page/google_drive_subpage.js';
 export {SettingsOfficePageElement} from './os_files_page/office_page.js';
+export {OsSettingsFilesPageElement} from './os_files_page/os_files_page.js';
 export {LanguagesBrowserProxyImpl} from './os_languages_page/languages_browser_proxy.js';
 export {InputsShortcutReminderState, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from './os_languages_page/languages_metrics_proxy.js';
 export {OsSettingsSmartInputsPageElement} from './os_languages_page/smart_inputs_page.js';

@@ -132,7 +132,7 @@ class DeviceDescriptionService {
   void OnParsedDeviceDescription(
       const DialDeviceData& device_data,
       const ParsedDialDeviceDescription& device_description,
-      SafeDialDeviceDescriptionParser::ParsingError parsing_error);
+      SafeDialDeviceDescriptionParser::ParsingResult parsing_result);
 
   // Remove expired cache entries from |description_map_|.
   void CleanUpCacheEntries();

@@ -96,6 +96,7 @@ DOMFileSystem::DOMFileSystem(ExecutionContext* context,
                              mojom::blink::FileSystemType type,
                              const KURL& root_url)
     : DOMFileSystemBase(context, name, type, root_url),
+      ActiveScriptWrappable<DOMFileSystem>({}),
       ExecutionContextClient(context),
       number_of_pending_callbacks_(0),
       root_entry_(

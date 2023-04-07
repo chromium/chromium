@@ -76,8 +76,6 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
      IDS_PASSWORD_MANAGER_DESTINATION_DROPDOWN_ACCESSIBLE_NAME},
     {"addPasswordTitle", IDS_PASSWORD_MANAGER_UI_ADD_PASSWORD},
     {"addShortcut", IDS_PASSWORD_MANAGER_UI_ADD_SHORTCUT_TITLE},
-    {"addShortcutDescription",
-     IDS_PASSWORD_MANAGER_UI_ADD_SHORTCUT_DESCRIPTION},
     {"alreadyChangedPasswordLink",
      IDS_PASSWORD_MANAGER_UI_ALREADY_CHANGED_PASSWORD},
     {"appsLabel", IDS_PASSWORD_MANAGER_UI_APPS_LABEL},
@@ -303,6 +301,13 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
   source->AddString("trustedVaultOptInUrl", chrome::kSyncTrustedVaultOptInURL);
   source->AddString("trustedVaultLearnMoreUrl",
                     chrome::kSyncTrustedVaultLearnMoreURL);
+
+  source->AddString(
+      "addShortcutDescription",
+      l10n_util::GetStringFUTF16(
+          IDS_PASSWORD_MANAGER_UI_ADD_SHORTCUT_DESCRIPTION,
+          l10n_util::GetStringUTF16(
+              IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE)));
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(

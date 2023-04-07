@@ -455,6 +455,7 @@ Os tokens de estado particular melhoram a privacidade na Web e não podem ser us
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /> sobre o conteúdo sugerido</translation>
 <translation id="3495219333887281978">Página inferior de login aberta na metade da altura.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="350276055892098337">Ordenar por mais antigo</translation>
 <translation id="3507132249039706973">A Proteção padrão está ativa</translation>
 <translation id="3509330069915219067">Off-line. O Chrome não pode verificar se há atualizações.</translation>
 <translation id="3513704683820682405">Realidade aumentada</translation>
@@ -556,7 +557,7 @@ Os tokens de estado particular melhoram a privacidade na Web e não podem ser us
 <translation id="4096227151372679484">Fluxo para adicionar aos favoritos aberto na metade da altura</translation>
 <translation id="4101475238162928417">Sincronize para acessar seus favoritos, senhas e muito mais em outros dispositivos</translation>
 <translation id="410351446219883937">Reprodução automática</translation>
-<translation id="4106587138345390261">O Chrome está explorando novos recursos que permitem que os sites ofereçam a mesma experiência de navegação atual usando menos informações pessoais</translation>
+<translation id="4106587138345390261">O Chrome está explorando novos recursos para permitir que os sites ofereçam a mesma experiência de navegação atual usando menos informações pessoais</translation>
 <translation id="4108314971463891922">Seguir</translation>
 <translation id="4108998448622696017">Detecta e avisa você sobre eventos perigosos quando eles acontecerem.</translation>
 <translation id="4116038641877404294">Faça o download de páginas e acesse off-line</translation>
@@ -575,6 +576,7 @@ Os tokens de estado particular melhoram a privacidade na Web e não podem ser us
 <translation id="4177222230309051052">Acesse todos os seus favoritos</translation>
 <translation id="4177501066905053472">Temas de anúncios</translation>
 <translation id="4181841719683918333">Idiomas</translation>
+<translation id="4188221736490993796">Ordenar de Z a A</translation>
 <translation id="4195643157523330669">Abrir em uma nova guia</translation>
 <translation id="4196597275619698563">Criar card</translation>
 <translation id="4198423547019359126">Não há locais de download disponíveis</translation>
@@ -641,6 +643,7 @@ Os tokens de estado particular melhoram a privacidade na Web e não podem ser us
 <translation id="4565377596337484307">Ocultar senha</translation>
 <translation id="4572422548854449519">Fazer login em conta gerenciada</translation>
 <translation id="4576892426230499203">Tente outra opção de verificação</translation>
+<translation id="4577115723294378384">Ordenar de A a Z</translation>
 <translation id="4578289292431526768">Vamos lá</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minuto atrás}one{# minutos atrás}other{# minutos atrás}}</translation>
 <translation id="4587589328781138893">Sites</translation>
@@ -664,6 +667,7 @@ Os tokens de estado particular melhoram a privacidade na Web e não podem ser us
 <translation id="4689792375321623175">Pesquisar imagem com o Google <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4699172675775169585">Imagens e arquivos armazenados em cache</translation>
+<translation id="4710167854527459075">Ordenar por mais recente</translation>
 <translation id="4719927025381752090">Oferecer para traduzir</translation>
 <translation id="4720023427747327413">Abrir no <ph name="PRODUCT_NAME" /></translation>
 <translation id="47217992755561375">Veja seus principais sites</translation>
@@ -833,6 +837,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5561162485081632007">Detecta e avisa você sobre eventos perigosos quando eles acontecem</translation>
 <translation id="5561549206367097665">Aguardando a rede…</translation>
 <translation id="5568069709869097550">Não consigo acessar</translation>
+<translation id="557018954714092179">Criar pasta</translation>
 <translation id="5578795271662203820">Pesquisar imagem no <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Nas <ph name="BEGIN_LINK1" />configurações<ph name="END_LINK1" />, é possível escolher a qualquer momento o que é sincronizado.</translation>
 <translation id="5590372121997663538">Lembrar deste computador</translation>
@@ -937,6 +942,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="6138832295072039549">Mude as configurações do site aqui</translation>
 <translation id="6140709049082532940">Proteção reforçada:</translation>
 <translation id="6140912465461743537">País/região</translation>
+<translation id="6148266338772765473">Excluir link</translation>
 <translation id="6150320133806434356">Favorito salvo</translation>
 <translation id="6154478581116148741">Ative o bloqueio da tela em Configurações para exportar suas senhas deste dispositivo</translation>
 <translation id="6159729262978459665">Limpa o histórico de todos os dispositivos sincronizados.</translation>
@@ -1028,6 +1034,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6590680911007613645">A senha que você está salvando precisa ser igual à usada em <ph name="SITE" /></translation>
 <translation id="6593061639179217415">Para computador</translation>
 <translation id="6594121454516132231">Veja como o Chrome pretende proteger você contra mecanismos de rastreamento entre sites ao mesmo tempo em que preserva uma Internet livre</translation>
+<translation id="6594347733515723558">Ordenar e mostrar opções</translation>
 <translation id="6595046016124923392">As imagens são enviadas para o Google e, assim, podemos melhorar as descrições para você.</translation>
 <translation id="6600954340915313787">Copiado no Chrome</translation>
 <translation id="661266467055912436">Melhora a segurança para você e para todos na Web.</translation>

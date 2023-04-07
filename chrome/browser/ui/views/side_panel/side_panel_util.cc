@@ -8,6 +8,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/strcat.h"
+#include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -92,7 +93,7 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
   }
 
   // Create Search Companion coordinator.
-  if (base::FeatureList::IsEnabled(features::kSidePanelCompanion) &&
+  if (base::FeatureList::IsEnabled(companion::features::kSidePanelCompanion) &&
       SearchCompanionSidePanelCoordinator::IsSupported(
           browser->profile(), /*include_dsp_check=*/false)) {
     SearchCompanionSidePanelCoordinator::GetOrCreateForBrowser(browser);

@@ -122,13 +122,14 @@ gfx::Rect ApplyTransformAtOrigin(gfx::Rect bounds, gfx::Transform transform) {
 
 }  // namespace
 
-class PagedAppsGridView::BackgroundCardLayer : public ui::Layer,
+class PagedAppsGridView::BackgroundCardLayer : public ui::LayerOwner,
                                                public ui::LayerDelegate {
  public:
   explicit BackgroundCardLayer(PagedAppsGridView* paged_apps_grid_view)
-      : Layer(ui::LAYER_TEXTURED), paged_apps_grid_view_(paged_apps_grid_view) {
-    SetFillsBoundsOpaquely(false);
-    set_delegate(this);
+      : LayerOwner(std::make_unique<ui::Layer>(ui::LAYER_TEXTURED)),
+        paged_apps_grid_view_(paged_apps_grid_view) {
+    layer()->SetFillsBoundsOpaquely(false);
+    layer()->set_delegate(this);
   }
 
   BackgroundCardLayer(const BackgroundCardLayer&) = delete;
@@ -137,15 +138,16 @@ class PagedAppsGridView::BackgroundCardLayer : public ui::Layer,
 
   void SetIsActivePage(bool is_active_page) {
     is_active_page_ = is_active_page;
-    SchedulePaint(parent()->bounds());
+    layer()->SchedulePaint(gfx::Rect(layer()->size()));
   }
 
  private:
   // ui::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override {
-    ui::PaintRecorder recorder(context, size());
+    const gfx::Size size = layer()->size();
+    ui::PaintRecorder recorder(context, size);
     gfx::Canvas* canvas = recorder.canvas();
-    gfx::RectF card_size((gfx::SizeF(size())));
+    gfx::RectF card_size((gfx::SizeF(size)));
 
     // Draw a solid rounded rect as the background.
     cc::PaintFlags flags;
@@ -292,7 +294,7 @@ void PagedAppsGridView::Layout() {
     // Make sure that the background cards render behind everything
     // else in the items container.
     for (size_t i = 0; i < background_cards_.size(); ++i) {
-      ui::Layer* const background_card = background_cards_[i].get();
+      ui::Layer* const background_card = background_cards_[i]->layer();
       background_card->SetBounds(BackgroundCardBounds(i));
       items_container()->layer()->StackAtBottom(background_card);
     }
@@ -310,7 +312,7 @@ void PagedAppsGridView::OnThemeChanged() {
   AppsGridView::OnThemeChanged();
 
   for (auto& card : background_cards_)
-    card.get()->SchedulePaint(card->parent()->bounds());
+    card->layer()->SchedulePaint(gfx::Rect(card->layer()->size()));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -644,7 +646,7 @@ gfx::Rect PagedAppsGridView::GetBackgroundCardBoundsForTesting(
     size_t card_index) {
   DCHECK_LT(card_index, background_cards_.size());
   gfx::Rect bounds_in_items_container = items_container()->GetMirroredRect(
-      background_cards_[card_index]->bounds());
+      background_cards_[card_index]->layer()->bounds());
   gfx::Point origin_in_apps_grid = bounds_in_items_container.origin();
   views::View::ConvertPointToTarget(items_container(), this,
                                     &origin_in_apps_grid);
@@ -654,7 +656,7 @@ gfx::Rect PagedAppsGridView::GetBackgroundCardBoundsForTesting(
 ui::Layer* PagedAppsGridView::GetBackgroundCardLayerForTesting(
     size_t card_index) const {
   DCHECK_LT(card_index, background_cards_.size());
-  return background_cards_[card_index].get();
+  return background_cards_[card_index]->layer();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -692,7 +694,7 @@ int PagedAppsGridView::GetPageFlipTargetForDrag(const gfx::Point& drag_point) {
   }
 
   gfx::RectF background_card_rect_in_grid(
-      background_cards_[GetSelectedPage()]->bounds());
+      background_cards_[GetSelectedPage()]->layer()->bounds());
   View::ConvertRectToTarget(items_container(), this,
                             &background_card_rect_in_grid);
 
@@ -813,7 +815,7 @@ void PagedAppsGridView::AnimateCardifiedState() {
   std::vector<std::unique_ptr<ui::AnimationThroughputReporter>> reporters;
   for (auto& background_card : background_cards_) {
     reporters.push_back(std::make_unique<ui::AnimationThroughputReporter>(
-        background_card->GetAnimator(),
+        background_card->layer()->GetAnimator(),
         metrics_util::ForSmoothness(base::BindRepeating(
             &ReportCardifiedSmoothness, cardified_state_))));
   }
@@ -853,23 +855,21 @@ void PagedAppsGridView::AnimateCardifiedState() {
   }
 
   for (size_t i = 0; i < background_cards_.size(); i++) {
-    auto& background_card = background_cards_[i];
+    ui::Layer* const background_card = background_cards_[i]->layer();
     // Reposition card bounds to compensate for the translation offset.
     gfx::Rect background_bounds = background_card->bounds();
     background_bounds.Offset(translate_offset);
     background_card->SetBounds(background_bounds);
     if (cardified_state_) {
       const bool is_active_page =
-          background_cards_[pagination_model_.selected_page()] ==
-          background_card;
-      background_card->SetIsActivePage(is_active_page);
+          static_cast<int>(i) == pagination_model_.selected_page();
+      background_cards_[i]->SetIsActivePage(is_active_page);
     } else {
-      animations.GetCurrentSequence().SetOpacity(background_card.get(),
+      animations.GetCurrentSequence().SetOpacity(background_card,
                                                  kBackgroundCardOpacityHide);
     }
-    animations.GetCurrentSequence().SetBounds(background_card.get(),
-                                              BackgroundCardBounds(i),
-                                              kCardifiedStateTweenType);
+    animations.GetCurrentSequence().SetBounds(
+        background_card, BackgroundCardBounds(i), kCardifiedStateTweenType);
   }
   highlighted_page_ = pagination_model_.selected_page();
 }
@@ -1014,30 +1014,32 @@ gfx::Rect PagedAppsGridView::BackgroundCardBounds(int new_page_index) {
 
 void PagedAppsGridView::AppendBackgroundCard() {
   background_cards_.push_back(std::make_unique<BackgroundCardLayer>(this));
-  ui::Layer* current_layer = background_cards_.back().get();
+  ui::Layer* current_layer = background_cards_.back()->layer();
   current_layer->SetBounds(BackgroundCardBounds(background_cards_.size() - 1));
   current_layer->SetVisible(true);
   items_container()->layer()->Add(current_layer);
 }
 
 void PagedAppsGridView::RemoveBackgroundCard() {
-  items_container()->layer()->Remove(background_cards_.back().get());
+  items_container()->layer()->Remove(background_cards_.back()->layer());
   background_cards_.pop_back();
 }
 
 void PagedAppsGridView::MaskContainerToBackgroundBounds() {
   DCHECK(!background_cards_.empty());
+  const gfx::Rect background_card_bounds =
+      background_cards_[0]->layer()->bounds();
   // Mask apps grid container layer to the background card width. Optionally
   // also include extra height to ensure the top gradient mask is shown as well.
   layer()->SetClipRect(
-      gfx::Rect(background_cards_[0]->bounds().x(), -margin_for_gradient_mask_,
-                background_cards_[0]->bounds().width(),
+      gfx::Rect(background_card_bounds.x(), -margin_for_gradient_mask_,
+                background_card_bounds.width(),
                 layer()->bounds().height() + margin_for_gradient_mask_));
 }
 
 void PagedAppsGridView::RemoveAllBackgroundCards() {
   for (auto& card : background_cards_)
-    items_container()->layer()->Remove(card.get());
+    items_container()->layer()->Remove(card->layer());
   background_cards_.clear();
 }
 
@@ -1212,7 +1214,7 @@ int PagedAppsGridView::GetTotalTopPaddingOnFirstPage() const {
 
 void PagedAppsGridView::StackCardsAtBottom() {
   for (size_t i = 0; i < background_cards_.size(); ++i) {
-    items_container()->layer()->StackAtBottom(background_cards_[i].get());
+    items_container()->layer()->StackAtBottom(background_cards_[i]->layer());
   }
 }
 

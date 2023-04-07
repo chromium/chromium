@@ -24,22 +24,15 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
-import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link FoldTransitionController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class FoldTransitionControllerUnitTest {
-    @Mock
-    private ActivityTabProvider mActivityTabProvider;
-    @Mock
-    private Tab mActivityTab;
     @Mock
     private ToolbarManager mToolbarManager;
     @Mock
@@ -51,8 +44,6 @@ public class FoldTransitionControllerUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        doReturn(mActivityTab).when(mActivityTabProvider).get();
-        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.HTTP_URL)).when(mActivityTab).getUrl();
         doNothing().when(mToolbarManager).setUrlBarFocusAndText(anyBoolean(), anyInt(), any());
         doNothing().when(mLayoutManager).addObserver(any());
         doReturn(true).when(mLayoutManager).isLayoutStartingToShow(LayoutType.BROWSING);
@@ -64,8 +55,8 @@ public class FoldTransitionControllerUnitTest {
         doReturn(true).when(mToolbarManager).isUrlBarFocused();
         doReturn(text).when(mToolbarManager).getUrlBarTextWithoutAutocomplete();
         Bundle savedInstanceState = new Bundle();
-        FoldTransitionController.saveUiState(savedInstanceState, mToolbarManager,
-                mActivityTabProvider, /* didChangeTabletMode= */ true);
+        FoldTransitionController.saveUiState(
+                savedInstanceState, mToolbarManager, /* didChangeTabletMode= */ true);
 
         Assert.assertTrue("Saved instance state should contain URL_BAR_FOCUS_STATE.",
                 savedInstanceState.containsKey(FoldTransitionController.URL_BAR_FOCUS_STATE));
@@ -81,8 +72,8 @@ public class FoldTransitionControllerUnitTest {
     public void testSaveUiState_urlBarNotFocused() {
         doReturn(false).when(mToolbarManager).isUrlBarFocused();
         Bundle savedInstanceState = new Bundle();
-        FoldTransitionController.saveUiState(savedInstanceState, mToolbarManager,
-                mActivityTabProvider, /* didChangeTabletMode= */ true);
+        FoldTransitionController.saveUiState(
+                savedInstanceState, mToolbarManager, /* didChangeTabletMode= */ true);
 
         Assert.assertFalse("Saved instance state should not contain URL_BAR_FOCUS_STATE.",
                 savedInstanceState.containsKey(FoldTransitionController.URL_BAR_FOCUS_STATE));

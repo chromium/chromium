@@ -26,7 +26,8 @@ class MODULES_EXPORT H264Encoder final : public VideoTrackRecorder::Encoder {
   };
   typedef std::unique_ptr<ISVCEncoder, ISVCEncoderDeleter> ScopedISVCEncoderPtr;
 
-  H264Encoder(const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
+  H264Encoder(scoped_refptr<base::SequencedTaskRunner> encoding_task_runner,
+              const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
               VideoTrackRecorder::CodecProfile codec_profile,
               uint32_t bits_per_second);
   ~H264Encoder() override;

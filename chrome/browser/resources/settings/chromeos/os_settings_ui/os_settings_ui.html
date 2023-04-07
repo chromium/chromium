@@ -119,14 +119,10 @@
     <div slot="body">
       <template is="dom-if" id="drawerTemplate">
         <os-settings-menu
-            show-apps="[[showApps_]]"
-            show-plugin-vm="[[showPluginVm_]]"
-            show-reset="[[showReset_]]"
-            show-startup="[[showStartup_]]"
-            have-play-store-app="[[havePlayStoreApp_]]"
-            on-iron-activate="onIronActivate_"
+            on-iron-activate="onSectionSelect_"
             advanced-opened="{{advancedOpenedInMenu_}}"
-            show-kerberos-section="[[showKerberosSection_]]">
+            show-kerberos-section="[[showKerberosSection_]]"
+            show-reset="[[showReset_]]">
         </os-settings-menu>
       </template>
     </div>
@@ -135,13 +131,11 @@
 <div id="container" class="no-outline">
   <div id="left">
     <template is="dom-if" if="[[showNavMenu_]]">
-      <os-settings-menu page-visibility="[[pageVisibility_]]"
-          show-reset="[[showReset_]]"
-          show-startup="[[showStartup_]]"
-          have-play-store-app="[[havePlayStoreApp_]]"
-          on-iron-activate="onIronActivate_"
+      <os-settings-menu
+          on-iron-activate="onSectionSelect_"
           advanced-opened="{{advancedOpenedInMenu_}}"
-          show-kerberos-section="[[showKerberosSection_]]">
+          show-kerberos-section="[[showKerberosSection_]]"
+          show-reset="[[showReset_]]">
       </os-settings-menu>
     </template>
   </div>

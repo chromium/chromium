@@ -70,8 +70,10 @@
 #include "chrome/browser/ash/multidevice_setup/auth_token_validator_factory.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_service_factory.h"
 #include "chrome/browser/ash/multidevice_setup/oobe_completion_tracker_factory.h"
+#include "chrome/browser/ash/nearby/nearby_dependencies_provider.h"
 #include "chrome/browser/ash/nearby/nearby_dependencies_provider_factory.h"
 #include "chrome/browser/ash/nearby/nearby_process_manager_factory.h"
+#include "chrome/browser/ash/nearby/presence/nearby_presence_service_factory.h"
 #include "chrome/browser/ash/nearby/quick_start_connectivity_service_factory.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/phonehub/phone_hub_manager_factory.h"
@@ -199,8 +201,10 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   LoginScreenExtensionsLifetimeManagerFactory::GetInstance();
   LoginScreenExtensionsContentScriptManagerFactory::GetInstance();
   login::SigninPartitionManager::Factory::GetInstance();
+  nearby::NearbyDependenciesProvider::EnsureFactoryBuilt();
   nearby::NearbyDependenciesProviderFactory::GetInstance();
   nearby::NearbyProcessManagerFactory::GetInstance();
+  ash::nearby::presence::NearbyPresenceServiceFactory::GetInstance();
   OwnerSettingsServiceAshFactory::GetInstance();
   phonehub::PhoneHubManagerFactory::GetInstance();
   platform_keys::KeyPermissionsServiceFactory::GetInstance();

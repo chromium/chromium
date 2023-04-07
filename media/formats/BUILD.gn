@@ -176,6 +176,12 @@ source_set("formats") {
       "mp2t/ts_packet.cc",
       "mp2t/ts_packet.h",
       "mp2t/ts_section.h",
+      "mp2t/ts_section_cat.cc",
+      "mp2t/ts_section_cat.h",
+      "mp2t/ts_section_cets_ecm.cc",
+      "mp2t/ts_section_cets_ecm.h",
+      "mp2t/ts_section_cets_pssh.cc",
+      "mp2t/ts_section_cets_pssh.h",
       "mp2t/ts_section_pat.cc",
       "mp2t/ts_section_pat.h",
       "mp2t/ts_section_pes.cc",
@@ -184,18 +190,6 @@ source_set("formats") {
       "mp2t/ts_section_pmt.h",
       "mp2t/ts_section_psi.cc",
       "mp2t/ts_section_psi.h",
-    ]
-  }
-
-  if (proprietary_codecs && enable_mse_mpeg2ts_stream_parser &&
-      enable_hls_sample_aes) {
-    sources += [
-      "mp2t/ts_section_cat.cc",
-      "mp2t/ts_section_cat.h",
-      "mp2t/ts_section_cets_ecm.cc",
-      "mp2t/ts_section_cets_ecm.h",
-      "mp2t/ts_section_cets_pssh.cc",
-      "mp2t/ts_section_cets_pssh.h",
     ]
   }
 

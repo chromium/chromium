@@ -20,7 +20,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/timer/elapsed_timer.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/content_hash_fetcher.h"
 #include "extensions/browser/content_hash_reader.h"

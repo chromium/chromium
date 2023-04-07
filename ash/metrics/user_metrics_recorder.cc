@@ -14,6 +14,7 @@
 #include "ash/metrics/desktop_task_switch_metric_recorder.h"
 #include "ash/metrics/pointer_metrics_recorder.h"
 #include "ash/metrics/stylus_metrics_recorder.h"
+#include "ash/metrics/touch_usage_metrics_recorder.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/shelf_item.h"
 #include "ash/public/cpp/shelf_model.h"
@@ -109,6 +110,7 @@ void UserMetricsRecorder::OnShellInitialized() {
         std::make_unique<DesktopTaskSwitchMetricRecorder>();
   }
   pointer_metrics_recorder_ = std::make_unique<PointerMetricsRecorder>();
+  touch_usage_metrics_recorder_ = std::make_unique<TouchUsageMetricsRecorder>();
   stylus_metrics_recorder_ = std::make_unique<StylusMetricsRecorder>();
 }
 
@@ -121,10 +123,12 @@ void UserMetricsRecorder::OnShellShuttingDown() {
   }
   desktop_task_switch_metric_recorder_.reset();
 
-  // To clean up pointer_metrics_recorder_ and stylus_metrics_recorder_
-  // properly, a valid shell instance is required, so explicitly delete them
-  // before the shell instance becomes invalid.
+  // To clean up `pointer_metrics_recorder_`, `touch_usage_metrics_recorder_`
+  // and `stylus_metrics_recorder_` properly, a valid shell instance is
+  // required, so explicitly delete them before the shell instance becomes
+  // invalid.
   pointer_metrics_recorder_.reset();
+  touch_usage_metrics_recorder_.reset();
   stylus_metrics_recorder_.reset();
 }
 

@@ -10,6 +10,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "components/account_id/account_id.h"
+#include "components/user_manager/known_user.h"
 #include "ui/chromeos/events/mojom/modifier_key.mojom.h"
 
 namespace ash {
@@ -94,5 +96,17 @@ template EXPORT_TEMPLATE_DEFINE(ASH_EXPORT) bool ShouldPersistSetting(
     int default_value,
     bool force_persistence,
     const base::Value::Dict* existing_settings_dict);
+
+const base::Value::Dict* GetLoginScreenSettingsDict(
+    PrefService* local_state,
+    AccountId account_id,
+    const std::string& pref_name) {
+  const auto* dict_value =
+      user_manager::KnownUser(local_state).FindPath(account_id, pref_name);
+  if (!dict_value || !dict_value->is_dict()) {
+    return nullptr;
+  }
+  return &dict_value->GetDict();
+}
 
 }  // namespace ash

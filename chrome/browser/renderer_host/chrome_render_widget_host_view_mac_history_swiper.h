@@ -63,6 +63,9 @@ enum RecognitionState {
 // Navigate in direction.
 - (void)navigateInDirection:(history_swiper::NavigationDirection)direction
                    onWindow:(NSWindow*)window;
+// Provide a hint that a back navigation is likely to occur due to a backwards
+// swipe.
+- (void)backwardsSwipeNavigationLikely;
 
 @end
 

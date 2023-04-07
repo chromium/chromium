@@ -1272,12 +1272,7 @@ void WebFrameWidgetImpl::SendScrollEndEventFromImplSide(
     // VisualViewport currently handles scroll but not scrollends. If that
     // changes, we should consider firing scrollend at the visualviewport
     // instead of simply bailing.
-    Node* document_node = nullptr;
-    if (View()->MainFrameImpl() &&
-        View()->MainFrameImpl()->GetFrame()->GetDocument()) {
-      document_node = View()->MainFrameImpl()->GetFrame()->GetDocument();
-    }
-    if (affects_outer_viewport || target_node != document_node) {
+    if (affects_outer_viewport || !target_node->IsDocumentNode()) {
       target_node->GetDocument().EnqueueScrollEndEventForNode(target_node);
     }
   }

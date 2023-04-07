@@ -87,7 +87,13 @@ FirewallHole::~FirewallHole() {
 
   chromeos::PermissionBrokerClient* client =
       chromeos::PermissionBrokerClient::Get();
-  DCHECK(client) << "Could not get permission broker client.";
+  // See crbug.com/1429368: sometimes the shutdown routine for
+  // PermissionBrokerClient takes place before firewall holes are released.
+  if (!client) {
+    LOG(ERROR) << "Could not get permission broker client.";
+    return;
+  }
+
   switch (type_) {
     case PortType::TCP:
       client->ReleaseTcpPort(port_, interface_,

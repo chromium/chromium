@@ -455,6 +455,7 @@ Privātā stāvokļa pilnvaras uzlabo konfidencialitāti tīmeklī. Tās nevar i
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" /> par ieteikto saturu.</translation>
 <translation id="3495219333887281978">Pierakstīšanās ekrāna apakšdaļas lapa ir atvērta pusekrāna augstumā.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="350276055892098337">Kārtot pēc vecākās</translation>
 <translation id="3507132249039706973">Ir ieslēgta standarta aizsardzība.</translation>
 <translation id="3509330069915219067">Bezsaistē. Pārlūkprogrammā Chrome nevar pārbaudīt atjauninājumu pieejamību.</translation>
 <translation id="3513704683820682405">Papildinātā realitāte</translation>
@@ -575,6 +576,7 @@ Privātā stāvokļa pilnvaras uzlabo konfidencialitāti tīmeklī. Tās nevar i
 <translation id="4177222230309051052">Iegūstiet visas savas grāmatzīmes</translation>
 <translation id="4177501066905053472">Reklāmu tēmas</translation>
 <translation id="4181841719683918333">Valodas</translation>
+<translation id="4188221736490993796">Kārtot no Z līdz A</translation>
 <translation id="4195643157523330669">Atvērt jaunā cilnē</translation>
 <translation id="4196597275619698563">Izveidot kartīti</translation>
 <translation id="4198423547019359126">Nav pieejamu lejupielādes atrašanās vietu.</translation>
@@ -640,6 +642,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="4565377596337484307">Slēpt paroli</translation>
 <translation id="4572422548854449519">Pierakstīšanās pārvaldītā kontā</translation>
 <translation id="4576892426230499203">Izmēģiniet citu verifikācijas opciju</translation>
+<translation id="4577115723294378384">Kārtot no A līdz Z</translation>
 <translation id="4578289292431526768">Sākt</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{pirms # minūtes}zero{pirms # minūtēm}one{pirms # minūtes}other{pirms # minūtēm}}</translation>
 <translation id="4587589328781138893">Vietnes</translation>
@@ -663,6 +666,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="4689792375321623175">Meklēt attēlu ar Google <ph name="BEGIN_NEW" />Jaunums<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}zero{<ph name="SHIPPING_OPTION_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4699172675775169585">Kešatmiņā ievietotie attēli un faili</translation>
+<translation id="4710167854527459075">Kārtot pēc jaunākās</translation>
 <translation id="4719927025381752090">Piedāvāt tulkot</translation>
 <translation id="4720023427747327413">Atvērt, izmantojot <ph name="PRODUCT_NAME" /></translation>
 <translation id="47217992755561375">Skatīt vietnes, ko apmeklējat visbiežāk</translation>
@@ -832,6 +836,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="5561162485081632007">Kad atgadās bīstami notikumi, tie tiek noteikti un jūs saņemat brīdinājumus.</translation>
 <translation id="5561549206367097665">Tiek gaidīts savienojums ar tīklu…</translation>
 <translation id="5568069709869097550">Nevarat pieteikties</translation>
+<translation id="557018954714092179">Izveidot jaunu mapi</translation>
 <translation id="5578795271662203820">Meklēt šo attēlu ar <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Jūs jebkurā laikā <ph name="BEGIN_LINK1" />iestatījumos<ph name="END_LINK1" /> varat izvēlēties, ko sinhronizēt.</translation>
 <translation id="5590372121997663538">Atcerēties šo datoru</translation>
@@ -936,6 +941,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="6138832295072039549">Šeit varat mainīt vietnes iestatījumus.</translation>
 <translation id="6140709049082532940">Uzlabota aizsardzība:</translation>
 <translation id="6140912465461743537">Valsts/reģions</translation>
+<translation id="6148266338772765473">Bez saites</translation>
 <translation id="6150320133806434356">Grāmatzīme ir saglabāta</translation>
 <translation id="6154478581116148741">Lai eksportētu paroles no šīs ierīces, sadaļā “Iestatījumi” ieslēdziet ekrāna bloķēšanu.</translation>
 <translation id="6159729262978459665">Vēsture tiks notīrīta no visām sinhronizētajām ierīcēm.</translation>
@@ -1027,6 +1033,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6590680911007613645">Parolei, kuru vēlaties saglabāt, ir jāatbilst vietnē <ph name="SITE" /> izmantotajai parolei</translation>
 <translation id="6593061639179217415">Vietne datoriem</translation>
 <translation id="6594121454516132231">Skatiet, kā pārlūkā Chrome tiek plānots aizsargāt jūs no starpvietņu izsekošanas, vienlaikus saglabājot atvērtā tīmekļa darbību.</translation>
+<translation id="6594347733515723558">Kārtošana un skatīšana</translation>
 <translation id="6595046016124923392">Attēli tiek sūtīti uz Google serveriem, lai uzlabotu aprakstus.</translation>
 <translation id="6600954340915313787">Nokopēta pārlūkā Chrome.</translation>
 <translation id="661266467055912436">Šis režīms efektīvāk aizsargā gan jūs, gan visus citus tīmekļa lietotājus.</translation>

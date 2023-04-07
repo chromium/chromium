@@ -490,7 +490,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTestForPasswordManagerPage,
     run_loop.Run();
   }
 
-  EXPECT_EQ(AppBannerManager::InstallableWebAppCheckResult::kYes_ByUserRequest,
+  EXPECT_EQ(AppBannerManager::InstallableWebAppCheckResult::kYes_Promotable,
             manager->GetInstallableWebAppCheckResultForTesting());
 }
 

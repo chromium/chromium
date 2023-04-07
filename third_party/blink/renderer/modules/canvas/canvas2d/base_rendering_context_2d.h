@@ -557,36 +557,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
            image_type == CanvasRenderingContext2DState::kNonOpaqueImage;
   }
 
-  // Blend modes that require compositing with layers when shadows are drawn.
-  ALWAYS_INLINE bool BlendModeRequiresLayersForShadows(SkBlendMode blendMode) {
-    return blendMode == SkBlendMode::kDstOver ||
-           blendMode == SkBlendMode::kPlus ||
-           blendMode == SkBlendMode::kMultiply ||
-           blendMode == SkBlendMode::kXor ||
-           blendMode == SkBlendMode::kOverlay ||
-           blendMode == SkBlendMode::kDarken ||
-           blendMode == SkBlendMode::kLighten ||
-           blendMode == SkBlendMode::kColorDodge ||
-           blendMode == SkBlendMode::kColorBurn ||
-           blendMode == SkBlendMode::kHardLight ||
-           blendMode == SkBlendMode::kSoftLight ||
-           blendMode == SkBlendMode::kDifference ||
-           blendMode == SkBlendMode::kExclusion ||
-           blendMode == SkBlendMode::kHue ||
-           blendMode == SkBlendMode::kSaturation ||
-           blendMode == SkBlendMode::kColor ||
-           blendMode == SkBlendMode::kLuminosity;
-  }
-
-  ALWAYS_INLINE bool BlendModeRequiresCompositedDraw(SkBlendMode blendMode) {
-    // Blend modes that require CompositedDraw in every case.
-    if (IsFullCanvasCompositeMode(blendMode))
-      return true;
-    const CanvasRenderingContext2DState& state = GetState();
-    // Blend modes that require CompositedDraw if shadows are drawn.
-    return state.ShouldDrawShadows() &&
-           BlendModeRequiresLayersForShadows(blendMode);
-  }
+  bool BlendModeRequiresCompositedDraw(SkBlendMode blendMode);
 
   ALWAYS_INLINE bool ShouldUseCompositedDraw(
       CanvasRenderingContext2DState::PaintType paint_type,
@@ -601,6 +572,10 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
       return true;
     return false;
   }
+
+  void ResetAlphaIfNeeded(cc::PaintCanvas* c,
+                          SkBlendMode blend_mode,
+                          const gfx::RectF* bounds = nullptr);
 
   // `paint_canvas` is null if this function is called asynchronously.
   template <OverdrawOp CurrentOverdrawOp,
@@ -690,6 +665,77 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   mojom::blink::ColorScheme color_scheme_ = mojom::blink::ColorScheme::kLight;
 };
 
+namespace {
+
+// Blend modes that require compositing with layers when shadows are drawn.
+ALWAYS_INLINE bool BlendModeRequiresLayersForShadows(SkBlendMode blendMode) {
+  return blendMode == SkBlendMode::kDstOver ||
+         blendMode == SkBlendMode::kPlus ||
+         blendMode == SkBlendMode::kMultiply ||
+         blendMode == SkBlendMode::kXor || blendMode == SkBlendMode::kOverlay ||
+         blendMode == SkBlendMode::kDarken ||
+         blendMode == SkBlendMode::kLighten ||
+         blendMode == SkBlendMode::kColorDodge ||
+         blendMode == SkBlendMode::kColorBurn ||
+         blendMode == SkBlendMode::kHardLight ||
+         blendMode == SkBlendMode::kSoftLight ||
+         blendMode == SkBlendMode::kDifference ||
+         blendMode == SkBlendMode::kExclusion ||
+         blendMode == SkBlendMode::kHue ||
+         blendMode == SkBlendMode::kSaturation ||
+         blendMode == SkBlendMode::kColor ||
+         blendMode == SkBlendMode::kLuminosity;
+}
+
+ALWAYS_INLINE bool BlendModeDoesntPreserveOpaqueDestinationAlpha(
+    SkBlendMode blendMode) {
+  return blendMode == SkBlendMode::kSrc || blendMode == SkBlendMode::kSrcIn ||
+         blendMode == SkBlendMode::kDstIn ||
+         blendMode == SkBlendMode::kSrcOut ||
+         blendMode == SkBlendMode::kDstOut ||
+         blendMode == SkBlendMode::kSrcATop ||
+         blendMode == SkBlendMode::kDstATop || blendMode == SkBlendMode::kXor ||
+         blendMode == SkBlendMode::kModulate;
+}
+
+}  // namespace
+
+ALWAYS_INLINE bool BaseRenderingContext2D::BlendModeRequiresCompositedDraw(
+    SkBlendMode blendMode) {
+  // Blend modes that require CompositedDraw in every case.
+  if (IsFullCanvasCompositeMode(blendMode)) {
+    return true;
+  }
+  const CanvasRenderingContext2DState& state = GetState();
+  // Blend modes that require CompositedDraw if shadows are drawn.
+  return state.ShouldDrawShadows() &&
+         BlendModeRequiresLayersForShadows(blendMode);
+}
+
+ALWAYS_INLINE void BaseRenderingContext2D::ResetAlphaIfNeeded(
+    cc::PaintCanvas* c,
+    SkBlendMode blend_mode,
+    const gfx::RectF* bounds) {
+  // TODO(skbug.com/14239): This would be unnecessary if skia had something
+  // like glColorMask that could be used to prevent the destination alpha from
+  // being modified.
+  if (!HasAlpha() &&
+      BlendModeDoesntPreserveOpaqueDestinationAlpha(blend_mode)) {
+    cc::PaintFlags flags;
+    flags.setBlendMode(SkBlendMode::kDstOver);
+    flags.setColor(SK_ColorBLACK);
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    SkRect alpha_bounds;
+    if (!c->getLocalClipBounds(&alpha_bounds)) {
+      return;
+    }
+    if (bounds) {
+      alpha_bounds.intersect(gfx::RectFToSkRect(*bounds));
+    }
+    c->drawRect(alpha_bounds, flags);
+  }
+}
+
 ALWAYS_INLINE void BaseRenderingContext2D::CheckOverdraw(
     const cc::PaintFlags* flags,
     CanvasRenderingContext2DState::ImageType image_type,
@@ -759,6 +805,7 @@ void BaseRenderingContext2D::DrawInternal(
   if (ShouldUseCompositedDraw(paint_type, image_type)) {
     WillDraw(clip_bounds, draw_type);
     CompositedDraw(draw_func, paint_canvas, paint_type, image_type);
+    ResetAlphaIfNeeded(paint_canvas, global_composite);
   } else if (global_composite == SkBlendMode::kSrc) {
     // Takes care of CheckOverdraw()
     paint_canvas->clear(HasAlpha() ? SkColors::kTransparent : SkColors::kBlack);
@@ -766,6 +813,7 @@ void BaseRenderingContext2D::DrawInternal(
         state.GetFlags(paint_type, kDrawForegroundOnly, image_type);
     WillDraw(clip_bounds, draw_type);
     draw_func(paint_canvas, flags);
+    ResetAlphaIfNeeded(paint_canvas, global_composite, &bounds);
   } else {
     SkIRect dirty_rect;
     if (ComputeDirtyRect(bounds, clip_bounds, &dirty_rect)) {
@@ -781,6 +829,7 @@ void BaseRenderingContext2D::DrawInternal(
       }
       WillDraw(dirty_rect, draw_type);
       draw_func(paint_canvas, flags);
+      ResetAlphaIfNeeded(paint_canvas, global_composite, &bounds);
     }
   }
   if (UNLIKELY(paint_canvas->NeedsFlush())) {

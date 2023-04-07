@@ -10,10 +10,10 @@ source_set("follow") {
   deps = [
     "//ios/chrome/browser/follow:enums",
     "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/ui/follow",
     "//ios/chrome/browser/ui/follow:first_follow_ui",
-    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/ntp/feed_management:feed_management_ui",
     "//ios/chrome/browser/ui/ntp/feed_management:follow_management_ui",
     "//ios/chrome/browser/ui/ntp/feed_management:navigation_delegate",

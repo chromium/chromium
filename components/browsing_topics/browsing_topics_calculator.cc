@@ -460,7 +460,7 @@ void BrowsingTopicsCalculator::OnGetTopicsForHostsCompleted(
                                    host_context_domains_map_);
 
     // Calculate descendant topics + their observing context domains
-    std::set<Topic> descendant_topics =
+    std::vector<Topic> descendant_topics =
         semantic_tree.GetDescendantTopics(topic);
     for (const Topic& descendant_topic : descendant_topics) {
       std::set<HashedDomain> descendant_topic_observation_domains =

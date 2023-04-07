@@ -57,7 +57,7 @@ const CGFloat kHeaderPaddingBottom = 10.0f;
 /// Leading and trailing padding for table view headers.
 const CGFloat kHeaderPadding = 2.0f;
 /// Top padding for table view headers.
-const CGFloat kHeaderTopPadding = 10.0f;
+const CGFloat kHeaderTopPadding = 16.0f;
 
 /// Returns whether the keyboard is dismissed when scrolling suggestions.
 BOOL ShouldDismissKeyboardOnScroll() {

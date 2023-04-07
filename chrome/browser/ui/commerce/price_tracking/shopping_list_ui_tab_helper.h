@@ -66,10 +66,10 @@ class ShoppingListUiTabHelper
       const content::LoadCommittedDetails& load_details) override;
 
   // SubscriptionsObserver
-  void OnSubscribe(const std::vector<CommerceSubscription>& subscriptions,
+  void OnSubscribe(const CommerceSubscription& subscription,
                    bool succeeded) override;
 
-  void OnUnsubscribe(const std::vector<CommerceSubscription>& subscriptions,
+  void OnUnsubscribe(const CommerceSubscription& subscription,
                      bool succeeded) override;
 
   // Update this tab helper (and associated observers) to use a different
@@ -106,6 +106,8 @@ class ShoppingListUiTabHelper
   // Update the flag tracking the price tracking state of the product from
   // subscriptions.
   void UpdatePriceTrackingStateFromSubscriptions();
+
+  void HandleSubscriptionChange(const CommerceSubscription& sub);
 
   // The shopping service is tied to the lifetime of the browser context
   // which will always outlive this tab helper.

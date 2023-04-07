@@ -118,13 +118,13 @@ class HtmlToWrapperTest(unittest.TestCase):
   def testHtmlToWrapperSchemeRelative(self):
     self._run_test('html_to_wrapper/foo.html',
                    'html_to_wrapper/foo.html.ts',
-                   'html_to_wrapper/foo_relative_expected.html.ts',
+                   'html_to_wrapper/foo_expected.html.ts',
                    scheme='relative')
 
   def testHtmlToWrapperSchemeChrome(self):
     self._run_test('html_to_wrapper/foo.html',
                    'html_to_wrapper/foo.html.ts',
-                   'html_to_wrapper/foo_expected.html.ts',
+                   'html_to_wrapper/foo_chrome_expected.html.ts',
                    scheme='chrome')
 
 

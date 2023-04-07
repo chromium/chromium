@@ -299,6 +299,8 @@ void PresentationRequest::Trace(Visitor* visitor) const {
 
 PresentationRequest::PresentationRequest(ExecutionContext* execution_context,
                                          const Vector<KURL>& urls)
-    : ExecutionContextClient(execution_context), urls_(urls) {}
+    : ActiveScriptWrappable<PresentationRequest>({}),
+      ExecutionContextClient(execution_context),
+      urls_(urls) {}
 
 }  // namespace blink

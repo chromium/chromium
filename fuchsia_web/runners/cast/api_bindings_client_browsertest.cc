@@ -19,8 +19,8 @@
 #include "fuchsia_web/common/test/frame_test_util.h"
 #include "fuchsia_web/common/test/test_navigation_listener.h"
 #include "fuchsia_web/runners/cast/api_bindings_client.h"
-#include "fuchsia_web/runners/cast/fake_api_bindings.h"
 #include "fuchsia_web/runners/cast/named_message_port_connector_fuchsia.h"
+#include "fuchsia_web/runners/cast/test/fake_api_bindings.h"
 #include "fuchsia_web/webengine/test/web_engine_browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

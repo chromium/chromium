@@ -43,14 +43,13 @@ struct WebMediaConfiguration;
 // - a WebmMuxer class multiplexing encoded data into a WebM container, and
 // - a single recorder client receiving this contained data.
 // All methods are called on the same thread as construction and destruction,
-// i.e. the Main Render thread. (Note that a base::BindPostTaskToCurrentDefault
-// is used to guarantee this, since VideoTrackRecorder sends back frames on IO
-// thread.)
+// i.e. the Main Render thread.
 class MODULES_EXPORT MediaRecorderHandler final
     : public GarbageCollected<MediaRecorderHandler>,
       public WebMediaStreamObserver {
  public:
-  MediaRecorderHandler() = default;
+  explicit MediaRecorderHandler(
+      scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner);
   MediaRecorderHandler(const MediaRecorderHandler&) = delete;
   MediaRecorderHandler& operator=(const MediaRecorderHandler&) = delete;
 
@@ -137,6 +136,8 @@ class MODULES_EXPORT MediaRecorderHandler final
                                  bool is_video);
 
   void OnVideoEncodingError();
+
+  const scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 
   // Set to true if there is no MIME type configured upon Initialize()
   // and the video track's source supports encoded output, giving

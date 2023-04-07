@@ -196,9 +196,8 @@ void BackForwardCacheBrowserTest::SetUpCommandLine(
   EnableFeatureAndSetParams(
       blink::features::kBackForwardCacheSendNotRestoredReasons, "", "");
 
-  // Do not trigger NotReached() for JavaScript execution.
-  DisableFeature(
-      blink::features::kBackForwardCacheNotReachedOnJavaScriptExecution);
+  // Do not trigger DumpWithoutCrashing() for JavaScript execution.
+  DisableFeature(blink::features::kBackForwardCacheDWCOnJavaScriptExecution);
 #if BUILDFLAG(IS_ANDROID)
   EnableFeatureAndSetParams(features::kBackForwardCache,
                             "process_binding_strength", "NORMAL");

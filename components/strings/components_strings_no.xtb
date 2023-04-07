@@ -730,6 +730,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2718207025093645426">Ingen regel er lastet inn for enheten eller den administrerte brukeren.</translation>
 <translation id="2721148159707890343">Forespørselen var vellykket</translation>
 <translation id="2723669454293168317">Kjør en sikkerhetssjekk i Chrome-innstillingene</translation>
+<translation id="2725492561136085792">Trykk på Enter for å aktivere denne handlingen.</translation>
 <translation id="2726001110728089263">Sideskuff</translation>
 <translation id="2728127805433021124">Tjenerens sertifikat er signert med en usikker signaturalgoritme.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Kjør Tilkoblingsdiagnostikk<ph name="END_LINK" /></translation>
@@ -826,6 +827,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="299990983510665749">Kombikupeer</translation>
 <translation id="3002501248619246229">Sjekk inndataskuffmedier</translation>
 <translation id="3005723025932146533">Vis lagret kopi</translation>
+<translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab for å bla gjennom tilgjengelige handlinger, og trykk deretter på Enter for å utføre den valgte handlingen.</translation>
 <translation id="3013291976881901233">MIDI-enheter</translation>
 <translation id="301521992641321250">Automatisk blokkert</translation>
 <translation id="3016780570757425217">vite hvor du er</translation>

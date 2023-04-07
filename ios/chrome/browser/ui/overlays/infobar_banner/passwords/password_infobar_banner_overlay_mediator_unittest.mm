@@ -20,7 +20,7 @@
 #import "ios/chrome/browser/passwords/ios_chrome_save_password_infobar_delegate.h"
 #import "ios/chrome/browser/passwords/test/mock_ios_chrome_save_passwords_infobar_delegate.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/icons/symbols.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/infobars/banners/test/fake_infobar_banner_consumer.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest_mac.h"

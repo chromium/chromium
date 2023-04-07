@@ -34,6 +34,7 @@ class HistoryClustersServiceTaskUpdateClusterTriggerability
       base::WeakPtr<HistoryClustersService> weak_history_clusters_service,
       ClusteringBackend* const backend,
       history::HistoryService* const history_service,
+      bool should_iterate_through_clusters_after_empty,
       base::OnceClosure callback);
   ~HistoryClustersServiceTaskUpdateClusterTriggerability() override;
 
@@ -125,6 +126,10 @@ class HistoryClustersServiceTaskUpdateClusterTriggerability
   // Tracks the time `this` was created to use for the max time we should update
   // clusters for.
   base::Time task_created_time_;
+
+  // Whether `this` should iterate through clusters after the first call with
+  // all filtered clusters returned.
+  const bool should_iterate_through_clusters_after_empty_ = false;
 
   // Tracks whether at least one cluster's triggerability was updated (for
   // metrics only).

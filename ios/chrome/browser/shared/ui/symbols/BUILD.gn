@@ -1,9 +1,148 @@
-# Copyright 2023 The Chromium Authors
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
+import("//build/config/ios/ios_sdk.gni")
+
+declare_args() {
+  # This defines targets to include branded icons.
+  ios_branded_icons = ":branded"
+}
+
+_use_branded_symbols = get_label_info(":branded", "label_no_toolchain") !=
+                       get_label_info(ios_branded_icons, "label_no_toolchain")
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "IOS_USE_BRANDED_SYMBOLS=$_use_branded_symbols" ]
+}
+
+source_set("icons") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "chrome_icon.h",
+    "chrome_icon.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//third_party/material_design_icons:ic_arrow_back",
+    "//third_party/material_design_icons:ic_chevron_right",
+    "//third_party/material_design_icons:ic_close",
+    "//third_party/material_design_icons:ic_info",
+    "//third_party/material_design_icons:ic_search",
+    "//ui/base",
+  ]
+  frameworks = [
+    "CoreGraphics.framework",
+    "UIKit.framework",
+  ]
+}
+
 source_set("symbols") {
   configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [ "symbols.h" ]
-  deps = [ "//ios/chrome/browser/ui/icons:symbols" ]
+  public = [ "symbols.h" ]
+  sources = [
+    "symbol_configurations.h",
+    "symbol_configurations.mm",
+    "symbol_helpers.h",
+    "symbol_helpers.mm",
+    "symbol_names.h",
+    "symbol_names.mm",
+  ]
+  deps = [
+    ":buildflags",
+    "//base",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols/resources:arrow_clockwise",
+    "//ios/chrome/browser/shared/ui/symbols/resources:arrow_triangle_slash_circlepath",
+    "//ios/chrome/browser/shared/ui/symbols/resources:camera",
+    "//ios/chrome/browser/shared/ui/symbols/resources:camera_fill",
+    "//ios/chrome/browser/shared/ui/symbols/resources:camera_lens",
+    "//ios/chrome/browser/shared/ui/symbols/resources:checkerboard_shield",
+    "//ios/chrome/browser/shared/ui/symbols/resources:checkermark_shield",
+    "//ios/chrome/browser/shared/ui/symbols/resources:chrome_product",
+    "//ios/chrome/browser/shared/ui/symbols/resources:cloud_and_arrow_up",
+    "//ios/chrome/browser/shared/ui/symbols/resources:cloud_slash",
+    "//ios/chrome/browser/shared/ui/symbols/resources:dino",
+    "//ios/chrome/browser/shared/ui/symbols/resources:incognito",
+    "//ios/chrome/browser/shared/ui/symbols/resources:incognito_circle_fill",
+    "//ios/chrome/browser/shared/ui/symbols/resources:incognito_circle_fill_ios14",
+    "//ios/chrome/browser/shared/ui/symbols/resources:language",
+    "//ios/chrome/browser/shared/ui/symbols/resources:laptopcomputer_and_phone",
+    "//ios/chrome/browser/shared/ui/symbols/resources:legacy_cloud_and_arrow_up",
+    "//ios/chrome/browser/shared/ui/symbols/resources:legacy_cloud_slash",
+    "//ios/chrome/browser/shared/ui/symbols/resources:legacy_plus_circle_fill",
+    "//ios/chrome/browser/shared/ui/symbols/resources:line_downtrend",
+    "//ios/chrome/browser/shared/ui/symbols/resources:location",
+    "//ios/chrome/browser/shared/ui/symbols/resources:location.fill",
+    "//ios/chrome/browser/shared/ui/symbols/resources:password",
+    "//ios/chrome/browser/shared/ui/symbols/resources:password_manager",
+    "//ios/chrome/browser/shared/ui/symbols/resources:photo_badge_magnifyingglass",
+    "//ios/chrome/browser/shared/ui/symbols/resources:photo_badge_plus",
+    "//ios/chrome/browser/shared/ui/symbols/resources:plus_circle_fill",
+    "//ios/chrome/browser/shared/ui/symbols/resources:plus_circle_fill_ios14",
+    "//ios/chrome/browser/shared/ui/symbols/resources:popup_badge_minus",
+    "//ios/chrome/browser/shared/ui/symbols/resources:shield",
+    "//ios/chrome/browser/shared/ui/symbols/resources:square_bullet_square",
+    "//ios/chrome/browser/shared/ui/symbols/resources:square_number",
+    "//ios/chrome/browser/shared/ui/symbols/resources:tab_grid_new_tab_button_incognito_ios14",
+    "//ios/chrome/browser/shared/ui/symbols/resources:tab_grid_new_tab_button_ios14",
+    "//ios/chrome/browser/shared/ui/symbols/resources:tab_grid_new_tab_floating_button_incognito_ios14",
+    "//ios/chrome/browser/shared/ui/symbols/resources:tab_grid_new_tab_floating_button_ios14",
+    "//ios/chrome/browser/shared/ui/symbols/resources:translate",
+    "//ios/chrome/browser/shared/ui/symbols/resources:tuner",
+    "//ios/chrome/common/ui/colors",
+    ios_branded_icons,
+  ]
+
+  # This icon uses template format version 4 but catalyst only currently supports version 3. See details in crbug.com/1392708#c28.
+  if (target_environment != "catalyst") {
+    deps += [
+      "//ios/chrome/browser/shared/ui/symbols/resources:multicolor_password",
+    ]
+  }
+}
+
+source_set("symbols_views") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "colorful_background_symbol_view.h",
+    "colorful_background_symbol_view.mm",
+  ]
+  deps = [
+    ":symbols",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/common/ui/util",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "chrome_icon_unittest.mm" ]
+  deps = [
+    ":icons",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+# TODO(crbug.com/734054): remove this target when the downstream repository
+# has been fixed to directly depends on the individual targets.
+group("assets") {
+  deps = [
+    "//third_party/material_design_icons:ic_arrow_back",
+    "//third_party/material_design_icons:ic_chevron_right",
+    "//third_party/material_design_icons:ic_close",
+    "//third_party/material_design_icons:ic_info",
+    "//third_party/material_design_icons:ic_search",
+  ]
+}
+
+group("branded") {
+  # Empty in the non-branded repo.
 }

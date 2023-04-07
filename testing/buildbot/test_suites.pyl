@@ -3764,6 +3764,9 @@
 
     'ios_blink_tests': {
       'absl_hardening_tests': {},
+      'angle_unittests': {
+        'use_isolated_scripts_api': True,
+      },
       'base_unittests': {},
       'blink_common_unittests': {},
       'blink_fuzzer_unittests': {},
@@ -3772,6 +3775,8 @@
       'blink_unittests': {},
       'boringssl_crypto_tests': {},
       'boringssl_ssl_tests': {},
+      'capture_unittests': {},
+      'cast_unittests': {},
       'cc_unittests': {},
       'color_unittests': {},
       'content_unittests': {},
@@ -3779,12 +3784,15 @@
       'crypto_unittests': {},
       'device_unittests': {},
       'display_unittests': {},
+      'events_unittests': {},
       'gcm_unit_tests': {},
       'gfx_unittests': {},
+      'gin_unittests': {},
       'gl_unittests': {},
       'google_apis_unittests': {},
       'gpu_unittests': {},
       'gwp_asan_unittests': {},
+      'ipc_tests': {},
       'latency_unittests': {},
       'libjingle_xmpp_unittests': {},
       'liburlpattern_unittests': {},
@@ -3796,6 +3804,8 @@
           '--gtest_filter=-*WebSocket*',
         ],
       },
+      'perfetto_unittests': {},
+      'services_unittests': {},
       'shell_dialogs_unittests': {},
       'skia_unittests': {},
       'sql_unittests': {},
@@ -4347,6 +4357,27 @@
       'xr_browser_tests': {
         'test': 'xr_browser_tests',
       }
+    },
+
+    # TODO(crbug.com/1320449): Remove this set of test suites when LSan can be
+    # enabled Mac ASan bots. This list will be gradually filled with more tests
+    # until the bot has parity with ASan bots, and the ASan bot can then enable
+    # LSan and the mac-lsan-fyi-rel bot go away.
+    'mac_lsan_fyi_gtests': {
+      'absl_hardening_tests':{},
+      'accessibility_unittests':{},
+      'app_shell_unittests':{},
+      'base_unittests':{},
+      'blink_heap_unittests':{},
+      'blink_platform_unittests':{},
+      'blink_unittests':{},
+      'cc_unittests':{},
+      'components_unittests':{},
+      'content_unittests':{},
+      'crashpad_tests':{},
+      'cronet_unittests':{},
+      'device_unittests':{},
+      'net_unittests':{},
     },
 
     'mac_specific_chromium_gtests': {
@@ -6655,6 +6686,14 @@
       'webview_ui_instrumentation_tests': {},
     },
 
+    'chromeos_brya_skylab_tests': {
+      'chromeos_chrome_all_tast_tests': {
+        'variants': [
+          'CROS_BRYA_RELEASE_LKGM',
+        ]
+      },
+    },
+
     'chromeos_octopus_skylab_tests': {
       'chromeos_chrome_all_tast_tests': {
         'variants': [
@@ -6667,6 +6706,14 @@
       'chromeos_chrome_all_tast_tests': {
         'variants': [
           'CROS_TROGDOR64_RELEASE_LKGM',
+        ]
+      },
+    },
+
+    'chromeos_volteer_skylab_tests': {
+      'chromeos_chrome_all_tast_tests': {
+        'variants': [
+          'CROS_VOLTEER_RELEASE_LKGM',
         ]
       },
     },
@@ -6703,6 +6750,44 @@
       'gpu_angle_ios_white_box_gtests': {
         'variants': [
           'SIM_IPHONE_X_16_2',
+        ],
+      },
+    },
+
+    'gpu_fyi_chromeos_release_telemetry_tests_skylab': {
+      'gpu_common_and_optional_telemetry_tests': {
+        'variants': [
+          'CROS_KEVIN_PUBLIC_LKGM',
+        ],
+      },
+      'gpu_mediapipe_validating_telemetry_tests': {
+        'variants': [
+          'CROS_KEVIN_PUBLIC_LKGM',
+        ],
+      },
+      'gpu_validating_telemetry_tests': {
+        'variants': [
+          'CROS_KEVIN_PUBLIC_LKGM',
+        ],
+      },
+      'gpu_webcodecs_validating_telemetry_test': {
+        'variants': [
+          'CROS_KEVIN_PUBLIC_LKGM',
+        ],
+      },
+      'gpu_webgl_conformance_validating_telemetry_tests': {
+        'variants': [
+          'CROS_KEVIN_PUBLIC_LKGM',
+        ],
+      },
+      'gpu_webgl2_conformance_gles_passthrough_telemetry_tests': {
+        'variants': [
+          'CROS_KEVIN_PUBLIC_LKGM',
+        ],
+      },
+      'gpu_webgl2_conformance_validating_telemetry_tests': {
+        'variants': [
+          'CROS_KEVIN_PUBLIC_LKGM',
         ],
       },
     },
@@ -7097,7 +7182,7 @@
     'lacros_arm64_generic_rel_skylab': {
       'lacros_skylab_tests': {
         'variants': [
-          'CROS_KEVIN_PUBLIC_LKGM',
+          'CROS_KEVIN64_PUBLIC_LKGM',
         ]
       },
     },
@@ -7107,7 +7192,7 @@
         'variants': [
           'CROS_JACUZZI_PUBLIC_LKGM',
           'CROS_JACUZZI_CQ_PUBLIC_LKGM',
-          'CROS_KEVIN_PUBLIC_LKGM',
+          'CROS_KEVIN64_PUBLIC_LKGM',
         ]
       },
     },
@@ -7124,7 +7209,7 @@
       'lacros_skylab_tests': {
         'variants': [
           'CROS_JACUZZI_PUBLIC_LKGM',
-          'CROS_KEVIN_PUBLIC_LKGM',
+          'CROS_KEVIN64_PUBLIC_LKGM',
         ]
       },
     },

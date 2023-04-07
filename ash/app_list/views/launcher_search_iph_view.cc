@@ -19,6 +19,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/events/event.h"
 #include "ui/gfx/font_list.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/background.h"
@@ -27,14 +28,12 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/style/typography.h"
 #include "url/gurl.h"
 
 namespace ash {
 namespace {
-constexpr int kVerticalInset = 20;
-constexpr int kHorizontalInset = 24;
-
 constexpr int kMainLayoutBetweenChildSpacing = 16;
 constexpr int kActionContainerBetweenChildSpacing = 8;
 
@@ -49,36 +48,59 @@ constexpr char16_t kChipThreeQueryPlaceholder[] = u"5 cm in inches";
 
 constexpr char16_t kAssistantButtonPlaceholder[] = u"Assistant";
 
-constexpr views::Radii kBackgroundRadiiLTR = {.top_left = 16.0f,
-                                              .top_right = 4.0f,
-                                              .bottom_right = 16.0f,
-                                              .bottom_left = 16.0f};
+constexpr views::Radii kBackgroundRadiiClamshellLTR = {.top_left = 16.0f,
+                                                       .top_right = 4.0f,
+                                                       .bottom_right = 16.0f,
+                                                       .bottom_left = 16.0f};
 
-constexpr views::Radii kBackgroundRadiiRTL = {.top_left = 4.0f,
-                                              .top_right = 16.0f,
-                                              .bottom_right = 16.0f,
-                                              .bottom_left = 16.0f};
+constexpr views::Radii kBackgroundRadiiClamshellRTL = {.top_left = 4.0f,
+                                                       .top_right = 16.0f,
+                                                       .bottom_right = 16.0f,
+                                                       .bottom_left = 16.0f};
+
+// There are 4px margins for the top and the bottom (and for the left in LTR
+// Clamshell mode) provided by SearchBoxViewBase's root level container, i.e.
+// left=10px in `kOuterBackgroundInsetsClamshell` means 14px in prod.
+constexpr gfx::Insets kOuterBackgroundInsetsClamshell =
+    gfx::Insets::TLBR(0, 10, 17, 10);
+constexpr gfx::Insets kOuterBackgroundInsetsTablet =
+    gfx::Insets::TLBR(10, 16, 12, 16);
+
+constexpr gfx::Insets kInnerBackgroundInsetsClamshell = gfx::Insets::VH(20, 24);
+constexpr gfx::Insets kInnerBackgroundInsetsTablet = gfx::Insets::VH(16, 16);
+
+constexpr int kBackgroundRadiusTablet = 16;
 
 }  // namespace
 
 LauncherSearchIphView::LauncherSearchIphView(
     std::unique_ptr<ScopedIphSession> scoped_iph_session,
-    raw_ptr<Delegate> delegate)
+    raw_ptr<Delegate> delegate,
+    bool is_in_tablet_mode)
     : scoped_iph_session_(std::move(scoped_iph_session)), delegate_(delegate) {
   SetID(ViewId::kSelf);
 
-  raw_ptr<views::BoxLayout> box_layout =
-      SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kVertical,
-          gfx::Insets::VH(kVerticalInset, kHorizontalInset)));
-  box_layout->set_between_child_spacing(kMainLayoutBetweenChildSpacing);
+  SetLayoutManager(std::make_unique<views::FillLayout>());
+
+  // Add a root `box_layout_view` as we can set margins (i.e. borders) outside
+  // the background.
+  raw_ptr<views::BoxLayoutView> box_layout_view =
+      AddChildView(std::make_unique<views::BoxLayoutView>());
+  box_layout_view->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  box_layout_view->SetInsideBorderInsets(is_in_tablet_mode
+                                             ? kInnerBackgroundInsetsTablet
+                                             : kInnerBackgroundInsetsClamshell);
+  box_layout_view->SetBetweenChildSpacing(kMainLayoutBetweenChildSpacing);
   // Use `kStretch` for `actions_container` to get stretched.
-  box_layout->set_cross_axis_alignment(
+  box_layout_view->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kStretch);
+  SetBorder(views::CreateEmptyBorder(is_in_tablet_mode
+                                         ? kOuterBackgroundInsetsTablet
+                                         : kOuterBackgroundInsetsClamshell));
 
   // Add texts into a container to avoid stretching `views::Label`s.
   raw_ptr<views::BoxLayoutView> text_container =
-      AddChildView(std::make_unique<views::BoxLayoutView>());
+      box_layout_view->AddChildView(std::make_unique<views::BoxLayoutView>());
   text_container->SetOrientation(views::BoxLayout::Orientation::kVertical);
   text_container->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
@@ -102,7 +124,7 @@ LauncherSearchIphView::LauncherSearchIphView(
   description_label_->SetDefaultTextStyle(
       views::style::TextStyle::STYLE_PRIMARY);
   description_label_->SetHorizontalAlignment(
-      gfx::HorizontalAlignment::ALIGN_TO_HEAD);
+      gfx::HorizontalAlignment::ALIGN_LEFT);
   description_label_->SetText(text + link);
 
   raw_ptr<const TypographyProvider> typography_provider =
@@ -115,7 +137,7 @@ LauncherSearchIphView::LauncherSearchIphView(
   }
 
   raw_ptr<views::BoxLayoutView> actions_container =
-      AddChildView(std::make_unique<views::BoxLayoutView>());
+      box_layout_view->AddChildView(std::make_unique<views::BoxLayoutView>());
   actions_container->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   actions_container->SetBetweenChildSpacing(
       kActionContainerBetweenChildSpacing);
@@ -147,15 +169,23 @@ LauncherSearchIphView::LauncherSearchIphView(
   assistant_button->SetPillButtonType(
       PillButton::Type::kDefaultLargeWithoutIcon);
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      kColorAshControlBackgroundColorInactive,
-      base::i18n::IsRTL() ? kBackgroundRadiiRTL : kBackgroundRadiiLTR,
-      /*for_border_thickness=*/0));
+  if (is_in_tablet_mode) {
+    box_layout_view->SetBackground(views::CreateThemedRoundedRectBackground(
+        kColorAshControlBackgroundColorInactive, kBackgroundRadiusTablet));
+  } else {
+    box_layout_view->SetBackground(views::CreateThemedRoundedRectBackground(
+        kColorAshControlBackgroundColorInactive,
+        base::i18n::IsRTL() ? kBackgroundRadiiClamshellRTL
+                            : kBackgroundRadiiClamshellLTR,
+        /*for_border_thickness=*/0));
+  }
 }
 
 LauncherSearchIphView::~LauncherSearchIphView() = default;
 
 void LauncherSearchIphView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+
   description_label_->ClearStyleRanges();
 
   // Apply no style if ranges are not initialized for a fail-safe behavior.
@@ -192,9 +222,9 @@ void LauncherSearchIphView::OnThemeChanged() {
     text_range_style_info.custom_font =
         typography_provider->ResolveTypographyToken(
             TypographyToken::kCrosBody2);
-    link_range_style_info.custom_font =
-        typography_provider->ResolveTypographyToken(
-            TypographyToken::kCrosBody2);
+
+    // TODO(b/272370530): We cannot set `custom_font` for the link range.
+    // Consult with UX about this limitation.
   }
 
   description_label_->AddStyleRange(text_range_, text_range_style_info);
@@ -203,6 +233,7 @@ void LauncherSearchIphView::OnThemeChanged() {
 
 void LauncherSearchIphView::RunLauncherSearchQuery(
     const std::u16string& query) {
+  scoped_iph_session_->NotifyEvent(kIphEventNameChipClick);
   delegate_->RunLauncherSearchQuery(query);
 }
 
@@ -211,6 +242,7 @@ void LauncherSearchIphView::OnLinkClicked(const ui::Event& event) {
 }
 
 void LauncherSearchIphView::OpenAssistantPage() {
+  scoped_iph_session_->NotifyEvent(kIphEventNameAssistantClick);
   delegate_->OpenAssistantPage();
 }
 

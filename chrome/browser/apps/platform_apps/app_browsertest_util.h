@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/auto_reset.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -135,6 +136,7 @@ class PlatformAppBrowserTest : public ExtensionApiTest {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<media_router::MockMediaRouter> media_router_;
 #endif
+  base::AutoReset<bool> enable_chrome_apps_;
 };
 
 class ExperimentalPlatformAppBrowserTest : public PlatformAppBrowserTest {

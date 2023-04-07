@@ -88,9 +88,9 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   MessagePopupView* GetPopupViewForNotificationID(
       const std::string& notification_id);
 
-  // Called when a new toast appears or toasts are rearranged in the |display|.
+  // Called when a new popup appears or popups are rearranged in the |display|.
   // The subclass may override this method to check the current desktop status
-  // so that the toasts are arranged at the correct place. Return true if
+  // so that the popups are arranged at the correct place. Return true if
   // alignment is actually changed.
   virtual bool RecomputeAlignment(const display::Display& display) = 0;
 
@@ -103,20 +103,20 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   void set_inverse() { inverse_ = true; }
 
  protected:
-  // Returns the x-origin for the given toast bounds in the current work area.
-  virtual int GetToastOriginX(const gfx::Rect& toast_bounds) const = 0;
+  // Returns the x-origin for the given popup bounds in the current work area.
+  virtual int GetPopupOriginX(const gfx::Rect& popup_bounds) const = 0;
 
   // Returns the baseline height of the current work area. That is the starting
-  // point if there are no other toasts.
+  // point if there are no other popups.
   virtual int GetBaseline() const = 0;
 
   // Returns the rect of the current work area.
   virtual gfx::Rect GetWorkArea() const = 0;
 
-  // Returns true if the toast should be aligned top down.
+  // Returns true if the popup should be aligned top down.
   virtual bool IsTopDown() const = 0;
 
-  // Returns true if the toasts are positioned at the left side of the desktop
+  // Returns true if the popups are positioned at the left side of the desktop
   // so that their reveal animation should happen from left side.
   virtual bool IsFromLeft() const = 0;
 

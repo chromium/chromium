@@ -22,6 +22,16 @@ static_library("keyboard_diagram_strings") {
   ]
 }
 
+source_set("chrome_os_webui_config") {
+  sources = [ "chrome_os_webui_config.h" ]
+
+  deps = [
+    "//base",
+    "//content/public/browser",
+    "//content/public/common",
+  ]
+}
+
 group("closure_compile") {
   deps = [ "resources:closure_compile" ]
 }

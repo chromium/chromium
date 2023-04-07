@@ -14,6 +14,7 @@
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/modules/mediarecorder/video_track_recorder.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -55,6 +56,7 @@ class H264EncoderFixture : public ::testing::Test {
         level_(level),
         bitrate_(bitrate),
         encoder_(
+            scheduler::GetSingleThreadTaskRunnerForTesting(),
             ConvertToBaseRepeatingCallback(
                 CrossThreadBindRepeating(&H264EncoderFixture::OnEncodedVideo,
                                          CrossThreadUnretained(this))),

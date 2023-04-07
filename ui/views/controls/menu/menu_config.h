@@ -40,6 +40,9 @@ struct VIEWS_EXPORT MenuConfig {
   bool ShouldShowAcceleratorText(const MenuItemView* item_view,
                                  std::u16string* text) const;
 
+  // Initialize menu config for CR2023
+  void InitCR2023();
+
   // Font list used by menus.
   gfx::FontList font_list;
 
@@ -115,6 +118,10 @@ struct VIEWS_EXPORT MenuConfig {
 
   // Thickness of the drawn separator line in pixels for double separator.
   int double_separator_thickness = 2;
+
+  // Left & right separator padding
+  int separator_left_margin = 0;
+  int separator_right_margin = 0;
 
   // Are mnemonics shown?
   bool show_mnemonics = false;
@@ -199,8 +206,9 @@ struct VIEWS_EXPORT MenuConfig {
   // Vertical padding for touchable menus.
   int vertical_touchable_menu_item_padding = 8;
 
-  // Left margin of padded separator (ui::PADDED_SEPARATOR).
+  // Left & right margin of padded separator (ui::PADDED_SEPARATOR).
   int padded_separator_left_margin = 64;
+  int padded_separator_right_margin = 0;
 
   // Whether arrow keys should wrap around the end of the menu when selecting.
   bool arrow_key_selection_wraps = true;

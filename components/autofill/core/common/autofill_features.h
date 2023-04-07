@@ -114,6 +114,10 @@ BASE_DECLARE_FEATURE(kAutofillFeedback);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillOnlyCacheIsAutofilledOnFill);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillConvergeToExtremeLengthStreetAddress);
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<bool> kAutofillConvergeToLonger;
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(
     kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete);
 // Records the values of HtmlFieldType that the server or heuristic predictions
@@ -129,7 +133,6 @@ enum class PrecedenceOverAutocompleteScope {
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<PrecedenceOverAutocompleteScope>
     kAutofillHeuristicPrecedenceScopeOverAutocomplete;
-
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<PrecedenceOverAutocompleteScope>
     kAutofillServerPrecedenceScopeOverAutocomplete;

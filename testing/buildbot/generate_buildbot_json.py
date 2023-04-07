@@ -855,7 +855,6 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
 
       result['merge'] = {
           'script': '//testing/merge_scripts/%s.py' % merge_script,
-          'args': [],
       }
     return result
 
@@ -885,7 +884,6 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       # this default.
       result['merge'] = {
         'script': '//testing/merge_scripts/standard_isolated_script_merge.py',
-        'args': [],
       }
     return result
 

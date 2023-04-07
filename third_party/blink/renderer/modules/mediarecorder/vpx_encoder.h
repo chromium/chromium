@@ -26,7 +26,8 @@ class VpxEncoder final : public VideoTrackRecorder::Encoder {
   typedef std::unique_ptr<vpx_codec_ctx_t, VpxCodecDeleter>
       ScopedVpxCodecCtxPtr;
 
-  VpxEncoder(bool use_vp9,
+  VpxEncoder(scoped_refptr<base::SequencedTaskRunner> encoding_task_runner,
+             bool use_vp9,
              const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
              uint32_t bits_per_second);
 

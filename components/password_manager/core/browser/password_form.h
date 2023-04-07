@@ -271,14 +271,14 @@ struct PasswordForm {
   // This member is populated in cases where we there are multiple input
   // elements that could possibly be the username. Used when our heuristics for
   // determining the username are incorrect. Optional.
-  AlternativeElementVector all_possible_usernames;
+  AlternativeElementVector all_alternative_usernames;
 
   // This member is populated in cases where we there are multiple possible
   // password values. Used in pending password state, to populate a dropdown
   // for possible passwords. Contains all possible passwords. Optional.
-  AlternativeElementVector all_possible_passwords;
+  AlternativeElementVector all_alternative_passwords;
 
-  // True if |all_possible_passwords| have autofilled value or its part.
+  // True if |all_alternative_passwords| have autofilled value or its part.
   bool form_has_autofilled_value = false;
 
   // The name of the input element corresponding to the current password.

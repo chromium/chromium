@@ -26,6 +26,7 @@ class CellularNetworkMetricsLogger;
 class CellularPolicyHandler;
 class ClientCertResolver;
 class ConnectionInfoMetricsLogger;
+class EnterpriseManagedMetadataStore;
 class ESimPolicyLoginMetricsLogger;
 class GeolocationHandler;
 class HiddenNetworkHandler;
@@ -33,6 +34,7 @@ class HotspotAllowedFlagHandler;
 class HotspotCapabilitiesProvider;
 class HotspotConfigurationHandler;
 class HotspotController;
+class HotspotFeatureUsageMetrics;
 class HotspotMetricsHelper;
 class HotspotStateHandler;
 class HotspotEnabledStateNotifier;
@@ -165,8 +167,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   std::unique_ptr<CellularMetricsLogger> cellular_metrics_logger_;
   std::unique_ptr<ConnectionInfoMetricsLogger> connection_info_metrics_logger_;
   std::unique_ptr<HiddenNetworkHandler> hidden_network_handler_;
+  std::unique_ptr<EnterpriseManagedMetadataStore>
+      enterprise_managed_metadata_store_;
   std::unique_ptr<HotspotAllowedFlagHandler> hotspot_allowed_flag_handler_;
   std::unique_ptr<HotspotCapabilitiesProvider> hotspot_capabilities_provider_;
+  std::unique_ptr<HotspotFeatureUsageMetrics> hotspot_feature_usage_metrics_;
   std::unique_ptr<HotspotStateHandler> hotspot_state_handler_;
   std::unique_ptr<HotspotController> hotspot_controller_;
   std::unique_ptr<HotspotConfigurationHandler> hotspot_configuration_handler_;

@@ -250,7 +250,7 @@
 <translation id="1202892408424955784">跟踪的商品</translation>
 <translation id="120368089816228251">乐谱</translation>
 <translation id="1203942045716040624">Shared Worker：<ph name="SCRIPT_URL" /></translation>
-<translation id="1211769675100312947">快捷方式由您自己挑选</translation>
+<translation id="1211769675100312947">您自己选取快捷方式</translation>
 <translation id="1213254615020057352">发送使用情况数据和诊断数据。自动向 Google 发送诊断数据、设备数据和应用使用情况数据，帮助改善您孩子的 Android 使用体验。我们会使用这些数据提高系统和应用的稳定性，并改进其他方面，但不会利用数据辨识您孩子的身份。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。这项设置是由此设备的所有者强制指定的。此设备的所有者可以选择向 Google 发送此设备的诊断数据和使用情况数据。如果您已为孩子开启“其他网络与应用活动记录”设置，这些数据可能会被保存到其 Google 帐号中。</translation>
 <translation id="1213726621272705156">此页面不会再显示卡片</translation>
 <translation id="121384500095351701">无法安全地下载此文件</translation>
@@ -691,6 +691,7 @@
 <translation id="1593594475886691512">正在格式化…</translation>
 <translation id="159359590073980872">图片缓存</translation>
 <translation id="1593926297800505364">保存付款方式</translation>
+<translation id="1594703455918849716">前往“检查”页面</translation>
 <translation id="1595492813686795610">Linux 正在升级</translation>
 <translation id="1596286373007273895">可用</translation>
 <translation id="1596709061955594992">蓝牙处于关闭状态。若要查看可用的设备，请开启蓝牙。</translation>
@@ -1321,7 +1322,6 @@
 <translation id="2114820389966440614">在此处查看“近期的精彩瞬间”和其他回忆</translation>
 <translation id="2114896190328250491">照片提供者：<ph name="NAME" /></translation>
 <translation id="2114995631896158695">未插入任何 SIM 卡</translation>
-<translation id="2116020356255810305">允许在开机时启动此应用</translation>
 <translation id="2116619964159595185">网站通常会连接到蓝牙设备以实现某些功能（例如设置或同步低功耗信标、健康或健身跟踪器，或智能灯泡）</translation>
 <translation id="2117655453726830283">下一张幻灯片</translation>
 <translation id="2119349053129246860">在“<ph name="APP" />”中打开</translation>
@@ -1673,6 +1673,7 @@
 <translation id="2399699884460174994">通知已开启</translation>
 <translation id="2399939490305346086">安全密钥登录数据</translation>
 <translation id="2400664245143453337">需要立即更新</translation>
+<translation id="2402226831639195063">提示音</translation>
 <translation id="2406153734066939945">删除这份个人资料及其数据？</translation>
 <translation id="2408018932941436077">正在保存信用卡信息</translation>
 <translation id="2408955596600435184">输入您的 PIN 码</translation>
@@ -1684,6 +1685,7 @@
 <translation id="241082044617551207">未知插件</translation>
 <translation id="2410940059315936967">您访问的网站可以嵌入其他网站的内容，例如图片、广告和文字。由这类其他网站设置的 Cookie 称为第三方 Cookie。</translation>
 <translation id="2411666601450687801">不允许在此设备上安装虚拟机</translation>
+<translation id="2412015533711271895">要使用此扩展程序，必须先征得家长或监护人同意</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414886740292270097">深色调</translation>
 <translation id="2416435988630956212">键盘功能键</translation>
@@ -3008,6 +3010,7 @@
 <translation id="3609277884604412258">快速搜索</translation>
 <translation id="3610241585790874201">不得将数据保存在设备上</translation>
 <translation id="3610369246614755442">基座风扇需要维修</translation>
+<translation id="3610961622607302617">更改 <ph name="WEBSITE" /> 的密码</translation>
 <translation id="361106536627977100">闪存数据</translation>
 <translation id="3611655097742243705">如需查找更多应用，请前往 Play 商店</translation>
 <translation id="3611658447322220736">最近关闭的网站可以完成数据收发操作</translation>
@@ -3064,6 +3067,7 @@
 <translation id="3651488188562686558">断开 Wi-Fi 连接</translation>
 <translation id="3652817283076144888">正在初始化</translation>
 <translation id="3653160965917900914">网络文件共享</translation>
+<translation id="3653887973853407813">无法使用此扩展程序。你的家长或监护人已在 Chrome 中关闭“网站、应用和扩展程序的权限”。</translation>
 <translation id="3653999333232393305">继续允许 <ph name="HOST" /> 使用您的麦克风</translation>
 <translation id="3654045516529121250">读取您的无障碍设置</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{此应用对 1 个文件拥有永久访问权限。}other{此应用对 # 个文件拥有永久访问权限。}}</translation>
@@ -3249,7 +3253,6 @@
 <translation id="380329542618494757">名称</translation>
 <translation id="3803345858388753269">视频画质</translation>
 <translation id="3803367742635802571">您访问的网站可能会停止按预期运行</translation>
-<translation id="3803583375545057606">让你的家长启用此扩展程序？</translation>
 <translation id="380408572480438692">启用性能数据收集功能有助于 Google 逐步改进系统。除非您提交反馈报告 (Alt-Shift-I) 并在其中包含性能数据，否则，系统不会发送任何数据。您随时可以返回此页停用性能数据收集功能。</translation>
 <translation id="3807249107536149332">登录屏幕中不允许使用“<ph name="EXTENSION_NAME" />”（扩展程序 ID 为“<ph name="EXTENSION_ID" />”）。</translation>
 <translation id="3807747707162121253">取消(&amp;C)</translation>
@@ -3670,7 +3673,6 @@
 <translation id="4169535189173047238">不允许</translation>
 <translation id="4170314459383239649">退出时清除</translation>
 <translation id="417096670996204801">选择一份个人资料</translation>
-<translation id="41725145403849567">让你的家长添加此扩展程序？</translation>
 <translation id="4175137578744761569">浅紫色和白色</translation>
 <translation id="4175737294868205930">永久存储</translation>
 <translation id="4176463684765177261">已停用</translation>
@@ -5081,7 +5083,6 @@
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN 码必须包含至少 1 个字符}other{PIN 码必须包含至少 # 个字符}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> 要求您立即连接到 Wi-Fi 并下载更新。您也可使用按流量计费的网络连接进行下载（可能需要支付相应费用）。</translation>
 <translation id="5476016146231427848">若要使用 Chromebook 版 Steam，请重启您的设备</translation>
-<translation id="5476897066181964657">你必须先征得家长或监护人的同意，然后才能添加此扩展程序</translation>
 <translation id="5481273127572794904">不允许自动下载多个文件</translation>
 <translation id="5481941284378890518">添加附近的打印机</translation>
 <translation id="5483785310822538350">撤消对文件和设备的访问权限</translation>
@@ -5135,6 +5136,7 @@
 <translation id="5517304475148761050">此应用需要获得对 Play 商店的访问权限</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">当网站想查看复制到剪贴板的文字和图片时询问您</translation>
+<translation id="5518949581554491184">使用 Android 手机进行设置</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">这是您想要的主页吗？</translation>
 <translation id="5522156646677899028">该扩展程序存在严重的安全漏洞。</translation>
@@ -5178,7 +5180,6 @@
 <translation id="5555639311269196631">关闭热点</translation>
 <translation id="5556459405103347317">重新加载</translation>
 <translation id="5558129378926964177">放大(&amp;I)</translation>
-<translation id="5558247502209241936">允许在窗口中打开此应用</translation>
 <translation id="5559311991468302423">删除此地址</translation>
 <translation id="55601339223879446">调整您的桌面在显示屏内的边界</translation>
 <translation id="5561162485081632007">检测危险事件并在此类事件发生时向您发出警告</translation>
@@ -5187,7 +5188,7 @@
     <ph name="BEGIN_PARAGRAPH4" />如果您已为孩子的 Google 帐号开启“网络与应用活动记录”设置，孩子的数据可能会被保存到其 Google 帐号中。访问 families.google.com 可详细了解这些设置及调整方法。<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5562781907504170924">此标签页已连接到蓝牙设备。</translation>
 <translation id="556321030400250233">本地文件或分享的文件</translation>
-<translation id="5563234215388768762">在 Google 上搜索，或者输入一个网址</translation>
+<translation id="5563234215388768762">在 Google 中搜索，或输入网址</translation>
 <translation id="5565735124758917034">主动</translation>
 <translation id="5568069709869097550">无法登录</translation>
 <translation id="5571066253365925590">蓝牙已启用</translation>
@@ -6001,7 +6002,6 @@
 <translation id="6305607932814307878">全局政策：</translation>
 <translation id="6305702903308659374">即使在 ChromeVox 朗读时也以正常音量播放音频</translation>
 <translation id="6305909198255586420">请使用您的主要个人资料进行安装</translation>
-<translation id="630750887748244481">您的家长已为 Chrome 停用“网站、应用和扩展程序的权限”，因此您无法添加这款扩展程序。</translation>
 <translation id="6307990684951724544">系统繁忙</translation>
 <translation id="6308493641021088955">登录服务提供方：<ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">链接另存为(&amp;K)...</translation>
@@ -6022,6 +6022,7 @@
 <translation id="6318125393809743217">添加一个包含政策配置的 policies.json 文件。</translation>
 <translation id="6318407754858604988">已开始下载</translation>
 <translation id="6318944945640833942">无法检测到打印机。请重新输入打印机地址。</translation>
+<translation id="6320808462673705899">没有与您的搜索条件相符的书签。</translation>
 <translation id="6322370287306604163">指纹解锁更快捷</translation>
 <translation id="6322559670748154781">此文件属于不常下载的内容，已被“高级保护”机制屏蔽</translation>
 <translation id="6324916366299863871">修改快捷方式</translation>
@@ -6466,6 +6467,7 @@
 <translation id="6725206449694821596">互联网打印协议 (IPP)</translation>
 <translation id="6725970970008349185">每页显示的候选字词数</translation>
 <translation id="672609503628871915">了解一下新变化</translation>
+<translation id="6726800386221816228">特殊字符</translation>
 <translation id="67269783048918309">发送使用情况数据和诊断数据。目前，此设备会自动向 Google 发送诊断数据、设备数据和应用使用情况数据。这些数据不会被用来辨识您孩子的身份，而是会被用来帮助提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据也会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。这项<ph name="BEGIN_LINK1" />设置<ph name="END_LINK1" />是由此设备的所有者强制指定的。如果您已为孩子开启“其他网络与应用活动记录”设置，这些数据可能会被保存到其 Google 帐号中。<ph name="BEGIN_LINK2" />了解详情<ph name="END_LINK2" /></translation>
 <translation id="6728528977475057549">尾号为 <ph name="LAST_FOUR_DIGITS" /> 的 IBAN</translation>
 <translation id="6729192290958770680">请输入用户名</translation>
@@ -6827,7 +6829,6 @@
 <translation id="7025190659207909717">移动数据服务管理</translation>
 <translation id="7025895441903756761">安全和隐私设置</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{在无痕式窗口中打开全部书签(&amp;I)}=1{在无痕式窗口中打开(&amp;I)}other{在无痕式窗口中打开全部（{COUNT} 个）书签(&amp;I)}}</translation>
-<translation id="7028057921476386252">你必须先征得家长或监护人的同意，然后才能启用此扩展程序</translation>
 <translation id="7029307918966275733">未安装 Crostini。请安装 Crostini 以查看开发人员名单。</translation>
 <translation id="7029809446516969842">密码</translation>
 <translation id="7030304022046916278">会将网址发送给“安全浏览”功能进行检查</translation>
@@ -6869,6 +6870,7 @@
 <translation id="7063129466199351735">处理快捷方式…</translation>
 <translation id="7063311912041006059">网址格式（用“<ph name="SPECIAL_SYMBOL" />”代替搜索字词）</translation>
 <translation id="706342288220489463">允许 Google 助理使用屏幕中的信息为您提供帮助</translation>
+<translation id="70641621694466590">前往“密码”页面</translation>
 <translation id="7064734931812204395">正在配置 Linux 容器。此过程最多可能需要 30 分钟的时间。</translation>
 <translation id="7065223852455347715">此设备已锁定为禁止注册到企业的模式。如果您要注册此设备，必须先完成设备恢复过程。</translation>
 <translation id="7065534935986314333">关于系统</translation>
@@ -7370,6 +7372,7 @@
 <translation id="7541773865713908457">使用“<ph name="APP_NAME" />”应用来<ph name="ACTION_NAME" /></translation>
 <translation id="754207240458482646">已与您帐号中的其他设备同步。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">在此<ph name="IDS_SHORT_PRODUCT_NAME" />设备上启用调试功能</translation>
+<translation id="7544977292347272434">请让你的家长批准此扩展程序</translation>
 <translation id="7545466883021407599">无法连接到服务器。请检查您的网络连接状况，然后重试。如果问题仍然存在，请尝试重启 Chromebook。错误代码：<ph name="ERROR_CODE" />。</translation>
 <translation id="7547317915858803630">警告：您的 <ph name="PRODUCT_NAME" />设置存储在网络驱动器上。这可能会导致速度变慢、崩溃，甚至数据丢失。</translation>
 <translation id="7548856833046333824">酒杯</translation>
@@ -7598,6 +7601,7 @@
 <translation id="7728668285692163452">系统将在稍后应用版本更改</translation>
 <translation id="7730449930968088409">截取您屏幕上的内容</translation>
 <translation id="7730683939467795481">此网页被扩展程序“<ph name="EXTENSION_NAME" />”更改了</translation>
+<translation id="773511996612364297">重音符号</translation>
 <translation id="7735165285389721951">已有一项 Steam 安装正在运行。请等待其完成，然后重试</translation>
 <translation id="7737115349420013392">正在与“<ph name="DEVICE_NAME" />”配对…</translation>
 <translation id="7737203573077018777">已收到<ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" />说明</translation>
@@ -7680,6 +7684,7 @@
 <translation id="7792388396321542707">停止共享</translation>
 <translation id="779308894558717334">浅绿色</translation>
 <translation id="7793098747275782155">深蓝色</translation>
+<translation id="7796453472368605346">变音符号</translation>
 <translation id="7797571222998226653">已关闭</translation>
 <translation id="7798504574384119986">查看网站权限</translation>
 <translation id="7798844538707273832">已自动禁用<ph name="PERMISSION" /></translation>
@@ -7764,6 +7769,7 @@
 <translation id="7876027585589532670">无法修改快捷方式</translation>
 <translation id="7877451762676714207">未知服务器错误。请重试或与服务器管理员联系。</translation>
 <translation id="7878945852730162014">管理下载中的文件，并在下载完成后打开</translation>
+<translation id="7879172417209159252">扩展程序无法使用</translation>
 <translation id="7879478708475862060">按输入法</translation>
 <translation id="7879631849810108578">已成功设置快捷键：<ph name="IDS_SHORT_SET_COMMAND" /></translation>
 <translation id="7880823633812189969">系统会在您重启设备时删除本地数据</translation>
@@ -8206,7 +8212,6 @@
 <translation id="8251509999076836464">正在与“<ph name="DEVICE_NAME" />”配对</translation>
 <translation id="8251578425305135684">已删除缩略图。</translation>
 <translation id="825238165904109940">总是显示完整网址</translation>
-<translation id="8252538334423261825">无法添加扩展程序</translation>
 <translation id="8252569384384439529">正在上传…</translation>
 <translation id="8253198102038551905">点击“+”可查看网络属性</translation>
 <translation id="8255212965098517578">近期的照片、通知和应用</translation>

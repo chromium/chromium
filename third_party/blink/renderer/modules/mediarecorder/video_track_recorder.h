@@ -62,6 +62,7 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     kH264,
 #endif
+    kAv1,
     kLast
   };
 
@@ -112,7 +113,8 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
   // fully operated on a codec-specific SequencedTaskRunner.
   class MODULES_EXPORT Encoder {
    public:
-    Encoder(const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
+    Encoder(scoped_refptr<base::SequencedTaskRunner> encoding_task_runner,
+            const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
             uint32_t bits_per_second);
     virtual ~Encoder();
 
@@ -161,6 +163,8 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     // conversion fails, the original |frame| will be returned.
     scoped_refptr<media::VideoFrame> ConvertToI420ForSoftwareEncoder(
         scoped_refptr<media::VideoFrame> frame);
+
+    const scoped_refptr<base::SequencedTaskRunner> encoding_task_runner_;
 
     // While |paused_|, frames are not encoded.
     bool paused_ = false;
@@ -227,7 +231,9 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     CodecId preferred_codec_id_ = CodecId::kLast;
   };
 
-  explicit VideoTrackRecorder(base::OnceClosure on_track_source_ended_cb);
+  VideoTrackRecorder(
+      scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
+      base::OnceClosure on_track_source_ended_cb);
 
   virtual void Pause() = 0;
   virtual void Resume() = 0;
@@ -236,6 +242,9 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
   virtual void OnEncodedVideoFrameForTesting(
       scoped_refptr<EncodedVideoFrame> frame,
       base::TimeTicks capture_time) {}
+
+ protected:
+  const scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 };
 
 // VideoTrackRecorderImpl uses the inherited WebMediaStreamSink and encodes the
@@ -257,12 +266,14 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
                                        size_t height,
                                        double framerate = 0.0);
 
-  VideoTrackRecorderImpl(CodecProfile codec,
-                         MediaStreamComponent* track,
-                         OnEncodedVideoCB on_encoded_video_cb,
-                         base::OnceClosure on_track_source_ended_cb,
-                         base::OnceClosure on_error_cb,
-                         uint32_t bits_per_second);
+  VideoTrackRecorderImpl(
+      scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
+      CodecProfile codec,
+      MediaStreamComponent* track,
+      OnEncodedVideoCB on_encoded_video_cb,
+      base::OnceClosure on_track_source_ended_cb,
+      base::OnceClosure on_error_cb,
+      uint32_t bits_per_second);
 
   VideoTrackRecorderImpl(const VideoTrackRecorderImpl&) = delete;
   VideoTrackRecorderImpl& operator=(const VideoTrackRecorderImpl&) = delete;
@@ -292,7 +303,7 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
       bool allow_vea_encoder,
       scoped_refptr<media::VideoFrame> frame,
       base::TimeTicks capture_time);
-  void OnError();
+  void OnHardwareEncoderError();
 
   void ConnectToTrack(const VideoCaptureDeliverFrameCB& callback);
   void DisconnectFromTrack();
@@ -324,10 +335,11 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
 // dispatch EncodedVideoFrame content received from a MediaStreamVideoTrack.
 class MODULES_EXPORT VideoTrackRecorderPassthrough : public VideoTrackRecorder {
  public:
-  // TODO(crbug.com/956045): Remove unused `main_task_runner` parameter.
-  VideoTrackRecorderPassthrough(MediaStreamComponent* track,
-                                OnEncodedVideoCB on_encoded_video_cb,
-                                base::OnceClosure on_track_source_ended_cb);
+  VideoTrackRecorderPassthrough(
+      scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
+      MediaStreamComponent* track,
+      OnEncodedVideoCB on_encoded_video_cb,
+      base::OnceClosure on_track_source_ended_cb);
 
   VideoTrackRecorderPassthrough(const VideoTrackRecorderPassthrough&) = delete;
   VideoTrackRecorderPassthrough& operator=(

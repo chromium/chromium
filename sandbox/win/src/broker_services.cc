@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include <utility>
-
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
@@ -54,19 +53,20 @@ enum {
 
 // Transfers parameters to the target events thread during Init().
 struct TargetEventsThreadParams {
-  TargetEventsThreadParams(HANDLE iocp,
-                           HANDLE no_targets,
-                           std::unique_ptr<sandbox::ThreadPool> thread_pool)
+  TargetEventsThreadParams(
+      HANDLE iocp,
+      std::unique_ptr<sandbox::BrokerServicesTargetTracker> target_tracker,
+      std::unique_ptr<sandbox::ThreadPool> thread_pool)
       : iocp(iocp),
-        no_targets(no_targets),
+        target_tracker_(std::move(target_tracker)),
         thread_pool(std::move(thread_pool)) {}
   ~TargetEventsThreadParams() {}
   // IOCP that job notifications and commands are sent to.
   // Handle is closed when BrokerServices is destroyed.
   HANDLE iocp;
-  // Event used when jobs cannot be tracked.
-  // Handle is closed when BrokerServices is destroyed.
-  HANDLE no_targets;
+  // Used in tests to keep track of how many processes are in jobs. Should be
+  // nullptr in production.
+  std::unique_ptr<sandbox::BrokerServicesTargetTracker> target_tracker_;
   // Thread pool used to mediate sandbox IPC, owned by the target
   // events thread but accessed by BrokerServices and TargetProcesses.
   // Destroyed when TargetEventsThread ends.
@@ -122,12 +122,7 @@ DWORD WINAPI TargetEventsThread(PVOID param) {
   std::unique_ptr<TargetEventsThreadParams> params(
       reinterpret_cast<TargetEventsThreadParams*>(param));
 
-  std::set<DWORD> child_process_ids;
   std::list<std::unique_ptr<JobTracker>> jobs;
-
-  int target_counter = 0;
-  int untracked_target_counter = 0;
-  ::ResetEvent(params->no_targets);
 
   while (true) {
     DWORD event = 0;
@@ -165,8 +160,6 @@ DWORD WINAPI TargetEventsThread(PVOID param) {
           // with it has terminated. It is safe to free the tracker
           // and release its reference to the associated policy object
           // which will Close the job handle.
-
-          // Erase directly.
           jobs.erase(std::remove_if(
                          jobs.begin(), jobs.end(),
                          [&](auto&& p) -> bool { return p.get() == tracker; }),
@@ -176,40 +169,29 @@ DWORD WINAPI TargetEventsThread(PVOID param) {
 
         case JOB_OBJECT_MSG_NEW_PROCESS: {
           // Child process created from sandboxed process.
-          DWORD process_id =
-              static_cast<DWORD>(reinterpret_cast<uintptr_t>(ovl));
-          size_t count = child_process_ids.count(process_id);
-          if (count == 0)
-            untracked_target_counter++;
-          ++target_counter;
-          if (1 == target_counter) {
-            ::ResetEvent(params->no_targets);
+          if (params->target_tracker_) {
+            params->target_tracker_->OnTargetAdded();
           }
           break;
         }
 
         case JOB_OBJECT_MSG_EXIT_PROCESS:
         case JOB_OBJECT_MSG_ABNORMAL_EXIT_PROCESS: {
-          size_t erase_result = child_process_ids.erase(
-              static_cast<DWORD>(reinterpret_cast<uintptr_t>(ovl)));
-          if (erase_result != 1U) {
-            // The process was untracked e.g. a child process of the target.
-            --untracked_target_counter;
-            DCHECK(untracked_target_counter >= 0);
+          if (params->target_tracker_) {
+            params->target_tracker_->OnTargetRemoved();
           }
-          --target_counter;
-          if (0 == target_counter)
-            ::SetEvent(params->no_targets);
-
-          DCHECK(target_counter >= 0);
           break;
         }
 
         case JOB_OBJECT_MSG_ACTIVE_PROCESS_LIMIT: {
           // A child process attempted and failed to create a child process.
+          // Counters must increment here as Windows will also send us a
+          // JOB_OBJECT_MSG_EXIT_PROCESS notification for the failed-to-start
+          // process.
           // Windows does not reveal the process id.
-          untracked_target_counter++;
-          target_counter++;
+          if (params->target_tracker_) {
+            params->target_tracker_->OnTargetAdded();
+          }
           break;
         }
 
@@ -217,6 +199,10 @@ DWORD WINAPI TargetEventsThread(PVOID param) {
           bool res = ::TerminateJobObject(tracker->policy->GetJobHandle(),
                                           sandbox::SBOX_FATAL_MEMORY_EXCEEDED);
           DCHECK(res);
+          // We also get the ACTIVE_PROCESS_ZERO event which reaps the job.
+          if (params->target_tracker_) {
+            params->target_tracker_->OnTargetRemoved();
+          }
           break;
         }
 
@@ -230,7 +216,6 @@ DWORD WINAPI TargetEventsThread(PVOID param) {
       tracker.reset(reinterpret_cast<JobTracker*>(ovl));
       DCHECK(tracker->policy->HasJob());
 
-      child_process_ids.insert(tracker->process_id);
       jobs.push_back(std::move(tracker));
     } else if (THREAD_CTRL_GET_POLICY_INFO == key) {
       // Clone the policies for sandbox diagnostics.
@@ -270,7 +255,8 @@ BrokerServicesBase::BrokerServicesBase() {}
 
 // The broker uses a dedicated worker thread that services the job completion
 // port to perform policy notifications and associated cleanup tasks.
-ResultCode BrokerServicesBase::Init() {
+ResultCode BrokerServicesBase::Init(
+    std::unique_ptr<BrokerServicesTargetTracker> target_tracker) {
   if (job_port_.IsValid() || thread_pool_)
     return SBOX_ERROR_UNEXPECTED_CALL;
 
@@ -278,13 +264,10 @@ ResultCode BrokerServicesBase::Init() {
   if (!job_port_.IsValid())
     return SBOX_ERROR_CANNOT_INIT_BROKERSERVICES;
 
-  no_targets_.Set(::CreateEventW(nullptr, true, false, nullptr));
-  if (!no_targets_.IsValid())
-    return SBOX_ERROR_CANNOT_INIT_BROKERSERVICES;
-
   // We transfer ownership of this memory to the thread.
   auto params = std::make_unique<TargetEventsThreadParams>(
-      job_port_.Get(), no_targets_.Get(), std::make_unique<ThreadPool>());
+      job_port_.Get(), std::move(target_tracker),
+      std::make_unique<ThreadPool>());
 
   // We keep the thread alive until our destructor so we can use a raw
   // pointer to the thread pool.
@@ -310,6 +293,16 @@ ResultCode BrokerServicesBase::Init() {
 
   params.release();
   return SBOX_ALL_OK;
+}
+
+ResultCode BrokerServicesBase::Init() {
+  return BrokerServicesBase::Init(nullptr);
+}
+
+// Only called in test code.
+ResultCode BrokerServicesBase::InitForTesting(
+    std::unique_ptr<BrokerServicesTargetTracker> target_tracker) {
+  return BrokerServicesBase::Init(std::move(target_tracker));
 }
 
 // The destructor should only be called when the Broker process is terminating.
@@ -511,11 +504,6 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
 
   *target_info = process_info.Take();
   return result;
-}
-
-ResultCode BrokerServicesBase::WaitForAllTargets() {
-  ::WaitForSingleObject(no_targets_.Get(), INFINITE);
-  return SBOX_ALL_OK;
 }
 
 ResultCode BrokerServicesBase::GetPolicyDiagnostics(

@@ -85,7 +85,7 @@ class LocalFrameBackForwardCacheTest : public testing::Test,
 TEST_F(LocalFrameBackForwardCacheTest, EvictionOnV8ExecutionAtMicrotask) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
-      features::kBackForwardCacheNotReachedOnJavaScriptExecution);
+      features::kBackForwardCacheDWCOnJavaScriptExecution);
   frame_test_helpers::TestWebFrameClient web_frame_client;
   TestLocalFrameBackForwardCacheClient frame_host(
       web_frame_client.GetRemoteNavigationAssociatedInterfaces());

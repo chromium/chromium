@@ -23,9 +23,17 @@ class ASH_EXPORT InputDeviceSettingsMetricsManager {
   ~InputDeviceSettingsMetricsManager();
 
   void RecordKeyboardInitialMetrics(const mojom::Keyboard& keyboard);
+  void RecordMouseInitialMetrics(const mojom::Mouse& mouse);
+  void RecordPointingStickInitialMetrics(
+      const mojom::PointingStick& pointingStick);
+  void RecordTouchpadInitialMetrics(const mojom::Touchpad& touchpad);
 
  private:
-  base::flat_map<AccountId, base::flat_set<uint32_t>> recorded_keyboards_;
+  base::flat_map<AccountId, base::flat_set<std::string>> recorded_keyboards_;
+  base::flat_map<AccountId, base::flat_set<std::string>> recorded_mice_;
+  base::flat_map<AccountId, base::flat_set<std::string>>
+      recorded_pointing_sticks_;
+  base::flat_map<AccountId, base::flat_set<std::string>> recorded_touchpads_;
 };
 
 }  // namespace ash

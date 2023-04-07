@@ -57,16 +57,15 @@ class AboutThisSiteService : public KeyedService {
     kNotShownNonGoogleDSE = 6,
     kNotShownLocalHost = 7,
     kNotShownOptimizationGuideNotAllowed = 8,
-    kShownWithoutMsbb = 9,
+    // kShownWithoutMsbb = 9 deprecated
     kSameTabNavigation = 10,
 
-    kMaxValue = kSameTabNavigation,
+    kMaxValue = kSameTabNavigation
   };
 
   explicit AboutThisSiteService(std::unique_ptr<Client> client,
                                 TemplateURLService* template_url_service,
-                                bool allow_missing_description,
-                                bool allow_non_msbb_users);
+                                bool allow_missing_description);
   ~AboutThisSiteService() override;
 
   AboutThisSiteService(const AboutThisSiteService&) = delete;
@@ -77,7 +76,7 @@ class AboutThisSiteService : public KeyedService {
       const GURL& url,
       ukm::SourceId source_id) const;
 
-  static GURL CreateMoreAboutUrl(const GURL& url);
+  static GURL CreateMoreAboutUrlForNavigation(const GURL& url);
   static void OnAboutThisSiteRowClicked(bool with_description);
   static void OnOpenedDirectlyFromSidePanel();
   static void OnSameTabNavigation();
@@ -88,7 +87,6 @@ class AboutThisSiteService : public KeyedService {
   std::unique_ptr<Client> client_;
   raw_ptr<TemplateURLService> template_url_service_;
   const bool allow_missing_description_;
-  const bool allow_non_msbb_users_;
 
   base::WeakPtrFactory<AboutThisSiteService> weak_ptr_factory_{this};
 };

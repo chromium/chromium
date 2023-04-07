@@ -476,7 +476,8 @@ void ParseUsingPredictions(std::vector<ProcessedField>* processed_fields,
     if (prediction.type == autofill::CREDIT_CARD_VERIFICATION_CODE ||
         prediction.type == autofill::CREDIT_CARD_NUMBER) {
       current_field->server_hints_credit_card_field = true;
-    } else if (prediction.type == autofill::NOT_PASSWORD) {
+    } else if (prediction.type == autofill::NOT_PASSWORD ||
+               prediction.type == autofill::ONE_TIME_CODE) {
       current_field->server_hints_not_password = true;
     } else if (prediction.type == autofill::NOT_USERNAME) {
       current_field->server_hints_not_username = true;
@@ -943,21 +944,21 @@ void SetFields(const SignificantFields& significant_fields,
 // parsing and wraps that in a ProcessedField. Returns the vector of all those
 // ProcessedField instances, or an empty vector if there was not a single
 // password field. Also, computes the vector of all password values and
-// associated element names in |all_possible_passwords|, and similarly for
-// usernames in |all_possible_usernames|. If |mode| is |kSaving|, fields with
+// associated element names in |all_alternative_passwords|, and similarly for
+// usernames in |all_alternative_usernames|. If |mode| is |kSaving|, fields with
 // empty values are ignored.
 std::vector<ProcessedField> ProcessFields(
     const std::vector<FormFieldData>& fields,
-    AlternativeElementVector* all_possible_passwords,
-    AlternativeElementVector* all_possible_usernames,
+    AlternativeElementVector* all_alternative_passwords,
+    AlternativeElementVector* all_alternative_usernames,
     FormDataParser::Mode mode) {
-  DCHECK(all_possible_passwords);
-  DCHECK(all_possible_passwords->empty());
+  CHECK(all_alternative_passwords);
+  CHECK(all_alternative_passwords->empty());
 
   std::vector<ProcessedField> result;
   result.reserve(fields.size());
 
-  // |all_possible_passwords| should only contain each value once.
+  // |all_alternative_passwords| should only contain each value once.
   // |seen_password_values| ensures that duplicates are ignored.
   std::set<base::StringPiece16> seen_password_values;
   // Similarly for usernames.
@@ -979,13 +980,13 @@ std::vector<ProcessedField> ProcessFields(
     if (!field_value.empty()) {
       std::set<base::StringPiece16>& seen_values =
           is_password ? seen_password_values : seen_username_values;
-      AlternativeElementVector* all_possible_fields =
-          is_password ? all_possible_passwords : all_possible_usernames;
+      AlternativeElementVector* all_alternative_fields =
+          is_password ? all_alternative_passwords : all_alternative_usernames;
       // Only the field name of the first occurrence is added.
       auto insertion = seen_values.insert(field_value);
       if (insertion.second) {
         // There was no such element in |seen_values|.
-        all_possible_fields->emplace_back(
+        all_alternative_fields->emplace_back(
             AlternativeElement::Value(field_value), field.unique_renderer_id,
             AlternativeElement::Name(field.name));
       }
@@ -1033,16 +1034,16 @@ bool GetMayUsePrefilledPlaceholder(
 // Puts together a PasswordForm, the result of the parsing, based on the
 // |form_data| description of the form metadata (e.g., action), the already
 // parsed information about what are the |significant_fields|, the list
-// |all_possible_passwords| of all non-empty password values which occurred in
-// the form and their associated element names, and the list
-// |all_possible_usernames| of all non-empty username values which
+// |all_alternative_passwords| of all non-empty password values which occurred
+// in the form and their associated element names, and the list
+// |all_alternative_usernames| of all non-empty username values which
 // occurred in the form and their associated elements. |form_predictions| is
 // used to find fields that may have preffilled placeholders.
 std::unique_ptr<PasswordForm> AssemblePasswordForm(
     const FormData& form_data,
     const SignificantFields& significant_fields,
-    AlternativeElementVector all_possible_passwords,
-    AlternativeElementVector all_possible_usernames,
+    AlternativeElementVector all_alternative_passwords,
+    AlternativeElementVector all_alternative_usernames,
     const absl::optional<FormPredictions>& form_predictions) {
   if (!significant_fields.HasPasswords() &&
       !significant_fields.is_single_username &&
@@ -1056,8 +1057,8 @@ std::unique_ptr<PasswordForm> AssemblePasswordForm(
   result->signon_realm = GetSignonRealm(form_data.url);
   result->action = form_data.action;
   result->form_data = form_data;
-  result->all_possible_passwords = std::move(all_possible_passwords);
-  result->all_possible_usernames = std::move(all_possible_usernames);
+  result->all_alternative_passwords = std::move(all_alternative_passwords);
+  result->all_alternative_usernames = std::move(all_alternative_usernames);
   result->scheme = PasswordForm::Scheme::kHtml;
   result->blocked_by_user = false;
   result->type = PasswordForm::Type::kFormSubmission;
@@ -1097,10 +1098,11 @@ std::unique_ptr<PasswordForm> FormDataParser::Parse(const FormData& form_data,
     return nullptr;
 
   readonly_status_ = ReadonlyPasswordFields::kNoHeuristics;
-  AlternativeElementVector all_possible_passwords;
-  AlternativeElementVector all_possible_usernames;
-  std::vector<ProcessedField> processed_fields = ProcessFields(
-      form_data.fields, &all_possible_passwords, &all_possible_usernames, mode);
+  AlternativeElementVector all_alternative_passwords;
+  AlternativeElementVector all_alternative_usernames;
+  std::vector<ProcessedField> processed_fields =
+      ProcessFields(form_data.fields, &all_alternative_passwords,
+                    &all_alternative_usernames, mode);
 
   if (processed_fields.empty())
     return nullptr;
@@ -1204,9 +1206,9 @@ std::unique_ptr<PasswordForm> FormDataParser::Parse(const FormData& form_data,
   base::UmaHistogramEnumeration("PasswordManager.UsernameDetectionMethod",
                                 method);
 
-  return AssemblePasswordForm(form_data, significant_fields,
-                              std::move(all_possible_passwords),
-                              std::move(all_possible_usernames), predictions_);
+  return AssemblePasswordForm(
+      form_data, significant_fields, std::move(all_alternative_passwords),
+      std::move(all_alternative_usernames), predictions_);
 }
 
 std::string GetSignonRealm(const GURL& url) {

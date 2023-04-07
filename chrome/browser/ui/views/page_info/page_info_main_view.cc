@@ -85,6 +85,8 @@ absl::optional<ui::ImageModel> GetAboutThisSiteSecondaryIcon() {
 }  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMainView, kCookieButtonElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMainView, kMainLayoutElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMainView, kPermissionsElementId);
 
 PageInfoMainView::ContainerView::ContainerView() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -128,6 +130,8 @@ PageInfoMainView::PageInfoMainView(
   permissions_view_ = AddChildView(std::make_unique<views::View>());
   permissions_view_->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
+
+  SetProperty(views::kElementIdentifierKey, kMainLayoutElementId);
 
   site_settings_view_ = AddChildView(CreateContainerView());
 
@@ -274,6 +278,8 @@ void PageInfoMainView::SetPermissionInfo(
   content_view->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
   content_view->SetID(PageInfoViewFactory::VIEW_ID_PAGE_INFO_PERMISSION_VIEW);
+  content_view->SetProperty(views::kElementIdentifierKey,
+                            kPermissionsElementId);
 
   // If there is a permission that supports one time grants, offset all other
   // permissions to align toggles.

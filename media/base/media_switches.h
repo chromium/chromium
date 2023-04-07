@@ -401,9 +401,12 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kExposeOutOfProcessVideoDecodingToLacros);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+// Note: please use IsOutOfProcessVideoDecodingEnabled() to determine if OOP-VD
+// is enabled instead of directly checking this feature flag. The reason is that
+// that function may perform checks beyond the feature flag.
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseOutOfProcessVideoDecoding);
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseOutOfProcessVideoEncoding);
@@ -435,6 +438,10 @@ MEDIA_EXPORT bool IsMultiPlaneFormatForHardwareVideoEnabled();
 #if BUILDFLAG(IS_WIN)
 MEDIA_EXPORT bool IsMediaFoundationD3D11VideoCaptureEnabled();
 #endif
+
+#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+MEDIA_EXPORT bool IsOutOfProcessVideoDecodingEnabled();
+#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
 enum class kCrosGlobalMediaControlsPinOptions {
   kPin,

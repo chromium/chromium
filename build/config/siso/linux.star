@@ -4,13 +4,13 @@
 # found in the LICENSE file.
 
 load("@builtin//struct.star", "module")
+load("./simple.star", "simple")
 
 __filegroups = {}
 
 __handlers = {}
 
-def __step_config(ctx):
-    step_config = {}
+def __step_config(ctx, step_config):
     step_config["platforms"] = {
         "default": {
             "OSFamily": "Linux",

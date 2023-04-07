@@ -26,19 +26,25 @@ const darkThemeBackgroundSkColor =
     rgbToSkColor(style.getPropertyValue('--google-grey-900-rgb'));
 const lightThemeBackgroundSkColor =
     rgbToSkColor(style.getPropertyValue('--google-grey-50-rgb'));
+const yellowThemeBackgroundSkColor =
+    rgbToSkColor(style.getPropertyValue('--google-yellow-200-rgb'));
 const darkThemeEmptyStateBodyColor = 'var(--google-grey-500)';
 const defaultThemeEmptyStateBodyColor = 'var(--google-grey-700)';
+const darkThemeLinkColors: LinkColor = {
+  default: 'var(--google-blue-300)',
+  visited: 'var(--google-purple-200)',
+};
 const defaultLinkColors: LinkColor = {
   default: 'var(--google-blue-900)',
   visited: 'var(--google-purple-900)',
 };
-const darkThemeLinkColors: LinkColor = {
-  default: 'var(--google-blue-300)',
-  visited: 'var(--google-purple-100)',
+const lightThemeLinkColors: LinkColor = {
+  default: 'var(--google-blue-800)',
+  visited: 'var(--google-purple-900)',
 };
-const lightThemeSelectionColor = 'var(--google-yellow-100)';
-const darkThemeSelectionColor = 'var(--google-blue-300)';
-const defaultThemeSelctionColor = 'var(--google-blue-100)';
+const darkThemeSelectionColor = 'var(--google-blue-200)';
+const defaultSelectionColor = 'var(--google-yellow-100)';
+const yellowThemeSelectionColor = 'var(--google-blue-100)';
 
 // A two-way map where each key is unique and each value is unique. The keys are
 // DOM nodes and the values are numbers, representing AXNodeIDs.
@@ -308,8 +314,14 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   private getLinkColor_(backgroundSkColor: SkColor): LinkColor {
-    const isDark = backgroundSkColor.value === darkThemeBackgroundSkColor.value;
-    return isDark ? darkThemeLinkColors : defaultLinkColors;
+    switch (backgroundSkColor.value) {
+      case darkThemeBackgroundSkColor.value:
+        return darkThemeLinkColors;
+      case lightThemeBackgroundSkColor.value:
+        return lightThemeLinkColors;
+      default:
+        return defaultLinkColors;
+    }
   }
 
   private getEmptyStateBodyColor_(backgroundSkColor: SkColor): string {
@@ -320,12 +332,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   private getSelectionColor_(backgroundSkColor: SkColor): string {
     switch (backgroundSkColor.value) {
-      case lightThemeBackgroundSkColor.value:
-        return lightThemeSelectionColor;
       case darkThemeBackgroundSkColor.value:
         return darkThemeSelectionColor;
+      case yellowThemeBackgroundSkColor.value:
+        return yellowThemeSelectionColor;
       default:
-        return defaultThemeSelctionColor;
+        return defaultSelectionColor;
     }
   }
 

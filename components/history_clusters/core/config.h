@@ -347,11 +347,6 @@ struct Config {
   // considered to be fully frozen and triggerability can be finalized.
   base::TimeDelta cluster_triggerability_cutoff_duration = base::Minutes(120);
 
-  // Whether to continue fetching persisted clusters when updating cluster
-  // triggerability even if all returned clusters had their triggerability
-  // calculated already.
-  bool fetch_persisted_clusters_after_filtered_clusters_empty = true;
-
   // WebUI features and params.
 
   // Whether show either the hide visits thumbs-down or menu item on individual
@@ -360,6 +355,16 @@ struct Config {
 
   // Whether to the icon or menu item.
   bool hide_visits_icon = true;
+
+  // The `kUseUrlForDisplayCache` feature and child params.
+
+  // Whether to use a cache to store the site engagement scores per host. Used
+  // in both the old (OnDeviceClusteringBackend) and new
+  // (ContextClustererHistoryServiceObserver) clustering paths.
+  bool use_url_for_display_cache = false;
+
+  // The max number of URLs that should be stored in the URL for display cache.
+  int url_for_display_cache_size = 100;
 
   // Lonely features without child params.
 

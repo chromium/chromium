@@ -26,6 +26,11 @@ const char kAppStoreRatingDescription[] =
     "When enabled, App Store Rating promo will be presented to eligible "
     "users.";
 
+const char kAutofillAccountProfilesStorageName[] =
+    "Enable profile saving in Google Account";
+const char kAutofillAccountProfilesStorageDescription[] =
+    "When enabled, the profiles would be saved to the Google Account";
+
 const char kAutofillAccountProfilesUnionViewName[] =
     "Enable compatibility with GAS";
 const char kAutofillAccountProfilesUnionViewDescription[] =

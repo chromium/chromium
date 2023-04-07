@@ -32,7 +32,7 @@ export function generateStatsLabel(report) {
   let labels = [];
   if (['outbound-rtp', 'remote-outbound-rtp', 'inbound-rtp',
       'remote-inbound-rtp'].includes(report.type) && report.stats.values) {
-    labels = ['kind', 'mid', 'rid', 'ssrc', '[codec]'];
+    labels = ['kind', 'mid', 'rid', 'ssrc', 'scalabilityMode', '[codec]'];
   } else if (['local-candidate', 'remote-candidate'].includes(report.type)) {
     labels = ['candidateType', 'tcpType', 'relayProtocol'];
   } else if (report.type === 'codec') {

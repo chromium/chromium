@@ -5,13 +5,14 @@
 #ifndef FUCHSIA_WEB_RUNNERS_CAST_PENDING_CAST_COMPONENT_H_
 #define FUCHSIA_WEB_RUNNERS_CAST_PENDING_CAST_COMPONENT_H_
 
+#include <chromium/cast/cpp/fidl.h>
 #include <fuchsia/component/runner/cpp/fidl.h>
 #include <lib/fidl/cpp/interface_request.h>
+
 #include <memory>
 
 #include "base/strings/string_piece.h"
 #include "fuchsia_web/runners/cast/cast_component.h"
-#include "fuchsia_web/runners/cast/fidl/fidl/hlcpp/chromium/cast/cpp/fidl.h"
 
 namespace base {
 class StartupContext;

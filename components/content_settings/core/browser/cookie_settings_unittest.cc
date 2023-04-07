@@ -279,6 +279,32 @@ TEST(CookieSettings, TestDefaultStorageAccessSetting) {
 }
 #endif
 
+TEST_P(CookieSettingsTest, UserBypass) {
+  // Bypass shouldn't be enabled.
+  EXPECT_FALSE(
+      cookie_settings_->IsStoragePartitioningBypassEnabled(kFirstPartySite));
+  EXPECT_FALSE(
+      cookie_settings_->IsStoragePartitioningBypassEnabled(kBlockedSite));
+
+  cookie_settings_->SetCookieSettingForUserBypass(kFirstPartySite);
+
+  // Bypass should only be enabled for |kFirstPartySite| with non-bypassed
+  // site(s) unaffected.
+  EXPECT_TRUE(
+      cookie_settings_->IsStoragePartitioningBypassEnabled(kFirstPartySite));
+  EXPECT_FALSE(
+      cookie_settings_->IsStoragePartitioningBypassEnabled(kBlockedSite));
+
+  FastForwardTime(cookie_settings_->kUserBypassEntriesTTL + base::Seconds(1));
+
+  // Passing the expiry of the user bypass entries should disable user bypass
+  // for |kFirstPartySite| leaving non-bypassed site(s) unaffected.
+  EXPECT_FALSE(
+      cookie_settings_->IsStoragePartitioningBypassEnabled(kFirstPartySite));
+  EXPECT_FALSE(
+      cookie_settings_->IsStoragePartitioningBypassEnabled(kBlockedSite));
+}
+
 TEST_P(CookieSettingsTest, TestAllowlistedScheme) {
   cookie_settings_->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
   EXPECT_FALSE(cookie_settings_->IsFullCookieAccessAllowed(

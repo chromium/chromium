@@ -1450,7 +1450,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_jetbrains_kotlin_kotlin_stdlib_jdk7_java") {
-    jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib_jdk7/kotlin-stdlib-jdk7-1.8.0.jar"
+    jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib_jdk7/kotlin-stdlib-jdk7-1.8.20.jar"
     output_name = "org_jetbrains_kotlin_kotlin_stdlib_jdk7"
     supports_android = true
     deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
@@ -1458,7 +1458,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_jetbrains_kotlin_kotlin_stdlib_jdk8_java") {
-    jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib_jdk8/kotlin-stdlib-jdk8-1.8.0.jar"
+    jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib_jdk8/kotlin-stdlib-jdk8-1.8.20.jar"
     output_name = "org_jetbrains_kotlin_kotlin_stdlib_jdk8"
     supports_android = true
     deps = [
@@ -1469,7 +1469,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_jetbrains_kotlinx_kotlinx_coroutines_android_java") {
-    jar_path = "libs/org_jetbrains_kotlinx_kotlinx_coroutines_android/kotlinx-coroutines-android-1.6.1.jar"
+    jar_path = "libs/org_jetbrains_kotlinx_kotlinx_coroutines_android/kotlinx-coroutines-android-1.6.4.jar"
     output_name = "org_jetbrains_kotlinx_kotlinx_coroutines_android"
     supports_android = true
     deps = [
@@ -1481,7 +1481,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm_java") {
-    jar_path = "libs/org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm/kotlinx-coroutines-core-jvm-1.6.1.jar"
+    jar_path = "libs/org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm/kotlinx-coroutines-core-jvm-1.6.4.jar"
     output_name = "org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm"
     supports_android = true
     deps = [

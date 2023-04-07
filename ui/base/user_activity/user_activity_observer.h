@@ -22,7 +22,9 @@ class COMPONENT_EXPORT(UI_BASE) UserActivityObserver {
 
   // Invoked periodically while the user is active (i.e. generating input
   // events). |event| is the event that triggered the notification; it may
-  // be NULL in some cases (e.g. testing or synthetic invocations).
+  // be NULL in some cases (e.g. testing, synthetic invocations or external user
+  // activities reported by Chrome extensions). The Imprivata extension reports
+  // external user activities (with NULL events) via the chrome.login API.
   virtual void OnUserActivity(const ui::Event* event) = 0;
 
  protected:

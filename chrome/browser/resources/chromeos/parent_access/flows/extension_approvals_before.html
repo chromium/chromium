@@ -1,50 +1,11 @@
 <style>
-  #before-screen-content {
-    color: var(--cros-color-primary);
-    display: flex;
-    flex-direction: column;
-  }
-
-  #title {
-    font-family: var(--cros-font-family-google-sans);
-    font-size: 24px;
-    font-weight: 500;
-    margin-bottom: 0;
-    margin-top: 16px;
-  }
-
-  #subtitle {
-    align-items: center;
-    color: var(--cros-color-secondary);
-    display: flex;
-    font: var(--cros-body-1-font);
-    margin-top: 16px;
-  }
-
-  #extension-title {
-    align-items: center;
-    display: flex;
-    margin-top: 24px;
-  }
-
-  #icon {
-    height: 32px;
-    margin-inline-end: 16px;
-    width: 32px;
-  }
-
-  #extension-name {
-    font-family: var(--cros-font-family-google-sans);
-    font-size: 16px;
-    font-weight: 500;
+  /* Set max height so scrolling container renders properly. */
+  extension-approvals-template::part(content) {
+    max-height: 325px;
   }
 </style>
 
-<div id="before-screen-content">
-  <h2 id="title">$i18n{extensionApprovalsBeforeTitle}</h2>
-  <div id="subtitle">$i18n{extensionApprovalsBeforeSubtitle}</div>
-  <div id="extension-title">
-    <img id="icon" src="[[extensionIconSrc]]" alt=""></img>
-    <div id="extension-name">[[extensionName]]</div>
-  </div>
-</div>
+<extension-approvals-template
+  title="$i18n{extensionApprovalsBeforeTitle}"
+  subtitle="$i18n{extensionApprovalsBeforeSubtitle}">
+</extension-approvals-template>

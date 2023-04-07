@@ -44,8 +44,8 @@ class It2MeConfirmationDialogChromeOSTest
   }
 
   void TearDown() override {
+    dialog.reset();
     message_center::MessageCenter::Shutdown();
-    dialog.release();
   }
 
   message_center::MessageCenter& message_center() const {

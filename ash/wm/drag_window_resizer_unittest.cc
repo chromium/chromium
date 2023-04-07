@@ -19,6 +19,7 @@
 #include "base/strings/stringprintf.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/client/cursor_shape_client.h"
 #include "ui/aura/env.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
@@ -722,6 +723,7 @@ TEST_F(DragWindowResizerTest, CursorDeviceScaleFactor) {
       display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[1]);
 
   auto* cursor_manager = Shell::Get()->cursor_manager();
+  const auto& cursor_shape_client = aura::client::GetCursorShapeClient();
   // Move window from the root window with 1.0 device scale factor to the root
   // window with 2.0 device scale factor.
   {
@@ -730,13 +732,19 @@ TEST_F(DragWindowResizerTest, CursorDeviceScaleFactor) {
     // Grab (0, 0) of the window.
     std::unique_ptr<WindowResizer> resizer(
         CreateDragWindowResizer(window_.get(), gfx::Point(), HTCAPTION));
-    EXPECT_EQ(1.0f, cursor_manager->GetCursor().image_scale_factor());
+    EXPECT_EQ(1.0f,
+              cursor_shape_client.GetCursorData(cursor_manager->GetCursor())
+                  ->scale_factor);
     ASSERT_TRUE(resizer.get());
     resizer->Drag(CalculateDragPoint(*resizer, 399, 200), 0);
     TestIfMouseWarpsAt(gfx::Point(699, 200));
-    EXPECT_EQ(2.0f, cursor_manager->GetCursor().image_scale_factor());
+    EXPECT_EQ(2.0f,
+              cursor_shape_client.GetCursorData(cursor_manager->GetCursor())
+                  ->scale_factor);
     resizer->CompleteDrag();
-    EXPECT_EQ(2.0f, cursor_manager->GetCursor().image_scale_factor());
+    EXPECT_EQ(2.0f,
+              cursor_shape_client.GetCursorData(cursor_manager->GetCursor())
+                  ->scale_factor);
   }
 
   // Move window from the root window with 2.0 device scale factor to the root
@@ -747,13 +755,19 @@ TEST_F(DragWindowResizerTest, CursorDeviceScaleFactor) {
     // Grab (0, 0) of the window.
     std::unique_ptr<WindowResizer> resizer(
         CreateDragWindowResizer(window_.get(), gfx::Point(), HTCAPTION));
-    EXPECT_EQ(2.0f, cursor_manager->GetCursor().image_scale_factor());
+    EXPECT_EQ(2.0f,
+              cursor_shape_client.GetCursorData(cursor_manager->GetCursor())
+                  ->scale_factor);
     ASSERT_TRUE(resizer.get());
     resizer->Drag(CalculateDragPoint(*resizer, -200, 200), 0);
     TestIfMouseWarpsAt(gfx::Point(400, 200));
-    EXPECT_EQ(1.0f, cursor_manager->GetCursor().image_scale_factor());
+    EXPECT_EQ(1.0f,
+              cursor_shape_client.GetCursorData(cursor_manager->GetCursor())
+                  ->scale_factor);
     resizer->CompleteDrag();
-    EXPECT_EQ(1.0f, cursor_manager->GetCursor().image_scale_factor());
+    EXPECT_EQ(1.0f,
+              cursor_shape_client.GetCursorData(cursor_manager->GetCursor())
+                  ->scale_factor);
   }
 }
 

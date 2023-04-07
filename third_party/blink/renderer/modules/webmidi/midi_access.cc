@@ -69,7 +69,8 @@ MIDIAccess::MIDIAccess(
     bool sysex_enabled,
     const Vector<MIDIAccessInitializer::PortDescriptor>& ports,
     ExecutionContext* execution_context)
-    : ExecutionContextLifecycleObserver(execution_context),
+    : ActiveScriptWrappable<MIDIAccess>({}),
+      ExecutionContextLifecycleObserver(execution_context),
       dispatcher_(dispatcher),
       sysex_enabled_(sysex_enabled),
       has_pending_activity_(false) {

@@ -266,8 +266,10 @@ class FederatedAuthUserInfoRequestTest : public RenderViewHostImplTestHarness {
         std::make_unique<TestIdpNetworkRequestManager>(config);
 
     blink::mojom::IdentityProviderConfigPtr idp_ptr =
-        blink::mojom::IdentityProviderConfig::New(
-            GURL(kProviderUrl), kClientId, kNonce, /*login_hit=*/nullptr);
+        blink::mojom::IdentityProviderConfig::New();
+    idp_ptr->config_url = GURL(kProviderUrl);
+    idp_ptr->client_id = kClientId;
+    idp_ptr->nonce = kNonce;
 
     UserInfoCallbackHelper callback_helper;
     std::unique_ptr<FederatedAuthUserInfoRequest> request =

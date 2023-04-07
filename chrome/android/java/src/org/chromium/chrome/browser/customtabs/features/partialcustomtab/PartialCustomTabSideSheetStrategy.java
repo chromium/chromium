@@ -364,7 +364,7 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         int leftDividerInset = mSheetOnRight ? width : 0;
         int rightDividerInset = !mSheetOnRight ? width : 0;
 
-        drawDividerLine(leftDividerInset, 0, rightDividerInset, toolbar);
+        drawDividerLineBase(leftDividerInset, 0, rightDividerInset, toolbar);
     }
 
     @Override

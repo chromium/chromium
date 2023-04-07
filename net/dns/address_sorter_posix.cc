@@ -402,15 +402,14 @@ void AddressSorterPosix::OnIPAddressChanged() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   source_map_.clear();
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  const internal::AddressTrackerLinux* tracker =
-      NetworkChangeNotifier::GetAddressTracker();
-  if (!tracker)
+  // TODO(crbug.com/1431364): This always returns nullptr on ChromeOS.
+  const AddressMapOwnerLinux* address_map_owner =
+      NetworkChangeNotifier::GetAddressMapOwner();
+  if (!address_map_owner) {
     return;
-  typedef internal::AddressTrackerLinux::AddressMap AddressMap;
-  AddressMap map = tracker->GetAddressMap();
-  for (AddressMap::const_iterator it = map.begin(); it != map.end(); ++it) {
-    const IPAddress& address = it->first;
-    const struct ifaddrmsg& msg = it->second;
+  }
+  AddressMapOwnerLinux::AddressMap map = address_map_owner->GetAddressMap();
+  for (const auto& [address, msg] : map) {
     SourceAddressInfo& info = source_map_[address];
     info.native = false;  // TODO(szym): obtain this via netlink.
     info.deprecated = msg.ifa_flags & IFA_F_DEPRECATED;

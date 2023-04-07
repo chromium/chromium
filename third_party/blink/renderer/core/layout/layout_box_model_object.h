@@ -503,11 +503,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
       bool first_line,
       LineDirectionMode,
       LinePositionMode = kPositionOnContainingLine) const = 0;
-  virtual LayoutUnit BaselinePosition(
-      FontBaseline,
-      bool first_line,
-      LineDirectionMode,
-      LinePositionMode = kPositionOnContainingLine) const = 0;
 
   // Returns true if the background is painted opaque in the given rect.
   // The query rect is given in local coordinate system.

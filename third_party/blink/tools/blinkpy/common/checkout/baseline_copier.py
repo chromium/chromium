@@ -187,8 +187,8 @@ class BaselineCopier:
 
     def write_copies(self, copies: Iterable[CopyOperation]) -> None:
         for source, dest in copies:
+            self._fs.maybe_make_directory(self._fs.dirname(dest))
             if source:
-                self._fs.maybe_make_directory(self._fs.dirname(dest))
                 self._fs.copyfile(source, dest)
             else:
                 self._fs.write_text_file(dest, ABBREVIATED_ALL_PASS)

@@ -137,6 +137,152 @@ TEST_P(PDFiumPageTest, IsCharInPageBounds) {
   EXPECT_FALSE(page.IsCharInPageBounds(29, page_bounds));
 }
 
+TEST_P(PDFiumPageTest, GetBoundingBoxRotatedMultipage) {
+  // Check getting bounding box for multiple rotated pages.
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("rotated_multi_page.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(4, engine->GetNumberOfPages());
+
+  // Rotation 0 degrees clockwise.
+  {
+    PDFiumPage& page = GetPDFiumPageForTest(*engine, 0);
+    const gfx::RectF bounding_box = page.GetBoundingBox();
+    EXPECT_FLOAT_EQ(0.0f, bounding_box.x());
+    EXPECT_FLOAT_EQ(266.66669f, bounding_box.y());
+    EXPECT_FLOAT_EQ(133.33334f, bounding_box.width());
+    EXPECT_FLOAT_EQ(400.0f, bounding_box.height());
+  }
+
+  // Rotation 90 degrees clockwise.
+  {
+    PDFiumPage& page = GetPDFiumPageForTest(*engine, 1);
+    const gfx::RectF bounding_box = page.GetBoundingBox();
+    EXPECT_FLOAT_EQ(266.66669f, bounding_box.x());
+    EXPECT_FLOAT_EQ(666.66669f, bounding_box.y());
+    EXPECT_FLOAT_EQ(400.0f, bounding_box.width());
+    EXPECT_FLOAT_EQ(133.33334f, bounding_box.height());
+  }
+  // Rotation 180 degrees clockwise.
+  {
+    PDFiumPage& page = GetPDFiumPageForTest(*engine, 2);
+    const gfx::RectF bounding_box = page.GetBoundingBox();
+    EXPECT_FLOAT_EQ(666.66669f, bounding_box.x());
+    EXPECT_FLOAT_EQ(933.33337f, bounding_box.y());
+    EXPECT_FLOAT_EQ(133.33334f, bounding_box.width());
+    EXPECT_FLOAT_EQ(400.0f, bounding_box.height());
+  }
+  // Rotation 270 degrees clockwise.
+  {
+    PDFiumPage& page = GetPDFiumPageForTest(*engine, 3);
+    const gfx::RectF bounding_box = page.GetBoundingBox();
+    EXPECT_FLOAT_EQ(933.33337f, bounding_box.x());
+    EXPECT_FLOAT_EQ(0.0f, bounding_box.y());
+    EXPECT_FLOAT_EQ(400.0f, bounding_box.width());
+    EXPECT_FLOAT_EQ(133.33334f, bounding_box.height());
+  }
+}
+
+TEST_P(PDFiumPageTest, GetBoundingBoxAnnotations) {
+  // Check getting the bounding box for annotations.
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("annots.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(1, engine->GetNumberOfPages());
+
+  PDFiumPage& page = GetPDFiumPageForTest(*engine, 0);
+  const gfx::RectF bounding_box = page.GetBoundingBox();
+  EXPECT_FLOAT_EQ(92.0f, bounding_box.x());
+  EXPECT_FLOAT_EQ(450.66669, bounding_box.y());
+  EXPECT_FLOAT_EQ(201.33334f, bounding_box.width());
+  EXPECT_FLOAT_EQ(469.33334f, bounding_box.height());
+}
+
+TEST_P(PDFiumPageTest, GetBoundingBoxBlankPage) {
+  // Check getting the bounding box for a blank page. The bounding box should be
+  // the crop box scaled to page pixels.
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(1, engine->GetNumberOfPages());
+
+  // The crop box is 200x200 in points.
+  PDFiumPage& page = GetPDFiumPageForTest(*engine, 0);
+  const gfx::RectF bounding_box = page.GetBoundingBox();
+  EXPECT_FLOAT_EQ(0.0f, bounding_box.x());
+  EXPECT_FLOAT_EQ(0.0f, bounding_box.y());
+  EXPECT_FLOAT_EQ(266.66669f, bounding_box.width());
+  EXPECT_FLOAT_EQ(266.66669f, bounding_box.height());
+}
+
+TEST_P(PDFiumPageTest, GetBoundingBoxCropped) {
+  // Check getting the bounding box for a page with a crop box different than
+  // the media box.
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("landscape_rectangles.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(1, engine->GetNumberOfPages());
+
+  PDFiumPage& page = GetPDFiumPageForTest(*engine, 0);
+  const gfx::RectF bounding_box = page.GetBoundingBox();
+  EXPECT_FLOAT_EQ(0.0f, bounding_box.x());
+  EXPECT_FLOAT_EQ(0.0f, bounding_box.y());
+  EXPECT_FLOAT_EQ(800.0f, bounding_box.width());
+  EXPECT_FLOAT_EQ(533.33337f, bounding_box.height());
+}
+
+TEST_P(PDFiumPageTest, GetBoundingBoxRotatedMultipageCropped) {
+  // Check getting the bounding box for a multiple rotated pages with a crop
+  // box.
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
+      &client, FILE_PATH_LITERAL("rotated_multi_page_cropped.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(4, engine->GetNumberOfPages());
+
+  // Rotation 0 degrees clockwise.
+  {
+    PDFiumPage& page = GetPDFiumPageForTest(*engine, 0);
+    const gfx::RectF bounding_box = page.GetBoundingBox();
+    EXPECT_FLOAT_EQ(0.0f, bounding_box.x());
+    EXPECT_FLOAT_EQ(133.33334f, bounding_box.y());
+    EXPECT_FLOAT_EQ(66.666672f, bounding_box.width());
+    EXPECT_FLOAT_EQ(400.0f, bounding_box.height());
+  }
+
+  // Rotation 90 degrees clockwise.
+  {
+    PDFiumPage& page = GetPDFiumPageForTest(*engine, 1);
+    const gfx::RectF bounding_box = page.GetBoundingBox();
+    EXPECT_FLOAT_EQ(133.33334f, bounding_box.x());
+    EXPECT_FLOAT_EQ(400.0f, bounding_box.y());
+    EXPECT_FLOAT_EQ(400.0f, bounding_box.width());
+    EXPECT_FLOAT_EQ(66.666672f, bounding_box.height());
+  }
+  // Rotation 180 degrees clockwise.
+  {
+    PDFiumPage& page = GetPDFiumPageForTest(*engine, 2);
+    const gfx::RectF bounding_box = page.GetBoundingBox();
+    EXPECT_FLOAT_EQ(400.0f, bounding_box.x());
+    EXPECT_FLOAT_EQ(133.33334f, bounding_box.y());
+    EXPECT_FLOAT_EQ(66.666672f, bounding_box.width());
+    EXPECT_FLOAT_EQ(400.0f, bounding_box.height());
+  }
+  // Rotation 270 degrees clockwise.
+  {
+    PDFiumPage& page = GetPDFiumPageForTest(*engine, 3);
+    const gfx::RectF bounding_box = page.GetBoundingBox();
+    EXPECT_FLOAT_EQ(133.33334f, bounding_box.x());
+    EXPECT_FLOAT_EQ(0.0f, bounding_box.y());
+    EXPECT_FLOAT_EQ(400.0f, bounding_box.width());
+    EXPECT_FLOAT_EQ(66.666672f, bounding_box.height());
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(All, PDFiumPageTest, testing::Bool());
 
 class PDFiumPageLinkTest : public PDFiumTestBase {

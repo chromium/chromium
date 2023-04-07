@@ -24,6 +24,10 @@ enum class AmbientVideo {
   kMaxValue = kClouds,
 };
 
+// Before the user explicitly selects anything, the hub automatically selects
+// this default for the user when the video theme is active.
+inline constexpr AmbientVideo kDefaultAmbientVideo = AmbientVideo::kNewMexico;
+
 // The returned StringPiece is guaranteed to be null-terminated and point to
 // memory valid for the lifetime of the program.
 COMPONENT_EXPORT(ASH_CONSTANTS)

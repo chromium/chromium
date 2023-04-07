@@ -103,8 +103,8 @@ bool MockRenderThread::Send(IPC::Message* msg) {
     if (msg->is_sync()) {
       // We actually need to handle deleting the reply deserializer for sync
       // messages.
-      reply_deserializer_.reset(
-          static_cast<IPC::SyncMessage*>(msg)->GetReplyDeserializer());
+      reply_deserializer_ =
+          static_cast<IPC::SyncMessage*>(msg)->TakeReplyDeserializer();
     }
     if (msg->routing_id() == MSG_ROUTING_CONTROL)
       OnControlMessageReceived(*msg);

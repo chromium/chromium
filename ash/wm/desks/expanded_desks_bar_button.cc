@@ -45,10 +45,12 @@ class ASH_EXPORT InnerExpandedDesksBarButton : public DeskButtonBase {
   METADATA_HEADER(InnerExpandedDesksBarButton);
 
   InnerExpandedDesksBarButton(ExpandedDesksBarButton* outer_button,
+                              DesksBarView* bar_view,
                               base::RepeatingClosure callback,
                               const std::u16string& text)
       : DeskButtonBase(text,
                        /*set_text=*/false,
+                       bar_view,
                        std::move(callback),
                        kCornerRadius),
         outer_button_(outer_button) {}
@@ -118,6 +120,7 @@ ExpandedDesksBarButton::ExpandedDesksBarButton(
       button_label_(button_label),
       inner_button_(AddChildView(
           std::make_unique<InnerExpandedDesksBarButton>(this,
+                                                        bar_view,
                                                         callback,
                                                         button_label))),
       label_(AddChildView(std::make_unique<views::Label>())) {

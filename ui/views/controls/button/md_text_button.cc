@@ -44,15 +44,15 @@ MdTextButton::MdTextButton(PressedCallback callback,
   SetHasInkDropActionOnClick(true);
   SetShowInkDropWhenHotTracked(true);
   InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
-      [](MdTextButton* host) {
-        return color_utils::DeriveDefaultIconColor(
-            host->label()->GetEnabledColor());
-      },
+      [](MdTextButton* host) { return host->GetHoverColor(host->GetStyle()); },
       this));
 
   if (features::IsChromeRefresh2023()) {
     constexpr int kImageSpacing = 8;
     SetImageLabelSpacing(kImageSpacing);
+    // Highlight button colors already have opacity applied.
+    // Set the opacity to 1 so the two values do not compound.
+    InkDrop::Get(this)->SetHighlightOpacity(1);
   } else {
     SetCornerRadius(LayoutProvider::Get()->GetCornerRadiusMetric(
         ShapeContextTokens::kButtonRadius));
@@ -101,6 +101,22 @@ void MdTextButton::SetStyle(views::MdTextButton::Style button_style) {
 
 views::MdTextButton::Style MdTextButton::GetStyle() const {
   return style_;
+}
+
+SkColor MdTextButton::GetHoverColor(Style button_style) {
+  if (!features::IsChromeRefresh2023()) {
+    return color_utils::DeriveDefaultIconColor(label()->GetEnabledColor());
+  }
+
+  switch (button_style) {
+    case Style::kProminent:
+      return GetColorProvider()->GetColor(ui::kColorSysStateHoverOnProminent);
+    case Style::kDefault:
+    case Style::kText:
+    case Style::kTonal:
+    default:
+      return GetColorProvider()->GetColor(ui::kColorSysStateHoverOnSubtle);
+  }
 }
 
 void MdTextButton::SetBgColorOverride(const absl::optional<SkColor>& color) {
@@ -289,7 +305,8 @@ void MdTextButton::UpdateBackgroundColor() {
 
   SkColor stroke_color = color_provider->GetColor(
       is_disabled ? ui::kColorButtonBorderDisabled : ui::kColorButtonBorder);
-  if (style_ == Style::kProminent || style_ == Style::kText) {
+  if (style_ == Style::kProminent || style_ == Style::kText ||
+      style_ == Style::kTonal) {
     stroke_color = SK_ColorTRANSPARENT;
   }
 

@@ -103,6 +103,20 @@ struct IdentityProviderConfig {
 
   // This field is not sent to the provider, but rather used by the user agent.
   IdentityProviderLoginHint login_hint;
+
+  // The scope of the federated identity request: name/email/photo or
+  // custom ones (e.g. "access to calendar", "access to social graph", etc).
+  array<string> scope;
+
+  // The types of token the relying party wants to get back (e.g. an id token
+  // or an access token).
+  // More than one type can be requested, e.g. to support OIDC flows:
+  // https://openid.net/specs/openid-connect-core-1_0.html#code-id_token-tokenExample
+  array<string> responseType;
+
+  // Additional parameters that the relying party can send to the IdP after
+  // the user's permission has been gathered.
+  map<string, string> params;
 };
 
 // The list of user information that can be returned to an identity provider during a UserInfo API call.

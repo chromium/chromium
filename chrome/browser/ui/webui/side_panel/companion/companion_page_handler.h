@@ -7,8 +7,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/webui/side_panel/companion/companion.mojom.h"
-#include "chrome/browser/ui/webui/side_panel/companion/msbb_delegate.h"
+#include "chrome/browser/companion/core/mojom/companion.mojom.h"
+#include "chrome/browser/companion/core/msbb_delegate.h"
 #include "components/lens/buildflags.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

@@ -8,7 +8,7 @@
 #include "components/media_router/browser/media_router_factory.h"
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/presentation_request.h"
 #include "content/public/browser/web_contents.h"
 

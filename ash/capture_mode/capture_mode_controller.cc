@@ -1352,8 +1352,7 @@ void CaptureModeController::OnImageFileSaved(
     RecordSaveToLocation(GetSaveToOption(file_saved_path));
   // NOTE: Holding space `client` may be `nullptr` in tests.
   if (auto* client = HoldingSpaceController::Get()->client()) {
-    client->AddScreenCapture(HoldingSpaceItem::Type::kScreenshot,
-                             file_saved_path);
+    client->AddItemOfType(HoldingSpaceItem::Type::kScreenshot, file_saved_path);
   }
 }
 
@@ -1374,10 +1373,10 @@ void CaptureModeController::OnVideoFileSaved(
                               CaptureModeType::kVideo);
       // NOTE: Holding space `client` may be `nullptr` in tests.
       if (auto* client = HoldingSpaceController::Get()->client()) {
-        client->AddScreenCapture(
-            is_gif ? HoldingSpaceItem::Type::kScreenRecordingGif
-                   : HoldingSpaceItem::Type::kScreenRecording,
-            saved_video_file_path);
+        client->AddItemOfType(is_gif
+                                  ? HoldingSpaceItem::Type::kScreenRecordingGif
+                                  : HoldingSpaceItem::Type::kScreenRecording,
+                              saved_video_file_path);
       }
 
       // We only record the file size histogram if it's not a projector-

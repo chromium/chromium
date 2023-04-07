@@ -67,8 +67,8 @@ bool IsFullyStructuredProfile(const AutofillProfile& profile) {
 // Extracts the `kKeySource` value of the `dict` and translates it into an
 // AutofillProfile::Source. If no source is present, Source::kLocalOrSyncable is
 // returned. If a source with invalid value is specified, an error message is
-// returned.
-base::expected<AutofillProfile::Source, std::string> GetProfileSourceFromDict(
+// logged and absl::nullopt is returned.
+absl::optional<AutofillProfile::Source> GetProfileSourceFromDict(
     const base::Value::Dict& dict) {
   if (!dict.contains(kKeySource)) {
     return AutofillProfile::Source::kLocalOrSyncable;
@@ -79,7 +79,8 @@ base::expected<AutofillProfile::Source, std::string> GetProfileSourceFromDict(
       return it->second;
     }
   }
-  return base::unexpected(base::StrCat({"Invalid ", kKeySource, " value"}));
+  LOG(ERROR) << "Invalid " << kKeySource << " value.";
+  return absl::nullopt;
 }
 
 // Given a `dict` of "field-type" : "value" mappings, constructs an
@@ -87,14 +88,14 @@ base::expected<AutofillProfile::Source, std::string> GetProfileSourceFromDict(
 // "field-type"s are converted to ServerFieldTypes using the `lookup_table`.
 // All verification statuses are set to `kUserVerified`.
 // If a field type cannot be mapped, or if the resulting profile is not
-// `IsFullyStructuredProfile()`, nullopt is returned.
-base::expected<AutofillProfile, std::string> MakeProfile(
+// `IsFullyStructuredProfile()`, absl::nullopt is returned.
+absl::optional<AutofillProfile> MakeProfile(
     const base::Value::Dict& dict,
     const FieldTypeLookupTable& lookup_table) {
-  base::expected<AutofillProfile::Source, std::string> source =
+  absl::optional<AutofillProfile::Source> source =
       GetProfileSourceFromDict(dict);
   if (!source.has_value()) {
-    return base::unexpected(source.error());
+    return absl::nullopt;
   }
   AutofillProfile profile(*source);
   // `dict` is a dictionary of std::string -> base::Value.
@@ -103,38 +104,41 @@ base::expected<AutofillProfile, std::string> MakeProfile(
       continue;
     }
     if (!lookup_table.contains(key)) {
-      return base::unexpected("Unknown type " + key);
+      LOG(ERROR) << "Unknown type " << key << ".";
+      return absl::nullopt;
     }
     profile.SetRawInfoWithVerificationStatus(
         lookup_table.at(key), base::UTF8ToUTF16(value.GetString()),
         VerificationStatus::kUserVerified);
   }
   if (!IsFullyStructuredProfile(profile)) {
-    return base::unexpected("Not a fully structured profile");
+    LOG(ERROR) << "Some profile is not fully structured.";
+    return absl::nullopt;
   }
   return profile;
 }
 
 // Reads the contents of `file`, parses it as a JSON file and converts its
 // content into AutofillProfiles.
-// If any step fails, an error message is returned.
-base::expected<std::vector<AutofillProfile>, std::string> LoadProfilesFromFile(
+// If any step fails, an error message is logged and absl::nullopt is returned.
+absl::optional<std::vector<AutofillProfile>> LoadProfilesFromFile(
     base::FilePath file) {
   std::string file_content;
   if (!base::ReadFileToString(file, &file_content)) {
-    return base::unexpected("Failed to read file " + file.MaybeAsASCII());
+    LOG(ERROR) << "Failed to read file " << file.MaybeAsASCII() << ".";
+    return absl::nullopt;
   }
   if (absl::optional<base::Value> json = base::JSONReader::Read(file_content)) {
     return AutofillProfilesFromJSON(*json);
   }
-  return base::unexpected("Failed to parse JSON");
+  LOG(ERROR) << "Failed to parse JSON file.";
+  return absl::nullopt;
 }
 
 // Sets all of the `pdm`'s profiles to `profiles`, if the `pdm` still exists.
-void SetProfiles(
-    base::WeakPtr<PersonalDataManager> pdm,
-    base::expected<std::vector<AutofillProfile>, std::string> profiles) {
-  CHECK(profiles.has_value()) << profiles.error();
+void SetProfiles(base::WeakPtr<PersonalDataManager> pdm,
+                 absl::optional<std::vector<AutofillProfile>> profiles) {
+  CHECK(profiles.has_value());
   if (pdm) {
     pdm->SetProfilesForAllSources(&*profiles);
   }
@@ -142,27 +146,30 @@ void SetProfiles(
 
 }  // namespace
 
-base::expected<std::vector<AutofillProfile>, std::string>
-AutofillProfilesFromJSON(const base::Value& json) {
+absl::optional<std::vector<AutofillProfile>> AutofillProfilesFromJSON(
+    const base::Value& json) {
   if (!json.is_dict()) {
-    return base::unexpected("JSON is not a dictionary at it's top level");
+    LOG(ERROR) << "JSON is not a dictionary at it's top level.";
+    return absl::nullopt;
   }
   const base::Value::List* profiles_json =
       json.GetDict().FindList(kKeyProfiles);
   if (!profiles_json) {
-    return base::unexpected(base::StrCat({"No ", kKeyProfiles, " key"}));
+    LOG(ERROR) << "No " << kKeyProfiles << " key.";
+    return absl::nullopt;
   }
 
   const auto kLookupTable = MakeFieldTypeLookupTable();
   std::vector<AutofillProfile> profiles_to_import;
   for (const base::Value& profile_json : *profiles_json) {
     if (!profile_json.is_dict()) {
-      return base::unexpected("Profile description to not a dictionary");
+      LOG(ERROR) << "Profile description is not a dictionary.";
+      return absl::nullopt;
     }
-    base::expected<AutofillProfile, std::string> profile =
+    absl::optional<AutofillProfile> profile =
         MakeProfile(profile_json.GetDict(), kLookupTable);
     if (!profile.has_value()) {
-      return base::unexpected(profile.error());
+      return absl::nullopt;
     }
     profiles_to_import.push_back(*profile);
   }

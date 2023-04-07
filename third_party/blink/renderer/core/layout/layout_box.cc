@@ -129,7 +129,6 @@ static const unsigned kBackgroundObscurationTestMaxDepth = 4;
 struct SameSizeAsLayoutBox : public LayoutBoxModelObject {
   LayoutRect frame_rect;
   LayoutSize previous_size;
-  LayoutUnit intrinsic_content_logical_height;
   LayoutRectOutsets margin_box_outsets;
   MinMaxSizes intrinsic_logical_widths;
   LayoutUnit intrinsic_logical_widths_initial_block_size;
@@ -476,7 +475,6 @@ void LayoutBoxRareData::Trace(Visitor* visitor) const {
 
 LayoutBox::LayoutBox(ContainerNode* node)
     : LayoutBoxModelObject(node),
-      intrinsic_content_logical_height_(-1),
       intrinsic_logical_widths_initial_block_size_(LayoutUnit::Min()) {
   SetIsBox();
   if (blink::IsA<HTMLLegendElement>(node))
@@ -3301,18 +3299,6 @@ void LayoutBox::ReplaceLayoutResult(const NGLayoutResult* result,
   }
 }
 
-void LayoutBox::RestoreLegacyLayoutResults(
-    const NGLayoutResult* measure_result,
-    const NGLayoutResult* layout_result) {
-  NOT_DESTROYED();
-  DCHECK(!IsLayoutNGObject());
-  measure_result_ = measure_result;
-  if (layout_result)
-    SetLayoutResult(layout_result, 0);
-  else
-    DCHECK(layout_results_.empty());
-}
-
 void LayoutBox::FinalizeLayoutResults() {
   DCHECK(!layout_results_.empty());
   DCHECK(!layout_results_.back()->PhysicalFragment().BreakToken());
@@ -4158,12 +4144,6 @@ void LayoutBox::ComputeMarginsForDirection(MarginDirection flow_direction,
 DISABLE_CFI_PERF
 void LayoutBox::UpdateLogicalHeight() {
   NOT_DESTROYED();
-  if (!HasOverrideLogicalHeight()) {
-    // If we have an override height, our children will have sized themselves
-    // relative to our override height, which would make our intrinsic size
-    // incorrect (too big).
-    intrinsic_content_logical_height_ = ContentLogicalHeight();
-  }
 
   LogicalExtentComputedValues computed_values;
   ComputeLogicalHeight(computed_values);
@@ -4189,11 +4169,6 @@ void LayoutBox::ComputeLogicalHeight(
       // <textarea>'s intrinsic size should ignore scrollbar existence.
       if (!IsTextArea()) {
         height += ComputeLogicalScrollbars().BlockSum();
-      }
-      // FIXME: The logical height of the inner editor box should have been
-      // added before calling ComputeLogicalHeight to avoid this hack.
-      if (IsTextControl()) {
-        SetIntrinsicContentLogicalHeight(default_height);
       }
     } else if (ShouldApplySizeContainment()) {
       height = BorderAndPaddingLogicalHeight() +
@@ -4994,7 +4969,7 @@ LayoutUnit LayoutBox::ContainingBlockLogicalWidthForPositioned(
                     To<LayoutBox>(containing_block)->ClientLogicalWidth());
   }
 
-  NOTREACHED_NORETURN();
+  return LayoutUnit();
 }
 
 LayoutUnit LayoutBox::ContainingBlockLogicalHeightForPositioned(
@@ -6753,24 +6728,6 @@ LayoutUnit LayoutBox::LineHeight(bool /*firstLine*/,
   if (IsAtomicInlineLevel()) {
     return direction == kHorizontalLine ? MarginHeight() + Size().Height()
                                         : MarginWidth() + Size().Width();
-  }
-  return LayoutUnit();
-}
-
-DISABLE_CFI_PERF
-LayoutUnit LayoutBox::BaselinePosition(
-    FontBaseline baseline_type,
-    bool /*firstLine*/,
-    LineDirectionMode direction,
-    LinePositionMode line_position_mode) const {
-  DCHECK_EQ(line_position_mode, kPositionOnContainingLine);
-  if (IsAtomicInlineLevel()) {
-    LayoutUnit result = direction == kHorizontalLine
-                            ? MarginHeight() + Size().Height()
-                            : MarginWidth() + Size().Width();
-    if (baseline_type == kAlphabeticBaseline)
-      return result;
-    return result - result / 2;
   }
   return LayoutUnit();
 }

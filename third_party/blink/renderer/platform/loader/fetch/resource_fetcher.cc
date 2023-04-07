@@ -1363,8 +1363,10 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   return resource;
 }
 
-void ResourceFetcher::RemoveResourceStrongReference(Resource* image_resource) {
-  document_resource_strong_refs_.erase(image_resource);
+void ResourceFetcher::RemoveResourceStrongReference(Resource* resource) {
+  if (resource) {
+    document_resource_strong_refs_.erase(resource);
+  }
 }
 
 void ResourceFetcher::ResourceTimingReportTimerFired(TimerBase* timer) {

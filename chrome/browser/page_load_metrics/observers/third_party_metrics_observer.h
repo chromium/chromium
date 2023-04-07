@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/containers/enum_set.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -115,9 +116,25 @@ class ThirdPartyMetricsObserver
   // instead.
   std::map<GURL, ThirdPartyInfo> all_third_party_info_;
 
+  // Timing event types used to track which ones we've already recorded timing
+  // data for.
+  enum class TimingEventType : uint8_t {
+    kFirstContentfulPaint = 0,
+    kLargestContentfulPaint = 1,
+
+    kMaxValue = kLargestContentfulPaint,
+  };
+  using TimingEventTypeEnumSet =
+      base::EnumSet<TimingEventType,
+                    TimingEventType::kFirstContentfulPaint,
+                    TimingEventType::kMaxValue>;
+
   // A set of RenderFrameHosts that we've recorded timing data for. The
   // RenderFrameHosts are later removed when they navigate again or are deleted.
-  std::set<content::RenderFrameHost*> recorded_frames_;
+  // Note that we use `base::flat_map` here because at most `kMaxRecordedFrames`
+  // entries will be contained in the map.
+  base::flat_map<content::RenderFrameHost*, TimingEventTypeEnumSet>
+      recorded_frames_;
 
   // If the page has any blocked_by_policy cookie or DOM storage access (e.g.,
   // block third-party cookies is enabled) then we don't want to record any

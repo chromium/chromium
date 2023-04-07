@@ -14,6 +14,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/cart/commerce_hint_service.h"
+#include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/media/history/media_history_store.mojom.h"
@@ -398,14 +399,16 @@ void BindUnhandledTapWebContentsObserver(
     content::RenderFrameHost* const host,
     mojo::PendingReceiver<blink::mojom::UnhandledTapNotifier> receiver) {
   auto* web_contents = content::WebContents::FromRenderFrameHost(host);
-  if (!web_contents)
+  if (!web_contents) {
     return;
+  }
 
   auto* unhandled_tap_notifier_observer =
       contextual_search::UnhandledTapWebContentsObserver::FromWebContents(
           web_contents);
-  if (!unhandled_tap_notifier_observer)
+  if (!unhandled_tap_notifier_observer) {
     return;
+  }
 
   contextual_search::CreateUnhandledTapNotifierImpl(
       unhandled_tap_notifier_observer->unhandled_tap_callback(),
@@ -456,26 +459,32 @@ void BindCommerceHintObserver(
       frame_host->GetProcess()->GetBrowserContext());
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  if (!identity_manager || !profile_manager)
+  if (!identity_manager || !profile_manager) {
     return;
+  }
   if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
-      profile_manager->GetNumberOfProfiles() <= 1)
+      profile_manager->GetNumberOfProfiles() <= 1) {
     return;
+  }
 #endif
   auto* web_contents = content::WebContents::FromRenderFrameHost(frame_host);
-  if (!web_contents)
+  if (!web_contents) {
     return;
+  }
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();
-  if (!browser_context)
+  if (!browser_context) {
     return;
-  if (browser_context->IsOffTheRecord())
+  }
+  if (browser_context->IsOffTheRecord()) {
     return;
+  }
 
   cart::CommerceHintService::CreateForWebContents(web_contents);
   cart::CommerceHintService* service =
       cart::CommerceHintService::FromWebContents(web_contents);
-  if (!service)
+  if (!service) {
     return;
+  }
   service->BindCommerceHintObserver(frame_host, std::move(receiver));
 }
 
@@ -484,13 +493,15 @@ void BindDistillabilityService(
     mojo::PendingReceiver<dom_distiller::mojom::DistillabilityService>
         receiver) {
   auto* web_contents = content::WebContents::FromRenderFrameHost(frame_host);
-  if (!web_contents)
+  if (!web_contents) {
     return;
+  }
 
   dom_distiller::DistillabilityDriver* driver =
       dom_distiller::DistillabilityDriver::FromWebContents(web_contents);
-  if (!driver)
+  if (!driver) {
     return;
+  }
   driver->SetIsSecureCallback(
       base::BindRepeating([](content::WebContents* contents) {
         // SecurityStateTabHelper uses chrome-specific
@@ -507,8 +518,9 @@ void BindDistillerJavaScriptService(
     mojo::PendingReceiver<dom_distiller::mojom::DistillerJavaScriptService>
         receiver) {
   auto* web_contents = content::WebContents::FromRenderFrameHost(frame_host);
-  if (!web_contents)
+  if (!web_contents) {
     return;
+  }
 
   dom_distiller::DomDistillerService* dom_distiller_service =
       dom_distiller::DomDistillerServiceFactory::GetForBrowserContext(
@@ -526,14 +538,16 @@ void BindPrerenderCanceler(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<prerender::mojom::PrerenderCanceler> receiver) {
   auto* web_contents = content::WebContents::FromRenderFrameHost(frame_host);
-  if (!web_contents)
+  if (!web_contents) {
     return;
+  }
 
   auto* no_state_prefetch_contents =
       prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
           web_contents);
-  if (!no_state_prefetch_contents)
+  if (!no_state_prefetch_contents) {
     return;
+  }
   no_state_prefetch_contents->AddPrerenderCancelerReceiver(std::move(receiver));
 }
 
@@ -552,8 +566,9 @@ void ForwardToJavaWebContents(content::RenderFrameHost* frame_host,
                               mojo::PendingReceiver<Interface> receiver) {
   content::WebContents* contents =
       content::WebContents::FromRenderFrameHost(frame_host);
-  if (contents)
+  if (contents) {
     contents->GetJavaInterfaces()->GetInterface(std::move(receiver));
+  }
 }
 
 template <typename Interface>
@@ -570,8 +585,9 @@ void BindMimeHandlerService(
         receiver) {
   auto* guest_view =
       extensions::MimeHandlerViewGuest::FromRenderFrameHost(frame_host);
-  if (!guest_view)
+  if (!guest_view) {
     return;
+  }
   extensions::MimeHandlerServiceImpl::Create(guest_view->GetStreamWeakPtr(),
                                              std::move(receiver));
 }
@@ -582,8 +598,9 @@ void BindBeforeUnloadControl(
         receiver) {
   auto* guest_view =
       extensions::MimeHandlerViewGuest::FromRenderFrameHost(frame_host);
-  if (!guest_view)
+  if (!guest_view) {
     return;
+  }
   guest_view->FuseBeforeUnloadControl(std::move(receiver));
 }
 #endif
@@ -958,10 +975,12 @@ void PopulateChromeWebUIFrameBinders(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       ash::OobeUI, ash::personalization_app::PersonalizationAppUI,
       ash::settings::OSSettingsUI, ash::DiagnosticsDialogUI,
-      ash::FirmwareUpdateAppUI,
+      ash::FirmwareUpdateAppUI, ash::ScanningUI, ash::OSFeedbackUI,
+      ash::ShortcutCustomizationAppUI,
       ash::printing::printing_manager::PrintManagementUI,
 #endif
-      NewTabPageUI, OmniboxPopupUI, BookmarksSidePanelUI>(map);
+      NewTabPageUI, OmniboxPopupUI, BookmarksSidePanelUI, CustomizeChromeUI>(
+      map);
 
   RegisterWebUIControllerInterfaceBinder<
       new_tab_page::mojom::PageHandlerFactory, NewTabPageUI>(map);
@@ -1491,7 +1510,7 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
       .Add<feed::mojom::FeedSidePanelHandlerFactory>();
 #endif  // !BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kSidePanelCompanion)) {
+  if (base::FeatureList::IsEnabled(companion::features::kSidePanelCompanion)) {
     registry.ForWebUI<CompanionSidePanelUntrustedUI>()
         .Add<side_panel::mojom::CompanionPageHandlerFactory>();
   }

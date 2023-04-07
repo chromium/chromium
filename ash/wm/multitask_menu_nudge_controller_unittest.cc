@@ -9,6 +9,8 @@
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/multitask_menu_nudge_delegate_ash.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
@@ -313,6 +315,23 @@ TEST_F(MultitaskMenuNudgeControllerTest, MenuShown) {
   test_clock_.Advance(base::Hours(25));
   window.reset();
   window = CreateAppWindow(gfx::Rect(300, 300));
+  EXPECT_FALSE(GetNudgeWidgetForWindow(window.get()));
+}
+
+// Tests that the nudge gets properly hidden after switching desks with a
+// floated window. Regression test for b/276786909.
+TEST_F(MultitaskMenuNudgeControllerTest, FloatedWindowNudge) {
+  // Create a new desk.
+  NewDesk();
+  ASSERT_TRUE(DesksController::Get()->desks()[0]->is_active());
+
+  // Create a floated window, the nudge is shown on new window activation.
+  auto window = CreateAppWindow(gfx::Rect(300, 300));
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(WindowState::Get(window.get())->IsFloated());
+  ASSERT_TRUE(GetNudgeWidgetForWindow(window.get()));
+
+  ActivateDesk(DesksController::Get()->desks()[1].get());
   EXPECT_FALSE(GetNudgeWidgetForWindow(window.get()));
 }
 

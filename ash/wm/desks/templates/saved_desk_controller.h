@@ -18,7 +18,7 @@ struct AdminTemplateMetadata {
   base::GUID uuid;
 
   // Name of the admin template, as it appears to the user.
-  std::string name;
+  std::u16string name;
 };
 
 // The saved desk controller has functionality for listing and launching saved
@@ -28,14 +28,16 @@ class ASH_EXPORT SavedDeskController {
   SavedDeskController();
   SavedDeskController(const SavedDeskController&) = delete;
   SavedDeskController& operator=(const SavedDeskController&) = delete;
-  ~SavedDeskController();
+  virtual ~SavedDeskController();
+
+  static SavedDeskController* Get();
 
   // Returns metadata for all currently available admin templates.
-  std::vector<AdminTemplateMetadata> GetAdminTemplateMetadata() const;
+  virtual std::vector<AdminTemplateMetadata> GetAdminTemplateMetadata() const;
 
   // Launch the template identified by `template_uuid`. Returns false if the
   // template doesn't exist.
-  bool LaunchAdminTemplate(const base::GUID& template_uuid);
+  virtual bool LaunchAdminTemplate(const base::GUID& template_uuid);
 };
 
 }  // namespace ash

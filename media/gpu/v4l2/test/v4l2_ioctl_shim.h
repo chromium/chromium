@@ -170,27 +170,27 @@ class V4L2IoctlShim {
 
   // Configures the underlying V4L2 queue via VIDIOC_S_FMT. Returns true
   // if the configuration was successful.
-  [[nodiscard]] bool SetFmt(const std::unique_ptr<V4L2Queue>& queue) const;
+  void SetFmt(const std::unique_ptr<V4L2Queue>& queue) const;
 
   // Retrieves the format of |queue| (via VIDIOC_G_FMT) and returns true if
   // successful, filling in |coded_size|, |num_planes|, and |fourcc| in that
   // case.
-  [[nodiscard]] bool GetFmt(const enum v4l2_buf_type type,
-                            gfx::Size* coded_size,
-                            uint32_t* num_planes,
-                            uint32_t* fourcc) const;
+  void GetFmt(const enum v4l2_buf_type type,
+              gfx::Size* coded_size,
+              uint32_t* num_planes,
+              uint32_t* fourcc) const;
 
   // Tries to configure |queue|. This does not modify the underlying
   // driver state.
   // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/vidioc-g-fmt.html?highlight=vidioc_try_fmt#description
-  [[nodiscard]] bool TryFmt(const std::unique_ptr<V4L2Queue>& queue) const;
+  void TryFmt(const std::unique_ptr<V4L2Queue>& queue) const;
 
   // Allocates buffers via VIDIOC_REQBUFS for |queue|.
-  [[nodiscard]] bool ReqBufs(std::unique_ptr<V4L2Queue>& queue) const;
+  void ReqBufs(std::unique_ptr<V4L2Queue>& queue) const;
 
   // Allocates buffers via VIDIOC_REQBUFS for |queue| with a buffer count.
-  [[nodiscard]] bool ReqBufsWithCount(std::unique_ptr<V4L2Queue>& queue,
-                                      uint32_t count) const;
+  void ReqBufsWithCount(std::unique_ptr<V4L2Queue>& queue,
+                        uint32_t count) const;
 
   // Enqueues an empty (capturing) or filled (output) buffer
   // in the driver's incoming |queue|.
@@ -199,32 +199,30 @@ class V4L2IoctlShim {
 
   // Dequeues a filled (capturing) or decoded (output) buffer
   // from the driver’s outgoing |queue|.
-  [[nodiscard]] bool DQBuf(const std::unique_ptr<V4L2Queue>& queue,
-                           uint32_t* buffer_id) const;
+  void DQBuf(const std::unique_ptr<V4L2Queue>& queue,
+             uint32_t* buffer_id) const;
 
   // Starts streaming |queue| (via VIDIOC_STREAMON).
-  [[nodiscard]] bool StreamOn(const enum v4l2_buf_type type) const;
+  void StreamOn(const enum v4l2_buf_type type) const;
 
   // Stops streaming |queue| (via VIDIOC_STREAMOFF).
-  [[nodiscard]] bool StreamOff(const enum v4l2_buf_type type) const;
+  void StreamOff(const enum v4l2_buf_type type) const;
 
   // Sets the value of controls which specify decoding parameters
   // for each frame.
-  [[nodiscard]] bool SetExtCtrls(const std::unique_ptr<V4L2Queue>& queue,
-                                 v4l2_ext_controls* ext_ctrls) const;
+  void SetExtCtrls(const std::unique_ptr<V4L2Queue>& queue,
+                   v4l2_ext_controls* ext_ctrls) const;
 
   // Allocates requests (likely one per OUTPUT buffer) via
   // MEDIA_IOC_REQUEST_ALLOC on the media device.
-  [[nodiscard]] bool MediaIocRequestAlloc(int* req_fd) const;
+  void MediaIocRequestAlloc(int* req_fd) const;
 
   // Submits a request for the given OUTPUT |queue| by queueing
   // the request with |queue|'s media_request_fd().
-  [[nodiscard]] bool MediaRequestIocQueue(
-      const std::unique_ptr<V4L2Queue>& queue) const;
+  void MediaRequestIocQueue(const std::unique_ptr<V4L2Queue>& queue) const;
 
   // Re-initializes the previously allocated request for reuse.
-  [[nodiscard]] bool MediaRequestIocReinit(
-      const std::unique_ptr<V4L2Queue>& queue) const;
+  void MediaRequestIocReinit(const std::unique_ptr<V4L2Queue>& queue) const;
 
   // Finds available media device for video decoder. This function also checks
   // to make sure either |bus_info| or |driver| field from |media_device_info|
@@ -238,8 +236,7 @@ class V4L2IoctlShim {
                                         uint32_t uncompressed_format) const;
 
   // Allocates buffers for the given |queue|.
-  [[nodiscard]] bool QueryAndMmapQueueBuffers(
-      std::unique_ptr<V4L2Queue>& queue) const;
+  void QueryAndMmapQueueBuffers(std::unique_ptr<V4L2Queue>& queue) const;
 
   enum class DeviceType {
     kDecoder,

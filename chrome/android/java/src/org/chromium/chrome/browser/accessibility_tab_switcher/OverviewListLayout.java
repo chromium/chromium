@@ -83,8 +83,11 @@ public class OverviewListLayout extends Layout
 
         if (container == null || mTabModelWrapper.getParent() != null) return;
 
+        // Use full-screen tab_switcher_view_holder to hold the list layout on tablets.
         ViewGroup overviewList =
-                (ViewGroup) container.findViewById(R.id.overview_list_layout_holder);
+                DeviceFormFactor.isNonMultiDisplayContextOnTablet(mTabModelWrapper.getContext())
+                ? (ViewGroup) container.findViewById(R.id.tab_switcher_view_holder)
+                : (ViewGroup) container.findViewById(R.id.overview_list_layout_holder);
         overviewList.setVisibility(View.VISIBLE);
         overviewList.addView(mTabModelWrapper);
     }
@@ -106,7 +109,8 @@ public class OverviewListLayout extends Layout
         if (params == null) return;
 
         params.bottomMargin = (int) (getBottomBrowserControlsHeight() * mDensity);
-        params.topMargin = mBrowserControlsStateProvider.getContentOffset();
+        params.topMargin = mBrowserControlsStateProvider.getContentOffset()
+                - (int) getContext().getResources().getDimension(R.dimen.tab_strip_height);
 
         mTabModelWrapper.setLayoutParams(params);
     }

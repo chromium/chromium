@@ -206,7 +206,6 @@ Amasayithi awakwazi ukusebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula
 <translation id="2411749908844615428">{count,plural, =1{Ikheli eli-{count} elilondoloziwe litholakala ngaphezu kwekhibhodi yakho.}one{Amakheli angu-{count} alondoloziwe atholakala ngaphezu kwekhibhodi yakho.}other{Amakheli angu-{count} alondoloziwe atholakala ngaphezu kwekhibhodi yakho.}}</translation>
 <translation id="2421004566762153674">Ivimba amakhukhi enkampani yangaphandle</translation>
 <translation id="2421044535038393232">Qhubeka nokuhlela</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{Iphasiwedi Eyonakalisiwe e-{COUNT}}one{Amaphasiwedi Onakalisiwe angu-{COUNT}}other{Amaphasiwedi Onakalisiwe angu-{COUNT}}}</translation>
 <translation id="2434405374328098816">Usuyilondolozile kakade iphasiwedi ka-"<ph name="USERNAME" />" ku-<ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Bonisa iphasiwedi</translation>
 <translation id="2451654228769116489">Phina ithebhu</translation>
@@ -257,7 +256,6 @@ Injini yakho yokusesha yi-<ph name="DSE_NAME" />. Bona imiyalelo yayo yokusula u
 <translation id="2718352093833049315">Ku-Wi-Fi kuphela</translation>
 <translation id="2747003861858887689">Inkambu edlule</translation>
 <translation id="2749231692441336879">Ukulandela <ph name="CHANNEL_NAME" /></translation>
-<translation id="2764831210418622012">khona manje</translation>
 <translation id="2772667768515195373">Ungasebenzisa amakheli alondoloziwe kuyo yonke imikhiqizo ye-Google. Leli kheli lilondolozwe ku-Google Account yakho, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Usesho lwe-Incognito</translation>
 <translation id="277771892408211951">Khetha ulimi</translation>
@@ -924,7 +922,6 @@ Lapho uku-Incognito, amasayithi awakwazi ukusebenzisa amakhukhi wakho ukubona um
 <ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Amathebhu wakamuva</translation>
 <translation id="7006788746334555276">Izilungiselelo zokuqukethwe</translation>
-<translation id="7014087399239955356">Ihlola Amaphasiwedi…</translation>
 <translation id="7029809446516969842">Amaphasiwedi</translation>
 <translation id="7053983685419859001">Vimba</translation>
 <translation id="7062545763355031412">Yamukela uphinde ushintshe ama-akhawunti</translation>

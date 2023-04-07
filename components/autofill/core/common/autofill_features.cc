@@ -313,6 +313,15 @@ BASE_FEATURE(kAutofillOnlyCacheIsAutofilledOnFill,
              "AutofillOnlyCacheIsAutofilledOnFill",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables converging towards the longer or shorter street address in profile
+// merging.
+BASE_FEATURE(kAutofillConvergeToExtremeLengthStreetAddress,
+             "AutofillConvergeToExtremeLengthStreetAddress",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<bool> kAutofillConvergeToLonger{
+    &kAutofillConvergeToExtremeLengthStreetAddress, "converge_to_longer", true};
+
 BASE_FEATURE(kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete,
              "AutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete",
              base::FEATURE_DISABLED_BY_DEFAULT);

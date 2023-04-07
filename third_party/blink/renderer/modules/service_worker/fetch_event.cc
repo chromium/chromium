@@ -102,6 +102,7 @@ FetchEvent::FetchEvent(ScriptState* script_state,
                        WaitUntilObserver* wait_until_observer,
                        bool navigation_preload_sent)
     : ExtendableEvent(type, initializer, wait_until_observer),
+      ActiveScriptWrappable<FetchEvent>({}),
       ExecutionContextClient(ExecutionContext::From(script_state)),
       observer_(respond_with_observer),
       preload_response_property_(MakeGarbageCollected<PreloadResponseProperty>(

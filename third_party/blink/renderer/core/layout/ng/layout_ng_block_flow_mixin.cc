@@ -124,67 +124,6 @@ void LayoutNGBlockFlowMixin<Base>::AddOutlineRects(
 }
 
 template <typename Base>
-LayoutUnit LayoutNGBlockFlowMixin<Base>::FirstLineBoxBaseline() const {
-  Base::CheckIsNotDestroyed();
-
-  if (const absl::optional<LayoutUnit> baseline =
-          Base::FirstLineBoxBaselineOverride())
-    return *baseline;
-
-  // Return the baseline of the first fragment that has a baseline.
-  // |OffsetFromOwnerLayoutBox| is not needed here, because the block offset of
-  // all fragments are 0 for multicol.
-  for (const NGPhysicalBoxFragment& fragment : Base::PhysicalFragments()) {
-    if (const absl::optional<LayoutUnit> offset = fragment.FirstBaseline())
-      return *offset;
-  }
-
-  // This logic is in |LayoutBlock|, but we cannot call |Base| because doing so
-  // may traverse |LayoutObject| tree, which may call this function for a child,
-  // but the child may be block fragmented.
-  if (Base::ChildrenInline()) {
-    return Base::EmptyLineBaseline(
-        Base::IsHorizontalWritingMode() ? kHorizontalLine : kVerticalLine);
-  }
-  return LayoutUnit(-1);
-}
-
-template <typename Base>
-LayoutUnit LayoutNGBlockFlowMixin<Base>::InlineBlockBaseline(
-    LineDirectionMode line_direction) const {
-  Base::CheckIsNotDestroyed();
-
-  // Please see |LayoutNGMixin<Base>::Paint()| for these DCHECKs.
-  DCHECK(Base::IsMonolithic() || !Base::CanTraversePhysicalFragments() ||
-         !Base::Parent()->CanTraversePhysicalFragments());
-  DCHECK_LE(Base::PhysicalFragmentCount(), 1u);
-
-  if (const absl::optional<LayoutUnit> baseline =
-          Base::InlineBlockBaselineOverride(line_direction))
-    return *baseline;
-
-  if (Base::PhysicalFragmentCount()) {
-    const NGPhysicalBoxFragment* fragment = Base::GetPhysicalFragment(0);
-    DCHECK(fragment);
-    if (absl::optional<LayoutUnit> offset = fragment->FirstBaseline())
-      return *offset;
-  }
-
-  // This logic is in |LayoutBlock| and |LayoutBlockFlow|, but we cannot call
-  // |Base| because doing so may traverse |LayoutObject| tree, which may call
-  // this function for a child, but the child may be block fragmented.
-  if (!Base::ChildrenInline()) {
-    for (LayoutObject* child = Base::LastChild(); child;
-         child = child->PreviousSibling()) {
-      DCHECK(child->IsBox());
-      if (!child->IsFloatingOrOutOfFlowPositioned())
-        return LayoutUnit(-1);
-    }
-  }
-  return Base::EmptyLineBaseline(line_direction);
-}
-
-template <typename Base>
 bool LayoutNGBlockFlowMixin<Base>::NodeAtPoint(
     HitTestResult& result,
     const HitTestLocation& hit_test_location,

@@ -36,9 +36,8 @@ class COMPONENT_EXPORT(UI_WM) CursorLoader
   // ui::CursorFactoryObserver:
   void OnThemeLoaded() override;
 
-  // Returns the rotation and scale of the currently loaded cursor.
+  // Returns the rotation of the currently loaded cursor.
   display::Display::Rotation rotation() const { return rotation_; }
-  float scale() const { return scale_; }
 
   // Sets the rotation and scale the cursors are loaded for.
   // Returns true if the cursor needs to be reset.

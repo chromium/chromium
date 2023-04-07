@@ -4736,6 +4736,11 @@
           'shards': 8,
         },
       },
+      'linux-wpt-content-shell-fyi-rel': {
+        'swarming': {
+          'shards': 10,
+        },
+      },
       'mac10.15-wpt-content-shell-fyi-rel': {
         'experiment_percentage': 100,
       },

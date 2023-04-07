@@ -12,7 +12,7 @@ cr.define('cr.ArcOverviewTracing', function() {
      * Initializes internal structures.
      */
     initialize() {
-      var maxTime = $('arc-overview-tracing-max-time');
+      const maxTime = $('arc-overview-tracing-max-time');
       maxTime.addEventListener('change', function(event) {
         chrome.send('setMaxTime', [parseInt(maxTime.value)]);
       }, false);

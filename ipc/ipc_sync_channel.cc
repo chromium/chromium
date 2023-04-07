@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -22,6 +23,7 @@
 #include "build/build_config.h"
 #include "ipc/ipc_channel_factory.h"
 #include "ipc/ipc_logging.h"
+#include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"
 #include "ipc/ipc_sync_message.h"
 #include "mojo/public/cpp/bindings/sync_event_watcher.h"
@@ -100,7 +102,7 @@ class SyncChannel::ReceivedSyncMsgQueue :
 
       // We set the event in case the listener thread is blocked (or is about
       // to). In case it's not, the PostTask dispatches the messages.
-      message_queue_.push_back(QueuedMessage(new Message(msg), context));
+      message_queue_.push_back({std::make_unique<Message>(msg), context});
       message_queue_version_++;
     }
 
@@ -113,7 +115,7 @@ class SyncChannel::ReceivedSyncMsgQueue :
   }
 
   void QueueReply(const Message &msg, SyncChannel::SyncContext* context) {
-    received_replies_.push_back(QueuedMessage(new Message(msg), context));
+    received_replies_.push_back({std::make_unique<Message>(msg), context});
   }
 
   // Called on the listener's thread to process any queues synchronous
@@ -136,7 +138,7 @@ class SyncChannel::ReceivedSyncMsgQueue :
     uint32_t expected_version = 0;
     SyncMessageQueue::iterator it;
     while (true) {
-      Message* message = nullptr;
+      std::unique_ptr<Message> message;
       scoped_refptr<SyncChannel::SyncContext> context;
       {
         base::AutoLock auto_lock(message_lock_);
@@ -150,8 +152,8 @@ class SyncChannel::ReceivedSyncMsgQueue :
               (dispatching_context &&
                message_group ==
                    dispatching_context->restrict_dispatch_group())) {
-            message = it->message;
-            context = it->context;
+            message = std::move(it->message);
+            context = std::move(it->context);
             it = message_queue_.erase(it);
             message_queue_version_++;
             expected_version = message_queue_version_;
@@ -159,11 +161,10 @@ class SyncChannel::ReceivedSyncMsgQueue :
           }
         }
       }
-
-      if (message == nullptr)
+      if (!message) {
         break;
+      }
       context->OnDispatchMessage(*message);
-      delete message;
     }
   }
 
@@ -174,7 +175,6 @@ class SyncChannel::ReceivedSyncMsgQueue :
     SyncMessageQueue::iterator iter = message_queue_.begin();
     while (iter != message_queue_.end()) {
       if (iter->context.get() == context) {
-        delete iter->message;
         iter = message_queue_.erase(iter);
         message_queue_version_++;
       } else {
@@ -198,9 +198,8 @@ class SyncChannel::ReceivedSyncMsgQueue :
   // calls based on a queued reply.
   void DispatchReplies() {
     for (size_t i = 0; i < received_replies_.size(); ++i) {
-      Message* message = received_replies_[i].message;
+      Message* message = received_replies_[i].message.get();
       if (received_replies_[i].context->TryToUnblockListener(message)) {
-        delete message;
         received_replies_.erase(received_replies_.begin() + i);
         return;
       }
@@ -243,8 +242,7 @@ class SyncChannel::ReceivedSyncMsgQueue :
 
   // Holds information about a queued synchronous message or reply.
   struct QueuedMessage {
-    QueuedMessage(Message* m, SyncContext* c) : message(m), context(c) { }
-    raw_ptr<Message> message;
+    std::unique_ptr<Message> message;
     scoped_refptr<SyncChannel::SyncContext> context;
   };
 
@@ -312,11 +310,12 @@ bool SyncChannel::SyncContext::Push(SyncMessage* sync_msg) {
   base::AutoLock auto_lock(deserializers_lock_);
   if (reject_new_deserializers_)
     return false;
+
   PendingSyncMsg pending(
-      SyncMessage::GetMessageId(*sync_msg), sync_msg->GetReplyDeserializer(),
+      SyncMessage::GetMessageId(*sync_msg), sync_msg->TakeReplyDeserializer(),
       new base::WaitableEvent(base::WaitableEvent::ResetPolicy::MANUAL,
                               base::WaitableEvent::InitialState::NOT_SIGNALED));
-  deserializers_.push_back(pending);
+  deserializers_.push_back(std::move(pending));
   return true;
 }
 
@@ -324,12 +323,10 @@ bool SyncChannel::SyncContext::Pop() {
   bool result;
   {
     base::AutoLock auto_lock(deserializers_lock_);
-    PendingSyncMsg msg = deserializers_.back();
-    delete msg.deserializer;
-    delete msg.done_event;
-    msg.done_event = nullptr;
-    deserializers_.pop_back();
+    PendingSyncMsg& msg = deserializers_.back();
+    msg.done_event.ClearAndDelete();
     result = msg.send_result;
+    deserializers_.pop_back();
   }
 
   // We got a reply to a synchronous Send() call that's blocking the listener

@@ -390,6 +390,7 @@ TEST_P(WaylandDataDragControllerTest, ReceiveDrag) {
                           wl::TestWaylandServerThread* server) {
     // HiDPI
     server->output()->SetScale(2);
+    server->output()->SetDeviceScaleFactor(2);
     server->output()->Flush();
 
     // Place the window onto the output.
@@ -465,6 +466,7 @@ TEST_P(WaylandDataDragControllerTest, ReceiveDragPixelSurface) {
       } else {
         output->SetScale(kTripleScale);
       }
+      server->output()->SetDeviceScaleFactor(kTripleScale);
       output->Flush();
 
       auto* data_offer = server->data_device_manager()
@@ -1190,7 +1192,10 @@ INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
 INSTANTIATE_TEST_SUITE_P(
     XdgVersionStableTestWithAuraShell,
     WaylandDataDragControllerTest,
-    Values(wl::ServerConfig{
-        .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}));
+    Values(wl::ServerConfig{.enable_aura_shell =
+                                wl::EnableAuraShellProtocol::kEnabled},
+           wl::ServerConfig{
+               .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled,
+               .use_aura_output_manager = true}));
 
 }  // namespace ui

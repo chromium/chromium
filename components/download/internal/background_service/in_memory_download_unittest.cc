@@ -7,12 +7,12 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
+#include "base/uuid.h"
 #include "net/base/io_buffer.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -125,9 +125,9 @@ class InMemoryDownloadTest : public testing::Test {
   // Helper method to create a download with request_params.
   void CreateDownload(const RequestParams& request_params) {
     download_ = std::make_unique<InMemoryDownloadImpl>(
-        base::GenerateGUID(), request_params, /* request_body= */ nullptr,
-        TRAFFIC_ANNOTATION_FOR_TESTS, delegate(), &url_loader_factory_,
-        io_thread_->task_runner());
+        base::Uuid::GenerateRandomV4().AsLowercaseString(), request_params,
+        /* request_body= */ nullptr, TRAFFIC_ANNOTATION_FOR_TESTS, delegate(),
+        &url_loader_factory_, io_thread_->task_runner());
   }
 
   InMemoryDownload* download() { return download_.get(); }

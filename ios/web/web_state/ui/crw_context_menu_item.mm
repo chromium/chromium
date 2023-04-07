@@ -26,6 +26,11 @@
                                          action:action];
 }
 
++ (CRWContextMenuItem*)itemWithID:(NSString*)ID
+                            title:(NSString*)title
+                          subMenu:(NSArray<CRWContextMenuItem*>*)subMenu {
+  return [[CRWContextMenuItem alloc] initWithID:ID title:title subMenu:subMenu];
+}
 - (instancetype)initWithID:(NSString*)ID
                      title:(NSString*)title
                     action:(ProceduralBlock)action {
@@ -48,6 +53,18 @@
     _title = title;
     _image = image;
     _action = action;
+  }
+  return self;
+}
+
+- (instancetype)initWithID:(NSString*)ID
+                     title:(NSString*)title
+                   subMenu:(NSArray<CRWContextMenuItem*>*)subMenu {
+  self = [super init];
+  if (self) {
+    _ID = ID;
+    _title = title;
+    _subMenu = subMenu;
   }
   return self;
 }

@@ -1046,7 +1046,6 @@ paint/invalidation/line-flow-with-floats-9.html
 paint/invalidation/overflow/vertical-overflow-child.html
 paint/invalidation/overflow/vertical-overflow-parent.html
 paint/invalidation/overflow/vertical-overflow-same.html
-paint/invalidation/position/layout-state-only-positioned.html
 paint/invalidation/repaint-across-writing-mode-boundary.html
 paint/invalidation/repaint-overlay/layers-overlay.html
 paint/invalidation/resize-iframe-text.html

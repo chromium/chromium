@@ -1328,7 +1328,6 @@
 <translation id="2114820389966440614">在此查看「近照精選」和其他回憶集錦</translation>
 <translation id="2114896190328250491">相片提供：<ph name="NAME" /></translation>
 <translation id="2114995631896158695">未插入 SIM 卡</translation>
-<translation id="2116020356255810305">可在開機時啟動應用程式</translation>
 <translation id="2116619964159595185">網站通常會連線至藍牙裝置，是因為要提供以下功能：設定或同步處理低功耗信標、健康與健身狀況追蹤器或智慧燈泡</translation>
 <translation id="2117655453726830283">下一張投影片</translation>
 <translation id="2119349053129246860">在「<ph name="APP" />」中開啟</translation>
@@ -3257,7 +3256,6 @@
 <translation id="380329542618494757">姓名</translation>
 <translation id="3803345858388753269">視訊品質</translation>
 <translation id="3803367742635802571">你造訪的網站可能無法正常運作</translation>
-<translation id="3803583375545057606">要詢問家長是否允許啟用這個擴充功能嗎？</translation>
 <translation id="380408572480438692">啟用成效資料收集功能可協助 Google 持續改善系統。除非你提交意見回饋報告 (Alt-Shift-I) 並在其中包含成效資料，否則 Google 不會收到任何相關資料。你可以隨時回到這個畫面停用收集功能。</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (擴充功能 ID：「<ph name="EXTENSION_ID" />」) 無法在登入畫面使用。</translation>
 <translation id="3807747707162121253">取消(&amp;C)</translation>
@@ -3678,7 +3676,6 @@
 <translation id="4169535189173047238">不允許</translation>
 <translation id="4170314459383239649">退出時清除</translation>
 <translation id="417096670996204801">選擇設定檔</translation>
-<translation id="41725145403849567">要詢問家長是否允許新增這個擴充功能嗎？</translation>
 <translation id="4175137578744761569">淺紫色與白色</translation>
 <translation id="4175737294868205930">永久儲存空間</translation>
 <translation id="4176463684765177261">已停用</translation>
@@ -5091,7 +5088,6 @@
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN 碼必須包含至少一個字元}other{PIN 碼必須包含至少 # 個字元}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> 要求你立即連線到 Wi-Fi 下載更新，或使用計量付費連線下載更新 (可能要支付流量費用)。</translation>
 <translation id="5476016146231427848">如要使用 Steam Chrome 版，請重新啟動裝置</translation>
-<translation id="5476897066181964657">你必須取得家長或監護人許可，才能新增這個擴充功能</translation>
 <translation id="5481273127572794904">不得自動下載多個檔案</translation>
 <translation id="5481941284378890518">新增附近的印表機</translation>
 <translation id="5483785310822538350">撤銷檔案和裝置存取權</translation>
@@ -5188,7 +5184,6 @@
 <translation id="5555639311269196631">關閉無線基地台</translation>
 <translation id="5556459405103347317">重新載入</translation>
 <translation id="5558129378926964177">放大(&amp;I)</translation>
-<translation id="5558247502209241936">可在視窗中開啟應用程式</translation>
 <translation id="5559311991468302423">刪除地址</translation>
 <translation id="55601339223879446">調整顯示畫面中的桌面邊界</translation>
 <translation id="5561162485081632007">可偵測不安全事件，並在這類事件發生時顯示警告訊息</translation>
@@ -6011,7 +6006,6 @@
 <translation id="6305607932814307878">全域政策：</translation>
 <translation id="6305702903308659374">ChromeVox 朗讀時仍維持音訊的標準音量</translation>
 <translation id="6305909198255586420">請使用主要設定檔安裝</translation>
-<translation id="630750887748244481">你的家長已停用 Chrome 的「網站、應用程式和擴充功能的權限」設定，你無法新增這個擴充功能。</translation>
 <translation id="6307990684951724544">系統忙碌中</translation>
 <translation id="6308493641021088955">登入資訊提供者：<ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">另存連結為(&amp;K)...</translation>
@@ -6837,7 +6831,6 @@
 <translation id="7025190659207909717">行動數據服務管理</translation>
 <translation id="7025895441903756761">安全性與隱私權</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{在無痕式視窗中開啟所有網址(&amp;I)}=1{在無痕式視窗中開啟(&amp;I)}other{在無痕式視窗中開啟所有 ({COUNT} 個) 網址(&amp;I)}}</translation>
-<translation id="7028057921476386252">你必須取得家長或監護人許可，才能啟用這個擴充功能</translation>
 <translation id="7029307918966275733">未安裝 Crostini。請安裝 Crostini 以查看開發人員名單。</translation>
 <translation id="7029809446516969842">密碼</translation>
 <translation id="7030304022046916278">系統會將網址傳送給安全瀏覽功能進行檢查</translation>
@@ -8216,7 +8209,6 @@
 <translation id="8251509999076836464">正在配對「<ph name="DEVICE_NAME" />」</translation>
 <translation id="8251578425305135684">已移除縮圖。</translation>
 <translation id="825238165904109940">一律顯示完整網址</translation>
-<translation id="8252538334423261825">無法新增擴充功能</translation>
 <translation id="8252569384384439529">上傳中...</translation>
 <translation id="8253198102038551905">按一下 [+] 即可查看網路屬性</translation>
 <translation id="8255212965098517578">最近的相片、通知和應用程式</translation>

@@ -155,7 +155,8 @@ void MojoInterfaceInterceptor::ContextDestroyed() {
 MojoInterfaceInterceptor::MojoInterfaceInterceptor(ExecutionContext* context,
                                                    const String& interface_name,
                                                    Scope::Enum scope)
-    : ExecutionContextLifecycleObserver(context),
+    : ActiveScriptWrappable<MojoInterfaceInterceptor>({}),
+      ExecutionContextLifecycleObserver(context),
       interface_name_(interface_name),
       scope_(scope) {}
 

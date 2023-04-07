@@ -363,7 +363,7 @@ Refer to README.md for content description and update process.
  <item id="chrome_commerce_waa_fetcher" added_in_milestone="107" content_hash_code="016d45fc" os_list="linux,windows,android,chromeos" file_path="components/commerce/core/account_checker.cc" />
  <item id="favicon_fetcher_get_favicon" added_in_milestone="106" content_hash_code="0640ce11" os_list="android" file_path="chrome/browser/supervised_user/android/favicon_fetcher.cc" />
  <item id="k_anonymity_service_get_token" added_in_milestone="106" content_hash_code="02bc56b0" os_list="linux,windows,android,chromeos" file_path="chrome/browser/k_anonymity_service/k_anonymity_trust_token_getter.cc" />
- <item id="enhanced_network_tts" added_in_milestone="103" content_hash_code="05205941" os_list="chromeos" file_path="chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_impl.cc" />
+ <item id="enhanced_network_tts" added_in_milestone="103" content_hash_code="03c12345" os_list="chromeos" file_path="chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_impl.cc" />
  <item id="shopping_list_ui_image_fetcher" added_in_milestone="107" content_hash_code="0680ae03" os_list="windows,chromeos,linux" file_path="chrome/browser/ui/commerce/price_tracking/shopping_list_ui_tab_helper.cc" />
  <item id="chrome_commerce_price_email_pref_fetcher" added_in_milestone="107" content_hash_code="00b3dc73" os_list="linux,windows,android,chromeos" file_path="components/commerce/core/account_checker.cc" />
  <item id="chrome_commerce_price_email_pref_sender" added_in_milestone="107" content_hash_code="03f51c85" os_list="linux,windows,android,chromeos" file_path="components/commerce/core/account_checker.cc" />
@@ -419,4 +419,6 @@ Refer to README.md for content description and update process.
  <item id="glanceables_tasks_integration" added_in_milestone="113" content_hash_code="06e038c9" os_list="chromeos" file_path="chrome/browser/ui/ash/glanceables/glanceables_tasks_client_impl.cc" />
  <item id="bookmarks_image_fetcher" added_in_milestone="114" content_hash_code="01dd68ad" os_list="chromeos,linux,windows" file_path="chrome/browser/ui/views/bookmarks/bookmark_bubble_view.cc" />
  <item id="screensaver_image_downloader" added_in_milestone="114" content_hash_code="020b8756" os_list="chromeos" file_path="chrome/browser/ash/policy/handlers/screensaver_image_downloader.cc" />
+ <item id="back_navigation_cache_query" added_in_milestone="114" content_hash_code="052f4fec" os_list="linux,windows,android,chromeos" file_path="content/browser/preloading/prerender/prerender_host_registry.cc" />
+ <item id="cws_info_service" added_in_milestone="114" content_hash_code="02e1a061" os_list="linux,windows,chromeos" file_path="chrome/browser/extensions/cws_info_service.cc" />
 </annotations>

@@ -131,9 +131,7 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
                    int dst_y_offset,
                    int dst_plane_index,
                    GLenum texture_target,
-                   GLuint src_row_bytes,
-                   const SkImageInfo& src_info,
-                   const void* src_pixels) override;
+                   const SkPixmap& src_sk_pixmap) override;
 
   void ConvertYUVAMailboxesToRGB(
       const gpu::Mailbox& dest_mailbox,

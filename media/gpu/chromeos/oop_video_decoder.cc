@@ -98,6 +98,31 @@ class OOPVideoDecoderSupportedConfigsManager {
     return configs_;
   }
 
+  VideoDecoderType GetDecoderType() {
+    base::AutoLock lock(lock_);
+    // This method should only be called in the initialization path of an
+    // OOPVideoDecoder instance. OOPVideoDecoder instances are initialized only
+    // after higher layers check that a VideoDecoderConfig is supported. If
+    // |decoder_type_| is not initialized to non-nullopt, it means that we're in
+    // one of two cases:
+    //
+    // a) We didn't try to get the supported configurations before initializing
+    //    OOPVideoDecoder instances. This should be impossible as higher layers
+    //    should guarantee that we know the supported configurations before
+    //    creating MojoVideoDecoderService instances (and therefore
+    //    OOPVideoDecoder instances). See, e.g., the logic in
+    //    InterfaceFactoryImpl::CreateVideoDecoder().
+    //
+    // b) We did try to get the supported configurations but an error occurred.
+    //    This case reduces to no supported configurations in which case, a
+    //    higher layer should reject any initialization attempt.
+    //
+    // Therefore, GetDecoderType() should only be reached when |decoder_type_|
+    // is known.
+    CHECK(decoder_type_.has_value());
+    return *decoder_type_;
+  }
+
   void NotifySupportKnown(
       mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder,
       base::OnceCallback<
@@ -152,10 +177,20 @@ class OOPVideoDecoderSupportedConfigsManager {
   ~OOPVideoDecoderSupportedConfigsManager() = default;
 
   void OnGetSupportedConfigs(const SupportedVideoDecoderConfigs& configs,
-                             VideoDecoderType /*decoder_type*/) {
+                             VideoDecoderType decoder_type) {
     base::AutoLock lock(lock_);
     DCHECK(!configs_);
-    configs_ = configs;
+    DCHECK(!decoder_type_);
+
+    if (decoder_type == VideoDecoderType::kVda ||
+        decoder_type == VideoDecoderType::kVaapi ||
+        decoder_type == VideoDecoderType::kV4L2) {
+      configs_ = configs;
+      decoder_type_ = decoder_type;
+    } else {
+      // The remote decoder is of an unexpected type, so let's assume it's bad.
+      configs_ = {};
+    }
 
     while (!waiting_callbacks_.empty()) {
       WaitingCallbackContext waiting_callback =
@@ -189,8 +224,9 @@ class OOPVideoDecoderSupportedConfigsManager {
   // once the supported configurations are known.
   mojo::Remote<stable::mojom::StableVideoDecoder> oop_video_decoder_;
 
-  // The cached supported video decoder configurations.
+  // The cached supported video decoder configurations and decoder type.
   absl::optional<SupportedVideoDecoderConfigs> configs_ GUARDED_BY(lock_);
+  absl::optional<VideoDecoderType> decoder_type_ GUARDED_BY(lock_);
 
   // This tracks everything that's needed to call a callback passed to
   // NotifySupportKnown() that had to be queued because there was a query in
@@ -404,10 +440,10 @@ void OOPVideoDecoder::OnInitializeDone(const DecoderStatus& status,
 
   CHECK(!has_error_);
 
-  if (!status.is_ok() ||
-      (decoder_type != VideoDecoderType::kVda &&
-       decoder_type != VideoDecoderType::kVaapi &&
-       decoder_type != VideoDecoderType::kV4L2) ||
+  const VideoDecoderType expected_decoder_type =
+      OOPVideoDecoderSupportedConfigsManager::Instance().GetDecoderType();
+
+  if (!status.is_ok() || decoder_type != expected_decoder_type ||
       (remote_decoder_type_ != VideoDecoderType::kUnknown &&
        remote_decoder_type_ != decoder_type)) {
     Stop();
@@ -803,8 +839,10 @@ void OOPVideoDecoder::AddLogRecord(const MediaLogRecord& event) {
   VLOGF(2);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (media_log_)
-    media_log_->AddLogRecord(std::make_unique<media::MediaLogRecord>(event));
+  // TODO(b/220915557): we should validate |event| before using it since we
+  // can't trust anything coming from the remote decoder.
+  // if (media_log_)
+  //   media_log_->AddLogRecord(std::make_unique<media::MediaLogRecord>(event));
 }
 
 }  // namespace media

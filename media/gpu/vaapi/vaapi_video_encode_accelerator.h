@@ -208,7 +208,7 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
 
   // Puts the encoder into en error state and notifies the client
   // about the error.
-  void NotifyError(Error error);
+  void NotifyError(EncoderStatus status);
 
   // Sets the encoder state to |state| on the correct thread.
   void SetState(State state);

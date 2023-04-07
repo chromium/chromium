@@ -275,7 +275,8 @@ public class CustomTabTabPersistencePolicyTest {
             public byte[] call() throws Exception {
                 TabModelSelectorImpl selectorImpl =
                         buildTestTabModelSelector(new int[] {111, 222, 333}, null);
-                return TabPersistentStore.serializeTabModelSelector(selectorImpl, null).listData;
+                return TabPersistentStore.serializeTabModelSelector(selectorImpl, null, false)
+                        .listData;
             }
         });
         FileOutputStream fos = null;

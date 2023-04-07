@@ -38,6 +38,8 @@ source_set("vaapi") {
   sources = [
     "av1_vaapi_video_decoder_delegate.cc",
     "av1_vaapi_video_decoder_delegate.h",
+    "av1_vaapi_video_encoder_delegate.cc",
+    "av1_vaapi_video_encoder_delegate.h",
     "h264_vaapi_video_decoder_delegate.cc",
     "h264_vaapi_video_decoder_delegate.h",
     "h264_vaapi_video_encoder_delegate.cc",

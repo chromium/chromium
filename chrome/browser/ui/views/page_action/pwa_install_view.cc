@@ -31,6 +31,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -178,7 +179,9 @@ views::BubbleDialogDelegate* PwaInstallView::GetBubble() const {
 }
 
 const gfx::VectorIcon& PwaInstallView::GetVectorIcon() const {
-  return omnibox::kInstallDesktopIcon;
+  return features::IsChromeRefresh2023()
+             ? omnibox::kInstallDesktopChromeRefreshIcon
+             : omnibox::kInstallDesktopIcon;
 }
 
 bool PwaInstallView::ShouldShowIph(content::WebContents* web_contents,

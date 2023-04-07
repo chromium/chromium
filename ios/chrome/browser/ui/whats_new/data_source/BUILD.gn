@@ -25,7 +25,7 @@ source_set("data_source") {
     "resources:whats_new_entries_plist",
     "//base",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ui/icons:symbols",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/colors",
     "//ui/base",
     "//url",

@@ -124,7 +124,8 @@ double ComputeSizeLossFunction(const PhysicalSize& requested_size,
 }  // namespace
 
 HTMLFencedFrameElement::HTMLFencedFrameElement(Document& document)
-    : HTMLFrameOwnerElement(html_names::kFencedframeTag, document) {
+    : HTMLFrameOwnerElement(html_names::kFencedframeTag, document),
+      sandbox_(MakeGarbageCollected<HTMLIFrameElementSandbox>(this)) {
   DCHECK(RuntimeEnabledFeatures::FencedFramesEnabled(GetExecutionContext()));
   UseCounter::Count(document, WebFeature::kHTMLFencedFrameElement);
   StartResizeObserver();
@@ -137,6 +138,11 @@ void HTMLFencedFrameElement::Trace(Visitor* visitor) const {
   visitor->Trace(frame_delegate_);
   visitor->Trace(resize_observer_);
   visitor->Trace(config_);
+  visitor->Trace(sandbox_);
+}
+
+DOMTokenList* HTMLFencedFrameElement::sandbox() const {
+  return sandbox_.Get();
 }
 
 void HTMLFencedFrameElement::DisconnectContentFrame() {
@@ -409,19 +415,32 @@ void HTMLFencedFrameElement::RemovedFrom(ContainerNode& node) {
 
 void HTMLFencedFrameElement::ParseAttribute(
     const AttributeModificationParams& params) {
-  if (params.name == html_names::kSrcAttr) {
-    if (config_) {
-      DCHECK(config_->url());
-      GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::blink::ConsoleMessageSource::kJavaScript,
-          mojom::blink::ConsoleMessageLevel::kWarning,
-          "Changing the `src` attribute on a fenced frame has no effect after "
-          "it has already been installed a config with a specified url."));
-      return;
-    }
+  if (params.name == html_names::kSandboxAttr) {
+    sandbox_->DidUpdateAttributeValue(params.old_value, params.new_value);
 
-    KURL url = GetNonEmptyURLAttribute(html_names::kSrcAttr);
-    Navigate(url);
+    network::mojom::blink::WebSandboxFlags current_flags =
+        network::mojom::blink::WebSandboxFlags::kNone;
+    if (!params.new_value.IsNull()) {
+      using network::mojom::blink::WebSandboxFlags;
+      WebSandboxFlags ignored_flags =
+          !RuntimeEnabledFeatures::StorageAccessAPIEnabled()
+              ? WebSandboxFlags::kStorageAccessByUserActivation
+              : WebSandboxFlags::kNone;
+
+      auto parsed = network::ParseWebSandboxPolicy(sandbox_->value().Utf8(),
+                                                   ignored_flags);
+      current_flags = parsed.flags;
+      if (!parsed.error_message.empty()) {
+        GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kOther,
+            mojom::blink::ConsoleMessageLevel::kError,
+            WebString::FromUTF8(
+                "Error while parsing the 'sandbox' attribute: " +
+                parsed.error_message)));
+      }
+    }
+    SetSandboxFlags(current_flags);
+    UseCounter::Count(GetDocument(), WebFeature::kSandboxViaFencedFrame);
   } else if (params.name == html_names::kAllowAttr) {
     if (allow_ != params.new_value) {
       allow_ = params.new_value;
@@ -433,10 +452,6 @@ void HTMLFencedFrameElement::ParseAttribute(
   } else {
     HTMLFrameOwnerElement::ParseAttribute(params);
   }
-}
-
-bool HTMLFencedFrameElement::IsURLAttribute(const Attribute& attribute) const {
-  return attribute.GetName() == html_names::kSrcAttr;
 }
 
 bool HTMLFencedFrameElement::IsPresentationAttribute(
@@ -474,7 +489,7 @@ void HTMLFencedFrameElement::Navigate(
   // prerendering. If this function is called while prerendering we won't have a
   // delegate and will bail early, but this should still be correct since,
   // post-activation, CreateDelegateAndNavigate will be run which will navigate
-  // to the most current src.
+  // to the most current config.
   if (!frame_delegate_)
     return;
 
@@ -521,6 +536,24 @@ void HTMLFencedFrameElement::Navigate(
             DeprecatedFencedFrameModeToString(parent_mode) + "'."));
     RecordFencedFrameCreationOutcome(
         FencedFrameCreationOutcome::kIncompatibleMode);
+    return;
+  }
+
+  // Cannot perform an embedder-initiated navigation in a fenced frame when the
+  // sandbox attribute restricts any of the mandatory unsandboxed features.
+  if (static_cast<int>(GetFramePolicy().sandbox_flags) &
+      static_cast<int>(blink::kFencedFrameMandatoryUnsandboxedFlags)) {
+    GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kJavaScript,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        "Can't navigate the fenced frame. A sandboxed fenced frame can "
+        "only be navigated by its embedder when all of the following "
+        "flags are set: allow-same-origin, allow-forms, allow-scripts, "
+        "allow-popups, allow-popups-to-escape-sandbox, and "
+        "allow-top-navigation-by-user-activation."));
+    RecordFencedFrameCreationOutcome(
+        FencedFrameCreationOutcome::kSandboxFlagsNotSet);
+    RecordFencedFrameUnsandboxedFlags(GetFramePolicy().sandbox_flags);
     return;
   }
 
@@ -596,7 +629,7 @@ void HTMLFencedFrameElement::CreateDelegateAndNavigate() {
   // prerendering, but we should only actually create the delegate once. Note,
   // this will also mean that we skip calling Navigate() again, but the result
   // should still be correct since the first Navigate call will use the
-  // up-to-date src.
+  // up-to-date config.
   if (frame_delegate_)
     return;
   if (GetDocument().IsPrerendering()) {
@@ -610,8 +643,6 @@ void HTMLFencedFrameElement::CreateDelegateAndNavigate() {
 
   if (config_) {
     NavigateToConfig();
-  } else {
-    Navigate(GetNonEmptyURLAttribute(html_names::kSrcAttr));
   }
 }
 

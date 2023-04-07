@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">Planeetta</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> on poistettu.</translation>
 <translation id="2307462900900812319">Määritä verkko</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Laajennusta, jonka tunnus on <ph name="BEGIN_LIST" /><ph name="END_LIST" />, ei löydy. Ota yhteyttä järjestelmänvalvojaan.}other{Laajennuksia, joiden tunnukset ovat <ph name="BEGIN_LIST" /><ph name="END_LIST" />, ei löydy. Ota yhteyttä järjestelmänvalvojaan.}}</translation>
 <translation id="2325650632570794183">Tätä tiedostotyyppiä ei tueta. Etsi tämäntyyppisiä tiedostoja avaava sovellus Chrome Web Storesta.</translation>
 <translation id="2326539130272988168">bulgaria</translation>
 <translation id="2337715497728194187">Jaa Bruschettalle</translation>
@@ -274,6 +275,7 @@
 <translation id="3290356915286466215">Suojaamaton</translation>
 <translation id="3291218047831493686">Yhdistä tähän verkkoon vaihtaaksesi SIM-lukituksen asetuksia</translation>
 <translation id="3293023191599135697">WEP-verkkoja ei tueta</translation>
+<translation id="3295006446256079333">Tämä määrä</translation>
 <translation id="3295357220137379386">Laite on varattu</translation>
 <translation id="3296763833017966289">gruusia</translation>
 <translation id="3307875152560779385">ukraina</translation>

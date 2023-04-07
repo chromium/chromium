@@ -34,6 +34,13 @@ BASE_FEATURE(kAdaptiveCharging,
              "AdaptiveCharging",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Whether adaptive charging feature is supported by the hardware. This is not
+// finch or user configurable but a hardware attribute controlled by ChromeOS
+// USE flag.
+BASE_FEATURE(kAdaptiveChargingHardwareSupport,
+             "AdaptiveChargingHardwareSupport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable the logic to show the notifications for Adaptive Charging features.
 // This is intended to be used by developers to test the UI aspect of the
 // feature.
@@ -1281,6 +1288,11 @@ BASE_FEATURE(kInternalServerSideSpeechRecognitionControl,
 // Enables sending `client-info` values to IPP printers on ChromeOS.
 BASE_FEATURE(kIppClientInfo, "IppClientInfo", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables correct handling of the function key row in Japanese.
+BASE_FEATURE(kJapaneseFunctionRow,
+             "JapaneseFunctionRow",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables IME button in the floating accessibility menu for the Kiosk session.
 BASE_FEATURE(kKioskEnableImeButton,
              "KioskEnableImeButton",
@@ -2349,12 +2361,6 @@ BASE_FEATURE(kPerUserMetrics,
 BASE_FEATURE(kArcFileTasksUseAppService,
              "ArcFileTasksUseAppService",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Allows Files App to find and execute tasks using App Service for Guest OS
-// apps.
-BASE_FEATURE(kGuestOsFileTasksUseAppService,
-             "GuestOsFileTasksUseAppService",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -3426,10 +3432,6 @@ bool IsWmModeEnabled() {
 
 bool ShouldArcFileTasksUseAppService() {
   return base::FeatureList::IsEnabled(kArcFileTasksUseAppService);
-}
-
-bool ShouldGuestOsFileTasksUseAppService() {
-  return base::FeatureList::IsEnabled(kGuestOsFileTasksUseAppService);
 }
 
 bool ShouldOnlyShowNewShortcutApp() {

@@ -25,7 +25,6 @@ class ViewPainter {
  public:
   ViewPainter(const LayoutView& layout_view) : layout_view_(layout_view) {}
 
-  void Paint(const PaintInfo&);
   void PaintBoxDecorationBackground(const PaintInfo&);
 
  private:

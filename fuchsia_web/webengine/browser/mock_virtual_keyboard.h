@@ -5,7 +5,7 @@
 #ifndef FUCHSIA_WEB_WEBENGINE_BROWSER_MOCK_VIRTUAL_KEYBOARD_H_
 #define FUCHSIA_WEB_WEBENGINE_BROWSER_MOCK_VIRTUAL_KEYBOARD_H_
 
-#include <fuchsia/input/virtualkeyboard/cpp/fidl.h>
+#include <fidl/fuchsia.input.virtualkeyboard/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>
 
 #include "base/fuchsia/scoped_service_binding.h"
@@ -15,7 +15,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class MockVirtualKeyboardController
-    : public fuchsia::input::virtualkeyboard::Controller {
+    : public fidl::Server<fuchsia_input_virtualkeyboard::Controller> {
  public:
   MockVirtualKeyboardController();
   ~MockVirtualKeyboardController() override;
@@ -24,43 +24,42 @@ class MockVirtualKeyboardController
   MockVirtualKeyboardController operator=(MockVirtualKeyboardController&) =
       delete;
 
-  void Bind(fuchsia::ui::views::ViewRef view_ref,
-            fuchsia::input::virtualkeyboard::TextType text_type,
-            fidl::InterfaceRequest<fuchsia::input::virtualkeyboard::Controller>
-                controller_request);
+  void Bind(fuchsia_ui_views::ViewRef view_ref,
+            fuchsia_input_virtualkeyboard::TextType text_type,
+            fidl::ServerEnd<fuchsia_input_virtualkeyboard::Controller>
+                controller_server_end);
 
   // Spins a RunLoop until the client calls WatchVisibility().
   void AwaitWatchAndRespondWith(bool is_visible);
 
-  const fuchsia::ui::views::ViewRef& view_ref() const { return view_ref_; }
-  fuchsia::input::virtualkeyboard::TextType text_type() const {
+  const fuchsia_ui_views::ViewRef& view_ref() const { return view_ref_; }
+  fuchsia_input_virtualkeyboard::TextType text_type() const {
     return text_type_;
   }
 
-  // fuchsia::input::virtualkeyboard::Controller implementation.
-  MOCK_METHOD0(RequestShow, void());
-  MOCK_METHOD0(RequestHide, void());
-  MOCK_METHOD1(SetTextType,
-               void(fuchsia::input::virtualkeyboard::TextType text_type));
+  // fuchsia_input_virtualkeyboard::Controller implementation.
+  MOCK_METHOD1(RequestShow, void(RequestShowCompleter::Sync&));
+  MOCK_METHOD1(RequestHide, void(RequestHideCompleter::Sync&));
+  MOCK_METHOD2(SetTextType,
+               void(SetTextTypeRequest&, SetTextTypeCompleter::Sync&));
 
  private:
-  // fuchsia::input::virtualkeyboard::Controller implementation.
-  void WatchVisibility(
-      fuchsia::input::virtualkeyboard::Controller::WatchVisibilityCallback
-          callback) final;
+  // fuchsia_input_virtualkeyboard::Controller implementation.
+  void WatchVisibility(WatchVisibilityCompleter::Sync& completer) final;
 
   base::OnceClosure on_watch_visibility_;
-  absl::optional<
-      fuchsia::input::virtualkeyboard::Controller::WatchVisibilityCallback>
-      watch_vis_callback_;
-  fuchsia::ui::views::ViewRef view_ref_;
-  fuchsia::input::virtualkeyboard::TextType text_type_;
-  fidl::Binding<fuchsia::input::virtualkeyboard::Controller> binding_;
+  absl::optional<fidl::Server<fuchsia_input_virtualkeyboard::Controller>::
+                     WatchVisibilityCompleter::Async>
+      watch_visibility_completer_;
+  fuchsia_ui_views::ViewRef view_ref_;
+  fuchsia_input_virtualkeyboard::TextType text_type_;
+  absl::optional<fidl::ServerBinding<fuchsia_input_virtualkeyboard::Controller>>
+      binding_;
 };
 
 // Services connection requests for MockVirtualKeyboardControllers.
 class MockVirtualKeyboardControllerCreator
-    : public fuchsia::input::virtualkeyboard::ControllerCreator {
+    : public fidl::Server<fuchsia_input_virtualkeyboard::ControllerCreator> {
  public:
   explicit MockVirtualKeyboardControllerCreator(
       base::TestComponentContextForProcess* component_context);
@@ -77,15 +76,12 @@ class MockVirtualKeyboardControllerCreator
   std::unique_ptr<MockVirtualKeyboardController> CreateController();
 
  private:
-  // fuchsia::input::virtualkeyboard implementation.
-  void Create(
-      fuchsia::ui::views::ViewRef view_ref,
-      fuchsia::input::virtualkeyboard::TextType text_type,
-      fidl::InterfaceRequest<fuchsia::input::virtualkeyboard::Controller>
-          controller_request) final;
+  // fuchsia_input_virtualkeyboard implementation.
+  void Create(CreateRequest& request, CreateCompleter::Sync& completer) final;
 
   MockVirtualKeyboardController* pending_controller_ = nullptr;
-  base::ScopedServiceBinding<fuchsia::input::virtualkeyboard::ControllerCreator>
+  base::ScopedNaturalServiceBinding<
+      fuchsia_input_virtualkeyboard::ControllerCreator>
       binding_;
 };
 

@@ -23,6 +23,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/wm/desks/templates/saved_desk_controller.h"
 #include "base/check.h"
 #include "base/strings/string_util.h"
 #include "extensions/common/constants.h"
@@ -153,6 +154,10 @@ bool ContinueSectionView::HasMinimumFilesToShow() const {
                        : kMinFilesForContinueSectionClamshellMode);
 }
 
+bool ContinueSectionView::HasDesksAdminTemplates() const {
+  return suggestions_container_->num_desks_admin_template_results() > 0;
+}
+
 bool ContinueSectionView::ShouldShowPrivacyNotice() const {
   if (!nudge_controller_)
     return false;
@@ -169,7 +174,16 @@ bool ContinueSectionView::ShouldShowPrivacyNotice() const {
 }
 
 bool ContinueSectionView::ShouldShowFilesSection() const {
-  return HasMinimumFilesToShow() &&
+  // TODO(hongyulong): each admin template or each file is a continue task view
+  // in the continue task container view. If we set this container visible, the
+  // admin template and the file will show up at the same time. I think we may
+  // need to separate the visibility for admin template and file in the
+  // container view. Otherwise, when we have a admin template, and if
+  // `IsPrivacyNoticeAccepted` and `WasPrivacyNoticeShown` all return false,
+  // the file, privacy toast, admin template will co-exist unexpectedly.
+  // Thus, we need to make some changes for the condition in another CL after
+  // fully consideration.
+  return (HasDesksAdminTemplates() || HasMinimumFilesToShow()) &&
          (nudge_controller_->IsPrivacyNoticeAccepted() ||
           nudge_controller_->WasPrivacyNoticeShown()) &&
          !privacy_toast_;

@@ -9,10 +9,10 @@
 #include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/user_education/tutorial_controller.h"
+#include "ash/user_education/user_education_types.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/account_id/account_id.h"
 #include "components/user_education/common/tutorial_description.h"
-#include "components/user_education/common/tutorial_identifier.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,11 +21,10 @@ namespace {
 
 // Aliases.
 using testing::_;
-using testing::Contains;
+using testing::ElementsAre;
 using testing::Eq;
 using testing::Pair;
 using user_education::TutorialDescription;
-using user_education::TutorialIdentifier;
 
 }  // namespace
 
@@ -52,16 +51,14 @@ TEST_F(CaptureModeTourControllerTest, GetTutorialDescriptions) {
   auto* capture_mode_tour_controller = CaptureModeTourController::Get();
   ASSERT_TRUE(capture_mode_tour_controller);
 
-  std::map<TutorialIdentifier, TutorialDescription>
-      tutorial_descriptions_by_id =
-          static_cast<TutorialController*>(capture_mode_tour_controller)
-              ->GetTutorialDescriptions();
+  std::map<TutorialId, TutorialDescription> tutorial_descriptions_by_id =
+      static_cast<TutorialController*>(capture_mode_tour_controller)
+          ->GetTutorialDescriptions();
 
   // TODO(http://b/275892879): Implement tutorial descriptions.
   EXPECT_THAT(tutorial_descriptions_by_id,
-              Contains(Pair(Eq("AshCaptureModeTourPrototype1"), _)));
-  EXPECT_THAT(tutorial_descriptions_by_id,
-              Contains(Pair(Eq("AshCaptureModeTourPrototype2"), _)));
+              ElementsAre(Pair(Eq(TutorialId::kCaptureModeTourPrototype1), _),
+                          Pair(Eq(TutorialId::kCaptureModeTourPrototype2), _)));
 }
 
 }  // namespace ash

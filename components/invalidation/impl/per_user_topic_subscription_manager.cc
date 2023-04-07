@@ -103,24 +103,6 @@ class PerProjectDictionaryPrefUpdate {
   raw_ptr<base::Value::Dict> per_sender_pref_;
 };
 
-// Added in M76.
-void MigratePrefs(PrefService* prefs, const std::string& project_id) {
-  if (!prefs->HasPrefPath(kActiveRegistrationTokenDeprecated)) {
-    return;
-  }
-  {
-    ScopedDictPrefUpdate token_update(prefs, kActiveRegistrationTokens);
-    token_update->Set(project_id,
-                      prefs->GetString(kActiveRegistrationTokenDeprecated));
-  }
-
-  const auto& old_subscriptions =
-      prefs->GetDict(kTypeSubscribedForInvalidationsDeprecated);
-  prefs->SetDict(project_id, old_subscriptions.Clone());
-  prefs->ClearPref(kActiveRegistrationTokenDeprecated);
-  prefs->ClearPref(kTypeSubscribedForInvalidationsDeprecated);
-}
-
 }  // namespace
 
 // static
@@ -211,7 +193,6 @@ PerUserTopicSubscriptionManager::PerUserTopicSubscriptionManager(
       identity_provider_(identity_provider),
       url_loader_factory_(url_loader_factory),
       project_id_(project_id),
-      migrate_prefs_(migrate_prefs),
       request_access_token_backoff_(&kBackoffPolicy) {}
 
 PerUserTopicSubscriptionManager::~PerUserTopicSubscriptionManager() = default;
@@ -231,9 +212,6 @@ PerUserTopicSubscriptionManager::Create(
 
 void PerUserTopicSubscriptionManager::Init() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (migrate_prefs_) {
-    MigratePrefs(pref_service_, project_id_);
-  }
   PerProjectDictionaryPrefUpdate update(pref_service_, project_id_);
   if (update->empty()) {
     return;

@@ -4,6 +4,7 @@
 
 #include "fuchsia_web/runners/cast/test/cast_runner_launcher.h"
 
+#include <chromium/cast/cpp/fidl.h>
 #include <fuchsia/buildinfo/cpp/fidl.h>
 #include <fuchsia/camera3/cpp/fidl.h>
 #include <fuchsia/component/decl/cpp/fidl.h>
@@ -15,7 +16,6 @@
 #include <fuchsia/memorypressure/cpp/fidl.h>
 #include <fuchsia/net/interfaces/cpp/fidl.h>
 #include <fuchsia/settings/cpp/fidl.h>
-#include <fuchsia/sys/cpp/fidl.h>
 #include <fuchsia/sysmem/cpp/fidl.h>
 #include <fuchsia/tracing/provider/cpp/fidl.h>
 #include <fuchsia/ui/composition/cpp/fidl.h>
@@ -31,7 +31,6 @@
 #include "base/fuchsia/process_context.h"
 #include "base/run_loop.h"
 #include "fuchsia_web/common/test/test_realm_support.h"
-#include "fuchsia_web/runners/cast/fidl/fidl/hlcpp/chromium/cast/cpp/fidl.h"
 #include "media/fuchsia/audio/fake_audio_device_enumerator_local_component.h"
 
 using ::component_testing::ChildRef;
@@ -135,8 +134,6 @@ CastRunnerLauncher::CastRunnerLauncher(CastRunnerFeatures runner_features) {
               Protocol{"fuchsia.posix.socket.Provider"},
               Protocol{"fuchsia.process.Launcher"},
               Protocol{fuchsia::settings::Display::Name_},
-              Protocol{fuchsia::sys::Environment::Name_},
-              Protocol{fuchsia::sys::Loader::Name_},
               Storage{.name = "cache", .path = "/cache"},
           },
       .source = ParentRef(),
@@ -187,8 +184,7 @@ CastRunnerLauncher::CastRunnerLauncher(CastRunnerFeatures runner_features) {
   realm_builder.AddRoute(
       Route{.capabilities = {Protocol{chromium::cast::DataReset::Name_},
                              Protocol{fuchsia::web::FrameHost::Name_},
-                             Protocol{fuchsia::web::Debug::Name_},
-                             Protocol{fuchsia::sys::Runner::Name_}},
+                             Protocol{fuchsia::web::Debug::Name_}},
             .source = ChildRef{kCastRunnerComponentName},
             .targets = {ParentRef()}});
 

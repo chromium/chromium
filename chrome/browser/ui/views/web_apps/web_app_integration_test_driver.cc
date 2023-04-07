@@ -2816,7 +2816,7 @@ void WebAppIntegrationTestDriver::CheckLaunchIconNotShown() {
   AfterStateCheckAction();
 }
 
-void WebAppIntegrationTestDriver::CheckTabCreated() {
+void WebAppIntegrationTestDriver::CheckTabCreated(Number number) {
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
@@ -2835,6 +2835,16 @@ void WebAppIntegrationTestDriver::CheckTabCreated() {
     ASSERT_TRUE(previous_browser_state.has_value());
     EXPECT_GT(most_recent_browser_state->tabs.size(),
               previous_browser_state->tabs.size());
+    int tab_diff = most_recent_browser_state->tabs.size() -
+                   previous_browser_state->tabs.size();
+    switch (number) {
+      case Number::kOne:
+        ASSERT_EQ(1, tab_diff);
+        break;
+      case Number::kTwo:
+        ASSERT_EQ(2, tab_diff);
+        break;
+    }
 #if BUILDFLAG(IS_MAC)
   }
 #endif

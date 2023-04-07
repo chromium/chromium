@@ -280,13 +280,11 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
     EXPECT_EQ(!requests.empty(), user_media_tab_existed);
 
     if (user_media_tab_existed) {
-      int user_media_request_count = -1;
-      ASSERT_TRUE(ExecuteScriptAndExtractInt(
-          shell(),
-          "window.domAutomationController.send("
-          "    document.querySelector('#user-media-tab-id')"
-          "        .childNodes.length);",
-          &user_media_request_count));
+      int user_media_request_count =
+          EvalJs(shell(),
+                 "document.querySelector('#user-media-tab-id')"
+                 "    .childNodes.length")
+              .ExtractInt();
       // The list of childnodes includes the input field and its label.
       ASSERT_EQ(requests.size(),
                 static_cast<size_t>(user_media_request_count) - 2);
@@ -441,14 +439,10 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
   }
 
   int GetSsrcInfoBlockCount(Shell* shell) {
-    int count = 0;
-    EXPECT_TRUE(ExecuteScriptAndExtractInt(
-        shell,
-        "window.domAutomationController.send("
-        "    document.getElementsByClassName("
-        "        ssrcInfoManager.SSRC_INFO_BLOCK_CLASS).length);",
-        &count));
-    return count;
+    return EvalJs(shell,
+                  "document.getElementsByClassName("
+                  "    ssrcInfoManager.SSRC_INFO_BLOCK_CLASS).length")
+        .ExtractInt();
   }
 
   // Verifies |dump| contains |peer_connection_number| peer connection dumps,
@@ -627,12 +621,9 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcInternalsBrowserTest, BweCompoundGraph) {
   EXPECT_TRUE(result);
 
   // Verify that the bweCompound graph contains multiple dataSeries.
-  int count = 0;
-  ASSERT_TRUE(ExecuteScriptAndExtractInt(
-        shell(),
-        "window.domAutomationController.send("
-        "   graphViews['" + graph_id + "'].getDataSeriesCount())",
-        &count));
+  int count =
+      EvalJs(shell(), "graphViews['" + graph_id + "'].getDataSeriesCount()")
+          .ExtractInt();
   EXPECT_EQ((int)stats.values.size(), count);
 }
 
@@ -697,50 +688,37 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcInternalsBrowserTest,
   const int NUMBER_OF_PEER_CONNECTIONS = 2;
 
   // Verifies the number of peerconnections.
-  int count = 0;
-  ASSERT_TRUE(ExecuteScriptAndExtractInt(
-      shell2,
-      "window.domAutomationController.send("
-      "    document.querySelector('#peer-connections-list')"
-      "        .getElementsByTagName('li').length);",
-      &count));
-  EXPECT_EQ(NUMBER_OF_PEER_CONNECTIONS, count);
+  EXPECT_EQ(NUMBER_OF_PEER_CONNECTIONS,
+            EvalJs(shell2,
+                   "document.querySelector('#peer-connections-list')"
+                   "    .getElementsByTagName('li').length;"));
 
   // Verifies the the event tables.
-  ASSERT_TRUE(ExecuteScriptAndExtractInt(
-      shell2,
-      "window.domAutomationController.send("
-      "    document.querySelector('#peer-connections-list')"
-      "        .getElementsByClassName('update-log-table').length);",
-      &count));
-  EXPECT_EQ(NUMBER_OF_PEER_CONNECTIONS, count);
+  EXPECT_EQ(NUMBER_OF_PEER_CONNECTIONS,
+            EvalJs(shell2,
+                   "document.querySelector('#peer-connections-list')"
+                   "    .getElementsByClassName('update-log-table').length;"));
 
-  ASSERT_TRUE(ExecuteScriptAndExtractInt(
-      shell2,
-      "window.domAutomationController.send("
-      "    document.querySelector('#peer-connections-list')"
-      "        .getElementsByClassName('update-log-table')[0].rows.length);",
-      &count));
-  EXPECT_GT(count, 1);
+  EXPECT_GT(
+      EvalJs(shell2,
+             "document.querySelector('#peer-connections-list')"
+             "    .getElementsByClassName('update-log-table')[0].rows.length;"),
+      1);
 
-  ASSERT_TRUE(ExecuteScriptAndExtractInt(
-      shell2,
-      "window.domAutomationController.send("
-      "    document.querySelector('#peer-connections-list')"
-      "        .getElementsByClassName('update-log-table')[1].rows.length);",
-      &count));
-  EXPECT_GT(count, 1);
+  EXPECT_GT(
+      EvalJs(shell2,
+             "document.querySelector('#peer-connections-list')"
+             "    .getElementsByClassName('update-log-table')[1].rows.length;"),
+      1);
 
   // Wait until the stats table containers are created.
-  count = 0;
+  int count = 0;
   while (count != NUMBER_OF_PEER_CONNECTIONS) {
-    ASSERT_TRUE(ExecuteScriptAndExtractInt(
-        shell2,
-        "window.domAutomationController.send("
-        "    document.querySelector('#peer-connections-list')"
-        "        .getElementsByClassName("
-        "        'stats-table-container').length);",
-        &count));
+    count = EvalJs(shell2,
+                   "document.querySelector('#peer-connections-list')"
+                   "    .getElementsByClassName("
+                   "    'stats-table-container').length;")
+                .ExtractInt();
   }
 
   // Verifies each stats table having more than one rows.

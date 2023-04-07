@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">Dispositivo USB-C (porta anteriore)</translation>
 <translation id="1013598600051641573">La risoluzione di <ph name="DISPLAY_NAME" /> è stata impostata su <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Fai clic su Conferma per mantenere le modifiche. Le impostazioni precedenti verranno ripristinate tra <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Il dispositivo Bluetooth "<ph name="DEVICE_NAME" />" chiede l'autorizzazione per essere accoppiato. Inserisci questo codice PIN sul dispositivo: <ph name="PINCODE" /></translation>
+<translation id="1017556409696559990">Riduci a icona la finestra principale quando non è presente una cronologia precedente in Chrome</translation>
 <translation id="1024364763893396229">Salva <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Batteria dello stilo in esaurimento</translation>
 <translation id="1036073649888683237">Per gestire le notifiche, vai alle Impostazioni</translation>
@@ -343,6 +344,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2621713457727696555">Protetta</translation>
 <translation id="263399434338050016">"Seleziona tutto"</translation>
+<translation id="2644422758626431000">Blocca la finestra a sinistra</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647092942972307022"><ph name="USED_MEMORY" /> su <ph name="TOTAL_MEMORY" /> disponibili</translation>
 <translation id="2653019840645008922">Acquisizione finestra</translation>
@@ -1050,6 +1052,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="5920710855273935292">L'audio del microfono è disattivato.</translation>
+<translation id="5922962980596822074">Passa da una finestra all'altra dalla finestra usata più recentemente</translation>
 <translation id="5924855612669061715">L'hotspot è attivato</translation>
 <translation id="5946788582095584774">La funzionalità <ph name="FEATURE_NAME" /> è attiva.</translation>
 <translation id="5947494881799873997">Ripristina</translation>
@@ -1139,6 +1142,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="6352082849089527770">Reti sconosciute</translation>
 <translation id="6359587239691116345">Ottieni le funzionalità e i miglioramenti della sicurezza più recenti. Se rifiuti questo aggiornamento, il tuo dispositivo potrebbe non funzionare più correttamente e potresti riscontrare problemi di prestazioni e sicurezza.</translation>
 <translation id="6376931439017688372">Bluetooth attivo.</translation>
+<translation id="6378515133128829137">Blocca la finestra a destra</translation>
 <translation id="6381109794406942707">Per sbloccare il dispositivo, inserisci il PIN.</translation>
 <translation id="638716340450135524">Attiva l'accesso alla fotocamera</translation>
 <translation id="639644700271529076">Funzione BLOC MAIUSC non attiva</translation>
@@ -1158,6 +1162,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="6459472438155181876">Estensione dello schermo su <ph name="DISPLAY_NAME" /></translation>
 <translation id="6477681113376365978">Impossibile scaricare il file</translation>
 <translation id="6482559668224714696">Lente d'ingrandimento a schermo intero</translation>
+<translation id="6483727822843292440">Passa da una finestra all'altra dalla finestra meno usata</translation>
 <translation id="6490471652906364588">Dispositivo USB-C (porta a destra)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> richiede l'aggiornamento di <ph name="DEVICE_TYPE" /> entro il termine ultimo</translation>
 <translation id="649452524636452238">PIN della smart card</translation>
@@ -1211,6 +1216,7 @@ Nuova installazione</translation>
 <translation id="6683022854667115063">Cuffie</translation>
 <translation id="6696025732084565524">La tastiera rimovibile richiede un aggiornamento critico</translation>
 <translation id="6700713906295497288">Pulsante di menu IME</translation>
+<translation id="6705577071209924099">Regola l'illuminazione</translation>
 <translation id="6707693040195709527">Il termine ultimo per il ripristino della versione precedente del dispositivo è trascorso</translation>
 <translation id="6710213216561001401">Precedente</translation>
 <translation id="6723839937902243910">Alimentazione</translation>
@@ -1231,6 +1237,7 @@ Nuova installazione</translation>
 <translation id="6782182743534150858">Scrivania 13</translation>
 <translation id="6782919488259222803">Cerca nella pagina corrente</translation>
 <translation id="6786750046913594791">Chiudi cartella</translation>
+<translation id="6787839852456839824">Scorciatoie da tastiera</translation>
 <translation id="6790428901817661496">Riproduci</translation>
 <translation id="679368458793552943">Aumenta lo zoom quando la lente d'ingrandimento è attiva</translation>
 <translation id="6801878137098616817">Modificato di recente</translation>

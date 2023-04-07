@@ -65,6 +65,16 @@ __gCrWeb['fill'] = __gCrWeb.fill;
 __gCrWeb.fill.MAX_DATA_LENGTH = 1024;
 
 /**
+ * The maximum string length supported by Autofill.
+ *
+ * This variable is from kMaxStringLength in
+ * chromium/src/components/autofill/core/common/autofill_constant.h
+ *
+ * @const {number}
+ */
+__gCrWeb.fill.MAX_STRING_LENGTH = 1024;
+
+/**
  * The maximum number of form fields we are willing to parse, due to
  * computational costs. Several examples of forms with lots of fields that are
  * not relevant to Autofill: (1) the Netflix queue; (2) the Amazon wishlist;
@@ -700,7 +710,7 @@ function isVisibleNode_(node) {
  * field_element.isFormControlElement().
  *
  * This also uses (|controlElements|, |elementArray|) because there is no
- * guaranteeded Map support on iOS yet.
+ * guaranteed Map support on iOS yet.
  * TODO(crbug.com/1030490): Make |elementArray| a Map.
  *
  * @param {NodeList} labels The labels to match.
@@ -791,7 +801,7 @@ function matchLabelsAndFields_(
  *
  * @param {HTMLFormElement} formElement The form element that will be processed.
  * @param {FormControlElement} formControlElement A control element in
- *     formElment, the FormField of which will be returned in field.
+ *     formElement, the FormField of which will be returned in field.
  * @param {Array<Element>} fieldsets The fieldsets to look through if
  *     formElement and formControlElement are not specified.
  * @param {Array<FormControlElement>} controlElements The control elements that
@@ -815,8 +825,9 @@ __gCrWeb.fill.formOrFieldsetsToFormData = function(
   // The extracted FormFields.
   const formFields = [];
 
-  // A vector of bools that indicate whether each element in |controlElements|
-  // meets the requirements and thus will be in the resulting |form|.
+  // A vector of booleans that indicate whether each element in
+  // |controlElements| meets the requirements and thus will be in the resulting
+  // |form|.
   const fieldsExtracted = [];
 
   if (!extractFieldsFromControlElements_(
@@ -898,7 +909,7 @@ __gCrWeb.fill.formOrFieldsetsToFormData = function(
  *     formElement is in.
  * @param {HTMLFormElement} formElement The form element that will be processed.
  * @param {FormControlElement} formControlElement A control element in
- *     formElment, the FormField of which will be returned in field.
+ *     formElement, the FormField of which will be returned in field.
  * @param {number} extractMask Mask controls what data is extracted from
  *     formElement.
  * @param {Object} form Form to fill in the AutofillFormData
@@ -1848,8 +1859,10 @@ __gCrWeb.fill.getOptionStringsFromElement = function(selectElement, field) {
   const options = selectElement.options;
   for (let i = 0; i < options.length; ++i) {
     const option = options[i];
-    field['option_values'].push(option['value']);
-    field['option_contents'].push(option['text']);
+    field['option_values'].push(
+        option['value'].substring(0, __gCrWeb.fill.MAX_STRING_LENGTH));
+    field['option_contents'].push(
+        option['text'].substring(0, __gCrWeb.fill.MAX_STRING_LENGTH));
   }
 };
 

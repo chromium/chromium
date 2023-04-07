@@ -234,13 +234,6 @@ class AdsPageLoadMetricsObserver
   void ProcessOngoingNavigationResource(
       content::NavigationHandle* navigation_handle);
 
-  // Records whether an ad frame was ignored by the Restricted Navigation
-  // AdTagging feature. For frames that are ignored, this is recorded when a
-  // FrameTreeData object would have been created for them, or when their
-  // FrameTreeData is deleted. For non-ignored frames, this is recorded when it
-  // is logged to metrics.
-  void RecordAdFrameIgnoredByRestrictedAdTagging(bool ignored);
-
   // Find the FrameTreeData object associated with a given FrameTreeNodeId in
   // |ad_frames_data_storage_|.
   FrameTreeData* FindFrameData(FrameTreeNodeId id);

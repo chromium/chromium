@@ -11,7 +11,7 @@
  * List of available colors to be used in charts. Each model is associated with
  * the same color in all charts.
  */
-var chartColors = [
+const chartColors = [
   '#e6194B',
   '#3cb44b',
   '#4363d8',
@@ -30,19 +30,19 @@ var chartColors = [
  * @type {Array<Object>}.
  * Array of models to display.
  */
-var models = [];
+const models = [];
 
 /**
  * @type {Array<string>}.
  * Array of taken colors and it is used to prevent several models are displayed
  * in the same color.
  */
-var takenColors = [];
+const takenColors = [];
 
 /**
  * Maps model to the associated color.
  */
-var modelColors = new Map();
+const modelColors = new Map();
 
 /**
  * Frame time based on 60 FPS.
@@ -63,8 +63,8 @@ function initializeOverviewUi() {
  * @param {number} duration duration of analyzed period.
  */
 function calculateFPS(events, duration) {
-  var eventCount = 0;
-  var index = events.getFirstEvent();
+  let eventCount = 0;
+  let index = events.getFirstEvent();
   while (index >= 0) {
     ++eventCount;
     index = events.getNextEvent(index, 1 /* direction */);
@@ -80,17 +80,18 @@ function calculateFPS(events, duration) {
  * @param {Object} model model to process.
  */
 function calculateAppRenderQualityAndCommitDeviation(model) {
-  var deltas = createDeltaEvents(getAppCommitEvents(model));
+  const deltas = createDeltaEvents(getAppCommitEvents(model));
 
-  var vsyncErrorDeviationAccumulator = 0.0;
+  let vsyncErrorDeviationAccumulator = 0.0;
   // Frame delta in microseconds.
-  for (var i = 0; i < deltas.events.length; i++) {
-    var displayFramesPassed = Math.round(deltas.events[i][2] / targetFrameTime);
-    var vsyncError =
+  for (let i = 0; i < deltas.events.length; i++) {
+    const displayFramesPassed =
+        Math.round(deltas.events[i][2] / targetFrameTime);
+    const vsyncError =
         deltas.events[i][2] - displayFramesPassed * targetFrameTime;
     vsyncErrorDeviationAccumulator += (vsyncError * vsyncError);
   }
-  var commitDeviation =
+  const commitDeviation =
       Math.sqrt(vsyncErrorDeviationAccumulator / deltas.events.length);
 
   // Sort by time delta.
@@ -105,9 +106,9 @@ function calculateAppRenderQualityAndCommitDeviation(model) {
   }
 
   // Get 10% and 90% indices.
-  var lowerPosition = Math.round(deltas.events.length / 10);
-  var upperPosition = deltas.events.length - 1 - lowerPosition;
-  var renderQuality =
+  const lowerPosition = Math.round(deltas.events.length / 10);
+  const upperPosition = deltas.events.length - 1 - lowerPosition;
+  const renderQuality =
       deltas.events[lowerPosition][2] / deltas.events[upperPosition][2];
 
   return [
@@ -133,15 +134,15 @@ function getModelTitle(model) {
  * @param {Object} model model to process.
  */
 function addModelHeader(model) {
-  var header = $('arc-overview-tracing-model-template').cloneNode(true);
+  const header = $('arc-overview-tracing-model-template').cloneNode(true);
   header.hidden = false;
-  var totalPowerElement =
+  const totalPowerElement =
       header.getElementsByClassName('arc-tracing-app-power-total')[0];
-  var cpuPowerElement =
+  const cpuPowerElement =
       header.getElementsByClassName('arc-tracing-app-power-cpu')[0];
-  var gpuPowerElement =
+  const gpuPowerElement =
       header.getElementsByClassName('arc-tracing-app-power-gpu')[0];
-  var memoryPowerElement =
+  const memoryPowerElement =
       header.getElementsByClassName('arc-tracing-app-power-memory')[0];
   totalPowerElement.parentNode.style.display = 'none';
 
@@ -151,15 +152,15 @@ function addModelHeader(model) {
   }
   header.getElementsByClassName('arc-tracing-app-title')[0].textContent =
       getModelTitle(model);
-  var date = model.information.timestamp ?
+  const date = model.information.timestamp ?
       new Date(model.information.timestamp).toLocaleString() :
       'Unknown date';
   header.getElementsByClassName('arc-tracing-app-date')[0].textContent = date;
-  var duration = (model.information.duration * 0.000001).toFixed(2);
+  const duration = (model.information.duration * 0.000001).toFixed(2);
   header.getElementsByClassName('arc-tracing-app-duration')[0].textContent =
       duration;
-  var platform = model.information.platform ? model.information.platform :
-                                              'Unknown platform';
+  const platform = model.information.platform ? model.information.platform :
+                                                'Unknown platform';
   header.getElementsByClassName('arc-tracing-app-platform')[0].textContent =
       platform;
 
@@ -169,16 +170,16 @@ function addModelHeader(model) {
   header.getElementsByClassName('arc-tracing-chrome-fps')[0].textContent =
       calculateFPS(getChromeSwapEvents(model), model.information.duration)
           .toFixed(2);
-  var renderQualityAndCommitDeviation =
+  const renderQualityAndCommitDeviation =
       calculateAppRenderQualityAndCommitDeviation(model);
   header.getElementsByClassName('arc-tracing-app-render-quality')[0]
       .textContent = renderQualityAndCommitDeviation[0].toFixed(1) + '%';
   header.getElementsByClassName('arc-tracing-app-commit-deviation')[0]
       .textContent = renderQualityAndCommitDeviation[1].toFixed(2) + 'ms';
 
-  var cpuPower = getAveragePower(model, 10 /* kCpuPower */);
-  var gpuPower = getAveragePower(model, 11 /* kGpuPower */);
-  var memoryPower = getAveragePower(model, 12 /* kMemoryPower */);
+  const cpuPower = getAveragePower(model, 10 /* kCpuPower */);
+  const gpuPower = getAveragePower(model, 11 /* kGpuPower */);
+  const memoryPower = getAveragePower(model, 12 /* kMemoryPower */);
   if (cpuPower != -1 && gpuPower != -1 && memoryPower != -1) {
     totalPowerElement.parentNode.style.display = 'block';
     totalPowerElement.textContent =
@@ -208,13 +209,13 @@ function addModelHeader(model) {
  * @param {object} model source model to analyze.
  */
 function getAppCommitEvents(model) {
-  var events = [];
-  for (var i = 0; i < model.views.length; i++) {
-    var view = model.views[i];
-    for (var j = 0; j < view.buffers.length; j++) {
-      var commitEvents =
+  const events = [];
+  for (let i = 0; i < model.views.length; i++) {
+    const view = model.views[i];
+    for (let j = 0; j < view.buffers.length; j++) {
+      const commitEvents =
           new Events(view.buffers[j], 200 /* kExoSurfaceAttach */);
-      var index = commitEvents.getFirstEvent();
+      let index = commitEvents.getFirstEvent();
       while (index >= 0) {
         events.push(commitEvents.events[index]);
         index = commitEvents.getNextEvent(index, 1 /* direction */);
@@ -239,12 +240,12 @@ function getAppCommitEvents(model) {
  * @returns {number} average power in watts or -1 in case no events found.
  */
 function getAveragePower(model, eventType) {
-  var events = new Events(model.system.memory, eventType);
-  var lastTimestamp = 0;
-  var totalEnergy = 0;
-  var index = events.getFirstEvent();
+  const events = new Events(model.system.memory, eventType);
+  let lastTimestamp = 0;
+  let totalEnergy = 0;
+  let index = events.getFirstEvent();
   while (index >= 0) {
-    var timestamp = events.events[index][1];
+    const timestamp = events.events[index][1];
     totalEnergy +=
         events.events[index][2] * (timestamp - lastTimestamp) * 0.001;
     lastTimestamp = timestamp;
@@ -266,11 +267,11 @@ function getAveragePower(model, eventType) {
  * @param {object} model source model to analyze.
  */
 function getChromeSwapEvents(model) {
-  var events = [];
-  for (var i = 0; i < model.chrome.buffers.length; i++) {
-    var swapEvents =
+  const events = [];
+  for (let i = 0; i < model.chrome.buffers.length; i++) {
+    const swapEvents =
         new Events(model.chrome.buffers[i], 504 /* kChromeOSSwapDone */);
-    var index = swapEvents.getFirstEvent();
+    let index = swapEvents.getFirstEvent();
     while (index >= 0) {
       events.push(swapEvents.events[index]);
       index = swapEvents.getNextEvent(index, 1 /* direction */);
@@ -293,12 +294,12 @@ function getChromeSwapEvents(model) {
  * @param {step} step to generate next results in microseconds.
  */
 function createFPSEvents(events, duration, windowSize, step) {
-  var fpsEvents = [];
-  var timestamp = 0;
-  var index = events.getFirstEvent();
+  const fpsEvents = [];
+  let timestamp = 0;
+  let index = events.getFirstEvent();
   while (timestamp < duration) {
-    var windowFromTimestamp = timestamp - windowSize / 2;
-    var windowToTimestamp = timestamp + windowSize / 2;
+    let windowFromTimestamp = timestamp - windowSize / 2;
+    let windowToTimestamp = timestamp + windowSize / 2;
     // Clamp ranges.
     if (windowToTimestamp > duration) {
       windowFromTimestamp = duration - windowSize;
@@ -311,8 +312,8 @@ function createFPSEvents(events, duration, windowSize, step) {
     while (index >= 0 && events.events[index][1] < windowFromTimestamp) {
       index = events.getNextEvent(index, 1 /* direction */);
     }
-    var frames = 0;
-    var scanIndex = index;
+    let frames = 0;
+    let scanIndex = index;
     while (scanIndex >= 0 && events.events[scanIndex][1] < windowToTimestamp) {
       ++frames;
       scanIndex = events.getNextEvent(scanIndex, 1 /* direction */);
@@ -331,15 +332,15 @@ function createFPSEvents(events, duration, windowSize, step) {
  * @param events source events to analyze.
  */
 function createDeltaEvents(events) {
-  var timeEvents = [];
-  var timestamp = 0;
-  var lastIndex = events.getFirstEvent();
+  const timeEvents = [];
+  const timestamp = 0;
+  let lastIndex = events.getFirstEvent();
   while (lastIndex >= 0) {
-    var index = events.getNextEvent(lastIndex, 1 /* direction */);
+    const index = events.getNextEvent(lastIndex, 1 /* direction */);
     if (index < 0) {
       break;
     }
-    var delta = events.events[index][1] - events.events[lastIndex][1];
+    const delta = events.events[index][1] - events.events[lastIndex][1];
     timeEvents.push(
         [0 /* type does not mattter */, events.events[index][1], delta]);
     lastIndex = index;
@@ -358,15 +359,15 @@ function createDeltaEvents(events) {
 function addCPUFrequencyView(parent, resolution, duration) {
   // Range from 0 to 3GHz
   // 50MHz  1 pixel resolution
-  var bands = createChart(
+  const bands = createChart(
       parent, 'CPU Frequency' /* title */, resolution, duration,
       60 /* height */, 5 /* gridLinesCount */);
-  var attributesTemplate =
+  const attributesTemplate =
       Object.assign({}, valueAttributes[9 /* kCpuFrequency */]);
   attributesTemplate.minValue = 0;
   attributesTemplate.maxValue = 3000000;  // Khz
   for (i = 0; i < models.length; i++) {
-    var attributes = Object.assign({}, attributesTemplate);
+    const attributes = Object.assign({}, attributesTemplate);
     attributes.color = modelColors.get(models[i]);
     bands.addChartSources(
         [new Events(models[i].system.memory, 9 /* kCpuFrequency */)],
@@ -384,15 +385,15 @@ function addCPUFrequencyView(parent, resolution, duration) {
 function addCPUTempView(parent, resolution, duration) {
   // Range from 20 to 100 celsius
   // 2 celsius 1 pixel resolution
-  var bands = createChart(
+  const bands = createChart(
       parent, 'CPU Temperature' /* title */, resolution, duration,
       40 /* height */, 3 /* gridLinesCount */);
-  var attributesTemplate =
+  const attributesTemplate =
       Object.assign({}, valueAttributes[8 /* kCpuTemperature */]);
   attributesTemplate.minValue = 20000;
   attributesTemplate.maxValue = 100000;
   for (i = 0; i < models.length; i++) {
-    var attributes = Object.assign({}, attributesTemplate);
+    const attributes = Object.assign({}, attributesTemplate);
     attributes.color = modelColors.get(models[i]);
     bands.addChartSources(
         [new Events(models[i].system.memory, 8 /* kCpuTemperature */)],
@@ -410,15 +411,15 @@ function addCPUTempView(parent, resolution, duration) {
 function addGPUFrequencyView(parent, resolution, duration) {
   // Range from 300MHz to 1GHz
   // 14MHz  1 pixel resolution
-  var bands = createChart(
+  const bands = createChart(
       parent, 'GPU Frequency' /* title */, resolution, duration,
       50 /* height */, 4 /* gridLinesCount */);
-  var attributesTemplate =
+  const attributesTemplate =
       Object.assign({}, valueAttributes[7 /* kGpuFrequency */]);
   attributesTemplate.minValue = 300;   // Mhz
   attributesTemplate.maxValue = 1000;  // Mhz
   for (i = 0; i < models.length; i++) {
-    var attributes = Object.assign({}, attributesTemplate);
+    const attributes = Object.assign({}, attributesTemplate);
     attributes.color = modelColors.get(models[i]);
     bands.addChartSources(
         [new Events(models[i].system.memory, 7 /* kGpuFrequency */)],
@@ -439,8 +440,8 @@ function addGPUFrequencyView(parent, resolution, duration) {
 function addFPSView(parent, resolution, duration, appView) {
   // FPS range from 10 to 70.
   // 1 fps 1 pixel resolution.
-  var title = appView ? 'App FPS' : 'ChromeOS FPS';
-  var bands = createChart(
+  const title = appView ? 'App FPS' : 'ChromeOS FPS';
+  const bands = createChart(
       parent, title, resolution, duration, 60 /* height */,
       5 /* gridLinesCount */);
 
@@ -448,9 +449,9 @@ function addFPSView(parent, resolution, duration, appView) {
     // To prevent further handling.
     event.stopPropagation();
 
-    var content = '';
-    var fileName = '';
-    var modelEvents = [];
+    let content = '';
+    let fileName = '';
+    const modelEvents = [];
     for (i = 0; i < models.length; i++) {
       if (i > 0) {
         content += ',';
@@ -463,10 +464,10 @@ function addFPSView(parent, resolution, duration, appView) {
     }
     fileName = content.replace(',', '_') + '_frame_times.csv';
     content += '\n';
-    var index = 0;
+    let index = 0;
     while (true) {
-      var line = '';
-      var dataExists = false;
+      let line = '';
+      let dataExists = false;
       for (i = 0; i < models.length; i++) {
         if (i > 0) {
           line += ',';
@@ -496,13 +497,13 @@ function addFPSView(parent, resolution, duration, appView) {
   bands.createTitleInput(
       'button', 'Export frame times', false, exportFrameTimes);
 
-  var attributesTemplate =
+  const attributesTemplate =
       {maxValue: 70, minValue: 10, name: 'fps', scale: 1.0, width: 1.0};
   for (i = 0; i < models.length; i++) {
-    var attributes = Object.assign({}, attributesTemplate);
-    var events = appView ? getAppCommitEvents(models[i]) :
-                           getChromeSwapEvents(models[i]);
-    var fpsEvents = createFPSEvents(
+    const attributes = Object.assign({}, attributesTemplate);
+    const events = appView ? getAppCommitEvents(models[i]) :
+                             getChromeSwapEvents(models[i]);
+    const fpsEvents = createFPSEvents(
         events, duration, 200000 /* windowSize, 0.2s */, targetFrameTime);
     attributes.color = modelColors.get(models[i]);
     bands.addChartSources([fpsEvents], true /* smooth */, attributes);
@@ -520,7 +521,7 @@ function addFPSView(parent, resolution, duration, appView) {
  */
 function addFPSHistograms(parent, anchor, timeBasedView) {
   // Define the width of each bar based on number of models in view.
-  var barWidth;
+  let barWidth;
   if (models.length == 1) {
     barWidth = 20;
   } else if (models.length == 2) {
@@ -582,9 +583,9 @@ function addFPSHistograms(parent, anchor, timeBasedView) {
 
   const fpsBandYOffset = 80;
 
-  for (var t = 0; t < 2; ++t) {
+  for (let t = 0; t < 2; ++t) {
     // Create band with FPSs.
-    for (var i = 0; i < basketFPSs.length; ++i) {
+    for (let i = 0; i < basketFPSs.length; ++i) {
       const x = fullSectionWidth * t         // Section offset
           + titleXOffset + titleWidth        // Title offset
           + (fullBarsWidth + basketGap) * i  // Bars begin for this basket.
@@ -593,11 +594,11 @@ function addFPSHistograms(parent, anchor, timeBasedView) {
           basketFPSs[i].toString(), x, fpsBandYOffset, 'middle' /* anchor */);
     }
 
-    for (var m = 0; m < models.length; ++m) {
+    for (let m = 0; m < models.length; ++m) {
       const events = t == 0 ? getAppCommitEvents(models[m]) :
                               getChromeSwapEvents(models[m]);
       // Presort deltas between frames. Fastest one goes first.
-      var deltas = createDeltaEvents(events);
+      const deltas = createDeltaEvents(events);
       if (deltas.events.length == 0) {
         // Nothing to display.
         continue;
@@ -609,26 +610,26 @@ function addFPSHistograms(parent, anchor, timeBasedView) {
       });
 
       // Calculate basket values.
-      var index = 0;
-      var lastIndex = 0;
-      var basketIndex = 0;
+      let index = 0;
+      let lastIndex = 0;
+      let basketIndex = 0;
       // Keep frame count for baskets.
-      var basketCountValues = Array(basketFPSs.length).fill(0);
+      const basketCountValues = Array(basketFPSs.length).fill(0);
       // Keep total time of frames for basket.
-      var basketTimeValues = Array(basketFPSs.length).fill(0);
+      const basketTimeValues = Array(basketFPSs.length).fill(0);
 
       // Maximum basket in context of frame count.
-      var basketCountValueMax = 0;
+      let basketCountValueMax = 0;
       // Maximum basket in context of total frame times.
-      var basketTimeValueMax = 0;
+      let basketTimeValueMax = 0;
 
-      var totalTime = 0;
-      var basketTime = 0;
+      let totalTime = 0;
+      let basketTime = 0;
 
       while (true) {
         if (index < deltas.events.length) {
           const frameTimeSeconds = deltas.events[index][2] * 0.000001;
-          var fps = 1.0 / frameTimeSeconds;
+          const fps = 1.0 / frameTimeSeconds;
           if (fps > basketMinFPSs[basketIndex]) {
             // This frame is in the current basket.
             basketTime += frameTimeSeconds;
@@ -666,15 +667,15 @@ function addFPSHistograms(parent, anchor, timeBasedView) {
       const barYBase = 60;
       const color = modelColors.get(models[m]);
 
-      var barX = fullSectionWidth * t  // Section offset
+      let barX = fullSectionWidth * t  // Section offset
           + titleXOffset + titleWidth  // Title offset
           + (barWidth + barGap) * m;   // Model offset of first bar.
-      for (var b = 0; b < basketFPSs.length; ++b) {
-        var tooltip = '';
-        var barHeight = 0;
+      for (let b = 0; b < basketFPSs.length; ++b) {
+        let tooltip = '';
+        let barHeight = 0;
         if (timeBasedView) {
           barHeight = maxBarHeight * basketTimeValues[b] / basketTimeValueMax;
-          var basketInfo = '';
+          let basketInfo = '';
           if (b == 0) {
             basketInfo =
                 'Frame time <= ' + (1000.0 / basketMinFPSs[b]).toFixed(1) +
@@ -693,7 +694,7 @@ function addFPSHistograms(parent, anchor, timeBasedView) {
               totalTime.toFixed(1).toString() + ' sec)';
         } else {
           barHeight = maxBarHeight * basketCountValues[b] / basketCountValueMax;
-          var basketInfo = '';
+          let basketInfo = '';
           if (b == 0) {
             basketInfo = 'Frame FPS >= ' + basketMinFPSs[b].toString();
           } else {
@@ -728,12 +729,12 @@ function addFPSHistograms(parent, anchor, timeBasedView) {
  */
 function addDeltaView(parent, resolution, duration, appView) {
   // time range from 0 to 67ms. 66.67ms is for 15 FPS.
-  var title = appView ? 'App commit time' : 'Chrome swap time';
+  const title = appView ? 'App commit time' : 'Chrome swap time';
   // 1 ms 1 pixel resolution.  Each grid lines correspond 1/120 FPS time update.
-  var bands = createChart(
+  const bands = createChart(
       parent, title, resolution, duration, 67 /* height */,
       7 /* gridLinesCount */);
-  var attributesTemplate = {
+  const attributesTemplate = {
     maxValue: 67000,  // microseconds
     minValue: 0,
     name: 'ms',
@@ -741,10 +742,10 @@ function addDeltaView(parent, resolution, duration, appView) {
     width: 1.0,
   };
   for (i = 0; i < models.length; i++) {
-    var attributes = Object.assign({}, attributesTemplate);
-    var events = appView ? getAppCommitEvents(models[i]) :
-                           getChromeSwapEvents(models[i]);
-    var timeEvents = createDeltaEvents(events);
+    const attributes = Object.assign({}, attributesTemplate);
+    const events = appView ? getAppCommitEvents(models[i]) :
+                             getChromeSwapEvents(models[i]);
+    const timeEvents = createDeltaEvents(events);
     attributes.color = modelColors.get(models[i]);
     bands.addChartSources([timeEvents], false /* smooth */, attributes);
   }
@@ -763,8 +764,8 @@ function addDeltaView(parent, resolution, duration, appView) {
  * @param {number} eventType event type to match particular power counter.
  */
 function addPowerView(parent, title, resolution, duration, eventType) {
-  var bands = null;
-  var attributesTemplate = {
+  let bands = null;
+  const attributesTemplate = {
     maxValue: 10000,
     minValue: 0,
     name: 'watts',
@@ -772,7 +773,7 @@ function addPowerView(parent, title, resolution, duration, eventType) {
     width: 1.0,
   };
   for (i = 0; i < models.length; i++) {
-    var events = new Events(models[i].system.memory, eventType, eventType);
+    const events = new Events(models[i].system.memory, eventType, eventType);
     if (events.getFirstEvent() < 0) {
       continue;
     }
@@ -783,7 +784,7 @@ function addPowerView(parent, title, resolution, duration, eventType) {
           parent, title, resolution, duration, 50 /* height */,
           4 /* gridLinesCount */);
     }
-    var attributes = Object.assign({}, attributesTemplate);
+    const attributes = Object.assign({}, attributesTemplate);
     attributes.color = modelColors.get(models[i]);
     bands.addChartSources([events], false /* smooth */, attributes);
   }
@@ -803,10 +804,10 @@ function refreshModels() {
   }
 
   // Microseconds per pixel. 100% zoom corresponds to 100 mcs per pixel.
-  var resolution = zooms[zoomLevel];
-  var parent = $('arc-event-bands');
+  const resolution = zooms[zoomLevel];
+  const parent = $('arc-event-bands');
 
-  var duration = 0;
+  let duration = 0;
   for (i = 0; i < models.length; i++) {
     duration = Math.max(duration, models[i].information.duration);
   }
@@ -844,7 +845,7 @@ function refreshModels() {
 function setModelColor(model) {
   // Try to assing color bound to timestamp.
   if (model.information && model.information.timestamp) {
-    var color = chartColors[
+    const color = chartColors[
         Math.trunc(model.information.timestamp * 0.001) % chartColors.length];
     if (!takenColors.includes(color)) {
       modelColors.set(model, color);
@@ -853,7 +854,7 @@ function setModelColor(model) {
     }
   }
   // Just find avaiable.
-  for (var i = 0; i < chartColors.length; i++) {
+  for (let i = 0; i < chartColors.length; i++) {
     if (!takenColors.includes(chartColors[i])) {
       modelColors.set(model, chartColors[i]);
       takenColors.push(chartColors[i]);
@@ -884,7 +885,7 @@ function addModel(model) {
  * @param {object} model to add.
  */
 function removeModel(model) {
-  var index = models.indexOf(model);
+  let index = models.indexOf(model);
   if (index == -1) {
     return;
   }

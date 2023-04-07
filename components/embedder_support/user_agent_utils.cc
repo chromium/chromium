@@ -390,15 +390,24 @@ std::string GetUserAgentInternal(
              : content::BuildUserAgentFromProduct(product);
 }
 
-std::string GetUserAgent(
-    ForceMajorVersionToMinorPosition force_major_to_minor,
-    UserAgentReductionEnterprisePolicyState user_agent_reduction) {
+absl::optional<std::string> GetUserAgentFromCommandLine() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(kUserAgent)) {
     std::string ua = command_line->GetSwitchValueASCII(kUserAgent);
-    if (net::HttpUtil::IsValidHeaderValue(ua))
+    if (net::HttpUtil::IsValidHeaderValue(ua)) {
       return ua;
+    }
     LOG(WARNING) << "Ignored invalid value for flag --" << kUserAgent;
+  }
+  return absl::nullopt;
+}
+
+std::string GetUserAgent(
+    ForceMajorVersionToMinorPosition force_major_to_minor,
+    UserAgentReductionEnterprisePolicyState user_agent_reduction) {
+  absl::optional<std::string> custom_ua = GetUserAgentFromCommandLine();
+  if (custom_ua.has_value()) {
+    return custom_ua.value();
   }
 
   if (base::FeatureList::IsEnabled(blink::features::kFullUserAgent))
@@ -412,14 +421,11 @@ std::string GetUserAgent(
 
 std::string GetReducedUserAgent(
     ForceMajorVersionToMinorPosition force_major_to_minor) {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(kUserAgent)) {
-    std::string ua = command_line->GetSwitchValueASCII(kUserAgent);
-    if (net::HttpUtil::IsValidHeaderValue(ua)) {
-      return ua;
-    }
-    LOG(WARNING) << "Ignored invalid value for flag --" << kUserAgent;
+  absl::optional<std::string> custom_ua = GetUserAgentFromCommandLine();
+  if (custom_ua.has_value()) {
+    return custom_ua.value();
   }
+
   return content::GetReducedUserAgent(
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUseMobileUserAgent),
@@ -428,14 +434,11 @@ std::string GetReducedUserAgent(
 
 std::string GetFullUserAgent(
     ForceMajorVersionToMinorPosition force_major_to_minor) {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(kUserAgent)) {
-    std::string ua = command_line->GetSwitchValueASCII(kUserAgent);
-    if (net::HttpUtil::IsValidHeaderValue(ua)) {
-      return ua;
-    }
-    LOG(WARNING) << "Ignored invalid value for flag --" << kUserAgent;
+  absl::optional<std::string> custom_ua = GetUserAgentFromCommandLine();
+  if (custom_ua.has_value()) {
+    return custom_ua.value();
   }
+
   return GetUserAgentInternal(
       force_major_to_minor,
       UserAgentReductionEnterprisePolicyState::kForceDisabled);
@@ -591,6 +594,13 @@ blink::UserAgentMetadata GetUserAgentMetadata() {
 
 blink::UserAgentMetadata GetUserAgentMetadata(const PrefService* pref_service) {
   blink::UserAgentMetadata metadata;
+  // If users provide valid user-agent in the command line, return an default
+  // blank UserAgentMetadata values.
+  absl::optional<std::string> custom_ua = GetUserAgentFromCommandLine();
+  if (custom_ua.has_value()) {
+    return metadata;
+  }
+
   bool enable_updated_grease_by_policy = true;
   UserAgentOptions ua_options;
   if (pref_service) {

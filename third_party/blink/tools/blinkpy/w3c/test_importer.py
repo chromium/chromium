@@ -67,9 +67,6 @@ class TestImporter(object):
         # wpt_expectations_updater.SimpleTestResult.
         self.rebaselined_tests = set()
         self.new_test_expectations = {}
-        # New override expectations for Android targets. A dictionary mapping
-        # products to dictionary that maps test names to test expectation lines
-        self.new_override_expectations = {}
         self.verbose = False
 
         args = ['--clean-up-affected-tests-only',
@@ -714,7 +711,6 @@ class TestImporter(object):
             self.wpt_revision,
             self.rebaselined_tests,
             self.new_test_expectations,
-            self.new_override_expectations,
             issue,
             patchset,
             dry_run=not auto_file_bugs,

@@ -460,6 +460,21 @@ bool IsChromeRefresh2023() {
   return base::FeatureList::IsEnabled(kChromeRefresh2023);
 }
 
+constexpr base::FeatureParam<ChromeRefresh2023Level>::Option
+    kChromeRefresh2023LevelOption[] = {{ChromeRefresh2023Level::kLevel1, "1"},
+                                       {ChromeRefresh2023Level::kLevel2, "2"}};
+
+const base::FeatureParam<ChromeRefresh2023Level> kChromeRefresh2023Level(
+    &kChromeRefresh2023,
+    "level",
+    ChromeRefresh2023Level::kLevel2,
+    &kChromeRefresh2023LevelOption);
+
+ChromeRefresh2023Level GetChromeRefresh2023Level() {
+  return IsChromeRefresh2023() ? kChromeRefresh2023Level.Get()
+                               : ChromeRefresh2023Level::kDisabled;
+}
+
 BASE_FEATURE(kWebUiSystemFont,
              "WebUiSystemFont",
              base::FEATURE_DISABLED_BY_DEFAULT);

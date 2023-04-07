@@ -4,6 +4,7 @@
 
 #include "ash/system/message_center/ash_message_popup_collection.h"
 
+#include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/focus_cycler.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -35,7 +36,7 @@ namespace ash {
 
 namespace {
 
-const int kToastMarginX = 7;
+const int kPopupMarginX = 8;
 
 void ReportPopupAnimationSmoothness(int smoothness) {
   base::UmaHistogramPercentage("Ash.NotificationPopup.AnimationSmoothness",
@@ -96,16 +97,16 @@ void AshMessagePopupCollection::SetTrayBubbleHeight(int height) {
     ResetBounds();
 }
 
-int AshMessagePopupCollection::GetToastOriginX(
-    const gfx::Rect& toast_bounds) const {
-  // In Ash, RTL UI language mirrors the whole ash layout, so the toast
+int AshMessagePopupCollection::GetPopupOriginX(
+    const gfx::Rect& popup_bounds) const {
+  // In Ash, RTL UI language mirrors the whole ash layout, so the popup
   // widgets should be at the bottom-left instead of bottom right.
   if (base::i18n::IsRTL())
-    return work_area_.x() + kToastMarginX;
+    return work_area_.x() + kPopupMarginX;
 
   if (IsFromLeft())
-    return work_area_.x() + kToastMarginX;
-  return work_area_.right() - kToastMarginX - toast_bounds.width();
+    return work_area_.x() + kPopupMarginX;
+  return work_area_.right() - kPopupMarginX - popup_bounds.width();
 }
 
 int AshMessagePopupCollection::GetBaseline() const {
@@ -114,8 +115,11 @@ int AshMessagePopupCollection::GetBaseline() const {
       shelf_->hotseat_widget()->state() == HotseatState::kExtended
           ? shelf_->hotseat_widget()->GetHotseatSize()
           : 0;
+
+  // Decrease baseline by `kShelfDisplayOffset` to compensate for the adjustment
+  // of edges in `Shelf::GetSystemTrayAnchorRect()`.
   return work_area_.bottom() - tray_bubble_insets.bottom() -
-         tray_bubble_height_ - hotseat_height;
+         tray_bubble_height_ - hotseat_height - kShelfDisplayOffset;
 }
 
 gfx::Rect AshMessagePopupCollection::GetWorkArea() const {
@@ -144,9 +148,10 @@ void AshMessagePopupCollection::ConfigureWidgetInitParamsForContainer(
     views::Widget::InitParams* init_params) {
   init_params->shadow_type = views::Widget::InitParams::ShadowType::kDrop;
   init_params->shadow_elevation = ::wm::kShadowElevationInactiveWindow;
-  // On ash, popups go in the status container.
+  // On ash, popups go in `SettingBubbleContainer` together with other tray
+  // bubbles, so the most recent element on screen will appear in front.
   init_params->parent = shelf_->GetWindow()->GetRootWindow()->GetChildById(
-      kShellWindowId_ShelfContainer);
+      kShellWindowId_SettingBubbleContainer);
 
   // Make the widget activatable so it can receive focus when cycling through
   // windows (i.e. pressing ctrl + forward/back).

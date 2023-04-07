@@ -12,7 +12,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/content_relationship_verification/content_relationship_verification_constants.h"
 #include "components/content_relationship_verification/response_header_verifier.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "net/log/net_log_event_type.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"

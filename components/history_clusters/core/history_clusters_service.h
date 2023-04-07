@@ -46,34 +46,10 @@ class ClusteringBackend;
 class HistoryClustersService;
 class HistoryClustersServiceTask;
 
-// Clears `HistoryClustersService`'s keyword cache when 1 or more history
-// entries are deleted.
-class VisitDeletionObserver : public history::HistoryServiceObserver {
- public:
-  explicit VisitDeletionObserver(
-      HistoryClustersService* history_clusters_service);
-
-  ~VisitDeletionObserver() override;
-
-  // Starts observing a service for history deletions.
-  void AttachToHistoryService(history::HistoryService* history_service);
-
-  // history::HistoryServiceObserver
-  void OnURLsDeleted(history::HistoryService* history_service,
-                     const history::DeletionInfo& deletion_info) override;
-
- private:
-  HistoryClustersService* history_clusters_service_;
-
-  // Tracks the observed history service, for cleanup.
-  base::ScopedObservation<history::HistoryService,
-                          history::HistoryServiceObserver>
-      history_service_observation_{this};
-};
-
 // This Service provides an API to the History Clusters for UI entry points.
 class HistoryClustersService : public base::SupportsUserData,
-                               public KeyedService {
+                               public KeyedService,
+                               public history::HistoryServiceObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -184,12 +160,16 @@ class HistoryClustersService : public base::SupportsUserData,
   absl::optional<history::ClusterKeywordData> DoesQueryMatchAnyCluster(
       const std::string& query);
 
-  // Clears `all_keywords_cache_` and cancels any pending tasks to populate it.
-  void ClearKeywordCache();
-
   // Prints the keyword bag state to the log messages. For example, a button on
   // chrome://history-clusters-internals triggers this.
   void PrintKeywordBagStateToLogMessage() const;
+
+  // history::HistoryServiceObserver:
+  void OnURLVisited(history::HistoryService* history_service,
+                    const history::URLRow& url_row,
+                    const history::VisitRow& visit_row) override;
+  void OnURLsDeleted(history::HistoryService* history_service,
+                     const history::DeletionInfo& deletion_info) override;
 
  private:
   friend class HistoryClustersServiceTestApi;
@@ -214,6 +194,9 @@ class HistoryClustersService : public base::SupportsUserData,
       KeywordMap* cache,
       std::vector<history::Cluster> clusters,
       QueryClustersContinuationParams continuation_params);
+
+  // Clears `all_keywords_cache_` and cancels any pending tasks to populate it.
+  void ClearKeywordCache();
 
   // Reads the "all keywords" and short keyword caches from prefs and
   // deserializes them.
@@ -281,10 +264,20 @@ class HistoryClustersService : public base::SupportsUserData,
   // requests when `persist_on_query` is enabled.
   base::ElapsedTimer update_clusters_timer_;
 
+  // Whether a synced visit was received since the last `UpdateClusters()` call.
+  // Used to determine whether the full set of persisted clusters needs to be
+  // iterated through when updating cluster triggerability. Always set this to
+  // true at the beginning of the session, so anything that happened at browser
+  // close gets picked up.
+  bool received_synced_visit_since_last_update_ = true;
+
   // A list of observers for this service.
   base::ObserverList<Observer> observers_;
 
-  VisitDeletionObserver visit_deletion_observer_;
+  // Tracks the observed history service, for cleanup.
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_service_observation_{this};
 
   ContextClustererHistoryServiceObserver context_clusterer_observer_;
 

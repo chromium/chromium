@@ -38,16 +38,15 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierLinux
 
   ~NetworkChangeNotifierLinux() override;
 
+  static NetworkChangeCalculatorParams NetworkChangeCalculatorParamsLinux();
+
  private:
   class BlockingThreadObjects;
-
-  static NetworkChangeCalculatorParams NetworkChangeCalculatorParamsLinux();
 
   // NetworkChangeNotifier:
   ConnectionType GetCurrentConnectionType() const override;
 
-  const internal::AddressTrackerLinux* GetAddressTrackerInternal()
-      const override;
+  const AddressMapOwnerLinux* GetAddressMapOwnerInternal() const override;
 
   // |blocking_thread_objects_| will live on this runner.
   scoped_refptr<base::SequencedTaskRunner> blocking_thread_runner_;

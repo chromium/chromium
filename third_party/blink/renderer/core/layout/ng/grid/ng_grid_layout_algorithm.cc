@@ -1552,6 +1552,31 @@ void NGGridLayoutAlgorithm::CalculateAlignmentBaselines(
   }
 }
 
+std::unique_ptr<NGGridLayoutTrackCollection>
+NGGridLayoutAlgorithm::CreateSubgridTrackCollection(
+    const NGSubgriddedItemData& subgrid_data,
+    GridTrackSizingDirection track_direction) const {
+  DCHECK(subgrid_data.IsSubgrid());
+
+  const bool is_for_columns_in_parent = subgrid_data->is_parallel_with_root_grid
+                                            ? track_direction == kForColumns
+                                            : track_direction == kForRows;
+  const auto& parent_track_collection =
+      is_for_columns_in_parent ? subgrid_data.ParentLayoutData().Columns()
+                               : subgrid_data.ParentLayoutData().Rows();
+
+  const auto& range_indices = is_for_columns_in_parent
+                                  ? subgrid_data->column_range_indices
+                                  : subgrid_data->row_range_indices;
+
+  return std::make_unique<NGGridLayoutTrackCollection>(
+      parent_track_collection.CreateSubgridTrackCollection(
+          range_indices.begin, range_indices.end,
+          GutterSize(track_direction, parent_track_collection.GutterSize()),
+          ComputeMarginsForSelf(ConstraintSpace(), Style()),
+          BorderScrollbarPadding(), track_direction));
+}
+
 void NGGridLayoutAlgorithm::InitializeTrackCollection(
     const NGSubgriddedItemData& opt_subgrid_data,
     GridTrackSizingDirection track_direction,
@@ -1562,7 +1587,7 @@ void NGGridLayoutAlgorithm::InitializeTrackCollection(
     DCHECK(opt_subgrid_data.IsSubgrid());
 
     layout_data->SetTrackCollection(
-        opt_subgrid_data.CreateSubgridCollection(track_direction));
+        CreateSubgridTrackCollection(opt_subgrid_data, track_direction));
     return;
   }
 
@@ -1793,7 +1818,7 @@ void NGGridLayoutAlgorithm::CompleteTrackSizingAlgorithm(
       DCHECK(opt_subgrid_data.IsSubgrid());
 
       layout_data.SetTrackCollection(
-          opt_subgrid_data.CreateSubgridCollection(track_direction));
+          CreateSubgridTrackCollection(opt_subgrid_data, track_direction));
     } else {
       ComputeUsedTrackSizes(sizing_subtree, track_direction, sizing_constraint,
                             opt_needs_additional_pass);
@@ -2829,18 +2854,23 @@ void NGGridLayoutAlgorithm::ExpandFlexibleTracks(
 }
 
 LayoutUnit NGGridLayoutAlgorithm::GutterSize(
-    GridTrackSizingDirection track_direction) const {
+    GridTrackSizingDirection track_direction,
+    LayoutUnit parent_grid_gutter_size) const {
   const bool is_for_columns = track_direction == kForColumns;
   const auto& gutter_size =
       is_for_columns ? Style().ColumnGap() : Style().RowGap();
 
-  if (!gutter_size)
-    return LayoutUnit();
+  if (!gutter_size) {
+    // No specified gutter size means we must use the "normal" gap behavior:
+    //   - For standalone grids `parent_grid_gutter_size` will default to zero.
+    //   - For subgrids we must provide the parent grid's gutter size.
+    return parent_grid_gutter_size;
+  }
 
-  LayoutUnit available_size = (is_for_columns ? grid_available_size_.inline_size
-                                              : grid_available_size_.block_size)
-                                  .ClampIndefiniteToZero();
-  return MinimumValueForLength(*gutter_size, available_size);
+  return MinimumValueForLength(
+      *gutter_size, (is_for_columns ? grid_available_size_.inline_size
+                                    : grid_available_size_.block_size)
+                        .ClampIndefiniteToZero());
 }
 
 // TODO(ikilpatrick): Determine if other uses of this method need to respect

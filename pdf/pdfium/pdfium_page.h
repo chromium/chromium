@@ -69,6 +69,12 @@ class PDFiumPage {
   // Get the bounds of the page with the crop box applied, in page pixels.
   gfx::RectF GetCroppedRect();
 
+  // Get the bounding box of the page in page pixels. The bounding box is the
+  // largest rectangle containing all visible content in the effective crop box.
+  // If the bounding box can't be calculated, returns the effective crop box.
+  // The resulting bounding box is relative to the effective crop box.
+  gfx::RectF GetBoundingBox();
+
   // Returns if the character at `char_index` is within `page_bounds`.
   bool IsCharInPageBounds(int char_index, const gfx::RectF& page_bounds);
 

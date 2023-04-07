@@ -206,7 +206,6 @@
 <translation id="2411749908844615428">{count,plural, =1{Над клавіатурою показується {count} збережена адреса.}one{Над клавіатурою показується {count} збережена адреса.}few{Над клавіатурою показуються {count} збережені адреси.}many{Над клавіатурою показуються {count} збережених адрес.}other{Над клавіатурою показуються {count} збереженої адреси.}}</translation>
 <translation id="2421004566762153674">Блокуються сторонні файли cookie</translation>
 <translation id="2421044535038393232">Продовжити редагувати</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} зламаний пароль}one{{COUNT} зламаний пароль}few{{COUNT} зламані паролі}many{{COUNT} зламаних паролів}other{{COUNT} зламаного пароля}}</translation>
 <translation id="2434405374328098816">Ви вже зберегли пароль для користувача <ph name="USERNAME" /> на веб-сайті <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Показати пароль</translation>
 <translation id="2451654228769116489">Закріпити вкладку</translation>
@@ -257,7 +256,6 @@
 <translation id="2718352093833049315">Лише у Wi-Fi</translation>
 <translation id="2747003861858887689">Попереднє поле</translation>
 <translation id="2749231692441336879">Ви підписалися на канал <ph name="CHANNEL_NAME" /></translation>
-<translation id="2764831210418622012">щойно</translation>
 <translation id="2772667768515195373">Ви можете використовувати збережені адреси в усіх продуктах Google. Цю адресу збережено у вашому обліковому записі Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773292004659987824">Пошук у режимі інкогніто</translation>
 <translation id="277771892408211951">Виберіть мову</translation>
@@ -924,7 +922,6 @@
 <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Останні вкладки</translation>
 <translation id="7006788746334555276">Веб-контент</translation>
-<translation id="7014087399239955356">Перевірка паролів…</translation>
 <translation id="7029809446516969842">Паролі</translation>
 <translation id="7053983685419859001">Блокувати</translation>
 <translation id="7062545763355031412">Прийняти та перейти в інший обліковий запис</translation>

@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">Մոլորակ</translation>
 <translation id="2305020378527873881">Չհաջողվեց առբերել <ph name="VOLUME_NAME" /> պանակը։</translation>
 <translation id="2307462900900812319">Կազմաձևել ցանցը</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Հետևյալ ID-ով ընդլայնում չհաջողվեց գտնել՝ <ph name="BEGIN_LIST" /><ph name="END_LIST" />։ Դիմեք ձեր ադմինիստրատորին։}one{Հետևյալ ID-ներով ընդլայնումներ չհաջողվեց գտնել՝ <ph name="BEGIN_LIST" /><ph name="END_LIST" />։ Դիմեք ձեր ադմինիստրատորին։}other{Հետևյալ ID-ներով ընդլայնումներ չհաջողվեց գտնել՝ <ph name="BEGIN_LIST" /><ph name="END_LIST" />։ Դիմեք ձեր ադմինիստրատորին։}}</translation>
 <translation id="2325650632570794183">Ֆայլի այս տեսակը չի աջակցվում: Այցելեք Chrome Web Store, որպեսզի գտնեք համապատասխան հավելված, որը կարող է բացել այս տեսակի ֆայլը:</translation>
 <translation id="2326539130272988168">բուլղարերեն</translation>
 <translation id="2337715497728194187">Կիսվել Bruschetta-ի հետ</translation>

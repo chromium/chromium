@@ -304,8 +304,13 @@ bool MigrateKeystoneApps(
 
       RegistrationRequest registration;
       registration.app_id = base::SysNSStringToUTF8(ticket.productID);
-      registration.version =
-          base::Version(base::SysNSStringToUTF8([ticket determineVersion]));
+      const base::Version version(
+          base::SysNSStringToUTF8([ticket determineVersion]));
+      if (version.IsValid()) {
+        registration.version = version;
+      } else {
+        registration.version = base::Version(kNullVersion);
+      }
       if (ticket.existenceChecker) {
         registration.existence_checker_path =
             base::mac::NSStringToFilePath(ticket.existenceChecker.path);
@@ -322,9 +327,6 @@ bool MigrateKeystoneApps(
 
       // Skip migration for incomplete ticket or Keystone itself.
       if (registration.app_id.empty() ||
-          registration.existence_checker_path.empty() ||
-          !base::PathExists(registration.existence_checker_path) ||
-          !registration.version.IsValid() ||
           base::EqualsCaseInsensitiveASCII(registration.app_id,
                                            "com.google.Keystone")) {
         continue;

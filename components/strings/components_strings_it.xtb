@@ -730,6 +730,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2718207025093645426">L'utente o dispositivo gestito non ha criteri caricati.</translation>
 <translation id="2721148159707890343">Richiesta riuscita</translation>
 <translation id="2723669454293168317">Esegui un controllo di sicurezza nelle impostazioni di Chrome</translation>
+<translation id="2725492561136085792">Premi Invio per attivare questa azione.</translation>
 <translation id="2726001110728089263">Vassoio laterale</translation>
 <translation id="2728127805433021124">Il certificato del server è stato firmato utilizzando un algoritmo di firma debole.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Eseguire lo strumento Diagnostica della connettività<ph name="END_LINK" /></translation>
@@ -826,6 +827,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="299990983510665749">Due volumi</translation>
 <translation id="3002501248619246229">Controlla contenuti multimediali cassetto di input</translation>
 <translation id="3005723025932146533">Mostra copia salvata</translation>
+<translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab per sfogliare le azioni disponibili, quindi Invio per eseguire l'azione selezionata.</translation>
 <translation id="3013291976881901233">Dispositivi MIDI</translation>
 <translation id="301521992641321250">Bloccata automaticamente</translation>
 <translation id="3016780570757425217">Conoscere la tua posizione</translation>
@@ -1982,6 +1984,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5872692522325383488">IBAN salvato</translation>
 <translation id="5873013647450402046">La tua banca vuole confermare la tua identità.</translation>
 <translation id="5877831137320480913">Bellezza e fitness</translation>
+<translation id="5879989559903563723">Autorizzazione non consentita in modalità Ospite</translation>
 <translation id="5884465125445718607">Busta Chinese #6</translation>
 <translation id="5887400589839399685">Carta salvata</translation>
 <translation id="5887687176710214216">Ultima visita: ieri</translation>
@@ -2778,7 +2781,7 @@ Ulteriori dettagli:
 <translation id="7773005668374414287">Stesso ordine a faccia in su</translation>
 <translation id="7785790577395078482">questo tablet</translation>
 <translation id="7786368602962652765">C'è un campo obbligatorio vuoto. Compilalo prima di salvare.</translation>
-<translation id="7790488044432570133">I siti che visiti possono chiedere a Chrome informazioni utili a valutare il rendimento dei loro annunci. Chrome consente ai siti di raccogliere tipi di dati limitati, come l'ora del giorno in cui ti è stato mostrato un annuncio.</translation>
+<translation id="7790488044432570133">I siti che visiti possono chiedere a Chrome informazioni utili a misurare il rendimento dei loro annunci. Chrome consente ai siti di raccogliere tipi di dati limitati, come l'ora del giorno in cui ti è stato mostrato un annuncio.</translation>
 <translation id="7791011319128895129">Non pubblicata</translation>
 <translation id="7791196057686275387">Rilegatura</translation>
 <translation id="7791543448312431591">Aggiungi</translation>
@@ -3223,6 +3226,7 @@ Ulteriori dettagli:
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Diritto e pubblica amministrazione</translation>
 <translation id="8957210676456822347">Autorizzazione Captive Portal</translation>
+<translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Vai alle Impostazioni sito</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Suggerimenti.<ph name="MARKUP_2" />Assicurati di avere una connessione dati<ph name="MARKUP_3" />Ricarica la pagina web in un secondo momento<ph name="MARKUP_4" />Controlla l'indirizzo inserito<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Salva carta</translation>

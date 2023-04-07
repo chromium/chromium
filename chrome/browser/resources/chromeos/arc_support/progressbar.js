@@ -6,7 +6,7 @@
  * Contains currently active progress bar animation.
  * @type {ProgressBarAnimation}
  */
-var activeProgressAnimation = null;
+let activeProgressAnimation = null;
 
 /**
  * Provides animation for set of div elements that looks similar to paper
@@ -34,19 +34,19 @@ class ProgressBarAnimation {
    */
   update_() {
     // Calculate animation time in range 0..1.
-    var currentAnimationRatio =
+    const currentAnimationRatio =
         ((new Date().getTime() - this.startTime_) / this.animationDurationMs_) %
         1;
     // Ranges and constants are taken from paper progress implementation.
     // Animate the primary progress.
     if (currentAnimationRatio <= 0.5) {
-      var translate = -100 + 200 * currentAnimationRatio;
+      const translate = -100 + 200 * currentAnimationRatio;
       this.primaryProgress_.style.transform =
           'scaleX(1) translateX(' + translate + '%)';
     } else if (currentAnimationRatio <= 0.75) {
       this.primaryProgress_.style.transform = 'scaleX(1) translateX(0%)';
     } else {
-      var scale = 4.0 * (1.0 - currentAnimationRatio);
+      const scale = 4.0 * (1.0 - currentAnimationRatio);
       this.primaryProgress_.style.transform =
           'scaleX(' + scale + ') translateX(0%)';
     }
@@ -56,7 +56,7 @@ class ProgressBarAnimation {
       this.secondaryProgress_.style.transform =
           'scaleX(0.75) translateX(-125%)';
     } else if (currentAnimationRatio < 0.9) {
-      var translate = -125.0 + 250.0 * (currentAnimationRatio - 0.3) / 0.6;
+      const translate = -125.0 + 250.0 * (currentAnimationRatio - 0.3) / 0.6;
       this.secondaryProgress_.style.transform =
           'scaleX(0.75) translateX(' + translate + '%)';
     } else {
@@ -104,7 +104,7 @@ function stopProgressAnimation() {
 function startProgressAnimation(pageDivId) {
   stopProgressAnimation();
 
-  var page = $(pageDivId);
+  const page = $(pageDivId);
   activeProgressAnimation =
       new ProgressBarAnimation(page.querySelector('.progress-container'));
   activeProgressAnimation.start();

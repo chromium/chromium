@@ -52,6 +52,26 @@ constexpr int ComputeBestAlignment(size_t bytes_per_pixel, size_t stride) {
 
 }  // anonymous namespace
 
+// static
+viz::ResourceFormat GLTextureHolder::GetPlaneFormat(
+    viz::SharedImageFormat format,
+    int plane_index) {
+  DCHECK(format.IsValidPlaneIndex(plane_index));
+  if (format.is_single_plane()) {
+    return format.resource_format();
+  }
+
+  if (format == viz::MultiPlaneFormat::kNV12) {
+    return plane_index == 0 ? viz::ResourceFormat::RED_8
+                            : viz::ResourceFormat::RG_88;
+  } else if (format == viz::MultiPlaneFormat::kYV12) {
+    return viz::ResourceFormat::RED_8;
+  }
+
+  NOTREACHED();
+  return viz::ResourceFormat::RGBA_8888;
+}
+
 GLTextureHolder::GLTextureHolder(viz::ResourceFormat format,
                                  const gfx::Size& size,
                                  bool is_passthrough,

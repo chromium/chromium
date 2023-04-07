@@ -200,12 +200,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
   mocha.run();
 });
 
-[[
-  'AccessibilityPage',
-  'os_a11y_page_tests.js',
-  {enabled: ['features::kPdfOcr']},
-],
- ['AboutPage', 'os_about_page_tests.js'],
+[['AboutPage', 'os_about_page_tests.js'],
  ['ApnDetailDialog', 'apn_detail_dialog_tests.js'],
  [
    'ApnSubpage', 'apn_subpage_tests.js',
@@ -317,7 +312,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['EsimRenameDialog', 'esim_rename_dialog_test.js'],
  ['FakeCrosAudioConfig', 'fake_cros_audio_config_test.js'],
  ['FakeInputDeviceSettings', 'fake_input_device_settings_provider_test.js'],
- ['FilesPage', 'os_files_page_test.js'],
  ['FingerprintListSubpage', 'fingerprint_list_subpage_test.js'],
  ['GoogleAssistantSubpage', 'google_assistant_subpage_test.js'],
  ['GuestOsSharedPaths', 'guest_os_shared_paths_test.js'],
@@ -374,7 +368,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'keyboard_shortcut_banner/keyboard_shortcut_banner_test.js'
  ],
  ['LockScreenSubpage', 'lock_screen_subpage_tests.js'],
- ['ManageAccessibilityPage', 'manage_accessibility_page_tests.js'],
  ['ManageUsersSubpage', 'manage_users_subpage_tests.js'],
  ['MultideviceCombinedSetupItem', 'multidevice_combined_setup_item_tests.js'],
  // TODO(b/208932892): Re-enable once flakiness is fixed.
@@ -405,7 +398,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ],
  ['MultideviceWifiSyncItem', 'multidevice_wifi_sync_item_tests.js'],
  ['NearbyShareConfirmPage', 'nearby_share_confirm_page_test.js'],
- ['NearbyShareHighVisibilityPage', 'nearby_share_high_visibility_page_test.js'],
+ [
+   'NearbySharePageNearbyShareHighVisibilityPage',
+   'nearby_share_page/nearby_share_high_visibility_page_test.js'
+ ],
  ['NearbyShareReceiveDialog', 'nearby_share_receive_dialog_tests.js'],
  [
    'NearbyShareSubpage',
@@ -417,12 +413,21 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['NetworkDeviceInfoDialog', 'network_device_info_dialog_test.js'],
  ['OncMojoTest', 'onc_mojo_test.js'],
  [
+   'OsA11yPage',
+   'os_a11y_page/os_a11y_page_tests.js',
+   {enabled: ['features::kPdfOcr']},
+ ],
+ [
    'OsA11yPageAudioAndCaptionsPage',
    'os_a11y_page/audio_and_captions_page_tests.js',
  ],
  [
    'OsA11yPageKeyboardAndTextInputPage',
    'os_a11y_page/keyboard_and_text_input_page_tests.js',
+ ],
+ [
+   'OsA11yPageManageAccessibilityPage',
+   'os_a11y_page/manage_accessibility_page_tests.js'
  ],
  [
    'OsA11yPageTextToSpeechPage',
@@ -460,7 +465,8 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'OsClearPersonalizationDataPage',
    'os_clear_personalization_data_page_test.js'
  ],
- ['OsFilesGoogleDrivePage', 'os_files_page/google_drive_page_test.js'],
+ ['OsFilesPage', 'os_files_page/os_files_page_test.js'],
+ ['OsFilesPageGoogleDrivePage', 'os_files_page/google_drive_page_test.js'],
  ['OsFilesPageOfficePage', 'os_files_page/office_page_test.js'],
  [
    'OsLanguagesPageSmartInputsPage',
@@ -489,7 +495,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['OsSettingsMain', 'os_settings_main_test.js'],
  ['OsSearchPage', 'os_search_page_test.js'],
  ['OsSettingsSearchBox', 'os_settings_search_box_test.js'],
- ['OSSettingsMenu', 'os_settings_menu_test.js'],
+ ['OsSettingsMenu', 'os_settings_menu_test.js'],
  ['OsSyncControlsSubpage', 'os_sync_controls_subpage_test.js'],
  [
    'ParentalControlsPage',

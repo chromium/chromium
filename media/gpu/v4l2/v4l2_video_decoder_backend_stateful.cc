@@ -399,7 +399,6 @@ scoped_refptr<VideoFrame> V4L2StatefulVideoDecoderBackend::GetPoolVideoFrame() {
                 &V4L2StatefulVideoDecoderBackend::EnqueueOutputBuffers),
             weak_this_)));
   }
-
   return frame;
 }
 

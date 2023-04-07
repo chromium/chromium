@@ -172,7 +172,8 @@ constexpr WebSocketCommon::State DOMWebSocket::kClosing;
 constexpr WebSocketCommon::State DOMWebSocket::kClosed;
 
 DOMWebSocket::DOMWebSocket(ExecutionContext* context)
-    : ExecutionContextLifecycleStateObserver(context),
+    : ActiveScriptWrappable<DOMWebSocket>({}),
+      ExecutionContextLifecycleStateObserver(context),
       buffered_amount_(0),
       consumed_buffered_amount_(0),
       buffered_amount_after_close_(0),

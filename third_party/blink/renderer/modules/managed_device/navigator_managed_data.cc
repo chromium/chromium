@@ -39,7 +39,8 @@ NavigatorManagedData* NavigatorManagedData::managed(Navigator& navigator) {
 }
 
 NavigatorManagedData::NavigatorManagedData(Navigator& navigator)
-    : Supplement<Navigator>(navigator),
+    : ActiveScriptWrappable<NavigatorManagedData>({}),
+      Supplement<Navigator>(navigator),
       device_api_service_(navigator.DomWindow()),
       managed_configuration_service_(navigator.DomWindow()),
       configuration_observer_(this, navigator.DomWindow()) {}

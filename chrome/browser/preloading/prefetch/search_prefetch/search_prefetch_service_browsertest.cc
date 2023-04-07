@@ -3122,36 +3122,28 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   content::RenderFrameHost* frame = GetWebContents()->GetPrimaryMainFrame();
 
   // Check the request total time is non-negative.
-  int value = -1;
   std::string script =
-      "window.domAutomationController.send(window.performance.timing."
-      "responseEnd - window.performance.timing.requestStart)";
-  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(frame, script, &value));
-  EXPECT_LE(0, value);
+      "window.performance.timing."
+      "responseEnd - window.performance.timing.requestStart";
+  EXPECT_LE(0, content::EvalJs(frame, script));
 
   // Check the response time is non-negative.
-  value = -1;
   script =
-      "window.domAutomationController.send(window.performance.timing."
-      "responseEnd - window.performance.timing.responseStart)";
-  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(frame, script, &value));
-  EXPECT_LE(0, value);
+      "window.performance.timing."
+      "responseEnd - window.performance.timing.responseStart";
+  EXPECT_LE(0, content::EvalJs(frame, script));
 
   // Check request start is after (or the same as) navigation start.
-  value = -1;
   script =
-      "window.domAutomationController.send(window.performance.timing."
-      "requestStart - window.performance.timing.navigationStart)";
-  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(frame, script, &value));
-  EXPECT_LE(0, value);
+      "window.performance.timing."
+      "requestStart - window.performance.timing.navigationStart";
+  EXPECT_LE(0, content::EvalJs(frame, script));
 
   // Check response end is after (or the same as) navigation start.
-  value = -1;
   script =
-      "window.domAutomationController.send(window.performance.timing."
-      "responseEnd - window.performance.timing.navigationStart)";
-  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(frame, script, &value));
-  EXPECT_LE(0, value);
+      "window.performance.timing."
+      "responseEnd - window.performance.timing.navigationStart";
+  EXPECT_LE(0, content::EvalJs(frame, script));
 }
 
 INSTANTIATE_TEST_SUITE_P(

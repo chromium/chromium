@@ -31,6 +31,7 @@ class PermissionPromptBubbleView : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(PermissionPromptBubbleView);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPermissionPromptBubbleViewIdentifier);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAllowButtonElementId);
   PermissionPromptBubbleView(
       Browser* browser,
       base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate,
@@ -75,6 +76,7 @@ class PermissionPromptBubbleView : public views::BubbleDialogDelegateView {
 
   PermissionPromptStyle prompt_style_;
 
+  const bool is_one_time_permission_;
   const UrlIdentity url_identity_;
   const std::u16string accessible_window_title_;
   const std::u16string window_title_;

@@ -100,6 +100,7 @@ Tieni presente che su <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> e <ph
 <translation id="1079425471279127373">La configurazione di questo criterio consente di stabilire se consentire o meno ad alcune origini delle applicazioni web con installazione forzata di ricevere gli attributi dei dispositivi (ad esempio, numero di serie, nome host) usando l'API Device Attributes.
 
       L'API Device Attributes è un elenco di API web; visita la pagina https://wicg.github.io/WebApiDevice/device_attributes. Sono disponibili soltanto per le origini che corrispondono ad applicazioni web con installazione forzata tramite <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> o per quella configurata nella sessione kiosk.</translation>
+<translation id="1079498696402787191">Usa il valore predefinito per gli hash consentiti in handshake TLS.</translation>
 <translation id="1079801999187584280">Non consentire l'utilizzo degli Strumenti per sviluppatori</translation>
 <translation id="1082802595100075771">Consenti agli utenti di scegliere un servizio Google anonimo per fornire descrizioni automatiche alle immagini senza etichetta</translation>
 <translation id="1087057100912843460">Consenti aggiornamenti</translation>
@@ -3223,6 +3224,7 @@ Questo criterio è una soluzione alternativa temporanea e verrà rimosso dopo il
 <translation id="3973371701361892765">Non nascondere mai automaticamente la barra delle app</translation>
 <translation id="3977304360459208438">Utilizza l'impostazione predefinita per le suite di crittografia 3DES in TLS</translation>
 <translation id="3979738908158213640">URL a cui verrà concesso l'accesso per eseguire l'attestazione del dispositivo durante l'autenticazione SAML</translation>
+<translation id="3982322576186033243">Non consentire hash non sicuri in handshake TLS</translation>
 <translation id="3983162212222338509">La risoluzione DNS di sistema può essere essere eseguita nel processo di rete, all'esterno del processo di rete o parzialmente all'interno e all'esterno, a seconda della configurazione del sistema e dei flag funzionalità.</translation>
 <translation id="3986700049001404598">Consenti agli utenti di terminare i processi con il Task Manager di Chrome</translation>
 <translation id="398884292557092447">Se il criterio viene impostato su true o se non viene configurato, gli utenti possono controllare i suggerimenti di compilazione automatica per le carte di credito nella UI.
@@ -4280,11 +4282,6 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 <translation id="4996161752665479028">Attiva SSH in Terminal System App</translation>
 <translation id="4997074784107449343">L'opzione Stampa come immagine non viene impostata per impostazione predefinita per le anteprime di stampa dei documenti PDF quando disponibile.</translation>
 <translation id="500149597848135831">Attiva tutte le varianti</translation>
-<translation id="5014511262203433035">Questo criterio consente di stabilire se gli utenti possono attivare o meno la Modalità solo HTTPS nelle Impostazioni. La Modalità solo HTTPS esegue l'upgrade di tutte le navigazioni alle estensioni HTTPS.
-      Se questa impostazione non viene configurata o se viene impostata su allowed, gli utenti potranno attivare la Modalità solo HTTPS.
-      Se viene impostata su disallowed, gli utenti non potranno attivare la Modalità solo HTTPS.
-      Se viene impostata su force_enabled, la Modalità solo HTTPS verrà attivata e gli utenti non potranno disattivarla.
-      L'attivazione forzata della Modalità solo HTTPS è supportata a partire dalla versione M112.</translation>
 <translation id="5017369989680827157">Se il criterio è impostato su True o se non viene configurato, gli utenti possono controllare la compilazione automatica per gli indirizzi nella UI.
 
       Se il criterio è impostato su False, la compilazione automatica non fornisce mai suggerimenti né compila le informazioni relative agli indirizzi, né salva le nuove informazioni inviate dagli utenti durante la navigazione sul Web.</translation>
@@ -4628,6 +4625,7 @@ Nota: questo criterio non viene applicato agli upgrade a HSTS.</translation>
 <translation id="5328965694451556034">Segnala accesso/uscita</translation>
 <translation id="5329018127554115226">La modalità ad alta efficienza verrà disattivata.</translation>
 <translation id="5330684698007383292">Consenti a <ph name="PRODUCT_FRAME_NAME" /> di gestire i seguenti tipi di contenuti</translation>
+<translation id="5331342092479819688">Consenti hash non sicuri in handshake TLS</translation>
 <translation id="5331746669335642668">La norma relativa al cloud <ph name="PRODUCT_NAME" /> esegue l'override della norma relativa alla piattaforma.</translation>
 <translation id="5334501839642146593">Non inviare mai le metriche a Google</translation>
 <translation id="5340008866815063393">Attiva la generazione di report sui dati dei criteri</translation>
@@ -4935,6 +4933,9 @@ Se il criterio non viene configurato, tutti i domini non possono accedere agli U
           Se disattivi questa impostazione, Gestione password impedisce la visualizzazione delle password memorizzate in testo non criptato nella finestra Gestione password.
 
           Se attivi questa norma o non la imposti, gli utenti potranno visualizzare le loro password in testo non criptato in Gestione password.</translation>
+<translation id="5618908165853580022">Questo criterio consente a <ph name="PRODUCT_NAME" /> di usare hash non sicuri precedenti durante la procedura di handshake TLS.
+
+      Se questo criterio non viene configurato, <ph name="PRODUCT_NAME" /> seguirà la procedura di implementazione predefinita per non consentire gli hash non sicuri. Se il criterio viene attivato, <ph name="PRODUCT_NAME" /> consentirà l'uso di hash non sicuri da parte di un server durante la negoziazione di un handshake TLS. Se viene disattivato, <ph name="PRODUCT_NAME" /> non consentirà l'uso di hash non sicuri da parte di un server durante la negoziazione di un handshake TLS. Questo criterio verrà rimosso nella versione 119.</translation>
 <translation id="5619498195290770056">Se il criterio viene configurato, puoi creare un elenco di pattern URL che specificano i siti che non possono impostare i cookie.
 
       Se il criterio non viene configurato, viene usato <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
@@ -5366,6 +5367,7 @@ Se il criterio non viene configurato, tutti i domini non possono accedere agli U
 <translation id="6049117606554031363">Attiva i report sullo stato della scheda del dispositivo</translation>
 <translation id="6050796253724099706">Attiva la funzione di lettura vocale nella schermata di accesso</translation>
 <translation id="605132676434455096">Non consentire l'aggiunta di nuovi profili</translation>
+<translation id="6053260874233331700">Non consentire l'accesso alla geolocalizzazione nella schermata di accesso.</translation>
 <translation id="6053681087509103368">Consenti a WebRTC di usare versioni obsolete del protocollo TLS/DTLS</translation>
 <translation id="6056517174496942473">Attiva flusso di attestazione <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> per un elenco di URL</translation>
 <translation id="6058879286588763839">A meno che <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> non venga specificato, sovrascrivendo <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />, la configurazione di <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> consente di specificare il criterio di gestione della modalità di ricarica della batteria (se supportato dal dispositivo). Per estendere la durata della batteria, il criterio controlla dinamicamente la ricarica della batteria riducendo al minimo l'usura e preservandone l'efficienza.
@@ -7095,6 +7097,11 @@ Questo sostituisce il criterio <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLIC
 <translation id="759957074386651883">Impostazioni di Navigazione sicura</translation>
 <translation id="7602621823177962064">Disattiva i report sulle informazioni relative alla memoria del dispositivo</translation>
 <translation id="7604169113182304895">Le app Android potrebbero decidere volontariamente se rispettare o meno questo elenco. Non è possibile imporre il rispetto dell'elenco.</translation>
+<translation id="7605203688694672897">Imposta il livello di accesso alla geolocalizzazione a livello di dispositivo per il sistema <ph name="PRODUCT_OS_NAME" />, che viene applicato prima dell'accesso dell'utente. Dopo l'accesso, gli utenti possono controllare il livello di accesso alla geolocalizzazione tramite le impostazioni per utente.
+
+Se il criterio non viene configurato o se viene impostato su <ph name="ALLOW" />, l'accesso alla geolocalizzazione nella schermata di accesso sarà consentito per i dispositivi gestiti. Se viene inviato un valore del criterio non valido, l'accesso viene reimpostato su <ph name="DISALLOW" />. Per i dispositivi non gestiti il valore è sempre <ph name="DISALLOW" />.
+
+AVVISO: fai attenzione quando modifichi questa impostazione perché potrebbe violare altri criteri che riguardano la geolocalizzazione (ad esempio <ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" />). In particolare, se questo criterio viene impostato su <ph name="DISALLOW" />, le opzioni <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS" /> e <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" /> del criterio <ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" /> non funzioneranno correttamente e nella schermata di <ph name="LOG_IN" /> verrà usata soltanto la risoluzione della posizione basata sull'<ph name="IP" />.</translation>
 <translation id="7608186022704392724">La funzionalità di invio automatico del PIN modifica il modo in cui i PIN vengono inseriti in <ph name="PRODUCT_OS_NAME" />.
           Anziché mostrare lo stesso campo di testo utilizzato per l'inserimento della password, questa funzionalità mostra un'UI speciale che indica chiaramente all'utente da quante cifre deve essere formato il PIN. Di conseguenza, la lunghezza del PIN dell'utente viene memorizzata al di fuori dei dati criptati dell'utente. Sono supportati soltanto i PIN formati da 6-12 cifre.
 
@@ -7505,6 +7512,13 @@ Questo criterio aziendale consente agli amministratori di stabilire se gli utent
 <translation id="7999336306414770162">Disattiva i report sulle informazioni VPD del dispositivo</translation>
 <translation id="7999818120028621358">Attiva la generazione di rapporti sugli eventi di prevenzione di fughe di dati</translation>
 <translation id="8001701200415781021">Limita gli Account Google che è possibile impostare come account principali del browser in <ph name="PRODUCT_NAME" /></translation>
+<translation id="8005143535239983809">Questo criterio consente di stabilire se il browser può o meno memorizzare automaticamente le password sui siti web e salvarle nel gestore delle password integrato. Non consente di limitare l'accesso o di modificare i contenuti delle password salvate nel gestore delle password e potenzialmente sincronizzate nel profilo dell'Account Google e su <ph name="ANDROID_NAME" />.
+
+Se il criterio viene attivato, gli utenti possono impostare <ph name="PRODUCT_NAME" /> in modo che memorizzi le password e le fornisca all'accesso successivo a un sito.
+
+Se il criterio viene disattivato, gli utenti non possono salvare nuove password, ma quelle salvate in precedenza restano attive.
+
+Se il criterio viene configurato, gli utenti non possono modificarlo in <ph name="PRODUCT_NAME" />. Se non viene configurato, gli utenti possono disattivare il salvataggio delle password.</translation>
 <translation id="800595420827930383">Utilizza lo strumento di verifica dei certificati della piattaforma precedente</translation>
 <translation id="8006219716745491366">Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attivo, l'assegnazione di un valore al criterio <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> consente di specificare un elenco di URL alternativi per l'estrazione dei termini di ricerca dal motore di ricerca. Gli URL devono includere la stringa <ph name="SEARCH_TERM_MARKER" />.
 
@@ -7873,6 +7887,7 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
       Se viene impostato su Disattivato, non viene mostrata una finestra di dialogo di avviso quando l'utente sta tentando di uscire.</translation>
 <translation id="830440838848984847">Consenti agli utenti di accedere a <ph name="PRODUCT_NAME" /></translation>
 <translation id="8306117673860983372">Impostazioni di accesso</translation>
+<translation id="8307340233340602723">Consenti o nega l'accesso alla geolocalizzazione del dispositivo</translation>
 <translation id="830819203330820450">Se il criterio è attivato o non configurato (impostazione predefinita), una pagina web può usare le API di condivisione schermo (ad esempio, getDisplayMedia() o l'API dell'estensione di acquisizione schermata desktop) per richiedere all'utente di selezionare una scheda, una finestra o una schermata desktop da acquisire.
 
       Se il criterio è disattivato, le chiamate alle API di condivisione schermo avranno esito negativo con un errore; tuttavia, questo criterio non viene preso in considerazione (e un sito sarà autorizzato a utilizzare le API di condivisione schermo) se il sito corrisponde a un modello di origine in uno dei seguenti criteri:
@@ -8272,6 +8287,11 @@ Questo criterio è una mappatura degli ID di configurazione alle configurazioni 
 <translation id="8687958770985542440">Riattiva l'API Web Components v0 fino alla versione M84</translation>
 <translation id="8693243869659262736">Utilizza client DNS integrato</translation>
 <translation id="8695006038397632296">Crea o carica richieste di installazione di estensioni nella Console di amministrazione</translation>
+<translation id="8695108198606654558">Questo criterio consente di controllare soltanto il comportamento di importazione alla prima esecuzione dopo l'installazione. Consente una transizione più semplice a <ph name="PRODUCT_NAME" /> negli ambienti in cui è stato ampiamente utilizzato un browser diverso prima dell'installazione del browser. Questo criterio non influisce sulle funzionalità del gestore delle password per gli Account Google.
+
+Se il criterio viene attivato, alla prima esecuzione vengono importate le password salvate dal browser predefinito precedente ed è possibile anche l'importazione manuale dalla pagina Impostazioni.
+Se il criterio viene disattivato, alla prima esecuzione non vengono importate le password salvate e l'importazione manuale dalla pagina Impostazioni viene bloccata.
+Se il criterio non viene configurato, alla prima esecuzione non vengono importate le password salvate, ma l'utente può scegliere di farlo dalla pagina Impostazioni.</translation>
 <translation id="8698286761337647563">Numero di giorni di anticipo con cui avvisare gli utenti SAML quando la loro password sta per scadere</translation>
 <translation id="8699392919012430269">Segnala informazioni sul Bluetooth di un dispositivo.
 
@@ -8310,6 +8330,7 @@ Questo criterio è una mappatura degli ID di configurazione alle configurazioni 
       "http://notexample.com/", "http://example.com.invalid.com/" e "http://example.comabc/" corrispondono soltanto in modalità "Default".
 
       "http://acme.com/ABC" corrisponde soltanto in "IESiteListMode".</translation>
+<translation id="8728854710675158426">Hash non sicuri in handshake TLS attivi</translation>
 <translation id="8734543507835977857">Avvia i ritardi di gestione dell'alimentazione e i limiti di durata delle sessioni all'inizio della sessione</translation>
 <translation id="8736538322216687231">Imponi livello minimo della Modalità con restrizioni di YouTube</translation>
 <translation id="8744844164152340112">Consente di stabilire il tema (scuro/chiaro/automatico) usato per eseguire il rendering dell'UI durante l'OOBE e nella sessione.
@@ -8827,6 +8848,7 @@ Se il criterio non viene configurato, per impostazione predefinita <ph name="PRO
 <translation id="9213751049772256263">Disattiva tutte le varianti</translation>
 <translation id="9217154963008402249">Frequenza dei pacchetti di rete di monitoraggio</translation>
 <translation id="9220314833408124365">Viene usato un criterio relativo al referrer predefinito no-referrer-when-downgrade</translation>
+<translation id="9221827710437832530">Consenti l'accesso alla geolocalizzazione nella schermata di accesso.</translation>
 <translation id="922540222991413931">Configura fonti di installazione di estensioni, applicazioni e script utente</translation>
 <translation id="924557436754151212">Importa password salvate dal browser predefinito alla prima esecuzione</translation>
 <translation id="926104720905645793">Questo criterio consente di controllare il reporting su cloud di <ph name="PRODUCT_NAME" />, che consente di caricare informazioni sul funzionamento del browser nella <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.

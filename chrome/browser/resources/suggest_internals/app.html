@@ -5,8 +5,12 @@
     overflow: hidden;
   }
 
+  cr-button {
+    width: 100%;
+  }
+
   cr-toolbar {
-    --cr-toolbar-left-spacer-width: 300px;
+    --cr-toolbar-left-spacer-width: 500px;
   }
 
   #requests {
@@ -17,11 +21,53 @@
   [slot='header'] {
     padding: 0 var(--cr-section-padding) var(--cr-section-padding);
   }
+
+  .upload-container {
+    position: relative;
+  }
+
+  .upload-container input[type=file] {
+    position: absolute;
+    top:0;
+    left:0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+  }
 </style>
 <cr-toolbar page-name="Suggest Debug Tool" search-prompt="Filter requests"
     clear-label="Clear filter" on-search-changed="onFilterChanged_"
-    always-show-logo show-search>
+    always-show-logo show-search show-menu on-cr-toolbar-menu-tap="showOutputControls_">
 </cr-toolbar>
+<cr-drawer id="drawer" heading="Output controls">
+  <div slot="body">
+        <cr-button title="export requests to clipboard" on-click="onCopyClick_">
+          Copy
+          <iron-icon icon="cr:insert-drive-file" slot="suffix-icon"></iron-icon>
+        </cr-button>
+        <cr-button title="Download requests in JSON format." on-click="onDownloadClick_">
+          Download
+          <iron-icon icon="cr:file-download" slot="suffix-icon"></iron-icon>
+        </cr-button>
+        <cr-button title="Import requests from clipboard." on-click="onPasteClick_">
+          Paste
+          <iron-icon icon="cr:insert-drive-file" slot="suffix-icon"></iron-icon>
+        </cr-button>
+        <div class="upload-container">
+          <cr-button>
+            Upload
+            <iron-icon icon="cr:insert-drive-file" slot="suffix-icon"></iron-icon>
+          </cr-button>
+          <input placeholder="Upload previously downloaded requests to load them." on-change="onImportFile_" type="file" accept=".json">
+        </div>
+        <cr-button title="Clears the result list" on-click="onClearClick_">
+          Clear
+          <iron-icon icon="cr:delete" slot="suffix-icon"></iron-icon>
+        </cr-button>
+  </div>
+</cr-drawer>
+
 <div id="requests">
   <template is="dom-if" if="[[hardcodedRequest_]]">
     <suggest-request request="[[hardcodedRequest_]]"

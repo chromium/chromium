@@ -138,6 +138,8 @@ constexpr FeatureParam<BackupRefPtrMode>::Option kBackupRefPtrModeOptions[] = {
     {BackupRefPtrMode::kDisabled, "disabled"},
     {BackupRefPtrMode::kEnabled, "enabled"},
     {BackupRefPtrMode::kEnabledWithoutZapping, "enabled-without-zapping"},
+    {BackupRefPtrMode::kEnabledWithoutMemoryReclaimer,
+     "enabled-without-memory-reclaimer"},
     {BackupRefPtrMode::kDisabledButSplitPartitions2Way,
      "disabled-but-2-way-split"},
     {BackupRefPtrMode::kDisabledButSplitPartitions3Way,

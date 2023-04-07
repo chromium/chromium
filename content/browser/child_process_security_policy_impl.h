@@ -547,6 +547,8 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // child process.
   size_t BrowsingInstanceIdCountForTesting(int child_id);
 
+  void ClearRegisteredSchemeForTesting(const std::string& scheme);
+
  private:
   friend class ChildProcessSecurityPolicyInProcessBrowserTest;
   friend class ChildProcessSecurityPolicyTest;

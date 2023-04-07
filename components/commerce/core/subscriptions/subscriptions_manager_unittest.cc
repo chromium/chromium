@@ -277,18 +277,16 @@ class SubscriptionsManagerTest : public testing::Test,
     account_checker_.SetAnonymizedUrlDataCollectionEnabled(msbb_enabled);
   }
 
-  void OnSubscribe(const std::vector<CommerceSubscription>& subscriptions,
+  void OnSubscribe(const CommerceSubscription& subscription,
                    bool succeeded) override {
-    ASSERT_EQ(1, (int)subscriptions.size());
-    ASSERT_EQ("333", subscriptions[0].id);
+    ASSERT_EQ("333", subscription.id);
     ASSERT_EQ(true, succeeded);
     on_subscribe_run_loop_.Quit();
   }
 
-  void OnUnsubscribe(const std::vector<CommerceSubscription>& subscriptions,
+  void OnUnsubscribe(const CommerceSubscription& subscription,
                      bool succeeded) override {
-    ASSERT_EQ(1, (int)subscriptions.size());
-    ASSERT_EQ("444", subscriptions[0].id);
+    ASSERT_EQ("444", subscription.id);
     ASSERT_EQ(true, succeeded);
     on_unsubscribe_run_loop_.Quit();
   }

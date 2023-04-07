@@ -90,9 +90,10 @@ export class AppStateController {
 
     this.ui_ = ui;
     this.directoryModel_ = directoryModel;
+    const {table} = ui.listContainer;
 
     // Register event listeners.
-    ui.listContainer.table.addEventListener(
+    table.addEventListener(
         'column-resize-end', this.saveViewOptions.bind(this));
     directoryModel.getFileList().addEventListener(
         'sorted', this.onFileListSorted_.bind(this));
@@ -102,7 +103,7 @@ export class AppStateController {
         'directory-changed', this.onDirectoryChanged_.bind(this));
 
     // Restore preferences.
-    this.ui_.setCurrentListType(
+    ui.setCurrentListType(
         this.viewOptions_.listType || ListContainer.ListType.DETAIL);
     if (this.viewOptions_.sortField) {
       this.fileListSortField_ = this.viewOptions_.sortField;
@@ -116,8 +117,10 @@ export class AppStateController {
       this.directoryModel_.getFileFilter().setAllAndroidFoldersVisible(true);
     }
     if (this.viewOptions_.columnConfig) {
-      this.ui_.listContainer.table.columnModel.restoreColumnConfig(
-          this.viewOptions_.columnConfig);
+      table.columnModel.restoreColumnConfig(this.viewOptions_.columnConfig);
+      // The stored config might not match the current table width, do a
+      // normalization here after restoration.
+      table.columnModel.normalizeWidths(table.clientWidth);
     }
   }
 

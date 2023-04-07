@@ -65,8 +65,9 @@ void MapBoolToBool(const std::string& arc_policy_name,
                    const policy::PolicyMap& policy_map,
                    bool invert_bool_value,
                    base::Value::Dict* filtered_policies) {
-  if (!policy_map.IsPolicySet(policy_name))
+  if (!policy_map.IsPolicySet(policy_name)) {
     return;
+  }
 
   const base::Value* const policy_value =
       policy_map.GetValue(policy_name, base::Value::Type::BOOLEAN);
@@ -85,8 +86,9 @@ void MapIntToBool(const std::string& arc_policy_name,
                   const policy::PolicyMap& policy_map,
                   int int_true,
                   base::Value::Dict* filtered_policies) {
-  if (!policy_map.IsPolicySet(policy_name))
+  if (!policy_map.IsPolicySet(policy_name)) {
     return;
+  }
 
   const base::Value* const policy_value =
       policy_map.GetValue(policy_name, base::Value::Type::INTEGER);
@@ -105,8 +107,9 @@ void MapManagedIntPrefToBool(const std::string& arc_policy_name,
                              const PrefService* profile_prefs,
                              int int_true,
                              base::Value::Dict* filtered_policies) {
-  if (!profile_prefs->IsManagedPreference(pref_name))
+  if (!profile_prefs->IsManagedPreference(pref_name)) {
     return;
+  }
 
   filtered_policies->Set(arc_policy_name,
                          profile_prefs->GetInteger(pref_name) == int_true);
@@ -119,8 +122,9 @@ void MapObjectToPresenceBool(const std::string& arc_policy_name,
                              const policy::PolicyMap& policy_map,
                              base::Value::Dict* filtered_policies,
                              const std::vector<std::string>& fields) {
-  if (!policy_map.IsPolicySet(policy_name))
+  if (!policy_map.IsPolicySet(policy_name)) {
     return;
+  }
 
   const base::Value* const policy_value =
       policy_map.GetValue(policy_name, base::Value::Type::DICT);
@@ -185,18 +189,21 @@ void AddOncCaCertsToPolicies(const policy::PolicyMap& policy_map,
     const base::Value::Dict& cert_dict = certificate.GetDict();
     const std::string* const cert_type =
         cert_dict.FindString(::onc::certificate::kType);
-    if (!cert_type || *cert_type != ::onc::certificate::kAuthority)
+    if (!cert_type || *cert_type != ::onc::certificate::kAuthority) {
       continue;
+    }
 
     const base::Value::List* const trust_list =
         cert_dict.FindList(::onc::certificate::kTrustBits);
-    if (!trust_list)
+    if (!trust_list) {
       continue;
+    }
 
     bool web_trust_flag = false;
     for (const auto& list_val : *trust_list) {
-      if (!list_val.is_string())
+      if (!list_val.is_string()) {
         NOTREACHED();
+      }
 
       if (list_val.GetString() == ::onc::certificate::kWeb) {
         // "Web" implies that the certificate is to be trusted for SSL
@@ -205,13 +212,15 @@ void AddOncCaCertsToPolicies(const policy::PolicyMap& policy_map,
         break;
       }
     }
-    if (!web_trust_flag)
+    if (!web_trust_flag) {
       continue;
+    }
 
     const std::string* const x509_data =
         cert_dict.FindString(::onc::certificate::kX509);
-    if (!x509_data)
+    if (!x509_data) {
       continue;
+    }
 
     base::Value::Dict data;
     data.Set("X509", *x509_data);
@@ -225,8 +234,9 @@ void AddOncCaCertsToPolicies(const policy::PolicyMap& policy_map,
 
 void AddRequiredKeyPairs(const CertStoreService* cert_store_service,
                          base::Value::Dict* filtered_policies) {
-  if (!cert_store_service)
+  if (!cert_store_service) {
     return;
+  }
   base::Value::List cert_names;
   for (const auto& name : cert_store_service->get_required_cert_names()) {
     base::Value::Dict value;
@@ -244,15 +254,17 @@ void AddChoosePrivateKeyRuleToPolicy(
     policy::PolicyService* const policy_service,
     const CertStoreService* cert_store_service,
     base::Value::Dict* filtered_policies) {
-  if (!cert_store_service)
+  if (!cert_store_service) {
     return;
+  }
 
   auto app_ids = chromeos::platform_keys::ExtensionKeyPermissionsService::
       GetCorporateKeyUsageAllowedAppIds(policy_service);
   base::Value::List arc_app_ids;
   for (const auto& app_id : app_ids) {
-    if (LooksLikeAndroidPackageName(app_id))
+    if (LooksLikeAndroidPackageName(app_id)) {
       arc_app_ids.Append(app_id);
+    }
   }
   if (arc_app_ids.empty() ||
       cert_store_service->get_required_cert_names().empty()) {
@@ -280,10 +292,11 @@ void ReplaceManagedConfigurationVariables(const Profile* profile,
       arc_policy->FindList(policy_util::kArcPolicyKeyApplications);
   if (applications) {
     for (base::Value& entry : *applications) {
-      base::Value* config =
-          entry.FindDictKey(ArcPolicyBridge::kManagedConfiguration);
-      if (config)
-        RecursivelyReplaceManagedConfigurationVariables(profile, config);
+      base::Value::Dict* config =
+          entry.GetDict().FindDict(ArcPolicyBridge::kManagedConfiguration);
+      if (config) {
+        RecursivelyReplaceManagedConfigurationVariables(profile, *config);
+      }
     }
   }
 }
@@ -454,13 +467,15 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
 void RecordPolicyMetrics(const policy::PolicyMap& policy) {
   const base::Value* const arc_enabled =
       policy.GetValue(policy::key::kArcEnabled, base::Value::Type::BOOLEAN);
-  if (!arc_enabled || !arc_enabled->GetBool())
+  if (!arc_enabled || !arc_enabled->GetBool()) {
     return;
+  }
 
   const base::Value* const arc_policy =
       policy.GetValue(policy::key::kArcPolicy, base::Value::Type::STRING);
-  if (arc_policy)
+  if (arc_policy) {
     policy_util::RecordPolicyMetrics(arc_policy->GetString());
+  }
 }
 
 // Singleton factory for ArcPolicyBridge.
@@ -606,8 +621,9 @@ void ArcPolicyBridge::ReportCloudDpsRequested(
     const std::vector<std::string>& package_names) {
   const std::set<std::string> packages_set(package_names.begin(),
                                            package_names.end());
-  for (Observer& observer : observers_)
+  for (Observer& observer : observers_) {
     observer.OnCloudDpsRequested(time, packages_set);
+  }
 }
 
 void ArcPolicyBridge::ReportCloudDpsSucceeded(
@@ -615,15 +631,17 @@ void ArcPolicyBridge::ReportCloudDpsSucceeded(
     const std::vector<std::string>& package_names) {
   const std::set<std::string> packages_set(package_names.begin(),
                                            package_names.end());
-  for (Observer& observer : observers_)
+  for (Observer& observer : observers_) {
     observer.OnCloudDpsSucceeded(time, packages_set);
+  }
 }
 
 void ArcPolicyBridge::ReportCloudDpsFailed(base::Time time,
                                            const std::string& package_name,
                                            mojom::InstallErrorReason reason) {
-  for (Observer& observer : observers_)
+  for (Observer& observer : observers_) {
     observer.OnCloudDpsFailed(time, package_name, reason);
+  }
 }
 
 void ArcPolicyBridge::ReportForceInstallMainLoopFailed(
@@ -631,15 +649,17 @@ void ArcPolicyBridge::ReportForceInstallMainLoopFailed(
     const std::vector<std::string>& package_names) {
   const std::set<std::string> packages_set(package_names.begin(),
                                            package_names.end());
-  for (Observer& observer : observers_)
+  for (Observer& observer : observers_) {
     observer.OnReportForceInstallMainLoopFailed(time, packages_set);
+  }
 }
 
 void ArcPolicyBridge::ReportDPCVersion(const std::string& version) {
   arc_dpc_version_ = version;
 
-  for (Observer& observer : observers_)
+  for (Observer& observer : observers_) {
     observer.OnReportDPCVersion(version);
+  }
 }
 
 void ArcPolicyBridge::ReportPlayStoreLocalPolicySet(
@@ -647,8 +667,9 @@ void ArcPolicyBridge::ReportPlayStoreLocalPolicySet(
     const std::vector<std::string>& package_names) {
   const std::set<std::string> packages_set(package_names.begin(),
                                            package_names.end());
-  for (Observer& observer : observers_)
+  for (Observer& observer : observers_) {
     observer.OnPlayStoreLocalPolicySet(time, packages_set);
+  }
 }
 
 void ArcPolicyBridge::OnPolicyUpdated(const policy::PolicyNamespace& ns,
@@ -664,8 +685,9 @@ void ArcPolicyBridge::OnPolicyUpdated(const policy::PolicyNamespace& ns,
 
   auto* instance = ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->policy(),
                                                OnPolicyUpdated);
-  if (!instance)
+  if (!instance) {
     return;
+  }
 
   instance->OnPolicyUpdated();
   RecordPolicyMetrics(current);
@@ -718,8 +740,9 @@ void ArcPolicyBridge::InitializePolicyService() {
 }
 
 std::string ArcPolicyBridge::GetCurrentJSONPolicies() const {
-  if (!is_managed_)
+  if (!is_managed_) {
     return std::string();
+  }
   const Profile* const profile = Profile::FromBrowserContext(context_);
   const user_manager::User* const user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);

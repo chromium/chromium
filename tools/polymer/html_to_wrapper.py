@@ -83,7 +83,7 @@ def main(argv):
                       default='polymer')
   parser.add_argument('--scheme',
                       choices=['chrome', 'relative'],
-                      default='chrome')
+                      default='relative')
 
   args = parser.parse_args(argv)
 

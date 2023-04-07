@@ -4,10 +4,17 @@
 
 #include "ash/system/privacy_hub/privacy_hub_notification.h"
 
+#include <iterator>
+#include <string>
+
 #include "ash/public/cpp/sensor_disabled_notification_delegate.h"
+#include "ash/shell.h"
+#include "ash/system/privacy_hub/privacy_hub_controller.h"
+#include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/enum_set.h"
 #include "components/vector_icons/vector_icons.h"
+#include "geolocation_privacy_switch_controller.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
@@ -176,21 +183,39 @@ std::vector<std::u16string> PrivacyHubNotification::GetAppsAccessingSensors(
     const size_t number_of_apps) const {
   std::vector<std::u16string> app_names;
 
-  if (SensorDisabledNotificationDelegate* delegate =
-          SensorDisabledNotificationDelegate::Get()) {
-    for (SensorDisabledNotificationDelegate::Sensor sensor : sensors_) {
-      for (const std::u16string& app :
-           delegate->GetAppsAccessingSensor(sensor)) {
-        if (!base::Contains(app_names, app)) {
-          app_names.push_back(app);
-        }
-        if (app_names.size() == number_of_apps) {
-          return app_names;
-        }
+  for (SensorDisabledNotificationDelegate::Sensor sensor : sensors_) {
+    CHECK_LE(app_names.size(), number_of_apps);
+    // This forces an implicit conversion of unsigned size_t into signed
+    // difference_type, avoiding conversion issues later on.
+    const decltype(app_names)::difference_type remaining_capacity =
+        number_of_apps - app_names.size();
+    if (remaining_capacity == 0) {
+      break;
+    }
+    std::vector<std::u16string> sensor_apps;
+    if (SensorDisabledNotificationDelegate::Sensor::kLocation == sensor) {
+      const auto* const controller = GeolocationPrivacySwitchController::Get();
+      if (controller) {
+        sensor_apps = controller->GetActiveApps(remaining_capacity);
+      }
+    } else {
+      if (SensorDisabledNotificationDelegate* delegate =
+              SensorDisabledNotificationDelegate::Get()) {
+        sensor_apps = delegate->GetAppsAccessingSensor(sensor);
       }
     }
+    // Copy de-duplicated app names.
+    std::sort(std::begin(sensor_apps), std::end(sensor_apps));
+    const auto unique_end =
+        std::unique(std::begin(sensor_apps), std::end(sensor_apps));
+    const auto elements_to_copy = std::min(
+        remaining_capacity, std::distance(std::begin(sensor_apps), unique_end));
+    std::copy(std::begin(sensor_apps),
+              std::next(std::begin(sensor_apps), elements_to_copy),
+              std::back_inserter(app_names));
   }
 
+  CHECK_LE(app_names.size(), number_of_apps);
   return app_names;
 }
 

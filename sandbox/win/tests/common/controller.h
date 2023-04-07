@@ -152,6 +152,9 @@ class TestRunner {
   // Returns the process ID for an asynchronous test.
   DWORD process_id() { return target_process_id_; }
 
+  // Blocks until the number of tracked processes returns to zero.
+  bool WaitForAllTargets();
+
  private:
 
   // The actual runner.

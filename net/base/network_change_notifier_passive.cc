@@ -17,6 +17,10 @@
 #include "net/android/network_change_notifier_android.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "net/base/network_change_notifier_linux.h"
+#endif
+
 namespace net {
 
 NetworkChangeNotifierPassive::NetworkChangeNotifierPassive(
@@ -100,8 +104,9 @@ NetworkChangeNotifierPassive::NetworkChangeCalculatorParamsPassive() {
   params.connection_type_offline_delay_ = base::Milliseconds(500);
   params.connection_type_online_delay_ = base::Milliseconds(500);
 #elif BUILDFLAG(IS_ANDROID)
-  params =
-      net::NetworkChangeNotifierAndroid::NetworkChangeCalculatorParamsAndroid();
+  params = NetworkChangeNotifierAndroid::NetworkChangeCalculatorParamsAndroid();
+#elif BUILDFLAG(IS_LINUX)
+  params = NetworkChangeNotifierLinux::NetworkChangeCalculatorParamsLinux();
 #else
   NOTIMPLEMENTED();
 #endif

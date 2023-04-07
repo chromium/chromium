@@ -13,6 +13,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -22,6 +23,7 @@ namespace ash::smb_dialog {
 namespace {
 
 constexpr int kSmbCredentialsDialogHeight = 230;
+constexpr int kSmbCredentialsDialogHeightWithJellyOn = 275;
 
 void AddSmbCredentialsDialogStrings(content::WebUIDataSource* html_source) {
   static const struct {
@@ -37,6 +39,8 @@ void AddSmbCredentialsDialogStrings(content::WebUIDataSource* html_source) {
   for (const auto& entry : localized_strings) {
     html_source->AddLocalizedString(entry.name, entry.id);
   }
+  bool is_jelly = chromeos::features::IsJellyEnabled();
+  html_source->AddBoolean("isJelly", is_jelly);
 }
 
 std::string GetDialogId(const std::string& mount_id) {
@@ -93,7 +97,9 @@ void SmbCredentialsDialog::Respond(const std::string& username,
 
 void SmbCredentialsDialog::GetDialogSize(gfx::Size* size) const {
   size->SetSize(SystemWebDialogDelegate::kDialogWidth,
-                kSmbCredentialsDialogHeight);
+                chromeos::features::IsJellyEnabled()
+                    ? kSmbCredentialsDialogHeightWithJellyOn
+                    : kSmbCredentialsDialogHeight);
 }
 
 std::string SmbCredentialsDialog::GetDialogArgs() const {

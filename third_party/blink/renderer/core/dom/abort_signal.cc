@@ -161,7 +161,8 @@ AbortSignal::AbortSignal(ExecutionContext* execution_context)
     : AbortSignal(execution_context, SignalType::kInternal) {}
 
 AbortSignal::AbortSignal(ExecutionContext* execution_context,
-                         SignalType signal_type) {
+                         SignalType signal_type)
+    : LazyActiveScriptWrappable<AbortSignal>({}) {
   DCHECK_NE(signal_type, SignalType::kComposite);
   InitializeCommon(execution_context, signal_type);
 
@@ -172,7 +173,8 @@ AbortSignal::AbortSignal(ExecutionContext* execution_context,
 }
 
 AbortSignal::AbortSignal(ScriptState* script_state,
-                         HeapVector<Member<AbortSignal>>& source_signals) {
+                         HeapVector<Member<AbortSignal>>& source_signals)
+    : LazyActiveScriptWrappable<AbortSignal>({}) {
   DCHECK(RuntimeEnabledFeatures::AbortSignalCompositionEnabled());
   InitializeCommon(ExecutionContext::From(script_state),
                    SignalType::kComposite);

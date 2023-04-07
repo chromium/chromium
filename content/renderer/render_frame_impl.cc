@@ -524,12 +524,20 @@ void FillNavigationParamsRequest(
   // Note: It's possible for initiator_base_url to be empty if this is an
   // error srcdoc page. See test
   // NavigationRequestBrowserTest.OriginForSrcdocErrorPageInSubframe.
-  if (common_params.initiator_base_url) {
-    CHECK(blink::features::IsNewBaseUrlInheritanceBehaviorEnabled() &&
-          (common_params.url.IsAboutSrcdoc() ||
-           common_params.url.IsAboutBlank()));
-    navigation_params->fallback_base_url =
-        common_params.initiator_base_url.value();
+  if (blink::features::IsNewBaseUrlInheritanceBehaviorEnabled() &&
+      common_params.initiator_base_url) {
+    if (!common_params.url.IsAboutSrcdoc() &&
+        !common_params.url.IsAboutBlank()) {
+      // TODO(crbug.com/1430232): Remove this once we know the cause of the
+      // associated CHECK failure.
+      SCOPED_CRASH_KEY_BOOL("new_base_url", "rfi_base_url_is_empty",
+                            common_params.initiator_base_url->is_empty());
+      base::debug::DumpWithoutCrashing();
+      navigation_params->fallback_base_url = WebURL();
+    } else {
+      navigation_params->fallback_base_url =
+          common_params.initiator_base_url.value();
+    }
   } else {
     navigation_params->fallback_base_url = WebURL();
   }
@@ -2539,6 +2547,7 @@ void RenderFrameImpl::CommitNavigation(
     const absl::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
     blink::mojom::PolicyContainerPtr policy_container,
     mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
+    mojo::PendingRemote<blink::mojom::ResourceCache> resource_cache,
     mojom::CookieManagerInfoPtr cookie_manager_info,
     mojom::StorageInfoPtr storage_info,
     mojom::NavigationClient::CommitNavigationCallback commit_callback) {
@@ -2596,8 +2605,8 @@ void RenderFrameImpl::CommitNavigation(
       std::move(controller_service_worker_info), std::move(container_info),
       std::move(prefetch_loader_factory), std::move(topics_loader_factory),
       std::move(keep_alive_loader_factory), std::move(code_cache_host),
-      std::move(cookie_manager_info), std::move(storage_info),
-      std::move(document_state));
+      std::move(resource_cache), std::move(cookie_manager_info),
+      std::move(storage_info), std::move(document_state));
 
   // Handle a navigation that has a non-empty `data_url_as_string`, or perform
   // a "loadDataWithBaseURL" navigation, which is different from a normal data:
@@ -2718,6 +2727,7 @@ void RenderFrameImpl::CommitNavigationWithParams(
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         keep_alive_loader_factory,
     mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
+    mojo::PendingRemote<blink::mojom::ResourceCache> resource_cache,
     mojom::CookieManagerInfoPtr cookie_manager_info,
     mojom::StorageInfoPtr storage_info,
     std::unique_ptr<DocumentState> document_state,
@@ -2808,6 +2818,7 @@ void RenderFrameImpl::CommitNavigationWithParams(
   DCHECK(!pending_loader_factories_);
   pending_loader_factories_ = std::move(new_loader_factories);
   pending_code_cache_host_ = std::move(code_cache_host);
+  pending_resource_cache_ = std::move(resource_cache);
   pending_cookie_manager_info_ = std::move(cookie_manager_info);
   pending_storage_info_ = std::move(storage_info);
   original_storage_key_ = navigation_params->storage_key;
@@ -3787,6 +3798,11 @@ void RenderFrameImpl::DidCommitNavigation(
       frame_->SetSessionStorageArea(
           std::move(pending_storage_info_->session_storage_area));
     }
+  }
+
+  if (pending_resource_cache_.is_valid()) {
+    CHECK(base::FeatureList::IsEnabled(blink::features::kRemoteResourceCache));
+    frame_->SetResourceCacheRemote(std::move(pending_resource_cache_));
   }
 
   DidCommitNavigationInternal(

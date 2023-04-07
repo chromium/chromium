@@ -14,7 +14,7 @@
 #include "content/shell/browser/shell_devtools_bindings.h"
 #include "content/shell/browser/shell_devtools_manager_delegate.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "base/command_line.h"
 #include "content/shell/common/shell_switches.h"
 #endif
@@ -24,7 +24,7 @@ namespace content {
 namespace {
 static GURL GetFrontendURL() {
   int port = ShellDevToolsManagerDelegate::GetHttpHandlerPort();
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   const char* query_string = "";
 #else
   const char* query_string = base::CommandLine::ForCurrentProcess()->HasSwitch(

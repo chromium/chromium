@@ -12,6 +12,10 @@ namespace media {
 // Must be called before any code that needs MediaFoundation.
 [[nodiscard]] MEDIA_EXPORT bool InitializeMediaFoundation();
 
+// Preloads DLLs required for MediaFoundation; returns false if DLLs fail to
+// load. InitializeMediaFoundation() will also return false if load fails.
+MEDIA_EXPORT bool PreSandboxMediaFoundationInitialization();
+
 }  // namespace media
 
 #endif  // MEDIA_BASE_WIN_MF_INITIALIZER_H_

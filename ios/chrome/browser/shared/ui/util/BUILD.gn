@@ -51,7 +51,7 @@ source_set("util") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/ui/icons:symbols",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common:button_config",
     "//ios/chrome/common:timing",
     "//ios/chrome/common/ui/util",

@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/cells/query_suggestion_view.h"
 
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cells_constants.h"
-#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "url/gurl.h"

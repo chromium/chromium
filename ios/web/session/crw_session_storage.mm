@@ -11,7 +11,7 @@
 #import "ios/web/common/features.h"
 #import "ios/web/navigation/nscoder_util.h"
 #import "ios/web/public/session/crw_session_certificate_policy_cache_storage.h"
-#import "ios/web/session/crw_session_user_data.h"
+#import "ios/web/public/session/crw_session_user_data.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

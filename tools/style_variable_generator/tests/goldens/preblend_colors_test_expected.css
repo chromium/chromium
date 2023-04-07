@@ -1,0 +1,46 @@
+/* Copyright 2020 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* This file is generated from:
+ *  tests/colors_test_palette.json5
+ *  tests/preblend_colors_test.json5
+ */
+:root {
+  color-scheme: light dark;
+}
+
+html:not(body) {
+  --google-grey-900-rgb: 32, 33, 36;
+  --google-grey-900: rgb(var(--google-grey-900-rgb));
+
+  --cros-bg-color-rgb: 255, 255, 255;
+  --cros-bg-color: rgb(var(--cros-bg-color-rgb));
+
+  --cros-highlight-color-hover-rgb: 0, 0, 0;
+  --cros-highlight-color-hover: rgba(var(--cros-highlight-color-hover-rgb), 0.2);
+
+  --cros-foo-color-rgb: 204, 204, 204;
+  --cros-foo-color: rgb(var(--cros-foo-color-rgb));
+
+  --cros-bar-color-rgb: 204, 204, 204;
+  --cros-bar-color: rgb(var(--cros-bar-color-rgb));
+
+  --cros-disabled-opacity: 0.38;
+}
+
+@media (prefers-color-scheme: dark) {
+html:not(body) {
+  --cros-bg-color-rgb: var(--google-grey-900-rgb);
+  --cros-bg-color: var(--google-grey-900);
+
+  --cros-highlight-color-hover-rgb: 255, 255, 255;
+  --cros-highlight-color-hover: rgba(var(--cros-highlight-color-hover-rgb), 0.4);
+
+  --cros-foo-color-rgb: 121, 122, 124;
+  --cros-foo-color: rgb(var(--cros-foo-color-rgb));
+
+  --cros-bar-color-rgb: 121, 122, 124;
+  --cros-bar-color: rgb(var(--cros-bar-color-rgb));
+}
+}

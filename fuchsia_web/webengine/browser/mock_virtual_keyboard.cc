@@ -4,40 +4,50 @@
 
 #include "fuchsia_web/webengine/browser/mock_virtual_keyboard.h"
 
+#include <lib/async/default.h>
+
 #include "base/run_loop.h"
 
-namespace virtualkeyboard = fuchsia::input::virtualkeyboard;
+namespace virtualkeyboard = fuchsia_input_virtualkeyboard;
 
-MockVirtualKeyboardController::MockVirtualKeyboardController()
-    : binding_(this) {}
-
-MockVirtualKeyboardController::~MockVirtualKeyboardController() = default;
+MockVirtualKeyboardController::MockVirtualKeyboardController() = default;
+MockVirtualKeyboardController::~MockVirtualKeyboardController() {
+  if (watch_visibility_completer_) {
+    watch_visibility_completer_->Close(ZX_ERR_PEER_CLOSED);
+  }
+  if (binding_) {
+    binding_->Close(ZX_ERR_PEER_CLOSED);
+  }
+}
 
 void MockVirtualKeyboardController::Bind(
-    fuchsia::ui::views::ViewRef view_ref,
+    fuchsia_ui_views::ViewRef view_ref,
     virtualkeyboard::TextType text_type,
-    fidl::InterfaceRequest<fuchsia::input::virtualkeyboard::Controller>
-        controller_request) {
+    fidl::ServerEnd<fuchsia_input_virtualkeyboard::Controller>
+        controller_server_end) {
   text_type_ = text_type;
   view_ref_ = std::move(view_ref);
-  binding_.Bind(std::move(controller_request));
+  binding_.emplace(async_get_default_dispatcher(),
+                   std::move(controller_server_end), this,
+                   base::FidlBindingClosureWarningLogger(
+                       "fuchsia.input.virtualkeyboard.Controller"));
 }
 
 void MockVirtualKeyboardController::AwaitWatchAndRespondWith(bool is_visible) {
-  if (!watch_vis_callback_) {
+  if (!watch_visibility_completer_) {
     base::RunLoop run_loop;
     on_watch_visibility_ = run_loop.QuitClosure();
     run_loop.Run();
-    ASSERT_TRUE(watch_vis_callback_);
+    ASSERT_TRUE(watch_visibility_completer_);
   }
 
-  (*watch_vis_callback_)(is_visible);
-  watch_vis_callback_ = {};
+  watch_visibility_completer_->Reply({{.is_visible = is_visible}});
+  watch_visibility_completer_.reset();
 }
 
 void MockVirtualKeyboardController::WatchVisibility(
-    virtualkeyboard::Controller::WatchVisibilityCallback callback) {
-  watch_vis_callback_ = std::move(callback);
+    MockVirtualKeyboardController::WatchVisibilityCompleter::Sync& completer) {
+  watch_visibility_completer_ = completer.ToAsync();
 
   if (on_watch_visibility_)
     std::move(on_watch_visibility_).Run();
@@ -61,12 +71,10 @@ MockVirtualKeyboardControllerCreator::CreateController() {
 }
 
 void MockVirtualKeyboardControllerCreator::Create(
-    fuchsia::ui::views::ViewRef view_ref,
-    fuchsia::input::virtualkeyboard::TextType text_type,
-    fidl::InterfaceRequest<fuchsia::input::virtualkeyboard::Controller>
-        controller_request) {
+    MockVirtualKeyboardControllerCreator::CreateRequest& request,
+    MockVirtualKeyboardControllerCreator::CreateCompleter::Sync& completer) {
   CHECK(pending_controller_);
-  pending_controller_->Bind(std::move(view_ref), text_type,
-                            std::move(controller_request));
+  pending_controller_->Bind(std::move(request.view_ref()), request.text_type(),
+                            std::move(request.controller_request()));
   pending_controller_ = nullptr;
 }

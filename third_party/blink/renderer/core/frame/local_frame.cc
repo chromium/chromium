@@ -34,6 +34,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
@@ -967,11 +968,10 @@ void LocalFrame::HookBackForwardCacheEviction() {
               frame->EvictFromBackForwardCache(
                   mojom::blink::RendererEvictionReason::kJavaScriptExecution);
               if (base::FeatureList::IsEnabled(
-                      features::
-                          kBackForwardCacheNotReachedOnJavaScriptExecution)) {
-                // Adding |NOTREACHED()| here to make sure this is not happening
-                // in any tests, except for when this is expected.
-                NOTREACHED();
+                      features::kBackForwardCacheDWCOnJavaScriptExecution)) {
+                // Adding |DumpWithoutCrashing()| here to make sure this is not
+                // happening in any tests, except for when this is expected.
+                base::debug::DumpWithoutCrashing();
               }
             }
           });
@@ -3485,9 +3485,14 @@ void LocalFrame::ScheduleNextServiceForScrollSnapshotClients() {
   }
 }
 
-void LocalFrame::SetResourceCacheImpl(ResourceCacheImpl* resource_cache) {
-  DCHECK(!resource_cache_);
-  resource_cache_ = resource_cache;
+void LocalFrame::BindResourceCache(
+    mojo::PendingReceiver<mojom::blink::ResourceCache> receiver) {
+  if (resource_cache_) {
+    resource_cache_->AddReceiver(std::move(receiver));
+  } else {
+    resource_cache_ =
+        MakeGarbageCollected<ResourceCacheImpl>(this, std::move(receiver));
+  }
 }
 
 void LocalFrame::SetResourceCacheRemote(

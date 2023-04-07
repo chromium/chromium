@@ -720,6 +720,116 @@ TEST_F(RenderAccessibilityImplTest, TestFocusConsistency) {
   EXPECT_TRUE(found_button_update);
 }
 
+TEST_F(RenderAccessibilityImplTest, TestExpandCollapseTreeItem) {
+  constexpr char html[] = R"HTML(
+      <body>
+        <div>
+          <ol role="tree">
+            <li role="treeitem" aria-expanded="false" id="1">
+            </li>
+          </ol>
+        </div>
+      </body>
+    )HTML";
+  LoadHTMLAndRefreshAccessibilityTree(html);
+
+  WebDocument document = GetMainFrame()->GetDocument();
+  WebAXObject root_obj = WebAXObject::FromWebDocument(document);
+  WebAXObject html_elem = root_obj.ChildAt(0);
+  WebAXObject body = html_elem.ChildAt(0);
+  WebAXObject div = body.ChildAt(0);
+  WebAXObject ol = div.ChildAt(0);
+  WebAXObject tree_item = ol.ChildAt(0);
+
+  std::string js(
+      "document.getElementById('1').addEventListener('keydown', (event) => { "
+      "let item = "
+      "document.getElementById('1'); if (event.key === 'ArrowRight') { "
+      "item.setAttribute('aria-expanded','true');} else if (event.key === "
+      "'ArrowLeft') { item.setAttribute('aria-expanded','false'); }}, true);");
+  ExecuteJavaScriptForTests(js.c_str());
+
+  // Expanding.
+  ui::AXActionData action;
+  action.target_node_id = tree_item.AxID();
+  action.action = ax::mojom::Action::kExpand;
+  GetRenderAccessibilityImpl()->PerformAction(action);
+  SendPendingAccessibilityEvents();
+
+  const std::vector<ui::AXTreeUpdate>& updates = GetHandledAccUpdates();
+  bool found_expanded_update = false;
+  for (const auto& update : updates) {
+    for (const auto& node_data : update.nodes) {
+      if (node_data.id == tree_item.AxID() &&
+          node_data.HasState(ax::mojom::State::kExpanded)) {
+        found_expanded_update = true;
+      }
+    }
+  }
+
+  EXPECT_TRUE(found_expanded_update);
+
+  // Expanding when expanded
+  action.target_node_id = tree_item.AxID();
+  action.action = ax::mojom::Action::kExpand;
+  GetRenderAccessibilityImpl()->PerformAction(action);
+  SendPendingAccessibilityEvents();
+
+  const std::vector<ui::AXTreeUpdate>& updates_2 = GetHandledAccUpdates();
+  found_expanded_update = false;
+  for (const auto& update : updates_2) {
+    for (const auto& node_data : update.nodes) {
+      if (node_data.id == tree_item.AxID() &&
+          node_data.HasState(ax::mojom::State::kExpanded)) {
+        found_expanded_update = true;
+      }
+    }
+  }
+
+  // Since item was already expanded, it should remain as such.
+  EXPECT_TRUE(found_expanded_update);
+
+  // Collapse when expanded.
+  action.target_node_id = tree_item.AxID();
+  action.action = ax::mojom::Action::kCollapse;
+  GetRenderAccessibilityImpl()->PerformAction(action);
+  SendPendingAccessibilityEvents();
+
+  const std::vector<ui::AXTreeUpdate>& updates_3 = GetHandledAccUpdates();
+  bool found_collapsed_update = false;
+  for (const auto& update : updates_3) {
+    for (const auto& node_data : update.nodes) {
+      if (node_data.id == tree_item.AxID() &&
+          node_data.HasState(ax::mojom::State::kCollapsed)) {
+        found_collapsed_update = true;
+      }
+    }
+  }
+
+  // Element should have collapsed.
+  EXPECT_TRUE(found_collapsed_update);
+
+  // Collapse when collapsed.
+  action.target_node_id = tree_item.AxID();
+  action.action = ax::mojom::Action::kCollapse;
+  GetRenderAccessibilityImpl()->PerformAction(action);
+  SendPendingAccessibilityEvents();
+
+  const std::vector<ui::AXTreeUpdate>& updates_4 = GetHandledAccUpdates();
+  found_collapsed_update = false;
+  for (const auto& update : updates_4) {
+    for (const auto& node_data : update.nodes) {
+      if (node_data.id == tree_item.AxID() &&
+          node_data.HasState(ax::mojom::State::kCollapsed)) {
+        found_collapsed_update = true;
+      }
+    }
+  }
+
+  // Element should still be collapsed.
+  EXPECT_TRUE(found_collapsed_update);
+}
+
 class MockPluginAccessibilityTreeSource : public content::PluginAXTreeSource {
  public:
   MockPluginAccessibilityTreeSource(ui::AXNodeID root_node_id) {

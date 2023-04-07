@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
-import {NamedDestinationMessageData, SaveRequestType} from './constants.js';
+import {NamedDestinationMessageData, Rect, SaveRequestType} from './constants.js';
 import {PdfPluginElement} from './internal_plugin.js';
 import {PinchPhase, Viewport} from './viewport.js';
 
@@ -320,6 +320,13 @@ export class PluginController implements ContentController {
 
   loadPreviewPage(url: string, index: number) {
     this.postMessage_({type: 'loadPreviewPage', url: url, index: index});
+  }
+
+  getPageBoundingBox(page: number): Promise<Rect> {
+    return this.postMessageWithReply_({
+      type: 'getPageBoundingBox',
+      page,
+    });
   }
 
   getPasswordComplete(password: string) {

@@ -23,8 +23,6 @@
         "fuchsia.process.Launcher",
         "fuchsia.scheduler.ProfileProvider",
         "fuchsia.settings.Display",
-        "fuchsia.sys.Environment",
-        "fuchsia.sys.Loader",
         "fuchsia.sysmem.Allocator",
         "fuchsia.tracing.provider.Registry",
         "fuchsia.vulkan.loader.Loader",

@@ -19,13 +19,6 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-
-const base::FilePath::CharType kLegacyBaseDirectory[] =
-    FILE_PATH_LITERAL("Chromium");
-
-}  // namespace
-
 BROWSER_USER_DATA_KEY_IMPL(SnapshotBrowserAgent)
 
 SnapshotBrowserAgent::SnapshotBrowserAgent(Browser* browser)
@@ -103,14 +96,6 @@ void SnapshotBrowserAgent::RemoveAllSnapshots() {
 
 void SnapshotBrowserAgent::MigrateStorageIfNecessary() {
   DCHECK(snapshot_cache_);
-  base::FilePath legacy_directory;
-  DCHECK(base::PathService::Get(base::DIR_CACHE, &legacy_directory));
-  legacy_directory = legacy_directory.Append(kLegacyBaseDirectory)
-                         .Append(kSnapshotsDirectoryName);
-  // The legacy directory is deleted in migration, and migration is NO-OP if
-  // directory does not exist.
-  [snapshot_cache_ migrateSnapshotsWithIDs:GetTabIDs()
-                            fromSourcePath:legacy_directory];
 }
 
 void SnapshotBrowserAgent::PurgeUnusedSnapshots() {

@@ -252,10 +252,10 @@ class FakeCartDiscountFetcherFactory : public CartDiscountFetcherFactory {
   bool is_tester_{false};
 };
 
-class FakeCartServiceDelegate : public CartServiceDelegate {
+class FakeCartDiscountServiceDelegate : public CartDiscountServiceDelegate {
  public:
-  explicit FakeCartServiceDelegate(CartService* cart_service)
-      : CartServiceDelegate(cart_service), expected_tester_(false) {}
+  explicit FakeCartDiscountServiceDelegate(CartService* cart_service)
+      : CartDiscountServiceDelegate(cart_service), expected_tester_(false) {}
 
   MOCK_METHOD(void,
               UpdateFreeListingCoupons,
@@ -383,8 +383,9 @@ class FetchDiscountWorkerTestBase : public testing::Test {
         HistoryServiceFactory::GetInstance(),
         HistoryServiceFactory::GetDefaultFactory());
     profile_ = profile_builder.Build();
-    fake_cart_service_delegate_ = std::make_unique<FakeCartServiceDelegate>(
-        CartServiceFactory::GetForProfile(profile_.get()));
+    fake_cart_service_delegate_ =
+        std::make_unique<FakeCartDiscountServiceDelegate>(
+            CartServiceFactory::GetForProfile(profile_.get()));
 
     fake_variations_client_ = std::make_unique<FakeVariationsClient>();
   }
@@ -447,7 +448,7 @@ class FetchDiscountWorkerTestBase : public testing::Test {
 
   std::unique_ptr<MockCartDiscountFetcher> mock_fetcher_;
 
-  std::unique_ptr<FakeCartServiceDelegate> fake_cart_service_delegate_;
+  std::unique_ptr<FakeCartDiscountServiceDelegate> fake_cart_service_delegate_;
 
   std::unique_ptr<FakeVariationsClient> fake_variations_client_;
 

@@ -35,7 +35,8 @@
 namespace blink {
 
 EditContext::EditContext(ScriptState* script_state, const EditContextInit* dict)
-    : ExecutionContextClient(ExecutionContext::From(script_state)) {
+    : ActiveScriptWrappable<EditContext>({}),
+      ExecutionContextClient(ExecutionContext::From(script_state)) {
   DCHECK(IsMainThread());
 
   if (dict->hasText())

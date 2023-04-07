@@ -765,22 +765,15 @@ bool SearchSuggestionParser::ParseSuggestResults(
 
         const auto* entity_info_string =
             suggestion_detail.FindString("google:entityinfo");
+        DecodeProtoFromBase64<omnibox::EntityInfo>(entity_info_string,
+                                                   entity_info);
 
-        // Extract data from proto field, but fall back to individual JSON
-        // fields if necessary.
-        if (!DecodeProtoFromBase64<omnibox::EntityInfo>(entity_info_string,
-                                                        entity_info)) {
-          entity_info.set_name(FindStringOrEmpty(suggestion_detail, "t"));
-          entity_info.set_annotation(FindStringOrEmpty(suggestion_detail, "a"));
-          entity_info.set_dominant_color(
-              FindStringOrEmpty(suggestion_detail, "dc"));
-          entity_info.set_image_url(FindStringOrEmpty(suggestion_detail, "i"));
-          entity_info.set_suggest_search_parameters(
-              FindStringOrEmpty(suggestion_detail, "q"));
-          entity_info.set_entity_id(
-              FindStringOrEmpty(suggestion_detail, "zae"));
+        // Tail Suggest.
+        std::string match_contents_tail =
+            FindStringOrEmpty(suggestion_detail, "t");
+        if (!match_contents_tail.empty()) {
+          match_contents = base::UTF8ToUTF16(match_contents_tail);
         }
-
         match_contents_prefix =
             base::UTF8ToUTF16(FindStringOrEmpty(suggestion_detail, "mp"));
 

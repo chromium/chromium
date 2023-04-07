@@ -11,6 +11,8 @@ namespace content {
 // UKM logging so don't remove or reorder values. Update
 // |PrefetchProxyPrefetchStatus| in //tools/metrics/histograms/enums.xml
 // whenever this is changed.
+// These are also mapped onto the first content internal range of
+// `PreloadingEligibility` and onto `PreloadingFailureReason`.
 enum class PrefetchStatus {
   // The interceptor used a prefetch.
   kPrefetchUsedNoProbe = 0,

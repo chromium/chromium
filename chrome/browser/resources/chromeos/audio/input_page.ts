@@ -99,14 +99,14 @@ export class InputPage extends Page {
 
           canvasContext.beginPath();
 
-          var dx = width * 1.0 / bufferSize;
-          var x = 0;
+          const dx = width * 1.0 / bufferSize;
+          let x = 0;
 
-          for (var i = 0; i < bufferSize; i++) {
+          for (let i = 0; i < bufferSize; i++) {
             const data = buffer[i];
             if (data) {
-              var v = data / 128.0;
-              var y = v * height / 2;
+              const v = data / 128.0;
+              const y = v * height / 2;
               if (i === 0) {
                 canvasContext.moveTo(x, y);
               } else {
@@ -215,9 +215,9 @@ export class InputPage extends Page {
   }
 
   startTimer() {
-    var startTime = Date.now();
+    const startTime = Date.now();
     this.intervalId = window.setInterval(() => {
-      var delta = Date.now() - startTime;
+      const delta = Date.now() - startTime;
       getRequiredElement('counter').innerHTML =
           String(Math.floor(delta / 1000)) + ':' + String(delta % 1000);
     }, 200);

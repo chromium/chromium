@@ -273,7 +273,8 @@ IntersectionObserver::IntersectionObserver(
     bool always_report_root_bounds,
     MarginTarget margin_target,
     bool use_overflow_clip_edge)
-    : ExecutionContextClient(delegate.GetExecutionContext()),
+    : ActiveScriptWrappable<IntersectionObserver>({}),
+      ExecutionContextClient(delegate.GetExecutionContext()),
       delegate_(&delegate),
       root_(root),
       thresholds_(thresholds),

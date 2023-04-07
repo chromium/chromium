@@ -29,7 +29,7 @@ import {getTemplate} from './os_files_page.html.js';
 const OsSettingsFilesPageElementBase =
     PrefsMixin(DeepLinkingMixin(RouteObserverMixin(PolymerElement)));
 
-class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
+export class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
   static get is() {
     return 'os-settings-files-page';
   }

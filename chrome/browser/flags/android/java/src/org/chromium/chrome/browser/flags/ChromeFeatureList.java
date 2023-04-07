@@ -316,7 +316,7 @@ public abstract class ChromeFeatureList {
     public static final String FEED_SHOW_SIGN_IN_COMMAND = "FeedShowSignInCommand";
     public static final String FEED_BOC_SIGN_IN_INTERSTITIAL = "FeedBoCSigninInterstitial";
     public static final String FEED_USER_INTERACTION_RELIABILITY_REPORT =
-            "kFeedUserInteractionReliabilityReport";
+            "FeedUserInteractionReliabilityReport";
     public static final String FILLING_PASSWORDS_FROM_ANY_ORIGIN = "FillingPasswordsFromAnyOrigin";
     public static final String FOCUS_OMNIBOX_IN_INCOGNITO_TAB_INTENTS =
             "FocusOmniboxInIncognitoTabIntents";
@@ -371,6 +371,8 @@ public abstract class ChromeFeatureList {
     public static final String OMNIBOX_ADAPT_NARROW_TABLET_WINDOWS =
             "OmniboxAdaptNarrowTabletWindows";
     public static final String OMNIBOX_ASSISTANT_VOICE_SEARCH = "OmniboxAssistantVoiceSearch";
+    public static final String OMNIBOX_CACHE_SUGGESTION_RESOURCES =
+            "OmniboxCacheSuggestionResources";
     public static final String OMNIBOX_CONSUMERS_IME_INSETS = "OmniboxConsumesImeInsets";
     public static final String OMNIBOX_HISTORY_CLUSTER_PROVIDER =
             "JourneysOmniboxHistoryClusterProvider";
@@ -532,7 +534,7 @@ public abstract class ChromeFeatureList {
             "WebApkTrampolineOnInitialIntent";
     public static final String WEB_APK_UNIQUE_ID = "WebApkUniqueId";
     public static final String WEB_APK_INSTALL_FAILURE_NOTIFICATION =
-            "kWebApkInstallFailureNotification";
+            "WebApkInstallFailureNotification";
     public static final String WEB_APK_INSTALL_RETRY = "WebApkInstallFailureRetry";
     public static final String WEB_FEED = "WebFeed";
     public static final String WEB_FEED_AWARENESS = "WebFeedAwareness";

@@ -33,7 +33,6 @@
 
 namespace blink {
 using protocol::Maybe;
-using protocol::Response;
 
 InspectorEmulationAgent::InspectorEmulationAgent(
     WebLocalFrameImpl* web_local_frame_impl,
@@ -159,7 +158,7 @@ void InspectorEmulationAgent::Restore() {
                        &virtual_time_ticks_base_ms);
 }
 
-Response InspectorEmulationAgent::disable() {
+protocol::Response InspectorEmulationAgent::disable() {
   if (enabled_) {
     instrumenting_agents_->RemoveInspectorEmulationAgent(this);
     enabled_ = false;
@@ -172,7 +171,7 @@ Response InspectorEmulationAgent::disable() {
   if (!locale_override_.Get().empty())
     setLocaleOverride(String());
   if (!web_local_frame_)
-    return Response::Success();
+    return protocol::Response::Success();
   setScriptExecutionDisabled(false);
   setScrollbarsHidden(false);
   setDocumentCookieDisabled(false);
@@ -195,27 +194,29 @@ Response InspectorEmulationAgent::disable() {
   }
   setDefaultBackgroundColorOverride(Maybe<protocol::DOM::RGBA>());
   disabled_image_types_.Clear();
-  return Response::Success();
+  return protocol::Response::Success();
 }
 
-Response InspectorEmulationAgent::resetPageScaleFactor() {
-  Response response = AssertPage();
+protocol::Response InspectorEmulationAgent::resetPageScaleFactor() {
+  protocol::Response response = AssertPage();
   if (!response.IsSuccess())
     return response;
   GetWebViewImpl()->ResetScaleStateImmediately();
   return response;
 }
 
-Response InspectorEmulationAgent::setPageScaleFactor(double page_scale_factor) {
-  Response response = AssertPage();
+protocol::Response InspectorEmulationAgent::setPageScaleFactor(
+    double page_scale_factor) {
+  protocol::Response response = AssertPage();
   if (!response.IsSuccess())
     return response;
   GetWebViewImpl()->SetPageScaleFactor(static_cast<float>(page_scale_factor));
   return response;
 }
 
-Response InspectorEmulationAgent::setScriptExecutionDisabled(bool value) {
-  Response response = AssertPage();
+protocol::Response InspectorEmulationAgent::setScriptExecutionDisabled(
+    bool value) {
+  protocol::Response response = AssertPage();
   if (!response.IsSuccess())
     return response;
   if (script_execution_disabled_.Get() == value)
@@ -225,8 +226,8 @@ Response InspectorEmulationAgent::setScriptExecutionDisabled(bool value) {
   return response;
 }
 
-Response InspectorEmulationAgent::setScrollbarsHidden(bool hidden) {
-  Response response = AssertPage();
+protocol::Response InspectorEmulationAgent::setScrollbarsHidden(bool hidden) {
+  protocol::Response response = AssertPage();
   if (!response.IsSuccess())
     return response;
   if (scrollbars_hidden_.Get() == hidden)
@@ -236,8 +237,9 @@ Response InspectorEmulationAgent::setScrollbarsHidden(bool hidden) {
   return response;
 }
 
-Response InspectorEmulationAgent::setDocumentCookieDisabled(bool disabled) {
-  Response response = AssertPage();
+protocol::Response InspectorEmulationAgent::setDocumentCookieDisabled(
+    bool disabled) {
+  protocol::Response response = AssertPage();
   if (!response.IsSuccess())
     return response;
   if (document_cookie_disabled_.Get() == disabled)
@@ -247,10 +249,10 @@ Response InspectorEmulationAgent::setDocumentCookieDisabled(bool disabled) {
   return response;
 }
 
-Response InspectorEmulationAgent::setTouchEmulationEnabled(
+protocol::Response InspectorEmulationAgent::setTouchEmulationEnabled(
     bool enabled,
     protocol::Maybe<int> max_touch_points) {
-  Response response = AssertPage();
+  protocol::Response response = AssertPage();
   if (!response.IsSuccess())
     return response;
   int max_points = max_touch_points.fromMaybe(1);
@@ -258,7 +260,7 @@ Response InspectorEmulationAgent::setTouchEmulationEnabled(
     String msg =
         "Touch points must be between 1 and " +
         String::Number(static_cast<uint16_t>(WebTouchEvent::kTouchesLengthCap));
-    return Response::InvalidParams(msg.Utf8());
+    return protocol::Response::InvalidParams(msg.Utf8());
   }
   touch_event_emulation_enabled_.Set(enabled);
   max_touch_points_.Set(max_points);
@@ -267,10 +269,10 @@ Response InspectorEmulationAgent::setTouchEmulationEnabled(
   return response;
 }
 
-Response InspectorEmulationAgent::setEmulatedMedia(
+protocol::Response InspectorEmulationAgent::setEmulatedMedia(
     Maybe<String> media,
     Maybe<protocol::Array<protocol::Emulation::MediaFeature>> features) {
-  Response response = AssertPage();
+  protocol::Response response = AssertPage();
   if (!response.IsSuccess())
     return response;
   if (media.isJust()) {
@@ -355,9 +357,9 @@ Response InspectorEmulationAgent::setEmulatedMedia(
   return response;
 }
 
-Response InspectorEmulationAgent::setEmulatedVisionDeficiency(
+protocol::Response InspectorEmulationAgent::setEmulatedVisionDeficiency(
     const String& type) {
-  Response response = AssertPage();
+  protocol::Response response = AssertPage();
   if (!response.IsSuccess())
     return response;
 
@@ -379,15 +381,15 @@ Response InspectorEmulationAgent::setEmulatedVisionDeficiency(
   else if (type == TypeEnum::Tritanopia)
     vision_deficiency = VisionDeficiency::kTritanopia;
   else
-    return Response::InvalidParams("Unknown vision deficiency type");
+    return protocol::Response::InvalidParams("Unknown vision deficiency type");
 
   emulated_vision_deficiency_.Set(type);
   GetWebViewImpl()->GetPage()->SetVisionDeficiency(vision_deficiency);
   return response;
 }
 
-Response InspectorEmulationAgent::setCPUThrottlingRate(double rate) {
-  Response response = AssertPage();
+protocol::Response InspectorEmulationAgent::setCPUThrottlingRate(double rate) {
+  protocol::Response response = AssertPage();
   if (!response.IsSuccess())
     return response;
   cpu_throttling_rate_.Set(rate);
@@ -395,8 +397,9 @@ Response InspectorEmulationAgent::setCPUThrottlingRate(double rate) {
   return response;
 }
 
-Response InspectorEmulationAgent::setFocusEmulationEnabled(bool enabled) {
-  Response response = AssertPage();
+protocol::Response InspectorEmulationAgent::setFocusEmulationEnabled(
+    bool enabled) {
+  protocol::Response response = AssertPage();
   if (!response.IsSuccess())
     return response;
   emulate_focus_.Set(enabled);
@@ -405,8 +408,9 @@ Response InspectorEmulationAgent::setFocusEmulationEnabled(bool enabled) {
   return response;
 }
 
-Response InspectorEmulationAgent::setAutoDarkModeOverride(Maybe<bool> enabled) {
-  Response response = AssertPage();
+protocol::Response InspectorEmulationAgent::setAutoDarkModeOverride(
+    Maybe<bool> enabled) {
+  protocol::Response response = AssertPage();
   if (!response.IsSuccess())
     return response;
   if (enabled.isJust()) {
@@ -421,7 +425,7 @@ Response InspectorEmulationAgent::setAutoDarkModeOverride(Maybe<bool> enabled) {
   return response;
 }
 
-Response InspectorEmulationAgent::setVirtualTimePolicy(
+protocol::Response InspectorEmulationAgent::setVirtualTimePolicy(
     const String& policy,
     Maybe<double> virtual_time_budget_ms,
     protocol::Maybe<int> max_virtual_time_task_starvation_count,
@@ -439,11 +443,11 @@ Response InspectorEmulationAgent::setVirtualTimePolicy(
     DCHECK_EQ(scheduler_policy,
               VirtualTimeController::VirtualTimePolicy::kPause);
     if (virtual_time_budget_ms.isJust()) {
-      return Response::InvalidParams(
+      return protocol::Response::InvalidParams(
           "Can only specify budget for non-Pause policy");
     }
     if (max_virtual_time_task_starvation_count.isJust()) {
-      return Response::InvalidParams(
+      return protocol::Response::InvalidParams(
           "Can only specify starvation count for non-Pause policy");
     }
   }
@@ -489,7 +493,7 @@ Response InspectorEmulationAgent::setVirtualTimePolicy(
           ? 0
           : (virtual_time_base_ticks_ - base::TimeTicks()).InMillisecondsF();
 
-  return Response::Success();
+  return protocol::Response::Success();
 }
 
 AtomicString InspectorEmulationAgent::OverrideAcceptImageHeader(
@@ -537,9 +541,9 @@ void InspectorEmulationAgent::PrepareRequest(DocumentLoader* loader,
   request.SetCacheMode(mojom::blink::FetchCacheMode::kBypassCache);
 }
 
-Response InspectorEmulationAgent::setNavigatorOverrides(
+protocol::Response InspectorEmulationAgent::setNavigatorOverrides(
     const String& platform) {
-  Response response = AssertPage();
+  protocol::Response response = AssertPage();
   if (!response.IsSuccess())
     return response;
   navigator_platform_override_.Set(platform);
@@ -560,16 +564,16 @@ void InspectorEmulationAgent::VirtualTimeBudgetExpired() {
     frontend->virtualTimeBudgetExpired();
 }
 
-Response InspectorEmulationAgent::setDefaultBackgroundColorOverride(
+protocol::Response InspectorEmulationAgent::setDefaultBackgroundColorOverride(
     Maybe<protocol::DOM::RGBA> color) {
-  Response response = AssertPage();
+  protocol::Response response = AssertPage();
   if (!response.IsSuccess())
     return response;
   if (!color.isJust()) {
     // Clear the override and state.
     GetWebViewImpl()->SetBaseBackgroundColorOverrideForInspector(absl::nullopt);
     default_background_color_override_rgba_.Clear();
-    return Response::Success();
+    return protocol::Response::Success();
   }
 
   blink::protocol::DOM::RGBA* rgba = color.fromJust();
@@ -578,10 +582,10 @@ Response InspectorEmulationAgent::setDefaultBackgroundColorOverride(
   int alpha = static_cast<int>(lroundf(255.0f * rgba->getA(1.0f)));
   GetWebViewImpl()->SetBaseBackgroundColorOverrideForInspector(
       Color(rgba->getR(), rgba->getG(), rgba->getB(), alpha).Rgb());
-  return Response::Success();
+  return protocol::Response::Success();
 }
 
-Response InspectorEmulationAgent::setDeviceMetricsOverride(
+protocol::Response InspectorEmulationAgent::setDeviceMetricsOverride(
     int width,
     int height,
     double device_scale_factor,
@@ -601,26 +605,26 @@ Response InspectorEmulationAgent::setDeviceMetricsOverride(
   return AssertPage();
 }
 
-Response InspectorEmulationAgent::clearDeviceMetricsOverride() {
+protocol::Response InspectorEmulationAgent::clearDeviceMetricsOverride() {
   // We don't have to do anything other than reply to the client, as the
   // emulation parameters should have already been cleared by the handling of
   // blink::mojom::FrameWidget::DisableDeviceEmulation.
   return AssertPage();
 }
 
-Response InspectorEmulationAgent::setHardwareConcurrencyOverride(
+protocol::Response InspectorEmulationAgent::setHardwareConcurrencyOverride(
     int hardware_concurrency) {
   if (hardware_concurrency <= 0) {
-    return Response::InvalidParams(
+    return protocol::Response::InvalidParams(
         "HardwareConcurrency must be a positive number");
   }
   InnerEnable();
   hardware_concurrency_override_.Set(hardware_concurrency);
 
-  return Response::Success();
+  return protocol::Response::Success();
 }
 
-Response InspectorEmulationAgent::setUserAgentOverride(
+protocol::Response InspectorEmulationAgent::setUserAgentOverride(
     const String& user_agent,
     protocol::Maybe<String> accept_language,
     protocol::Maybe<String> platform,
@@ -643,7 +647,7 @@ Response InspectorEmulationAgent::setUserAgentOverride(
     if (user_agent.empty()) {
       ua_metadata_override_ = absl::nullopt;
       serialized_ua_metadata_override_.Set(std::vector<uint8_t>());
-      return Response::InvalidParams(
+      return protocol::Response::InvalidParams(
           "Can't specify UserAgentMetadata but no UA string");
     }
     std::unique_ptr<protocol::Emulation::UserAgentMetadata> ua_metadata =
@@ -712,26 +716,26 @@ Response InspectorEmulationAgent::setUserAgentOverride(
                              marshalled.end());
   serialized_ua_metadata_override_.Set(std::move(marshalled_as_bytes));
 
-  return Response::Success();
+  return protocol::Response::Success();
 }
 
-Response InspectorEmulationAgent::setLocaleOverride(
+protocol::Response InspectorEmulationAgent::setLocaleOverride(
     protocol::Maybe<String> maybe_locale) {
   // Only allow resetting overrides set by the same agent.
   if (locale_override_.Get().empty() &&
       LocaleController::instance().has_locale_override()) {
-    return Response::ServerError(
+    return protocol::Response::ServerError(
         "Another locale override is already in effect");
   }
   String locale = maybe_locale.fromMaybe(String());
   String error = LocaleController::instance().SetLocaleOverride(locale);
   if (!error.empty())
-    return Response::ServerError(error.Utf8());
+    return protocol::Response::ServerError(error.Utf8());
   locale_override_.Set(locale);
-  return Response::Success();
+  return protocol::Response::Success();
 }
 
-Response InspectorEmulationAgent::setTimezoneOverride(
+protocol::Response InspectorEmulationAgent::setTimezoneOverride(
     const String& timezone_id) {
   if (timezone_id == TimeZoneController::TimeZoneIdOverride()) {
     // Do nothing.
@@ -745,15 +749,15 @@ Response InspectorEmulationAgent::setTimezoneOverride(
     }
     if (!timezone_override_) {
       return TimeZoneController::HasTimeZoneOverride()
-                 ? Response::ServerError(
+                 ? protocol::Response::ServerError(
                        "Timezone override is already in effect")
-                 : Response::InvalidParams("Invalid timezone id");
+                 : protocol::Response::InvalidParams("Invalid timezone id");
     }
   }
 
   timezone_id_override_.Set(timezone_id);
 
-  return Response::Success();
+  return protocol::Response::Success();
 }
 
 void InspectorEmulationAgent::GetDisabledImageTypes(HashSet<String>* result) {
@@ -814,12 +818,12 @@ void InspectorEmulationAgent::InnerEnable() {
 
 void InspectorEmulationAgent::SetSystemThemeState() {}
 
-Response InspectorEmulationAgent::AssertPage() {
+protocol::Response InspectorEmulationAgent::AssertPage() {
   if (!web_local_frame_) {
-    return Response::ServerError(
+    return protocol::Response::ServerError(
         "Operation is only supported for pages, not workers");
   }
-  return Response::Success();
+  return protocol::Response::Success();
 }
 
 void InspectorEmulationAgent::Trace(Visitor* visitor) const {
@@ -843,9 +847,9 @@ protocol::Response InspectorEmulationAgent::setDisabledImageTypes(
       continue;
     }
     disabled_image_types_.Clear();
-    return Response::InvalidParams("Invalid image type");
+    return protocol::Response::InvalidParams("Invalid image type");
   }
-  return Response::Success();
+  return protocol::Response::Success();
 }
 
 protocol::Response InspectorEmulationAgent::setAutomationOverride(
@@ -853,7 +857,7 @@ protocol::Response InspectorEmulationAgent::setAutomationOverride(
   if (enabled)
     InnerEnable();
   automation_override_.Set(enabled);
-  return Response::Success();
+  return protocol::Response::Success();
 }
 
 void InspectorEmulationAgent::ApplyAutomationOverride(bool& enabled) const {

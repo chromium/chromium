@@ -722,9 +722,7 @@ const char kChromeLabsDescription[] =
     "experimental features.";
 
 const char kChromeRefresh2023Name[] = "Chrome Refresh 2023";
-const char kChromeRefresh2023Description[] =
-    "Refresh of Chrome Desktop UI, excluding most of omnibox UI that is "
-    "controlled by a separate flag.";
+const char kChromeRefresh2023Description[] = "Refresh of Chrome Desktop UI.";
 
 const char kCommerceHintAndroidName[] = "Commerce Hint Android";
 const char kCommerceHintAndroidDescription[] =
@@ -1062,12 +1060,6 @@ const char kAccessibilityChromeVoxPageMigrationName[] =
 const char kAccessibilityChromeVoxPageMigrationDescription[] =
     "This option enables ChromeVox page migration from extension options page"
     "to a Chrome OS settings page.";
-
-const char kAccessibilitySelectToSpeakContextMenuOptionName[] =
-    "Select-To-Speak Context menu option";
-const char kAccessibilitySelectToSpeakContextMenuOptionDescription[] =
-    "This option enables a context menu option that will speak the selected "
-    "text";
 
 const char kAccessibilitySelectToSpeakHoverTextImprovementsName[] =
     "Select-to-Speak Hover Text Improvements";
@@ -2087,6 +2079,12 @@ const char kOmniboxBookmarkPathsDescription[] =
     "suggest a bookmark titled 'Jupiter' with URL "
     "'en.wikipedia.org/wiki/Jupiter' located in a path containing 'planet.'";
 
+const char kOmniboxCacheSuggestionResourcesName[] =
+    "Omnibox cache suggestion resources";
+const char kOmniboxCacheSuggestionResourcesDescription[] =
+    "When enabled, the omnibox will cache frequently used drawables and "
+    "strings rather than loading them from Android every time they're needed.";
+
 const char kOmniboxClosePopupWithEscapeName[] =
     "Omnibox Close Popup with Escape";
 const char kOmniboxClosePopupWithEscapeDescription[] =
@@ -2113,10 +2111,6 @@ const char kOmniboxCR23ExpandedStateShapeDescription[] =
 const char kOmniboxCR23SteadyStateIconsName[] = "Omnibox Steady State Icons";
 const char kOmniboxCR23SteadyStateIconsDescription[] =
     "Updates Omnibox steady state icons to comply with CR23 guidelines.";
-
-const char kOmniboxCr23UmbrellaName[] = "Omnibox CR23 Umbrella";
-const char kOmniboxCr23UmbrellaDescription[] =
-    "Updates all Omnibox UI to comply with CR23 guidelines.";
 
 const char kOmniboxDisableCGIParamMatchingName[] =
     "Disable CGI Param Name Matching";
@@ -2532,11 +2526,6 @@ const char kPageInfoAboutThisSiteNonEnName[] =
 const char kPageInfoAboutThisSiteNonEnDescription[] =
     "Enable the 'About this site' section in the page info UI in languages "
     "other than English.";
-
-const char kPageInfoAboutThisSiteNonMsbbName[] =
-    "'About this site' for non-MSBB users";
-const char kPageInfoAboutThisSiteNonMsbbDescription[] =
-    "Make 'About this site' section in Page Info available for non-MSBB users.";
 
 const char kPageInfoboutThisPageDescriptionPlaceholderName[] =
     "AboutThisPage description placeholder";
@@ -4632,6 +4621,13 @@ const char kWebAppManifestImmediateUpdatingDescription[] =
     "soon as a change has been detected instead of waiting for all app windows "
     "to be closed.";
 
+const char kWebAppSyncGeneratedIconFixName[] =
+    "Web App Sync Generated Icon Unprompted Updating";
+const char kWebAppSyncGeneratedIconFixDescription[] =
+    "Allows web apps installed via sync to update their icons without prompting"
+    "during a manifest update if the icons were generated, indictative of"
+    "network errors during the sync install.";
+
 const char kWebAuthenticationPermitEnterpriseAttestationName[] =
     "Web Authentication Enterprise Attestation";
 const char kWebAuthenticationPermitEnterpriseAttestationDescription[] =
@@ -6396,6 +6392,12 @@ const char kLauncherSystemInfoAnswerCardsDescription[] =
     "Enables System info answer cards in the launcher to provide system "
     "performance metrics";
 
+const char kLauncherOmniboxPublishLogicLogName[] =
+    "Omnibox publish logic log in launcher";
+const char kLauncherOmniboxPublishLogicLogDescription[] =
+    "Enables omnibox provider publish logic logs so that we can debug the "
+    "reason why some results disappars";
+
 const char kMacAddressRandomizationName[] = "MAC address randomization";
 const char kMacAddressRandomizationDescription[] =
     "Feature to allow MAC address randomization to be enabled for WiFi "
@@ -6684,6 +6686,14 @@ const char kLocalWebApprovalsName[] = "Local web approvals";
 const char kLocalWebApprovalsDescription[] =
     "Enable local web approvals for Family Link users. Web filter interstitial "
     "refresh needs to also be enabled.";
+#endif
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+const char kEnableProtoApiForClassifyUrlName[] =
+    "Enable Proto API for Classify URL";
+const char kEnableProtoApiForClassifyUrlDescription[] =
+    "Calls to Classify URL RPC will use Protocol Buffer format in resposnes, "
+    "instead of JSON.";
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

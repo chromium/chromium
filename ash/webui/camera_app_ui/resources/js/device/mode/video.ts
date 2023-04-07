@@ -161,7 +161,9 @@ export interface GifResult {
 }
 
 export interface TimeLapseResult {
+  autoStopped: boolean;
   duration: number;
+  everPaused: boolean;
   resolution: Resolution;
   speed: number;
   timeLapseSaver: TimeLapseSaver;
@@ -506,7 +508,8 @@ export class Video extends ModeBase {
     this.autoStopped = false;
     this.stopped = false;
 
-    if (this.recordingType === RecordType.NORMAL) {
+    if (this.recordingType === RecordType.NORMAL ||
+        this.recordingType === RecordType.TIME_LAPSE) {
       const canStart = await this.startMonitorStorage();
       if (!canStart) {
         ChromeHelper.getInstance().stopMonitorStorage();
@@ -598,7 +601,9 @@ export class Video extends ModeBase {
       }
 
       return [this.handler.onTimeLapseCaptureDone({
+        autoStopped: this.autoStopped,
         duration: this.recordTime.inMilliseconds(),
+        everPaused: this.everPaused,
         resolution: this.captureResolution,
         speed: timeLapseSaver.speed,
         timeLapseSaver,

@@ -6,7 +6,6 @@
 
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
-#include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 
 namespace blink {
 

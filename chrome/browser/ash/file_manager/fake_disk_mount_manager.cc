@@ -100,8 +100,9 @@ void FakeDiskMountManager::UnmountPath(const std::string& mount_path,
     unmount_errors_.erase(unmount_iter);
   } else {
     MountPoints::iterator iter = mount_points_.find(mount_path);
-    if (iter == mount_points_.end())
+    if (iter == mount_points_.end()) {
       return;
+    }
 
     const MountPoint mount_point = *iter;
     mount_points_.erase(iter);
@@ -125,8 +126,9 @@ void FakeDiskMountManager::RemountAllRemovableDrives(
 }
 
 bool FakeDiskMountManager::FinishAllUnmountPathRequests() {
-  if (pending_unmount_callbacks_.empty())
+  if (pending_unmount_callbacks_.empty()) {
     return false;
+  }
 
   while (!pending_unmount_callbacks_.empty()) {
     std::move(pending_unmount_callbacks_.front()).Run();

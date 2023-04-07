@@ -240,10 +240,6 @@ class BLINK_EXPORT WebAXObject {
   unsigned CellRowSpan() const;
   ax::mojom::SortDirection SortDirection() const;
 
-  // Load inline text boxes for just this subtree, even if
-  // settings->inlineTextBoxAccessibilityEnabled() is false.
-  void LoadInlineTextBoxes() const;
-
   // Walk the WebAXObjects on the same line. This is supported on any
   // object type but primarily intended to be used for inline text boxes.
   WebAXObject NextOnLine() const;

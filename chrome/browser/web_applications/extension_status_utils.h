@@ -17,6 +17,14 @@ class BrowserContext;
 }
 
 namespace extensions {
+namespace testing {
+// Because the allow-list needs to stick around for a while, this flag makes it
+// easy for us to continue testing chrome apps on Windows/Mac/Linux without
+// having to jump through hurdles to add ids to the allow-list.
+// TODO(http://b/268221237): Remove this & tests on WML once allow-list is
+// removed.
+extern bool g_enable_chrome_apps_for_testing;
+}  // namespace testing
 
 bool IsExtensionBlockedByPolicy(content::BrowserContext* context,
                                 const std::string& extension_id);

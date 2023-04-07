@@ -26,17 +26,36 @@ Note that the above list is meant to be exhaustive. A component should not be
 added just to separate it from other code in the same layer that is the only
 consumer; that can be done with strict `DEPS` or GN `visibility` rules.
 
+## Before adding a new component
+
+  * Is there an existing component that you can leverage instead of introducing
+    a new component?
+      * Can you restructure an existing component to logically encompass the
+        proposed new code?
+      * As a general rule, we prefer fewer top level components. So, consider
+        whether adding sub-features within an existing component is more
+        appropriate for your use case.
+      * Historically, dependency issues were simply addressed by adding new
+        components. But, you can (and it is preferred to) solve that by
+        restructing an existing component and its dependencies where possible.
+
 ## Guidelines for adding a new component
 
   * You will be added to an `OWNERS` file under `//components/{your component}`
     and be responsible for maintaining your addition.
+      * You must specify at least two OWNERS for any new component.
   * A `//components/OWNER` must approve of the location of your code.
+  * The CL (either commit message or comment) must explicitly specify what [use
+    case(s)](#use-cases) justify the new component.
   * Code must be needed in at least 2 places in Chrome that don't have a "higher
     layered" directory that could facilitate sharing (e.g. `//content/common`,
     `//chrome/utility`, etc.).
   * The CL adding a new component should be substantial enough so that
     //components/OWNERS can see its basic intended structure and usage before
     approving the addition (e.g., it should not just be an empty shell).
+  * You must add a [`DIR_METADATA`](https://source.chromium.org/chromium/infra/infra/+/main:go/src/infra/tools/dirmd/README.md)
+    file under `//components/{your component}` with an appropriately specified
+    bug-component.
 
 ## Dependencies of a component
 

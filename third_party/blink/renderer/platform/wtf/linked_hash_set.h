@@ -64,6 +64,12 @@ class LinkedHashSet {
   using BackingConstIterator = typename ListType::const_iterator;
 
  public:
+  using value_type = ValueArg;
+  using reference = value_type&;
+  using const_reference = const value_type&;
+  using pointer = value_type*;
+  using const_pointer = const value_type*;
+
   // TODO(keinakashima): add security check
   struct AddResult final {
     STACK_ALLOCATED();

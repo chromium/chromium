@@ -255,13 +255,13 @@ bool DownloadDatabase::MigrateHashHttpMethodAndGenerateGuids() {
   //
   // This GUID generation scheme is only used for migrated download rows and
   // assumes that the likelihood of a collision with a GUID generated via
-  // base::GenerateGUID() will be vanishingly small.
+  // base::GenerateUuid() will be vanishingly small.
   //
   // A previous version of this code generated GUIDs that used random bits for
   // all but the first 32-bits. I.e. the scheme didn't respect the 6 fixed bits
   // as prescribed for type 4 GUIDs. The resulting GUIDs are not believed to
   // have an elevated risk of collision with GUIDs generated via
-  // base::GenerateGUID() and are considered valid by all known consumers. Hence
+  // base::GenerateUuid() and are considered valid by all known consumers. Hence
   // no additional migration logic is being introduced to fix those GUIDs.
   sql::Statement select(GetDB().GetUniqueStatement(
       base::StringPrintf("SELECT id FROM %s", kDownloadsTable).c_str()));

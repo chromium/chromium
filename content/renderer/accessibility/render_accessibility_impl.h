@@ -266,12 +266,6 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
 
   static void IgnoreProtocolChecksForTesting();
 
-  // After a serialization is sent to the browser process, this function will
-  // return true until the "ack" message is received, indicating the browser got
-  // the serialization message.
-  // No new serializations are sent until this message is received.
-  bool IsWaitingForAck() const;
-
   // The RenderAccessibilityManager that owns us.
   RenderAccessibilityManager* render_accessibility_manager_;
 
@@ -344,6 +338,16 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
 
   // A set of IDs for which we should always load inline text boxes.
   std::set<int32_t> load_inline_text_boxes_ids_;
+
+  // This will flip to true when we initiate the process of sending AX data to
+  // the browser, and will flip back to false once we receive back an ACK.
+  bool serialization_in_flight_ = false;
+
+  // This flips to true if a request for an immediate update was not honored
+  // because serialization_in_flight_ was true. It flips back to false once
+  // serialization_in_flight_ has flipped to false and an immediate update has
+  // been requested.
+  bool immediate_update_required_after_ack_ = false;
 
   // Controls whether serialization should be run synchronously at the end of a
   // main frame update, or scheduled as an asynchronous task.

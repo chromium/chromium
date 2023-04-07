@@ -138,6 +138,8 @@ void DataTypeManagerImpl::Configure(ModelTypeSet preferred_types,
 
   ModelTypeSet allowed_types = ControlTypes();
   // Add types with controllers.
+  // TODO(crbug.com/1430450): `preferred_types` should already only contain
+  // types with controllers. Can we CHECK() this instead?
   for (const auto& [type, controller] : *controllers_) {
     allowed_types.Put(type);
 
@@ -216,10 +218,6 @@ void DataTypeManagerImpl::ConfigureImpl(ModelTypeSet preferred_types,
               last_requested_context_.authenticated_account_id);
     DCHECK_EQ(context.cache_guid, last_requested_context_.cache_guid);
   }
-
-  // TODO(zea): consider not performing a full configuration once there's a
-  // reliable way to determine if the requested set of enabled types matches the
-  // current set.
 
   preferred_types_ = preferred_types;
   last_requested_context_ = context;
@@ -388,7 +386,7 @@ void DataTypeManagerImpl::Restart() {
   preferred_types_without_errors_ = GetEnabledTypes();
   configuration_types_queue_ = PrioritizeTypes(preferred_types_without_errors_);
 
-  model_load_manager_.Initialize(
+  model_load_manager_.Configure(
       /*preferred_types_without_errors=*/preferred_types_without_errors_,
       /*preferred_types=*/preferred_types_, last_requested_context_);
 }
@@ -650,22 +648,15 @@ void DataTypeManagerImpl::OnSingleDataTypeWillStop(ModelType type,
 }
 
 void DataTypeManagerImpl::Stop(SyncStopMetadataFate metadata_fate) {
-  if (state_ == STOPPED)
+  if (state_ == STOPPED) {
     return;
+  }
 
   bool need_to_notify = state_ == CONFIGURING;
-  StopImpl(metadata_fate);
 
-  if (need_to_notify) {
-    ConfigureResult result(ABORTED, preferred_types_);
-    NotifyDone(result);
-  }
-}
-
-void DataTypeManagerImpl::StopImpl(SyncStopMetadataFate metadata_fate) {
   state_ = STOPPING;
 
-  // Invalidate weak pointer to drop configuration callbacks.
+  // Invalidate weak pointers to drop configuration callbacks.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
   // Stop all data types.
@@ -677,6 +668,11 @@ void DataTypeManagerImpl::StopImpl(SyncStopMetadataFate metadata_fate) {
   // TODO(mastiz): Reconsider waiting in STOPPING state until all datatypes have
   // stopped.
   state_ = STOPPED;
+
+  if (need_to_notify) {
+    ConfigureResult result(ABORTED, preferred_types_);
+    NotifyDone(result);
+  }
 }
 
 void DataTypeManagerImpl::NotifyStart() {

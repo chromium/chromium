@@ -2532,7 +2532,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   ASSERT_TRUE(observer.Wait());
   // 3 possible passwords are going to be shown in a dropdown when the password
   // selection feature is enabled. The first one will be selected as the main
-  // password by default. All three will be in the all_possible_passwords
+  // password by default. All three will be in the |all_alternative_passwords|
   // list. The save password prompt is expected.
   BubbleObserver bubble_observer(WebContents());
   EXPECT_TRUE(bubble_observer.IsSavePromptShownAutomatically());
@@ -2543,7 +2543,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   EXPECT_THAT(
       ManagePasswordsUIController::FromWebContents(WebContents())
           ->GetPendingPassword()
-          .all_possible_passwords,
+          .all_alternative_passwords,
       ElementsAre(AllOf(Field("value", &AlternativeElement::value, u"pass1"),
                         Field("name", &AlternativeElement::name,
                               u"chg_password_wo_username_field")),

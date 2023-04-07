@@ -7,8 +7,8 @@
 
 #include <string>
 
+#include "ash/ambient/ui/ambient_slideshow_peripheral_ui.h"
 #include "ash/ambient/ui/ambient_view_delegate.h"
-#include "ash/ambient/ui/media_string_view.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "base/memory/raw_ptr.h"
@@ -21,17 +21,14 @@
 
 namespace ash {
 
-class AmbientInfoView;
 class JitterCalculator;
-class MediaStringView;
 
 // AmbientBackgroundImageView--------------------------------------------------
 // A custom ImageView to display photo image and details information on ambient.
 // It also handles specific mouse/gesture events to dismiss ambient when user
 // interacts with the background photos.
 class ASH_EXPORT AmbientBackgroundImageView : public views::View,
-                                              public views::ViewObserver,
-                                              public MediaStringView::Delegate {
+                                              public views::ViewObserver {
  public:
   METADATA_HEADER(AmbientBackgroundImageView);
 
@@ -49,9 +46,6 @@ class ASH_EXPORT AmbientBackgroundImageView : public views::View,
   // views::ViewObserver:
   void OnViewBoundsChanged(views::View* observed_view) override;
 
-  // MediaStringView::Delegate:
-  MediaStringView::Settings GetSettings() override;
-
   // Updates the display images.
   void UpdateImage(const gfx::ImageSkia& image,
                    const gfx::ImageSkia& related_image,
@@ -62,6 +56,9 @@ class ASH_EXPORT AmbientBackgroundImageView : public views::View,
   void UpdateImageDetails(const std::u16string& details,
                           const std::u16string& related_details);
 
+  // Shows/Hides the peripheral ui.
+  void SetPeripheralUiVisibility(bool visible);
+
   gfx::ImageSkia GetCurrentImage();
 
   gfx::Rect GetImageBoundsInScreenForTesting() const;
@@ -70,8 +67,6 @@ class ASH_EXPORT AmbientBackgroundImageView : public views::View,
 
  private:
   void InitLayout();
-
-  void UpdateGlanceableInfoPosition();
 
   void UpdateLayout();
   bool UpdateRelatedImageViewVisibility();
@@ -107,9 +102,7 @@ class ASH_EXPORT AmbientBackgroundImageView : public views::View,
 
   ::ambient::TopicType topic_type_ = ::ambient::TopicType::kOther;
 
-  AmbientInfoView* ambient_info_view_ = nullptr;
-
-  MediaStringView* media_string_view_ = nullptr;
+  AmbientSlideshowPeripheralUi* ambient_peripheral_ui_ = nullptr;
 
   base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
       observed_views_{this};

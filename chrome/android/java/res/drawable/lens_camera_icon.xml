@@ -4,27 +4,6 @@ Copyright 2021 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp"
-    android:height="24dp"
-    android:viewportWidth="24"
-    android:viewportHeight="24">
-
-    <path
-        android:pathData="M 0 0 H 24 V 24 H 0 V 0 Z" />
-    <path
-        android:fillColor="#4285F4"
-        android:pathData="M 12 9.52 C 13.9329966244 9.52 15.5 11.0870033756 15.5 13.02 C 15.5 14.9529966244 13.9329966244 16.52 12 16.52 C 10.0670033756 16.52 8.5 14.9529966244 8.5 13.02 C 8.5 11.0870033756 10.0670033756 9.52 12 9.52 Z" />
-    <path
-        android:fillColor="#EA4335"
-        android:pathData="M20,9v5.02V17c0,0.21-0.04,0.41-0.1,0.6v0v0c-0.2,0.62-0.68,1.1-1.29,1.29h0v0 C18.41,18.96,18.21,19,18,19H8.99l2,2h5.51H18c0.55,0,1.08-0.11,1.56-0.31c0.48-0.2,0.91-0.5,1.27-0.86 c0.18-0.18,0.34-0.38,0.49-0.59c0.29-0.43,0.5-0.91,0.6-1.43C21.97,17.55,22,17.28,22,17v-1.5v-3.48V10.5l-2.1-2.1 C19.96,8.59,20,8.79,20,9z" />
-    <path
-        android:fillColor="#4285F4"
-        android:pathData="M4,9c0-0.21,0.04-0.41,0.1-0.6C4.3,7.78,4.78,7.3,5.4,7.1C5.59,7.04,5.79,7,6,7h12 c0.21,0,0.41,0.04,0.6,0.1c0,0,0,0,0,0L16.5,5l-2-2h-1.68H12h-0.82H9.5l-2,2H6C3.79,5,2,6.79,2,9v1.5v1.51l2,2V9z" />
-    <path
-        android:fillColor="#34A853"
-        android:pathData="M18,5h-1.5l2.1,2.1c0.15,0.05,0.3,0.12,0.43,0.2c0.27,0.16,0.5,0.39,0.66,0.66 c0.08,0.13,0.15,0.28,0.2,0.43v0l2.1,2.1V9C22,6.79,20.21,5,18,5z" />
-    <path
-        android:fillColor="#FBBC04"
-        android:pathData="M6,21h4.99l-2-2H6c-1.1,0-2-0.9-2-2v-2.99l-2-2V17C2,19.21,3.79,21,6,21z" />
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="960" android:viewportHeight="960" android:tint="?attr/colorControlNormal">
+<path android:fillColor="@android:color/white" android:pathData="M760,520L840,520L840,360Q840,294 793,247Q746,200 680,200L600,200L560,120L400,120L360,200L280,200Q214,200 167,247Q120,294 120,360L120,480L200,480L200,360Q200,327 223.5,303.5Q247,280 280,280L680,280Q713,280 736.5,303.5Q760,327 760,360L760,520ZM280,840L480,840L480,760L280,760Q247,760 223.5,736.5Q200,713 200,680L200,600L120,600L120,680Q120,746 167,793Q214,840 280,840ZM720,800Q753,800 776.5,776.5Q800,753 800,720Q800,687 776.5,663.5Q753,640 720,640Q687,640 663.5,663.5Q640,687 640,720Q640,753 663.5,776.5Q687,800 720,800ZM480,640Q530,640 565,605Q600,570 600,520Q600,470 565,435Q530,400 480,400Q430,400 395,435Q360,470 360,520Q360,570 395,605Q430,640 480,640Z"/>
 </vector>

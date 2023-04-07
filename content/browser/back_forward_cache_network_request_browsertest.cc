@@ -934,9 +934,9 @@ class BackForwardCacheBrowserTestWithDisallowJavaScriptExecution
   void SetUpCommandLine(base::CommandLine* command_line) override {
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
     feature_list_.InitAndEnableFeature(
-        blink::features::kBackForwardCacheNotReachedOnJavaScriptExecution);
+        blink::features::kBackForwardCacheDWCOnJavaScriptExecution);
     DCHECK(base::FeatureList::IsEnabled(
-        blink::features::kBackForwardCacheNotReachedOnJavaScriptExecution));
+        blink::features::kBackForwardCacheDWCOnJavaScriptExecution));
   }
 
  private:
@@ -980,7 +980,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(rfh_a->is_evicted_from_back_forward_cache());
 
   // 4.) Go back. Expect that readystatechange event has not been fired, and
-  // NOTREACHED is not hit.
+  // DumpWithoutCrashing is not hit.
   TestNavigationManager nav_manager_2(web_contents(), url_a);
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(nav_manager_2.WaitForNavigationFinished());

@@ -461,6 +461,7 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
   // Message handlers.
   void HandleDisplayAnnotationsMessage(const base::Value::Dict& message);
   void HandleGetNamedDestinationMessage(const base::Value::Dict& message);
+  void HandleGetPageBoundingBoxMessage(const base::Value::Dict& message);
   void HandleGetPasswordCompleteMessage(const base::Value::Dict& message);
   void HandleGetSelectedTextMessage(const base::Value::Dict& message);
   void HandleGetThumbnailMessage(const base::Value::Dict& message);

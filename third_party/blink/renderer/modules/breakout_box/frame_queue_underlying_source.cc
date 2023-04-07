@@ -41,6 +41,7 @@ FrameQueueUnderlyingSource<NativeFrameType>::FrameQueueUnderlyingSource(
     std::string device_id,
     wtf_size_t frame_pool_size)
     : UnderlyingSourceBase(script_state),
+      ActiveScriptWrappable<FrameQueueUnderlyingSource<NativeFrameType>>({}),
       realm_task_runner_(ExecutionContext::From(script_state)
                              ->GetTaskRunner(TaskType::kInternalMediaRealTime)),
       frame_queue_handle_(
@@ -64,6 +65,7 @@ FrameQueueUnderlyingSource<NativeFrameType>::FrameQueueUnderlyingSource(
     ScriptState* script_state,
     FrameQueueUnderlyingSource<NativeFrameType>* other_source)
     : UnderlyingSourceBase(script_state),
+      ActiveScriptWrappable<FrameQueueUnderlyingSource<NativeFrameType>>({}),
       realm_task_runner_(ExecutionContext::From(script_state)
                              ->GetTaskRunner(TaskType::kInternalMediaRealTime)),
       frame_queue_handle_(other_source->frame_queue_handle_.Queue()),

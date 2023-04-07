@@ -51,7 +51,8 @@ ScriptPromise BatteryManager::getBattery(ScriptState* script_state,
 BatteryManager::~BatteryManager() = default;
 
 BatteryManager::BatteryManager(Navigator& navigator)
-    : Supplement<Navigator>(navigator),
+    : ActiveScriptWrappable<BatteryManager>({}),
+      Supplement<Navigator>(navigator),
       ExecutionContextLifecycleStateObserver(navigator.DomWindow()),
       PlatformEventController(*navigator.DomWindow()),
       battery_dispatcher_(

@@ -22,7 +22,7 @@ import {ChromeVox} from '../chromevox.js';
 import {ChromeVoxRange} from '../chromevox_range.js';
 import {ChromeVoxState} from '../chromevox_state.js';
 import {CommandHandlerInterface} from '../command_handler_interface.js';
-import {DesktopAutomationInterface} from '../desktop_automation_interface.js';
+import {DesktopAutomationInterface} from '../event/desktop_automation_interface.js';
 import {EventSource} from '../event_source.js';
 import {Output} from '../output/output.js';
 import {OutputNodeSpan, OutputSelectionSpan} from '../output/output_types.js';

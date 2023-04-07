@@ -267,8 +267,7 @@ TEST_F(CursorWindowControllerTest, ScaleUsesCorrectAssets) {
 // Test different properties of the composited cursor with different device
 // scale factors and zoom levels.
 TEST_F(CursorWindowControllerTest, DSF) {
-  auto* const cursor_shape_client = aura::client::GetCursorShapeClient();
-  DCHECK(cursor_shape_client);
+  const auto& cursor_shape_client = aura::client::GetCursorShapeClient();
 
   auto cursor_test = [&](ui::Cursor cursor, float size, float cursor_scale) {
     const float dsf =
@@ -278,7 +277,7 @@ TEST_F(CursorWindowControllerTest, DSF) {
 
     cursor_window_controller()->SetCursor(cursor);
     const absl::optional<ui::CursorData> cursor_data =
-        cursor_shape_client->GetCursorData(cursor);
+        cursor_shape_client.GetCursorData(cursor);
     DCHECK(cursor_data);
 
     // Software cursors look blurry if they are resized by the window they are

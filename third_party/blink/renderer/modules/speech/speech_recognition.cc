@@ -246,7 +246,8 @@ void SpeechRecognition::StartInternal(ExceptionState* exception_state) {
 }
 
 SpeechRecognition::SpeechRecognition(LocalDOMWindow* window)
-    : ExecutionContextLifecycleObserver(window),
+    : ActiveScriptWrappable<SpeechRecognition>({}),
+      ExecutionContextLifecycleObserver(window),
       PageVisibilityObserver(window->GetFrame() ? window->GetFrame()->GetPage()
                                                 : nullptr),
       grammars_(SpeechGrammarList::Create()),  // FIXME: The spec is not clear

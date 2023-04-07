@@ -14,10 +14,10 @@ source_set("cells") {
 
   deps = [
     "//base",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/whats_new/resources:hero_image_background_color",
     "//ios/chrome/browser/ui/whats_new/resources:whats_new_icon_tile",
     "//ios/chrome/common/ui/colors",
@@ -39,9 +39,9 @@ source_set("unit_tests") {
     ":cells",
     "//base",
     "//base/test:test_support",
+    "//ios/chrome/browser/shared/ui/symbols:icons",
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/icons",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/table_view:cells_constants",
   ]

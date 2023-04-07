@@ -5,10 +5,11 @@
 #ifndef UI_BASE_IME_FUCHSIA_VIRTUAL_KEYBOARD_CONTROLLER_FUCHSIA_H_
 #define UI_BASE_IME_FUCHSIA_VIRTUAL_KEYBOARD_CONTROLLER_FUCHSIA_H_
 
-#include <fuchsia/input/virtualkeyboard/cpp/fidl.h>
+#include <fidl/fuchsia.input.virtualkeyboard/cpp/fidl.h>
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
 
 #include "base/component_export.h"
+#include "base/fuchsia/fidl_event_handler.h"
 #include "ui/base/ime/input_method_base.h"
 #include "ui/base/ime/virtual_keyboard_controller.h"
 
@@ -19,7 +20,7 @@ class COMPONENT_EXPORT(UI_BASE_IME) VirtualKeyboardControllerFuchsia
     : public VirtualKeyboardController {
  public:
   // |input_method| must outlive |this|.
-  VirtualKeyboardControllerFuchsia(fuchsia::ui::views::ViewRef view_ref,
+  VirtualKeyboardControllerFuchsia(fuchsia_ui_views::ViewRef view_ref,
                                    ui::InputMethodBase* input_method);
   ~VirtualKeyboardControllerFuchsia() override;
 
@@ -41,15 +42,19 @@ class COMPONENT_EXPORT(UI_BASE_IME) VirtualKeyboardControllerFuchsia
   void WatchVisibility();
 
   // Handles the visibility change response from the service.
-  void OnVisibilityChange(bool is_visible);
+  void OnVisibilityChange(
+      const fidl::Result<
+          fuchsia_input_virtualkeyboard::Controller::WatchVisibility>& result);
 
   // Gets the Fuchsia TextType corresponding to the currently focused field.
-  fuchsia::input::virtualkeyboard::TextType GetFocusedTextType() const;
+  fuchsia_input_virtualkeyboard::TextType GetFocusedTextType() const;
 
   ui::InputMethodBase* const input_method_;
-  fuchsia::input::virtualkeyboard::TextType requested_type_ =
-      fuchsia::input::virtualkeyboard::TextType::ALPHANUMERIC;
-  fuchsia::input::virtualkeyboard::ControllerPtr controller_service_;
+  fuchsia_input_virtualkeyboard::TextType requested_type_ =
+      fuchsia_input_virtualkeyboard::TextType::kAlphanumeric;
+  fidl::Client<fuchsia_input_virtualkeyboard::Controller> controller_client_;
+  base::FidlErrorEventLogger<fuchsia_input_virtualkeyboard::Controller>
+      controller_error_logger_{"fuchsia.input.virtualkeyboard.Controller"};
   bool keyboard_visible_ = false;
   bool requested_visible_ = false;
 };

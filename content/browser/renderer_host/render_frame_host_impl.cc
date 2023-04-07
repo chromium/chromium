@@ -79,6 +79,7 @@
 #include "content/browser/loader/keep_alive_url_loader_service.h"
 #include "content/browser/loader/navigation_early_hints_manager.h"
 #include "content/browser/loader/prefetch_url_loader_service.h"
+#include "content/browser/loader/resource_cache_manager.h"
 #include "content/browser/log_console_message.h"
 #include "content/browser/media/media_interface_proxy.h"
 #include "content/browser/media/webaudio/audio_context_manager_impl.h"
@@ -1807,6 +1808,12 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   // its RenderViewHost.
   if (owned_render_widget_host_)
     owned_render_widget_host_->ShutdownAndDestroyWidget(false);
+
+  ResourceCacheManager* resource_cache_manager =
+      GetStoragePartition()->GetResourceCacheManager();
+  if (resource_cache_manager) {
+    resource_cache_manager->RenderFrameHostDeleted(*this);
+  }
 
   render_view_host_.reset();
 
@@ -9502,6 +9509,7 @@ void RenderFrameHostImpl::CommitNavigation(
 
   std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
       subresource_loader_factories;
+  mojo::PendingRemote<blink::mojom::ResourceCache> resource_cache_remote;
   if (!is_same_document || is_first_navigation) {
     recreate_default_url_loader_factory_after_network_service_crash_ = false;
     subresource_loader_factories =
@@ -9669,6 +9677,14 @@ void RenderFrameHostImpl::CommitNavigation(
         CreateURLLoaderFactoriesForIsolatedWorlds(
             subresource_loader_factories_config,
             isolated_worlds_requiring_separate_url_loader_factory_);
+
+    ResourceCacheManager* resource_cache_manager =
+        partition->GetResourceCacheManager();
+    if (resource_cache_manager) {
+      resource_cache_manager
+          ->MaybeInitializeResourceCacheRemoteOnCommitNavigation(
+              resource_cache_remote, *navigation_request);
+    }
   }
 
   // It is imperative that cross-document navigations always provide a set of
@@ -9869,7 +9885,8 @@ void RenderFrameHostImpl::CommitNavigation(
         std::move(subresource_overrides), std::move(controller),
         std::move(container_info), std::move(prefetch_loader_factory),
         std::move(topics_loader_factory), std::move(keep_alive_loader_factory),
-        manifest_policy, std::move(policy_container), *document_token,
+        std::move(resource_cache_remote), manifest_policy,
+        std::move(policy_container), *document_token,
         devtools_navigation_token);
     navigation_request->frame_tree_node()
         ->navigator()
@@ -10048,8 +10065,8 @@ bool RenderFrameHostImpl::IsFocused() {
          focused_rfh->IsDescendantOfWithinFrameTree(this);
 }
 
-bool RenderFrameHostImpl::MaybeSetWebUI(NavigationRequest& request,
-                                        std::unique_ptr<WebUIImpl> new_web_ui) {
+void RenderFrameHostImpl::SetWebUI(NavigationRequest& request,
+                                   std::unique_ptr<WebUIImpl> new_web_ui) {
   // This function should only be called to set a WebUI object. To clear an
   // existing WebUI object, call `ClearWebUI()` instead.
   CHECK(new_web_ui);
@@ -10067,23 +10084,6 @@ bool RenderFrameHostImpl::MaybeSetWebUI(NavigationRequest& request,
 
   web_ui_ = std::move(new_web_ui);
 
-  // If we have assigned (zero or more) bindings to the NavigationEntry in
-  // the past, make sure we're not granting it different bindings than it
-  // had before. If so, note it and don't give it any bindings, to avoid a
-  // potential privilege escalation.
-  int entry_bindings = request.bindings();
-  if (entry_bindings != FrameNavigationEntry::kInvalidBindings &&
-      web_ui_->GetBindings() != entry_bindings) {
-    RecordAction(base::UserMetricsAction("ProcessSwapBindingsMismatch_RVHM"));
-    base::WeakPtr<RenderFrameHostImpl> self = GetWeakPtr();
-    ClearWebUI();
-    // `ClearWebUI()` may indirectly call content's embedders and delete this.
-    // There are no known occurrences of it, so we assume this never happen and
-    // crash immediately if it does, because there are no easy ways to recover.
-    CHECK(self);
-    return false;
-  }
-
   // It is not expected for GuestView to be able to navigate to WebUI.
   DCHECK(!GetProcess()->IsForGuestsOnly());
 
@@ -10099,8 +10099,6 @@ bool RenderFrameHostImpl::MaybeSetWebUI(NavigationRequest& request,
   // have had any bindings. Verify that and grant the required bindings.
   DCHECK_EQ(BINDINGS_POLICY_NONE, GetEnabledBindings());
   AllowBindings(web_ui_->GetBindings());
-
-  return true;
 }
 
 void RenderFrameHostImpl::ClearWebUI() {
@@ -10227,20 +10225,6 @@ void RenderFrameHostImpl::UpdateAccessibilityMode() {
     browser_accessibility_manager_->DetachFromParentManager();
     browser_accessibility_manager_.reset();
   }
-}
-
-void RenderFrameHostImpl::RequestAXTreeSnapshot(
-    AXTreeSnapshotCallback callback,
-    const ui::AXMode& ax_mode,
-    bool exclude_offscreen,
-    size_t max_nodes,
-    const base::TimeDelta& timeout) {
-  auto params = mojom::SnapshotAccessibilityTreeParams::New();
-  params->ax_mode = ax_mode.flags();
-  params->exclude_offscreen = exclude_offscreen;
-  params->max_nodes = max_nodes;
-  params->timeout = timeout;
-  RequestAXTreeSnapshot(std::move(callback), std::move(params));
 }
 
 void RenderFrameHostImpl::SnapshotDocumentForViewTransition(
@@ -11185,7 +11169,7 @@ void RenderFrameHostImpl::CreateCodeCacheHostWithIsolationKey(
     mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver,
     const net::NetworkIsolationKey& nik) {
   // Create a new CodeCacheHostImpl and bind it to the given receiver.
-  code_cache_host_receivers_.Add(GetProcess()->GetID(), nik, storage_key_,
+  code_cache_host_receivers_.Add(GetProcess()->GetID(), nik,
                                  std::move(receiver),
                                  GetCodeCacheHostReceiverHandler());
 }
@@ -12869,6 +12853,7 @@ void RenderFrameHostImpl::SendCommitNavigation(
     mojo::PendingRemote<network::mojom::URLLoaderFactory> topics_loader_factory,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         keep_alive_loader_factory,
+    mojo::PendingRemote<blink::mojom::ResourceCache> resource_cache_remote,
     const absl::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
     blink::mojom::PolicyContainerPtr policy_container,
     const blink::DocumentToken& document_token,
@@ -12955,6 +12940,20 @@ void RenderFrameHostImpl::SendCommitNavigation(
   //    otherwise).
   MaybeSendFencedFrameReportingBeacon(*navigation_request);
 
+  // TODO(crbug.com/1430232): Remove this once we know the cause of the
+  // associated CHECK failure.
+  if (common_params->initiator_base_url &&
+      (!blink::features::IsNewBaseUrlInheritanceBehaviorEnabled() ||
+       (!common_params->url.IsAboutBlank() &&
+        !common_params->url.IsAboutSrcdoc()))) {
+    SCOPED_CRASH_KEY_BOOL(
+        "new_base_url", "new_base_url_enabled",
+        blink::features::IsNewBaseUrlInheritanceBehaviorEnabled());
+    SCOPED_CRASH_KEY_BOOL("new_base_url", "url_is_empty",
+                          common_params->initiator_base_url->is_empty());
+    base::debug::DumpWithoutCrashing();
+  }
+
   commit_params->commit_sent = base::TimeTicks::Now();
   navigation_client->CommitNavigation(
       std::move(common_params), std::move(commit_params),
@@ -12966,7 +12965,8 @@ void RenderFrameHostImpl::SendCommitNavigation(
       std::move(keep_alive_loader_factory), document_token,
       devtools_navigation_token, permissions_policy,
       std::move(policy_container), std::move(code_cache_host),
-      std::move(cookie_manager_info), std::move(storage_info),
+      std::move(resource_cache_remote), std::move(cookie_manager_info),
+      std::move(storage_info),
       BuildCommitNavigationCallback(navigation_request));
   base::UmaHistogramTimes(
       base::StrCat({"Navigation.SendCommitNavigationTime.",
@@ -15085,14 +15085,9 @@ bool RenderFrameHostImpl::GetIsThirdPartyCookiesUserBypassEnabled() {
   return read_context.IsThirdPartyCookiesUserBypassEnabled();
 }
 
-void RenderFrameHostImpl::SetResourceCache(
-    mojo::PendingRemote<blink::mojom::ResourceCache> remote) {
-  GetMojomFrameInRenderer()->SetResourceCache(std::move(remote));
-}
-
-void RenderFrameHostImpl::FlushMojomFrameRemoteForTesting() {
-  DCHECK(frame_);
-  frame_.FlushForTesting();  // IN-TEST
+void RenderFrameHostImpl::SetResourceCacheRemote(
+    mojo::PendingRemote<blink::mojom::ResourceCache> pending_remote) {
+  GetMojomFrameInRenderer()->SetResourceCache(std::move(pending_remote));
 }
 
 }  // namespace content

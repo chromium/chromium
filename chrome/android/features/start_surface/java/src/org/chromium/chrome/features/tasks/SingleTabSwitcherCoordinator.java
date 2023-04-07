@@ -186,4 +186,11 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
         mContainer.setVisibility(isVisible ? View.VISIBLE : View.GONE);
         mMediatorOnTablet.setVisibility(isVisible);
     }
+
+    @VisibleForTesting
+    public boolean isVisible() {
+        if (mMediatorOnTablet == null) return false;
+
+        return mMediatorOnTablet.isVisible();
+    }
 }

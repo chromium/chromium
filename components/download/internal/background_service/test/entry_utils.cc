@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/download/internal/background_service/test/entry_utils.h"
-#include "base/guid.h"
 #include "base/memory/values_equivalent.h"
 #include "base/ranges/algorithm.h"
+#include "base/uuid.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 
 namespace download {
@@ -40,7 +40,8 @@ bool CompareEntryListUsingGuidOnly(const std::vector<Entry*>& expected,
 }
 
 Entry BuildBasicEntry() {
-  return BuildEntry(DownloadClient::TEST, base::GenerateGUID());
+  return BuildEntry(DownloadClient::TEST,
+                    base::Uuid::GenerateRandomV4().AsLowercaseString());
 }
 
 Entry BuildBasicEntry(Entry::State state) {

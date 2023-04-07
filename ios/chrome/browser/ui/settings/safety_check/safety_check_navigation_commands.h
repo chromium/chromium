@@ -9,6 +9,9 @@
 // controller.
 @protocol SafetyCheckNavigationCommands
 
+// Shows the Password Checkup page.
+- (void)showPasswordCheckupPage;
+
 // Shows password issues page.
 - (void)showPasswordIssuesPage;
 

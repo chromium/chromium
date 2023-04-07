@@ -95,8 +95,10 @@ class PersonalDataManagerCleanerTest : public PersonalDataManagerTestBase,
 };
 
 // Tests that DedupeProfiles sets the correct profile guids to
-// delete after merging similar profiles.
-TEST_F(PersonalDataManagerCleanerTest, DedupeProfiles_ProfilesToDelete) {
+// delete after merging similar profiles, and correct merge mappings for billing
+// address id references.
+TEST_F(PersonalDataManagerCleanerTest,
+       DedupeProfiles_ProfilesToDelete_GuidsMergeMap) {
   // Create the profile for which to find duplicates. It has the highest
   // ranking score.
   AutofillProfile* profile1 =
@@ -161,92 +163,21 @@ TEST_F(PersonalDataManagerCleanerTest, DedupeProfiles_ProfilesToDelete) {
   histogram_tester.ExpectUniqueSample(
       "Autofill.NumberOfProfilesRemovedDuringDedupe", 2, 1);
 
+  // Profile 1 was merged into profile 3 and profile 3 into profile 5.
+  std::unordered_map<std::string, std::string> expected_guids_to_merge = {
+      {profile1->guid(), profile3->guid()},
+      {profile3->guid(), profile5->guid()}};
+  EXPECT_EQ(guids_merge_map, expected_guids_to_merge);
+
   // Profile1 should be deleted because it was sent as the profile to merge and
   // thus was merged into profile3 and then into profile5.
-  EXPECT_TRUE(profiles_to_delete.count(profile1->guid()));
-
   // Profile3 should be deleted because profile1 was merged into it and the
   // resulting profile was then merged into profile5.
-  EXPECT_TRUE(profiles_to_delete.count(profile3->guid()));
-
-  // Only these two profiles should be deleted.
-  EXPECT_EQ(2U, profiles_to_delete.size());
+  EXPECT_THAT(profiles_to_delete, testing::UnorderedElementsAre(
+                                      profile1->guid(), profile3->guid()));
 
   // All profiles should still be present in |existing_profiles|.
   EXPECT_EQ(5U, existing_profiles.size());
-}
-
-// Tests that DedupeProfiles sets the correct merge mapping for billing address
-// id references.
-TEST_F(PersonalDataManagerCleanerTest, DedupeProfiles_GuidsMergeMap) {
-  // Create the profile for which to find duplicates. It has the highest
-  // ranking score.
-  AutofillProfile* profile1 =
-      new AutofillProfile(base::GenerateUuid(), test::kEmptyOrigin);
-  test::SetProfileInfo(profile1, "Homer", "Jay", "Simpson",
-                       "homer.simpson@abc.com", "", "742. Evergreen Terrace",
-                       "", "Springfield", "IL", "91601", "US", "12345678910");
-  profile1->set_use_count(9);
-
-  // Create a different profile that should not be deduped (different address).
-  AutofillProfile* profile2 =
-      new AutofillProfile(base::GenerateUuid(), test::kEmptyOrigin);
-  test::SetProfileInfo(profile2, "Homer", "Jay", "Simpson",
-                       "homer.simpson@abc.com", "Fox", "1234 Other Street", "",
-                       "Springfield", "IL", "91601", "US", "12345678910");
-  profile2->set_use_count(7);
-
-  // Create a profile similar to profile1 which should be deduped.
-  AutofillProfile* profile3 =
-      new AutofillProfile(base::GenerateUuid(), test::kEmptyOrigin);
-  test::SetProfileInfo(profile3, "Homer", "Jay", "Simpson",
-                       "homer.simpson@abc.com", "", "742 Evergreen Terrace", "",
-                       "Springfield", "IL", "91601", "US", "12345678910");
-  profile3->set_use_count(5);
-
-  // Create another different profile that should not be deduped (different
-  // name).
-  AutofillProfile* profile4 =
-      new AutofillProfile(base::GenerateUuid(), test::kEmptyOrigin);
-  test::SetProfileInfo(profile4, "Marjorie", "Jacqueline", "Simpson",
-                       "homer.simpson@abc.com", "Fox", "742 Evergreen Terrace",
-                       "", "Springfield", "IL", "91601", "US", "12345678910");
-  profile4->set_use_count(3);
-
-  // Create another profile similar to profile1. Since that one has the lowest
-  // ranking score, the result of the merge should be in this profile at the end
-  // of the test.
-  AutofillProfile* profile5 =
-      new AutofillProfile(base::GenerateUuid(), test::kEmptyOrigin);
-  test::SetProfileInfo(profile5, "Homer", "Jay", "Simpson",
-                       "homer.simpson@abc.com", "Fox", "742 Evergreen Terrace.",
-                       "", "Springfield", "IL", "91601", "US", "12345678910");
-  profile5->set_use_count(1);
-
-  // Add the profiles.
-  std::vector<std::unique_ptr<AutofillProfile>> existing_profiles;
-  existing_profiles.push_back(std::unique_ptr<AutofillProfile>(profile1));
-  existing_profiles.push_back(std::unique_ptr<AutofillProfile>(profile2));
-  existing_profiles.push_back(std::unique_ptr<AutofillProfile>(profile3));
-  existing_profiles.push_back(std::unique_ptr<AutofillProfile>(profile4));
-  existing_profiles.push_back(std::unique_ptr<AutofillProfile>(profile5));
-
-  std::unordered_map<std::string, std::string> guids_merge_map;
-  std::unordered_set<std::string> profiles_to_delete;
-
-  personal_data_manager_cleaner_->DedupeProfilesForTesting(
-      &existing_profiles, &profiles_to_delete, &guids_merge_map);
-
-  // The two profile merges should be recorded in the map.
-  EXPECT_EQ(2U, guids_merge_map.size());
-
-  // Profile 1 was merged into profile 3.
-  ASSERT_TRUE(guids_merge_map.count(profile1->guid()));
-  EXPECT_TRUE(guids_merge_map.at(profile1->guid()) == profile3->guid());
-
-  // Profile 3 was merged into profile 5.
-  ASSERT_TRUE(guids_merge_map.count(profile3->guid()));
-  EXPECT_TRUE(guids_merge_map.at(profile3->guid()) == profile5->guid());
 }
 
 // Tests that UpdateCardsBillingAddressReference sets the correct billing

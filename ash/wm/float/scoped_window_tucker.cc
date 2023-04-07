@@ -111,15 +111,17 @@ class TuckHandleView : public views::Button,
         DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
 
     // Paint the container bottom layer with default 80% opacity.
-    const SkColor bottom_color = ColorUtil::GetSecondToneColor(
-        dark_mode ? gfx::kGoogleGrey500 : gfx::kGoogleGrey600);
+    SkColor color = dark_mode ? gfx::kGoogleGrey500 : gfx::kGoogleGrey600;
+    const SkColor bottom_color =
+        SkColorSetA(color, std::round(SkColorGetA(color) * 0.8f));
+
     const gfx::ImageSkia& tuck_container_bottom = gfx::CreateVectorIcon(
         kTuckHandleContainerBottomIcon, kTuckHandleWidth, bottom_color);
     canvas->DrawImageInt(tuck_container_bottom, 0, 0);
 
     // Paint the container top layer. This is mostly transparent, with 12%
     // opacity.
-    const SkColor color = dark_mode ? gfx::kGoogleGrey200 : gfx::kGoogleGrey600;
+    color = dark_mode ? gfx::kGoogleGrey200 : gfx::kGoogleGrey600;
     const SkColor top_color =
         SkColorSetA(color, std::round(SkColorGetA(color) * 0.12f));
     const gfx::ImageSkia& tuck_container_top = gfx::CreateVectorIcon(

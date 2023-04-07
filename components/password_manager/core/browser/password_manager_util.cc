@@ -93,7 +93,7 @@ void UpdateMetadataForUsage(PasswordForm* credential) {
 
   // Remove alternate usernames. At this point we assume that we have found
   // the right username.
-  credential->all_possible_usernames.clear();
+  credential->all_alternative_usernames.clear();
 }
 
 password_manager::SyncState GetPasswordSyncState(

@@ -26,7 +26,6 @@ namespace blink {
 
 using midi::mojom::PortState;
 using midi::mojom::Result;
-using mojom::blink::PermissionStatus;
 
 MIDIAccessInitializer::MIDIAccessInitializer(ScriptState* script_state,
                                              const MIDIOptions* options)
@@ -136,9 +135,10 @@ void MIDIAccessInitializer::StartSession() {
   dispatcher_->SetClient(this);
 }
 
-void MIDIAccessInitializer::OnPermissionsUpdated(PermissionStatus status) {
+void MIDIAccessInitializer::OnPermissionsUpdated(
+    mojom::blink::PermissionStatus status) {
   permission_service_.reset();
-  if (status == PermissionStatus::GRANTED) {
+  if (status == mojom::blink::PermissionStatus::GRANTED) {
     StartSession();
   } else {
     Reject(
@@ -146,9 +146,10 @@ void MIDIAccessInitializer::OnPermissionsUpdated(PermissionStatus status) {
   }
 }
 
-void MIDIAccessInitializer::OnPermissionUpdated(PermissionStatus status) {
+void MIDIAccessInitializer::OnPermissionUpdated(
+    mojom::blink::PermissionStatus status) {
   permission_service_.reset();
-  if (status == PermissionStatus::GRANTED) {
+  if (status == mojom::blink::PermissionStatus::GRANTED) {
     StartSession();
   } else {
     Reject(

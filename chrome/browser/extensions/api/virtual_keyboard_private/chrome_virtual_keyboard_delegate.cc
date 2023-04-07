@@ -534,6 +534,9 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
       base::FeatureList::IsEnabled(ash::features::kHandwritingLibraryDlc)));
   features.Append(
       GenerateFeatureFlag("jelly", chromeos::features::IsJellyEnabled()));
+  features.Append(GenerateFeatureFlag(
+      "japanesefunctionrow",
+      base::FeatureList::IsEnabled(ash::features::kJapaneseFunctionRow)));
 
   results.Set("features", std::move(features));
 

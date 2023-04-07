@@ -4355,11 +4355,6 @@ Kebijakan ini bersifat sementara dan akan dihapus segera setelah pengurangan gem
 <translation id="4996161752665479028">Aktifkan SSH di Terminal System App</translation>
 <translation id="4997074784107449343">Opsi Cetak sebagai gambar tidak akan disetel sebagai default untuk pratinjau cetak dokumen PDF jika tersedia.</translation>
 <translation id="500149597848135831">Aktifkan semua variasi</translation>
-<translation id="5014511262203433035">Kebijakan ini mengontrol apakah pengguna dapat mengaktifkan Mode Khusus HTTPS di Setelan. Mode Khusus HTTPS mengupgrade semua navigasi ke HTTPS.
-      Jika setelan ini tidak disetel atau disetel ke diizinkan, pengguna akan diizinkan mengaktifkan Mode Khusus HTTPS.
-      Jika setelan ini disetel ke tidak diizinkan, pengguna tidak akan diizinkan mengaktifkan Mode Khusus HTTPS.
-      Jika setelan ini disetel ke force_enabled, Mode Khusus HTTPS akan diaktifkan dan pengguna tidak akan dapat menonaktifkannya.
-      Mengaktifkan paksa Mode Khusus HTTPS didukung mulai dari M112 dan seterusnya.</translation>
 <translation id="5017369989680827157">Jika kebijakan ditetapkan ke Benar (True) atau tidak ditetapkan, pengguna akan dapat mengontrol fitur Isi otomatis alamat di UI.
 
       Jika kebijakan ditetapkan ke Salah (False), Isi otomatis tidak akan menyarankan atau mengisi informasi alamat, juga tidak akan menyimpan informasi alamat tambahan yang dikirimkan pengguna saat menjelajahi web.</translation>

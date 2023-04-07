@@ -27,6 +27,24 @@ def _CheckSemanticColors(input_api, output_api):
     style_root = [
         input_api.change.RepositoryRoot(), 'ui', 'chromeos', 'styles'
     ]
+
+    def ExtractPrefixesAndVariables(file_set):
+      # Identify the CSS variable prefixes currently in use by the semantic
+      # stylesheets.
+      css_prefixes = set()
+      style_generator = CSSStyleGenerator()
+      style_generator.AddJSONFilesToModel(cros_styles)
+      for file_path in cros_styles:
+          context = style_generator.in_file_to_context.get(file_path,
+                                                           {}).get('CSS')
+          if (not context or 'prefix' not in context):
+              continue
+
+          css_prefixes.add('--' + context['prefix'] + '-')
+
+      valid_css_variables = style_generator.GetCSSVarNames()
+      return css_prefixes, valid_css_variables
+
     cros_styles = [
         input_api.os_path.join(*style_root, 'cros_colors.json5'),
         input_api.os_path.join(*style_root, 'cros_palette.json5'),
@@ -34,22 +52,20 @@ def _CheckSemanticColors(input_api, output_api):
         input_api.os_path.join(*style_root, 'cros_shadows.json5'),
         input_api.os_path.join(*style_root, 'cros_sys_colors.json5'),
         input_api.os_path.join(*style_root, 'cros_typography.json5'),
+    ]
+
+    cros_prefixes, cros_variables = ExtractPrefixesAndVariables(cros_styles)
+
+    gm3_styles = [
         input_api.os_path.join(*style_root, 'cros_gm3_typography.json5'),
     ]
 
-    # Identify the CSS variable prefixes currently in use by the semantic
-    # stylesheets.
-    css_prefixes = set()
-    style_generator = CSSStyleGenerator()
-    style_generator.AddJSONFilesToModel(cros_styles)
-    for file_path in cros_styles:
-        context = style_generator.in_file_to_context.get(file_path,
-                                                         {}).get('CSS')
-        if (not context or 'prefix' not in context):
-            continue
+    gm3_prefixes, gm3_variables = ExtractPrefixesAndVariables(gm3_styles)
 
-        css_prefixes.add('--' + context['prefix'] + '-')
+    cros_variables.update(gm3_variables)
+    valid_css_variables = cros_variables
 
+    css_prefixes = cros_prefixes | gm3_prefixes
     css_regex = input_api.re.compile('(' + '|'.join(css_prefixes) +
                                      '.+?)[^-a-zA-Z0-9_]+')
 
@@ -70,8 +86,6 @@ def _CheckSemanticColors(input_api, output_api):
                     (file_path, line_num, potential_invalid_match))
 
         return invalid_matches
-
-    valid_css_variables = style_generator.GetCSSVarNames()
 
     invalid_variables = []
     for f in affected_files:

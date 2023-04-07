@@ -38,8 +38,8 @@ void UserDirectoryIntegrityManager::RecordCreatingNewUser(
 }
 
 void UserDirectoryIntegrityManager::RemoveUser(const AccountId& account_id) {
-  UserManager::Get()->RemoveUser(
-      account_id, UserRemovalReason::MISCONFIGURED_USER, /*delegate=*/nullptr);
+  UserManager::Get()->RemoveUser(account_id,
+                                 UserRemovalReason::MISCONFIGURED_USER);
 }
 
 void UserDirectoryIntegrityManager::ClearPrefs() {

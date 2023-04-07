@@ -455,6 +455,7 @@
 <translation id="3493531032208478708">পৰামৰ্শ দিয়া সমলৰ বিষয়ে <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">ছাইন ইন কৰাৰ সুবিধা থকা তলৰ শ্বীটখন অৰ্ধ উচ্চতাত খোলা হৈছে।</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="350276055892098337">পুৰণি অনুসৰি সজাওক</translation>
 <translation id="3507132249039706973">সাধাৰণ সুৰক্ষা অন আছে</translation>
 <translation id="3509330069915219067">অফলাইন হৈ আছে। Chromeএ আপডে’ট আছেনে নাই পৰীক্ষা কৰিব নোৱাৰে।</translation>
 <translation id="3513704683820682405">পৰিৱৰ্ধিত বাস্তৱিকতা</translation>
@@ -575,6 +576,7 @@
 <translation id="4177222230309051052">আপোনাৰ আটাইবোৰ বুকমাৰ্ক পাওক</translation>
 <translation id="4177501066905053472">বিজ্ঞাপনৰ বিষয়বস্তু</translation>
 <translation id="4181841719683918333">ভাষাসমূহ</translation>
+<translation id="4188221736490993796">Zৰ পৰা Aলৈ সজাওক</translation>
 <translation id="4195643157523330669">নতুন টেবত খোলক</translation>
 <translation id="4196597275619698563">কাৰ্ড সৃষ্টি কৰক</translation>
 <translation id="4198423547019359126">ডাউনল’ড কৰিবলৈ কোনো অৱস্থান নাই</translation>
@@ -640,6 +642,7 @@
 <translation id="4565377596337484307">পাছৱৰ্ড লুকুৱাওক</translation>
 <translation id="4572422548854449519">পৰিচালিত একাউণ্টত ছাইন ইন কৰক</translation>
 <translation id="4576892426230499203">সত্যাপনৰ অন্য এটা বিকল্প ব্যৱহাৰ কৰি চাওক</translation>
+<translation id="4577115723294378384">Aৰ পৰা Zলৈ সজাওক</translation>
 <translation id="4578289292431526768">আৰম্ভ কৰক</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# মিনিট পূর্বে}one{# মিনিট পূর্বে}other{# মিনিট পূর্বে}}</translation>
 <translation id="4587589328781138893">Sites</translation>
@@ -663,6 +666,7 @@
 <translation id="4689792375321623175">Google <ph name="BEGIN_NEW" />New<ph name="END_NEW" />ৰ জৰিয়তে প্ৰতিচ্ছবি সন্ধান কৰক</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 আৰু <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />টা}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 আৰু <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />টা}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 আৰু <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />টা}}</translation>
 <translation id="4699172675775169585">কেশ্ব প্ৰতিচ্ছবি আৰু ফাইল</translation>
+<translation id="4710167854527459075">নতুন অনুসৰি সজাওক</translation>
 <translation id="4719927025381752090">অনুবাদ কৰাৰ প্ৰস্তাৱ দিয়ক</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" />ত খোলক</translation>
 <translation id="47217992755561375">আপোনাৰ শীৰ্ষ ছাইটসমূহ চাওক</translation>
@@ -832,6 +836,7 @@
 <translation id="5561162485081632007">বিপজ্জনক ঘটনাবোৰ চিনাক্ত কৰে আৰু সেইবোৰ ঘটাৰ সময়ত আপোনাক সকীয়নি দিয়ে</translation>
 <translation id="5561549206367097665">নেটৱৰ্কৰ বাবে অপেক্ষাৰত…</translation>
 <translation id="5568069709869097550">ছাইন ইন কৰিব নোৱাৰি</translation>
+<translation id="557018954714092179">নতুন ফ’ল্ডাৰ সৃষ্টি কৰক</translation>
 <translation id="5578795271662203820">এই ছবিৰ বাবে <ph name="SEARCH_ENGINE" />ত সন্ধান কৰক</translation>
 <translation id="5581519193887989363">আপুনি কি ছিংক কৰিব লাগে সেয়া <ph name="BEGIN_LINK1" />ছেটিংসমূহ<ph name="END_LINK1" />-লৈ গৈ যেতিয়াই মন যায় তেতিয়াই সলনি কৰিব পাৰে।</translation>
 <translation id="5590372121997663538">এই কম্পিউটাৰটো মনত ৰাখিব</translation>
@@ -936,6 +941,7 @@
 <translation id="6138832295072039549">ইয়াত আপোনাৰ ছাইটৰ ছেটিং সলনি কৰক</translation>
 <translation id="6140709049082532940">বৰ্ধিত সুৰক্ষা:</translation>
 <translation id="6140912465461743537">দেশ/অঞ্চল</translation>
+<translation id="6148266338772765473">লিংক বহিৰ্ভূত কৰক</translation>
 <translation id="6150320133806434356">বুকমাৰ্ক ছেভ কৰা হৈছে</translation>
 <translation id="6154478581116148741">এই ডিভাইচটোৰ পৰা আপোনাৰ পাছৱৰ্ডসমূহ ৰপ্তানি কৰিবলৈ ছেটিংসমূহ-লৈ গৈ স্ক্রীণ লক অন কৰক</translation>
 <translation id="6159729262978459665">আটাইবোৰ ছিংক কৰা ডিভাইচৰ পৰা ইতিহাস মচে।</translation>
@@ -1027,6 +1033,7 @@
 <translation id="6590680911007613645">আপুনি ছেভ কৰিবলৈ লোৱা পাছৱৰ্ডটো যাতে আপোনাৰ <ph name="SITE" />ৰ পাছৱৰ্ডটোৰ সৈতে মিলে সেয়া নিশ্চিত কৰক</translation>
 <translation id="6593061639179217415">ডেস্কটপৰ ছাইট</translation>
 <translation id="6594121454516132231">মুক্ত ৱেব সুৰক্ষিত কৰি ৰাখি ক্ৰছ-ছাইট ট্ৰেকিঙৰ পৰা আপোনাক সুৰক্ষা প্ৰদান কৰিবলৈ Chromeএ কেনেকৈ পৰিকল্পনা কৰে সেয়া চাওক</translation>
+<translation id="6594347733515723558">বিকল্পবোৰ সজাওক আৰু চাওক</translation>
 <translation id="6595046016124923392">আপোনাৰ বাবে বিৱৰণ উন্নত কৰিবলৈ Googleলৈ প্ৰতিচ্ছবিসমূহ পঠিওৱা হয়।</translation>
 <translation id="6600954340915313787">Chromeলৈ প্ৰতিলিপি কৰা হ’ল</translation>
 <translation id="661266467055912436">আপোনাৰ লগতে ৱেবত থকা প্ৰত্যেকজনৰ বাবে সুৰক্ষা উন্নত কৰে।</translation>

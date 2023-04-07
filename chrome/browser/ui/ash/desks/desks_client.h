@@ -244,7 +244,7 @@ class DesksClient : public ash::SessionObserver {
 
   // Called by a launch performance tracker when it has completed monitoring the
   // launch of a template.
-  void RemoveLaunchPerformanceTracker(base::GUID tracker_uuid);
+  void RemoveLaunchPerformanceTracker(const base::GUID& tracker_uuid);
 
   // Get the pointer to the window by `browser_session_id`.
   aura::Window* GetWindowByBrowserSessionId(SessionID browser_session_id);

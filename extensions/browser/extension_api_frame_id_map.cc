@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/uuid.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/navigation_entry.h"
@@ -232,6 +233,14 @@ ExtensionApiFrameIdMap::DocumentId ExtensionApiFrameIdMap::GetDocumentId(
   return DocumentId();
 }
 
+// static
+base::Uuid ExtensionApiFrameIdMap::GetContextId(
+    content::RenderFrameHost* render_frame_host) {
+  return ExtensionDocumentUserData::GetOrCreateForCurrentDocument(
+             render_frame_host)
+      ->context_id();
+}
+
 api::extension_types::FrameType ExtensionApiFrameIdMap::GetFrameType(
     content::RenderFrameHost* rfh) {
   DCHECK(rfh);
@@ -320,7 +329,8 @@ void ExtensionApiFrameIdMap::OnRenderFrameDeleted(
 ExtensionApiFrameIdMap::ExtensionDocumentUserData::ExtensionDocumentUserData(
     content::RenderFrameHost* render_frame_host)
     : content::DocumentUserData<ExtensionDocumentUserData>(render_frame_host),
-      document_id_(DocumentId::Create()) {
+      document_id_(DocumentId::Create()),
+      context_id_(base::Uuid::GenerateRandomV4()) {
   Get()->document_id_map_[document_id_] = this;
 }
 

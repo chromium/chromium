@@ -455,6 +455,7 @@ Private state tokens forbedrer beskyttelsen af personlige oplysninger på nettet
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /> om anbefalet indhold</translation>
 <translation id="3495219333887281978">Loginfeltet i bunden er åbnet i halv højde.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="350276055892098337">Sortér efter ældste</translation>
 <translation id="3507132249039706973">Standardbeskyttelse er aktiveret</translation>
 <translation id="3509330069915219067">Offline. Chrome kan ikke søge efter opdateringer.</translation>
 <translation id="3513704683820682405">Augmented reality</translation>
@@ -575,6 +576,7 @@ Private state tokens forbedrer beskyttelsen af personlige oplysninger på nettet
 <translation id="4177222230309051052">Få alle dine bogmærker</translation>
 <translation id="4177501066905053472">Annonceemner</translation>
 <translation id="4181841719683918333">Sprog</translation>
+<translation id="4188221736490993796">Sortér fra Å til A</translation>
 <translation id="4195643157523330669">Åbn på ny fane</translation>
 <translation id="4196597275619698563">Opret kort</translation>
 <translation id="4198423547019359126">Der er ingen tilgængelige downloadplaceringer</translation>
@@ -640,6 +642,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4565377596337484307">Skjul adgangskode</translation>
 <translation id="4572422548854449519">Log ind på managerstyret konto</translation>
 <translation id="4576892426230499203">Prøv en anden verificeringsmulighed</translation>
+<translation id="4577115723294378384">Sortér fra A til Å</translation>
 <translation id="4578289292431526768">Kom i gang</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{For # minut siden}one{For # minut siden}other{For # minutter siden}}</translation>
 <translation id="4587589328781138893">Websites</translation>
@@ -663,6 +666,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4689792375321623175">Søg efter billedet med Google <ph name="BEGIN_NEW" />Nyhed<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> mere}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> mere}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> mere}}</translation>
 <translation id="4699172675775169585">Billeder og filer, der er gemt i cache</translation>
+<translation id="4710167854527459075">Sortér efter nyeste</translation>
 <translation id="4719927025381752090">Tilbyd at oversætte</translation>
 <translation id="4720023427747327413">Åbn i <ph name="PRODUCT_NAME" /></translation>
 <translation id="47217992755561375">Se dine mest anvendte websites</translation>
@@ -832,6 +836,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5561162485081632007">Registrerer og advarer dig om skadelige hændelser, når de opstår</translation>
 <translation id="5561549206367097665">Venter på netværk…</translation>
 <translation id="5568069709869097550">Kan ikke logge ind</translation>
+<translation id="557018954714092179">Opret ny mappe</translation>
 <translation id="5578795271662203820">Søg efter billedet på <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Du kan altid vælge, hvad der skal synkroniseres, i <ph name="BEGIN_LINK1" />indstillingerne<ph name="END_LINK1" />.</translation>
 <translation id="5590372121997663538">Husk denne computer</translation>
@@ -936,6 +941,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="6138832295072039549">Skift indstillinger for websites her</translation>
 <translation id="6140709049082532940">Forbedret beskyttelse:</translation>
 <translation id="6140912465461743537">Land/region</translation>
+<translation id="6148266338772765473">Ekskluder link</translation>
 <translation id="6150320133806434356">Bogmærket er gemt</translation>
 <translation id="6154478581116148741">Aktivér skærmlåsen i Indstillinger for at eksportere dine adgangskoder fra denne enhed</translation>
 <translation id="6159729262978459665">Ryder historikken fra alle synkroniserede enheder.</translation>
@@ -1027,6 +1033,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6590680911007613645">Sørg for, at den adgangskode, du gemmer, er den samme som din adgangskode til <ph name="SITE" /></translation>
 <translation id="6593061639179217415">Standardwebsite</translation>
 <translation id="6594121454516132231">Se, hvordan Chrome bestræber sig på at beskytte dig mod sporing på tværs af forskellige websites og samtidig bevarer det åbne net</translation>
+<translation id="6594347733515723558">Valgmuligheder for visning og sortering</translation>
 <translation id="6595046016124923392">Billederne sendes til Google med henblik på at give dig bedre beskrivelser.</translation>
 <translation id="6600954340915313787">Kopieret til Chrome</translation>
 <translation id="661266467055912436">Forbedrer din og alles sikkerhed på nettet.</translation>

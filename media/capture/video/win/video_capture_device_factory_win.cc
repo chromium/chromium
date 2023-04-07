@@ -354,7 +354,7 @@ class VideoCaptureDeviceFactoryWin::ComThreadData
 // static
 bool VideoCaptureDeviceFactoryWin::PlatformSupportsMediaFoundation() {
   static const bool has_media_foundation =
-      LoadMediaFoundationDlls() && InitializeMediaFoundation();
+      InitializeMediaFoundation() && LoadMediaFoundationDlls();
   return has_media_foundation;
 }
 

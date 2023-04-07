@@ -23,7 +23,7 @@ blink_modules_sources("exported") {
     "//third_party/blink/renderer/modules/crypto",
     "//third_party/blink/renderer/modules/filesystem",
     "//third_party/blink/renderer/modules/mediastream",
-    "//third_party/blink/renderer/modules/shared_storage/services",
+    "//third_party/blink/renderer/modules/shared_storage",
     "//ui/accessibility:ax_enums_mojo_blink",
   ]
 }

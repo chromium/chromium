@@ -21,7 +21,7 @@ class LoginDisplayWebUI : public LoginDisplay {
   ~LoginDisplayWebUI() override;
 
   // LoginDisplay implementation:
-  void Init(const user_manager::UserList& users, bool show_guest) override;
+  void Init(const user_manager::UserList& users) override;
   void SetUIEnabled(bool is_enabled) override;
 };
 

@@ -206,7 +206,6 @@
 <translation id="2411749908844615428">{count,plural, =1{鍵盤上方顯示 {count} 個已儲存的地址。}other{鍵盤上方顯示 {count} 個已儲存的地址。}}</translation>
 <translation id="2421004566762153674">封鎖第三方 Cookie</translation>
 <translation id="2421044535038393232">繼續編輯</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} 組密碼遭外洩}other{{COUNT} 組密碼遭外洩}}</translation>
 <translation id="2434405374328098816">你已儲存過「<ph name="USERNAME" />」在 <ph name="WEBSITE" /> 使用的密碼</translation>
 <translation id="2435457462613246316">顯示密碼</translation>
 <translation id="2451654228769116489">固定分頁</translation>
@@ -257,7 +256,6 @@
 <translation id="2718352093833049315">僅限連上 Wi-Fi 網路時</translation>
 <translation id="2747003861858887689">上一個欄位</translation>
 <translation id="2749231692441336879">正在追蹤「<ph name="CHANNEL_NAME" />」</translation>
-<translation id="2764831210418622012">剛剛</translation>
 <translation id="2772667768515195373">你可以在各項 Google 產品中使用已儲存的地址。系統會將這個地址儲存到 Google 帳戶 (<ph name="USER_EMAIL" />) 中。</translation>
 <translation id="2773292004659987824">無痕搜尋</translation>
 <translation id="277771892408211951">選取語言</translation>
@@ -924,7 +922,6 @@
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">最近開啟的分頁</translation>
 <translation id="7006788746334555276">內容設定</translation>
-<translation id="7014087399239955356">正在檢查密碼...</translation>
 <translation id="7029809446516969842">密碼</translation>
 <translation id="7053983685419859001">封鎖</translation>
 <translation id="7062545763355031412">接受並切換帳戶</translation>

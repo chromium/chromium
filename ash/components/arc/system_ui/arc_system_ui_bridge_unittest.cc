@@ -44,11 +44,13 @@ class TestColorPaletteController : public ash::ColorPaletteController {
   void SetStaticColor(SkColor seed_color,
                       const AccountId& account_id,
                       base::OnceClosure on_complete) override {}
-  ash::ColorPaletteSeed GetColorPaletteSeed(
+  absl::optional<ash::ColorPaletteSeed> GetColorPaletteSeed(
       const AccountId& account_id) const override {
     return seed_;
   }
-  ash::ColorPaletteSeed GetCurrentSeed() const override { return seed_; }
+  absl::optional<ash::ColorPaletteSeed> GetCurrentSeed() const override {
+    return seed_;
+  }
   bool UsesWallpaperSeedColor(const AccountId& account_id) const override {
     return true;
   }
@@ -170,6 +172,25 @@ TEST_F(ArcSystemUIBridgeTest, SendOverlayColor) {
   EXPECT_EQ((uint32_t)50, system_ui_instance_.source_color());
   EXPECT_EQ(mojom::ThemeStyleType::EXPRESSIVE,
             system_ui_instance_.theme_style());
+}
+
+TEST_F(ArcSystemUIBridgeTest, OnConnectionReady_NeutralToSpritzConversion) {
+  base::test::ScopedFeatureList features(chromeos::features::kJelly);
+
+  EXPECT_FALSE(system_ui_instance_.dark_theme_status());
+  ash::ColorPaletteSeed seed;
+  seed.color_mode = ui::ColorProviderManager::ColorMode::kLight;
+  seed.scheme = ash::ColorScheme::kNeutral;
+  seed.seed_color = SK_ColorCYAN;
+  test_palette_->SetSeed(seed);
+
+  // When the connection is ready, bridge will read the current seed from the
+  // ColorPaletteController.
+  bridge_->OnConnectionReady();
+  EXPECT_FALSE(system_ui_instance_.dark_theme_status());
+  EXPECT_EQ(static_cast<uint32_t>(SK_ColorCYAN),
+            system_ui_instance_.source_color());
+  EXPECT_EQ(mojom::ThemeStyleType::SPRITZ, system_ui_instance_.theme_style());
 }
 
 }  // namespace arc

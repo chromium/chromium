@@ -369,7 +369,11 @@ class MockCWSInfoService : public extensions::CWSInfoServiceInterface {
   MOCK_METHOD(absl::optional<bool>,
               IsLiveInCWS,
               (const Extension&),
-              (override));
+              (const, override));
+  MOCK_METHOD(absl::optional<CWSInfoServiceInterface::CWSInfo>,
+              GetCWSInfo,
+              (const Extension&),
+              (const, override));
 };
 
 class ExtensionAdminPolicyTest : public ExtensionManagementServiceTest {

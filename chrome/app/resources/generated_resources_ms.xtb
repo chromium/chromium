@@ -1340,7 +1340,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2114820389966440614">Lihat "Sorotan Terbaharu" dan kenangan lain di sini</translation>
 <translation id="2114896190328250491">Foto oleh <ph name="NAME" /></translation>
 <translation id="2114995631896158695">Tiada kad SIM dimasukkan</translation>
-<translation id="2116020356255810305">Dayakan pelancaran apl semasa permulaan</translation>
 <translation id="2116619964159595185">Laman biasanya menyambung kepada peranti Bluetooth untuk ciri seperti menyediakan atau menyegerakkan bikon tenaga rendah, penjejak kesihatan atau kecergasan atau mentol lampu pintar</translation>
 <translation id="2117655453726830283">Slaid seterusnya</translation>
 <translation id="2119349053129246860">Buka dalam <ph name="APP" /></translation>
@@ -3272,7 +3271,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="380329542618494757">Nama</translation>
 <translation id="3803345858388753269">Kualiti Video</translation>
 <translation id="3803367742635802571">Laman yang anda lawati mungkin berhenti berfungsi seperti yang direka</translation>
-<translation id="3803583375545057606">Minta ibu/bapa anda mendayakan sambungan ini?</translation>
 <translation id="380408572480438692">Tindakan mendayakan pengumpulan data prestasi akan membantu Google menambah baik sistem dengan berlalunya masa. Tiada data dihantar sehingga anda memfailkan laporan maklum balas (Alt-Shift-I) dan menyertakan data prestasi. Anda boleh kembali ke skrin ini untuk melumpuhkan pengumpulan pada bila-bila masa.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (ID sambungan "<ph name="EXTENSION_ID" />") tidak dibenarkan pada skrin log masuk.</translation>
 <translation id="3807747707162121253">&amp;Batal</translation>
@@ -3694,7 +3692,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4169535189173047238">Jangan benarkan</translation>
 <translation id="4170314459383239649">Kosongkan Apabila Keluar</translation>
 <translation id="417096670996204801">Pilih profil</translation>
-<translation id="41725145403849567">Minta ibu/bapa anda menambahkan sambungan ini?</translation>
 <translation id="4175137578744761569">Ungu cerah dan putih</translation>
 <translation id="4175737294868205930">Storan berterusan</translation>
 <translation id="4176463684765177261">Dilumpuhkan</translation>
@@ -5108,7 +5105,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN mestilah sekurang-kurangnya satu aksara}other{PIN mestilah sekurang-kurangnya # aksara}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> menghendaki anda menyambung kepada Wi-Fi sekarang dan memuat turun kemaskinian. Atau, muat turun daripada sambungan bermeter (caj mungkin dikenakan).</translation>
 <translation id="5476016146231427848">Sila mulakan semula peranti anda untuk menggunakan Stim pada Chromebook</translation>
-<translation id="5476897066181964657">Ibu/bapa atau penjaga perlu menyatakan bahawa anda boleh menambahkan sambungan ini</translation>
 <translation id="5481273127572794904">Tidak dibenarkan untuk memuat turun berbilang fail secara automatik</translation>
 <translation id="5481941284378890518">Tambahkan Pencetak Berdekatan</translation>
 <translation id="5483785310822538350">Batalkan akses fail dan peranti</translation>
@@ -5205,7 +5201,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5555639311269196631">Matikan tempat liputan</translation>
 <translation id="5556459405103347317">Muat Semula</translation>
 <translation id="5558129378926964177">Zum &amp;Masuk</translation>
-<translation id="5558247502209241936">Dayakan pembukaan apl dalam tetingkap</translation>
 <translation id="5559311991468302423">Padamkan alamat</translation>
 <translation id="55601339223879446">Laraskan sempadan desktop anda dalam lingkungan paparan</translation>
 <translation id="5561162485081632007">Mengesan dan memberikan amaran kepada anda tentang acara berbahaya apabila berlaku</translation>
@@ -6031,7 +6026,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6305607932814307878">Dasar Global:</translation>
 <translation id="6305702903308659374">Mainkan pada kelantangan biasa walaupun semasa ChromeVox bertutur</translation>
 <translation id="6305909198255586420">Sila pasang menggunakan profil utama anda</translation>
-<translation id="630750887748244481">Ibu/bapa anda telah mematikan "Kebenaran untuk laman web, apl dan sambungan" untuk Chrome. Penambahan sambungan ini tidak dibenarkan.</translation>
 <translation id="6307990684951724544">Sistem sibuk</translation>
 <translation id="6308493641021088955">Log masuk disediakan oleh <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Simpan pau&amp;tan sebagai...</translation>
@@ -6857,7 +6851,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7025190659207909717">Pengurusan perkhidmatan data mudah alih</translation>
 <translation id="7025895441903756761">Keselamatan dan Privasi</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Buka Semua dalam Tetingkap &amp;Inkognito}=1{Buka dalam Tetingkap &amp;Inkognito}other{Buka Semua ({COUNT}) dalam Tetingkap &amp;Inkognito}}</translation>
-<translation id="7028057921476386252">Ibu/bapa atau penjaga perlu menyatakan bahawa anda boleh mendayakan sambungan ini</translation>
 <translation id="7029307918966275733">Crostini tidak dipasang. Sila pasang Crostini untuk melihat kredit.</translation>
 <translation id="7029809446516969842">Kata laluan</translation>
 <translation id="7030304022046916278">Menghantar URL kepada Penyemakan Imbas Selamat untuk semakan</translation>
@@ -8236,7 +8229,6 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8251509999076836464">Menggandingkan dengan <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">Lakaran kenit dibuang.</translation>
 <translation id="825238165904109940">Sentiasa Paparkan URL Penuh</translation>
-<translation id="8252538334423261825">Tidak dapat menambah sambungan</translation>
 <translation id="8252569384384439529">Memuat naik...</translation>
 <translation id="8253198102038551905">Klik '+' untuk mendapatkan sifat rangkaian</translation>
 <translation id="8255212965098517578">Foto, pemberitahuan dan apl terkini</translation>

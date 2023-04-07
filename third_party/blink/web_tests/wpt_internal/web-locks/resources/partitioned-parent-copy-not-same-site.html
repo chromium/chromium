@@ -9,6 +9,8 @@ DisableThirdPartyStoragePartitioning --expire-timestamp=2000000000 -->
 </head>
 <script>
 async function onLoad() {
+  // Step 6:
+  // wpt_internal/web-locks/storage-deprecation-trial-enabled.https.html
   self.addEventListener('message', evt => {
     if (self.opener)
       self.opener.postMessage(evt.data, '*');
@@ -16,11 +18,15 @@ async function onLoad() {
       self.top.postMessage(evt.data, '*');
   }, { once: true });
 
+  // Step 3:
+  // wpt_internal/web-locks/storage-deprecation-trial-enabled.https.html
   const params = new URLSearchParams(self.location.search);
   const frame = document.createElement('iframe');
   frame.src = params.get('target');
   document.body.appendChild(frame);
 
+  // Step 4:
+  // wpt_internal/web-locks/storage-deprecation-trial-enabled.https.html
   frame.addEventListener('load', function(){
     frame.contentWindow.postMessage({op: 'request',
         name: 'testLock', ifAvailable: true}, '*');

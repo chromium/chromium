@@ -17,6 +17,7 @@
 #include "components/keyed_service/core/keyed_service_base_factory.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/buildflags/buildflags.h"
 #include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/common/features.h"
@@ -229,6 +230,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "FileSystemAccessPermissionContext",
     "GeneratedPrefs",
     "HeavyAdService",
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    "HidConnectionResourceManager",
+#endif
     "HidDeviceManager",
     "HostContentSettingsMap",
     "MediaRouterUIService",
@@ -355,6 +359,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "ContentSettingsService",
     "CookieSettings",
     "CookiesAPI",
+    "CWSInfoService",
     "DeveloperPrivateAPI",
     "DeviceInfoSyncService",
     "DownloadCoreService",
@@ -384,6 +389,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "GCMProfileService",
     "GeneratedPrefs",
     "HeavyAdService",
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    "HidConnectionResourceManager",
+#endif
     "HidDeviceManager",
     "HistoryAPI",
     "HistoryService",

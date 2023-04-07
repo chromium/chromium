@@ -48,7 +48,8 @@ NearbyInternalsUI::NearbyInternalsUI(content::WebUI* web_ui)
       std::make_unique<NearbyInternalsHttpHandler>(context));
   web_ui->AddMessageHandler(
       std::make_unique<NearbyInternalsPrefsHandler>(context));
-  web_ui->AddMessageHandler(std::make_unique<NearbyInternalsPresenceHandler>());
+  web_ui->AddMessageHandler(
+      std::make_unique<NearbyInternalsPresenceHandler>(context));
   web_ui->AddMessageHandler(
       std::make_unique<NearbyInternalsUiTriggerHandler>(context));
   web_ui->AddMessageHandler(std::make_unique<QuickPairHandler>());

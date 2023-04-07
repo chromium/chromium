@@ -14,7 +14,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/DeferredStartupHandlerTest.java",
   "junit/src/org/chromium/chrome/browser/DelayedScreenLockIntentHandlerTest.java",
   "junit/src/org/chromium/chrome/browser/DragAndDropLauncherActivityUnitTest.java",
-  "junit/src/org/chromium/chrome/browser/PowerBroadcastReceiverTest.java",
+  "junit/src/org/chromium/chrome/browser/OmahaServiceStartDelayerTest.java",
   "junit/src/org/chromium/chrome/browser/ShadowIdleHandlerAwareMessageQueue.java",
   "junit/src/org/chromium/chrome/browser/ShortcutHelperTest.java",
   "junit/src/org/chromium/chrome/browser/UndoRefocusHelperTest.java",

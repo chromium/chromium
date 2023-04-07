@@ -131,6 +131,11 @@ std::string HeadlessBrowser::GetProductNameAndVersion() {
 /// static
 blink::UserAgentMetadata HeadlessBrowser::GetUserAgentMetadata() {
   auto metadata = embedder_support::GetUserAgentMetadata(nullptr);
+  // Skip override brand version information if components' API returns a blank
+  // UserAgentMetadata.
+  if (metadata == blink::UserAgentMetadata()) {
+    return metadata;
+  }
   std::string significant_version = version_info::GetMajorVersionNumber();
   constexpr bool kEnableUpdatedGreaseByPolicy = true;
 

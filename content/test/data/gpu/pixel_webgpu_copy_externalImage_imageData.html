@@ -66,8 +66,7 @@
       const renderCallback = function() {
         c2d.drawImage(imageBitmap, 0, 0, canvas2d.width, canvas2d.height);
 
-        webGpuUtils.uploadToGPUTextureTest(gpuDevice, gpuContext, imageBitmap,
-                                           {isWebGLCanvas: false});
+        webGpuUtils.uploadToGPUTextureTest(gpuDevice, gpuContext, imageBitmap);
 
         waitForFinish();
       };

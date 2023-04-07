@@ -28,6 +28,7 @@
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
+#include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -1542,28 +1543,35 @@ ChromeContentBrowserClient::GetPopupNavigationDelegateFactoryForTesting() {
 
 ChromeContentBrowserClient::ChromeContentBrowserClient() {
 #if BUILDFLAG(ENABLE_PLUGINS)
-  extra_parts_.push_back(new ChromeContentBrowserClientPluginsPart);
+  extra_parts_.push_back(
+      std::make_unique<ChromeContentBrowserClientPluginsPart>());
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-  extra_parts_.push_back(new ChromeContentBrowserClientTabletModePart);
+  extra_parts_.push_back(
+      std::make_unique<ChromeContentBrowserClientTabletModePart>());
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-  extra_parts_.push_back(new ChromeContentBrowserClientTabStripPart);
+  extra_parts_.push_back(
+      std::make_unique<ChromeContentBrowserClientTabStripPart>());
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  extra_parts_.push_back(new ChromeContentBrowserClientExtensionsPart);
+  extra_parts_.push_back(
+      std::make_unique<ChromeContentBrowserClientExtensionsPart>());
 #endif
 
-  extra_parts_.push_back(new ChromeContentBrowserClientPerformanceManagerPart);
+  extra_parts_.push_back(
+      std::make_unique<ChromeContentBrowserClientPerformanceManagerPart>());
 }
 
 ChromeContentBrowserClient::~ChromeContentBrowserClient() {
-  for (int i = static_cast<int>(extra_parts_.size()) - 1; i >= 0; --i)
-    delete extra_parts_[i];
-  extra_parts_.clear();
+  // std::vector<> does not guarantee any specific destruction order, so
+  // explicitly destroy elements in the reverse order per header comment.
+  while (!extra_parts_.empty()) {
+    extra_parts_.pop_back();
+  }
 }
 
 // static
@@ -4284,8 +4292,9 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
   web_prefs->disable_webauthn = true;
 #endif
 
-  for (ChromeContentBrowserClientParts* parts : extra_parts_)
+  for (auto& parts : extra_parts_) {
     parts->OverrideWebkitPrefs(web_contents, web_prefs);
+  }
 }
 
 bool ChromeContentBrowserClientParts::OverrideWebPreferencesAfterNavigation(
@@ -4323,7 +4332,7 @@ bool ChromeContentBrowserClient::OverrideWebPreferencesAfterNavigation(
       require_transient_activation_for_show_file_or_directory_picker;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  for (ChromeContentBrowserClientParts* parts : extra_parts_) {
+  for (auto& parts : extra_parts_) {
     prefs_changed |=
         parts->OverrideWebPreferencesAfterNavigation(web_contents, web_prefs);
   }
@@ -4485,7 +4494,7 @@ void ChromeContentBrowserClient::GetAdditionalAllowedSchemesForFileSystem(
   additional_allowed_schemes->push_back(content::kChromeDevToolsScheme);
   additional_allowed_schemes->push_back(content::kChromeUIScheme);
   additional_allowed_schemes->push_back(content::kChromeUIUntrustedScheme);
-  for (auto*& extra_part : extra_parts_) {
+  for (auto& extra_part : extra_parts_) {
     extra_part->GetAdditionalAllowedSchemesForFileSystem(
         additional_allowed_schemes);
   }
@@ -6670,6 +6679,11 @@ bool ChromeContentBrowserClient::HandleWebUIReverse(
 
 const ui::NativeTheme* ChromeContentBrowserClient::GetWebTheme() const {
   return ui::NativeTheme::GetInstanceForWeb();
+}
+
+void ChromeContentBrowserClient::AddExtraPart(
+    ChromeContentBrowserClientParts* part) {
+  extra_parts_.push_back(base::WrapUnique(part));
 }
 
 scoped_refptr<safe_browsing::UrlCheckerDelegate>

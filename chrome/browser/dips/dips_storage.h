@@ -48,6 +48,11 @@ class DIPSStorage {
   void RecordBounce(const GURL& url, base::Time time, bool stateful);
 
   // Storage querying Methods --------------------------------------------------
+
+  // Returns the subset of sites in |sites| WITHOUT user interaction recorded.
+  std::set<std::string> FilterSitesWithoutInteraction(
+      std::set<std::string> sites) const;
+
   // Returns all sites that did a bounce that aren't protected from DIPS.
   std::vector<std::string> GetSitesThatBounced() const;
 

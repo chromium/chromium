@@ -57,12 +57,17 @@ class InputDeviceSettingsProvider
       const ::ash::mojom::KeyboardPolicies& keyboard_policies) override;
   void OnTouchpadConnected(const ::ash::mojom::Touchpad& touchpad) override;
   void OnTouchpadDisconnected(const ::ash::mojom::Touchpad& touchpad) override;
+  void OnTouchpadSettingsUpdated(
+      const ::ash::mojom::Touchpad& touchpad) override;
   void OnPointingStickConnected(
       const ::ash::mojom::PointingStick& pointing_stick) override;
   void OnPointingStickDisconnected(
       const ::ash::mojom::PointingStick& pointing_stick) override;
+  void OnPointingStickSettingsUpdated(
+      const ::ash::mojom::PointingStick& pointing_stick) override;
   void OnMouseConnected(const ::ash::mojom::Mouse& mouse) override;
   void OnMouseDisconnected(const ::ash::mojom::Mouse& mouse) override;
+  void OnMouseSettingsUpdated(const ::ash::mojom::Mouse& mouse) override;
 
  private:
   void NotifyKeyboardsUpdated();

@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros_local.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
 
@@ -80,6 +81,8 @@ bool SQLitePersistentStoreBackendBase::InitializeDatabase() {
     return db_ != nullptr;
   }
 
+  base::ElapsedTimer timer;
+
   const base::FilePath dir = path_.DirName();
   if (!base::PathExists(dir) && !base::CreateDirectory(dir)) {
     return false;
@@ -119,6 +122,10 @@ bool SQLitePersistentStoreBackendBase::InitializeDatabase() {
     Reset();
     return false;
   }
+
+  base::UmaHistogramCustomTimes(histogram_tag_ + ".TimeInitializeDB",
+                                timer.Elapsed(), base::Milliseconds(1),
+                                base::Minutes(1), 50);
 
   initialized_ = DoInitializeDatabase();
 

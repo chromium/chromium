@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Drawable.ConstantState;
 
 import androidx.annotation.ColorInt;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -20,10 +21,14 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -36,6 +41,8 @@ import org.chromium.ui.base.TestActivity;
 public class OmniboxResourceProviderTest {
     private static final String TAG = "ORPTest";
 
+    @Rule
+    public TestRule mProcessor = new Features.JUnitProcessor();
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
@@ -297,5 +304,39 @@ public class OmniboxResourceProviderTest {
         assertEquals("Wrong status offline text color for DEFAULT.", defaultColor,
                 OmniboxResourceProvider.getStatusOfflineTextColor(
                         mActivity, BrandedColorScheme.APP_DEFAULT));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_CACHE_SUGGESTION_RESOURCES})
+    public void getDrawableCached() {
+        Drawable drawable =
+                OmniboxResourceProvider.getDrawable(mActivity, R.drawable.btn_suggestion_refine);
+        ConstantState constantState = drawable.getConstantState();
+
+        Assert.assertEquals(constantState,
+                OmniboxResourceProvider.getDrawableCacheForTesting().get(
+                        R.drawable.btn_suggestion_refine));
+
+        drawable = OmniboxResourceProvider.getDrawable(mActivity, R.drawable.btn_suggestion_refine);
+        Assert.assertNotNull(drawable);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_CACHE_SUGGESTION_RESOURCES})
+    public void getStringCached() {
+        String refineString = OmniboxResourceProvider.getString(
+                mActivity, R.string.accessibility_omnibox_btn_refine, "foobar");
+
+        Assert.assertEquals(
+                mActivity.getString(R.string.accessibility_omnibox_btn_refine, "foobar"),
+                refineString);
+        Assert.assertEquals(mActivity.getString(R.string.accessibility_omnibox_btn_refine),
+                OmniboxResourceProvider.getStringCacheForTesting().get(
+                        R.string.accessibility_omnibox_btn_refine));
+
+        String copyString = OmniboxResourceProvider.getString(mActivity, R.string.copy_link);
+        Assert.assertEquals(mActivity.getString(R.string.copy_link, "foobar"), copyString);
+        Assert.assertEquals(copyString,
+                OmniboxResourceProvider.getStringCacheForTesting().get(R.string.copy_link));
     }
 }

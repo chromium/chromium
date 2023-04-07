@@ -123,6 +123,7 @@ MediaStream::MediaStream(ExecutionContext* context,
                          TransferredMediaStreamTrack* transferred_track,
                          base::OnceCallback<void(MediaStream*)> callback)
     : ExecutionContextClient(context),
+      ActiveScriptWrappable<MediaStream>({}),
       descriptor_(stream_descriptor),
       media_stream_initialized_callback_(std::move(callback)),
       scheduled_event_timer_(
@@ -183,6 +184,7 @@ MediaStream::MediaStream(ExecutionContext* context,
                          const MediaStreamTrackVector& audio_tracks,
                          const MediaStreamTrackVector& video_tracks)
     : ExecutionContextClient(context),
+      ActiveScriptWrappable<MediaStream>({}),
       descriptor_(stream_descriptor),
       scheduled_event_timer_(
           context->GetTaskRunner(TaskType::kMediaElementEvent),
@@ -213,6 +215,7 @@ MediaStream::MediaStream(ExecutionContext* context,
                          const MediaStreamTrackVector& audio_tracks,
                          const MediaStreamTrackVector& video_tracks)
     : ExecutionContextClient(context),
+      ActiveScriptWrappable<MediaStream>({}),
       scheduled_event_timer_(
           context->GetTaskRunner(TaskType::kMediaElementEvent),
           this,

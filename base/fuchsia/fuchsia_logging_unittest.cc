@@ -12,6 +12,7 @@
 
 #include "base/fuchsia/fuchsia_component_connect.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/fuchsia/test_component_context_for_process.h"
 #include "base/fuchsia/test_log_listener_safe.h"
 #include "base/logging.h"
 #include "base/test/scoped_logging_settings.h"
@@ -118,6 +119,51 @@ TEST(FuchsiaLoggingTest, ConnectionErrorMessage) {
       "Failed to connect to base.testfidl.TestInterface: "
       "ZX_ERR_PEER_CLOSED",
       base::FidlConnectionErrorMessage(result));
+}
+
+TEST(FuchsiaLoggingTest, FidlMethodErrorMessage_TwoWay) {
+  fidl::Result<base_testfidl::TestInterface::Add> result =
+      fit::error(fidl::Status::Unbound());
+
+  EXPECT_EQ(
+      "Error calling Add: FIDL operation failed due to user initiated unbind, "
+      "status: ZX_ERR_CANCELED (-23), detail: unbound endpoint",
+      base::FidlMethodResultErrorMessage(result, "Add"));
+}
+
+TEST(FuchsiaLoggingTest, FidlMethodErrorMessage_OneWay) {
+  fit::result<fidl::OneWayError> result = fit::error(fidl::Status::Unbound());
+
+  EXPECT_EQ(
+      "Error calling Add: FIDL operation failed due to user initiated unbind, "
+      "status: ZX_ERR_CANCELED (-23), detail: unbound endpoint",
+      base::FidlMethodResultErrorMessage(result, "Add"));
+}
+
+TEST(FuchsiaLoggingTest, FidlBindingClosureWarningLogger) {
+  test::SingleThreadTaskEnvironment task_environment{
+      test::SingleThreadTaskEnvironment::MainThreadType::IO};
+  SimpleTestLogListener listener;
+
+  // Ensure that logging is directed to the system debug log.
+  logging::ScopedLoggingSettings scoped_logging_settings;
+  TestComponentContextForProcess test_context;
+  test_context.AddService(fidl::DiscoverableProtocolName<fuchsia_logger::Log>);
+  ListenFilteredByCurrentProcessId(listener);
+
+  // Initialize logging in the `scoped_logging_settings_`.
+  CHECK(logging::InitLogging({.logging_dest = logging::LOG_DEFAULT}));
+
+  base::FidlBindingClosureWarningLogger<base_testfidl::TestInterface>()(
+      fidl::UnbindInfo::PeerClosed(ZX_ERR_PEER_CLOSED));
+
+  absl::optional<fuchsia_logger::LogMessage> logged_message =
+      listener.RunUntilMessageReceived(
+          "base.testfidl.TestInterface unbound: ZX_ERR_PEER_CLOSED (-24)");
+
+  ASSERT_TRUE(logged_message.has_value());
+  EXPECT_EQ(logged_message->severity(),
+            static_cast<int32_t>(fuchsia_logger::LogLevelFilter::kWarn));
 }
 
 }  // namespace base

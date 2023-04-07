@@ -55,12 +55,6 @@
 
   function runTest() {
     promise_test(async (t) => {
-      // Skip the test on a Mac as they do not support touch screens.
-      // TODO(awogbemila): Use a different method of scrolling so this test
-      // can run on macs.
-      const isMac = navigator.platform.toUpperCase().indexOf('MAC')>=0;
-      if (isMac)
-        return;
       await resetScrollers(t);
       await waitForCompositorCommit();
 
@@ -74,10 +68,10 @@
       assert_approx_equals(target_div.scrollTop, max_target_div_scroll_top, 1,
         "target_div should be fully scrolled down");
 
-      scrollend_promise = waitForScrollendEvent(t, document, 1000);
+      scrollend_promise = waitForScrollendEvent(t, document, 2000);
       target_div.addEventListener("scrollend", fail);
       // Scroll up on target div and wait for the doc to get scrollend event.
-      await touchScrollInTarget(target_div.clientHeight + 25, target_div, "down");
+      await scrollElementDown(target_div, target_div.clientHeight + 25);
       await scrollend_promise;
 
       target_div.removeEventListener("scrollend", fail);
@@ -86,12 +80,6 @@
     }, "testing, vertical");
 
     promise_test(async (t) => {
-      // Skip the test on a Mac as they do not support touch screens.
-      // TODO(awogbemila): Use a different method of scrolling so this test
-      // can run on macs.
-      const isMac = navigator.platform.toUpperCase().indexOf('MAC')>=0;
-      if (isMac)
-        return;
       await resetScrollers(t);
       await waitForCompositorCommit();
 
@@ -105,10 +93,9 @@
       assert_approx_equals(target_div.scrollLeft, max_target_div_scroll_left, 1,
         "target_div should be fully scrolled right");
 
-      scrollend_promise = waitForScrollendEvent(t, document, 1000);
+      scrollend_promise = waitForScrollendEvent(t, document, 2000);
       target_div.addEventListener("scrollend", fail);
-      // Scroll up on target div and wait for the doc to get scrollend event.
-      await touchScrollInTarget(target_div.clientWidth + 25, target_div, "right");
+      await scrollElementLeft(target_div, target_div.clientWidth + 25);
       await scrollend_promise;
 
       target_div.removeEventListener("scrollend", fail);

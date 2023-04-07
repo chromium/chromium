@@ -1718,6 +1718,9 @@ inline CSSIdentifierValue::CSSIdentifierValue(TimelineScroller scroller)
     case TimelineScroller::kRoot:
       value_id_ = CSSValueID::kRoot;
       break;
+    case TimelineScroller::kSelf:
+      value_id_ = CSSValueID::kSelf;
+      break;
   }
 }
 
@@ -1728,6 +1731,8 @@ inline TimelineScroller CSSIdentifierValue::ConvertTo() const {
       return TimelineScroller::kNearest;
     case CSSValueID::kRoot:
       return TimelineScroller::kRoot;
+    case CSSValueID::kSelf:
+      return TimelineScroller::kSelf;
     default:
       break;
   }

@@ -27,6 +27,14 @@ namespace sidePanel {
     boolean? enabled;
   };
 
+  // A dictionary containing the extension's options for how its side panel
+  // behaves.
+  dictionary PanelBehavior {
+    // Whether clicking the extension's icon will toggle showing the extension's
+    // entry in the side panel. Defaults to false.
+    boolean? openPanelOnActionClick;
+  };
+
   dictionary GetPanelOptions {
     // If specified, the side panel options for the given tab will be returned.
     // Otherwise, returns the default side panel options (used for any tab that
@@ -36,6 +44,7 @@ namespace sidePanel {
 
   callback VoidCallback = void();
   callback PanelOptionsCallback = void(PanelOptions options);
+  callback PanelBehaviorCallback = void(PanelBehavior behavior);
 
   interface Functions {
     // Configures the side panel.
@@ -47,8 +56,20 @@ namespace sidePanel {
     // Returns the active panel configuration.
     // |options|: Specifies the context to return the configuration for.
     // |callback|: Called with the active panel configuration.
-    [supportsPromises] static void getOptions(
-      GetPanelOptions options,
-      PanelOptionsCallback callback);
+    [supportsPromises] static void getOptions(GetPanelOptions options,
+                                              PanelOptionsCallback callback);
+
+    // Configures the extension's side panel behavior. This is an upsert
+    // operation.
+    // |behavior|: The new behavior to be set.
+    // |callback|: Called when the new behavior has been set.
+    [nodoc, supportsPromises] static void setPanelBehavior(
+        PanelBehavior behavior,
+        optional VoidCallback callback);
+
+    // Returns the extension's current side panel behavior.
+    // |callback|: Called with the extension's side panel behavior.
+    [nodoc, supportsPromises] static void getPanelBehavior(
+        PanelBehaviorCallback callback);
   };
 };

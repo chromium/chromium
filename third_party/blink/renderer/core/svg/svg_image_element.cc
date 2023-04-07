@@ -39,6 +39,7 @@ namespace blink {
 SVGImageElement::SVGImageElement(Document& document)
     : SVGGraphicsElement(svg_names::kImageTag, document),
       SVGURIReference(this),
+      ActiveScriptWrappable<SVGImageElement>({}),
       is_default_overridden_intrinsic_size_(
           GetExecutionContext() &&
           !GetExecutionContext()->IsFeatureEnabled(

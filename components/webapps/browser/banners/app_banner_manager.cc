@@ -402,7 +402,7 @@ void AppBannerManager::OnDidGetManifest(const InstallableData& data) {
       Stop(ALREADY_INSTALLED);
     } else {
       SetInstallableWebAppCheckResult(
-          InstallableWebAppCheckResult::kYes_ByUserRequest);
+          InstallableWebAppCheckResult::kYes_Promotable);
       Stop(NO_ERROR_DETECTED);
     }
     return;

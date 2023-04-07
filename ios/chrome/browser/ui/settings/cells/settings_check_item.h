@@ -9,6 +9,13 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 
+// Possible warning states of a SettingsCheckItem.
+enum class WarningState {
+  kSafe,     // Everything is good, no warning to show (green icon).
+  kWarning,  // There is a warning, but it's not high priority (yellow icon).
+  kSevereWarning,  // There is a high priority warning (red icon).
+};
+
 // SettingsCheckItem is a model class that uses SettingsCheckCell.
 @interface SettingsCheckItem : TableViewItem
 
@@ -54,6 +61,9 @@
 // Disabled cell are automatically drawn with dimmed text and without
 // `trailingImage` or `activityIndicator`.
 @property(nonatomic, assign, getter=isEnabled) BOOL enabled;
+
+// The WarningState of the item.
+@property(nonatomic, assign) WarningState warningState;
 
 @end
 

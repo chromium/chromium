@@ -15,6 +15,8 @@ declare_args() {
   # Whether to allow Rust code to be part of the Chromium *build process*.
   # This can be used to create Rust test binaries, even if the flag below
   # is false.
+  # This only applies to Chromium itself, so the build_with_chromium check
+  # should not be removed.
   # TODO(crbug.com/1386212): Mac
   # TODO(crbug.com/1271215): Windows
   # TODO(crbug.com/1426472): use_clang_coverage
@@ -25,7 +27,7 @@ declare_args() {
   # slowly and carefully and there may be no actual bugs there.
   enable_rust = is_linux && !is_official_build && !using_sanitizer &&
                 target_cpu != "x86" && !use_clang_coverage && is_clang &&
-                target_os == host_os
+                target_os == host_os && build_with_chromium
 
   # As we incrementally enable Rust on mainstream builders, we want to enable
   # the toolchain (by switching 'enable_rust' to true) while still disabling

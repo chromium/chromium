@@ -441,8 +441,9 @@ void DragHandle::HideDragHandleNudgeHelper(bool hidden_by_tap, bool animate) {
     ScheduleDragHandleTranslationAnimation(
         0, base::TimeDelta(), gfx::Tween::ZERO,
         ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-    drag_handle_nudge_->GetWidget()->CloseWithReason(
-        views::Widget::ClosedReason::kUnspecified);
+    views::Widget* nudge_widget = drag_handle_nudge_->GetWidget();
+    drag_handle_nudge_ = nullptr;
+    nudge_widget->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
     return;
   }
   ScheduleDragHandleTranslationAnimation(

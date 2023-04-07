@@ -508,17 +508,12 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame(std::vector<uint8_t>& y_plane,
                                    .ptr = &v4l2_compressed_hdr_probs};
   }
 
-  if (!v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, &ext_ctrls))
-    LOG(FATAL) << "VIDIOC_S_EXT_CTRLS failed.";
+  v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, &ext_ctrls);
 
-  if (!v4l2_ioctl_->MediaRequestIocQueue(OUTPUT_queue_))
-    LOG(FATAL) << "MEDIA_REQUEST_IOC_QUEUE failed.";
+  v4l2_ioctl_->MediaRequestIocQueue(OUTPUT_queue_);
 
   uint32_t buffer_id;
-
-  if (!v4l2_ioctl_->DQBuf(CAPTURE_queue_, &buffer_id)) {
-    LOG(FATAL) << "VIDIOC_DQBUF failed for CAPTURE queue.";
-  }
+  v4l2_ioctl_->DQBuf(CAPTURE_queue_, &buffer_id);
 
   scoped_refptr<MmappedBuffer> buffer = CAPTURE_queue_->GetBuffer(buffer_id);
   size = CAPTURE_queue_->display_size();
@@ -547,17 +542,14 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame(std::vector<uint8_t>& y_plane,
       CAPTURE_queue_->set_last_queued_buffer_id(reusable_buffer_slot);
   }
 
-  if (!v4l2_ioctl_->DQBuf(OUTPUT_queue_, &buffer_id)) {
-    LOG(FATAL) << "VIDIOC_DQBUF failed for OUTPUT queue.";
-  }
+  v4l2_ioctl_->DQBuf(OUTPUT_queue_, &buffer_id);
 
   // TODO(stevecho): With current VP9 API, VIDIOC_G_EXT_CTRLS ioctl call is
   // needed when forward probabilities update is used. With new VP9 API landing
   // in kernel 5.17, VIDIOC_G_EXT_CTRLS ioctl call is no longer needed, see:
   // https://lwn.net/Articles/855419/
 
-  if (!v4l2_ioctl_->MediaRequestIocReinit(OUTPUT_queue_))
-    LOG(FATAL) << "MEDIA_REQUEST_IOC_REINIT failed.";
+  v4l2_ioctl_->MediaRequestIocReinit(OUTPUT_queue_);
 
   return Vp9Decoder::kOk;
 }

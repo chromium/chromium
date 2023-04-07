@@ -14,6 +14,10 @@ async function waitForScrollendEvent(test, target, timeoutMs = 500) {
   return waitForEvent("scrollend", test, target, timeoutMs);
 }
 
+async function waitForOverscrollEvent(test, target, timeoutMs = 500) {
+  return waitForEvent("overscroll", test, target, timeoutMs);
+}
+
 async function waitForPointercancelEvent(test, target, timeoutMs = 500) {
   return waitForEvent("pointercancel", test, target, timeoutMs);
 }
@@ -251,4 +255,24 @@ function conditionHolds(condition, error_message = 'Condition is not true anymor
     }
     tick(0);
   });
+}
+
+function scrollElementDown(element, scroll_amount) {
+  let x = 0;
+  let y = 0;
+  let delta_x = 0;
+  let delta_y = scroll_amount;
+  let actions = new test_driver.Actions()
+  .scroll(x, y, delta_x, delta_y, {origin: element});
+  return  actions.send();
+}
+
+function scrollElementLeft(element, scroll_amount) {
+  let x = 0;
+  let y = 0;
+  let delta_x = scroll_amount;
+  let delta_y = 0;
+  let actions = new test_driver.Actions()
+  .scroll(x, y, delta_x, delta_y, {origin: element});
+  return  actions.send();
 }

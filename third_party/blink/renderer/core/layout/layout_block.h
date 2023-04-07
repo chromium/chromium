@@ -139,11 +139,7 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
       bool first_line,
       LineDirectionMode,
       LinePositionMode = kPositionOnContainingLine) const override;
-  LayoutUnit BaselinePosition(
-      FontBaseline,
-      bool first_line,
-      LineDirectionMode,
-      LinePositionMode = kPositionOnContainingLine) const override;
+
   bool UseLogicalBottomMarginEdgeForInlineBlockBaseline() const;
 
   LayoutUnit MinLineHeightForReplacedObject(bool is_first_line,
@@ -348,8 +344,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
  protected:
   LayoutUnit MarginIntrinsicLogicalWidthForChild(const LayoutBox& child) const;
 
-  LayoutUnit BeforeMarginInLineDirection(LineDirectionMode) const;
-
  public:
   void Paint(const PaintInfo&) const override;
   virtual void PaintObject(const PaintInfo&,
@@ -377,12 +371,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
       LayoutObject& child,
       LayoutUnit& min_preferred_logical_width,
       LayoutUnit& max_preferred_logical_width) const;
-
-  LayoutUnit FirstLineBoxBaseline() const override;
-  LayoutUnit InlineBlockBaseline(LineDirectionMode) const override;
-  absl::optional<LayoutUnit> FirstLineBoxBaselineOverride() const;
-  absl::optional<LayoutUnit> InlineBlockBaselineOverride(
-      LineDirectionMode) const;
 
   bool HitTestChildren(HitTestResult&,
                        const HitTestLocation&,

@@ -162,7 +162,7 @@ TEST_F(TrayEventFilterTest, ClickingOnMenuContainerDoesNotCloseBubble) {
   EXPECT_TRUE(IsBubbleShown());
 }
 
-TEST_F(TrayEventFilterTest, ClickingOnPopupDoesNotCloseBubble) {
+TEST_F(TrayEventFilterTest, ClickingOnPopupClosesBubble) {
   // Set up a popup window.
   auto popup_widget = std::make_unique<views::Widget>();
   views::Widget::InitParams popup_params;
@@ -183,11 +183,11 @@ TEST_F(TrayEventFilterTest, ClickingOnPopupDoesNotCloseBubble) {
   ShowSystemTrayMainView();
   EXPECT_TRUE(IsBubbleShown());
 
-  // Clicking on StatusContainer should not close the bubble.
+  // Clicking on the popup should close the bubble.
   ui::MouseEvent event = outside_event();
   ui::Event::DispatcherApi(&event).set_target(popup_window.get());
   GetTrayEventFilter()->OnMouseEvent(&event);
-  EXPECT_TRUE(IsBubbleShown());
+  EXPECT_FALSE(IsBubbleShown());
 }
 
 TEST_F(TrayEventFilterTest, ClickingOnKeyboardContainerDoesNotCloseBubble) {

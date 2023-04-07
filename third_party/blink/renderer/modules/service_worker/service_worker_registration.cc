@@ -140,7 +140,8 @@ ServiceWorkerRegistration* ServiceWorkerRegistration::Take(
 ServiceWorkerRegistration::ServiceWorkerRegistration(
     ExecutionContext* execution_context,
     WebServiceWorkerRegistrationObjectInfo info)
-    : ExecutionContextLifecycleObserver(execution_context),
+    : ActiveScriptWrappable<ServiceWorkerRegistration>({}),
+      ExecutionContextLifecycleObserver(execution_context),
       registration_id_(info.registration_id),
       scope_(std::move(info.scope)),
       stopped_(false) {
@@ -152,7 +153,8 @@ ServiceWorkerRegistration::ServiceWorkerRegistration(
 ServiceWorkerRegistration::ServiceWorkerRegistration(
     ExecutionContext* execution_context,
     mojom::blink::ServiceWorkerRegistrationObjectInfoPtr info)
-    : ExecutionContextLifecycleObserver(execution_context),
+    : ActiveScriptWrappable<ServiceWorkerRegistration>({}),
+      ExecutionContextLifecycleObserver(execution_context),
       registration_id_(info->registration_id),
       scope_(std::move(info->scope)),
       stopped_(false) {

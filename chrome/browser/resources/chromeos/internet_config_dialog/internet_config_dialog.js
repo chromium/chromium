@@ -74,15 +74,15 @@ Polymer({
 
   /** @override */
   attached() {
-    var dialogArgs = chrome.getVariableValue('dialogArguments');
+    const dialogArgs = chrome.getVariableValue('dialogArguments');
     if (dialogArgs) {
-      var args = JSON.parse(dialogArgs);
+      const args = JSON.parse(dialogArgs);
       this.type_ = args.type;
       assert(this.type_);
       this.guid_ = args.guid || '';
     } else {
       // For debugging
-      var params = new URLSearchParams(document.location.search.substring(1));
+      const params = new URLSearchParams(document.location.search.substring(1));
       this.type_ = params.get('type') || 'WiFi';
       this.guid_ = params.get('guid') || '';
     }
@@ -102,7 +102,7 @@ Polymer({
    * @private
    */
   getDialogTitle_() {
-    var type = this.i18n('OncType' + this.type_);
+    const type = this.i18n('OncType' + this.type_);
     return this.i18n('internetJoinType', type);
   },
 

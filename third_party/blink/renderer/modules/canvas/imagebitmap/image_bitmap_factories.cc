@@ -277,7 +277,6 @@ ImageBitmapFactories::ImageBitmapLoader::ImageBitmapLoader(
     const ImageBitmapOptions* options)
     : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
       loader_(MakeGarbageCollected<FileReaderLoader>(
-          FileReaderLoader::kReadAsArrayBuffer,
           this,
           GetExecutionContext()->GetTaskRunner(TaskType::kFileReading))),
       factory_(&factory),
@@ -338,8 +337,9 @@ void ImageBitmapFactories::ImageBitmapLoader::ContextDestroyed() {
   }
 }
 
-void ImageBitmapFactories::ImageBitmapLoader::DidFinishLoading() {
-  auto contents = loader_->TakeContents();
+void ImageBitmapFactories::ImageBitmapLoader::DidFinishLoading(
+    FileReaderData data) {
+  auto contents = std::move(data).AsArrayBufferContents();
   loader_.Clear();
   if (!contents.IsValid()) {
     RejectPromise(kAllocationFailureImageBitmapRejectionReason);
@@ -348,7 +348,9 @@ void ImageBitmapFactories::ImageBitmapLoader::DidFinishLoading() {
   ScheduleAsyncImageBitmapDecoding(std::move(contents));
 }
 
-void ImageBitmapFactories::ImageBitmapLoader::DidFail(FileErrorCode) {
+void ImageBitmapFactories::ImageBitmapLoader::DidFail(
+    FileErrorCode error_code) {
+  FileReaderAccumulator::DidFail(error_code);
   RejectPromise(kUndecodableImageBitmapRejectionReason);
 }
 
@@ -427,7 +429,7 @@ void ImageBitmapFactories::ImageBitmapLoader::ResolvePromiseOnOriginalThread(
 
 void ImageBitmapFactories::ImageBitmapLoader::Trace(Visitor* visitor) const {
   ExecutionContextLifecycleObserver::Trace(visitor);
-  FileReaderLoaderClient::Trace(visitor);
+  FileReaderAccumulator::Trace(visitor);
   visitor->Trace(factory_);
   visitor->Trace(resolver_);
   visitor->Trace(options_);

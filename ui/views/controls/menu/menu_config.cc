@@ -5,6 +5,7 @@
 #include "ui/views/controls/menu/menu_config.h"
 
 #include "base/no_destructor.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 
@@ -12,6 +13,7 @@ namespace views {
 
 MenuConfig::MenuConfig() {
   Init();
+  InitCR2023();
 }
 
 MenuConfig::~MenuConfig() = default;
@@ -42,6 +44,18 @@ bool MenuConfig::ShouldShowAcceleratorText(const MenuItemView* item,
   }
   *text = accelerator.GetShortcutText();
   return true;
+}
+
+void MenuConfig::InitCR2023() {
+  if (!features::IsChromeRefresh2023()) {
+    return;
+  }
+  // CR2023 menu metrics
+  separator_height = 17;
+  separator_left_margin = 12;
+  separator_right_margin = 12;
+  item_top_margin = 6;
+  item_bottom_margin = 6;
 }
 
 // static

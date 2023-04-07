@@ -563,21 +563,11 @@ enum class ChromeAppDeprecationFeatureValue {
 #endif
 };
 
-enum class ChromeAppsEnabledPrefValue {
-  kDefault,
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_FUCHSIA)
-  kEnabled,
-  kDisabled,
-#endif
-};
-
 std::string ChromeAppDeprecationFeatureValueToString(
-    const ::testing::TestParamInfo<std::tuple<ChromeAppDeprecationFeatureValue,
-                                              ChromeAppsEnabledPrefValue>>&
+    const ::testing::TestParamInfo<ChromeAppDeprecationFeatureValue>&
         param_info) {
   std::string result;
-  switch (std::get<0>(param_info.param)) {
+  switch (param_info.param) {
     case ChromeAppDeprecationFeatureValue::kDefault:
       result = "ChromeAppDeprecationFeatureDefault";
       break;
@@ -594,21 +584,6 @@ std::string ChromeAppDeprecationFeatureValueToString(
       break;
 #endif
   }
-  result += '_';
-  switch (std::get<1>(param_info.param)) {
-    case ChromeAppsEnabledPrefValue::kDefault:
-      result += "ChromeAppsEnabledPrefDefault";
-      break;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_FUCHSIA)
-    case ChromeAppsEnabledPrefValue::kEnabled:
-      result += "ChromeAppsEnabledPrefEnabled";
-      break;
-    case ChromeAppsEnabledPrefValue::kDisabled:
-      result += "ChromeAppsEnabledPrefDisabled";
-      break;
-#endif
-  }
   return result;
 }
 
@@ -616,12 +591,10 @@ std::string ChromeAppDeprecationFeatureValueToString(
 
 class StartupBrowserCreatorChromeAppShortcutTest
     : public StartupBrowserCreatorTest,
-      public ::testing::WithParamInterface<
-          std::tuple<ChromeAppDeprecationFeatureValue,
-                     ChromeAppsEnabledPrefValue>> {
+      public ::testing::WithParamInterface<ChromeAppDeprecationFeatureValue> {
  protected:
   StartupBrowserCreatorChromeAppShortcutTest() {
-    switch (std::get<0>(GetParam())) {
+    switch (GetParam()) {
       case ChromeAppDeprecationFeatureValue::kDefault:
         break;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -654,21 +627,6 @@ class StartupBrowserCreatorChromeAppShortcutTest
 
   void SetUpOnMainThread() override {
     StartupBrowserCreatorTest::SetUpOnMainThread();
-    switch (std::get<1>(GetParam())) {
-      case ChromeAppsEnabledPrefValue::kDefault:
-        break;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_FUCHSIA)
-      case ChromeAppsEnabledPrefValue::kEnabled:
-        browser()->profile()->GetPrefs()->SetBoolean(
-            extensions::pref_names::kChromeAppsEnabled, true);
-        break;
-      case ChromeAppsEnabledPrefValue::kDisabled:
-        browser()->profile()->GetPrefs()->SetBoolean(
-            extensions::pref_names::kChromeAppsEnabled, false);
-        break;
-#endif
-    }
   }
 
   void ExpectBlockLaunch(const std::string& app_id, bool force_install_dialog) {
@@ -801,16 +759,9 @@ class StartupBrowserCreatorChromeAppShortcutTest
   bool IsExpectedToAllowLaunch() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)
-    switch (std::get<1>(GetParam())) {
-      case ChromeAppsEnabledPrefValue::kEnabled:
-        return true;
-      case ChromeAppsEnabledPrefValue::kDisabled:
-      case ChromeAppsEnabledPrefValue::kDefault:
-        break;
-    }
     // Under no circumstance can the kChromeAppsDeprecation flag be used to
     // globally disable deprecation.
-    switch (std::get<0>(GetParam())) {
+    switch (GetParam()) {
       case ChromeAppDeprecationFeatureValue::kEnabledWithLaunchOption:
       case ChromeAppDeprecationFeatureValue::kEnabledWithNoLaunch:
       case ChromeAppDeprecationFeatureValue::kDefault:
@@ -823,7 +774,7 @@ class StartupBrowserCreatorChromeAppShortcutTest
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   ExpectedLaunchBehavior GetLaunchBehaviorExpected(bool would_launch_tab) {
-    switch (std::get<0>(GetParam())) {
+    switch (GetParam()) {
       case ChromeAppDeprecationFeatureValue::kEnabledWithLaunchOption:
         return would_launch_tab
                    ? ExpectedLaunchBehavior::kLaunchAnywaysInTab
@@ -1024,23 +975,15 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     StartupBrowserCreatorChromeAppShortcutTest,
-    ::testing::Combine(
-        ::testing::Values(
-            ChromeAppDeprecationFeatureValue::kDefault
+    ::testing::Values(
+        ChromeAppDeprecationFeatureValue::kDefault
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-            ,
-            ChromeAppDeprecationFeatureValue::kEnabledWithLaunchOption,
-            ChromeAppDeprecationFeatureValue::kEnabledWithNoLaunch,
-            ChromeAppDeprecationFeatureValue::kDisabled
+        ,
+        ChromeAppDeprecationFeatureValue::kEnabledWithLaunchOption,
+        ChromeAppDeprecationFeatureValue::kEnabledWithNoLaunch,
+        ChromeAppDeprecationFeatureValue::kDisabled
 #endif
-            ),
-        ::testing::Values(ChromeAppsEnabledPrefValue::kDefault
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-                          ,
-                          ChromeAppsEnabledPrefValue::kEnabled,
-                          ChromeAppsEnabledPrefValue::kDisabled
-#endif
-                          )),
+        ),
     ChromeAppDeprecationFeatureValueToString);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -1231,11 +1174,9 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTestWithLaunch,
 INSTANTIATE_TEST_SUITE_P(
     All,
     StartupBrowserCreatorChromeAppShortcutTestWithLaunch,
-    ::testing::Combine(
-        ::testing::Values(
-            ChromeAppDeprecationFeatureValue::kEnabledWithLaunchOption,
-            ChromeAppDeprecationFeatureValue::kEnabledWithNoLaunch),
-        ::testing::Values(ChromeAppsEnabledPrefValue::kDisabled)),
+    ::testing::Values(
+        ChromeAppDeprecationFeatureValue::kEnabledWithLaunchOption,
+        ChromeAppDeprecationFeatureValue::kEnabledWithNoLaunch),
     ChromeAppDeprecationFeatureValueToString);
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

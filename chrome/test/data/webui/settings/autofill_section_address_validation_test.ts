@@ -8,7 +8,7 @@ import 'chrome://settings/lazy_load.js';
 import {CountryDetailManagerImpl, CrInputElement, CrTextareaElement} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {createAddressEntry, createEmptyAddressEntry, makeGuid} from './passwords_and_autofill_fake_data.js';
+import {createAddressEntry, createEmptyAddressEntry, makeGuid, STUB_USER_ACCOUNT_INFO} from './passwords_and_autofill_fake_data.js';
 import {CountryDetailManagerTestImpl, createAddressDialog, expectEvent} from './autofill_section_test_utils.js';
 // clang-format on
 
@@ -19,15 +19,11 @@ suite('AutofillSectionAddressValidationTests', () => {
 
   test('verifyRequiredFields', async () => {
     const address = createEmptyAddressEntry();
-    const country = 'US';
-    address.countryCode = country;
-    address.metadata = {
-      summaryLabel: '',
-      source: chrome.autofillPrivate.AddressSource.ACCOUNT,
-    };
+    address.countryCode = 'US';
 
     const components =
-        await CountryDetailManagerImpl.getInstance().getAddressFormat(country);
+        await CountryDetailManagerImpl.getInstance().getAddressFormat(
+            address.countryCode);
 
     const nRequired = components.components.reduce(
         (n, row) =>
@@ -36,7 +32,10 @@ suite('AutofillSectionAddressValidationTests', () => {
 
     assertGT(nRequired, 0, 'US addresses should have required components');
 
-    const dialog = await createAddressDialog(address);
+    const dialog = await createAddressDialog(address, {
+      ...STUB_USER_ACCOUNT_INFO,
+      isEligibleForAddressAccountStorage: true,
+    });
     const content = dialog.$.dialog;
     const save = dialog.$.saveButton;
 
@@ -61,14 +60,10 @@ suite('AutofillSectionAddressValidationTests', () => {
 
 
   test('verifyClearingOutRequiredField', async () => {
-    const address = createEmptyAddressEntry();
-    address.countryCode = 'US';
-    address.metadata = {
-      summaryLabel: '',
-      source: chrome.autofillPrivate.AddressSource.ACCOUNT,
-    };
-
-    const dialog = await createAddressDialog(address);
+    const dialog = await createAddressDialog(createEmptyAddressEntry(), {
+      ...STUB_USER_ACCOUNT_INFO,
+      isEligibleForAddressAccountStorage: true,
+    });
     const content = dialog.$.dialog;
     const save = dialog.$.saveButton;
     const requiredElements =
@@ -92,14 +87,10 @@ suite('AutofillSectionAddressValidationTests', () => {
   });
 
   test('verifyFormSaveability', async () => {
-    const address = createEmptyAddressEntry();
-    address.countryCode = 'US';
-    address.metadata = {
-      summaryLabel: '',
-      source: chrome.autofillPrivate.AddressSource.ACCOUNT,
-    };
-
-    const dialog = await createAddressDialog(address);
+    const dialog = await createAddressDialog(createEmptyAddressEntry(), {
+      ...STUB_USER_ACCOUNT_INFO,
+      isEligibleForAddressAccountStorage: true,
+    });
     const content = dialog.$.dialog;
     const save = dialog.$.saveButton;
     const requiredElements =
@@ -126,14 +117,10 @@ suite('AutofillSectionAddressValidationTests', () => {
   });
 
   test('verifySaveabilityResetOnCountryChange', async () => {
-    const address = createEmptyAddressEntry();
-    address.countryCode = 'US';
-    address.metadata = {
-      summaryLabel: '',
-      source: chrome.autofillPrivate.AddressSource.ACCOUNT,
-    };
-
-    const dialog = await createAddressDialog(address);
+    const dialog = await createAddressDialog(createEmptyAddressEntry(), {
+      ...STUB_USER_ACCOUNT_INFO,
+      isEligibleForAddressAccountStorage: true,
+    });
     const content = dialog.$.dialog;
     const save = dialog.$.saveButton;
     const country = dialog.$.country;

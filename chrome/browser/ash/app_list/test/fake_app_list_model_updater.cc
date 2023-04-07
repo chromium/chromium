@@ -189,7 +189,7 @@ bool FakeAppListModelUpdater::SearchEngineIsGoogle() {
   return search_engine_is_google_;
 }
 
-void FakeAppListModelUpdater::QueryWouldTriggerLauncherSearchIph() {}
+void FakeAppListModelUpdater::RecalculateWouldTriggerLauncherSearchIph() {}
 
 void FakeAppListModelUpdater::PublishSearchResults(
     const std::vector<ChromeSearchResult*>& results,

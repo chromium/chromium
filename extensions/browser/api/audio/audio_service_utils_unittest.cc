@@ -9,26 +9,26 @@ namespace extensions {
 
 TEST(AudioServiceUtilsTest, ConvertStreamTypeFromMojom) {
   EXPECT_EQ(ConvertStreamTypeFromMojom(crosapi::mojom::StreamType::kNone),
-            api::audio::STREAM_TYPE_NONE);
+            api::audio::StreamType::kNone);
   EXPECT_EQ(ConvertStreamTypeFromMojom(crosapi::mojom::StreamType::kInput),
-            api::audio::STREAM_TYPE_INPUT);
+            api::audio::StreamType::kInput);
   EXPECT_EQ(ConvertStreamTypeFromMojom(crosapi::mojom::StreamType::kOutput),
-            api::audio::STREAM_TYPE_OUTPUT);
+            api::audio::StreamType::kOutput);
 }
 
 TEST(AudioServiceUtilsTest, ConvertStreamTypeToMojom) {
   EXPECT_EQ(crosapi::mojom::StreamType::kNone,
-            ConvertStreamTypeToMojom(api::audio::STREAM_TYPE_NONE));
+            ConvertStreamTypeToMojom(api::audio::StreamType::kNone));
   EXPECT_EQ(crosapi::mojom::StreamType::kInput,
-            ConvertStreamTypeToMojom(api::audio::STREAM_TYPE_INPUT));
+            ConvertStreamTypeToMojom(api::audio::StreamType::kInput));
   EXPECT_EQ(crosapi::mojom::StreamType::kOutput,
-            ConvertStreamTypeToMojom(api::audio::STREAM_TYPE_OUTPUT));
+            ConvertStreamTypeToMojom(api::audio::StreamType::kOutput));
 }
 
 TEST(AudioServiceUtilsTest, ConvertDeviceTypeFromMojom) {
   const int mojom_max_value =
       static_cast<int>(crosapi::mojom::DeviceType::kMaxValue);
-  const int ext_max_value = static_cast<int>(api::audio::DEVICE_TYPE_LAST);
+  const int ext_max_value = static_cast<int>(api::audio::DeviceType::kMaxValue);
 
   ASSERT_EQ(ext_max_value, mojom_max_value);
 
@@ -42,7 +42,7 @@ TEST(AudioServiceUtilsTest, ConvertDeviceTypeFromMojom) {
 TEST(AudioServiceUtilsTest, ConvertDeviceTypeToMojom) {
   const int mojom_max_value =
       static_cast<int>(crosapi::mojom::DeviceType::kMaxValue);
-  const int ext_max_value = static_cast<int>(api::audio::DEVICE_TYPE_LAST);
+  const int ext_max_value = static_cast<int>(api::audio::DeviceType::kMaxValue);
 
   ASSERT_EQ(ext_max_value, mojom_max_value);
 
@@ -95,8 +95,8 @@ TEST(AudioServiceUtilsTest, ConvertDeviceFilterFromMojomStreamTypes) {
                                 crosapi::mojom::StreamType::kOutput,
                                 crosapi::mojom::StreamType::kInput};
   std::vector<api::audio::StreamType> expected = {
-      api::audio::STREAM_TYPE_INPUT, api::audio::STREAM_TYPE_OUTPUT,
-      api::audio::STREAM_TYPE_INPUT};
+      api::audio::StreamType::kInput, api::audio::StreamType::kOutput,
+      api::audio::StreamType::kInput};
   result = ConvertDeviceFilterFromMojom(input);
   EXPECT_TRUE(result && result->stream_types &&
               (*result->stream_types == expected));
@@ -145,9 +145,9 @@ TEST(AudioServiceUtilsTest, ConvertDeviceFilterToMojomStreamTypes) {
   std::vector<crosapi::mojom::StreamType> expected = {
       crosapi::mojom::StreamType::kOutput, crosapi::mojom::StreamType::kInput,
       crosapi::mojom::StreamType::kInput};
-  input->stream_types.emplace({api::audio::STREAM_TYPE_OUTPUT,
-                               api::audio::STREAM_TYPE_INPUT,
-                               api::audio::STREAM_TYPE_INPUT});
+  input->stream_types.emplace({api::audio::StreamType::kOutput,
+                               api::audio::StreamType::kInput,
+                               api::audio::StreamType::kInput});
   result = ConvertDeviceFilterToMojom(input.get());
   EXPECT_TRUE(result && result->includedStreamTypes &&
               (*result->includedStreamTypes == expected));
@@ -173,8 +173,8 @@ TEST(AudioServiceUtilsTest, ConvertAudioDeviceInfoFromMojom) {
 
   auto result = ConvertAudioDeviceInfoFromMojom(input);
   EXPECT_EQ(result.id, test_id);
-  EXPECT_EQ(result.stream_type, api::audio::STREAM_TYPE_OUTPUT);
-  EXPECT_EQ(result.device_type, api::audio::DEVICE_TYPE_BLUETOOTH);
+  EXPECT_EQ(result.stream_type, api::audio::StreamType::kOutput);
+  EXPECT_EQ(result.device_type, api::audio::DeviceType::kBluetooth);
   EXPECT_EQ(result.display_name, test_display_name);
   EXPECT_EQ(result.device_name, test_device_name);
   EXPECT_EQ(result.is_active, test_is_active);
@@ -193,8 +193,8 @@ TEST(AudioServiceUtilsTest, ConvertAudioDeviceInfoToMojom) {
 
   api::audio::AudioDeviceInfo input;
   input.id = test_id;
-  input.stream_type = api::audio::STREAM_TYPE_INPUT;
-  input.device_type = api::audio::DEVICE_TYPE_MIC;
+  input.stream_type = api::audio::StreamType::kInput;
+  input.device_type = api::audio::DeviceType::kMic;
   input.display_name = test_display_name;
   input.device_name = test_device_name;
   input.is_active = test_is_active;

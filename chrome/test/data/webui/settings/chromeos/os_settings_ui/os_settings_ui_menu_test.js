@@ -87,7 +87,8 @@ suite('<os-settings-ui> menu', () => {
     const router = Router.getInstance();
     router.navigateTo(routes.BASIC, urlParams);
     assertEquals(urlParams.toString(), router.getQueryParameters().toString());
-    settingsMenu.$.personalization.click();
+    settingsMenu.shadowRoot.querySelector('a.item[href="personalization"]')
+        .click();
     assertEquals('', router.getQueryParameters().toString());
   });
 

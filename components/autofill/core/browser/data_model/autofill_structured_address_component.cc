@@ -790,7 +790,7 @@ void AddressComponent::UnsetParsedAndFormattedValuesInEntireTree() {
 void AddressComponent::MergeVerificationStatuses(
     const AddressComponent& newer_component) {
   if (IsValueAssigned() && (GetValue() == newer_component.GetValue()) &&
-      HasNewerValuePrecendenceInMerging(newer_component)) {
+      HasNewerValuePrecedenceInMerging(newer_component)) {
     value_verification_status_ = newer_component.GetVerificationStatus();
   }
 
@@ -957,7 +957,7 @@ bool AddressComponent::MergeWithComponent(
 
   // If the normalized values are the same, optimize the verification status.
   if ((merge_mode_ & kUseBetterOrNewerForSameValue) && (value == value_newer)) {
-    if (HasNewerValuePrecendenceInMerging(newer_component)) {
+    if (HasNewerValuePrecedenceInMerging(newer_component)) {
       CopyFrom(newer_component);
     }
     return true;
@@ -1071,9 +1071,9 @@ bool AddressComponent::MergeWithComponent(
     if (this_has_canonical_value != newer_has_canonical_value &&
         (comparison_values_are_substrings_of_each_other ||
          token_comparison_result.ContainEachOther())) {
-      // Copy the new component if it has a canoniscalized name and a status
-      // that is not worse of it if has a better status even if it is not
-      // canoniscalized.
+      // Copy the new component if it has a canonicalized name and a status
+      // that is not worse or if it has a better status even if it is not
+      // canonicalized.
       if ((!this_has_canonical_value &&
            newer_component_has_better_or_equal_status) ||
           (this_has_canonical_value && newer_component_has_better_status)) {
@@ -1094,7 +1094,7 @@ bool AddressComponent::MergeWithComponent(
   }
 
   if (merge_mode_ & kUseBetterOrMostRecentIfDifferent) {
-    if (HasNewerValuePrecendenceInMerging(newer_component)) {
+    if (HasNewerValuePrecedenceInMerging(newer_component)) {
       SetValue(newer_component.GetValue(),
                newer_component.GetVerificationStatus());
     }
@@ -1115,7 +1115,7 @@ bool AddressComponent::MergeWithComponent(
     // component with the better verification status, or if both are the same,
     // use the newer one.
     if (token_comparison_result.TokensMatch()) {
-      if (HasNewerValuePrecendenceInMerging(newer_component)) {
+      if (HasNewerValuePrecedenceInMerging(newer_component)) {
         SetValue(newer_component.GetValue(),
                  newer_component.GetVerificationStatus());
       }
@@ -1145,8 +1145,10 @@ bool AddressComponent::MergeWithComponent(
   return false;
 }
 
-bool AddressComponent::HasNewerValuePrecendenceInMerging(
+bool AddressComponent::HasNewerValuePrecedenceInMerging(
     const AddressComponent& newer_component) const {
+  // In case of equality of verification statuses, the newer component gets
+  // precedence over the old one.
   return !IsLessSignificantVerificationStatus(
       newer_component.GetVerificationStatus(), GetVerificationStatus());
 }
@@ -1162,7 +1164,7 @@ bool AddressComponent::MergeTokenEquivalentComponent(
   // Assumption:
   // The values of both components are a permutation of the same tokens.
   // The componentization of the components can be different in terms of
-  // how the tokens are divided between the subomponents. The valdiation
+  // how the tokens are divided between the subcomponents. The validation
   // status of the component and its subcomponent can be different.
   //
   // Merge Strategy:
@@ -1180,7 +1182,7 @@ bool AddressComponent::MergeTokenEquivalentComponent(
       newer_component.Subcomponents();
   DCHECK(subcomponents_.size() == other_subcomponents.size());
 
-  if (HasNewerValuePrecendenceInMerging(newer_component)) {
+  if (HasNewerValuePrecedenceInMerging(newer_component)) {
     SetValue(newer_component.GetValue(),
              newer_component.GetVerificationStatus());
   }
@@ -1234,7 +1236,7 @@ bool AddressComponent::MergeTokenEquivalentComponent(
     DCHECK(subcomponents_[i]->GetStorageType() ==
            other_subcomponents.at(i)->GetStorageType());
 
-    // If the components can't be merged directly, store the ungermed index and
+    // If the components can't be merged directly, store the unmerged index and
     // sum the verification scores to decide which component's substructure to
     // use.
     if (!subcomponents_[i]->MergeTokenEquivalentComponent(

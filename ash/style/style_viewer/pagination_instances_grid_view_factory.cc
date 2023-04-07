@@ -109,7 +109,9 @@ class PaginationTestScrollView : public views::ScrollView,
     model_observer_.Observe(model_);
     SetHorizontalScrollBarMode(views::ScrollView::ScrollBarMode::kDisabled);
     SetVerticalScrollBarMode(views::ScrollView::ScrollBarMode::kDisabled);
-    TotalPagesChanged(0, model_->total_pages());
+    if (model_->total_pages() > 0) {
+      TotalPagesChanged(0, model_->total_pages());
+    }
   }
 
   PaginationTestScrollView(const PaginationTestScrollView&) = delete;
@@ -128,6 +130,12 @@ class PaginationTestScrollView : public views::ScrollView,
 
   // PaginationModelObserver:
   void TotalPagesChanged(int previous_page_count, int new_page_count) override {
+    previous_page_count = std::max(0, previous_page_count);
+    new_page_count = std::max(0, new_page_count);
+    if (previous_page_count == new_page_count) {
+      return;
+    }
+
     // Synchronize the number of labels with total pages.
     if (previous_page_count < new_page_count) {
       for (int i = previous_page_count; i < new_page_count; i++) {

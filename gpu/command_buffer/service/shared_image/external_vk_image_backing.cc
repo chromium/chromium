@@ -156,7 +156,6 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
   bool is_external = context_state->support_vulkan_external_object();
 
   auto* device_queue = context_state->vk_context_provider()->GetDeviceQueue();
-  VkFormat vk_format = ToVkFormat(format);
   constexpr auto kUsageNeedsColorAttachment =
       SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
       SHARED_IMAGE_USAGE_RASTER | SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
@@ -173,42 +172,60 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
     }
   }
 
-  auto it = image_usage_cache.find(vk_format);
-  DCHECK(it != image_usage_cache.end());
-  auto vk_tiling_usage = it->second;
-
-  // Requested usage flags must be supported.
-  DCHECK_EQ(vk_usage & vk_tiling_usage, vk_usage);
-
   // Must request all available image usage flags if aliasing GL texture. This
   // is a spec requirement per EXT_memory_object. However, if
   // ANGLE_memory_object_flags is supported, usage flags can be arbitrary.
   bool request_all_flags = is_external && (usage & SHARED_IMAGE_USAGE_GLES2) &&
                            !UseMinimalUsageFlags(context_state.get());
-  if (request_all_flags) {
-    vk_usage |= vk_tiling_usage;
-  }
 
   VkImageCreateFlags vk_create = 0;
 
-  std::unique_ptr<VulkanImage> image;
-  if (is_external) {
-    image = VulkanImage::CreateWithExternalMemory(device_queue, size, vk_format,
-                                                  vk_usage, vk_create,
-                                                  VK_IMAGE_TILING_OPTIMAL);
-  } else {
-    image = VulkanImage::Create(device_queue, size, vk_format, vk_usage,
-                                vk_create, VK_IMAGE_TILING_OPTIMAL);
+  int num_planes = format.NumberOfPlanes();
+  std::vector<TextureHolderVk> textures;
+  textures.reserve(num_planes);
+
+  size_t estimated_size = 0;
+  for (int plane = 0; plane < format.NumberOfPlanes(); ++plane) {
+    gfx::Size plane_size = format.GetPlaneSize(plane, size);
+    VkFormat vk_format = ToVkFormat(format, plane);
+
+    auto it = image_usage_cache.find(vk_format);
+    DCHECK(it != image_usage_cache.end());
+    auto vk_tiling_usage = it->second;
+
+    // Requested usage flags must be supported.
+    DCHECK_EQ(vk_usage & vk_tiling_usage, vk_usage);
+
+    VkImageUsageFlags vk_plane_usage = vk_usage;
+    if (request_all_flags) {
+      vk_plane_usage |= vk_tiling_usage;
+    }
+
+    std::unique_ptr<VulkanImage> image;
+    if (is_external) {
+      image = VulkanImage::CreateWithExternalMemory(
+          device_queue, plane_size, vk_format, vk_plane_usage, vk_create,
+          VK_IMAGE_TILING_OPTIMAL);
+    } else {
+      image = VulkanImage::Create(device_queue, plane_size, vk_format,
+                                  vk_plane_usage, vk_create,
+                                  VK_IMAGE_TILING_OPTIMAL);
+    }
+    if (!image) {
+      return nullptr;
+    }
+
+    estimated_size += image->device_size();
+    textures.emplace_back(std::move(image));
   }
-  if (!image)
-    return nullptr;
 
   bool use_separate_gl_texture =
       UseSeparateGLTexture(context_state.get(), format);
   auto backing = std::make_unique<ExternalVkImageBacking>(
       base::PassKey<ExternalVkImageBacking>(), mailbox, format, size,
-      color_space, surface_origin, alpha_type, usage, std::move(context_state),
-      std::move(image), command_pool, use_separate_gl_texture);
+      color_space, surface_origin, alpha_type, usage, estimated_size,
+      std::move(context_state), std::move(textures), command_pool,
+      use_separate_gl_texture);
 
   if (!pixel_data.empty()) {
     auto image_info = backing->AsSkImageInfo();
@@ -257,12 +274,19 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::CreateFromGMB(
     return nullptr;
   }
 
+  size_t estimated_size = image->device_size();
+
+  std::vector<TextureHolderVk> textures;
+  textures.reserve(1);
+  textures.emplace_back(std::move(image));
+
   bool use_separate_gl_texture =
       UseSeparateGLTexture(context_state.get(), si_format);
   auto backing = std::make_unique<ExternalVkImageBacking>(
       base::PassKey<ExternalVkImageBacking>(), mailbox, si_format, size,
-      color_space, surface_origin, alpha_type, usage, std::move(context_state),
-      std::move(image), command_pool, use_separate_gl_texture);
+      color_space, surface_origin, alpha_type, usage, estimated_size,
+      std::move(context_state), std::move(textures), command_pool,
+      use_separate_gl_texture);
   backing->SetCleared();
   return backing;
 }
@@ -276,8 +300,9 @@ ExternalVkImageBacking::ExternalVkImageBacking(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    size_t estimated_size_bytes,
     scoped_refptr<SharedContextState> context_state,
-    std::unique_ptr<VulkanImage> image,
+    std::vector<TextureHolderVk> vk_textures,
     VulkanCommandPool* command_pool,
     bool use_separate_gl_texture)
     : ClearTrackingSharedImageBacking(mailbox,
@@ -287,22 +312,12 @@ ExternalVkImageBacking::ExternalVkImageBacking(
                                       surface_origin,
                                       alpha_type,
                                       usage,
-                                      image->device_size(),
+                                      estimated_size_bytes,
                                       /*is_thread_safe=*/false),
       context_state_(std::move(context_state)),
+      vk_textures_(std::move(vk_textures)),
       command_pool_(command_pool),
-      use_separate_gl_texture_(use_separate_gl_texture) {
-  vk_textures_.resize(1);
-  auto& vk_texture = vk_textures_[0];
-  vk_texture.vulkan_image = std::move(image);
-  gfx::Size plane_size = vk_texture.vulkan_image->size();
-  GrVkImageInfo vk_image_info =
-      CreateGrVkImageInfo(vk_texture.vulkan_image.get());
-  vk_texture.backend_texture =
-      GrBackendTexture(plane_size.width(), plane_size.height(), vk_image_info);
-  vk_texture.promise_texture =
-      SkPromiseImageTexture::Make(vk_texture.backend_texture);
-}
+      use_separate_gl_texture_(use_separate_gl_texture) {}
 
 ExternalVkImageBacking::~ExternalVkImageBacking() {
   auto semaphores = std::move(read_semaphores_);
@@ -609,11 +624,31 @@ bool ExternalVkImageBacking::MakeGLContextCurrent() {
 }
 
 bool ExternalVkImageBacking::ProduceGLTextureInternal(bool is_passthrough) {
-  gl::GLApi* api = gl::g_current_gl_context;
-  absl::optional<ScopedDedicatedMemoryObject> memory_object;
-  auto& vk_texture = vk_textures_[0];
-  auto& vulkan_image = vk_texture.vulkan_image;
+  gl_textures_.reserve(vk_textures_.size());
+  for (size_t plane = 0; plane < vk_textures_.size(); ++plane) {
+    if (!CreateGLTexture(is_passthrough, plane)) {
+      gl_textures_.clear();
+      return false;
+    }
+  }
 
+  return true;
+}
+
+bool ExternalVkImageBacking::CreateGLTexture(bool is_passthrough,
+                                             size_t plane_index) {
+  gl::GLApi* api = gl::g_current_gl_context;
+
+  auto& vk_texture = vk_textures_[plane_index];
+  auto& vulkan_image = vk_texture.vulkan_image;
+  gfx::Size plane_size = vulkan_image->size();
+  auto plane_format = GLTextureHolder::GetPlaneFormat(format(), plane_index);
+
+  DCHECK_EQ(gl_textures_.size(), plane_index);
+  auto& gl_texture = gl_textures_.emplace_back(plane_format, plane_size,
+                                               is_passthrough, nullptr);
+
+  absl::optional<ScopedDedicatedMemoryObject> memory_object;
   if (!use_separate_gl_texture()) {
     GrVkImageInfo image_info = vk_texture.GetGrVkImageInfo();
 
@@ -637,8 +672,9 @@ bool ExternalVkImageBacking::ProduceGLTextureInternal(bool is_passthrough) {
         GL_HANDLE_TYPE_OPAQUE_WIN32_EXT, memory_handle.Take());
 #elif BUILDFLAG(IS_FUCHSIA)
     zx::vmo vmo = vulkan_image->GetMemoryZirconHandle();
-    if (!vmo)
+    if (!vmo) {
       return false;
+    }
     memory_object.emplace(api);
     api->glImportMemoryZirconHandleANGLEFn(
         memory_object->id(), image_info.fAlloc.fSize,
@@ -652,8 +688,7 @@ bool ExternalVkImageBacking::ProduceGLTextureInternal(bool is_passthrough) {
                       ->feature_info()
                       ->feature_flags()
                       .angle_rgbx_internal_format;
-  GLFormatDesc format_desc =
-      ToGLFormatDesc(format(), /*plane_index=*/0, use_rgbx);
+  GLFormatDesc format_desc = ToGLFormatDesc(format(), plane_index, use_rgbx);
 
   GLuint texture_service_id = 0;
   api->glGenTexturesFn(1, &texture_service_id);
@@ -669,10 +704,10 @@ bool ExternalVkImageBacking::ProduceGLTextureInternal(bool is_passthrough) {
     if (UseTexStorage2D(context_state_.get())) {
       api->glTexStorage2DEXTFn(GL_TEXTURE_2D, 1,
                                format_desc.storage_internal_format,
-                               size().width(), size().height());
+                               plane_size.width(), plane_size.height());
     } else {
       api->glTexImage2DFn(GL_TEXTURE_2D, 0, format_desc.image_internal_format,
-                          size().width(), size().height(), 0,
+                          plane_size.width(), plane_size.height(), 0,
                           format_desc.data_format, format_desc.data_type,
                           nullptr);
     }
@@ -687,23 +722,20 @@ bool ExternalVkImageBacking::ProduceGLTextureInternal(bool is_passthrough) {
     DCHECK_NE(vulkan_image->usage(), 0u);
     if (UseMinimalUsageFlags(context_state())) {
       api->glTexStorageMemFlags2DANGLEFn(
-          GL_TEXTURE_2D, 1, format_desc.storage_internal_format, size().width(),
-          size().height(), memory_object->id(), 0, vulkan_image->flags(),
-          vulkan_image->usage(), nullptr);
+          GL_TEXTURE_2D, 1, format_desc.storage_internal_format,
+          plane_size.width(), plane_size.height(), memory_object->id(), 0,
+          vulkan_image->flags(), vulkan_image->usage(), nullptr);
     } else {
       api->glTexStorageMem2DEXTFn(
-          GL_TEXTURE_2D, 1, format_desc.storage_internal_format, size().width(),
-          size().height(), memory_object->id(), 0);
+          GL_TEXTURE_2D, 1, format_desc.storage_internal_format,
+          plane_size.width(), plane_size.height(), memory_object->id(), 0);
     }
   }
-
-  auto& gl_texture = gl_textures_.emplace_back(format().resource_format(),
-                                               size(), is_passthrough, nullptr);
 
   if (is_passthrough) {
     auto texture = base::MakeRefCounted<gpu::gles2::TexturePassthrough>(
         texture_service_id, GL_TEXTURE_2D, format_desc.storage_internal_format,
-        size().width(), size().height(),
+        plane_size.width(), plane_size.height(),
         /*depth=*/1, /*border=*/0, format_desc.data_format,
         format_desc.data_type);
     gl_texture.InitializeWithTexture(format_desc, std::move(texture));
@@ -713,11 +745,11 @@ bool ExternalVkImageBacking::ProduceGLTextureInternal(bool is_passthrough) {
     // If the backing is already cleared, no need to clear it again.
     gfx::Rect cleared_rect;
     if (IsCleared()) {
-      cleared_rect = gfx::Rect(size());
+      cleared_rect = gfx::Rect(plane_size);
     }
 
     texture->SetLevelInfo(GL_TEXTURE_2D, 0, format_desc.storage_internal_format,
-                          size().width(), size().height(), 1, 0,
+                          plane_size.width(), plane_size.height(), 1, 0,
                           format_desc.data_format, format_desc.data_type,
                           cleared_rect);
     texture->SetImmutable(true, true);
@@ -1219,16 +1251,20 @@ void ExternalVkImageBacking::EndAccessInternal(
   }
 }
 
-ExternalVkImageBacking::TextureHolderVk::TextureHolderVk() = default;
-ExternalVkImageBacking::TextureHolderVk::TextureHolderVk(
-    TextureHolderVk&& other) = default;
-ExternalVkImageBacking::TextureHolderVk&
-ExternalVkImageBacking::TextureHolderVk::operator=(TextureHolderVk&& other) =
-    default;
-ExternalVkImageBacking::TextureHolderVk::~TextureHolderVk() = default;
+TextureHolderVk::TextureHolderVk(std::unique_ptr<VulkanImage> image)
+    : vulkan_image(std::move(image)) {
+  gfx::Size size = vulkan_image->size();
+  GrVkImageInfo vk_image_info = CreateGrVkImageInfo(vulkan_image.get());
+  backend_texture =
+      GrBackendTexture(size.width(), size.height(), vk_image_info);
+  promise_texture = SkPromiseImageTexture::Make(backend_texture);
+}
 
-GrVkImageInfo ExternalVkImageBacking::TextureHolderVk::GetGrVkImageInfo()
-    const {
+TextureHolderVk::TextureHolderVk(TextureHolderVk&& other) = default;
+TextureHolderVk& TextureHolderVk::operator=(TextureHolderVk&& other) = default;
+TextureHolderVk::~TextureHolderVk() = default;
+
+GrVkImageInfo TextureHolderVk::GetGrVkImageInfo() const {
   GrVkImageInfo info;
   bool result = backend_texture.getVkImageInfo(&info);
   DCHECK(result);

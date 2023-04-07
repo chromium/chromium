@@ -3,14 +3,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# IMPORTANT! Before running this script you have to run
-# `rm -r ~/scratch && mkdir ~/scratch` first
-#
+# IMPORTANT! This script relies on "${HOME}/scratch/". This directory
+# is made when it runs (and must not exist at runtime) and is left
+# behind at termination (for you to save off or remove).
 #
 # For more fine-grained instructions, see:
 # https://docs.google.com/document/d/1chTvr3fSofQNV_PDPEHRyUgcJCQBgTDOOBriW9gIm9M/edit?ts=5e9549a2#heading=h.fjdnrdg1gcty
 
 set -e  # makes the script quit on any command failure
+set -u  # unset variables are quit-worthy errors
 
 PLATFORMS="win,android"
 if [ "$1" != "" ]
@@ -23,6 +24,11 @@ REWRITER_SRC_DIR=$(dirname $SCRIPT_PATH)
 
 COMPILE_DIRS=.
 EDIT_DIRS=.
+SCRATCH_DIR="${HOME}/scratch/"
+
+# Make the scratch dir, relying on mkdir's natural fail-on-existing
+# behavior (and prior `set -e` of this script).
+mkdir "${SCRATCH_DIR}"
 
 # Save llvm-build as it is about to be overwritten.
 mv third_party/llvm-build third_party/llvm-build-upstream
@@ -109,6 +115,10 @@ use_goma = false
 chrome_pgo_phase = 0
 symbol_level = 1
 force_enable_raw_ptr_exclusion = true
+# crbug/1396061
+enable_dsyms = false
+# Can't exec Xcode `strip` binary
+enable_stripping = false
 EOF
         ;;
 

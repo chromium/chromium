@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/overlays/public/infobar_banner/tailored_security_service_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/safe_browsing/tailored_security/test/mock_tailored_security_service_infobar_delegate.h"
-#import "ios/chrome/browser/ui/icons/symbols.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/infobars/banners/test/fake_infobar_banner_consumer.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"

@@ -4,16 +4,13 @@
 
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
 
-#include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/system/sys_info.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/common/content_features.h"
-#include "ui/display/screen.h"
 
 namespace content {
 
@@ -42,16 +39,19 @@ NavigationEntryScreenshotCache::NavigationEntryScreenshotCache(
     base::SafeRef<NavigationEntryScreenshotManager> manager,
     NavigationControllerImpl* nav_controller)
     : manager_(manager), nav_controller_(nav_controller) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(AreBackForwardTransitionsEnabled());
 }
 
 NavigationEntryScreenshotCache::~NavigationEntryScreenshotCache() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   Purge();
 }
 
 void NavigationEntryScreenshotCache::SetScreenshot(
     NavigationEntry* entry,
     std::unique_ptr<NavigationEntryScreenshot> screenshot) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // We must be caching screenshot for a valid entry.
   CHECK(entry);
   // A navigation entry without a screenshot will be removed from the cache
@@ -71,6 +71,7 @@ void NavigationEntryScreenshotCache::SetScreenshot(
 std::unique_ptr<NavigationEntryScreenshot>
 NavigationEntryScreenshotCache::RemoveScreenshot(
     NavigationEntry* navigation_entry) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(navigation_entry);
   const int navigation_entry_id = navigation_entry->GetUniqueID();
   auto it = cached_screenshots_.find(navigation_entry_id);
@@ -87,6 +88,7 @@ NavigationEntryScreenshotCache::RemoveScreenshot(
 void NavigationEntryScreenshotCache::OnNavigationEntryGone(
     int navigation_entry_id,
     size_t size) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto it = cached_screenshots_.find(navigation_entry_id);
   CHECK(it != cached_screenshots_.end());
   cached_screenshots_.erase(it);
@@ -94,6 +96,8 @@ void NavigationEntryScreenshotCache::OnNavigationEntryGone(
 }
 
 void NavigationEntryScreenshotCache::EvictScreenshotsUntilUnderBudgetOrEmpty() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   CHECK(!IsEmpty());
 
   CHECK_GT(manager_->GetCurrentCacheSize(), manager_->GetMaxCacheSize());
@@ -158,6 +162,7 @@ void NavigationEntryScreenshotCache::EvictScreenshotsUntilUnderBudgetOrEmpty() {
 }
 
 void NavigationEntryScreenshotCache::Purge() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto it = cached_screenshots_.begin();
   while (!IsEmpty()) {
     auto* evicted_entry = nav_controller_->GetEntryWithUniqueID(*it);

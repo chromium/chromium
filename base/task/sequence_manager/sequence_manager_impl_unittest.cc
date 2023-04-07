@@ -1969,6 +1969,45 @@ TEST_P(SequenceManagerTest, QueueTaskObserverRemovingInsideTask) {
   RunLoop().RunUntilIdle();
 }
 
+TEST_P(SequenceManagerTest, CancelHandleInsideTaskObserver) {
+  class CancelingTaskObserver : public TaskObserver {
+   public:
+    DelayedTaskHandle handle;
+    bool will_run_task_called = false;
+    bool did_process_task_called = false;
+    explicit CancelingTaskObserver(DelayedTaskHandle handle_in)
+        : handle(std::move(handle_in)) {
+      EXPECT_TRUE(handle.IsValid());
+    }
+
+    ~CancelingTaskObserver() override {
+      EXPECT_FALSE(handle.IsValid());
+      EXPECT_TRUE(will_run_task_called);
+      EXPECT_TRUE(did_process_task_called);
+    }
+
+    void DidProcessTask(const PendingTask& task) override {
+      did_process_task_called = true;
+    }
+    void WillProcessTask(const PendingTask& task,
+                         bool was_blocked_or_low_priority) override {
+      handle.CancelTask();
+      will_run_task_called = true;
+    }
+  };
+
+  auto queue = CreateTaskQueue();
+
+  auto handle = queue->task_runner()->PostCancelableDelayedTask(
+      subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE,
+      BindLambdaForTesting([]() { FAIL(); }), base::TimeDelta());
+
+  CancelingTaskObserver observer(std::move(handle));
+  queue->AddTaskObserver(&observer);
+
+  RunLoop().RunUntilIdle();
+}
+
 TEST_P(SequenceManagerTest, ThreadCheckAfterTermination) {
   auto queue = CreateTaskQueue();
   EXPECT_TRUE(queue->task_runner()->RunsTasksInCurrentSequence());

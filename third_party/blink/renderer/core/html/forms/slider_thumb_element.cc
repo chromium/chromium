@@ -43,10 +43,9 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
-#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
-#include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/ng/flex/layout_ng_flexible_box.h"
+#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 #include "ui/base/ui_base_features.h"
 
 namespace blink {
@@ -74,7 +73,7 @@ void SliderThumbElement::SetPositionFromValue() {
 
 LayoutObject* SliderThumbElement::CreateLayoutObject(
     const ComputedStyle& style) {
-  return LayoutObjectFactory::CreateBlockFlow(*this, style);
+  return MakeGarbageCollected<LayoutNGBlockFlow>(this);
 }
 
 bool SliderThumbElement::IsDisabledFormControl() const {

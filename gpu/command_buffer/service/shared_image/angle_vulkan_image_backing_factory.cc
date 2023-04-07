@@ -52,10 +52,8 @@ AngleVulkanImageBackingFactory::AngleVulkanImageBackingFactory(
       rg_iter != supported_formats_.end()) {
     auto& r_info = r_iter->second[0];
     auto& rg_info = rg_iter->second[0];
-    supported_formats_[viz::MultiPlaneFormat::kYUV_420_BIPLANAR] = {r_info,
-                                                                    rg_info};
-    supported_formats_[viz::MultiPlaneFormat::kYVU_420] = {r_info, r_info,
-                                                           r_info};
+    supported_formats_[viz::MultiPlaneFormat::kNV12] = {r_info, rg_info};
+    supported_formats_[viz::MultiPlaneFormat::kYV12] = {r_info, r_info, r_info};
   }
 }
 
@@ -71,6 +69,7 @@ AngleVulkanImageBackingFactory::CreateSharedImage(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     bool is_thread_safe) {
   auto backing = std::make_unique<AngleVulkanImageBacking>(
       context_state_, mailbox, format, size, color_space, surface_origin,
@@ -91,6 +90,7 @@ AngleVulkanImageBackingFactory::CreateSharedImage(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     base::span<const uint8_t> data) {
   auto backing = std::make_unique<AngleVulkanImageBacking>(
       context_state_, mailbox, format, size, color_space, surface_origin,
@@ -112,7 +112,8 @@ AngleVulkanImageBackingFactory::CreateSharedImage(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage) {
+    uint32_t usage,
+    std::string debug_label) {
   auto resource_format = viz::GetResourceFormat(buffer_format);
   auto si_format = viz::SharedImageFormat::SinglePlane(resource_format);
   auto backing = std::make_unique<AngleVulkanImageBacking>(

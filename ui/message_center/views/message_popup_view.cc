@@ -142,12 +142,16 @@ void MessagePopupView::Show() {
   widget->Init(std::move(params));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On Chrome OS, this widget is shown in the shelf container. It means this
-  // widget would inherit the parent's window targeter (ShelfWindowTarget) by
-  // default. But it is not good for popup. So we override it with the normal
-  // WindowTargeter.
+  // On Chrome OS, notification pop-ups are shown in the
+  // `SettingBubbleContainer`, together with other shelf pod bubbles. This
+  // widget would inherit the parent's window targeter by default. But it is not
+  // good for popup. So we override it with the normal WindowTargeter.
   gfx::NativeWindow native_window = widget->GetNativeWindow();
   native_window->SetEventTargeter(std::make_unique<aura::WindowTargeter>());
+
+  // Newly shown popups are stacked at the bottom so they do not cast shadows
+  // on previously shown popups.
+  native_window->parent()->StackChildAtBottom(native_window);
 #endif
 
   widget->SetOpacity(0.0);

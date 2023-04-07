@@ -1222,17 +1222,33 @@ chromium-metrics-reviews@google.com.
   <token key="CardMetadataVisible" variants="Autofill.CardMetadataVisible"/>
 </histogram>
 
-<histogram name="Autofill.CreditCard.{CardIssuer}.ShownWithMetadata"
+<histogram name="Autofill.CreditCard.{CardIssuer}.{FormEventWithMetadata}"
     enum="Boolean" expires_after="2024-03-01">
   <owner>vishwasuppoor@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
-    Emits true if a {CardIssuer} was shown with metadata in Autofill
-    suggestions. Emits false if every {CardIssuer} was shown without metadata in
-    Autofill suggestions. Only cards with issuer ids are considered. It is
-    emitted every time Autofill suggestions are shown.
+    Emits true if a {CardIssuer}:
+
+    1. shown in Autofill suggestions had metadata
+
+    2. selected from Autofill suggestions had metadata
+
+    Emits false if:
+
+    1. every {CardIssuer} shown in Autofill suggestions did not have metadata
+
+    2. a {CardIssuer} selected from Autofill suggestions did not have metadata
+
+    It is emitted every time Autofill suggestions shown or selected have an
+    issuer id.
   </summary>
   <token key="CardIssuer" variants="Autofill.CreditCardIssuerId"/>
+  <token key="FormEventWithMetadata">
+    <variant name="SelectedWithMetadata"
+        summary="A card with issuer id was selected"/>
+    <variant name="ShownWithMetadata"
+        summary="A card with issuer id was shown"/>
+  </token>
 </histogram>
 
 <histogram name="Autofill.CreditCardFillingInfoBar"
@@ -2743,6 +2759,16 @@ chromium-metrics-reviews@google.com.
     <variant name="Middle" summary="the middle name of the profile"/>
     <variant name="SecondLast" summary="the second last name of the profile"/>
   </token>
+</histogram>
+
+<histogram name="Autofill.NewerStreetAddressWithSameStatusIsChosen"
+    enum="Boolean" expires_after="2023-09-13">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logs whether a street address merge operation favored the new or old address
+    because of the feature `kAutofillConvergeToExtremeLengthStreetAddress`.
+  </summary>
 </histogram>
 
 <histogram
@@ -4462,7 +4488,29 @@ chromium-metrics-reviews@google.com.
     it. See the TouchToFillCreditCardMediator.java for details. Note that
     &quot;Go to payment settings&quot; click is also considered as the outcome,
     although it doesn't close the Touch To Fill. So in this case there will be a
-    double count for one bottom sheet showing.
+    double count for one bottom sheet showing. This histogram contains a bug of
+    not accounting all users' manual bottom sheet dismissal. It should be
+    removed after M114 is rolled out.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.TouchToFill.CreditCard.Outcome2"
+    enum="TouchToFill.CreditCard.Outcome" expires_after="2023-09-03">
+  <owner>atsvirhckova@google.com</owner>
+  <owner>izuzic@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Records the outcome with which the bottom sheet was closed: credit card
+    selected, virtual card selected, go to payment settings, scan new credit
+    card or dismissed with no action. The metric is recorded right after user
+    has done the action: the credit card selection or some other option (which
+    always leads to the bottom sheet being closed) or swiped the sheet to close
+    it. See the TouchToFillCreditCardMediator.java for details. Note that
+    &quot;Go to payment settings&quot; click is also considered as the outcome,
+    although it doesn't close the Touch To Fill. So in this case there will be a
+    double count for one bottom sheet showing. This fixes the bug introduced in
+    Autofill.TouchToFill.CreditCard.Outcome and counts all user bottom sheet
+    dismissals. The old histogram should be removed after M114 is rolled out.
   </summary>
 </histogram>
 

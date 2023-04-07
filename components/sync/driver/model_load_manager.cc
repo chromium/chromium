@@ -27,9 +27,9 @@ ModelLoadManager::ModelLoadManager(
 
 ModelLoadManager::~ModelLoadManager() = default;
 
-void ModelLoadManager::Initialize(ModelTypeSet preferred_types_without_errors,
-                                  ModelTypeSet preferred_types,
-                                  const ConfigureContext& context) {
+void ModelLoadManager::Configure(ModelTypeSet preferred_types_without_errors,
+                                 ModelTypeSet preferred_types,
+                                 const ConfigureContext& context) {
   // |preferred_types_without_errors| must be a subset of |preferred_types|.
   DCHECK(preferred_types.HasAll(preferred_types_without_errors))
       << " desired: "
@@ -60,9 +60,9 @@ void ModelLoadManager::Initialize(ModelTypeSet preferred_types_without_errors,
 
   DVLOG(1) << "ModelLoadManager: Stopping disabled types.";
   for (const auto& [type, dtc] : *controllers_) {
-    // We generally stop all data types which are not desired. When the storage
-    // option changes, we need to restart all data types so that they can
-    // re-wire to the correct storage.
+    // Stop all data types which are not preferred anymore. When the sync mode
+    // changes (between full-sync and transport mode), restart all data types so
+    // that they can re-wire to the correct storage.
     bool should_stop =
         !preferred_types_without_errors_.Has(dtc->type()) || sync_mode_changed;
     if (should_stop && dtc->state() != DataTypeController::NOT_RUNNING) {
@@ -176,7 +176,7 @@ void ModelLoadManager::Stop(SyncStopMetadataFate metadata_fate) {
         (dtc->state() != DataTypeController::NOT_RUNNING &&
          dtc->state() != DataTypeController::STOPPING)) {
       // We don't really wait until all datatypes have been fully stopped, which
-      // is only required (and in fact waited for) when Initialize() is called.
+      // is only required (and in fact waited for) when Configure() is called.
       StopDatatypeImpl(SyncError(), metadata_fate, dtc.get(),
                        base::DoNothing());
       DVLOG(1) << "ModelLoadManager: Stopped " << dtc->name();
@@ -222,8 +222,8 @@ void ModelLoadManager::NotifyDelegateIfReadyForConfigure() {
     return;
   }
 
-  // It may be possible that `load_models_elapsed_timer_` was never set. For eg.
-  // if StopDatatype() was called before Initialize().
+  // It may be possible that `load_models_elapsed_timer_` was never set, e.g.
+  // if StopDatatype() was called before Configure().
   if (load_models_elapsed_timer_) {
     base::UmaHistogramMediumTimes("Sync.ModelLoadManager.LoadModelsElapsedTime",
                                   load_models_elapsed_timer_->Elapsed());

@@ -442,7 +442,6 @@ BUILDERS = {
             'microdump_stackwalk',
             'system_webview_google_apk',
             'android_tools',
-            'chromium_builder_perf',
             'dump_syms',
             'push_apps_to_background_apk',
             'system_webview_apk',
@@ -503,7 +502,6 @@ BUILDERS = {
             'microdump_stackwalk',
             'system_webview_google_apk',
             'android_tools',
-            'chromium_builder_perf',
             'dump_syms',
             'push_apps_to_background_apk',
             'system_webview_apk',
@@ -522,7 +520,6 @@ BUILDERS = {
             'microdump_stackwalk',
             'system_webview_google_apk',
             'android_tools',
-            'chromium_builder_perf',
             'push_apps_to_background_apk',
             'system_webview_apk',
             'system_webview_shell_apk',
@@ -590,7 +587,6 @@ BUILDERS = {
             'microdump_stackwalk',
             'system_webview_google_apk',
             'android_tools',
-            'chromium_builder_perf',
             'push_apps_to_background_apk',
             'system_webview_apk',
             'system_webview_shell_apk',
@@ -604,7 +600,7 @@ BUILDERS = {
         False,
     },
     'linux-builder-perf': {
-        'additional_compile_targets': ['chromedriver', 'chromium_builder_perf'],
+        'additional_compile_targets': ['chromedriver'],
         'tests': [{
             'name': 'chrome_sizes',
             'isolate': 'chrome_sizes',
@@ -622,7 +618,6 @@ BUILDERS = {
         False,
     },
     'linux-builder-perf-pgo': {
-        'additional_compile_targets': ['chromium_builder_perf'],
         'dimension': {
             'cpu': 'x86-64',
             'os': 'Ubuntu-18.04',
@@ -630,11 +625,9 @@ BUILDERS = {
         },
         'perf_trigger': False,
     },
-    'linux-builder-perf-rel': {
-        'additional_compile_targets': ['chromium_builder_perf'],
-    },
+    'linux-builder-perf-rel': {},
     'mac-builder-perf': {
-        'additional_compile_targets': ['chromedriver', 'chromium_builder_perf'],
+        'additional_compile_targets': ['chromedriver'],
         'tests': [{
             'name': 'chrome_sizes',
             'isolate': 'chrome_sizes',
@@ -652,7 +645,6 @@ BUILDERS = {
         False,
     },
     'mac-builder-perf-pgo': {
-        'additional_compile_targets': ['chromium_builder_perf'],
         'dimension': {
             'cpu': 'x86-64',
             'os': 'Mac',
@@ -661,7 +653,7 @@ BUILDERS = {
         'perf_trigger': False,
     },
     'mac-arm-builder-perf': {
-        'additional_compile_targets': ['chromedriver', 'chromium_builder_perf'],
+        'additional_compile_targets': ['chromedriver'],
         'tests': [{
             'name': 'chrome_sizes',
             'isolate': 'chrome_sizes',
@@ -679,7 +671,6 @@ BUILDERS = {
         False,
     },
     'mac-arm-builder-perf-pgo': {
-        'additional_compile_targets': ['chromium_builder_perf'],
         'dimension': {
             'cpu': 'x86',
             'os': 'Mac',
@@ -688,7 +679,7 @@ BUILDERS = {
         'perf_trigger': False,
     },
     'win64-builder-perf': {
-        'additional_compile_targets': ['chromedriver', 'chromium_builder_perf'],
+        'additional_compile_targets': ['chromedriver'],
         'tests': [{
             'name': 'chrome_sizes',
             'isolate': 'chrome_sizes',
@@ -706,7 +697,6 @@ BUILDERS = {
         False,
     },
     'win64-builder-perf-pgo': {
-        'additional_compile_targets': ['chromium_builder_perf'],
         'dimension': {
             'cpu': 'x86-64',
             'os': 'Windows-10',
@@ -1532,8 +1522,7 @@ def _generate_pinpoint_builders_dict(builder):
     content = copy.deepcopy(builder[key])
     additional_compile_targets = content.get('additional_compile_targets', [])
     additional_compile_targets = list(
-        filter(lambda x: x not in ['chromium_builder_perf', 'chromedriver'],
-               additional_compile_targets))
+        filter(lambda x: x not in ['chromedriver'], additional_compile_targets))
     if additional_compile_targets:
       content['additional_compile_targets'] = additional_compile_targets
     elif 'additional_compile_targets' in content:

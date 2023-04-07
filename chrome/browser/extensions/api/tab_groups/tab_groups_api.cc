@@ -126,9 +126,9 @@ ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
     TabStripModel* tab_strip = browser->tab_strip_model();
     if (!tab_strip)
       return RespondNow(Error(tabs_constants::kTabStripNotEditableQueryError));
-    if (!tab_strip->SupportsTabGroups())
-      return RespondNow(
-          Error(tabs_constants::kTabStripDoesNotSupportTabGroupsError));
+    if (!tab_strip->SupportsTabGroups()) {
+      continue;
+    }
 
     for (const tab_groups::TabGroupId& id :
          tab_strip->group_model()->ListTabGroups()) {

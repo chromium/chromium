@@ -9,6 +9,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -114,11 +115,14 @@ int GetPasswordCountForWarningType(
   }
 }
 
-// TODO(crbug.com/1406540): Title case and update returned string for Password
-// Checkup homepage.
 NSString* FormatElapsedTimeSinceLastCheck(
-    absl::optional<base::Time> last_completed_check) {
+    absl::optional<base::Time> last_completed_check,
+    bool use_title_case) {
   if (!last_completed_check.has_value()) {
+    // The title case format is only used in the Password Checkup Homepage as of
+    // now and it is currently not possible to reach this page if no check has
+    // yet been completed. There is therefore no need for now to have a title
+    // case version of "Check never run."
     return l10n_util::GetNSString(IDS_IOS_CHECK_NEVER_RUN);
   }
 
@@ -129,14 +133,20 @@ NSString* FormatElapsedTimeSinceLastCheck(
   // If check finished in less than `kJustCheckedTimeThreshold` show
   // "just now" instead of timestamp.
   if (elapsed_time < kJustCheckedTimeThreshold) {
-    timestamp = l10n_util::GetStringUTF16(IDS_IOS_CHECK_FINISHED_JUST_NOW);
+    timestamp = l10n_util::GetStringUTF16(
+        use_title_case ? IDS_IOS_CHECK_FINISHED_JUST_NOW_TITLE_CASE
+                       : IDS_IOS_CHECK_FINISHED_JUST_NOW);
   } else {
     timestamp = ui::TimeFormat::SimpleWithMonthAndYear(
-        ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_LONG,
-        elapsed_time, true);
+        use_title_case ? ui::TimeFormat::FORMAT_TITLE_CASE_ELAPSED
+                       : ui::TimeFormat::FORMAT_ELAPSED,
+        ui::TimeFormat::LENGTH_LONG, elapsed_time, true);
   }
 
-  return l10n_util::GetNSStringF(IDS_IOS_LAST_COMPLETED_CHECK, timestamp);
+  return features::IsPasswordCheckupEnabled()
+             ? l10n_util::GetNSStringF(
+                   IDS_IOS_PASSWORD_CHECKUP_LAST_COMPLETED_CHECK, timestamp)
+             : l10n_util::GetNSStringF(IDS_IOS_LAST_COMPLETED_CHECK, timestamp);
 }
 
 std::vector<CredentialUIEntry> GetPasswordsForWarningType(

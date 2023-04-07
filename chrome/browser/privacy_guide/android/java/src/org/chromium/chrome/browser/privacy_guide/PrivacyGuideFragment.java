@@ -123,7 +123,7 @@ public class PrivacyGuideFragment extends Fragment {
 
     private void modifyAppBar() {
         AppCompatActivity settingsActivity = (AppCompatActivity) getActivity();
-        settingsActivity.setTitle(R.string.prefs_privacy_guide_title);
+        settingsActivity.setTitle(R.string.privacy_guide_fragment_title);
         settingsActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
     }
 

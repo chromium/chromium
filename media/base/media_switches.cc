@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
+#include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "components/system_media_controls/linux/buildflags/buildflags.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -1227,12 +1228,12 @@ const base::Feature MEDIA_EXPORT kExposeOutOfProcessVideoDecodingToLacros{
     base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 // Spawn utility processes to perform hardware decode acceleration instead of
 // using the GPU process.
 const base::Feature MEDIA_EXPORT kUseOutOfProcessVideoDecoding{
     "UseOutOfProcessVideoDecoding", base::FEATURE_DISABLED_BY_DEFAULT};
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // Spawn utility processes to perform hardware encode acceleration instead of
@@ -1496,6 +1497,21 @@ bool IsMediaFoundationD3D11VideoCaptureEnabled() {
   return base::FeatureList::IsEnabled(kMediaFoundationD3D11VideoCapture);
 }
 #endif
+
+#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+bool IsOutOfProcessVideoDecodingEnabled() {
+#if BUILDFLAG(IS_CASTOS)
+  // The sandbox for OOP-VD was designed assuming that we're not on CastOS (see
+  // go/oop-vd-sandbox).
+  //
+  // TODO(b/210759684): revisit the sandbox to see if this restriction is
+  // necessary.
+  return false;
+#else
+  return base::FeatureList::IsEnabled(kUseOutOfProcessVideoDecoding);
+#endif
+}
+#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
 // Return bitmask of audio formats supported by EDID.
 uint32_t GetPassthroughAudioFormats() {

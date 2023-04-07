@@ -9,14 +9,11 @@ import android.os.Handler;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 
 /**
  * A utility class to handle saving and restoring the UI state across fold transitions.
@@ -33,15 +30,14 @@ public class FoldTransitionController {
      *
      * @param savedInstanceState The {@link Bundle} where the UI state will be saved.
      * @param toolbarManager The {@link ToolbarManager} for the current activity.
-     * @param activityTabProvider The activity tab {@link Supplier} for the current activity.
      * @param didChangeTabletMode Whether the activity is recreated due to a fold configuration
      *         change. {@code true} if the fold configuration changed, {@code false} otherwise.
      */
-    public static void saveUiState(Bundle savedInstanceState, ToolbarManager toolbarManager,
-            Supplier<Tab> activityTabProvider, boolean didChangeTabletMode) {
+    public static void saveUiState(
+            Bundle savedInstanceState, ToolbarManager toolbarManager, boolean didChangeTabletMode) {
         savedInstanceState.putBoolean(
                 FoldTransitionController.DID_CHANGE_TABLET_MODE, didChangeTabletMode);
-        saveOmniboxState(savedInstanceState, toolbarManager, activityTabProvider);
+        saveOmniboxState(savedInstanceState, toolbarManager);
     }
 
     /**
@@ -57,16 +53,11 @@ public class FoldTransitionController {
         restoreOmniboxState(savedInstanceState, toolbarManager, layoutManager, layoutStateHandler);
     }
 
-    private static void saveOmniboxState(Bundle savedInstanceState, ToolbarManager toolbarManager,
-            Supplier<Tab> activityTabProvider) {
+    private static void saveOmniboxState(Bundle savedInstanceState, ToolbarManager toolbarManager) {
         if (savedInstanceState == null || toolbarManager == null) {
             return;
         }
-        if (activityTabProvider == null || activityTabProvider.get() == null
-                || UrlUtilities.isNTPUrl(activityTabProvider.get().getUrl())) {
-            // TODO (crbug.com/1425248): Support NTP fakebox focus state retention.
-            return;
-        }
+
         if (toolbarManager.isUrlBarFocused()) {
             savedInstanceState.putBoolean(FoldTransitionController.URL_BAR_FOCUS_STATE, true);
             savedInstanceState.putString(FoldTransitionController.URL_BAR_EDIT_TEXT,

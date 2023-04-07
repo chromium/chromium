@@ -162,22 +162,7 @@ gfx::Size GetMaxHandleImageSize() {
   return union_rect.size();
 }
 
-// Convenience methods to convert a |bound| from screen to the |client|'s
-// coordinate system and vice versa.
-// Note that this is not quite correct because it does not take into account
-// transforms such as rotation and scaling. This should be in TouchEditable.
-// TODO(varunjain): Fix this.
-gfx::SelectionBound ConvertFromScreen(ui::TouchEditable* client,
-                                      const gfx::SelectionBound& bound) {
-  gfx::SelectionBound result = bound;
-  gfx::Point edge_end = bound.edge_end_rounded();
-  gfx::Point edge_start = bound.edge_start_rounded();
-  client->ConvertPointFromScreen(&edge_end);
-  client->ConvertPointFromScreen(&edge_start);
-  result.SetEdge(gfx::PointF(edge_start), gfx::PointF(edge_end));
-  return result;
-}
-
+// Converts `bound` from `client`'s coordinate system to screen coordinates.
 gfx::SelectionBound ConvertToScreen(ui::TouchEditable* client,
                                     const gfx::SelectionBound& bound) {
   gfx::SelectionBound result = bound;
@@ -239,9 +224,6 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
 
   // View:
   void OnPaint(gfx::Canvas* canvas) override {
-    if (draw_invisible_)
-      return;
-
     // Draw the handle image.
     canvas->DrawImageInt(
         *image_->ToImageSkia(), kSelectionHandleHorizPadding,
@@ -300,11 +282,8 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
     OnPropertyChanged(&widget_, kPropertyEffectsNone);
   }
 
-  // If |is_visible| is true, this will update the widget and trigger a repaint
-  // if necessary. Otherwise this will only update the internal state:
-  // |selection_bound_| and |image_|, so that the state is valid for the time
-  // this becomes visible.
-  void SetBoundInScreen(const gfx::SelectionBound& bound, bool is_visible) {
+  // Updates the handle bound and image and triggers a repaint if necessary.
+  void SetBoundInScreen(const gfx::SelectionBound& bound) {
     bool update_bound_type = false;
     // Cursor handle should always have the bound type CENTER
     DCHECK(!is_cursor_handle_ || bound.type() == gfx::SelectionBound::CENTER);
@@ -321,22 +300,19 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
     if (update_bound_type) {
       selection_bound_.set_type(bound.type());
       image_ = GetHandleImage(bound.type());
-      if (is_visible)
-        SchedulePaint();
+      SchedulePaint();
     }
 
-    if (is_visible) {
-      selection_bound_.SetEdge(bound.edge_start(), bound.edge_end());
+    selection_bound_.SetEdge(bound.edge_start(), bound.edge_end());
 
-      widget_->SetBounds(GetSelectionWidgetBounds(selection_bound_));
+    widget_->SetBounds(GetSelectionWidgetBounds(selection_bound_));
 
-      aura::Window* window = widget_->GetNativeView();
-      gfx::Point edge_start = selection_bound_.edge_start_rounded();
-      gfx::Point edge_end = selection_bound_.edge_end_rounded();
-      wm::ConvertPointFromScreen(window, &edge_start);
-      wm::ConvertPointFromScreen(window, &edge_end);
-      selection_bound_.SetEdge(gfx::PointF(edge_start), gfx::PointF(edge_end));
-    }
+    aura::Window* window = widget_->GetNativeView();
+    gfx::Point edge_start = selection_bound_.edge_start_rounded();
+    gfx::Point edge_end = selection_bound_.edge_end_rounded();
+    wm::ConvertPointFromScreen(window, &edge_start);
+    wm::ConvertPointFromScreen(window, &edge_end);
+    selection_bound_.SetEdge(gfx::PointF(edge_start), gfx::PointF(edge_end));
 
     const auto insets = gfx::Insets::TLBR(
         selection_bound_.GetHeight() + kSelectionHandleVerticalVisualOffset, 0,
@@ -346,14 +322,6 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
     // easier.
     widget_->GetNativeWindow()->targeter()->SetInsets(insets, insets);
   }
-
-  void SetDrawInvisible(bool draw_invisible) {
-    if (draw_invisible_ == draw_invisible)
-      return;
-    draw_invisible_ = draw_invisible;
-    OnPropertyChanged(&draw_invisible_, kPropertyEffectsPaint);
-  }
-  bool GetDrawInvisible() const { return draw_invisible_; }
 
  private:
   raw_ptr<TouchSelectionControllerImpl> controller_;
@@ -370,12 +338,6 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
   // TouchSelectionControllerImpl::OnDragUpdate while dragging the handle.
   gfx::Vector2d drag_offset_;
 
-  // If set to true, the handle will not draw anything, hence providing an empty
-  // widget. We need this because we may want to stop showing the handle while
-  // it is being dragged. Since it is being dragged, we cannot destroy the
-  // handle.
-  bool draw_invisible_ = false;
-
   // Owning widget.
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
@@ -385,7 +347,6 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
 BEGIN_METADATA(TouchSelectionControllerImpl, EditingHandleView, View)
 ADD_READONLY_PROPERTY_METADATA(gfx::SelectionBound::Type, SelectionBoundType)
 ADD_PROPERTY_METADATA(bool, WidgetVisible)
-ADD_PROPERTY_METADATA(bool, DrawInvisible)
 END_METADATA
 
 TouchSelectionControllerImpl::TouchSelectionControllerImpl(
@@ -457,23 +418,17 @@ void TouchSelectionControllerImpl::SelectionChanged() {
   selection_bound_2_ = screen_bound_focus;
   selection_bound_1_clipped_ = screen_bound_anchor_clipped;
   selection_bound_2_clipped_ = screen_bound_focus_clipped;
+  const bool should_show_anchor_handle = ShouldShowHandleFor(anchor);
+  const bool should_show_focus_handle = ShouldShowHandleFor(focus);
 
   if (dragging_handle_) {
     // We need to reposition only the selection handle that is being dragged.
     // The other handle stays the same. Also, the selection handle being dragged
     // will always be at the end of selection, while the other handle will be at
     // the start.
-    // If the new location of this handle is out of client view, its widget
-    // should not get hidden, since it should still receive touch events.
-    // Hence, we are not using |SetHandleBound()| method here.
-    dragging_handle_->SetBoundInScreen(screen_bound_focus_clipped, true);
-
-    // Temporary fix for selection handle going outside a window. On a webpage,
-    // the page should scroll if the selection handle is dragged outside the
-    // window. That does not happen currently. So we just hide the handle for
-    // now.
-    // TODO(varunjain): Fix this: crbug.com/269003
-    dragging_handle_->SetDrawInvisible(!ShouldShowHandleFor(focus));
+    // The dragging handle widget should remain shown as the handle is dragged,
+    // to ensure that it keeps receiving touch events.
+    UpdateHandle(dragging_handle_, screen_bound_focus_clipped, true);
 
     if (dragging_handle_ != cursor_handle_) {
       // The non-dragging-handle might have recently become visible.
@@ -487,7 +442,8 @@ void TouchSelectionControllerImpl::SelectionChanged() {
         selection_bound_1_clipped_ = screen_bound_focus_clipped;
         selection_bound_2_clipped_ = screen_bound_anchor_clipped;
       }
-      SetHandleBound(non_dragging_handle, anchor, screen_bound_anchor_clipped);
+      UpdateHandle(non_dragging_handle, screen_bound_anchor_clipped,
+                   should_show_anchor_handle);
     }
   } else {
     if (screen_bound_anchor.edge_start() == screen_bound_focus.edge_start() &&
@@ -495,13 +451,16 @@ void TouchSelectionControllerImpl::SelectionChanged() {
       // Empty selection, show cursor handle.
       selection_handle_1_->SetWidgetVisible(false);
       selection_handle_2_->SetWidgetVisible(false);
-      SetHandleBound(cursor_handle_, anchor, screen_bound_anchor_clipped);
+      UpdateHandle(cursor_handle_, screen_bound_anchor_clipped,
+                   should_show_anchor_handle);
       quick_menu_requested_ = !tap_cursor_to_toggle_menu_enabled_;
     } else {
       // Non-empty selection, show selection handles.
       cursor_handle_->SetWidgetVisible(false);
-      SetHandleBound(selection_handle_1_, anchor, screen_bound_anchor_clipped);
-      SetHandleBound(selection_handle_2_, focus, screen_bound_focus_clipped);
+      UpdateHandle(selection_handle_1_, screen_bound_anchor_clipped,
+                   should_show_anchor_handle);
+      UpdateHandle(selection_handle_2_, screen_bound_focus_clipped,
+                   should_show_focus_handle);
       quick_menu_requested_ = true;
     }
     UpdateQuickMenu();
@@ -579,12 +538,16 @@ void TouchSelectionControllerImpl::ConvertPointToClientView(
   client_view_->ConvertPointFromScreen(point);
 }
 
-void TouchSelectionControllerImpl::SetHandleBound(
+void TouchSelectionControllerImpl::UpdateHandle(
     EditingHandleView* handle,
-    const gfx::SelectionBound& bound,
-    const gfx::SelectionBound& bound_in_screen) {
-  handle->SetWidgetVisible(ShouldShowHandleFor(bound));
-  handle->SetBoundInScreen(bound_in_screen, handle->GetWidgetVisible());
+    const gfx::SelectionBound& bound_in_screen,
+    bool should_show_handle) {
+  if (should_show_handle) {
+    handle->SetBoundInScreen(bound_in_screen);
+    handle->SetWidgetVisible(true);
+  } else {
+    handle->SetWidgetVisible(false);
+  }
 }
 
 bool TouchSelectionControllerImpl::ShouldShowHandleFor(
@@ -692,32 +655,31 @@ void TouchSelectionControllerImpl::HideQuickMenu() {
 }
 
 gfx::Rect TouchSelectionControllerImpl::GetQuickMenuAnchorRect() const {
-  // Get selection end points in client_view's space.
-  gfx::SelectionBound b1_in_screen = selection_bound_1_clipped_;
-  gfx::SelectionBound b2_in_screen = cursor_handle_->GetWidgetVisible()
-                                         ? b1_in_screen
-                                         : selection_bound_2_clipped_;
-  // Convert from screen to client.
-  gfx::SelectionBound b1 = ConvertFromScreen(client_view_, b1_in_screen);
-  gfx::SelectionBound b2 = ConvertFromScreen(client_view_, b2_in_screen);
+  const bool selection_bound_1_handle_visible =
+      cursor_handle_->GetWidgetVisible() ||
+      selection_handle_1_->GetWidgetVisible();
+  const bool selection_bound_2_handle_visible =
+      cursor_handle_->GetWidgetVisible() ||
+      selection_handle_2_->GetWidgetVisible();
 
-  // if selection is completely inside the view, we display the quick menu in
-  // the middle of the end points on the top. Else, we show it above the visible
+  // If both selection handles are visible, we display the quick menu above the
+  // middle of the selection endpoints. Else, we show it above the visible
   // handle. If no handle is visible, we do not show the menu.
   gfx::Rect menu_anchor;
-  if (ShouldShowHandleFor(b1) && ShouldShowHandleFor(b2))
-    menu_anchor = gfx::RectBetweenSelectionBounds(b1_in_screen, b2_in_screen);
-  else if (ShouldShowHandleFor(b1))
-    menu_anchor = BoundToRect(b1_in_screen);
-  else if (ShouldShowHandleFor(b2))
-    menu_anchor = BoundToRect(b2_in_screen);
-  else
-    return menu_anchor;
+  if (selection_bound_1_handle_visible && selection_bound_2_handle_visible) {
+    menu_anchor = gfx::RectBetweenSelectionBounds(selection_bound_1_clipped_,
+                                                  selection_bound_2_clipped_);
+  } else if (selection_bound_1_handle_visible) {
+    menu_anchor = BoundToRect(selection_bound_1_clipped_);
+  } else if (selection_bound_2_handle_visible) {
+    menu_anchor = BoundToRect(selection_bound_2_clipped_);
+  } else {
+    return gfx::Rect();
+  }
 
   // Enlarge the anchor rect so that the menu is offset from the text at least
   // by the same distance the handles are offset from the text.
   menu_anchor.Inset(gfx::Insets::VH(-kSelectionHandleVerticalVisualOffset, 0));
-
   return menu_anchor;
 }
 

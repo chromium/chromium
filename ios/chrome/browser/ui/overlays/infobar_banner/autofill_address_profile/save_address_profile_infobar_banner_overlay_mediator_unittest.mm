@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/overlays/public/infobar_banner/infobar_banner_overlay_responses.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/save_address_profile_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/test/fake_overlay_request_callback_installer.h"
-#import "ios/chrome/browser/ui/icons/symbols.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/infobars/banners/test/fake_infobar_banner_consumer.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"

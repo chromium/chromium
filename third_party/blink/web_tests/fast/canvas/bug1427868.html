@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script type="text/javascript">
+// This is a regression test for crbug.com/1427868
+const canvasElem = document.createElement('canvas');
+document.body.appendChild(canvasElem);
+const ctx = canvasElem.getContext('2d', {alpha: false});
+ctx.globalCompositeOperation = 'destination-out';
+ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);
+</script>
+</body>
+</html>

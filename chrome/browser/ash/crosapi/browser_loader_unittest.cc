@@ -23,6 +23,8 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/update_client/update_client.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -99,6 +101,8 @@ class BrowserLoaderTest : public testing::Test {
  protected:
   component_updater::MockComponentUpdateService mock_component_update_service_;
   scoped_refptr<component_updater::FakeCrOSComponentManager> component_manager_;
+  user_manager::ScopedUserManager scoped_user_manager_{
+      std::make_unique<user_manager::FakeUserManager>()};
   ash::FakeUpstartClient fake_upstart_client_;
   std::unique_ptr<BrowserProcessPlatformPartTestApi> browser_part_;
   std::unique_ptr<BrowserLoader> browser_loader_;

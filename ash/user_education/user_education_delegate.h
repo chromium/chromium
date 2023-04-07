@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "base/functional/callback_forward.h"
-#include "components/user_education/common/tutorial_identifier.h"
 
 class AccountId;
 
@@ -21,6 +20,8 @@ struct TutorialDescription;
 
 namespace ash {
 
+enum class TutorialId;
+
 // The delegate of the `UserEducationController` which facilitates communication
 // between Ash and user education services in the browser.
 class ASH_EXPORT UserEducationDelegate {
@@ -32,7 +33,7 @@ class ASH_EXPORT UserEducationDelegate {
   // NOTE: Currently only the primary user profile is supported.
   virtual void RegisterTutorial(
       const AccountId& account_id,
-      user_education::TutorialIdentifier tutorial_id,
+      TutorialId tutorial_id,
       user_education::TutorialDescription tutorial_description) = 0;
 
   // Starts the tutorial previously registered with the specified `tutorial_id`
@@ -41,7 +42,7 @@ class ASH_EXPORT UserEducationDelegate {
   // be run on tutorial finish.
   // NOTE: Currently only the primary user profile is supported.
   virtual void StartTutorial(const AccountId& account_id,
-                             user_education::TutorialIdentifier tutorial_id,
+                             TutorialId tutorial_id,
                              ui::ElementContext element_context,
                              base::OnceClosure completed_callback,
                              base::OnceClosure aborted_callback) = 0;

@@ -305,7 +305,8 @@ RTCDataChannel::RTCDataChannel(
     ExecutionContext* context,
     rtc::scoped_refptr<webrtc::DataChannelInterface> channel,
     RTCPeerConnectionHandler* peer_connection_handler)
-    : ExecutionContextLifecycleObserver(context),
+    : ActiveScriptWrappable<RTCDataChannel>({}),
+      ExecutionContextLifecycleObserver(context),
       scheduled_event_timer_(context->GetTaskRunner(TaskType::kNetworking),
                              this,
                              &RTCDataChannel::ScheduledEventTimerFired),

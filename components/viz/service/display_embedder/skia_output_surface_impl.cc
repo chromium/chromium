@@ -771,7 +771,7 @@ void SkiaOutputSurfaceImpl::EndPaint(
 sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromRenderPass(
     const AggregatedRenderPassId& id,
     const gfx::Size& size,
-    ResourceFormat format,
+    SharedImageFormat format,
     bool mipmap,
     sk_sp<SkColorSpace> color_space,
     const gpu::Mailbox& mailbox) {
@@ -779,20 +779,19 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromRenderPass(
   DCHECK(current_paint_);
 
   auto& image_context = render_pass_image_cache_[id];
-  auto si_format = SharedImageFormat::SinglePlane(format);
   if (!image_context) {
     gpu::MailboxHolder mailbox_holder(mailbox, gpu::SyncToken(), 0);
     image_context = std::make_unique<ImageContextImpl>(
-        mailbox_holder, size, si_format, /*maybe_concurrent_reads=*/false,
+        mailbox_holder, size, format, /*maybe_concurrent_reads=*/false,
         /*ycbcr_info=*/absl::nullopt, std::move(color_space),
         /*is_for_render_pass=*/true);
   }
   if (!image_context->has_image()) {
     SkColorType color_type =
-        ResourceFormatToClosestSkColorType(true /* gpu_compositing */, format);
-    GrBackendFormat backend_format = GetGrBackendFormatForTexture(
-        si_format, /*plane_index=*/0, GL_TEXTURE_2D,
-        /*ycbcr_info=*/absl::nullopt);
+        ToClosestSkColorType(true /* gpu_compositing */, format);
+    GrBackendFormat backend_format =
+        GetGrBackendFormatForTexture(format, /*plane_index=*/0, GL_TEXTURE_2D,
+                                     /*ycbcr_info=*/absl::nullopt);
     FulfillForPlane* fulfill = new FulfillForPlane(image_context.get());
     auto image = SkImages::PromiseTextureFrom(
         gr_context_thread_safe_, backend_format,
@@ -1441,7 +1440,7 @@ void SkiaOutputSurfaceImpl::InitDelegatedInkPointRendererReceiver(
 }
 
 gpu::Mailbox SkiaOutputSurfaceImpl::CreateSharedImage(
-    ResourceFormat format,
+    SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     uint32_t usage,

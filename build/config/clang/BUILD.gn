@@ -35,6 +35,27 @@ config("find_bad_constructs") {
         "check-ipc",
       ]
     }
+
+    if (enable_check_raw_ptr_fields) {
+      cflags += [
+        "-Xclang",
+        "-plugin-arg-find-bad-constructs",
+        "-Xclang",
+        "check-raw-ptr-fields",
+
+        # TODO(keishi): Remove this once crrev.com/c/4387753 is rolled out.
+        "-Xclang",
+        "-plugin-arg-find-bad-constructs",
+        "-Xclang",
+        "raw-ptr-exclude-path=base/no_destructor.h",
+
+        # TODO(keishi): Remove this once crrev.com/c/4086161 lands.
+        "-Xclang",
+        "-plugin-arg-find-bad-constructs",
+        "-Xclang",
+        "raw-ptr-exclude-path=base/containers/span.h",
+      ]
+    }
   }
 }
 

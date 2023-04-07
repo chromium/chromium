@@ -685,7 +685,7 @@ class Rebaseline(AbstractParallelRebaselineCommand):
                     test_baseline_set.add(test, build, step_name)
 
         _log.debug('Rebaselining: %s', test_baseline_set)
-        self.rebaseline(options, test_baseline_set)
+        return self.rebaseline(options, test_baseline_set)
 
 
 @dataclass

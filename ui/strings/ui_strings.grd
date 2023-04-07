@@ -357,6 +357,36 @@ need to be translated for each locale.-->
                {YEARS, plural, =1 {1 year ago} other {# years ago}}
       </message>
 
+      <message name="IDS_TIME_TITLE_CASE_ELAPSED_LONG_SECS"
+               desc="Relative time in browsing history or file list, in title case. [ICU Syntax]">
+               {SECONDS, plural, =1 {1 Second Ago} other {# Seconds Ago}}
+      </message>
+
+      <message name="IDS_TIME_TITLE_CASE_ELAPSED_LONG_MINS"
+               desc="Relative time in browsing history or file list, in title case. [ICU Syntax]">
+               {SECONDS, plural, =1 {1 Minute Ago} other {# Minutes Ago}}
+      </message>
+
+      <message name="IDS_TIME_TITLE_CASE_ELAPSED_HOURS"
+               desc="Relative time in browsing history or file list, in title case. [ICU Syntax]">
+               {HOURS, plural, =1 {1 Hour Ago} other {# Hours Ago}}
+      </message>
+
+      <message name="IDS_TIME_TITLE_CASE_ELAPSED_DAYS"
+               desc="Relative time in browsing history or file list, in title case. [ICU Syntax]">
+               {DAYS, plural, =1 {1 Day Ago} other {# Days Ago}}
+      </message>
+
+      <message name="IDS_TIME_TITLE_CASE_ELAPSED_MONTHS"
+               desc="Relative time in browsing history or file list, in title case. [ICU Syntax]">
+               {MONTHS, plural, =1 {1 Month Ago} other {# Months Ago}}
+      </message>
+
+      <message name="IDS_TIME_TITLE_CASE_ELAPSED_YEARS"
+               desc="Relative time in browsing history or file list, in title case. [ICU Syntax]">
+               {YEARS, plural, =1 {1 Year Ago} other {# Years Ago}}
+      </message>
+
       <message name="IDS_PAST_TIME_TODAY" desc="Relative day today">
         Today
       </message>

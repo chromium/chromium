@@ -42,7 +42,7 @@ BASE_FEATURE(kSafeSitesFilterBehaviorPolicyAndroid,
 
 BASE_FEATURE(kPolicyMergeMultiSource,
              "PolicyMergeMultiSource",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_IOS)
 BASE_FEATURE(kPolicyLogsPageIOS,

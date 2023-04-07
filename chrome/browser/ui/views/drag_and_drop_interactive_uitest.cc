@@ -799,19 +799,17 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
     if (!frame)
       return false;
 
-    std::string script;
-    int response = 0;
-
     // Navigate the frame and wait for the load event.
-    script = base::StringPrintf(
+    std::string script = base::StringPrintf(
         "location.href = '/cross-site/%s/drag_and_drop/%s';\n"
-        "setTimeout(function() { domAutomationController.send(42); }, 0);",
+        "new Promise(resolve => {"
+        "  setTimeout(function() { resolve(42); }, 0);"
+        "});",
         origin.c_str(), filename.c_str());
     content::TestFrameNavigationObserver observer(frame);
-    if (!content::ExecuteScriptAndExtractInt(frame, script, &response))
+    if (content::EvalJs(frame, script).ExtractInt() != 42) {
       return false;
-    if (response != 42)
-      return false;
+    }
     observer.Wait();
 
     // |frame| might have been swapped-out during a cross-site navigation,

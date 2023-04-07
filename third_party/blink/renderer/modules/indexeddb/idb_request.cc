@@ -138,15 +138,15 @@ IDBRequest::IDBRequest(ScriptState* script_state,
                        const Source* source,
                        IDBTransaction* transaction,
                        AsyncTraceState metrics)
-    : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
+    : ActiveScriptWrappable<IDBRequest>({}),
+      ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
       transaction_(transaction),
       isolate_(script_state->GetIsolate()),
       metrics_(std::move(metrics)),
       source_(source),
       event_queue_(
           MakeGarbageCollected<EventQueue>(ExecutionContext::From(script_state),
-                                           TaskType::kDatabaseAccess)) {
-}
+                                           TaskType::kDatabaseAccess)) {}
 
 IDBRequest::~IDBRequest() {
   if (!GetExecutionContext())

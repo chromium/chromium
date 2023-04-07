@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
@@ -43,6 +44,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.ActiveTabState;
@@ -507,10 +509,28 @@ public final class ReturnToChromeUtil {
      * Creates a new Tab.
      * @param tabCreator The {@link TabCreator} object.
      */
-    public static Tab createNewTab(TabCreator tabCreator) {
+    public static Tab createNewTabAndShowHomeSurfaceUi(TabCreator tabCreator) {
         // Creates a new Tab if doesn't find an existing to reuse.
-        return tabCreator.createNewTab(
+        Tab tab = tabCreator.createNewTab(
                 new LoadUrlParams(UrlConstants.NTP_URL), TabLaunchType.FROM_STARTUP, null);
+        showHomeSurfaceUiOnNtp(tab);
+        return tab;
+    }
+
+    /**
+     * Shows the home surface UI on the next active NTP.
+     */
+    public static void showHomeSurfaceOnNextNtp(
+            TabModel currentTabModel, TabModelSelector tabModelSelector) {
+        TabModelObserver observer = new TabModelObserver() {
+            @Override
+            public void didSelectTab(Tab tab, int type, int lastId) {
+                assert tab.isNativePage() && tab.getNativePage() instanceof NewTabPage;
+                ReturnToChromeUtil.showHomeSurfaceUiOnNtp(tab);
+                currentTabModel.removeObserver(this);
+            }
+        };
+        tabModelSelector.getModel(false).addObserver(observer);
     }
 
     /**
@@ -531,8 +551,9 @@ public final class ReturnToChromeUtil {
         int indexOfFirstNtp = TabModelUtils.getTabIndexByUrl(currentTabModel, UrlConstants.NTP_URL);
         if (indexOfFirstNtp != TabModel.INVALID_TAB_INDEX) {
             TabModelUtils.setIndex(currentTabModel, indexOfFirstNtp, false);
+            showHomeSurfaceUiOnNtp(currentTabModel.getTabAt(indexOfFirstNtp));
         } else {
-            createNewTab(tabCreator);
+            createNewTabAndShowHomeSurfaceUi(tabCreator);
         }
     }
 
@@ -666,5 +687,13 @@ public final class ReturnToChromeUtil {
             BrowserUiUtils.recordModuleClickHistogram(HostSurface.NEW_TAB_PAGE,
                     BrowserUiUtils.ModuleTypeOnStartAndNTP.TAB_SWITCHER_BUTTON);
         }
+    }
+
+    /**
+     * Shows the home surface UI on the given Ntp on tablets.
+     */
+    private static void showHomeSurfaceUiOnNtp(Tab ntpTab) {
+        assert ntpTab.isNativePage();
+        ((NewTabPage) ntpTab.getNativePage()).showHomeSurfaceUi();
     }
 }

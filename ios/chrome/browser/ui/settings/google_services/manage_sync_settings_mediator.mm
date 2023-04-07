@@ -17,6 +17,7 @@
 #import "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
@@ -26,7 +27,6 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
-#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_command_handler.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
@@ -291,6 +291,8 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
   // EncryptionItemType.
   self.encryptionItem =
       [[TableViewImageItem alloc] initWithType:EncryptionItemType];
+  self.encryptionItem.accessibilityIdentifier =
+      kEncryptionAccessibilityIdentifier;
   self.encryptionItem.title = GetNSString(IDS_IOS_MANAGE_SYNC_ENCRYPTION);
   // The detail text (if any) is an error message, so color it in red.
   self.encryptionItem.detailTextColor = [UIColor colorNamed:kRedColor];

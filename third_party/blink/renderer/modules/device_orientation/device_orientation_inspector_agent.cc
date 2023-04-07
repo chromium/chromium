@@ -12,8 +12,6 @@
 
 namespace blink {
 
-using protocol::Response;
-
 DeviceOrientationInspectorAgent::~DeviceOrientationInspectorAgent() = default;
 
 DeviceOrientationInspectorAgent::DeviceOrientationInspectorAgent(
@@ -37,10 +35,10 @@ DeviceOrientationController& DeviceOrientationInspectorAgent::Controller() {
       *inspected_frames_->Root()->DomWindow());
 }
 
-Response DeviceOrientationInspectorAgent::setDeviceOrientationOverride(
-    double alpha,
-    double beta,
-    double gamma) {
+protocol::Response
+DeviceOrientationInspectorAgent::setDeviceOrientationOverride(double alpha,
+                                                              double beta,
+                                                              double gamma) {
   enabled_.Set(true);
   alpha_.Set(alpha);
   beta_.Set(beta);
@@ -48,19 +46,20 @@ Response DeviceOrientationInspectorAgent::setDeviceOrientationOverride(
   Controller().SetOverride(
       DeviceOrientationData::Create(alpha, beta, gamma, false));
   sensor_agent_->SetOrientationSensorOverride(alpha, beta, gamma);
-  return Response::Success();
+  return protocol::Response::Success();
 }
 
-Response DeviceOrientationInspectorAgent::clearDeviceOrientationOverride() {
+protocol::Response
+DeviceOrientationInspectorAgent::clearDeviceOrientationOverride() {
   return disable();
 }
 
-Response DeviceOrientationInspectorAgent::disable() {
+protocol::Response DeviceOrientationInspectorAgent::disable() {
   agent_state_.ClearAllFields();
   if (!inspected_frames_->Root()->DomWindow()->IsContextDestroyed())
     Controller().ClearOverride();
   sensor_agent_->Disable();
-  return Response::Success();
+  return protocol::Response::Success();
 }
 
 void DeviceOrientationInspectorAgent::Restore() {

@@ -442,6 +442,8 @@ TEST_F(UserAgentUtilsTest, CustomUserAgent) {
   EXPECT_EQ(GetReducedUserAgent(), custom_user_agent);
   EXPECT_EQ(GetFullUserAgent(), custom_user_agent);
   EXPECT_EQ(GetUserAgent(), custom_user_agent);
+  // Make sure return blank values for GetUserAgentMetadata().
+  EXPECT_EQ(blink::UserAgentMetadata(), GetUserAgentMetadata());
 }
 
 TEST_F(UserAgentUtilsTest, InvalidCustomUserAgent) {

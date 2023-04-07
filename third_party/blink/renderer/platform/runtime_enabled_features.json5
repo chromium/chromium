@@ -2472,6 +2472,10 @@
       origin_trial_allows_third_party: true,
     },
     {
+      name: "OverflowOverlayAliasesAuto",
+      status: "experimental",
+    },
+    {
       name: "OverscrollCustomization",
       status: "experimental",
       base_feature: "none",

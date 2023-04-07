@@ -13,6 +13,7 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "ash/system/federated/federated_service_controller_impl.h"
+#include "base/logging.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/ash/app_list/search/common/string_util.h"
 #include "chrome/browser/ash/app_list/search/ranking/ranker_manager.h"
 #include "chrome/browser/ash/app_list/search/ranking/sorting.h"
+#include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/ash/app_list/search/search_metrics_manager.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
 #include "chrome/browser/ash/app_list/search/search_session_metrics_manager.h"
@@ -87,6 +89,9 @@ void SearchController::Initialize() {
 
 void SearchController::OnBurnInPeriodElapsed() {
   ranker_manager_->OnBurnInPeriodElapsed();
+  if (search_features::isLauncherOmniboxPublishLogicLogEnabled()) {
+    LOG(ERROR) << "Launcher search burn-in period elapsed publish";
+  }
   Publish();
 }
 
@@ -145,6 +150,9 @@ void SearchController::ClearSearch() {
     provider->StopQuery();
   }
 
+  if (search_features::isLauncherOmniboxPublishLogicLogEnabled()) {
+    LOG(ERROR) << "Launcher search clear search publish";
+  }
   Publish();
   ranker_manager_->Start(u"", results_, categories_);
 }
@@ -186,6 +194,9 @@ void SearchController::OnZeroStateTimedOut() {
   // Zero state callbacks will get run when next batch of results gets
   // published.
   if (last_query_.empty() && !on_zero_state_done_.empty()) {
+    if (search_features::isLauncherOmniboxPublishLogicLogEnabled()) {
+      LOG(ERROR) << "Launcher search zero state timeout publish";
+    }
     Publish();
   }
 }
@@ -242,6 +253,9 @@ void SearchController::InvokeResultAction(ChromeSearchResult* result,
     // We need to update the currently published results to not include the
     // just-removed result. Manually set the result as filtered and re-publish.
     result->scoring().set_filtered(true);
+    if (search_features::isLauncherOmniboxPublishLogicLogEnabled()) {
+      LOG(ERROR) << "Launcher search remove publish";
+    }
     Publish();
   }
 }
@@ -281,7 +295,19 @@ void SearchController::SetSearchResults(const SearchProvider* provider) {
   // If the burn-in period has not yet elapsed, don't call Publish here (this
   // case is covered by a call scheduled within the burn-in controller).
   if (!last_query_.empty() && is_post_burn_in) {
+    if (search_features::isLauncherOmniboxPublishLogicLogEnabled()) {
+      LOG(ERROR) << "Launcher search post burn-in publish from "
+                 << static_cast<int>(provider->ResultType());
+    }
     Publish();
+  } else if (search_features::isLauncherOmniboxPublishLogicLogEnabled() &&
+             !last_query_.empty()) {
+    LOG(ERROR) << "Launcher search pre burn-in from "
+               << static_cast<int>(provider->ResultType());
+  } else if (search_features::isLauncherOmniboxPublishLogicLogEnabled()) {
+    // We should expect no log from here.
+    LOG(ERROR) << "Launcher search empty query results from "
+               << static_cast<int>(provider->ResultType());
   }
 }
 
@@ -304,7 +330,9 @@ void SearchController::SetZeroStateResults(const SearchProvider* provider) {
       returned_zero_state_blockers_ < total_zero_state_blockers_) {
     return;
   }
-
+  if (search_features::isLauncherOmniboxPublishLogicLogEnabled()) {
+    LOG(ERROR) << "Launcher search zero state publish";
+  }
   Publish();
 }
 

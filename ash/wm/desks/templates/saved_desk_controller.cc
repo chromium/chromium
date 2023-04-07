@@ -8,6 +8,7 @@
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "base/check.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -55,17 +56,29 @@ std::unique_ptr<DeskTemplate> CreatePlaceholderTemplate() {
   return desk_template;
 }
 
+// Pointer to the global `SavedDeskController` instance.
+SavedDeskController* g_instance = nullptr;
+
 }  // namespace
 
-SavedDeskController::SavedDeskController() = default;
+SavedDeskController::SavedDeskController() {
+  CHECK(!g_instance);
+  g_instance = this;
+}
 
-SavedDeskController::~SavedDeskController() = default;
+SavedDeskController::~SavedDeskController() {
+  g_instance = nullptr;
+}
+
+SavedDeskController* SavedDeskController::Get() {
+  return g_instance;
+}
 
 std::vector<AdminTemplateMetadata>
 SavedDeskController::GetAdminTemplateMetadata() const {
   return {AdminTemplateMetadata{
       .uuid = base::GUID::ParseLowercase(kPlaceholderUuid),
-      .name = kPlaceholderName}};
+      .name = base::UTF8ToUTF16(base::StringPiece(kPlaceholderName))}};
 }
 
 bool SavedDeskController::LaunchAdminTemplate(const base::GUID& template_uuid) {

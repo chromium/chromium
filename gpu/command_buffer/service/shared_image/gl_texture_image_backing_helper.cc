@@ -142,7 +142,7 @@ GLTextureImageBackingHelper::ProduceDawnCommon(
   bool success = factory->CreateSharedImage(
       dst_mailbox, backing->format(), backing->size(), backing->color_space(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, gpu::kNullSurfaceHandle,
-      backing->usage() | SHARED_IMAGE_USAGE_WEBGPU);
+      backing->usage() | SHARED_IMAGE_USAGE_WEBGPU, "ProduceDawnCommon");
   if (!success) {
     DLOG(ERROR) << "Cannot create a shared image resource for internal blit";
     return nullptr;

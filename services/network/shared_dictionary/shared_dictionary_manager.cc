@@ -1,0 +1,47 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "services/network/shared_dictionary/shared_dictionary_manager.h"
+
+#include "services/network/shared_dictionary/shared_dictionary_manager_in_memory.h"
+#include "services/network/shared_dictionary/shared_dictionary_storage.h"
+
+namespace network {
+
+// static
+std::unique_ptr<SharedDictionaryManager>
+SharedDictionaryManager::CreateInMemory() {
+  return std::make_unique<SharedDictionaryManagerInMemory>();
+}
+
+SharedDictionaryManager::SharedDictionaryManager() = default;
+SharedDictionaryManager::~SharedDictionaryManager() = default;
+
+scoped_refptr<SharedDictionaryStorage> SharedDictionaryManager::GetStorage(
+    const net::NetworkIsolationKey& network_isolation_key) {
+  if (network_isolation_key.IsTransient()) {
+    return nullptr;
+  }
+  auto it = storages_.find(network_isolation_key);
+  if (it != storages_.end()) {
+    DCHECK(it->second);
+    return it->second.get();
+  }
+  scoped_refptr<SharedDictionaryStorage> storage =
+      CreateStorage(network_isolation_key);
+  storages_.emplace(network_isolation_key, storage.get());
+  return storage;
+}
+
+void SharedDictionaryManager::OnStorageDeleted(
+    const net::NetworkIsolationKey& network_isolation_key) {
+  size_t removed_count = storages_.erase(network_isolation_key);
+  DCHECK_EQ(1U, removed_count);
+}
+
+base::WeakPtr<SharedDictionaryManager> SharedDictionaryManager::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
+}  // namespace network

@@ -1,0 +1,36 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Appearance Description: A square open at the top with a curved arrow pointing
+//   from the center to the right.
+// Note: Share icon specifically for Windows.
+
+CANVAS_DIMENSIONS, 20,
+MOVE_TO, 14.5f, 15.5f,
+R_H_LINE_TO, -10,
+V_LINE_TO, 4,
+H_LINE_TO, 3,
+R_V_LINE_TO, 11.5f,
+R_CUBIC_TO, 0, 0.83f, 0.67f, 1.5f, 1.5f, 1.5f,
+R_H_LINE_TO, 10,
+R_CUBIC_TO, 0.83f, 0, 1.5f, -0.67f, 1.5f, -1.5f,
+V_LINE_TO, 12,
+R_H_LINE_TO, -1.5f,
+R_V_LINE_TO, 3.5f,
+CLOSE,
+NEW_PATH,
+MOVE_TO, 7.5f, 7.25f,
+R_H_LINE_TO, 6.63f,
+R_LINE_TO, -1.69f, 1.69f,
+LINE_TO, 13.5f, 10,
+LINE_TO, 17, 6.5f,
+LINE_TO, 13.5f, 3,
+R_LINE_TO, -1.06f, 1.06f,
+R_LINE_TO, 1.69f, 1.69f,
+H_LINE_TO, 7.5f,
+R_CUBIC_TO, -0.83f, 0, -1.5f, 0.67f, -1.5f, 1.5f,
+R_V_LINE_TO, 4.25f,
+R_H_LINE_TO, 1.5f,
+V_LINE_TO, 7.25f,
+CLOSE

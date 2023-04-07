@@ -730,6 +730,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2718207025093645426">Hallinnoidulla käyttäjällä tai laitteella ei ole ladattua käytäntöä.</translation>
 <translation id="2721148159707890343">Pyyntö onnistui</translation>
 <translation id="2723669454293168317">Tee turvatarkistus Chromen asetuksissa</translation>
+<translation id="2725492561136085792">Aktivoi toiminto painamalla Enter.</translation>
 <translation id="2726001110728089263">Sivulokero</translation>
 <translation id="2728127805433021124">Palvelimen varmenne on allekirjoitettu heikolla allekirjoitusalgoritmilla.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />yhteysdiagnostiikkaa<ph name="END_LINK" /></translation>
@@ -826,6 +827,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="299990983510665749">Viistoperät</translation>
 <translation id="3002501248619246229">Tarkista syöttölokeron media</translation>
 <translation id="3005723025932146533">Näytä tallennettu kopio</translation>
+<translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, selaa käytettävissä olevia toimintoja painamalla sarkainta ja suorita valittu toiminto painamalla Enter.</translation>
 <translation id="3013291976881901233">MIDI-laitteet</translation>
 <translation id="301521992641321250">Estetty automaattisesti</translation>
 <translation id="3016780570757425217">Saada sijaintisi selville.</translation>
@@ -1341,6 +1343,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4274173425554582601">Tietokoneet ja elektroniikka</translation>
 <translation id="4275830172053184480">Käynnistä laite uudelleen</translation>
 <translation id="4277028893293644418">Pyydä uusi salasana</translation>
+<translation id="4277937682389409325">Paikallinen osoite</translation>
 <translation id="4278390842282768270">Sallittu</translation>
 <translation id="4281998142035485137">{0,plural, =1{Avataanko luottamuksellinen tiedosto?}other{Avataanko luottamukselliset tiedostot?}}</translation>
 <translation id="4282346679996504092">Tämän tuotteen ilmoitukset on laitettu pois päältä ja kirjanmerkki poistettu</translation>

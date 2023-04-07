@@ -26,7 +26,6 @@
 namespace blink {
 
 using protocol::Maybe;
-using protocol::Response;
 
 namespace encoding_enum = protocol::Audits::GetEncodedResponse::EncodingEnum;
 
@@ -141,7 +140,7 @@ protocol::Response InspectorAuditsAgent::getEncodedResponse(
 
   String body;
   bool is_base64_encoded;
-  Response response =
+  protocol::Response response =
       network_agent_->GetResponseBody(request_id, &body, &is_base64_encoded);
   if (!response.IsSuccess())
     return response;
@@ -149,14 +148,15 @@ protocol::Response InspectorAuditsAgent::getEncodedResponse(
   Vector<char> base64_decoded_buffer;
   if (!is_base64_encoded || !Base64Decode(body, base64_decoded_buffer) ||
       base64_decoded_buffer.size() == 0) {
-    return Response::ServerError("Failed to decode original image");
+    return protocol::Response::ServerError("Failed to decode original image");
   }
 
   Vector<unsigned char> encoded_image;
   if (!EncodeAsImage(base64_decoded_buffer.data(), base64_decoded_buffer.size(),
                      encoding, quality.fromMaybe(kDefaultEncodeQuality),
                      &encoded_image)) {
-    return Response::ServerError("Could not encode image with given settings");
+    return protocol::Response::ServerError(
+        "Could not encode image with given settings");
   }
 
   *out_original_size = static_cast<int>(base64_decoded_buffer.size());
@@ -165,7 +165,7 @@ protocol::Response InspectorAuditsAgent::getEncodedResponse(
   if (!size_only.fromMaybe(false)) {
     *out_body = protocol::Binary::fromVector(std::move(encoded_image));
   }
-  return Response::Success();
+  return protocol::Response::Success();
 }
 
 void InspectorAuditsAgent::CheckContrastForDocument(Document* document,
@@ -180,38 +180,41 @@ void InspectorAuditsAgent::CheckContrastForDocument(Document* document,
   GetFrontend()->flush();
 }
 
-Response InspectorAuditsAgent::checkContrast(protocol::Maybe<bool> report_aaa) {
-  if (!inspected_frames_)
-    return Response::ServerError("Inspected frames are not available");
+protocol::Response InspectorAuditsAgent::checkContrast(
+    protocol::Maybe<bool> report_aaa) {
+  if (!inspected_frames_) {
+    return protocol::Response::ServerError(
+        "Inspected frames are not available");
+  }
 
   auto* main_window = inspected_frames_->Root()->DomWindow();
   if (!main_window)
-    return Response::ServerError("Document is not available");
+    return protocol::Response::ServerError("Document is not available");
 
   CheckContrastForDocument(main_window->document(),
                            report_aaa.fromMaybe(false));
 
-  return Response::Success();
+  return protocol::Response::Success();
 }
 
-Response InspectorAuditsAgent::enable() {
+protocol::Response InspectorAuditsAgent::enable() {
   if (enabled_.Get()) {
-    return Response::Success();
+    return protocol::Response::Success();
   }
 
   enabled_.Set(true);
   InnerEnable();
-  return Response::Success();
+  return protocol::Response::Success();
 }
 
-Response InspectorAuditsAgent::disable() {
+protocol::Response InspectorAuditsAgent::disable() {
   if (!enabled_.Get()) {
-    return Response::Success();
+    return protocol::Response::Success();
   }
 
   enabled_.Clear();
   instrumenting_agents_->RemoveInspectorAuditsAgent(this);
-  return Response::Success();
+  return protocol::Response::Success();
 }
 
 void InspectorAuditsAgent::Restore() {

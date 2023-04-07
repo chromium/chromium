@@ -25,17 +25,25 @@ void ArcAppLaunchThrottleObserver::StartObserving(
     content::BrowserContext* context,
     const ObserverStateChangedCallback& callback) {
   ThrottleObserver::StartObserving(context, callback);
-  auto* app_list_prefs = ArcAppListPrefs::Get(context);
-  if (app_list_prefs)  // for unit testing
-    app_list_prefs->AddObserver(this);
+
+  // if ArcWindowWatcher is available, it offers a more accurate cue of
+  // when launched app is displayed - and we use that instead
+  // of task creation, which comes too early.
+  if (ash::ArcWindowWatcher::instance()) {
+    window_display_observation_.Observe(ash::ArcWindowWatcher::instance());
+  } else {
+    auto* app_list_prefs = ArcAppListPrefs::Get(context);
+    if (app_list_prefs) {  // for unit testing
+      task_creation_observation_.Observe(app_list_prefs);
+    }
+  }
   AddAppLaunchObserver(context, this);
 }
 
 void ArcAppLaunchThrottleObserver::StopObserving() {
   RemoveAppLaunchObserver(context(), this);
-  auto* app_list_prefs = ArcAppListPrefs::Get(context());
-  if (app_list_prefs)  // for unit testing
-    app_list_prefs->RemoveObserver(this);
+  window_display_observation_.Reset();
+  task_creation_observation_.Reset();
   ThrottleObserver::StopObserving();
 }
 
@@ -56,6 +64,11 @@ void ArcAppLaunchThrottleObserver::OnTaskCreated(
     const std::string& activity,
     const std::string& intent,
     int32_t session_id) {
+  OnLaunchedOrRequestExpired(package_name);
+}
+
+void ArcAppLaunchThrottleObserver::OnArcWindowDisplayed(
+    const std::string& package_name) {
   OnLaunchedOrRequestExpired(package_name);
 }
 

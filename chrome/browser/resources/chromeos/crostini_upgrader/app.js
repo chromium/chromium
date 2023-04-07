@@ -144,11 +144,11 @@ Polymer({
         this.state_ = State.BACKUP_SUCCEEDED;
         // We do a short (2 second) interstitial display of the backup success
         // message before continuing the upgrade.
-        var timeout = new Promise((resolve, reject) => {
+        const timeout = new Promise((resolve, reject) => {
           setTimeout(resolve, wasCancelled ? 0 : 2000);
         });
         // We also want to wait for the prechecks to finish.
-        var callback = new Promise((resolve, reject) => {
+        const callback = new Promise((resolve, reject) => {
           this.startPrechecks_(resolve, reject);
         });
         Promise.all([timeout, callback]).then(() => {
@@ -587,7 +587,7 @@ Polymer({
     if (this.progressLineNumber_ < this.upgradeProgress_) {
       this.lastProgressLine_ =
           this.progressMessages_[this.progressLineNumber_++];
-      var t = setTimeout(
+      const t = setTimeout(
           this.updateProgressLine_.bind(this), this.progressLineDisplayMs_);
     }
   },

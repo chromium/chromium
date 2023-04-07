@@ -12,10 +12,12 @@
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
+#include "chromeos/ash/components/network/enterprise_managed_metadata_store.h"
 #include "chromeos/ash/components/network/hotspot_capabilities_provider.h"
 #include "chromeos/ash/components/network/hotspot_controller.h"
 #include "chromeos/ash/components/network/hotspot_enabled_state_notifier.h"
 #include "chromeos/ash/components/network/hotspot_state_handler.h"
+#include "chromeos/ash/components/network/metrics/hotspot_feature_usage_metrics.h"
 #include "chromeos/ash/components/network/metrics/hotspot_metrics_helper.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
@@ -73,10 +75,17 @@ class HotspotConfigurationHandlerTest : public ::testing::Test {
         hotspot_configuration_handler_->HasObserver(&observer_)) {
       hotspot_configuration_handler_->RemoveObserver(&observer_);
     }
+    enterprise_managed_metadata_store_ =
+        std::make_unique<EnterpriseManagedMetadataStore>();
     hotspot_capabilities_provider_ =
         std::make_unique<HotspotCapabilitiesProvider>();
     hotspot_capabilities_provider_->Init(
         network_state_test_helper_.network_state_handler());
+    hotspot_feature_usage_metrics_ =
+        std::make_unique<HotspotFeatureUsageMetrics>();
+    hotspot_feature_usage_metrics_->Init(
+        enterprise_managed_metadata_store_.get(),
+        hotspot_capabilities_provider_.get());
     technology_state_controller_ =
         std::make_unique<TechnologyStateController>();
     technology_state_controller_->Init(
@@ -85,11 +94,13 @@ class HotspotConfigurationHandlerTest : public ::testing::Test {
     hotspot_state_handler_->Init();
     hotspot_controller_ = std::make_unique<HotspotController>();
     hotspot_controller_->Init(hotspot_capabilities_provider_.get(),
+                              hotspot_feature_usage_metrics_.get(),
                               hotspot_state_handler_.get(),
                               technology_state_controller_.get());
     hotspot_enabled_state_notifier_ =
         std::make_unique<HotspotEnabledStateNotifier>();
-    hotspot_enabled_state_notifier_->Init(hotspot_controller_.get());
+    hotspot_enabled_state_notifier_->Init(hotspot_state_handler_.get(),
+                                          hotspot_controller_.get());
     hotspot_configuration_handler_ =
         std::make_unique<HotspotConfigurationHandler>();
     hotspot_configuration_handler_->AddObserver(&observer_);
@@ -104,8 +115,10 @@ class HotspotConfigurationHandlerTest : public ::testing::Test {
     hotspot_configuration_handler_->RemoveObserver(&observer_);
     hotspot_configuration_handler_.reset();
     hotspot_controller_.reset();
+    hotspot_feature_usage_metrics_.reset();
     hotspot_capabilities_provider_.reset();
     hotspot_state_handler_.reset();
+    enterprise_managed_metadata_store_.reset();
     technology_state_controller_.reset();
     LoginState::Shutdown();
   }
@@ -162,7 +175,10 @@ class HotspotConfigurationHandlerTest : public ::testing::Test {
   base::HistogramTester histogram_tester_;
   std::unique_ptr<HotspotConfigurationHandler> hotspot_configuration_handler_;
   std::unique_ptr<HotspotController> hotspot_controller_;
+  std::unique_ptr<EnterpriseManagedMetadataStore>
+      enterprise_managed_metadata_store_;
   std::unique_ptr<HotspotCapabilitiesProvider> hotspot_capabilities_provider_;
+  std::unique_ptr<HotspotFeatureUsageMetrics> hotspot_feature_usage_metrics_;
   std::unique_ptr<HotspotStateHandler> hotspot_state_handler_;
   std::unique_ptr<TechnologyStateController> technology_state_controller_;
   std::unique_ptr<HotspotEnabledStateNotifier> hotspot_enabled_state_notifier_;

@@ -24,6 +24,7 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/web_applications/test/ssl_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
@@ -483,7 +484,10 @@ class PreinstalledWebAppManagerExtensionBrowserTest
     : public extensions::ExtensionBrowserTest,
       public PreinstalledWebAppManagerBrowserTest {
  public:
-  PreinstalledWebAppManagerExtensionBrowserTest() = default;
+  PreinstalledWebAppManagerExtensionBrowserTest()
+      : enable_chrome_apps_(
+            &extensions::testing::g_enable_chrome_apps_for_testing,
+            true) {}
   ~PreinstalledWebAppManagerExtensionBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -495,6 +499,9 @@ class PreinstalledWebAppManagerExtensionBrowserTest
     ResetInterceptor();
     extensions::ExtensionBrowserTest::TearDownOnMainThread();
   }
+
+ private:
+  base::AutoReset<bool> enable_chrome_apps_;
 };
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)

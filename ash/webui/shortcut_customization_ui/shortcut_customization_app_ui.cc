@@ -25,6 +25,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/resources/grit/webui_resources.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 namespace ash {
@@ -181,6 +182,9 @@ void AddFeatureFlags(content::WebUIDataSource* html_source) {
                           ::features::IsShortcutCustomizationEnabled());
   html_source->AddBoolean("isSearchEnabled",
                           features::IsSearchInShortcutsAppEnabled());
+  html_source->AddBoolean(
+      "isJellyEnabledForShortcutCustomization",
+      ash::features::IsJellyEnabledForShortcutCustomization());
 }
 
 }  // namespace
@@ -234,6 +238,15 @@ void ShortcutCustomizationAppUI::BindInterface(
   DCHECK(search_handler);
 
   search_handler->BindInterface(std::move(receiver));
+}
+
+void ShortcutCustomizationAppUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
+  // BindInterface should not be called unless jelly-colors and
+  // scanning-app-jelly flags are enabled.
+  CHECK(features::IsJellyEnabledForShortcutCustomization());
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ShortcutCustomizationAppUI)

@@ -13,7 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/cors_origin_pattern_setter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"

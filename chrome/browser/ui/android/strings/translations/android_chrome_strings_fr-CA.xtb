@@ -455,6 +455,7 @@ Les jetons de confiance valides améliorent la confidentialité sur le Web et ne
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /> sur le contenu suggéré</translation>
 <translation id="3495219333887281978">La zone de contenu dans le bas de l'écran de connexion est ouverte à mi-hauteur.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="350276055892098337">Trier par le plus ancien</translation>
 <translation id="3507132249039706973">La protection standard est activée</translation>
 <translation id="3509330069915219067">Hors ligne. Chrome ne peut pas vérifier la présence de mises à jour.</translation>
 <translation id="3513704683820682405">Réalité augmentée</translation>
@@ -575,6 +576,7 @@ Les jetons de confiance valides améliorent la confidentialité sur le Web et ne
 <translation id="4177222230309051052">Ajoutez tous vos favoris</translation>
 <translation id="4177501066905053472">Sujets d'annonces</translation>
 <translation id="4181841719683918333">Langues</translation>
+<translation id="4188221736490993796">Trier de Z à A</translation>
 <translation id="4195643157523330669">Ouvrir dans un nouvel onglet</translation>
 <translation id="4196597275619698563">Créer une carte</translation>
 <translation id="4198423547019359126">Aucun dossier de téléchargement n'est disponible</translation>
@@ -640,6 +642,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="4565377596337484307">Masquer le mot de passe</translation>
 <translation id="4572422548854449519">Connectez-vous à un compte géré</translation>
 <translation id="4576892426230499203">Essayez avec une autre option de vérification</translation>
+<translation id="4577115723294378384">Trier de A à Z</translation>
 <translation id="4578289292431526768">Allons-y</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{Il y a # minute}one{Il y a # minute}other{Il y a # minutes}}</translation>
 <translation id="4587589328781138893">Sites</translation>
@@ -663,6 +666,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="4689792375321623175">Rechercher avec Google <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> autre option de livraison}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> autre option de livraison}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> autres options de livraison}}</translation>
 <translation id="4699172675775169585">Images et fichiers dans la mémoire cache</translation>
+<translation id="4710167854527459075">Trier par le plus récent</translation>
 <translation id="4719927025381752090">Proposer une traduction</translation>
 <translation id="4720023427747327413">Ouvrir dans <ph name="PRODUCT_NAME" /></translation>
 <translation id="47217992755561375">Afficher vos sites les plus fréquentés</translation>
@@ -832,6 +836,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5561162485081632007">Il détecte les événements dangereux et vous en informe lorsqu'ils surviennent</translation>
 <translation id="5561549206367097665">En attente du réseau…</translation>
 <translation id="5568069709869097550">Impossible de se connecter</translation>
+<translation id="557018954714092179">Créer un dossier</translation>
 <translation id="5578795271662203820">Rechercher cette image avec <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Vous pouvez toujours choisir les éléments à synchroniser dans les <ph name="BEGIN_LINK1" />paramètres<ph name="END_LINK1" />.</translation>
 <translation id="5590372121997663538">Mémoriser cet ordinateur</translation>
@@ -936,6 +941,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="6138832295072039549">Modifier les paramètres de votre site ici</translation>
 <translation id="6140709049082532940">Protection renforcée :</translation>
 <translation id="6140912465461743537">Pays/région</translation>
+<translation id="6148266338772765473">Exclure le lien</translation>
 <translation id="6150320133806434356">Favori enregistré</translation>
 <translation id="6154478581116148741">Activez le verrouillage de l'écran dans Paramètres pour exporter vos mots de passe à partir de cet appareil</translation>
 <translation id="6159729262978459665">Efface l'historique de tous les appareils synchronisés.</translation>
@@ -1027,6 +1033,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6590680911007613645">Assurez-vous que le mot de passe que vous enregistrez correspond à celui pour <ph name="SITE" /></translation>
 <translation id="6593061639179217415">Version ordinateur</translation>
 <translation id="6594121454516132231">Découvrez comment Chrome planifie de vous protéger du suivi intersites, tout en préservant le caractère ouvert du Web</translation>
+<translation id="6594347733515723558">Options tri et affichage</translation>
 <translation id="6595046016124923392">Les images sont envoyées à Google afin d'améliorer les descriptions pour vous.</translation>
 <translation id="6600954340915313787">Copiée dans Chrome</translation>
 <translation id="661266467055912436">Il renforce votre sécurité et celle de tous les utilisateurs sur le Web.</translation>

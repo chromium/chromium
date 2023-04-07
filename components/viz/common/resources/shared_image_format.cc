@@ -154,11 +154,11 @@ SharedImageFormat GetEquivalentMultiplanarFormat(
     ResourceFormat resource_format) {
   switch (resource_format) {
     case ResourceFormat::YVU_420:
-      return MultiPlaneFormat::kYVU_420;
+      return MultiPlaneFormat::kYV12;
     case ResourceFormat::YUV_420_BIPLANAR:
-      return MultiPlaneFormat::kYUV_420_BIPLANAR;
+      return MultiPlaneFormat::kNV12;
     case ResourceFormat::YUVA_420_TRIPLANAR:
-      return MultiPlaneFormat::kYUVA_420_TRIPLANAR;
+      return MultiPlaneFormat::kNV12A;
     case ResourceFormat::P010:
       return MultiPlaneFormat::kP010;
     default:

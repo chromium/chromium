@@ -942,6 +942,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.BrowserSupport.UnexpectedBrowserSupportInitialize"
+    enum="Boolean" expires_after="M122">
+  <owner>andreaorru@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    Making sure nobody in the production calls
+    ash::standalone_browser::BrowserSupport::Initialize() in unexpected timing.
+    This entry will not have &quot;false&quot; status.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Calendar.CalendarKeyboardNavigationSource"
     enum="CalendarKeyboardNavigationSource" expires_after="2023-09-18">
   <owner>kradtke@chromium.org</owner>
@@ -4441,6 +4452,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Personalization.DynamicColor.ToggleButton"
+    enum="BooleanEnabled" expires_after="2024-04-03">
+  <owner>ericamlee@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Emitted when a user clicks the toggle button to enable or disable dynamic
+    color in personalization hub.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Personalization.EntryPoint"
     enum="PersonalizationEntryPoint" expires_after="2023-09-10">
   <owner>thuongphan@chromium.org</owner>
@@ -4657,6 +4678,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Record the type of privacy indicators shown. Emitted when the privacy
     indicators view is shown in the status tray.
+  </summary>
+</histogram>
+
+<histogram name="Ash.PrivacyIndicators.Source" enum="PrivacyIndicatorsSource"
+    expires_after="2023-09-19">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Record the source that use privacy indicators. Emitted when there's a client
+    calling into the function that updates the privacy indicators.
   </summary>
 </histogram>
 

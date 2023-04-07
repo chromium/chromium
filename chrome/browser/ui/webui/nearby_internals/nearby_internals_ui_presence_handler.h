@@ -7,11 +7,18 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "chromeos/ash/components/nearby/presence/nearby_presence_service.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
-class NearbyInternalsPresenceHandler : public content::WebUIMessageHandler {
+namespace content {
+class BrowserContext;
+}  // namespace content
+
+class NearbyInternalsPresenceHandler
+    : public content::WebUIMessageHandler,
+      ash::nearby::presence::NearbyPresenceService::ScanDelegate {
  public:
-  NearbyInternalsPresenceHandler();
+  explicit NearbyInternalsPresenceHandler(content::BrowserContext* context);
   NearbyInternalsPresenceHandler(const NearbyInternalsPresenceHandler&) =
       delete;
   NearbyInternalsPresenceHandler& operator=(
@@ -24,8 +31,20 @@ class NearbyInternalsPresenceHandler : public content::WebUIMessageHandler {
   void OnJavascriptDisallowed() override;
 
  private:
+  // ash::nearby::presence::NearbyPresenceService::ScanDelegate:
+  void OnPresenceDeviceFound(
+      const ash::nearby::presence::NearbyPresenceService::PresenceDevice&
+          presence_device) override;
+  void OnPresenceDeviceChanged(
+      const ash::nearby::presence::NearbyPresenceService::PresenceDevice&
+          presence_device) override;
+  void OnPresenceDeviceLost(
+      const ash::nearby::presence::NearbyPresenceService::PresenceDevice&
+          presence_device) override;
+
   void Initialize(const base::Value::List& args);
   void HandleStartPresenceScan(const base::Value::List& args);
+  content::BrowserContext* const context_;
 
   base::WeakPtrFactory<NearbyInternalsPresenceHandler> weak_ptr_factory_{this};
 };

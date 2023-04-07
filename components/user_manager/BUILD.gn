@@ -36,7 +36,6 @@ component("user_manager") {
       "include_exclude_account_id_filter.h",
       "known_user.cc",
       "known_user.h",
-      "remove_user_delegate.h",
       "scoped_user_manager.cc",
       "scoped_user_manager.h",
       "user.cc",

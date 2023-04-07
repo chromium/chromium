@@ -88,18 +88,30 @@ bool IsValidMessagingSource(RenderProcessHost& process,
       }
       return true;
 
-    case MessagingEndpoint::Type::kTab:
-      if (source_endpoint.extension_id.has_value()) {
-        const std::string& extension_id = source_endpoint.extension_id.value();
-        bool is_content_script_expected =
-            ContentScriptTracker::DidProcessRunContentScriptFromExtension(
-                process, extension_id);
-        if (!is_content_script_expected) {
-          bad_message::ReceivedBadMessage(
-              &process,
-              bad_message::EMF_INVALID_EXTENSION_ID_FOR_CONTENT_SCRIPT);
-          return false;
-        }
+    case MessagingEndpoint::Type::kContentScript: {
+      if (!source_endpoint.extension_id) {
+        bad_message::ReceivedBadMessage(
+            &process, bad_message::EMF_INVALID_EXTENSION_ID_FOR_CONTENT_SCRIPT);
+        return false;
+      }
+      bool is_content_script_expected =
+          ContentScriptTracker::DidProcessRunContentScriptFromExtension(
+              process, *source_endpoint.extension_id);
+      if (!is_content_script_expected) {
+        bad_message::ReceivedBadMessage(
+            &process, bad_message::EMF_INVALID_EXTENSION_ID_FOR_CONTENT_SCRIPT);
+        return false;
+      }
+      return true;
+    }
+
+    case MessagingEndpoint::Type::kWebPage:
+      // NOTE: We classify hosted apps as kWebPage, but we don't include
+      // the extension ID in the source for those messages.
+      if (source_endpoint.extension_id) {
+        bad_message::ReceivedBadMessage(
+            &process, bad_message::EMF_INVALID_EXTENSION_ID_FOR_WEB_PAGE);
+        return false;
       }
       return true;
   }

@@ -10,7 +10,7 @@
  * @type {Object}.
  * Currently loaded model.
  */
-var activeModel = null;
+let activeModel = null;
 
 /**
  * Sets current power control status.
@@ -66,31 +66,31 @@ function refreshModel() {
   if (!activeModel) {
     return;
   }
-  var duration = activeModel.information.duration;
+  const duration = activeModel.information.duration;
 
   // Microseconds per pixel. 100% zoom corresponds to 100 mcs per pixel.
-  var resolution = zooms[zoomLevel];
-  var parent = $('arc-event-bands');
+  const resolution = zooms[zoomLevel];
+  const parent = $('arc-event-bands');
 
-  var topBandPadding = 4;
-  var chartHeight = 96;
-  var barHeight = 12;
+  const topBandPadding = 4;
+  const chartHeight = 96;
+  const barHeight = 12;
 
-  var controlTitle =
+  const controlTitle =
       new EventBandTitle(parent, 'Power control', 'arc-events-band-title');
-  var controlBands =
+  const controlBands =
       new EventBands(controlTitle, 'arc-events-band', resolution, 0, duration);
   controlBands.setWidth(controlBands.timestampToOffset(duration));
   controlBands.addChart(2 * barHeight, topBandPadding);
 
-  var wakenessfullAttributes = {
+  const wakenessfullAttributes = {
     '-1': {color: '#ffc0cb', name: 'Unknown'},
     0: {color: '#5d5d5d', name: 'Asleep'},
     1: {color: '#fff0c7', name: 'Awake'},
     2: {color: '#c7cfff', name: 'Dreaming'},
     3: {color: '#3e49ed', name: 'Dozing'},
   };
-  var throttlingAttributes = {
+  const throttlingAttributes = {
     0: {color: '#ffc0cb', name: 'Unknown'},
     1: {color: '#ccc', name: 'Throttling'},
     2: {color: '#7bed3e', name: 'Foreground'},
@@ -109,8 +109,8 @@ function refreshModel() {
           15 /* kThrottlingMode */),
       throttlingAttributes, barHeight /* y */, barHeight);
 
-  var cpusTitle = new EventBandTitle(parent, 'CPUs', 'arc-events-band-title');
-  var cpusBands =
+  const cpusTitle = new EventBandTitle(parent, 'CPUs', 'arc-events-band-title');
+  const cpusBands =
       new CpuEventBands(cpusTitle, 'arc-events-band', resolution, 0, duration);
   cpusBands.showDetailedInfo = false;
   cpusBands.setWidth(cpusBands.timestampToOffset(duration));
@@ -131,9 +131,9 @@ function refreshModel() {
           activeModel.system.memory, 10 /* kCpuPower */, 10 /* kCpuPower */)],
       true /* smooth */);
 
-  var memoryTitle =
+  const memoryTitle =
       new EventBandTitle(parent, 'Memory', 'arc-events-band-title');
-  var memoryBands =
+  const memoryBands =
       new EventBands(memoryTitle, 'arc-events-band', resolution, 0, duration);
   memoryBands.setWidth(memoryBands.timestampToOffset(duration));
   memoryBands.addChart(chartHeight, topBandPadding);
@@ -166,9 +166,9 @@ function refreshModel() {
           12 /* kMemoryPower */)],
       true /* smooth */);
 
-  var chromeTitle =
+  const chromeTitle =
       new EventBandTitle(parent, 'Chrome graphics', 'arc-events-band-title');
-  var chromeBands =
+  const chromeBands =
       new EventBands(chromeTitle, 'arc-events-band', resolution, 0, duration);
   chromeBands.setWidth(chromeBands.timestampToOffset(duration));
   chromeBands.addChart(chartHeight, topBandPadding);

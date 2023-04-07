@@ -7,13 +7,13 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import {Annotation, URLVisit} from 'chrome://new-tab-page/history_cluster_types.mojom-webui.js';
 import {PageImageServiceBrowserProxy, TileModuleElement} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
-import {PageImageServiceHandlerRemote} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
+import {ClientId as PageImageServiceClientId, PageImageServiceHandlerRemote} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
-import {installMock} from '../../test_support.js';
+import {assertStyle, installMock} from '../../test_support.js';
 
 import {createVisit} from './test_support.js';
 
@@ -30,8 +30,10 @@ suite('NewTabPageModulesHistoryClustersModuleTileTest', () => {
     metrics = fakeMetricsPrivate();
   });
 
-  function initializeModule(visit: URLVisit): TileModuleElement {
+  function initializeModule(
+      visit: URLVisit, smallFormat: boolean = false): TileModuleElement {
     const tileElement = new TileModuleElement();
+    tileElement.smallFormat = smallFormat;
     tileElement.visit = visit;
     document.body.append(tileElement);
     return tileElement;
@@ -39,14 +41,15 @@ suite('NewTabPageModulesHistoryClustersModuleTileTest', () => {
 
   test('Tile element populated with correct data', async () => {
     // Arrange.
-    const tileElement = initializeModule(createVisit(
-        BigInt(1), 'https://www.test.com/1', 'https://www.test.com/1',
-        'Test Title 1', false, '1 min ago', [Annotation.kBookmarked]));
+    const tileElement = initializeModule(createVisit({
+      relativeDate: '1 min ago',
+      annotations: [Annotation.kBookmarked],
+    }));
 
     // Assert.
     await waitAfterNextRender(tileElement);
     assertTrue(!!tileElement);
-    assertEquals($$(tileElement, '#title')!.innerHTML, 'Test Title 1');
+    assertEquals($$(tileElement, '#title')!.innerHTML, 'Test Title');
     assertEquals('1 min ago', $$(tileElement, '#date')!.innerHTML);
     assertTrue(
         !!window.getComputedStyle($$<HTMLImageElement>(tileElement, '#icon')!)
@@ -64,9 +67,10 @@ suite('NewTabPageModulesHistoryClustersModuleTileTest', () => {
                 null;
             imageServiceHandler.setResultFor(
                 'getPageImageUrl', Promise.resolve(imageResult));
-            initializeModule(createVisit(
-                BigInt(1), 'https://www.test.com/1', 'https://www.test.com/1',
-                'Test Title 1', true, '1 min ago'));
+            initializeModule(createVisit({
+              hasUrlKeyedImage: true,
+              relativeDate: '1 min ago',
+            }));
 
             await flushTasks();
 
@@ -78,4 +82,52 @@ suite('NewTabPageModulesHistoryClustersModuleTileTest', () => {
                 metrics.count(
                     'NewTabPage.HistoryClusters.ImageLoadSuccess', success));
           }));
+
+  test('Tile shows background image if exists', async () => {
+    // Set result for getPageImageUrl.
+    imageServiceHandler.setResultFor('getPageImageUrl', Promise.resolve({
+      result: {imageUrl: {url: 'https://example.com/image.png'}},
+    }));
+    const visit = createVisit({hasUrlKeyedImage: true});
+    const tileElement = initializeModule(visit);
+
+    // Assert.
+    const [clientId, pageUrl] =
+        await imageServiceHandler.whenCalled('getPageImageUrl');
+    assertEquals(PageImageServiceClientId.NtpQuests, clientId);
+    assertEquals(visit.normalizedUrl, pageUrl);
+
+    await flushTasks();
+    assertTrue(!!$$(tileElement, '#image img'));
+    assertTrue(!$$(tileElement, '#image page-favicon'));
+  });
+
+  test('Tile does not call for or display image if small format', async () => {
+    // Set result for getPageImageUrl.
+    imageServiceHandler.setResultFor('getPageImageUrl', Promise.resolve({
+      result: {imageUrl: {url: 'https://example.com/image.png'}},
+    }));
+    const visit = createVisit({hasUrlKeyedImage: true});
+    const tileElement = initializeModule(visit, true);
+
+    // Assert.
+    await flushTasks();
+    assertEquals(0, imageServiceHandler.getCallCount('getPageImageUrl'));
+    assertStyle($$(tileElement, '#image')!, 'display', 'none');
+  });
+
+  test('Tile shows favicon if no image', async () => {
+    // Set result for getPageImageUrl.
+    imageServiceHandler.setResultFor('getPageImageUrl', Promise.resolve({
+      result: null,
+    }));
+    const visit = createVisit({hasUrlKeyedImage: true});
+    const tileElement = initializeModule(visit);
+
+    // Assert.
+    await flushTasks();
+    assertEquals(1, imageServiceHandler.getCallCount('getPageImageUrl'));
+    assertTrue(!$$(tileElement, '#image img'));
+    assertTrue(!!$$(tileElement, '#image page-favicon'));
+  });
 });

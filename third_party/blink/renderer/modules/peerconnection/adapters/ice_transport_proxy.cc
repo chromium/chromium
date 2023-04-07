@@ -70,6 +70,12 @@ void IceTransportProxy::OnGatheringStateChanged(
   delegate_->OnGatheringStateChanged(new_state);
 }
 
+void IceTransportProxy::OnCandidateGathered(
+    const cricket::Candidate& candidate) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  delegate_->OnCandidateGathered(candidate);
+}
+
 void IceTransportProxy::OnStateChanged(webrtc::IceTransportState new_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   delegate_->OnStateChanged(new_state);

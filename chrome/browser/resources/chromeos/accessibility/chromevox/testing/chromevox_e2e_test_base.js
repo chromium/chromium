@@ -136,7 +136,7 @@ ChromeVoxE2ETest = class extends E2ETestBase {
         'AbstractEarcons', '/chromevox/background/abstract_earcons.js');
     await importModule(
         'BaseAutomationHandler',
-        '/chromevox/background/base_automation_handler.js');
+        '/chromevox/background/event/base_automation_handler.js');
     await importModule(
         'ChromeVoxState', '/chromevox/background/chromevox_state.js');
     await importModule(

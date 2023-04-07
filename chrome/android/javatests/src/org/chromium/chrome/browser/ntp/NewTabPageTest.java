@@ -25,6 +25,7 @@ import android.graphics.Canvas;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.contrib.RecyclerViewActions;
@@ -76,6 +77,8 @@ import org.chromium.chrome.browser.suggestions.tile.Tile;
 import org.chromium.chrome.browser.suggestions.tile.TileGroup;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -796,6 +799,110 @@ public class NewTabPageTest {
         histogramWatcher.assertExpected(HISTOGRAM_NTP_MODULE_LONGCLICK
                 + " is not recorded correctly when we perform long click on the home button "
                 + "and navigate to home page setting.");
+    }
+
+    /**
+     * Test show and click on the single tab card on the {@link NewTabPage} in the tablet.
+     */
+    @Test
+    @MediumTest
+    @Feature({"NewTabPage"})
+    public void testSingleTabCardShowAndClick() {
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        mActivityTestRule.loadUrl(TEST_URL);
+        Tab mostRecentTab = activity.getActivityTab();
+        Tab newTab = mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL);
+        NewTabPageTestUtils.waitForNtpLoaded(newTab);
+        NewTabPage ntp = (NewTabPage) newTab.getNativePage();
+        NewTabPageLayout ntpLayout = ntp.getNewTabPageLayout();
+
+        TestThreadUtils.runOnUiThreadBlocking(ntp::showHomeSurfaceUi);
+
+        View singleTabCardView = ntpLayout.findViewById(R.id.single_tab_view);
+        assertEquals("The single tab card is still invisible after initialization.", View.VISIBLE,
+                singleTabCardView.getVisibility());
+        TextView title = singleTabCardView.findViewById(R.id.tab_title_view);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            String mostRecentTabTitle = mostRecentTab.getTitle();
+            assertEquals("The title of the single tab card is wrong.", mostRecentTabTitle,
+                    title.getText());
+        });
+
+        onView(withId(R.id.single_tab_view)).perform(click());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            int mostRecentTabId = mostRecentTab.getId();
+            assertEquals("After clicking on the single tab card, it leads us to the wrong tab.",
+                    mostRecentTabId, mActivityTestRule.getActivity().getActivityTab().getId());
+        });
+    }
+
+    /**
+     * Test destroy the already existing single tab card on the {@link NewTabPage} on tablet.
+     */
+    @Test
+    @MediumTest
+    @Feature({"NewTabPage"})
+    public void testSingleTabCardDestroy() {
+        mActivityTestRule.loadUrl(TEST_URL);
+        Tab newTab = mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL);
+        NewTabPageTestUtils.waitForNtpLoaded(newTab);
+        NewTabPage ntp = (NewTabPage) newTab.getNativePage();
+        NewTabPageLayout ntpLayout = ntp.getNewTabPageLayout();
+
+        TestThreadUtils.runOnUiThreadBlocking(ntp::showHomeSurfaceUi);
+
+        ViewGroup singleTabCardViewContainer =
+                ntpLayout.findViewById(R.id.tab_switcher_module_container);
+        assertEquals("The single tab card container is still invisible after initialization.",
+                View.VISIBLE, singleTabCardViewContainer.getVisibility());
+        View singleTabCardView = ntpLayout.findViewById(R.id.single_tab_view);
+        assertEquals("The single tab card is still invisible after initialization.", View.VISIBLE,
+                singleTabCardView.getVisibility());
+
+        TestThreadUtils.runOnUiThreadBlocking(ntp::destroySingleTabCard);
+        assertEquals("The single tab card container is still visible after destroying it.",
+                View.GONE, singleTabCardViewContainer.getVisibility());
+        assertEquals("The single tab card is still visible after destroying it.", View.GONE,
+                singleTabCardView.getVisibility());
+    }
+
+    /**
+     * Test hide the already existing single tab card on the {@link NewTabPage} in the tablet
+     * by the tab observer.
+     */
+    @Test
+    @MediumTest
+    @Feature({"NewTabPage"})
+    public void testSingleTabCardHide() {
+        mActivityTestRule.loadUrl(TEST_URL);
+        Tab newTab = mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL);
+        NewTabPageTestUtils.waitForNtpLoaded(newTab);
+        NewTabPage ntp = (NewTabPage) newTab.getNativePage();
+        NewTabPageLayout ntpLayout = ntp.getNewTabPageLayout();
+
+        TestThreadUtils.runOnUiThreadBlocking(ntp::showHomeSurfaceUi);
+
+        ViewGroup singleTabCardViewContainer =
+                ntpLayout.findViewById(R.id.tab_switcher_module_container);
+        assertEquals("The single tab card container is still invisible after initialization.",
+                View.VISIBLE, singleTabCardViewContainer.getVisibility());
+        View singleTabCardView = ntpLayout.findViewById(R.id.single_tab_view);
+        assertEquals("The single tab card is still invisible after initialization.", View.VISIBLE,
+                singleTabCardView.getVisibility());
+
+        TabObserver tabObserver = ntp.getTabObserverForTesting();
+        ntp.setShownAsHomeSurfaceForTesting(false);
+        Assert.assertFalse(
+                "The variable controlling whether to show the single tab card hasn't been "
+                        + "set to false.",
+                ntp.getShownAsHomeSurfaceForTesting());
+        ntpLayout.setMostVisitedTilesCoordinatorForTesting(null);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { tabObserver.onShown(newTab, TabSelectionType.FROM_NEW); });
+        assertEquals("The single tab card container is still visible after hiding it.", View.GONE,
+                singleTabCardViewContainer.getVisibility());
+        assertEquals("The single tab card is still visible after hiding it.", View.GONE,
+                singleTabCardView.getVisibility());
     }
 
     private void captureThumbnail() {

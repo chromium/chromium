@@ -1341,7 +1341,6 @@
 <translation id="2114820389966440614">এখানে "সাম্প্রতিক হাইলাইট" অন্যান্য মেমরি দেখুন</translation>
 <translation id="2114896190328250491"><ph name="NAME" /> এর থেকে পাওয়া ফটো</translation>
 <translation id="2114995631896158695">কোনও সিম কার্ড যোগ করা হয়নি</translation>
-<translation id="2116020356255810305">স্টার্টআপে অ্যাপ চালু করার বিকল্প চালু করুন</translation>
 <translation id="2116619964159595185">সাইটগুলি সাধারণত লো-এনার্জি বিকন, স্বাস্থ্য বা ফিটনেস ট্র্যাকার অথবা স্মার্ট আলোর বাল্বের মতো ফিচার সেট আপ অথবা সিঙ্ক করতে ব্লুটুথ ডিভাইস কানেক্ট করে</translation>
 <translation id="2117655453726830283">পরবর্তী স্লাইড</translation>
 <translation id="2119349053129246860"><ph name="APP" /> এ খুলুন</translation>
@@ -3273,7 +3272,6 @@
 <translation id="380329542618494757">নাম</translation>
 <translation id="3803345858388753269">ভিডিও কোয়ালিটি</translation>
 <translation id="3803367742635802571">যেমনভাবে ডিজাইন করা হয়েছে আপনার ভিজিট করা সাইট তেমনভাবে কাজ করা বন্ধ করতে পারে</translation>
-<translation id="3803583375545057606">আপনার অভিভাবককে এই এক্সটেনশন চালু করতে বলুন?</translation>
 <translation id="380408572480438692">কার্য-সম্পাদনা ডেটার সংগ্রহ চালু করলে দিনে দিনে এটি Google কে তার সিস্টেম উন্নত করতে সাহায্য করবে৷ আপনি যতক্ষণ না কোনও প্রতিবার্তা রিপোর্ট (Alt-Shift-I) এবং কার্য-সম্পাদনার ডেটা অন্তর্ভুক্ত করবেন ততক্ষণ কোনও ডেটা পাঠানো হয় না৷ সংগ্রহ বন্ধ করতে আপনি যেকোনও সময়ে এই স্ক্রিনে ফিরে আসতে পারেন৷</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (extension ID "<ph name="EXTENSION_ID" />") is not allowed on a login screen.</translation>
 <translation id="3807747707162121253">&amp;বাতিল</translation>
@@ -3695,7 +3693,6 @@
 <translation id="4169535189173047238">অনুমতি দেবেন না</translation>
 <translation id="4170314459383239649">ছেড়ে গেলে কুকিজ মুছে দিন</translation>
 <translation id="417096670996204801">প্রোফাইল বেছে নিন</translation>
-<translation id="41725145403849567">আপনার অভিভাবককে এই এক্সটেনশন যোগ করতে বলুন?</translation>
 <translation id="4175137578744761569">হালকা বেগুনি ও সাদা</translation>
 <translation id="4175737294868205930">অনবরত স্টোরেজ</translation>
 <translation id="4176463684765177261">অক্ষম হয়েছে</translation>
@@ -5110,7 +5107,6 @@
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{পিন অন্তত একটি অক্ষরের হতে হবে}one{পিন অন্তত # অক্ষরের হতে হবে}other{পিন অন্তত # অক্ষরের হতে হবে}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" />-এর প্রয়োজন অনুযায়ী, আপনাকে এখনই ওয়াই-ফাই নেটওয়ার্কে কানেক্ট করতে হবে এবং একটি আপডেট ডাউনলোড করতে হবে। অথবা, মিটার্ড ইন্টারনেট কানেকশন ব্যবহার করেও ডাউনলোড করতে পারবেন (এর জন্য চার্জ দিতে হতে পারে)।</translation>
 <translation id="5476016146231427848">Chromebook-এ Steam ব্যবহার করতে আপনার ডিভাইস রিস্টার্ট করুন</translation>
-<translation id="5476897066181964657">একজন প্যারেন্ট বা অভিভাবককে বলতে হবে যে এই এক্সটেনশনটি যোগ করা আপনার পক্ষে ঠিক আছে</translation>
 <translation id="5481273127572794904">একাধিক ফাইল অটোমেটিক ডাউনলোড করার অনুমতি দেওয়া হয়নি</translation>
 <translation id="5481941284378890518">আশেপাশের প্রিন্টারগুলি যোগ করুন</translation>
 <translation id="5483785310822538350">ফাইল এবং ডিভাইসের অ্যাক্সেস প্রত্যাহার করুন</translation>
@@ -5207,7 +5203,6 @@
 <translation id="5555639311269196631">হটস্পট বন্ধ করুন</translation>
 <translation id="5556459405103347317">রিলোড করুন</translation>
 <translation id="5558129378926964177">বড়ো করুন</translation>
-<translation id="5558247502209241936">উইন্ডোতে অ্যাপ খোলার বিকল্প চালু করুন</translation>
 <translation id="5559311991468302423">ঠিকানা মুছুন</translation>
 <translation id="55601339223879446">প্রদর্শনের মধ্যে আপনার ডেস্কটপ সীমানার সামঞ্জস্যবিধান করুন</translation>
 <translation id="5561162485081632007">ব্রাউজ করার সময় কোনও ঝুঁকিপূর্ণ ঘটনা ঘটলে সেটি শনাক্ত করে আপনাকে সতর্ক করা হয়</translation>
@@ -6035,7 +6030,6 @@
 <translation id="6305607932814307878">সার্বিক নীতি:</translation>
 <translation id="6305702903308659374">ChromeVox কথা বলতে থাকলেও সাধারণ ভলিউমে বাজান</translation>
 <translation id="6305909198255586420">আপনার প্রাইমারি প্রোফাইল ব্যবহার করে ইনস্টল করুন</translation>
-<translation id="630750887748244481">তোমার অভিভাবক Chrome-এ "সাইট, অ্যাপ ও এক্সটেনশনের অনুমতি" বন্ধ করে দিয়েছেন। এই এক্সটেনশন যোগ করার অনুমতি নেই।</translation>
 <translation id="6307990684951724544">সিস্টেম ব্যস্ত আছে</translation>
 <translation id="6308493641021088955"><ph name="EXTENSION_NAME" /> এক্সটেনশন দিয়ে সাইন-ইন করুন</translation>
 <translation id="6308937455967653460">লি&amp;ঙ্ক এই রূপে সেভ করুন...</translation>
@@ -6863,7 +6857,6 @@
 <translation id="7025190659207909717">মোবাইল ডেটা পরিষেবা পরিচালন</translation>
 <translation id="7025895441903756761">নিরাপত্তা ও গোপনীয়তা</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{সবকটি &amp;ছদ্মবেশী উইন্ডোতে খুলুন}=1{&amp;ছদ্মবেশী উইন্ডোতে খুলুন}one{সবকটি ({COUNT}টি) &amp;ছদ্মবেশী উইন্ডোতে খুলুন}other{সবকটি ({COUNT}টি) &amp;ছদ্মবেশী উইন্ডোতে খুলুন}}</translation>
-<translation id="7028057921476386252">একজন প্যারেন্ট বা অভিভাবককে বলতে হবে যে এই এক্সটেনশনটি চালু করা আপনার পক্ষে ঠিক আছে</translation>
 <translation id="7029307918966275733">Crostini ইনস্টল করা হয়নি। ক্রেডিট দেখার জন্য Crostini ইনস্টল করুন।</translation>
 <translation id="7029809446516969842">পাসওয়ার্ড</translation>
 <translation id="7030304022046916278">URL চেক করতে Safe Browsing-এ পাঠায়</translation>
@@ -8241,7 +8234,6 @@
 <translation id="8251509999076836464"><ph name="DEVICE_NAME" />-এর সাথে পেয়ার করা হচ্ছে</translation>
 <translation id="8251578425305135684">থাম্বনেল সরানো হয়েছে৷</translation>
 <translation id="825238165904109940">সবসময় সম্পূর্ণ ইউআরএল দেখুন</translation>
-<translation id="8252538334423261825">এক্সটেনশন যোগ করা যাবে না</translation>
 <translation id="8252569384384439529">আপলোড হচ্ছে…</translation>
 <translation id="8253198102038551905">নেটওয়ার্কের প্রোপাটিজ পেতে '+'-এ ক্লিক করুন</translation>
 <translation id="8255212965098517578">সাম্প্রতিক ফটো, বিজ্ঞপ্তি ও অ্যাপ</translation>

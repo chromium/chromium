@@ -75,7 +75,7 @@ void MouseCursorMonitorAura::NotifyCursorChanged(const ui::Cursor& cursor) {
   }
 
   absl::optional<ui::CursorData> cursor_data =
-      aura::client::GetCursorShapeClient()->GetCursorData(cursor);
+      aura::client::GetCursorShapeClient().GetCursorData(cursor);
   if (!cursor_data) {
     LOG(ERROR) << "Failed to load bitmap for cursor type: " << cursor.type();
     return;

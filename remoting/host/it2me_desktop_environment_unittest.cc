@@ -135,6 +135,13 @@ class It2MeDesktopEnvironmentTest : public ::testing::Test {
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  void TearDown() override {
+    // Wait until DeleteSoon is finished.
+    environment_.RunUntilIdle();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   DesktopEnvironmentOptions default_options() {
     DesktopEnvironmentOptions options;
     // These options must be false or we run into crashes in HostWindowProxy.

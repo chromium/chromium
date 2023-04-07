@@ -133,7 +133,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     item.textFieldEnabled = YES;
     item.hideIcon = NO;
     item.autoCapitalizationType = field.autoCapitalizationType;
-    item.returnKeyType = field.returnKeyType;
+    item.returnKeyType = UIReturnKeyDone;
     item.keyboardType = field.keyboardType;
     [model addItem:item toSectionWithIdentifier:SectionIdentifierFields];
   }

@@ -730,6 +730,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2718207025093645426">Engin regla er virk fyrir notanda eða tæki sem er stýrt.</translation>
 <translation id="2721148159707890343">Beiðni tókst</translation>
 <translation id="2723669454293168317">Keyra öryggisathugun í stillingum Chrome</translation>
+<translation id="2725492561136085792">Ýttu á Enter til að virkja aðgerðina.</translation>
 <translation id="2726001110728089263">Hliðarbakki</translation>
 <translation id="2728127805433021124">Vottorð þjónsins er undirritað með ótraustu undirritunarreikniriti.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Keyrir greiningu á tengigetu<ph name="END_LINK" /></translation>
@@ -826,6 +827,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="299990983510665749">Hlaðbakar</translation>
 <translation id="3002501248619246229">Athuga miðil í innbakka</translation>
 <translation id="3005723025932146533">Sýna vistað afrit</translation>
+<translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á dálkalykilinn til að skoða hvaða aðgerðir eru í boði og síðan á Enter til að framkvæma valda aðgerð.</translation>
 <translation id="3013291976881901233">MIDI-tæki</translation>
 <translation id="301521992641321250">Sjálfkrafa lokað á</translation>
 <translation id="3016780570757425217">Komast að staðsetningunni þinni</translation>

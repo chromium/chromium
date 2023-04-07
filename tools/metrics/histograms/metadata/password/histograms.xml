@@ -730,6 +730,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.AffiliationDatabase.Error"
+    enum="SqliteLoggedResultCode" expires_after="2023-08-27">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Errors reported by SQLite while using the affiliation database database.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.AffiliationDatabase.StoreResult"
+    enum="StoreAffiliationResult" expires_after="2023-08-27">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>The result of AffiliationDatabase::Store call.</summary>
+</histogram>
+
 <histogram name="PasswordManager.AffiliationFetcher.FailedToParseResponse"
     enum="Boolean" expires_after="M115">
   <owner>vsemeniuk@google.com</owner>

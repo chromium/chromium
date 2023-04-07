@@ -259,23 +259,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebUIEmbeddedOptionsTest,
       &set_result));
   ASSERT_EQ("success", set_result);
 
-  int actual_value = 0;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-      guest_rfh,
-      content::JsReplace("chrome.storage.local.get((storage) => {"
-                         "  domAutomationController.send(storage[$1]);"
-                         "});",
-                         storage_key),
-      &actual_value));
-  EXPECT_EQ(storage_value, actual_value);
+  EXPECT_EQ(
+      storage_value,
+      content::EvalJs(guest_rfh, content::JsReplace(
+                                     "new Promise(resolve =>"
+                                     "  chrome.storage.local.get((storage) => "
+                                     "    resolve(storage[$1])));",
+                                     storage_key)));
 
-  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-      guest_rfh,
-      "onChangedPromise.then((newValue) => {"
-      "  domAutomationController.send(newValue);"
-      "});",
-      &actual_value));
-  EXPECT_EQ(storage_value, actual_value);
+  EXPECT_EQ(storage_value, content::EvalJs(guest_rfh, "onChangedPromise;"));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebUIEmbeddedOptionsTest,

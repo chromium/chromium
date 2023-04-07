@@ -24,6 +24,7 @@ class MLActivation;
 class MLContext;
 class MLClampOptions;
 class MLConv2dOptions;
+class MLConvTranspose2dOptions;
 class MLGemmOptions;
 class MLGraph;
 class MLLeakyReluOptions;
@@ -59,16 +60,30 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
     uint32_t end;
   };
 
-  // Calculate the effective padding based on WebNN auto padding rules.
+  // Calculate the effective padding for conv2d based on WebNN auto padding
+  // rules.
   //
   // TODO(crbug.com/1273291): Add the link to WebNN spec's algorithm once it is
   // defined, tracked by: https://github.com/webmachinelearning/webnn/issues/326
-  static absl::optional<PaddingSizes> CalculatePaddingForAutoPad(
+  static absl::optional<PaddingSizes> CalculateConv2dPadding(
       V8MLAutoPad::Enum auto_pad,
       const uint32_t input_size,
       const uint32_t filter_size,
       const uint32_t stride,
       const uint32_t dilation);
+
+  // Calculate the effective padding for convTranspose2d based on WebNN auto
+  // padding rules.
+  //
+  // TODO(crbug.com/1273291): Add the link to WebNN spec's algorithm once it is
+  // defined, tracked by: https://github.com/webmachinelearning/webnn/issues/326
+  static absl::optional<PaddingSizes> CalculateConvTransposed2dPadding(
+      V8MLAutoPad::Enum auto_pad,
+      const uint32_t input_size,
+      const uint32_t filter_size,
+      const uint32_t stride,
+      const uint32_t dilation,
+      const uint32_t output_padding);
 
   // ml_graph_builder.idl
   MLOperand* input(String name,
@@ -93,6 +108,11 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                     const MLOperand* filter,
                     const MLConv2dOptions* options,
                     ExceptionState& exception_state);
+
+  MLOperand* convTranspose2d(const MLOperand* input,
+                             const MLOperand* filter,
+                             const MLConvTranspose2dOptions* options,
+                             ExceptionState& exception_state);
 
   // Element-wise binary operations
   MLOperand* add(const MLOperand* a,

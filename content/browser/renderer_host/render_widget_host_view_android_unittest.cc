@@ -84,7 +84,7 @@ std::string PostTestCaseName(const ::testing::TestParamInfo<bool>& info) {
 
 }  // namespace
 
-class RenderWidgetHostViewAndroidTest : public testing::Test {
+class RenderWidgetHostViewAndroidTest : public RenderViewHostImplTestHarness {
  public:
   RenderWidgetHostViewAndroidTest();
 
@@ -129,10 +129,6 @@ class RenderWidgetHostViewAndroidTest : public testing::Test {
   std::unique_ptr<TestViewAndroidDelegate> test_view_android_delegate_;
 
  private:
-  std::unique_ptr<TestBrowserContext> browser_context_;
-  scoped_refptr<SiteInstanceImpl> site_instance_;
-  std::unique_ptr<TestWebContents> web_contents_;
-  std::unique_ptr<FrameTree> frame_tree_;
   std::unique_ptr<MockRenderProcessHost> process_;
   scoped_refptr<SiteInstanceGroup> site_instance_group_;
   std::unique_ptr<MockRenderWidgetHostDelegate> delegate_;
@@ -145,8 +141,6 @@ class RenderWidgetHostViewAndroidTest : public testing::Test {
   // Owned by `render_view_host_`.
   raw_ptr<MockRenderWidgetHost> host_;
   raw_ptr<RenderWidgetHostViewAndroid> render_widget_host_view_android_;
-
-  BrowserTaskEnvironment task_environment_;
 };
 
 RenderWidgetHostViewAndroidTest::RenderWidgetHostViewAndroidTest()
@@ -193,31 +187,22 @@ RenderWidgetHostViewAndroidTest::CreateRenderWidgetHostViewAndroid(
 }
 
 void RenderWidgetHostViewAndroidTest::SetUp() {
-  browser_context_ = std::make_unique<TestBrowserContext>();
-  site_instance_ = SiteInstanceImpl::Create(browser_context_.get());
-  web_contents_ =
-      TestWebContents::Create(browser_context_.get(), site_instance_);
-  frame_tree_ = std::make_unique<FrameTree>(
-      browser_context_.get(), web_contents_.get(), web_contents_.get(),
-      web_contents_.get(), web_contents_.get(), web_contents_.get(),
-      web_contents_.get(), web_contents_.get(), web_contents_.get(),
-      FrameTree::Type::kPrimary);
+  RenderViewHostImplTestHarness::SetUp();
 
   delegate_ = std::make_unique<MockRenderWidgetHostDelegate>();
-  process_ = std::make_unique<MockRenderProcessHost>(browser_context_.get());
-  site_instance_group_ =
-      base::WrapRefCounted(SiteInstanceGroup::CreateForTesting(
-          browser_context_.get(), process_.get()));
+  process_ = std::make_unique<MockRenderProcessHost>(browser_context());
+  site_instance_group_ = base::WrapRefCounted(
+      SiteInstanceGroup::CreateForTesting(browser_context(), process_.get()));
   // Initialized before ownership is given to `render_view_host_`.
   std::unique_ptr<MockRenderWidgetHost> mock_host =
-      MockRenderWidgetHost::Create(frame_tree_.get(), delegate_.get(),
-                                   site_instance_group_->GetSafeRef(),
-                                   process_->GetNextRoutingID());
+      MockRenderWidgetHost::Create(
+          &contents()->GetPrimaryFrameTree(), delegate_.get(),
+          site_instance_group_->GetSafeRef(), process_->GetNextRoutingID());
   host_ = mock_host.get();
   render_view_host_ = new TestRenderViewHost(
-      frame_tree_.get(), site_instance_group_.get(),
-      site_instance_->GetStoragePartitionConfig(), std::move(mock_host),
-      web_contents_.get(), process_->GetNextRoutingID(),
+      &contents()->GetPrimaryFrameTree(), site_instance_group_.get(),
+      contents()->GetSiteInstance()->GetStoragePartitionConfig(),
+      std::move(mock_host), contents(), process_->GetNextRoutingID(),
       process_->GetNextRoutingID(), nullptr,
       CreateRenderViewHostCase::kDefault);
   parent_layer_ = cc::slim::Layer::Create();
@@ -234,16 +219,13 @@ void RenderWidgetHostViewAndroidTest::SetUp() {
 void RenderWidgetHostViewAndroidTest::TearDown() {
   render_widget_host_view_android_->Destroy();
   render_view_host_.reset();
-  frame_tree_->Shutdown();
-  frame_tree_.reset();
-  web_contents_.reset();
-  site_instance_.reset();
 
   delegate_.reset();
   process_->Cleanup();
   site_instance_group_.reset();
   process_ = nullptr;
-  browser_context_.reset();
+
+  RenderViewHostImplTestHarness::TearDown();
 }
 
 // Tests that when a child responds to a Surface Synchronization message, while

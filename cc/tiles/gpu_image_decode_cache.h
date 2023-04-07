@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -273,12 +274,7 @@ class CC_EXPORT GpuImageDecodeCache
     void Unlock();
 
     void SetLockedData(std::unique_ptr<base::DiscardableMemory> data,
-                       sk_sp<SkImage> image,
-                       bool out_of_raster);
-    void SetLockedData(std::unique_ptr<base::DiscardableMemory> data,
-                       sk_sp<SkImage> image_y,
-                       sk_sp<SkImage> image_u,
-                       sk_sp<SkImage> image_v,
+                       sk_sp<SkImage> images[SkYUVAInfo::kMaxPlanes],
                        bool out_of_raster);
     void ResetData();
     base::DiscardableMemory* data() const { return data_.get(); }
@@ -286,24 +282,11 @@ class CC_EXPORT GpuImageDecodeCache
     void SetBitmapImage(sk_sp<SkImage> image);
     void ResetBitmapImage();
 
-    sk_sp<SkImage> image() const {
+    sk_sp<SkImage> image(int i = 0) const {
       DCHECK(is_locked() || is_bitmap_backed_);
-      return image_;
+      DCHECK_LT(i, SkYUVAInfo::kMaxPlanes);
+      return images_[i];
     }
-
-    sk_sp<SkImage> y_image() const {
-      return plane_image_internal(YUVIndex::kY);
-    }
-
-    sk_sp<SkImage> u_image() const {
-      return plane_image_internal(YUVIndex::kU);
-    }
-
-    sk_sp<SkImage> v_image() const {
-      return plane_image_internal(YUVIndex::kV);
-    }
-
-    bool is_yuv() const { return image_yuv_planes_.has_value(); }
 
     bool can_do_hardware_accelerated_decode() const {
       return can_do_hardware_accelerated_decode_;
@@ -314,7 +297,7 @@ class CC_EXPORT GpuImageDecodeCache
     }
 
     // Test-only functions.
-    sk_sp<SkImage> ImageForTesting() const { return image_; }
+    sk_sp<SkImage> ImageForTesting() const { return images_[0]; }
 
     bool decode_failure = false;
     // Similar to |task|, but only is generated if there is no associated upload
@@ -335,21 +318,9 @@ class CC_EXPORT GpuImageDecodeCache
    private:
     void ReportUsageStats() const;
 
-    sk_sp<SkImage> plane_image_internal(const YUVIndex yuv_index) const {
-      DCHECK(is_locked());
-      DCHECK(image_yuv_planes_);
-      DCHECK_GT(image_yuv_planes_->size(), static_cast<size_t>(yuv_index))
-          << "Requested reference to a plane_id that is not set";
-      return image_yuv_planes_->at(static_cast<size_t>(yuv_index));
-    }
-
     const bool is_bitmap_backed_;
     std::unique_ptr<base::DiscardableMemory> data_;
-    sk_sp<SkImage> image_;  // RGBX (or null in YUV decode path)
-    // Only fill out the absl::optional |yuv_color_space| if doing YUV decoding.
-    // Otherwise it was filled out with a default "identity" value by the
-    // decoder.
-    absl::optional<YUVSkImages> image_yuv_planes_;
+    sk_sp<SkImage> images_[SkYUVAInfo::kMaxPlanes];
 
     // Keeps tracks of images that could go through hardware decode acceleration
     // though they're possibly prevented from doing so because of a disabled
@@ -529,6 +500,7 @@ class CC_EXPORT GpuImageDecodeCache
               bool is_bitmap_backed,
               bool can_do_hardware_accelerated_decode,
               bool do_hardware_accelerated_decode,
+              const SkImageInfo& image_info,
               absl::optional<SkYUVAPixmapInfo> yuva_pixmap_info);
 
     bool IsGpuOrTransferCache() const;
@@ -544,8 +516,16 @@ class CC_EXPORT GpuImageDecodeCache
     bool needs_mips = false;
     bool is_bitmap_backed;
     bool is_budgeted = false;
-    absl::optional<SkYUVAPixmapInfo> yuva_pixmap_info;
     base::TimeTicks last_use;
+
+    // The RGBA image info for the decoded image. The dimensions may be smaller
+    // than the original size if the image needs to be downscaled.
+    SkImageInfo image_info;
+
+    // The YUVA image info for the image, if the image is to be decoded to YUVA.
+    // The dimensions may be smaller than the original size if the image needs
+    // to be downscaled.
+    absl::optional<SkYUVAPixmapInfo> yuva_pixmap_info;
 
     // If true, this image is no longer in our |persistent_cache_| and will be
     // deleted as soon as its ref count reaches zero.
@@ -669,9 +649,12 @@ class CC_EXPORT GpuImageDecodeCache
       const DrawImage& image,
       bool allow_hardware_decode);
   void WillAddCacheEntry(const DrawImage& draw_image);
-  SkImageInfo CreateImageInfoForDrawImage(const DrawImage& draw_image,
-                                          AuxImage aux_image,
-                                          int upload_scale_mip_level) const;
+
+  // Returns the SkImageInfo for the resulting image and the mip level for
+  // upload.
+  std::tuple<SkImageInfo, int> CreateImageInfoForDrawImage(
+      const DrawImage& draw_image,
+      AuxImage aux_image) const;
 
   // Finds the ImageData that should be used for the given DrawImage. Looks
   // first in the |in_use_cache_|, and then in the |persistent_cache_|.
@@ -709,14 +692,10 @@ class CC_EXPORT GpuImageDecodeCache
       const DrawImage& draw_image,
       ImageData* image_data,
       sk_sp<SkColorSpace> color_space);
-  void UploadImageIfNecessary_TransferCache_SoftwareDecode_YUVA(
+  void UploadImageIfNecessary_TransferCache_SoftwareDecode(
       const DrawImage& draw_image,
       ImageData* image_data,
       sk_sp<SkColorSpace> decoded_target_colorspace,
-      absl::optional<TargetColorParams> target_color_params);
-  void UploadImageIfNecessary_TransferCache_SoftwareDecode_RGBA(
-      const DrawImage& draw_image,
-      ImageData* image_data,
       absl::optional<TargetColorParams> target_color_params);
   void UploadImageIfNecessary_GpuCpu_YUVA(
       const DrawImage& draw_image,

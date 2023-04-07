@@ -118,9 +118,13 @@ struct RawPtrAsanUnownedImpl {
 
   template <typename T>
   static void ProbeForLowSeverityLifetimeIssue(T* wrapped_ptr) {
-    if (wrapped_ptr && !LikelySmuggledScalar(wrapped_ptr) &&
-        !EndOfAliveAllocation(wrapped_ptr, IsAdjustablePtr)) {
-      reinterpret_cast<const volatile uint8_t*>(wrapped_ptr)[0];
+    if (wrapped_ptr) {
+      const volatile void* probe_ptr =
+          reinterpret_cast<const volatile void*>(wrapped_ptr);
+      if (!LikelySmuggledScalar(probe_ptr) &&
+          !EndOfAliveAllocation(probe_ptr, IsAdjustablePtr)) {
+        reinterpret_cast<const volatile uint8_t*>(probe_ptr)[0];
+      }
     }
   }
 

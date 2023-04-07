@@ -209,6 +209,8 @@ public class PersonalDataManagerTest {
     @SmallTest
     @Feature({"Autofill"})
     public void testCreditCardWithCardArtUrl_imageDownloaded() throws TimeoutException {
+        Context context = ContextUtils.getApplicationContext();
+        int cornerRadiusId = R.dimen.card_art_corner_radius;
         GURL cardArtUrl = new GURL("http://google.com/test.png");
         CreditCard cardWithCardArtUrl = new CreditCard(/* guid= */ "serverGuid", /* origin= */ "",
                 /* isLocal= */ false, /* isCached= */ false, "John Doe Server", "41111111111111111",
@@ -222,7 +224,8 @@ public class PersonalDataManagerTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             assertEquals(TEST_CARD_ART_IMAGE,
                     PersonalDataManager.getInstance()
-                            .getCustomImageForAutofillSuggestionIfAvailable(cardArtUrl));
+                            .getCustomImageForAutofillSuggestionIfAvailable(cardArtUrl,
+                                    context.getResources().getDimension(cornerRadiusId)));
         });
     }
 
@@ -666,6 +669,7 @@ public class PersonalDataManagerTest {
         Context context = ContextUtils.getApplicationContext();
         int widthId = R.dimen.autofill_dropdown_icon_width;
         int heightId = R.dimen.autofill_dropdown_icon_height;
+        int cornerRadiusId = R.dimen.card_art_corner_radius;
         Bitmap scaledTestCardArtImage = Bitmap.createScaledBitmap(TEST_CARD_ART_IMAGE,
                 context.getResources().getDimensionPixelSize(widthId),
                 context.getResources().getDimensionPixelSize(heightId), true);
@@ -678,14 +682,15 @@ public class PersonalDataManagerTest {
                             .getBitmap()
                             .sameAs(((BitmapDrawable) AutofillUiUtils.getCardIcon(context,
                                              new GURL("http://google.com/test.png"),
-                                             R.drawable.mc_card, widthId, heightId, true))
+                                             R.drawable.mc_card, widthId, heightId, cornerRadiusId,
+                                             true))
                                             .getBitmap()));
 
             // The custom icon is already cached, and gets returned.
             assertTrue(scaledTestCardArtImage.sameAs(
                     ((BitmapDrawable) AutofillUiUtils.getCardIcon(context,
                              new GURL("http://google.com/test.png"), R.drawable.mc_card, widthId,
-                             heightId, true))
+                             heightId, cornerRadiusId, true))
                             .getBitmap()));
         });
     }
@@ -698,6 +703,7 @@ public class PersonalDataManagerTest {
         Context context = ContextUtils.getApplicationContext();
         int widthId = R.dimen.autofill_dropdown_icon_width;
         int heightId = R.dimen.autofill_dropdown_icon_height;
+        int cornerRadiusId = R.dimen.card_art_corner_radius;
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // In the absence of custom icon URL, the default icon is returned.
@@ -706,7 +712,7 @@ public class PersonalDataManagerTest {
                             .getBitmap()
                             .sameAs(((BitmapDrawable) AutofillUiUtils.getCardIcon(context,
                                              new GURL(""), R.drawable.mc_card, widthId, heightId,
-                                             true))
+                                             cornerRadiusId, true))
                                             .getBitmap()));
 
             // Calling it twice just to make sure that there is no caching behavior like it happens
@@ -716,7 +722,7 @@ public class PersonalDataManagerTest {
                             .getBitmap()
                             .sameAs(((BitmapDrawable) AutofillUiUtils.getCardIcon(context,
                                              new GURL(""), R.drawable.mc_card, widthId, heightId,
-                                             true))
+                                             cornerRadiusId, true))
                                             .getBitmap()));
         });
     }
@@ -729,14 +735,13 @@ public class PersonalDataManagerTest {
         Context context = ContextUtils.getApplicationContext();
         int widthId = R.dimen.autofill_dropdown_icon_width;
         int heightId = R.dimen.autofill_dropdown_icon_height;
-        Bitmap scaledTestCardArtImage = Bitmap.createScaledBitmap(TEST_CARD_ART_IMAGE,
-                context.getResources().getDimensionPixelSize(widthId),
-                context.getResources().getDimensionPixelSize(heightId), true);
+        int cornerRadiusId = R.dimen.card_art_corner_radius;
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // If neither the custom icon nor the default icon is available, null is returned.
             assertEquals(null,
-                    AutofillUiUtils.getCardIcon(context, new GURL(""), 0, widthId, heightId, true));
+                    AutofillUiUtils.getCardIcon(
+                            context, new GURL(""), 0, widthId, heightId, cornerRadiusId, true));
         });
     }
 }

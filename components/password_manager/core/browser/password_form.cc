@@ -145,10 +145,10 @@ void PasswordFormToJSON(const PasswordForm& form, base::Value::Dict& target) {
   target.Set("confirmation_password_element_renderer_id",
              base::NumberToString(
                  form.confirmation_password_element_renderer_id.value()));
-  target.Set("all_possible_usernames",
-             AlternativeElementVectorToString(form.all_possible_usernames));
-  target.Set("all_possible_passwords",
-             AlternativeElementVectorToString(form.all_possible_passwords));
+  target.Set("all_alternative_usernames",
+             AlternativeElementVectorToString(form.all_alternative_usernames));
+  target.Set("all_alternative_passwords",
+             AlternativeElementVectorToString(form.all_alternative_passwords));
   target.Set("blocked_by_user", form.blocked_by_user);
   target.Set("date_last_used", form.date_last_used.ToDoubleT());
   target.Set("date_password_modified", form.date_password_modified.ToDoubleT());
@@ -386,8 +386,8 @@ bool operator==(const PasswordForm& lhs, const PasswordForm& rhs) {
          lhs.username_element == rhs.username_element &&
          lhs.username_element_renderer_id == rhs.username_element_renderer_id &&
          lhs.username_value == rhs.username_value &&
-         lhs.all_possible_usernames == rhs.all_possible_usernames &&
-         lhs.all_possible_passwords == rhs.all_possible_passwords &&
+         lhs.all_alternative_usernames == rhs.all_alternative_usernames &&
+         lhs.all_alternative_passwords == rhs.all_alternative_passwords &&
          lhs.form_has_autofilled_value == rhs.form_has_autofilled_value &&
          lhs.password_element == rhs.password_element &&
          lhs.password_element_renderer_id == rhs.password_element_renderer_id &&

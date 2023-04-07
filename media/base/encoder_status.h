@@ -24,6 +24,9 @@ struct EncoderStatusTraits {
     kUnsupportedFrameFormat = 10,
     kScalingError = 11,
     kFormatConversionError = 12,
+    kEncoderHardwareDriverError = 13,
+    kEncoderIllegalState = 14,
+    kSystemAPICallError = 14,
   };
   static constexpr StatusGroupType Group() { return "EncoderStatus"; }
 };

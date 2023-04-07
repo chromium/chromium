@@ -30,7 +30,7 @@
 #include "components/user_prefs/user_prefs.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/render_process_host.h"

@@ -119,9 +119,10 @@ OmniboxActionId OmniboxAction::ActionId() const {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-base::android::ScopedJavaGlobalRef<jobject> OmniboxAction::GetJavaObject()
-    const {
-  return base::android::ScopedJavaGlobalRef<jobject>();
+base::android::ScopedJavaLocalRef<jobject> OmniboxAction::GetOrCreateJavaObject(
+    JNIEnv* env) const {
+  NOTREACHED() << "This implementation does not have a java counterpart";
+  return {};
 }
 #endif
 

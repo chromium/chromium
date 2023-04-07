@@ -46,11 +46,15 @@ chrome.test.runTests([
     }
 
     // deleteUrl entry point.
-    chrome.history.deleteAll(function() {
+    function deleteRangeTestStart() {
+      removeItemRemovedListener();
       setItemVisitedListener(onAddedItem);
       setItemRemovedListener(deleteUrlTestVerification);
       populateHistory([GOOGLE_URL], function() { });
-    });
+    }
+
+    setItemRemovedListener(deleteRangeTestStart);
+    chrome.history.deleteAll(() => {});
   },
 
   // Suppose we have time epochs x,y,z and history events A,B which occur
@@ -72,7 +76,8 @@ chrome.test.runTests([
       });
     }
 
-    chrome.history.deleteAll(function() {
+    function deleteRangeTestStart(removed) {
+      removeItemRemovedListener();
       setItemRemovedListener(deleteRangeTestVerification);
       addUrlsWithTimeline(urls, function(eventTimes) {
         // Remove the range covering the first URL:
@@ -81,7 +86,10 @@ chrome.test.runTests([
            'endTime': eventTimes.between},
           function() {});
       });
-    });
+    }
+
+    setItemRemovedListener(deleteRangeTestStart);
+    chrome.history.deleteAll(() => {});
   },
 
   // Suppose we have time epochs x,y,z and history events A,B which occur
@@ -103,7 +111,8 @@ chrome.test.runTests([
       });
     }
 
-    chrome.history.deleteAll(function() {
+    function deleteRangeTestStart() {
+      removeItemRemovedListener();
       setItemRemovedListener(deleteRangeTestVerification);
       addUrlsWithTimeline(urls, function(eventTimes) {
         // Remove the range covering the second URL:
@@ -112,7 +121,10 @@ chrome.test.runTests([
            'endTime': eventTimes.after},
           function() {});
       });
-    });
+    }
+
+    setItemRemovedListener(deleteRangeTestStart);
+    chrome.history.deleteAll(() => {});
   },
 
   // Suppose we have time epochs x,y,z and history events A,B which occur
@@ -121,7 +133,7 @@ chrome.test.runTests([
   function deleteWholeRange() {
     var urls = [GOOGLE_URL, PICASA_URL];
 
-    function deleteRangeTestVerification() {
+    function deleteRangeTestVerification(removed) {
       removeItemRemovedListener();
 
       var query = { 'text': '' };
@@ -133,7 +145,8 @@ chrome.test.runTests([
       });
     }
 
-    chrome.history.deleteAll(function() {
+    function deleteRangeTestStart(removed) {
+      removeItemRemovedListener();
       setItemRemovedListener(deleteRangeTestVerification);
       addUrlsWithTimeline(urls, function(eventTimes) {
         // Remove the range covering both URLs:
@@ -142,7 +155,10 @@ chrome.test.runTests([
            'endTime': eventTimes.after},
           function() {});
       });
-    });
+    }
+
+    setItemRemovedListener(deleteRangeTestStart);
+    chrome.history.deleteAll(() => {});
   },
 
   // Delete a range with start time equal to end time.  See that nothing
@@ -150,14 +166,15 @@ chrome.test.runTests([
   function deleteEmptyRange() {
     var urls = [GOOGLE_URL, PICASA_URL];
 
-    function deleteRangeTestVerification() {
+    function deleteRangeTestVerification(removed) {
       removeItemRemovedListener();
 
       // Nothing should have been deleted.
       chrome.test.fail();
     }
 
-    chrome.history.deleteAll(function() {
+    function deleteRangeTestStart(removed) {
+      removeItemRemovedListener();
       setItemRemovedListener(deleteRangeTestVerification);
       addUrlsWithTimeline(urls, function(eventTimes) {
         // Remove an empty range.
@@ -173,6 +190,10 @@ chrome.test.runTests([
             });
           });
       });
-    });
+    }
+
+    setItemRemovedListener(deleteRangeTestStart);
+    chrome.history.deleteAll(() => {});
   }
+
 ])});

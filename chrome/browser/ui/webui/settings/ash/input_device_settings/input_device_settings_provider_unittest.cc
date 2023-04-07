@@ -252,6 +252,8 @@ class FakeInputDeviceSettingsController : public InputDeviceSettingsController {
     ++num_times_set_pointing_stick_settings_called_;
   }
 
+  void OnLoginScreenFocusedPodChanged(const AccountId& account_id) override {}
+
   void AddKeyboard(::ash::mojom::KeyboardPtr keyboard) {
     keyboards_.push_back(std::move(keyboard));
     observer_->OnKeyboardConnected(*keyboards_.back());

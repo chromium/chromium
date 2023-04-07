@@ -10,6 +10,7 @@ import {FeedbackAppExitPath, FeedbackAppHelpContentOutcome, FeedbackAppPreSubmit
 import {OS_FEEDBACK_TRUSTED_ORIGIN} from 'chrome://os-feedback/help_content.js';
 import {setFeedbackServiceProviderForTesting, setHelpContentProviderForTesting} from 'chrome://os-feedback/mojo_interface_provider.js';
 import {SearchPageElement} from 'chrome://os-feedback/search_page.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
@@ -910,5 +911,37 @@ export function FeedbackFlowTestSuite() {
 
     verifyHelpContentOutcomeMetricCalled(
         true, FeedbackAppHelpContentOutcome.kContinueNoHelpContentDisplayed);
+  });
+
+  test('UpdatesCSSUrlBasedOnIsJellyEnabledForOsFeedback', async () => {
+    // Setup test for jelly disabled.
+    loadTimeData.overrideValues({
+      isJellyEnabledForOsFeedback: false,
+    });
+    /*@type {HTMLLinkElement}*/
+    const link = document.createElement('link');
+    const disabledUrl = 'chrome://resources/chromeos/colors/cros_styles.css';
+    link.href = disabledUrl;
+    document.head.appendChild(link);
+    await initializePage();
+
+    assertTrue(link.href.includes(disabledUrl));
+
+    // Reset app element.
+    document.body.innerHTML = '';
+    page.remove();
+    page = null;
+
+    // Setup test for jelly enabled.
+    loadTimeData.overrideValues({
+      isJellyEnabledForOsFeedback: true,
+    });
+    await initializePage();
+
+    const enabledUrl = 'theme/colors.css';
+    assertTrue(link.href.includes(enabledUrl));
+
+    // Clean up test specific element.
+    document.head.removeChild(link);
   });
 }

@@ -242,13 +242,15 @@ void OnConvertFileDefinitionDone(
 bool IsUnderNonNativeLocalPath(const storage::FileSystemContext& context,
                                const base::FilePath& file_path) {
   base::FilePath virtual_path;
-  if (!context.external_backend()->GetVirtualPath(file_path, &virtual_path))
+  if (!context.external_backend()->GetVirtualPath(file_path, &virtual_path)) {
     return false;
+  }
 
   const storage::FileSystemURL url = context.CreateCrackedFileSystemURL(
       blink::StorageKey(), storage::kFileSystemTypeExternal, virtual_path);
-  if (!url.is_valid())
+  if (!url.is_valid()) {
     return false;
+  }
 
   return IsNonNativeFileSystemType(url.type());
 }
@@ -554,12 +556,14 @@ bool ConvertAbsoluteFilePathToRelativeFileSystemPath(
     base::FilePath* virtual_path) {
   storage::ExternalFileSystemBackend* backend =
       GetFileSystemContextForSourceURL(profile, source_url)->external_backend();
-  if (!backend)
+  if (!backend) {
     return false;
+  }
 
   // Find if this file path is managed by the external backend.
-  if (!backend->GetVirtualPath(absolute_path, virtual_path))
+  if (!backend->GetVirtualPath(absolute_path, virtual_path)) {
     return false;
+  }
 
   return true;
 }

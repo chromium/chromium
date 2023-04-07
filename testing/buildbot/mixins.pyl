@@ -421,12 +421,6 @@
       },
     },
   },
-  'chromeos-kevin-skylab': {
-    'cros_board': 'kevin',
-    'cros_img': 'kevin-public/R114-15397.0.0',
-    'bucket': 'chromiumos-image-archive',
-    'timeout_sec': 10800,
-  },
   'chromeos-octopus': {
     'swarming': {
       'dimensions': {
@@ -790,6 +784,9 @@
         },
       ]
     },
+  },
+  'long_skylab_timeout': {
+    'timeout_sec': 10800,
   },
   'mac-archive-rel-args': {
     'args': [

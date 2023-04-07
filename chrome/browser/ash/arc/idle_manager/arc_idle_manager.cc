@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/arc/idle_manager/arc_cpu_throttle_observer.h"
 #include "chrome/browser/ash/arc/idle_manager/arc_display_power_observer.h"
 #include "chrome/browser/ash/arc/idle_manager/arc_on_battery_observer.h"
+#include "chrome/browser/ash/arc/idle_manager/arc_window_observer.h"
 
 namespace arc {
 
@@ -82,6 +83,7 @@ ArcIdleManager::ArcIdleManager(content::BrowserContext* context,
       bridge_(bridge) {
   AddObserver(std::make_unique<ArcCpuThrottleObserver>());
   AddObserver(std::make_unique<ArcBackgroundServiceObserver>());
+  AddObserver(std::make_unique<ArcWindowObserver>());
   if (kEnableArcIdleManagerIgnoreBatteryForPLT.Get()) {
     LOG(WARNING) << "Doze will be enabled regardless of battery status";
   } else {

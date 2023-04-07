@@ -47,8 +47,10 @@ constexpr JitterCalculator::Config kGlanceableInfoJitterConfig = {
 }  // namespace
 
 // PhotoView ------------------------------------------------------------------
-PhotoView::PhotoView(AmbientViewDelegateImpl* delegate)
-    : delegate_(delegate),
+PhotoView::PhotoView(AmbientViewDelegateImpl* delegate,
+                     bool peripheral_ui_visible)
+    : peripheral_ui_visible_(peripheral_ui_visible),
+      delegate_(delegate),
       glanceable_info_jitter_calculator_(kGlanceableInfoJitterConfig) {
   DCHECK(delegate_);
   SetID(AmbientViewID::kAmbientPhotoView);
@@ -88,6 +90,7 @@ void PhotoView::Init() {
     // Each image view will be animated on its own layer.
     image_view->SetPaintToLayer();
     image_view->layer()->SetFillsBoundsOpaquely(false);
+    image_view->SetPeripheralUiVisibility(peripheral_ui_visible_);
   }
 
   // Hides one image view initially for fade in animation.

@@ -218,6 +218,9 @@
         <include name="IDR_LOCAL_WEB_APPROVALS_AFTER_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\parent_access\flows\local_web_approvals_after.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_EXTENSION_APPROVALS_DISABLED_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\parent_access\flows\extension_approvals_disabled.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_EXTENSION_APPROVALS_BEFORE_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\parent_access\flows\extension_approvals_before.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_EXTENSION_APPROVALS_AFTER_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\parent_access\flows\extension_approvals_after.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_EXTENSION_APPROVALS_TEMPLATE_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\parent_access\flows\extension_approvals_template.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_EXTENSION_APPROVALS_EXTENSION_PERMISSION_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\parent_access\flows\extension_permission.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_PARENT_ACCESS_CONTROLLER_JS" file="resources\chromeos\parent_access\parent_access_controller.js" type="BINDATA" />
         <include name="IDR_PARENT_ACCESS_UI_HANDLER_JS" file="resources\chromeos\parent_access\parent_access_ui_handler.js" type="BINDATA" />
         <include name="IDR_PARENT_ACCESS_SCREEN_JS" file="resources\chromeos\parent_access\parent_access_screen.js" type="BINDATA" />

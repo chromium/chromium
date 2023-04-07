@@ -95,10 +95,6 @@ class MediaRouterIntegrationBrowserTest
   static void ExecuteJavaScriptAPI(content::WebContents* web_contents,
                                    const std::string& script);
 
-  static int ExecuteScriptAndExtractInt(
-      const content::ToRenderFrameHost& adapter,
-      const std::string& script);
-
   static std::string ExecuteScriptAndExtractString(
       const content::ToRenderFrameHost& adapter,
       const std::string& script);

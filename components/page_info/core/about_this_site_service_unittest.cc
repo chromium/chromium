@@ -85,7 +85,7 @@ OptimizationGuideDecision ReturnUnknown(const GURL& url,
   return OptimizationGuideDecision::kUnknown;
 }
 
-class AboutThisSiteServiceTest : public testing::TestWithParam<bool> {
+class AboutThisSiteServiceTest : public testing::Test {
  public:
   void SetUp() override {
     auto client_mock =
@@ -98,8 +98,7 @@ class AboutThisSiteServiceTest : public testing::TestWithParam<bool> {
 
     service_ = std::make_unique<AboutThisSiteService>(
         std::move(client_mock), template_url_service_.get(),
-        /*allow_missing_description*/ false,
-        /*allow_non_msbb_users*/ GetParam());
+        /*allow_missing_description*/ false);
   }
 
   void SetOptimizationGuideAllowed(bool allowed) {
@@ -117,12 +116,8 @@ class AboutThisSiteServiceTest : public testing::TestWithParam<bool> {
   std::unique_ptr<TemplateURLService> template_url_service_;
 };
 
-INSTANTIATE_TEST_SUITE_P(AllowNonMsbbUsers,
-                         AboutThisSiteServiceTest,
-                         testing::Bool());
-
 // Tests that correct proto messages are accepted.
-TEST_P(AboutThisSiteServiceTest, ValidResponse) {
+TEST_F(AboutThisSiteServiceTest, ValidResponse) {
   base::HistogramTester t;
   EXPECT_CALL(*client(), CanApplyOptimization(_, _))
       .WillOnce(Invoke(&ReturnDescription));
@@ -139,7 +134,7 @@ TEST_P(AboutThisSiteServiceTest, ValidResponse) {
 }
 
 // Tests the language specific feature check.
-TEST_P(AboutThisSiteServiceTest, FeatureCheck) {
+TEST_F(AboutThisSiteServiceTest, FeatureCheck) {
   const char* enabled[]{"en-US", "en-UK", "en"};
   const char* disabled[]{"da", "id", "zh-TW", "ja"};
   const char* enabled_on_android[]{"pt", "pt-BR", "pt-PT", "fr", "fr-CA", "it",
@@ -162,7 +157,7 @@ TEST_P(AboutThisSiteServiceTest, FeatureCheck) {
 }
 
 // Tests that incorrect proto messages are discarded.
-TEST_P(AboutThisSiteServiceTest, InvalidResponse) {
+TEST_F(AboutThisSiteServiceTest, InvalidResponse) {
   base::HistogramTester t;
   EXPECT_CALL(*client(), CanApplyOptimization(_, _))
       .WillOnce(Invoke(&ReturnInvalidDescription));
@@ -177,7 +172,7 @@ TEST_P(AboutThisSiteServiceTest, InvalidResponse) {
 }
 
 // Tests that no response is handled.
-TEST_P(AboutThisSiteServiceTest, NoResponse) {
+TEST_F(AboutThisSiteServiceTest, NoResponse) {
   base::HistogramTester t;
   EXPECT_CALL(*client(), CanApplyOptimization(_, _))
       .WillOnce(Invoke(&ReturnNoResult));
@@ -192,7 +187,7 @@ TEST_P(AboutThisSiteServiceTest, NoResponse) {
 }
 
 // Tests that unknown response is handled.
-TEST_P(AboutThisSiteServiceTest, Unknown) {
+TEST_F(AboutThisSiteServiceTest, Unknown) {
   base::HistogramTester t;
   EXPECT_CALL(*client(), CanApplyOptimization(_, _))
       .WillOnce(Invoke(&ReturnUnknown));
@@ -207,7 +202,7 @@ TEST_P(AboutThisSiteServiceTest, Unknown) {
 }
 
 // Tests that ATP not shown when Google is not set as DSE
-TEST_P(AboutThisSiteServiceTest, NotShownWhenNoGoogleDSE) {
+TEST_F(AboutThisSiteServiceTest, NotShownWhenNoGoogleDSE) {
   base::HistogramTester t;
 
   // Changing default provider to other than Google
@@ -233,7 +228,7 @@ TEST_P(AboutThisSiteServiceTest, NotShownWhenNoGoogleDSE) {
 }
 
 // Tests that IP addresses and localhost are handled.
-TEST_P(AboutThisSiteServiceTest, LocalHosts) {
+TEST_F(AboutThisSiteServiceTest, LocalHosts) {
   base::HistogramTester t;
 
   auto info = service()->GetAboutThisSiteInfo(
@@ -251,72 +246,65 @@ TEST_P(AboutThisSiteServiceTest, LocalHosts) {
                        AboutThisSiteInteraction::kNotShownLocalHost, 3);
 }
 
-class AboutThisSiteNonMsbbUsersNotAllowedServiceTest
-    : public AboutThisSiteServiceTest {};
-
-INSTANTIATE_TEST_SUITE_P(AllowNonMsbbUsers,
-                         AboutThisSiteNonMsbbUsersNotAllowedServiceTest,
-                         testing::Values(false));
-
-// Tests that disabled optimization guide is handled when non-MSBB users are not
-// supported.
-TEST_P(AboutThisSiteNonMsbbUsersNotAllowedServiceTest, MssbUsersNotAllowed) {
-  base::HistogramTester t;
-  SetOptimizationGuideAllowed(false);
-
-  auto info = service()->GetAboutThisSiteInfo(
-      GURL("https://foo.com"), ukm::UkmRecorder::GetNewSourceID());
-  EXPECT_FALSE(info.has_value());
-  t.ExpectTotalCount("Security.PageInfo.AboutThisSiteStatus", 0);
-  t.ExpectUniqueSample(
-      "Security.PageInfo.AboutThisSiteInteraction",
-      AboutThisSiteInteraction::kNotShownOptimizationGuideNotAllowed, 1);
-}
-
-class AboutThisSiteNonMsbbUsersAllowedServiceTest
-    : public AboutThisSiteServiceTest {};
-
-INSTANTIATE_TEST_SUITE_P(AllowNonMsbbUsers,
-                         AboutThisSiteNonMsbbUsersAllowedServiceTest,
-                         testing::Values(true));
-
-// Tests the local creation of the Diner URL when non-MSBB users are supported.
-TEST_P(AboutThisSiteNonMsbbUsersAllowedServiceTest,
-       OptimizationNotAllowedAndNonMsbbUsersAllowed) {
-  base::HistogramTester t;
-  SetOptimizationGuideAllowed(false);
-
-  auto info = service()->GetAboutThisSiteInfo(
-      GURL("https://foo.com"), ukm::UkmRecorder::GetNewSourceID());
-  EXPECT_TRUE(info.has_value());
-  EXPECT_EQ(info->more_about().url(),
+// Tests the local creation of the Diner URL for navigation.
+TEST_F(AboutThisSiteServiceTest, CreateMoreAboutUrlForNavigation) {
+  auto url =
+      service()->CreateMoreAboutUrlForNavigation(GURL("https://foo.com"));
+  EXPECT_EQ(url,
             "https://www.google.com/search?"
             "q=About+https%3A%2F%2Ffoo.com%2F"
-            "&tbm=ilp&ctx=chrome");
-
-  t.ExpectTotalCount("Security.PageInfo.AboutThisSiteStatus", 0);
-  t.ExpectUniqueSample("Security.PageInfo.AboutThisSiteInteraction",
-                       AboutThisSiteInteraction::kShownWithoutMsbb, 1);
+            "&tbm=ilp&ctx=chrome_nav");
 }
 
-// Tests the local creation of the Diner URL with an anchor when when non-MSBB
-// users are supported.
-TEST_P(AboutThisSiteNonMsbbUsersAllowedServiceTest,
-       OptimizationNotAllowedAndNonMsbbUsersAllowedWithAnchor) {
-  base::HistogramTester t;
-  SetOptimizationGuideAllowed(false);
-
-  auto info = service()->GetAboutThisSiteInfo(
-      GURL("https://foo.com#anchor"), ukm::UkmRecorder::GetNewSourceID());
-  EXPECT_TRUE(info.has_value());
-  EXPECT_EQ(info->more_about().url(),
+// Tests the local creation of the Diner URL for navigation with anchor.
+TEST_F(AboutThisSiteServiceTest, CreateMoreAboutUrlForNavigationWithAnchor) {
+  auto url = service()->CreateMoreAboutUrlForNavigation(
+      GURL("https://foo.com#anchor"));
+  EXPECT_EQ(url,
             "https://www.google.com/search?"
             "q=About+https%3A%2F%2Ffoo.com%2F%23anchor"
-            "&tbm=ilp&ctx=chrome");
-
-  t.ExpectTotalCount("Security.PageInfo.AboutThisSiteStatus", 0);
-  t.ExpectUniqueSample("Security.PageInfo.AboutThisSiteInteraction",
-                       AboutThisSiteInteraction::kShownWithoutMsbb, 1);
+            "&tbm=ilp&ctx=chrome_nav");
 }
 
+// Tests the local creation of the Diner URL for navigation from an origin with
+// path.
+TEST_F(AboutThisSiteServiceTest, CreateMoreAboutUrlForNavigationWithPath) {
+  auto url = service()->CreateMoreAboutUrlForNavigation(
+      GURL("https://foo.com/index.html"));
+  EXPECT_EQ(url,
+            "https://www.google.com/search?"
+            "q=About+https%3A%2F%2Ffoo.com%2Findex.html"
+            "&tbm=ilp&ctx=chrome_nav");
+}
+
+// Tests the local creation of the Diner URL for navigation from an invalid
+// origin.
+TEST_F(AboutThisSiteServiceTest, CreateMoreAboutUrlForNavigationInvalid) {
+  auto url = service()->CreateMoreAboutUrlForNavigation(
+      GURL("https://127.0.0.1/index.html"));
+  EXPECT_EQ(url,
+            "https://www.google.com/search?"
+            "q=About+https%3A%2F%2F127.0.0.1%2F"
+            "&tbm=ilp&ctx=chrome_nav");
+}
+
+// Tests the local creation of the Diner URL for navigation from an invalid
+// origin (blank).
+TEST_F(AboutThisSiteServiceTest, CreateMoreAboutUrlForNavigationInvalidBlank) {
+  auto url = service()->CreateMoreAboutUrlForNavigation(GURL("about:blank"));
+  EXPECT_EQ(url,
+            "https://www.google.com/search?"
+            "q=About+"
+            "&tbm=ilp&ctx=chrome_nav");
+}
+
+// Tests the local creation of the Diner URL for navigation from an invalid
+// origin (file).
+TEST_F(AboutThisSiteServiceTest, CreateMoreAboutUrlForNavigationInvalidFile) {
+  auto url = service()->CreateMoreAboutUrlForNavigation(GURL("file:///a/b/c"));
+  EXPECT_EQ(url,
+            "https://www.google.com/search?"
+            "q=About+file%3A%2F%2F%2F"
+            "&tbm=ilp&ctx=chrome_nav");
+}
 }  // namespace page_info

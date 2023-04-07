@@ -4275,11 +4275,6 @@ Cette règle est temporaire et sera supprimée dès le lancement de l'annulation
 <translation id="4996161752665479028">Activer les connexions SSH dans Terminal System App</translation>
 <translation id="4997074784107449343">Lorsqu'elle est disponible, l'option "Imprimer en tant qu'image" permettant de générer un aperçu avant impression d'un PDF n'est pas proposée par défaut.</translation>
 <translation id="500149597848135831">Activer toutes les variantes</translation>
-<translation id="5014511262203433035">Cette règle détermine si les utilisateurs peuvent ou non activer le mode HTTPS uniquement dans les paramètres. Ce mode fait passer toutes les navigations en HTTPS.
-      Si ce paramètre n'est pas défini ou s'il est défini sur "Autorisé", les utilisateurs seront autorisés à activer le mode HTTPS uniquement.
-      Si ce paramètre est défini sur "Interdit", les utilisateurs ne seront pas autorisés à activer le mode HTTPS uniquement.
-      Si ce paramètre est défini sur "force_enabled", le mode HTTPS uniquement sera activé et les utilisateurs ne pourront pas le désactiver.
-      L'activation forcée du mode HTTPS uniquement est disponible à partir de M112.</translation>
 <translation id="5017369989680827157">Si cette règle est définie sur "True" ou qu'elle n'est pas configurée, les utilisateurs contrôlent la saisie automatique des adresses dans l'interface utilisateur.
 
       Si cette règle est définie sur "False", les adresses ne sont jamais suggérées ni saisies automatiquement. De même, les informations complémentaires liées à une adresse que les utilisateurs fournissent sur une page Web ne sont pas enregistrées.</translation>

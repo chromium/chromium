@@ -32,7 +32,7 @@
 namespace blink {
 
 LayoutWordBreak::LayoutWordBreak(HTMLWBRElement& node)
-    : LayoutNGText(&node, StringImpl::empty_) {}
+    : LayoutText(&node, StringImpl::empty_) {}
 
 bool LayoutWordBreak::IsWordBreak() const {
   NOT_DESTROYED();

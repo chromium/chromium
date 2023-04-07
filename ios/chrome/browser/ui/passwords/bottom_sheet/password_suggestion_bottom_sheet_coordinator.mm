@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_coordinator.h"
 
+#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_mediator.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_view_controller.h"
@@ -37,8 +38,9 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
                       delegate:(id<PasswordControllerDelegate>)delegate {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    self.viewController =
-        [[PasswordSuggestionBottomSheetViewController alloc] init];
+    self.viewController = [[PasswordSuggestionBottomSheetViewController alloc]
+        initWithFaviconLoader:IOSChromeFaviconLoaderFactory::GetForBrowserState(
+                                  browser->GetBrowserState())];
     self.mediator = [[PasswordSuggestionBottomSheetMediator alloc]
         initWithWebStateList:browser->GetWebStateList()
                       params:params];

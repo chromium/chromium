@@ -72,7 +72,8 @@ IdleDetector* IdleDetector::Create(ScriptState* script_state) {
 }
 
 IdleDetector::IdleDetector(ExecutionContext* context)
-    : ExecutionContextClient(context),
+    : ActiveScriptWrappable<IdleDetector>({}),
+      ExecutionContextClient(context),
       task_runner_(context->GetTaskRunner(TaskType::kMiscPlatformAPI)),
       timer_(task_runner_, this, &IdleDetector::DispatchUserIdleEvent),
       receiver_(this, context) {}

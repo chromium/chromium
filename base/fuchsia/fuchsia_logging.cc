@@ -11,6 +11,7 @@
 #include "base/location.h"
 #include "base/process/process.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/stringprintf.h"
 
 namespace logging {
 
@@ -32,6 +33,23 @@ ZxLogMessage::~ZxLogMessage() {
 
 namespace base {
 
+namespace internal {
+
+std::string FidlConnectionErrorMessage(const base::StringPiece& protocol_name,
+                                       const base::StringPiece& status_string) {
+  return base::StringPrintf("Failed to connect to %s: %s", protocol_name.data(),
+                            status_string.data());
+}
+
+std::string FidlMethodResultErrorMessage(
+    const base::StringPiece& formatted_error,
+    const base::StringPiece& method_name) {
+  return base::StringPrintf("Error calling %s: %s", method_name.data(),
+                            formatted_error.data());
+}
+
+}  // namespace internal
+
 fit::function<void(zx_status_t)> LogFidlErrorAndExitProcess(
     const Location& from_here,
     StringPiece protocol_name) {
@@ -43,6 +61,21 @@ fit::function<void(zx_status_t)> LogFidlErrorAndExitProcess(
           << protocol_name << " disconnected unexpectedly, exiting";
     }
     base::Process::TerminateCurrentProcessImmediately(1);
+  };
+}
+
+std::string FidlMethodResultErrorMessage(
+    const fit::result<fidl::OneWayError>& result,
+    const base::StringPiece& method_name) {
+  CHECK(result.is_error());
+  return internal::FidlMethodResultErrorMessage(
+      result.error_value().FormatDescription(), method_name);
+}
+
+fit::function<void(fidl::UnbindInfo)> FidlBindingClosureWarningLogger(
+    base::StringPiece protocol_name) {
+  return [protocol_name](fidl::UnbindInfo info) {
+    ZX_LOG(WARNING, info.status()) << protocol_name << " unbound";
   };
 }
 

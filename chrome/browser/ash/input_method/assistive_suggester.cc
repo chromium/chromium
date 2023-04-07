@@ -452,14 +452,8 @@ bool AssistiveSuggester::HandleLongpressEnabledKeyEvent(
 }
 
 void AssistiveSuggester::OnLongpressDetected() {
-  if (!current_longpress_keydown_.has_value() ||
-      // If the following conditions are met, its possible the text box does not
-      // support IME operations.
-      last_surrounding_text_.empty() || last_cursor_pos_ <= 0 ||
-      static_cast<int>(last_surrounding_text_.length()) < last_cursor_pos_ ||
-      (!IsLongpressEnabledControlV(current_longpress_keydown_.value()) &&
-       last_surrounding_text_[last_cursor_pos_ - 1] !=
-           current_longpress_keydown_->GetCharacter())) {
+  if (!(current_longpress_keydown_.has_value() ||
+        IsLongpressEnabledControlV(current_longpress_keydown_.value()))) {
     return;
   }
 

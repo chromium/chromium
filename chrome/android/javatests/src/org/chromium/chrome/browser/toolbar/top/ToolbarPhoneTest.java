@@ -16,6 +16,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.graphics.Canvas;
 import android.graphics.drawable.ColorDrawable;
@@ -58,10 +59,12 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -98,6 +101,8 @@ public class ToolbarPhoneTest {
     ThemeColorProvider mThemeColorProvider;
     @Mock
     GradientDrawable mLocationbarBackgroundDrawable;
+    @Mock
+    OptionalButtonCoordinator mOptionalButtonCoordinator;
 
     private Canvas mCanvas = new Canvas();
     private ToolbarPhone mToolbar;
@@ -630,6 +635,105 @@ public class ToolbarPhoneTest {
         // Ensure it is possible to return to tab switcher.
         TestThreadUtils.runOnUiThreadBlocking(() -> { tabSwitcherButton.performClick(); });
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
+    }
+
+    @Test
+    @MediumTest
+    public void testOptionalButton_NotDrawnWhenZeroWidth() {
+        Drawable drawable = AppCompatResources.getDrawable(
+                mActivityTestRule.getActivity(), R.drawable.ic_toolbar_share_offset_24dp);
+        ButtonData buttonData = new ButtonDataImpl(true, drawable, null,
+                mActivityTestRule.getActivity().getString(R.string.share), false, null, true,
+                AdaptiveToolbarButtonVariant.UNKNOWN);
+
+        // Show a button, this will inflate the optional button view and create its coordinator.
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mToolbar.updateOptionalButton(buttonData); });
+
+        CriteriaHelper.pollUiThread(()
+                                            -> mToolbar.getOptionalButtonViewForTesting() != null
+                        && mToolbar.getOptionalButtonViewForTesting().getVisibility()
+                                == View.VISIBLE);
+
+        // Replace the coordinator with a mock, and set the button to visible with 0 width.
+        View optionalButtonView = mToolbar.findViewById(R.id.optional_toolbar_button_container);
+        when(mOptionalButtonCoordinator.getViewForDrawing()).thenReturn(optionalButtonView);
+        when(mOptionalButtonCoordinator.getViewWidth()).thenReturn(0);
+        when(mOptionalButtonCoordinator.getViewVisibility()).thenReturn(View.VISIBLE);
+
+        mToolbar.setOptionalButtonCoordinatorForTesting(mOptionalButtonCoordinator);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Draw the toolbar.
+            mToolbar.draWithoutBackground(mCanvas);
+            // Optional button shouldn't be drawn because its width is zero.
+            verify(mOptionalButtonCoordinator, never()).getViewForDrawing();
+        });
+    }
+
+    @Test
+    @MediumTest
+    public void testOptionalButton_NotDrawnWhenNotVisible() {
+        Drawable drawable = AppCompatResources.getDrawable(
+                mActivityTestRule.getActivity(), R.drawable.ic_toolbar_share_offset_24dp);
+        ButtonData buttonData = new ButtonDataImpl(true, drawable, null,
+                mActivityTestRule.getActivity().getString(R.string.share), false, null, true,
+                AdaptiveToolbarButtonVariant.UNKNOWN);
+
+        // Show a button, this will inflate the optional button view and create its coordinator.
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mToolbar.updateOptionalButton(buttonData); });
+
+        CriteriaHelper.pollUiThread(()
+                                            -> mToolbar.getOptionalButtonViewForTesting() != null
+                        && mToolbar.getOptionalButtonViewForTesting().getVisibility()
+                                == View.VISIBLE);
+
+        // Replace the coordinator with a mock, and set the button to gone with regular width.
+        View optionalButtonView = mToolbar.findViewById(R.id.optional_toolbar_button_container);
+        when(mOptionalButtonCoordinator.getViewForDrawing()).thenReturn(optionalButtonView);
+        when(mOptionalButtonCoordinator.getViewWidth()).thenReturn(optionalButtonView.getWidth());
+        when(mOptionalButtonCoordinator.getViewVisibility()).thenReturn(View.GONE);
+
+        mToolbar.setOptionalButtonCoordinatorForTesting(mOptionalButtonCoordinator);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Draw the toolbar.
+            mToolbar.draWithoutBackground(mCanvas);
+            // Optional button shouldn't be drawn because its visibility is gone.
+            verify(mOptionalButtonCoordinator, never()).getViewForDrawing();
+        });
+    }
+
+    @Test
+    @MediumTest
+    public void testOptionalButton_DrawnWhenVisible() {
+        Drawable drawable = AppCompatResources.getDrawable(
+                mActivityTestRule.getActivity(), R.drawable.ic_toolbar_share_offset_24dp);
+        ButtonData buttonData = new ButtonDataImpl(true, drawable, null,
+                mActivityTestRule.getActivity().getString(R.string.share), false, null, true,
+                AdaptiveToolbarButtonVariant.UNKNOWN);
+
+        // Show a button, this will inflate the optional button view and create its coordinator.
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mToolbar.updateOptionalButton(buttonData); });
+
+        CriteriaHelper.pollUiThread(()
+                                            -> mToolbar.getOptionalButtonViewForTesting() != null
+                        && mToolbar.getOptionalButtonViewForTesting().getVisibility()
+                                == View.VISIBLE);
+
+        // Replace the coordinator with a mock, and set the button to visible with regular width.
+        View optionalButtonView = mToolbar.findViewById(R.id.optional_toolbar_button_container);
+        when(mOptionalButtonCoordinator.getViewForDrawing()).thenReturn(optionalButtonView);
+        when(mOptionalButtonCoordinator.getViewWidth()).thenReturn(optionalButtonView.getWidth());
+        when(mOptionalButtonCoordinator.getViewVisibility()).thenReturn(View.VISIBLE);
+
+        mToolbar.setOptionalButtonCoordinatorForTesting(mOptionalButtonCoordinator);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Draw the toolbar.
+            mToolbar.draWithoutBackground(mCanvas);
+            // Optional button should be drawn.
+            verify(mOptionalButtonCoordinator, atLeastOnce()).getViewForDrawing();
+        });
     }
 
     private static class TestControlsVisibilityDelegate

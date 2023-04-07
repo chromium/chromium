@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 
+#include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/ui_features.h"
 
 namespace companion {
 

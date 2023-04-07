@@ -1340,7 +1340,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2114820389966440614">Se Senaste höjdpunkterna och andra minnen här</translation>
 <translation id="2114896190328250491">Foto taget av <ph name="NAME" /></translation>
 <translation id="2114995631896158695">Inget SIM-kort har satts i</translation>
-<translation id="2116020356255810305">Aktivera att appen startas vid start</translation>
 <translation id="2116619964159595185">Åtkomst till enheter via Bluetooth brukar kunna behövas för funktioner som att konfigurera eller synkronisera en energisnål beacon-sändare, hälsomätare eller smart glödlampa</translation>
 <translation id="2117655453726830283">Nästa bild</translation>
 <translation id="2119349053129246860">Öppna i <ph name="APP" /></translation>
@@ -3272,7 +3271,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="380329542618494757">Namn</translation>
 <translation id="3803345858388753269">Bildkvalitet</translation>
 <translation id="3803367742635802571">Webbplatser du besöker kan sluta fungera som avsett</translation>
-<translation id="3803583375545057606">Vill du be din förälder att aktivera tillägget?</translation>
 <translation id="380408572480438692">Aktivering av insamling av resultatdata hjälper Google att förbättra systemet med tiden. Inga data skickas förrän du skickar en feedbackrapport (Alt-Skift-I) och inkluderar resultatdata. Du kan när som helst återgå till den här skärmen för att inaktivera insamlingen.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (tilläggs-id <ph name="EXTENSION_ID" />) får inte användas på en inloggningsskärm.</translation>
 <translation id="3807747707162121253">&amp;Avbryt</translation>
@@ -3694,7 +3692,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4169535189173047238">Tillåt inte</translation>
 <translation id="4170314459383239649">Rensa vid avslut</translation>
 <translation id="417096670996204801">Välj en profil</translation>
-<translation id="41725145403849567">Vill du be din förälder att lägga till tillägget?</translation>
 <translation id="4175137578744761569">Ljuslila och vit</translation>
 <translation id="4175737294868205930">Beständig lagring</translation>
 <translation id="4176463684765177261">Inaktiverad</translation>
@@ -5108,7 +5105,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Pinkoden måste innehålla minst ett tecken}other{Pinkoden måste innehålla minst # tecken}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> kräver att du ansluter till wifi och laddar ned en uppdatering nu. Du kan även ladda ned via en anslutning med datapriser (avgifter kan tillkomma).</translation>
 <translation id="5476016146231427848">Starta om enheten om du vill använda Steam på Chromebook</translation>
-<translation id="5476897066181964657">En förälder eller vårdnadshavare måste godkänna att du lägger till det här tillägget</translation>
 <translation id="5481273127572794904">Får inte ladda ned flera filer automatiskt</translation>
 <translation id="5481941284378890518">Lägg till skrivare i närheten</translation>
 <translation id="5483785310822538350">Återkalla åtkomst till enheten och filer</translation>
@@ -5205,7 +5201,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5555639311269196631">Inaktivera surfzon</translation>
 <translation id="5556459405103347317">Hämta igen</translation>
 <translation id="5558129378926964177">Zooma &amp;in</translation>
-<translation id="5558247502209241936">Aktivera att appen öppnas i fönster</translation>
 <translation id="5559311991468302423">Radera adressen</translation>
 <translation id="55601339223879446">Justera skrivbordets avgränsning på skärmen</translation>
 <translation id="5561162485081632007">Identifierar och varnar dig om farliga händelser som inträffar</translation>
@@ -6031,7 +6026,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6305607932814307878">Global policy:</translation>
 <translation id="6305702903308659374">Spela upp på normal volym även när ChromeVox används</translation>
 <translation id="6305909198255586420">Installera med din primära profil</translation>
-<translation id="630750887748244481">Din förälder har inaktiverat Behörigheter för webbplatser, appar och tillägg för Chrome. Det är inte tillåtet att lägga till det här tillägget.</translation>
 <translation id="6307990684951724544">Systemet är upptaget</translation>
 <translation id="6308493641021088955">Inloggning tillhandahålls av <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Spara l&amp;änk som...</translation>
@@ -6857,7 +6851,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7025190659207909717">Hantering av mobil datatjänst</translation>
 <translation id="7025895441903756761">Säkerhet och integritet</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Öppna alla i ett &amp;inkognitofönster}=1{Öppna i &amp;inkognitofönster}other{Öppna alla ({COUNT}) i ett &amp;inkognitofönster}}</translation>
-<translation id="7028057921476386252">En förälder eller vårdnadshavare måste godkänna att du aktiverar det här tillägget</translation>
 <translation id="7029307918966275733">Crostini har inte installerats. Installera Crostini för att visa upphovspersoner.</translation>
 <translation id="7029809446516969842">Lösenord</translation>
 <translation id="7030304022046916278">Webbadresser skickas till Säker webbsökning för kontroll</translation>
@@ -8236,7 +8229,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8251509999076836464">Parkopplar till <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">Miniatyren har tagits bort.</translation>
 <translation id="825238165904109940">Visa alltid hela webbadresser</translation>
-<translation id="8252538334423261825">Det gick inte att lägga till tillägget</translation>
 <translation id="8252569384384439529">Laddar upp …</translation>
 <translation id="8253198102038551905">Klicka på + för att hämta nätverksegenskaperna</translation>
 <translation id="8255212965098517578">Senaste foton, aviseringar och appar</translation>

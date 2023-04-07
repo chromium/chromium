@@ -39,8 +39,9 @@ namespace {
 // Returns empty string if |email| does not contain an "@".
 std::string EmailName(const std::string& email) {
   size_t at_sign_pos = email.find("@");
-  if (at_sign_pos == std::string::npos)
+  if (at_sign_pos == std::string::npos) {
     return "";
+  }
   return email.substr(0, at_sign_pos);
 }
 
@@ -50,8 +51,9 @@ std::string EmailName(const std::string& email) {
 // Returns empty string if |email| does not contain an "@".
 std::string EmailDomain(const std::string& email) {
   size_t at_sign_pos = email.find("@");
-  if (at_sign_pos == std::string::npos)
+  if (at_sign_pos == std::string::npos) {
     return "";
+  }
   return email.substr(at_sign_pos + 1);
 }
 
@@ -201,8 +203,9 @@ std::string SearchAndReplace(
 // Returns a regular expression that matches any one variable in |resolver|.
 std::string ResolverKeyMatcher(const VariableResolver& resolver) {
   std::vector<base::StringPiece> keys;
-  for (const auto& item : resolver)
+  for (const auto& item : resolver) {
     keys.emplace_back(item.first);
+  }
   return base::JoinString(keys, /*separator=*/"|");
 }
 
@@ -214,9 +217,7 @@ std::string ResolverKeyMatcher(const VariableResolver& resolver) {
 // Chains resolve to the first value that is non-empty. In the example above if
 // the asset ID is empty, the chain resolves to the email of the current user.
 void ReplaceVariables(const VariableResolver& resolver,
-                      std::string* configuration) {
-  DCHECK(configuration);
-
+                      std::string& configuration) {
   // |variable_matcher| matches any of the supported variables in |resolver|.
   const std::string variable_matcher = ResolverKeyMatcher(resolver);
 
@@ -244,25 +245,21 @@ void ReplaceVariables(const VariableResolver& resolver,
       resolver);
 
   std::string replaced_configuration =
-      SearchAndReplace(regex, std::move(chain_resolver), *configuration);
-  *configuration = std::move(replaced_configuration);
+      SearchAndReplace(regex, std::move(chain_resolver), configuration);
+  configuration = std::move(replaced_configuration);
 }
 
-void RecursivelySearchAndReplaceVariables(const VariableResolver& resolver,
-                                          base::Value* managedConfiguration) {
-  // Recursive call for dictionary values.
-  if (managedConfiguration->is_dict()) {
-    for (auto kv : managedConfiguration->GetDict()) {
-      RecursivelySearchAndReplaceVariables(resolver, &kv.second);
+void RecursivelySearchAndReplaceVariables(
+    const VariableResolver& resolver,
+    base::Value::Dict& managedConfiguration) {
+  for (auto [key, configuration] : managedConfiguration) {
+    if (configuration.is_dict()) {
+      // Recursive call for dictionary values.
+      RecursivelySearchAndReplaceVariables(resolver, configuration.GetDict());
+    } else if (configuration.is_string()) {
+      ReplaceVariables(resolver, configuration.GetString());
     }
-    return;
   }
-  // Exit early for non string values.
-  if (!managedConfiguration->is_string())
-    return;
-
-  // Find variable chains and replace them with the corresponding value.
-  ReplaceVariables(resolver, &managedConfiguration->GetString());
 }
 
 }  // namespace
@@ -277,7 +274,7 @@ const char kDeviceAnnotatedLocation[] = "DEVICE_ANNOTATED_LOCATION";
 
 void RecursivelyReplaceManagedConfigurationVariables(
     const Profile* profile,
-    base::Value* managedConfiguration) {
+    base::Value::Dict& managedConfiguration) {
   policy::DeviceAttributesImpl device_attributes;
   RecursivelyReplaceManagedConfigurationVariables(profile, &device_attributes,
                                                   managedConfiguration);
@@ -286,7 +283,7 @@ void RecursivelyReplaceManagedConfigurationVariables(
 void RecursivelyReplaceManagedConfigurationVariables(
     const Profile* profile,
     policy::DeviceAttributes* device_attributes,
-    base::Value* managedConfiguration) {
+    base::Value::Dict& managedConfiguration) {
   const VariableResolver resolver =
       BuildVariableResolver(profile, device_attributes);
   RecursivelySearchAndReplaceVariables(resolver, managedConfiguration);

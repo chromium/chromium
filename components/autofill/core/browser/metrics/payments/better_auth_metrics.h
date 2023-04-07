@@ -92,7 +92,9 @@ enum class WebauthnOptInPromoNotOfferedReason {
   // Used only on Android. Checkbox not shown to the user because the user has
   // previously opted-in from Settings.
   kOptedInFromSettings = 5,
-  kMaxValue = kOptedInFromSettings,
+  // According to the server, the user is already opted into FIDO auth.
+  kAlreadyOptedIn = 6,
+  kMaxValue = kAlreadyOptedIn,
 };
 
 // The user decision for the WebAuthn opt-in promo.

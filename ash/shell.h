@@ -112,6 +112,7 @@ class BackGestureEventHandler;
 class BacklightsForcedOffSetter;
 class BluetoothDeviceStatusUiHandler;
 class BluetoothNotificationController;
+class BluetoothStateCache;
 class BrightnessControlDelegate;
 class CalendarController;
 class CameraEffectsController;
@@ -421,6 +422,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   }
   BacklightsForcedOffSetter* backlights_forced_off_setter() {
     return backlights_forced_off_setter_.get();
+  }
+  BluetoothStateCache* bluetooth_state_cache() {
+    return bluetooth_state_cache_.get();
   }
   BrightnessControlDelegate* brightness_control_delegate() {
     return brightness_control_delegate_.get();
@@ -1076,6 +1080,7 @@ class ASH_EXPORT Shell : public SessionObserver,
       resolution_notification_controller_;
   std::unique_ptr<BluetoothNotificationController>
       bluetooth_notification_controller_;
+  std::unique_ptr<BluetoothStateCache> bluetooth_state_cache_;
   std::unique_ptr<BluetoothDeviceStatusUiHandler>
       bluetooth_device_status_ui_handler_;
   std::unique_ptr<KeyboardControllerImpl> keyboard_controller_;

@@ -51,8 +51,7 @@
         c2d.fillStyle = "rgb(0, 0, 255)";
         c2d.fillRect(100, 0, 100, 100);
 
-        webGpuUtils.uploadToGPUTextureTest(gpuDevice, gpuContext, offscreenCanvas,
-                                           {isWebGLCanvas: false});
+        webGpuUtils.uploadToGPUTextureTest(gpuDevice, gpuContext, offscreenCanvas);
 
         waitForFinish();
       };

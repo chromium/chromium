@@ -8,13 +8,17 @@
     width: 100%;
   }
 
+  wallpaper-grid-item[data-is-video][aria-selected='true']::part(item) {
+    cursor: default;
+  }
 </style>
 <iron-list aria-setsize$="[[albums.length]]" as="album" grid id="grid"
     items="[[albums]]" role="listbox">
   <template>
-    <wallpaper-grid-item aria-label$="[[album.title]]" 
+    <wallpaper-grid-item aria-label$="[[album.title]]"
         aria-posinset$="[[getAriaIndex_(index)]]"
         class$="[[getAlbumItemClass_(album, albums)]]"
+        data-is-video$="[[isVideo_(topicSource)]]"
         index="[[index]]"
         is-google-photos="[[isGooglePhotos_(topicSource)]]"
         on-wallpaper-grid-item-selected="onAlbumSelected_"

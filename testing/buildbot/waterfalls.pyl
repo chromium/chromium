@@ -4443,14 +4443,14 @@
         'skip_merge_script': True,
         'use_swarming': False,
         'mixins': [
-          'chromeos-kevin-skylab',
           'limited_capacity_bot',
+          'long_skylab_timeout',
         ],
         'test_suites': {
           # There should be the same gtests here as on the normal kevin bot,
           # but mixing test types on a single bot is not supported in Skylab
           # yet.
-          'skylab_gpu_telemetry_tests': 'gpu_fyi_chromeos_release_telemetry_tests',
+          'skylab_gpu_telemetry_tests': 'gpu_fyi_chromeos_release_telemetry_tests_skylab',
         },
       },
       'GPU FYI Android arm Builder': {},
@@ -5370,6 +5370,17 @@
         'test_suites': {
           'gtest_tests': 'chromium_linux_gtests',
         },
+      },
+      'mac-lsan-fyi-rel': {
+        'mixins': [
+          'mac_x64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'mac_lsan_fyi_gtests',
+        },
+        'args': [
+          '--test-launcher-print-test-stdio=always',
+        ],
       },
     },
   },
@@ -6684,6 +6695,17 @@
           'gtest_tests': 'chromeos_browser_finch_tests',
         },
       },
+      'chromeos-brya-chrome-skylab-fyi': {
+        'additional_compile_targets': [
+          "chrome",
+          "linux_symbols",
+          "symupload",
+        ],
+        'test_suites': {
+          'skylab_tests': 'chromeos_brya_skylab_tests',
+        },
+        'os_type': 'chromeos',
+      },
       'chromeos-octopus-chrome-skylab-fyi': {
         'additional_compile_targets': [
           "chrome",
@@ -6703,6 +6725,17 @@
         ],
         'test_suites': {
           'skylab_tests': 'chromeos_trogdor64_skylab_tests',
+        },
+        'os_type': 'chromeos',
+      },
+      'chromeos-volteer-chrome-skylab-fyi': {
+        'additional_compile_targets': [
+          "chrome",
+          "linux_symbols",
+          "symupload",
+        ],
+        'test_suites': {
+          'skylab_tests': 'chromeos_volteer_skylab_tests',
         },
         'os_type': 'chromeos',
       },

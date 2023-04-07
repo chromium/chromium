@@ -23,7 +23,7 @@ class AmbientVideoUiLauncher : public AmbientUiLauncher {
   ~AmbientVideoUiLauncher() override;
 
   // AmbientUiLauncher overrides:
-  void Initialize(base::OnceClosure on_done) override;
+  void Initialize(InitializationCallback on_done) override;
   std::unique_ptr<views::View> CreateView() override;
   void Finalize() override;
   AmbientBackendModel* GetAmbientBackendModel() override;

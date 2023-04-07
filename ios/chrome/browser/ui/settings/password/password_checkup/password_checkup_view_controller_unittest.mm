@@ -18,10 +18,10 @@
 #import "ios/chrome/browser/passwords/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_commands.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_constants.h"
@@ -52,9 +52,12 @@ class PasswordCheckupViewControllerTest : public ChromeTableViewControllerTest {
   PasswordCheckupViewControllerTest() = default;
 
   void SetUp() override {
-    // Enable Password Grouping feature to get the affiliated groups.
-    feature_list.InitAndEnableFeature(
-        password_manager::features::kPasswordsGrouping);
+    // Enable Password Checkup and Password Grouping to get the affiliated
+    // groups.
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{password_manager::features::kIOSPasswordCheckup,
+                              password_manager::features::kPasswordsGrouping},
+        /*disabled_features=*/{});
 
     ChromeTableViewControllerTest::SetUp();
     TestChromeBrowserState::Builder builder;

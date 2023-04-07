@@ -45,11 +45,10 @@
 #include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 
 namespace blink {
-using protocol::Response;
 
-static Response ToResponse(ExceptionState& exception_state) {
+static protocol::Response ToResponse(ExceptionState& exception_state) {
   if (!exception_state.HadException())
-    return Response::Success();
+    return protocol::Response::Success();
 
   String name_prefix = IsDOMExceptionCode(exception_state.Code())
                            ? DOMException::GetErrorName(
@@ -57,7 +56,7 @@ static Response ToResponse(ExceptionState& exception_state) {
                                  " "
                            : g_empty_string;
   String msg = name_prefix + exception_state.Message();
-  return Response::ServerError(msg.Utf8());
+  return protocol::Response::ServerError(msg.Utf8());
 }
 
 InspectorDOMStorageAgent::InspectorDOMStorageAgent(
@@ -85,17 +84,17 @@ void InspectorDOMStorageAgent::InnerEnable() {
     ns->AddInspectorStorageAgent(this);
 }
 
-Response InspectorDOMStorageAgent::enable() {
+protocol::Response InspectorDOMStorageAgent::enable() {
   if (enabled_.Get())
-    return Response::Success();
+    return protocol::Response::Success();
   enabled_.Set(true);
   InnerEnable();
-  return Response::Success();
+  return protocol::Response::Success();
 }
 
-Response InspectorDOMStorageAgent::disable() {
+protocol::Response InspectorDOMStorageAgent::disable() {
   if (!enabled_.Get())
-    return Response::Success();
+    return protocol::Response::Success();
   enabled_.Set(false);
   StorageController::GetInstance()->RemoveLocalStorageInspectorStorageAgent(
       this);
@@ -103,27 +102,29 @@ Response InspectorDOMStorageAgent::disable() {
       StorageNamespace::From(inspected_frames_->Root()->GetPage());
   if (ns)
     ns->RemoveInspectorStorageAgent(this);
-  return Response::Success();
+  return protocol::Response::Success();
 }
 
-Response InspectorDOMStorageAgent::clear(
+protocol::Response InspectorDOMStorageAgent::clear(
     std::unique_ptr<protocol::DOMStorage::StorageId> storage_id) {
   StorageArea* storage_area = nullptr;
-  Response response = FindStorageArea(std::move(storage_id), storage_area);
+  protocol::Response response =
+      FindStorageArea(std::move(storage_id), storage_area);
   if (!response.IsSuccess())
     return response;
   DummyExceptionStateForTesting exception_state;
   storage_area->clear(exception_state);
   if (exception_state.HadException())
-    return Response::ServerError("Could not clear the storage");
-  return Response::Success();
+    return protocol::Response::ServerError("Could not clear the storage");
+  return protocol::Response::Success();
 }
 
-Response InspectorDOMStorageAgent::getDOMStorageItems(
+protocol::Response InspectorDOMStorageAgent::getDOMStorageItems(
     std::unique_ptr<protocol::DOMStorage::StorageId> storage_id,
     std::unique_ptr<protocol::Array<protocol::Array<String>>>* items) {
   StorageArea* storage_area = nullptr;
-  Response response = FindStorageArea(std::move(storage_id), storage_area);
+  protocol::Response response =
+      FindStorageArea(std::move(storage_id), storage_area);
   if (!response.IsSuccess())
     return response;
 
@@ -146,15 +147,16 @@ Response InspectorDOMStorageAgent::getDOMStorageItems(
     storage_items->emplace_back(std::move(entry));
   }
   *items = std::move(storage_items);
-  return Response::Success();
+  return protocol::Response::Success();
 }
 
-Response InspectorDOMStorageAgent::setDOMStorageItem(
+protocol::Response InspectorDOMStorageAgent::setDOMStorageItem(
     std::unique_ptr<protocol::DOMStorage::StorageId> storage_id,
     const String& key,
     const String& value) {
   StorageArea* storage_area = nullptr;
-  Response response = FindStorageArea(std::move(storage_id), storage_area);
+  protocol::Response response =
+      FindStorageArea(std::move(storage_id), storage_area);
   if (!response.IsSuccess())
     return response;
 
@@ -163,11 +165,12 @@ Response InspectorDOMStorageAgent::setDOMStorageItem(
   return ToResponse(exception_state);
 }
 
-Response InspectorDOMStorageAgent::removeDOMStorageItem(
+protocol::Response InspectorDOMStorageAgent::removeDOMStorageItem(
     std::unique_ptr<protocol::DOMStorage::StorageId> storage_id,
     const String& key) {
   StorageArea* storage_area = nullptr;
-  Response response = FindStorageArea(std::move(storage_id), storage_area);
+  protocol::Response response =
+      FindStorageArea(std::move(storage_id), storage_area);
   if (!response.IsSuccess())
     return response;
 
@@ -224,7 +227,7 @@ LocalFrame* FrameWithStorageKey(const String& key_raw_string,
 }
 }  // namespace
 
-Response InspectorDOMStorageAgent::FindStorageArea(
+protocol::Response InspectorDOMStorageAgent::FindStorageArea(
     std::unique_ptr<protocol::DOMStorage::StorageId> storage_id,
     StorageArea*& storage_area) {
   String security_origin = storage_id->getSecurityOrigin("");
@@ -236,11 +239,12 @@ Response InspectorDOMStorageAgent::FindStorageArea(
           : inspected_frames_->FrameWithSecurityOrigin(security_origin);
 
   if (!frame) {
-    return Response::ServerError("Frame not found for the given storage id");
+    return protocol::Response::ServerError(
+        "Frame not found for the given storage id");
   }
   if (is_local_storage) {
     if (!frame->DomWindow()->GetSecurityOrigin()->CanAccessLocalStorage()) {
-      return Response::ServerError(
+      return protocol::Response::ServerError(
           "Security origin cannot access local storage");
     }
     storage_area = StorageArea::CreateForInspectorAgent(
@@ -248,23 +252,23 @@ Response InspectorDOMStorageAgent::FindStorageArea(
         StorageController::GetInstance()->GetLocalStorageArea(
             frame->DomWindow()),
         StorageArea::StorageType::kLocalStorage);
-    return Response::Success();
+    return protocol::Response::Success();
   }
 
   if (!frame->DomWindow()->GetSecurityOrigin()->CanAccessSessionStorage()) {
-    return Response::ServerError(
+    return protocol::Response::ServerError(
         "Security origin cannot access session storage");
   }
   StorageNamespace* session_namespace =
       StorageNamespace::From(frame->GetPage());
   if (!session_namespace)
-    return Response::ServerError("SessionStorage is not supported");
+    return protocol::Response::ServerError("SessionStorage is not supported");
   DCHECK(session_namespace->IsSessionStorage());
 
   storage_area = StorageArea::CreateForInspectorAgent(
       frame->DomWindow(), session_namespace->GetCachedArea(frame->DomWindow()),
       StorageArea::StorageType::kSessionStorage);
-  return Response::Success();
+  return protocol::Response::Success();
 }
 
 }  // namespace blink

@@ -1397,21 +1397,6 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
     global_trackers_.predictor_jank_tracker->ReportLatestScrollDelta(
         total_predicted_delta, end_timestamp, args_.interval);
   }
-
-  // Counting number of inputs per frame for flings and normal input has
-  // to be separate as the rate of input generation is different for each
-  // of them, normal input is screen generated, and flings are GPU vsync
-  // generated.
-  if (fling_input_count > 0) {
-    UMA_HISTOGRAM_COUNTS(
-        "Event.InputEventCoalescing.ScrollUpdate.FlingUpdatesPerFrame",
-        fling_input_count);
-  }
-  if (normal_input_count > 0) {
-    UMA_HISTOGRAM_COUNTS(
-        "Event.InputEventCoalescing.ScrollUpdate.GestureUpdatesPerFrame",
-        normal_input_count);
-  }
 }
 
 void CompositorFrameReporter::ReportEventLatencyTraceEvents() const {

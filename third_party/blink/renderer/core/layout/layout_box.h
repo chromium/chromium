@@ -1136,8 +1136,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void ReplaceLayoutResult(const NGLayoutResult*, wtf_size_t index);
 
   void ShrinkLayoutResults(wtf_size_t results_to_keep);
-  void RestoreLegacyLayoutResults(const NGLayoutResult* measure_result,
-                                  const NGLayoutResult* layout_result);
 
   // Perform any finalization needed after all the layout results have been
   // added.
@@ -1312,12 +1310,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     NOT_DESTROYED();
     return StyleRef().IsHorizontalWritingMode() ? IntrinsicSize().Height()
                                                 : IntrinsicSize().Width();
-  }
-  // TODO(1229581): Remove this function, and intrinsic_content_logical_height_.
-  virtual LayoutUnit IntrinsicContentLogicalHeight() const {
-    NOT_DESTROYED();
-    NOTREACHED();
-    return LayoutUnit();
   }
 
   // Whether or not the element shrinks to its intrinsic width (rather than
@@ -1528,16 +1520,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   PaintLayer* EnclosingFloatPaintingLayer() const;
 
-  virtual LayoutUnit FirstLineBoxBaseline() const {
-    NOT_DESTROYED();
-    return LayoutUnit(-1);
-  }
-  virtual LayoutUnit InlineBlockBaseline(LineDirectionMode) const {
-    NOT_DESTROYED();
-    return LayoutUnit(-1);
-  }  // Returns -1 if we should skip this box when computing the baseline of an
-     // inline-block.
-
   bool ShrinkToAvoidFloats() const;
   virtual bool CreatesNewFormattingContext() const {
     NOT_DESTROYED();
@@ -1587,11 +1569,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
 
   LayoutUnit LineHeight(
-      bool first_line,
-      LineDirectionMode,
-      LinePositionMode = kPositionOnContainingLine) const override;
-  LayoutUnit BaselinePosition(
-      FontBaseline,
       bool first_line,
       LineDirectionMode,
       LinePositionMode = kPositionOnContainingLine) const override;
@@ -1749,12 +1726,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     NOT_DESTROYED();
     if (IsFloating())
       RemoveFloatingOrPositionedChildFromBlockLists();
-  }
-
-  void SetIntrinsicContentLogicalHeight(
-      LayoutUnit intrinsic_content_logical_height) const {
-    NOT_DESTROYED();
-    intrinsic_content_logical_height_ = intrinsic_content_logical_height;
   }
 
   bool CanRenderBorderImage() const;
@@ -2235,11 +2206,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
  private:
   // Previous value of frame_size_, updated after paint invalidation.
   LayoutSize previous_size_;
-
-  // Our intrinsic height, used for min-height: min-content etc. Maintained by
-  // updateLogicalHeight. This is logicalHeight() before it is clamped to
-  // min/max.
-  mutable LayoutUnit intrinsic_content_logical_height_;
 
  protected:
   MinMaxSizes intrinsic_logical_widths_;

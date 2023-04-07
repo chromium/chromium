@@ -67,3 +67,10 @@ class TestConfigInjectGetTaskAllow(TestConfig):
     @property
     def inject_get_task_allow_entitlement(self):
         return True
+
+
+class TestConfigNotarizationToolOverride(TestConfig):
+
+    @property
+    def notarization_tool_path(self):
+        return f'/fun/bin/{self.notarization_tool}.custom'

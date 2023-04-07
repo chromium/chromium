@@ -30,6 +30,10 @@ class CrashesDOMHandler;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class ChromeCameraAppUIDelegate;
+
+namespace app_list::federated {
+class FederatedMetricsManager;
+}  // namespace app_list::federated
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace domain_reliability {
@@ -148,6 +152,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   friend class ChromeCameraAppUIDelegate;
+  friend class app_list::federated::FederatedMetricsManager;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

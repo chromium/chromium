@@ -24,12 +24,18 @@ class NotarizationError(Exception):
     pass
 
 
+def _get_notarizaton_tool_cmd(config):
+    if config.notarization_tool_path:
+        return [config.notarization_tool_path]
+    return ['xcrun', str(config.notarization_tool)]
+
+
 def _submit_altool(path, config):
-    command = [
-        'xcrun', 'altool', '--notarize-app', '--file', path,
-        '--primary-bundle-id', config.base_bundle_id, '--username',
-        config.notary_user, '--password', config.notary_password,
-        '--output-format', 'xml'
+    assert config.notarization_tool == model.NotarizationTool.ALTOOL
+    command = _get_notarizaton_tool_cmd(config) + [
+        '--notarize-app', '--file', path, '--primary-bundle-id',
+        config.base_bundle_id, '--username', config.notary_user, '--password',
+        config.notary_password, '--output-format', 'xml'
     ]
     if config.notary_asc_provider is not None:
         command.extend(['--asc-provider', config.notary_asc_provider])
@@ -60,9 +66,8 @@ def _submit_altool(path, config):
 
 
 def _submit_notarytool(path, config):
-    command = [
-        'xcrun',
-        'notarytool',
+    assert config.notarization_tool == model.NotarizationTool.NOTARYTOOL
+    command = _get_notarizaton_tool_cmd(config) + [
         'submit',
         path,
         '--apple-id',
@@ -122,11 +127,11 @@ NotarizationResult = collections.namedtuple(
 
 
 def _get_result_altool(uuid, config):
+    assert config.notarization_tool == model.NotarizationTool.ALTOOL
     try:
-        command = [
-            'xcrun', 'altool', '--notarization-info', uuid, '--username',
-            config.notary_user, '--password', config.notary_password,
-            '--output-format', 'xml'
+        command = _get_notarizaton_tool_cmd(config) + [
+            '--notarization-info', uuid, '--username', config.notary_user,
+            '--password', config.notary_password, '--output-format', 'xml'
         ]
         if config.notary_asc_provider is not None:
             command.extend(['--asc-provider', config.notary_asc_provider])
@@ -168,18 +173,18 @@ def _get_result_altool(uuid, config):
 
 
 def _get_log_notarytool(uuid, config):
-    command = [
-        'xcrun', 'notarytool', 'log', uuid, '--apple-id', config.notary_user,
-        '--team-id', config.notary_team_id
+    assert config.notarization_tool == model.NotarizationTool.NOTARYTOOL
+    command = _get_notarizaton_tool_cmd(config) + [
+        'log', uuid, '--apple-id', config.notary_user, '--team-id',
+        config.notary_team_id
     ]
     return commands.run_password_command_output(
         command, _altool_password_for_notarytool(config.notary_password))
 
 
 def _get_result_notarytool(uuid, config):
-    command = [
-        'xcrun',
-        'notarytool',
+    assert config.notarization_tool == model.NotarizationTool.NOTARYTOOL
+    command = _get_notarizaton_tool_cmd(config) + [
         'info',
         uuid,
         '--apple-id',

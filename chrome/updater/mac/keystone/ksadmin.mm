@@ -672,9 +672,9 @@ void KSAdminApp::DoPrintTickets(UpdaterScope scope) {
           ticket_printed = true;
         }
 
-        // Fallback to print legacy Keystone tickets if there's no app
+        // Fallback to print legacy Keystone tickets if there's no apps
         // registered with the new updater.
-        if (!ticket_printed) {
+        if (states.empty()) {
           ticket_printed = std::move(fallback_cb).Run();
         }
         std::move(done_cb).Run(ticket_printed || app_id.empty() ? 0 : 1);

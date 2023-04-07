@@ -95,7 +95,7 @@ class DeviceDescriptionServiceTest : public ::testing::Test {
 
   void TestOnParsedDeviceDescription(
       ParsedDialDeviceDescription device_description,
-      SafeDialDeviceDescriptionParser::ParsingError parsing_error,
+      SafeDialDeviceDescriptionParser::ParsingResult parsing_result,
       const std::string& error_message) {
     GURL app_url("http://192.168.1.1/apps");
     auto device_data = CreateDialDeviceData(1);
@@ -107,7 +107,7 @@ class DeviceDescriptionServiceTest : public ::testing::Test {
       EXPECT_CALL(mock_success_cb_, Run(device_data, description_data));
     }
     device_description_service()->OnParsedDeviceDescription(
-        device_data, device_description, parsing_error);
+        device_data, device_description, parsing_result);
   }
 
  protected:
@@ -159,7 +159,7 @@ TEST_F(DeviceDescriptionServiceTest, TestGetDeviceDescriptionFetchURL) {
       device_data, description_response_data);
   device_description_service_.OnParsedDeviceDescription(
       device_data, CreateParsedDialDeviceDescription(1),
-      SafeDialDeviceDescriptionParser::ParsingError::kNone);
+      SafeDialDeviceDescriptionParser::ParsingResult::kSuccess);
 }
 
 TEST_F(DeviceDescriptionServiceTest, TestGetDeviceDescriptionFetchURLError) {
@@ -243,12 +243,12 @@ TEST_F(DeviceDescriptionServiceTest, TestOnParsedDeviceDescription) {
 
   // XML parsing errors.
   std::string error_message = "Failed to parse device description XML";
-  SafeDialDeviceDescriptionParser::ParsingError errors[] = {
-      SafeDialDeviceDescriptionParser::ParsingError::kInvalidXml,
-      SafeDialDeviceDescriptionParser::ParsingError::kFailedToReadUdn,
-      SafeDialDeviceDescriptionParser::ParsingError::kFailedToReadFriendlyName,
-      SafeDialDeviceDescriptionParser::ParsingError::kFailedToReadModelName,
-      SafeDialDeviceDescriptionParser::ParsingError::kFailedToReadDeviceType};
+  SafeDialDeviceDescriptionParser::ParsingResult errors[] = {
+      SafeDialDeviceDescriptionParser::ParsingResult::kInvalidXml,
+      SafeDialDeviceDescriptionParser::ParsingResult::kFailedToReadUdn,
+      SafeDialDeviceDescriptionParser::ParsingResult::kFailedToReadFriendlyName,
+      SafeDialDeviceDescriptionParser::ParsingResult::kFailedToReadModelName,
+      SafeDialDeviceDescriptionParser::ParsingResult::kFailedToReadDeviceType};
   for (auto error : errors)
     TestOnParsedDeviceDescription(ParsedDialDeviceDescription(), error,
                                   error_message);
@@ -257,12 +257,13 @@ TEST_F(DeviceDescriptionServiceTest, TestOnParsedDeviceDescription) {
   error_message = "Failed to process fetch result";
   TestOnParsedDeviceDescription(
       ParsedDialDeviceDescription(),
-      SafeDialDeviceDescriptionParser::ParsingError::kNone, error_message);
+      SafeDialDeviceDescriptionParser::ParsingResult::kSuccess, error_message);
 
   // Valid device description and put in cache
   auto description = CreateParsedDialDeviceDescription(1);
   TestOnParsedDeviceDescription(
-      description, SafeDialDeviceDescriptionParser::ParsingError::kNone, "");
+      description, SafeDialDeviceDescriptionParser::ParsingResult::kSuccess,
+      "");
   EXPECT_EQ(size_t(1), description_cache_->size());
 
   // Valid device description ptr and skip cache.
@@ -275,7 +276,8 @@ TEST_F(DeviceDescriptionServiceTest, TestOnParsedDeviceDescription) {
   EXPECT_EQ(size_t(cache_num + 1), description_cache_->size());
   description = CreateParsedDialDeviceDescription(1);
   TestOnParsedDeviceDescription(
-      description, SafeDialDeviceDescriptionParser::ParsingError::kNone, "");
+      description, SafeDialDeviceDescriptionParser::ParsingResult::kSuccess,
+      "");
   EXPECT_EQ(size_t(cache_num + 1), description_cache_->size());
 }
 

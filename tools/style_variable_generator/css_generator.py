@@ -65,7 +65,7 @@ class CSSStyleGenerator(BaseGenerator):
             Modes,
         }
 
-    def ShouldResolveBlendedColors(self):
+    def DefaultPreblend(self):
         return False
 
     def AddGeneratedVars(self, var_names, variable):
@@ -159,17 +159,17 @@ class CSSStyleGenerator(BaseGenerator):
 
     def CSSColorVar(self, name, color, mode):
         '''Returns the CSS color representation given a color name and color'''
-        if color.blended_colors:
-            return 'color-mix(in srgb, %s %s%%, %s)' % (
-                self.CSSBlendInputColor(color.blended_colors[0]),
-                self.ExtractOpacity(color.blended_colors[0], mode),
-                self.CSSBlendInputColor(color.blended_colors[1]))
         if color.var:
             return 'var(%s)' % self.ToCSSVarName(color.var)
 
         if color.opacity and color.opacity.a != 1:
             return 'rgba(var(%s-rgb), %s)' % (self.ToCSSVarName(name),
                                               self._CSSOpacity(color.opacity))
+        if color.blended_colors:
+            return 'color-mix(in srgb, %s %s%%, %s)' % (
+                self.CSSBlendInputColor(color.blended_colors[0]),
+                self.ExtractOpacity(color.blended_colors[0], mode),
+                self.CSSBlendInputColor(color.blended_colors[1]))
 
         return 'rgb(var(%s-rgb))' % self.ToCSSVarName(name)
 

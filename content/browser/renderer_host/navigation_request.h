@@ -429,9 +429,13 @@ class CONTENT_EXPORT NavigationRequest
 #endif
   base::SafeRef<NavigationHandle> GetSafeRef() override;
   bool ExistingDocumentWasDiscarded() const override;
+  blink::RuntimeFeatureStateContext& GetMutableRuntimeFeatureStateContext()
+      override;
+  // End of NavigationHandle implementation.
 
-  // mojom::NavigationRendererCancellationListener implementation
+  // mojom::NavigationRendererCancellationListener implementation:
   void RendererCancellationWindowEnded() override;
+  // End of mojom::NavigationRendererCancellationListener implementation.
 
   void RegisterCommitDeferringConditionForTesting(
       std::unique_ptr<CommitDeferringCondition> condition);
@@ -1080,18 +1084,13 @@ class CONTENT_EXPORT NavigationRequest
   // for a ViewTransition.
   void SetViewTransitionState(blink::ViewTransitionState view_transition_state);
 
-  // Returns a mutable reference to a blink::RuntimeFeatureStateContext object,
-  // which exposes the getters and setters for Blink Runtime-Enabled Features to
-  // the browser process. Any feature set using the RuntimeFeatureStateContext
-  // before navigation commit will be communicated back to the renderer process.
+  // Returns a const reference to a blink::RuntimeFeatureStateContext (RFSC)
+  // object. Once the commit params are sent to the renderer we no longer allow
+  // write access to the RFSC, but read access is still available.
   //
-  // This function should not be called once the navigation has been committed.
-  // NOTE: these feature changes will apply to the "to-be-created" document.
-  blink::RuntimeFeatureStateContext& GetMutableRuntimeFeatureStateContext();
-
-  // Returns a const reference to a blink::RuntimeFeatureStateContext object.
-  // Once the commit params are sent to the renderer we no longer allow write
-  // access to the RFSC, but read access is still available.
+  // Note: This method has another
+  // version, `GetMutableRuntimeFeatureStateContext()`, accessible via
+  // NavigationHandle and will return a mutable reference to the RFSC.
   const blink::RuntimeFeatureStateContext& GetRuntimeFeatureStateContext();
 
   BrowsingContextGroupSwap browsing_context_group_swap() const {
@@ -1175,10 +1174,17 @@ class CONTENT_EXPORT NavigationRequest
     resume_commit_closure_ = std::move(closure);
   }
 
-  // Creates a WebUI object for this navigation which will later be saved in
-  // `frame_host`. If no WebUI applies, returns null.
-  std::unique_ptr<WebUIImpl> CreateWebUIIfNeeded(
-      RenderFrameHostImpl* frame_host);
+  // Creates a WebUI object for this navigation and saves it in `web_ui_`. Later
+  // on, the WebUI created will be moved to `frame_host`. Returns true if and
+  // only if a WebUI object is successfully created and saved.
+  bool CreateWebUIIfNeeded(RenderFrameHostImpl* frame_host);
+
+  bool HasWebUI() { return !!web_ui_; }
+
+  std::unique_ptr<WebUIImpl> TakeWebUI() {
+    CHECK(HasWebUI());
+    return std::move(web_ui_);
+  }
 
  private:
   friend class NavigationRequestTest;
@@ -1837,8 +1843,9 @@ class CONTENT_EXPORT NavigationRequest
 
   // Called on FrameTreeNode's queued NavigationRequest (if any) when another
   // NavigationRequest associated with the same FrameTreeNode is destroyed and
-  // the queued NavigationRequest can be resumed.
-  void ResumeCommit();
+  // the queued NavigationRequest can be resumed. Will post a task to run the
+  // `resume_commit_closure_` asynchronously.
+  void PostResumeCommitTask();
 
   // Used to detect if the page being navigated to is participating in the
   // related deprecation trial and recording that in NavigationControllerImpl.
@@ -2542,6 +2549,11 @@ class CONTENT_EXPORT NavigationRequest
   // See `RenderFrameHostImpl::CookieChangeListener`.
   std::unique_ptr<RenderFrameHostImpl::CookieChangeListener>
       cookie_change_listener_;
+
+  // The WebUI object to be used for this navigation. When a RenderFrameHost has
+  // been picked for the navigation, the WebUI object will be moved to be owned
+  // by the RenderFrameHost.
+  std::unique_ptr<WebUIImpl> web_ui_;
 
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 };

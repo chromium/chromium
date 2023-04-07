@@ -98,6 +98,10 @@ BASE_FEATURE(kHideVisits,
              "HistoryClustersHideVisits",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kUseUrlForDisplayCache,
+             "HistoryClustersUrlForDisplayCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace internal
 
 BASE_FEATURE(kSidePanelJourneys,

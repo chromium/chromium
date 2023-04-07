@@ -331,7 +331,8 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage) {
+    uint32_t usage,
+    std::string debug_label) {
   DCHECK(IsValidSharedMemoryBufferFormat(size, format));
 
   SharedMemoryRegionWrapper shm_wrapper;
@@ -348,7 +349,7 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
 
   return base::WrapUnique(new CompoundImageBacking(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      allow_shm_overlays, std::move(shm_backing),
+      std::move(debug_label), allow_shm_overlays, std::move(shm_backing),
       gpu_backing_factory->GetWeakPtr()));
 }
 
@@ -364,7 +365,8 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage) {
+    uint32_t usage,
+    std::string debug_label) {
   DCHECK(IsValidSharedMemoryBufferFormat(size, format, plane));
 
   SharedMemoryRegionWrapper shm_wrapper;
@@ -384,8 +386,8 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
 
   return base::WrapUnique(new CompoundImageBacking(
       mailbox, plane_format, plane_size, color_space, surface_origin,
-      alpha_type, usage, allow_shm_overlays, std::move(shm_backing),
-      gpu_backing_factory->GetWeakPtr()));
+      alpha_type, usage, std::move(debug_label), allow_shm_overlays,
+      std::move(shm_backing), gpu_backing_factory->GetWeakPtr()));
 }
 
 CompoundImageBacking::CompoundImageBacking(
@@ -396,6 +398,7 @@ CompoundImageBacking::CompoundImageBacking(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     bool allow_shm_overlays,
     std::unique_ptr<SharedMemoryImageBacking> shm_backing,
     base::WeakPtr<SharedImageBackingFactory> gpu_backing_factory)
@@ -416,9 +419,9 @@ CompoundImageBacking::CompoundImageBacking(
     elements_[0].access_streams.Put(SharedImageAccessStream::kOverlay);
   elements_[0].content_id_ = latest_content_id_;
 
-  elements_[1].create_callback =
-      base::BindOnce(&CompoundImageBacking::LazyCreateBacking,
-                     base::Unretained(this), std::move(gpu_backing_factory));
+  elements_[1].create_callback = base::BindOnce(
+      &CompoundImageBacking::LazyCreateBacking, base::Unretained(this),
+      std::move(gpu_backing_factory), std::move(debug_label));
   elements_[1].access_streams =
       base::Difference(AccessStreamSet::All(), kMemoryStreamSet);
 }
@@ -648,6 +651,7 @@ SharedImageBacking* CompoundImageBacking::GetBacking(
 
 void CompoundImageBacking::LazyCreateBacking(
     base::WeakPtr<SharedImageBackingFactory> factory,
+    std::string debug_label,
     std::unique_ptr<SharedImageBacking>& backing) {
   if (!factory) {
     DLOG(ERROR) << "Can't allocate backing after image has been destroyed";
@@ -657,7 +661,7 @@ void CompoundImageBacking::LazyCreateBacking(
   backing = factory->CreateSharedImage(
       mailbox(), format(), kNullSurfaceHandle, size(), color_space(),
       surface_origin(), alpha_type(), usage() | SHARED_IMAGE_USAGE_CPU_UPLOAD,
-      /*is_thread_safe=*/false);
+      std::move(debug_label), /*is_thread_safe=*/false);
   if (!backing) {
     DLOG(ERROR) << "Failed to allocate GPU backing";
     return;

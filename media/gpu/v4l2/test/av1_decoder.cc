@@ -1086,17 +1086,12 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<uint8_t>& y_plane,
   struct v4l2_ext_controls ext_ctrls = {.count = base::checked_cast<__u32>(ext_ctrl_vectors.size()),
                                         .controls = &ext_ctrl_vectors[0]};
 
-  if (!v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, &ext_ctrls))
-    LOG(FATAL) << "VIDIOC_S_EXT_CTRLS failed.";
+  v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, &ext_ctrls);
 
-  if (!v4l2_ioctl_->MediaRequestIocQueue(OUTPUT_queue_))
-    LOG(FATAL) << "MEDIA_REQUEST_IOC_QUEUE failed.";
+  v4l2_ioctl_->MediaRequestIocQueue(OUTPUT_queue_);
 
   uint32_t buffer_id;
-
-  if (!v4l2_ioctl_->DQBuf(CAPTURE_queue_, &buffer_id)) {
-    LOG(FATAL) << "VIDIOC_DQBUF failed for CAPTURE queue.";
-  }
+  v4l2_ioctl_->DQBuf(CAPTURE_queue_, &buffer_id);
 
   scoped_refptr<MmappedBuffer> buffer = CAPTURE_queue_->GetBuffer(buffer_id);
   size = CAPTURE_queue_->display_size();
@@ -1111,12 +1106,9 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<uint8_t>& y_plane,
       reusable_buffer_ids,
       !libgav1::IsIntraFrame(current_frame_header.frame_type));
 
-  if (!v4l2_ioctl_->DQBuf(OUTPUT_queue_, &buffer_id)) {
-    LOG(FATAL) << "VIDIOC_DQBUF failed for OUTPUT queue.";
-  }
+  v4l2_ioctl_->DQBuf(OUTPUT_queue_, &buffer_id);
 
-  if (!v4l2_ioctl_->MediaRequestIocReinit(OUTPUT_queue_))
-    LOG(FATAL) << "MEDIA_REQUEST_IOC_REINIT failed.";
+  v4l2_ioctl_->MediaRequestIocReinit(OUTPUT_queue_);
 
   return VideoDecoder::kOk;
 }

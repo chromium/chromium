@@ -27,9 +27,7 @@ IDBRequestLoader::IDBRequestLoader(
   DCHECK(IDBValueUnwrapper::IsWrapped(values_));
 }
 
-IDBRequestLoader::~IDBRequestLoader() {
-  // TODO(pwnall): Do we need to call loader_->Cancel() here?
-}
+IDBRequestLoader::~IDBRequestLoader() {}
 
 void IDBRequestLoader::Start() {
 #if DCHECK_IS_ON()
@@ -86,19 +84,21 @@ void IDBRequestLoader::StartNextValue() {
   file_reader_loading_ = true;
 #endif  // DCHECK_IS_ON()
   loader_ = MakeGarbageCollected<FileReaderLoader>(
-      FileReaderLoader::kReadByClient, this,
-      exection_context->GetTaskRunner(TaskType::kDatabaseAccess));
+      this, exection_context->GetTaskRunner(TaskType::kDatabaseAccess));
   loader_->Start(unwrapper.WrapperBlobHandle());
 }
 
-void IDBRequestLoader::DidStartLoading() {}
+FileErrorCode IDBRequestLoader::DidStartLoading(uint64_t, uint64_t) {
+  return FileErrorCode::kOK;
+}
 
-void IDBRequestLoader::DidReceiveDataForClient(const char* data,
+FileErrorCode IDBRequestLoader::DidReceiveData(const char* data,
                                                unsigned data_length) {
   DCHECK_LE(wrapped_data_.size() + data_length, wrapped_data_.capacity())
       << "The reader returned more data than we were prepared for";
 
   wrapped_data_.Append(data, data_length);
+  return FileErrorCode::kOK;
 }
 
 void IDBRequestLoader::DidFinishLoading() {

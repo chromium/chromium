@@ -18,6 +18,7 @@
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_page_view.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
@@ -216,6 +217,12 @@ void ContentsView::SetActiveStateInternal(int page_index, bool animate) {
     return;
 
   app_list_pages_[GetActivePageIndex()]->OnWillBeHidden();
+
+  raw_ptr<SearchBoxView> search_box_view = GetSearchBoxView();
+  CHECK(search_box_view)
+      << "SearchBoxView must be available to update its internal state.";
+  search_box_view->SetIsIphAllowed(GetStateForPageIndex(page_index) ==
+                                   AppListState::kStateSearchResults);
 
   // Start animating to the new page. Disable animation for tests.
   bool should_animate = animate && !set_active_state_without_animation_ &&

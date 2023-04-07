@@ -177,12 +177,21 @@ bool KeyboardCapability::IsTopRowKey(const KeyboardCode& key_code) {
           KeyboardCode::VKEY_BROWSER_REFRESH,
           KeyboardCode::VKEY_ZOOM,
           KeyboardCode::VKEY_MEDIA_LAUNCH_APP1,
+          KeyboardCode::VKEY_ALL_APPLICATIONS,
+          KeyboardCode::VKEY_SNAPSHOT,
           KeyboardCode::VKEY_BRIGHTNESS_DOWN,
           KeyboardCode::VKEY_BRIGHTNESS_UP,
+          KeyboardCode::VKEY_PRIVACY_SCREEN_TOGGLE,
+          KeyboardCode::VKEY_MICROPHONE_MUTE_TOGGLE,
           KeyboardCode::VKEY_MEDIA_PLAY_PAUSE,
           KeyboardCode::VKEY_VOLUME_MUTE,
           KeyboardCode::VKEY_VOLUME_DOWN,
           KeyboardCode::VKEY_VOLUME_UP,
+          KeyboardCode::VKEY_KBD_BACKLIGHT_TOGGLE,
+          KeyboardCode::VKEY_KBD_BRIGHTNESS_DOWN,
+          KeyboardCode::VKEY_KBD_BRIGHTNESS_UP,
+          KeyboardCode::VKEY_MEDIA_NEXT_TRACK,
+          KeyboardCode::VKEY_MEDIA_PREV_TRACK,
       });
   return base::Contains(*top_row_action_keys, key_code);
 }

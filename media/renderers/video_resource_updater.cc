@@ -144,7 +144,7 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
         return VideoFrameResourceType::YUV;
       } else {
         DCHECK_EQ(num_textures, 1u);
-        si_formats[0] = viz::MultiPlaneFormat::kYVU_420;
+        si_formats[0] = viz::MultiPlaneFormat::kYV12;
         return VideoFrameResourceType::RGB;
       }
 
@@ -168,7 +168,7 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
         return VideoFrameResourceType::YUV;
       } else {
         DCHECK_EQ(num_textures, 1u);
-        si_formats[0] = viz::MultiPlaneFormat::kYUV_420_BIPLANAR;
+        si_formats[0] = viz::MultiPlaneFormat::kNV12;
         return VideoFrameResourceType::RGB;
       }
 
@@ -181,7 +181,7 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
         return VideoFrameResourceType::YUVA;
       } else {
         DCHECK_EQ(num_textures, 1u);
-        si_formats[0] = viz::MultiPlaneFormat::kYUVA_420_TRIPLANAR;
+        si_formats[0] = viz::MultiPlaneFormat::kNV12A;
         return VideoFrameResourceType::RGBA;
       }
 

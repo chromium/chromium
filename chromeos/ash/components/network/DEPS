@@ -25,6 +25,7 @@ include_rules = [
   "+components/user_manager",
   "+crypto",
   "+dbus",
+  "+mojo/public",
   "+net",
   "+services/preferences/public/cpp",
   "+testing",

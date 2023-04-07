@@ -431,8 +431,11 @@ void SearchResultPageView::OnAnimationStarted(AppListState from_state,
 }
 
 gfx::Size SearchResultPageView::GetPreferredSearchBoxSize() const {
-  static gfx::Size size = gfx::Size(kWidth, kActiveSearchBoxHeight);
-  return size;
+  raw_ptr<const views::View> iph_view =
+      search_view_->search_box_view()->iph_view();
+  const int iph_height = iph_view ? iph_view->GetPreferredSize().height() : 0;
+
+  return gfx::Size(kWidth, kActiveSearchBoxHeight + iph_height);
 }
 
 }  // namespace ash

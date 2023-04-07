@@ -31,7 +31,6 @@
 <translation id="1860796786778352021">Zamknięcie powiadomienia</translation>
 <translation id="186476001994626254">Treść typu Web Smart Paste</translation>
 <translation id="1871244248791675517">Ins</translation>
-<translation id="1884435127456172652"><ph name="NUMBER" />%</translation>
 <translation id="1901303067676059328">Zaznacz &amp;wszystko</translation>
 <translation id="19085484004813472">To jest nowa funkcja</translation>
 <translation id="2006524834898217237">Upewnij się, że to urządzenie jest połączone z internetem.</translation>
@@ -202,6 +201,7 @@
 <translation id="8393700583063109961">Wyślij wiadomość</translation>
 <translation id="8394908167088220973">Odtwórz/wstrzymaj multimedia</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 rok}few{# lata}many{# lat}other{# roku}}</translation>
+<translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623">Plik <ph name="SAVEAS_EXTENSION_TYPE" /> (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> kB/s</translation>
 <translation id="8725488761726303204">i jeszcze <ph name="NUMBER" /></translation>

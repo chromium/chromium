@@ -19,6 +19,7 @@
 
 namespace ash {
 
+class EnterpriseManagedMetadataStore;
 class HotspotConfigurationHandler;
 class HotspotController;
 
@@ -51,16 +52,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
   HotspotMetricsHelper& operator=(const HotspotMetricsHelper&) = delete;
   ~HotspotMetricsHelper() override;
 
-  void Init(HotspotCapabilitiesProvider* hotspot_capabilities_provider,
+  void Init(EnterpriseManagedMetadataStore* enterprise_managed_metadata_store,
+            HotspotCapabilitiesProvider* hotspot_capabilities_provider,
             HotspotStateHandler* hotspot_state_handler,
             HotspotController* hotspot_controller,
             HotspotConfigurationHandler* hotspot_configuration_handler,
             HotspotEnabledStateNotifier* hotspot_enabled_state_notifier,
             NetworkStateHandler* network_state_handler);
-
-  void set_is_enterprise_managed(bool is_enterprise_managed) {
-    is_enterprise_managed_ = is_enterprise_managed;
-  }
 
  private:
   friend class HotspotMetricsHelperTest;
@@ -226,6 +224,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
   // due to device is not cellular capable.
   absl::optional<HotspotMetricsAllowStatus> GetMetricsAllowStatus();
 
+  EnterpriseManagedMetadataStore* enterprise_managed_metadata_store_ = nullptr;
   HotspotCapabilitiesProvider* hotspot_capabilities_provider_ = nullptr;
   HotspotStateHandler* hotspot_state_handler_ = nullptr;
   HotspotConfigurationHandler* hotspot_configuration_handler_ = nullptr;
@@ -251,8 +250,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
   // Tracks if the device is enterprise managed or not.
   bool is_enterprise_managed_ = false;
 
-  mojo::Receiver<hotspot_config::mojom::HotspotEnabledStateObserver>
-      hotspot_state_enabled_state_observer_receiver_{this};
   mojo::Receiver<hotspot_config::mojom::HotspotEnabledStateObserver>
       hotspot_enabled_state_notifier_receiver_{this};
 };

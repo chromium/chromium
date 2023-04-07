@@ -33,8 +33,9 @@ int64_t ComputeSpaceNeedToBeFreedAfterGetMetadataAsync(
     const base::FilePath& path,
     int64_t snapshot_size) {
   int64_t free_size = base::SysInfo::AmountOfFreeDiskSpace(path);
-  if (free_size < 0)
+  if (free_size < 0) {
     return -1;
+  }
 
   // We need to keep cryptohome::kMinFreeSpaceInBytes free space even after
   // |snapshot_size| is occupied.

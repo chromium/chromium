@@ -2913,6 +2913,16 @@ crbug.com/1359555 external/wpt/speculation-rules/prerender/workers.html [ Failur
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-fonts/font-size-adjust-013.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/white-space/pre-wrap-align-center-001.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/white-space/pre-wrap-align-center-002.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/white-space/pre-wrap-align-center-003.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/white-space/pre-wrap-align-end-001.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/white-space/pre-wrap-align-end-002.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/white-space/pre-wrap-align-end-003.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/white-space/pre-wrap-align-left-002.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/white-space/pre-wrap-align-left-003.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/white-space/pre-wrap-align-right-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-box/margin-trim/flex-column-style-change-triggers-layout-block-end.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-box/margin-trim/flex-column-style-change-triggers-layout-block-start.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-box/margin-trim/flex-column-style-change-triggers-layout-block.html [ Failure ]
@@ -2990,7 +3000,6 @@ crbug.com/626703 external/wpt/css/css-counter-styles/counter-style-at-rule/syste
 crbug.com/626703 external/wpt/css/css-counter-styles/counter-style-at-rule/system-alphabetic.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-counter-styles/counter-style-at-rule/system-extends.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-counter-styles/counter-style-at-rule/system-symbolic.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-overflow/overflow-overlay.html [ Failure ]
 crbug.com/626703 [ Mac11 ] external/wpt/url/IdnaTestV2.window.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/css/css-box/margin-trim/block-container-non-adjoining-item.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-box/margin-trim/flex-block-end-trimmed-only.html [ Failure ]
@@ -3510,7 +3519,6 @@ crbug.com/764235 external/wpt/css/css-grid/alignment/grid-baseline-align-001.htm
 crbug.com/764235 external/wpt/css/css-grid/alignment/grid-baseline-justify-001.html [ Failure ]
 
 # [css-subgrid]
-crbug.com/618969 external/wpt/css/css-grid/subgrid/abs-pos-002.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/auto-track-sizing-001.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/auto-track-sizing-002.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/baseline-001.html [ Crash Failure ]
@@ -3518,20 +3526,15 @@ crbug.com/618969 external/wpt/css/css-grid/subgrid/grid-gap-001.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/grid-gap-002.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/grid-gap-003.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/grid-gap-004.html [ Failure ]
-crbug.com/618969 external/wpt/css/css-grid/subgrid/grid-gap-005.html [ Failure ]
-crbug.com/618969 external/wpt/css/css-grid/subgrid/grid-gap-006.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/grid-gap-007.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/grid-gap-008.html [ Failure ]
-crbug.com/618969 external/wpt/css/css-grid/subgrid/grid-gap-009.html [ Failure ]
-crbug.com/618969 external/wpt/css/css-grid/subgrid/grid-gap-010.html [ Failure ]
-crbug.com/618969 external/wpt/css/css-grid/subgrid/grid-gap-011.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/grid-gap-larger-001.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/grid-gap-larger-002.html [ Failure ]
-crbug.com/618969 external/wpt/css/css-grid/subgrid/grid-gap-normal-001.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/grid-gap-smaller-001.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/independent-formatting-context.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/item-percentage-height-001.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/line-names-007.html [ Failure ]
+crbug.com/618969 external/wpt/css/css-grid/subgrid/line-names-012.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/orthogonal-writing-mode-001.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/orthogonal-writing-mode-002.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/orthogonal-writing-mode-003.html [ Failure ]
@@ -6659,7 +6662,6 @@ crbug.com/1412866 http/tests/inspector-protocol/tracing/advanced-painting-instru
 # Sheriff 2023-02-14
 crbug.com/1414978 external/wpt/webrtc/RTCPeerConnection-GC.https.html [ Failure Pass ]
 crbug.com/1417178 [ Linux ] external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/same-document-traversal-cross-document-nav.html [ Failure Pass ]
-crbug.com/1416271 [ Linux ] external/wpt/js-self-profiling/time-domain.window.html [ Failure Pass ]
 
 # By default, WPTs run with "RTCLegacyCallbackBasedGetStats" enabled, which
 # suppresses the warning that is expected in this test causing it to timeout.
@@ -6691,3 +6693,19 @@ crbug.com/1428795 [ Linux ] external/wpt/dom/events/Event-dispatch-on-disabled-e
 
 crbug.com/1430357 [ Mac ] virtual/view-transition/external/wpt/css/css-view-transitions/massive-element-* [ Failure Pass ]
 crbug.com/1430357 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/massive-element-* [ Failure Pass ]
+
+# Sheriff 2023-04-05
+crbug.com/1430215 external/wpt/dom/events/scrolling/scrollend-event-fired-to-window.html [ Failure Pass ]
+crbug.com/1430986 http/tests/inspector-protocol/tracing/page-load-metrics.js [ Failure Pass Timeout ]
+
+# Sheriff 2023-04-06
+crbug.com/1362106 [ Linux ] media/video-source-error-no-candidate.html [ Failure Pass ]
+crbug.com/1362106 [ Linux ] media/video-source.html [ Failure Pass ]
+crbug.com/1430215 external/wpt/dom/events/scrolling/overscroll-deltas.html [ Failure Pass ]
+crbug.com/1431085 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-source-media.html [ Failure Pass ]
+
+# Sheriff 2023-04-07
+crbug.com/1431236 external/wpt/long-animation-frame/tentative/loaf-user-callback.html [ Failure Pass ]
+crbug.com/1416265 external/wpt/js-self-profiling/class-names.https.html [ Crash Pass ]
+crbug.com/1416265 external/wpt/js-self-profiling/cross-origin-script-no-cors.sub.html [ Crash Pass ]
+crbug.com/1416271 external/wpt/js-self-profiling/time-domain.window.html [ Crash Failure Pass ]

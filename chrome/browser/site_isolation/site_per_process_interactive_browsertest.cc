@@ -632,13 +632,9 @@ namespace {
 
 // Helper to retrieve the frame's (window.innerWidth, window.innerHeight).
 gfx::Size GetFrameSize(content::RenderFrameHost* frame) {
-  int width = 0;
-  EXPECT_TRUE(ExecuteScriptAndExtractInt(
-      frame, "domAutomationController.send(window.innerWidth);", &width));
+  int width = EvalJs(frame, "window.innerWidth;").ExtractInt();
 
-  int height = 0;
-  EXPECT_TRUE(ExecuteScriptAndExtractInt(
-      frame, "domAutomationController.send(window.innerHeight);", &height));
+  int height = EvalJs(frame, "window.innerHeight;").ExtractInt();
 
   return gfx::Size(width, height);
 }

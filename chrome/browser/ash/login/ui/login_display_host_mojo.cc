@@ -9,7 +9,9 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/cpp/login_screen.h"
+#include "ash/public/cpp/login_screen_model.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/system/model/enterprise_domain_model.h"
@@ -57,7 +59,7 @@
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "components/version_info/version_info.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
@@ -79,18 +81,21 @@ bool AllAllowlistedUsersPresent() {
   CrosSettings* cros_settings = CrosSettings::Get();
   bool allow_new_user = false;
   cros_settings->GetBoolean(kAccountsPrefAllowNewUser, &allow_new_user);
-  if (allow_new_user)
+  if (allow_new_user) {
     return false;
+  }
 
   bool allow_family_link = false;
   cros_settings->GetBoolean(kAccountsPrefFamilyLinkAccountsAllowed,
                             &allow_family_link);
-  if (allow_family_link)
+  if (allow_family_link) {
     return false;
+  }
 
   const base::Value::List* allowlist = nullptr;
-  if (!cros_settings->GetList(kAccountsPrefUsers, &allowlist) || !allowlist)
+  if (!cros_settings->GetList(kAccountsPrefUsers, &allowlist) || !allowlist) {
     return false;
+  }
   for (const base::Value& i : *allowlist) {
     const std::string* allowlisted_user = i.GetIfString();
     // NB: Wildcards in the allowlist are also detected as not present here.
@@ -132,6 +137,35 @@ bool IsLazyWebUILoadingEnabled() {
   return true;
 }
 
+void ShowOwnerPod(const AccountId& owner) {
+  const user_manager::User* device_owner =
+      user_manager::UserManager::Get()->FindUser(owner);
+  CHECK(device_owner);
+
+  std::vector<LoginUserInfo> user_info_list;
+  LoginUserInfo user_info;
+  user_info.basic_user_info.type = device_owner->GetType();
+  user_info.basic_user_info.account_id = device_owner->GetAccountId();
+  user_info.basic_user_info.display_name =
+      base::UTF16ToUTF8(device_owner->GetDisplayName());
+  user_info.basic_user_info.display_email = device_owner->display_email();
+  user_info.basic_user_info.avatar =
+      UserSelectionScreen::BuildAshUserAvatarForUser(*device_owner);
+  user_info.auth_type = proximity_auth::mojom::AuthType::OFFLINE_PASSWORD;
+  user_info.is_signed_in = device_owner->is_logged_in();
+  user_info.is_device_owner = true;
+  user_info.can_remove = false;
+  user_info_list.push_back(user_info);
+
+  LoginScreen::Get()->GetModel()->SetUserList(user_info_list);
+  LoginScreen::Get()->SetAllowLoginAsGuest(false);
+  LoginScreen::Get()->EnableAddUserButton(false);
+
+  // Disable PIN.
+  LoginScreen::Get()->GetModel()->SetPinEnabledForUser(owner,
+                                                       /*enabled=*/false);
+}
+
 }  // namespace
 
 LoginDisplayHostMojo::AuthState::AuthState(
@@ -165,8 +199,9 @@ LoginDisplayHostMojo::LoginDisplayHostMojo(DisplayedScreen displayed_screen)
 LoginDisplayHostMojo::~LoginDisplayHostMojo() {
   scoped_activity_observation_.Reset();
   LoginScreenClientImpl::Get()->SetDelegate(nullptr);
-  if (!dialog_)
+  if (!dialog_) {
     return;
+  }
 
   GetLoginScreenCertProviderService()
       ->pin_dialog_manager()
@@ -224,10 +259,11 @@ void LoginDisplayHostMojo::StartBrowserDataMigration() {
 
 void LoginDisplayHostMojo::HandleDisplayCaptivePortal() {
   EnsureOobeDialogLoaded();
-  if (dialog_->IsVisible())
+  if (dialog_->IsVisible()) {
     GetOobeUI()->GetErrorScreen()->FixCaptivePortal();
-  else
+  } else {
     dialog_->SetShouldDisplayCaptivePortal(true);
+  }
 }
 
 LoginDisplay* LoginDisplayHostMojo::GetLoginDisplay() {
@@ -235,16 +271,18 @@ LoginDisplay* LoginDisplayHostMojo::GetLoginDisplay() {
 }
 
 ExistingUserController* LoginDisplayHostMojo::GetExistingUserController() {
-  if (!existing_user_controller_)
+  if (!existing_user_controller_) {
     CreateExistingUserController();
+  }
   return existing_user_controller_.get();
 }
 
 gfx::NativeWindow LoginDisplayHostMojo::GetNativeWindow() const {
   // We can't access the login widget because it's in ash, return the native
   // window of the dialog widget if it exists.
-  if (!dialog_)
+  if (!dialog_) {
     return nullptr;
+  }
   return dialog_->GetNativeWindow();
 }
 
@@ -253,14 +291,16 @@ views::Widget* LoginDisplayHostMojo::GetLoginWindowWidget() const {
 }
 
 OobeUI* LoginDisplayHostMojo::GetOobeUI() const {
-  if (!dialog_)
+  if (!dialog_) {
     return nullptr;
+  }
   return dialog_->GetOobeUI();
 }
 
 content::WebContents* LoginDisplayHostMojo::GetOobeWebContents() const {
-  if (!dialog_)
+  if (!dialog_) {
     return nullptr;
+  }
   return dialog_->GetWebContents();
 }
 
@@ -270,8 +310,9 @@ WebUILoginView* LoginDisplayHostMojo::GetWebUILoginView() const {
 }
 
 void LoginDisplayHostMojo::OnFinalize() {
-  if (dialog_)
+  if (dialog_) {
     dialog_->Close();
+  }
 
   ShutdownDisplayHost();
 }
@@ -379,8 +420,9 @@ void LoginDisplayHostMojo::OnStartAppLaunch() {
 
 void LoginDisplayHostMojo::OnBrowserCreated() {
   base::TimeTicks startup_time = startup_metric_utils::MainEntryPointTicks();
-  if (startup_time.is_null())
+  if (startup_time.is_null()) {
     return;
+  }
   base::TimeDelta delta = base::TimeTicks::Now() - startup_time;
   UMA_HISTOGRAM_CUSTOM_TIMES("OOBE.BootToSignInCompleted", delta,
                              base::Milliseconds(10), base::Minutes(30), 100);
@@ -432,6 +474,10 @@ void LoginDisplayHostMojo::HideOobeDialog(bool saml_page_closed) {
 
   user_selection_screen_->OnBeforeShow();
   LoadWallpaper(focused_pod_account_id_);
+  if (features::IsInputDeviceSettingsSplitEnabled()) {
+    InputDeviceSettingsController::Get()->OnLoginScreenFocusedPodChanged(
+        focused_pod_account_id_);
+  }
   HideDialog();
 
   // If the OOBE dialog was hidden due to closing of the SAML page (camera
@@ -451,8 +497,9 @@ void LoginDisplayHostMojo::SetShelfButtonsEnabled(bool enabled) {
 }
 
 void LoginDisplayHostMojo::UpdateOobeDialogState(OobeDialogState state) {
-  if (dialog_)
+  if (dialog_) {
     dialog_->SetState(state);
+  }
 }
 
 void LoginDisplayHostMojo::UpdateAddUserButtonStatus() {
@@ -477,7 +524,7 @@ void LoginDisplayHostMojo::VerifyOwnerForKiosk(base::OnceClosure on_success) {
   owner_verified_callback_ = std::move(on_success);
   owner_account_id_ = user_manager::UserManager::Get()->GetOwnerAccountId();
   CHECK(owner_account_id_.is_valid());
-  login_display_->ShowOwnerPod(owner_account_id_);
+  ShowOwnerPod(owner_account_id_);
   HideOobeDialog();
 }
 
@@ -509,13 +556,15 @@ void LoginDisplayHostMojo::ShowEnableConsumerKioskScreen() {
 bool LoginDisplayHostMojo::GetKeyboardRemappedPrefValue(
     const std::string& pref_name,
     int* value) const {
-  if (!focused_pod_account_id_.is_valid())
+  if (!focused_pod_account_id_.is_valid()) {
     return false;
+  }
   user_manager::KnownUser known_user(g_browser_process->local_state());
   absl::optional<int> opt_val =
       known_user.FindIntPath(focused_pod_account_id_, pref_name);
-  if (value && opt_val.has_value())
+  if (value && opt_val.has_value()) {
     *value = opt_val.value();
+  }
   return opt_val.has_value();
 }
 
@@ -598,8 +647,14 @@ void LoginDisplayHostMojo::HandleAuthenticateUserWithChallengeResponse(
 void LoginDisplayHostMojo::HandleOnFocusPod(const AccountId& account_id) {
   user_selection_screen_->HandleFocusPod(account_id);
   WallpaperControllerClientImpl::Get()->ShowUserWallpaper(account_id);
-  if (focused_pod_account_id_ != account_id)
+  if (features::IsInputDeviceSettingsSplitEnabled()) {
+    InputDeviceSettingsController::Get()->OnLoginScreenFocusedPodChanged(
+        account_id);
+  }
+
+  if (focused_pod_account_id_ != account_id) {
     MaybeUpdateOfflineLoginLinkVisibility(account_id);
+  }
   focused_pod_account_id_ = account_id;
 }
 
@@ -615,8 +670,9 @@ bool LoginDisplayHostMojo::HandleFocusLockScreenApps(bool reverse) {
 }
 
 void LoginDisplayHostMojo::HandleFocusOobeDialog() {
-  if (!dialog_->IsVisible())
+  if (!dialog_->IsVisible()) {
     return;
+  }
 
   dialog_->GetWebContents()->Focus();
 }
@@ -681,8 +737,9 @@ void LoginDisplayHostMojo::OnOldEncryptionDetected(
 void LoginDisplayHostMojo::OnCurrentScreenChanged(OobeScreenId current_screen,
                                                   OobeScreenId new_screen) {
   DCHECK(dialog_);
-  if (!dialog_->IsVisible())
+  if (!dialog_->IsVisible()) {
     ShowDialog();
+  }
 }
 
 void LoginDisplayHostMojo::OnDestroyingOobeUI() {
@@ -692,8 +749,9 @@ void LoginDisplayHostMojo::OnDestroyingOobeUI() {
 // views::ViewObserver:
 void LoginDisplayHostMojo::OnViewBoundsChanged(views::View* observed_view) {
   DCHECK(scoped_observation_.IsObservingSource(observed_view));
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.WebDialogViewBoundsChanged(observed_view->GetBoundsInScreen());
+  }
 }
 
 void LoginDisplayHostMojo::OnViewIsDeleting(views::View* observed_view) {
@@ -711,8 +769,9 @@ OobeUIDialogDelegate* LoginDisplayHostMojo::EnsureDialogForTest() {
 }
 
 void LoginDisplayHostMojo::EnsureOobeDialogLoaded() {
-  if (dialog_)
+  if (dialog_) {
     return;
+  }
 
   dialog_ = new OobeUIDialogDelegate(weak_factory_.GetWeakPtr());
 
@@ -766,8 +825,9 @@ void LoginDisplayHostMojo::ShowFullScreen() {
 }
 
 void LoginDisplayHostMojo::HideDialog() {
-  if (!dialog_)
+  if (!dialog_) {
     return;
+  }
 
   // Stop observing so that dialog will not be shown when a screen change
   // occurs. Screen changes can occur even when the dialog is not shown (e.g.
@@ -781,26 +841,30 @@ void LoginDisplayHostMojo::HideDialog() {
 }
 
 void LoginDisplayHostMojo::ObserveOobeUI() {
-  if (added_as_oobe_observer_)
+  if (added_as_oobe_observer_) {
     return;
+  }
 
   OobeUI* oobe_ui = GetOobeUI();
-  if (!oobe_ui)
+  if (!oobe_ui) {
     return;
+  }
 
   oobe_ui->AddObserver(this);
   added_as_oobe_observer_ = true;
 }
 
 void LoginDisplayHostMojo::StopObservingOobeUI() {
-  if (!added_as_oobe_observer_)
+  if (!added_as_oobe_observer_) {
     return;
+  }
 
   added_as_oobe_observer_ = false;
 
   OobeUI* oobe_ui = GetOobeUI();
-  if (oobe_ui)
+  if (oobe_ui) {
     oobe_ui->RemoveObserver(this);
+  }
 }
 
 void LoginDisplayHostMojo::CreateExistingUserController() {
@@ -813,8 +877,9 @@ void LoginDisplayHostMojo::CreateExistingUserController() {
 void LoginDisplayHostMojo::CheckOwnerCredentials(
     const UserContext& user_context) {
   CHECK_EQ(owner_account_id_, user_context.GetAccountId());
-  if (!extended_authenticator_)
+  if (!extended_authenticator_) {
     extended_authenticator_ = ExtendedAuthenticator::Create(this);
+  }
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -855,8 +920,10 @@ void LoginDisplayHostMojo::MaybeUpdateOfflineLoginLinkVisibility(
 void LoginDisplayHostMojo::OnUserActivity(const ui::Event* event) {
   // ESC button can be used to hide login dialog when SAML is configured.
   // Prevent reopening it with ESC.
-  if (event->IsKeyEvent() && event->AsKeyEvent()->key_code() == ui::VKEY_ESCAPE)
+  if (event && (event->IsKeyEvent() &&
+                event->AsKeyEvent()->key_code() == ui::VKEY_ESCAPE)) {
     return;
+  }
   scoped_activity_observation_.Reset();
   ShowGaiaDialog(EmptyAccountId());
 }
@@ -865,8 +932,9 @@ void LoginDisplayHostMojo::OnDeviceSettingsChanged() {
   // Update status of add user button in the shelf.
   UpdateAddUserButtonStatus();
 
-  if (!dialog_)
+  if (!dialog_) {
     return;
+  }
 
   // Reload Gaia.
   GaiaScreen* gaia_screen = GetWizardController()->GetScreen<GaiaScreen>();

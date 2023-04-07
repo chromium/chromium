@@ -19,7 +19,7 @@ class MockLoginDisplay : public LoginDisplay {
 
   ~MockLoginDisplay() override;
 
-  MOCK_METHOD(void, Init, (const user_manager::UserList&, bool), (override));
+  MOCK_METHOD(void, Init, (const user_manager::UserList&), (override));
   MOCK_METHOD(void, SetUIEnabled, (bool), (override));
 };
 

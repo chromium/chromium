@@ -38,7 +38,7 @@ import {Route, Router} from '../router.js';
 import {getTemplate} from './os_a11y_page.html.js';
 import {OsA11yPageBrowserProxy, OsA11yPageBrowserProxyImpl} from './os_a11y_page_browser_proxy.js';
 
-interface OsSettingsA11yPageElement {
+export interface OsSettingsA11yPageElement {
   $: {
     a11yImageLabels: SettingsToggleButtonElement,
   };
@@ -47,7 +47,7 @@ interface OsSettingsA11yPageElement {
 const OsSettingsA11yPageElementBase = DeepLinkingMixin(
     RouteOriginMixin(PrefsMixin(WebUiListenerMixin(PolymerElement))));
 
-class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
+export class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
   static get is() {
     return 'os-settings-a11y-page';
   }

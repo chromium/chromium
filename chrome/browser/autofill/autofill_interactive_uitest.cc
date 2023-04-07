@@ -1246,9 +1246,7 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
   // show if it's going to. If it does show, an assert in
   // BrowserAutofillManagerTestDelegateImpl will trigger.
   void MakeSurePopupDoesntAppear() {
-    int unused;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-        GetWebContents(), "domAutomationController.send(42)", &unused));
+    EXPECT_EQ(42, content::EvalJs(GetWebContents(), "42"));
   }
 
   void SimulateKeyPress(const ui::DomKey& dom_key,
@@ -2129,12 +2127,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, InputFiresBeforeChange) {
                                 kEmptyAddress, {"firstname", "M"}))}));
   EXPECT_THAT(GetFormValues(), ValuesAre(kDefaultAddress));
 
-  int num_input_element_events = -1;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-      GetWebContents(),
-      "domAutomationController.send(inputElementEvents.length);",
-      &num_input_element_events));
-  EXPECT_EQ(2, num_input_element_events);
+  EXPECT_EQ(2, content::EvalJs(GetWebContents(), "inputElementEvents.length;"));
 
   std::vector<std::string> input_element_events;
   input_element_events.resize(2);
@@ -2149,12 +2142,8 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, InputFiresBeforeChange) {
   EXPECT_EQ("input", input_element_events[0]);
   EXPECT_EQ("change", input_element_events[1]);
 
-  int num_select_element_events = -1;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-      GetWebContents(),
-      "domAutomationController.send(selectElementEvents.length);",
-      &num_select_element_events));
-  EXPECT_EQ(2, num_select_element_events);
+  EXPECT_EQ(2,
+            content::EvalJs(GetWebContents(), "selectElementEvents.length;"));
 
   std::vector<std::string> select_element_events;
   select_element_events.resize(2);

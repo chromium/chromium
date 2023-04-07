@@ -7,9 +7,11 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import './strings.m.js';
 
-import {SmbBrowserProxy, SmbBrowserProxyImpl} from 'chrome://resources/ash/common/smb_shares/smb_browser_proxy.js';
-import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
+import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {SmbBrowserProxy, SmbBrowserProxyImpl} from 'chrome://resources/ash/common/smb_shares/smb_browser_proxy.js';
+import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
@@ -50,7 +52,7 @@ Polymer({
   attached() {
     const dialogArgs = chrome.getVariableValue('dialogArguments');
     assert(dialogArgs);
-    var args = JSON.parse(dialogArgs);
+    const args = JSON.parse(dialogArgs);
     assert(args);
     assert(args.path);
     assert(args.mid);
@@ -71,4 +73,11 @@ Polymer({
         this.mountId_, this.username_, this.password_);
     chrome.send('dialogClose');
   },
+});
+
+window.addEventListener('load', () => {
+  const jellyEnabled = loadTimeData.getBoolean('isJelly');
+  const theme = jellyEnabled ? 'refresh23' : 'legacy';
+  document.documentElement.setAttribute('theme', theme);
+  startColorChangeUpdater();
 });

@@ -223,8 +223,7 @@ TEST_F(ResolvedFrameDataTest, MarkAsUsed) {
   EXPECT_TRUE(resolved_frame.WasUsedInAggregation());
 
   // This is the first frame this aggregation.
-  EXPECT_FALSE(resolved_frame.IsSameFrameAsLastAggregation());
-  EXPECT_FALSE(resolved_frame.IsNextFrameSinceLastAggregation());
+  EXPECT_EQ(resolved_frame.GetFrameDamageType(), FrameDamageType::kFull);
 
   // Nothing changes if MarkAsUsedInAggregation() is called more than once
   // before reset.
@@ -238,8 +237,7 @@ TEST_F(ResolvedFrameDataTest, MarkAsUsed) {
   // Don't submit a new frame for the next aggregation.
   resolved_frame.MarkAsUsedInAggregation();
   EXPECT_TRUE(resolved_frame.WasUsedInAggregation());
-  EXPECT_TRUE(resolved_frame.IsSameFrameAsLastAggregation());
-  EXPECT_FALSE(resolved_frame.IsNextFrameSinceLastAggregation());
+  EXPECT_EQ(resolved_frame.GetFrameDamageType(), FrameDamageType::kNone);
 
   resolved_frame.ResetAfterAggregation();
 
@@ -248,8 +246,7 @@ TEST_F(ResolvedFrameDataTest, MarkAsUsed) {
   resolved_frame.UpdateForActiveFrame(render_pass_id_generator_);
   resolved_frame.MarkAsUsedInAggregation();
 
-  EXPECT_FALSE(resolved_frame.IsSameFrameAsLastAggregation());
-  EXPECT_TRUE(resolved_frame.IsNextFrameSinceLastAggregation());
+  EXPECT_EQ(resolved_frame.GetFrameDamageType(), FrameDamageType::kFrame);
 
   resolved_frame.ResetAfterAggregation();
 
@@ -259,8 +256,7 @@ TEST_F(ResolvedFrameDataTest, MarkAsUsed) {
   SubmitCompositorFrame(MakeSimpleFrame());
   resolved_frame.UpdateForActiveFrame(render_pass_id_generator_);
   resolved_frame.MarkAsUsedInAggregation();
-  EXPECT_FALSE(resolved_frame.IsSameFrameAsLastAggregation());
-  EXPECT_FALSE(resolved_frame.IsNextFrameSinceLastAggregation());
+  EXPECT_EQ(resolved_frame.GetFrameDamageType(), FrameDamageType::kFull);
 }
 
 // Verifies that SetFullDamageForNextAggregation()
@@ -284,8 +280,7 @@ TEST_F(ResolvedFrameDataTest, SetFullDamageNextAggregation) {
   // This is the next frame so normally it would use `damage_rect` for damage.
   // SetFullDamageForNextAggregation() changes that so the full output_rect is
   // damaged.
-  EXPECT_FALSE(resolved_frame.IsNextFrameSinceLastAggregation());
-  EXPECT_FALSE(resolved_frame.IsSameFrameAsLastAggregation());
+  EXPECT_EQ(resolved_frame.GetFrameDamageType(), FrameDamageType::kFull);
   EXPECT_EQ(resolved_frame.GetSurfaceDamage(), kOutputRect);
 }
 

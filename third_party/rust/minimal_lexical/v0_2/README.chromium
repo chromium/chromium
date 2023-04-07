@@ -1,6 +1,0 @@
-Name: minimal-lexical
-URL: https://crates.io/crates/minimal-lexical
-Description: Fast float parsing conversion routines.
-Version: 0.2.1
-Security Critical: no
-License: Apache 2.0

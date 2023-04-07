@@ -117,10 +117,10 @@ dependencies {
 
     // Needed by androidx and by doubledown targets.
     // Note: These have version overrides set in ChromiumDepGraph.groovy.
-    compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1"
-    compile "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.1"
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0"
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0"
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.20"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.20"
 
     // Needed by androidx.macrobenchmarks
     androidTestCompile "com.squareup.wire:wire-runtime-jvm:4.4.3"

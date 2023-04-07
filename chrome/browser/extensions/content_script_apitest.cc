@@ -581,14 +581,8 @@ IN_PROC_BROWSER_TEST_F(ContentScriptCssInjectionTest,
   };
   // Returns the number of stylesheets attached to the document.
   auto get_style_sheet_count = [&get_active_tab]() {
-    int count = -1;
-    constexpr char kGetStyleSheetCount[] =
-        "domAutomationController.send(document.styleSheets.length);";
-    if (!content::ExecuteScriptAndExtractInt(get_active_tab(),
-                                             kGetStyleSheetCount, &count)) {
-      return -1;
-    }
-    return count;
+    constexpr char kGetStyleSheetCount[] = "document.styleSheets.length;";
+    return content::EvalJs(get_active_tab(), kGetStyleSheetCount).ExtractInt();
   };
 
   // CSS injection should be allowed on an unprivileged web page that matches

@@ -179,36 +179,43 @@ bool InitializeLocalFileSystem(std::string mount_point_name,
                                base::ScopedTempDir* tmp_dir,
                                base::FilePath* mount_point_dir,
                                const std::vector<TestDirConfig>& dir_contents) {
-  if (!tmp_dir->CreateUniqueTempDir())
+  if (!tmp_dir->CreateUniqueTempDir()) {
     return false;
+  }
 
   *mount_point_dir = tmp_dir->GetPath().AppendASCII(mount_point_name);
   // Create the mount point.
-  if (!base::CreateDirectory(*mount_point_dir))
+  if (!base::CreateDirectory(*mount_point_dir)) {
     return false;
+  }
 
   constexpr TestDirConfig kTestDir = {"2012-01-02T00:00:00.000Z",
                                       "2012-01-02T00:00:01.000Z", "test_dir",
                                       nullptr};
 
   const base::FilePath test_dir = mount_point_dir->AppendASCII(kTestDir.name);
-  if (!base::CreateDirectory(test_dir))
+  if (!base::CreateDirectory(test_dir)) {
     return false;
+  }
 
   for (const auto& file : dir_contents) {
     const base::FilePath test_path = test_dir.AppendASCII(file.name);
     if (file.contents) {
-      if (!google_apis::test_util::WriteStringToFile(test_path, file.contents))
+      if (!google_apis::test_util::WriteStringToFile(test_path,
+                                                     file.contents)) {
         return false;
+      }
     } else {
-      if (!base::CreateDirectory(test_path))
+      if (!base::CreateDirectory(test_path)) {
         return false;
+      }
     }
   }
 
   for (const auto& file : dir_contents) {
-    if (!TouchFile(test_dir.Append(file.name), file.mtime, file.atime))
+    if (!TouchFile(test_dir.Append(file.name), file.mtime, file.atime)) {
       return false;
+    }
   }
 
   // Touch the directory holding all the contents last.

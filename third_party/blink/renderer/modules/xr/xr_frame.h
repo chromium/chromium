@@ -56,10 +56,20 @@ class XRFrame final : public ScriptWrappable {
 
   XRSession* session() const { return session_; }
 
-  XRViewerPose* getViewerPose(XRReferenceSpace*, ExceptionState&);
-  XRPose* getPose(XRSpace*, XRSpace*, ExceptionState&);
+  // Returns basespace_from_viewer.
+  XRViewerPose* getViewerPose(XRReferenceSpace* basespace,
+                              ExceptionState& exception_state);
+
+  // Return an XRPose that has a transform of basespace_from_space, while
+  // accounting for the base pose matrix of this frame. If computing a transform
+  // isn't possible, return nullptr.
+  XRPose* getPose(XRSpace* space,
+                  XRSpace* basespace,
+                  ExceptionState& exception_state);
+
   XRAnchorSet* trackedAnchors() const;
-  XRLightEstimate* getLightEstimate(XRLightProbe*, ExceptionState&) const;
+  XRLightEstimate* getLightEstimate(XRLightProbe* light_probe,
+                                    ExceptionState& exception_state) const;
   XRCPUDepthInformation* getDepthInformation(
       XRView* view,
       ExceptionState& exception_state) const;

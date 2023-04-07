@@ -62,15 +62,7 @@ IN_PROC_BROWSER_TEST_P(HistoryApiTest, TimedSearch) {
   ASSERT_TRUE(RunExtensionTest("history/regular/timed_search")) << message_;
 }
 
-// TODO(crbug.com/1423419): This tests fails when the extension uses a
-// service worker. Only run the legacy background page version for now.
-using HistoryApiBackgroundPageTest = HistoryApiTest;
-
-INSTANTIATE_TEST_SUITE_P(PersistentBackground,
-                         HistoryApiBackgroundPageTest,
-                         ::testing::Values(ContextType::kPersistentBackground));
-
-IN_PROC_BROWSER_TEST_P(HistoryApiBackgroundPageTest, Delete) {
+IN_PROC_BROWSER_TEST_P(HistoryApiTest, Delete) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("history/regular/delete")) << message_;
 }

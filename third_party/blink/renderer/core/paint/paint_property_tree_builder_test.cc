@@ -375,7 +375,11 @@ TEST_P(PaintPropertyTreeBuilderTest, OverflowScrollExcludeCssOverlayScrollbar) {
   )HTML");
   // The document content should not be clipped by the overlay scrollbar because
   // the scrollbar can be transparent and the content needs to paint below.
-  EXPECT_CLIP_RECT(FloatRoundedRect(0, 0, 800, 600), DocContentClip());
+  if (RuntimeEnabledFeatures::OverflowOverlayAliasesAutoEnabled()) {
+    EXPECT_CLIP_RECT(FloatRoundedRect(0, 0, 600, 600), DocContentClip());
+  } else {
+    EXPECT_CLIP_RECT(FloatRoundedRect(0, 0, 800, 600), DocContentClip());
+  }
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, OverflowScrollVerticalRL) {

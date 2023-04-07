@@ -181,11 +181,6 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
       const NGPhysicalBoxStrut& border_padding,
       const LayoutSize* overridden_intrinsic_size = nullptr) const;
 
-  LayoutUnit IntrinsicContentLogicalHeight() const override {
-    NOT_DESTROYED();
-    return IntrinsicLogicalHeight();
-  }
-
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
   void SetIntrinsicSize(const LayoutSize& intrinsic_size) {

@@ -20,6 +20,7 @@
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> immer übersetzen</translation>
 <translation id="110724200315609752">Zu offenem Fenster wechseln</translation>
 <translation id="1112015203684611006">Fehler beim Drucken.</translation>
+<translation id="1118266931011974190">Nach <ph name="THRESHOLD" /> Tagen</translation>
 <translation id="1125564390852150847">Neuen Tab erstellen.</translation>
 <translation id="1126013303640354461">Zahlungsmethoden und Adressen bei Google Pay werden nicht verschlüsselt. Der Chrome-Browserverlauf wird nicht synchronisiert.
 Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten lesen. Die Passphrase wird nicht an Google gesendet oder von Google gespeichert. Falls du sie vergessen hast oder diese Einstellung ändern möchtest, musst du die Synchronisierung zurücksetzen. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
@@ -205,7 +206,6 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="2411749908844615428">{count,plural, =1{{count} gespeicherte Adresse oben auf der Tastatur verfügbar.}other{{count} gespeicherte Adressen oben auf der Tastatur verfügbar.}}</translation>
 <translation id="2421004566762153674">Drittanbieter-Cookies werden blockiert</translation>
 <translation id="2421044535038393232">Weiter bearbeiten</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} gehacktes Passwort}other{{COUNT} gehackte Passwörter}}</translation>
 <translation id="2434405374328098816">Du hast für „<ph name="USERNAME" />“ schon ein Passwort bei <ph name="WEBSITE" /> gespeichert</translation>
 <translation id="2435457462613246316">Passwort anzeigen</translation>
 <translation id="2451654228769116489">Tab anpinnen</translation>
@@ -217,6 +217,7 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="2482878487686419369">Benachrichtigungen</translation>
 <translation id="2496626742194544812">Zum ersten Tab</translation>
 <translation id="2500374554657206846">Optionen zum Speichern von Passwörtern</translation>
+<translation id="2502415369140591438"><ph name="COUNT" /> wiederverwendete Passwörter</translation>
 <translation id="2523363575747517183">Diese Website versucht wiederholt, eine andere App zu öffnen.</translation>
 <translation id="2529021024822217800">Alle öffnen</translation>
 <translation id="2547458583188611426">Synchronisierung funktioniert nicht. Gib deine Passphrase ein, um die Synchronisierung zu starten.</translation>
@@ -232,6 +233,7 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="2626236249646841566">Prüfe deine Verbindung und versuche es noch einmal.</translation>
 <translation id="2637313651144986786">Tabs suchen…</translation>
 <translation id="2647269890314209800">Verwendete Cookies</translation>
+<translation id="2648721026697078500">Nie verschieben</translation>
 <translation id="2648803196158606475">Gelesene löschen</translation>
 <translation id="2653659639078652383">Senden</translation>
 <translation id="2664621323652615289">Beenden</translation>
@@ -255,7 +257,6 @@ Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum L�
 <translation id="2718352093833049315">Nur bei WLAN</translation>
 <translation id="2747003861858887689">Vorheriges Feld</translation>
 <translation id="2749231692441336879">Du folgst <ph name="CHANNEL_NAME" /></translation>
-<translation id="2764831210418622012">gerade eben</translation>
 <translation id="2772667768515195373">Du kannst gespeicherte Adressen in allen Google-Produkten verwenden. Diese Adresse ist in deinem Google-Konto (<ph name="USER_EMAIL" />) gespeichert.</translation>
 <translation id="2773292004659987824">Inkognitosuche</translation>
 <translation id="277771892408211951">Sprache wählen</translation>
@@ -293,6 +294,7 @@ Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum L�
 <translation id="2932085390869194046">Passwort vorschlagen…</translation>
 <translation id="2932765531295814441">Passwörter manuell hinzufügen</translation>
 <translation id="2952581218264071393">1. Öffne die Chrome-Einstellungen</translation>
+<translation id="2953871438216280742">Melde dich an, um deine Leseliste in deinem Google-Konto zu öffnen und zu speichern.</translation>
 <translation id="2958718410589002129">Passwörter</translation>
 <translation id="2961210776189273067">Anrede</translation>
 <translation id="2964349545761222050">Drittanbieter-Cookies blockieren</translation>
@@ -347,6 +349,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3305294846493618482">mehr</translation>
 <translation id="3311748811247479259">Aus</translation>
 <translation id="3324193307694657476">Adresse 2</translation>
+<translation id="3328459813621383194">Inaktive Tabs verschieben</translation>
 <translation id="3328801116991980348">Websiteinformationen</translation>
 <translation id="3371831930909698441">Übersetzer ist verfügbar. Optionen sind unten auf dem Bildschirm verfügbar.</translation>
 <translation id="3377063233124932127">Deine gespeicherten Lesezeichen, Passwörter und mehr werden jetzt oben angezeigt.</translation>
@@ -385,6 +388,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3581564640715911333">Übersetzung für Seiten in andere Sprachen anbieten</translation>
 <translation id="3588820906588687999">Bild in neuem Tab öffnen</translation>
 <translation id="3595252146048399851">In den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> kannst du auswählen, was synchronisiert werden soll. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
+<translation id="3595588371156514964">{COUNT,plural, =1{{COUNT} schwaches Passwort}other{{COUNT} schwache Passwörter}}</translation>
 <translation id="3603009562372709545">Link-URL kopieren</translation>
 <translation id="3607167657931203000">Autofill-Daten</translation>
 <translation id="3608008480985212611">Anmelden, um Einstellungen zu verwalten.</translation>
@@ -511,6 +515,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="452750746583162491">Synchronisierte Daten prüfen</translation>
 <translation id="4536418791685807335">Melde dich noch einmal an.</translation>
 <translation id="4540780316273593836">Ein Problem ist aufgetreten</translation>
+<translation id="4550040941166547650">Nur auf diesem Gerät</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{{COUNT} inaktiven Tab schließen?}other{{COUNT} inaktive Tabs schließen?}}</translation>
 <translation id="457386861538956877">Mehr...</translation>
 <translation id="4587235830039045480">Passwort in meinem Google-Konto speichern</translation>
@@ -621,6 +626,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5211488077761630279">Zulassen, dass „<ph name="SITE_NAME" />“ <ph name="PERMISSION" /> verwendet?</translation>
 <translation id="5219295696240154694">Dabei helfen, das Web für alle sicherer zu machen</translation>
+<translation id="5221339005270097309">Passwörter werden geprüft…</translation>
 <translation id="5228579091201413441">Synchronisierung aktivieren</translation>
 <translation id="5232485538978018676">Mit verwaltetem Konto anmelden</translation>
 <translation id="5234764350956374838">Schließen</translation>
@@ -660,6 +666,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein und deine Geräte müssen dasselbe iCloud-Konto verwenden.</translation>
 <translation id="5551897871312988470">Übersetzung anbieten</translation>
 <translation id="5556459405103347317">Neu laden</translation>
+<translation id="555749644339804659">Passwörter werden geprüft…</translation>
 <translation id="556042886152191864">Schaltfläche</translation>
 <translation id="5597915316964418992">Tab-Raster öffnen</translation>
 <translation id="560322036295180549">Von deiner Organisation deaktiviert</translation>
@@ -764,6 +771,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="6193424046394092997">{count,plural, =1{Lesezeichen in „{title}“ gespeichert}other{Lesezeichen in „{title}“ gespeichert}}</translation>
 <translation id="6196207969502475924">Sprachsuche</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} Tab schließen}other{{COUNT} Tabs schließen}}</translation>
+<translation id="6210079381482819663">Tabs, die <ph name="THRESHOLD" /> Tage oder länger nicht verwendet wurden, werden hierhin verschoben. Du kannst dies jederzeit <ph name="BEGIN_LINK" />in den Einstellungen<ph name="END_LINK" /> ändern.</translation>
 <translation id="6213567400989743524">Geschlossene Warnungen</translation>
 <translation id="6219550825416862075">Willkommen zurück</translation>
 <translation id="6219688215832490856">Nie übersetzen</translation>
@@ -919,7 +927,6 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Zuletzt geöffnete Tabs</translation>
 <translation id="7006788746334555276">Inhaltseinstellungen</translation>
-<translation id="7014087399239955356">Passwörter werden geprüft…</translation>
 <translation id="7029809446516969842">Passwörter</translation>
 <translation id="7053983685419859001">Blockieren</translation>
 <translation id="7062545763355031412">Akzeptieren und Konto wechseln</translation>
@@ -1059,6 +1066,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8059533439631660104">Abschnitt minimieren</translation>
 <translation id="8065292699993359127">URLs in Chrome im Inkognitomodus öffnen</translation>
 <translation id="806745655614357130">Daten getrennt halten</translation>
+<translation id="8069394452933076548">Lege fest, wann Tabs, die länger nicht verwendet wurden, in den Bereich „Inaktive Tabs“ verschoben werden sollen.</translation>
 <translation id="8073670137947914548">Download abgeschlossen</translation>
 <translation id="8073872304774253879">Suchanfragen und das Surfen verbessern</translation>
 <translation id="8076492880354921740">Tabs</translation>
@@ -1203,6 +1211,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="9055772144595778347">Anmeldefehler</translation>
 <translation id="9055960261314198756">Erweiterter Schutz ist deaktiviert</translation>
 <translation id="9057972802061533987">Folgen nicht möglich. Ein Fehler ist aufgetreten.</translation>
+<translation id="9061495354530850708">Im Google-Konto</translation>
 <translation id="9065203028668620118">Bearbeiten</translation>
 <translation id="9068336935206019333">Im Inkognitomodus von Chrome öffnen</translation>
 <translation id="9079935439869366234">Alle als ungelesen markieren</translation>

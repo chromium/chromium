@@ -172,7 +172,8 @@ class OmniboxAction : public base::RefCounted<OmniboxAction> {
   virtual OmniboxActionId ActionId() const;
 
 #if BUILDFLAG(IS_ANDROID)
-  virtual base::android::ScopedJavaGlobalRef<jobject> GetJavaObject() const;
+  virtual base::android::ScopedJavaLocalRef<jobject> GetOrCreateJavaObject(
+      JNIEnv* env) const;
 #endif
 
  protected:

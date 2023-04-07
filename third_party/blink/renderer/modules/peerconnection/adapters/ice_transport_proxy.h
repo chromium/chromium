@@ -77,6 +77,7 @@ class IceTransportProxy final {
   // Callbacks from RTCIceTransportHost.
   friend class IceTransportHost;
   void OnGatheringStateChanged(cricket::IceGatheringState new_state);
+  void OnCandidateGathered(const cricket::Candidate& candidate);
   void OnStateChanged(webrtc::IceTransportState new_state);
   void OnSelectedCandidatePairChanged(
       const std::pair<cricket::Candidate, cricket::Candidate>&

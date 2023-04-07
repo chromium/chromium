@@ -34,6 +34,7 @@
 #include "chrome/browser/ash/app_list/search/ranking/launch_data.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/ash/app_list/search/search_controller_factory.h"
+#include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/url_handler_ash.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -137,6 +138,10 @@ class ScopedIphSessionImpl : public ash::ScopedIphSession {
 
   ~ScopedIphSessionImpl() override { tracker_->Dismissed(iph_feature_); }
 
+  void NotifyEvent(const std::string& event) override {
+    tracker_->NotifyEvent(event);
+  }
+
  private:
   raw_ptr<feature_engagement::Tracker> tracker_;
   const base::Feature& iph_feature_;
@@ -207,6 +212,9 @@ void AppListClientImpl::OnAppListControllerDestroyed() {
 
 void AppListClientImpl::StartSearch(const std::u16string& trimmed_query) {
   if (search_controller_) {
+    if (search_features::isLauncherOmniboxPublishLogicLogEnabled()) {
+      LOG(ERROR) << "Launcher search start search with query " << trimmed_query;
+    }
     if (trimmed_query.empty()) {
       search_controller_->ClearSearch();
     } else {
@@ -231,6 +239,9 @@ void AppListClientImpl::StartSearch(const std::u16string& trimmed_query) {
 void AppListClientImpl::StartZeroStateSearch(base::OnceClosure on_done,
                                              base::TimeDelta timeout) {
   if (search_controller_) {
+    if (search_features::isLauncherOmniboxPublishLogicLogEnabled()) {
+      LOG(ERROR) << "Launcher search start zero state search";
+    }
     search_controller_->StartZeroState(std::move(on_done), timeout);
     OnSearchStarted();
   } else {
@@ -552,7 +563,7 @@ void AppListClientImpl::SetProfile(Profile* new_profile) {
 
   SetUpSearchUI();
   OnTemplateURLServiceChanged();
-  QueryWouldTriggerLauncherSearchIph();
+  RecalculateWouldTriggerLauncherSearchIph();
 }
 
 void AppListClientImpl::SetUpSearchUI() {
@@ -694,7 +705,7 @@ ash::AppListNotifier* AppListClientImpl::GetNotifier() {
   return app_list_notifier_.get();
 }
 
-void AppListClientImpl::QueryWouldTriggerLauncherSearchIph() {
+void AppListClientImpl::RecalculateWouldTriggerLauncherSearchIph() {
   // This can be called before a `Profile` is set to `AppListClientImpl`. If a
   // `Profile` is not set yet, return here. `AppListClientImpl::SetProfile` will
   // call this method once a `Profile` is set.
@@ -702,7 +713,7 @@ void AppListClientImpl::QueryWouldTriggerLauncherSearchIph() {
     return;
   }
 
-  current_model_updater_->QueryWouldTriggerLauncherSearchIph();
+  current_model_updater_->RecalculateWouldTriggerLauncherSearchIph();
 }
 
 std::unique_ptr<ash::ScopedIphSession>

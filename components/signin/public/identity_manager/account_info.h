@@ -25,7 +25,7 @@ extern const char kNoPictureURLFound[];
 
 // Stores the basic information about an account that is always known
 // about the account (from the moment it is added to the system until
-// it is removed). It will unfrequently, if ever, change.
+// it is removed). It will infrequently, if ever, change.
 struct CoreAccountInfo {
   CoreAccountInfo();
   ~CoreAccountInfo();

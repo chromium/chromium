@@ -66,6 +66,9 @@ class ASH_EXPORT ContinueTaskContainerView : public ui::ListModelObserver,
 
   size_t num_results() const { return num_results_; }
   size_t num_file_results() const { return num_file_results_; }
+  size_t num_desks_admin_template_results() const {
+    return num_desks_admin_template_results_;
+  }
 
   void SetResults(SearchModel::SearchResults* results);
 
@@ -187,6 +190,9 @@ class ASH_EXPORT ContinueTaskContainerView : public ui::ListModelObserver,
   // continue section, so `num_files_results_` should be used to determine
   // whether continue section can be shown.
   size_t num_file_results_ = 0;
+
+  // The number of admin templates will be shown in the continue section.
+  size_t num_desks_admin_template_results_ = 0;
 
   // The number of columns available for the view. This is ignored in tablet
   // mode.

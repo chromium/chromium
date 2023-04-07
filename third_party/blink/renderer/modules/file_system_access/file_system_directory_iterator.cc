@@ -17,7 +17,8 @@ FileSystemDirectoryIterator::FileSystemDirectoryIterator(
     FileSystemDirectoryHandle* directory,
     Mode mode,
     ExecutionContext* execution_context)
-    : ExecutionContextClient(execution_context),
+    : ActiveScriptWrappable<FileSystemDirectoryIterator>({}),
+      ExecutionContextClient(execution_context),
       mode_(mode),
       directory_(directory),
       receiver_(this, execution_context) {

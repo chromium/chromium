@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_TOOLBAR_APP_MENU_MODEL_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/timer/elapsed_timer.h"
@@ -24,10 +25,6 @@
 class AppMenuIconController;
 class BookmarkSubMenuModel;
 class Browser;
-
-namespace {
-class MockAppMenuModel;
-}  // namespace
 
 // Values should correspond to 'WrenchMenuAction' enum in enums.xml.
 enum AppMenuAction {
@@ -140,6 +137,23 @@ class ExtensionsMenuModel : public ui::SimpleMenuModel {
   void Build(Browser* browser);
 };
 
+class FindAndEditSubMenuModel : public ui::SimpleMenuModel {
+ public:
+  FindAndEditSubMenuModel(ui::SimpleMenuModel::Delegate* delegate,
+                          Browser* browser,
+                          AppMenuIconController* app_menu_icon_controller);
+
+  FindAndEditSubMenuModel(const FindAndEditSubMenuModel&) = delete;
+  FindAndEditSubMenuModel& operator=(const FindAndEditSubMenuModel&) = delete;
+
+  ~FindAndEditSubMenuModel() override;
+
+ private:
+  void Build(Browser* browser);
+
+  raw_ptr<AppMenuIconController> app_menu_icon_controller_ = nullptr;
+};
+
 // A menu model that builds the contents of the app menu.
 class AppMenuModel : public ui::SimpleMenuModel,
                      public ui::SimpleMenuModel::Delegate,
@@ -231,8 +245,6 @@ class AppMenuModel : public ui::SimpleMenuModel,
   void CreateZoomMenu();
 
  private:
-  friend class ::MockAppMenuModel;
-
   // Adds actionable global error menu items to the menu.
   // Examples: Extension permissions and sign in errors.
   // Returns a boolean indicating whether any menu items were added.

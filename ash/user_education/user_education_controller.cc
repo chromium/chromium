@@ -13,6 +13,7 @@
 #include "ash/user_education/holding_space_tour/holding_space_tour_controller.h"
 #include "ash/user_education/tutorial_controller.h"
 #include "ash/user_education/user_education_delegate.h"
+#include "ash/user_education/user_education_util.h"
 #include "ash/user_education/welcome_tour/welcome_tour_controller.h"
 #include "base/check_op.h"
 #include "components/account_id/account_id.h"
@@ -23,26 +24,6 @@ namespace {
 
 // The singleton instance owned by `Shell`.
 UserEducationController* g_instance = nullptr;
-
-// Helpers ---------------------------------------------------------------------
-
-const AccountId& GetAccountId(const UserSession* user_session) {
-  return user_session ? user_session->user_info.account_id : EmptyAccountId();
-}
-
-bool IsPrimaryAccountId(const AccountId& account_id) {
-  if (!account_id.is_valid()) {
-    return false;
-  }
-  auto* session_controller = Shell::Get()->session_controller();
-  if (!session_controller) {
-    return false;
-  }
-  if (const auto* user_session = session_controller->GetPrimaryUserSession()) {
-    return GetAccountId(user_session) == account_id;
-  }
-  return false;
-}
 
 }  // namespace
 
@@ -71,7 +52,7 @@ UserEducationController::UserEducationController(
   auto* session_controller = Shell::Get()->session_controller();
   session_observation_.Observe(session_controller);
   for (const auto& user_session : session_controller->GetUserSessions()) {
-    OnUserSessionAdded(GetAccountId(user_session.get()));
+    OnUserSessionAdded(user_education_util::GetAccountId(user_session.get()));
   }
 }
 
@@ -85,6 +66,21 @@ UserEducationController* UserEducationController::Get() {
   return g_instance;
 }
 
+void UserEducationController::StartTutorial(
+    UserEducationPrivateApiKey,
+    TutorialId tutorial_id,
+    ui::ElementContext element_context,
+    base::OnceClosure completed_callback,
+    base::OnceClosure aborted_callback) {
+  // NOTE: User education in Ash is currently only supported for the primary
+  // user profile. This is a self-imposed restriction.
+  auto account_id = Shell::Get()->session_controller()->GetActiveAccountId();
+  CHECK(user_education_util::IsPrimaryAccountId(account_id));
+  delegate_->StartTutorial(account_id, tutorial_id, element_context,
+                           std::move(completed_callback),
+                           std::move(aborted_callback));
+}
+
 void UserEducationController::OnChromeTerminating() {
   session_observation_.Reset();
 }
@@ -92,7 +88,7 @@ void UserEducationController::OnChromeTerminating() {
 void UserEducationController::OnUserSessionAdded(const AccountId& account_id) {
   // NOTE: User education in Ash is currently only supported for the primary
   // user profile. This is a self-imposed restriction.
-  if (!IsPrimaryAccountId(account_id)) {
+  if (!user_education_util::IsPrimaryAccountId(account_id)) {
     return;
   }
 

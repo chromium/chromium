@@ -1354,11 +1354,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppAllProfilesTest,
   // Rename "image3.jpg" to "x.jpg".
   constexpr int kRenameResultSuccess = 0;
   constexpr char kScript[] =
-      "lastLoadedReceivedFileList().item(0).renameOriginalFile('x.jpg')"
-      ".then(result => domAutomationController.send(result));";
-  int result = ~kRenameResultSuccess;
-  EXPECT_EQ(true, content::ExecuteScriptAndExtractInt(app, kScript, &result));
-  EXPECT_EQ(kRenameResultSuccess, result);
+      "lastLoadedReceivedFileList().item(0).renameOriginalFile('x.jpg')";
+  EXPECT_EQ(kRenameResultSuccess, content::EvalJs(app, kScript));
 
   folder.Refresh();
 
@@ -1389,12 +1386,11 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest, DeleteFile) {
 
   EXPECT_EQ("640x480", WaitForImageAlt(web_ui, kFileJpeg640x480));
 
-  int result = 0;
   constexpr char kScript[] =
       "lastLoadedReceivedFileList().item(0).deleteOriginalFile()"
-      ".then(() => domAutomationController.send(42));";
-  EXPECT_EQ(true, content::ExecuteScriptAndExtractInt(app, kScript, &result));
-  EXPECT_EQ(42, result);  // Magic success (no exception thrown).
+      ".then(() => 42);";
+  EXPECT_EQ(42, content::EvalJs(
+                    app, kScript));  // Magic success (no exception thrown).
 
   // Ensure the file *not* deleted is the only one that remains.
   folder.Refresh();
@@ -1498,10 +1494,9 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
   // here that 0-1 retries are usually sufficient.
   int received_file_length = 0;
   do {
-    EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-        app,
-        "domAutomationController.send(lastLoadedReceivedFileList().length);",
-        &received_file_length));
+    received_file_length =
+        content::EvalJs(app, "lastLoadedReceivedFileList().length;")
+            .ExtractInt();
   } while (received_file_length != 2);
 
   bool result;

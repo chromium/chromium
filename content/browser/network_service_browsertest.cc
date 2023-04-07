@@ -316,7 +316,9 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest,
   EXPECT_GT(base::ComputeDirectorySize(GetCacheIndexDirectory()),
             directory_size);
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 class NetworkConnectionObserver
     : public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
@@ -370,7 +372,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest,
   observer.WaitForConnectionType(
       network::mojom::ConnectionType::CONNECTION_ETHERNET);
 }
-#endif
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 
 IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest,
                        MemoryPressureSentToNetworkProcess) {

@@ -898,6 +898,14 @@ bool ChildProcessSecurityPolicyImpl::IsPseudoScheme(
   return base::Contains(pseudo_schemes_, scheme);
 }
 
+void ChildProcessSecurityPolicyImpl::ClearRegisteredSchemeForTesting(
+    const std::string& scheme) {
+  base::AutoLock lock(lock_);
+  schemes_okay_to_request_in_any_process_.erase(scheme);
+  schemes_okay_to_commit_in_any_process_.erase(scheme);
+  pseudo_schemes_.erase(scheme);
+}
+
 void ChildProcessSecurityPolicyImpl::GrantCommitURL(int child_id,
                                                     const GURL& url) {
   // Can't grant the capability to commit invalid URLs.

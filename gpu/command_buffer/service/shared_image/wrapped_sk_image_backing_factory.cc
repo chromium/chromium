@@ -58,6 +58,7 @@ WrappedSkImageBackingFactory::CreateSharedImage(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     bool is_thread_safe) {
   // Ensure that the backing is treated as thread safe only when DrDc is enabled
   // for vulkan context.
@@ -73,7 +74,7 @@ WrappedSkImageBackingFactory::CreateSharedImage(
       color_space, surface_origin, alpha_type, usage, context_state_,
       /*is_thread_safe=*/is_thread_safe &&
           context_state_->GrContextIsVulkan() && is_drdc_enabled_);
-  if (!texture->Initialize()) {
+  if (!texture->Initialize(debug_label)) {
     return nullptr;
   }
   return texture;
@@ -88,13 +89,14 @@ WrappedSkImageBackingFactory::CreateSharedImage(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     base::span<const uint8_t> data) {
   auto texture = std::make_unique<WrappedSkImageBacking>(
       base::PassKey<WrappedSkImageBackingFactory>(), mailbox, format, size,
       color_space, surface_origin, alpha_type, usage, context_state_,
       /*is_thread_safe=*/context_state_->GrContextIsVulkan() &&
           is_drdc_enabled_);
-  if (!texture->InitializeWithData(data, /*stride=*/0)) {
+  if (!texture->InitializeWithData(debug_label, data, /*stride=*/0)) {
     return nullptr;
   }
   return texture;
@@ -110,7 +112,8 @@ WrappedSkImageBackingFactory::CreateSharedImage(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage) {
+    uint32_t usage,
+    std::string debug_label) {
   NOTREACHED();
   return nullptr;
 }

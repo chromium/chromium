@@ -437,7 +437,7 @@ class CommandBufferSetup {
       shared_image_factory_->CreateSharedImage(
           mailbox, si_format, gfx::Size(256, 256),
           gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
-          kPremul_SkAlphaType, gfx::kNullAcceleratedWidget, usage);
+          kPremul_SkAlphaType, gfx::kNullAcceleratedWidget, usage, "TestLabel");
     }
 
 #if defined(GPU_FUZZER_USE_RASTER_DECODER)

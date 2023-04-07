@@ -157,6 +157,7 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     bool is_thread_safe) {
   DCHECK(!is_thread_safe);
   return CreateSharedImageInternal(mailbox, format, surface_handle, size,
@@ -173,6 +174,7 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     base::span<const uint8_t> pixel_data) {
   return CreateSharedImageInternal(mailbox, format, kNullSurfaceHandle, size,
                                    color_space, surface_origin, alpha_type,
@@ -188,6 +190,7 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     gfx::GpuMemoryBufferHandle handle) {
   return CreateSharedImageGMBs(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
@@ -205,7 +208,8 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage) {
+    uint32_t usage,
+    std::string debug_label) {
   if (!gpu::IsPlaneValidForGpuMemoryBufferFormat(plane, buffer_format)) {
     LOG(ERROR) << "Invalid plane " << gfx::BufferPlaneToString(plane) << " for "
                << gfx::BufferFormatToString(buffer_format);

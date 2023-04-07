@@ -7,7 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "content/browser/url_loader_factory_getter.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/test/simple_url_loader_test_helper.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"

@@ -10,6 +10,7 @@
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/continue_section_view.h"
 #include "ash/app_list/views/page_switcher.h"
+#include "ash/app_list/views/pagination_model_transition_waiter.h"
 #include "ash/app_list/views/recent_apps_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/public/cpp/tablet_mode.h"
@@ -25,34 +26,6 @@
 #include "ui/views/controls/textfield/textfield.h"
 
 namespace ash {
-
-namespace {
-
-class TransitionWaiter : public PaginationModelObserver {
- public:
-  explicit TransitionWaiter(PaginationModel* model) : model_(model) {
-    model_->AddObserver(this);
-  }
-
-  TransitionWaiter(const TransitionWaiter&) = delete;
-  TransitionWaiter& operator=(const TransitionWaiter&) = delete;
-
-  ~TransitionWaiter() override { model_->RemoveObserver(this); }
-
-  void Wait() {
-    ui_run_loop_ = std::make_unique<base::RunLoop>();
-    ui_run_loop_->Run();
-  }
-
- private:
-  // PaginationModelObserver:
-  void TransitionEnded() override { ui_run_loop_->QuitWhenIdle(); }
-
-  std::unique_ptr<base::RunLoop> ui_run_loop_;
-  PaginationModel* model_ = nullptr;
-};
-
-}  // namespace
 
 class AppsContainerViewTest : public AshTestBase {
  public:
@@ -365,7 +338,8 @@ TEST_F(AppsContainerViewTest, StartPageDragThenRelease) {
   EXPECT_EQ(0, GetSelectedPage());
   EXPECT_EQ(2, GetTotalPages());
 
-  TransitionWaiter transition_waiter(apps_grid_view->pagination_model());
+  PaginationModelTransitionWaiter transition_waiter(
+      apps_grid_view->pagination_model());
   gfx::Point start_page_drag = test_api.GetViewAtIndex(GridIndex(0, 0))
                                    ->GetIconBoundsInScreen()
                                    .bottom_right();

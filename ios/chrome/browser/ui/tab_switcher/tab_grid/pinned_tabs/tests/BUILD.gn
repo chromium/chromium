@@ -12,8 +12,8 @@ source_set("eg2_tests") {
 
   deps = [
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/tabs:features",
-    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs:constants",

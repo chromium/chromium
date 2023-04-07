@@ -612,6 +612,7 @@ WorkerGlobalScope::WorkerGlobalScope(
           std::move(creation_params->web_worker_fetch_context),
           thread->GetWorkerReportingProxy(),
           creation_params->script_url.ProtocolIsData()),
+      ActiveScriptWrappable<WorkerGlobalScope>({}),
       script_type_(creation_params->script_type),
       user_agent_(creation_params->user_agent),
       ua_metadata_(creation_params->ua_metadata),

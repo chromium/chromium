@@ -812,6 +812,48 @@ TEST_F(WindowFloatTest, PinnedWindow) {
   EXPECT_TRUE(floated_window->IsVisible());
 }
 
+// Tests that a window pinned to all desks can be floated (does not include the
+// converse).
+TEST_F(WindowFloatTest, FloatAllDesksWindow) {
+  // Create two new desks (three total).
+  NewDesk();
+  NewDesk();
+  auto* desks_controller = DesksController::Get();
+  ASSERT_EQ(3u, desks_controller->desks().size());
+
+  // Create a floated window and a regular window on the first desk.
+  auto first_floated_window = CreateFloatedWindow();
+  auto all_desks_window = CreateAppWindow();
+
+  // Assign the regular window to all desks.
+  views::Widget::GetWidgetForNativeWindow(all_desks_window.get())
+      ->SetVisibleOnAllWorkspaces(true);
+  ASSERT_TRUE(
+      desks_util::IsWindowVisibleOnAllWorkspaces(all_desks_window.get()));
+  ASSERT_EQ(1u, desks_controller->visible_on_all_desks_windows().size());
+
+  // Switch to the second desk and create another floated window.
+  ActivateDesk(desks_controller->desks()[1].get());
+  ASSERT_TRUE(wm::IsActiveWindow(all_desks_window.get()));
+  auto second_floated_window = CreateFloatedWindow();
+
+  // Switch to the third desk and float the `all_desks_window` using the
+  // accelerator.
+  ActivateDesk(desks_controller->desks()[2].get());
+  ASSERT_TRUE(wm::IsActiveWindow(all_desks_window.get()));
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(WindowState::Get(all_desks_window.get())->IsFloated());
+
+  // Switch back to the first and second desks. The other floated windows should
+  // no longer be floated, and the `all_desks_window` should still be floated.
+  ActivateDesk(desks_controller->desks()[0].get());
+  EXPECT_FALSE(WindowState::Get(first_floated_window.get())->IsFloated());
+  EXPECT_TRUE(WindowState::Get(all_desks_window.get())->IsFloated());
+  ActivateDesk(desks_controller->desks()[1].get());
+  EXPECT_FALSE(WindowState::Get(second_floated_window.get())->IsFloated());
+  EXPECT_TRUE(WindowState::Get(all_desks_window.get())->IsFloated());
+}
+
 // A test class that uses a mock time test environment.
 class WindowFloatMetricsTest : public WindowFloatTest {
  public:

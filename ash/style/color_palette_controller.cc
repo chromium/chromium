@@ -61,6 +61,31 @@ const AccountId& AccountFromSession(const UserSession* session) {
   return session->user_info.account_id;
 }
 
+// Refresh colors of the system on the current color mode. Not only the SysUI,
+// but also all the other components like WebUI. This will trigger
+// View::OnThemeChanged to live update the colors. The colors live update can
+// happen when color mode changes or wallpaper changes. It is needed when
+// wallpaper changes as the background color is calculated from current
+// wallpaper.
+void RefreshNativeTheme(const ColorPaletteSeed& seed) {
+  const SkColor themed_color = seed.seed_color;
+  bool is_dark_mode_enabled = seed.color_mode == ColorMode::kDark;
+  auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+  native_theme->set_use_dark_colors(is_dark_mode_enabled);
+  native_theme->set_user_color(themed_color);
+  native_theme->NotifyOnNativeThemeUpdated();
+
+  auto* native_theme_web = ui::NativeTheme::GetInstanceForWeb();
+  if (!native_theme_web->IsForcedDarkMode()) {
+    native_theme_web->set_use_dark_colors(is_dark_mode_enabled);
+    native_theme_web->set_preferred_color_scheme(
+        is_dark_mode_enabled ? ui::NativeTheme::PreferredColorScheme::kDark
+                             : ui::NativeTheme::PreferredColorScheme::kLight);
+  }
+  native_theme_web->set_user_color(themed_color);
+  native_theme_web->NotifyOnNativeThemeUpdated();
+}
+
 // TODO(b/258719005): Finish implementation with code that works/uses libmonet.
 class ColorPaletteControllerImpl : public ColorPaletteController,
                                    public WallpaperControllerObserver,
@@ -73,9 +98,6 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
         dark_light_mode_controller_(dark_light_mode_controller) {
     dark_light_observation_.Observe(dark_light_mode_controller);
     wallpaper_observation_.Observe(wallpaper_controller);
-
-    wallpaper_color_[ColorMode::kDark] = SK_ColorTRANSPARENT;
-    wallpaper_color_[ColorMode::kLight] = SK_ColorTRANSPARENT;
   }
 
   ~ColorPaletteControllerImpl() override = default;
@@ -99,9 +121,7 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
     }
     pref_service->SetInteger(prefs::kDynamicColorColorScheme,
                              static_cast<int>(scheme));
-    // TODO(b/258719005): Call this after the native theme change has been
-    // applied.
-    NotifyObservers(account_id);
+    NotifyObservers(GetColorPaletteSeed(account_id));
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, std::move(on_complete), base::Milliseconds(100));
   }
@@ -120,28 +140,31 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
     pref_service->SetInteger(prefs::kDynamicColorColorScheme,
                              static_cast<int>(ColorScheme::kStatic));
     pref_service->SetUint64(prefs::kDynamicColorSeedColor, seed_color);
-    // TODO(b/258719005): Call this after the native theme change has been
-    // applied.
-    NotifyObservers(account_id);
+    NotifyObservers(GetColorPaletteSeed(account_id));
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, std::move(on_complete), base::Milliseconds(100));
   }
 
-  ColorPaletteSeed GetColorPaletteSeed(
+  absl::optional<ColorPaletteSeed> GetColorPaletteSeed(
       const AccountId& account_id) const override {
     ColorPaletteSeed seed;
-    seed.color_mode = dark_light_mode_controller_->IsDarkModeEnabled()
-                          ? ui::ColorProviderManager::ColorMode::kDark
-                          : ui::ColorProviderManager::ColorMode::kLight;
-    seed.seed_color = UsesWallpaperSeedColor(account_id)
-                          ? wallpaper_color_.at(seed.color_mode)
-                          : GetStaticSeedColor(account_id);
+    bool dark = dark_light_mode_controller_->IsDarkModeEnabled();
+    absl::optional<SkColor> seed_color = UsesWallpaperSeedColor(account_id)
+                                             ? CurrentWallpaperColor(dark)
+                                             : GetStaticSeedColor(account_id);
+    if (!seed_color) {
+      return {};
+    }
+
+    seed.color_mode = dark ? ui::ColorProviderManager::ColorMode::kDark
+                           : ui::ColorProviderManager::ColorMode::kLight;
+    seed.seed_color = *seed_color;
     seed.scheme = GetColorScheme(account_id);
 
     return seed;
   }
 
-  ColorPaletteSeed GetCurrentSeed() const override {
+  absl::optional<ColorPaletteSeed> GetCurrentSeed() const override {
     const auto* session = GetActiveUserSession();
     if (!session) {
       return {};
@@ -198,38 +221,27 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
 
   // WallpaperControllerObserver overrides:
   void OnWallpaperColorsChanged() override {
-    if (!chromeos::features::IsJellyEnabled()) {
-      SkColor dark_color = GetWallpaperColor(true);
-      SkColor light_color = GetWallpaperColor(false);
-      SetWallpaperColor(dark_color, light_color);
-      return;
-    }
-
-    SkColor wallpaper_color =
-        wallpaper_controller_->calculated_colors()->celebi_color;
-    // When Jelly is enabled, light/dark changes are handled in palette
-    // generation.  So it's the same color.
-    SetWallpaperColor(wallpaper_color, wallpaper_color);
+    NotifyObservers(BestEffortSeed(GetActiveUserSession()));
   }
 
   // ColorModeObserver overrides:
   void OnColorModeChanged(bool) override {
-    // Change colors and notify.
-    auto* session = GetActiveUserSession();
-    if (session) {
-      NotifyObservers(AccountFromSession(session));
-    }
+    NotifyObservers(BestEffortSeed(GetActiveUserSession()));
   }
 
  private:
-  void SetWallpaperColor(SkColor dark_color, SkColor light_color) {
-    wallpaper_color_[ColorMode::kDark] = dark_color;
-    wallpaper_color_[ColorMode::kLight] = light_color;
-    // TODO(b/258719005): Update Native Theme
-    auto* session = GetActiveUserSession();
-    if (session) {
-      NotifyObservers(AccountFromSession(session));
+  absl::optional<SkColor> CurrentWallpaperColor(bool dark) const {
+    if (!chromeos::features::IsJellyEnabled()) {
+      return GetWallpaperColor(dark);
     }
+
+    const absl::optional<WallpaperCalculatedColors>& calculated_colors =
+        wallpaper_controller_->calculated_colors();
+    if (!calculated_colors) {
+      return {};
+    }
+
+    return calculated_colors->celebi_color;
   }
 
   SkColor GetStaticSeedColor(const AccountId& account_id) const {
@@ -241,6 +253,32 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
     }
     return static_cast<SkColor>(
         pref_service->GetUint64(prefs::kDynamicColorSeedColor));
+  }
+
+  // Returns the seed for `session` if it's present.  Otherwise, returns a seed
+  // for backward compatibility with just dark/light and seed color filled.
+  absl::optional<ColorPaletteSeed> BestEffortSeed(const UserSession* session) {
+    if (session) {
+      return GetColorPaletteSeed(AccountFromSession(session));
+    }
+
+    // Generate a seed where we assume TonalSpot and ignore static colors.
+    // TODO(b/276475812): When static color and color scheme are in local state,
+    // only run this if Jelly is not enabled.
+    ColorPaletteSeed seed;
+    bool dark = dark_light_mode_controller_->IsDarkModeEnabled();
+    absl::optional<SkColor> seed_color = CurrentWallpaperColor(dark);
+    if (!seed_color) {
+      // If `seed_color` is not available, we expect to have it shortly when the
+      // color computation is done and this will be called again.
+      return {};
+    }
+    seed.color_mode = dark ? ui::ColorProviderManager::ColorMode::kDark
+                           : ui::ColorProviderManager::ColorMode::kLight;
+    seed.seed_color = *seed_color;
+    seed.scheme = ColorScheme::kTonalSpot;
+
+    return seed;
   }
 
   SampleColorScheme GenerateSampleColorScheme(ColorScheme scheme) const {
@@ -255,14 +293,18 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
             .tertiary = SK_ColorBLUE};
   }
 
-  void NotifyObservers(const AccountId& account_id) {
-    ColorPaletteSeed seed = GetColorPaletteSeed(account_id);
-    for (auto& observer : observers_) {
-      observer.OnColorPaletteChanging(seed);
+  void NotifyObservers(const absl::optional<ColorPaletteSeed>& seed) {
+    if (!seed) {
+      // If the seed wasn't valid, skip notifications.
+      return;
     }
-  }
 
-  base::flat_map<ui::ColorProviderManager::ColorMode, SkColor> wallpaper_color_;
+    for (auto& observer : observers_) {
+      observer.OnColorPaletteChanging(*seed);
+    }
+
+    RefreshNativeTheme(*seed);
+  }
 
   base::ScopedObservation<DarkLightModeController, ColorModeObserver>
       dark_light_observation_{this};

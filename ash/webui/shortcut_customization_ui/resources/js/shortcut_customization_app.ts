@@ -13,7 +13,9 @@ import 'chrome://resources/ash/common/page_toolbar.js';
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {NavigationViewPanelElement} from 'chrome://resources/ash/common/navigation_view_panel.js';
+import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -106,6 +108,14 @@ export class ShortcutCustomizationAppElement extends
 
   override connectedCallback(): void {
     super.connectedCallback();
+    if (loadTimeData.getBoolean('isJellyEnabledForShortcutCustomization')) {
+      // Use dynamic color CSS and start listening to `ColorProvider` updates.
+      // TODO(b/276493795): After the Jelly experiment is launched, replace
+      // `cros_styles.css` with `theme/colors.css` directly in `index.html`.
+      document.querySelector('link[href*=\'cros_styles.css\']')
+          ?.setAttribute('href', 'chrome://theme/colors.css?sets=legacy,sys');
+      startColorChangeUpdater();
+    }
 
     this.fetchAccelerators();
     this.addEventListener('show-edit-dialog', this.showDialog);

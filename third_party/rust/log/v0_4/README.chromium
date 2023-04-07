@@ -1,6 +1,0 @@
-Name: log
-URL: https://crates.io/crates/log
-Description: A lightweight logging facade for Rust
-Version: 0.4.14
-Security Critical: no
-License: Apache 2.0

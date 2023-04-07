@@ -109,7 +109,6 @@
           "--test-launcher-print-test-stdio=always"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -131,7 +130,6 @@
           "--test-launcher-jobs=1"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "browser_tests_functional",
@@ -155,7 +153,6 @@
           "--test-launcher-print-test-stdio=always"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -176,7 +173,6 @@
           "--gtest_filter=WebRtc*"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -198,7 +194,6 @@
           "--test-launcher-jobs=1"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "content_browsertests_sequential",
@@ -222,7 +217,6 @@
           "--test-launcher-timeout=120000"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "content_browsertests_stress",
@@ -243,7 +237,6 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/webrtc.content_unittests.filter"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -263,7 +256,6 @@
           "--gtest_filter=Webrtc*"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -298,7 +290,6 @@
           "--test-launcher-print-test-stdio=always"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -321,7 +312,6 @@
           "--test-launcher-jobs=1"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "browser_tests_functional",
@@ -343,7 +333,6 @@
           "--gtest_filter=WebRtc*"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -366,7 +355,6 @@
           "--test-launcher-jobs=1"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "content_browsertests_sequential",
@@ -391,7 +379,6 @@
           "--test-launcher-timeout=120000"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "content_browsertests_stress",
@@ -413,7 +400,6 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/webrtc.content_unittests.filter"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -434,7 +420,6 @@
           "--gtest_filter=Webrtc*"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -470,7 +455,6 @@
           "--test-launcher-print-test-stdio=always"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -492,7 +476,6 @@
           "--test-launcher-jobs=1"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "browser_tests_functional",
@@ -516,7 +499,6 @@
           "--test-launcher-print-test-stdio=always"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -537,7 +519,6 @@
           "--gtest_filter=WebRtc*"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -559,7 +540,6 @@
           "--test-launcher-jobs=1"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "content_browsertests_sequential",
@@ -583,7 +563,6 @@
           "--test-launcher-timeout=120000"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "content_browsertests_stress",
@@ -604,7 +583,6 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/webrtc.content_unittests.filter"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -624,7 +602,6 @@
           "--gtest_filter=Webrtc*"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {

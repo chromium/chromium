@@ -20,6 +20,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/values.h"
 #include "chromeos/printing/printer_translator.h"
+#include "components/device_event_log/device_event_log.h"
 
 namespace ash {
 
@@ -43,7 +44,8 @@ using TaskData = std::unique_ptr<TaskDataInternal>;
 // slow.
 std::unique_ptr<PrinterCache> ParsePrinters(std::unique_ptr<std::string> data) {
   if (!data) {
-    LOG(WARNING) << "Received null data";
+    PRINTER_LOG(ERROR) << "Failed to parse printers policy ("
+                       << "received null data)";
     return nullptr;
   }
 
@@ -54,23 +56,24 @@ std::unique_ptr<PrinterCache> ParsePrinters(std::unique_ptr<std::string> data) {
       *data, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
 
   if (!value_with_error.has_value()) {
-    LOG(WARNING) << "Failed to parse printers policy ("
-                 << value_with_error.error().message << ") on line "
-                 << value_with_error.error().line << " at position "
-                 << value_with_error.error().column;
+    PRINTER_LOG(ERROR) << "Failed to parse printers policy ("
+                       << value_with_error.error().message << ") on line "
+                       << value_with_error.error().line << " at position "
+                       << value_with_error.error().column;
     return nullptr;
   }
 
   base::Value& json_blob = *value_with_error;
   if (!json_blob.is_list()) {
-    LOG(WARNING) << "Failed to parse printers policy (an array was expected)";
+    PRINTER_LOG(ERROR) << "Failed to parse printers policy "
+                       << "(an array was expected)";
     return nullptr;
   }
 
   const base::Value::List& printer_list = json_blob.GetList();
   if (printer_list.size() > kMaxRecords) {
-    LOG(WARNING) << "Too many records in printers policy: "
-                 << printer_list.size();
+    PRINTER_LOG(ERROR) << "Failed to parse printers policy ("
+                       << "too many records: " << printer_list.size() << ")";
     return nullptr;
   }
 
@@ -78,13 +81,15 @@ std::unique_ptr<PrinterCache> ParsePrinters(std::unique_ptr<std::string> data) {
   parsed_printers->reserve(printer_list.size());
   for (const base::Value& val : printer_list) {
     if (!val.is_dict()) {
-      LOG(WARNING) << "Entry in printers policy skipped.  Not a dictionary.";
+      PRINTER_LOG(ERROR) << "Entry in printers policy skipped ("
+                         << "not a dictionary)";
       continue;
     }
 
     auto printer = chromeos::RecommendedPrinterToPrinter(val.GetDict());
     if (!printer) {
-      LOG(WARNING) << "Failed to parse printer configuration.  Skipped.";
+      PRINTER_LOG(ERROR) << "Entry in printers policy skipped ("
+                         << "failed to parse printer configuration)";
       continue;
     }
     parsed_printers->push_back(std::move(printer));
@@ -259,6 +264,12 @@ class BulkPrintersCalculatorImpl : public BulkPrintersCalculator {
 
   void SetData(std::unique_ptr<std::string> data) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (data) {
+      PRINTER_LOG(DEBUG) << "BulkPrintersCalculator::SetData() with "
+                         << data->size() << " bytes.";
+    } else {
+      PRINTER_LOG(ERROR) << "BulkPrintersCalculator::SetData() with nullptr.";
+    }
     data_is_set_ = true;
     TaskData task_data =
         std::make_unique<TaskDataInternal>(++last_received_task_);

@@ -19,7 +19,6 @@
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/list_marker.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_bidi_paragraph.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_initial_letter_utils.h"
@@ -1526,7 +1525,8 @@ void NGInlineNode::AssociateItemsWithInlines(NGInlineNodeData* data) const {
   WTF::wtf_size_t size = items.size();
   for (WTF::wtf_size_t i = 0; i != size;) {
     LayoutObject* object = items[i].GetLayoutObject();
-    if (auto* layout_text = DynamicTo<LayoutNGText>(object)) {
+    auto* layout_text = DynamicTo<LayoutText>(object);
+    if (layout_text && !layout_text->IsBR()) {
 #if DCHECK_IS_ON()
       // Items split from a LayoutObject should be consecutive.
       DCHECK(associated_objects.insert(object).is_new_entry);

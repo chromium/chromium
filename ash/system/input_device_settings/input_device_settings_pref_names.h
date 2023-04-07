@@ -16,6 +16,14 @@ constexpr char kPointingStickObservedDevicesPref[] =
 constexpr char kTouchpadObservedDevicesPref[] =
     "settings.touchpad.observed_devices";
 
+// Prefs which contain login screen settings for connected internal devices.
+constexpr char kKeyboardLoginScreenInternalSettingsPref[] =
+    "settings.keyboard.internal";
+
+// Prefs which contain login screen settings for connected external devices.
+constexpr char kKeyboardLoginScreenExternalSettingsPref[] =
+    "settings.keyboard.external";
+
 // Prefs which contain dictionaries of settings for each connected device.
 constexpr char kKeyboardDeviceSettingsDictPref[] = "settings.keyboard.devices";
 constexpr char kMouseDeviceSettingsDictPref[] = "settings.mouse.devices";

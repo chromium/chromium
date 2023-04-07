@@ -32,6 +32,7 @@
 #include "cc/base/switches.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "chrome/browser/feature_guide/notifications/feature_notification_guide_service.h"
 #include "chrome/browser/flag_descriptions.h"
@@ -1445,6 +1446,14 @@ const FeatureEntry::FeatureVariation kLocalWebApprovalsVariations[] = {
      std::size(kLocalWebApprovalsPreferRemoteParams), nullptr},
 };
 #endif
+
+const FeatureEntry::FeatureParam kChromeRefresh2023Level1[] = {{"level", "1"}};
+
+// "Enabled" is equivalent to "Enabled with Omnibox", therefore we don't need to
+// make a separate variation for it.
+const FeatureEntry::FeatureVariation kChromeRefresh2023Variations[] = {
+    {"without Omnibox", kChromeRefresh2023Level1,
+     std::size(kChromeRefresh2023Level1), nullptr}};
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
@@ -2929,6 +2938,8 @@ constexpr char kWallpaperGooglePhotosSharedAlbumsInternalName[] =
 constexpr char kWallpaperPerDeskName[] = "per-desk-wallpaper";
 constexpr char kLibAssistantV2MigrationInternalName[] =
     "cros-libassistant-v2-migration";
+constexpr char kTimeOfDayWallpaperInternalName[] = "time-of-day-wallpaper";
+constexpr char kTimeOfDayScreenSaverInternalName[] = "time-of-day-screen-saver";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -4055,12 +4066,14 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          ash::features::kPolicyProvidedTrustAnchorsAllowedAtLockScreen)},
-    {"time-of-day-screen-saver", flag_descriptions::kTimeOfDayScreenSaverName,
+    {kTimeOfDayScreenSaverInternalName,
+     flag_descriptions::kTimeOfDayScreenSaverName,
      flag_descriptions::kTimeOfDayScreenSaverDescription, kOsCrOS,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kTimeOfDayScreenSaver,
                                     kTimeOfDayScreenSaverVideoVariations,
                                     "FeatureManagementTimeOfDayScreenSaver")},
-    {"time-of-day-wallpaper", flag_descriptions::kTimeOfDayWallpaperName,
+    {kTimeOfDayWallpaperInternalName,
+     flag_descriptions::kTimeOfDayWallpaperName,
      flag_descriptions::kTimeOfDayWallpaperDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kTimeOfDayWallpaper)},
     {"enable-rfc-8925", flag_descriptions::kEnableRFC8925Name,
@@ -4558,6 +4571,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebAppManifestImmediateUpdatingName,
      flag_descriptions::kWebAppManifestImmediateUpdatingDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kWebAppManifestImmediateUpdating)},
+    {"web-app-sync-generated-icon-fix",
+     flag_descriptions::kWebAppSyncGeneratedIconFixName,
+     flag_descriptions::kWebAppSyncGeneratedIconFixDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kWebAppSyncGeneratedIconFix)},
 #endif  // !BUILDFLAG(IS_ANDROID)
     {"use-sync-sandbox", flag_descriptions::kSyncSandboxName,
      flag_descriptions::kSyncSandboxDescription, kOsAll,
@@ -5435,6 +5452,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     kOmniboxAssistantVoiceSearchVariations,
                                     "OmniboxAssistantVoiceSearch")},
 
+    {"omnibox-cache-suggestion-resources",
+     flag_descriptions::kOmniboxCacheSuggestionResourcesName,
+     flag_descriptions::kOmniboxCacheSuggestionResourcesDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kOmniboxCacheSuggestionResources)},
+
     {"omnibox-consumes-ime-insets",
      flag_descriptions::kOmniboxConsumesImeInsetsName,
      flag_descriptions::kOmniboxConsumesImeInsetsDescription, kOsAndroid,
@@ -5756,10 +5778,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kUniformRowHeight,
                                     kOmniboxSuggestionHeightVariations,
                                     "Uniform Omnibox Suggest Heights")},
-
-    {"omnibox-cr23-umbrella", flag_descriptions::kOmniboxCr23UmbrellaName,
-     flag_descriptions::kOmniboxCr23UmbrellaDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(omnibox::kCr2023Umbrella)},
 
     {"omnibox-cr23-expanded-state-height",
      flag_descriptions::kOmniboxCR23ExpandedStateHeightName,
@@ -7085,13 +7103,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessibilityServiceDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityService)},
 
-    {"enable-accessibility-select-to-speak-context-menu-option",
-     flag_descriptions::kAccessibilitySelectToSpeakContextMenuOptionName,
-     flag_descriptions::kAccessibilitySelectToSpeakContextMenuOptionDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         features::kAccessibilitySelectToSpeakContextMenuOption)},
-
     {"enable-accessibility-select-to-speak-hover-text-improvements",
      flag_descriptions::kAccessibilitySelectToSpeakHoverTextImprovementsName,
      flag_descriptions::
@@ -7216,6 +7227,14 @@ const FeatureEntry kFeatureEntries[] = {
                                     kLocalWebApprovalsVariations,
                                     "LocalWebApprovals")},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+    {"enable-proto-api-for-classify-url",
+     flag_descriptions::kEnableProtoApiForClassifyUrlName,
+     flag_descriptions::kEnableProtoApiForClassifyUrlDescription,
+     kOsAndroid | (kOsDesktop & ~kOsFuchsia),
+     FEATURE_VALUE_TYPE(supervised_user::kEnableProtoApiForClassifyUrl)},
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     {"use-out-of-process-video-decoding",
@@ -7583,12 +7602,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(page_info::kPageInfoAboutThisSiteNonEn)},
 
-    {"page-info-about-this-site-non-msbb",
-     flag_descriptions::kPageInfoAboutThisSiteNonMsbbName,
-     flag_descriptions::kPageInfoAboutThisSiteNonMsbbDescription,
-     kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(page_info::kPageInfoAboutThisSiteNonMsbb)},
-
 #if !BUILDFLAG(IS_ANDROID)
     {"page-info-about-this-page-persistent-side-panel-entry",
      flag_descriptions::kPageInfoboutThisPagePersistentEntryName,
@@ -7793,6 +7806,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLauncherSystemInfoAnswerCardsName,
      flag_descriptions::kLauncherSystemInfoAnswerCardsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(search_features::kLauncherSystemInfoAnswerCards)},
+    {"launcher-omnibox-publish-logic-log",
+     flag_descriptions::kLauncherOmniboxPublishLogicLogName,
+     flag_descriptions::kLauncherOmniboxPublishLogicLogDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(search_features::kLauncherOmniboxPublishLogicLog)},
     {"quick-gesture-show-launcher",
      flag_descriptions::kQuickActionShowBubbleLauncherName,
      flag_descriptions::kQuickActionShowBubbleLauncherDescription, kOsCrOS,
@@ -8082,7 +8099,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"chrome-refresh-2023", flag_descriptions::kChromeRefresh2023Name,
      flag_descriptions::kChromeRefresh2023Description, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kChromeRefresh2023)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kChromeRefresh2023,
+                                    kChromeRefresh2023Variations,
+                                    "ChromeRefresh2023")},
 
     {"enable-first-party-sets", flag_descriptions::kEnableFirstPartySetsName,
      flag_descriptions::kEnableFirstPartySetsDescription, kOsAll,
@@ -8415,7 +8434,7 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
     {"csc", flag_descriptions::kCscName, flag_descriptions::kCscDescription,
      kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kSidePanelCompanion,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(companion::features::kSidePanelCompanion,
                                     kCscVariations,
                                     "CSC")},
 
@@ -10214,6 +10233,22 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
     return base::FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
         floss::features::kFlossIsAvailable.name,
         base::FeatureList::OVERRIDE_DISABLE_FEATURE);
+  }
+
+  // Only show Time of Day wallpaper flag if channel is one of
+  // Dev/Canary/Unknown.
+  if (!strcmp(kTimeOfDayWallpaperInternalName, entry.internal_name)) {
+    return (channel != version_info::Channel::DEV &&
+            channel != version_info::Channel::CANARY &&
+            channel != version_info::Channel::UNKNOWN);
+  }
+
+  // Only show Time of Day Screen Saver flag if channel is one of
+  // Dev/Canary/Unknown.
+  if (!strcmp(kTimeOfDayScreenSaverInternalName, entry.internal_name)) {
+    return (channel != version_info::Channel::DEV &&
+            channel != version_info::Channel::CANARY &&
+            channel != version_info::Channel::UNKNOWN);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

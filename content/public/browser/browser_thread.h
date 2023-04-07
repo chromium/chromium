@@ -15,17 +15,13 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/browser_task_traits.h"
 
 #if defined(UNIT_TEST)
 #include "base/logging.h"
 #endif
 
 namespace content {
-
-// TODO(1026641): Include browser_task_traits.h directly when the migration to
-// Get(UI|IO)ThreadTaskrunner() is complete and the cyclic dependency of
-// browser_task_traits.h on BrowserThread::ID is broken.
-class BrowserTaskTraits;
 
 // Use DCHECK_CURRENTLY_ON(BrowserThread::ID) to assert that a function can only
 // be called on the named BrowserThread.
@@ -43,16 +39,12 @@ class BrowserTaskTraits;
 //
 // In unit tests, there must be a content::BrowserTaskEnvironment in scope for
 // this API to be available.
-//
-// TODO(1026641): Make default traits |{}| the default param when it's possible
-// to include browser_task_traits.h in this file (see note above on the
-// BrowserTaskTraits fwd-decl).
 CONTENT_EXPORT scoped_refptr<base::SingleThreadTaskRunner>
-GetUIThreadTaskRunner(const BrowserTaskTraits& traits);
+GetUIThreadTaskRunner(const BrowserTaskTraits& traits = {});
 
 // The BrowserThread::IO counterpart to GetUIThreadTaskRunner().
 CONTENT_EXPORT scoped_refptr<base::SingleThreadTaskRunner>
-GetIOThreadTaskRunner(const BrowserTaskTraits& traits);
+GetIOThreadTaskRunner(const BrowserTaskTraits& traits = {});
 
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserThread

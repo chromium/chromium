@@ -206,7 +206,6 @@
 <translation id="2411749908844615428">{count,plural, =1{כתובת שמורה אחת ({count}) זמינה מעל המקלדת.}one{{count} כתובות שמורות זמינות מעל המקלדת.}two{{count} כתובות שמורות זמינות מעל המקלדת.}other{{count} כתובות שמורות זמינות מעל המקלדת.}}</translation>
 <translation id="2421004566762153674">‏חסימת קובצי Cookie של צד שלישי</translation>
 <translation id="2421044535038393232">המשך העריכה</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{סיסמה אחת ({COUNT}) שנחשפה}one{{COUNT} סיסמאות שנחשפו}two{{COUNT} סיסמאות שנחשפו}other{{COUNT} סיסמאות שנחשפו}}</translation>
 <translation id="2434405374328098816">כבר שמרת סיסמה עבור המשתמש "<ph name="USERNAME" />" לאתר <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">הצגת סיסמה</translation>
 <translation id="2451654228769116489">הצמדת הכרטיסייה</translation>
@@ -257,7 +256,6 @@
 <translation id="2718352093833049315">‏רק ב-Wi-Fi</translation>
 <translation id="2747003861858887689">השדה הקודם</translation>
 <translation id="2749231692441336879">האתר <ph name="CHANNEL_NAME" /> נמצא במעקב</translation>
-<translation id="2764831210418622012">ממש עכשיו</translation>
 <translation id="2772667768515195373">‏אפשר להשתמש בכתובות שמורות במוצרי Google. הכתובת הזו שמורה בחשבון Google שלך, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">חיפוש במצב אנונימי</translation>
 <translation id="277771892408211951">בחירת שפה</translation>
@@ -924,7 +922,6 @@
 <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">כרטיסיות אחרונות</translation>
 <translation id="7006788746334555276">הגדרות תוכן</translation>
-<translation id="7014087399239955356">הסיסמאות נבדקות…</translation>
 <translation id="7029809446516969842">סיסמאות</translation>
 <translation id="7053983685419859001">חסימה</translation>
 <translation id="7062545763355031412">אישור והחלפת חשבונות</translation>

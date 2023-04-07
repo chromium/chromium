@@ -176,12 +176,8 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
   // Safe from any thread.
   //
 
-  // Error notification (using PostTask() to |child_task_runner_|, if
-  // necessary).
-  void NotifyError(Error error);
-
   // Set the encoder_state_ to kError and notify the client (if necessary).
-  void SetErrorState(Error error);
+  void SetErrorState(EncoderStatus status);
 
   //
   // Other utility functions.  Called on the |encoder_task_runner_|.

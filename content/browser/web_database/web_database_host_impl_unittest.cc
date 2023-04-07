@@ -202,6 +202,8 @@ TEST_F(WebDatabaseHostImplTest, OpenFileCreatesBucket) {
   EXPECT_EQ(result->storage_key,
             blink::StorageKey::CreateFromStringForTesting(example_url));
   EXPECT_GT(result->id.value(), 0);
+
+  security_policy->ClearIsolatedOriginsForTesting();
 }
 
 TEST_F(WebDatabaseHostImplTest, GetOrCreateBucketError) {
@@ -233,6 +235,8 @@ TEST_F(WebDatabaseHostImplTest, GetOrCreateBucketError) {
                          }));
       }));
   run_loop.Run();
+
+  security_policy->ClearIsolatedOriginsForTesting();
 }
 
 TEST_F(WebDatabaseHostImplTest, BadMessagesUnauthorized) {
@@ -290,6 +294,8 @@ TEST_F(WebDatabaseHostImplTest, BadMessagesUnauthorized) {
   CheckUnauthorizedOrigin([&]() {
     host()->HandleSqliteError(incorrect_origin, db_name, /*error=*/0);
   });
+
+  security_policy->ClearIsolatedOriginsForTesting();
 }
 
 TEST_F(WebDatabaseHostImplTest, BadMessagesInvalid) {
@@ -380,6 +386,7 @@ TEST_F(WebDatabaseHostImplTest, ProcessShutdown) {
   }
 
   mojo::SetDefaultProcessErrorHandler(base::NullCallback());
+  security_policy->ClearIsolatedOriginsForTesting();
 }
 
 }  // namespace

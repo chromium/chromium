@@ -48,7 +48,8 @@ static constexpr uint64_t kMaxTruncateLength =
     std::numeric_limits<uint64_t>::max();
 
 FileWriter::FileWriter(ExecutionContext* context)
-    : ExecutionContextLifecycleObserver(context),
+    : ActiveScriptWrappable<FileWriter>({}),
+      ExecutionContextLifecycleObserver(context),
       ready_state_(kInit),
       operation_in_progress_(kOperationNone),
       queued_operation_(kOperationNone),

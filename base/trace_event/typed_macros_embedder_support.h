@@ -7,6 +7,7 @@
 
 #include "base/base_export.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/perfetto/include/perfetto/tracing/internal/track_event_internal.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/track_event.pbzero.h"
@@ -56,9 +57,11 @@ class BASE_EXPORT TrackEventHandle {
   }
 
  private:
-  raw_ptr<TrackEvent> event_;
-  raw_ptr<IncrementalState> incremental_state_;
-  raw_ptr<CompletionListener> listener_;
+  // These fields not raw_ptr<> for performance reasons: based on this sampling
+  // profiler result on ChromeOS. go/brp-cros-prof-diff-20230403
+  RAW_PTR_EXCLUSION TrackEvent* event_;
+  RAW_PTR_EXCLUSION IncrementalState* incremental_state_;
+  RAW_PTR_EXCLUSION CompletionListener* listener_;
   const bool filter_debug_annotations_ = false;
 };
 

@@ -1341,7 +1341,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2114820389966440614">Tingnan ang "Mga Kamakailang Highlight" at iba pang alaala dito</translation>
 <translation id="2114896190328250491">Larawan ni <ph name="NAME" /></translation>
 <translation id="2114995631896158695">Walang nakalagay na SIM card</translation>
-<translation id="2116020356255810305">I-enable ang paglunsad ng app sa startup</translation>
 <translation id="2116619964159595185">Karaniwang kumokonekta ang mga site sa mga Bluetooth device para sa mga feature na tulad ng pag-set up o pag-sync ng low-energy beacon, tracker ng kalusugan o fitness, o smart light bulb</translation>
 <translation id="2117655453726830283">Susunod na slide</translation>
 <translation id="2119349053129246860">Buksan sa <ph name="APP" /></translation>
@@ -3273,7 +3272,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="380329542618494757">Pangalan</translation>
 <translation id="3803345858388753269">Kalidad ng Video</translation>
 <translation id="3803367742635802571">Posibleng hindi na gumana ayon sa disenyo ang mga site na binibisita mo</translation>
-<translation id="3803583375545057606">Hihilingin sa iyong magulang na i-enable ang extension na ito?</translation>
 <translation id="380408572480438692">Makakatulong sa Google ang pag-e-enable sa pagkolekta ng data ng pagganap na pahusayin ang system sa paglipas ng panahon. Walang ipinapadalang data hanggang sa maghain ka ng ulat ng feedback (Alt-Shift-I) at magsama ng data ng pagganap. Makakabalik ka sa screen na ito upang i-disable ang pagkolekta anumang oras.</translation>
 <translation id="3807249107536149332">Ang <ph name="EXTENSION_NAME" /> (extension ID "<ph name="EXTENSION_ID" />") ay hindi pinapayagan sa screen sa pag-login.</translation>
 <translation id="3807747707162121253">&amp;Kanselahin</translation>
@@ -3695,7 +3693,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4169535189173047238">Huwag payagan</translation>
 <translation id="4170314459383239649">I-clear sa Paglabas</translation>
 <translation id="417096670996204801">Pumili ng profile</translation>
-<translation id="41725145403849567">Hihilingin sa iyong magulang na idagdag ang extension na ito?</translation>
 <translation id="4175137578744761569">Light purple at puti</translation>
 <translation id="4175737294868205930">Matagalang storage</translation>
 <translation id="4176463684765177261">Hindi pinapagana</translation>
@@ -5109,7 +5106,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Dapat ay hindi bababa sa isang character ang PIN}one{Dapat ay hindi bababa sa # character ang PIN}other{Dapat ay hindi bababa sa # na character ang PIN}}</translation>
 <translation id="5474859849784484111">Hinihiling sa iyo ng <ph name="MANAGER" /> na kumonekta ka sa Wi-Fi ngayon at mag-download ng update. O mag-download mula sa isang nakametrong koneksyon (posibleng may nalalapat na mga singil).</translation>
 <translation id="5476016146231427848">Paki-restart ang iyong device para magamit ang Steam sa Chromebook</translation>
-<translation id="5476897066181964657">Kailangang sabihin ng magulang o tagapag-alaga na OK na idagdag mo ang extension na ito</translation>
 <translation id="5481273127572794904">Hindi pinapayagang awtomatikong mag-download ng maraming file</translation>
 <translation id="5481941284378890518">Magdagdag ng Mga Printer na Nasa Malapit</translation>
 <translation id="5483785310822538350">Bawiin ang access sa file at device</translation>
@@ -5206,7 +5202,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5555639311269196631">I-off ang hotspot</translation>
 <translation id="5556459405103347317">I-reload</translation>
 <translation id="5558129378926964177">Mag-zoom &amp;In</translation>
-<translation id="5558247502209241936">I-enable ang pagbubukas ng app sa window</translation>
 <translation id="5559311991468302423">I-delete ang address</translation>
 <translation id="55601339223879446">Isaayos ang mga hangganan ng iyong desktop sa display</translation>
 <translation id="5561162485081632007">Nagde-detect ng mga mapanganib na event at nagbibigay sa iyo ng babala tungkol sa mga ito kapag nangyari ang mga ito</translation>
@@ -6032,7 +6027,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6305607932814307878">Pandaigdigang Patakaran:</translation>
 <translation id="6305702903308659374">I-play sa normal na volume kahit na nagsasalita ang ChromeVox</translation>
 <translation id="6305909198255586420">Paki-install gamit ang iyong pangunahing profile</translation>
-<translation id="630750887748244481">Na-off ng iyong magulang ang "Mga pahintulot para sa mga site, app, at extension" para sa Chrome. Hindi pinapayagan ang pagdagdag sa extension na ito.</translation>
 <translation id="6307990684951724544">Abala ang system</translation>
 <translation id="6308493641021088955">Ibinibigay ng <ph name="EXTENSION_NAME" /> ang pag-sign in</translation>
 <translation id="6308937455967653460">I-save ang lin&amp;k bilang...</translation>
@@ -6860,7 +6854,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7025190659207909717">Pamamahala sa serbisyo ng data ng mobile</translation>
 <translation id="7025895441903756761">Seguridad at Privacy</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Buksan Lahat sa &amp;Incognito Window}=1{Buksan sa &amp;Incognito Window}one{Buksan Lahat ({COUNT}) sa &amp;Incognito Window}other{Buksan Lahat ({COUNT}) sa &amp;Incognito Window}}</translation>
-<translation id="7028057921476386252">Kailangang sabihin ng magulang o tagapag-alaga na OK na i-enable mo ang extension na ito</translation>
 <translation id="7029307918966275733">Hindi naka-install ang Crostini. Paki-install ang Crostini para matingnan ang mga credit.</translation>
 <translation id="7029809446516969842">Mga Password</translation>
 <translation id="7030304022046916278">Nagpapadala ng mga URL sa Ligtas na Pag-browse para masuri ang mga ito</translation>
@@ -8239,7 +8232,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8251509999076836464">Ipinapares sa <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">Naalis ang thumbnail.</translation>
 <translation id="825238165904109940">Palaging Ipakita ang Mga Buong URL</translation>
-<translation id="8252538334423261825">Hindi maidagdag ang extension</translation>
 <translation id="8252569384384439529">Ina-upload...</translation>
 <translation id="8253198102038551905">I-click '+' upang makita ang mga property ng network</translation>
 <translation id="8255212965098517578">Mga kamakailang larawan, notification, at app</translation>

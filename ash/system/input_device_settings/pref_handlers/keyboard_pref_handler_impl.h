@@ -10,6 +10,7 @@
 #include "ash/system/input_device_settings/pref_handlers/keyboard_pref_handler.h"
 #include "base/values.h"
 
+class AccountId;
 class PrefService;
 
 namespace ash {
@@ -26,9 +27,28 @@ class ASH_EXPORT KeyboardPrefHandlerImpl : public KeyboardPrefHandler {
       PrefService* pref_service,
       const mojom::KeyboardPolicies& keyboard_policies,
       mojom::Keyboard* keyboard) override;
+
+  void InitializeLoginScreenKeyboardSettings(
+      PrefService* local_state,
+      const AccountId& account_id,
+      const mojom::KeyboardPolicies& keyboard_policies,
+      mojom::Keyboard* keyboard) override;
+
+  // Updates device settings stored in prefs to match the values in
+  // `keyboard.settings`.
   void UpdateKeyboardSettings(PrefService* pref_service,
                               const mojom::KeyboardPolicies& keyboard_policies,
                               const mojom::Keyboard& keyboard) override;
+
+  void UpdateLoginScreenKeyboardSettings(
+      PrefService* local_state,
+      const AccountId& account_id,
+      const mojom::KeyboardPolicies& keyboard_policies,
+      const mojom::Keyboard& keyboard) override;
+
+  void InitializeWithDefaultKeyboardSettings(
+      const mojom::KeyboardPolicies& keyboard_policies,
+      mojom::Keyboard* keyboard) override;
 };
 
 }  // namespace ash

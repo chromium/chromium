@@ -176,13 +176,12 @@ gfx::RectF MouseCursorOverlayController::ComputeRelativeBoundsForOverlay(
 
   const gfx::Size& window_size = window->bounds().size();
   absl::optional<ui::CursorData> cursor_data =
-      aura::client::GetCursorShapeClient()->GetCursorData(cursor);
+      aura::client::GetCursorShapeClient().GetCursorData(cursor);
   if (window_size.IsEmpty() || !window->GetRootWindow() || !cursor_data)
     return gfx::RectF();
 
   const SkBitmap& bitmap = cursor_data->bitmaps[0];
-  const float scale_factor = cursor.image_scale_factor();
-  DCHECK_GT(scale_factor, 0.0f);
+  const float scale_factor = cursor_data->scale_factor;
 
   // Compute the cursor size in terms of DIP coordinates.
   const gfx::SizeF size = gfx::ScaleSize(
@@ -213,7 +212,7 @@ void MouseCursorOverlayController::DisconnectFromToolkitForTesting() {
 SkBitmap MouseCursorOverlayController::GetCursorImage(
     const gfx::NativeCursor& cursor) {
   absl::optional<ui::CursorData> cursor_data =
-      aura::client::GetCursorShapeClient()->GetCursorData(cursor);
+      aura::client::GetCursorShapeClient().GetCursorData(cursor);
   if (!cursor_data)
     return SkBitmap();
 

@@ -38,6 +38,9 @@ public class OmniboxFeatures {
     private static final MutableFlagWithSafeDefault sJourneysRowUiFlag =
             new MutableFlagWithSafeDefault(
                     ChromeFeatureList.OMNIBOX_HISTORY_CLUSTER_PROVIDER, false);
+    private static final MutableFlagWithSafeDefault sCacheSuggestionResources =
+            new MutableFlagWithSafeDefault(
+                    ChromeFeatureList.OMNIBOX_CACHE_SUGGESTION_RESOURCES, false);
 
     /**
      * @param context The activity context.
@@ -115,5 +118,13 @@ public class OmniboxFeatures {
     /** Whether Journeys suggestions should be shown in a dedicated row. */
     public static boolean isJourneysRowUiEnabled() {
         return sJourneysRowUiFlag.isEnabled();
+    }
+
+    /**
+     * Returns whether suggestion resources should be cached directly instead of relying on Android
+     * system caching.
+     */
+    public static boolean shouldCacheSuggestionResources() {
+        return sCacheSuggestionResources.isEnabled();
     }
 }

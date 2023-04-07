@@ -34,7 +34,8 @@ PresentationAvailability::PresentationAvailability(
     ExecutionContext* execution_context,
     const WTF::Vector<KURL>& urls,
     bool value)
-    : ExecutionContextLifecycleStateObserver(execution_context),
+    : ActiveScriptWrappable<PresentationAvailability>({}),
+      ExecutionContextLifecycleStateObserver(execution_context),
       PageVisibilityObserver(
           To<LocalDOMWindow>(execution_context)->GetFrame()->GetPage()),
       urls_(urls),

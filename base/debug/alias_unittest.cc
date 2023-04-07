@@ -37,3 +37,11 @@ TEST(DebugAlias, U16String) {
   EXPECT_TRUE(
       std::equal(std::begin(kTestString), std::end(kTestString), aliased_copy));
 }
+
+TEST(DebugAlias, U16StringPartialCopy) {
+  std::u16string input = u"Hello world!";
+  DEBUG_ALIAS_FOR_U16CSTR(aliased_copy, input.c_str(), 5);
+  // Make sure we don't write past the specified number of characters. We
+  // subtract 1 to account for the null terminator.
+  EXPECT_EQ(input.substr(0, 4), aliased_copy);
+}

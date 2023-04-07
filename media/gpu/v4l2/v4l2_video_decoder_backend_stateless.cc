@@ -240,6 +240,7 @@ V4L2StatelessVideoDecoderBackend::CreateSurface() {
     // driver via MMAP. The VideoFrame received from V4L2 buffer will remain
     // until deallocating V4L2Queue. But we need to know when the buffer is not
     // used by the client. So we wrap the frame here.
+    DCHECK_EQ(output_queue_->GetMemoryType(), V4L2_MEMORY_MMAP);
     scoped_refptr<VideoFrame> origin_frame = output_buf->GetVideoFrame();
     if (!origin_frame) {
       LOG(ERROR) << "There is no available VideoFrame from the V4L2 buffer.";
@@ -250,7 +251,10 @@ V4L2StatelessVideoDecoderBackend::CreateSurface() {
                                        origin_frame->visible_rect(),
                                        origin_frame->natural_size());
   } else {
-    // Try to get VideoFrame from the pool.
+    // This is used in cases when the video decoder format does not need
+    // conversion before being sent to Chrome's Media pipeline. On ChromeOS,
+    // currently only RK3399 (scarlet) supports this.
+    DCHECK_EQ(output_queue_->GetMemoryType(), V4L2_MEMORY_DMABUF);
     frame = pool->GetFrame();
     if (!frame) {
       // We allocate the same number of output buffer slot in V4L2 device and

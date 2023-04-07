@@ -64,6 +64,7 @@ class TestOutput : public GlobalObject {
   void SetLogicalOrigin(const gfx::Point& xdg_logical_origin);
   void SetPanelTransform(wl_output_transform wl_panel_transform);
   void SetLogicalInsets(const gfx::Insets& wl_logical_insets);
+  void SetDeviceScaleFactor(float aura_device_scale_factor);
   void SetLogicalTransform(wl_output_transform aura_logical_transform);
 
   const gfx::Size& GetPhysicalSize() const;

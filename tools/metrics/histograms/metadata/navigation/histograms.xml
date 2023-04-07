@@ -45,6 +45,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
       was removed in Feb 2022.
     </obsolete>
   </variant>
+  <variant name=".Embedder_BookmarkBar"/>
   <variant name=".Embedder_DefaultSearchEngine"/>
   <variant name=".Embedder_DirectURLInput"/>
   <variant name=".SpeculationRule"/>

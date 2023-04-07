@@ -7,16 +7,16 @@
  */
 
 // Namespace of SVG elements
-var svgNS = 'http://www.w3.org/2000/svg';
+const svgNS = 'http://www.w3.org/2000/svg';
 
 // Background color for the band with events.
-var bandColor = '#d3d3d3';
+const bandColor = '#d3d3d3';
 
 // Color that should never appear on UI.
-var unusedColor = '#ff0000';
+const unusedColor = '#ff0000';
 
 // Supported zooms, mcs per pixel
-var zooms = [
+const zooms = [
   2.5,
   5.0,
   10.0,
@@ -33,7 +33,7 @@ var zooms = [
 ];
 
 // Active zoom level, as index in |zooms|. By default 100 mcs per pixel.
-var zoomLevel = 5;
+let zoomLevel = 5;
 
 /**
  * Keep in sync with ArcTracingGraphicsModel::BufferEventType
@@ -43,7 +43,7 @@ var zoomLevel = 5;
  * rendered as a line and |radius| defines the radius in case it is rendered as
  * a circle.
  */
-var eventAttributes = {
+const eventAttributes = {
   // kIdleIn
   0: {color: bandColor, name: 'idle'},
   // kIdleOut
@@ -150,7 +150,7 @@ var eventAttributes = {
  * sequence. Empty list means that tested event is certainly end of the
  * sequence.
  */
-var endSequenceEvents = {
+const endSequenceEvents = {
   // kIdleIn
   0: [],
   // kBufferQueueQueueDone
@@ -189,7 +189,7 @@ var endSequenceEvents = {
  * allocated. To prevent this scanario, |minRange| defines the minimum range of
  * values and is set in scaled units.
  */
-var valueAttributes = {
+const valueAttributes = {
   // kMemUsed.
   1: {
     color: '#ff3d00',
@@ -292,13 +292,13 @@ var valueAttributes = {
  * @type {function()}.
  * Callback when UI has to be updted.
  */
-var updateUiCallback = null;
+let updateUiCallback = null;
 
 /**
  * @type {DetailedInfoView}.
  * Currently active detailed view.
  */
-var activeDetailedInfoView = null;
+let activeDetailedInfoView = null;
 
 /**
  * Discards active detailed view if it exists.
@@ -335,7 +335,7 @@ function timestampToMsText(timestamp) {
  * |delta| means zoom in and positive zoom out.
  */
 function updateZoom(delta) {
-  var newZoomLevel = zoomLevel + delta;
+  const newZoomLevel = zoomLevel + delta;
   if (newZoomLevel < 0 || newZoomLevel >= zooms.length) {
     return;
   }
@@ -379,11 +379,11 @@ function initializeUi(initZoomLevel, callback) {
 
   if ($('arc-tracing-load')) {
     $('arc-tracing-load').onclick = function(event) {
-      var fileElement = document.createElement('input');
+      const fileElement = document.createElement('input');
       fileElement.type = 'file';
 
       fileElement.onchange = function(event) {
-        var reader = new FileReader();
+        const reader = new FileReader();
         reader.onload = function(response) {
           chrome.send('loadFromText', [response.target.result]);
         };
@@ -407,7 +407,7 @@ function setStatus(statusText) {
 class SVG {
   // Creates rectangle element in the |svg| with provided attributes.
   static addRect(svg, x, y, width, height, color, opacity) {
-    var rect = document.createElementNS(svgNS, 'rect');
+    const rect = document.createElementNS(svgNS, 'rect');
     rect.setAttributeNS(null, 'x', x);
     rect.setAttributeNS(null, 'y', y);
     rect.setAttributeNS(null, 'width', width);
@@ -423,7 +423,7 @@ class SVG {
 
   // Creates line element in the |svg| with provided attributes.
   static addLine(svg, x1, y1, x2, y2, color, width) {
-    var line = document.createElementNS(svgNS, 'line');
+    const line = document.createElementNS(svgNS, 'line');
     line.setAttributeNS(null, 'x1', x1);
     line.setAttributeNS(null, 'y1', y1);
     line.setAttributeNS(null, 'x2', x2);
@@ -436,7 +436,7 @@ class SVG {
 
   // Creates polyline element in the |svg| with provided attributes.
   static addPolyline(svg, points, color, width) {
-    var polyline = document.createElementNS(svgNS, 'polyline');
+    const polyline = document.createElementNS(svgNS, 'polyline');
     polyline.setAttributeNS(null, 'points', points.join(' '));
     polyline.setAttributeNS(null, 'stroke', color);
     polyline.setAttributeNS(null, 'stroke-width', width);
@@ -447,7 +447,7 @@ class SVG {
 
   // Creates circle element in the |svg| with provided attributes.
   static addCircle(svg, x, y, radius, strokeWidth, color, strokeColor) {
-    var circle = document.createElementNS(svgNS, 'circle');
+    const circle = document.createElementNS(svgNS, 'circle');
     circle.setAttributeNS(null, 'cx', x);
     circle.setAttributeNS(null, 'cy', y);
     circle.setAttributeNS(null, 'r', radius);
@@ -461,8 +461,8 @@ class SVG {
   // Creates text element in the |svg| with provided attributes.
   static addText(svg, x, y, fontSize, textContent, anchor, transform) {
     const lines = textContent.split('\n');
-    for (var i = 0; i < lines.length; ++i) {
-      var text = document.createElementNS(svgNS, 'text');
+    for (let i = 0; i < lines.length; ++i) {
+      const text = document.createElementNS(svgNS, 'text');
       text.setAttributeNS(null, 'x', x);
       text.setAttributeNS(null, 'y', y);
       text.setAttributeNS(null, 'fill', 'black');
@@ -490,11 +490,11 @@ class EventBandTitle {
     this.div = document.createElement('div');
     this.div.classList.add(className);
     if (opt_iconContent) {
-      var icon = document.createElement('img');
+      const icon = document.createElement('img');
       icon.src = 'data:image/png;base64,' + opt_iconContent;
       this.div.appendChild(icon);
     }
-    var span = document.createElement('span');
+    const span = document.createElement('span');
     span.appendChild(document.createTextNode(title));
     this.div.appendChild(span);
     this.controlledItems = [];
@@ -519,7 +519,7 @@ class EventBandTitle {
 
   onClick_() {
     this.div.classList.toggle('hidden');
-    for (var i = 0; i < this.controlledItems.length; ++i) {
+    for (let i = 0; i < this.controlledItems.length; ++i) {
       this.controlledItems[i].classList.toggle('hidden');
     }
   }
@@ -621,16 +621,16 @@ class EventBands {
    * @param {number} padding to separate from the next band or chart.
    */
   addBand(eventBand, height, padding) {
-    var currentColor = unusedColor;
-    var addToBand = false;
-    var x = this.bandOffsetX;
-    var eventIndex = eventBand.getFirstAfter(this.minTimestamp);
+    let currentColor = unusedColor;
+    let addToBand = false;
+    let x = this.bandOffsetX;
+    let eventIndex = eventBand.getFirstAfter(this.minTimestamp);
     while (eventIndex >= 0) {
-      var event = eventBand.events[eventIndex];
+      const event = eventBand.events[eventIndex];
       if (event[1] >= this.maxTimestamp) {
         break;
       }
-      var nextX = this.timestampToOffset(event[1]) + this.bandOffsetX;
+      const nextX = this.timestampToOffset(event[1]) + this.bandOffsetX;
       if (addToBand) {
         SVG.addRect(
             this.svg, x, this.nextYOffset, nextX - x, height, currentColor);
@@ -715,20 +715,20 @@ class EventBands {
    *                  based on event type.
    */
   addChartSources(sources, smooth, opt_attributes) {
-    var chart = this.charts[this.charts.length - 1];
+    const chart = this.charts[this.charts.length - 1];
 
     // Calculate min/max for sources and event indices.
-    var minValue = null;
-    var maxValue = null;
-    var eventIndicesForAll = [];
-    var eventDetected = false;
-    var attributes = opt_attributes;
-    var autoDetectRange = !attributes ||
+    let minValue = null;
+    let maxValue = null;
+    const eventIndicesForAll = [];
+    let eventDetected = false;
+    let attributes = opt_attributes;
+    const autoDetectRange = !attributes ||
         typeof attributes.minValue == 'undefined' ||
         typeof attributes.maxValue == 'undefined';
-    for (var i = 0; i < sources.length; ++i) {
-      var source = sources[i];
-      var eventIndex = source.getFirstAfter(this.minTimestamp);
+    for (let i = 0; i < sources.length; ++i) {
+      const source = sources[i];
+      let eventIndex = source.getFirstAfter(this.minTimestamp);
       if (eventIndex < 0 || source.events[eventIndex][1] > this.maxTimestamp) {
         eventIndicesForAll.push([]);
         continue;
@@ -737,7 +737,7 @@ class EventBands {
         minValue = source.events[eventIndex][2];
         maxValue = source.events[eventIndex][2];
       }
-      var eventIndices = [];
+      const eventIndices = [];
       while (eventIndex >= 0 &&
              source.events[eventIndex][1] <= this.maxTimestamp) {
         eventIndices.push(eventIndex);
@@ -766,32 +766,32 @@ class EventBands {
       }
 
       // Add +-1% to bounds.
-      var dif = maxValue - minValue;
+      const dif = maxValue - minValue;
       minValue -= dif * 0.01;
       maxValue += dif * 0.01;
     } else {
       minValue = attributes.minValue;
       maxValue = attributes.maxValue;
     }
-    var divider = 1.0 / (maxValue - minValue);
+    const divider = 1.0 / (maxValue - minValue);
 
     // Render now.
-    var height = chart.bottom - chart.top;
-    for (var i = 0; i < sources.length; ++i) {
-      var source = sources[i];
-      var eventIndices = eventIndicesForAll[i];
+    const height = chart.bottom - chart.top;
+    for (let i = 0; i < sources.length; ++i) {
+      const source = sources[i];
+      const eventIndices = eventIndicesForAll[i];
       if (eventIndices.length == 0) {
         continue;
       }
       // Determine type using first element.
-      var eventType = source.events[eventIndices[0]][0];
+      const eventType = source.events[eventIndices[0]][0];
 
-      var points = [];
-      var lastY = 0;
-      for (var j = 0; j < eventIndices.length; ++j) {
-        var event = source.events[eventIndices[j]];
-        var x = this.timestampToOffset(event[1]);
-        var y = height * (maxValue - event[2]) * divider;
+      const points = [];
+      let lastY = 0;
+      for (let j = 0; j < eventIndices.length; ++j) {
+        const event = source.events[eventIndices[j]];
+        const x = this.timestampToOffset(event[1]);
+        const y = height * (maxValue - event[2]) * divider;
         if (!smooth && j != 0) {
           points.push([x, lastY]);
         }
@@ -900,27 +900,27 @@ class EventBands {
    * @param {number} height height of bars.
    */
   addBarSource(source, attributes, y, height) {
-    var chart = this.charts[this.charts.length - 1];
+    const chart = this.charts[this.charts.length - 1];
 
-    var eventIndex = source.getFirstAfter(this.minTimestamp);
+    let eventIndex = source.getFirstAfter(this.minTimestamp);
     if (eventIndex < 0 || source.events[eventIndex][1] > this.maxTimestamp) {
       return;
     }
 
     while (eventIndex >= 0 &&
            source.events[eventIndex][1] <= this.maxTimestamp) {
-      var eventIndexNext = source.getNextEvent(eventIndex, 1 /* direction */);
-      var event = source.events[eventIndex];
-      var x = this.timestampToOffset(event[1]);
-      var color = attributes[event[2]].color;
-      var nextTimestamp = 0;
+      const eventIndexNext = source.getNextEvent(eventIndex, 1 /* direction */);
+      const event = source.events[eventIndex];
+      const x = this.timestampToOffset(event[1]);
+      const color = attributes[event[2]].color;
+      let nextTimestamp = 0;
       if (eventIndexNext >= 0 &&
           source.events[eventIndexNext][1] <= this.maxTimestamp) {
         nextTimestamp = source.events[eventIndexNext][1];
       } else {
         nextTimestamp = this.maxTimestamp;
       }
-      var width = this.timestampToOffset(nextTimestamp);
+      const width = this.timestampToOffset(nextTimestamp);
       eventIndex = eventIndexNext;
       SVG.addRect(this.svg, x, y, width, height, color, 1.0 /* opacity */);
     }
@@ -953,15 +953,15 @@ class EventBands {
    *                 for default or set to 'circle'.
    */
   addGlobal(events, renderType) {
-    var eventIndex = -1;
+    let eventIndex = -1;
     while (true) {
       eventIndex = events.getNextEvent(eventIndex, 1 /* direction */);
       if (eventIndex < 0) {
         break;
       }
-      var event = events.events[eventIndex];
-      var attributes = events.getEventAttributes(eventIndex);
-      var x = this.timestampToOffset(event[1]) + this.bandOffsetX;
+      const event = events.events[eventIndex];
+      const attributes = events.getEventAttributes(eventIndex);
+      const x = this.timestampToOffset(event[1]) + this.bandOffsetX;
       if (renderType == 'circle') {
         SVG.addCircle(
             this.svg, x, this.height / 2, attributes.radius,
@@ -1014,13 +1014,13 @@ class EventBands {
    *                  closest to farthest.
    */
   findGlobalEvents_(timestamp, distance) {
-    var events = [];
-    var leftBorder = timestamp - distance;
-    var rightBorder = timestamp + distance;
-    for (var i = 0; i < this.globalEvents.length; ++i) {
-      var index = this.globalEvents[i].getFirstAfter(leftBorder);
+    const events = [];
+    const leftBorder = timestamp - distance;
+    const rightBorder = timestamp + distance;
+    for (let i = 0; i < this.globalEvents.length; ++i) {
+      let index = this.globalEvents[i].getFirstAfter(leftBorder);
       while (index >= 0) {
-        var event = this.globalEvents[i].events[index];
+        const event = this.globalEvents[i].events[index];
         if (event[1] > rightBorder) {
           break;
         }
@@ -1029,8 +1029,8 @@ class EventBands {
       }
     }
     events.sort(function(a, b) {
-      var distanceA = Math.abs(timestamp - a[1]);
-      var distanceB = Math.abs(timestamp - b[1]);
+      const distanceA = Math.abs(timestamp - a[1]);
+      const distanceB = Math.abs(timestamp - b[1]);
       return distanceA - distanceB;
     });
     return events;
@@ -1045,13 +1045,13 @@ class EventBands {
     // Clear previous content.
     this.tooltip.textContent = '';
 
-    var svgStyle = window.getComputedStyle(this.svg, null);
-    var paddingLeft = parseFloat(svgStyle.getPropertyValue('padding-left'));
-    var paddingTop = parseFloat(svgStyle.getPropertyValue('padding-top'));
-    var eventX = event.offsetX - paddingLeft;
-    var eventY = event.offsetY - paddingTop;
+    const svgStyle = window.getComputedStyle(this.svg, null);
+    const paddingLeft = parseFloat(svgStyle.getPropertyValue('padding-left'));
+    const paddingTop = parseFloat(svgStyle.getPropertyValue('padding-top'));
+    const eventX = event.offsetX - paddingLeft;
+    const eventY = event.offsetY - paddingTop;
 
-    var svg = document.createElementNS(svgNS, 'svg');
+    const svg = document.createElementNS(svgNS, 'svg');
     svg.setAttributeNS(
         'http://www.w3.org/2000/xmlns/', 'xmlns:xlink',
         'http://www.w3.org/1999/xlink');
@@ -1074,10 +1074,10 @@ class EventBands {
       return;
     }
 
-    var eventTimestamp = this.offsetToTime(eventX - this.bandOffsetX);
+    const eventTimestamp = this.offsetToTime(eventX - this.bandOffsetX);
 
-    var width = 220;
-    var yOffset = this.verticalGap;
+    const width = 220;
+    let yOffset = this.verticalGap;
 
     // In case of global events are not available, render tooltip for band and
     // chart.
@@ -1085,7 +1085,7 @@ class EventBands {
         this.updateToolTipForGlobalEvents_(event, svg, eventTimestamp, yOffset);
     if (yOffset == this.verticalGap) {
       // Find band for this mouse event.
-      for (var i = 0; i < this.bands.length; ++i) {
+      for (let i = 0; i < this.bands.length; ++i) {
         if (this.bands[i].top <= eventY && this.bands[i].bottom > eventY) {
           yOffset = this.updateToolTipForBand_(
               event, svg, eventTimestamp, this.bands[i].band, yOffset);
@@ -1094,7 +1094,7 @@ class EventBands {
       }
 
       // Find chart for this mouse event.
-      for (var i = 0; i < this.charts.length; ++i) {
+      for (let i = 0; i < this.charts.length; ++i) {
         if (this.charts[i].top <= eventY && this.charts[i].bottom > eventY) {
           yOffset = this.updateToolTipForChart_(
               event, svg, eventTimestamp, this.charts[i], yOffset);
@@ -1130,7 +1130,7 @@ class EventBands {
     if (!this.vsyncEvents) {
       return null;
     }
-    var vsyncEventIndex = this.vsyncEvents.getLastBefore(eventTimestamp);
+    const vsyncEventIndex = this.vsyncEvents.getLastBefore(eventTimestamp);
     if (vsyncEventIndex < 0) {
       return null;
     }
@@ -1149,9 +1149,9 @@ class EventBands {
    * @returns {number} vertical position of the next element.
    */
   addTimeInfoToTooltip_(svg, yOffset, eventTimestamp) {
-    var vsyncTimestamp = this.getVSyncTimestamp_(eventTimestamp);
+    const vsyncTimestamp = this.getVSyncTimestamp_(eventTimestamp);
 
-    var text = timestampToMsText(eventTimestamp) + ' ms';
+    let text = timestampToMsText(eventTimestamp) + ' ms';
     if (vsyncTimestamp) {
       text += ', +' + timestampToMsText(eventTimestamp - vsyncTimestamp) +
           ' since last vsync';
@@ -1176,18 +1176,18 @@ class EventBands {
   updateToolTipForGlobalEvents_(event, svg, eventTimestamp, yOffset) {
     // Try to find closest global events in the range -3..3 pixels. Several
     // events may stick close each other so let diplay up to 3 closest events.
-    var distanceMcs = 3 * this.resolution;
-    var globalEvents = this.findGlobalEvents_(eventTimestamp, distanceMcs);
+    const distanceMcs = 3 * this.resolution;
+    const globalEvents = this.findGlobalEvents_(eventTimestamp, distanceMcs);
     if (globalEvents.length == 0) {
       return yOffset;
     }
 
     // Show the global events info.
-    var globalEventCnt = Math.min(globalEvents.length, 3);
-    for (var i = 0; i < globalEventCnt; ++i) {
-      var globalEvent = globalEvents[i];
-      var globalEventType = globalEvent[0];
-      var globalEventTimestamp = globalEvent[1];
+    const globalEventCnt = Math.min(globalEvents.length, 3);
+    for (let i = 0; i < globalEventCnt; ++i) {
+      const globalEvent = globalEvents[i];
+      const globalEventType = globalEvent[0];
+      let globalEventTimestamp = globalEvent[1];
       if (globalEventType == 406 /* kVsyncTimestamp */) {
         // -1 to prevent VSYNC detects itself. In last case, previous VSYNC
         // would be chosen.
@@ -1196,7 +1196,7 @@ class EventBands {
 
       yOffset = this.addTimeInfoToTooltip_(svg, yOffset, globalEventTimestamp);
 
-      var attributes = eventAttributes[globalEventType];
+      const attributes = eventAttributes[globalEventType];
       yOffset += this.lineHeight;
       SVG.addCircle(
           svg, this.iconOffset, yOffset - this.iconRadius, this.iconRadius, 1,
@@ -1231,20 +1231,20 @@ class EventBands {
   updateToolTipForBand_(event, svg, eventTimestamp, eventBand, yOffset) {
     // Find the event under the cursor. |index| points to the current event
     // and |nextIndex| points to the next event.
-    var nextIndex = eventBand.getFirstEvent();
+    let nextIndex = eventBand.getFirstEvent();
     while (nextIndex >= 0) {
       if (eventBand.events[nextIndex][1] > eventTimestamp) {
         break;
       }
       nextIndex = eventBand.getNextEvent(nextIndex, 1 /* direction */);
     }
-    var index = eventBand.getNextEvent(nextIndex, -1 /* direction */);
+    let index = eventBand.getNextEvent(nextIndex, -1 /* direction */);
 
     if (index < 0 || eventBand.isEndOfSequence(index)) {
       // In case cursor points to idle event, show its interval.
       yOffset += this.lineHeight;
-      var startIdle = index < 0 ? 0 : eventBand.events[index][1];
-      var endIdle =
+      const startIdle = index < 0 ? 0 : eventBand.events[index][1];
+      const endIdle =
           nextIndex < 0 ? this.maxTimestamp : eventBand.events[nextIndex][1];
       SVG.addText(
           svg, this.horizontalGap, yOffset, this.fontSize,
@@ -1254,23 +1254,23 @@ class EventBands {
       // Show the sequence of non-idle events.
       // Find the start of the non-idle sequence.
       while (true) {
-        var prevIndex = eventBand.getNextEvent(index, -1 /* direction */);
+        const prevIndex = eventBand.getNextEvent(index, -1 /* direction */);
         if (prevIndex < 0 || eventBand.isEndOfSequence(prevIndex)) {
           break;
         }
         index = prevIndex;
       }
 
-      var sequenceTimestamp = eventBand.events[index][1];
+      const sequenceTimestamp = eventBand.events[index][1];
       yOffset = this.addTimeInfoToTooltip_(svg, yOffset, sequenceTimestamp);
 
-      var lastTimestamp = sequenceTimestamp;
+      let lastTimestamp = sequenceTimestamp;
       // Scan for the entries to show.
-      var entriesToShow = [];
+      const entriesToShow = [];
       while (index >= 0) {
-        var attributes = eventBand.getEventAttributes(index);
-        var eventTimestamp = eventBand.events[index][1];
-        var entryToShow = {};
+        const attributes = eventBand.getEventAttributes(index);
+        const eventTimestamp = eventBand.events[index][1];
+        const entryToShow = {};
         entryToShow.color = attributes.color;
         if (eventBand.events[index].length > 2) {
           entryToShow.text = attributes.name + ' ' + eventBand.events[index][2];
@@ -1293,8 +1293,8 @@ class EventBands {
       if (entriesToShow.length > 0) {
         entriesToShow[entriesToShow.length - 1].color = bandColor;
       }
-      for (var i = 0; i < entriesToShow.length; ++i) {
-        var entryToShow = entriesToShow[i];
+      for (let i = 0; i < entriesToShow.length; ++i) {
+        const entryToShow = entriesToShow[i];
         yOffset += this.lineHeight;
         SVG.addCircle(
             svg, this.iconOffset, yOffset - this.iconRadius, this.iconRadius, 1,
@@ -1320,37 +1320,38 @@ class EventBands {
    * @returns {number} next vertical position to fill the next content.
    */
   updateToolTipForChart_(event, svg, eventTimestamp, chart, yOffset) {
-    var valueOffset = 32;
+    const valueOffset = 32;
 
-    var contentAdded = false;
-    for (var i = 0; i < chart.sourcesWithBounds.length; ++i) {
-      var sourceWithBounds = chart.sourcesWithBounds[i];
+    let contentAdded = false;
+    for (let i = 0; i < chart.sourcesWithBounds.length; ++i) {
+      const sourceWithBounds = chart.sourcesWithBounds[i];
 
-      var color;
-      var text;
+      let color;
+      let text;
       if (sourceWithBounds.perValue) {
         // Tooltip per value
-        var index = sourceWithBounds.source.getLastBefore(eventTimestamp);
+        const index = sourceWithBounds.source.getLastBefore(eventTimestamp);
         if (index < 0) {
           continue;
         }
-        var event = sourceWithBounds.source.events[index];
+        const event = sourceWithBounds.source.events[index];
         color = sourceWithBounds.attributes[event[2]].color;
         text = sourceWithBounds.attributes[event[2]].name;
       } else {
         // Interpolate results.
-        var indexAfter = sourceWithBounds.source.getFirstAfter(eventTimestamp);
+        const indexAfter =
+            sourceWithBounds.source.getFirstAfter(eventTimestamp);
         if (indexAfter < 0) {
           continue;
         }
-        var indexBefore = sourceWithBounds.source.getNextEvent(
+        const indexBefore = sourceWithBounds.source.getNextEvent(
             indexAfter, -1 /* direction */);
         if (indexBefore < 0) {
           continue;
         }
-        var eventBefore = sourceWithBounds.source.events[indexBefore];
-        var eventAfter = sourceWithBounds.source.events[indexAfter];
-        var factor = (eventTimestamp - eventBefore[1]) /
+        const eventBefore = sourceWithBounds.source.events[indexBefore];
+        const eventAfter = sourceWithBounds.source.events[indexAfter];
+        let factor = (eventTimestamp - eventBefore[1]) /
             (eventAfter[1] - eventBefore[1]);
 
         if (!sourceWithBounds.smooth) {
@@ -1359,7 +1360,7 @@ class EventBands {
             factor = 0.0;
           }
         }
-        var value = factor * eventAfter[2] + (1.0 - factor) * eventBefore[2];
+        const value = factor * eventAfter[2] + (1.0 - factor) * eventBefore[2];
         text = (value * sourceWithBounds.attributes.scale).toFixed(1) + ' ' +
             sourceWithBounds.attributes.name;
         color = sourceWithBounds.attributes.color;
@@ -1431,54 +1432,54 @@ class DetailedInfoView {
 class CpuDetailedInfoView extends DetailedInfoView {
   create(overviewBand) {
     this.overlay = $('arc-detailed-view-overlay');
-    var overviewRect = overviewBand.svg.getBoundingClientRect();
+    const overviewRect = overviewBand.svg.getBoundingClientRect();
 
     // Clear previous content.
     this.overlay.textContent = '';
 
     // UI constants to render.
-    var columnNameWidth = 130;
-    var columnUsageWidth = 40;
-    var scrollBarWidth = 3;
-    var zoomFactor = 4.0;
-    var cpuBandHeight = 14;
-    var processInfoHeight = 14;
-    var padding = 2;
-    var fontSize = 12;
-    var processInfoPadding = 2;
-    var threadInfoPadding = 12;
-    var cpuUsagePadding = 2;
-    var columnsWidth = columnNameWidth + columnUsageWidth;
+    const columnNameWidth = 130;
+    const columnUsageWidth = 40;
+    const scrollBarWidth = 3;
+    const zoomFactor = 4.0;
+    const cpuBandHeight = 14;
+    const processInfoHeight = 14;
+    const padding = 2;
+    const fontSize = 12;
+    const processInfoPadding = 2;
+    const threadInfoPadding = 12;
+    const cpuUsagePadding = 2;
+    const columnsWidth = columnNameWidth + columnUsageWidth;
 
     // Use minimum 80% of inner width or 600 pixels to display detailed view
     // zoomed |zoomFactor| times.
-    var availableWidthPixels =
+    let availableWidthPixels =
         window.innerWidth * 0.8 - columnsWidth - scrollBarWidth;
     availableWidthPixels = Math.max(availableWidthPixels, 600);
-    var availableForHalfBandMcs = Math.floor(
+    const availableForHalfBandMcs = Math.floor(
         overviewBand.offsetToTime(availableWidthPixels) / (2.0 * zoomFactor));
     // Determine the interval to display.
-    var eventTimestamp =
+    const eventTimestamp =
         overviewBand.offsetToTime(event.offsetX - overviewBand.bandOffsetX);
-    var minTimestamp = eventTimestamp - availableForHalfBandMcs;
-    var maxTimestamp = eventTimestamp + availableForHalfBandMcs + 1;
-    var duration = maxTimestamp - minTimestamp;
+    const minTimestamp = eventTimestamp - availableForHalfBandMcs;
+    const maxTimestamp = eventTimestamp + availableForHalfBandMcs + 1;
+    const duration = maxTimestamp - minTimestamp;
 
     // Construct sub-model of active/idle events per each thread, active within
     // this interval.
-    var eventsPerTid = {};
-    for (var cpuId = 0; cpuId < overviewBand.model.system.cpu.length; cpuId++) {
-      var activeEvents = new Events(
+    const eventsPerTid = {};
+    for (let cpuId = 0; cpuId < overviewBand.model.system.cpu.length; cpuId++) {
+      const activeEvents = new Events(
           overviewBand.model.system.cpu[cpuId], 3 /* kActive */,
           3 /* kActive */);
       // Assume we have an idle before minTimestamp.
-      var activeTid = 0;
-      var index = activeEvents.getFirstAfter(minTimestamp);
-      var activeStartTimestamp = minTimestamp;
+      let activeTid = 0;
+      let index = activeEvents.getFirstAfter(minTimestamp);
+      let activeStartTimestamp = minTimestamp;
       // Check if previous event goes over minTimestamp, in that case extract
       // the active thread.
       if (index > 0) {
-        var lastBefore = activeEvents.getNextEvent(index, -1 /* direction */);
+        const lastBefore = activeEvents.getNextEvent(index, -1 /* direction */);
         if (lastBefore >= 0) {
           // This may be idle (tid=0) or real thread.
           activeTid = activeEvents.events[lastBefore][2];
@@ -1497,19 +1498,19 @@ class CpuDetailedInfoView extends DetailedInfoView {
     }
 
     // The same thread might be executed on different CPU cores. Sort events.
-    for (var tid in eventsPerTid) {
+    for (const tid in eventsPerTid) {
       eventsPerTid[tid].events.sort(function(a, b) {
         return a[1] - b[1];
       });
     }
 
     // Group threads by process.
-    var threadsPerPid = {};
-    var pids = [];
-    var totalTime = 0;
-    for (var tid in eventsPerTid) {
-      var thread = eventsPerTid[tid];
-      var pid = overviewBand.model.system.threads[tid].pid;
+    const threadsPerPid = {};
+    const pids = [];
+    let totalTime = 0;
+    for (const tid in eventsPerTid) {
+      const thread = eventsPerTid[tid];
+      const pid = overviewBand.model.system.threads[tid].pid;
       if (!(pid in threadsPerPid)) {
         pids.push(pid);
         threadsPerPid[pid] = {};
@@ -1526,33 +1527,34 @@ class CpuDetailedInfoView extends DetailedInfoView {
       return threadsPerPid[b].totalTime - threadsPerPid[a].totalTime;
     });
 
-    var totalUsage = 100.0 * totalTime / duration;
-    var cpuInfo = 'CPU view. ' + pids.length + '/' +
+    const totalUsage = 100.0 * totalTime / duration;
+    const cpuInfo = 'CPU view. ' + pids.length + '/' +
         Object.keys(eventsPerTid).length +
         ' active processes/threads. Total cpu usage: ' + totalUsage.toFixed(2) +
         '%.';
-    var title = new EventBandTitle(
+    const title = new EventBandTitle(
         this.overlay, undefined, cpuInfo, 'arc-cpu-view-title');
-    var bands = new EventBands(
+    const bands = new EventBands(
         title, 'arc-events-cpu-detailed-band',
         overviewBand.resolution / zoomFactor, minTimestamp, maxTimestamp);
     bands.setBandOffsetX(columnsWidth);
-    var bandsWidth = bands.timestampToOffset(maxTimestamp);
-    var totalWidth = bandsWidth + columnsWidth;
+    const bandsWidth = bands.timestampToOffset(maxTimestamp);
+    const totalWidth = bandsWidth + columnsWidth;
     bands.setWidth(totalWidth);
 
-    for (var i = 0; i < pids.length; i++) {
-      var pid = pids[i];
-      var threads = threadsPerPid[pid].threads;
-      var processName;
+    for (let i = 0; i < pids.length; i++) {
+      const pid = pids[i];
+      const threads = threadsPerPid[pid].threads;
+      let processName;
       if (pid in overviewBand.model.system.threads) {
         processName = overviewBand.model.system.threads[pid].name;
       } else {
         processName = 'Others';
       }
-      var processCpuUsage = 100.0 * threadsPerPid[pid].totalTime / duration;
-      var processInfo = processName + ' <' + pid + '>';
-      var processInfoTextLine = bands.nextYOffset + processInfoHeight - padding;
+      const processCpuUsage = 100.0 * threadsPerPid[pid].totalTime / duration;
+      const processInfo = processName + ' <' + pid + '>';
+      const processInfoTextLine =
+          bands.nextYOffset + processInfoHeight - padding;
       SVG.addText(
           bands.svg, processInfoPadding, processInfoTextLine, fontSize,
           processInfo);
@@ -1575,12 +1577,12 @@ class CpuDetailedInfoView extends DetailedInfoView {
 
       bands.nextYOffset += (processInfoHeight + padding);
 
-      for (var j = 0; j < threads.length; j++) {
-        var tid = threads[j].tid;
+      for (let j = 0; j < threads.length; j++) {
+        const tid = threads[j].tid;
         bands.addBand(
             new Events(eventsPerTid[tid].events, 0, 1), cpuBandHeight, padding);
-        var threadName = overviewBand.model.system.threads[tid].name;
-        var threadCpuUsage = 100.0 * threads[j].totalTime / duration;
+        const threadName = overviewBand.model.system.threads[tid].name;
+        const threadCpuUsage = 100.0 * threads[j].totalTime / duration;
         SVG.addText(
             bands.svg, threadInfoPadding, bands.nextYOffset - padding, fontSize,
             threadName);
@@ -1592,14 +1594,14 @@ class CpuDetailedInfoView extends DetailedInfoView {
       bands.addBandSeparator(2 /* padding */);
     }
 
-    var vsyncEvents = new Events(
+    const vsyncEvents = new Events(
         overviewBand.model.android.global_events, 406 /* kVsyncTimestamp */,
         406 /* kVsyncTimestamp */);
     bands.setVSync(vsyncEvents);
 
     // Add center and boundary lines.
-    var kTimeMark = 10000;
-    var timeEvents = [
+    const kTimeMark = 10000;
+    const timeEvents = [
       [kTimeMark, minTimestamp],
       [kTimeMark, eventTimestamp],
       [kTimeMark, maxTimestamp - 1],
@@ -1614,8 +1616,8 @@ class CpuDetailedInfoView extends DetailedInfoView {
         bands.svg, columnsWidth, 0, columnsWidth, bands.height, '#888', 0.25);
 
     // Mark zoomed interval in overview.
-    var overviewX = overviewBand.timestampToOffset(minTimestamp);
-    var overviewWidth =
+    const overviewX = overviewBand.timestampToOffset(minTimestamp);
+    const overviewWidth =
         overviewBand.timestampToOffset(maxTimestamp) - overviewX;
     this.bandSelection = SVG.addRect(
         overviewBand.svg, overviewX, 0, overviewWidth, overviewBand.height,
@@ -1625,7 +1627,7 @@ class CpuDetailedInfoView extends DetailedInfoView {
     this.bandSelection.classList.add('arc-no-mouse-events');
 
     // Align position in overview and middle line here if possible.
-    var left = Math.max(
+    const left = Math.max(
         Math.min(
             Math.round(event.clientX - columnsWidth - bandsWidth * 0.5),
             window.innerWidth - totalWidth),
@@ -1674,9 +1676,9 @@ class CpuEventBands extends EventBands {
   setModel(model) {
     this.model = model;
     this.showDetailedInfo = true;
-    var bandHeight = 6;
-    var padding = 2;
-    for (var cpuId = 0; cpuId < this.model.system.cpu.length; cpuId++) {
+    const bandHeight = 6;
+    const padding = 2;
+    for (let cpuId = 0; cpuId < this.model.system.cpu.length; cpuId++) {
       this.addBand(
           new Events(this.model.system.cpu[cpuId], 0, 1), bandHeight, padding);
     }
@@ -1687,7 +1689,7 @@ class CpuEventBands extends EventBands {
   }
 
   showDetailedInfo(event) {
-    var view = new CpuDetailedInfoView();
+    const view = new CpuDetailedInfoView();
     view.create(this);
     return view;
   }
@@ -1764,14 +1766,14 @@ class Events {
    * @param {number} index element index in |this.events|.
    */
   isEndOfSequence(index) {
-    var nextEventTypes = endSequenceEvents[this.events[index][0]];
+    const nextEventTypes = endSequenceEvents[this.events[index][0]];
     if (!nextEventTypes) {
       return false;
     }
     if (nextEventTypes.length == 0) {
       return true;
     }
-    var nextIndex = this.getNextEvent(index, 1 /* direction */);
+    const nextIndex = this.getNextEvent(index, 1 /* direction */);
     if (nextIndex < 0) {
       // No more events after and it is listed as possible end of sequence.
       return true;
@@ -1796,10 +1798,10 @@ class Events {
           this.events.length /* index */, -1 /* direction */);
     }
     // At this moment |firstBefore| and |firstAfter| points to any event.
-    var firstBefore = 0;
-    var firstAfter = this.events.length - 1;
+    let firstBefore = 0;
+    let firstAfter = this.events.length - 1;
     while (firstBefore + 1 != firstAfter) {
-      var candidateIndex = Math.ceil((firstBefore + firstAfter) / 2);
+      const candidateIndex = Math.ceil((firstBefore + firstAfter) / 2);
       if (this.events[candidateIndex][1] < timestamp) {
         firstBefore = candidateIndex;
       } else {
@@ -1816,8 +1818,8 @@ class Events {
     } else if (firstAfter < 0) {
       return firstBefore;
     } else {
-      var diffBefore = timestamp - this.events[firstBefore][1];
-      var diffAfter = this.events[firstAfter][1] - timestamp;
+      const diffBefore = timestamp - this.events[firstBefore][1];
+      const diffAfter = this.events[firstAfter][1] - timestamp;
       if (diffBefore < diffAfter) {
         return firstBefore;
       } else {
@@ -1832,7 +1834,7 @@ class Events {
    * @param {number} timestamp to search.
    */
   getFirstAfter(timestamp) {
-    var closest = this.getClosest(timestamp);
+    const closest = this.getClosest(timestamp);
     if (closest < 0) {
       return -1;
     }
@@ -1848,7 +1850,7 @@ class Events {
    * @param {number} timestamp to search.
    */
   getLastBefore(timestamp) {
-    var closest = this.getClosest(timestamp);
+    const closest = this.getClosest(timestamp);
     if (closest < 0) {
       return -1;
     }
@@ -1875,13 +1877,13 @@ class Events {
  */
 function createChart(
     parent, title, resolution, duration, height, gridLinesCount, anchor) {
-  var titleBands =
+  const titleBands =
       new EventBandTitle(parent, anchor, title, 'arc-events-band-title');
-  var bands =
+  const bands =
       new EventBands(titleBands, 'arc-events-band', resolution, 0, duration);
   bands.setWidth(bands.timestampToOffset(duration));
   bands.addChart(height, 4 /* padding */);
-  for (var i = 0; i < gridLinesCount; i++) {
+  for (let i = 0; i < gridLinesCount; i++) {
     bands.addChartGridLine((i + 1) * height / (gridLinesCount + 1));
   }
   return bands;

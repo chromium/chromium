@@ -455,6 +455,7 @@
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Իմացեք ավելին<ph name="END_LINK" /> առաջարկվող բովանդակության վերաբերյալ</translation>
 <translation id="3495219333887281978">Հաշիվ մտնելու ներքևի էկրանը բացված է կիսով չափ։</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="350276055892098337">Սկզբում հները</translation>
 <translation id="3507132249039706973">Սովորական պաշտպանությունը միացված է</translation>
 <translation id="3509330069915219067">Կապ չկա։ Chrome-ը չի կարող ստուգել թարմացումների առկայությունը։</translation>
 <translation id="3513704683820682405">Լրացված իրականություն</translation>
@@ -575,6 +576,7 @@
 <translation id="4177222230309051052">Ձեր բոլոր էջանիշները՝ միշտ ձեռքի տակ</translation>
 <translation id="4177501066905053472">Գովազդի թեմաներ</translation>
 <translation id="4181841719683918333">Լեզուներ</translation>
+<translation id="4188221736490993796">Դասավորել Ֆ-ից Ա</translation>
 <translation id="4195643157523330669">Բացել նոր ներդիրով</translation>
 <translation id="4196597275619698563">Ստեղծել քարտ</translation>
 <translation id="4198423547019359126">Ներբեռնումների պանակներ չկան</translation>
@@ -640,6 +642,7 @@
 <translation id="4565377596337484307">Թաքցնել գաղտնաբառը</translation>
 <translation id="4572422548854449519">Մուտք գործեք կառավարվող հաշիվ</translation>
 <translation id="4576892426230499203">Ընտրեք հաստատման այլ տարբերակ</translation>
+<translation id="4577115723294378384">Դասավորել Ա-ից Ֆ</translation>
 <translation id="4578289292431526768">Սկսել</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# րոպե առաջ}one{# րոպե առաջ}other{# րոպե առաջ}}</translation>
 <translation id="4587589328781138893">Կայքեր</translation>
@@ -663,6 +666,7 @@
 <translation id="4689792375321623175">Որոնել պատկերներ Google-ով <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 և ուղարկման ևս <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> տարբերակ}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 և ուղարկման ևս <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> տարբերակ}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 և ուղարկման ևս <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> տարբերակ}}</translation>
 <translation id="4699172675775169585">Քեշավորված պատկերներ և ֆայլեր</translation>
+<translation id="4710167854527459075">Սկզբում նորերը</translation>
 <translation id="4719927025381752090">Առաջարկել թարգմանել</translation>
 <translation id="4720023427747327413">Բացել <ph name="PRODUCT_NAME" />-ում</translation>
 <translation id="47217992755561375">Դիտեք ձեր թոփ կայքերը</translation>
@@ -832,6 +836,7 @@
 <translation id="5561162485081632007">Հայտնաբերում է վտանգավոր իրադարձություններն ու զգուշացնում դրանց մասին</translation>
 <translation id="5561549206367097665">Ցանցի որոնում…</translation>
 <translation id="5568069709869097550">Չհաջողվեց մուտք գործել</translation>
+<translation id="557018954714092179">Ստեղծել նոր պանակ</translation>
 <translation id="5578795271662203820">Որոնել այս պատկերը <ph name="SEARCH_ENGINE" />-ում</translation>
 <translation id="5581519193887989363">Ցանկացած ժամանակ կարող եք անցնել <ph name="BEGIN_LINK1" />կարգավորումներ<ph name="END_LINK1" /> և ընտրել, թե ինչն եք ուզում համաժամացնել:</translation>
 <translation id="5590372121997663538">Հիշել այս համակարգիչը</translation>
@@ -936,6 +941,7 @@
 <translation id="6138832295072039549">Այստեղ կարող եք փոխել կայքի կարգավորումները</translation>
 <translation id="6140709049082532940">Բարելավված պաշտպանություն՝</translation>
 <translation id="6140912465461743537">Երկիր/տարածաշրջան</translation>
+<translation id="6148266338772765473">Բացառել հղումը</translation>
 <translation id="6150320133806434356">Էջանիշը պահված է</translation>
 <translation id="6154478581116148741">Այս սարքից ձեր գաղտնաբառերն արտահանելու համար կարգավորումներում միացրեք էկրանի կողպումը։</translation>
 <translation id="6159729262978459665">Մաքրում է պատմությունը բոլոր համաժամացված սարքերից։</translation>
@@ -1027,6 +1033,7 @@
 <translation id="6590680911007613645">Ստուգեք՝ արդյոք գաղտնաբառը, որն ուզում եք պահել, համընկնում է <ph name="SITE" /> կայքի ձեր գաղտնաբառի հետ։</translation>
 <translation id="6593061639179217415">Համակարգչային տարբերակ</translation>
 <translation id="6594121454516132231">Դիտեք, թե ինչպես է Chromе-ը պաշտպանելու ձեզ գործողությունների միջկայքային հետագծման մեխանիզմներից</translation>
+<translation id="6594347733515723558">Դասավորում և դիտում</translation>
 <translation id="6595046016124923392">Պատկերներն ուղարկվում են Google-ին՝ նկարագրությունները բարելավելու նպատակով։</translation>
 <translation id="6600954340915313787">Պատճենվել է Chrome-ում</translation>
 <translation id="661266467055912436">Համացանցը դարձնում է ավելի անվտանգ ձեր և մյուս օգտատերերի համար։</translation>

@@ -730,6 +730,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2718207025093645426">Nid oes gan ddefnyddiwr neu ddyfais a reolir unrhyw bolisi wedi'i lwytho.</translation>
 <translation id="2721148159707890343">Roedd y cais yn llwyddiannus</translation>
 <translation id="2723669454293168317">Rhedeg gwiriad diogelwch yng ngosodiadau Chrome</translation>
+<translation id="2725492561136085792">Pwyswch Enter i weithredu'r weithred hon.</translation>
 <translation id="2726001110728089263">Hambwrdd Ochr</translation>
 <translation id="2728127805433021124">Llofnodir tystysgrif gweinyddwr gan ddefnyddio algorithm llofnodi gwan.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Wrthi'n Rhedeg Diagnosteg Cysylltedd<ph name="END_LINK" /></translation>
@@ -826,6 +827,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="299990983510665749">Car cefn codi</translation>
 <translation id="3002501248619246229">Gwiriwch y cyfryngau hambwrdd mewnbwn</translation>
 <translation id="3005723025932146533">Dangos y copi sydd wedi'i gadw</translation>
+<translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, pwyswch Tab i bori'r gweithredoedd sydd ar gael, yna Enter i weithredu'r weithred a ddewiswyd.</translation>
 <translation id="3013291976881901233">Dyfeisiau MIDI</translation>
 <translation id="301521992641321250">Rhwystrwyd yn awtomatig</translation>
 <translation id="3016780570757425217">Gwybod eich lleoliad</translation>
@@ -1340,6 +1342,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4274173425554582601">Cyfrifiaduron ac electroneg</translation>
 <translation id="4275830172053184480">Ailgychwynnwch eich dyfais</translation>
 <translation id="4277028893293644418">Ailosod cyfrinair</translation>
+<translation id="4277937682389409325">Cyfeiriad lleol</translation>
 <translation id="4278390842282768270">Caniateir</translation>
 <translation id="4281998142035485137">{0,plural, =1{Agor ffeil gyfrinachol?}zero{Agor ffeiliau cyfrinachol?}two{Agor ffeiliau cyfrinachol?}few{Agor ffeiliau cyfrinachol?}many{Agor ffeiliau cyfrinachol?}other{Agor ffeiliau cyfrinachol?}}</translation>
 <translation id="4282346679996504092">Mae hysbysiadau ar gyfer y cynnyrch hwn wedi'u diffodd a'r nod tudalen wedi'i ddileu</translation>

@@ -14,128 +14,128 @@
   "typography": {
     "font_families": {},
     "typefaces": {
-      "display0": {
-        "font_family": "'Google Sans Medium', 'Roboto', sans-serif",
+      "display_0": {
+        "font_family": "'Google Sans Medium', 'Google Sans', 'Roboto', sans-serif",
         "font_size": 57,
         "font_weight": 500,
         "line_height": 64
       },
-      "display1": {
-        "font_family": "'Google Sans Medium', 'Roboto', sans-serif",
+      "display_1": {
+        "font_family": "'Google Sans Medium', 'Google Sans', 'Roboto', sans-serif",
         "font_size": 44,
         "font_weight": 500,
         "line_height": 52
       },
-      "display2": {
-        "font_family": "'Google Sans Medium', 'Roboto', sans-serif",
+      "display_2": {
+        "font_family": "'Google Sans Medium', 'Google Sans', 'Roboto', sans-serif",
         "font_size": 36,
         "font_weight": 500,
         "line_height": 44
       },
-      "display3": {
-        "font_family": "'Google Sans Medium', 'Roboto', sans-serif",
+      "display_3": {
+        "font_family": "'Google Sans Medium', 'Google Sans', 'Roboto', sans-serif",
         "font_size": 32,
         "font_weight": 500,
         "line_height": 40
       },
-      "display3-regular": {
-        "font_family": "'Google Sans Regular', 'Roboto', sans-serif",
+      "display_3-regular": {
+        "font_family": "'Google Sans Regular', 'Google Sans', 'Roboto', sans-serif",
         "font_size": 32,
         "font_weight": 400,
         "line_height": 40
       },
-      "display4": {
-        "font_family": "'Google Sans Medium', 'Roboto', sans-serif",
+      "display_4": {
+        "font_family": "'Google Sans Medium', 'Google Sans', 'Roboto', sans-serif",
         "font_size": 28,
         "font_weight": 500,
         "line_height": 36
       },
-      "display5": {
-        "font_family": "'Google Sans Medium', 'Roboto', sans-serif",
+      "display_5": {
+        "font_family": "'Google Sans Medium', 'Google Sans', 'Roboto', sans-serif",
         "font_size": 24,
         "font_weight": 500,
         "line_height": 32
       },
-      "display6": {
-        "font_family": "'Google Sans Medium', 'Roboto', sans-serif",
+      "display_6": {
+        "font_family": "'Google Sans Medium', 'Google Sans', 'Roboto', sans-serif",
         "font_size": 22,
         "font_weight": 500,
         "line_height": 28
       },
-      "display6-regular": {
-        "font_family": "'Google Sans Regular', 'Roboto', sans-serif",
+      "display_6-regular": {
+        "font_family": "'Google Sans Regular', 'Google Sans', 'Roboto', sans-serif",
         "font_size": 22,
         "font_weight": 400,
         "line_height": 28
       },
-      "display7": {
-        "font_family": "'Google Sans Medium', 'Roboto', sans-serif",
+      "display_7": {
+        "font_family": "'Google Sans Medium', 'Google Sans', 'Roboto', sans-serif",
         "font_size": 18,
         "font_weight": 500,
         "line_height": 24
       },
-      "title1": {
-        "font_family": "'Google Sans Text Medium', 'Roboto', sans-serif",
+      "title_1": {
+        "font_family": "'Google Sans Text Medium', 'Google Sans', 'Roboto', sans-serif",
         "font_size": 16,
         "font_weight": 500,
         "line_height": 24
       },
-      "headline1": {
-        "font_family": "'Google Sans Text Medium', 'Roboto', sans-serif",
+      "headline_1": {
+        "font_family": "'Google Sans Text Medium', 'Google Sans', 'Roboto', sans-serif",
         "font_size": 15,
         "font_weight": 500,
         "line_height": 22
       },
-      "button1": {
-        "font_family": "'Google Sans Text Medium', 'Roboto', sans-serif",
+      "button_1": {
+        "font_family": "'Google Sans Text Medium', 'Google Sans', 'Roboto', sans-serif",
         "font_size": 14,
         "font_weight": 500,
         "line_height": 20
       },
-      "button2": {
-        "font_family": "'Google Sans Text Medium', 'Roboto', sans-serif",
+      "button_2": {
+        "font_family": "'Google Sans Text Medium', 'Google Sans', 'Roboto', sans-serif",
         "font_size": 13,
         "font_weight": 500,
         "line_height": 20
       },
-      "body0": {
-        "font_family": "'Google Sans Text Regular', 'Roboto', sans-serif",
+      "body_0": {
+        "font_family": "'Google Sans Text Regular', 'Google Sans', 'Roboto', sans-serif",
         "font_size": 16,
         "font_weight": 400,
         "line_height": 24
       },
-      "body1": {
-        "font_family": "'Google Sans Text Regular', 'Roboto', sans-serif",
+      "body_1": {
+        "font_family": "'Google Sans Text Regular', 'Google Sans', 'Roboto', sans-serif",
         "font_size": 14,
         "font_weight": 400,
         "line_height": 20
       },
-      "body2": {
-        "font_family": "'Google Sans Text Regular', 'Roboto', sans-serif",
+      "body_2": {
+        "font_family": "'Google Sans Text Regular', 'Google Sans', 'Roboto', sans-serif",
         "font_size": 13,
         "font_weight": 400,
         "line_height": 20
       },
-      "annotation1": {
-        "font_family": "'Google Sans Text Regular', 'Roboto', sans-serif",
+      "annotation_1": {
+        "font_family": "'Google Sans Text Regular', 'Google Sans', 'Roboto', sans-serif",
         "font_size": 12,
         "font_weight": 400,
         "line_height": 18
       },
-      "annotation2": {
-        "font_family": "'Google Sans Text Regular', 'Roboto', sans-serif",
+      "annotation_2": {
+        "font_family": "'Google Sans Text Regular', 'Google Sans', 'Roboto', sans-serif",
         "font_size": 11,
         "font_weight": 400,
         "line_height": 16
       },
-      "label1": {
-        "font_family": "'Google Sans Text Medium', 'Roboto', sans-serif",
+      "label_1": {
+        "font_family": "'Google Sans Text Medium', 'Google Sans', 'Roboto', sans-serif",
         "font_size": 10,
         "font_weight": 500,
         "line_height": 10
       },
-      "label2": {
-        "font_family": "'Google Sans Text Regular', 'Roboto', sans-serif",
+      "label_2": {
+        "font_family": "'Google Sans Text Regular', 'Google Sans', 'Roboto', sans-serif",
         "font_size": 10,
         "font_weight": 400,
         "line_height": 10

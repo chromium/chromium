@@ -16,7 +16,7 @@
  *   user: number,
  * }}
  */
-var SysInfoApiCpuResult;
+let SysInfoApiCpuResult;
 
 /**
  * |getSysInfo| memory result.
@@ -29,7 +29,7 @@ var SysInfoApiCpuResult;
  *   total: number,
  * }}
  */
-var SysInfoApiMemoryResult;
+let SysInfoApiMemoryResult;
 
 /**
  * |getSysInfo| zram result.
@@ -41,7 +41,7 @@ var SysInfoApiMemoryResult;
  *   origDataSize: number,
  * }}
  */
-var SysInfoApiZramResult;
+let SysInfoApiZramResult;
 
 /**
  * |getSysInfo| api result.
@@ -52,4 +52,4 @@ var SysInfoApiZramResult;
  *   zram: !SysInfoApiZramResult,
  * }}
  */
-var SysInfoApiResult;
+let SysInfoApiResult;

@@ -219,7 +219,7 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
         UpdatePrivacyIndicators(
             /*app_id=*/GetNotificationId(vm_type_, notifications_.active),
             app_name, /*is_camera_used=*/false, /*is_microphone_used=*/false,
-            delegate);
+            delegate, PrivacyIndicatorsSource::kLinuxVm);
       } else {
         CloseNotification(notifications_.active);
       }
@@ -232,7 +232,8 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
             /*is_camera_used=*/
             new_notification[static_cast<size_t>(DeviceType::kCamera)],
             /*is_microphone_used=*/
-            new_notification[static_cast<size_t>(DeviceType::kMic)], delegate);
+            new_notification[static_cast<size_t>(DeviceType::kMic)], delegate,
+            PrivacyIndicatorsSource::kLinuxVm);
       } else {
         OpenNotification(new_notification);
       }

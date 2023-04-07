@@ -76,13 +76,9 @@ IN_PROC_BROWSER_TEST_F(NearbyShareDialogUITest, RendersComponent) {
   content::WebContents* web_contents = GetWebContentsForNearbyShareHost();
 
   // Assert that we render the nearby-share-app component.
-  int num_nearby_share_app = -1;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-      web_contents,
-      "domAutomationController.send("
-      "document.getElementsByTagName('nearby-share-app').length)",
-      &num_nearby_share_app));
-  EXPECT_EQ(1, num_nearby_share_app);
+  EXPECT_EQ(1, content::EvalJs(
+                   web_contents,
+                   "document.getElementsByTagName('nearby-share-app').length"));
 }
 
 IN_PROC_BROWSER_TEST_F(NearbyShareDialogUITest,

@@ -19,7 +19,7 @@
 #include "components/sessions/core/session_id_generator.h"
 #include "components/storage_monitor/storage_monitor.h"
 #include "components/update_client/update_query_params.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/context_factory.h"
 #include "content/public/browser/devtools_agent_host.h"

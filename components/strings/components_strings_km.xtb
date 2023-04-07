@@ -733,6 +733,7 @@
 <translation id="2718207025093645426">អ្នកប្រើប្រាស់ ឬឧបករណ៍ដែលស្ថិតក្រោមការគ្រប់គ្រងមិនបានផ្ទុកគោលការណ៍ទេ។</translation>
 <translation id="2721148159707890343">សំណើរបានជោគជ័យ</translation>
 <translation id="2723669454293168317">ដំណើរការ​ការពិនិត្យ​សុវត្ថិភាព​នៅក្នុងការកំណត់ Chrome</translation>
+<translation id="2725492561136085792">ចុច Enter ដើម្បី​បើក​ដំណើរការ​សកម្មភាព​នេះ។</translation>
 <translation id="2726001110728089263">ទម្រចំហៀង</translation>
 <translation id="2728127805433021124">វិញ្ញាបនប័ត្រម៉ាស៊ីនមេត្រូវបានចុះហេត្ថលេខាដោយប្រើនីតិវិធីដោះស្រាយហត្ថលេខាខ្សោយ។</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />កំពុងដំណើរការការវិភាគការតភ្ជាប់<ph name="END_LINK" /></translation>
@@ -829,6 +830,7 @@
 <translation id="299990983510665749">រថយន្ត​ប្រភេទ Hatchback</translation>
 <translation id="3002501248619246229">ពិនិត្យមើល​មេឌៀនៃទម្រ​ធាតុបញ្ចូល</translation>
 <translation id="3005723025932146533">បង្ហាញច្បាប់ចម្លងដែលបានរក្សាទុក</translation>
+<translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" /> ចុច Tab ដើម្បី​រុករក​សកម្មភាព​ដែលអាចធ្វើបាន រួច​ចុច Enter ដើម្បី​​ប្រតិបត្តិ​​សកម្មភាព​ដែល​បាន​ជ្រើសរើស។</translation>
 <translation id="3013291976881901233">ឧបករណ៍ MIDI</translation>
 <translation id="301521992641321250">បាន​ទប់ស្កាត់ដោយ​ស្វ័យ​ប្រវត្តិ</translation>
 <translation id="3016780570757425217">ដឹងពីទីតាំងរបស់អ្នក</translation>
@@ -1989,6 +1991,7 @@
 <translation id="5872692522325383488">បាន​រក្សាទុក IBAN</translation>
 <translation id="5873013647450402046">ធនាគារ​របស់អ្នក​ចង់បញ្ជាក់ថា ពិតជាអ្នក។</translation>
 <translation id="5877831137320480913">សម្រស់ និង​សម្បទា</translation>
+<translation id="5879989559903563723">មិន​ត្រូវ​បាន​អនុញ្ញាត​នៅ​ក្នុង​មុខងារភ្ញៀវ​ទេ</translation>
 <translation id="5884465125445718607">ស្រោមសំបុត្រចិន #6</translation>
 <translation id="5887400589839399685">បានរក្សាទុក​កាត</translation>
 <translation id="5887687176710214216">បានចូលមើល​លើកចុងក្រោយ​កាលពីម្សិលមិញ</translation>
@@ -3232,6 +3235,7 @@
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">ច្បាប់ និង​រដ្ឋាភិបាល</translation>
 <translation id="8957210676456822347">ការអនុញ្ញាតច្រកចូលគ្រប់គ្រង</translation>
+<translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">ចូលទៅកាន់​ការកំណត់​គេហទំព័រ</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />ការផ្តល់យោបល់៖<ph name="MARKUP_2" />សូមប្រាកដថាអ្នកមានការតភ្ជាប់ទិន្នន័យ<ph name="MARKUP_3" />ដំណើរការគេហទំព័រនេះឡើងវិញនៅពេលក្រោយ<ph name="MARKUP_4" />ពិនិត្យមើលអាសយដ្ឋានដែលអ្នកបានបញ្ជូល<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">រក្សាទុក​បណ្ណ</translation>

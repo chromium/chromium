@@ -542,6 +542,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="3999683152997576765">You can see and remove topics of interest that sites use to show you ads. Chrome estimates your interests based on your recent browsing history.</translation>
 <translation id="4000212216660919741">Offline Home</translation>
 <translation id="4016425174436051808">Can’t follow. Something went wrong.</translation>
+<translation id="4024768890073681126">Your browser is managed by your parent</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# hr}other{# hrs}}</translation>
 <translation id="4035877632587724847">Don't allow</translation>
 <translation id="4036177530563778041">Easily continue where you left off</translation>

@@ -41,7 +41,7 @@
         "is_component_build": false,
         "is_debug": false,
         "proprietary_codecs": true,
-        "rbe_link_cfg_file": "../../buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_linux_link_small.cfg",
+        "rbe_link_cfg_file": "../../buildtools/reclient_cfgs/rewrapper_linux_link.cfg",
         "use_remoteexec": true,
         "use_remoteexec_links": true
       }

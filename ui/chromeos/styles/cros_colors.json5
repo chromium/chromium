@@ -12,6 +12,7 @@
   options: {
     CSS: {
       prefix: 'cros',
+      preblend: true,
     },
     proto: {
       field_name: 'cros_colors',

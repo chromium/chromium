@@ -148,6 +148,14 @@ public abstract class TabModelOrchestrator {
         return mTabPersistentStore.getRestoredTabCount();
     }
 
+    /**
+     * Sets whether to skip saving all of the non-active Ntps when serializing the Tab model meta
+     * data.
+     */
+    public void setSkipSavingNonActiveNtps(boolean skipSavingNonActiveNtps) {
+        mTabPersistentStore.setSkipSavingNonActiveNtps(skipSavingNonActiveNtps);
+    }
+
     protected void wireSelectorAndStore() {
         // Notify TabModelSelector when TabPersistentStore initializes tab state
         final TabPersistentStoreObserver persistentStoreObserver =

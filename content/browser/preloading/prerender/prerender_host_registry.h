@@ -21,6 +21,7 @@
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/common/content_export.h"
 #include "content/common/frame.mojom-forward.h"
+#include "content/public/browser/preloading.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -34,6 +35,10 @@ class SingleThreadTaskRunner;
 namespace memory_instrumentation {
 class GlobalMemoryDump;
 }
+
+namespace network {
+class SimpleURLLoader;
+}  // namespace network
 
 namespace content {
 
@@ -211,6 +216,11 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   const std::string& GetPrerenderEmbedderHistogramSuffix(
       int frame_tree_node_id);
 
+  // May be called when it is believed to be likely that the user will perform a
+  // back navigation due to the trigger indicated by `predictor` (e.g. they're
+  // hovering over a back button).
+  void BackNavigationLikely(PreloadingPredictor predictor);
+
   base::WeakPtr<PrerenderHostRegistry> GetWeakPtr();
 
   // Only used for tests.
@@ -222,6 +232,9 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   }
   void SetTaskRunnerForTesting(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  bool HasOngoingHttpCacheQueryForTesting() const {
+    return !!http_cache_query_loader_;
+  }
 
  private:
   // WebContentsObserver implementation:
@@ -265,6 +278,14 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
       int frame_tree_node_id,
       bool success,
       std::unique_ptr<memory_instrumentation::GlobalMemoryDump> dump);
+
+  // Called when we have the HTTP cache result of the main resource of the back
+  // navigation queried by `BackNavigationLikely`.
+  void OnBackResourceCacheResult(
+      PreloadingPredictor predictor,
+      base::WeakPtr<PreloadingAttempt> attempt,
+      GURL back_url,
+      scoped_refptr<net::HttpResponseHeaders> headers);
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTimerTaskRunner();
 
@@ -312,6 +333,10 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // Only used for tests. This task runner is used for precise injection in
   // tests and for timing control.
   scoped_refptr<base::SingleThreadTaskRunner> timer_task_runner_for_testing_;
+
+  // A pending cache-only load of a URL, used to identify whether there is an
+  // entry for it in the HTTP cache.
+  std::unique_ptr<network::SimpleURLLoader> http_cache_query_loader_;
 
   base::ObserverList<Observer> observers_;
 

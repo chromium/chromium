@@ -344,11 +344,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           refSpace = getAdjustedRefSpace(refSpace);
         }
 
-        let pose = frame.getViewerPose(refSpace);
+        let viewer_from_space = frame.getViewerPose(refSpace);
 
         // In most other samples, these rendering details will be handeld by
         // cottontail by calling scene.drawXRFrame.
-        if (pose) {
+        if (viewer_from_space) {
           gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
           if (!arMode) {
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -356,7 +356,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
           // Loop through each of the views reported by the frame and draw them
           // into the corresponding viewport.
-          for (let view of pose.views) {
+          for (let view of viewer_from_space.views) {
             let viewport = session.renderState.baseLayer.getViewport(view);
             gl.viewport(viewport.x, viewport.y, viewport.width, viewport.height);
 

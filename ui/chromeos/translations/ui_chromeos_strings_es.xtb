@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2305020378527873881">Se ha expulsado <ph name="VOLUME_NAME" />.</translation>
 <translation id="2307462900900812319">Configurar red</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{No se puede encontrar ninguna extensión con el ID: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> Ponte en contacto con tu administrador.}other{No se pueden encontrar extensiones con los IDs: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> Ponte en contacto con tu administrador.}}</translation>
 <translation id="2325650632570794183">No se admite este tipo de archivo. Accede a Chrome Web Store para buscar una aplicación que pueda abrir este tipo de archivo.</translation>
 <translation id="2326539130272988168">Búlgaro</translation>
 <translation id="2337715497728194187">Compartir con Bruschetta</translation>
@@ -274,6 +275,7 @@
 <translation id="3290356915286466215">No segura</translation>
 <translation id="3291218047831493686">Debes conectarte a esta red para cambiar el ajuste de bloqueo de la SIM</translation>
 <translation id="3293023191599135697">Las redes WEP no son compatibles</translation>
+<translation id="3295006446256079333">Este volumen</translation>
 <translation id="3295357220137379386">Dispositivo ocupado</translation>
 <translation id="3296763833017966289">Georgiano</translation>
 <translation id="3307875152560779385">Ucraniano</translation>

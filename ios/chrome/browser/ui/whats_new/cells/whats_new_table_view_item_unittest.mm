@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/ui/whats_new/cells/whats_new_table_view_item.h"
 
 #import "base/mac/foundation_util.h"
+#import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "testing/gtest_mac.h"

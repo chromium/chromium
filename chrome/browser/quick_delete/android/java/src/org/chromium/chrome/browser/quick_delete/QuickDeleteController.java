@@ -5,6 +5,9 @@
 package org.chromium.chrome.browser.quick_delete;
 
 import android.content.Context;
+import android.os.Build;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 
 import androidx.annotation.NonNull;
 
@@ -89,6 +92,7 @@ public class QuickDeleteController {
 
     private void onQuickDeleteFinished() {
         navigateToTabSwitcher();
+        triggerHapticFeedback();
         // TODO(crbug.com/1412087): Show post-delete animation.
         showSnackbar();
     }
@@ -99,6 +103,17 @@ public class QuickDeleteController {
     private void navigateToTabSwitcher() {
         if (mLayoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER)) return;
         mLayoutManager.showLayout(LayoutType.TAB_SWITCHER, /*animate=*/true);
+    }
+
+    private void triggerHapticFeedback() {
+        Vibrator v = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
+        final long duration = 50;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            v.vibrate(VibrationEffect.createOneShot(duration, VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            // Deprecated in API 26.
+            v.vibrate(duration);
+        }
     }
 
     /**

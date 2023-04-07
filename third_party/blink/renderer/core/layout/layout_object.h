@@ -845,6 +845,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // and its renderer (e.g. <iframe> creates a LayoutIFrame even if the
   // initial 'display' value is inline).
   static LayoutObject* CreateObject(Element*, const ComputedStyle&);
+  static LayoutBlockFlow* CreateBlockFlowOrListItem(Element* element,
+                                                    const ComputedStyle& style);
 
   bool IsPseudoElement() const {
     NOT_DESTROYED();
@@ -902,10 +904,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   bool IsLayoutNGOutsideListMarker() const {
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectNGOutsideListMarker);
-  }
-  bool IsLayoutNGText() const {
-    NOT_DESTROYED();
-    return IsOfType(kLayoutObjectNGText);
   }
   bool IsLayoutNGTextCombine() const {
     NOT_DESTROYED();
@@ -1179,19 +1177,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     DCHECK(IsLayoutInline());
     bitfields_.SetAlwaysCreateLineBoxesForLayoutInline(
         always_create_line_boxes);
-  }
-
-  bool AncestorLineBoxDirty() const {
-    NOT_DESTROYED();
-    return bitfields_.AncestorLineBoxDirty();
-  }
-  void SetAncestorLineBoxDirty(bool value = true) {
-    NOT_DESTROYED();
-    bitfields_.SetAncestorLineBoxDirty(value);
-    if (value) {
-      SetNeedsLayoutAndFullPaintInvalidation(
-          layout_invalidation_reason::kLineBoxesChanged);
-    }
   }
 
   void SetIsInsideFlowThreadIncludingDescendants(bool);
@@ -3547,7 +3532,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     kLayoutObjectNGInsideListMarker,
     kLayoutObjectNGListItem,
     kLayoutObjectNGOutsideListMarker,
-    kLayoutObjectNGText,
     kLayoutObjectNGTextCombine,
     kLayoutObjectNGTextControlMultiLine,
     kLayoutObjectNGTextControlSingleLine,
@@ -3923,7 +3907,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
           can_contain_fixed_position_objects_(false),
           has_counter_node_map_(false),
           ever_had_layout_(false),
-          ancestor_line_box_dirty_(false),
           is_inside_flow_thread_(false),
           subtree_change_listener_registered_(false),
           notified_of_subtree_change_(false),
@@ -4134,7 +4117,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     ADD_BOOLEAN_BITFIELD(has_counter_node_map_, HasCounterNodeMap);
 
     ADD_BOOLEAN_BITFIELD(ever_had_layout_, EverHadLayout);
-    ADD_BOOLEAN_BITFIELD(ancestor_line_box_dirty_, AncestorLineBoxDirty);
 
     ADD_BOOLEAN_BITFIELD(is_inside_flow_thread_, IsInsideFlowThread);
 
@@ -4454,7 +4436,6 @@ inline void LayoutObject::ClearNeedsLayoutWithoutPaintInvalidation() {
   SetSelfNeedsLayoutForStyle(false);
   SetSelfNeedsLayoutForAvailableSpace(false);
   SetNeedsPositionedMovementLayout(false);
-  SetAncestorLineBoxDirty(false);
 
   if (!ChildLayoutBlockedByDisplayLock()) {
     SetPosChildNeedsLayout(false);

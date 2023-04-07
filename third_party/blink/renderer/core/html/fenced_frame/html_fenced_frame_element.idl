@@ -6,11 +6,11 @@
 
 [Exposed=Window, HTMLConstructor, RuntimeEnabled=FencedFrames]
 interface HTMLFencedFrameElement : HTMLElement {
-    [CEReactions, Reflect, URL] attribute USVString src;
     [CEReactions, RuntimeEnabled=FencedFramesAPIChanges, MeasureAs=FencedFrameConfigAttribute] attribute FencedFrameConfig? config;
     [CEReactions, Reflect] attribute DOMString width;
     [CEReactions, Reflect] attribute DOMString height;
     [CallWith=ScriptState] static boolean canLoadOpaqueURL();
     // Feature Policy
     [CEReactions, Reflect, RuntimeEnabled=FencedFramesAPIChanges] attribute DOMString allow;
+    [PutForwards=value] readonly attribute DOMTokenList sandbox;
 };

@@ -50,6 +50,14 @@ class BrowserThemeProviderDelegate {
 
 class ThemeService : public KeyedService, public BrowserThemeProviderDelegate {
  public:
+  // This is stored as an integer in the profile prefs, so entries should not be
+  // renumbered and numeric values should never be reused.
+  enum class BrowserColorScheme {
+    kSystem = 0,
+    kLight = 1,
+    kDark = 2,
+  };
+
   // This class keeps track of the number of existing |ThemeReinstaller|
   // objects. When that number reaches 0 then unused themes will be deleted.
   class ThemeReinstaller {
@@ -176,6 +184,9 @@ class ThemeService : public KeyedService, public BrowserThemeProviderDelegate {
 
   // Returns the theme color for the current policy theme.
   virtual SkColor GetPolicyThemeColor() const;
+
+  // Gets the browser color scheme preference.
+  BrowserColorScheme GetBrowserColorScheme() const;
 
   // Returns |ThemeService::ThemeReinstaller| for the current theme.
   std::unique_ptr<ThemeService::ThemeReinstaller>

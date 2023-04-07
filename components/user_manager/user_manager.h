@@ -20,7 +20,6 @@ class PrefService;
 namespace user_manager {
 
 class ScopedUserManager;
-class RemoveUserDelegate;
 
 // A list pref of the the regular users known on this device, arranged in LRU
 // order, stored in local state.
@@ -205,11 +204,14 @@ class USER_MANAGER_EXPORT UserManager {
 
   // Removes the user from the device while providing a reason for enterprise
   // reporting. Note, it will verify that the given user isn't the owner, so
-  // calling this method for the owner will take no effect. Note, |delegate|
-  // can be NULL.
+  // calling this method for the owner will take no effect.
+  // This removes the user from the list synchronously, so the following
+  // function calls should have updated users. However, actual deletion of
+  // a user from a device has more tasks to complete, such as deletion of
+  // cryptohome data, which are asynchronous operations. Currently, there's
+  // no support to observe the completion of such tasks.
   virtual void RemoveUser(const AccountId& account_id,
-                          UserRemovalReason reason,
-                          RemoveUserDelegate* delegate) = 0;
+                          UserRemovalReason reason) = 0;
 
   // Removes the user from the persistent list only. Also removes the user's
   // picture.

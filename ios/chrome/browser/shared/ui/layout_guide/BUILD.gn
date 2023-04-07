@@ -1,0 +1,17 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/swift_source_set.gni")
+
+source_set("layout_guide") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "layout_guide_names.h" ]
+  deps = [ "//ios/chrome/browser/shared/ui/util" ]
+}
+
+source_set("layout_guide_swift") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "layout_guide_swift.h" ]
+  deps = [ "//ios/chrome/browser/shared/ui/util:util_swift" ]
+}

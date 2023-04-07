@@ -16,33 +16,31 @@ class SemanticTreeUnittest : public testing::Test {
 };
 
 TEST_F(SemanticTreeUnittest, GetDescendantTopicsTopicNotInMap) {
-  std::set<Topic> topics = semantic_tree_.GetDescendantTopics(Topic(10000));
+  std::vector<Topic> topics = semantic_tree_.GetDescendantTopics(Topic(10000));
   EXPECT_TRUE(topics.empty());
 }
 
 TEST_F(SemanticTreeUnittest, GetDescendantTopicsNoChildren) {
-  std::set<Topic> topics = semantic_tree_.GetDescendantTopics(Topic(8));
+  std::vector<Topic> topics = semantic_tree_.GetDescendantTopics(Topic(8));
   EXPECT_TRUE(topics.empty());
 }
 
 TEST_F(SemanticTreeUnittest, GetDescendantTopicsOneChild) {
-  std::set<Topic> topics = semantic_tree_.GetDescendantTopics(Topic(7));
-  EXPECT_FALSE(topics.empty());
-  std::set<Topic> expected_descendants = {Topic(8)};
+  std::vector<Topic> topics = semantic_tree_.GetDescendantTopics(Topic(7));
+  std::vector<Topic> expected_descendants = {Topic(8)};
   EXPECT_EQ(topics, expected_descendants);
 }
 
 TEST_F(SemanticTreeUnittest, GetDescendantTopicsMultipleChildren) {
-  std::set<Topic> topics = semantic_tree_.GetDescendantTopics(Topic(250));
-  EXPECT_FALSE(topics.empty());
-  std::set<Topic> expected_descendants = {Topic(251), Topic(252), Topic(253)};
+  std::vector<Topic> topics = semantic_tree_.GetDescendantTopics(Topic(250));
+  std::vector<Topic> expected_descendants = {Topic(251), Topic(252),
+                                             Topic(253)};
   EXPECT_EQ(topics, expected_descendants);
 }
 
 TEST_F(SemanticTreeUnittest, GetDescendantTopicsMultipleLevelsOfDescendants) {
-  std::set<Topic> topics = semantic_tree_.GetDescendantTopics(Topic(255));
-  EXPECT_FALSE(topics.empty());
-  std::set<Topic> expected_descendants = {
+  std::vector<Topic> topics = semantic_tree_.GetDescendantTopics(Topic(255));
+  std::vector<Topic> expected_descendants = {
       Topic(256), Topic(257), Topic(258), Topic(259), Topic(260), Topic(261),
   };
   EXPECT_EQ(topics, expected_descendants);

@@ -72,7 +72,6 @@ build_webui_tests("build") {
     "kerberos_accounts_test.js",
     "kerberos_page_test.js",
     "lock_screen_subpage_tests.ts",
-    "manage_accessibility_page_tests.js",
     "manage_users_subpage_tests.js",
     "multidevice_combined_setup_item_tests.js",
     "multidevice_feature_item_tests.js",
@@ -87,18 +86,15 @@ build_webui_tests("build") {
     "multidevice_wifi_sync_disabled_link_tests.js",
     "multidevice_wifi_sync_item_tests.js",
     "nearby_share_confirm_page_test.js",
-    "nearby_share_high_visibility_page_test.js",
     "nearby_share_receive_dialog_tests.js",
     "nearby_share_subpage_tests.js",
     "network_always_on_vpn_test.js",
     "network_device_info_dialog_test.js",
     "network_proxy_section_test.js",
     "onc_mojo_test.ts",
-    "os_a11y_page_tests.js",
     "os_about_page_tests.js",
     "os_clear_personalization_data_page_test.js",
     "os_edit_dictionary_page_test.js",
-    "os_files_page_test.js",
     "os_languages_page_v2_tests.js",
     "os_paired_bluetooth_list_item_tests.js",
     "os_paired_bluetooth_list_tests.js",
@@ -137,7 +133,6 @@ build_webui_tests("build") {
     "test_kerberos_accounts_browser_proxy.js",
     "test_metrics_consent_browser_proxy.js",
     "test_multidevice_browser_proxy.js",
-    "test_os_a11y_page_browser_proxy.js",
     "test_os_languages_browser_proxy.js",
     "test_os_languages_metrics_proxy.js",
     "test_os_lifetime_browser_proxy.js",
@@ -209,8 +204,13 @@ build_webui_tests("build") {
 
     "keyboard_shortcut_banner/keyboard_shortcut_banner_test.ts",
 
+    "nearby_share_page/nearby_share_high_visibility_page_test.ts",
+
     "os_a11y_page/audio_and_captions_page_tests.ts",
     "os_a11y_page/keyboard_and_text_input_page_tests.ts",
+    "os_a11y_page/manage_accessibility_page_tests.ts",
+    "os_a11y_page/os_a11y_page_tests.ts",
+    "os_a11y_page/test_os_a11y_page_browser_proxy.ts",
     "os_a11y_page/text_to_speech_page_tests.ts",
     "os_a11y_page/text_to_speech_subpage_tests.ts",
     "os_a11y_page/tts_subpage_test.ts",
@@ -226,6 +226,7 @@ build_webui_tests("build") {
 
     "os_files_page/google_drive_page_test.ts",
     "os_files_page/office_page_test.ts",
+    "os_files_page/os_files_page_test.ts",
 
     "os_languages_page/smart_inputs_page_test.ts",
 

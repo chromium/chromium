@@ -52,14 +52,17 @@ class IOSChromeSyncedTabDelegate
 
   explicit IOSChromeSyncedTabDelegate(web::WebState* web_state);
 
-  // Whether navigation data should be taken from session storage.
-  // Storage must be used if slim navigation is enabled and the tab has not be
-  // displayed.
-  // If the session storage must be used and was not fetched yet, bet it from
-  // `web_state_`.
+  // Returns whether the navigation data must be read from session storage.
+  // Can only be used if placeholder tabs support is not enabled. If this
+  // method returns true, then `session_storage_` must be used to get the
+  // navigation information.
   bool GetSessionStorageIfNeeded() const;
 
-  web::WebState* web_state_;
+  // The associated WebState.
+  web::WebState* const web_state_;
+
+  // The session storage for the WebState. Used only when the support for
+  // placeholder tabs is not enabled. Invalid to use otherwise.
   mutable CRWSessionStorage* session_storage_;
 
   WEB_STATE_USER_DATA_KEY_DECL();

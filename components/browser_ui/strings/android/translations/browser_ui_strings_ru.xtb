@@ -122,7 +122,7 @@
 <translation id="3115898365077584848">Показать информацию</translation>
 <translation id="3123473560110926937">Заблокировано на некоторых сайтах</translation>
 <translation id="3143754809889689516">Воспроизвести с начала</translation>
-<translation id="3162899666601560689">Сайты могут использовать файлы cookie, чтобы сделать работу в браузере более удобной, например запоминая товары в корзине или информацию о том, что вы уже вошли в аккаунт</translation>
+<translation id="3162899666601560689">Сайты могут использовать файлы cookie для вашего удобства, например, чтобы сохранять информацию о товарах в корзине или о том, что вы вошли в аккаунт.</translation>
 <translation id="3165022941318558018">Разрешите сайту использовать сторонние файлы cookie.</translation>
 <translation id="3198916472715691905">В памяти занято: <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="3203366800380907218">Из интернета</translation>
@@ -186,7 +186,7 @@
 <translation id="4336434711095810371">Удалить все данные</translation>
 <translation id="4338831206024587507">Все сайты с доменом <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Блокировать передачу на сайты информации об использовании устройства</translation>
-<translation id="4412992751769744546">Разрешить сторонним сайтам сохранять файлы cookie</translation>
+<translation id="4412992751769744546">Разрешить использование сторонних файлов cookie</translation>
 <translation id="4428065317363009941">Персонализация рекламы</translation>
 <translation id="4434045419905280838">Всплывающие окна и переадресация</translation>
 <translation id="4440642537584213025">Развернуть раздел "<ph name="TARGET_DESCRIPTION" />"</translation>
@@ -198,7 +198,7 @@
 <translation id="4534723447064627427">Чтобы у приложения "<ph name="APP_NAME" />" был доступ к микрофону, предоставьте разрешение в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Отключить микрофон</translation>
 <translation id="4570913071927164677">Подробнее…</translation>
-<translation id="4598549027014564149">В режиме инкогнито сайты не могут отслеживать ваши действия с помощью файлов cookie, даже на связанных сайтах. Информация о действиях в браузере не используется, например, для показа персонализированной рекламы. Из-за этого функции некоторых сайтов могут стать недоступными.</translation>
+<translation id="4598549027014564149">В режиме инкогнито сайты не могут использовать файлы cookie, чтобы отслеживать ваши действия на других сайтах, даже связанных. Информация о действиях в браузере не используется для таких целей, как показ персонализированной рекламы. Функции некоторых сайтов могут быть недоступны.</translation>
 <translation id="4645575059429386691">Управляется вашими родителями</translation>
 <translation id="4670064810192446073">Виртуальная реальность</translation>
 <translation id="4751476147751820511">Датчики движения и освещенности</translation>
@@ -364,7 +364,7 @@
 <translation id="7719367874908701697">Масштабирование страницы</translation>
 <translation id="7781829728241885113">Вчера</translation>
 <translation id="7791543448312431591">Добавить</translation>
-<translation id="780301667611848630">Пропустить</translation>
+<translation id="780301667611848630">Нет, спасибо</translation>
 <translation id="7804248752222191302">Сайт использует вашу камеру</translation>
 <translation id="7807060072011926525">Данные от Google</translation>
 <translation id="7835852323729233924">Воспроизведение медиаконтента</translation>
@@ -386,7 +386,7 @@
 <translation id="8116925261070264013">Сайты с отключенным звуком</translation>
 <translation id="813082847718468539">Сведения о сайте</translation>
 <translation id="8131740175452115882">Подтвердить</translation>
-<translation id="8154912474061769055">Функции многих сайтов могут стать недоступными</translation>
+<translation id="8154912474061769055">Функции многих сайтов могут быть недоступны.</translation>
 <translation id="8168435359814927499">Контент</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" />: разрешено</translation>
 <translation id="8200772114523450471">Возобновить</translation>
@@ -417,7 +417,7 @@
 <translation id="851751545965956758">Не разрешать сайтам подключаться к устройствам</translation>
 <translation id="8525306231823319788">Полноэкранный режим</translation>
 <translation id="8528440122773422556">Будут удалены все данные и файлы cookie, сохраненные сайтами, которые связаны с <ph name="ORIGIN" />, или их приложением на главном экране.</translation>
-<translation id="8541410041357371550">Этот сайт использует темы рекламы из Chrome, чтобы показывать вам более подходящие объявления</translation>
+<translation id="8541410041357371550">Этот сайт использует темы из Chrome, чтобы показывать вам более подходящую рекламу</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Файлы cookie разрешены для <ph name="FPS_MEMBERS_COUNT" /> сайта <ph name="FPS_OWNER" />}one{Файлы cookie разрешены для <ph name="FPS_MEMBERS_COUNT" /> сайта <ph name="FPS_OWNER" />}few{Файлы cookie разрешены для <ph name="FPS_MEMBERS_COUNT" /> сайтов <ph name="FPS_OWNER" />}many{Файлы cookie разрешены для <ph name="FPS_MEMBERS_COUNT" /> сайтов <ph name="FPS_OWNER" />}other{Файлы cookie разрешены для <ph name="FPS_MEMBERS_COUNT" /> сайта <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Разрешено (рекомендуется)</translation>
 <translation id="8609465669617005112">Переместить вверх</translation>
@@ -431,7 +431,7 @@
 <translation id="8737217482364735741">Будут удалены все данные и файлы cookie, которые сохранены сайтом <ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">Выберите фото</translation>
 <translation id="8801436777607969138">Блокировать код JavaScript на определенном сайте</translation>
-<translation id="8803526663383843427">Функция включена</translation>
+<translation id="8803526663383843427">Если функция включена</translation>
 <translation id="8805385115381080995">Сайты реже запрашивают проверку личности, поэтому вы меньше отвлекаетесь от работы в браузере.</translation>
 <translation id="8816026460808729765">Закрыть сайтам доступ к датчикам</translation>
 <translation id="8823559166155093873">Блокировать файлы cookie</translation>

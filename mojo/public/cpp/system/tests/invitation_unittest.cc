@@ -48,6 +48,9 @@ enum class TransportType {
 #if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_IOS)
   // Fuchsia has no named pipe support.
   kChannelServer,
+  // Test the scenario of calling SendIsolated without providing remote process
+  // handle.
+  kChannelServerWithoutHandle,
 #endif
 };
 
@@ -103,7 +106,8 @@ class MAYBE_InvitationCppTest
         break;
       }
 #if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_IOS)
-      case TransportType::kChannelServer: {
+      case TransportType::kChannelServer:
+      case TransportType::kChannelServerWithoutHandle: {
         command_line.AppendSwitchASCII(kTransportTypeSwitch,
                                        kTransportTypeChannelServer);
         NamedPlatformChannel::Options named_channel_options;
@@ -165,8 +169,25 @@ class MAYBE_InvitationCppTest
         } else {
           DCHECK(primordial_pipes);
           DCHECK_EQ(num_primordial_pipes, 1u);
+          // Provide the remote process handle when calling SendIsolated
+          // function.
           primordial_pipes[0] = OutgoingInvitation::SendIsolated(
               std::move(server_endpoint), {}, child_process_.Handle());
+        }
+        break;
+      case TransportType::kChannelServerWithoutHandle:
+        DCHECK(server_endpoint.is_valid());
+        if (invitation_type == InvitationType::kNormal) {
+          OutgoingInvitation::Send(std::move(invitation),
+                                   child_process_.Handle(),
+                                   std::move(server_endpoint), error_callback);
+        } else {
+          DCHECK(primordial_pipes);
+          DCHECK_EQ(num_primordial_pipes, 1u);
+          // Don't provide the remote process handle when calling SendIsolated
+          // function.
+          primordial_pipes[0] =
+              OutgoingInvitation::SendIsolated(std::move(server_endpoint), {});
         }
         break;
 #endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_IOS)
@@ -362,14 +383,16 @@ DEFINE_TEST_CLIENT(CppProcessErrorsClient) {
   EXPECT_EQ(kDisconnectMessage, ReadMessage(pipe));
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         MAYBE_InvitationCppTest,
-                         testing::Values(TransportType::kChannel
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    MAYBE_InvitationCppTest,
+    testing::Values(TransportType::kChannel
 #if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_IOS)
-                                         ,
-                                         TransportType::kChannelServer
+                    ,
+                    TransportType::kChannelServer,
+                    TransportType::kChannelServerWithoutHandle
 #endif
-                                         ));
+                    ));
 
 }  // namespace
 }  // namespace mojo

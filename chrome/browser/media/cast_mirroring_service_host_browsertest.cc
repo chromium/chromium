@@ -24,7 +24,7 @@
 #include "components/mirroring/mojom/session_observer.mojom.h"
 #include "components/mirroring/mojom/session_parameters.mojom.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"

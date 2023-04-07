@@ -65,8 +65,7 @@ CrOSNextDeskIconButton::CrOSNextDeskIconButton(
     ui::ColorId background_color_id,
     bool initially_enabled,
     base::RepeatingClosure callback)
-    : CrOSNextDeskButtonBase(text, /*set_text=*/false, callback),
-      bar_view_(bar_view),
+    : CrOSNextDeskButtonBase(text, /*set_text=*/false, bar_view, callback),
       state_(bar_view_->IsZeroState() ? State::kZero : State::kExpanded),
       button_icon_(button_icon),
       icon_color_id_(icon_color_id),

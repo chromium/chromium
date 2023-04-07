@@ -156,6 +156,12 @@ void IOSChromeLocalSessionEventRouter::OnWebStateChange(
       GetSyncedTabDelegateFromWebState(web_state);
   if (!tab)
     return;
+  // Some WebState event happen during the navigation restoration. Ignore
+  // them as the tab is still considered as placeholder by this point as
+  // the session cannot be forwarded to sync yet.
+  if (tab->IsPlaceholderTab()) {
+    return;
+  }
   if (handler_)
     handler_->OnLocalTabModified(tab);
   if (!tab->ShouldSync(sessions_client_))

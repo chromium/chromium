@@ -285,10 +285,13 @@ ScriptPromise VideoDecoder::isConfigSupported(ScriptState* script_state,
   auto* config_copy = CopyConfig(*config);
 
   // Run the "Check Configuration Support" algorithm.
+  HardwarePreference hw_pref = GetHardwareAccelerationPreference(*config_copy);
   VideoDecoderSupport* support = VideoDecoderSupport::Create();
   support->setConfig(config_copy);
 
-  if (!media::IsSupportedVideoType(*video_type)) {
+  if ((hw_pref == HardwarePreference::kPreferSoftware &&
+       !media::IsBuiltInVideoCodec(video_type->codec)) ||
+      !media::IsSupportedVideoType(*video_type)) {
     support->setSupported(false);
     return ScriptPromise::Cast(
         script_state,
@@ -309,7 +312,6 @@ ScriptPromise VideoDecoder::isConfigSupported(ScriptState* script_state,
   }
 
   // If hardware is preferred, asynchronously check for a hardware decoder.
-  HardwarePreference hw_pref = GetHardwareAccelerationPreference(*config_copy);
   if (hw_pref == HardwarePreference::kPreferHardware) {
     auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
         script_state, exception_state.GetContext());

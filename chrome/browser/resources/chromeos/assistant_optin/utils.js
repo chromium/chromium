@@ -32,8 +32,8 @@ export class HtmlSanitizer {
    * @public
    */
   sanitizeHtml(content) {
-    var doc = document.implementation.createHTMLDocument();
-    var div = doc.createElement('div');
+    const doc = document.implementation.createHTMLDocument();
+    const div = doc.createElement('div');
     div.innerHTML = content;
     return this.sanitizeNode_(doc, div).innerHTML;
   }
@@ -48,7 +48,7 @@ export class HtmlSanitizer {
    * @private
    */
   sanitizeNode_(doc, node) {
-    var name = node.nodeName.toLowerCase();
+    const name = node.nodeName.toLowerCase();
     if (name == '#text') {
       return node;
     }
@@ -56,7 +56,7 @@ export class HtmlSanitizer {
       return doc.createTextNode('');
     }
 
-    var copy = doc.createElement(name);
+    const copy = doc.createElement(name);
     // Only allow 'href' attribute for tag 'a'.
     if (name == 'a' && node.attributes.length == 1 &&
         node.attributes.item(0).name == 'href') {
@@ -64,7 +64,7 @@ export class HtmlSanitizer {
     }
 
     while (node.childNodes.length > 0) {
-      var child = node.removeChild(node.childNodes[0]);
+      const child = node.removeChild(node.childNodes[0]);
       copy.appendChild(this.sanitizeNode_(doc, child));
     }
     return copy;

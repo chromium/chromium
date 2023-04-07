@@ -56,16 +56,12 @@ class WasmTrapHandlerBrowserTest : public InProcessBrowserTest {
 
   void RunJSTestAndEnsureTrapHandlerRan(const std::string& js) const {
     if (IsTrapHandlerEnabled()) {
-      const auto* get_fault_count =
-          "domAutomationController.send(%GetWasmRecoveredTrapCount())";
-      int original_count = 0;
+      const auto* get_fault_count = "%GetWasmRecoveredTrapCount()";
       auto* const tab = browser()->tab_strip_model()->GetActiveWebContents();
-      ASSERT_TRUE(content::ExecuteScriptAndExtractInt(tab, get_fault_count,
-                                                      &original_count));
+      int original_count = content::EvalJs(tab, get_fault_count).ExtractInt();
       ASSERT_NO_FATAL_FAILURE(RunJSTest(js));
-      int new_count = 0;
-      ASSERT_TRUE(content::ExecuteScriptAndExtractInt(tab, get_fault_count,
-                                                      &new_count));
+      int new_count = content::EvalJs(tab, get_fault_count).ExtractInt();
+      ASSERT_NO_FATAL_FAILURE(RunJSTest(js));
       ASSERT_GT(new_count, original_count);
     } else {
       ASSERT_NO_FATAL_FAILURE(RunJSTest(js));

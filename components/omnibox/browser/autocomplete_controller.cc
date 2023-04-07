@@ -23,6 +23,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -1505,17 +1506,10 @@ bool AutocompleteController::ShouldRunProvider(
 }
 
 void AutocompleteController::OnUrlScoringModelDone(
-    base::OnceCallback<void(AutocompleteMatch)> callback,
-    AutocompleteMatch match,
-    absl::optional<float> relevance) {
-  // Update the relevance scores for any URL match that has a valid output from
-  // the model. This callback is called with nullopt output for non-URL
-  // suggestions.
-  if (relevance.has_value()) {
-    match.relevance = relevance.value();
-  }
-
-  std::move(callback).Run(match);
+    base::OnceCallback<void(std::pair<absl::optional<float>, size_t>)> callback,
+    size_t match_index,
+    absl::optional<float> model_output) {
+  std::move(callback).Run(std::make_pair(model_output, match_index));
 }
 
 void AutocompleteController::OnUrlScoringModelDoneForAllMatches(
@@ -1523,15 +1517,45 @@ void AutocompleteController::OnUrlScoringModelDoneForAllMatches(
     absl::optional<AutocompleteMatch> last_default_match,
     std::u16string last_default_associated_keyword,
     bool force_notify_default_match_changed,
-    const std::vector<AutocompleteMatch>& matches) {
-  // This callback receives a list of matches with the updated relevance scores
-  // from the scoring model.  This swaps out the set of matches in the
-  // AutocompleteResult with updated scores, re-sorts them, and notifies
-  // observers.
-  // TODO(crbug.com/1405555): It's possible that these results are stale, i.e.
-  //  input may have changed since the ml scoring was kicked off. The scoring
-  //  tasks should be cancelled when the controller is stopped/re-started.
-  result_.matches_ = matches;
+    std::vector<std::pair<absl::optional<float>, size_t>>
+        outputs_and_match_indices) {
+  // The goal is to redistribute the existing relevance scores among the URL
+  // suggestions according to the ML model output values. Construct two max
+  // heaps for the (legacy) relevance score and the output scores.
+  std::priority_queue<int> relevance_heap;
+  std::priority_queue<std::pair<float, size_t>> output_and_match_index_heap;
+  for (auto output_and_index : outputs_and_match_indices) {
+    const auto& output = output_and_index.first;
+    auto index = output_and_index.second;
+
+    if (index >= result_.matches_.size()) {
+      NOTREACHED();
+      return;
+    }
+
+    // Output is absl::nullopt for non-URL suggestions. In that case, skip these
+    // as their relevance scores should not be updated.
+    if (!output.has_value()) {
+      continue;
+    }
+
+    relevance_heap.emplace(result_.match_at(index)->relevance);
+    output_and_match_index_heap.emplace(output.value(), index);
+  }
+
+  while (!relevance_heap.empty()) {
+    // Assign the match with the highest respective model output with the
+    // highest relevance score.
+    auto match_index = output_and_match_index_heap.top().second;
+    auto* match = result_.match_at(match_index);
+
+    match->RecordAdditionalInfo("legacy_relevance", match->relevance);
+    match->relevance = relevance_heap.top();
+
+    relevance_heap.pop();
+    output_and_match_index_heap.pop();
+  }
+
   result_.SortAndCull(input, template_url_service_);
 
   AnnotateResultAndNotifyChanged(last_default_match,
@@ -1557,27 +1581,33 @@ bool AutocompleteController::MaybeRunUrlScoringModel(
   // Needed because the model is not owned and `this` may not longer be alive.
   scoring_model_weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
 
-  auto barrier_callback = base::BarrierCallback<AutocompleteMatch>(
-      result_.size(),
-      base::BindOnce(
-          &AutocompleteController::OnUrlScoringModelDoneForAllMatches,
-          scoring_model_weak_ptr_, input_, last_default_match,
-          last_default_associated_keyword, force_notify_default_match_changed));
+  auto barrier_callback =
+      base::BarrierCallback<std::pair<absl::optional<float>, size_t>>(
+          result_.size(),
+          base::BindOnce(
+              &AutocompleteController::OnUrlScoringModelDoneForAllMatches,
+              scoring_model_weak_ptr_, input_, last_default_match,
+              last_default_associated_keyword,
+              force_notify_default_match_changed));
 
-  for (const auto& match : result_.matches_) {
+  for (size_t match_index = 0; match_index < result_.matches_.size();
+       match_index++) {
+    auto* match = result_.match_at(match_index);
     // The ML scoring model only supports URL matches - bookmarks, history, etc.
     // Call the model for those types and directly invoke the model callback for
     // any other match type.
-    if (AutocompleteMatch::GetDefaultGroupId(match.type) !=
+    if (AutocompleteMatch::GetDefaultGroupId(match->type) !=
         omnibox::GROUP_OTHER_NAVS) {
-      OnUrlScoringModelDone(barrier_callback, match, /*output=*/absl::nullopt);
+      OnUrlScoringModelDone(barrier_callback,
+                            /*match_index=*/match_index,
+                            /*model_output=*/absl::nullopt);
       continue;
     }
 
     scoring_model_service->ScoreAutocompleteUrlMatch(
-        &scoring_model_task_tracker_, match.scoring_signals,
+        &scoring_model_task_tracker_, match->scoring_signals,
         base::BindOnce(&AutocompleteController::OnUrlScoringModelDone,
-                       scoring_model_weak_ptr_, barrier_callback, match));
+                       scoring_model_weak_ptr_, barrier_callback, match_index));
   }
 
   return true;

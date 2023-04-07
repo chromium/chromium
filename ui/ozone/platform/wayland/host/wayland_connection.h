@@ -160,10 +160,6 @@ class WaylandConnection {
     return xdg_output_manager_.get();
   }
 
-  wp_fractional_scale_manager_v1* fractional_scale_manager_v1() const {
-    return fractional_scale_manager_v1_.get();
-  }
-
   void SetPlatformCursor(wl_cursor* cursor_data, int buffer_scale);
 
   void SetCursorBufferListener(WaylandCursorBufferListener* listener);
@@ -324,7 +320,6 @@ class WaylandConnection {
   // makes it possible to avoid exposing setters for all those global objects:
   // these setters would only be needed by the globals but would be visible to
   // everyone.
-  friend class FractionalScaleManager;
   friend class GtkPrimarySelectionDeviceManager;
   friend class GtkShell1;
   friend class OrgKdeKwinIdle;
@@ -408,7 +403,6 @@ class WaylandConnection {
   wl::Object<zxdg_decoration_manager_v1> xdg_decoration_manager_;
   wl::Object<zcr_extended_drag_v1> extended_drag_v1_;
   wl::Object<zxdg_output_manager_v1> xdg_output_manager_;
-  wl::Object<wp_fractional_scale_manager_v1> fractional_scale_manager_v1_;
 
   // Manages Wayland windows.
   WaylandWindowManager window_manager_{this};

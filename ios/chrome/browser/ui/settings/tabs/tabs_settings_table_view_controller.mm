@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_table_view_controller.h"
 
+#import "base/i18n/message_formatter.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
@@ -13,7 +14,7 @@
 #import "ios/chrome/browser/ui/settings/tabs/inactive_tabs/inactive_tabs_settings_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_table_view_controller_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ui/base/l10n/l10n_util_mac.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -140,10 +141,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
     _inactiveTabsDetailItem.detailText =
         l10n_util::GetNSString(IDS_IOS_OPTIONS_INACTIVE_TABS_DISABLED);
   } else {
-    std::u16string thresholdString = base::SysNSStringToUTF16(
-        [NSString stringWithFormat:@"%@", @(_inactiveDaysThreshold)]);
-    _inactiveTabsDetailItem.detailText = l10n_util::GetNSStringF(
-        IDS_IOS_OPTIONS_INACTIVE_TABS_THRESHOLD, thresholdString);
+    _inactiveTabsDetailItem.detailText = base::SysUTF16ToNSString(
+        base::i18n::MessageFormatter::FormatWithNumberedArgs(
+            l10n_util::GetStringUTF16(IDS_IOS_OPTIONS_INACTIVE_TABS_THRESHOLD),
+            _inactiveDaysThreshold));
   }
   [self reconfigureCellsForItems:@[ _inactiveTabsDetailItem ]];
 }

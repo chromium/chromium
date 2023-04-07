@@ -5695,10 +5695,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
     return GetCountFromBackgroundScript(extension, profile(), "secondCount");
   };
   auto get_third_count = [page_host]() {
-    int count = -1;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-        page_host, "domAutomationController.send(window.thirdCount);", &count));
-    return count;
+    return content::EvalJs(page_host, "window.thirdCount;").ExtractInt();
   };
 
   // No listeners should have fired yet.
@@ -6111,10 +6108,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
     return GetCountFromBackgroundScript(extension, profile(), "eventCount");
   };
   auto get_page_event_count = [page_host]() {
-    int count = -1;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-        page_host, "domAutomationController.send(self.eventCount);", &count));
-    return count;
+    return content::EvalJs(page_host, "self.eventCount;").ExtractInt();
   };
 
   // Stop the extension's service worker. The worker listener should now be

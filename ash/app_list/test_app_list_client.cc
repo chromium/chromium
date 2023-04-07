@@ -17,6 +17,14 @@
 
 namespace ash {
 
+namespace {
+class FakeScopedIphSession : public ScopedIphSession {
+ public:
+  ~FakeScopedIphSession() override = default;
+  void NotifyEvent(const std::string& event) override {}
+};
+}  // namespace
+
 TestAppListClient::TestAppListClient() = default;
 
 TestAppListClient::~TestAppListClient() = default;
@@ -84,11 +92,11 @@ AppListNotifier* TestAppListClient::GetNotifier() {
   return nullptr;
 }
 
-void TestAppListClient::QueryWouldTriggerLauncherSearchIph() {}
+void TestAppListClient::RecalculateWouldTriggerLauncherSearchIph() {}
 
 std::unique_ptr<ScopedIphSession>
 TestAppListClient::CreateLauncherSearchIphSession() {
-  return std::make_unique<ScopedIphSession>();
+  return std::make_unique<FakeScopedIphSession>();
 }
 
 void TestAppListClient::OpenSearchBoxIphUrl() {}

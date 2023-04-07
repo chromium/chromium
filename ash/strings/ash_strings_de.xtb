@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB-C-Gerät (Port vorne)</translation>
 <translation id="1013598600051641573">"<ph name="DISPLAY_NAME" />" wurde auf <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) umgestellt. Bitte bestätigen, um die Änderungen beizubehalten. Die vorherigen Einstellungen werden in <ph name="TIMEOUT_SECONDS" /> wiederhergestellt.</translation>
 <translation id="1013923882670373915">Das Bluetooth-Gerät „<ph name="DEVICE_NAME" />“ bittet um Erlaubnis für Kopplung. Gib folgenden PIN-Code auf dem Gerät ein: <ph name="PINCODE" />.</translation>
+<translation id="1017556409696559990">Oberes Fenster minimieren, wenn es in Chrome keinen Zurück-Verlauf gibt</translation>
 <translation id="1024364763893396229"><ph name="NAME" /> speichern</translation>
 <translation id="1032891413405719768">Die Batterie des Eingabestifts ist schwach</translation>
 <translation id="1036073649888683237">Benachrichtigungen unter Einstellungen verwalten</translation>
@@ -343,6 +344,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2621713457727696555">Gesichert</translation>
 <translation id="263399434338050016">„Alles auswählen“</translation>
+<translation id="2644422758626431000">Fenster links anpinnen</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2647092942972307022"><ph name="USED_MEMORY" /> von <ph name="TOTAL_MEMORY" /> verfügbar</translation>
 <translation id="2653019840645008922">Fensteraufnahme</translation>
@@ -1052,6 +1054,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">An</translation>
 <translation id="5920710855273935292">Mikrofon ist stummgeschaltet.</translation>
+<translation id="5922962980596822074">Fenster vom zuletzt verwendeten Fenster durchgehen</translation>
 <translation id="5924855612669061715">Hotspot aktiviert</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ist aktiviert.</translation>
 <translation id="5947494881799873997">Rückgängig machen</translation>
@@ -1141,6 +1144,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="6352082849089527770">Unbekannte Netzwerke</translation>
 <translation id="6359587239691116345">Hol dir die neuesten Funktionen und Sicherheitsoptimierungen. Wenn du dieses Update ablehnst, funktioniert dein Gerät möglicherweise nicht mehr richtig und es können Sicherheits- und Leistungsprobleme auftreten.</translation>
 <translation id="6376931439017688372">Bluetooth ist aktiviert</translation>
+<translation id="6378515133128829137">Fenster rechts anpinnen</translation>
 <translation id="6381109794406942707">Gib deine PIN ein, um das Gerät zu entsperren.</translation>
 <translation id="638716340450135524">Kamerazugriff aktivieren</translation>
 <translation id="639644700271529076">Feststelltaste Aus</translation>
@@ -1160,6 +1164,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="6459472438155181876">Bildschirm wird auf <ph name="DISPLAY_NAME" /> erweitert...</translation>
 <translation id="6477681113376365978">Datei kann nicht heruntergeladen werden</translation>
 <translation id="6482559668224714696">Vollbildlupe</translation>
+<translation id="6483727822843292440">Fenster vom am wenigsten verwendeten Fenster durchgehen</translation>
 <translation id="6490471652906364588">USB-C-Gerät (Port rechts)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> erfordert, dass dein Gerät (<ph name="DEVICE_TYPE" />) vor Ablauf der Frist aktualisiert wird</translation>
 <translation id="649452524636452238">Smartcard-PIN</translation>
@@ -1233,6 +1238,7 @@ Neuinstallation</translation>
 <translation id="6782182743534150858">Desktop 13</translation>
 <translation id="6782919488259222803">Auf aktueller Seite suchen</translation>
 <translation id="6786750046913594791">Ordner schließen</translation>
+<translation id="6787839852456839824">Tastenkombinationen</translation>
 <translation id="6790428901817661496">Wiedergabe</translation>
 <translation id="679368458793552943">Heranzoomen, wenn die Lupe aktiviert ist</translation>
 <translation id="6801878137098616817">Vor Kurzem bearbeitet</translation>

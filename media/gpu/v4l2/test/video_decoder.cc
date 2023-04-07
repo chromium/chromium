@@ -46,16 +46,14 @@ void VideoDecoder::Initialize() {
   if (!v4l2_ioctl_->EnumFrameSizes(OUTPUT_queue_->fourcc()))
     LOG(INFO) << "EnumFrameSizes for OUTPUT queue failed.";
 
-  if (!v4l2_ioctl_->SetFmt(OUTPUT_queue_))
-    LOG(FATAL) << "SetFmt for OUTPUT queue failed.";
+  v4l2_ioctl_->SetFmt(OUTPUT_queue_);
 
   gfx::Size coded_size;
   uint32_t num_planes;
   uint32_t fourcc;
-  if (!v4l2_ioctl_->GetFmt(CAPTURE_queue_->type(), &coded_size, &num_planes,
-                           &fourcc)) {
-    LOG(FATAL) << "GetFmt for CAPTURE queue failed.";
-  }
+  v4l2_ioctl_->GetFmt(CAPTURE_queue_->type(), &coded_size, &num_planes,
+                      &fourcc);
+
   LOG_ASSERT((V4L2_PIX_FMT_MM21 == fourcc && 2 == num_planes) ||
              (V4L2_PIX_FMT_NV12 == fourcc && 1 == num_planes))
       << media::FourccToString(fourcc)
@@ -69,32 +67,22 @@ void VideoDecoder::Initialize() {
   // VIDIOC_TRY_FMT may or may not be needed; it's used by the stateful
   // Chromium V4L2VideoDecoder backend, see b/190733055#comment78.
   // TODO(b/190733055): try and remove it after landing all the code.
-  if (!v4l2_ioctl_->TryFmt(CAPTURE_queue_))
-    LOG(FATAL) << "TryFmt for CAPTURE queue failed.";
+  v4l2_ioctl_->TryFmt(CAPTURE_queue_);
 
-  if (!v4l2_ioctl_->SetFmt(CAPTURE_queue_))
-    LOG(FATAL) << "SetFmt for CAPTURE queue failed.";
+  v4l2_ioctl_->SetFmt(CAPTURE_queue_);
 
   // If there is a dynamic resolution change, the Initialization sequence will
   // be performed again, minus the allocation of OUTPUT queue buffers.
   if (IsResolutionChanged()) {
-    if (!v4l2_ioctl_->ReqBufsWithCount(CAPTURE_queue_,
-                                       number_of_buffers_in_capture_queue_)) {
-      LOG(FATAL) << "ReqBufs for CAPTURE queue failed.";
-    }
+    v4l2_ioctl_->ReqBufsWithCount(CAPTURE_queue_,
+                                  number_of_buffers_in_capture_queue_);
   } else {
-    if (!v4l2_ioctl_->ReqBufs(OUTPUT_queue_))
-      LOG(FATAL) << "ReqBufs for OUTPUT queue failed.";
-
-    if (!v4l2_ioctl_->QueryAndMmapQueueBuffers(OUTPUT_queue_))
-      LOG(FATAL) << "QueryAndMmapQueueBuffers for OUTPUT queue failed";
-
-    if (!v4l2_ioctl_->ReqBufs(CAPTURE_queue_))
-      LOG(FATAL) << "ReqBufs for CAPTURE queue failed.";
+    v4l2_ioctl_->ReqBufs(OUTPUT_queue_);
+    v4l2_ioctl_->QueryAndMmapQueueBuffers(OUTPUT_queue_);
+    v4l2_ioctl_->ReqBufs(CAPTURE_queue_);
   }
 
-  if (!v4l2_ioctl_->QueryAndMmapQueueBuffers(CAPTURE_queue_))
-    LOG(FATAL) << "QueryAndMmapQueueBuffers for CAPTURE queue failed.";
+  v4l2_ioctl_->QueryAndMmapQueueBuffers(CAPTURE_queue_);
 
   // Only 1 CAPTURE buffer is needed for 1st key frame decoding. Remaining
   // CAPTURE buffers will be queued after that.
@@ -102,16 +90,11 @@ void VideoDecoder::Initialize() {
     LOG(FATAL) << "VIDIOC_QBUF failed for CAPTURE queue.";
 
   int media_request_fd;
-  if (!v4l2_ioctl_->MediaIocRequestAlloc(&media_request_fd))
-    LOG(FATAL) << "MEDIA_IOC_REQUEST_ALLOC failed";
-
+  v4l2_ioctl_->MediaIocRequestAlloc(&media_request_fd);
   OUTPUT_queue_->set_media_request_fd(media_request_fd);
 
-  if (!v4l2_ioctl_->StreamOn(OUTPUT_queue_->type()))
-    LOG(FATAL) << "StreamOn for OUTPUT queue failed.";
-
-  if (!v4l2_ioctl_->StreamOn(CAPTURE_queue_->type()))
-    LOG(FATAL) << "StreamOn for CAPTURE queue failed.";
+  v4l2_ioctl_->StreamOn(OUTPUT_queue_->type());
+  v4l2_ioctl_->StreamOn(CAPTURE_queue_->type());
 }
 
 // Follows the dynamic resolution change sequence described in
@@ -119,16 +102,12 @@ void VideoDecoder::Initialize() {
 VideoDecoder::Result VideoDecoder::HandleDynamicResolutionChange(
     const gfx::Size& new_resolution) {
   // Call VIDIOC_STREAMOFF() on both the OUTPUT and CAPTURE queues.
-  if (!v4l2_ioctl_->StreamOff(OUTPUT_queue_->type()))
-    LOG(FATAL) << "StreamOff for OUTPUT queue failed.";
-
-  if (!v4l2_ioctl_->StreamOff(CAPTURE_queue_->type()))
-    LOG(FATAL) << "StreamOff for CAPTURE queue failed.";
+  v4l2_ioctl_->StreamOff(OUTPUT_queue_->type());
+  v4l2_ioctl_->StreamOff(CAPTURE_queue_->type());
 
   // Free all CAPTURE buffers from the driver side by calling VIDIOC_REQBUFS()
   // on the CAPTURE queue with a buffer count of zero.
-  if (!v4l2_ioctl_->ReqBufsWithCount(CAPTURE_queue_, 0))
-    LOG(FATAL) << "Failed to free all buffers for CAPTURE queue";
+  v4l2_ioctl_->ReqBufsWithCount(CAPTURE_queue_, 0);
 
   // Free queued CAPTURE buffer indexes that are tracked by the client side.
   CAPTURE_queue_->DequeueAllBufferIds();

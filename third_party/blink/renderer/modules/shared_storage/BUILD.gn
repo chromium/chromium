@@ -5,11 +5,24 @@
 import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("shared_storage") {
+  visibility = [
+    "//third_party/blink/renderer/modules",
+    "//third_party/blink/renderer/modules/exported",
+  ]
+
   sources = [
     "shared_storage.cc",
     "shared_storage.h",
+    "shared_storage_operation_definition.cc",
+    "shared_storage_operation_definition.h",
     "shared_storage_worklet.cc",
     "shared_storage_worklet.h",
+    "shared_storage_worklet_global_scope.cc",
+    "shared_storage_worklet_global_scope.h",
+    "shared_storage_worklet_messaging_proxy.cc",
+    "shared_storage_worklet_messaging_proxy.h",
+    "shared_storage_worklet_thread.cc",
+    "shared_storage_worklet_thread.h",
     "util.cc",
     "util.h",
     "window_shared_storage.cc",

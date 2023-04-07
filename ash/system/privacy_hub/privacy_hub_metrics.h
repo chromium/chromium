@@ -23,7 +23,8 @@ enum class PrivacyHubNavigationOrigin {
 enum class PrivacyHubLearnMoreSensor {
   kMicrophone = 0,
   kCamera = 1,
-  kMaxValue = kCamera
+  kGeolocation = 2,
+  kMaxValue = kGeolocation
 };
 
 static constexpr char kPrivacyHubMicrophoneEnabledFromSettingsHistogram[] =
@@ -34,6 +35,10 @@ static constexpr char kPrivacyHubCameraEnabledFromSettingsHistogram[] =
     "ChromeOS.PrivacyHub.Camera.Settings.Enabled";
 static constexpr char kPrivacyHubCameraEnabledFromNotificationHistogram[] =
     "ChromeOS.PrivacyHub.Camera.Notification.Enabled";
+static constexpr char kPrivacyHubGeolocationEnabledFromSettingsHistogram[] =
+    "ChromeOS.PrivacyHub.Geolocation.Settings.Enabled";
+static constexpr char kPrivacyHubGeolocationEnabledFromNotificationHistogram[] =
+    "ChromeOS.PrivacyHub.Geolocation.Notification.Enabled";
 static constexpr char kPrivacyHubOpenedHistogram[] =
     "ChromeOS.PrivacyHub.Opened";
 static constexpr char kPrivacyHubLearnMorePageOpenedHistogram[] =
@@ -46,6 +51,10 @@ ASH_EXPORT void LogMicrophoneEnabledFromNotification(bool enabled);
 // Report camera mute events from system and notifications.
 ASH_EXPORT void LogCameraEnabledFromSettings(bool enabled);
 ASH_EXPORT void LogCameraEnabledFromNotification(bool enabled);
+
+// Report geolocation events from system and notifications.
+ASH_EXPORT void LogGeolocationEnabledFromSettings(bool enabled);
+ASH_EXPORT void LogGeolocationEnabledFromNotification(bool enabled);
 
 // Report that Privacy Hub has been opened from a notification.
 ASH_EXPORT void LogPrivacyHubOpenedFromNotification();

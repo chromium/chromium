@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
@@ -1135,6 +1136,70 @@ TEST_P(MLGraphTest, ConcatTest) {
                                  2.0, 3.0, 4.0, 2.0, 3.0, 4.0, 4.0,
                                  5.0, 6.0, 5.0, 6.0, 7.0, 8.0}}
         .Test(*this, scope);
+  }
+}
+
+template <typename T>
+struct PadTester {
+  OperandInfo<T> input;
+  Vector<uint32_t> beginning_padding;
+  Vector<uint32_t> ending_padding;
+  Vector<T> expected;
+
+  void Test(MLGraphTest& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder,
+            MLPadOptions* options = MLPadOptions::Create()) {
+    auto* input_operand = BuildInput(builder, "input", input.dimensions,
+                                     input.type, scope.GetExceptionState());
+    auto* output_operand = BuildPad(scope, builder, input_operand,
+                                    beginning_padding, ending_padding, options);
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    EXPECT_NE(graph, nullptr);
+
+    MLNamedArrayBufferViews inputs(
+        {{"input",
+          CreateArrayBufferViewForOperand(input_operand, input.values)}});
+    MLNamedArrayBufferViews outputs(
+        {{"output", CreateArrayBufferViewForOperand(output_operand)}});
+    auto* compute_exception =
+        helper.ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(compute_exception, nullptr);
+    auto results = GetArrayBufferViewValues<T>(outputs[0].second);
+    EXPECT_EQ(results, expected);
+  }
+};
+
+TEST_P(MLGraphTest, PadTest) {
+  V8TestingScope scope;
+  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  {
+    // Test pad operator with default options.
+    auto* options = MLPadOptions::Create();
+    PadTester<float>{
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {2, 3},
+                  .values = {1, 2, 3, 4, 5, 6}},
+        .beginning_padding = {1, 2},
+        .ending_padding = {1, 2},
+        .expected = {0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 2., 3., 0., 0.,
+                     0., 0., 4., 5., 6., 0., 0., 0., 0., 0., 0., 0., 0., 0.}}
+        .Test(*this, scope, builder, options);
+  }
+  {
+    // Test pad operator with options->value = 8.
+    auto* options = MLPadOptions::Create();
+    options->setValue(8);
+    PadTester<float>{
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {2, 3},
+                  .values = {1, 2, 3, 4, 5, 6}},
+        .beginning_padding = {1, 2},
+        .ending_padding = {1, 2},
+        .expected = {8., 8., 8., 8., 8., 8., 8., 8., 8., 1., 2., 3., 8., 8.,
+                     8., 8., 4., 5., 6., 8., 8., 8., 8., 8., 8., 8., 8., 8.}}
+        .Test(*this, scope, builder, options);
   }
 }
 

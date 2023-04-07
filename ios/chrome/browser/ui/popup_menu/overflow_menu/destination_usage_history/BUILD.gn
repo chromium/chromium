@@ -26,7 +26,7 @@ source_set("unit_tests") {
     "//components/prefs",
     "//components/prefs:test_support",
     "//ios/chrome/browser/prefs:pref_names",
-    "//ios/chrome/browser/ui/icons:symbols",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/ui/popup_menu/overflow_menu:feature_flags",
     "//ios/chrome/browser/ui/popup_menu/overflow_menu:overflow_menu_constants",
     "//ios/chrome/browser/ui/popup_menu/overflow_menu:overflow_menu_swift",

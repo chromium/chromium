@@ -44,14 +44,11 @@ class TabletModeMultitaskMenuEventHandler : public ui::EventHandler {
   }
 
  private:
-  // True while a drag to open or close the menu is in progress. Needed to
-  // consume GestureScrollBegin, GestureScrollUpdate, and GestureScrollEnd
-  // events in order.
-  bool is_drag_active_ = false;
-
-  bool CanProcessEvent(aura::Window* window) const;
-
   void MaybeCreateMultitaskMenu(aura::Window* active_window);
+
+  // True while a drag to open or close the menu is in progress. Needed since a
+  // drag may go outside menu bounds, during which we still handle events.
+  bool is_drag_active_ = false;
 
   // Creates a draggable bar when app windows are activated.
   std::unique_ptr<TabletModeMultitaskCue> multitask_cue_;

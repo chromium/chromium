@@ -402,7 +402,9 @@ ExtensionFunction::ResponseAction ManagementLaunchAppFunction::Run() {
   const ManagementAPIDelegate* delegate = ManagementAPI::GetFactoryInstance()
                                               ->Get(browser_context())
                                               ->GetDelegate();
-  delegate->LaunchAppFunctionDelegate(extension, browser_context());
+  if (!delegate->LaunchAppFunctionDelegate(extension, browser_context())) {
+    return RespondNow(Error(keys::kChromeAppsDeprecated, params->id));
+  }
   return RespondNow(NoArguments());
 }
 

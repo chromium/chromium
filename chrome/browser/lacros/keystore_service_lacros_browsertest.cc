@@ -18,7 +18,7 @@
 #include "chromeos/crosapi/mojom/keystore_service.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
 #include "net/cert/nss_cert_database.h"
 #include "net/cert/scoped_nss_types.h"

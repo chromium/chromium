@@ -41,7 +41,8 @@ CanvasRenderingContext::CanvasRenderingContext(
     CanvasRenderingContextHost* host,
     const CanvasContextCreationAttributesCore& attrs,
     CanvasRenderingAPI canvas_rendering_API)
-    : host_(host),
+    : ActiveScriptWrappable<CanvasRenderingContext>({}),
+      host_(host),
       color_params_(attrs.color_space, attrs.pixel_format, attrs.alpha),
       creation_attributes_(attrs),
       canvas_rendering_type_(canvas_rendering_API) {}

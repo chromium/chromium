@@ -70,6 +70,10 @@ class ASH_PUBLIC_EXPORT FakeAmbientBackendControllerImpl
   // Whether there is a pending UpdateSettings() request.
   bool IsUpdateSettingsPending() const;
 
+  // Will automatically reply to all future UpdateSettings() calls with
+  // |success|.
+  void EnableUpdateSettingsAutoReply(bool success);
+
   // Sets the weather info that will be returned in subsequent calls to
   // `FetchWeather`.
   void SetWeatherInfo(absl::optional<WeatherInfo> info);
@@ -88,10 +92,18 @@ class ASH_PUBLIC_EXPORT FakeAmbientBackendControllerImpl
     custom_topic_generator_ = std::move(custom_topic_generator);
   }
 
+  // The latest temperature unit received via |UpdateSettings()|. Defaults to
+  // |kCelsius| if |UpdateSettings()| has not been called.
+  AmbientModeTemperatureUnit current_temperature_unit() const {
+    return current_temperature_unit_;
+  }
+
  private:
   OnSettingsAndAlbumsFetchedCallback pending_fetch_settings_albums_callback_;
 
   UpdateSettingsCallback pending_update_callback_;
+
+  absl::optional<bool> update_auto_reply_;
 
   absl::optional<WeatherInfo> weather_info_;
 
@@ -104,6 +116,9 @@ class ASH_PUBLIC_EXPORT FakeAmbientBackendControllerImpl
   absl::optional<int> custom_num_topics_to_return_;
 
   TopicGeneratorCallback custom_topic_generator_;
+
+  AmbientModeTemperatureUnit current_temperature_unit_ =
+      AmbientModeTemperatureUnit::kCelsius;
 };
 
 }  // namespace ash

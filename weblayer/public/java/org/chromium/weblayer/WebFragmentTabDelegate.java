@@ -4,10 +4,12 @@
 
 package org.chromium.weblayer;
 
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.RemoteException;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.webengine.interfaces.ITabObserverDelegate;
 
@@ -35,6 +37,10 @@ class WebFragmentTabDelegate extends TabCallback {
     @Override
     public void onTitleUpdated(@NonNull String title) {
         maybeRunOnTabObserver(observer -> { observer.notifyTitleUpdated(title); });
+    }
+
+    void notifyFaviconChanged(@Nullable Bitmap favicon) {
+        maybeRunOnTabObserver(observer -> { observer.notifyFaviconChanged(favicon); });
     }
 
     private interface OnTabObserverCallback {

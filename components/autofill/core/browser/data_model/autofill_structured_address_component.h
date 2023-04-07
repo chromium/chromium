@@ -522,9 +522,8 @@ class AddressComponent {
       const AddressComponent& other) const;
 
   // Returns true if the merging of two token identical values should give
-  // precedence to the newer value. By default, the newer component gets
-  // precedence if it has the same or better verification status.
-  virtual bool HasNewerValuePrecendenceInMerging(
+  // precedence to the newer value.
+  virtual bool HasNewerValuePrecedenceInMerging(
       const AddressComponent& newer_component) const;
 
   // Parses |value| by using |parse_expressions| and assigns the values.

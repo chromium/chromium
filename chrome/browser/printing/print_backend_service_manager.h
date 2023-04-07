@@ -343,6 +343,8 @@ class PrintBackendServiceManager {
   PrintBackendServiceManager();
   ~PrintBackendServiceManager();
 
+  static std::string ClientTypeToString(ClientType client_type);
+
   static void LogCallToRemote(base::StringPiece name,
                               const CallbackContext& context);
   static void LogCallbackFromRemote(base::StringPiece name,

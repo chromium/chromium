@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.suggestions.tile.TileSource;
 import org.chromium.chrome.browser.suggestions.tile.TileTitleSource;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabState;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
@@ -353,6 +354,17 @@ public class StartSurfaceTestUtils {
         AtomicReference<StartSurface> startSurface = new AtomicReference<>();
         TestThreadUtils.runOnUiThreadBlocking(() -> startSurface.set(cta.getStartSurface()));
         return (StartSurfaceCoordinator) startSurface.get();
+    }
+
+    /**
+     * Gets the current active Tab from UI thread.
+     * @param cta The ChromeTabbedActivity under test.
+     */
+    public static Tab getCurrentTabFromUIThread(ChromeTabbedActivity cta) {
+        AtomicReference<Tab> tab = new AtomicReference<>();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> tab.set(TabModelUtils.getCurrentTab(cta.getCurrentTabModel())));
+        return tab.get();
     }
 
     /**

@@ -206,7 +206,6 @@
 <translation id="2411749908844615428">{count,plural, =1{{count} نشانی ذخیره‌شده در بالای صفحه‌کلید موجود است.}one{{count} نشانی ذخیره‌شده در بالای صفحه‌کلید موجود است.}other{{count} نشانی ذخیره‌شده در بالای صفحه‌کلید موجود است.}}</translation>
 <translation id="2421004566762153674">کوکی‌های شخص ثالث را مسدود می‌کند</translation>
 <translation id="2421044535038393232">ادامه ویرایش</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} گذرواژه لورفته}one{{COUNT} گذرواژه لورفته}other{{COUNT} گذرواژه لورفته}}</translation>
 <translation id="2434405374328098816">قبلاً گذرواژه‌ای برای «<ph name="USERNAME" />» در <ph name="WEBSITE" /> ذخیره کرده‌اید</translation>
 <translation id="2435457462613246316">نمایش گذرواژه</translation>
 <translation id="2451654228769116489">سنجاق کردن برگه</translation>
@@ -257,7 +256,6 @@
 <translation id="2718352093833049315">‏فقط در Wi-Fi</translation>
 <translation id="2747003861858887689">فیلد قبلی</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> را دنبال می‌کنید</translation>
-<translation id="2764831210418622012">همین حالا</translation>
 <translation id="2772667768515195373">‏می‌توانید از نشانی‌های ذخیره‌شده در محصولات Google استفاده کنید. این نشانی در «حساب Google» شما (<ph name="USER_EMAIL" />) ذخیره شده است.</translation>
 <translation id="2773292004659987824">جستجوی ناشناس</translation>
 <translation id="277771892408211951">انتخاب زبان</translation>
@@ -924,7 +922,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">برگه‌های جدید</translation>
 <translation id="7006788746334555276">تنظیمات محتوا</translation>
-<translation id="7014087399239955356">درحال بررسی گذرواژه‌ها…</translation>
 <translation id="7029809446516969842">گذرواژه‌ها</translation>
 <translation id="7053983685419859001">مسدود کردن</translation>
 <translation id="7062545763355031412">پذیرش و تغییر حساب‌ها</translation>

@@ -538,7 +538,9 @@ void MojoTrap::DispatchOrQueueEvent(Trigger& trigger,
   // Block as long as any other thread is dispatching.
   while (dispatching_thread_.has_value()) {
     base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
+    waiters_++;
     dispatching_condition_.Wait();
+    waiters_--;
   }
 
   dispatching_thread_ = base::PlatformThread::CurrentRef();
@@ -556,7 +558,9 @@ void MojoTrap::DispatchOrQueueEvent(Trigger& trigger,
 
   // We're done. Give other threads a chance.
   dispatching_thread_.reset();
-  dispatching_condition_.Signal();
+  if (waiters_ > 0) {
+    dispatching_condition_.Signal();
+  }
 }
 
 void MojoTrap::DispatchEvent(const MojoTrapEvent& event) {

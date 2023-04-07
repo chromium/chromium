@@ -455,6 +455,7 @@
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /> за предложените содржини</translation>
 <translation id="3495219333887281978">Долниот лист за најавување е отворен на половина екран.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="350276055892098337">Подредување по најстари</translation>
 <translation id="3507132249039706973">Вклучена е „Стандардната заштита“</translation>
 <translation id="3509330069915219067">Офлајн. Chrome не може да провери дали има ажурирања.</translation>
 <translation id="3513704683820682405">Проширена реалност</translation>
@@ -575,6 +576,7 @@
 <translation id="4177222230309051052">Преземете ги сите ваши обележувачи</translation>
 <translation id="4177501066905053472">Теми на реклами</translation>
 <translation id="4181841719683918333">Јазици</translation>
+<translation id="4188221736490993796">Подредување од Ш до А</translation>
 <translation id="4195643157523330669">Отвори во нова картичка</translation>
 <translation id="4196597275619698563">Создај картичка</translation>
 <translation id="4198423547019359126">Нема достапни локации за преземање</translation>
@@ -640,6 +642,7 @@
 <translation id="4565377596337484307">Сокриј ја лозинката</translation>
 <translation id="4572422548854449519">Најавете се на управувана сметка</translation>
 <translation id="4576892426230499203">Обидете се со друга опција за потврда</translation>
+<translation id="4577115723294378384">Подредување од А до Ш</translation>
 <translation id="4578289292431526768">Ајде</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{Пред # минута}one{Пред # минута}other{Пред # минути}}</translation>
 <translation id="4587589328781138893">Сајтови</translation>
@@ -663,6 +666,7 @@
 <translation id="4689792375321623175">Пребарајте слика со Google <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4699172675775169585">Кеширани слики и датотеки</translation>
+<translation id="4710167854527459075">Подредување по најнови</translation>
 <translation id="4719927025381752090">Понудувај превод</translation>
 <translation id="4720023427747327413">Отвори во <ph name="PRODUCT_NAME" /></translation>
 <translation id="47217992755561375">Видете ги вашите најдобри сајтови</translation>
@@ -832,6 +836,7 @@
 <translation id="5561162485081632007">Открива опасни настани и ве предупредува кога ќе се случат</translation>
 <translation id="5561549206367097665">Се чека мрежа…</translation>
 <translation id="5568069709869097550">Не може да се најавите</translation>
+<translation id="557018954714092179">Создавање нова папка</translation>
 <translation id="5578795271662203820">Пребарај во <ph name="SEARCH_ENGINE" /> за сликава</translation>
 <translation id="5581519193887989363">Секогаш може да изберете што да синхронизирате во <ph name="BEGIN_LINK1" />Поставки<ph name="END_LINK1" />.</translation>
 <translation id="5590372121997663538">Запомни го компјутеров</translation>
@@ -936,6 +941,7 @@
 <translation id="6138832295072039549">Променете ги поставките за сајтот тука</translation>
 <translation id="6140709049082532940">Подобрена заштита:</translation>
 <translation id="6140912465461743537">Држава/регион</translation>
+<translation id="6148266338772765473">Изостави линк</translation>
 <translation id="6150320133806434356">Обележувачот е зачуван</translation>
 <translation id="6154478581116148741">Вклучете го заклучувањето на екранот во „Поставки“ за да ги извезете лозинките од уредов</translation>
 <translation id="6159729262978459665">Ќе ја исчисти историјата од сите синхронизирани уреди.</translation>
@@ -1027,6 +1033,7 @@
 <translation id="6590680911007613645">Проверете дали лозинката што ја зачувувате се совпаѓа со лозинката за <ph name="SITE" /></translation>
 <translation id="6593061639179217415">Сајт за десктоп</translation>
 <translation id="6594121454516132231">Погледнете како Chrome планира да ве заштити од следење на повеќе сајтови, додека истовремено го зачувува отворениот интернет</translation>
+<translation id="6594347733515723558">Подредување и преглед</translation>
 <translation id="6595046016124923392">Сликите се испраќаат во Google за да им се подобрат описите.</translation>
 <translation id="6600954340915313787">Копирано на Chrome</translation>
 <translation id="661266467055912436">Ја подобрува безбедноста за вас и сите останати на интернет.</translation>

@@ -269,7 +269,7 @@ TEST_F(PrivacyHubNotificationTest, WithApps) {
   EXPECT_EQ(
       l10n_util::GetStringFUTF16(
           IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES,
-          app2, app1),
+          app1, app2),
       notification_ptr->message());
 
   // More than two apps -> generic notification text.
@@ -292,7 +292,7 @@ TEST_F(PrivacyHubNotificationTest, WithApps) {
   EXPECT_EQ(
       l10n_util::GetStringFUTF16(
           IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES,
-          app3, app1),
+          app1, app3),
       notification_ptr->message());
 }
 

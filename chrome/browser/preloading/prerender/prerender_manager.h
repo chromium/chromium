@@ -75,6 +75,14 @@ class PrerenderManager : public content::WebContentsObserver,
   // owner that can cancels the corresponding prerendering?
   void StopPrerenderSearchResult(const GURL& canonical_search_url);
 
+  // The entry of bookmark prerender.
+  // Calling this method will return WeakPtr of the started prerender, and lead
+  // to the cancellation of the previous prerender if the given url is different
+  // from the on-going one. If the url given is already on-going, this function
+  // will return the weak pointer to the on-going prerender handle.
+  base::WeakPtr<content::PrerenderHandle> StartPrerenderBookmark(
+      const GURL& prerendering_url);
+
   // The entry of direct url input prerender.
   // Calling this method will return WeakPtr of the started prerender, and lead
   // to the cancellation of the previous prerender if the given url is different
@@ -134,6 +142,8 @@ class PrerenderManager : public content::WebContentsObserver,
   // prerender has been destroyed by the timer. With its help, PrerenderManager
   // can record the prediction regardless whether a prerender is expired or not.
   std::unique_ptr<SearchPrerenderTask> search_prerender_task_;
+
+  std::unique_ptr<content::PrerenderHandle> bookmark_prerender_handle_;
 
   std::unique_ptr<content::PrerenderHandle> direct_url_input_prerender_handle_;
 

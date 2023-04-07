@@ -1152,12 +1152,6 @@ class CONTENT_EXPORT ServiceWorkerVersion
   bool is_update_scheduled_ = false;
   bool in_dtor_ = false;
 
-  // When true, script evaluation doesn't start until InitializeGlobalScope() is
-  // called. This allows the browser process to prevent the renderer from
-  // evaluating the script immediately after the script has been loaded, until
-  // the subresource loader factories are updated.
-  bool initialize_global_scope_after_main_script_loaded_for_testing = false;
-
   // Populated via network::mojom::URLResponseHead of the main script.
   std::unique_ptr<MainScriptResponse> main_script_response_;
 

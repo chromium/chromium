@@ -59,6 +59,15 @@ void IceTransportHost::OnGatheringStateChanged(
                           new_state));
 }
 
+void IceTransportHost::OnCandidateGathered(
+    const cricket::Candidate& candidate) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  PostCrossThreadTask(
+      *proxy_thread_, FROM_HERE,
+      CrossThreadBindOnce(&IceTransportProxy::OnCandidateGathered, proxy_,
+                          candidate));
+}
+
 void IceTransportHost::OnStateChanged(webrtc::IceTransportState new_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   PostCrossThreadTask(*proxy_thread_, FROM_HERE,

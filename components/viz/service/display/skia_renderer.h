@@ -278,7 +278,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
     gfx::Size size;
     bool generate_mipmap = false;
     gfx::ColorSpace color_space;
-    ResourceFormat format;
+    SharedImageFormat format;
     gpu::Mailbox mailbox;
     bool is_root = false;
     bool is_scanout = false;
@@ -294,7 +294,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   RenderPassOverlayParams* GetOrCreateRenderPassOverlayBacking(
       AggregatedRenderPassId render_pass_id,
       const AggregatedRenderPassDrawQuad* rpdq,
-      ResourceFormat buffer_format,
+      SharedImageFormat buffer_format,
       gfx::ColorSpace color_space,
       const gfx::Size& buffer_size);
 

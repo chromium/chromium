@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/uuid.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_data_handle.h"
 #include "storage/browser/blob/blob_storage_context.h"
@@ -59,7 +59,7 @@ void BlobTaskProxy::SaveAsBlobOnIO(std::unique_ptr<std::string> data,
   DCHECK(io_task_runner_->BelongsToCurrentThread());
 
   // Build blob data. This has to do a copy into blob's internal storage.
-  std::string blob_uuid = base::GenerateGUID();
+  std::string blob_uuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   auto builder = std::make_unique<storage::BlobDataBuilder>(blob_uuid);
   builder->AppendData(*data);
   blob_data_handle_ =

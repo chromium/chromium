@@ -647,8 +647,10 @@ ScopedPauseRendering::~ScopedPauseRendering() {
   LayerTreeHost* host = host_.get();
   if (host) {
     DCHECK_GT(host->pause_rendering_count_, 0u);
-    if (--host->pause_rendering_count_ == 0)
+    if (--host->pause_rendering_count_ == 0) {
+      host->SetNeedsCommit();
       host->proxy_->SetPauseRendering(false);
+    }
   }
 }
 

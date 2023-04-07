@@ -61,7 +61,7 @@ from blinkpy.common.host import Host
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.web_tests.models import test_failures
 from blinkpy.web_tests.port.android import (
-    ANDROID_WEBLAYER, ANDROID_WEBVIEW, CHROME_ANDROID)
+    ANDROID_WEBVIEW, CHROME_ANDROID)
 from blinkpy.w3c.wpt_results_processor import WPTResultsProcessor
 
 from devil import devil_env
@@ -82,6 +82,7 @@ from skia_gold_infra import finch_skia_gold_session_manager
 from skia_gold_infra import finch_skia_gold_utils
 from run_wpt_tests import get_device
 
+ANDROID_WEBLAYER = 'android_weblayer'
 LOGCAT_TAG = 'finch_test_runner_py'
 LOGCAT_FILTERS = [
   'chromium:v',

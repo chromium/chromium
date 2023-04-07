@@ -250,6 +250,7 @@
   E_CPONLY(kColorButtonForegroundDisabled) \
   E_CPONLY(kColorButtonForegroundProminent) \
   E_CPONLY(kColorButtonForegroundTonal) \
+  E_CPONLY(kColorButtonHoverBackgroundText) \
   E_CPONLY(kColorMultitaskFeedbackButtonLabelBackground) \
   E_CPONLY(kColorMultitaskFeedbackButtonLabelForeground) \
   E_CPONLY(kColorMultitaskMenuNudgePulse) \
@@ -391,6 +392,8 @@
   E_CPONLY(kColorTextfieldForegroundPlaceholder) \
   E_CPONLY(kColorTextfieldSelectionBackground) \
   E_CPONLY(kColorTextfieldSelectionForeground) \
+  E_CPONLY(kColorTextfieldOutline) \
+  E_CPONLY(kColorTextfieldDisabledOutline) \
   E_CPONLY(kColorTextfieldInvalidOutline) \
   E_CPONLY(kColorThrobber) \
   E_CPONLY(kColorThrobberPreconnect) \

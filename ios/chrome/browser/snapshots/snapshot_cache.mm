@@ -27,6 +27,7 @@
 #import "base/threading/scoped_blocking_call.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/snapshots/features.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache_observer.h"
 #import "ios/chrome/browser/snapshots/snapshot_lru_cache.h"
 #import "ios/chrome/browser/tabs/features.h"
@@ -163,6 +164,8 @@ UIImage* ReadImageForSnapshotIDFromDisk(NSString* snapshot_id,
 void WriteImageToDisk(UIImage* image, const base::FilePath& file_path) {
   if (!image)
     return;
+  // CGImage should exist, otherwise UIImageJPEG(PNG)Representation returns nil.
+  CHECK(image.CGImage);
 
   base::FilePath directory = file_path.DirName();
   if (!base::DirectoryExists(directory)) {
@@ -177,8 +180,14 @@ void WriteImageToDisk(UIImage* image, const base::FilePath& file_path) {
   NSString* path = base::SysUTF8ToNSString(file_path.AsUTF8Unsafe());
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
-  [UIImageJPEGRepresentation(image, kJPEGImageQuality) writeToFile:path
-                                                        atomically:YES];
+  NSData* data = UIImageJPEGRepresentation(image, kJPEGImageQuality);
+  if (!data && base::FeatureList::IsEnabled(kPDFSnapshot)) {
+    // Use UIImagePNGRepresentation instead when ImageJPEGRepresentation returns
+    // nil. It happens when the underlying CGImageRef contains data in an
+    // unsupported bitmap format.
+    data = UIImagePNGRepresentation(image);
+  }
+  [data writeToFile:path atomically:YES];
 
   // Encrypt the snapshot file (mostly for Incognito, but can't hurt to
   // always do it).
@@ -212,45 +221,6 @@ void ConvertAndSaveGreyImage(NSString* snapshot_id,
                                         image_scale, cache_directory);
   WriteImageToDisk(grey_image, image_path);
   base::mac::SetBackupExclusion(image_path);
-}
-
-void MigrateSnapshotsWithIDs(const base::FilePath& old_cache_directory,
-                             const base::FilePath& new_cache_directory,
-                             NSSet<NSString*>* snapshot_ids,
-                             ImageScale snapshot_scale) {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::WILL_BLOCK);
-
-  if (old_cache_directory.empty() ||
-      old_cache_directory == new_cache_directory ||
-      !base::DirectoryExists(old_cache_directory)) {
-    return;
-  }
-
-  DCHECK(base::DirectoryExists(new_cache_directory));
-  for (NSString* snapshot_id in snapshot_ids) {
-    for (const ImageType image_type : kImageTypes) {
-      const base::FilePath old_image_path = ImagePath(
-          snapshot_id, image_type, snapshot_scale, old_cache_directory);
-      const base::FilePath new_image_path = ImagePath(
-          snapshot_id, image_type, snapshot_scale, new_cache_directory);
-
-      // Only migrate snapshots which are needed.
-      if (!base::PathExists(old_image_path) || base::PathExists(new_image_path))
-        continue;
-
-      if (!base::Move(old_image_path, new_image_path)) {
-        DLOG(ERROR) << "Error migrating file: "
-                    << old_image_path.AsUTF8Unsafe();
-      }
-    }
-  }
-
-  // Remove the old source folder.
-  if (!base::DeletePathRecursively(old_cache_directory)) {
-    DLOG(ERROR) << "Error deleting snapshots folder during migration: "
-                << old_cache_directory.AsUTF8Unsafe();
-  }
 }
 
 void DeleteImageWithSnapshotID(const base::FilePath& cache_directory,
@@ -521,17 +491,6 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
 - (base::FilePath)greyImagePathForSnapshotID:(NSString*)snapshotID {
   return ImagePath(snapshotID, IMAGE_TYPE_GREYSCALE, _snapshotsScale,
                    _cacheDirectory);
-}
-
-- (void)migrateSnapshotsWithIDs:(NSSet<NSString*>*)snapshotIDs
-                 fromSourcePath:(const base::FilePath&)sourcePath {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (!_taskRunner)
-    return;
-
-  _taskRunner->PostTask(
-      FROM_HERE, base::BindOnce(&MigrateSnapshotsWithIDs, sourcePath,
-                                _cacheDirectory, snapshotIDs, _snapshotsScale));
 }
 
 - (void)purgeCacheOlderThan:(const base::Time&)date

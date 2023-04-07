@@ -9,7 +9,6 @@
 #include <numeric>
 
 #include "base/barrier_closure.h"
-#include "base/task/test_task_traits_extension.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
@@ -59,16 +58,6 @@ TEST(PostJobTest, CreateJobSimple) {
   job_started = true;
   handle.Join();
   EXPECT_EQ(num_tasks_to_run, 0U);
-}
-
-TEST(PostJobTest, PostJobExtension) {
-  testing::FLAGS_gtest_death_test_style = "threadsafe";
-  EXPECT_DCHECK_DEATH({
-    auto handle = PostJob(
-        FROM_HERE, TestExtensionBoolTrait(),
-        BindRepeating([](JobDelegate* delegate) {}),
-        BindRepeating([](size_t /*worker_count*/) -> size_t { return 0; }));
-  });
 }
 
 // Verify that concurrent accesses with task_id as the only form of

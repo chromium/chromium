@@ -2227,10 +2227,6 @@ void ExtensionPrefs::RegisterProfilePrefs(
   registry->RegisterListPref(kExternalUninstalls);
   registry->RegisterListPref(
       pref_names::kExtendedBackgroundLifetimeForPortConnectionsToUrls);
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_FUCHSIA)
-  registry->RegisterBooleanPref(pref_names::kChromeAppsEnabled, false);
-#endif
   registry->RegisterBooleanPref(
       pref_names::kChromeAppsWebViewPermissiveBehaviorAllowed, false);
 

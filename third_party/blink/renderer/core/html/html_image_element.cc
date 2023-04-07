@@ -57,7 +57,6 @@
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
-#include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/media_type_names.h"
@@ -100,6 +99,7 @@ HTMLImageElement::HTMLImageElement(Document& document,
 
 HTMLImageElement::HTMLImageElement(Document& document, bool created_by_parser)
     : HTMLElement(html_names::kImgTag, document),
+      ActiveScriptWrappable<HTMLImageElement>({}),
       image_loader_(MakeGarbageCollected<HTMLImageLoader>(this)),
       image_device_pixel_ratio_(1.0f),
       source_(nullptr),
@@ -468,7 +468,7 @@ LayoutObject* HTMLImageElement::CreateLayoutObject(const ComputedStyle& style) {
 
   switch (layout_disposition_) {
     case LayoutDisposition::kFallbackContent:
-      return LayoutObjectFactory::CreateBlockFlow(*this, style);
+      return LayoutObject::CreateBlockFlowOrListItem(this, style);
     case LayoutDisposition::kPrimaryContent: {
       LayoutImage* image = MakeGarbageCollected<LayoutImage>(this);
       image->SetImageResource(MakeGarbageCollected<LayoutImageResource>());

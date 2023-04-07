@@ -412,10 +412,10 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
   /**
    * Called when a section is selected.
    */
-  private onIronActivate_(e: CustomEvent<{selected: string}>) {
+  private onSectionSelect_(e: CustomEvent<{selected: string}>) {
     assert(this.showNavMenu_);
-    const section = e.detail.selected;
-    const path = new URL(section).pathname;
+    const url = e.detail.selected;
+    const path = new URL(url).pathname;
     const route = Router.getInstance().getRouteForPath(path);
     assert(route, 'os-settings-menu has an entry with an invalid route.');
     this.activeRoute_ = route;

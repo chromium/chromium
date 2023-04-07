@@ -24,7 +24,7 @@
 
 namespace media_router {
 
-using ParsingError = SafeDialDeviceDescriptionParser::ParsingError;
+using ParsingResult = SafeDialDeviceDescriptionParser::ParsingResult;
 
 namespace {
 
@@ -37,30 +37,30 @@ constexpr int kCacheCleanUpTimeoutMins = 30;
 // Maximum size on the number of cached entries.
 constexpr int kCacheMaxEntries = 256;
 
-// Checks mandatory fields. Returns ParsingError::kNone if device description is
-// valid; Otherwise returns specific error type.
-ParsingError ValidateParsedDeviceDescription(
+// Checks mandatory fields. Returns ParsingResult::kSuccess if device
+// description is valid; Otherwise returns specific error type.
+ParsingResult ValidateParsedDeviceDescription(
     const DialDeviceData& device_data,
     const ParsedDialDeviceDescription& description_data) {
   if (description_data.unique_id.empty()) {
-    return ParsingError::kMissingUniqueId;
+    return ParsingResult::kMissingUniqueId;
   }
   if (description_data.friendly_name.empty()) {
-    return ParsingError::kMissingFriendlyName;
+    return ParsingResult::kMissingFriendlyName;
   }
   if (!description_data.app_url.is_valid()) {
-    return ParsingError::kMissingAppUrl;
+    return ParsingResult::kMissingAppUrl;
   }
   if (!device_data.IsValidUrl(description_data.app_url)) {
-    return ParsingError::kInvalidAppUrl;
+    return ParsingResult::kInvalidAppUrl;
   }
-
-  return ParsingError::kNone;
+  return ParsingResult::kSuccess;
 }
 
-void RecordDialParsingError(
-    SafeDialDeviceDescriptionParser::ParsingError parsing_error) {
-  UMA_HISTOGRAM_ENUMERATION("MediaRouter.Dial.ParsingError", parsing_error);
+void RecordDialParsingResult(
+    SafeDialDeviceDescriptionParser::ParsingResult parse_result) {
+  UMA_HISTOGRAM_ENUMERATION("MediaRouter.Dial.DeviceDescriptionParsingResult",
+                            parse_result);
 }
 
 }  // namespace
@@ -179,23 +179,24 @@ DeviceDescriptionService::CheckAndUpdateCache(
 void DeviceDescriptionService::OnParsedDeviceDescription(
     const DialDeviceData& device_data,
     const ParsedDialDeviceDescription& device_description,
-    SafeDialDeviceDescriptionParser::ParsingError parsing_error) {
+    SafeDialDeviceDescriptionParser::ParsingResult parsing_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pending_device_count_--;
-  if (parsing_error != ParsingError::kNone) {
-    RecordDialParsingError(parsing_error);
+  if (parsing_result != ParsingResult::kSuccess) {
+    RecordDialParsingResult(parsing_result);
     error_cb_.Run(device_data, "Failed to parse device description XML");
     return;
   }
 
-  ParsingError error =
+  parsing_result =
       ValidateParsedDeviceDescription(device_data, device_description);
-  if (error != ParsingError::kNone) {
-    RecordDialParsingError(error);
+  if (parsing_result != ParsingResult::kSuccess) {
+    RecordDialParsingResult(parsing_result);
     error_cb_.Run(device_data, "Failed to process fetch result");
     return;
   }
 
+  RecordDialParsingResult(ParsingResult::kSuccess);
   if (description_cache_.size() >= kCacheMaxEntries) {
     success_cb_.Run(device_data, device_description);
     return;

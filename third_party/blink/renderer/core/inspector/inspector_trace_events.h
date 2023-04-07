@@ -278,7 +278,6 @@ extern const char kListValueChange[];
 extern const char kListStyleTypeChange[];
 extern const char kCounterStyleChange[];
 extern const char kImageChanged[];
-extern const char kLineBoxesChanged[];
 extern const char kSliderValueChanged[];
 extern const char kAncestorMarginCollapsing[];
 extern const char kFieldsetChanged[];

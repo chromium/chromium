@@ -34,7 +34,7 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
       {kColorSysStateDisabledContainer}, {kColorButtonBackground})};
   mixer[kColorButtonBackgroundProminentFocused] = {GetResultingPaintColor(
       {kColorSysStateFocus}, {kColorButtonBackgroundProminent})};
-  mixer[kColorButtonBorder] = {kColorSysOutline};
+  mixer[kColorButtonBorder] = {kColorSysTonalOutline};
   mixer[kColorButtonBorderDisabled] = {kColorSysStateDisabled};
   mixer[kColorButtonForeground] = {kColorSysPrimary};
   mixer[kColorButtonForegroundDisabled] = {kColorSysStateDisabled};
@@ -72,6 +72,8 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
       BlendForMinContrast(kColorSysError, kColorTextfieldBackground)};
   mixer[kColorTextfieldForegroundDisabled] = {kColorSysStateDisabled};
   mixer[kColorTextfieldForegroundPlaceholder] = {kColorSysOnSurfaceSubtle};
+  mixer[kColorTextfieldOutline] = {kColorSysNeutralOutline};
+  mixer[kColorTextfieldDisabledOutline] = {SK_ColorTRANSPARENT};
   mixer[kColorTextfieldInvalidOutline] = {
       kColorTextfieldForegroundPlaceholderInvalid};
   mixer[kColorTextfieldSelectionBackground] = {kColorSysTonalContainer};

@@ -277,7 +277,7 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
   VideoPixelFormat picture_format_ = PIXEL_FORMAT_UNKNOWN;
 
   // Corresponding SharedImageFormat.
-  viz::SharedImageFormat si_format_ = viz::MultiPlaneFormat::kYUV_420_BIPLANAR;
+  viz::SharedImageFormat si_format_ = viz::MultiPlaneFormat::kNV12;
 
   // Frames that have not yet been decoded, keyed by bitstream ID; maintains
   // ownership of Frame objects while they flow through VideoToolbox.

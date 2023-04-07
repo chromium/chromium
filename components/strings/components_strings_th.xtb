@@ -1984,6 +1984,7 @@
 <translation id="5872692522325383488">บันทึก IBAN แล้ว</translation>
 <translation id="5873013647450402046">ธนาคารต้องการยืนยันตัวตนของคุณ</translation>
 <translation id="5877831137320480913">สุขภาพและความงาม</translation>
+<translation id="5879989559903563723">ไม่อนุญาตในโหมดผู้มาเยือน</translation>
 <translation id="5884465125445718607">Envelope Chinese #6</translation>
 <translation id="5887400589839399685">บันทึกการ์ดแล้ว</translation>
 <translation id="5887687176710214216">เข้าชมล่าสุดเมื่อวาน</translation>
@@ -2010,7 +2011,7 @@
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5947508410139465809">ไฟล์ที่คุณอัปโหลดหรือแนบจะส่งไปยัง Google Cloud หรือบุคคลที่สามเพื่อทำการวิเคราะห์ เช่น อาจสแกนหาข้อมูลที่ละเอียดอ่อนหรือมัลแวร์ และอาจจัดเก็บตามนโยบายบริษัท</translation>
 <translation id="5951495562196540101">ลงทะเบียนด้วยบัญชีผู้ใช้ทั่วไปไม่ได้ (มีใบอนุญาตแบบแพ็กเกจ)</translation>
-<translation id="5953516610448771166">คำบรรยายสดไม่พร้อมใช้งานกับสื่อนี้ หากต้องการรับคำบรรยาย ให้บล็อก<ph name="CONTENT_SETTINGS" />สำหรับเว็บไซต์นี้</translation>
+<translation id="5953516610448771166">คำบรรยายแทนเสียงแบบสดไม่พร้อมใช้งานกับสื่อนี้ หากต้องการรับคำบรรยายแทนเสียง ให้บล็อก<ph name="CONTENT_SETTINGS" />สำหรับเว็บไซต์นี้</translation>
 <translation id="5955063559762970069">โรงแรมและที่พัก</translation>
 <translation id="5963413905009737549">ส่วน</translation>
 <translation id="5967260682280773804">36 x 48 นิ้ว</translation>
@@ -3226,6 +3227,7 @@
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">กฎหมายและการปกครอง</translation>
 <translation id="8957210676456822347">การให้สิทธิ์แคปทีฟพอร์ทัล</translation>
+<translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">ไปที่การตั้งค่าเว็บไซต์</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />คำแนะนำ:<ph name="MARKUP_2" />ตรวจสอบว่าคุณมีการเชื่อมต่ออินเทอร์เน็ต<ph name="MARKUP_3" />โหลดหน้าเว็บนี้อีกครั้งในภายหลัง<ph name="MARKUP_4" />ตรวจสอบที่อยู่ที่คุณป้อน<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">บันทึกบัตร</translation>

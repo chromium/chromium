@@ -68,6 +68,10 @@ void TestOutput::SetLogicalInsets(const gfx::Insets& aura_logical_insets) {
   metrics_.aura_logical_insets = aura_logical_insets;
 }
 
+void TestOutput::SetDeviceScaleFactor(float aura_device_scale_factor) {
+  metrics_.aura_device_scale_factor = aura_device_scale_factor;
+}
+
 void TestOutput::SetLogicalTransform(
     wl_output_transform aura_logical_transform) {
   metrics_.aura_logical_transform = aura_logical_transform;

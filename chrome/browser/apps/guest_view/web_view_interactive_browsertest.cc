@@ -691,13 +691,12 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest, Focus_FocusTakeFocus) {
   ASSERT_TRUE(GetGuestRenderFrameHost());
 
   // Compute where to click in the window to focus the guest input box.
-  int clickX, clickY;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-      embedder_web_contents(),
-      "domAutomationController.send(Math.floor(window.clickX));", &clickX));
-  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-      embedder_web_contents(),
-      "domAutomationController.send(Math.floor(window.clickY));", &clickY));
+  int clickX =
+      content::EvalJs(embedder_web_contents(), "Math.floor(window.clickX);")
+          .ExtractInt();
+  int clickY =
+      content::EvalJs(embedder_web_contents(), "Math.floor(window.clickY);")
+          .ExtractInt();
 
   ExtensionTestMessageListener next_step_listener("TEST_STEP_PASSED");
   next_step_listener.set_failure_message("TEST_STEP_FAILED");

@@ -36,6 +36,9 @@ class MacHistorySwiperTest : public CocoaTest {
         [OCMockObject mockForProtocol:@protocol(HistorySwiperDelegate)];
     [[[mockDelegate stub] andReturn:view_] viewThatWantsHistoryOverlay];
     [[[mockDelegate stub] andReturnBool:YES] shouldAllowHistorySwiping];
+    [[[mockDelegate stub] andDo:^(NSInvocation* invocation) {
+      got_backwards_hint_ = true;
+    }] backwardsSwipeNavigationLikely];
 
     base::scoped_nsobject<HistorySwiper> historySwiper(
         [[HistorySwiper alloc] initWithDelegate:mockDelegate]);
@@ -80,6 +83,7 @@ class MacHistorySwiperTest : public CocoaTest {
     navigated_right_ = false;
     navigated_left_ = false;
     magic_mouse_history_swipe_ = false;
+    got_backwards_hint_ = false;
   }
 
   void TearDown() override {
@@ -108,6 +112,7 @@ class MacHistorySwiperTest : public CocoaTest {
   bool navigated_right_;
   bool navigated_left_;
   bool magic_mouse_history_swipe_;
+  bool got_backwards_hint_;
 };
 
 NSPoint makePoint(CGFloat x, CGFloat y) {
@@ -240,6 +245,7 @@ TEST_F(MacHistorySwiperTest, SwipeLeft) {
   EXPECT_EQ(end_count_, 1);
   EXPECT_FALSE(navigated_right_);
   EXPECT_TRUE(navigated_left_);
+  EXPECT_TRUE(got_backwards_hint_);
 }
 
 // Test that a simple right-swipe causes navigation.
@@ -262,6 +268,7 @@ TEST_F(MacHistorySwiperTest, SwipeRight) {
   EXPECT_EQ(end_count_, 1);
   EXPECT_TRUE(navigated_right_);
   EXPECT_FALSE(navigated_left_);
+  EXPECT_FALSE(got_backwards_hint_);
 }
 
 // If the user doesn't swipe enough, the history swiper should begin, but the
@@ -276,6 +283,10 @@ TEST_F(MacHistorySwiperTest, SwipeLeftSmallAmount) {
   EXPECT_EQ(end_count_, 1);
   EXPECT_FALSE(navigated_right_);
   EXPECT_FALSE(navigated_left_);
+
+  // Even though the gesture did not result in a navigation, it was far enough
+  // along to produce a hint of a possible back navigation.
+  EXPECT_TRUE(got_backwards_hint_);
 }
 
 // Diagonal swipes with a slight horizontal bias should not start the history

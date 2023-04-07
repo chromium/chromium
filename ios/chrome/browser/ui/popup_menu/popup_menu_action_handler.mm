@@ -80,7 +80,7 @@ using base::UserMetricsAction;
       [self.delegate readPageLater];
       break;
     case PopupMenuActionPageBookmark: {
-      RecordAction(UserMetricsAction("MobileMenuAddToBookmarks"));
+      RecordAction(UserMetricsAction("MobileMenuAddToOrEditBookmark"));
       LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
       web::WebState* currentWebState = self.delegate.currentWebState;
       if (!currentWebState) {

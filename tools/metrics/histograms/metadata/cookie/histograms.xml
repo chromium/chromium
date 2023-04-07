@@ -843,6 +843,12 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cookie.TimeInitializeDB" units="ms" expires_after="2023-09-10">
+  <owner>bingler@chromium.org</owner>
+  <owner>src/net/cookies/OWNERS</owner>
+  <summary>The amount of time (ms) to initialize the cookies database.</summary>
+</histogram>
+
 <histogram name="Cookie.TruncatingCharacterInCookieString"
     enum="TruncatingCharacterInCookieStringType" expires_after="2023-05-12">
   <owner>bingler@chromium.org</owner>

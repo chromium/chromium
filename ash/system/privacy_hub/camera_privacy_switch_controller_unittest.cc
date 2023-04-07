@@ -693,7 +693,7 @@ TEST_P(PrivacyHubCameraControllerTest, NotificationText) {
   EXPECT_EQ(
       l10n_util::GetStringFUTF16(
           IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES,
-          app2, app1),
+          app1, app2),
       notification->message());
 
   // Launch app3 that's also accessing camera, a notification should be
@@ -718,7 +718,7 @@ TEST_P(PrivacyHubCameraControllerTest, NotificationText) {
   EXPECT_EQ(
       l10n_util::GetStringFUTF16(
           IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES,
-          app3, app1),
+          app1, app3),
       notification->message());
 }
 

@@ -21,7 +21,7 @@
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/local_device_info_provider.h"
 #include "components/sync_device_info/local_device_info_util.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 
 using sync_pb::SharingSpecificFields;
 

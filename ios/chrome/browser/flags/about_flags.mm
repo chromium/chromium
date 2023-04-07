@@ -704,6 +704,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::test::kAutofillShowTypePredictions)},
+    {"autofill-account-profiles-storage",
+     flag_descriptions::kAutofillAccountProfilesStorageName,
+     flag_descriptions::kAutofillAccountProfilesStorageDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillAccountProfileStorage)},
     {"autofill-account-profiles-union-view",
      flag_descriptions::kAutofillAccountProfilesUnionViewName,
      flag_descriptions::kAutofillAccountProfilesUnionViewDescription,

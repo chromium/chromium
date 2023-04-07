@@ -62,7 +62,8 @@ template <typename Traits>
 EncoderBase<Traits>::EncoderBase(ScriptState* script_state,
                                  const InitType* init,
                                  ExceptionState& exception_state)
-    : ReclaimableCodec(ReclaimableCodec::CodecType::kEncoder,
+    : ActiveScriptWrappable<EncoderBase<Traits>>({}),
+      ReclaimableCodec(ReclaimableCodec::CodecType::kEncoder,
                        ExecutionContext::From(script_state)),
       state_(V8CodecState::Enum::kUnconfigured),
       script_state_(script_state),

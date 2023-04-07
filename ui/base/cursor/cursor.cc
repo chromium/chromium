@@ -6,9 +6,7 @@
 
 #include <utility>
 
-#include "base/check.h"
 #include "base/check_op.h"
-#include "base/numerics/checked_math.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/skia_util.h"
@@ -19,9 +17,14 @@ using mojom::CursorType;
 
 CursorData::CursorData() : bitmaps({SkBitmap()}) {}
 
-CursorData::CursorData(std::vector<SkBitmap> bitmaps, gfx::Point hotspot)
-    : bitmaps(std::move(bitmaps)), hotspot(std::move(hotspot)) {
-  DCHECK_GT(this->bitmaps.size(), 0u);
+CursorData::CursorData(std::vector<SkBitmap> bitmaps,
+                       gfx::Point hotspot,
+                       float scale_factor)
+    : bitmaps(std::move(bitmaps)),
+      hotspot(std::move(hotspot)),
+      scale_factor(scale_factor) {
+  CHECK_GT(this->bitmaps.size(), 0u);
+  CHECK_GT(scale_factor, 0);
 }
 
 CursorData::CursorData(const CursorData& cursor_data) = default;
@@ -55,9 +58,9 @@ void Cursor::SetPlatformCursor(scoped_refptr<PlatformCursor> platform_cursor) {
 
 bool Cursor::operator==(const Cursor& cursor) const {
   return type_ == cursor.type_ && platform_cursor_ == cursor.platform_cursor_ &&
-         image_scale_factor_ == cursor.image_scale_factor_ &&
          (type_ != CursorType::kCustom ||
-          (custom_hotspot_ == cursor.custom_hotspot_ &&
+          (image_scale_factor_ == cursor.image_scale_factor_ &&
+           custom_hotspot_ == cursor.custom_hotspot_ &&
            gfx::BitmapsAreEqual(custom_bitmap_, cursor.custom_bitmap_)));
 }
 

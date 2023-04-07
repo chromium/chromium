@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_activity_indicator_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_disclosure_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_illustrated_item.h"
@@ -68,7 +69,6 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
-#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_menu_provider.h"
@@ -278,12 +278,27 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 // Returns YES if the user cannot turn on sync for enterprise policy reasons.
 - (BOOL)isSyncDisabledByAdministrator {
   DCHECK(self.syncService);
-  bool syncDisabledPolicy = self.syncService->GetDisableReasons().Has(
-      syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
+  if (self.syncService->GetDisableReasons().Has(
+          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
+    // Return YES if the SyncDisabled policy is enabled.
+    return YES;
+  }
+
   PrefService* prefService = self.browserState->GetPrefs();
-  bool syncTypesDisabledPolicy =
-      IsManagedSyncDataType(prefService, SyncSetupService::kSyncOpenTabs);
-  return syncDisabledPolicy || syncTypesDisabledPolicy;
+  DCHECK(prefService);
+  if (IsManagedSyncDataType(prefService, SyncSetupService::kSyncOpenTabs)) {
+    // Return YES if the data type is disabled by the SyncTypesListDisabled
+    // policy.
+    return YES;
+  }
+
+  DCHECK(self.browserState);
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForBrowserState(self.browserState);
+  DCHECK(authService);
+  // Return NO is sign-in is disabled by the BrowserSignin policy.
+  return authService->GetServiceStatus() ==
+         AuthenticationService::ServiceStatus::SigninDisabledByPolicy;
 }
 
 #pragma mark - SyncObserverModelBridge

@@ -6,9 +6,9 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/url_formatter/elide_url.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_image_container_view.h"
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_menu_button.h"
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_price_chip_view.h"

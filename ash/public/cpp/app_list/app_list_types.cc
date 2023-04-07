@@ -44,6 +44,7 @@ bool IsAppListSearchResultAnApp(AppListSearchResultType result_type) {
     case AppListSearchResultType::kPersonalization:
     case AppListSearchResultType::kImageSearch:
     case AppListSearchResultType::kSystemInfo:
+    case AppListSearchResultType::kZeroStateDesksAdminTemplate:
       return false;
   }
 }
@@ -54,6 +55,7 @@ bool IsZeroStateResultType(AppListSearchResultType result_type) {
     case AppListSearchResultType::kZeroStateDrive:
     case AppListSearchResultType::kZeroStateHelpApp:
     case AppListSearchResultType::kZeroStateApp:
+    case AppListSearchResultType::kZeroStateDesksAdminTemplate:
       return true;
     case AppListSearchResultType::kUnknown:
     case AppListSearchResultType::kInstalledApp:

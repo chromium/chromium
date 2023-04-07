@@ -17,3 +17,6 @@
 -org.chromium.components.browser_ui.photo_picker.PhotoPickerDialogTest.testMultiSelectionPhoto
 -org.chromium.components.browser_ui.photo_picker.PhotoPickerDialogTest.testNoSelection
 -org.chromium.components.browser_ui.photo_picker.PhotoPickerDialogTest.testSingleSelectionPhoto
+
+# crbug.com/1431321
+-org.chromium.ui.resources.dynamics.HardwareDrawTest.testStartBitmapCapture_raceCondition

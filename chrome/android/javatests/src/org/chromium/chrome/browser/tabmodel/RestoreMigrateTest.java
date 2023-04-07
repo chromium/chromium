@@ -53,7 +53,7 @@ public class RestoreMigrateTest {
                 TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<byte[]>() {
                     @Override
                     public byte[] call() throws Exception {
-                        return TabPersistentStore.serializeTabModelSelector(selector, null)
+                        return TabPersistentStore.serializeTabModelSelector(selector, null, false)
                                 .listData;
                     }
                 });

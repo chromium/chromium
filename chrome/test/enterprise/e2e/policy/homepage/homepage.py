@@ -54,7 +54,7 @@ class HomepageTest(ChromeEnterpriseTestCase):
 
     # verify the home page is the value of HomepageLocation
     homepage = self._getHomepageLocation(self.win_config['client'])
-    self.assertIn("http://www.example.com/", homepage)
+    self.assertIn("https://www.example.com/", homepage)
 
   @test
   def test_HomepageIsNewTab(self):

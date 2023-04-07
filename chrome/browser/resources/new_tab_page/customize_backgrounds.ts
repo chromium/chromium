@@ -172,11 +172,15 @@ export class CustomizeBackgroundsElement extends PolymerElement {
   }
 
   revertBackgroundChanges() {
-    this.pageHandler_.revertBackgroundChanges();
+    if (!this.customBackgroundDisabledByPolicy_) {
+      this.pageHandler_.revertBackgroundChanges();
+    }
   }
 
   confirmBackgroundChanges() {
-    this.pageHandler_.confirmBackgroundChanges();
+    if (!this.customBackgroundDisabledByPolicy_) {
+      this.pageHandler_.confirmBackgroundChanges();
+    }
   }
 }
 

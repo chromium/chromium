@@ -274,5 +274,10 @@ NearbyDependenciesProvider::GetNetworkContext() {
   return profile_->GetDefaultStoragePartition()->GetNetworkContext();
 }
 
+// static
+void NearbyDependenciesProvider::EnsureFactoryBuilt() {
+  NearbyDependenciesProviderShutdownNotifierFactory::GetInstance();
+}
+
 }  // namespace nearby
 }  // namespace ash

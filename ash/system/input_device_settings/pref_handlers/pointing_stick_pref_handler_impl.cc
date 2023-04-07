@@ -71,7 +71,6 @@ mojom::PointingStickSettingsPtr GetPointingStickSettingsFromPrefs(
 }
 
 mojom::PointingStickSettingsPtr RetrievePointingStickSettings(
-    PrefService* pref_service,
     const mojom::PointingStick& pointing_stick,
     const base::Value::Dict& settings_dict) {
   mojom::PointingStickSettingsPtr settings =
@@ -160,8 +159,8 @@ void PointingStickPrefHandlerImpl::InitializePointingStickSettings(
   ForcePointingStickSettingPersistence force_persistence;
 
   if (settings_dict) {
-    pointing_stick->settings = RetrievePointingStickSettings(
-        pref_service, *pointing_stick, *settings_dict);
+    pointing_stick->settings =
+        RetrievePointingStickSettings(*pointing_stick, *settings_dict);
   } else if (Shell::Get()->input_device_tracker()->WasDevicePreviouslyConnected(
                  InputDeviceTracker::InputDeviceCategory::kPointingStick,
                  pointing_stick->device_key)) {

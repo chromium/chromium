@@ -535,7 +535,8 @@ CacheStorage::CacheStorage(
     ExecutionContext* context,
     GlobalFetch::ScopedFetcher* fetcher,
     mojo::PendingRemote<mojom::blink::CacheStorage> pending_remote)
-    : ExecutionContextClient(context),
+    : ActiveScriptWrappable<CacheStorage>({}),
+      ExecutionContextClient(context),
       scoped_fetcher_(fetcher),
       blob_client_list_(MakeGarbageCollected<CacheStorageBlobClientList>()),
       cache_storage_remote_(context) {

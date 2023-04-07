@@ -31,6 +31,8 @@
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdf_annot.h"
 #include "third_party/pdfium/public/fpdf_catalog.h"
+#include "third_party/pdfium/public/fpdf_edit.h"
+#include "third_party/pdfium/public/fpdfview.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -56,6 +58,17 @@ constexpr float k90DegreesInRadians = base::kPiFloat / 2;
 constexpr float k180DegreesInRadians = base::kPiFloat;
 constexpr float k270DegreesInRadians = 3 * base::kPiFloat / 2;
 constexpr float k360DegreesInRadians = 2 * base::kPiFloat;
+
+constexpr float kPointsToPixels = static_cast<float>(printing::kPixelsPerInch) /
+                                  static_cast<float>(printing::kPointsPerInch);
+
+// Page rotations in clockwise degrees.
+enum class Rotation {
+  kRotate0 = 0,
+  kRotate90 = 1,
+  kRotate180 = 2,
+  kRotate270 = 3,
+};
 
 gfx::RectF FloatPageRectToPixelRect(FPDF_PAGE page, const gfx::RectF& input) {
   int output_width = FPDF_GetPageWidthF(page);
@@ -277,6 +290,80 @@ bool AreTextStyleEqual(FPDF_TEXTPAGE text_page,
          char_style.stroke_color == style.stroke_color &&
          char_style.is_italic == style.is_italic &&
          char_style.is_bold == style.is_bold;
+}
+
+// Returns the bounds with the smallest left, smallest bottom, largest right,
+// and largest top.
+FS_RECTF GetLargestBounds(const FS_RECTF& largest_bounds,
+                          const FS_RECTF& bounds) {
+  return {std::min(largest_bounds.left, bounds.left),
+          std::max(largest_bounds.top, bounds.top),
+          std::max(largest_bounds.right, bounds.right),
+          std::min(largest_bounds.bottom, bounds.bottom)};
+}
+
+gfx::RectF GetRotatedRectF(Rotation rotation,
+                           gfx::SizeF page_size,
+                           const FS_RECTF& original_bounds) {
+  FS_RECTF bounds;
+
+  // When the page is rotated 90 degrees or 270 degrees, the page width and
+  // height are swapped. Swap it back for calculations.
+  if (rotation == Rotation::kRotate90 || rotation == Rotation::kRotate270) {
+    page_size.Transpose();
+  }
+
+  switch (rotation) {
+    case Rotation::kRotate0: {
+      bounds = original_bounds;
+      break;
+    }
+    case Rotation::kRotate90: {
+      bounds.left = original_bounds.bottom;
+      bounds.top = page_size.width() - original_bounds.left;
+      bounds.right = original_bounds.top;
+      bounds.bottom = page_size.width() - original_bounds.right;
+      break;
+    }
+    case Rotation::kRotate180: {
+      bounds.left = page_size.width() - original_bounds.right;
+      bounds.top = page_size.height() - original_bounds.bottom;
+      bounds.right = page_size.width() - original_bounds.left;
+      bounds.bottom = page_size.height() - original_bounds.top;
+      break;
+    }
+    case Rotation::kRotate270: {
+      bounds.left = page_size.height() - original_bounds.top;
+      bounds.top = original_bounds.right;
+      bounds.right = page_size.height() - original_bounds.bottom;
+      bounds.bottom = original_bounds.left;
+      break;
+    }
+  }
+
+  return gfx::RectF(bounds.left, bounds.bottom, bounds.right - bounds.left,
+                    bounds.top - bounds.bottom);
+}
+
+// Get the effective crop box. If empty or failed to calculate the effective
+// crop box, default to a `gfx::RectF` with dimensions page width by page
+// height.
+gfx::RectF GetEffectiveCropBox(FPDF_PAGE page,
+                               Rotation rotation,
+                               const gfx::SizeF& page_size) {
+  gfx::RectF effective_crop_box;
+  FS_RECTF effective_crop_bounds;
+  if (FPDF_GetPageBoundingBox(page, &effective_crop_bounds)) {
+    effective_crop_box =
+        GetRotatedRectF(rotation, page_size, effective_crop_bounds);
+  }
+
+  if (effective_crop_box.IsEmpty()) {
+    effective_crop_box =
+        gfx::RectF(0, 0, page_size.width(), page_size.height());
+  }
+
+  return effective_crop_box;
 }
 
 }  // namespace
@@ -560,6 +647,69 @@ gfx::RectF PDFiumPage::GetCroppedRect() {
                   raw_rect.right - raw_rect.left,
                   raw_rect.top - raw_rect.bottom);
   return FloatPageRectToPixelRect(page, rect);
+}
+
+gfx::RectF PDFiumPage::GetBoundingBox() {
+  FPDF_PAGE page = GetPage();
+  if (!page) {
+    return gfx::RectF();
+  }
+
+  // Page width and height are already swapped based on page rotation.
+  gfx::SizeF page_size(FPDF_GetPageWidthF(page), FPDF_GetPageHeightF(page));
+  Rotation rotation = static_cast<Rotation>(FPDFPage_GetRotation(page));
+
+  // Start with bounds with the left and bottom values at the max possible
+  // bounds and the right and top values at the min possible bounds. Bounds are
+  // relative to the media box.
+  FS_RECTF largest_bounds = {page_size.width(), 0, 0, page_size.height()};
+  for (int i = 0; i < FPDFPage_CountObjects(page); ++i) {
+    FPDF_PAGEOBJECT page_object = FPDFPage_GetObject(page, i);
+    if (!page_object) {
+      continue;
+    }
+
+    FS_RECTF bounds;
+    if (FPDFPageObj_GetBounds(page_object, &bounds.left, &bounds.bottom,
+                              &bounds.right, &bounds.top)) {
+      largest_bounds = GetLargestBounds(largest_bounds, bounds);
+    }
+  }
+  for (int i = 0; i < FPDFPage_GetAnnotCount(page); ++i) {
+    ScopedFPDFAnnotation annotation(FPDFPage_GetAnnot(page, i));
+    if (!annotation) {
+      continue;
+    }
+
+    FS_RECTF bounds;
+    if (FPDFAnnot_GetRect(annotation.get(), &bounds)) {
+      largest_bounds = GetLargestBounds(largest_bounds, bounds);
+    }
+  }
+
+  gfx::RectF bounding_box =
+      GetRotatedRectF(rotation, page_size, largest_bounds);
+
+  gfx::RectF effective_crop_box =
+      GetEffectiveCropBox(page, rotation, page_size);
+
+  // If the bounding box is empty, default to the effective crop box.
+  if (bounding_box.IsEmpty()) {
+    bounding_box = effective_crop_box;
+  } else {
+    // Some bounding boxes may be out-of-bounds of `effective_crop_box`. Clip to
+    // be within `effective_crop_box`.
+    bounding_box.Intersect(effective_crop_box);
+  }
+
+  // Set the bounding box to be relative to the effective crop box.
+  bounding_box.set_x(bounding_box.x() - effective_crop_box.x());
+  bounding_box.set_y(bounding_box.y() - effective_crop_box.y());
+
+  // Scale to page pixels.
+  bounding_box.Scale(kPointsToPixels);
+
+  return bounding_box;
 }
 
 bool PDFiumPage::IsCharInPageBounds(int char_index,

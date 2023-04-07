@@ -578,6 +578,10 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
   }
 
   if (received_load_complete_event) {
+    // Clearing the focused node first ensures that the focus event isn't
+    // suppressed in the case where focus was on the same node as in a previous
+    // update.
+    SetLastFocusedNode(nullptr);
     // Fire a focus event after the document has finished loading, but after all
     // the platform independent events have already fired, e.g. kLayoutComplete.
     // Some screen readers need a focus event in order to work properly.
@@ -890,6 +894,30 @@ void BrowserAccessibilityManager::Increment(const BrowserAccessibility& node) {
 
   ui::AXActionData action_data;
   action_data.action = ax::mojom::Action::kIncrement;
+  action_data.target_node_id = node.GetId();
+  delegate_->AccessibilityPerformAction(action_data);
+  BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
+}
+
+void BrowserAccessibilityManager::Expand(const BrowserAccessibility& node) {
+  if (!delegate_) {
+    return;
+  }
+
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kExpand;
+  action_data.target_node_id = node.GetId();
+  delegate_->AccessibilityPerformAction(action_data);
+  BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
+}
+
+void BrowserAccessibilityManager::Collapse(const BrowserAccessibility& node) {
+  if (!delegate_) {
+    return;
+  }
+
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kCollapse;
   action_data.target_node_id = node.GetId();
   delegate_->AccessibilityPerformAction(action_data);
   BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();

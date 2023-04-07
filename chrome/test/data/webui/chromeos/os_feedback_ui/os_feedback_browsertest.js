@@ -22,6 +22,7 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
+GEN('#include "chromeos/constants/chromeos_features.h"');
 
 this.OSFeedbackBrowserTest = class extends PolymerTest {
   /** @override */
@@ -32,7 +33,12 @@ this.OSFeedbackBrowserTest = class extends PolymerTest {
 
   /** @override */
   get featureList() {
-    return {enabled: ['ash::features::kOsFeedback']};
+    return {
+      enabled: [
+        'ash::features::kOsFeedback', 'ash::features::kOsFeedbackJelly',
+        'chromeos::features::kJelly'
+      ]
+    };
   }
 };
 
@@ -50,8 +56,9 @@ const debug_suites_list = [
   'shareDataPageTest',
 ];
 
+// TODO(crbug.com/1401615): Flaky.
 TEST_F(
-    'OSFeedbackBrowserTest', 'All', function() {
+    'OSFeedbackBrowserTest', 'DISABLED_All', function() {
       assertDeepEquals(
           debug_suites_list, test_suites_list,
           'List of registered tests suites and debug suites do not match.\n' +

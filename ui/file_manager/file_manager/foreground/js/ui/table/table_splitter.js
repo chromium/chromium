@@ -97,7 +97,7 @@ export class TableSplitter extends Splitter {
    */
   handleSplitterDragEnd() {
     this.ownerDocument.documentElement.classList.remove('col-resize');
-    dispatchSimpleEvent(this, 'column-resize-end', true);
+    dispatchSimpleEvent(this, 'column-resize-end', /*bubbles=*/ true);
     this.table_.columnModel.handleSplitterDragEnd();
   }
 }

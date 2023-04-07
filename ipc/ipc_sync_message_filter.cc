@@ -49,8 +49,7 @@ bool SyncMessageFilter::Send(Message* message) {
       base::WaitableEvent::InitialState::NOT_SIGNALED);
   PendingSyncMsg pending_message(
       SyncMessage::GetMessageId(*message),
-      static_cast<SyncMessage*>(message)->GetReplyDeserializer(),
-      &done_event);
+      static_cast<SyncMessage*>(message)->TakeReplyDeserializer(), &done_event);
 
   {
     base::AutoLock auto_lock(lock_);
@@ -95,7 +94,6 @@ bool SyncMessageFilter::Send(Message* message) {
 
   {
     base::AutoLock auto_lock(lock_);
-    delete pending_message.deserializer;
     pending_sync_messages_.erase(&pending_message);
   }
 

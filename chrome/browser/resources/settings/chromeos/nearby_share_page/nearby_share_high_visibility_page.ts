@@ -45,7 +45,7 @@ const PULSE_ANIMATION_URL_DARK: string =
 
 const NearbyShareHighVisibilityPageElementBase = I18nMixin(PolymerElement);
 
-class NearbyShareHighVisibilityPageElement extends
+export class NearbyShareHighVisibilityPageElement extends
     NearbyShareHighVisibilityPageElementBase {
   static get is() {
     return 'nearby-share-high-visibility-page' as const;

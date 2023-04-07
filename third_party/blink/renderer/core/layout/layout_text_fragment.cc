@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
-#include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 
 namespace blink {
@@ -38,7 +37,7 @@ LayoutTextFragment::LayoutTextFragment(Node* node,
                                        const String& str,
                                        int start_offset,
                                        int length)
-    : LayoutNGText(node, str ? str.Substring(start_offset, length) : String()),
+    : LayoutText(node, str ? str.Substring(start_offset, length) : String()),
       start_(start_offset),
       fragment_length_(length),
       is_remaining_text_layout_object_(false),
@@ -85,7 +84,7 @@ LayoutTextFragment* LayoutTextFragment::CreateAnonymous(PseudoElement& pseudo,
 
 void LayoutTextFragment::Trace(Visitor* visitor) const {
   visitor->Trace(first_letter_pseudo_element_);
-  LayoutNGText::Trace(visitor);
+  LayoutText::Trace(visitor);
 }
 
 void LayoutTextFragment::WillBeDestroyed() {
@@ -93,7 +92,7 @@ void LayoutTextFragment::WillBeDestroyed() {
   if (is_remaining_text_layout_object_ && first_letter_pseudo_element_)
     first_letter_pseudo_element_->ClearRemainingTextLayoutObject();
   first_letter_pseudo_element_ = nullptr;
-  LayoutNGText::WillBeDestroyed();
+  LayoutText::WillBeDestroyed();
 }
 
 String LayoutTextFragment::CompleteText() const {
@@ -118,7 +117,7 @@ String LayoutTextFragment::OriginalText() const {
 
 void LayoutTextFragment::TextDidChange() {
   NOT_DESTROYED();
-  LayoutNGText::TextDidChange();
+  LayoutText::TextDidChange();
 
   start_ = 0;
   fragment_length_ = TextLength();
@@ -143,7 +142,7 @@ void LayoutTextFragment::SetTextFragment(String text,
   // where we only use portions of the string.
   if (GetText() != text) {
     SetTextInternal(std::move(text));
-    LayoutNGText::TextDidChange();
+    LayoutText::TextDidChange();
   }
 
   start_ = start;
@@ -157,7 +156,7 @@ void LayoutTextFragment::TransformText() {
   // we only use portions of the string.
   if (String text_to_transform = OriginalText()) {
     SetTextInternal(std::move(text_to_transform));
-    LayoutNGText::TextDidChange();
+    LayoutText::TextDidChange();
   }
 }
 
@@ -170,7 +169,7 @@ UChar LayoutTextFragment::PreviousCharacter() const {
     }
   }
 
-  return LayoutNGText::PreviousCharacter();
+  return LayoutText::PreviousCharacter();
 }
 
 // If this is the layoutObject for a first-letter pseudoNode then we have to
@@ -283,17 +282,17 @@ String LayoutTextFragment::PlainText() const {
   // See also ElementInnerTextCollector::ProcessTextNode(), which does the same.
   NOT_DESTROYED();
   if (!is_remaining_text_layout_object_ || !GetNode())
-    return LayoutNGText::PlainText();
+    return LayoutText::PlainText();
   LayoutText* first_letter = GetFirstLetterPart();
   if (!first_letter)
-    return LayoutNGText::PlainText();
+    return LayoutText::PlainText();
   const NGOffsetMapping* remaining_text_mapping = GetNGOffsetMapping();
   const NGOffsetMapping* first_letter_mapping =
       first_letter->GetNGOffsetMapping();
   if (first_letter_mapping && remaining_text_mapping &&
       first_letter_mapping != remaining_text_mapping)
-    return first_letter_mapping->GetText() + LayoutNGText::PlainText();
-  return LayoutNGText::PlainText();
+    return first_letter_mapping->GetText() + LayoutText::PlainText();
+  return LayoutText::PlainText();
 }
 
 }  // namespace blink

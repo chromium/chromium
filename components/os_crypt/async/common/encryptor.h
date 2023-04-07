@@ -14,7 +14,18 @@
 #include "base/gtest_prod_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace mojo {
+template <typename DataViewType, typename T>
+struct StructTraits;
+}  // namespace mojo
+
 namespace os_crypt_async {
+
+namespace mojom {
+enum class Algorithm;
+class EncryptorDataView;
+class KeyDataView;
+}  // namespace mojom
 
 class EncryptorTestBase;
 class OSCryptAsync;
@@ -28,32 +39,55 @@ class Encryptor {
   // encryption key.
   class Key {
    public:
-    Key(const Key&);
-    Key& operator=(const Key&);
+    // Moveable, not copyable.
+    Key(Key&& other);
+    Key& operator=(Key&& other);
+    Key(const Key&) = delete;
+    Key& operator=(const Key&) = delete;
 
     ~Key();
 
     static const size_t kAES256GCMKeySize = 256u / 8u;
 
-    enum class Algorithm {
-      kAES256GCM = 0,  // Algorithm used on Windows: 256 bit key with 96 bit
-                       // random nonce at the start of the data.
-    };
+    // Mojo must be able to construct this class for serialization.
+    // TODO(crbug.com/1427202): Remove this once mojo::DefaultConstruct::Tag can
+    // be used instead.
+    Key();
 
-    Key(base::span<const uint8_t> key, const Algorithm& algo);
+    Key(base::span<const uint8_t> key, const mojom::Algorithm& algo);
+
+    bool operator==(const Key& other) const = default;
 
    private:
     friend class Encryptor;
+    // OSCryptAsync and tests need to be able to Clone() keys.
+    friend class OSCryptAsync;
+    friend struct mojo::StructTraits<os_crypt_async::mojom::KeyDataView,
+                                     os_crypt_async::Encryptor::Key>;
+    FRIEND_TEST_ALL_PREFIXES(EncryptorTestBase, MultipleKeys);
+    FRIEND_TEST_ALL_PREFIXES(EncryptorTraitsTest, TraitsRoundTrip);
 
     std::vector<uint8_t> Encrypt(base::span<const uint8_t> plaintext) const;
     absl::optional<std::vector<uint8_t>> Decrypt(
         base::span<const uint8_t> ciphertext) const;
 
-    Algorithm algo_;
+    Key Clone() const;
+
+    // Algorithm. Can only be absl::nullopt if the instance is in the process of
+    // being serialized to/from mojo.
+    absl::optional<mojom::Algorithm> algorithm_;
     std::vector<uint8_t> key_;
   };
 
   using KeyRing = std::map</*tag=*/std::string, Key>;
+
+  // Create an encryptor with no keys or encryption provider. In this case, all
+  // encryption operations will be delegated to OSCrypt.
+  // Must be public for mojo to be able to construct this class for
+  // serialization.
+  // TODO(crbug.com/1427202): Remove this once mojo::DefaultConstruct::Tag can
+  // be used instead.
+  Encryptor();
 
   ~Encryptor();
 
@@ -84,15 +118,15 @@ class Encryptor {
  private:
   friend class EncryptorTestBase;
   friend class OSCryptAsync;
+  friend struct mojo::StructTraits<os_crypt_async::mojom::EncryptorDataView,
+                                   os_crypt_async::Encryptor>;
 
-  // Create an encryptor with no keys or encryption provider. In this case, all
-  // encryption operations will be delegated to OSCrypt.
-  Encryptor();
+  FRIEND_TEST_ALL_PREFIXES(EncryptorTraitsTest, TraitsRoundTrip);
 
   // Create an encryptor with a set of `keys`. The `provider_for_encryption`
   // specifies which provider is used for encryption, and must have a
   // corresponding key in `keys`.
-  Encryptor(const KeyRing& keys, const std::string& provider_for_encryption);
+  Encryptor(KeyRing keys, const std::string& provider_for_encryption);
 
   // Clone is used by the factory to vend instances.
   Encryptor Clone() const;

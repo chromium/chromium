@@ -144,6 +144,7 @@
     // If the account storage feature is not available, the promo should be
     // visible to show "Turn on Sync promo".
     self.shouldShowSigninPromo = YES;
+    return;
   }
   // if the account storage feature is available and the user is signed in only,
   // the promo should be visible only if the first sync is not finished yet.

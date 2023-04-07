@@ -76,6 +76,8 @@ class ASH_EXPORT AppListSearchView : public views::View,
     return result_selection_controller_.get();
   }
 
+  raw_ptr<SearchBoxView> search_box_view() { return search_box_view_; }
+
  private:
   // Passed to |result_selection_controller_| as a callback that gets called
   // when the currently selected result changes.

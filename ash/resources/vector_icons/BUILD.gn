@@ -372,6 +372,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "system_menu_cast_enabled.icon",
     "system_menu_cast_generic.icon",
     "system_menu_cast_message.icon",
+    "system_menu_cast_paused.icon",
     "system_menu_computer.icon",
     "system_menu_computer_legacy.icon",
     "system_menu_gamepad.icon",

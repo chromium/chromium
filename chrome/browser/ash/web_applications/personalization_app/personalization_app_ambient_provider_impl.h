@@ -77,7 +77,7 @@ class PersonalizationAppAmbientProviderImpl
 
   bool IsAmbientModeEnabled();
 
-  AmbientUiSettings GetCurrentUiSettings();
+  AmbientUiSettings GetCurrentUiSettings() const;
 
   // Update the local `settings_` to server.
   void UpdateSettings();
@@ -114,6 +114,14 @@ class PersonalizationAppAmbientProviderImpl
 
   // Reset local settings to start a new session.
   void ResetLocalSettings();
+
+  // Not necessarily the same as `settings_.topic_source`. The `topic_source` in
+  // `settings_` should never be `kVideo` since it reflects what the server
+  // stores, and the server does not know about video. Note it's important to
+  // leave `settings_` untouched while the video theme is active so that the
+  // user's exact `AmbientSettings` can be restored when switching back to a
+  // non-video theme (ex: slideshow).
+  AmbientModeTopicSource GetCurrentTopicSource() const;
 
   mojo::Receiver<ash::personalization_app::mojom::AmbientProvider>
       ambient_receiver_{this};

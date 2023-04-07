@@ -36,7 +36,6 @@
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/fileapi/file_error.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -51,21 +50,19 @@ DOMArrayBuffer* FileReaderSync::readAsArrayBuffer(
     ExceptionState& exception_state) {
   DCHECK(blob);
 
-  FileReaderLoader* loader = MakeGarbageCollected<FileReaderLoader>(
-      FileReaderLoader::kReadAsArrayBuffer, nullptr, task_runner_);
-  StartLoading(*loader, *blob, exception_state);
-
-  return loader->ArrayBufferResult();
+  absl::optional<FileReaderData> res = Load(*blob, exception_state);
+  return !res ? nullptr : std::move(res).value().AsDOMArrayBuffer();
 }
 
 String FileReaderSync::readAsBinaryString(Blob* blob,
                                           ExceptionState& exception_state) {
   DCHECK(blob);
 
-  FileReaderLoader* loader = MakeGarbageCollected<FileReaderLoader>(
-      FileReaderLoader::kReadAsBinaryString, nullptr, task_runner_);
-  StartLoading(*loader, *blob, exception_state);
-  return loader->StringResult();
+  absl::optional<FileReaderData> res = Load(*blob, exception_state);
+  if (!res) {
+    return "";
+  }
+  return std::move(res).value().AsBinaryString();
 }
 
 String FileReaderSync::readAsText(Blob* blob,
@@ -73,30 +70,34 @@ String FileReaderSync::readAsText(Blob* blob,
                                   ExceptionState& exception_state) {
   DCHECK(blob);
 
-  FileReaderLoader* loader = MakeGarbageCollected<FileReaderLoader>(
-      FileReaderLoader::kReadAsText, nullptr, task_runner_);
-  loader->SetEncoding(encoding);
-  StartLoading(*loader, *blob, exception_state);
-  return loader->StringResult();
+  absl::optional<FileReaderData> res = Load(*blob, exception_state);
+  if (!res) {
+    return "";
+  }
+  return std::move(res).value().AsText(encoding);
 }
 
 String FileReaderSync::readAsDataURL(Blob* blob,
                                      ExceptionState& exception_state) {
   DCHECK(blob);
 
-  FileReaderLoader* loader = MakeGarbageCollected<FileReaderLoader>(
-      FileReaderLoader::kReadAsDataURL, nullptr, task_runner_);
-  loader->SetDataType(blob->type());
-  StartLoading(*loader, *blob, exception_state);
-  return loader->StringResult();
+  absl::optional<FileReaderData> res = Load(*blob, exception_state);
+  if (!res) {
+    return "";
+  }
+  return std::move(res).value().AsDataURL(blob->type());
 }
 
-void FileReaderSync::StartLoading(FileReaderLoader& loader,
-                                  const Blob& blob,
-                                  ExceptionState& exception_state) {
-  loader.Start(blob.GetBlobDataHandle());
-  if (loader.GetErrorCode() != FileErrorCode::kOK)
-    file_error::ThrowDOMException(exception_state, loader.GetErrorCode());
+absl::optional<FileReaderData> FileReaderSync::Load(
+    const Blob& blob,
+    ExceptionState& exception_state) {
+  auto res =
+      SyncedFileReaderAccumulator::Load(blob.GetBlobDataHandle(), task_runner_);
+  if (res.first != FileErrorCode::kOK) {
+    file_error::ThrowDOMException(exception_state, res.first);
+    return absl::nullopt;
+  }
+  return std::move(res.second);
 }
 
 }  // namespace blink

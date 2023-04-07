@@ -84,6 +84,7 @@ class MODULES_EXPORT AudioTrackRecorder
   // invalid.
   static std::unique_ptr<AudioTrackEncoder> CreateAudioEncoder(
       CodecId codec,
+      scoped_refptr<base::SequencedTaskRunner> encoder_task_runner,
       OnEncodedAudioCB on_encoded_audio_cb,
       uint32_t bits_per_second,
       BitrateMode bitrate_mode);

@@ -107,6 +107,8 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
   // Wait on the sync token if any and destroy the shared image.
   void DestroySharedImage(const Mailbox& mailbox, const SyncToken& sync_token);
 
+  std::string GetLabel() const;
+
   raw_ptr<GpuChannel> channel_;
 
   // While this is not a CommandBuffer, this provides a unique identifier for

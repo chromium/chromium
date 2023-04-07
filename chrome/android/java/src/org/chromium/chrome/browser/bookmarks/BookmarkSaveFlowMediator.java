@@ -29,8 +29,6 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.List;
-
 /** Controls the bookmarks save-flow. */
 public class BookmarkSaveFlowMediator
         extends BookmarkModelObserver implements SubscriptionsObserver {
@@ -233,14 +231,14 @@ public class BookmarkSaveFlowMediator
 
     // SubscriptionsObserver implementation
     @Override
-    public void onSubscribe(List<CommerceSubscription> subscriptions, boolean succeeded) {
-        if (!succeeded) return;
-        setPriceTrackingToggleVisualsOnly(subscriptions.contains(mSubscription));
+    public void onSubscribe(CommerceSubscription subscription, boolean succeeded) {
+        if (!succeeded || !subscription.equals(mSubscription)) return;
+        setPriceTrackingToggleVisualsOnly(true);
     }
 
     @Override
-    public void onUnsubscribe(List<CommerceSubscription> subscriptions, boolean succeeded) {
-        if (!succeeded) return;
-        setPriceTrackingToggleVisualsOnly(!subscriptions.contains(mSubscription));
+    public void onUnsubscribe(CommerceSubscription subscription, boolean succeeded) {
+        if (!succeeded || !subscription.equals(mSubscription)) return;
+        setPriceTrackingToggleVisualsOnly(false);
     }
 }

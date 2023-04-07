@@ -8,7 +8,9 @@ import './search_page.js';
 import './share_data_page.js';
 import './strings.m.js';
 
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {stringToMojoString16} from 'chrome://resources/ash/common/mojo_utils.js';
+import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {FeedbackAppExitPath, FeedbackAppHelpContentOutcome, FeedbackAppPreSubmitAction, FeedbackContext, FeedbackServiceProviderInterface, Report, SendReportStatus} from './feedback_types.js';
@@ -262,6 +264,17 @@ export class FeedbackFlowElement extends PolymerElement {
      * @private
      */
     this.noHelpContentDisplayed_;
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    if (loadTimeData.getBoolean('isJellyEnabledForOsFeedback')) {
+      // TODO(b/276493287): After the Jelly experiment is launched, replace
+      // `cros_styles.css` with `theme/colors.css` directly in `index.html`.
+      document.querySelector('link[href*=\'cros_styles.css\']')
+          ?.setAttribute('href', 'chrome://theme/colors.css?sets=legacy,sys');
+      startColorChangeUpdater();
+    }
   }
 
   ready() {

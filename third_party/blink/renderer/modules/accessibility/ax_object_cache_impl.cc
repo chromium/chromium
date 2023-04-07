@@ -2959,6 +2959,26 @@ void AXObjectCacheImpl::HandleAttributeChanged(
     PostNotification(obj, ax::mojom::Event::kAriaAttributeChanged);
 }
 
+void AXObjectCacheImpl::FinishedParsingTable(HTMLTableElement* table) {
+  // The data table heuristic can change from false to true as a table's
+  // children are parsed; but it will never change from true to false.
+  if (AXObject* ax_object = SafeGet(table)) {
+    if (ax_object->RoleValue() == ax::mojom::blink::Role::kLayoutTable) {
+      DeferTreeUpdate(&AXObjectCacheImpl::UpdateTableRoleWithCleanLayout,
+                      table);
+    }
+  }
+}
+
+void AXObjectCacheImpl::UpdateTableRoleWithCleanLayout(Node* table) {
+  if (AXObject* ax_table = Get(table)) {
+    if (ax_table->RoleValue() == ax::mojom::blink::Role::kLayoutTable &&
+        ax_table->IsDataTable()) {
+      HandleRoleChangeWithCleanLayout(table);
+    }
+  }
+}
+
 void AXObjectCacheImpl::HandleAriaExpandedChangeWithCleanLayout(Node* node) {
   if (!node)
     return;
@@ -3676,19 +3696,55 @@ void AXObjectCacheImpl::MarkAXSubtreeDirty(AXObject* obj) {
   DeferTreeUpdateInternal(std::move(callback), obj);
 }
 
-// This method is useful when something that potentially affects most of the
-// page occurs, such as an inertness change or a fullscreen toggle.
-// This keeps the existing nodes, but recomputes all of their properties and
-// reserializes everything.
 void AXObjectCacheImpl::MarkDocumentDirty() {
-  if (AXObject* root = SafeGet(document_)) {
-    // Assume all nodes in the tree need to recompute their properties.
-    ++modification_count_;
-    // Tell the serializer that everything will need to be serialized.
-    MarkAXSubtreeDirty(root);
-    // Send the serialization at the next available opportunity.
-    ScheduleAXUpdate();
+  mark_all_dirty_ = true;
+  ScheduleAXUpdate();
+}
+
+void AXObjectCacheImpl::MarkDocumentDirtyWithCleanLayout() {
+  // This function will cause everything to be reserialized from the root down,
+  // but will not create new AXObjects, which avoids resetting the user's
+  // position in the content.
+  DCHECK(mark_all_dirty_);
+  mark_all_dirty_ = false;
+
+  // Assume all nodes in the tree need to recompute their properties.
+  // Note that objects can remain in the tree without being re-created.
+  // However, they will be dropped if they are no longer needed as the tree
+  // structure is rebuilt from the top down.
+  ++modification_count_;
+
+  // Don't keep previous parent-child relationships.
+  // This loop operates on a copy of values in the objects_ map, because some
+  // entries may be removed from objects_ while iterating.
+  HeapVector<Member<AXObject>> objects;
+  CopyValuesToVector(objects_, objects);
+  for (auto& object : objects) {
+    if (!object->IsDetached()) {
+      object->SetNeedsToUpdateChildren();
+    }
   }
+
+  // Clear anything about to be serialized, because everything will be
+  // reserialized anyway.
+  dirty_objects_.clear();
+
+  // Tell the serializer that everything will need to be serialized.
+  DCHECK(Root());
+  MarkAXSubtreeDirtyWithCleanLayout(Root());
+  ChildrenChangedWithCleanLayout(Root());
+}
+
+void AXObjectCacheImpl::ResetSerializer() {
+  ax_tree_serializer_->Reset();
+
+  // Clear anything about to be serialized, because everything will be
+  // reserialized anyway.
+  dirty_objects_.clear();
+  pending_events_.clear();
+
+  // Send the serialization at the next available opportunity.
+  ScheduleAXUpdate();
 }
 
 void AXObjectCacheImpl::MarkElementDirty(const Node* element) {
@@ -3913,6 +3969,12 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
     bool& had_load_complete_messages,
     bool& need_to_send_location_changes) {
   HashSet<int32_t> already_serialized_ids;
+
+  // If MarkDocumentDirty() was called, do it now. This is not done earlier, in
+  // order to avoid attempting to serialize objects that are pruned.
+  if (mark_all_dirty_) {
+    MarkDocumentDirtyWithCleanLayout();
+  }
 
   // Make a copy of the events, because it's possible that
   // actions inside this loop will cause more events to be

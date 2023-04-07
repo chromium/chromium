@@ -255,7 +255,8 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest,
 }
 
 // Tests save and recall a desk.
-IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, SaveAndRecallDeskTest) {
+// TODO(crbug.com/1430982): Test is flaky.
+IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, DISABLED_SaveAndRecallDeskTest) {
   // Save a desk.
   auto save_desk_function =
       base::MakeRefCounted<WmDesksPrivateSaveActiveDeskFunction>();

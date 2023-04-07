@@ -30,7 +30,6 @@
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/json/string_escape.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -43,6 +42,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/trace_event.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/download/internal/common/download_job_impl.h"
 #include "components/download/internal/common/parallel_download_utils.h"
@@ -379,7 +379,7 @@ DownloadItemImpl::DownloadItemImpl(
   delegate_->Attach();
   DCHECK(state_ == COMPLETE_INTERNAL || state_ == INTERRUPTED_INTERNAL ||
          state_ == CANCELLED_INTERNAL);
-  DCHECK(base::IsValidGUID(guid_));
+  DCHECK(base::IsValidUuid(guid_));
 
   if (download_entry) {
     download_source_ = download_entry->download_source;
@@ -414,7 +414,7 @@ DownloadItemImpl::DownloadItemImpl(DownloadItemImplDelegate* delegate,
                     info.isolation_info,
                     info.save_info->range_request_from,
                     info.save_info->range_request_to),
-      guid_(info.guid.empty() ? base::GenerateGUID() : info.guid),
+      guid_(info.guid.empty() ? base::GenerateUuid() : info.guid),
       download_id_(download_id),
       response_headers_(info.response_headers),
       content_disposition_(info.content_disposition),
@@ -453,7 +453,7 @@ DownloadItemImpl::DownloadItemImpl(
     const std::string& mime_type,
     DownloadJob::CancelRequestCallback cancel_request_callback)
     : request_info_(url),
-      guid_(base::GenerateGUID()),
+      guid_(base::GenerateUuid()),
       download_id_(download_id),
       mime_type_(mime_type),
       original_mime_type_(mime_type),

@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "media/base/format_utils.h"
+#include "media/base/video_types.h"
 #include "media/base/video_util.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/video/fake_gpu_memory_buffer.h"
@@ -90,6 +91,8 @@ class PlatformVideoFramePoolTest
     EXPECT_EQ(layout_->size(), frame->coded_size());
     EXPECT_EQ(visible_rect_, frame->visible_rect());
     EXPECT_EQ(natural_size_, frame->natural_size());
+    // We can't assert any of the |frame| metadata because the frame creation
+    // callback is a fake.
 
     return frame;
   }
@@ -108,11 +111,13 @@ class PlatformVideoFramePoolTest
   gfx::Size natural_size_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         PlatformVideoFramePoolTest,
-                         testing::Values(PIXEL_FORMAT_YV12,
-                                         PIXEL_FORMAT_NV12,
-                                         PIXEL_FORMAT_P016LE));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PlatformVideoFramePoolTest,
+    testing::Values(PIXEL_FORMAT_YV12, PIXEL_FORMAT_NV12, PIXEL_FORMAT_P016LE),
+    [](const ::testing::TestParamInfo<VideoPixelFormat>& info) {
+      return VideoPixelFormatToString(info.param);
+    });
 
 TEST_P(PlatformVideoFramePoolTest, SingleFrameReuse) {
   const auto fourcc = Fourcc::FromVideoPixelFormat(GetParam());

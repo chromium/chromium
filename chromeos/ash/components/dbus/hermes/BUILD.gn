@@ -17,6 +17,7 @@ source_set("hermes_clients") {
   visibility = [ ":*" ]
   defines = [ "IS_HERMES_CLIENT_IMPL" ]
   deps = [
+    "//ash/constants",
     "//base",
     "//chromeos/dbus/common",
     "//components/device_event_log",

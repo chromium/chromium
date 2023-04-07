@@ -24,6 +24,8 @@
 namespace {
 
 const gfx::VectorIcon& kExtensionIcon = vector_icons::kExtensionIcon;
+const gfx::VectorIcon& kExtensionChromeRefreshIcon =
+    vector_icons::kExtensionChromeRefreshIcon;
 
 }  // namespace
 
@@ -48,7 +50,8 @@ ExtensionsToolbarButton::ExtensionsToolbarButton(
       views::ButtonController::NotifyAction::kOnPress);
 
   SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_EXTENSIONS_BUTTON));
-  SetVectorIcon(kExtensionIcon);
+  SetVectorIcon(features::IsChromeRefresh2023() ? kExtensionChromeRefreshIcon
+                                                : kExtensionIcon);
 
   GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kMenu);
 }

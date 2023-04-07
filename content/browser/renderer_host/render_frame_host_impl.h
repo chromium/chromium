@@ -384,11 +384,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   const base::UnguessableToken& GetReportingSource() override;
 
   ui::AXTreeID GetAXTreeID() override;
-  void RequestAXTreeSnapshot(AXTreeSnapshotCallback callback,
-                             const ui::AXMode& ax_mode,
-                             bool exclude_offscreen,
-                             size_t max_nodes,
-                             const base::TimeDelta& timeout) override;
   SiteInstanceImpl* GetSiteInstance() const override;
   RenderProcessHost* GetProcess() const override;
   GlobalRenderFrameHostId GetGlobalId() const override;
@@ -1495,11 +1490,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // addition, its associated RenderWidgetHost has to be focused.
   bool IsFocused();
 
-  // Tries to set `new_web_ui` as the WebUI for this RenderFrameHost, which is
-  // based on the provided `request`'s URL. Returns true if the WebUI can be
-  // used by this RenderFrameHost.
-  bool MaybeSetWebUI(NavigationRequest& request,
-                     std::unique_ptr<WebUIImpl> new_web_ui);
+  // Sets `new_web_ui` as the WebUI for this RenderFrameHost, which is based on
+  // the provided `request`'s URL.
+  void SetWebUI(NavigationRequest& request,
+                std::unique_ptr<WebUIImpl> new_web_ui);
 
   // Destroys WebUI instance and resets related data.
   // This indirectly calls content's embedders and may have arbitrary side
@@ -1878,8 +1872,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
     // This will reduce the feature count for |feature_| for the first time, and
     // do nothing for further calls.
     inline void reset() {
-      if (render_frame_host_)
+      if (render_frame_host_) {
         render_frame_host_->OnBackForwardCacheDisablingFeatureRemoved(feature_);
+      }
       render_frame_host_ = nullptr;
     }
 
@@ -2899,13 +2894,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // last committed document.
   CookieChangeListener::CookieChangeInfo GetCookieChangeInfo();
 
-  // Sets a ResourceCache in the renderer. `remote` must have the same process
+  // Sets a ResourceCache in the renderer. `this` must be active and there must
+  // be no pending navigation. `remote` must have the same and process
   // isolation policy.
-  // TODO(https://crbug.com/1414262): Add checks to ensure the preconditions.
-  void SetResourceCache(
-      mojo::PendingRemote<blink::mojom::ResourceCache> remote);
-
-  void FlushMojomFrameRemoteForTesting();
+  void SetResourceCacheRemote(
+      mojo::PendingRemote<blink::mojom::ResourceCache> pending_remote);
 
  protected:
   friend class RenderFrameHostFactory;
@@ -2958,6 +2951,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
           topics_loader_factory,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           keep_alive_loader_factory,
+      mojo::PendingRemote<blink::mojom::ResourceCache> resource_cache_remote,
       const absl::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
       blink::mojom::PolicyContainerPtr policy_container,
       const blink::DocumentToken& document_token,

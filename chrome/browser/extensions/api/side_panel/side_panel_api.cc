@@ -53,4 +53,26 @@ ExtensionFunction::ResponseAction SidePanelSetOptionsFunction::RunFunction() {
   return RespondNow(NoArguments());
 }
 
+ExtensionFunction::ResponseAction
+SidePanelSetPanelBehaviorFunction::RunFunction() {
+  absl::optional<api::side_panel::SetPanelBehavior::Params> params =
+      api::side_panel::SetPanelBehavior::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  if (params->behavior.open_panel_on_action_click.has_value()) {
+    GetService()->SetOpenSidePanelOnIconClick(
+        extension()->id(), *params->behavior.open_panel_on_action_click);
+  }
+
+  return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction
+SidePanelGetPanelBehaviorFunction::RunFunction() {
+  api::side_panel::PanelBehavior behavior;
+  behavior.open_panel_on_action_click =
+      GetService()->GetOpenSidePanelOnIconClick(extension()->id());
+
+  return RespondNow(WithArguments(behavior.ToValue()));
+}
+
 }  // namespace extensions

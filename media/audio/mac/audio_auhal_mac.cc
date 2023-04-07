@@ -162,7 +162,7 @@ void ReportFramesRequestedUma(int number_of_frames_requested) {
 
 }  // namespace
 
-AUHALStream::AUHALStream(AUHALStreamClient* client,
+AUHALStream::AUHALStream(AudioIOStreamClient* client,
                          const AudioParameters& params,
                          AudioDeviceID device,
                          const AudioManager::LogCallback& log_callback)
@@ -279,7 +279,7 @@ void AUHALStream::Start(AudioSourceCallback* callback) {
 
 #if BUILDFLAG(IS_MAC)
   peak_detector_ = std::make_unique<AmplitudePeakDetector>(base::BindRepeating(
-      &AUHALStreamClient::StopAmplitudePeakTrace, base::Unretained(client_)));
+      &AudioIOStreamClient::StopAmplitudePeakTrace, base::Unretained(client_)));
 #endif
 
   OSStatus result = AudioOutputUnitStart(audio_unit_->audio_unit());

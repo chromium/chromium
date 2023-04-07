@@ -35,6 +35,7 @@ BluetoothDevice::BluetoothDevice(ExecutionContext* context,
                                  mojom::blink::WebBluetoothDevicePtr device,
                                  Bluetooth* bluetooth)
     : ExecutionContextClient(context),
+      ActiveScriptWrappable<BluetoothDevice>({}),
       attribute_instance_map_(
           MakeGarbageCollected<BluetoothAttributeInstanceMap>(this)),
       device_(std::move(device)),

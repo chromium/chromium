@@ -104,9 +104,18 @@ AutocompleteMatch CreateACMatchWithScoringSignals(
   return match;
 }
 
+// Use a test fixture to ensure that any scoped settings that are set during the
+// test are cleared after the test is terminated.
+class AutocompleteMatchTest : public testing::Test {
+ protected:
+  void TearDown() override {
+    RichAutocompletionParams::ClearParamsForTesting();
+  }
+};
+
 }  // namespace
 
-TEST(AutocompleteMatchTest, MoreRelevant) {
+TEST_F(AutocompleteMatchTest, MoreRelevant) {
   struct RelevantCases {
     int r1;
     int r2;
@@ -132,7 +141,7 @@ TEST(AutocompleteMatchTest, MoreRelevant) {
   }
 }
 
-TEST(AutocompleteMatchTest, MergeClassifications) {
+TEST_F(AutocompleteMatchTest, MergeClassifications) {
   // Merging two empty vectors should result in an empty vector.
   EXPECT_EQ(std::string(),
       AutocompleteMatch::ClassificationsToString(
@@ -202,7 +211,7 @@ TEST(AutocompleteMatchTest, MergeClassifications) {
                   "0,2," "1,0," "5,7," "6,1," "17,0"))));
 }
 
-TEST(AutocompleteMatchTest, GetMatchComponents) {
+TEST_F(AutocompleteMatchTest, GetMatchComponents) {
   struct MatchComponentsTestData {
     const std::string url;
     std::vector<std::string> input_terms;
@@ -275,7 +284,7 @@ TEST(AutocompleteMatchTest, GetMatchComponents) {
   }
 }
 
-TEST(AutocompleteMatchTest, FormatUrlForSuggestionDisplay) {
+TEST_F(AutocompleteMatchTest, FormatUrlForSuggestionDisplay) {
   // This test does not need to verify url_formatter's functionality in-depth,
   // since url_formatter has its own unit tests. This test is to validate that
   // flipping feature flags and varying the trim_scheme parameter toggles the
@@ -318,7 +327,7 @@ TEST(AutocompleteMatchTest, FormatUrlForSuggestionDisplay) {
     test_case.Validate();
 }
 
-TEST(AutocompleteMatchTest, SupportsDeletion) {
+TEST_F(AutocompleteMatchTest, SupportsDeletion) {
   // A non-deletable match with no duplicates.
   AutocompleteMatch m(nullptr, 0, false,
                       AutocompleteMatchType::URL_WHAT_YOU_TYPED);
@@ -372,7 +381,7 @@ void CheckDuplicateCase(const DuplicateCase& duplicate_case) {
   EXPECT_TRUE(m2.stripped_destination_url.is_valid());
 }
 
-TEST(AutocompleteMatchTest, Duplicates) {
+TEST_F(AutocompleteMatchTest, Duplicates) {
   DuplicateCase cases[] = {
     { L"g", "http://www.google.com/",  "https://www.google.com/",    true },
     { L"g", "http://www.google.com/",  "http://www.google.com",      true },
@@ -424,7 +433,7 @@ TEST(AutocompleteMatchTest, Duplicates) {
     CheckDuplicateCase(caseI);
 }
 
-TEST(AutocompleteMatchTest, DedupeDriveURLs) {
+TEST_F(AutocompleteMatchTest, DedupeDriveURLs) {
   DuplicateCase cases[] = {
       // Document URLs pointing to the same document, perhaps with different
       // /edit points, hashes, or cgiargs, are deduped.
@@ -443,7 +452,7 @@ TEST(AutocompleteMatchTest, DedupeDriveURLs) {
     CheckDuplicateCase(caseI);
 }
 
-TEST(AutocompleteMatchTest, UpgradeMatchWithPropertiesFrom) {
+TEST_F(AutocompleteMatchTest, UpgradeMatchWithPropertiesFrom) {
   scoped_refptr<FakeAutocompleteProvider> bookmark_provider =
       new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_BOOKMARK);
   scoped_refptr<FakeAutocompleteProvider> history_provider =
@@ -491,7 +500,7 @@ TEST(AutocompleteMatchTest, UpgradeMatchWithPropertiesFrom) {
   EXPECT_EQ(history_match.inline_autocompletion, u"preserve");
 }
 
-TEST(AutocompleteMatchTest, MergeScoringSignals) {
+TEST_F(AutocompleteMatchTest, MergeScoringSignals) {
   AutocompleteMatch match = CreateACMatchWithScoringSignals(
       /*typed_count*/ 3, /*visit_count*/ 10,
       /*elapsed_time_last_visit_secs*/ 100, /*shortcut_visit_count*/ 5,
@@ -549,7 +558,7 @@ TEST(AutocompleteMatchTest, MergeScoringSignals) {
   EXPECT_TRUE(match.scoring_signals.allowed_to_be_default_match());
 }
 
-TEST(AutocompleteMatchTest, SetAllowedToBeDefault) {
+TEST_F(AutocompleteMatchTest, SetAllowedToBeDefault) {
   // Test all combinations of:
   // 1) input text in ["goo", "goo ", "goo  "]
   // 2) input prevent_inline_autocomplete in [false, true]
@@ -591,13 +600,13 @@ TEST(AutocompleteMatchTest, SetAllowedToBeDefault) {
                             false);
 }
 
-TEST(AutocompleteMatchTest, SetAllowedToBeDefault_PrefixAutocompletion) {
+TEST_F(AutocompleteMatchTest, SetAllowedToBeDefault_PrefixAutocompletion) {
   // Verify that a non-empty prefix autocompletion will prevent an empty inline
   // autocompletion from bypassing the other default match requirements.
   TestSetAllowedToBeDefault(0, "xyz", true, "", "prefix", "", false);
 }
 
-TEST(AutocompleteMatchTest, TryRichAutocompletion) {
+TEST_F(AutocompleteMatchTest, TryRichAutocompletion) {
   auto test = [](const std::string input_text,
                  bool input_prevent_inline_autocomplete,
                  const std::string primary_text,
@@ -859,7 +868,7 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
   }
 }
 
-TEST(AutocompleteMatchTest, TryRichAutocompletionShortcutText) {
+TEST_F(AutocompleteMatchTest, TryRichAutocompletionShortcutText) {
   auto test = [](const std::string input_text, const std::string primary_text,
                  const std::string secondary_text,
                  const std::string shortcut_text, bool expected_return,
@@ -939,7 +948,7 @@ TEST(AutocompleteMatchTest, TryRichAutocompletionShortcutText) {
   }
 }
 
-TEST(AutocompleteMatchTest, BetterDuplicate) {
+TEST_F(AutocompleteMatchTest, BetterDuplicate) {
   const auto create_match = [](scoped_refptr<FakeAutocompleteProvider> provider,
                                int relevance) {
     return AutocompleteMatch{provider.get(), relevance, false,

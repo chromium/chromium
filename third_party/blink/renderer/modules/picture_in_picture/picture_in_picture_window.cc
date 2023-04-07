@@ -14,7 +14,9 @@ namespace blink {
 PictureInPictureWindow::PictureInPictureWindow(
     ExecutionContext* execution_context,
     const gfx::Size& size)
-    : ExecutionContextClient(execution_context), size_(size) {}
+    : ActiveScriptWrappable<PictureInPictureWindow>({}),
+      ExecutionContextClient(execution_context),
+      size_(size) {}
 
 void PictureInPictureWindow::OnClose() {
   size_ = gfx::Size();

@@ -36,8 +36,10 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/fileapi/file_error.h"
+#include "third_party/blink/renderer/core/fileapi/file_read_type.h"
+#include "third_party/blink/renderer/core/fileapi/file_reader_client.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
-#include "third_party/blink/renderer/core/fileapi/file_reader_loader_client.h"
 #include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -53,7 +55,7 @@ enum class FileErrorCode;
 class CORE_EXPORT FileReader final : public EventTargetWithInlineData,
                                      public ActiveScriptWrappable<FileReader>,
                                      public ExecutionContextLifecycleObserver,
-                                     public FileReaderLoaderClient {
+                                     public FileReaderAccumulator {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -88,10 +90,10 @@ class CORE_EXPORT FileReader final : public EventTargetWithInlineData,
     return ExecutionContextLifecycleObserver::GetExecutionContext();
   }
 
-  // FileReaderLoaderClient
-  void DidStartLoading() override;
-  void DidReceiveData() override;
-  void DidFinishLoading() override;
+  // FileReaderClient
+  FileErrorCode DidStartLoading() override;
+  FileErrorCode DidReceiveData() override;
+  void DidFinishLoading(FileReaderData contents) override;
   void DidFail(FileErrorCode) override;
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(loadstart, kLoadstart)
@@ -107,7 +109,7 @@ class CORE_EXPORT FileReader final : public EventTargetWithInlineData,
   class ThrottlingController;
 
   void Terminate();
-  void ReadInternal(Blob*, FileReaderLoader::ReadType, ExceptionState&);
+  void ReadInternal(Blob*, FileReadType, ExceptionState&);
   void FireEvent(const AtomicString& type);
 
   void ExecutePendingRead();
@@ -127,11 +129,12 @@ class CORE_EXPORT FileReader final : public EventTargetWithInlineData,
 
   String blob_type_;
   scoped_refptr<BlobDataHandle> blob_data_handle_;
-  FileReaderLoader::ReadType read_type_;
+  FileReadType read_type_;
   String encoding_;
   probe::AsyncTaskContext async_task_context_;
 
   Member<FileReaderLoader> loader_;
+  Member<V8UnionArrayBufferOrString> result_ = nullptr;
   Member<DOMException> error_;
   absl::optional<base::ElapsedTimer> last_progress_notification_time_;
 };

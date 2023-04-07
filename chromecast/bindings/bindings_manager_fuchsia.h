@@ -5,6 +5,7 @@
 #ifndef CHROMECAST_BINDINGS_BINDINGS_MANAGER_FUCHSIA_H_
 #define CHROMECAST_BINDINGS_BINDINGS_MANAGER_FUCHSIA_H_
 
+#include <chromium/cast/cpp/fidl.h>
 #include <fuchsia/mem/cpp/fidl.h>
 
 #include <list>
@@ -12,7 +13,6 @@
 #include <string>
 
 #include "chromecast/bindings/bindings_manager.h"
-#include "fuchsia_web/runners/cast/fidl/fidl/hlcpp/chromium/cast/cpp/fidl.h"
 
 namespace chromecast {
 namespace bindings {

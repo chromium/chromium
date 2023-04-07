@@ -92,7 +92,9 @@ interface NetworkChangeManager {
   // This is needed for ChromeOS because only one process can listen for network
   // changes from Shill, and currently that has to be the browser process. This
   // allows the browser process to forward the network changes to the network
-  // service.
+  // service. Similarly for Android and Lacros: only the browser process can
+  // listen for network changes due to platform-specific issues. And on Linux,
+  // listening for network changes can't run sandboxed.
   [EnableIf=network_change_notifier_in_browser]
   OnNetworkChanged(
       bool dns_changed,

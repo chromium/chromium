@@ -35,8 +35,7 @@ const char kSuppressEventJS[] =
     "window.domAutomationController.send(setDefaultAction('%ls', %ls));";
 const char kGetResultJS[] =
     "window.domAutomationController.send(keyEventResult[%d]);";
-const char kGetResultLengthJS[] =
-    "window.domAutomationController.send(keyEventResult.length);";
+const char kGetResultLengthJS[] = "keyEventResult.length;";
 const char kGetFocusedElementJS[] =
     "window.domAutomationController.send(focusedElement);";
 const char kSetFocusedElementJS[] =
@@ -169,10 +168,10 @@ class BrowserKeyEventsTest : public InProcessBrowserTest {
 
   void GetResultLength(int tab_index, int* length) {
     ASSERT_LT(tab_index, browser()->tab_strip_model()->count());
-    ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-        browser()->tab_strip_model()->GetWebContentsAt(tab_index),
-        kGetResultLengthJS,
-        length));
+    *length = content::EvalJs(
+                  browser()->tab_strip_model()->GetWebContentsAt(tab_index),
+                  kGetResultLengthJS)
+                  .ExtractInt();
   }
 
   void CheckResult(int tab_index, int length, const char* const result[]) {

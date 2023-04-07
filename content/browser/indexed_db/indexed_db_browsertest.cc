@@ -606,7 +606,9 @@ class IndexedDBBrowserTestWithVersion3Schema
   }
 };
 
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithVersion3Schema, MigrationTest) {
+// TODO(crbug.com/1431352): Re-enable this test
+IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithVersion3Schema,
+                       DISABLED_MigrationTest) {
   const GURL kTestUrl = GetTestUrl("indexeddb", "v3_migration_test.html");
   // For some reason setting empty file modification time on Android fails with
   // EPERM. https://crbug.com/1045488

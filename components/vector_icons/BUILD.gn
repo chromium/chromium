@@ -51,6 +51,7 @@ aggregate_vector_icons("components_vector_icons") {
     "error_outline.icon",
     "ethernet.icon",
     "extension.icon",
+    "extension_chrome_refresh.icon",
     "feed.icon",
     "file_download.icon",
     "file_download_off.icon",

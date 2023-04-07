@@ -479,9 +479,11 @@ function replaceNode(
     element.setAttribute('data-data', replacement.data);
     element.setAttribute('data-annotation', replacement.annotationText);
     element.setAttribute('role', 'link');
-    element.innerText = replacement.text;
+    // Use textContent not innerText, since setting innerText will cause
+    // the text to be parsed and '\n' to be upgraded to <br>.
+    element.textContent = replacement.text;
 
-    if (replacement.type == 'PHONE_NUMBER' || replacement.type == 'EMAIL') {
+    if (replacement.type == 'PHONE_NUMBER' || replacement.type == 'EMAIL') {
       element.style.cssText = decorationStylesForPhoneAndEmail;
     } else {
       element.style.cssText = decorationStyles;

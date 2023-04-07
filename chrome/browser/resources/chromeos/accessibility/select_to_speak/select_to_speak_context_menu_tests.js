@@ -17,14 +17,6 @@ SelectToSpeakContextMenuTest = class extends SelectToSpeakE2ETest {
   }
 
   /** @override */
-  get featureList() {
-    return {
-      enabled: ['features::kAccessibilitySelectToSpeakContextMenuOption'],
-    };
-  }
-
-
-  /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
     await importModule('EventGenerator', '/common/event_generator.js');

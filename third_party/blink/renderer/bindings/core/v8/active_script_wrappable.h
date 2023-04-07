@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_ACTIVE_SCRIPT_WRAPPABLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_ACTIVE_SCRIPT_WRAPPABLE_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable_creation_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/active_script_wrappable_base.h"
 namespace blink {
@@ -15,21 +16,27 @@ class ExecutionContext;
 // asynchronous activity, even if they are not referenced in the JavaScript or
 // Blink heap.
 //
-// This is useful for ScriptWrappable objects that are not held alive by regular
-// references from the object graph. E.g., XMLHttpRequest may have a pending
-// activity that may be visible (e.g. firing event listeners or resolving
-// promises) and should thus not be collected.
+// This can be useful for ScriptWrappable objects that are not held alive by
+// regular references from the object graph. E.g., XMLHttpRequest may have a
+// pending activity that may be visible (e.g. firing event listeners or
+// resolving promises) and should thus not be collected.
 //
-// Such objects should derive from ActiveScriptWrappable<T>, and override
-// ScriptWrappable::HasPendingActivity:
-//   bool HasPendingActivity() const final;
-// which returns true if there may be pending activity which requires the
-// wrappable remain alive.
+// Alternatively, it is generally less error prone though to attach the
+// wrappable object to the regular Blink heap. ActiveScriptWrappable negatively
+// affects garbage collection performance and is thus preferred to keep objects
+// alive through other means, e.g. normal Member<> pointers. When not easily
+// feasibly, a new ActiveScriptWrappable should be allow-listed in
+// ActiveScriptWrappableCreationKey as a friend.
 //
-// To avoid leaking objects after the context is destroyed, users of
-// ActiveScriptWrappable<T> also have to provide a GetExecutionContext() method
-// that returns the ExecutionContext or nullptr. A nullptr or already destroyed
-// context results in ignoring HasPendingActivity().
+// The objects should derive from ActiveScriptWrappable<T>, and override
+// `ScriptWrappable::HasPendingActivity()`. The method is not allowed to
+// allocate.
+//
+// Caveat:
+// - To avoid leaking objects after the context is destroyed, users of
+//   ActiveScriptWrappable<T> also have to provide a `GetExecutionContext()`
+//   method that returns the ExecutionContext or nullptr. A nullptr or already
+//   destroyed context results in ignoring `HasPendingActivity()`.
 //
 // Automatically activates the ASW behavior after construction. For lazy
 // initialization, see LazyActiveScriptWrappable below.
@@ -46,6 +53,9 @@ class ActiveScriptWrappable : public ActiveScriptWrappableBase {
     RegisterActiveScriptWrappable();
   }
 
+ protected:
+  explicit ActiveScriptWrappable(ActiveScriptWrappableCreationKey) {}
+
   bool IsContextDestroyed() const final {
     return IsContextDestroyedForActiveScriptWrappable(
         static_cast<const T*>(this)->GetExecutionContext());
@@ -54,9 +64,6 @@ class ActiveScriptWrappable : public ActiveScriptWrappableBase {
   bool DispatchHasPendingActivity() const final {
     return static_cast<const T*>(this)->HasPendingActivity();
   }
-
- protected:
-  ActiveScriptWrappable() = default;
 };
 
 // Same as ActiveScriptWrappable with the difference the the object is not
@@ -87,7 +94,7 @@ class LazyActiveScriptWrappable : public ActiveScriptWrappableBase {
   }
 
  protected:
-  LazyActiveScriptWrappable() = default;
+  explicit LazyActiveScriptWrappable(ActiveScriptWrappableCreationKey) {}
 };
 
 // Helper for ActiveScriptWrappable<T>::IsContextDestroyed();

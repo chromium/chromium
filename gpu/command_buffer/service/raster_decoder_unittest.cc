@@ -300,8 +300,8 @@ class RasterDecoderOOPTest : public testing::Test, DecoderClient {
         viz::SharedImageFormat::SinglePlane(resource_format);
     shared_image_factory_->CreateSharedImage(
         mailbox, si_format, size, color_space, kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType, gpu::kNullSurfaceHandle,
-        SHARED_IMAGE_USAGE_RASTER);
+        kPremul_SkAlphaType, gpu::kNullSurfaceHandle, SHARED_IMAGE_USAGE_RASTER,
+        "TestLabel");
 
     if (cleared) {
       SharedImageRepresentationFactory repr_factory(shared_image_manager(),

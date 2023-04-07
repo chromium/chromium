@@ -228,6 +228,21 @@ TEST_F(ListPreferenceMergeTest, ServerEmpty) {
   EXPECT_EQ(merged_value, local_list_value);
 }
 
+TEST_F(ListPreferenceMergeTest, ServerCorrupt) {
+  {
+    ScopedListPrefUpdate update(pref_service_.get(), kListPrefName);
+    update->Append(local_url0_);
+  }
+
+  const PrefService::Preference* pref =
+      pref_service_->FindPreference(kListPrefName);
+  base::Value merged_value(helper::MergePreference(
+      &client_, pref->name(), *pref->GetValue(), base::Value("corrupt-type")));
+  const base::Value::List& local_list_value =
+      pref_service_->GetList(kListPrefName);
+  EXPECT_EQ(merged_value, local_list_value);
+}
+
 TEST_F(ListPreferenceMergeTest, Merge) {
   {
     ScopedListPrefUpdate update(pref_service_.get(), kListPrefName);
@@ -341,6 +356,21 @@ TEST_F(DictionaryPreferenceMergeTest, ServerEmpty) {
       pref_service_->FindPreference(kDictionaryPrefName);
   base::Value merged_value(helper::MergePreference(
       &client_, pref->name(), *pref->GetValue(), base::Value()));
+  const base::Value::Dict& local_dict_value =
+      pref_service_->GetDict(kDictionaryPrefName);
+  EXPECT_EQ(merged_value, local_dict_value);
+}
+
+TEST_F(DictionaryPreferenceMergeTest, ServerCorrupt) {
+  {
+    ScopedDictPrefUpdate update(pref_service_.get(), kDictionaryPrefName);
+    SetContentPattern(*update, expression3_, 1);
+  }
+
+  const PrefService::Preference* pref =
+      pref_service_->FindPreference(kDictionaryPrefName);
+  base::Value merged_value(helper::MergePreference(
+      &client_, pref->name(), *pref->GetValue(), base::Value("corrupt-type")));
   const base::Value::Dict& local_dict_value =
       pref_service_->GetDict(kDictionaryPrefName);
   EXPECT_EQ(merged_value, local_dict_value);

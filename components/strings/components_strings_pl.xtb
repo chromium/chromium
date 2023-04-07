@@ -730,6 +730,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2718207025093645426">Zarządzany użytkownik lub zarządzane urządzenie nie ma wczytanych zasad.</translation>
 <translation id="2721148159707890343">Żądanie wykonane pomyślnie</translation>
 <translation id="2723669454293168317">Uruchom kontrolę zabezpieczeń w ustawieniach Chrome</translation>
+<translation id="2725492561136085792">Aby aktywować to działanie, naciśnij Enter.</translation>
 <translation id="2726001110728089263">Taca boczna</translation>
 <translation id="2728127805433021124">Certyfikat serwera został podpisany przy użyciu słabego algorytmu podpisu.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Uruchomienie diagnostyki połączeń<ph name="END_LINK" /></translation>
@@ -826,6 +827,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="299990983510665749">Hatchbacki</translation>
 <translation id="3002501248619246229">Sprawdź nośnik na tacy wejściowej</translation>
 <translation id="3005723025932146533">Pokaż zapisaną kopię</translation>
+<translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />; naciśnij Tab, aby przejrzeć dostępne działania, a potem Enter, aby wykonać wybraną czynność.</translation>
 <translation id="3013291976881901233">Urządzenia MIDI</translation>
 <translation id="301521992641321250">Automatycznie zablokowane</translation>
 <translation id="3016780570757425217">Sprawdzanie Twojej lokalizacji</translation>
@@ -1985,6 +1987,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5872692522325383488">Numer IBAN został zapisany</translation>
 <translation id="5873013647450402046">Bank chce potwierdzić Twoją tożsamość.</translation>
 <translation id="5877831137320480913">Uroda i fitness</translation>
+<translation id="5879989559903563723">Niedozwolone w trybie gościa</translation>
 <translation id="5884465125445718607">Koperta chińska nr 6</translation>
 <translation id="5887400589839399685">Zapisano kartę</translation>
 <translation id="5887687176710214216">Ostatnio używana wczoraj</translation>
@@ -3226,6 +3229,7 @@ Dodatkowe informacje:
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Prawo i administracja</translation>
 <translation id="8957210676456822347">Autoryzacja portalu przechwytującego</translation>
+<translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Otwórz ustawienia witryny</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Sugestie:<ph name="MARKUP_2" />Upewnij się, że działa połączenie transmisji danych.<ph name="MARKUP_3" />Załaduj tę stronę ponownie później.<ph name="MARKUP_4" />Sprawdź wpisany adres.<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Zapisz kartę</translation>

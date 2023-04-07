@@ -1002,7 +1002,6 @@ void ArcBluetoothBridge::OnSetDiscoverable(bool discoverable,
 void ArcBluetoothBridge::SetDiscoverable(bool discoverable, uint32_t timeout) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(bluetooth_adapter_);
-  DCHECK(!discoverable || timeout != 0);
 
   bool currently_discoverable = bluetooth_adapter_->IsDiscoverable();
 
@@ -1049,13 +1048,8 @@ void ArcBluetoothBridge::SetAdapterProperty(
 
   if (property->is_discovery_timeout()) {
     uint32_t discovery_timeout = property->get_discovery_timeout();
-    if (discovery_timeout > 0) {
-      discoverable_off_timeout_ = discovery_timeout;
-      OnSetAdapterProperty(mojom::BluetoothStatus::SUCCESS, std::move(property));
-    } else {
-      OnSetAdapterProperty(mojom::BluetoothStatus::PARM_INVALID,
-                           std::move(property));
-    }
+    discoverable_off_timeout_ = absl::make_optional(discovery_timeout);
+    OnSetAdapterProperty(mojom::BluetoothStatus::SUCCESS, std::move(property));
   } else if (property->is_bdname()) {
     auto property_clone = property.Clone();
     const std::string bdname = property->get_bdname();
@@ -1071,8 +1065,9 @@ void ArcBluetoothBridge::SetAdapterProperty(
     // Only set the BT scan mode to discoverable if requested and Android has
     // set a discovery timeout previously.
     if (property->get_adapter_scan_mode() ==
-        mojom::BluetoothScanMode::CONNECTABLE_DISCOVERABLE) {
-      SetDiscoverable(discoverable_off_timeout_ > 0, discoverable_off_timeout_);
+            mojom::BluetoothScanMode::CONNECTABLE_DISCOVERABLE &&
+        discoverable_off_timeout_.has_value()) {
+      SetDiscoverable(/*discoverable=*/true, discoverable_off_timeout_.value());
     } else {
       SetDiscoverable(/*discoverable=*/false, /*timeout=*/0);
     }

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(shibalik): move this to /chrome/app
+
 MOVE_TO, 38, 38,
 H_LINE_TO, 10,
 V_LINE_TO, 10,

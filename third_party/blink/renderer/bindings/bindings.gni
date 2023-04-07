@@ -13,6 +13,7 @@ blink_core_sources_bindings =
     get_path_info([
                     "core/v8/active_script_wrappable.cc",
                     "core/v8/active_script_wrappable.h",
+                    "core/v8/active_script_wrappable_creation_key.h",
                     "core/v8/array_value.cc",
                     "core/v8/array_value.h",
                     "core/v8/binding_security.cc",

@@ -6,7 +6,7 @@
  * @fileoverview This implements a table header.
  */
 
-import {getPropertyDescriptor} from 'chrome://resources/ash/common/cr_deprecated.js';
+import {dispatchSimpleEvent, getPropertyDescriptor} from 'chrome://resources/ash/common/cr_deprecated.js';
 
 import {Table} from './table.js';
 import {TableSplitter} from './table_splitter.js';
@@ -233,6 +233,7 @@ export class TableHeader {
    */
   handleDblClick_(index, e) {
     this.table_.fitColumn(index);
+    dispatchSimpleEvent(this, 'column-resize-end', /*bubbles=*/ true);
   }
 
   /**
@@ -257,19 +258,18 @@ export class TableHeader {
   }
 }
 
-  TableHeader.prototype.__proto__ = HTMLDivElement.prototype;
+TableHeader.prototype.__proto__ = HTMLDivElement.prototype;
 
-  /**
-   * The table associated with the header.
-   * @type {Element}
-   */
-  TableHeader.prototype.table;
-  Object.defineProperty(
-      TableHeader.prototype, 'table', getPropertyDescriptor('table'));
+/**
+ * The table associated with the header.
+ * @type {Element}
+ */
+TableHeader.prototype.table;
+Object.defineProperty(
+    TableHeader.prototype, 'table', getPropertyDescriptor('table'));
 
-  /**
-   * Rectangular area around the splitters sensitive to touch events
-   * (in pixels).
-   */
-  TableHeader.TOUCH_DRAG_AREA_WIDTH = 30;
-
+/**
+ * Rectangular area around the splitters sensitive to touch events
+ * (in pixels).
+ */
+TableHeader.TOUCH_DRAG_AREA_WIDTH = 30;

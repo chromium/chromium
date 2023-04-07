@@ -15,6 +15,7 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
 
@@ -61,19 +62,17 @@ class RasterInterface : public InterfaceBase {
                                GLboolean unpack_flip_y,
                                GLboolean unpack_premultiply_alpha) = 0;
 
-  // Synchronously writes pixels from caller-owned memory |src_pixels| and given
-  // |src_info| + |src_row_bytes| into |dest_mailbox| for given |plane_index|.
-  // |plane_index| applies to multiplanar textures in mailboxes, for example YUV
-  // images produced by the VideoDecoder. |plane_index| as 0 should be passed
-  // for known single-plane textures.
+  // Asynchronously writes pixels from caller-owned memory inside
+  // |src_sk_pixmap| into |dest_mailbox| for given |plane_index|. |plane_index|
+  // applies to multiplanar textures in mailboxes, for example YUV images
+  // produced by the VideoDecoder. |plane_index| as 0 should be passed for known
+  // single-plane textures.
   virtual void WritePixels(const gpu::Mailbox& dest_mailbox,
                            int dst_x_offset,
                            int dst_y_offset,
                            int dst_plane_index,
                            GLenum texture_target,
-                           GLuint src_row_bytes,
-                           const SkImageInfo& src_info,
-                           const void* src_pixels) = 0;
+                           const SkPixmap& src_sk_pixmap) = 0;
 
   // Copy `yuva_plane_mailboxes` to `dest_mailbox`. The color space for the
   // source of the copy is split into `planes_yuv_color_space` which converts

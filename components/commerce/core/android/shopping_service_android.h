@@ -105,12 +105,8 @@ class ShoppingServiceAndroid : public base::SupportsUserData::Data,
                                   const GURL& url,
                                   absl::optional<MerchantInfo> info);
 
-  void OnSubscribe(const std::vector<CommerceSubscription>& subscriptions,
-                   bool succeeded) override;
-  void OnUnsubscribe(const std::vector<CommerceSubscription>& subscriptions,
-                     bool succeeded) override;
-  ScopedJavaLocalRef<jobject> ConvertSubscriptionsToJavaList(
-      const std::vector<CommerceSubscription>& subscriptions);
+  void OnSubscribe(const CommerceSubscription& sub, bool succeeded) override;
+  void OnUnsubscribe(const CommerceSubscription& sub, bool succeeded) override;
 
   // A handle to the backing shopping service. This is held as a raw pointer
   // since this object's lifecycle is tied to the service itself. This object

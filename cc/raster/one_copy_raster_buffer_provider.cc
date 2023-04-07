@@ -474,7 +474,7 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
       bitmap.eraseColor(raster_source->background_color().toSkColor());
       ri->WritePixels(*mailbox, /*dst_x_offset=*/0, /*dst_y_offset=*/0,
                       /*dst_plane_index=*/0, mailbox_texture_target,
-                      clear_bytes_per_row, dst_info, bitmap.getPixels());
+                      bitmap.pixmap());
     }
   }
 

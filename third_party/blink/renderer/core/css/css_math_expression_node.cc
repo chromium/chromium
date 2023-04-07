@@ -1793,7 +1793,7 @@ class CSSMathExpressionNodeParser {
       tokens.ConsumeWhitespace();
       inner_range.ConsumeWhitespace();
       CSSMathExpressionNode* result = ParseValueExpression(inner_range, depth);
-      if (!result || !inner_range.AtEnd()) {
+      if (!result) {
         return nullptr;
       }
       result->SetIsNestedCalc();

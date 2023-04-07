@@ -8,10 +8,10 @@
 #include <string>
 
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
+#include "base/uuid.h"
 #include "components/download/content/public/all_download_item_notifier.h"
 #include "components/download/internal/background_service/test/mock_download_driver_client.h"
 #include "components/download/public/common/download_features.h"
@@ -190,19 +190,19 @@ TEST_F(DownloadDriverImplTest, TestGetActiveDownloadsCall) {
   using DownloadState = download::DownloadItem::DownloadState;
   content::FakeDownloadItem item1;
   item1.SetState(DownloadState::IN_PROGRESS);
-  item1.SetGuid(base::GenerateGUID());
+  item1.SetGuid(base::Uuid::GenerateRandomV4().AsLowercaseString());
 
   content::FakeDownloadItem item2;
   item2.SetState(DownloadState::CANCELLED);
-  item2.SetGuid(base::GenerateGUID());
+  item2.SetGuid(base::Uuid::GenerateRandomV4().AsLowercaseString());
 
   content::FakeDownloadItem item3;
   item3.SetState(DownloadState::COMPLETE);
-  item3.SetGuid(base::GenerateGUID());
+  item3.SetGuid(base::Uuid::GenerateRandomV4().AsLowercaseString());
 
   content::FakeDownloadItem item4;
   item4.SetState(DownloadState::INTERRUPTED);
-  item4.SetGuid(base::GenerateGUID());
+  item4.SetGuid(base::Uuid::GenerateRandomV4().AsLowercaseString());
 
   std::vector<download::DownloadItem*> items{&item1, &item2, &item3, &item4};
 

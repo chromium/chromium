@@ -33,8 +33,9 @@ base::FilePathWatcher* CreateAndStartFilePathWatcher(
 
   std::unique_ptr<base::FilePathWatcher> watcher(new base::FilePathWatcher);
   if (!watcher->Watch(watch_path, base::FilePathWatcher::Type::kNonRecursive,
-                      callback))
+                      callback)) {
     return nullptr;
+  }
 
   return watcher.release();
 }
@@ -102,8 +103,9 @@ void FileWatcher::RemoveListener(const url::Origin& listener) {
 
   // If entry found - decrease it's count and remove if necessary
   --it->second;
-  if (it->second == 0)
+  if (it->second == 0) {
     origins_.erase(it);
+  }
 }
 
 std::vector<url::Origin> FileWatcher::GetListeners() const {

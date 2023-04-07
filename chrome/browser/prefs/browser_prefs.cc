@@ -256,6 +256,7 @@
 #include "components/query_tiles/tile_service_prefs.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/cart/cart_service.h"
+#include "chrome/browser/companion/core/promo_handler.h"
 #include "chrome/browser/device_api/device_service_impl.h"
 #include "chrome/browser/gcm/gcm_product_util.h"
 #include "chrome/browser/hid/hid_policy_allowed_devices.h"
@@ -278,7 +279,6 @@
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
-#include "chrome/browser/ui/webui/side_panel/companion/promo_handler.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"

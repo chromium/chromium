@@ -61,4 +61,5 @@ found in the LICENSE file.
 
     <!-- Card art -->
     <dimen name="card_art_corner_radius">3dp</dimen>
+    <dimen name="keyboard_accessory_card_art_corner_radius">2dp</dimen>
 </resources>

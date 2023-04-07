@@ -22,7 +22,7 @@
 #include <sys/mman.h>
 #endif
 
-namespace safe_browsing::seven_zip_analyzer {
+namespace safe_browsing {
 
 namespace {
 
@@ -137,27 +137,62 @@ class SevenZipDelegate : public seven_zip::Delegate {
 
 }  // namespace
 
-void AnalyzeSevenZipFile(base::File seven_zip_file,
-                         base::File temp_file,
-                         base::File temp_file2,
-                         ArchiveAnalyzerResults* results) {
-  bool too_big_to_unpack =
-      base::checked_cast<uint64_t>(seven_zip_file.GetLength()) >
-      FileTypePolicies::GetInstance()->GetMaxFileSizeToAnalyze("7z");
-  if (too_big_to_unpack) {
-    results->success = false;
-    results->analysis_result = ArchiveAnalysisResult::kTooLarge;
-    return;
-  }
+SevenZipAnalyzer::~SevenZipAnalyzer() = default;
 
-  SevenZipDelegate delegate(results, std::move(temp_file),
-                            std::move(temp_file2));
-  seven_zip::Extract(std::move(seven_zip_file), delegate);
+SevenZipAnalyzer::SevenZipAnalyzer() = default;
 
-  if (delegate.success()) {
-    results->success = true;
-    results->analysis_result = ArchiveAnalysisResult::kValid;
-  }
+void SevenZipAnalyzer::Init(base::File seven_zip_file,
+                            base::FilePath seven_zip_path,
+                            FinishedAnalysisCallback finished_analysis_callback,
+                            GetTempFileCallback get_temp_file_callback,
+                            ArchiveAnalyzerResults* results) {
+  results_ = results;
+  root_seven_zip_path_ = seven_zip_path;
+  finished_analysis_callback_ = std::move(finished_analysis_callback);
+  get_temp_file_callback_ = get_temp_file_callback;
+  seven_zip_file_ = std::move(seven_zip_file);
+  get_temp_file_callback_.Run(base::BindOnce(&SevenZipAnalyzer::FilePreChecks,
+                                             weak_factory_.GetWeakPtr()));
+  get_temp_file_callback_.Run(base::BindOnce(&SevenZipAnalyzer::FilePreChecks,
+                                             weak_factory_.GetWeakPtr()));
 }
 
-}  // namespace safe_browsing::seven_zip_analyzer
+void SevenZipAnalyzer::FilePreChecks(base::File temp_file) {
+  if (!temp_file.IsValid()) {
+    results_->success = false;
+    results_->analysis_result = ArchiveAnalysisResult::kFailedToOpenTempFile;
+    std::move(finished_analysis_callback_).Run();
+    return;
+  }
+  if (!temp_file_.IsValid()) {
+    temp_file_ = std::move(temp_file);
+    return;
+  } else {
+    temp_file2_ = std::move(temp_file);
+  }
+  // If the file is too big to unpack, return failure.
+  bool too_big_to_unpack =
+      base::checked_cast<uint64_t>(seven_zip_file_.GetLength()) >
+      FileTypePolicies::GetInstance()->GetMaxFileSizeToAnalyze("7z");
+  if (too_big_to_unpack) {
+    results_->success = false;
+    results_->analysis_result = ArchiveAnalysisResult::kTooLarge;
+    std::move(finished_analysis_callback_).Run();
+    return;
+  }
+  AnalyzeSevenZipFile();
+}
+
+void SevenZipAnalyzer::AnalyzeSevenZipFile() {
+  SevenZipDelegate delegate(results_, std::move(temp_file_),
+                            std::move(temp_file2_));
+  seven_zip::Extract(std::move(seven_zip_file_), delegate);
+
+  if (delegate.success()) {
+    results_->success = true;
+    results_->analysis_result = ArchiveAnalysisResult::kValid;
+  }
+  std::move(finished_analysis_callback_).Run();
+}
+
+}  // namespace safe_browsing

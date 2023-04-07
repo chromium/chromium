@@ -35,7 +35,8 @@ namespace blink {
 BackgroundFetchRegistration::BackgroundFetchRegistration(
     ServiceWorkerRegistration* service_worker_registration,
     mojom::blink::BackgroundFetchRegistrationPtr registration)
-    : developer_id_(registration->registration_data->developer_id),
+    : ActiveScriptWrappable<BackgroundFetchRegistration>({}),
+      developer_id_(registration->registration_data->developer_id),
       upload_total_(registration->registration_data->upload_total),
       uploaded_(registration->registration_data->uploaded),
       download_total_(registration->registration_data->download_total),

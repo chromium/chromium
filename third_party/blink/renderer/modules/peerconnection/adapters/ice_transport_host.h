@@ -54,6 +54,7 @@ class IceTransportHost final : public IceTransportAdapter::Delegate {
  private:
   // IceTransportAdapter::Delegate overrides.
   void OnGatheringStateChanged(cricket::IceGatheringState new_state) override;
+  void OnCandidateGathered(const cricket::Candidate& candidate) override;
   void OnStateChanged(webrtc::IceTransportState new_state) override;
   void OnSelectedCandidatePairChanged(
       const std::pair<cricket::Candidate, cricket::Candidate>&

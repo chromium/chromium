@@ -81,6 +81,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuNudgeController
   // aura::WindowObserver:
   void OnWindowParentChanged(aura::Window* window,
                              aura::Window* parent) override;
+  void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
   void OnWindowBoundsChanged(aura::Window* window,
                              const gfx::Rect& old_bounds,
                              const gfx::Rect& new_bounds,

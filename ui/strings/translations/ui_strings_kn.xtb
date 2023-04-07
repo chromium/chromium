@@ -31,7 +31,6 @@
 <translation id="1860796786778352021">ಅಧಿಸೂಚನೆ ಮುಚ್ಚು</translation>
 <translation id="186476001994626254">ವೆಬ್ ಸ್ಮಾರ್ಟ್ ಅಂಟಿಸುವ ವಿಷಯ</translation>
 <translation id="1871244248791675517">Ins</translation>
-<translation id="1884435127456172652"><ph name="NUMBER" /> %</translation>
 <translation id="1901303067676059328">&amp;ಎಲ್ಲ ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="19085484004813472">ಇದೊಂದು ಹೊಸ ವೈಶಿಷ್ಟ್ಯ</translation>
 <translation id="2006524834898217237">ಈ ಸಾಧನವು ಇಂಟರ್ನೆಟ್‌ಗೆ ಸಂಪರ್ಕಗೊಂಡಿರುವುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
@@ -202,6 +201,7 @@
 <translation id="8393700583063109961">ಸಂದೇಶ ಕಳುಹಿಸು</translation>
 <translation id="8394908167088220973">ಮೀಡಿಯಾ ಪ್ಲೇ/ವಿರಾಮ</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1ವ}one{#ವ}other{#ವ}}</translation>
+<translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> ಫೈಲ್ (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s </translation>
 <translation id="8725488761726303204">+ <ph name="NUMBER" /> ಇನ್ನಷ್ಟು</translation>

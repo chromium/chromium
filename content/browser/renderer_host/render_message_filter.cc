@@ -36,7 +36,7 @@
 #include "content/common/render_message_filter.mojom.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"

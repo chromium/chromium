@@ -10,7 +10,7 @@
 <translation id="1049743911850919806">In incognito</translation>
 <translation id="1058669287135776095">Sei offline. Controlla la connessione a internet e riprova.</translation>
 <translation id="10614374240317010">Mai salvate</translation>
-<translation id="1062628064301375934">Aiutaci a rendere il Web più privato</translation>
+<translation id="1062628064301375934">Aiutaci a rendere il web più privato</translation>
 <translation id="107147699690128016">Se cambi l'estensione del file, il file potrebbe essere aperto in un'altra applicazione e costituire un pericolo per il dispositivo.</translation>
 <translation id="1089606299949659462">Revisione completata.</translation>
 <translation id="1095761715416917775">Assicurati di poter accedere sempre ai dati sincronizzati</translation>
@@ -49,7 +49,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1239792311949352652">Condividi rapidamente questa pagina. Per modificare questa scorciatoia, vai a Impostazioni.</translation>
 <translation id="1240190568154816272">Suggerimenti per Chrome</translation>
 <translation id="1240288207750131269">Caricamento della lingua <ph name="LANG" /> in corso…</translation>
-<translation id="1240903469550363138">Per continuare, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> condividerà il tuo nome, il tuo indirizzo email e l'immagine del tuo profilo con questo sito. Leggi le <ph name="BEGIN_LINK1" />norme sulla privacy<ph name="END_LINK1" /> e i <ph name="BEGIN_LINK2" />Termini di servizio<ph name="END_LINK2" /> del sito.</translation>
+<translation id="1240903469550363138">Per continuare, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> condividerà il tuo nome, il tuo indirizzo email e l'immagine del tuo profilo con questo sito. Leggi le <ph name="BEGIN_LINK1" />Norme sulla privacy<ph name="END_LINK1" /> e i <ph name="BEGIN_LINK2" />Termini di servizio<ph name="END_LINK2" /> del sito.</translation>
 <translation id="124116460088058876">Altre lingue</translation>
 <translation id="1242883863226959074">dispositivo</translation>
 <translation id="124678866338384709">Chiudi scheda corrente</translation>
@@ -542,6 +542,7 @@ I token di stato privati migliorano la privacy sul web e non possono essere usat
 <translation id="3999683152997576765">Puoi visualizzare e rimuovere argomenti di interesse usati dai siti per mostrarti annunci. Chrome stima i tuoi interessi in base alla tua recente cronologia di navigazione.</translation>
 <translation id="4000212216660919741">Home page offline</translation>
 <translation id="4016425174436051808">Non è possibile seguire. Si è verificato un errore.</translation>
+<translation id="4024768890073681126">Il tuo browser è gestito da un genitore</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ora}other{# ore}}</translation>
 <translation id="4035877632587724847">Non consentire</translation>
 <translation id="4036177530563778041">Continua facilmente da dove avevi interrotto</translation>
@@ -1193,7 +1194,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7431991332293347422">Controlla la modalità di utilizzo della cronologia di navigazione per personalizzare la Ricerca e non solo</translation>
 <translation id="7435356471928173109">Disattivata dall'amministratore</translation>
 <translation id="7437998757836447326">Esci da Chrome</translation>
-<translation id="7443901082822119557">Con la modalità di navigazione in incognito, i siti non possono utilizzare i cookie per conoscere la tua attività di navigazione su siti diversi, ad esempio per personalizzare gli annunci. Le funzionalità su alcuni siti potrebbero non essere disponibili.</translation>
+<translation id="7443901082822119557">Con la modalità di navigazione in incognito, i siti non possono utilizzare i cookie per conoscere la tua attività di navigazione su diversi siti, ad esempio per personalizzare gli annunci. Le funzionalità su alcuni siti potrebbero non essere disponibili.</translation>
 <translation id="7453467225369441013">Verrai disconnesso dalla maggior parte dei siti, ma non dal tuo Account Google.</translation>
 <translation id="7453810262525006706">Comprimi in vista laterale</translation>
 <translation id="7454641608352164238">Spazio insufficiente</translation>

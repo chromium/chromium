@@ -263,7 +263,7 @@ class SkiaOutputSurfaceImplOnGpu
   void RemoveAsyncReadResultHelperWithLock(AsyncReadResultHelper* helper);
 
   void CreateSharedImage(gpu::Mailbox mailbox,
-                         ResourceFormat format,
+                         SharedImageFormat format,
                          const gfx::Size& size,
                          const gfx::ColorSpace& color_space,
                          uint32_t usage,
@@ -352,7 +352,7 @@ class SkiaOutputSurfaceImplOnGpu
 
   // Helper for `CopyOutputNV12()` & `CopyOutputRGBA()` methods:
   std::unique_ptr<gpu::SkiaImageRepresentation>
-  CreateSharedImageRepresentationSkia(ResourceFormat resource_format,
+  CreateSharedImageRepresentationSkia(SharedImageFormat format,
                                       const gfx::Size& size,
                                       const gfx::ColorSpace& color_space);
 
@@ -568,7 +568,7 @@ class SkiaOutputSurfaceImplOnGpu
   // The format that will be used to CreateSolidColorSharedImage(). This should
   // be either RGBA_8888 by default, or BGRA_8888 if the default is not
   // supported on Linux.
-  ResourceFormat solid_color_image_format_ = RGBA_8888;
+  SharedImageFormat solid_color_image_format_ = SinglePlaneFormat::kRGBA_8888;
 
   THREAD_CHECKER(thread_checker_);
 

@@ -84,7 +84,7 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
   sk_sp<SkImage> MakePromiseSkImageFromRenderPass(
       const AggregatedRenderPassId& id,
       const gfx::Size& size,
-      ResourceFormat format,
+      SharedImageFormat format,
       bool mipmap,
       sk_sp<SkColorSpace> color_space,
       const gpu::Mailbox& mailbox) override;
@@ -104,7 +104,7 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
   gpu::SyncToken Flush() override;
   bool EnsureMinNumberOfBuffers(int n) override;
   void PreserveChildSurfaceControls() override {}
-  gpu::Mailbox CreateSharedImage(ResourceFormat format,
+  gpu::Mailbox CreateSharedImage(SharedImageFormat format,
                                  const gfx::Size& size,
                                  const gfx::ColorSpace& color_space,
                                  uint32_t usage,

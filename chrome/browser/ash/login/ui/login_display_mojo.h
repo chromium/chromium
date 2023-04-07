@@ -30,14 +30,11 @@ class LoginDisplayMojo : public LoginDisplay,
   void UpdateChallengeResponseAuthAvailability(const AccountId& account_id);
 
   // LoginDisplay:
-  void Init(const user_manager::UserList& filtered_users,
-            bool show_guest) override;
+  void Init(const user_manager::UserList& filtered_users) override;
   void SetUIEnabled(bool is_enabled) override;
 
   // user_manager::UserManager::Observer:
   void OnUserImageChanged(const user_manager::User& user) override;
-
-  void ShowOwnerPod(const AccountId& owner);
 
  private:
   void OnPinCanAuthenticate(const AccountId& account_id, bool can_authenticate);

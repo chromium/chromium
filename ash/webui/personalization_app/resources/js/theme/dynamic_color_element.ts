@@ -20,6 +20,7 @@ import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-key
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
 import {ColorScheme, SampleColorScheme} from '../../personalization_app.mojom-webui.js';
+import {logDynamicColorToggleButtonClick} from '../personalization_metrics_logger.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {convertToRgbHexStr} from '../utils.js';
 
@@ -128,6 +129,10 @@ export class DynamicColorElement extends WithPersonalizationStore {
   }
 
   private onToggleChanged_() {
+    // automaticSeedColorEnabled represents the state before the toggle button
+    // was clicked. We flip the state of automaticSeedColorEnabled to show the
+    // result of clicking the toggle.
+    logDynamicColorToggleButtonClick(!this.automaticSeedColorEnabled);
     if (this.automaticSeedColorEnabled) {
       this.previousColorSchemeSelected_ = this.colorSchemeSelected_;
       const staticColor =

@@ -12,7 +12,7 @@
 #include "base/location.h"
 #include "base/task/thread_pool.h"
 #include "components/services/screen_ai/public/cpp/screen_ai_install_state.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_process_host.h"
 
 namespace {

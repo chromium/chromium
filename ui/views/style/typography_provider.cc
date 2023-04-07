@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "ui/base/default_style.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/views/style/typography.h"
 
@@ -80,7 +81,9 @@ ui::ResourceBundle::FontDetails TypographyProvider::GetFontDetails(
       details.weight = gfx::Font::Weight::BOLD;
       break;
     case style::CONTEXT_BUTTON_MD:
-      details.size_delta = ui::kLabelFontSizeDelta;
+      details.size_delta = features::IsChromeRefresh2023()
+                               ? ui::kLabelFontSizeDeltaChromeRefresh2023
+                               : ui::kLabelFontSizeDelta;
       details.weight = TypographyProvider::MediumWeightForUI();
       break;
     case style::CONTEXT_DIALOG_TITLE:

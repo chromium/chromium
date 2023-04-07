@@ -235,8 +235,8 @@ class OmniboxPedal : public OmniboxAction {
   OmniboxActionId ActionId() const override;
 
 #if BUILDFLAG(IS_ANDROID)
-  base::android::ScopedJavaGlobalRef<jobject> GetJavaObject() const override;
-  void CreateOrUpdateJavaObject();
+  base::android::ScopedJavaLocalRef<jobject> GetOrCreateJavaObject(
+      JNIEnv* env) const override;
 #endif
 
  protected:
@@ -258,7 +258,7 @@ class OmniboxPedal : public OmniboxAction {
   std::vector<SynonymGroup> synonym_groups_;
 
 #if BUILDFLAG(IS_ANDROID)
-  base::android::ScopedJavaGlobalRef<jobject> j_omnibox_action_;
+  mutable base::android::ScopedJavaGlobalRef<jobject> j_omnibox_action_;
 #endif
 };
 

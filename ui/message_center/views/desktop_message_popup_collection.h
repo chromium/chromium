@@ -45,7 +45,7 @@ class MESSAGE_CENTER_EXPORT DesktopMessagePopupCollection
 
  protected:
   // Overridden from MessagePopupCollection:
-  int GetToastOriginX(const gfx::Rect& toast_bounds) const override;
+  int GetPopupOriginX(const gfx::Rect& popup_bounds) const override;
   int GetBaseline() const override;
   gfx::Rect GetWorkArea() const override;
   bool IsTopDown() const override;

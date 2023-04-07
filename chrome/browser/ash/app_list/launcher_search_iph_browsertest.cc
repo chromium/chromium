@@ -2,21 +2,35 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/app_list_presenter_impl.h"
 #include "ash/app_list/app_list_public_test_util.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
+#include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/app_list_toast_view.h"
+#include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/assistant/assistant_test_api_impl.h"
+#include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/launcher_search_iph_view.h"
+#include "ash/app_list/views/pagination_model_transition_waiter.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/assistant/assistant_controller_impl.h"
 #include "ash/assistant/test/test_assistant_service.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
 #include "ash/assistant/ui/main_stage/assistant_zero_state_view.h"
+#include "ash/public/cpp/accelerators.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/test/app_list_test_api.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/strings/stringprintf.h"
+#include "base/test/gtest_tags.h"
+#include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/ui/ash/assistant/assistant_test_mixin.h"
@@ -34,6 +48,22 @@
 #include "ui/views/view_observer.h"
 
 namespace {
+
+constexpr char kScreenPlayTagName[] = "feature_id";
+constexpr char kScreenPlayTagValue[] =
+    "screenplay-3adcce6b-a470-48b0-9246-f6570c5cef34";
+
+constexpr char kNotifyUsedEventUserActionName[] =
+    "InProductHelp.NotifyUsedEvent.IPH_LauncherSearchHelpUi";
+constexpr char kNotifyEventUserActionName[] =
+    "InProductHelp.NotifyEvent.IPH_LauncherSearchHelpUi";
+
+constexpr char kIphConfigParamNameEventUsed[] = "event_used";
+constexpr char kIphConfigParamNameEventTrigger[] = "event_trigger";
+constexpr char kIphConfigParamNameEvent1[] = "event_1";
+constexpr char kIphConfigParamNameAvailability[] = "availability";
+constexpr char kIphConfigParamNameSessionRate[] = "session_rate";
+
 class ViewWaiter : public views::ViewObserver {
  public:
   ViewWaiter(raw_ptr<views::View> observed_view, int view_id)
@@ -87,111 +117,224 @@ void Click(raw_ptr<views::View> view) {
   event_generator.ClickLeftButton();
 }
 
+std::string GenerateTestSuffix(const testing::TestParamInfo<bool>& info) {
+  return info.param ? "tablet" : "clamshell";
+}
+
 }  // namespace
 
-class AppListIphBrowserTest : public MixinBasedInProcessBrowserTest {
+class AppListIphBrowserTest : public MixinBasedInProcessBrowserTest,
+                              public testing::WithParamInterface<bool> {
  public:
   void SetUpOnMainThread() override {
+    ash::Shell::Get()->tablet_mode_controller()->SetEnabledForTest(GetParam());
     ash::Shell::Get()->assistant_controller()->SetAssistant(&test_service_);
     test_api_impl_.EnableAssistantAndWait();
+
+    app_list_client_impl_ = AppListClientImpl::GetInstance();
+    app_list_client_impl_->UpdateProfile();
+
+    base::AddTagToTestResult(kScreenPlayTagName, kScreenPlayTagValue);
+
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
   }
 
   void TearDownOnMainThread() override { DisableAssistant(); }
 
+ protected:
   void DisableAssistant() { test_api_impl_.SetAssistantEnabled(false); }
 
- private:
-  ash::TestAssistantService test_service_;
-  ash::AssistantTestApiImpl test_api_impl_;
-};
+  // Provides both `IsClamshellModeTest` and `IsTabletModeTest` to be able to
+  // write `if(IsClamshellModeTest)` instead of `if(!IsTabletModeTest)` for
+  // readbility.
+  bool IsClamshellModeTest() const { return !GetParam(); }
+  bool IsTabletModeTest() const { return GetParam(); }
 
-class AppListIphBrowserTestWithDemoMode : public AppListIphBrowserTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_iph_feature_list_ =
-        std::make_unique<feature_engagement::test::ScopedIphFeatureList>();
-    scoped_iph_feature_list_->InitForDemo(
-        feature_engagement::kIPHLauncherSearchHelpUiFeature);
-
-    MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
+  bool IsAppListVisible() const {
+    return ash::AppListControllerImpl::Get()->IsVisible();
   }
 
- protected:
   void OpenAppList() {
-    ASSERT_TRUE(!app_list_client_impl_);
-    ASSERT_TRUE(!search_box_view_);
+    ASSERT_FALSE(IsAppListVisible());
 
-    app_list_client_impl_ = AppListClientImpl::GetInstance();
-    app_list_client_impl_->UpdateProfile();
+    if (IsClamshellModeTest()) {
+      app_list_client_impl_->ShowAppList(ash::AppListShowSource::kSearchKey);
 
-    app_list_client_impl_->ShowAppList(ash::AppListShowSource::kSearchKey);
-    // We dispatch mouse events to interact with UI. Wait animation completion
-    // to reliably dispatch those events.
-    ash::AppListTestApi().WaitForBubbleWindow(
-        /*wait_for_opening_animation=*/true);
-    search_box_view_ = ash::GetSearchBoxView();
-    ASSERT_TRUE(search_box_view_);
+      // We dispatch mouse events to interact with UI. Wait animation completion
+      // to reliably dispatch those events.
+      ash::AppListTestApi().WaitForBubbleWindow(
+          /*wait_for_opening_animation=*/true);
+    } else {
+      ash::AcceleratorController::Get()->PerformActionIfEnabled(
+          ash::TOGGLE_APP_LIST, {});
+
+      // We dispatch mouse events to interact with UI. Wait animation completion
+      // to reliably dispatch those events.
+      ash::AppListTestApi().WaitForAppListShowAnimation(
+          /*is_bubble_window=*/false);
+    }
+
+    ASSERT_TRUE(IsAppListVisible());
   }
 
-  void OpenAppListWithIph() {
+  // Opens app list and activates the search box if necessary. The search box is
+  // active by default in clamshell mode.
+  void OpenAppListForSearch() {
     OpenAppList();
 
+    if (IsTabletModeTest()) {
+      ash::PaginationModelTransitionWaiter pagination_model_transition_waiter(
+          GetFullscreenAppListContentsView()->pagination_model_for_testing());
+      Click(search_box_view());
+      pagination_model_transition_waiter.Wait();
+    }
+
+    ASSERT_TRUE(search_box_view());
+    ASSERT_TRUE(search_box_view()->is_search_box_active());
+  }
+
+  void DismissAppList() {
+    ASSERT_TRUE(IsAppListVisible());
+
+    if (IsClamshellModeTest()) {
+      app_list_client_impl()->DismissView();
+    } else {
+      // In tablet mode, dismiss the app list view by activating a Chrome
+      // browser window for a better prod behavior simulation.
+      // `AppListClientImpl::DismissView` can also dismiss the app list view.
+      // But it puts a UI in a weird state.
+      browser()->window()->Activate();
+    }
+
+    ASSERT_FALSE(IsAppListVisible());
+  }
+
+  void OpenAppListAndWaitForIphView() {
+    OpenAppListForSearch();
+
     // There is an async call for checking IPH trigger condition.
-    ViewWaiter(search_box_view_, ash::LauncherSearchIphView::ViewId::kSelf)
+    ViewWaiter(search_box_view(), ash::LauncherSearchIphView::ViewId::kSelf)
         .Run();
     ASSERT_TRUE(IsLauncherSearchIphViewVisible());
+  }
+
+  raw_ptr<ash::ContentsView> GetFullscreenAppListContentsView() {
+    return ash::GetAppListView()->app_list_main_view()->contents_view();
+  }
+
+  raw_ptr<ash::AssistantZeroStateView> GetAssistantZeroStateView() {
+    if (IsClamshellModeTest()) {
+      return static_cast<ash::AssistantZeroStateView*>(
+          ash::GetAppListBubbleView()->GetViewByID(
+              ash::AssistantViewID::kZeroStateView));
+    }
+
+    return static_cast<ash::AssistantZeroStateView*>(
+        ash::GetAppListView()->GetViewByID(
+            ash::AssistantViewID::kZeroStateView));
+  }
+
+  raw_ptr<ash::AppListToastView> GetAssistantLearnMoreToast() {
+    if (IsClamshellModeTest()) {
+      return static_cast<ash::AppListToastView*>(
+          ash::GetAppListBubbleView()->GetViewByID(
+              ash::AssistantViewID::kLearnMoreToast));
+    }
+
+    return static_cast<ash::AppListToastView*>(
+        ash::GetAppListView()->GetViewByID(
+            ash::AssistantViewID::kLearnMoreToast));
+  }
+
+  bool IsSearchPageActive() {
+    if (IsClamshellModeTest()) {
+      return ash::GetAppListBubbleView()->current_page_for_test() ==
+             ash::AppListBubblePage::kSearch;
+    } else {
+      return GetFullscreenAppListContentsView()->IsShowingSearchResults();
+    }
+  }
+
+  bool IsAssistantPageActive() {
+    if (IsClamshellModeTest()) {
+      return ash::GetAppListBubbleView()->current_page_for_test() ==
+             ash::AppListBubblePage::kAssistant;
+    } else {
+      return GetFullscreenAppListContentsView()->IsShowingEmbeddedAssistantUI();
+    }
   }
 
   raw_ptr<AppListClientImpl> app_list_client_impl() {
     return app_list_client_impl_;
   }
 
-  raw_ptr<ash::SearchBoxView> search_box_view() { return search_box_view_; }
-
- protected:
-  std::unique_ptr<feature_engagement::test::ScopedIphFeatureList>
-      scoped_iph_feature_list_;
+  raw_ptr<ash::SearchBoxView> search_box_view() {
+    return ash::GetSearchBoxView();
+  }
 
  private:
+  ash::TestAssistantService test_service_;
+  ash::AssistantTestApiImpl test_api_impl_;
+
   raw_ptr<AppListClientImpl> app_list_client_impl_ = nullptr;
-  raw_ptr<ash::SearchBoxView> search_box_view_ = nullptr;
 };
 
-IN_PROC_BROWSER_TEST_F(AppListIphBrowserTest,
+class AppListIphBrowserTestWithTestConfig : public AppListIphBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    base::FieldTrialParams params;
+    params[kIphConfigParamNameAvailability] = "any";
+    params[kIphConfigParamNameSessionRate] = "any";
+    params[kIphConfigParamNameEventUsed] =
+        base::StringPrintf("name:%s;comparator:any;window:365;storage:365",
+                           ash::LauncherSearchIphView::kIphEventNameChipClick);
+    // Trigger event is not used for this test config. Note that a trigger event
+    // gets incremented every time an IPH is shown.
+    params[kIphConfigParamNameEventTrigger] =
+        "name:IPH_LauncherSearchHelpUi_trigger;comparator:any;window:365;"
+        "storage:365";
+    params[kIphConfigParamNameEvent1] = base::StringPrintf(
+        "name:%s;comparator:==0;window:365;storage:365",
+        ash::LauncherSearchIphView::kIphEventNameAssistantClick);
+
+    scoped_iph_feature_list_ =
+        std::make_unique<feature_engagement::test::ScopedIphFeatureList>();
+    scoped_iph_feature_list_->InitAndEnableFeaturesWithParameters(
+        {base::test::FeatureRefAndParams(
+            feature_engagement::kIPHLauncherSearchHelpUiFeature, params)});
+
+    MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
+  }
+
+ private:
+  std::unique_ptr<feature_engagement::test::ScopedIphFeatureList>
+      scoped_iph_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(AppListIphBrowserTest,
                        LauncherSearchIphNotShownByDefault) {
-  raw_ptr<AppListClientImpl> client_impl = AppListClientImpl::GetInstance();
-  client_impl->UpdateProfile();
-
-  client_impl->ShowAppList(ash::AppListShowSource::kSearchKey);
-  ash::AppListTestApi().WaitForBubbleWindow(
-      /*wait_for_opening_animation=*/false);
+  OpenAppListForSearch();
   EXPECT_FALSE(IsLauncherSearchIphViewVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(AppListIphBrowserTestWithDemoMode, LauncherSearchIph) {
-  OpenAppListWithIph();
+IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig, LauncherSearchIph) {
+  OpenAppListAndWaitForIphView();
+
   EXPECT_TRUE(IsLauncherSearchIphViewVisible());
-  EXPECT_TRUE(search_box_view()->assistant_button()->GetBackground());
+  if (IsClamshellModeTest()) {
+    EXPECT_TRUE(search_box_view()->assistant_button()->GetBackground());
+  }
 
-  // Dismiss the app list and show it again. IPH won't be shown this time. Note
-  // that this is IPH demo mode behavior.
-  app_list_client_impl()->DismissView();
-  ASSERT_FALSE(app_list_client_impl()->GetAppListWindow());
-
-  app_list_client_impl()->ShowAppList(ash::AppListShowSource::kSearchKey);
-  ash::AppListTestApi().WaitForBubbleWindow(
-      /*wait_for_opening_animation=*/false);
-
-  EXPECT_FALSE(IsLauncherSearchIphViewVisible());
-  // Launcher search iph installs a background to assistant button. It should be
-  // removed if the iph gets dismissed.
-  EXPECT_FALSE(search_box_view()->assistant_button()->GetBackground());
+  // IPH should be kept being shown as long as the trigger condition in the test
+  // config matches.
+  DismissAppList();
+  OpenAppListAndWaitForIphView();
+  EXPECT_TRUE(IsLauncherSearchIphViewVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(AppListIphBrowserTestWithDemoMode,
+IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig,
                        LauncherSearchIphSearch) {
-  OpenAppListWithIph();
+  OpenAppListAndWaitForIphView();
   EXPECT_TRUE(IsLauncherSearchIphViewVisible());
 
   // Do search and confirm that the IPH gets dismissed.
@@ -199,9 +342,12 @@ IN_PROC_BROWSER_TEST_F(AppListIphBrowserTestWithDemoMode,
   EXPECT_FALSE(IsLauncherSearchIphViewVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(AppListIphBrowserTestWithDemoMode,
-                       LauncherSearchIphAssistant) {
-  OpenAppListWithIph();
+using AppListIphBrowserTestWithTestConfigClamshell =
+    AppListIphBrowserTestWithTestConfig;
+
+IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfigClamshell,
+                       LauncherSearchIphAssistantButtonInSearchBox) {
+  OpenAppListAndWaitForIphView();
 
   // Clicks Assistant button to open Assistant UI and confirm that IPH gets
   // dismissed.
@@ -213,42 +359,68 @@ IN_PROC_BROWSER_TEST_F(AppListIphBrowserTestWithDemoMode,
   EXPECT_FALSE(IsLauncherSearchIphViewVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(AppListIphBrowserTestWithDemoMode, ClickChip) {
-  OpenAppListWithIph();
+IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig, ClickChip) {
+  OpenAppListAndWaitForIphView();
 
+  // Chip click is specified as EventUsed in the test config.
+  base::UserActionTester user_action_tester;
   raw_ptr<views::View> chip = search_box_view()->GetViewByID(
       ash::LauncherSearchIphView::ViewId::kChipStart);
   ASSERT_TRUE(chip);
   Click(chip);
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount(kNotifyUsedEventUserActionName));
 
   EXPECT_EQ(u"Weather",
             app_list_client_impl()->search_controller()->get_query());
-  EXPECT_EQ(ash::AppListBubblePage::kSearch,
-            ash::GetAppListBubbleView()->current_page_for_test());
+  EXPECT_TRUE(IsSearchPageActive());
   EXPECT_FALSE(IsLauncherSearchIphViewVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(AppListIphBrowserTestWithDemoMode, ClickAssistant) {
-  OpenAppListWithIph();
+IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig, ClickAssistant) {
+  OpenAppListAndWaitForIphView();
 
+  EXPECT_TRUE(IsLauncherSearchIphViewVisible());
+  if (IsClamshellModeTest()) {
+    // Confirm that a background is installed as we check that this gets removed
+    // if IPH is not shown below.
+    EXPECT_TRUE(search_box_view()->assistant_button()->GetBackground());
+  }
+
+  // Confirm that assistant event is recorded. Make sure that the initial count
+  // is 0 to distinguish this from other events.
+  base::UserActionTester user_action_tester;
+  ASSERT_EQ(0, user_action_tester.GetActionCount(kNotifyEventUserActionName));
   raw_ptr<views::View> assistant_button = search_box_view()->GetViewByID(
       ash::LauncherSearchIphView::ViewId::kAssistant);
   ASSERT_TRUE(assistant_button);
   Click(assistant_button);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kNotifyEventUserActionName));
 
-  EXPECT_EQ(ash::AppListBubblePage::kAssistant,
-            ash::GetAppListBubbleView()->current_page_for_test());
+  EXPECT_TRUE(IsAssistantPageActive());
   EXPECT_FALSE(IsLauncherSearchIphViewVisible());
+
+  // Dismiss the app list and show it again. IPH won't be shown this time. Note
+  // that this behavior is coming from the IPH test config.
+  DismissAppList();
+  OpenAppListForSearch();
+  EXPECT_FALSE(IsLauncherSearchIphViewVisible());
+
+  if (IsClamshellModeTest()) {
+    // Launcher search iph installs a background to an assistant button in the
+    // search box. It should be removed if the iph gets dismissed.
+    EXPECT_FALSE(search_box_view()->assistant_button()->GetBackground());
+  }
 }
 
-IN_PROC_BROWSER_TEST_F(AppListIphBrowserTestWithDemoMode,
+IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig,
                        NoIphWithoutAssistant) {
   // `AssistantTestApiImpl::SetAssistantEnabled` asserts that the value has
   // taken effect, i.e. we are sure that Assistant gets disabled after this
   // call.
   DisableAssistant();
 
-  OpenAppList();
+  OpenAppListForSearch();
 
   // There is an async call for IPH to be shown. This test expects that IPH does
   // NOT get shown. But run `RunUntilIdle` as this test can get failed if we
@@ -259,8 +431,8 @@ IN_PROC_BROWSER_TEST_F(AppListIphBrowserTestWithDemoMode,
   EXPECT_FALSE(search_box_view()->assistant_button()->GetBackground());
 }
 
-IN_PROC_BROWSER_TEST_F(AppListIphBrowserTestWithDemoMode, ClickLink) {
-  OpenAppListWithIph();
+IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig, ClickLink) {
+  OpenAppListAndWaitForIphView();
   raw_ptr<views::StyledLabel> description_label =
       static_cast<views::StyledLabel*>(search_box_view()->GetViewByID(
           ash::LauncherSearchIphView::ViewId::kDescriptionLabel));
@@ -273,51 +445,81 @@ IN_PROC_BROWSER_TEST_F(AppListIphBrowserTestWithDemoMode, ClickLink) {
 }
 
 // The bool param indicates if the AssistantLearnMore feature is enabled or not.
-class AppListIphBrowserTestWithLearnMoreToast
-    : public AppListIphBrowserTestWithDemoMode,
-      public testing::WithParamInterface<bool> {
+class AppListIphBrowserTestWithLearnMoreToast : public AppListIphBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_iph_feature_list_ =
-        std::make_unique<feature_engagement::test::ScopedIphFeatureList>();
-    if (GetParam()) {
-      scoped_iph_feature_list_->InitAndEnableFeatures(
-          {ash::assistant::features::kEnableAssistantLearnMore});
-    }
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::assistant::features::kEnableAssistantLearnMore);
+
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithLearnMoreToast,
-                       ShowAssistantLearnMoreToast) {
+IN_PROC_BROWSER_TEST_P(AppListIphBrowserTest,
+                       NoAssistantLearnMoreToastFlagOff) {
+  ASSERT_FALSE(base::FeatureList::IsEnabled(
+      ash::assistant::features::kEnableAssistantLearnMore));
+
   OpenAppList();
 
-  auto* assistant_button = search_box_view()->assistant_button();
+  raw_ptr<views::ImageButton> assistant_button =
+      search_box_view()->assistant_button();
   ASSERT_TRUE(assistant_button);
   Click(assistant_button);
 
-  EXPECT_EQ(ash::AppListBubblePage::kAssistant,
-            ash::GetAppListBubbleView()->current_page_for_test());
+  // The learn more toast is shown in the zero state view.
+  ASSERT_TRUE(IsAssistantPageActive());
+  ASSERT_TRUE(GetAssistantZeroStateView()->GetVisible());
 
-  ash::AssistantZeroStateView* zero_state_view =
-      static_cast<ash::AssistantZeroStateView*>(
-          ash::GetAppListBubbleView()->GetViewByID(
-              ash::AssistantViewID::kZeroStateView));
-  ASSERT_TRUE(zero_state_view->GetVisible());
-
-  ash::AppListToastView* learn_more_toast = static_cast<ash::AppListToastView*>(
-      ash::GetAppListBubbleView()->GetViewByID(
-          ash::AssistantViewID::kLearnMoreToast));
-  ASSERT_TRUE(learn_more_toast);
-  if (GetParam()) {
-    ASSERT_TRUE(learn_more_toast->GetVisible());
-    ASSERT_TRUE(learn_more_toast->IsDrawn());
-  } else {
-    ASSERT_FALSE(learn_more_toast->GetVisible());
-    ASSERT_FALSE(learn_more_toast->IsDrawn());
-  }
+  raw_ptr<ash::AppListToastView> learn_more_toast =
+      GetAssistantLearnMoreToast();
+  EXPECT_FALSE(learn_more_toast->GetVisible());
+  EXPECT_FALSE(learn_more_toast->IsDrawn());
 }
 
-INSTANTIATE_TEST_SUITE_P(/* no label */,
+IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithLearnMoreToast,
+                       ShowAssistantLearnMoreToast) {
+  // TODO(b/276970723): Disables tablet mode variant for a crash.
+  if (IsTabletModeTest()) {
+    GTEST_SKIP() << "b/276970723";
+  }
+
+  OpenAppList();
+
+  raw_ptr<views::ImageButton> assistant_button =
+      search_box_view()->assistant_button();
+  ASSERT_TRUE(assistant_button);
+  Click(assistant_button);
+
+  // The learn more toast is shown in the zero state view.
+  ASSERT_TRUE(IsAssistantPageActive());
+  ASSERT_TRUE(GetAssistantZeroStateView()->GetVisible());
+
+  raw_ptr<ash::AppListToastView> learn_more_toast =
+      GetAssistantLearnMoreToast();
+  EXPECT_TRUE(learn_more_toast->GetVisible());
+  EXPECT_TRUE(learn_more_toast->IsDrawn());
+}
+
+INSTANTIATE_TEST_SUITE_P(LauncherSearchIph,
+                         AppListIphBrowserTest,
+                         /*is_tablet_mode=*/testing::Bool(),
+                         &GenerateTestSuffix);
+
+INSTANTIATE_TEST_SUITE_P(LauncherSearchIph,
+                         AppListIphBrowserTestWithTestConfig,
+                         /*is_tablet=*/testing::Bool(),
+                         &GenerateTestSuffix);
+
+INSTANTIATE_TEST_SUITE_P(LauncherSearchIph,
+                         AppListIphBrowserTestWithTestConfigClamshell,
+                         /*is_tablet=*/testing::Values(false),
+                         &GenerateTestSuffix);
+
+INSTANTIATE_TEST_SUITE_P(LauncherSearchIph,
                          AppListIphBrowserTestWithLearnMoreToast,
-                         /*values=*/testing::Bool());
+                         /*is_tablet_mode=*/testing::Bool(),
+                         &GenerateTestSuffix);

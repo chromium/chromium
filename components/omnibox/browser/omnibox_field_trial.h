@@ -380,7 +380,9 @@ extern const base::FeatureParam<int> kSuggestionRowHeight;
 // Specifies the vertical margin to use in one-line rich entity and answer
 // suggestions.
 extern const base::FeatureParam<int> kRichSuggestionVerticalMargin;
-
+// Omnibox GM3 - icons.
+// Returns true if the feature to enable GM3 icons is enabled.
+bool IsChromeRefreshIconsEnabled();
 // Omnibox GM3 - text style.
 // Returns true if the feature to enable GM3 text styling is enabled.
 bool IsGM3TextStyleEnabled();

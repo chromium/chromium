@@ -20,6 +20,7 @@
 #include "components/spellcheck/browser/spellcheck_platform.h"
 #include "components/spellcheck/common/spellcheck_panel.mojom.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "content/public/browser/preloading.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -146,6 +147,22 @@ using content::RenderViewHost;
   } else {
     chrome::GoBack(webContents);
   }
+}
+
+- (void)backwardsSwipeNavigationLikely {
+  if (!_renderWidgetHost) {
+    return;
+  }
+
+  content::WebContents* webContents = content::WebContents::FromRenderViewHost(
+      RenderViewHost::From(_renderWidgetHost));
+  if (!webContents) {
+    return;
+  }
+
+  webContents->BackNavigationLikely(
+      content::preloading_predictor::kBackGestureNavigation,
+      WindowOpenDisposition::CURRENT_TAB);
 }
 
 - (BOOL)validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)item

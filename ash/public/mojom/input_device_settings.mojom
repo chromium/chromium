@@ -26,6 +26,12 @@ struct KeyboardPolicies {
   InputDeviceSettingsPolicy? top_row_are_fkeys_policy;
 };
 
+// Represents the current set of mouse enterprise policies. All members are
+// optional. When null, there is no enterprise policy set for the given setting.
+struct MousePolicies {
+  InputDeviceSettingsPolicy? swap_right_policy;
+};
+
 // MetaKey denotes all the possible options deducable from the users external or
 // internal keyboard. Used to show the correct key to the user in the settings
 // UI.

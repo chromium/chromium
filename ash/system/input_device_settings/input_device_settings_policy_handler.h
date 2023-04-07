@@ -19,7 +19,8 @@ class ASH_EXPORT InputDeviceSettingsPolicyHandler {
   using EnterprisePolicyCallback = base::RepeatingClosure;
 
   explicit InputDeviceSettingsPolicyHandler(
-      EnterprisePolicyCallback keyboard_policy_callback);
+      EnterprisePolicyCallback keyboard_policy_callback,
+      EnterprisePolicyCallback mouse_policy_callback);
   InputDeviceSettingsPolicyHandler(const InputDeviceSettingsPolicyHandler&) =
       delete;
   InputDeviceSettingsPolicyHandler& operator=(
@@ -32,6 +33,8 @@ class ASH_EXPORT InputDeviceSettingsPolicyHandler {
     return keyboard_policies_;
   }
 
+  const mojom::MousePolicies& mouse_policies() const { return mouse_policies_; }
+
  private:
   void RefreshKeyboardPolicies(bool notify);
   void RefreshMousePolicies(bool notify);
@@ -40,10 +43,13 @@ class ASH_EXPORT InputDeviceSettingsPolicyHandler {
   void OnMousePoliciesChanged(const std::string& pref_name);
 
   EnterprisePolicyCallback keyboard_policy_callback_;
+  EnterprisePolicyCallback mouse_policy_callback_;
 
   mojom::KeyboardPolicies keyboard_policies_;
+  mojom::MousePolicies mouse_policies_;
 
-  // Used to track preferences which may be controlled by enterprise policies.
+  // Used to track preferences which may be controlled by enterprise
+  // policies.
   PrefChangeRegistrar pref_change_registrar_;
 };
 

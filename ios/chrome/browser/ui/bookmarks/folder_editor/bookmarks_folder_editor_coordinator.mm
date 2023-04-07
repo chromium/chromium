@@ -92,31 +92,25 @@
       SyncSetupServiceFactory::GetForBrowserState(browserState);
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(browserState);
+  _viewController = [[BookmarksFolderEditorViewController alloc]
+      initWithBookmarkModel:model
+                 folderNode:_folderNode
+           parentFolderNode:_parentFolderNode
+           syncSetupService:syncSetupService
+                syncService:syncService
+                    browser:self.browser];
+  _viewController.delegate = self;
+  _viewController.snackbarCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SnackbarCommands);
+
   if (_baseNavigationController) {
     DCHECK(_parentFolderNode);
-    _viewController = [BookmarksFolderEditorViewController
-        folderCreatorWithBookmarkModel:model
-                          parentFolder:_parentFolderNode
-                               browser:self.browser
-                      syncSetupService:syncSetupService
-                           syncService:syncService];
-    _viewController.delegate = self;
-    _viewController.snackbarCommandsHandler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), SnackbarCommands);
+    DCHECK(!_folderNode);
     [_baseNavigationController pushViewController:_viewController animated:YES];
   } else {
     DCHECK(!_navigationController);
-    DCHECK(_folderNode);
     DCHECK(!_parentFolderNode);
-    _viewController = [BookmarksFolderEditorViewController
-        folderEditorWithBookmarkModel:model
-                               folder:_folderNode
-                              browser:self.browser
-                     syncSetupService:syncSetupService
-                          syncService:syncService];
-    _viewController.delegate = self;
-    _viewController.snackbarCommandsHandler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), SnackbarCommands);
+    DCHECK(_folderNode);
     _navigationController = [[BookmarkNavigationController alloc]
         initWithRootViewController:_viewController];
     _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;

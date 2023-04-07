@@ -3286,11 +3286,11 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_BRIGHTNESS_UP" desc="Label for accelerator action - Turn brightness up.">
         Turn brightness up
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_CYCLE_BACKWARD_MRU" translateable="false" desc="Label for accelerator action - Cycle backwards in the MRU window list.">
-        Cycle backwards in the MRU window list
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_CYCLE_BACKWARD_MRU" desc="Label for accelerator action - Go through windows from the least used window.">
+        Go through windows from the least used window
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_CYCLE_FORWARD_MRU" translateable="false" desc="Label for accelerator action - Cycle forwards in the most recently used window list.">
-        Cycle forwards in the most recently used window list
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_CYCLE_FORWARD_MRU" desc="Label for accelerator action - Go through windows from the most recently used window.">
+        Go through windows from the most recently used window
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DESKS_ACTIVATE_DESK_LEFT" desc="Label for accelerator action - Activate desk on left.">
         Activate desk on left
@@ -3562,17 +3562,17 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_VOLUME_UP" desc="Label for accelerator action - Turn volume up.">
         Turn volume up
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_WINDOW_CYCLE_SNAP_LEFT" translateable="false" desc="Label for accelerator action - Keep window on left.">
-        Keep window on left
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_WINDOW_CYCLE_SNAP_LEFT" desc="Label for accelerator action - Pin window to left.">
+        Pin window to left
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_WINDOW_CYCLE_SNAP_RIGHT" translateable="false" desc="Label for accelerator action - Keep window on right.">
-        Keep window on right
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_WINDOW_CYCLE_SNAP_RIGHT" desc="Label for accelerator action - Pin window to right.">
+        Pin window to right
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_WINDOW_MINIMIZE" desc="Label for accelerator action - Minimize window.">
         Minimize window
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_MINIMIZE_TOP_WINDOW_ON_BACK" translateable="false" desc="Label for accelerator action - Minimize top window on back.">
-        Minimize top window on back
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_MINIMIZE_TOP_WINDOW_ON_BACK" desc="Label for accelerator action - Minimize top window when there's no back history in Chrome.">
+        Minimize top window when there's no back history in Chrome
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DEBUG_KEYBOARD_BACKLIGHT_TOGGLE" translateable="false" desc="Label for accelerator action - Turn keyboard backlight on or off.">
         Turn keyboard backlight on or off
@@ -5131,6 +5131,26 @@ Here are some things you can try to get started.
         Turn on camera access
       </message>
 
+      <!-- Strings for geolocation privacy hub switch notifications -->
+      <message name="IDS_PRIVACY_HUB_GEOLOCATION_OFF_NOTIFICATION_TITLE" desc="Title for a notification shown to the users when an app tries to use the geolocation while the geolocation is disabled.">
+        Turn on precise location access?
+      </message>
+      <message name="IDS_PRIVACY_HUB_GEOLOCATION_OFF_NOTIFICATION_MESSAGE" desc="Message for a notification shown to the users when an app tries to use the geolocation while the geolocation is off.">
+        This allows all apps and websites with the location permission and ChromeOS to use Wi-Fi and mobile networks location.
+      </message>
+      <message name="IDS_PRIVACY_HUB_GEOLOCATION_OFF_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME" desc="Message for a notification shown to the users when an app tries to use the geolocation while the geolocation is off.">
+        This allows <ph name="APP_NAME">$1<ex>Maps</ex></ph> and all apps and websites with the location permission and ChromeOS to use Wi-Fi and mobile networks location.
+      </message>
+      <message name="IDS_PRIVACY_HUB_GEOLOCATION_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES" desc="Message for a notification shown to the users when two and more apps try to use the geolocation while the geolocation is off.">
+        This allows <ph name="APP_NAME">$1<ex>Maps</ex></ph>, <ph name="APP2_NAME">$2<ex>Waze</ex></ph>and all apps and websites with the location permission and ChromeOS to use Wi-Fi and mobile networks location.
+      </message>
+      <message name="IDS_PRIVACY_HUB_TURN_ON_GEOLOCATION_ACTION_BUTTON" desc="Label for an action button that enables the geolocation.">
+        Turn on location access
+      </message>
+      <message name="IDS_PRIVACY_HUB_TURN_ON_GEOLOCATION_LEARN_MORE_BUTTON" desc="Label for an action button that opens the learn more page.">
+        Learn more
+      </message>
+
       <!-- Strings for microphone mute switch notification -->
       <message name="IDS_MICROPHONE_MUTED_BY_SW_SWITCH_NOTIFICATION_TITLE" desc="Title for a notification shown to the users when an app tries to use the microphone while the microphone is muted by one of the software switches.">
         Turn on microphone access?
@@ -5717,8 +5737,8 @@ Here are some things you can try to get started.
       </message>
 
       <!-- Shortcut Customization App -->
-      <message name="IDS_ASH_SHORTCUT_CUSTOMIZATION_APP_TITLE" translateable="false" desc="The title of the shortcut customization system web app. Shortcut customization lets users to customize their system shortcuts.">
-        Shortcut Customization
+      <message name="IDS_ASH_SHORTCUT_CUSTOMIZATION_APP_TITLE" desc="The title of the keyboard shortcuts system web app. Keyboard shortcuts lets users to customize their system shortcuts.">
+        Keyboard shortcuts
       </message>
 
       <message name="IDS_ASH_SHIMLESS_RMA_APP_TITLE" translateable="false" desc="The title of shimless RMA flow SWA. Shimless RMA guides repair technicians through step-by-step repair flow.">

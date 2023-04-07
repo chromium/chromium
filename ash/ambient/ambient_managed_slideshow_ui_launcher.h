@@ -32,7 +32,7 @@ class AmbientManagedSlideshowUiLauncher : public AmbientUiLauncher,
   void OnImagesReady() override;
 
   // AmbientUiLauncher overrides
-  void Initialize(base::OnceClosure on_done) override;
+  void Initialize(InitializationCallback on_done) override;
 
   std::unique_ptr<views::View> CreateView() override;
 
@@ -51,7 +51,7 @@ class AmbientManagedSlideshowUiLauncher : public AmbientUiLauncher,
 
   AmbientManagedPhotoController photo_controller_;
   base::raw_ptr<AmbientViewDelegateImpl> delegate_;
-  base::OnceClosure initialization_callback_;
+  InitializationCallback initialization_callback_;
   base::ScopedObservation<AmbientBackendModel, AmbientBackendModelObserver>
       ambient_backend_model_observer_{this};
 

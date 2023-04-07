@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/settings/privacy/safe_browsing/safe_browsing_enhanced_protection_mediator.h"
 
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
-#import "ios/chrome/browser/ui/icons/symbols.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/privacy/safe_browsing/safe_browsing_constants.h"
 #import "ios/chrome/browser/ui/settings/privacy/safe_browsing/safe_browsing_enhanced_protection_consumer.h"

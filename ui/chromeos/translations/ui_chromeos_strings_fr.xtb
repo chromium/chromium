@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">Planète</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> a été éjecté.</translation>
 <translation id="2307462900900812319">Configurer le réseau</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Impossible de trouver l'extension associée à l'ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> Contactez votre administrateur.}one{Impossible de trouver l'extension associée à l'ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> Contactez votre administrateur.}other{Impossible de trouver les extensions associées aux ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> Contactez votre administrateur.}}</translation>
 <translation id="2325650632570794183">Ce type de fichier n'est pas compatible. Veuillez accéder au Chrome Web Store pour trouver une application pouvant l'ouvrir.</translation>
 <translation id="2326539130272988168">Bulgare</translation>
 <translation id="2337715497728194187">Partager avec Bruschetta</translation>

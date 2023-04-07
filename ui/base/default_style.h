@@ -17,29 +17,32 @@ namespace ui {
 // native MessageBox dialogs. On Mac, it is [NSFont systemFontSize]. Linux
 // consults the default font description for a GTK Widget context. On ChromeOS,
 // ui::ResourceBundle provides a description via IDS_UI_FONT_FAMILY_CROS.
-const int kMessageFontSizeDelta = 0;
+constexpr int kMessageFontSizeDelta = 0;
 
 // Default font size delta for views::Badge.
 #if BUILDFLAG(IS_APPLE)
 // Aim for 9pt for Cocoa labels ([NSFont systemFontSize] is typically 13pt).
-const int kBadgeFontSizeDelta = -4;
+constexpr int kBadgeFontSizeDelta = -4;
 #else
-const int kBadgeFontSizeDelta = -3;
+constexpr int kBadgeFontSizeDelta = -3;
 #endif
 
 // Default font size delta for dialog buttons, textfields, and labels.
+// Default font size for ChromeRefresh2023 is 13 instead of 12.
 #if BUILDFLAG(IS_APPLE)
 // Aim for 12pt for Cocoa labels ([NSFont systemFontSize] is typically 13pt).
-const int kLabelFontSizeDelta = -1;
+constexpr int kLabelFontSizeDelta = -1;
+constexpr int kLabelFontSizeDeltaChromeRefresh2023 = 0;
 #else
-const int kLabelFontSizeDelta = 0;
+constexpr int kLabelFontSizeDelta = 0;
+constexpr int kLabelFontSizeDeltaChromeRefresh2023 = 1;
 #endif
 
 // Font size delta for dialog titles.
 #if BUILDFLAG(IS_APPLE)
-const int kTitleFontSizeDelta = 1;
+constexpr int kTitleFontSizeDelta = 1;
 #else
-const int kTitleFontSizeDelta = 3;
+constexpr int kTitleFontSizeDelta = 3;
 #endif
 
 }  // namespace ui

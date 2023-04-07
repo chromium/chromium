@@ -1,0 +1,48 @@
+<style>
+  :host {
+    font: var(--cros-body-2-font);
+  }
+
+  .permission-action {
+    background: transparent;
+    border: none;
+    color: var(--cros-color-selection);
+    cursor: pointer;
+    font: var(--cros-body-2-font);
+    margin: 2px 8px 2px 16px;
+    outline: none;
+  }
+
+  .permission-action:focus {
+    box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color);
+  }
+
+  #permission {
+    color: var(--cros-color-secondary);
+    margin: 0 8px 0 8px;
+  }
+
+  #details {
+    color: var(--cros-color-secondary);
+    margin: 0 8px 0 16px;
+    outline: none;
+    white-space: pre;
+  }
+</style>
+
+<div id="permission">[[permission]]</div>
+<template is="dom-if" if="[[detail]]">
+  <div id="details" tabindex="0" hidden>[[detail]]</div>
+  <button class="permission-action"
+    id="show-details"
+    on-click="showDetails"
+    tabindex="0">
+    $i18n{extensionApprovalsShowDetailsButton}
+  </button>
+  <button class="permission-action"
+    id="hide-details"
+    on-click="hideDetails"
+    tabindex="0" hidden>
+    $i18n{extensionApprovalsHideDetailsButton}
+  </button>
+</template>

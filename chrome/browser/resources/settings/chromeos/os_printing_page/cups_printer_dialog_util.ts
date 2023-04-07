@@ -138,7 +138,9 @@ export function getErrorText(result: PrinterSetupResult): string {
     case PrinterSetupResult.PPD_UNRETRIEVABLE:
       return loadTimeData.getString('printerAddedPpdUnretrievableMessage');
     default:
-      assertNotReached();
+      // TODO(b/277073603): As part of the OS Printer settings revamp, add
+      // strings for the missing `PrinterSetupResult` values.
+      return loadTimeData.getString('printerAddedFailedMessage');
   }
 }
 

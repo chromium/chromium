@@ -21,7 +21,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/scheduler/browser_task_executor.h"
-#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/content_browser_client.h"
 
 namespace content {

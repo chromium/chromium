@@ -21,6 +21,7 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.InsetDrawable;
 import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.view.Display;
@@ -136,6 +137,8 @@ public class PartialCustomTabTestRule implements TestRule {
     View mDragHandlebar;
     @Mock
     GradientDrawable mDragBarBackground;
+    @Mock
+    InsetDrawable mInsetDragBarBackground;
     @Mock
     ColorDrawable mColorDrawable;
     @Mock
@@ -255,6 +258,11 @@ public class PartialCustomTabTestRule implements TestRule {
         mDisplaySize.set(DEVICE_WIDTH, DEVICE_HEIGHT - NAVBAR_HEIGHT);
         when(mContentFrame.getHeight()).thenReturn(DEVICE_HEIGHT - NAVBAR_HEIGHT);
         when(mDisplay.getRotation()).thenReturn(Surface.ROTATION_90);
+    }
+
+    public void configInsetDrawableBg() {
+        when(mDragBar.getBackground()).thenReturn(mInsetDragBarBackground);
+        when(mInsetDragBarBackground.getDrawable()).thenReturn(mDragBarBackground);
     }
 
     public void configLandscapeMode() {

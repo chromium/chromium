@@ -3,7 +3,9 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//media/media_options.gni")
 import("//third_party/blink/renderer/modules/modules.gni")
+import("//third_party/libaom/options.gni")
 import("//third_party/webrtc/webrtc.gni")
 
 buildflag_header("buildflags") {
@@ -27,6 +29,8 @@ blink_modules_sources("mediarecorder") {
     "blob_event.h",
     "media_recorder.cc",
     "media_recorder.h",
+    "media_recorder_encoder_wrapper.cc",
+    "media_recorder_encoder_wrapper.h",
     "media_recorder_handler.cc",
     "media_recorder_handler.h",
     "track_recorder.h",
@@ -57,5 +61,9 @@ blink_modules_sources("mediarecorder") {
     ]
 
     deps += [ "//third_party/openh264:encoder" ]
+  }
+
+  if (enable_libaom) {
+    deps += [ "//third_party/libaom" ]
   }
 }

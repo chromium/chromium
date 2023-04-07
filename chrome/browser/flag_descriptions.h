@@ -605,9 +605,6 @@ extern const char kAccessibilityChromeVoxPageMigrationDescription[];
 extern const char kAccessibilitySelectToSpeakPrefsMigrationName[];
 extern const char kAccessibilitySelectToSpeakPrefsMigrationDescription[];
 
-extern const char kAccessibilitySelectToSpeakContextMenuOptionName[];
-extern const char kAccessibilitySelectToSpeakContextMenuOptionDescription[];
-
 extern const char kAccessibilitySelectToSpeakHoverTextImprovementsName[];
 extern const char kAccessibilitySelectToSpeakHoverTextImprovementsDescription[];
 
@@ -1172,6 +1169,9 @@ extern const char kOmniboxAssistantVoiceSearchDescription[];
 extern const char kOmniboxBookmarkPathsName[];
 extern const char kOmniboxBookmarkPathsDescription[];
 
+extern const char kOmniboxCacheSuggestionResourcesName[];
+extern const char kOmniboxCacheSuggestionResourcesDescription[];
+
 extern const char kOmniboxClosePopupWithEscapeName[];
 extern const char kOmniboxClosePopupWithEscapeDescription[];
 
@@ -1186,9 +1186,6 @@ extern const char kOmniboxCR23ExpandedStateShapeDescription[];
 
 extern const char kOmniboxCR23SteadyStateIconsName[];
 extern const char kOmniboxCR23SteadyStateIconsDescription[];
-
-extern const char kOmniboxCr23UmbrellaName[];
-extern const char kOmniboxCr23UmbrellaDescription[];
 
 extern const char kOmniboxDisableCGIParamMatchingName[];
 extern const char kOmniboxDisableCGIParamMatchingDescription[];
@@ -1420,9 +1417,6 @@ extern const char kPageInfoAboutThisSiteNewIconDescription[];
 
 extern const char kPageInfoAboutThisSiteNonEnName[];
 extern const char kPageInfoAboutThisSiteNonEnDescription[];
-
-extern const char kPageInfoAboutThisSiteNonMsbbName[];
-extern const char kPageInfoAboutThisSiteNonMsbbDescription[];
 
 extern const char kPageInfoboutThisPageDescriptionPlaceholderName[];
 extern const char kPageInfoboutThisPageDescriptionPlaceholderDescription[];
@@ -2662,6 +2656,9 @@ extern const char kSharingDesktopShareToGoogleCollectionsDescription[];
 extern const char kWebAppManifestImmediateUpdatingName[];
 extern const char kWebAppManifestImmediateUpdatingDescription[];
 
+extern const char kWebAppSyncGeneratedIconFixName[];
+extern const char kWebAppSyncGeneratedIconFixDescription[];
+
 extern const char kWebAuthenticationPermitEnterpriseAttestationName[];
 extern const char kWebAuthenticationPermitEnterpriseAttestationDescription[];
 
@@ -3686,6 +3683,9 @@ extern const char kLauncherFuzzyMatchForOmniboxDescription[];
 extern const char kLauncherSystemInfoAnswerCardsName[];
 extern const char kLauncherSystemInfoAnswerCardsDescription[];
 
+extern const char kLauncherOmniboxPublishLogicLogName[];
+extern const char kLauncherOmniboxPublishLogicLogDescription[];
+
 extern const char kMacAddressRandomizationName[];
 extern const char kMacAddressRandomizationDescription[];
 
@@ -3897,6 +3897,11 @@ extern const char kFollowingFeedSidepanelDescription[];
 extern const char kLocalWebApprovalsName[];
 extern const char kLocalWebApprovalsDescription[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+extern const char kEnableProtoApiForClassifyUrlName[];
+extern const char kEnableProtoApiForClassifyUrlDescription[];
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 extern const char kUseOutOfProcessVideoDecodingName[];

@@ -43,11 +43,18 @@ void MenuSeparator::OnPaint(gfx::Canvas* canvas) {
   }
 
   gfx::Rect paint_rect(0, pos, width(), separator_thickness);
-  if (type_ == ui::PADDED_SEPARATOR)
+  if (type_ == ui::PADDED_SEPARATOR) {
     paint_rect.Inset(
-        gfx::Insets::TLBR(0, menu_config.padded_separator_left_margin, 0, 0));
-  else if (menu_config.use_outer_border)
+        gfx::Insets::TLBR(0, menu_config.padded_separator_left_margin, 0,
+                          menu_config.padded_separator_right_margin));
+  } else {
+    paint_rect.Inset(gfx::Insets::TLBR(0, menu_config.separator_left_margin, 0,
+                                       menu_config.separator_right_margin));
+  }
+
+  if (menu_config.use_outer_border && type_ != ui::PADDED_SEPARATOR) {
     paint_rect.Inset(gfx::Insets::VH(0, 1));
+  }
 
 #if BUILDFLAG(IS_WIN)
   // Hack to get the separator to display correctly on Windows where we may

@@ -8,7 +8,7 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/password_infobar_banner_overlay.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_support.h"
-#import "ios/chrome/browser/ui/icons/symbols.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_consumer.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_overlay_mediator+consumer_support.h"
 #import "ios/chrome/grit/ios_strings.h"

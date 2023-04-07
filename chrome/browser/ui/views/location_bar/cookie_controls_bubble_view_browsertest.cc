@@ -51,7 +51,7 @@ class CookieControlsBubbleViewTest : public DialogBrowserTest {
     content::CookieChangeObserver observer(
         browser()->tab_strip_model()->GetActiveWebContents());
     NavigateToUrlWithThirdPartyCookies();
-    if (name == "NotWorkingClicked") {
+    if (name == "NotWorkingClicked" || name == "CookiesBlocked") {
       observer.Wait();
     }
     ASSERT_TRUE(cookie_controls_icon()->GetVisible());

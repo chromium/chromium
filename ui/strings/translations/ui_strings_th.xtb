@@ -31,7 +31,6 @@
 <translation id="1860796786778352021">ปิดการแจ้งเตือน</translation>
 <translation id="186476001994626254">Web Smart Paste Content</translation>
 <translation id="1871244248791675517">Ins</translation>
-<translation id="1884435127456172652"><ph name="NUMBER" /> %</translation>
 <translation id="1901303067676059328">เลือก&amp;ทั้งหมด</translation>
 <translation id="19085484004813472">นี่เป็นฟีเจอร์ใหม่</translation>
 <translation id="2006524834898217237">ตรวจสอบว่าอุปกรณ์นี้เชื่อมต่ออินเทอร์เน็ตแล้ว</translation>
@@ -202,6 +201,7 @@
 <translation id="8393700583063109961">ส่งข้อความ</translation>
 <translation id="8394908167088220973">เล่น/หยุดสื่อชั่วคราว</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 ปี}other{# ปี}}</translation>
+<translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623">ไฟล์ <ph name="SAVEAS_EXTENSION_TYPE" /> (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/วินาที</translation>
 <translation id="8725488761726303204">และอีก <ph name="NUMBER" /> รายการ</translation>

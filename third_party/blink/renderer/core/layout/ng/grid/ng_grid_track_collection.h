@@ -148,7 +148,7 @@ class CORE_EXPORT NGGridLayoutTrackCollection
 
  public:
   struct SetGeometry {
-    SetGeometry(LayoutUnit offset, wtf_size_t track_count)
+    explicit SetGeometry(LayoutUnit offset, wtf_size_t track_count = 0)
         : offset(offset), track_count(track_count) {}
 
     LayoutUnit offset;
@@ -156,11 +156,6 @@ class CORE_EXPORT NGGridLayoutTrackCollection
   };
 
   NGGridLayoutTrackCollection() = delete;
-
-  NGGridLayoutTrackCollection(
-      const NGGridLayoutTrackCollection& other,
-      const NGBoxStrut& subgrid_border_scrollbar_padding,
-      const NGBoxStrut& subgrid_margins);
 
   // Don't allow this class to be used for grid sizing.
   virtual bool IsForSizing() const { return false; }
@@ -207,9 +202,12 @@ class CORE_EXPORT NGGridLayoutTrackCollection
 
   // Creates a track collection containing every |Range| with index in the range
   // [begin, end], including their respective |SetGeometry| and baselines.
-  NGGridLayoutTrackCollection CreateSubgridCollection(
+  NGGridLayoutTrackCollection CreateSubgridTrackCollection(
       wtf_size_t begin_range_index,
       wtf_size_t end_range_index,
+      LayoutUnit subgrid_gutter_size,
+      const NGBoxStrut& subgrid_margin,
+      const NGBoxStrut& subgrid_border_scrollbar_padding,
       GridTrackSizingDirection subgrid_track_direction) const;
 
   GridTrackSizingDirection Direction() const { return track_direction_; }
@@ -261,12 +259,6 @@ class CORE_EXPORT NGGridLayoutTrackCollection
   //  (start: 3, end: 5) -> indefinite as:
   //      start <= last_indefinite_index[end]
   Vector<wtf_size_t, 16> last_indefinite_index_;
-
-  // These values are used to adjust the sets geometry to the relative border
-  // box of a subgrid and account for its gutter size difference.
-  LayoutUnit sets_geometry_start_offset_;
-  LayoutUnit start_extra_margin_;
-  LayoutUnit end_extra_margin_;
 };
 
 // |NGGridRangeBuilder::EnsureTrackCoverage| may introduce a range start and/or

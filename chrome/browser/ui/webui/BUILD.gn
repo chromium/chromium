@@ -37,7 +37,11 @@ source_set("configs") {
       "chrome_untrusted_web_ui_configs_desktop.h",
     ]
 
-    deps += [ "//build:branding_buildflags" ]
+    deps += [
+      "//build:branding_buildflags",
+      "//chrome/browser/companion/core",
+      "//chrome/browser/companion/core/mojom:mojo_bindings",
+    ]
   }
 
   # Includes Ash Chrome and Lacros Chrome

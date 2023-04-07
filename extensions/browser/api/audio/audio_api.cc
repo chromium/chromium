@@ -84,7 +84,7 @@ void AudioAPI::OnMuteChanged(bool is_input, bool is_muted) {
   // Dispatch onMuteChanged event.
   audio::MuteChangedEvent raw_event;
   raw_event.stream_type =
-      is_input ? audio::STREAM_TYPE_INPUT : audio::STREAM_TYPE_OUTPUT;
+      is_input ? audio::StreamType::kInput : audio::StreamType::kOutput;
   raw_event.is_muted = is_muted;
   auto event_args = audio::OnMuteChanged::Create(raw_event);
   auto event = std::make_unique<Event>(events::AUDIO_ON_MUTE_CHANGED,
@@ -203,7 +203,7 @@ ExtensionFunction::ResponseAction AudioSetMuteFunction::Run() {
       AudioAPI::GetFactoryInstance()->Get(browser_context())->GetService();
   DCHECK(service);
 
-  const bool is_input = (params->stream_type == audio::STREAM_TYPE_INPUT);
+  const bool is_input = (params->stream_type == audio::StreamType::kInput);
 
   service->SetMute(is_input, params->is_muted,
                    base::BindOnce(&AudioSetMuteFunction::OnResponse, this));
@@ -229,7 +229,7 @@ ExtensionFunction::ResponseAction AudioGetMuteFunction::Run() {
   AudioService* service =
       AudioAPI::GetFactoryInstance()->Get(browser_context())->GetService();
   DCHECK(service);
-  const bool is_input = (params->stream_type == audio::STREAM_TYPE_INPUT);
+  const bool is_input = (params->stream_type == audio::StreamType::kInput);
 
   service->GetMute(is_input,
                    base::BindOnce(&AudioGetMuteFunction::OnResponse, this));

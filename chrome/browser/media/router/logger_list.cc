@@ -5,7 +5,7 @@
 #include "chrome/browser/media/router/logger_list.h"
 
 #include "base/task/sequenced_task_runner.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 
 namespace media_router {
 

@@ -6,10 +6,13 @@
 
 #include <utility>
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/path_service.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/login/startup_utils.h"
@@ -17,6 +20,7 @@
 #include "chrome/browser/ash/policy/dev_mode/dev_mode_policy_util.h"
 #include "chrome/browser/ash/policy/value_validation/onc_device_policy_value_validator.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "chromeos/dbus/constants/dbus_paths.h"
 #include "components/ownership/owner_key_util.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -295,8 +299,23 @@ void DeviceCloudPolicyStoreAsh::CheckDMToken() {
   base::UmaHistogramBoolean(kDMTokenCheckHistogram, false);
   base::UmaHistogramBoolean(kPolicyCheckHistogram, policy_data);
 
+  std::stringstream debug_info;
+  debug_info << "has_policy: " << (policy_data != nullptr);
+  if (policy_data) {
+    debug_info << ", has_managed_by: " << policy_data->has_managed_by();
+    if (policy_data->has_policy_type()) {
+      debug_info << ", policy_type: " << policy_data->policy_type();
+    }
+  }
+  base::FilePath key_path;
+  bool path_found =
+      base::PathService::Get(chromeos::dbus_paths::FILE_OWNER_KEY, &key_path);
+  debug_info << ", has_key: " << (path_found && base::PathExists(key_path));
+  debug_info << ", attrs mode: " << install_attributes_->GetMode()
+             << ", is_locked: " << install_attributes_->IsDeviceLocked();
   LOG(ERROR) << "Device policy read on enrolled device yields "
-             << "no DM token! Status: " << service_status << ".";
+             << "no DM token! Status: " << service_status
+             << ", debug_info: " << debug_info.str() << ".";
 
   // At the time LoginDisplayHostWebUI decides whether enrollment flow is to
   // be started, policy hasn't been read yet.  To work around this, once the

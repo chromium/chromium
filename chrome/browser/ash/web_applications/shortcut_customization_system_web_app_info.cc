@@ -16,7 +16,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 
-// TODO(jimmyxgong): Update to correct icon and app sizes.
 std::unique_ptr<WebAppInstallInfo>
 CreateWebAppInfoForShortcutCustomizationSystemWebApp() {
   auto info = std::make_unique<WebAppInstallInfo>();

@@ -6,10 +6,8 @@
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_DISPLAY_OVERLAY_CONTROLLER_H_
 
 #include "ash/public/cpp/style/color_mode_observer.h"
-#include "ash/wm/window_state.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
-#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_uma.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/point.h"
@@ -106,8 +104,8 @@ class DisplayOverlayController : public ui::EventHandler,
   friend class ArcInputOverlayManagerTest;
   friend class DisplayOverlayControllerTest;
   friend class EducationalView;
-  friend class InputMenuView;
   friend class InputMappingView;
+  friend class InputMenuView;
   friend class MenuEntryViewTest;
 
   // Display overlay is added for starting |display_mode|.

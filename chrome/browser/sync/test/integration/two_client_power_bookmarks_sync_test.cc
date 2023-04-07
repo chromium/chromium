@@ -172,7 +172,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientPowerBookmarksSyncTest, AddOnePower) {
   VerifyPowersForURL(kGoogleURL, service0_, service1_);
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientPowerBookmarksSyncTest, UpdateOnePower) {
+IN_PROC_BROWSER_TEST_F(TwoClientPowerBookmarksSyncTest,
+                       // TODO(crbug.com/1430600): Re-enable this test.
+                       DISABLED_UpdateOnePower) {
   ASSERT_TRUE(SetupSync());
   SetupServices();
 

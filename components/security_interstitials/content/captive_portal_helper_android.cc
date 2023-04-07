@@ -4,7 +4,7 @@
 
 #include "components/security_interstitials/content/captive_portal_helper_android.h"
 #include "components/security_interstitials/content/captive_portal_helper.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 
 #include <stddef.h>
 

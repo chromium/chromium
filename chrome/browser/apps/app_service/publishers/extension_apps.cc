@@ -7,8 +7,11 @@
 #include <memory>
 #include <utility>
 
+#include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/extension_status_utils.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "extensions/common/extension.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -21,6 +24,13 @@ ExtensionApps::ExtensionApps(AppServiceProxy* proxy)
 ExtensionApps::~ExtensionApps() = default;
 
 bool ExtensionApps::Accepts(const extensions::Extension* extension) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_FUCHSIA)
+  if (extensions::IsExtensionUnsupportedDeprecatedApp(profile(),
+                                                      extension->id())) {
+    return false;
+  }
+#endif
   if (!extension->is_app()) {
     return false;
   }

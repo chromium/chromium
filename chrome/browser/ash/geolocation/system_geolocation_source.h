@@ -38,6 +38,8 @@ class SystemGeolocationSource : public device::SystemGeolocationSource,
   // device::SystemGeolocationSource:
   void RegisterPermissionUpdateCallback(
       PermissionUpdateCallback callback) override;
+  void AppAttemptsToUseGeolocation() override;
+  void AppCeasesToUseGeolocation() override;
 
  private:
   // SessionObserver:

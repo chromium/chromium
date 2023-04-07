@@ -8,12 +8,12 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "ash/test/ash_test_base.h"
 #include "ash/test_shell_delegate.h"
 #include "ash/user_education/capture_mode_tour/capture_mode_tour_controller.h"
 #include "ash/user_education/holding_space_tour/holding_space_tour_controller.h"
 #include "ash/user_education/mock_user_education_delegate.h"
 #include "ash/user_education/tutorial_controller.h"
+#include "ash/user_education/user_education_ash_test_base.h"
 #include "ash/user_education/welcome_tour/welcome_tour_controller.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -29,7 +29,6 @@ namespace {
 // Aliases.
 using testing::_;
 using testing::Eq;
-using testing::StrictMock;
 using user_education::TutorialDescription;
 using user_education::TutorialIdentifier;
 
@@ -40,7 +39,7 @@ using user_education::TutorialIdentifier;
 // Base class for tests of the `UserEducationController` parameterized by
 // whether user education features are enabled.
 class UserEducationControllerTest
-    : public NoSessionAshTestBase,
+    : public UserEducationAshTestBase,
       public testing::WithParamInterface<
           std::tuple</*capture_mode_tour_enabled=*/bool,
                      /*holding_space_tour_enabled=*/bool,
@@ -69,31 +68,8 @@ class UserEducationControllerTest
   // Returns whether the Welcome Tour is enabled given test parameterization.
   bool IsWelcomeTourEnabled() const { return std::get<2>(GetParam()); }
 
-  // Returns the mocked delegate which facilitates communication between Ash and
-  // user education services in the browser.
-  StrictMock<MockUserEducationDelegate>* user_education_delegate() {
-    return user_education_delegate_;
-  }
-
  private:
-  // NoSessionAshTestBase:
-  void SetUp() override {
-    // Mock the user education delegate. Note that it is expected that the user
-    // education delegate be created once and only once.
-    auto shell_delegate = std::make_unique<TestShellDelegate>();
-    shell_delegate->SetUserEducationDelegateFactory(base::BindLambdaForTesting(
-        [&]() -> std::unique_ptr<UserEducationDelegate> {
-          EXPECT_EQ(user_education_delegate_, nullptr);
-          auto user_education_delegate =
-              std::make_unique<StrictMock<MockUserEducationDelegate>>();
-          user_education_delegate_ = user_education_delegate.get();
-          return user_education_delegate;
-        }));
-    NoSessionAshTestBase::SetUp(std::move(shell_delegate));
-  }
-
   base::test::ScopedFeatureList scoped_feature_list_;
-  StrictMock<MockUserEducationDelegate>* user_education_delegate_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -137,9 +113,10 @@ TEST_P(UserEducationControllerTest, RegistersTutorials) {
     GTEST_SKIP();
   }
 
-  // Ensure user delegate exists.
+  // Ensure delegate exists and disallow any unexpected tutorial registrations.
   auto* user_education_delegate = this->user_education_delegate();
   ASSERT_TRUE(user_education_delegate);
+  EXPECT_CALL(*user_education_delegate, RegisterTutorial).Times(0);
 
   // Create and cache an account ID for the primary user.
   AccountId primary_user_account_id = AccountId::FromUserEmail("primary@test");
@@ -155,7 +132,8 @@ TEST_P(UserEducationControllerTest, RegistersTutorials) {
              ->GetTutorialDescriptions()) {
       EXPECT_CALL(
           *user_education_delegate,
-          RegisterTutorial(Eq(primary_user_account_id), Eq(tutorial_id), _));
+          RegisterTutorial(Eq(primary_user_account_id), Eq(tutorial_id), _))
+          .RetiresOnSaturation();
     }
   }
 
@@ -170,7 +148,8 @@ TEST_P(UserEducationControllerTest, RegistersTutorials) {
              ->GetTutorialDescriptions()) {
       EXPECT_CALL(
           *user_education_delegate,
-          RegisterTutorial(Eq(primary_user_account_id), Eq(tutorial_id), _));
+          RegisterTutorial(Eq(primary_user_account_id), Eq(tutorial_id), _))
+          .RetiresOnSaturation();
     }
   }
 
@@ -184,7 +163,8 @@ TEST_P(UserEducationControllerTest, RegistersTutorials) {
              ->GetTutorialDescriptions()) {
       EXPECT_CALL(
           *user_education_delegate,
-          RegisterTutorial(Eq(primary_user_account_id), Eq(tutorial_id), _));
+          RegisterTutorial(Eq(primary_user_account_id), Eq(tutorial_id), _))
+          .RetiresOnSaturation();
     }
   }
 

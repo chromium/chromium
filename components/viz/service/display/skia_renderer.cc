@@ -1126,8 +1126,7 @@ void SkiaRenderer::BindFramebufferToTexture(
   // should be backing ready.
   RenderPassBacking& backing = iter->second;
   current_canvas_ = skia_output_surface_->BeginPaintRenderPass(
-      render_pass_id, backing.size,
-      SharedImageFormat::SinglePlane(backing.format), backing.generate_mipmap,
+      render_pass_id, backing.size, backing.format, backing.generate_mipmap,
       backing.scanout_dcomp_surface, RenderPassBackingSkColorSpace(backing),
       /*is_overlay=*/is_root, backing.mailbox);
 
@@ -3206,7 +3205,7 @@ void SkiaRenderer::AllocateRenderPassResourceIfNeeded(
     // TODO(tangm): We should clean this up by either avoiding HDR or using
     //              RGBAF16 surfaces in this case.
     const bool dcomp_surface_unsupported_format =
-        requirements.format == ResourceFormat::RGBA_1010102;
+        requirements.format == SinglePlaneFormat::kRGBA_1010102;
 
     if (requirements.scanout_dcomp_surface &&
         !dcomp_surface_unsupported_format) {
@@ -3327,7 +3326,7 @@ SkiaRenderer::RenderPassOverlayParams*
 SkiaRenderer::GetOrCreateRenderPassOverlayBacking(
     AggregatedRenderPassId render_pass_id,
     const AggregatedRenderPassDrawQuad* rpdq,
-    ResourceFormat buffer_format,
+    SharedImageFormat buffer_format,
     gfx::ColorSpace color_space,
     const gfx::Size& buffer_size) {
   RenderPassOverlayParams overlay_params;
@@ -3474,7 +3473,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
   if (filter_bounds.IsEmpty())
     return;
 
-  ResourceFormat buffer_format{};
+  SharedImageFormat buffer_format;
   gfx::ColorSpace color_space;
 
   RenderPassBacking* src_quad_backing = nullptr;
@@ -3488,7 +3487,8 @@ void SkiaRenderer::PrepareRenderPassOverlay(
 
     // For bypassed render pass, we use the same format and color space for the
     // framebuffer.
-    buffer_format = GetResourceFormat(reshape_buffer_format());
+    buffer_format = SharedImageFormat::SinglePlane(
+        GetResourceFormat(reshape_buffer_format()));
     color_space = reshape_color_space();
   } else {
     // A real render pass that was turned into an image
@@ -3532,7 +3532,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
   } else {
     current_canvas_ = skia_output_surface_->BeginPaintRenderPass(
         quad->render_pass_id, dst_overlay_backing.size,
-        SharedImageFormat::SinglePlane(dst_overlay_backing.format),
+        dst_overlay_backing.format,
         /*mipmap=*/false,
         /*scanout_dcomp_surface=*/false,
         RenderPassBackingSkColorSpace(dst_overlay_backing),
@@ -3632,7 +3632,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
   overlay->damage_rect = gfx::RectF(filter_bounds);
   // Fill in |format| and |color_space| information based on selected backing.
   overlay->color_space = color_space;
-  overlay->format = BufferFormat(buffer_format);
+  overlay->format = BufferFormat(buffer_format.resource_format());
 #endif  // BUILDFLAG(IS_APPLE)
 }
 #endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)

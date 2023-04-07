@@ -2691,17 +2691,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       kSuccess,
       JoinInterestGroupAndVerify(
           blink::TestInterestGroupBuilder(origin, "cars")
-              .SetExpiry(base::Time())
-              .SetAllSellerCapabilities(
-                  blink::SellerCapabilities::kLatencyStats)
-              .SetExecutionMode(
-                  blink::InterestGroup::ExecutionMode::kCompatibilityMode)
-              .SetAds({{{GURL("https://example.com/render"),
-                         /*size_group=*/"group_1",
-                         /*metadata=*/absl::nullopt}}})
-              .SetAdComponents({{{GURL("https://example.com/component"),
-                                  /*size_group=*/"group_1",
-                                  /*metadata=*/absl::nullopt}}})
+              .SetAds(
+                  {{{GURL("https://example.com/render"),
+                     /*metadata=*/absl::nullopt, /*size_group=*/"group_1"}}})
+              .SetAdComponents(
+                  {{{GURL("https://example.com/component"),
+                     /*metadata=*/absl::nullopt, /*size_group=*/"group_1"}}})
               .SetAdSizes(
                   {{{"size_1",
                      blink::AdSize(150, blink::AdSize::LengthUnit::kPixels, 75,
@@ -5722,11 +5717,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
               /*name=*/"cars")
               .SetBiddingUrl(https_server_->GetURL(
                   "a.test", "/interest_group/bidding_logic_with_size.js"))
-              .SetTrustedBiddingSignalsUrl(https_server_->GetURL(
-                  "a.test", "/interest_group/trusted_bidding_signals.json"))
-              .SetTrustedBiddingSignalsKeys({{"key1"}})
               .SetAds(/*ads=*/{
-                  {{ad_url, "group_1", R"({"ad":"metadata","here":[1,2]})"}}})
+                  {{ad_url, R"({"ad":"metadata","here":[1,2]})", "group_1"}}})
               .SetAdSizes(
                   {{{"size_1",
                      blink::AdSize(100, blink::AdSize::LengthUnit::kScreenWidth,
@@ -5736,15 +5728,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   std::string auction_config = JsReplace(
       R"({
-    seller: $1,
-    decisionLogicUrl: $2,
-    interestGroupBuyers: [$1],
-    auctionSignals: {x: 1},
-    sellerSignals: {yet: 'more', info: 1},
-    sellerTimeout: 200,
-    perBuyerSignals: {$1: {even: 'more', x: 4.5}},
-    perBuyerTimeouts: {$1: 100, '*': 150}
-                })",
+          seller: $1,
+          decisionLogicUrl: $2,
+          interestGroupBuyers: [$1]
+        })",
       test_origin,
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js"));
   RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad_url);
@@ -5772,9 +5759,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
               .SetTrustedBiddingSignalsUrl(https_server_->GetURL(
                   "a.test", "/interest_group/trusted_bidding_signals.json"))
               .SetTrustedBiddingSignalsKeys({{"key1"}})
-              .SetAds(/*ads=*/{
-                  {{ad_url, /*size_group=*/"group_1",
-                    /*metadata=*/R"({"ad":"metadata","here":[1,2]})"}}})
+              .SetAds(/*ads=*/{{{ad_url, /*metadata=*/absl::nullopt,
+                                 /*size_group=*/"group_1"}}})
               .SetAdSizes(
                   {{{"size_1",
                      blink::AdSize(100, blink::AdSize::LengthUnit::kScreenWidth,
@@ -6457,8 +6443,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
               /*name=*/"cars")
               .SetBiddingUrl(https_server_->GetURL(
                   "a.test", "/interest_group/bidding_logic_with_size.js"))
-              .SetAds(/*ads=*/{{{ad_url, /*size_group=*/"group_1",
-                                 /*metadata=*/absl::nullopt}}})
+              .SetAds(/*ads=*/{{{ad_url, /*metadata=*/absl::nullopt,
+                                 /*size_group=*/"group_1"}}})
               .SetAdSizes(
                   {{{"size_1",
                      blink::AdSize(100, blink::AdSize::LengthUnit::kScreenWidth,
@@ -6511,10 +6497,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
               /*name=*/"cars")
               .SetBiddingUrl(https_server_->GetURL(
                   "a.test", "/interest_group/bidding_logic_with_size.js"))
-              .SetAds(/*ads=*/{{{ad_url, /*size_group=*/"group_1",
-                                 /*metadata=*/absl::nullopt}}})
-              .SetAdComponents({{{ad_component_url, /*size_group=*/"group_2",
-                                  /*metadata=*/absl::nullopt}}})
+              .SetAds(/*ads=*/{{{ad_url, /*metadata=*/absl::nullopt,
+                                 /*size_group=*/"group_1"}}})
+              .SetAdComponents({{{ad_component_url, /*metadata=*/absl::nullopt,
+                                  /*size_group=*/"group_2"}}})
               .SetAdSizes(
                   {{{"size_1",
                      blink::AdSize(100, blink::AdSize::LengthUnit::kScreenWidth,

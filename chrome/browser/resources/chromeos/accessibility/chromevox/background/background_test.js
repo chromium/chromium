@@ -20,9 +20,6 @@ ChromeVoxBackgroundTest = class extends ChromeVoxE2ETest {
 
     // Alphabetical based on file path.
     await importModule(
-        'BaseAutomationHandler',
-        '/chromevox/background/base_automation_handler.js');
-    await importModule(
         'BrailleCommandHandler',
         '/chromevox/background/braille/braille_command_handler.js');
     await importModule('ChromeVox', '/chromevox/background/chromevox.js');
@@ -36,8 +33,16 @@ ChromeVoxBackgroundTest = class extends ChromeVoxE2ETest {
         'CommandHandlerInterface',
         '/chromevox/background/command_handler_interface.js');
     await importModule(
+        'BaseAutomationHandler',
+        '/chromevox/background/event/base_automation_handler.js');
+    await importModule(
         'DesktopAutomationInterface',
-        '/chromevox/background/desktop_automation_interface.js');
+        '/chromevox/background/event/desktop_automation_interface.js');
+    await importModule(
+        'PageLoadSoundHandler',
+        '/chromevox/background/event/page_load_sound_handler.js');
+    await importModule(
+        'PointerHandler', '/chromevox/background/event/pointer_handler.js');
     await importModule('FocusBounds', '/chromevox/background/focus_bounds.js');
     await importModule(
         'GestureCommandHandler',
@@ -48,11 +53,6 @@ ChromeVoxBackgroundTest = class extends ChromeVoxE2ETest {
     await importModule('Output', '/chromevox/background/output/output.js');
     await importModule(
         'OutputAction', '/chromevox/background/output/output_types.js');
-    await importModule(
-        'PageLoadSoundHandler',
-        '/chromevox/background/page_load_sound_handler.js');
-    await importModule(
-        'PointerHandler', '/chromevox/background/pointer_handler.js');
     await importModule(
         'TtsBackground', '/chromevox/background/tts_background.js');
     await importModule(

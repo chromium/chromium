@@ -37,7 +37,7 @@
 #include "components/security_interstitials/content/ssl_cert_reporter.h"
 #include "components/security_state/core/security_state.h"
 #include "components/variations/variations_params_manager.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"

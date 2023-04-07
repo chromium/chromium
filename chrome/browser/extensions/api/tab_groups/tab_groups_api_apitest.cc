@@ -20,16 +20,7 @@ namespace {
 using TabGroupsApiTest = ExtensionApiTest;
 
 IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, TestTabGroupsWorks) {
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/1148195): Fix flakiness of this text on Linux.
-  return;
-#endif
-
-  ASSERT_TRUE(
-      RunExtensionTest("tab_groups", {}, {.ignore_manifest_warnings = true}))
-      << message_;
+  ASSERT_TRUE(RunExtensionTest("tab_groups")) << message_;
 }
 
 // Tests that events are restricted to their respective browser contexts,

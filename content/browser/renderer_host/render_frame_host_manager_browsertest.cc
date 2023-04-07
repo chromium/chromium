@@ -1098,18 +1098,8 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 
   // We should have received only 1 message in the opener and "foo" tabs,
   // and updated the title.
-  int opener_received_messages = 0;
-  EXPECT_TRUE(ExecuteScriptAndExtractInt(
-      opener_contents,
-      "window.domAutomationController.send(window.receivedMessages);",
-      &opener_received_messages));
-  int foo_received_messages = 0;
-  EXPECT_TRUE(ExecuteScriptAndExtractInt(
-      foo_contents,
-      "window.domAutomationController.send(window.receivedMessages);",
-      &foo_received_messages));
-  EXPECT_EQ(1, foo_received_messages);
-  EXPECT_EQ(1, opener_received_messages);
+  EXPECT_EQ(1, EvalJs(opener_contents, "window.receivedMessages;"));
+  EXPECT_EQ(1, EvalJs(foo_contents, "window.receivedMessages;"));
   EXPECT_EQ(u"msg", foo_contents->GetTitle());
 
   // 4) Now post a message from the _blank window to the foo window.  The
@@ -1216,24 +1206,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   ASSERT_EQ(expected_title, title_observer.WaitAndGetTitle());
 
   // Check message counts.
-  int opener_received_messages_via_port = 0;
-  EXPECT_TRUE(ExecuteScriptAndExtractInt(
-      opener_contents,
-      "window.domAutomationController.send(window.receivedMessagesViaPort);",
-      &opener_received_messages_via_port));
-  int foo_received_messages = 0;
-  EXPECT_TRUE(ExecuteScriptAndExtractInt(
-      foo_contents,
-      "window.domAutomationController.send(window.receivedMessages);",
-      &foo_received_messages));
-  int foo_received_messages_with_port = 0;
-  EXPECT_TRUE(ExecuteScriptAndExtractInt(
-      foo_contents,
-      "window.domAutomationController.send(window.receivedMessagesWithPort);",
-      &foo_received_messages_with_port));
-  EXPECT_EQ(1, foo_received_messages);
-  EXPECT_EQ(1, foo_received_messages_with_port);
-  EXPECT_EQ(1, opener_received_messages_via_port);
+  EXPECT_EQ(1, EvalJs(opener_contents, "window.receivedMessagesViaPort;"));
+  EXPECT_EQ(1, EvalJs(foo_contents, "window.receivedMessages;"));
+  EXPECT_EQ(1, EvalJs(foo_contents, "window.receivedMessagesWithPort;"));
   EXPECT_EQ(u"msg-with-port", foo_contents->GetTitle());
   EXPECT_EQ(u"msg-back-via-port", opener_contents->GetTitle());
 }

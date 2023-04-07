@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/gmock_callback_support.h"
@@ -364,8 +365,10 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
     encoder_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner({});
     audio_track_recorder_ = std::make_unique<AudioTrackRecorder>(
         codec_, media_stream_component_,
-        WTF::BindRepeating(&AudioTrackRecorderTest::OnEncodedAudio,
-                           WTF::Unretained(this)),
+        base::BindPostTask(
+            scheduler::GetSingleThreadTaskRunnerForTesting(),
+            WTF::BindRepeating(&AudioTrackRecorderTest::OnEncodedAudio,
+                               WTF::Unretained(this))),
         ConvertToBaseOnceCallback(CrossThreadBindOnce([] {})),
         0u /* bits_per_second */, GetParam().bitrate_mode,
         encoder_task_runner_);

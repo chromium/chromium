@@ -35,7 +35,6 @@
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/ax_platform_node_textrangeprovider_win.h"
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
-#include "ui/accessibility/test_ax_tree_manager.h"
 
 using Microsoft::WRL::ComPtr;
 

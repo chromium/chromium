@@ -116,7 +116,6 @@ class MEDIA_EXPORT Mp2tStreamParser : public StreamParser {
   std::unique_ptr<EsParser> CreateAacParser(int pes_pid);
   std::unique_ptr<EsParser> CreateMpeg1AudioParser(int pes_pid);
 
-#if BUILDFLAG(ENABLE_HLS_SAMPLE_AES)
   bool ShouldForceEncryptedParser();
   std::unique_ptr<EsParser> CreateEncryptedH264Parser(int pes_pid,
                                                       bool emit_clear_buffers);
@@ -142,7 +141,6 @@ class MEDIA_EXPORT Mp2tStreamParser : public StreamParser {
   void RegisterPsshBoxes(const std::vector<uint8_t>& init_data);
 
   const DecryptConfig* GetDecryptConfig() { return decrypt_config_.get(); }
-#endif
 
   // List of callbacks.
   InitCB init_cb_;
@@ -193,13 +191,11 @@ class MEDIA_EXPORT Mp2tStreamParser : public StreamParser {
   // So the unroller is global between PES pids.
   TimestampUnroller timestamp_unroller_;
 
-#if BUILDFLAG(ENABLE_HLS_SAMPLE_AES)
   EncryptionScheme initial_encryption_scheme_ = EncryptionScheme::kUnencrypted;
 
   // TODO(jrummell): Rather than store the key_id and iv in a DecryptConfig,
   // provide a better way to access the last values seen in a ECM packet.
   std::unique_ptr<DecryptConfig> decrypt_config_;
-#endif
 };
 
 }  // namespace mp2t

@@ -1,7 +1,7 @@
 Name: kotlinx-coroutines-android
 Short Name: kotlinx-coroutines-android
 URL: https://github.com/Kotlin/kotlinx.coroutines
-Version: 1.6.1
+Version: 1.6.4
 License: Apache Version 2.0
 License File: LICENSE
 CPEPrefix: unknown

@@ -8,13 +8,16 @@
 #include "chromeos/ash/components/network/hotspot_controller.h"
 #include "chromeos/ash/components/network/hotspot_state_handler.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace ash {
 
 // This class captures hotspot and wifi state changes from HotspotController and
 // HotspotStateHandler and relays them to its observers.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotEnabledStateNotifier
-    : public HotspotController::Observer {
+    : public HotspotController::Observer,
+      public HotspotStateHandler::Observer {
  public:
   HotspotEnabledStateNotifier();
   HotspotEnabledStateNotifier(const HotspotEnabledStateNotifier&) = delete;
@@ -22,14 +25,19 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotEnabledStateNotifier
       delete;
   ~HotspotEnabledStateNotifier() override;
 
-  void Init(HotspotController* hotspot_controller);
+  void Init(HotspotStateHandler* hotspot_state_handler,
+            HotspotController* hotspot_controller);
 
   void ObserveEnabledStateChanges(
       mojo::PendingRemote<hotspot_config::mojom::HotspotEnabledStateObserver>
           observer);
 
  private:
-  HotspotEnabledStateNotifier(HotspotController* hotspot_controller);
+  HotspotEnabledStateNotifier(HotspotStateHandler* hotspot_state_handler,
+                              HotspotController* hotspot_controller);
+
+  // HotspotStateHandler::Observer:
+  void OnHotspotStatusChanged() override;
 
   // HotspotController::Observer:
   void OnHotspotTurnedOn(bool wifi_turned_off) override;
@@ -37,6 +45,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotEnabledStateNotifier
       hotspot_config::mojom::DisableReason disable_reason) override;
 
   HotspotController* hotspot_controller_;
+  HotspotStateHandler* hotspot_state_handler_;
   mojo::RemoteSet<hotspot_config::mojom::HotspotEnabledStateObserver>
       observers_;
 };

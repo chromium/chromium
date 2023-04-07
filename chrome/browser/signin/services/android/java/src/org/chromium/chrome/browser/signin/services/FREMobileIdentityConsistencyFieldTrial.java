@@ -272,20 +272,24 @@ public class FREMobileIdentityConsistencyFieldTrial {
      */
     @MainThread
     public static void createFirstRunVariationsTrial() {
+        // TODO(https://crbug.com/1430512): Add a test to verify that the group assignment stays
+        // consistent when the user closes and reopens Chrome during the FRE.
+        synchronized (LOCK) {
+            // Don't create a new group if the user was already assigned a group. Can
+            // happen when the user dismisses FRE without finishing the flow and starts chrome
+            // again.
+            if (SharedPreferencesManager.getInstance().readInt(
+                        ChromePreferenceKeys.FIRST_RUN_VARIATIONS_FIELD_TRIAL_GROUP, -2)
+                    != -2) {
+                return;
+            }
+        }
         int group = generateFirstRunStringVariationsGroup(
                 LowEntropySource.generateLowEntropySourceForFirstRunTrial(),
                 LowEntropySource.MAX_LOW_ENTROPY_SIZE);
         synchronized (LOCK) {
             SharedPreferencesManager.getInstance().writeInt(
                     ChromePreferenceKeys.FIRST_RUN_VARIATIONS_FIELD_TRIAL_GROUP, group);
-        }
-    }
-
-    @AnyThread
-    public static void setFirstRunTrialGroupForTesting(String group) {
-        synchronized (LOCK) {
-            SharedPreferencesManager.getInstance().writeString(
-                    ChromePreferenceKeys.FIRST_RUN_FIELD_TRIAL_GROUP, group);
         }
     }
 

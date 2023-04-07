@@ -8,13 +8,14 @@
 #include <map>
 
 #include "ash/ash_export.h"
-#include "components/user_education/common/tutorial_identifier.h"
 
 namespace user_education {
 struct TutorialDescription;
 }  // namespace user_education
 
 namespace ash {
+
+enum class TutorialId;
 
 // Base class for controllers responsible for specific feature tutorials. A
 // single controller may be responsible for multiple feature tutorials.
@@ -26,8 +27,7 @@ class ASH_EXPORT TutorialController {
 
   // Returns the descriptions for all feature tutorials controlled by this
   // instance, mapped to their respective identifiers.
-  virtual std::map<user_education::TutorialIdentifier,
-                   user_education::TutorialDescription>
+  virtual std::map<TutorialId, user_education::TutorialDescription>
   GetTutorialDescriptions() = 0;
 
  protected:

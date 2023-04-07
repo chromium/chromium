@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">ග්‍රහලෝකය</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> ඉවත් කර ඇත.</translation>
 <translation id="2307462900900812319">ජාලය සකසන්න</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> සහිත දිගුවක් ස්ථානගත කළ නොහැක. ඔබේ පරිපාලක සම්බන්ධ කර ගන්න.}one{IDs <ph name="BEGIN_LIST" /><ph name="END_LIST" /> සහිත දිගු ස්ථානගත කළ නොහැක. ඔබේ පරිපාලක සම්බන්ධ කර ගන්න.}other{IDs <ph name="BEGIN_LIST" /><ph name="END_LIST" /> සහිත දිගු ස්ථානගත කළ නොහැක. ඔබේ පරිපාලක සම්බන්ධ කර ගන්න.}}</translation>
 <translation id="2325650632570794183">මෙම ගොනු ආකාරය සහාය නොදක්වයි. මෙම ආකාරයේ ගොනුව විවෘත කළ හැකි යෙදුමක් සොයා ගැනීමට Chrome වෙබ් අලෙවිසැල වෙත යන්න.</translation>
 <translation id="2326539130272988168">බල්ගේරියානු</translation>
 <translation id="2337715497728194187">Bruschetta සමග බෙදා ගන්න</translation>
@@ -274,6 +275,7 @@
 <translation id="3290356915286466215">අනාරක්‍ෂිතයි</translation>
 <translation id="3291218047831493686">SIM අගුලු සැකසීම වෙනස් කිරීමට මෙම ජාලයට සම්බන්ධ වන්න</translation>
 <translation id="3293023191599135697">WEP ජාල සහාය නොදක්වයි</translation>
+<translation id="3295006446256079333">මෙම වෙළුම</translation>
 <translation id="3295357220137379386">උපාංගය කාර්යබහුලයි</translation>
 <translation id="3296763833017966289">ජොර්ජියානු</translation>
 <translation id="3307875152560779385">යුක්‍රේනියානු</translation>

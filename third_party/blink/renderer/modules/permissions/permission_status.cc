@@ -27,7 +27,8 @@ PermissionStatus* PermissionStatus::Take(PermissionStatusListener* listener,
 
 PermissionStatus::PermissionStatus(PermissionStatusListener* listener,
                                    ExecutionContext* execution_context)
-    : ExecutionContextLifecycleStateObserver(execution_context),
+    : ActiveScriptWrappable<PermissionStatus>({}),
+      ExecutionContextLifecycleStateObserver(execution_context),
       listener_(listener) {}
 
 PermissionStatus::~PermissionStatus() = default;

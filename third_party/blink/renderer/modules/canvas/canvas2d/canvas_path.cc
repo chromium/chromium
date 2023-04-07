@@ -495,7 +495,6 @@ void CanvasPath::ellipse(double double_x,
     return;
   }
 
-  UpdatePathFromLineIfNecessaryForMutation();
   path_.AddEllipse(gfx::PointF(x, y), radius_x, radius_y, rotation, start_angle,
                    adjusted_end_angle);
 }

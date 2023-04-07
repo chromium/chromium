@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/passwords/password_check_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
@@ -39,7 +40,6 @@
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_mock.h"
-#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_consumer.h"
@@ -48,6 +48,7 @@
 #import "ios/chrome/browser/upgrade/upgrade_constants.h"
 #import "ios/chrome/browser/upgrade/upgrade_recommended_details.h"
 #import "ios/chrome/common/string_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -65,6 +66,12 @@
 
 namespace {
 
+using l10n_util::GetNSString;
+using password_manager::InsecureCredential;
+using password_manager::InsecureType;
+using password_manager::TestPasswordStore;
+using password_manager::features::IsPasswordCheckupEnabled;
+
 typedef NS_ENUM(NSInteger, SafetyCheckItemType) {
   // CheckTypes section.
   UpdateItemType = kItemTypeEnumZero,
@@ -77,12 +84,7 @@ typedef NS_ENUM(NSInteger, SafetyCheckItemType) {
 };
 
 // The size of trailing symbol icons.
-NSInteger kTrailingSymbolImagePointSize = 18;
-
-using password_manager::InsecureCredential;
-using password_manager::InsecureType;
-using password_manager::TestPasswordStore;
-using l10n_util::GetNSString;
+NSInteger kTrailingSymbolImagePointSize = 22;
 
 // Registers account preference that will be used for Safe Browsing.
 PrefService* SetPrefService() {
@@ -99,10 +101,36 @@ UIImage* SafeImage() {
                                             kTrailingSymbolImagePointSize);
 }
 
+// The image when there are reused passwords, weak passwords or dismissed
+// compromised password warnings.
+UIImage* WarningImage() {
+  return DefaultSymbolTemplateWithPointSize(kErrorCircleFillSymbol,
+                                            kTrailingSymbolImagePointSize);
+}
+
 // The image when the state is unsafe.
 UIImage* UnsafeImage() {
-  return DefaultSymbolTemplateWithPointSize(kWarningFillSymbol,
-                                            kTrailingSymbolImagePointSize);
+  return DefaultSymbolTemplateWithPointSize(
+      IsPasswordCheckupEnabled() ? kErrorCircleFillSymbol : kWarningFillSymbol,
+      kTrailingSymbolImagePointSize);
+}
+
+// The color when the state is safe.
+UIColor* GreenColor() {
+  return [UIColor
+      colorNamed:IsPasswordCheckupEnabled() ? kGreen500Color : kGreenColor];
+}
+
+// The color when there are reused passwords, weak passwords or dismissed
+// compromised password warnings.
+UIColor* YellowColor() {
+  return [UIColor colorNamed:kYellow500Color];
+}
+
+// The color when the state is unsafe.
+UIColor* RedColor() {
+  return [UIColor
+      colorNamed:IsPasswordCheckupEnabled() ? kRed500Color : kRedColor];
 }
 
 }  // namespace
@@ -168,16 +196,17 @@ class SafetyCheckMediatorTest : public PlatformTest {
   }
 
   // Creates a form.
-  std::unique_ptr<password_manager::PasswordForm> CreateForm() {
+  std::unique_ptr<password_manager::PasswordForm> CreateForm(
+      std::string signon_realm = "http://www.example.com/") {
     auto form = std::make_unique<password_manager::PasswordForm>();
-    form->url = GURL("http://www.example.com/accounts/LoginAuth");
-    form->action = GURL("http://www.example.com/accounts/Login");
+    form->url = GURL(signon_realm + "accounts/LoginAuth");
+    form->action = GURL(signon_realm + "accounts/Login");
     form->username_element = u"Email";
     form->username_value = u"test@egmail.com";
     form->password_element = u"Passwd";
     form->password_value = u"test";
     form->submit_element = u"signIn";
-    form->signon_realm = "http://www.example.com/";
+    form->signon_realm = signon_realm;
     form->scheme = password_manager::PasswordForm::Scheme::kHtml;
     form->blocked_by_user = false;
     return form;
@@ -191,8 +220,11 @@ class SafetyCheckMediatorTest : public PlatformTest {
   }
 
   // Creates and adds a saved insecure password form.
-  void AddSavedInsecureForm(InsecureType insecure_type, bool is_muted = false) {
-    auto form = CreateForm();
+  void AddSavedInsecureForm(
+      InsecureType insecure_type,
+      bool is_muted = false,
+      std::string signon_realm = "http://www.example.com/") {
+    auto form = CreateForm(signon_realm);
     form->password_issues = {
         {insecure_type,
          password_manager::InsecurityMetadata(
@@ -333,6 +365,8 @@ TEST_F(SafetyCheckMediatorTest, SafeBrowsingSafeUI) {
           IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_STANDARD_PROTECTION_ENABLED_DESC_WITH_ENHANCED_PROTECTION));
 
   EXPECT_EQ(mediator_.safeBrowsingCheckItem.trailingImage, SafeImage());
+  EXPECT_TRUE([mediator_.safeBrowsingCheckItem.trailingImageTintColor
+      isEqual:GreenColor()]);
 }
 
 // Tests UI for Safe Browsing row in Safety Check settings.
@@ -348,6 +382,8 @@ TEST_F(SafetyCheckMediatorTest,
   EXPECT_EQ(mediator_.safeBrowsingCheckItem.accessoryType,
             UITableViewCellAccessoryNone);
   EXPECT_EQ(mediator_.safeBrowsingCheckItem.trailingImage, SafeImage());
+  EXPECT_TRUE([mediator_.safeBrowsingCheckItem.trailingImageTintColor
+      isEqual:GreenColor()]);
 
   // Check UI when Safe Browsing protection choice is "Standard Protection".
   mediator_.enhancedSafeBrowsingPreference.value = false;
@@ -359,6 +395,8 @@ TEST_F(SafetyCheckMediatorTest,
   EXPECT_EQ(mediator_.safeBrowsingCheckItem.accessoryType,
             UITableViewCellAccessoryDisclosureIndicator);
   EXPECT_EQ(mediator_.safeBrowsingCheckItem.trailingImage, SafeImage());
+  EXPECT_TRUE([mediator_.safeBrowsingCheckItem.trailingImageTintColor
+      isEqual:GreenColor()]);
 
   // Check UI when Safe Browsing protection choice is "No Protection".
   mediator_.safeBrowsingPreference.value = false;
@@ -367,6 +405,8 @@ TEST_F(SafetyCheckMediatorTest,
   EXPECT_EQ(mediator_.safeBrowsingCheckItem.accessoryType,
             UITableViewCellAccessoryDisclosureIndicator);
   EXPECT_EQ(mediator_.safeBrowsingCheckItem.trailingImage, UnsafeImage());
+  EXPECT_TRUE([mediator_.safeBrowsingCheckItem.trailingImageTintColor
+      isEqual:RedColor()]);
 }
 
 TEST_F(SafetyCheckMediatorTest, SafeBrowsingDisabledReturnsInfoState) {
@@ -409,27 +449,39 @@ TEST_F(SafetyCheckMediatorTest, PasswordCheckSafeCheck) {
 // state and when the kIOSPasswordCheckup feature is disabled.
 TEST_F(SafetyCheckMediatorTest, PasswordCheckSafeUIWithoutKIOSPasswordCheckup) {
   // Disable Password Checkup feature.
-  base::test::ScopedFeatureList featureList;
-  featureList.InitAndDisableFeature(
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
       password_manager::features::kIOSPasswordCheckup);
 
   mediator_.passwordCheckRowState = PasswordCheckRowStateSafe;
   [mediator_ reconfigurePasswordCheckItem];
   EXPECT_NSEQ(mediator_.passwordCheckItem.detailText,
               base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
-                  IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT, 0)));
+                  IDS_IOS_PASSWORD_CHECKUP_COMPROMISED_COUNT, 0)));
   EXPECT_EQ(mediator_.passwordCheckItem.trailingImage, SafeImage());
+  EXPECT_TRUE([mediator_.passwordCheckItem.trailingImageTintColor
+      isEqual:GreenColor()]);
+  EXPECT_EQ(mediator_.passwordCheckItem.accessoryType,
+            UITableViewCellAccessoryNone);
 }
 
 // Tests that the content of the `passwordCheckItem` is as expected when in safe
 // state and when the kIOSPasswordCheckup feature is enabled.
 TEST_F(SafetyCheckMediatorTest, PasswordCheckSafeUIWithKIOSPasswordCheckup) {
   // Enable Password Checkup feature.
-  base::test::ScopedFeatureList featureList;
-  featureList.InitAndEnableFeature(
+  base::test::ScopedFeatureList feature_list(
       password_manager::features::kIOSPasswordCheckup);
 
-  // TODO(crbug.com/1406540): Implement test.
+  mediator_.passwordCheckRowState = PasswordCheckRowStateSafe;
+  [mediator_ reconfigurePasswordCheckItem];
+  EXPECT_NSEQ(mediator_.passwordCheckItem.detailText,
+              base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
+                  IDS_IOS_PASSWORD_CHECKUP_COMPROMISED_COUNT, 0)));
+  EXPECT_EQ(mediator_.passwordCheckItem.trailingImage, SafeImage());
+  EXPECT_TRUE([mediator_.passwordCheckItem.trailingImageTintColor
+      isEqual:GreenColor()]);
+  EXPECT_EQ(mediator_.passwordCheckItem.accessoryType,
+            UITableViewCellAccessoryDisclosureIndicator);
 }
 
 // Tests that only having a leaked password results in an umuted compromised
@@ -447,8 +499,8 @@ TEST_F(SafetyCheckMediatorTest, PasswordCheckUnmutedCompromisedPasswordsCheck) {
 TEST_F(SafetyCheckMediatorTest,
        PasswordCheckUnmutedCompromisedPasswordsUIWithoutKIOSPasswordCheckup) {
   // Disable Password Checkup feature.
-  base::test::ScopedFeatureList featureList;
-  featureList.InitAndDisableFeature(
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
       password_manager::features::kIOSPasswordCheckup);
 
   AddSavedInsecureForm(InsecureType::kLeaked);
@@ -457,8 +509,12 @@ TEST_F(SafetyCheckMediatorTest,
   [mediator_ reconfigurePasswordCheckItem];
   EXPECT_NSEQ(mediator_.passwordCheckItem.detailText,
               base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
-                  IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT, 1)));
+                  IDS_IOS_PASSWORD_CHECKUP_COMPROMISED_COUNT, 1)));
   EXPECT_EQ(mediator_.passwordCheckItem.trailingImage, UnsafeImage());
+  EXPECT_TRUE(
+      [mediator_.passwordCheckItem.trailingImageTintColor isEqual:RedColor()]);
+  EXPECT_EQ(mediator_.passwordCheckItem.accessoryType,
+            UITableViewCellAccessoryDisclosureIndicator);
 }
 
 // Tests that the content of the `passwordCheckItem` is as expected when in
@@ -466,19 +522,28 @@ TEST_F(SafetyCheckMediatorTest,
 TEST_F(SafetyCheckMediatorTest,
        PasswordCheckUnmutedCompromisedPasswordsUIWithKIOSPasswordCheckup) {
   // Enable Password Checkup feature.
-  base::test::ScopedFeatureList featureList;
-  featureList.InitAndEnableFeature(
+  base::test::ScopedFeatureList feature_list(
       password_manager::features::kIOSPasswordCheckup);
 
-  // TODO(crbug.com/1406540): Implement test.
+  AddSavedInsecureForm(InsecureType::kLeaked);
+  mediator_.passwordCheckRowState =
+      PasswordCheckRowStateUnmutedCompromisedPasswords;
+  [mediator_ reconfigurePasswordCheckItem];
+  EXPECT_NSEQ(mediator_.passwordCheckItem.detailText,
+              base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
+                  IDS_IOS_PASSWORD_CHECKUP_COMPROMISED_COUNT, 1)));
+  EXPECT_EQ(mediator_.passwordCheckItem.trailingImage, UnsafeImage());
+  EXPECT_TRUE(
+      [mediator_.passwordCheckItem.trailingImageTintColor isEqual:RedColor()]);
+  EXPECT_EQ(mediator_.passwordCheckItem.accessoryType,
+            UITableViewCellAccessoryDisclosureIndicator);
 }
 
 // Tests that only having a reused password results in a reused password row
 // state. kIOSPasswordCheckup feature needs to be enabled for this test.
 TEST_F(SafetyCheckMediatorTest, PasswordCheckReusedPasswordsCheck) {
   // Enable Password Checkup feature.
-  base::test::ScopedFeatureList featureList;
-  featureList.InitAndEnableFeature(
+  base::test::ScopedFeatureList feature_list(
       password_manager::features::kIOSPasswordCheckup);
 
   AddSavedInsecureForm(InsecureType::kReused);
@@ -492,19 +557,29 @@ TEST_F(SafetyCheckMediatorTest, PasswordCheckReusedPasswordsCheck) {
 // reused state. kIOSPasswordCheckup feature needs to be enabled for this test.
 TEST_F(SafetyCheckMediatorTest, PasswordCheckReusedPasswordsUI) {
   // Enable Password Checkup feature.
-  base::test::ScopedFeatureList featureList;
-  featureList.InitAndEnableFeature(
+  base::test::ScopedFeatureList feature_list(
       password_manager::features::kIOSPasswordCheckup);
 
-  // TODO(crbug.com/1406540): Implement test.
+  AddSavedInsecureForm(InsecureType::kReused);
+  AddSavedInsecureForm(InsecureType::kReused, /*is_muted=*/false,
+                       /*signon_realm=*/"http://www.example1.com/");
+  mediator_.passwordCheckRowState = PasswordCheckRowStateReusedPasswords;
+  [mediator_ reconfigurePasswordCheckItem];
+  EXPECT_NSEQ(
+      mediator_.passwordCheckItem.detailText,
+      l10n_util::GetNSStringF(IDS_IOS_PASSWORD_CHECKUP_REUSED_COUNT, u"2"));
+  EXPECT_EQ(mediator_.passwordCheckItem.trailingImage, WarningImage());
+  EXPECT_TRUE([mediator_.passwordCheckItem.trailingImageTintColor
+      isEqual:YellowColor()]);
+  EXPECT_EQ(mediator_.passwordCheckItem.accessoryType,
+            UITableViewCellAccessoryDisclosureIndicator);
 }
 
 // Tests that only having a weak password results in a weak password row state.
 // kIOSPasswordCheckup feature needs to be enabled for this test.
 TEST_F(SafetyCheckMediatorTest, PasswordCheckWeakPasswordsCheck) {
   // Enable Password Checkup feature.
-  base::test::ScopedFeatureList featureList;
-  featureList.InitAndEnableFeature(
+  base::test::ScopedFeatureList feature_list(
       password_manager::features::kIOSPasswordCheckup);
 
   AddSavedInsecureForm(InsecureType::kWeak);
@@ -518,11 +593,20 @@ TEST_F(SafetyCheckMediatorTest, PasswordCheckWeakPasswordsCheck) {
 // state. kIOSPasswordCheckup feature needs to be enabled for this test.
 TEST_F(SafetyCheckMediatorTest, PasswordCheckWeakPasswordsUI) {
   // Enable Password Checkup feature.
-  base::test::ScopedFeatureList featureList;
-  featureList.InitAndEnableFeature(
+  base::test::ScopedFeatureList feature_list(
       password_manager::features::kIOSPasswordCheckup);
 
-  // TODO(crbug.com/1406540): Implement test.
+  AddSavedInsecureForm(InsecureType::kWeak);
+  mediator_.passwordCheckRowState = PasswordCheckRowStateWeakPasswords;
+  [mediator_ reconfigurePasswordCheckItem];
+  EXPECT_NSEQ(mediator_.passwordCheckItem.detailText,
+              base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
+                  IDS_IOS_PASSWORD_CHECKUP_WEAK_COUNT, 1)));
+  EXPECT_EQ(mediator_.passwordCheckItem.trailingImage, WarningImage());
+  EXPECT_TRUE([mediator_.passwordCheckItem.trailingImageTintColor
+      isEqual:YellowColor()]);
+  EXPECT_EQ(mediator_.passwordCheckItem.accessoryType,
+            UITableViewCellAccessoryDisclosureIndicator);
 }
 
 // Tests that only having a dismissed compromsied warning results in a dismissed
@@ -530,8 +614,7 @@ TEST_F(SafetyCheckMediatorTest, PasswordCheckWeakPasswordsUI) {
 // test.
 TEST_F(SafetyCheckMediatorTest, PasswordCheckDismissedWarningsCheck) {
   // Enable Password Checkup feature.
-  base::test::ScopedFeatureList featureList;
-  featureList.InitAndEnableFeature(
+  base::test::ScopedFeatureList feature_list(
       password_manager::features::kIOSPasswordCheckup);
 
   AddSavedInsecureForm(InsecureType::kLeaked, /*is_muted=*/true);
@@ -546,11 +629,20 @@ TEST_F(SafetyCheckMediatorTest, PasswordCheckDismissedWarningsCheck) {
 // this test.
 TEST_F(SafetyCheckMediatorTest, PasswordCheckDismissedWarningsUI) {
   // Enable Password Checkup feature.
-  base::test::ScopedFeatureList featureList;
-  featureList.InitAndEnableFeature(
+  base::test::ScopedFeatureList feature_list(
       password_manager::features::kIOSPasswordCheckup);
 
-  // TODO(crbug.com/1406540): Implement test.
+  AddSavedInsecureForm(InsecureType::kLeaked, /*is_muted=*/true);
+  mediator_.passwordCheckRowState = PasswordCheckRowStateDismissedWarnings;
+  [mediator_ reconfigurePasswordCheckItem];
+  EXPECT_NSEQ(mediator_.passwordCheckItem.detailText,
+              base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
+                  IDS_IOS_PASSWORD_CHECKUP_DISMISSED_COUNT, 1)));
+  EXPECT_EQ(mediator_.passwordCheckItem.trailingImage, WarningImage());
+  EXPECT_TRUE([mediator_.passwordCheckItem.trailingImageTintColor
+      isEqual:YellowColor()]);
+  EXPECT_EQ(mediator_.passwordCheckItem.accessoryType,
+            UITableViewCellAccessoryDisclosureIndicator);
 }
 
 // Tests that exceeding the quota limit results in an error row state.
@@ -569,6 +661,8 @@ TEST_F(SafetyCheckMediatorTest, PasswordCheckErrorUI) {
   EXPECT_NSEQ(mediator_.passwordCheckItem.detailText,
               GetNSString(IDS_IOS_PASSWORD_CHECK_ERROR));
   EXPECT_FALSE(mediator_.passwordCheckItem.infoButtonHidden);
+  EXPECT_EQ(mediator_.passwordCheckItem.accessoryType,
+            UITableViewCellAccessoryNone);
 }
 
 #pragma mark - Update check tests
@@ -591,6 +685,8 @@ TEST_F(SafetyCheckMediatorTest, UpdateCheckUpToDateUI) {
       mediator_.updateCheckItem.detailText,
       GetNSString(IDS_IOS_SETTINGS_SAFETY_CHECK_UPDATES_UP_TO_DATE_DESC));
   EXPECT_EQ(mediator_.updateCheckItem.trailingImage, SafeImage());
+  EXPECT_TRUE(
+      [mediator_.updateCheckItem.trailingImageTintColor isEqual:GreenColor()]);
 }
 
 TEST_F(SafetyCheckMediatorTest, OmahaRespondsOutOfDateAndUpdatesInfobarTime) {
@@ -616,6 +712,8 @@ TEST_F(SafetyCheckMediatorTest, UpdateCheckOutOfDateUI) {
       mediator_.updateCheckItem.detailText,
       GetNSString(IDS_IOS_SETTINGS_SAFETY_CHECK_UPDATES_OUT_OF_DATE_DESC));
   EXPECT_EQ(mediator_.updateCheckItem.trailingImage, UnsafeImage());
+  EXPECT_TRUE(
+      [mediator_.updateCheckItem.trailingImageTintColor isEqual:RedColor()]);
 }
 
 TEST_F(SafetyCheckMediatorTest, OmahaRespondsError) {
@@ -679,7 +777,7 @@ TEST_F(SafetyCheckMediatorTest, UpdateNonclickableUpToDate) {
   EXPECT_FALSE([mediator_ isItemClickable:updateItem]);
 }
 
-TEST_F(SafetyCheckMediatorTest, PasswordClickableUnsafe) {
+TEST_F(SafetyCheckMediatorTest, PasswordClickableUnmutedCompromisedPasswords) {
   mediator_.passwordCheckRowState =
       PasswordCheckRowStateUnmutedCompromisedPasswords;
   [mediator_ reconfigurePasswordCheckItem];
@@ -688,12 +786,75 @@ TEST_F(SafetyCheckMediatorTest, PasswordClickableUnsafe) {
   EXPECT_TRUE([mediator_ isItemClickable:passwordItem]);
 }
 
+// When in safe state, the password check item is non clickable when the
+// kIOSPasswordCheckup feature is disabled.
 TEST_F(SafetyCheckMediatorTest, PasswordNonclickableSafe) {
+  // Disable Password Checkup feature.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      password_manager::features::kIOSPasswordCheckup);
+
   mediator_.passwordCheckRowState = PasswordCheckRowStateSafe;
   [mediator_ reconfigurePasswordCheckItem];
   TableViewItem* passwordItem = [[TableViewItem alloc]
       initWithType:SafetyCheckItemType::PasswordItemType];
   EXPECT_FALSE([mediator_ isItemClickable:passwordItem]);
+}
+
+// When in safe state, the password check item is clickable when the
+// kIOSPasswordCheckup feature is enabled.
+TEST_F(SafetyCheckMediatorTest, PasswordClickableSafe) {
+  // Enable Password Checkup feature.
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kIOSPasswordCheckup);
+
+  mediator_.passwordCheckRowState = PasswordCheckRowStateSafe;
+  [mediator_ reconfigurePasswordCheckItem];
+  TableViewItem* passwordItem = [[TableViewItem alloc]
+      initWithType:SafetyCheckItemType::PasswordItemType];
+  EXPECT_TRUE([mediator_ isItemClickable:passwordItem]);
+}
+
+// Reused passwords are only available when the kIOSPasswordCheckup feature is
+// enabled.
+TEST_F(SafetyCheckMediatorTest, PasswordClickableReusedPasswords) {
+  // Enable Password Checkup feature.
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kIOSPasswordCheckup);
+
+  mediator_.passwordCheckRowState = PasswordCheckRowStateReusedPasswords;
+  [mediator_ reconfigurePasswordCheckItem];
+  TableViewItem* passwordItem = [[TableViewItem alloc]
+      initWithType:SafetyCheckItemType::PasswordItemType];
+  EXPECT_TRUE([mediator_ isItemClickable:passwordItem]);
+}
+
+// Weak passwords are only available when the kIOSPasswordCheckup feature is
+// enabled.
+TEST_F(SafetyCheckMediatorTest, PasswordClickableWeakPasswords) {
+  // Enable Password Checkup feature.
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kIOSPasswordCheckup);
+
+  mediator_.passwordCheckRowState = PasswordCheckRowStateWeakPasswords;
+  [mediator_ reconfigurePasswordCheckItem];
+  TableViewItem* passwordItem = [[TableViewItem alloc]
+      initWithType:SafetyCheckItemType::PasswordItemType];
+  EXPECT_TRUE([mediator_ isItemClickable:passwordItem]);
+}
+
+// Dismissed warnings are only available when the kIOSPasswordCheckup feature is
+// enabled.
+TEST_F(SafetyCheckMediatorTest, PasswordClickableDismissedWarnings) {
+  // Enable Password Checkup feature.
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kIOSPasswordCheckup);
+
+  mediator_.passwordCheckRowState = PasswordCheckRowStateDismissedWarnings;
+  [mediator_ reconfigurePasswordCheckItem];
+  TableViewItem* passwordItem = [[TableViewItem alloc]
+      initWithType:SafetyCheckItemType::PasswordItemType];
+  EXPECT_TRUE([mediator_ isItemClickable:passwordItem]);
 }
 
 TEST_F(SafetyCheckMediatorTest, SafeBrowsingNonClickableDefault) {

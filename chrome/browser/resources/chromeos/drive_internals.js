@@ -9,7 +9,7 @@
  * @return {string} Formatted string in megabytes.
  */
 function toMegaByteString(bytes) {
-  var mb = Math.floor(bytes / (1 << 20));
+  const mb = Math.floor(bytes / (1 << 20));
   return mb.toString().replace(
       /\d+?(?=(\d{3})+$)/g,  // Digit sequence (\d+) followed (?=) by 3n digits.
       function(three_digit_block) {
@@ -22,7 +22,7 @@ function toMegaByteString(bytes) {
  * @param {Array} preferences List of dictionaries describing preferences.
  */
 function updateDriveRelatedPreferences(preferences) {
-  var ul = $('drive-related-preferences');
+  const ul = $('drive-related-preferences');
   updateKeyValueList(ul, preferences);
 }
 
@@ -41,7 +41,7 @@ function updateConnectionStatus(connStatus) {
  * @param {Array} paths List of dictionaries describing paths.
  */
 function updatePathConfigurations(paths) {
-  var ul = $('path-configurations');
+  const ul = $('path-configurations');
   updateKeyValueList(ul, paths);
 }
 
@@ -52,13 +52,13 @@ function updatePathConfigurations(paths) {
  * @param {Object} gcacheSummary Dictionary of summary of GCache.
  */
 function updateGCacheContents(gcacheContents, gcacheSummary) {
-  var tbody = $('gcache-contents');
-  for (var i = 0; i < gcacheContents.length; i++) {
-    var entry = gcacheContents[i];
-    var tr = document.createElement('tr');
+  const tbody = $('gcache-contents');
+  for (let i = 0; i < gcacheContents.length; i++) {
+    const entry = gcacheContents[i];
+    const tr = document.createElement('tr');
 
     // Add some suffix based on the type.
-    var path = entry.path;
+    let path = entry.path;
     if (entry.is_directory) {
       path += '/';
     } else if (entry.is_symbolic_link) {
@@ -82,7 +82,7 @@ function updateGCacheContents(gcacheContents, gcacheSummary) {
  * The function is called from the C++ side repeatedly.
  */
 function updateCacheContents(cacheEntry) {
-  var tr = document.createElement('tr');
+  const tr = document.createElement('tr');
   tr.appendChild(createElementFromText('td', cacheEntry.local_id));
   tr.appendChild(createElementFromText('td', cacheEntry.md5));
   tr.appendChild(createElementFromText('td', cacheEntry.is_present));
@@ -134,7 +134,7 @@ function updateStartupArguments(args) {
  * stogage.
  */
 function updateLocalStorageUsage(localStorageSummary) {
-  var freeSpaceInMB = toMegaByteString(localStorageSummary.free_space);
+  const freeSpaceInMB = toMegaByteString(localStorageSummary.free_space);
   $('local-storage-freespace').innerText = freeSpaceInMB;
 }
 
@@ -144,30 +144,31 @@ function updateLocalStorageUsage(localStorageSummary) {
  * of in-flight operations.
  */
 function updateInFlightOperations(inFlightOperations) {
-  var container = $('in-flight-operations-contents');
+  const container = $('in-flight-operations-contents');
 
   // Reset the table. Remove children in reverse order. Otherwides each
   // existingNodes[i] changes as a side effect of removeChild.
-  var existingNodes = container.childNodes;
-  for (var i = existingNodes.length - 1; i >= 0; i--) {
-    var node = existingNodes[i];
+  const existingNodes = container.childNodes;
+  for (let i = existingNodes.length - 1; i >= 0; i--) {
+    const node = existingNodes[i];
     if (node.className == 'in-flight-operation') {
       container.removeChild(node);
     }
   }
 
   // Add in-flight operations.
-  for (var i = 0; i < inFlightOperations.length; i++) {
-    var operation = inFlightOperations[i];
-    var tr = document.createElement('tr');
+  for (let i = 0; i < inFlightOperations.length; i++) {
+    const operation = inFlightOperations[i];
+    const tr = document.createElement('tr');
     tr.className = 'in-flight-operation';
     tr.appendChild(createElementFromText('td', operation.id));
     tr.appendChild(createElementFromText('td', operation.type));
     tr.appendChild(createElementFromText('td', operation.file_path));
     tr.appendChild(createElementFromText('td', operation.state));
-    var progress = operation.progress_current + '/' + operation.progress_total;
+    let progress = operation.progress_current + '/' + operation.progress_total;
     if (operation.progress_total > 0) {
-      var percent = operation.progress_current / operation.progress_total * 100;
+      const percent =
+          operation.progress_current / operation.progress_total * 100;
       progress += ' (' + Math.round(percent) + '%)';
     }
     tr.appendChild(createElementFromText('td', progress));
@@ -181,8 +182,8 @@ function updateInFlightOperations(inFlightOperations) {
  * @param {Object} aboutResource Dictionary describing about resource.
  */
 function updateAboutResource(aboutResource) {
-  var quotaTotalInMb = toMegaByteString(aboutResource['account-quota-total']);
-  var quotaUsedInMb = toMegaByteString(aboutResource['account-quota-used']);
+  const quotaTotalInMb = toMegaByteString(aboutResource['account-quota-total']);
+  const quotaUsedInMb = toMegaByteString(aboutResource['account-quota-used']);
 
   $('account-quota-info').textContent =
       quotaUsedInMb + ' / ' + quotaTotalInMb + ' (MB)';
@@ -196,14 +197,14 @@ function updateAboutResource(aboutResource) {
  * @param {Object} deltaUpdateStatus Dictionary describing delta update status.
  */
 function updateDeltaUpdateStatus(deltaUpdateStatus) {
-  var itemContainer = $('delta-update-status');
-  for (var i = 0; i < deltaUpdateStatus['items'].length; i++) {
-    var update = deltaUpdateStatus['items'][i];
-    var tr = document.createElement('tr');
+  const itemContainer = $('delta-update-status');
+  for (let i = 0; i < deltaUpdateStatus['items'].length; i++) {
+    const update = deltaUpdateStatus['items'][i];
+    const tr = document.createElement('tr');
     tr.className = 'delta-update';
     tr.appendChild(createElementFromText('td', update.id));
     tr.appendChild(createElementFromText('td', update.root_entry_path));
-    var startPageToken = update.start_page_token;
+    const startPageToken = update.start_page_token;
     tr.appendChild(createElementFromText(
         'td',
         startPageToken + (startPageToken ? ' (loaded)' : ' (not loaded)')));
@@ -220,7 +221,7 @@ function updateDeltaUpdateStatus(deltaUpdateStatus) {
  * @param {Array} log Array of events.
  */
 function updateEventLog(log) {
-  var ul = $('event-log');
+  const ul = $('event-log');
   updateKeyValueList(ul, log);
 }
 
@@ -229,7 +230,7 @@ function updateEventLog(log) {
  * @param {Array} log Log lines.
  */
 function updateServiceLog(log) {
-  var ul = $('service-log');
+  const ul = $('service-log');
   updateKeyValueList(ul, log);
 }
 
@@ -238,7 +239,7 @@ function updateServiceLog(log) {
  * @param {Array} log Log lines.
  */
 function updateOtherServiceLogsUrl(url) {
-  var link = $('other-logs');
+  const link = $('other-logs');
   link.setAttribute('href', url);
 }
 
@@ -297,7 +298,7 @@ function onRemoveSyncPath(path, status) {
  * @return {HTMLElement} The newly created HTML element.
  */
 function createElementFromText(elementName, text) {
-  var element = document.createElement(elementName);
+  const element = document.createElement(elementName);
   element.appendChild(document.createTextNode(text));
   return element;
 }
@@ -310,14 +311,14 @@ function createElementFromText(elementName, text) {
  * created.
  */
 function updateKeyValueList(ul, list) {
-  for (var i = 0; i < list.length; i++) {
-    var item = list[i];
-    var text = item.key;
+  for (let i = 0; i < list.length; i++) {
+    const item = list[i];
+    let text = item.key;
     if (item.value != '') {
       text += ': ' + item.value;
     }
 
-    var li = createElementFromText('li', text);
+    const li = createElementFromText('li', text);
     if (item.class) {
       li.classList.add(item.class);
     }
@@ -341,18 +342,18 @@ function updateResetStatus(success) {
  * Makes up-to-date table of contents.
  */
 function updateToc() {
-  var toc = $('toc');
+  const toc = $('toc');
   while (toc.firstChild) {
     toc.removeChild(toc.firstChild);
   }
-  var sections = document.getElementsByTagName('section');
-  for (var i = 0; i < sections.length; i++) {
-    var section = sections[i];
+  const sections = document.getElementsByTagName('section');
+  for (let i = 0; i < sections.length; i++) {
+    const section = sections[i];
     if (!section.hidden) {
-      var header = section.getElementsByTagName('h2')[0];
-      var a = createElementFromText('a', header.textContent);
+      const header = section.getElementsByTagName('h2')[0];
+      const a = createElementFromText('a', header.textContent);
       a.href = '#' + section.id;
-      var li = document.createElement('li');
+      const li = document.createElement('li');
       li.appendChild(a);
       toc.appendChild(li);
     }
@@ -365,7 +366,7 @@ function updateToc() {
  * @param {boolean} enabled Whether to enable.
  */
 function setSectionEnabled(section, enable) {
-  var element = $(section);
+  const element = $(section);
   if (element.hidden !== !enable) {
     element.hidden = !enable;
     updateToc();

@@ -1,6 +1,0 @@
-Name: lazycell
-URL: https://crates.io/crates/lazycell
-Description: A library providing a lazily filled Cell struct
-Version: 1.3.0
-Security Critical: no
-License: Apache 2.0

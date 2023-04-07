@@ -731,10 +731,12 @@ void ExtensionTelemetryService::DumpReportForTest(
                << "      Domain: " << get_all_args_pb.domain() << "\n"
                << "      Name: " << get_all_args_pb.name() << "\n"
                << "      Path: " << get_all_args_pb.path() << "\n"
-               << "      Secure: " << get_all_args_pb.secure() << "\n"
+               << "      Secure: " << (get_all_args_pb.secure() ? "Y" : "N")
+               << "\n"
                << "      StoreId: " << get_all_args_pb.store_id() << "\n"
                << "      URL: " << get_all_args_pb.url() << "\n"
-               << "      IsSession: " << get_all_args_pb.is_session() << "\n"
+               << "      IsSession: "
+               << (get_all_args_pb.is_session() ? "Y" : "N") << "\n"
                << "      count: " << get_all_args_pb.count() << "\n";
           }
         }
@@ -759,9 +761,56 @@ void ExtensionTelemetryService::DumpReportForTest(
         }
         continue;
       }
+      // Potential Password Theft
+      if (signal_pb.has_potential_password_theft_info()) {
+        const auto& potential_password_theft_info_pb =
+            signal_pb.potential_password_theft_info();
+        const RepeatedPtrField<
+            ExtensionTelemetryReportRequest_SignalInfo_PotentialPasswordTheftInfo_PasswordReuseInfo>&
+            reused_password_infos =
+                potential_password_theft_info_pb.reused_password_infos();
+        const RepeatedPtrField<
+            ExtensionTelemetryReportRequest_SignalInfo_PotentialPasswordTheftInfo_RemoteHostData>&
+            remote_hosts_data =
+                potential_password_theft_info_pb.remote_hosts_data();
+        if (!reused_password_infos.empty() && !remote_hosts_data.empty()) {
+          ss << "  Signal: PotentialPasswordTheft\n";
+          for (const auto& remote_hosts_data_pb : remote_hosts_data) {
+            ss << "    RemoteHostData:\n"
+               << "      URL: " << remote_hosts_data_pb.remote_host_url()
+               << "\n"
+               << "      count: " << remote_hosts_data_pb.count() << "\n";
+          }
+          for (const auto& reused_password_infos_pb : reused_password_infos) {
+            ss << "    PasswordReuseInfo:\n";
+            ss << "      DomainsMatchingPassword:\n";
+            for (const std::string& matching_domain :
+                 reused_password_infos_pb.domains_matching_password()) {
+              ss << "        " << matching_domain << "\n";
+            }
+            ss << "      IsChromeSigninPassword: "
+               << (reused_password_infos_pb.is_chrome_signin_password() ? "Y"
+                                                                        : "N")
+               << "\n";
+            ss << "      ReusedPasswordAccountType:\n";
+            ss << "        IsAccountSyncing: "
+               << (reused_password_infos_pb.reused_password_account_type()
+                           .is_account_syncing()
+                       ? "Y"
+                       : "N")
+               << "\n";
+            ss << "        AccountType: "
+               << reused_password_infos_pb.reused_password_account_type()
+                      .account_type()
+               << "\n";
+            ss << "      ReuseCount: " << reused_password_infos_pb.count()
+               << "\n";
+          }
+        }
+        continue;
+      }
     }
   }
-
   DVLOG(1) << "Telemetry Report: " << ss.str();
 }
 

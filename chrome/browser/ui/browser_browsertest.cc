@@ -96,6 +96,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/sessions/core/command_storage_manager_test_helper.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/common/language_detection_details.h"
 #include "content/public/browser/browser_context.h"
@@ -176,6 +177,13 @@ std::u16string WindowCaptionFromPageTitle(const std::u16string& page_title) {
   // On Mac, we don't want to suffix the page title with the application name.
   if (page_title.empty())
     return l10n_util::GetStringUTF16(IDS_BROWSER_WINDOW_MAC_TAB_UNTITLED);
+  return page_title;
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On Lacros, we don't want to suffix the page title with the application
+  // name. Note that the default title for empty title is different from Mac.
+  if (page_title.empty()) {
+    return l10n_util::GetStringUTF16(IDS_DEFAULT_TAB_TITLE);
+  }
   return page_title;
 #else
   if (page_title.empty())

@@ -141,7 +141,6 @@ mojom::TouchpadSettingsPtr GetTouchpadSettingsFromPrefs(
 }
 
 mojom::TouchpadSettingsPtr RetrieveTouchpadSettings(
-    PrefService* pref_service,
     const mojom::Touchpad& touchpad,
     const base::Value::Dict& settings_dict) {
   mojom::TouchpadSettingsPtr settings = mojom::TouchpadSettings::New();
@@ -303,8 +302,7 @@ void TouchpadPrefHandlerImpl::InitializeTouchpadSettings(
   const auto* settings_dict = devices_dict.FindDict(touchpad->device_key);
   ForceTouchpadSettingPersistence force_persistence;
   if (settings_dict) {
-    touchpad->settings =
-        RetrieveTouchpadSettings(pref_service, *touchpad, *settings_dict);
+    touchpad->settings = RetrieveTouchpadSettings(*touchpad, *settings_dict);
   } else if (Shell::Get()->input_device_tracker()->WasDevicePreviouslyConnected(
                  InputDeviceTracker::InputDeviceCategory::kTouchpad,
                  touchpad->device_key)) {

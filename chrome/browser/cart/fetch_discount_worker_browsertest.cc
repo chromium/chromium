@@ -358,6 +358,7 @@ class FetchFLCodeDiscountWorkerBrowserTest
     parter_merchant_list_.push_back("merchant0.com");
     parter_merchant_list_.push_back("merchant1.com");
     parter_merchant_list_.push_back("merchant2.com");
+    parter_merchant_list_.push_back("merchant3.com");
   }
 
   void SetUpOnMainThread() override {
@@ -462,6 +463,22 @@ IN_PROC_BROWSER_TEST_F(FetchFLCodeDiscountWorkerBrowserTest,
                             EqualsDisplayStrings(expected_display_string)))));
 }
 
+IN_PROC_BROWSER_TEST_F(FetchFLCodeDiscountWorkerBrowserTest,
+                       IgnoreNotSupportedType_RBD_WITH_CODE) {
+  embedded_test_server()->StartAcceptingConnections();
+
+  CreateCart("merchant3.com",
+             BuildCartProto("merchant3.com", "https://www.merchant3.com/cart"));
+
+  StartGettingDiscount();
+  waitForDiscounts("merchant3.com");
+
+  // Verify discounts.
+  EXPECT_THAT(coupon_service_->GetFreeListingCouponsForUrl(
+                  GURL("https://www.merchant3.com/cart")),
+              testing::IsEmpty());
+}
+
 class FetchCodeBasedDiscountWorkerBrowserTest
     : public FetchDiscountWorkerBrowserTest {
  public:
@@ -469,6 +486,8 @@ class FetchCodeBasedDiscountWorkerBrowserTest
     parter_merchant_list_.push_back("merchant0.com");
     parter_merchant_list_.push_back("merchant1.com");
     parter_merchant_list_.push_back("merchant2.com");
+    parter_merchant_list_.push_back("merchant3.com");
+    parter_merchant_list_.push_back("merchant4.com");
   }
 
   void SetUpOnMainThread() override {
@@ -576,4 +595,42 @@ IN_PROC_BROWSER_TEST_F(FetchCodeBasedDiscountWorkerBrowserTest,
           testing::Property("display_strings",
                             &autofill::AutofillOfferData::GetDisplayStrings,
                             EqualsDisplayStrings(expected_display_string)))));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    FetchCodeBasedDiscountWorkerBrowserTest,
+    SimulateServerFlagIsOffByNotReturningTheRBDWithCodeType) {
+  embedded_test_server()->StartAcceptingConnections();
+
+  CreateCart("merchant3.com",
+             BuildCartProto("merchant3.com", "https://www.merchant3.com/cart"));
+  CreateCart("merchant4.com",
+             BuildCartProto("merchant4.com", "https://www.merchant4.com/cart"));
+
+  StartGettingDiscount();
+  waitForDiscounts("merchant3.com");
+  waitForDiscounts("merchant4.com");
+
+  // Verify discounts.
+  autofill::DisplayStrings expected_display_string;
+  expected_display_string.value_prop_text = "Save 10% on Running shoes.";
+  EXPECT_THAT(
+      coupon_service_->GetFreeListingCouponsForUrl(
+          GURL("https://www.merchant3.com/cart")),
+      ElementsAre(testing::AllOf(
+          testing::Property("offer_id",
+                            &autofill::AutofillOfferData::GetOfferId,
+                            testing::Eq(1)),
+          testing::Property("promo_code",
+                            &autofill::AutofillOfferData::GetPromoCode,
+                            testing::Eq("SAVE10")),
+          testing::Property("expiry", &autofill::AutofillOfferData::GetExpiry,
+                            testing::Eq(base::Time::FromDoubleT(1635204293))),
+          testing::Property("display_strings",
+                            &autofill::AutofillOfferData::GetDisplayStrings,
+                            EqualsDisplayStrings(expected_display_string)))));
+
+  EXPECT_THAT(coupon_service_->GetFreeListingCouponsForUrl(
+                  GURL("https://www.merchant4.com/cart")),
+              testing::IsEmpty());
 }

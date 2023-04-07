@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2305020378527873881">O volume <ph name="VOLUME_NAME" /> foi ejetado.</translation>
 <translation id="2307462900900812319">Configurar rede</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Não foi possível localizar uma extensão com o ID <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Entre em contato com o administrador.}one{Não foi possível localizar uma extensão com o ID <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Entre em contato com o administrador.}other{Não foi possível localizar extensões com os IDs <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Entre em contato com o administrador.}}</translation>
 <translation id="2325650632570794183">Este tipo de arquivo não é suportado. Visite a Chrome Web Store para encontrar um aplicativo que possa abrir este tipo de arquivo.</translation>
 <translation id="2326539130272988168">Búlgaro</translation>
 <translation id="2337715497728194187">Compartilhar com a Bruschetta</translation>

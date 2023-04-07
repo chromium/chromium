@@ -25,7 +25,8 @@ ReportingObserver* ReportingObserver::Create(
 ReportingObserver::ReportingObserver(ExecutionContext* execution_context,
                                      V8ReportingObserverCallback* callback,
                                      ReportingObserverOptions* options)
-    : ExecutionContextClient(execution_context),
+    : ActiveScriptWrappable<ReportingObserver>({}),
+      ExecutionContextClient(execution_context),
       execution_context_(execution_context),
       callback_(callback),
       options_(options),

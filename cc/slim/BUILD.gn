@@ -7,6 +7,8 @@ component("slim") {
     "constants.h",
     "damage_data.cc",
     "damage_data.h",
+    "delayed_scheduler.cc",
+    "delayed_scheduler.h",
     "features.cc",
     "features.h",
     "filter.cc",

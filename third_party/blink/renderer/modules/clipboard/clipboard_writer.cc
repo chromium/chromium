@@ -343,33 +343,31 @@ void ClipboardWriter::WriteToSystem(Blob* blob) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!file_reader_);
   file_reader_ = MakeGarbageCollected<FileReaderLoader>(
-      FileReaderLoader::kReadAsArrayBuffer, this,
-      std::move(file_reading_task_runner_));
+      this, std::move(file_reading_task_runner_));
   file_reader_->Start(blob->GetBlobDataHandle());
 }
 
-// FileReaderLoaderClient implementation.
-
-void ClipboardWriter::DidStartLoading() {}
-void ClipboardWriter::DidReceiveData() {}
-
-void ClipboardWriter::DidFinishLoading() {
+// FileReaderClient implementation.
+void ClipboardWriter::DidFinishLoading(FileReaderData contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DOMArrayBuffer* array_buffer = file_reader_->ArrayBufferResult();
+  DOMArrayBuffer* array_buffer = std::move(contents).AsDOMArrayBuffer();
   DCHECK(array_buffer);
 
   self_keep_alive_.Clear();
+  file_reader_ = nullptr;
 
   StartWrite(array_buffer, clipboard_task_runner_);
 }
 
 void ClipboardWriter::DidFail(FileErrorCode error_code) {
+  FileReaderAccumulator::DidFail(error_code);
   self_keep_alive_.Clear();
+  file_reader_ = nullptr;
   promise_->RejectFromReadOrDecodeFailure();
 }
 
 void ClipboardWriter::Trace(Visitor* visitor) const {
-  FileReaderLoaderClient::Trace(visitor);
+  FileReaderAccumulator::Trace(visitor);
   visitor->Trace(promise_);
   visitor->Trace(system_clipboard_);
   visitor->Trace(file_reader_);

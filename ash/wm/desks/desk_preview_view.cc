@@ -560,7 +560,10 @@ void DeskPreviewView::OnThemeChanged() {
 }
 
 void DeskPreviewView::OnFocus() {
-  UpdateOverviewHighlightForFocusAndSpokenFeedback(this);
+  if (mini_view_->owner_bar()->overview_grid()) {
+    UpdateOverviewHighlightForFocusAndSpokenFeedback(this);
+  }
+
   mini_view_->UpdateFocusColor();
   View::OnFocus();
 }

@@ -8,10 +8,10 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/url_formatter/elide_url.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/table_view_bookmarks_folder_item.h"
-#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

@@ -129,7 +129,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, GL_SkiaGL) {
   uint32_t usage = SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_SCANOUT;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, /*is_thread_safe=*/false);
+      alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
   EXPECT_TRUE(backing);
   backing->SetCleared();
 
@@ -209,7 +209,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, Dawn_SkiaGL) {
   uint32_t usage = SHARED_IMAGE_USAGE_WEBGPU | SHARED_IMAGE_USAGE_SCANOUT;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, /*is_thread_safe=*/false);
+      alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
   EXPECT_TRUE(backing);
 
   std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
@@ -275,7 +275,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
                          SHARED_IMAGE_USAGE_WEBGPU;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, /*is_thread_safe=*/false);
+      alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
   EXPECT_TRUE(backing);
 
   GLenum expected_target = GL_TEXTURE_RECTANGLE;
@@ -399,7 +399,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, UnclearDawn_SkiaFails) {
   const gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, /*is_thread_safe=*/false);
+      alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
   ASSERT_NE(backing, nullptr);
 
   std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
@@ -491,7 +491,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, SkiaAccessFirstFails) {
   const gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, /*is_thread_safe=*/false);
+      alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
   ASSERT_NE(backing, nullptr);
 
   std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
@@ -588,7 +588,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, Basic) {
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, /*is_thread_safe=*/false);
+      alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
 
   if (!should_succeed) {
     EXPECT_FALSE(backing);
@@ -679,7 +679,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialData) {
 
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      initial_data);
+      "TestLabel", initial_data);
   ::testing::Mock::VerifyAndClearExpectations(&progress_reporter_);
   if (!should_succeed) {
     EXPECT_FALSE(backing);
@@ -725,7 +725,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialDataImage) {
   std::vector<uint8_t> initial_data(256 * 256 * 4);
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      initial_data);
+      "TestLabel", initial_data);
   if (!should_succeed) {
     EXPECT_FALSE(backing);
     return;
@@ -762,11 +762,11 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialDataWrongSize) {
   std::vector<uint8_t> initial_data_large(256 * 512 * 4);
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      initial_data_small);
+      "TestLabel", initial_data_small);
   EXPECT_FALSE(backing);
   backing = backing_factory_->CreateSharedImage(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      initial_data_large);
+      "TestLabel", initial_data_large);
   EXPECT_FALSE(backing);
 }
 
@@ -782,7 +782,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InvalidFormat) {
   uint32_t usage = SHARED_IMAGE_USAGE_SCANOUT;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, /*is_thread_safe=*/false);
+      alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
   EXPECT_FALSE(backing);
 }
 
@@ -797,13 +797,13 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InvalidSize) {
   uint32_t usage = SHARED_IMAGE_USAGE_SCANOUT;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, /*is_thread_safe=*/false);
+      alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
   EXPECT_FALSE(backing);
 
   size = gfx::Size(INT_MAX, INT_MAX);
   backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, /*is_thread_safe=*/false);
+      alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
   EXPECT_FALSE(backing);
 }
 
@@ -822,7 +822,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, EstimatedSize) {
   uint32_t usage = SHARED_IMAGE_USAGE_SCANOUT;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, /*is_thread_safe=*/false);
+      alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
 
   if (!should_succeed) {
     EXPECT_FALSE(backing);
@@ -900,7 +900,7 @@ class IOSurfaceImageBackingFactoryGMBTest
       return supports_ar30_;
     } else if (format == viz::SinglePlaneFormat::kRGBA_1010102) {
       return supports_ab30_;
-    } else if (format == viz::MultiPlaneFormat::kYUV_420_BIPLANAR) {
+    } else if (format == viz::MultiPlaneFormat::kNV12) {
       return supports_ycbcr_420v_;
     } else if (format == viz::MultiPlaneFormat::kP010) {
       return supports_ycbcr_p010_;
@@ -929,7 +929,7 @@ TEST_P(IOSurfaceImageBackingFactoryGMBTest, Basic) {
 
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(handle));
+      "TestLabel", std::move(handle));
 
   if (!should_succeed) {
     EXPECT_FALSE(backing);
@@ -1022,7 +1022,7 @@ const auto kSinglePlaneFormats =
 const auto kGMBFormats =
     ::testing::Values(viz::SinglePlaneFormat::kRGBA_8888,
                       viz::SinglePlaneFormat::kBGRA_1010102,
-                      viz::MultiPlaneFormat::kYUV_420_BIPLANAR,
+                      viz::MultiPlaneFormat::kNV12,
                       viz::MultiPlaneFormat::kP010);
 
 std::string TestParamToString(

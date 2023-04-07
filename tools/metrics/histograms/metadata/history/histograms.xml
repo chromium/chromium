@@ -873,7 +873,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="History.Clusters.Backend.FilterClusterProcessor.NumClusters.{Segment}{Source}"
-    units="ms" expires_after="2023-08-08">
+    units="counts" expires_after="2023-08-08">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -2287,27 +2287,6 @@ chromium-metrics-reviews@google.com.
     URLs is used for synchronous inline autocomplete on the UI thread, while the
     larger slower service is run off of disk on a background thread. Recorded on
     profile open.
-  </summary>
-</histogram>
-
-<histogram name="History.InMemoryDBKeywordTermsCount" units="items"
-    expires_after="2020-02-16">
-  <owner>sky@chromium.org</owner>
-  <owner>mpearson@chromium.org</owner>
-  <component>UI&gt;Browser&gt;History</component>
-  <summary>
-    Number of items in in-memory keyword_search_terms table. Recorded on profile
-    open.
-  </summary>
-</histogram>
-
-<histogram name="History.InMemoryDBKeywordURLItemCount" units="items"
-    expires_after="2020-02-16">
-  <owner>sky@chromium.org</owner>
-  <owner>mpearson@chromium.org</owner>
-  <component>UI&gt;Browser&gt;History</component>
-  <summary>
-    Number of items in in-memory urls table. Recorded on profile open.
   </summary>
 </histogram>
 

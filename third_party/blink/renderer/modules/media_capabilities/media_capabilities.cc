@@ -1103,7 +1103,9 @@ ScriptPromise MediaCapabilities::encodingInfo(
   DCHECK_EQ(config->type(), "record");
   DCHECK(RuntimeEnabledFeatures::MediaCapabilitiesEncodingInfoEnabled());
 
-  if (auto* handler = MakeGarbageCollected<MediaRecorderHandler>()) {
+  if (auto* handler = MakeGarbageCollected<MediaRecorderHandler>(
+          resolver->GetExecutionContext()->GetTaskRunner(
+              TaskType::kInternalMediaRealTime))) {
     handler->EncodingInfo(ToWebMediaConfiguration(config),
                           WTF::BindOnce(&OnMediaCapabilitiesEncodingInfo,
                                         WrapPersistent(resolver)));

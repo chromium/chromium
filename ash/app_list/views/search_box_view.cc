@@ -23,6 +23,7 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -382,6 +383,8 @@ void SearchBoxView::HandleQueryChange(const std::u16string& query,
 
   current_query_ = query;
 
+  UpdateIphViewVisibility();
+
   // The search box background depens on whether the query is empty, so schedule
   // repaint when this changes.
   if (query_empty_changed)
@@ -623,9 +626,11 @@ void SearchBoxView::UpdateBackground(AppListState target_state) {
 void SearchBoxView::UpdateLayout(AppListState target_state,
                                  int target_state_height) {
   // Horizontal margins are selected to match search box icon's vertical
-  // margins.
+  // margins. Space used for iph should be ignored.
+  const int iph_height =
+      iph_view() ? iph_view()->GetPreferredSize().height() : 0;
   const int horizontal_spacing =
-      (target_state_height - GetSearchBoxIconSize()) / 2;
+      (target_state_height - iph_height - GetSearchBoxIconSize()) / 2;
   const int horizontal_right_padding =
       horizontal_spacing -
       (GetSearchBoxButtonSize() - GetSearchBoxIconSize()) / 2;
@@ -1233,6 +1238,7 @@ void SearchBoxView::UpdateIphViewVisibility() {
   const bool is_iph_showing = iph_view() != nullptr;
 
   const bool should_show_iph = show_assistant_button && is_iph_allowed_ &&
+                               !HasValidQuery() &&
                                (would_trigger_iph || is_iph_showing);
 
   if (should_show_iph == is_iph_showing) {
@@ -1247,7 +1253,8 @@ void SearchBoxView::UpdateIphViewVisibility() {
     }
 
     SetIphView(std::make_unique<LauncherSearchIphView>(
-        std::move(scoped_iph_session), /*delegate=*/this));
+        std::move(scoped_iph_session), /*delegate=*/this,
+        /*is_in_tablet_mode=*/!is_app_list_bubble_));
 
     assistant_button()->SetBackground(views::CreateThemedRoundedRectBackground(
         kColorAshControlBackgroundColorInactive,
@@ -1258,6 +1265,13 @@ void SearchBoxView::UpdateIphViewVisibility() {
     DeleteIphView();
     assistant_button()->SetBackground(nullptr);
   }
+
+  // Adding or removing IPH view can change `SearchBoxView` bounds largely.
+  // Re-layout can be necessary on parent views as well. Explicitly call
+  // `InvalidateLayout` to trigger re-layouts on all parent views. Without this,
+  // we can have unnecessary spaces in `SearchBoxView` for an IPH dismiss under
+  // some conditions.
+  InvalidateLayout();
 }
 
 void SearchBoxView::OnWouldTriggerIphChanged() {

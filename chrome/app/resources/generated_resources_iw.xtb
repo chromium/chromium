@@ -1339,7 +1339,6 @@
 <translation id="2114820389966440614">כאן ניתן לעיין באלבום 'המיטב מהזמן האחרון' ובזיכרונות נוספים</translation>
 <translation id="2114896190328250491">צילום מאת <ph name="NAME" /></translation>
 <translation id="2114995631896158695">‏אין כרטיס SIM</translation>
-<translation id="2116020356255810305">פתיחת האפליקציה בזמן ההפעלה</translation>
 <translation id="2116619964159595185">‏בדרך כלל, אתרים מתחברים למכשירי Bluetooth כדי לתמוך בתכונות כמו הגדרת איתות Bluetooth בעל מתח נמוך או סנכרון עם איתות כזה, מכשיר מעקב אחר נתוני בריאות או כושר או נורה חכמה</translation>
 <translation id="2117655453726830283">לשקף הבא</translation>
 <translation id="2119349053129246860">פתיחה באמצעות <ph name="APP" /></translation>
@@ -3272,7 +3271,6 @@
 <translation id="380329542618494757">שם</translation>
 <translation id="3803345858388753269">איכות הווידאו</translation>
 <translation id="3803367742635802571">יכול להיות שאתרים שביקרת בהם יפסיקו לפעול כמו שצריך</translation>
-<translation id="3803583375545057606">לבקש מהורה להפעיל את התוסף הזה?</translation>
 <translation id="380408572480438692">‏הפעלת האפשרות לאיסוף נתוני ביצועים תסייע ל-Google לשפר את המערכת עם הזמן. הנתונים נשלחים רק לאחר שמגישים דוח משוב (Alt-Shift-I) וכוללים את נתוני הביצועים. ניתן לחזור למסך זה כדי להשבית את איסוף הנתונים בכל עת.</translation>
 <translation id="3807249107536149332">לא ניתן להשתמש ב-<ph name="EXTENSION_NAME" /> (מזהה תוסף "<ph name="EXTENSION_ID" />") במסך התחברות.</translation>
 <translation id="3807747707162121253">&amp;ביטול</translation>
@@ -3694,7 +3692,6 @@
 <translation id="4169535189173047238">לא לאפשר</translation>
 <translation id="4170314459383239649">מחיקה ביציאה</translation>
 <translation id="417096670996204801">בחירת פרופיל</translation>
-<translation id="41725145403849567">לבקש מהורה להוסיף את התוסף הזה?</translation>
 <translation id="4175137578744761569">סגול בהיר ולבן</translation>
 <translation id="4175737294868205930">אחסון קבוע</translation>
 <translation id="4176463684765177261">מושבת</translation>
@@ -5108,7 +5105,6 @@
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{קוד האימות חייב להיות באורך של תו אחד לפחות}one{קוד האימות חייב להיות באורך של # תווים לפחות}two{קוד האימות חייב להיות באורך של # תווים לפחות}other{קוד האימות חייב להיות באורך של # תווים לפחות}}</translation>
 <translation id="5474859849784484111">‏כדי להיכנס אל <ph name="MANAGER" />, מתחברים עכשיו לרשת Wi-Fi ומורידים עדכון. ניתן גם לבצע את ההורדה דרך חיבור עם חיוב לפי שימוש בנתונים (עשויים לחול חיובים).</translation>
 <translation id="5476016146231427848">‏צריך להפעיל מחדש את Chromebook כדי להשתמש ב-Steam</translation>
-<translation id="5476897066181964657">כדי להוסיף את התוסף הזה, עליך לקבל אישור מהורה או מאפוטרופוס</translation>
 <translation id="5481273127572794904">לא מורשים להוריד מספר קבצים באופן אוטומטי</translation>
 <translation id="5481941284378890518">הוספת מדפסות קרובות</translation>
 <translation id="5483785310822538350">ביטול גישה לקבצים ולמכשירים</translation>
@@ -5205,7 +5201,6 @@
 <translation id="5555639311269196631">כיבוי הנקודה לשיתוף אינטרנט</translation>
 <translation id="5556459405103347317">טעינה מחדש</translation>
 <translation id="5558129378926964177">הת&amp;קרבות</translation>
-<translation id="5558247502209241936">פתיחת האפליקציה בחלון</translation>
 <translation id="5559311991468302423">מחיקת הכתובת</translation>
 <translation id="55601339223879446">שינוי גבולות שולחן העבודה שלך בצג</translation>
 <translation id="5561162485081632007">מזהה אירועים מסוכנים כשהם מתרחשים ומזהיר אותך על כך</translation>
@@ -6031,7 +6026,6 @@
 <translation id="6305607932814307878">מדיניות גלובלית:</translation>
 <translation id="6305702903308659374">‏הפעלה בעוצמת שמע רגילה גם אם מכשיר ה-ChromeVox מקריא</translation>
 <translation id="6305909198255586420">יש לבצע את ההתקנה עם הפרופיל הראשי</translation>
-<translation id="630750887748244481">‏ההגדרה 'הרשאות לאתרים, לאפליקציות ולתוספים' הושבתה ב-Chrome על ידי ההורה שלך. ההוספה של התוסף הזה אסורה.</translation>
 <translation id="6307990684951724544">המערכת עמוסה</translation>
 <translation id="6308493641021088955">הכניסה מבוצעת בעזרת <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">שמירת קישור&amp; בשם...</translation>
@@ -6861,7 +6855,6 @@
 <translation id="7025190659207909717">ניהול שירות של נתונים סלולריים</translation>
 <translation id="7025895441903756761">אבטחה ופרטיות</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{פתיחת כול הכתובות בחלון &amp;אנונימי}=1{פתיחה בחלון &amp;אנונימי}one{פתיחת כול הכתובות ({COUNT}) בחלון &amp;אנונימי}two{פתיחת כול הכתובות ({COUNT}) בחלון &amp;אנונימי}other{פתיחת כול הכתובות ({COUNT}) בחלון &amp;אנונימי}}</translation>
-<translation id="7028057921476386252">כדי להפעיל את התוסף הזה, עליך לקבל אישור מהורה או מאפוטרופוס</translation>
 <translation id="7029307918966275733">‏Crostini לא מותקן. יש להתקין את Crostini כדי להציג קרדיטים.</translation>
 <translation id="7029809446516969842">סיסמאות</translation>
 <translation id="7030304022046916278">‏שליחת כתובות URL לבדיקה על ידי 'גלישה בטוחה'</translation>
@@ -8241,7 +8234,6 @@
 <translation id="8251509999076836464">מתבצעת התאמה ל-<ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">התמונה הממוזערת הוסרה.</translation>
 <translation id="825238165904109940">‏הצגה של כתובות URL מלאות בכל המקרים</translation>
-<translation id="8252538334423261825">אי אפשר להוסיף את התוסף</translation>
 <translation id="8252569384384439529">ההעלאה מתבצעת...</translation>
 <translation id="8253198102038551905">יש ללחוץ על '+' כדי לקבל מאפייני רשת</translation>
 <translation id="8255212965098517578">התמונות, ההתראות והאפליקציות מהזמן האחרון</translation>

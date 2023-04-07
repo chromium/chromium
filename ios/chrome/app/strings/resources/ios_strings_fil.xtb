@@ -206,7 +206,6 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="2411749908844615428">{count,plural, =1{{count} na-save na address ang available sa itaas ng iyong keyboard.}one{{count} na-save na address ang available sa itaas ng iyong keyboard.}other{{count} na na-save na address ang available sa itaas ng iyong keyboard.}}</translation>
 <translation id="2421004566762153674">Pag-block sa third-party na cookies</translation>
 <translation id="2421044535038393232">Magpatuloy sa Pag-edit</translation>
-<translation id="2430198251915534025">{COUNT,plural, =1{{COUNT} Nakompromisong Password}one{{COUNT} Nakompromisong Password}other{{COUNT} na Nakompromisong Password}}</translation>
 <translation id="2434405374328098816">May na-save ka nang password para sa "<ph name="USERNAME" />" sa <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Ipakita ang password</translation>
 <translation id="2451654228769116489">I-pin ang Tab</translation>
@@ -257,7 +256,6 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="2718352093833049315">Sa Wi-Fi lang</translation>
 <translation id="2747003861858887689">Nakaraang field</translation>
 <translation id="2749231692441336879">Sinusubaybayan ang <ph name="CHANNEL_NAME" /></translation>
-<translation id="2764831210418622012">ngayon lang</translation>
 <translation id="2772667768515195373">Puwede kang gumamit ng mga naka-save na address sa lahat ng produkto ng Google. Naka-save ang address na ito sa iyong Google Account na <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Paghahanap sa Incognito</translation>
 <translation id="277771892408211951">Pumili ng Wika</translation>
@@ -924,7 +922,6 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Mga Kamakailang Tab</translation>
 <translation id="7006788746334555276">Mga Setting ng Nilalaman</translation>
-<translation id="7014087399239955356">Sinusuri ang Mga Password...</translation>
 <translation id="7029809446516969842">Mga Password</translation>
 <translation id="7053983685419859001">I-block</translation>
 <translation id="7062545763355031412">Tanggapin at lumipat ng account</translation>

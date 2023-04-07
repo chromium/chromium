@@ -1556,6 +1556,33 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </token>
 </histogram>
 
+<histogram
+    name="ChromeOS.Inputs.TouchscreenUsage.Temporary.{TimePeriod}.{Mode}"
+    units="ms" expires_after="2024-01-31">
+<!-- TODO(b/270610982): Remove excess time periods once an optimal time period has been selected. -->
+
+  <owner>wmahon@google.com</owner>
+  <owner>chromeos-tango@google.com</owner>
+  <summary>
+    Records touchscreen usage time in {Mode}. A usage session is defined as a
+    set of subsequent touches where each touch occurred less than {TimePeriod}
+    after the previous.
+  </summary>
+  <token key="TimePeriod">
+    <variant name="1Minute"/>
+    <variant name="3Minutes"/>
+    <variant name="5Minutes"/>
+    <variant name="5Seconds"/>
+    <variant name="10Minutes"/>
+    <variant name="15Seconds"/>
+    <variant name="30Seconds"/>
+  </token>
+  <token key="Mode">
+    <variant name="ClamshellMode"/>
+    <variant name="TabletMode"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.Intents.IntentPickerAction"
     enum="IntentPickerDialogAction" expires_after="2023-10-01">
   <owner>tsergeant@chromium.org</owner>
@@ -2390,36 +2417,58 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 </histogram>
 
 <histogram
-    name="ChromeOS.Settings.Device.Keyboard.{KeyboardType}.BlockMetaFKeyRewrites.Initial"
+    name="ChromeOS.Settings.Device.Keyboard.{KeyboardType}.{KeyboardSetting}.Initial"
     enum="Boolean" expires_after="2024-03-22">
   <owner>dpad@google.com</owner>
-  <owner>yyhyyh@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
-    Records the initial value of the Block Meta and Function Key rewrites
-    settings when a keyboard's settings are first initialized.
+    Records the value of the {KeyboardSetting} setting when the {KeyboardType}
+    keyboard is first initialized.
   </summary>
   <token key="KeyboardType">
     <variant name="External"/>
     <variant name="ExternalChromeOs"/>
     <variant name="Internal"/>
   </token>
+  <token key="KeyboardSetting">
+    <variant name="BlockMetaFKeyRewrites"/>
+    <variant name="TopRowAreFKeys"/>
+  </token>
 </histogram>
 
 <histogram
-    name="ChromeOS.Settings.Device.Keyboard.{KeyboardType}.TopRowAreFKeys.Initial"
-    enum="Boolean" expires_after="2024-03-22">
+    name="ChromeOS.Settings.Device.Touchpad.{TouchpadType}.Sensitivity.Initial"
+    enum="PointerSensitivity" expires_after="2024-03-22">
   <owner>dpad@google.com</owner>
-  <owner>yyhyyh@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
-    Records the initial value of the top-row keys are used as Function Keys when
-    a keyboard's settings are first initialized.
+    Records the value of the sensitivity setting when the {TouchpadType}
+    touchpad is first initialized.
   </summary>
-  <token key="KeyboardType">
-    <variant name="External"/>
-    <variant name="ExternalChromeOs"/>
-    <variant name="Internal"/>
+  <token key="TouchpadType">
+    <variant name="External" summary="external touchpad"/>
+    <variant name="Internal" summary="internal touchpad"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ChromeOS.Settings.Device.Touchpad.{TouchpadType}.{TouchpadSetting}.Initial"
+    enum="Boolean" expires_after="2024-03-22">
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the value of the {TouchpadSetting} settings when the {TouchpadType}
+    touchpad is first initialized.
+  </summary>
+  <token key="TouchpadType">
+    <variant name="External" summary="external touchpad"/>
+    <variant name="Internal" summary="internal touchpad"/>
+  </token>
+  <token key="TouchpadSetting">
+    <variant name="AccelerationEnabled"/>
+    <variant name="ReverseScrolling"/>
+    <variant name="TapDragging"/>
+    <variant name="TapToClick"/>
   </token>
 </histogram>
 
@@ -2436,6 +2485,40 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
     <variant name="Mouse"/>
     <variant name="PointingStick"/>
     <variant name="Touchpad"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Settings.Device.{Peripheral}.Sensitivity.Initial"
+    enum="PointerSensitivity" expires_after="2024-03-22">
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the value of the sensitivity setting when the {Peripheral} device is
+    first initialized. The value ranges from 1 to 5.
+  </summary>
+  <token key="Peripheral">
+    <variant name="Mouse"/>
+    <variant name="PointingStick"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ChromeOS.Settings.Device.{Peripheral}.{PeripheralSetting}.Initial"
+    enum="Boolean" expires_after="2024-03-22">
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the value of the {PeripheralSetting} settings when the {Peripheral}
+    device is first initialized.
+  </summary>
+  <token key="Peripheral">
+    <variant name="Mouse"/>
+    <variant name="PointingStick"/>
+  </token>
+  <token key="PeripheralSetting">
+    <variant name="AccelerationEnabled"/>
+    <variant name="ReverseScrolling"/>
+    <variant name="SwapPrimaryButtons"/>
   </token>
 </histogram>
 

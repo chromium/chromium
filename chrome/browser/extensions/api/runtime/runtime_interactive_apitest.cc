@@ -86,6 +86,8 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsInteractiveApiTest, GetPopupContext) {
   content::RenderFrameHost* popup_frame =
       popup_host->web_contents()->GetPrimaryMainFrame();
   int expected_frame_id = ExtensionApiFrameIdMap::GetFrameId(popup_frame);
+  std::string expected_context_id =
+      ExtensionApiFrameIdMap::GetContextId(popup_frame).AsLowercaseString();
   std::string expected_document_id =
       ExtensionApiFrameIdMap::GetDocumentId(popup_frame).ToString();
   std::string expected_frame_url =
@@ -104,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsInteractiveApiTest, GetPopupContext) {
   static constexpr char kExpectedTemplate[] =
       R"([{
             "contextType": "POPUP",
-            "contextId": "",
+            "contextId": "%s",
             "tabId": -1,
             "windowId": -1,
             "frameId": %d,
@@ -113,9 +115,10 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsInteractiveApiTest, GetPopupContext) {
             "documentOrigin": "%s",
             "incognito": false
          }])";
-  std::string expected = base::StringPrintf(
-      kExpectedTemplate, expected_frame_id, expected_document_id.c_str(),
-      expected_frame_url.c_str(), expected_origin.c_str());
+  std::string expected =
+      base::StringPrintf(kExpectedTemplate, expected_context_id.c_str(),
+                         expected_frame_id, expected_document_id.c_str(),
+                         expected_frame_url.c_str(), expected_origin.c_str());
   EXPECT_THAT(background_contexts, base::test::IsJson(expected));
 }
 

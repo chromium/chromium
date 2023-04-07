@@ -29,7 +29,7 @@ BASE_FEATURE(kCastDisableModelNameCheck,
 // --enable-cast-streaming-with-hidpi.
 BASE_FEATURE(kCastEnableStreamingWithHiDPI,
              "CastEnableStreamingWithHiDPI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace mirroring

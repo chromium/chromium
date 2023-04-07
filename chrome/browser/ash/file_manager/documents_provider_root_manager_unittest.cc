@@ -89,8 +89,9 @@ class DocumentsProviderRootManagerTest : public testing::Test {
     root_manager_.reset();
     arc_service_manager_->arc_bridge_service()->file_system()->CloseInstance(
         &file_system_instance_);
-    if (runner_)
+    if (runner_) {
       runner_->Shutdown();
+    }
   }
 
   void AddFakeRoot(const std::string& authority,

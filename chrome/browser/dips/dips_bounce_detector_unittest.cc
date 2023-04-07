@@ -88,6 +88,21 @@ class TestBounceDetectorDelegate : public DIPSBounceDetectorDelegate {
     }
   }
 
+  // The version of this method in the DIPSWebContentsObserver checks
+  // DIPSStorage for interactions and runs |callback| with the returned list of
+  // sites without interaction. However, for the purpose of testing here, this
+  // method just records the sites reported to it in |reported_sites_| without
+  // filtering.
+  void ReportRedirectorsWithoutInteraction(
+      const std::set<std::string>& sites) override {
+    if (sites.size() == 0) {
+      return;
+    }
+
+    reported_sites_.push_back(base::JoinString(
+        std::vector<base::StringPiece>(sites.begin(), sites.end()), ", "));
+  }
+
   void RecordEvent(DIPSRecordedEvent event,
                    const GURL& url,
                    const base::Time& time) override {
@@ -113,9 +128,17 @@ class TestBounceDetectorDelegate : public DIPSBounceDetectorDelegate {
     url_by_source_id_[source_id_] = FormatURL(url);
   }
 
-  std::set<BounceTuple> GetRecordedBounces() const { return recorded_bounces_; }
+  const std::set<BounceTuple>& GetRecordedBounces() const {
+    return recorded_bounces_;
+  }
 
-  std::set<EventTuple> GetRecordedEvents() const { return recorded_events_; }
+  const std::set<EventTuple>& GetRecordedEvents() const {
+    return recorded_events_;
+  }
+
+  const std::vector<std::string>& GetReportedSites() const {
+    return reported_sites_;
+  }
 
   const std::vector<std::string>& redirects() const { return redirects_; }
 
@@ -131,6 +154,7 @@ class TestBounceDetectorDelegate : public DIPSBounceDetectorDelegate {
   std::vector<std::string> redirects_;
   std::set<BounceTuple> recorded_bounces_;
   std::set<EventTuple> recorded_events_;
+  std::vector<std::string> reported_sites_;
 };
 
 // If you wait this long, even a navigation without user gesture is not
@@ -252,6 +276,10 @@ class DIPSBounceDetectorTest : public ::testing::Test {
                             const base::Time& time,
                             DIPSRecordedEvent event) {
     return std::make_tuple(GURL(url), time, event);
+  }
+
+  const std::vector<std::string>& GetReportedSites() const {
+    return delegate_.GetReportedSites();
   }
 
   base::Time GetCurrentTime() { return test_clock_.Now(); }
@@ -453,6 +481,80 @@ TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Client_Uncommitted) {
                                   /*stateful=*/false),
                   MakeBounceTuple("http://e.test", GetCurrentTime(),
                                   /*stateful=*/false)));
+}
+
+TEST_F(DIPSBounceDetectorTest,
+       ReportRedirectorsInChain_OnEachFinishedNavigation) {
+  // Visit initial page on a.test
+  NavigateTo("http://a.test", kWithUserGesture);
+
+  // Navigate with a click (not a redirect) to b.test, which S-redirects to
+  // c.test
+  StartNavigation("http://b.test", kWithUserGesture)
+      .RedirectTo("http://c.test")
+      .Finish(true);
+
+  // Navigate without a click (i.e. by C-redirecting) to d.test
+  NavigateTo("http://d.test", kNoUserGesture);
+
+  // Navigate without a click (i.e. by C-redirecting) to e.test, which
+  // S-redirects to f.test
+  StartNavigation("http://e.test", kNoUserGesture)
+      .RedirectTo("http://f.test")
+      .Finish(true);
+
+  EXPECT_THAT(GetReportedSites(),
+              testing::ElementsAre("b.test", "c.test", "d.test, e.test"));
+}
+
+TEST_F(DIPSBounceDetectorTest,
+       ReportRedirectorsInChain_IncludingUncommittedNavigations) {
+  // Visit initial page on a.test
+  NavigateTo("http://a.test", kWithUserGesture);
+
+  // Start a redirect chain that doesn't commit.
+  StartNavigation("http://b.test", kWithUserGesture)
+      .RedirectTo("http://c.test")
+      .RedirectTo("http://d.test")
+      .Finish(false);
+
+  // Because the previous navigation didn't commit, the following chain still
+  // starts from http://a.test/.
+  StartNavigation("http://e.test", kWithUserGesture)
+      .RedirectTo("http://f.test")
+      .Finish(true);
+
+  EXPECT_THAT(GetReportedSites(),
+              testing::ElementsAre("b.test, c.test", "e.test"));
+}
+
+// This test verifies that sites in a redirect chain that are the same as the
+// starting site (i.e., last site before the redirect chain started) are not
+// reported.
+TEST_F(DIPSBounceDetectorTest,
+       ReportRedirectorsInChain_OmitSitesMatchingStartSite) {
+  // Visit initial page on a.test.
+  NavigateTo("http://a.test", kWithUserGesture);
+
+  // Navigate with a click (not a redirect) to b.test, which S-redirects to
+  // a.test, which S-redirects to c.test.
+  StartNavigation("http://b.test", kWithUserGesture)
+      .RedirectTo("http://a.test")
+      .RedirectTo("http://c.test")
+      .Finish(true);
+
+  // Navigate without a click (i.e. by C-redirecting) to a.test.
+  NavigateTo("http://a.test", kNoUserGesture);
+
+  // Navigate without a click (i.e. by C-redirecting) to d.test, which
+  // S-redirects to e.test, which S-redirects to f.test.
+  StartNavigation("http://d.test", kNoUserGesture)
+      .RedirectTo("http://e.test")
+      .RedirectTo("http://f.test")
+      .Finish(true);
+
+  EXPECT_THAT(GetReportedSites(),
+              testing::ElementsAre("b.test", "c.test", "d.test, e.test"));
 }
 
 TEST_F(DIPSBounceDetectorTest, InteractionRecording_Throttled) {

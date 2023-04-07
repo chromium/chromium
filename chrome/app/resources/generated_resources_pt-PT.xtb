@@ -1328,7 +1328,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2114820389966440614">Veja "Destaques recentes" e outras memórias aqui</translation>
 <translation id="2114896190328250491">Foto de <ph name="NAME" /></translation>
 <translation id="2114995631896158695">Nenhum cartão SIM inserido</translation>
-<translation id="2116020356255810305">Ativar o início da app no arranque</translation>
 <translation id="2116619964159595185">Normalmente, os sites estabelecem ligação a dispositivos Bluetooth para funcionalidades como configurar ou sincronizar um beacon Bluetooth Low Energy, uma lâmpada inteligente ou um monitorizador de saúde ou fitness</translation>
 <translation id="2117655453726830283">Diapositivo seguinte</translation>
 <translation id="2119349053129246860">Abrir na aplicação <ph name="APP" /></translation>
@@ -3258,7 +3257,6 @@ Pretende pará-lo?</translation>
 <translation id="380329542618494757">Nome</translation>
 <translation id="3803345858388753269">Qualidade de vídeo</translation>
 <translation id="3803367742635802571">Os sites que visita podem deixar de funcionar como previsto</translation>
-<translation id="3803583375545057606">Pedir aos teus pais para ativarem esta extensão?</translation>
 <translation id="380408572480438692">A ativação da recolha de dados de desempenho ajudará a Google a melhorar o sistema ao longo do tempo. Não serão enviados quaisquer dados enquanto não apresentar um relatório de comentários (Alt-Shift-I) e incluir os dados de desempenho. É possível regressar a este ecrã para desativar a recolha em qualquer altura.</translation>
 <translation id="3807249107536149332">O <ph name="EXTENSION_NAME" /> (ID de extensão "<ph name="EXTENSION_ID" />") não é permitido num ecrã de início de sessão.</translation>
 <translation id="3807747707162121253">&amp;Cancelar</translation>
@@ -3680,7 +3678,6 @@ Pretende pará-lo?</translation>
 <translation id="4169535189173047238">Não permitir</translation>
 <translation id="4170314459383239649">Limpar ao sair</translation>
 <translation id="417096670996204801">Escolha um perfil</translation>
-<translation id="41725145403849567">Pedir aos teus pais para adicionarem esta extensão?</translation>
 <translation id="4175137578744761569">Roxo claro e branco</translation>
 <translation id="4175737294868205930">Armazenamento persistente</translation>
 <translation id="4176463684765177261">Desativado</translation>
@@ -5093,7 +5090,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{O PIN tem de ter, pelo menos, um caráter.}other{O PIN tem de ter, pelo menos, # carateres.}}</translation>
 <translation id="5474859849784484111">O domínio <ph name="MANAGER" /> requer que estabeleça ligação a uma rede Wi-Fi agora e transfira uma atualização. Em alternativa, transfira a partir de uma ligação com acesso limitado (podem aplicar-se custos).</translation>
 <translation id="5476016146231427848">Reinicie o dispositivo para usar o Steam no Chromebook</translation>
-<translation id="5476897066181964657">Os pais ou o tutor têm de indicar que podes adicionar esta extensão</translation>
 <translation id="5481273127572794904">Sem autorização para transferir vários ficheiros automaticamente</translation>
 <translation id="5481941284378890518">Adicionar impressoras próximas</translation>
 <translation id="5483785310822538350">Revogar o acesso a ficheiros e a dispositivos</translation>
@@ -5190,7 +5186,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="5555639311269196631">Desativar zona Wi-Fi</translation>
 <translation id="5556459405103347317">Recarregar</translation>
 <translation id="5558129378926964177">Amp&amp;liar</translation>
-<translation id="5558247502209241936">Ativar a abertura da app na janela</translation>
 <translation id="5559311991468302423">Apagar morada</translation>
 <translation id="55601339223879446">Ajustar os limites do seu ambiente de trabalho no ecrã</translation>
 <translation id="5561162485081632007">Deteta e envia-lhe avisos sobre a ocorrência de eventos perigosos.</translation>
@@ -6017,7 +6012,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6305607932814307878">Política Global:</translation>
 <translation id="6305702903308659374">Reproduzir num volume normal mesmo se o ChromeVox estiver a falar</translation>
 <translation id="6305909198255586420">Instale através do seu perfil principal</translation>
-<translation id="630750887748244481">Um dos teus pais desativou as "Autorizações para sites, apps e extensões" do Chrome. Não é permitido adicionar esta extensão.</translation>
 <translation id="6307990684951724544">Sistema ocupado</translation>
 <translation id="6308493641021088955">Início de sessão fornecido por <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Guardar lin&amp;k como...</translation>
@@ -6843,7 +6837,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7025190659207909717">Gestão de serviços de dados móveis</translation>
 <translation id="7025895441903756761">Segurança e privacidade</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Abrir todos numa janela de &amp;navegação anónima}=1{Abrir numa janela de &amp;navegação anónima}other{Abrir todos ({COUNT}) numa janela de &amp;navegação anónima}}</translation>
-<translation id="7028057921476386252">Os pais ou o tutor têm de indicar que podes ativar esta extensão</translation>
 <translation id="7029307918966275733">O Crostini não está instalado. Instale o Crostini para ver os créditos.</translation>
 <translation id="7029809446516969842">Palavras-passe</translation>
 <translation id="7030304022046916278">Envia URLs para a Navegação segura para os verificar</translation>
@@ -8222,7 +8215,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8251509999076836464">A sincronizar com <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">Miniatura removida.</translation>
 <translation id="825238165904109940">Mostrar sempre URLs completos</translation>
-<translation id="8252538334423261825">Não é possível adicionar a extensão</translation>
 <translation id="8252569384384439529">A carregar…</translation>
 <translation id="8253198102038551905">Clique em "+" para aceder às propriedades de rede</translation>
 <translation id="8255212965098517578">Fotos, notificações e apps recentes</translation>

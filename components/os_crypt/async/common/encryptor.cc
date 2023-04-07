@@ -9,7 +9,9 @@
 
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "components/os_crypt/async/common/algorithm.mojom.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "crypto/aead.h"
 #include "crypto/random.h"
@@ -23,34 +25,49 @@ constexpr size_t kNonceLength = 96 / 8;  // AES_GCM_NONCE_LENGTH
 
 }  // namespace
 
-Encryptor::Key::Key(base::span<const uint8_t> key, const Algorithm& algo)
-    : algo_(algo), key_(key.begin(), key.end()) {
-  switch (algo_) {
-    case Key::Algorithm::kAES256GCM:
-      DCHECK_EQ(key.size(), Key::kAES256GCMKeySize);
+Encryptor::Key::Key(base::span<const uint8_t> key,
+                    const mojom::Algorithm& algorithm)
+    : algorithm_(algorithm), key_(key.begin(), key.end()) {
+  if (!algorithm_.has_value()) {
+    NOTREACHED_NORETURN();
+  }
+
+  switch (*algorithm_) {
+    case mojom::Algorithm::kAES256GCM:
+      CHECK_EQ(key.size(), Key::kAES256GCMKeySize);
       break;
   }
 }
 
-Encryptor::Key::Key(const Key&) = default;
-Encryptor::Key& Encryptor::Key::operator=(const Key&) = default;
+Encryptor::Key::Key() = default;
+
+Encryptor::Key::Key(Key&& other) = default;
+Encryptor::Key& Encryptor::Key::operator=(Key&& other) = default;
 
 Encryptor::Key::~Key() = default;
+
+Encryptor::Key Encryptor::Key::Clone() const {
+  return Key(key_, *algorithm_);
+}
 
 Encryptor::Encryptor() = default;
 
 Encryptor::Encryptor(Encryptor&& other) = default;
 Encryptor& Encryptor::operator=(Encryptor&& other) = default;
 
-Encryptor::Encryptor(const KeyRing& keys,
-                     const std::string& provider_for_encryption)
-    : keys_(keys), provider_for_encryption_(provider_for_encryption) {}
+Encryptor::Encryptor(KeyRing keys, const std::string& provider_for_encryption)
+    : keys_(std::move(keys)),
+      provider_for_encryption_(provider_for_encryption) {}
 Encryptor::~Encryptor() = default;
 
 std::vector<uint8_t> Encryptor::Key::Encrypt(
     base::span<const uint8_t> plaintext) const {
-  switch (algo_) {
-    case Key::Algorithm::kAES256GCM: {
+  if (!algorithm_.has_value()) {
+    NOTREACHED_NORETURN();
+  }
+
+  switch (*algorithm_) {
+    case mojom::Algorithm::kAES256GCM: {
       crypto::Aead aead(crypto::Aead::AES_256_GCM);
       aead.Init(key_);
 
@@ -67,13 +84,16 @@ std::vector<uint8_t> Encryptor::Key::Encrypt(
       return ciphertext;
     }
   }
-  LOG(FATAL) << "Unsupported algorithm" << static_cast<int>(algo_);
+  LOG(FATAL) << "Unsupported algorithm" << static_cast<int>(*algorithm_);
 }
 
 absl::optional<std::vector<uint8_t>> Encryptor::Key::Decrypt(
     base::span<const uint8_t> ciphertext) const {
-  switch (algo_) {
-    case Key::Algorithm::kAES256GCM: {
+  if (!algorithm_.has_value()) {
+    NOTREACHED_NORETURN();
+  }
+  switch (*algorithm_) {
+    case mojom::Algorithm::kAES256GCM: {
       if (ciphertext.size() < kNonceLength) {
         return absl::nullopt;
       }
@@ -87,7 +107,7 @@ absl::optional<std::vector<uint8_t>> Encryptor::Key::Decrypt(
       return aead.Open(data, nonce, /*additional_data=*/{});
     }
   }
-  LOG(FATAL) << "Unsupported algorithm" << static_cast<int>(algo_);
+  LOG(FATAL) << "Unsupported algorithm" << static_cast<int>(*algorithm_);
 }
 
 bool Encryptor::EncryptString(const std::string& plaintext,
@@ -177,7 +197,12 @@ absl::optional<std::string> Encryptor::DecryptData(
 }
 
 Encryptor Encryptor::Clone() const {
-  return Encryptor(keys_, provider_for_encryption_);
+  KeyRing keyring;
+  for (const auto& [provider, key] : keys_) {
+    keyring.emplace(provider, key.Clone());
+  }
+
+  return Encryptor(std::move(keyring), provider_for_encryption_);
 }
 
 }  // namespace os_crypt_async

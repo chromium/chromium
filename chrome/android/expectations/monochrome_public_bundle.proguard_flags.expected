@@ -914,7 +914,7 @@
     @android.support.annotation.Keep <init>(...);
 }
 
-# File: ../../third_party/android_deps/libs/org_jetbrains_kotlinx_kotlinx_coroutines_android/kotlinx-coroutines-android-1.6.1.jar:META-INF/com.android.tools/r8-from-1.6.0/coroutines.pro
+# File: ../../third_party/android_deps/libs/org_jetbrains_kotlinx_kotlinx_coroutines_android/kotlinx-coroutines-android-1.6.4.jar:META-INF/com.android.tools/r8-from-1.6.0/coroutines.pro
 # Allow R8 to optimize away the FastServiceLoader.
 # Together with ServiceLoader optimization in R8
 # this results in direct instantiation when loading Dispatchers.Main
@@ -925,8 +925,6 @@
 -assumenosideeffects class kotlinx.coroutines.internal.FastServiceLoaderKt {
     boolean ANDROID_DETECTED return true;
 }
-
--keep class kotlinx.coroutines.android.AndroidDispatcherFactory {*;}
 
 # Disable support for "Missing Main Dispatcher", since we always have Android main dispatcher
 -assumenosideeffects class kotlinx.coroutines.internal.MainDispatchersKt {
@@ -940,7 +938,7 @@
     boolean getRECOVER_STACK_TRACES() return false;
 }
 
-# File: ../../third_party/android_deps/libs/org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm/kotlinx-coroutines-core-jvm-1.6.1.jar:META-INF/com.android.tools/r8/coroutines.pro
+# File: ../../third_party/android_deps/libs/org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm/kotlinx-coroutines-core-jvm-1.6.4.jar:META-INF/com.android.tools/r8/coroutines.pro
 # When editing this file, update the following files as well:
 # - META-INF/proguard/coroutines.pro
 # - META-INF/com.android.tools/proguard/coroutines.pro

@@ -49,3 +49,31 @@ ci.builder(
     execution_timeout = 4 * time.hour,
     reclient_jobs = reclient.jobs.DEFAULT,
 )
+
+# TODO(crbug.com/1320449): Remove this builder after burning down failures
+# and measuring performance to see if we can roll LSan into ASan.
+ci.builder(
+    name = "mac-lsan-fyi-rel",
+    schedule = "with 24h interval",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        run_tests_serially = True,
+    ),
+    builderless = 1,
+    cores = None,
+    os = os.MAC_ANY,
+    console_view_entry = consoles.console_view_entry(
+        category = "mac|lsan",
+        short_name = "lsan",
+    ),
+    execution_timeout = 12 * time.hour,
+    reclient_jobs = reclient.jobs.DEFAULT,
+)

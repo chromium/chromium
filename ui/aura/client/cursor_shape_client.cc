@@ -12,13 +12,14 @@ namespace aura::client {
 CursorShapeClient::~CursorShapeClient() = default;
 
 void SetCursorShapeClient(CursorShapeClient* client) {
-  DCHECK(aura::Env::HasInstance());
+  CHECK(aura::Env::HasInstance());
   aura::Env::GetInstance()->set_cursor_shape_client(client);
 }
 
-CursorShapeClient* GetCursorShapeClient() {
-  DCHECK(aura::Env::HasInstance());
-  return aura::Env::GetInstance()->cursor_shape_client();
+const CursorShapeClient& GetCursorShapeClient() {
+  CHECK(aura::Env::HasInstance());
+  CHECK(aura::Env::GetInstance()->cursor_shape_client());
+  return *aura::Env::GetInstance()->cursor_shape_client();
 }
 
 }  // namespace aura::client

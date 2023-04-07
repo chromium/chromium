@@ -33,6 +33,8 @@
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "net/base/load_flags.h"
+#include "services/network/public/cpp/simple_url_loader.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 #include "third_party/blink/public/common/features.h"
@@ -75,6 +77,107 @@ bool DeviceHasEnoughMemoryForPrerender() {
       kDefaultMemoryThresholdMb);
 
   return base::SysInfo::AmountOfPhysicalMemoryMB() > memory_threshold_mb;
+}
+
+// Create a resource request for `back_url` that only checks whether the
+// resource is in the HTTP cache.
+std::unique_ptr<network::SimpleURLLoader> CreateHttpCacheQueryingResourceLoad(
+    const GURL& back_url) {
+  url::Origin origin = url::Origin::Create(back_url);
+  net::IsolationInfo isolation_info = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kMainFrame, origin, origin,
+      net::SiteForCookies::FromOrigin(origin));
+  network::ResourceRequest::TrustedParams trusted_params;
+  trusted_params.isolation_info = isolation_info;
+
+  std::unique_ptr<network::ResourceRequest> request =
+      std::make_unique<network::ResourceRequest>();
+  request->url = back_url;
+  request->load_flags =
+      net::LOAD_ONLY_FROM_CACHE | net::LOAD_SKIP_CACHE_VALIDATION;
+  request->trusted_params = trusted_params;
+  request->site_for_cookies = trusted_params.isolation_info.site_for_cookies();
+  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  request->skip_service_worker = true;
+  request->do_not_prompt_for_login = true;
+
+  CHECK(!request->SendsCookies());
+  CHECK(!request->SavesCookies());
+  constexpr net::NetworkTrafficAnnotationTag traffic_annotation =
+      net::DefineNetworkTrafficAnnotation("back_navigation_cache_query",
+                                          R"(
+          semantics {
+            sender: "Prerender"
+            description:
+              "This is not actually a network request. It is used internally "
+              "by the browser to determine if the HTTP cache would be used if "
+              "the user were to navigate back in session history. It only "
+              "checks the cache and does not hit the network."
+            trigger:
+              "When the user performs an action that would suggest that they "
+              "intend to navigate back soon. Examples include hovering the "
+              "mouse over the back button and the start of a gestural back "
+              "navigation."
+            user_data {
+              type: NONE
+            }
+            data: "None. The request doesn't hit the network."
+            destination: LOCAL
+            internal {
+              contacts {
+                email: "chrome-brapp-loading@chromium.org"
+              }
+            }
+            last_reviewed: "2023-03-24"
+          }
+          policy {
+            cookies_allowed: NO
+            setting:
+              "This is not controlled by a setting."
+            policy_exception_justification: "This is not a network request."
+        })");
+
+  return network::SimpleURLLoader::Create(std::move(request),
+                                          traffic_annotation);
+}
+
+// Returns true if the given navigation is meant to be predicted by a predictor
+// related to session history (e.g. hovering over the back button could have
+// predicted the navigation).
+bool IsNavigationInSessionHistoryPredictorDomain(NavigationHandle* handle) {
+  CHECK(handle->IsInPrimaryMainFrame());
+  CHECK(!handle->IsSameDocument());
+
+  if (handle->IsRendererInitiated()) {
+    return false;
+  }
+
+  // Note that currently the only predictors are for back navigations of a
+  // single step, however we still include all session history navigations in
+  // the domain. The preloading of back navigations could generalize to session
+  // history navigations of other offsets, but we haven't explored this due to
+  // the higher usage of the back button compared to the forward button or
+  // history menu.
+  if (!(handle->GetPageTransition() & ui::PAGE_TRANSITION_FORWARD_BACK)) {
+    return false;
+  }
+
+  if (handle->IsPost()) {
+    return false;
+  }
+
+  if (handle->IsServedFromBackForwardCache()) {
+    return false;
+  }
+
+  if (!handle->GetURL().SchemeIsHTTPOrHTTPS()) {
+    return false;
+  }
+
+  // Note that even though the current predictors do not handle session history
+  // navigations that are same-site or which don't use the HTTP cache, they are
+  // still included in the domain.
+  return true;
 }
 
 }  // namespace
@@ -768,6 +871,133 @@ void PrerenderHostRegistry::CancelAllHostsForTesting() {
   // After we're done scheduling deletion, clear the map and the pending queue.
   prerender_host_by_frame_tree_node_id_.clear();
   pending_prerenders_.clear();
+}
+
+void PrerenderHostRegistry::BackNavigationLikely(
+    PreloadingPredictor predictor) {
+  if (http_cache_query_loader_) {
+    return;
+  }
+
+  PreloadingData* preloading_data =
+      PreloadingData::GetOrCreateForWebContents(web_contents());
+  preloading_data->SetIsNavigationInDomainCallback(
+      predictor,
+      base::BindRepeating(IsNavigationInSessionHistoryPredictorDomain));
+
+  WebContentsImpl* contents = static_cast<WebContentsImpl*>(web_contents());
+  NavigationControllerImpl& controller = contents->GetController();
+  const absl::optional<int> target_index = controller.GetIndexForGoBack();
+
+  if (!target_index.has_value()) {
+    RecordPrerenderBackNavigationEligibility(
+        predictor, PrerenderBackNavigationEligibility::kNoBackEntry, nullptr);
+    return;
+  }
+
+  NavigationEntryImpl* back_entry = controller.GetEntryAtIndex(*target_index);
+  CHECK(back_entry);
+  const GURL& back_url = back_entry->GetURL();
+
+  if (controller.GetBackForwardCache().GetEntry(back_entry->GetUniqueID())) {
+    RecordPrerenderBackNavigationEligibility(
+        predictor, PrerenderBackNavigationEligibility::kBfcacheEntryExists,
+        nullptr);
+    return;
+  }
+
+  PreloadingURLMatchCallback same_url_matcher =
+      PreloadingData::GetSameURLMatcher(back_url);
+  preloading_data->AddPreloadingPrediction(predictor, /*confidence=*/100,
+                                           same_url_matcher);
+  PreloadingAttempt* attempt = preloading_data->AddPreloadingAttempt(
+      predictor, PreloadingType::kPrerender, same_url_matcher);
+
+  if (back_entry->GetMainFrameDocumentSequenceNumber() ==
+      controller.GetLastCommittedEntry()
+          ->GetMainFrameDocumentSequenceNumber()) {
+    RecordPrerenderBackNavigationEligibility(
+        predictor, PrerenderBackNavigationEligibility::kTargetIsSameDocument,
+        attempt);
+    return;
+  }
+
+  if (back_entry->root_node()->frame_entry->method() != "GET") {
+    RecordPrerenderBackNavigationEligibility(
+        predictor, PrerenderBackNavigationEligibility::kMethodNotGet, attempt);
+    return;
+  }
+
+  if (prerender_navigation_utils::IsDisallowedHttpResponseCode(
+          back_entry->GetHttpStatusCode())) {
+    RecordPrerenderBackNavigationEligibility(
+        predictor,
+        PrerenderBackNavigationEligibility::kTargetIsFailedNavigation, attempt);
+    return;
+  }
+
+  if (!back_url.SchemeIsHTTPOrHTTPS()) {
+    RecordPrerenderBackNavigationEligibility(
+        predictor, PrerenderBackNavigationEligibility::kTargetIsNonHttp,
+        attempt);
+    return;
+  }
+
+  // While same site back navigations could potentially be prerendered, doing so
+  // would involve more significant compat risk. For now, we consider them
+  // ineligible. See https://crbug.com/1422266 .
+  if (prerender_navigation_utils::IsSameSite(
+          back_url,
+          contents->GetPrimaryMainFrame()->GetLastCommittedOrigin())) {
+    RecordPrerenderBackNavigationEligibility(
+        predictor, PrerenderBackNavigationEligibility::kTargetIsSameSite,
+        attempt);
+    return;
+  }
+
+  // To determine whether the resource for the target entry is in the HTTP
+  // cache, we send a "fake" ResourceRequest which only loads from the cache.
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
+      contents->GetPrimaryMainFrame()
+          ->GetStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess();
+  http_cache_query_loader_ = CreateHttpCacheQueryingResourceLoad(back_url);
+  http_cache_query_loader_->DownloadHeadersOnly(
+      url_loader_factory.get(),
+      base::BindOnce(&PrerenderHostRegistry::OnBackResourceCacheResult,
+                     base::Unretained(this), predictor, attempt->GetWeakPtr(),
+                     back_url));
+}
+
+void PrerenderHostRegistry::OnBackResourceCacheResult(
+    PreloadingPredictor predictor,
+    base::WeakPtr<PreloadingAttempt> attempt,
+    GURL back_url,
+    scoped_refptr<net::HttpResponseHeaders> headers) {
+  // It's safe to delete the SimpleURLLoader while running the callback that was
+  // passed to it. We do so once we're done with it in this method.
+  std::unique_ptr<network::SimpleURLLoader> http_cache_query_loader =
+      std::move(http_cache_query_loader_);
+
+  if (!http_cache_query_loader->LoadedFromCache()) {
+    // If not in the cache, then this cache-only request must have failed.
+    CHECK_NE(http_cache_query_loader->NetError(), net::OK);
+
+    RecordPrerenderBackNavigationEligibility(
+        predictor, PrerenderBackNavigationEligibility::kNoHttpCacheEntry,
+        attempt.get());
+    return;
+  }
+
+  RecordPrerenderBackNavigationEligibility(
+      predictor, PrerenderBackNavigationEligibility::kEligible, attempt.get());
+
+  if (attempt) {
+    attempt->SetHoldbackStatus(PreloadingHoldbackStatus::kAllowed);
+    // At this point, we are only collecting metrics and not actually
+    // prerendering anything.
+    attempt->SetTriggeringOutcome(PreloadingTriggeringOutcome::kNoOp);
+  }
 }
 
 base::WeakPtr<PrerenderHostRegistry> PrerenderHostRegistry::GetWeakPtr() {

@@ -54,6 +54,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
  public:
   IntegrationTestCommandsSystem() = default;
 
+  void ExpectNoCrashes() const override {
+    updater::test::ExpectNoCrashes(updater_scope_);
+  }
+
   void PrintLog() const override { RunCommand("print_log"); }
 
   void CopyLog() const override {

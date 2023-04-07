@@ -18,7 +18,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/chromium_strings.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/dbus/bluez_dbus_thread_manager.h"
 #include "ui/base/l10n/l10n_util.h"

@@ -9,8 +9,8 @@ import("//third_party/inspector_protocol/inspector_protocol.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//tools/grit/grit_rule.gni")
 
-# Android does not support DevTools front-end.
-if (!is_android) {
+# Android and iOS don't support DevTools front-end.
+if (!is_android && !is_ios) {
   source_set("devtools_resources_extern") {
     sources = [ "devtools_resources.cc" ]
 

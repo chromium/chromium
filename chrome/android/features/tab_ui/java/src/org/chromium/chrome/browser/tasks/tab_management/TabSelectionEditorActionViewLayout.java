@@ -163,45 +163,46 @@ public class TabSelectionEditorActionViewLayout extends LinearLayout {
             return;
         }
 
-        // Get empty size without spacer and action views.
+        // Get empty size without action views.
         removeAllActionViews();
         mMenuButton.setVisibility(View.VISIBLE);
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         final int width = getMeasuredWidth();
 
-        // Calculate the remaining room used by the menu, number roll view, etc.
-        int usedRoom = getPaddingLeft() + getPaddingRight();
-        int requiredWidth = usedRoom;
-        for (int i = 0; i < getChildCount(); i++) {
-            // NumberRollView size is dynamically restricted.
-            if (getChildAt(i) instanceof NumberRollView) continue;
-
-            usedRoom += getChildAt(i).getMeasuredWidth();
-        }
+        // The width that is required by visible views.
+        int requiredWidth = getPaddingLeft() + getPaddingRight();
+        // The width including the menu button assuming it is visible.
+        int usedWidth = requiredWidth + mMenuButton.getMeasuredWidth();
 
         mVisibleActions.clear();
 
-        // Add all action views leaving room using the remaining room.
-        boolean allActionViewsShown = true;
+        // Add all action views that fit.
+        boolean hasForcedAnyActionViewToMenu = false;
+        final int childMeasureSpec =
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
         for (TabSelectionEditorMenuItem menuItem : mMenuItemsWithActionView) {
             final View actionView = menuItem.getActionView();
-            actionView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+            actionView.measure(childMeasureSpec, childMeasureSpec);
             final int actionViewWidth = actionView.getMeasuredWidth();
-            if (usedRoom + actionViewWidth > width || !allActionViewsShown) {
-                // The ActionView was removed. Ensure it still has a LayoutParams.
+            if (usedWidth + actionViewWidth > width || hasForcedAnyActionViewToMenu) {
+                // The ActionView doesn't fit. Ensure it still has a LayoutParams.
                 actionView.setLayoutParams(mActionViewParams);
-                allActionViewsShown = false;
+                hasForcedAnyActionViewToMenu = true;
                 continue;
             }
 
             // Add views in front of the menu button.
             addView(actionView, getChildCount() - 1, mActionViewParams);
             mVisibleActions.add(menuItem);
-            usedRoom += actionViewWidth;
+            usedWidth += actionViewWidth;
             requiredWidth += actionViewWidth;
         }
-        mDelegate.setVisibleActionViews(mVisibleActions);
-        if (mHasMenuOnlyItems || !allActionViewsShown) {
+        if (mDelegate != null) {
+            // Any items in mVisibleActions will appear in the Toolbar. The remaining items will be
+            // forced into the overflow menu.
+            mDelegate.setVisibleActionViews(mVisibleActions);
+        }
+        if (mHasMenuOnlyItems || hasForcedAnyActionViewToMenu) {
             mMenuButton.setVisibility(View.VISIBLE);
             requiredWidth += mMenuButton.getMeasuredWidth();
         } else {
@@ -227,6 +228,10 @@ public class TabSelectionEditorActionViewLayout extends LinearLayout {
     }
 
     private void update() {
-        measure(View.MeasureSpec.EXACTLY, View.MeasureSpec.AT_MOST);
+        int widthMeasureSpec =
+                View.MeasureSpec.makeMeasureSpec(getMeasuredWidth(), View.MeasureSpec.AT_MOST);
+        int heightMeasureSpec =
+                View.MeasureSpec.makeMeasureSpec(getMeasuredHeight(), View.MeasureSpec.EXACTLY);
+        measure(widthMeasureSpec, heightMeasureSpec);
     }
 }

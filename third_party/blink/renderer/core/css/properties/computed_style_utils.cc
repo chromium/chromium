@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/layout_ng_grid.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_anchor_query.h"
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/style_intrinsic_length.h"
@@ -573,22 +574,27 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
     const LayoutObject* layout_object) {
   std::pair<const Length*, const Length*> positions;
   bool is_horizontal_property;
+  bool is_right_or_bottom;
   switch (property.PropertyID()) {
     case CSSPropertyID::kLeft:
       positions = std::make_pair(&style.Left(), &style.Right());
       is_horizontal_property = true;
+      is_right_or_bottom = false;
       break;
     case CSSPropertyID::kRight:
       positions = std::make_pair(&style.Right(), &style.Left());
       is_horizontal_property = true;
+      is_right_or_bottom = true;
       break;
     case CSSPropertyID::kTop:
       positions = std::make_pair(&style.Top(), &style.Bottom());
       is_horizontal_property = false;
+      is_right_or_bottom = false;
       break;
     case CSSPropertyID::kBottom:
       positions = std::make_pair(&style.Bottom(), &style.Top());
       is_horizontal_property = false;
+      is_right_or_bottom = true;
       break;
     default:
       NOTREACHED();
@@ -618,8 +624,18 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
               : box->ContainingBlockLogicalHeightForGetComputedStyle();
     }
 
-    return ZoomAdjustedPixelValue(ValueForLength(offset, containing_block_size),
-                                  style);
+    absl::optional<NGAnchorEvaluatorImpl> anchor_evaluator_storage;
+    NGAnchorEvaluatorImpl* anchor_evaluator = nullptr;
+    if (offset.HasAnchorQueries() && layout_object->IsOutOfFlowPositioned()) {
+      anchor_evaluator_storage.emplace(
+          NGAnchorEvaluatorImpl::BuildFromLayoutResult(*layout_object));
+      anchor_evaluator = &anchor_evaluator_storage.value();
+      anchor_evaluator->SetAxis(!is_horizontal_property, is_right_or_bottom,
+                                containing_block_size);
+    }
+
+    return ZoomAdjustedPixelValue(
+        ValueForLength(offset, containing_block_size, anchor_evaluator), style);
   }
 
   if (offset.IsAuto() && layout_object) {

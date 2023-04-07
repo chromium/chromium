@@ -23,6 +23,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
@@ -2078,6 +2079,27 @@ NavigationRequest::~NavigationRequest() {
   TRACE_EVENT_NESTABLE_ASYNC_END0("navigation", "NavigationRequest",
                                   navigation_id_);
 
+  // IMPORTANT NOTE: DO NOT return early from the destructor before this line.
+  // Otherwise, a queued navigation might get stuck in a queueing state forever.
+  // This navigation has finished. See if there is another NavigationRequest
+  // that lives in the associated FrameTreeNode that satisfies these conditions:
+  // - Is currently queued to wait for a pending commit navigation to finish
+  // - Is not the NavigationRequest that is currently being destructed itself
+  // - Is not a failed Back/Forward Cache restore that is waiting to be
+  // restarted as a new navigation (as that navigation is basically inactive).
+  if (NavigationRequest* request = frame_tree_node_->navigation_request()) {
+    if (request->IsQueued() && request != this &&
+        !request->restarting_back_forward_cached_navigation_) {
+      // It might be possible for the pending commit RFH to still exist, e.g. if
+      // the navigation being destructed is an unrelated navigation
+      // (same-document navigation etc). In that case, don't continue the queued
+      // navigation just yet.
+      if (!request->ShouldQueueDueToExistingPendingCommitRFH()) {
+        request->PostResumeCommitTask();
+      }
+    }
+  }
+
   if (loading_mem_tracker_)
     loading_mem_tracker_->Cancel();
   ResetExpectedProcess();
@@ -2161,25 +2183,6 @@ NavigationRequest::~NavigationRequest() {
         rfh->EvictFromBackForwardCacheWithReason(
             BackForwardCacheMetrics::NotRestoredReason::
                 kNavigationCancelledWhileRestoring);
-      }
-    }
-  }
-
-  // This navigation has finished. See if there is another NavigationRequest
-  // that lives in the associated FrameTreeNode that satisfies these conditions:
-  // - Is currently queued to wait for a pending commit navigation to finish
-  // - Is not the NavigationRequest that is currently being destructed itself
-  // - Is not a failed Back/Forward Cache restore that is waiting to be
-  // restarted as a new navigation (as that navigation is basically inactive).
-  if (NavigationRequest* request = frame_tree_node_->navigation_request()) {
-    if (request->IsQueued() && request != this &&
-        !request->restarting_back_forward_cached_navigation_) {
-      // It might be possible for the pending commit RFH to still exist, e.g. if
-      // the navigation being destructed is an unrelated navigation
-      // (same-document navigation etc). In that case, don't continue the queued
-      // navigation just yet.
-      if (!request->ShouldQueueDueToExistingPendingCommitRFH()) {
-        request->ResumeCommit();
       }
     }
   }
@@ -3721,9 +3724,6 @@ UrlInfo NavigationRequest::GetUrlInfo() {
         UrlInfo::OriginIsolationRequest::kRequiresOriginKeyedProcess;
   }
 
-  if (ShouldRequestSiteIsolationForCOOP())
-    isolation_flags |= UrlInfo::OriginIsolationRequest::kCOOP;
-
   auto isolation_request =
       static_cast<UrlInfo::OriginIsolationRequest>(isolation_flags);
 
@@ -3732,6 +3732,7 @@ UrlInfo NavigationRequest::GetUrlInfo() {
 
   UrlInfoInit url_info_init(GetURL());
   url_info_init.WithOriginIsolationRequest(isolation_request)
+      .WithCOOPSiteIsolation(ShouldRequestSiteIsolationForCOOP())
       .WithWebExposedIsolationInfo(web_exposed_isolation_info)
       .WithIsPdf(is_pdf_);
 
@@ -9214,7 +9215,7 @@ blink::RuntimeFeatureStateContext&
 NavigationRequest::GetMutableRuntimeFeatureStateContext() {
   // runtime_feature_state_context_ shouldn't be modified after READY_TO_COMMIT
   // as its state has already been sent to the renderer.
-  DCHECK_LT(state_, NavigationState::READY_TO_COMMIT);
+  DCHECK_LE(state_, NavigationState::READY_TO_COMMIT);
   return runtime_feature_state_context_;
 }
 
@@ -9263,7 +9264,7 @@ bool NavigationRequest::ShouldQueueDueToExistingPendingCommitRFH() const {
   return false;
 }
 
-void NavigationRequest::ResumeCommit() {
+void NavigationRequest::PostResumeCommitTask() {
   DCHECK(ShouldAvoidRedundantNavigationCancellations());
   DCHECK(!ShouldQueueDueToExistingPendingCommitRFH());
   // TODO(crbug.com/1220337): Add some metrics for how often:
@@ -9342,8 +9343,7 @@ bool NavigationRequest::GetIsThirdPartyCookiesUserBypassEnabled() {
   return GetParentFrame()->GetIsThirdPartyCookiesUserBypassEnabled();
 }
 
-std::unique_ptr<WebUIImpl> NavigationRequest::CreateWebUIIfNeeded(
-    RenderFrameHostImpl* frame_host) {
+bool NavigationRequest::CreateWebUIIfNeeded(RenderFrameHostImpl* frame_host) {
   TRACE_EVENT2("content", "NavigationRequest::CreateWebUI", "frame_host",
                frame_host, "url", GetURL());
   WebUI::TypeID new_web_ui_type =
@@ -9351,8 +9351,9 @@ std::unique_ptr<WebUIImpl> NavigationRequest::CreateWebUIIfNeeded(
           frame_host->GetSiteInstance()->GetBrowserContext(), GetURL());
   if (new_web_ui_type == WebUI::kNoWebUI) {
     // The navigation doesn't need a WebUI.
-    return nullptr;
+    return false;
   }
+  CHECK(!web_ui_);
 
   // We reuse WebUI on navigations with the same WebUI type where we use the
   // same RFH, so don't create a new one if there is already an existing WebUI
@@ -9361,19 +9362,38 @@ std::unique_ptr<WebUIImpl> NavigationRequest::CreateWebUIIfNeeded(
   // if the WebUI type differs.
   if (frame_host->web_ui()) {
     CHECK_EQ(new_web_ui_type, frame_host->web_ui_type());
-    return nullptr;
+    return false;
   }
 
-  std::unique_ptr<WebUIImpl> web_ui = std::make_unique<WebUIImpl>(frame_host);
+  web_ui_ = std::make_unique<WebUIImpl>(frame_host);
+
   std::unique_ptr<WebUIController> controller(
       WebUIControllerFactoryRegistry::GetInstance()
-          ->CreateWebUIControllerForURL(web_ui.get(), GetURL()));
+          ->CreateWebUIControllerForURL(web_ui_.get(), GetURL()));
   if (!controller) {
-    return nullptr;
+    // TODO(https://crbug.com/1220337): Make this a CHECK instead.
+    return false;
   }
 
-  web_ui->SetController(std::move(controller));
-  return web_ui;
+  // If we have assigned (zero or more) bindings to the NavigationEntry in
+  // the past, make sure we're not granting it different bindings than it
+  // had before. If so, note it and don't give it any bindings, to avoid a
+  // potential privilege escalation.
+  if (bindings() != FrameNavigationEntry::kInvalidBindings &&
+      bindings() != web_ui_->GetBindings()) {
+    RecordAction(base::UserMetricsAction("ProcessSwapBindingsMismatch_RVHM"));
+    base::WeakPtr<NavigationRequest> self = GetWeakPtr();
+    web_ui_.reset();
+    // Resetting the WebUI may indirectly call content's embedders and delete
+    // `this`. There are no known occurrences of it, so we assume this never
+    // happen and crash immediately if it does, because there are no easy ways
+    // to recover.
+    CHECK(self);
+    return false;
+  }
+
+  web_ui_->SetController(std::move(controller));
+  return true;
 }
 
 }  // namespace content

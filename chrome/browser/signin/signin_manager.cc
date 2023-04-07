@@ -126,7 +126,7 @@ void SigninManager::UpdateUnconsentedPrimaryAccount() {
 #else
     DCHECK(!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync));
     signin_metrics::ProfileSignout source =
-        signin_metrics::ProfileSignout::kUserDeletedAccountCookies;
+        signin_metrics::ProfileSignout::kSigninManagerUpdateUPA;
 #endif
     identity_manager_->GetPrimaryAccountMutator()->ClearPrimaryAccount(
         source, signin_metrics::SignoutDelete::kIgnoreMetric);

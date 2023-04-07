@@ -17,6 +17,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/mojo_bubble_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 
@@ -28,6 +29,10 @@ class CustomizeChromePageHandler;
 class CartHandler;
 class Profile;
 class HelpBubbleHandler;
+
+namespace ui {
+class ColorChangeHandler;
+}
 
 // WebUI controller for chrome://customize-chrome-side-panel.top-chrome
 class CustomizeChromeUI
@@ -68,6 +73,10 @@ class CustomizeChromeUI
       mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
           pending_receiver);
 
+  void BindInterface(
+      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+          pending_receiver);
+
  private:
   // side_panel::mojom::CustomizeChromePageHandlerFactory
   void CreatePageHandler(
@@ -95,6 +104,7 @@ class CustomizeChromeUI
   std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
   mojo::Receiver<help_bubble::mojom::HelpBubbleHandlerFactory>
       help_bubble_handler_factory_receiver_{this};
+  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 
   base::WeakPtrFactory<CustomizeChromeUI> weak_ptr_factory_{this};
 

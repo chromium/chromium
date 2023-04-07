@@ -230,7 +230,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
   virtual uint32_t GetId() const = 0;
 
   // Retrieve the GUID for this download. The returned string is never empty and
-  // will satisfy base::IsValidGUID() and uniquely identifies the download
+  // will satisfy base::IsValidUuid() and uniquely identifies the download
   // during its lifetime.
   virtual const std::string& GetGuid() const = 0;
 

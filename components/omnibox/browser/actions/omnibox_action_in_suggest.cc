@@ -31,23 +31,22 @@ OmniboxActionInSuggest::OmniboxActionInSuggest(omnibox::ActionInfo action_info)
               l10n_util::GetStringUTF16(IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST)),
           {},
           false),
-      action_info_{std::move(action_info)} {
-#if BUILDFLAG(IS_ANDROID)
-  std::string serialized_action;
-  if (!action_info_.SerializeToString(&serialized_action)) {
-    serialized_action.clear();
-  }
-  j_omnibox_action_.Reset(
-      BuildOmniboxActionInSuggest(strings_.hint, serialized_action));
-#endif
-}
+      action_info_{std::move(action_info)} {}
 
 OmniboxActionInSuggest::~OmniboxActionInSuggest() = default;
 
 #if BUILDFLAG(IS_ANDROID)
-base::android::ScopedJavaGlobalRef<jobject>
-OmniboxActionInSuggest::GetJavaObject() const {
-  return j_omnibox_action_;
+base::android::ScopedJavaLocalRef<jobject>
+OmniboxActionInSuggest::GetOrCreateJavaObject(JNIEnv* env) const {
+  if (!j_omnibox_action_) {
+    std::string serialized_action;
+    if (!action_info_.SerializeToString(&serialized_action)) {
+      serialized_action.clear();
+    }
+    j_omnibox_action_.Reset(
+        BuildOmniboxActionInSuggest(env, strings_.hint, serialized_action));
+  }
+  return base::android::ScopedJavaLocalRef<jobject>(j_omnibox_action_);
 }
 #endif
 

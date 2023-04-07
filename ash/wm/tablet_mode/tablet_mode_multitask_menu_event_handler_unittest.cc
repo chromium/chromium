@@ -15,6 +15,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_multitask_cue.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
+#include "ash/wm/window_util.h"
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -128,11 +129,7 @@ class TabletModeMultitaskMenuEventHandlerTest : public AshTestBase {
 
   chromeos::MultitaskMenuView* GetMultitaskMenuView(
       TabletModeMultitaskMenu* multitask_menu) const {
-    chromeos::MultitaskMenuView* multitask_menu_view =
-        multitask_menu->GetMultitaskMenuViewForTesting();
-    EXPECT_EQ(chromeos::MultitaskMenuView::kViewClassName,
-              multitask_menu_view->GetClassName());
-    return multitask_menu_view;
+    return multitask_menu->GetMultitaskMenuViewForTesting();
   }
 
  protected:
@@ -274,6 +271,17 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest,
   generator->MoveTouchId(gfx::Point(0, 150), 1);
 }
 
+// Tests that the multitask menu cannot be shown while in pinned state.
+TEST_F(TabletModeMultitaskMenuEventHandlerTest, SwipeDownInPinnedWindow) {
+  // Create and pin a window.
+  std::unique_ptr<aura::Window> pinned_window = CreateAppWindow();
+  wm::ActivateWindow(pinned_window.get());
+  window_util::PinWindow(pinned_window.get(), /*trusted=*/true);
+
+  GenerateScroll(pinned_window->bounds().CenterPoint().x(), 0, 150);
+  EXPECT_FALSE(GetMultitaskMenu());
+}
+
 // Tests that swipe down outside the menu doesn't crash. Test for b/266742428.
 TEST_F(TabletModeMultitaskMenuEventHandlerTest, SwipeDownMenuTwice) {
   auto window = CreateTestWindow(gfx::Rect(800, 600));
@@ -297,6 +305,23 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, SwipeDownMenuTwice) {
   histogram_tester_.ExpectBucketCount(
       chromeos::GetEntryTypeHistogramName(),
       chromeos::MultitaskMenuEntryType::kGestureScroll, 2);
+}
+
+// Tests no crash on multiple finger scrolls.
+TEST_F(TabletModeMultitaskMenuEventHandlerTest, MultiFingerSroll) {
+  auto window = CreateTestWindow();
+  const int center_x = window->bounds().CenterPoint().x();
+
+  // Scroll down with 2 fingers.
+  const int kTouchPoints = 2;
+  gfx::Point points[kTouchPoints] = {
+      gfx::Point(center_x, 0),
+      gfx::Point(center_x + 10, 0),
+  };
+  const int kSteps = 15;
+  GetEventGenerator()->GestureMultiFingerScroll(kTouchPoints, points, 15,
+                                                kSteps, 0, 150);
+  EXPECT_TRUE(GetMultitaskMenu());
 }
 
 // Tests that a partial drag will show or hide the menu as expected.

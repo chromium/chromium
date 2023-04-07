@@ -5,7 +5,7 @@ typedef (USVString or FencedFrameConfig) SharedStorageResponse;
 
 [
   RuntimeEnabled=SharedStorageAPI,
-  Exposed=(Window)
+  Exposed=(Window, SharedStorageWorklet)
 ] interface SharedStorage {
   [
     CallWith=ScriptState,
@@ -33,6 +33,31 @@ typedef (USVString or FencedFrameConfig) SharedStorageResponse;
   ] Promise<any> clear();
 
   [
+    Exposed=SharedStorageWorklet,
+    CallWith=ScriptState,
+    RaisesException
+  ] Promise<DOMString> get(DOMString key);
+
+  [
+    Exposed=SharedStorageWorklet,
+    CallWith=ScriptState,
+    RaisesException
+  ] Promise<unsigned long> length();
+
+  [
+    Exposed=SharedStorageWorklet,
+    CallWith=ScriptState,
+    RaisesException
+  ] Promise<double> remainingBudget();
+
+  [
+    Exposed=SharedStorageWorklet,
+    CallWith=ScriptState,
+    RaisesException
+  ] readonly attribute any context;
+
+  [
+    Exposed=Window,
     CallWith=ScriptState,
     RaisesException,
     MeasureAs=SharedStorageAPI_SelectURL_Method
@@ -41,10 +66,15 @@ typedef (USVString or FencedFrameConfig) SharedStorageResponse;
                                  optional SharedStorageRunOperationMethodOptions options);
 
   [
+    Exposed=Window,
     CallWith=ScriptState,
     RaisesException,
     MeasureAs=SharedStorageAPI_Run_Method
   ] Promise<any> run(DOMString name, optional SharedStorageRunOperationMethodOptions options);
 
-  [CallWith=ScriptState, RaisesException] readonly attribute SharedStorageWorklet worklet;
+  [
+    Exposed=Window,
+    CallWith=ScriptState,
+    RaisesException
+  ] readonly attribute SharedStorageWorklet worklet;
 };

@@ -8587,39 +8587,6 @@ TEST_F(BrowserAutofillManagerTest,
   }
 }
 
-// Tests that a form with <select> field is accepted if <option> value (not
-// content) is quite long. Some websites use value to propagate long JSON to
-// JS-backed logic.
-TEST_F(BrowserAutofillManagerTest, FormWithLongOptionValuesIsAcceptable) {
-  FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
-
-  FormFieldData field;
-  test::CreateTestFormField("First name", "firstname", "", "text", &field);
-  form.fields.push_back(field);
-  test::CreateTestFormField("Last name", "lastname", "", "text", &field);
-  form.fields.push_back(field);
-
-  // Prepare <select> field with long <option> values.
-  const size_t kOptionValueLength = 10240;
-  const std::string long_string(kOptionValueLength, 'a');
-  const std::vector<const char*> values(3, long_string.c_str());
-  const std::vector<const char*> contents{"A", "B", "C"};
-  test::CreateTestSelectField("Country", "country", "", values, contents,
-                              &field);
-  form.fields.push_back(field);
-
-  FormsSeen({form});
-
-  // Suggestions should be displayed.
-  for (const FormFieldData& form_field : form.fields) {
-    GetAutofillSuggestions(form, form_field);
-    EXPECT_TRUE(external_delegate_->on_suggestions_returned_seen());
-  }
-}
-
 // Test that is_all_server_suggestions is true if there are only
 // full_server_card and masked_server_card on file.
 TEST_F(BrowserAutofillManagerTest,

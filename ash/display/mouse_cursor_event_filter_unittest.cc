@@ -6,6 +6,7 @@
 
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ui/aura/client/cursor_shape_client.h"
 #include "ui/aura/env.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/base/cursor/cursor.h"
@@ -150,11 +151,18 @@ TEST_F(MouseCursorEventFilterTest, CursorDeviceScaleFactor) {
       display::test::CreateDisplayLayout(display_manager(),
                                          display::DisplayPlacement::RIGHT, 0));
   auto* cursor_manager = Shell::Get()->cursor_manager();
-  EXPECT_EQ(1.0f, cursor_manager->GetCursor().image_scale_factor());
+  const auto& cursor_shape_client = aura::client::GetCursorShapeClient();
+  EXPECT_EQ(1.0f,
+            cursor_shape_client.GetCursorData(cursor_manager->GetCursor())
+                ->scale_factor);
   GetEventGenerator()->MoveMouseTo(401, 200);
-  EXPECT_EQ(2.0f, cursor_manager->GetCursor().image_scale_factor());
+  EXPECT_EQ(2.0f,
+            cursor_shape_client.GetCursorData(cursor_manager->GetCursor())
+                ->scale_factor);
   GetEventGenerator()->MoveMouseTo(399, 200);
-  EXPECT_EQ(1.0f, cursor_manager->GetCursor().image_scale_factor());
+  EXPECT_EQ(1.0f,
+            cursor_shape_client.GetCursorData(cursor_manager->GetCursor())
+                ->scale_factor);
 }
 
 // Verifies that pressing the key repeatedly will not hide the cursor.

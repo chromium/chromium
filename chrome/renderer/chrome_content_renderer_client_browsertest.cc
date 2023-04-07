@@ -19,7 +19,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/network_session_configurator/common/network_switches.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/test/browser_test.h"

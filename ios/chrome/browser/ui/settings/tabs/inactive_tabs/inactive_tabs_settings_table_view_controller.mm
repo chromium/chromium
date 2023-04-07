@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/ui/settings/tabs/inactive_tabs/inactive_tabs_settings_table_view_controller.h"
 
+#import "base/i18n/message_formatter.h"
 #import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
@@ -92,25 +94,13 @@ int InactiveDaysThresholdWithItemType(ItemType item_type) {
       forSectionWithIdentifier:SectionIdentifierOptions];
 
   // Option items.
-  [model addItem:[self createTextItemWithText:
-                           l10n_util::GetNSString(
-                               IDS_IOS_OPTIONS_INACTIVE_TABS_DISABLED)
-                                         item:ItemTypeOptionsNever]
+  [model addItem:[self createItemWithType:ItemTypeOptionsNever]
       toSectionWithIdentifier:SectionIdentifierOptions];
-  [model addItem:[self createTextItemWithText:
-                           l10n_util::GetNSStringF(
-                               IDS_IOS_OPTIONS_INACTIVE_TABS_THRESHOLD, u"7")
-                                         item:ItemTypeOptions7Days]
+  [model addItem:[self createItemWithType:ItemTypeOptions7Days]
       toSectionWithIdentifier:SectionIdentifierOptions];
-  [model addItem:[self createTextItemWithText:
-                           l10n_util::GetNSStringF(
-                               IDS_IOS_OPTIONS_INACTIVE_TABS_THRESHOLD, u"14")
-                                         item:ItemTypeOptions14Days]
+  [model addItem:[self createItemWithType:ItemTypeOptions14Days]
       toSectionWithIdentifier:SectionIdentifierOptions];
-  [model addItem:[self createTextItemWithText:
-                           l10n_util::GetNSStringF(
-                               IDS_IOS_OPTIONS_INACTIVE_TABS_THRESHOLD, u"21")
-                                         item:ItemTypeOptions21Days]
+  [model addItem:[self createItemWithType:ItemTypeOptions21Days]
       toSectionWithIdentifier:SectionIdentifierOptions];
 
   [self updateCheckedStateWithDaysThreshold:_threshold];
@@ -118,12 +108,19 @@ int InactiveDaysThresholdWithItemType(ItemType item_type) {
 
 #pragma mark - Internal methods
 
-// Creates a table view item with text and a type.
-- (TableViewDetailTextItem*)createTextItemWithText:(NSString*)text
-                                              item:(ItemType)item {
+// Creates a table view item for the given type.
+- (TableViewDetailTextItem*)createItemWithType:(ItemType)itemType {
   TableViewDetailTextItem* tableViewItem =
-      [[TableViewDetailTextItem alloc] initWithType:item];
-  tableViewItem.text = text;
+      [[TableViewDetailTextItem alloc] initWithType:itemType];
+  if (itemType == ItemTypeOptionsNever) {
+    tableViewItem.text =
+        l10n_util::GetNSString(IDS_IOS_OPTIONS_INACTIVE_TABS_DISABLED);
+  } else {
+    tableViewItem.text = base::SysUTF16ToNSString(
+        base::i18n::MessageFormatter::FormatWithNumberedArgs(
+            l10n_util::GetStringUTF16(IDS_IOS_OPTIONS_INACTIVE_TABS_THRESHOLD),
+            InactiveDaysThresholdWithItemType(itemType)));
+  }
   tableViewItem.accessibilityTraits |= UIAccessibilityTraitButton;
   return tableViewItem;
 }

@@ -4265,11 +4265,6 @@ Diese Richtlinie ist vorübergehend verfügbar und wird nach Einführung der Sys
 <translation id="4996161752665479028">SSH in der Terminal System App aktivieren</translation>
 <translation id="4997074784107449343">Die Option „Als Bild drucken“ ist für die Druckvorschau von PDF-Dokumenten standardmäßig nicht aktiviert, wenn sie verfügbar ist.</translation>
 <translation id="500149597848135831">Alle Variationen aktivieren</translation>
-<translation id="5014511262203433035">Mit dieser Richtlinie wird festgelegt, ob Nutzer den Nur-HTTPS-Modus in den Einstellungen aktivieren können. Über den Nur-HTTPS-Modus werden alle Aufrufe von Websites auf HTTPS umgestellt.
-      Wenn diese Einstellung nicht konfiguriert oder auf „Zugelassen“ festgelegt ist, dürfen Nutzer den Nur-HTTPS-Modus aktivieren.
-      Ist sie auf „Nicht zugelassen“ festgelegt, dürfen Nutzer den Nur-HTTPS-Modus nicht aktivieren.
-      Wenn diese Einstellung auf „force_enabled“ gesetzt ist, wird der Nur-HTTPS-Modus aktiviert und Nutzer können ihn nicht deaktivieren.
-      Die erzwungene Aktivierung des Nur-HTTPS-Modus wird ab M112 unterstützt.</translation>
 <translation id="5017369989680827157">Wenn die Richtlinie auf „True“ gesetzt oder nicht konfiguriert ist, können Nutzer das automatische Ausfüllen von Adressdaten in der UI steuern.
 
       Ist sie auf „False“ gesetzt, schlägt Autofill keine Adressdaten vor und füllt entsprechende Felder auch nicht automatisch aus. Außerdem werden keine zusätzlichen Adressinformationen gespeichert, die Nutzer beim Surfen im Internet senden.</translation>
@@ -5346,6 +5341,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="6049117606554031363">Melden des Boardstatus auf Geräten aktivieren</translation>
 <translation id="6050796253724099706">Gesprochenes Feedback auf dem Anmeldebildschirm aktivieren</translation>
 <translation id="605132676434455096">Hinzufügen neuer Profile nicht zulassen</translation>
+<translation id="6053260874233331700">Zugriff auf Standortbestimmung auf dem Anmeldebildschirm nicht zulassen.</translation>
 <translation id="6053681087509103368">Zulassen, dass WebRTC veraltete Versionen des TLS/DTLS-Protokolls verwendet</translation>
 <translation id="6056517174496942473">Attestierungsablauf <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> für eine Liste von URLs aktivieren</translation>
 <translation id="6058879286588763839">Es sei denn, „<ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" />“ ist festgelegt, wodurch „<ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />“ überschrieben wird, dann wird durch das Konfigurieren von „<ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />“ die Energieverwaltungsrichtlinie für den Akkulademodus festgelegt, sofern die Funktion vom Gerät unterstützt wird. Mit dieser Richtlinie kannst du das Aufladen des Akkus dynamisch steuern. So lässt sich der durch unnötige Belastung entstehende Akkuverschleiß verringern und die Lebensdauer des Akkus verlängern.
@@ -7066,6 +7062,11 @@ Dies ersetzt die eingestellte Richtlinie <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_
 <translation id="759957074386651883">Safe Browsing-Einstellungen</translation>
 <translation id="7602621823177962064">Melden der Informationen zum Arbeitsspeicher auf Geräten deaktivieren</translation>
 <translation id="7604169113182304895">Diese Liste kann auf freiwilliger Basis für Android-Apps übernommen werden. Es ist nicht möglich, die Verwendung zu erzwingen.</translation>
+<translation id="7605203688694672897">Damit kannst du die Zugriffsebene für die Standortbestimmung auf Geräteebene für das <ph name="PRODUCT_OS_NAME" />-System festlegen. Diese gilt, bevor sich ein Nutzer anmeldet. Nach der Anmeldung können Nutzer die Zugriffsebene für die Standortbestimmung über die Einstellung pro Nutzer festlegen.
+
+Wenn die Richtlinie nicht konfiguriert oder auf „<ph name="ALLOW" />“ festgelegt ist, ist der Zugriff auf die Standortbestimmung auf dem Anmeldebildschirm für verwaltete Geräte zulässig. Wenn ein ungültiger Richtlinienwert gesendet wird, wird der Zugriff auf „<ph name="DISALLOW" />“ zurückgesetzt. Bei nicht verwalteten Geräten lautet der Wert immer „<ph name="DISALLOW" />“.
+
+ACHTUNG: Du musst vorsichtig sein, wenn du diese Einstellung änderst, da dadurch möglicherweise andere Richtlinien nicht mehr funktionieren, die die Standortbestimmung betreffen (z. B. „<ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" />“). Speziell die Optionen „<ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS" />“ und „<ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" />“ der Richtlinie „<ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" />“ funktionieren nicht mehr, wenn diese Richtlinie auf „<ph name="DISALLOW" />“ gesetzt ist. Sie verwenden dann nur die <ph name="IP" />-basierte Standortauflösung auf dem Anmeldebildschirm (<ph name="LOG_IN" />).</translation>
 <translation id="7608186022704392724">Durch die Funktion der automatischen PIN-Eingabe ändert sich die Eingabe von PINs unter <ph name="PRODUCT_OS_NAME" />.
           Statt das Textfeld anzuzeigen, das auch für die Eingabe des Passworts verwendet wird, zeigt diese Funktion eine spezielle UI, an der Nutzer erkennen, wie viele Ziffern für die PIN benötigt werden. In der Folge wird die Länge der jeweiligen PIN außerhalb der verschlüsselten Nutzerdaten gespeichert. Es werden nur PINs mit mindestens 6 und höchstens 12 Ziffern unterstützt.
 
@@ -7866,6 +7867,7 @@ Wenn eine der folgenden Richtlinien konfiguriert ist, muss diese Richtlinie deak
       Ist die Richtlinie deaktiviert, wird keine Warnung angezeigt, wenn der Nutzer versucht, den Browser zu schließen.</translation>
 <translation id="830440838848984847">Nutzern die Anmeldung in <ph name="PRODUCT_NAME" /> erlauben</translation>
 <translation id="8306117673860983372">Anmeldeeinstellungen</translation>
+<translation id="8307340233340602723">Zugriff auf Standortbestimmung für Geräte zulassen oder ablehnen</translation>
 <translation id="830819203330820450">Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist (Standard), können Webseiten
       Bildschirmfreigabe-APIs (z. B. "getDisplayMedia()" oder die Desktop Capture-Erweiterungs-API) verwenden,
       um den Nutzer aufzufordern, einen Tab, ein Fenster oder einen Desktop für die Aufnahme auszuwählen.
@@ -8858,6 +8860,7 @@ Wenn die Richtlinie nicht konfiguriert ist, kann <ph name="PRODUCT_NAME" /> dies
 <translation id="9213751049772256263">Alle Variationen deaktivieren</translation>
 <translation id="9217154963008402249">Häufigkeit von Kontrollnetzwerkpaketen</translation>
 <translation id="9220314833408124365">Setzt die standardmäßige Verweisrichtlinie auf „no-referrer-when-downgrade“</translation>
+<translation id="9221827710437832530">Zugriff auf Standortbestimmung auf dem Anmeldebildschirm zulassen.</translation>
 <translation id="922540222991413931">Installationsquellen für Erweiterungen, Apps und Nutzerskripte konfigurieren</translation>
 <translation id="924557436754151212">Gespeicherte Passwörter bei erster Ausführung aus Standardbrowser importieren</translation>
 <translation id="926104720905645793">Mit dieser Richtlinie wird festgelegt, ob Cloud-Berichte für <ph name="PRODUCT_NAME" /> erstellt werden. Dabei werden Daten zum Betrieb des Browsers in die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> hochgeladen.

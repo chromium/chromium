@@ -38,7 +38,7 @@ source_set("incognito_reauth_ui") {
   deps = [
     ":incognito_reauth_util",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ui/icons:symbols",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/util",
     "//ui/base",
   ]

@@ -21,6 +21,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -486,7 +487,8 @@ public class KeyboardAccessoryModernViewTest {
         // Return the cached image when
         // PersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable is called for the
         // above url.
-        when(mMockPersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable(any()))
+        when(mMockPersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable(
+                     any(), anyFloat()))
                 .thenReturn(TEST_CARD_ART_IMAGE);
         // Create an autofill suggestion and set the `customIconUrl`.
         AutofillBarItem customIconItem = new AutofillBarItem(
@@ -518,7 +520,8 @@ public class KeyboardAccessoryModernViewTest {
         when(customIconUrl.getSpec()).thenReturn(CUSTOM_ICON_URL);
         // Return the response of PersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable
         // to null to indicate that the image is not present in the cache.
-        when(mMockPersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable(any()))
+        when(mMockPersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable(
+                     any(), anyFloat()))
                 .thenReturn(null);
         AutofillBarItem customIconItem = new AutofillBarItem(
                 getDefaultAutofillSuggestionBuilder().setCustomIconUrl(customIconUrl).build(),

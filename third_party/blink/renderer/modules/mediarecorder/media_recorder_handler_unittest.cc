@@ -13,6 +13,7 @@
 #include "media/base/audio_bus.h"
 #include "media/base/video_color_space.h"
 #include "media/base/video_frame.h"
+#include "media/media_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -76,6 +77,7 @@ struct MediaRecorderTestParams {
 static const MediaRecorderTestParams kMediaRecorderTestParams[] = {
     {true, false, "video/webm", "vp8", true},
     {true, false, "video/webm", "vp9", true},
+    {true, false, "video/webm", "av1", true},
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     {true, false, "video/x-matroska", "avc1", false},
 #endif
@@ -125,7 +127,8 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
   MediaRecorderHandlerFixture(bool has_video, bool has_audio)
       : has_video_(has_video),
         has_audio_(has_audio),
-        media_recorder_handler_(MakeGarbageCollected<MediaRecorderHandler>()),
+        media_recorder_handler_(MakeGarbageCollected<MediaRecorderHandler>(
+            scheduler::GetSingleThreadTaskRunnerForTesting())),
         audio_source_(kTestAudioChannels,
                       440 /* freq */,
                       kTestAudioSampleRate) {
@@ -226,6 +229,11 @@ class MediaRecorderHandlerTest : public TestWithParam<MediaRecorderTestParams>,
       return false;
     }
 #endif
+#if !BUILDFLAG(ENABLE_LIBAOM)
+    if (std::string(GetParam().codecs) == "av1") {
+      return false;
+    }
+#endif
     return true;
   }
 };
@@ -277,6 +285,10 @@ TEST_P(MediaRecorderHandlerTest, CanSupportMimeType) {
   const String example_good_codecs_7("pcm");
   EXPECT_TRUE(media_recorder_handler_->CanSupportMimeType(
       mime_type_audio, example_good_codecs_7));
+
+  const String example_good_codecs_8("AV1,opus");
+  EXPECT_TRUE(media_recorder_handler_->CanSupportMimeType(
+      mime_type_video, example_good_codecs_5));
 
   const String example_unsupported_codecs_2("vorbis");
   EXPECT_FALSE(media_recorder_handler_->CanSupportMimeType(
@@ -781,6 +793,7 @@ static const MediaRecorderPassthroughTestParams
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
         {"video/x-matroska;codecs=avc1", media::VideoCodec::kH264},
 #endif
+        {"video/webm;codecs=av1", media::VideoCodec::kAV1},
 };
 
 class MediaRecorderHandlerPassthroughTest
@@ -791,7 +804,8 @@ class MediaRecorderHandlerPassthroughTest
     registry_.Init();
     video_source_ = registry_.AddVideoTrack(TestVideoTrackId());
     ON_CALL(*video_source_, SupportsEncodedOutput).WillByDefault(Return(true));
-    media_recorder_handler_ = MakeGarbageCollected<MediaRecorderHandler>();
+    media_recorder_handler_ = MakeGarbageCollected<MediaRecorderHandler>(
+        scheduler::GetSingleThreadTaskRunnerForTesting());
     EXPECT_FALSE(media_recorder_handler_->recording_);
   }
 

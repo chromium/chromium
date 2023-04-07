@@ -114,11 +114,11 @@ class ASH_EXPORT ColorPaletteController {
                               base::OnceClosure on_complete) = 0;
 
   // Returns the most recently used ColorPaletteSeed.
-  virtual ColorPaletteSeed GetColorPaletteSeed(
+  virtual absl::optional<ColorPaletteSeed> GetColorPaletteSeed(
       const AccountId& account_id) const = 0;
 
   // Returns the current seed for the current user.
-  virtual ColorPaletteSeed GetCurrentSeed() const = 0;
+  virtual absl::optional<ColorPaletteSeed> GetCurrentSeed() const = 0;
 
   // Returns true if using a color scheme based on the current wallpaper.
   virtual bool UsesWallpaperSeedColor(const AccountId& account_id) const = 0;

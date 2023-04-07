@@ -13,11 +13,13 @@
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
+#include "chromeos/ash/components/network/enterprise_managed_metadata_store.h"
 #include "chromeos/ash/components/network/hotspot_capabilities_provider.h"
 #include "chromeos/ash/components/network/hotspot_configuration_handler.h"
 #include "chromeos/ash/components/network/hotspot_controller.h"
 #include "chromeos/ash/components/network/hotspot_enabled_state_notifier.h"
 #include "chromeos/ash/components/network/hotspot_state_handler.h"
+#include "chromeos/ash/components/network/metrics/hotspot_feature_usage_metrics.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,10 +44,17 @@ class HotspotMetricsHelperTest : public testing::Test {
   void SetUp() override {
     LoginState::Initialize();
 
+    enterprise_managed_metadata_store_ =
+        std::make_unique<EnterpriseManagedMetadataStore>();
     hotspot_capabilities_provider_ =
         std::make_unique<HotspotCapabilitiesProvider>();
     hotspot_capabilities_provider_->Init(
         network_state_test_helper_.network_state_handler());
+    hotspot_feature_usage_metrics_ =
+        std::make_unique<HotspotFeatureUsageMetrics>();
+    hotspot_feature_usage_metrics_->Init(
+        enterprise_managed_metadata_store_.get(),
+        hotspot_capabilities_provider_.get());
     technology_state_controller_ =
         std::make_unique<TechnologyStateController>();
     technology_state_controller_->Init(
@@ -54,6 +63,7 @@ class HotspotMetricsHelperTest : public testing::Test {
     hotspot_state_handler_->Init();
     hotspot_controller_ = std::make_unique<HotspotController>();
     hotspot_controller_->Init(hotspot_capabilities_provider_.get(),
+                              hotspot_feature_usage_metrics_.get(),
                               hotspot_state_handler_.get(),
                               technology_state_controller_.get());
     hotspot_configuration_handler_ =
@@ -61,9 +71,11 @@ class HotspotMetricsHelperTest : public testing::Test {
     hotspot_configuration_handler_->Init(hotspot_controller_.get());
     hotspot_enabled_state_notifier_ =
         std::make_unique<HotspotEnabledStateNotifier>();
-    hotspot_enabled_state_notifier_->Init(hotspot_controller_.get());
+    hotspot_enabled_state_notifier_->Init(hotspot_state_handler_.get(),
+                                          hotspot_controller_.get());
     hotspot_metrics_helper_ = std::make_unique<HotspotMetricsHelper>();
     hotspot_metrics_helper_->Init(
+        enterprise_managed_metadata_store_.get(),
         hotspot_capabilities_provider_.get(), hotspot_state_handler_.get(),
         hotspot_controller_.get(), hotspot_configuration_handler_.get(),
         hotspot_enabled_state_notifier_.get(),
@@ -104,9 +116,11 @@ class HotspotMetricsHelperTest : public testing::Test {
     hotspot_metrics_helper_.reset();
     hotspot_configuration_handler_.reset();
     hotspot_controller_.reset();
+    hotspot_feature_usage_metrics_.reset();
     hotspot_capabilities_provider_.reset();
     hotspot_state_handler_.reset();
     technology_state_controller_.reset();
+    enterprise_managed_metadata_store_.reset();
     LoginState::Shutdown();
   }
 
@@ -116,8 +130,11 @@ class HotspotMetricsHelperTest : public testing::Test {
   base::HistogramTester histogram_tester_;
   NetworkStateTestHelper network_state_test_helper_{
       /*use_default_devices_and_services=*/false};
+  std::unique_ptr<EnterpriseManagedMetadataStore>
+      enterprise_managed_metadata_store_;
   std::unique_ptr<HotspotCapabilitiesProvider> hotspot_capabilities_provider_;
   std::unique_ptr<HotspotStateHandler> hotspot_state_handler_;
+  std::unique_ptr<HotspotFeatureUsageMetrics> hotspot_feature_usage_metrics_;
   std::unique_ptr<TechnologyStateController> technology_state_controller_;
   std::unique_ptr<HotspotController> hotspot_controller_;
   std::unique_ptr<HotspotConfigurationHandler> hotspot_configuration_handler_;
@@ -205,14 +222,15 @@ TEST_F(HotspotMetricsHelperTest, HotspotUsageDurationHistogram) {
   SetHotspotStateInShill(shill::kTetheringStateActive);
   hotspot_controller_->DisableHotspot(
       base::DoNothing(), hotspot_config::mojom::DisableReason::kUserInitiated);
+  SetHotspotStateInShill(shill::kTetheringStateIdle);
   base::RunLoop().RunUntilIdle();
   histogram_tester_.ExpectTimeBucketCount(
       HotspotMetricsHelper::kHotspotUsageDuration, kHotspotUsageTime, 1);
 
-  SetHotspotStateInShill(shill::kTetheringStateIdle);
   // Verifies that the usage duration is logged if hotspot is torn down by
   // internal error.
   hotspot_controller_->EnableHotspot(base::DoNothing());
+  SetHotspotStateInShill(shill::kTetheringStateActive);
   base::RunLoop().RunUntilIdle();
   task_environment_.FastForwardBy(kHotspotUsageTime);
 
@@ -298,7 +316,7 @@ TEST_F(HotspotMetricsHelperTest, HotspotIsDeviceManagedHistogram) {
       base::DoNothing(), hotspot_config::mojom::DisableReason::kUserInitiated);
   base::RunLoop().RunUntilIdle();
 
-  hotspot_metrics_helper_->set_is_enterprise_managed(
+  enterprise_managed_metadata_store_->set_is_enterprise_managed(
       /*is_enterprise_managed=*/true);
   hotspot_controller_->EnableHotspot(base::DoNothing());
   base::RunLoop().RunUntilIdle();
@@ -350,7 +368,7 @@ TEST_F(HotspotMetricsHelperTest, HotspotDisableReasonHistogram) {
       HotspotMetricsHelper::kHotspotDisableReasonHistogram,
       HotspotMetricsHelper::HotspotMetricsDisableReason::kUserInitiated, 1);
 
-  SetHotspotStateInShill(shill::kTetheringStateIdle);
+  SetHotspotStateInShill(shill::kTetheringStateActive);
   // Verifies that the disabel reason is logged if hotspot is torn down by
   // internal error.
   base::Value::Dict status_dict;

@@ -22,26 +22,21 @@ bool IsInterstitialDisplayingText(content::RenderFrameHost* interstitial_frame,
   DCHECK(text.find("\'") == std::string::npos);
   std::string command = base::StringPrintf(
       "var hasText = document.body.textContent.indexOf('%s') >= 0;"
-      "window.domAutomationController.send(hasText ? %d : %d);",
+      "hasText ? %d : %d;",
       text.c_str(), security_interstitials::CMD_TEXT_FOUND,
       security_interstitials::CMD_TEXT_NOT_FOUND);
-  int result = 0;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(interstitial_frame, command,
-                                                  &result));
-  return result == security_interstitials::CMD_TEXT_FOUND;
+  return content::EvalJs(interstitial_frame, command).ExtractInt() ==
+         security_interstitials::CMD_TEXT_FOUND;
 }
 
 bool InterstitialHasProceedLink(content::RenderFrameHost* interstitial_frame) {
-  int result = security_interstitials::CMD_ERROR;
   const std::string javascript = base::StringPrintf(
-      "domAutomationController.send("
-      "(document.querySelector(\"#proceed-link\") === null) "
-      "? (%d) : (%d))",
+      "document.querySelector(\"#proceed-link\") === null "
+      "? %d : %d",
       security_interstitials::CMD_TEXT_NOT_FOUND,
       security_interstitials::CMD_TEXT_FOUND);
-  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(interstitial_frame,
-                                                  javascript, &result));
-  return result == security_interstitials::CMD_TEXT_FOUND;
+  return content::EvalJs(interstitial_frame, javascript).ExtractInt() ==
+         security_interstitials::CMD_TEXT_FOUND;
 }
 
 bool IsShowingInterstitial(content::WebContents* tab) {

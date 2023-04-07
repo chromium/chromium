@@ -40,10 +40,6 @@ namespace gfx {
 class ImageSkia;
 }
 
-namespace user_manager {
-class RemoveUserDelegate;
-}
-
 namespace policy {
 class CloudExternalDataPolicyHandler;
 }  // namespace policy
@@ -161,8 +157,7 @@ class ChromeUserManagerImpl
   void PerformPostUserLoggedInActions(bool browser_restart) override;
   void RemoveNonCryptohomeData(const AccountId& account_id) override;
   void RemoveUserInternal(const AccountId& account_id,
-                          user_manager::UserRemovalReason reason,
-                          user_manager::RemoveUserDelegate* delegate) override;
+                          user_manager::UserRemovalReason reason) override;
   bool IsDeviceLocalAccountMarkedForRemoval(
       const AccountId& account_id) const override;
   void GuestUserLoggedIn() override;

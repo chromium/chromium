@@ -281,7 +281,7 @@ public final class CronetLoggerTest {
         builder.enableNetworkQualityEstimator(isNetworkQualityEstimatorEnabled);
         builder.setThreadPriority(threadPriority);
 
-        CronetEngine engine = builder.build();
+        CronetEngine engine = mTestFramework.startEngine();
         final CronetEngineBuilderInfo builderInfo = mTestLogger.getLastCronetEngineBuilderInfo();
         final CronetVersion version = mTestLogger.getLastCronetVersion();
         final CronetSource source = mTestLogger.getLastCronetSource();
@@ -388,6 +388,9 @@ public final class CronetLoggerTest {
 
         assertEquals(2, mTestLogger.callsToLogCronetEngineCreation());
         assertEquals(2, mTestLogger.callsToLogCronetTrafficInfo());
+
+        engine1.shutdown();
+        engine2.shutdown();
     }
 
     @Test

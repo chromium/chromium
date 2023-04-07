@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/uuid.h"
 #include "components/download/internal/background_service/entry.h"
 #include "components/download/internal/background_service/stats.h"
 #include "components/download/internal/background_service/test/entry_utils.h"
@@ -268,7 +268,8 @@ TEST_F(DownloadServiceModelImplTest, Get) {
   store_->TriggerInit(true, std::make_unique<std::vector<Entry>>(entries));
 
   EXPECT_TRUE(test::CompareEntry(&entry, model_->Get(entry.guid)));
-  EXPECT_EQ(nullptr, model_->Get(base::GenerateGUID()));
+  EXPECT_EQ(nullptr,
+            model_->Get(base::Uuid::GenerateRandomV4().AsLowercaseString()));
 }
 
 TEST_F(DownloadServiceModelImplTest, PeekEntries) {

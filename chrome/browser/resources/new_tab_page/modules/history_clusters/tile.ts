@@ -57,6 +57,7 @@ export class TileModuleElement extends I18nMixin
       smallFormat: {
         type: Boolean,
         value: false,
+        reflectToAttribute: true,
       },
     };
   }

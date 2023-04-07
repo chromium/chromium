@@ -18,6 +18,10 @@
 #include "net/base/net_export.h"
 #include "net/base/network_handle.h"
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "net/base/address_map_linux.h"
+#endif
+
 namespace net {
 
 class NetworkChangeNotifierFactory;
@@ -26,10 +30,6 @@ class SystemDnsConfigChangeNotifier;
 typedef std::vector<NetworkInterface> NetworkInterfaceList;
 
 namespace internal {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-class AddressTrackerLinux;
-#endif
-
 #if BUILDFLAG(IS_FUCHSIA)
 class NetworkInterfaceCache;
 #endif
@@ -461,7 +461,7 @@ class NET_EXPORT NetworkChangeNotifier {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Returns the AddressTrackerLinux if present.
-  static const internal::AddressTrackerLinux* GetAddressTracker();
+  static const AddressMapOwnerLinux* GetAddressMapOwner();
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -630,10 +630,8 @@ class NET_EXPORT NetworkChangeNotifier {
       bool omit_observers_in_constructor_for_testing = false);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // Returns the AddressTrackerLinux if present.
-  // TODO(szym): Retrieve AddressMap from NetworkState. http://crbug.com/144212
-  virtual const internal::AddressTrackerLinux*
-      GetAddressTrackerInternal() const;
+  // Returns the AddressMapOwnerLinux if present.
+  virtual const AddressMapOwnerLinux* GetAddressMapOwnerInternal() const;
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)

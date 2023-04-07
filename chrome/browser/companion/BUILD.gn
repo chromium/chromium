@@ -5,9 +5,12 @@
 source_set("unit_tests") {
   testonly = true
   sources = []
-  deps = []
+  deps = [ "core" ]
 
   if (!is_ios) {
-    deps += [ "text_finder:unit_tests" ]
+    deps += [
+      "core:unit_tests",
+      "text_finder:unit_tests",
+    ]
   }
 }

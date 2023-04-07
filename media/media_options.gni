@@ -76,9 +76,6 @@ declare_args() {
   # on-device decoding and bitstream passthrough as supported by device.
   enable_platform_dts_audio = false
 
-  enable_mse_mpeg2ts_stream_parser =
-      proprietary_codecs && (enable_cast_receiver || use_fuzzing_engine)
-
   # Enable Dolby Vision demuxing. Enabled by default for Chromecast and Windows.
   # Actual decoding must be provided by the platform. Since most Dolby Vision
   # profiles use HEVC, `enable_platform_hevc` is required to enable this.
@@ -94,10 +91,6 @@ declare_args() {
   # default, unless overwritten by the run time feature
   # kAllowClearDolbyVisionInMseWhenPlatformEncryptedDvEnabled.
   enable_platform_encrypted_dolby_vision = proprietary_codecs && is_win
-
-  # Enable HLS with SAMPLE-AES decryption.
-  enable_hls_sample_aes =
-      proprietary_codecs && (enable_cast_receiver || use_fuzzing_engine)
 
   # Enable logging override, e.g. enable DVLOGs through level 2 at build time.
   # On Cast devices, these are logged as INFO.
@@ -135,6 +128,10 @@ declare_args() {
   enable_platform_hevc =
       proprietary_codecs &&
       (enable_hevc_parser_and_hw_decoder || is_cast_media_device)
+
+  enable_mse_mpeg2ts_stream_parser =
+      proprietary_codecs &&
+      (enable_hls_demuxer || enable_cast_receiver || use_fuzzing_engine)
 }
 
 declare_args() {
@@ -154,20 +151,10 @@ assert(!enable_platform_dolby_vision || proprietary_codecs,
 assert(
     !enable_platform_encrypted_dolby_vision || enable_platform_dolby_vision,
     "enable_platform_dolby_vision required for enable_platform_encrypted_dolby_vision")
-assert(!enable_hls_sample_aes || proprietary_codecs,
-       "proprietary_codecs required for enable_hls_sample_aes")
 assert(!enable_platform_dts_audio || proprietary_codecs,
        "proprietary_codecs required for enable_platform_dts_audio")
-
-assert(!enable_hls_sample_aes || enable_mse_mpeg2ts_stream_parser,
-       "enable_mse_mpeg2ts_stream_parser required for enable_hls_sample_aes")
-
-assert(!enable_hls_demuxer || enable_mse_mpeg2ts_stream_parser,
-       "enable_mse_mpeg2ts_stream_parser required for enable_hls_demuxer")
-
 assert(!enable_platform_hevc || proprietary_codecs,
        "proprietary_codecs required for enable_platform_hevc")
-
 assert(!enable_hevc_parser_and_hw_decoder || enable_platform_hevc,
        "enable_platform_hevc required for enable_hevc_parser_and_hw_decoder")
 

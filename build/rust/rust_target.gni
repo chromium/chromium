@@ -45,9 +45,15 @@ template("rust_target") {
   }
 
   if (defined(invoker.output_dir) && invoker.output_dir != "") {
-    _out_dir = invoker.output_dir
+    # This is where the build target (.exe, .rlib, etc) goes.
+    _output_dir = invoker.output_dir
+
+    # This is where the OUT_DIR environment variable points to when running a
+    # build script and when compiling the build target, for consuming generated
+    # files.
+    _env_out_dir = invoker.output_dir
   } else {
-    _out_dir = target_out_dir
+    _env_out_dir = target_out_dir
   }
 
   _allow_unsafe = false
@@ -176,7 +182,7 @@ template("rust_target") {
                "outside the Chromium build.")
     _cxx_bindings = invoker.cxx_bindings
   }
-  _rustenv = [ "OUT_DIR=" + rebase_path(_out_dir) ]
+  _rustenv = [ "OUT_DIR=" + rebase_path(_env_out_dir) ]
   if (defined(invoker.rustenv)) {
     _rustenv += invoker.rustenv
   }
@@ -223,7 +229,6 @@ template("rust_target") {
                  "_rustenv",
                  "_rustflags",
                  "_support_use_from_cpp",
-                 "_test_deps",
                  "_testonly",
                  "_use_local_std",
                  "_visibility",
@@ -305,7 +310,7 @@ template("rust_target") {
                                    "rustflags",
                                    "rustenv",
                                    "configs",
-                                   "output_dir",
+                                   "unit_test_output_dir",
                                    "unit_test_target",
                                    "test_inputs",
                                  ])
@@ -326,7 +331,9 @@ template("rust_target") {
       # The Rust tool() declarations, like C++ ones, use the output_name and
       # output_dir, so that GN targets can override these if needed. Here we
       # give them their default values, or allow them to be overridden.
-      output_dir = _out_dir
+      if (defined(_output_dir)) {
+        output_dir = _output_dir
+      }
       if (!defined(output_name) || output_name == "") {
         output_name = crate_name
       }
@@ -384,7 +391,10 @@ template("rust_target") {
         testonly = true
         crate_root = _crate_root
         rustflags = _rustflags
-        output_dir = _out_dir
+        env_out_dir = _env_out_dir
+        if (defined(invoker.unit_test_output_dir)) {
+          output_dir = invoker.unit_test_output_dir
+        }
         deps = _rust_deps + _public_deps
         aliased_deps = _rust_aliased_deps
         public_deps = [ ":${_target_name}" ]

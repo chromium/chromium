@@ -784,7 +784,6 @@ component("base") {
     "task/task_runner.h",
     "task/task_traits.cc",
     "task/task_traits.h",
-    "task/task_traits_extension.h",
     "task/thread_pool.cc",
     "task/thread_pool.h",
     "task/thread_pool/delayed_priority_queue.cc",
@@ -1432,8 +1431,6 @@ component("base") {
       "fuchsia/scoped_fx_logger.h",
       "fuchsia/scoped_service_binding.h",
       "fuchsia/scoped_service_publisher.h",
-      "fuchsia/service_provider_impl.cc",
-      "fuchsia/service_provider_impl.h",
       "fuchsia/startup_context.cc",
       "fuchsia/startup_context.h",
       "fuchsia/system_info.cc",
@@ -3035,15 +3032,6 @@ if (is_fuchsia) {
   }
 }
 
-source_set("base_unittests_tasktraits") {
-  testonly = true
-  sources = [
-    "task/test_task_traits_extension.cc",
-    "task/test_task_traits_extension.h",
-  ]
-  deps = [ ":base" ]
-}
-
 source_set("arm_bti_testfunctions") {
   testonly = true
 
@@ -3321,7 +3309,6 @@ test("base_unittests") {
     "task/single_thread_task_executor_unittest.cc",
     "task/single_thread_task_runner_unittest.cc",
     "task/task_runner_unittest.cc",
-    "task/task_traits_extension_unittest.cc",
     "task/task_traits_unittest.cc",
     "task/thread_pool/can_run_policy_test.h",
     "task/thread_pool/delayed_priority_queue_unittest.cc",
@@ -3445,7 +3432,6 @@ test("base_unittests") {
     ":arm_bti_testfunctions",
     ":base",
     ":base_stack_sampling_profiler_test_util",
-    ":base_unittests_tasktraits",
     ":feature_list_buildflags",
     ":i18n",
     ":sanitizer_buildflags",
@@ -3905,7 +3891,6 @@ test("base_unittests") {
       "fuchsia/scoped_natural_service_publisher_unittest.cc",
       "fuchsia/scoped_service_binding_unittest.cc",
       "fuchsia/scoped_service_publisher_unittest.cc",
-      "fuchsia/service_provider_impl_unittest.cc",
       "fuchsia/system_build_info_unittest.cc",
       "fuchsia/system_product_info_unittest.cc",
       "fuchsia/test_component_context_for_process_unittest.cc",
@@ -4075,7 +4060,6 @@ if (enable_nocompile_tests) {
       "sequence_checker_unittest.nc",
       "strings/string_piece_unittest.nc",
       "task/bind_post_task_unittest.nc",
-      "task/task_traits_extension_unittest.nc",
       "task/task_traits_unittest.nc",
       "thread_annotations_unittest.nc",
       "traits_bag_unittest.nc",
@@ -4086,7 +4070,6 @@ if (enable_nocompile_tests) {
 
     deps = [
       ":base",
-      ":base_unittests_tasktraits",
       "//base/test:run_all_unittests",
       "//testing/gtest",
     ]

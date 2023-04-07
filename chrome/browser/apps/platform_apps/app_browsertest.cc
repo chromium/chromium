@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
+#include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/test_switches.h"
@@ -93,6 +94,17 @@ namespace app_runtime = extensions::api::app_runtime;
 namespace extensions {
 
 namespace {
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+bool ExpectChromeAppsDefaultEnabled() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_FUCHSIA)
+  return false;
+#else
+  return true;
+#endif
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Non-abstract RenderViewContextMenu class.
 class PlatformAppContextMenu : public RenderViewContextMenu {
@@ -211,7 +223,10 @@ bool CopyTestDataAndGetTestFilePath(const base::FilePath& test_data_file,
 
 class PlatformAppWithFileBrowserTest : public PlatformAppBrowserTest {
  public:
-  PlatformAppWithFileBrowserTest() {
+  PlatformAppWithFileBrowserTest()
+      : enable_chrome_apps_(
+            &extensions::testing::g_enable_chrome_apps_for_testing,
+            true) {
     set_open_about_blank_on_browser_launch(false);
   }
 
@@ -294,6 +309,9 @@ class PlatformAppWithFileBrowserTest : public PlatformAppBrowserTest {
     command_line.AppendArgPath(test_file);
     return command_line;
   }
+
+ private:
+  base::AutoReset<bool> enable_chrome_apps_;
 };
 
 const char kChromiumURL[] = "http://chromium.org";
@@ -1055,6 +1073,53 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
   launched_listener.Reply("reload");
   ASSERT_TRUE(launched_listener2.WaitUntilSatisfied());
 }
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/1288199): Run these tests on Chrome OS with both Ash and
+// Lacros processes active.
+
+class PlatformAppChromeAppsDeprecationTest
+    : public PlatformAppBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  PlatformAppChromeAppsDeprecationTest()
+      : chrome_apps_maybe_enabled_(
+            &extensions::testing::g_enable_chrome_apps_for_testing,
+            AreChromeAppsEnabledForTesting()) {}
+
+  bool AreChromeAppsEnabledForTesting() { return GetParam(); }
+
+ private:
+  base::AutoReset<bool> chrome_apps_maybe_enabled_;
+};
+
+IN_PROC_BROWSER_TEST_P(PlatformAppChromeAppsDeprecationTest,
+                       PlatformAppInAppService) {
+  // The extension loads, but is not populated in the app service.
+  ASSERT_TRUE(LoadExtension(
+      test_data_dir_.AppendASCII("platform_apps").AppendASCII("minimal"),
+      {.context_type = ContextType::kFromManifest}));
+  ExtensionId packaged_app_id = last_loaded_extension_id();
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile());
+  ASSERT_TRUE(proxy);
+  bool called = false;
+  proxy->AppRegistryCache().ForOneApp(
+      packaged_app_id,
+      [&called](const apps::AppUpdate& update) { called = true; });
+  if (AreChromeAppsEnabledForTesting()) {
+    EXPECT_TRUE(called);
+  } else {
+    EXPECT_EQ(ExpectChromeAppsDefaultEnabled(), called);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    PlatformAppChromeAppsDeprecationTest,
+    ::testing::Values(true, false));
+
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace {
 

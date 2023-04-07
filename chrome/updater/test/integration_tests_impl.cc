@@ -446,6 +446,30 @@ void CopyLog(const base::FilePath& src_dir) {
   }
 }
 
+void ExpectNoCrashes(UpdaterScope scope) {
+  absl::optional<base::FilePath> database_path(GetCrashDatabasePath(scope));
+  if (!database_path || !base::PathExists(*database_path)) {
+    return;
+  }
+
+  base::FilePath dest_dir = GetLogDestinationDir();
+  dest_dir = dest_dir.AppendASCII(GetTestName());
+  EXPECT_TRUE(base::CreateDirectory(dest_dir));
+
+  base::FileEnumerator it(*database_path, true, base::FileEnumerator::FILES,
+                          FILE_PATH_LITERAL("*.dmp"),
+                          base::FileEnumerator::FolderSearchPolicy::ALL);
+  int count = 0;
+  for (base::FilePath name = it.Next(); !name.empty(); name = it.Next()) {
+    VLOG(0) << __func__ << "Copying " << name << " to: " << dest_dir;
+    EXPECT_TRUE(base::CopyFile(name, dest_dir.Append(name.BaseName())));
+
+    ++count;
+  }
+
+  EXPECT_EQ(count, 0) << ": " << count << " crashes found";
+}
+
 void RunWake(UpdaterScope scope, int expected_exit_code) {
   RunUpdaterWithSwitch(base::Version(kUpdaterVersion), scope, kWakeSwitch,
                        expected_exit_code);

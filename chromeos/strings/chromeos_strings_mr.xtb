@@ -140,6 +140,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">अधिक सेटिंग्ज</translation>
 <translation id="2085089206770112532">डिस्प्लेचा ब्राइटनेस कमी करा</translation>
+<translation id="209751264101900360">डॉन टू डार्क - क्लाउड फ्लो</translation>
 <translation id="2102231663024125441">मजकूर संपादन</translation>
 <translation id="2105810540595158374">डिव्हाइस हे गेम नियंत्रक आहे.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, आवृत्ती <ph name="MILESTONE_VERSION" /></translation>
@@ -370,6 +371,7 @@
 <translation id="4275663329226226506">माध्यम</translation>
 <translation id="4289540628985791613">विहंगावलोकन</translation>
 <translation id="4289849978083912975">स्लाइड शो</translation>
+<translation id="4293621540182258188">डॉन टू डार्क - अर्थ फ्लो</translation>
 <translation id="4297501883039923494">थांबले - अज्ञात एरर</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> इमेज</translation>
 <translation id="4311195029067684288">पूर्ण</translation>
@@ -544,6 +546,7 @@
 <translation id="576835345334454681">डिस्प्लेचा ब्राइटनेस वाढवा</translation>
 <translation id="57838592816432529">म्यूट करा</translation>
 <translation id="5784136236926853061">उच्च HTTP लेटन्सी</translation>
+<translation id="5809090008577139505">ऑरोरा</translation>
 <translation id="5826644637650799838">आर्टविषयी</translation>
 <translation id="5832805196449965646">व्यक्ती जोडा</translation>
 <translation id="583281660410589416">अज्ञात</translation>
@@ -562,6 +565,7 @@
 <translation id="5907649332524363701">कीचा रंग</translation>
 <translation id="5916084858004523819">प्रतिबंधित</translation>
 <translation id="5916664084637901428">सुरू</translation>
+<translation id="5918201491776799918">Chromebook Plus साठी खास आर्टवर्क निवडा</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{तुमची फाइल यशस्वीरीत्या स्कॅन करण्यात आली आहे आणि <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> वर सेव्ह केली आहे.}other{तुमच्या फाइल यशस्वीरीत्या स्कॅन करण्यात आल्या आहेत आणि <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> वर सेव्ह केल्या आहेत.}}</translation>
 <translation id="5931523347251946569">फाइल सापडली नाही</translation>
 <translation id="5939518447894949180">रीसेट करा</translation>
@@ -818,6 +822,7 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> निवडा</translation>
 <translation id="8151185429379586178">डेव्हलपर टूल</translation>
+<translation id="8153923300383192510">Chromebook Plus साठी खास</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">अटॅच करा</translation>
 <translation id="8206859287963243715">सेल्यूलर</translation>

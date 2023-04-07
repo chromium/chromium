@@ -9,7 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_source.h"
 #include "extensions/browser/api/declarative/rules_registry.h"

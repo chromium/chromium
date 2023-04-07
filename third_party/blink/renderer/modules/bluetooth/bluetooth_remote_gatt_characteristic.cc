@@ -35,7 +35,8 @@ BluetoothRemoteGATTCharacteristic::BluetoothRemoteGATTCharacteristic(
     mojom::blink::WebBluetoothRemoteGATTCharacteristicPtr characteristic,
     BluetoothRemoteGATTService* service,
     BluetoothDevice* device)
-    : ExecutionContextLifecycleObserver(context),
+    : ActiveScriptWrappable<BluetoothRemoteGATTCharacteristic>({}),
+      ExecutionContextLifecycleObserver(context),
       characteristic_(std::move(characteristic)),
       service_(service),
       device_(device),

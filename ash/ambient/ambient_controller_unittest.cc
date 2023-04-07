@@ -16,6 +16,7 @@
 #include "ash/ambient/test/test_ambient_managed_photo_source.h"
 #include "ash/ambient/ui/ambient_container_view.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
+#include "ash/ambient/ui/photo_view.h"
 #include "ash/assistant/assistant_interaction_controller_impl.h"
 #include "ash/assistant/model/assistant_interaction_model.h"
 #include "ash/constants/ambient_theme.h"
@@ -703,12 +704,17 @@ TEST_P(AmbientControllerTestForAnyUiSettings,
       ui::ET_TOUCH_PRESSED, gfx::PointF(), gfx::PointF(), base::TimeTicks(),
       ui::PointerDetails()));
 
+  // External user activity.
+  events.emplace_back(nullptr);
+
   for (const auto& event : events) {
     ShowAmbientScreen();
     FastForwardTiny();
     EXPECT_TRUE(WidgetsVisible());
 
-    if (event.get()->IsMouseEvent()) {
+    if (!event) {
+      ambient_controller()->OnUserActivity(nullptr);
+    } else if (event.get()->IsMouseEvent()) {
       ambient_controller()->OnMouseEvent(event.get()->AsMouseEvent());
     } else if (event.get()->IsTouchEvent()) {
       ambient_controller()->OnTouchEvent(event.get()->AsTouchEvent());
@@ -1632,14 +1638,11 @@ TEST_F(AmbientControllerTest,
 
 class AmbientControllerForManagedScreensaverTest : public AmbientAshTestBase {
  public:
-  AmbientControllerForManagedScreensaverTest()
-      : photo_source_(std::make_unique<TestAmbientManagedPhotoSource>()) {}
-
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
         ash::features::kAmbientModeManagedScreensaver);
     AmbientAshTestBase::SetUp();
-
+    photo_source_ = std::make_unique<TestAmbientManagedPhotoSource>();
     GetSessionControllerClient()->set_show_lock_screen_views(true);
     CreateTestData();
   }
@@ -1647,6 +1650,7 @@ class AmbientControllerForManagedScreensaverTest : public AmbientAshTestBase {
   void TearDown() override {
     ASSERT_TRUE(temp_dir_.Delete());
     image_file_paths_.clear();
+    photo_source_.reset();
     AmbientAshTestBase::TearDown();
   }
 
@@ -1693,6 +1697,11 @@ TEST_F(AmbientControllerForManagedScreensaverTest,
   ASSERT_TRUE(GetContainerView());
   EXPECT_TRUE(
       GetContainerView()->GetViewByID(AmbientViewID::kAmbientPhotoView));
+
+  // Peripheral Ui is always hidden in managed screeensaver mode
+  EXPECT_FALSE(GetAmbientSlideshowPeripheralUi()->GetVisible())
+      << "Peripheral Ui should be hidden in managed mode";
+
   GetEventGenerator()->ClickLeftButton();
   EXPECT_FALSE(ambient_controller()->IsShown());
   FastForwardToLockScreenTimeout();
@@ -1746,6 +1755,7 @@ TEST_F(AmbientControllerForManagedScreensaverTest,
   ASSERT_TRUE(GetContainerView());
   EXPECT_TRUE(
       GetContainerView()->GetViewByID(AmbientViewID::kAmbientPhotoView));
+  EXPECT_TRUE(GetAmbientSlideshowPeripheralUi()->GetVisible());
   UnlockScreen();
   EXPECT_FALSE(ambient_controller()->IsShown());
 }
@@ -1822,6 +1832,18 @@ TEST_F(AmbientControllerForManagedScreensaverTest,
   ASSERT_TRUE(GetContainerView());
   EXPECT_TRUE(
       GetContainerView()->GetViewByID(AmbientViewID::kAmbientPhotoView));
+}
+
+TEST_F(AmbientControllerForManagedScreensaverTest,
+       AmbientManagedPhotoSourceErrorCase) {
+  SetAmbientModeManagedScreensaverEnabled(/*enabled=*/true);
+  photo_source_.reset();
+  SimulateScreensaverStart();
+
+  // The view will not be created as an initialization callback will be called
+  // with success = false, so the container would be null.
+  ASSERT_FALSE(GetContainerView());
+  EXPECT_TRUE(ambient_controller()->IsShown());
 }
 
 TEST_F(AmbientControllerTest, RendersCorrectViewForVideo) {

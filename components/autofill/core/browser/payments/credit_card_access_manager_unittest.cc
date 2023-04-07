@@ -1839,10 +1839,11 @@ TEST_F(CreditCardAccessManagerTest, SettingsPage_OptOut) {
 // -- bool card_authorization_token_present;
 // -- bool max_strikes_limit_reached;
 // -- bool has_opted_in_from_android_settings;
+// -- bool is_opted_in_for_fido;
 class CreditCardAccessManagerBetterAuthOptInLogTest
     : public CreditCardAccessManagerTest,
       public testing::WithParamInterface<
-          std::tuple<bool, bool, bool, bool, bool>> {
+          std::tuple<bool, bool, bool, bool, bool, bool>> {
  public:
   CreditCardAccessManagerBetterAuthOptInLogTest() = default;
   ~CreditCardAccessManagerBetterAuthOptInLogTest() override = default;
@@ -1869,6 +1870,13 @@ class CreditCardAccessManagerBetterAuthOptInLogTest
     if (IsVirtualCard()) {
       card_->set_record_type(CreditCard::VIRTUAL_CARD);
     }
+    if (IsOptedIntoFido()) {
+      // If user and device are already opted into FIDO, then add an eligible
+      // card to ensure that the `unmask_details_` contains fido request
+      // options.
+      payments_client_->AddFidoEligibleCard("random_id", kCredentialId,
+                                            kGooglePaymentsRpid);
+    }
 
     credit_card_access_manager_->PrepareToFetchCreditCard();
     credit_card_access_manager_->FetchCreditCard(card_,
@@ -1880,14 +1888,17 @@ class CreditCardAccessManagerBetterAuthOptInLogTest
   bool CardAuthorizationTokenPresent() { return std::get<2>(GetParam()); }
   bool MaxStrikesLimitReached() { return std::get<3>(GetParam()); }
   bool HasOptedInFromAndroidSettings() { return std::get<4>(GetParam()); }
+  bool IsOptedIntoFido() { return std::get<5>(GetParam()); }
+
   bool ShouldOfferFidoOptIn() {
-    return !IsVirtualCard() && UnmaskDetailsOfferFidoOptIn() &&
-           CardAuthorizationTokenPresent() && !MaxStrikesLimitReached();
+    return !IsOptedIntoFido() && !IsVirtualCard() &&
+           UnmaskDetailsOfferFidoOptIn() && CardAuthorizationTokenPresent() &&
+           !MaxStrikesLimitReached();
   }
 
   bool ShouldOfferFidoOptInAndroid() {
-    return !IsVirtualCard() && UnmaskDetailsOfferFidoOptIn() &&
-           !HasOptedInFromAndroidSettings();
+    return !IsOptedIntoFido() && !IsVirtualCard() &&
+           UnmaskDetailsOfferFidoOptIn() && !HasOptedInFromAndroidSettings();
   }
 
   const std::string GetFidoOptInNotOfferedHistogram() {
@@ -1920,7 +1931,13 @@ TEST_P(CreditCardAccessManagerBetterAuthOptInLogTest,
               .with_cvc(u"123")),
       ShouldOfferFidoOptIn());
 
-  if (!UnmaskDetailsOfferFidoOptIn()) {
+  if (IsOptedIntoFido()) {
+    histogram_tester.ExpectUniqueSample(
+        GetFidoOptInNotOfferedHistogram(),
+        /*sample=*/
+        autofill_metrics::WebauthnOptInPromoNotOfferedReason::kAlreadyOptedIn,
+        /*expected_bucket_count=*/1);
+  } else if (!UnmaskDetailsOfferFidoOptIn()) {
     histogram_tester.ExpectUniqueSample(
         GetFidoOptInNotOfferedHistogram(),
         /*sample=*/
@@ -1964,7 +1981,13 @@ TEST_P(CreditCardAccessManagerBetterAuthOptInLogTest,
   EXPECT_EQ(credit_card_access_manager_->ShouldOfferFidoAuthForTesting(),
             ShouldOfferFidoOptInAndroid());
 
-  if (!UnmaskDetailsOfferFidoOptIn()) {
+  if (IsOptedIntoFido()) {
+    histogram_tester.ExpectUniqueSample(
+        GetFidoOptInNotOfferedHistogram(),
+        /*sample=*/
+        autofill_metrics::WebauthnOptInPromoNotOfferedReason::kAlreadyOptedIn,
+        /*expected_bucket_count=*/1);
+  } else if (!UnmaskDetailsOfferFidoOptIn()) {
     histogram_tester.ExpectUniqueSample(
         GetFidoOptInNotOfferedHistogram(),
         /*sample=*/
@@ -1993,6 +2016,7 @@ TEST_P(CreditCardAccessManagerBetterAuthOptInLogTest,
 INSTANTIATE_TEST_SUITE_P(,
                          CreditCardAccessManagerBetterAuthOptInLogTest,
                          testing::Combine(testing::Bool(),
+                                          testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool(),

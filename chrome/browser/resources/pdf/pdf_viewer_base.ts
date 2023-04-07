@@ -149,11 +149,6 @@ export abstract class PdfViewerBaseElement extends PolymerElement {
 
     record(UserAction.DOCUMENT_OPENED);
 
-    // Parse open pdf parameters.
-    this.paramsParser = new OpenPdfParamsParser(destination => {
-      return PluginController.getInstance().getNamedDestination(destination);
-    });
-
     // Create the viewport.
     const defaultZoom =
         this.browserApi!.getZoomBehavior() === ZoomBehavior.MANAGE ?
@@ -189,6 +184,16 @@ export abstract class PdfViewerBaseElement extends PolymerElement {
         () => this.loaded);
     pluginController.isActive = true;
     this.currentController = pluginController;
+
+    // Parse open pdf parameters.
+    const getNamedDestinationCallback = (destination: string) => {
+      return PluginController.getInstance().getNamedDestination(destination);
+    };
+    const getPageBoundingBoxCallback = (page: number) => {
+      return PluginController.getInstance().getPageBoundingBox(page);
+    };
+    this.paramsParser = new OpenPdfParamsParser(
+        getNamedDestinationCallback, getPageBoundingBoxCallback);
 
     this.tracker.add(
         pluginController.getEventTarget(),
@@ -432,14 +437,22 @@ export abstract class PdfViewerBaseElement extends PolymerElement {
 
     if (params.position) {
       this.viewport_.goToPageAndXy(
-          params.page ? params.page : 0, params.position.x, params.position.y);
+          params.page || 0, params.position.x, params.position.y);
     } else if (params.page) {
       this.viewport_.goToPage(params.page);
     }
 
     if (params.view) {
       this.isUserInitiatedEvent = false;
-      this.viewport_.setFittingType(params.view);
+      let fittingTypeParams;
+      if (params.view === FittingType.FIT_TO_BOUNDING_BOX) {
+        assert(params.boundingBox);
+        fittingTypeParams = {
+          page: params.page || 0,
+          boundingBox: params.boundingBox,
+        };
+      }
+      this.viewport_.setFittingType(params.view, fittingTypeParams);
       this.forceFit(params.view);
       if (params.viewPosition) {
         const zoomedPositionShift =

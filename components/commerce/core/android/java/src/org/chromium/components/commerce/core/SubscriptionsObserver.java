@@ -4,23 +4,21 @@
 
 package org.chromium.components.commerce.core;
 
-import java.util.List;
-
 /** An observer to notify that a (un)subscribe request has finished. */
 public interface SubscriptionsObserver {
     /**
      * Invoked when a subscribe request has finished.
      *
-     * @param subscriptions The list of subscriptions being added.
-     * @param succeeded Whether the subscriptions are successfully added.
+     * @param subscription The subscription being added.
+     * @param succeeded Whether the subscription is successfully added.
      */
-    void onSubscribe(List<CommerceSubscription> subscriptions, boolean succeeded);
+    void onSubscribe(CommerceSubscription subscription, boolean succeeded);
 
     /**
      * Invoked when an unsubscribe request has finished.
      *
-     * @param subscriptions The list of subscriptions being removed.
-     * @param succeeded Whether the subscriptions are successfully removed.
+     * @param subscription The subscription being removed.
+     * @param succeeded Whether the subscription is successfully removed.
      */
-    void onUnsubscribe(List<CommerceSubscription> subscriptions, boolean succeeded);
+    void onUnsubscribe(CommerceSubscription subscription, boolean succeeded);
 }

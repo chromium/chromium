@@ -10,6 +10,8 @@ enum MLInputOperandLayout { "nchw", "nhwc" };
 
 enum MLConv2dFilterOperandLayout { "oihw", "hwio", "ohwi", "ihwo" };
 
+enum MLConvTranspose2dFilterOperandLayout { "iohw", "hwoi", "ohwi" };
+
 enum MLAutoPad { "explicit", "same-upper", "same-lower" };
 
 dictionary MLConv2dOptions {
@@ -20,6 +22,20 @@ dictionary MLConv2dOptions {
   [EnforceRange] unsigned long groups = 1;
   MLInputOperandLayout inputLayout = "nchw";
   MLConv2dFilterOperandLayout filterLayout = "oihw";
+  MLOperand bias;
+  MLActivation activation;
+};
+
+dictionary MLConvTranspose2dOptions {
+  sequence<[EnforceRange] unsigned long> padding;
+  sequence<[EnforceRange] unsigned long> strides;
+  sequence<[EnforceRange] unsigned long> dilations;
+  sequence<[EnforceRange] unsigned long> outputPadding;
+  sequence<[EnforceRange] unsigned long> outputSizes;
+  MLAutoPad autoPad = "explicit";
+  [EnforceRange] unsigned long groups = 1;
+  MLInputOperandLayout inputLayout = "nchw";
+  MLConvTranspose2dFilterOperandLayout filterLayout = "iohw";
   MLOperand bias;
   MLActivation activation;
 };
@@ -98,6 +114,7 @@ dictionary MLTransposeOptions{
   [RaisesException] MLOperand concat(sequence<MLOperand> inputs, [EnforceRange] unsigned long axis);
 
   [RaisesException] MLOperand conv2d(MLOperand input, MLOperand filter, optional MLConv2dOptions options = {});
+  [RaisesException] MLOperand convTranspose2d(MLOperand input, MLOperand filter, optional MLConvTranspose2dOptions options = {});
 
   // Element-wise binary operations
   [RaisesException] MLOperand add(MLOperand a, MLOperand b);

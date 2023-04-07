@@ -185,6 +185,24 @@ INSTANTIATE_TEST_SUITE_P(
          ui::Accelerator{ui::VKEY_BROWSER_FORWARD, ui::EF_ALT_DOWN},
          {}},
 
+        // Layout2 doesn't have VKEY_ALL_APPLICATIONS key.
+        {{INTERNAL},
+         {kKbdTopRowLayout2Tag},
+         ui::Accelerator{ui::VKEY_ALL_APPLICATIONS, ui::EF_ALT_DOWN},
+         {}},
+
+        // Layout1 doesn't have VKEY_SNAPSHOT key.
+        {{EXTERNAL_BLUETOOTH},
+         {kKbdTopRowLayout1Tag},
+         ui::Accelerator{ui::VKEY_SNAPSHOT, ui::EF_ALT_DOWN},
+         {}},
+
+        // LayoutWilco doesn't have VKEY_MICROPHONE_MUTE_TOGGLE key.
+        {{EXTERNAL_USB},
+         {kKbdTopRowLayoutWilcoTag},
+         ui::Accelerator{ui::VKEY_MICROPHONE_MUTE_TOGGLE, ui::EF_ALT_DOWN},
+         {}},
+
         // For TopRowLayout1: [Alt] + [Forward] -> [Alt] + [Search] + [F2].
         {{EXTERNAL_BLUETOOTH},
          {kKbdTopRowLayout1Tag},

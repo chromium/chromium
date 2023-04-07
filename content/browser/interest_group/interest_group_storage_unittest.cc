@@ -115,17 +115,17 @@ class InterestGroupStorageTest : public testing::Test {
         /*ads=*/
         std::vector<InterestGroup::Ad>{
             blink::InterestGroup::Ad(GURL("https://full.example.com/ad1"),
-                                     "group_1", "metadata1"),
+                                     "metadata1", "group_1"),
             blink::InterestGroup::Ad(GURL("https://full.example.com/ad2"),
-                                     "group_2", "metadata2")},
+                                     "metadata2", "group_2")},
         /*ad_components=*/
         std::vector<InterestGroup::Ad>{
             blink::InterestGroup::Ad(
-                GURL("https://full.example.com/adcomponent1"), "group_1",
-                "metadata1c"),
+                GURL("https://full.example.com/adcomponent1"), "metadata1c",
+                "group_1"),
             blink::InterestGroup::Ad(
-                GURL("https://full.example.com/adcomponent2"), "group_2",
-                "metadata2c")},
+                GURL("https://full.example.com/adcomponent2"), "metadata2c",
+                "group_2")},
         /*ad_sizes=*/
         {{{"size_1", blink::AdSize(300, blink::AdSize::LengthUnit::kPixels, 150,
                                    blink::AdSize::LengthUnit::kPixels)},
@@ -170,11 +170,11 @@ class InterestGroupStorageTest : public testing::Test {
     update.trusted_bidding_signals_keys =
         std::vector<std::string>{"a", "b2", "c", "d"};
     update.ads = full.ads;
-    update.ads->emplace_back(GURL("https://full.example.com/ad3"), "group_3",
-                             "metadata3");
+    update.ads->emplace_back(GURL("https://full.example.com/ad3"), "metadata3",
+                             "group_3");
     update.ad_components = full.ad_components;
     update.ad_components->emplace_back(
-        GURL("https://full.example.com/adcomponent3"), "group_3", "metadata3c");
+        GURL("https://full.example.com/adcomponent3"), "metadata3c", "group_3");
     storage->UpdateInterestGroup(blink::InterestGroupKey(full.owner, full.name),
                                  update);
 

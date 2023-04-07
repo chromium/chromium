@@ -50,11 +50,15 @@ export function expectEvent(
  * Creates the autofill section for the given list.
  */
 export async function createAutofillSection(
-    addresses: chrome.autofillPrivate.AddressEntry[],
-    prefValues: any): Promise<SettingsAutofillSectionElement> {
+    addresses: chrome.autofillPrivate.AddressEntry[], prefValues: any,
+    accountInfo?: chrome.autofillPrivate.AccountInfo):
+    Promise<SettingsAutofillSectionElement> {
   // Override the AutofillManagerImpl for testing.
   const autofillManager = new TestAutofillManager();
   autofillManager.data.addresses = addresses;
+  if (accountInfo) {
+    autofillManager.data.accountInfo = accountInfo;
+  }
   AutofillManagerImpl.setInstance(autofillManager);
 
   const section = document.createElement('settings-autofill-section');
@@ -70,16 +74,37 @@ export async function createAutofillSection(
  * has actually opened.
  */
 export function createAddressDialog(
-    address: chrome.autofillPrivate.AddressEntry):
+    address: chrome.autofillPrivate.AddressEntry,
+    accountInfo?: chrome.autofillPrivate.AccountInfo):
     Promise<SettingsAddressEditDialogElement> {
   return new Promise(function(resolve) {
     const section = document.createElement('settings-address-edit-dialog');
     section.address = address;
+    section.accountInfo = accountInfo;
     document.body.appendChild(section);
     eventToPromise('on-update-address-wrapper', section).then(function() {
       resolve(section);
     });
   });
+}
+
+export async function openAddressDialog(
+    section: SettingsAutofillSectionElement):
+    Promise<SettingsAddressEditDialogElement> {
+  let dialog =
+      section.shadowRoot!.querySelector('settings-address-edit-dialog');
+  assertFalse(!!dialog, 'stale dialog found');
+
+  section.$.addAddress.click();
+
+  flush();
+
+  dialog = section.shadowRoot!.querySelector('settings-address-edit-dialog');
+
+  assertTrue(!!dialog, 'the dialog element should be in the section subtree');
+
+  await eventToPromise('on-update-address-wrapper', dialog);
+  return dialog;
 }
 
 /**

@@ -22,11 +22,12 @@ namespace ash {
 // for the first time and ends when the `Finalize` method is called.
 class AmbientUiLauncher {
  public:
+  using InitializationCallback = base::OnceCallback<void(bool success)>;
   virtual ~AmbientUiLauncher() = default;
 
   // Do any asynchronous initialization before launching the UI. This method is
   // only expected to be run once per ambient UI session.
-  virtual void Initialize(base::OnceClosure on_done) = 0;
+  virtual void Initialize(InitializationCallback on_done) = 0;
 
   // After Initialize() is complete, we call this method to create the view,
   // this can be called multiple times during an ambient UI session in case

@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
@@ -18,10 +19,14 @@
 #include "media/base/media_log.h"
 #include "media/base/media_track.h"
 #include "media/base/pipeline_status.h"
+#include "media/filters/chunk_demuxer.h"
 #include "media/filters/hls_data_source_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
+
+// Declared and defined in manifest_demuxer.cc.
+class ManifestDemuxerStream;
 
 class MEDIA_EXPORT ManifestDemuxer final : public Demuxer {
  public:
@@ -66,8 +71,60 @@ class MEDIA_EXPORT ManifestDemuxer final : public Demuxer {
                                    TrackChangeCB change_completed_cb) override;
 
  private:
-  MediaLog* media_log_;
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  // This wrapper class allows us to capture the results of Read() and use
+  // DecoderBuffer timestamps to update the current media time within the
+  // loaded buffer, without having to make modifications to ChunkDemuxer.
+  class ManifestDemuxerStream : public DemuxerStream {
+   public:
+    ~ManifestDemuxerStream() override;
+    using WrapperReadCb =
+        base::RepeatingCallback<void(DemuxerStream::ReadCB,
+                                     DemuxerStream::Status,
+                                     DemuxerStream::DecoderBufferVector)>;
+    ManifestDemuxerStream(DemuxerStream* stream, WrapperReadCb cb);
+    void Read(uint32_t count, DemuxerStream::ReadCB cb) override;
+    AudioDecoderConfig audio_decoder_config() override;
+    VideoDecoderConfig video_decoder_config() override;
+    DemuxerStream::Type type() const override;
+    StreamLiveness liveness() const override;
+    void EnableBitstreamConverter() override;
+    bool SupportsConfigChanges() override;
+
+   private:
+    WrapperReadCb read_cb_;
+    DemuxerStream* stream_;
+  };
+
+  void OnChunkDemuxerInitialized(PipelineStatus init_status);
+  void OnChunkDemuxerOpened();
+  void OnProgress();
+  void OnEncryptedMediaData(EmeInitDataType type,
+                            const std::vector<uint8_t>& data);
+  void OnDemuxerStreamRead(DemuxerStream::ReadCB wrapped_read_cb,
+                           DemuxerStream::Status status,
+                           DemuxerStream::DecoderBufferVector buffers);
+
+  std::unique_ptr<MediaLog> media_log_;
+  scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
+
+  // Pending callbacks.
+  PipelineStatusCallback pending_init_;
+
+  // Wrapped chunk demuxer that actually does the parsing and demuxing of the
+  // raw data we feed it.
+  std::unique_ptr<ChunkDemuxer> chunk_demuxer_;
+
+  // Updated by seek, and by updates from outgoing frames.
+  base::TimeDelta media_time_ = base::Seconds(0);
+
+  // Keeps a map of demuxer streams to their wrapper implementations which
+  // can be used to set the current media time. ChunkDemuxer's streams live
+  // forever due to the use of raw pointers in the pipeline, so these must
+  // also live for the duration of `this` lifetime.
+  base::flat_map<DemuxerStream*, std::unique_ptr<ManifestDemuxerStream>>
+      streams_;
+
+  base::WeakPtrFactory<ManifestDemuxer> weak_factory_{this};
 };
 
 }  // namespace media

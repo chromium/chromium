@@ -21,7 +21,8 @@ namespace media {
 // should estimating the end-to-end latency from microphone input to speakers.
 //
 // An example test page with instructions can be found under
-// third_party/blink/manual_tests/audio_latency.html
+// third_party/blink/manual_tests/audio_latency.html, and more general
+// documentation can be found under docs/media/latency_tracing.md.
 //
 // Note: does nothing if the "audio.latency" tracing category is disabled.
 //

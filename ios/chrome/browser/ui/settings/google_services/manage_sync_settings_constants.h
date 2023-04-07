@@ -25,6 +25,9 @@ extern NSString* const kSyncAutofillIdentifier;
 extern NSString* const kSyncPreferencesIdentifier;
 extern NSString* const kSyncReadingListIdentifier;
 
+// Accessibility identifier for Encryption item.
+extern NSString* const kEncryptionAccessibilityIdentifier;
+
 // Sections used in Sync Settings page.
 typedef NS_ENUM(NSInteger, SyncSettingsSectionIdentifier) {
   // Section for all the sync settings.

@@ -51,6 +51,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactory {
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       uint32_t usage,
+      std::string debug_label,
       bool is_thread_safe) = 0;
   virtual std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
@@ -60,6 +61,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactory {
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       uint32_t usage,
+      std::string debug_label,
       base::span<const uint8_t> pixel_data) = 0;
   virtual std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
@@ -69,6 +71,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactory {
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       uint32_t usage,
+      std::string debug_label,
       gfx::GpuMemoryBufferHandle handle);
   virtual std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
@@ -79,7 +82,8 @@ class GPU_GLES2_EXPORT SharedImageBackingFactory {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage) = 0;
+      uint32_t usage,
+      std::string debug_label) = 0;
 
   // Returns true if the factory is supported
   bool CanCreateSharedImage(uint32_t usage,

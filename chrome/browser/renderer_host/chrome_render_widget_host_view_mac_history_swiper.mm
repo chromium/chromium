@@ -276,8 +276,13 @@ BOOL forceMagicMouse = NO;
     // renderer.
     BOOL sufficientlyFar = fabs(_gestureCurrentPoint.x - _gestureStartPoint.x) >
                            kConsumeEventThreshold;
-    if (sufficientlyFar)
+    if (sufficientlyFar) {
       _recognitionState = history_swiper::kTracking;
+
+      if (_historySwipeDirection == history_swiper::kBackwards) {
+        [_delegate backwardsSwipeNavigationLikely];
+      }
+    }
   }
 
   if (_historyOverlay)

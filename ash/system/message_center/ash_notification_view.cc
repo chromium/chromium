@@ -38,6 +38,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -85,6 +86,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/drag_utils.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout.h"
@@ -647,6 +649,12 @@ AshNotificationView::AshNotificationView(
     layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF{kMessagePopupCornerRadius});
     layer()->SetIsFastRoundedCorner(true);
+    SetBorder(std::make_unique<views::HighlightBorder>(
+        kMessagePopupCornerRadius,
+        chromeos::features::IsJellyrollEnabled()
+            ? views::HighlightBorder::Type::kHighlightBorderOnShadow
+            : views::HighlightBorder::Type::kHighlightBorder1,
+        /*use_light_colors=*/false));
   }
 
   views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);

@@ -29,6 +29,13 @@ class LauncherSearchIphView : public views::View {
     virtual void OpenSearchBoxIphUrl() = 0;
   };
 
+  // Event names live in a global namespace. Prefix with the feature name to
+  // prevent unintentional name collisions.
+  static constexpr char kIphEventNameChipClick[] =
+      "IPH_LauncherSearchHelpUi_chip_click";
+  static constexpr char kIphEventNameAssistantClick[] =
+      "IPH_LauncherSearchHelpUi_assistant_click";
+
   enum ViewId {
     kSelf = 1,
     kDescriptionLabel,
@@ -39,7 +46,8 @@ class LauncherSearchIphView : public views::View {
   };
 
   LauncherSearchIphView(std::unique_ptr<ScopedIphSession> scoped_iph_session,
-                        raw_ptr<Delegate> delegate);
+                        raw_ptr<Delegate> delegate,
+                        bool is_in_tablet_mode);
   ~LauncherSearchIphView() override;
 
   // views::View:

@@ -11,6 +11,7 @@ module.exports = {
     'no-confusing-arrow' : ['error'],
     'no-console' : 'off',
     'no-throw-literal' : 'off',
+    'no-var' : 'off',
     'object-shorthand' : ['error', 'always'],
     'prefer-const' : ['error', {'destructuring' : 'all'}],
   },

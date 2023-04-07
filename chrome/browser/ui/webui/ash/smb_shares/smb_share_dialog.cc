@@ -14,6 +14,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_ui.h"
@@ -86,6 +87,9 @@ SmbShareDialogUI::SmbShareDialogUI(content::WebUI* web_ui)
   bool is_guest = user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
                   user_manager::UserManager::Get()->IsLoggedInAsPublicAccount();
   source->AddBoolean("isGuest", is_guest);
+
+  bool is_jelly = chromeos::features::IsJellyEnabled();
+  source->AddBoolean("isJelly", is_jelly);
 
   source->UseStringsJs();
   source->SetDefaultResource(IDR_SMB_SHARES_DIALOG_CONTAINER_HTML);

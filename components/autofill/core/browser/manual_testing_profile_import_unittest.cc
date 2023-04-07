@@ -62,12 +62,10 @@ TEST(ManualTestingProfileImportTest, AutofillProfilesFromJSON_Valid) {
   expected_profile2.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_HOUSE_NUMBER, u"123", VerificationStatus::kUserVerified);
 
-  base::expected<std::vector<AutofillProfile>, std::string> profiles =
-      AutofillProfilesFromJSON(*json);
-  ASSERT_TRUE(profiles.has_value()) << profiles.error();
-  EXPECT_THAT(*profiles,
-              testing::Pointwise(ProfilesCompareEqual(),
-                                 {expected_profile1, expected_profile2}));
+  EXPECT_THAT(
+      AutofillProfilesFromJSON(*json),
+      testing::Optional(testing::Pointwise(
+          ProfilesCompareEqual(), {expected_profile1, expected_profile2})));
 }
 
 // Tests that the conversion fails when an unrecognized field type is present.

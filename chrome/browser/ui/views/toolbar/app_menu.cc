@@ -51,6 +51,7 @@
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/feature_switch.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -62,6 +63,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/themed_vector_icon.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -86,6 +88,7 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_scroll_view_container.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 using base::UserMetricsAction;
@@ -133,29 +136,38 @@ bool IsRecentTabsCommand(int command_id) {
 // paint the border.
 class InMenuButtonBackground : public views::Background {
  public:
-  enum ButtonType {
+  enum class ButtonType {
     // A rectangular button with no drawn border.
-    NO_BORDER,
+    kNoBorder,
 
     // A rectangular button with a border drawn along the leading (left) side.
-    LEADING_BORDER,
+    kLeadingBorder,
 
     // A button with no drawn border and a rounded background.
-    ROUNDED_BUTTON,
+    kRoundedButton,
   };
 
-  explicit InMenuButtonBackground(ButtonType type) : type_(type) {}
+  enum class ButtonShape {
+    // A rectagular or rounded rectangular button.
+    kRectangular,
+    // A circular button centered in the bounds.
+    kCircular,
+  };
+
+  explicit InMenuButtonBackground(ButtonType type,
+                                  ButtonShape shape = ButtonShape::kRectangular)
+      : type_(type), shape_(shape) {}
   InMenuButtonBackground(const InMenuButtonBackground&) = delete;
   InMenuButtonBackground& operator=(const InMenuButtonBackground&) = delete;
 
   // Overridden from views::Background.
   void Paint(gfx::Canvas* canvas, View* view) const override {
-    Button* button = Button::AsButton(view);
+    Button* button = views::AsViewClass<views::Button>(view);
     int h = view->height();
 
     // Draw leading border if desired.
     gfx::Rect bounds(view->GetLocalBounds());
-    if (type_ == LEADING_BORDER) {
+    if (type_ == ButtonType::kLeadingBorder) {
       // We need to flip the canvas for RTL iff the button is not auto-flipping
       // already, so we end up flipping exactly once.
       gfx::ScopedCanvas scoped_canvas(canvas);
@@ -187,20 +199,27 @@ class InMenuButtonBackground : public views::Background {
                       views::Button::ButtonState state) const {
     if (state == views::Button::STATE_HOVERED ||
         state == views::Button::STATE_PRESSED) {
+      gfx::Rect bounds_rect = bounds;
       ui::NativeTheme::ExtraParams params;
-      if (type_ == ROUNDED_BUTTON) {
+      if (type_ == ButtonType::kRoundedButton) {
         // Consistent with a hover corner radius (kInkDropSmallCornerRadius).
         const int kBackgroundCornerRadius = 2;
         params.menu_item.corner_radius = kBackgroundCornerRadius;
+      } else if (shape_ == ButtonShape::kCircular) {
+        constexpr int kCircularButtonSize = 28;
+        bounds_rect.ClampToCenteredSize(
+            gfx::Size(kCircularButtonSize, kCircularButtonSize));
+        params.menu_item.corner_radius = kCircularButtonSize / 2;
       }
-      view->GetNativeTheme()->Paint(canvas->sk_canvas(),
-                                    view->GetColorProvider(),
-                                    ui::NativeTheme::kMenuItemBackground,
-                                    ui::NativeTheme::kHovered, bounds, params);
+      view->GetNativeTheme()->Paint(
+          canvas->sk_canvas(), view->GetColorProvider(),
+          ui::NativeTheme::kMenuItemBackground, ui::NativeTheme::kHovered,
+          bounds_rect, params);
     }
   }
 
   const ButtonType type_;
+  const ButtonShape shape_;
 };
 
 std::u16string GetAccessibleNameForAppMenuItem(ButtonMenuItemModel* model,
@@ -238,7 +257,8 @@ class InMenuButton : public LabelButton {
     SetFocusBehavior(FocusBehavior::ALWAYS);
     SetHorizontalAlignment(gfx::ALIGN_CENTER);
 
-    SetBackground(std::make_unique<InMenuButtonBackground>(type));
+    SetBackground(std::make_unique<InMenuButtonBackground>(
+        InMenuButtonBackground::ButtonType::kNoBorder));
     SetBorder(views::CreateEmptyBorder(
         gfx::Insets::TLBR(0, kHorizontalPadding, 0, kHorizontalPadding)));
     label()->SetFontList(MenuConfig::instance().font_list);
@@ -270,6 +290,28 @@ class InMenuButton : public LabelButton {
 BEGIN_METADATA(InMenuButton, LabelButton)
 END_METADATA
 
+// A button with an image inside a menu item.
+class InMenuImageButton : public ImageButton {
+ public:
+  METADATA_HEADER(InMenuImageButton);
+  explicit InMenuImageButton(PressedCallback callback)
+      : ImageButton(callback) {}
+
+  void Init(InMenuButtonBackground::ButtonType type,
+            InMenuButtonBackground::ButtonShape shape,
+            const ui::ImageModel& image_model) {
+    SetImageModel(views::Button::STATE_NORMAL, image_model);
+    SetImageHorizontalAlignment(ImageButton::ALIGN_CENTER);
+    SetImageVerticalAlignment(ImageButton::ALIGN_MIDDLE);
+    SetBackground(std::make_unique<InMenuButtonBackground>(type, shape));
+    SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::TLBR(0, kHorizontalPadding, 0, kHorizontalPadding)));
+  }
+};
+
+BEGIN_METADATA(InMenuImageButton, ImageButton)
+END_METADATA
+
 // AppMenuView is a view that can contain label buttons.
 class AppMenuView : public views::View {
  public:
@@ -286,7 +328,7 @@ class AppMenuView : public views::View {
     node_data->role = ax::mojom::Role::kMenu;
   }
 
-  InMenuButton* CreateAndConfigureButton(
+  views::Button* CreateAndConfigureButton(
       views::Button::PressedCallback callback,
       int string_id,
       InMenuButtonBackground::ButtonType type,
@@ -297,34 +339,45 @@ class AppMenuView : public views::View {
         /*use_accessible_name_as_tooltip_text=*/false);
   }
 
-  InMenuButton* CreateButtonWithAccessibleName(
+  views::Button* CreateButtonWithAccessibleName(
       views::Button::PressedCallback callback,
       int string_id,
       InMenuButtonBackground::ButtonType type,
       size_t index,
       int accessible_name_id,
       bool add_accelerator_text,
-      bool use_accessible_name_as_tooltip_text) {
+      bool use_accessible_name_as_tooltip_text,
+      const ui::ImageModel image_model = ui::ImageModel()) {
     // Should only be invoked during construction when |menu_| is valid.
     DCHECK(menu_);
 
-    InMenuButton* button = new InMenuButton(
-        std::move(callback),
-        gfx::RemoveAccelerator(l10n_util::GetStringUTF16(string_id)));
-    button->Init(type);
-    button->SetAccessibleName(GetAccessibleNameForAppMenuItem(
+    std::unique_ptr<views::Button> menu_button;
+    if (features::IsChromeRefresh2023()) {
+      auto button = std::make_unique<InMenuImageButton>(std::move(callback));
+      button->Init(type, InMenuButtonBackground::ButtonShape::kCircular,
+                   image_model);
+      menu_button = std::move(button);
+    } else {
+      auto button = std::make_unique<InMenuButton>(
+          std::move(callback),
+          gfx::RemoveAccelerator(l10n_util::GetStringUTF16(string_id)));
+      button->Init(type);
+      menu_button = std::move(button);
+    }
+    menu_button->SetAccessibleName(GetAccessibleNameForAppMenuItem(
         menu_model_, index, accessible_name_id, add_accelerator_text));
-    button->set_tag(index);
-    button->SetEnabled(menu_model_->IsEnabledAt(index));
+    menu_button->set_tag(index);
+    menu_button->SetEnabled(menu_model_->IsEnabledAt(index));
     if (use_accessible_name_as_tooltip_text) {
-      button->SetTooltipText(l10n_util::GetStringUTF16(accessible_name_id));
+      menu_button->SetTooltipText(
+          l10n_util::GetStringUTF16(accessible_name_id));
     }
 
-    AddChildView(button);
     // all buttons on menu should must be a custom button in order for
     // the keyboard nativigation work.
-    DCHECK(Button::AsButton(button));
-    return button;
+    DCHECK(views::IsViewClass<views::Button>(menu_button.get()));
+
+    return AddChildView(std::move(menu_button));
   }
 
  protected:
@@ -358,7 +411,10 @@ class FullscreenButton : public ImageButton {
     SetImageHorizontalAlignment(ImageButton::ALIGN_CENTER);
     SetImageVerticalAlignment(ImageButton::ALIGN_MIDDLE);
     SetBackground(std::make_unique<InMenuButtonBackground>(
-        InMenuButtonBackground::LEADING_BORDER));
+        InMenuButtonBackground::ButtonType::kLeadingBorder,
+        features::IsChromeRefresh2023()
+            ? InMenuButtonBackground::ButtonShape::kCircular
+            : InMenuButtonBackground::ButtonShape::kRectangular));
     const int accname_string_id =
         is_in_fullscreen ? IDS_ACCNAME_EXIT_FULLSCREEN : IDS_ACCNAME_FULLSCREEN;
     SetTooltipText(l10n_util::GetStringUTF16(accname_string_id));
@@ -417,15 +473,17 @@ class AppMenu::CutCopyPasteView : public AppMenuView {
     CreateAndConfigureButton(
         base::BindRepeating(cancel_and_evaluate, base::Unretained(menu),
                             menu_model, cut_index),
-        IDS_CUT, InMenuButtonBackground::LEADING_BORDER, cut_index);
+        IDS_CUT, InMenuButtonBackground::ButtonType::kLeadingBorder, cut_index);
     CreateAndConfigureButton(
         base::BindRepeating(cancel_and_evaluate, base::Unretained(menu),
                             menu_model, copy_index),
-        IDS_COPY, InMenuButtonBackground::LEADING_BORDER, copy_index);
+        IDS_COPY, InMenuButtonBackground::ButtonType::kLeadingBorder,
+        copy_index);
     CreateAndConfigureButton(
         base::BindRepeating(cancel_and_evaluate, base::Unretained(menu),
                             menu_model, paste_index),
-        IDS_PASTE, InMenuButtonBackground::LEADING_BORDER, paste_index);
+        IDS_PASTE, InMenuButtonBackground::ButtonType::kLeadingBorder,
+        paste_index);
   }
   CutCopyPasteView(const CutCopyPasteView&) = delete;
   CutCopyPasteView& operator=(const CutCopyPasteView&) = delete;
@@ -476,13 +534,8 @@ class AppMenu::ZoomView : public AppMenuView {
            size_t decrement_index,
            size_t increment_index,
            size_t fullscreen_index)
-      : AppMenuView(menu, menu_model),
-        increment_button_(nullptr),
-        zoom_label_(nullptr),
-        decrement_button_(nullptr),
-        fullscreen_button_(nullptr),
-        zoom_label_max_width_(0),
-        zoom_label_max_width_valid_(false) {
+      : AppMenuView(menu, menu_model) {
+    const bool is_chrome_refresh = features::IsChromeRefresh2023();
     browser_zoom_subscription_ =
         zoom::ZoomEventManager::GetForBrowserContext(menu->browser_->profile())
             ->AddZoomLevelChangedCallback(
@@ -492,37 +545,49 @@ class AppMenu::ZoomView : public AppMenuView {
     const auto activate = [](ButtonMenuItemModel* menu_model, size_t index) {
       menu_model->ActivatedAt(index);
     };
+    auto image_model = is_chrome_refresh ? ui::ImageModel::FromVectorIcon(
+                                               kZoomMinusMenuRefreshIcon,
+                                               ui::kColorMenuItemForeground)
+                                         : ui::ImageModel();
     decrement_button_ = CreateButtonWithAccessibleName(
         base::BindRepeating(activate, menu_model, decrement_index),
-        IDS_ZOOM_MINUS2, InMenuButtonBackground::LEADING_BORDER,
+        IDS_ZOOM_MINUS2,
+        is_chrome_refresh ? InMenuButtonBackground::ButtonType::kNoBorder
+                          : InMenuButtonBackground::ButtonType::kLeadingBorder,
         decrement_index, IDS_ACCNAME_ZOOM_MINUS2,
         /*add_accelerator_text=*/false,
-        /*use_accessible_name_as_tooltip_text=*/true);
+        /*use_accessible_name_as_tooltip_text=*/true,
+        /*image_model=*/image_model);
 
-    zoom_label_ = new Label(base::FormatPercent(100));
-    zoom_label_->SetAutoColorReadabilityEnabled(false);
-    zoom_label_->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
-    zoom_label_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+    auto zoom_label = std::make_unique<Label>(base::FormatPercent(100));
+    zoom_label->SetAutoColorReadabilityEnabled(false);
+    zoom_label->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
+    zoom_label->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
         0, kZoomLabelHorizontalPadding, 0, kZoomLabelHorizontalPadding)));
-    zoom_label_->SetBackground(std::make_unique<InMenuButtonBackground>(
-        InMenuButtonBackground::NO_BORDER));
+    zoom_label->SetBackground(std::make_unique<InMenuButtonBackground>(
+        InMenuButtonBackground::ButtonType::kNoBorder));
 
     // Need to set a font list for the zoom label width calculations.
-    zoom_label_->SetFontList(MenuConfig::instance().font_list);
+    zoom_label->SetFontList(MenuConfig::instance().font_list);
 
     // An accessibility role of kAlert will ensure that any updates to the zoom
     // level can be picked up by screen readers.
-    zoom_label_->GetViewAccessibility().OverrideRole(ax::mojom::Role::kAlert);
+    zoom_label->GetViewAccessibility().OverrideRole(ax::mojom::Role::kAlert);
 
-    AddChildView(zoom_label_.get());
+    zoom_label_ = AddChildView(std::move(zoom_label));
 
+    image_model = is_chrome_refresh ? ui::ImageModel::FromVectorIcon(
+                                          kZoomPlusMenuRefreshIcon,
+                                          ui::kColorMenuItemForeground)
+                                    : ui::ImageModel();
     increment_button_ = CreateButtonWithAccessibleName(
         base::BindRepeating(activate, menu_model, increment_index),
-        IDS_ZOOM_PLUS2, InMenuButtonBackground::NO_BORDER, increment_index,
-        IDS_ACCNAME_ZOOM_PLUS2, /*add_accelerator_text=*/false,
-        /*use_accessible_name_as_tooltip_text=*/true);
+        IDS_ZOOM_PLUS2, InMenuButtonBackground::ButtonType::kNoBorder,
+        increment_index, IDS_ACCNAME_ZOOM_PLUS2, /*add_accelerator_text=*/false,
+        /*use_accessible_name_as_tooltip_text=*/true,
+        /*image_model=*/image_model);
 
-    fullscreen_button_ = new FullscreenButton(
+    auto fullscreen_button = std::make_unique<FullscreenButton>(
         base::BindRepeating(
             [](AppMenu* menu, ButtonMenuItemModel* menu_model, size_t index) {
               menu->CancelAndEvaluate(menu_model, index);
@@ -530,25 +595,27 @@ class AppMenu::ZoomView : public AppMenuView {
             menu, menu_model, fullscreen_index),
         menu_model, fullscreen_index,
         menu->browser_->window() && menu->browser_->window()->IsFullscreen());
-    fullscreen_button_->SetImageModel(
+    const auto& fullscreen_icon =
+        is_chrome_refresh ? kFullscreenRefreshIcon : kFullscreenIcon;
+    fullscreen_button->SetImageModel(
         ImageButton::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(kFullscreenIcon,
+        ui::ImageModel::FromVectorIcon(fullscreen_icon,
                                        ui::kColorMenuItemForeground));
     auto hovered_fullscreen_image = ui::ImageModel::FromVectorIcon(
-        kFullscreenIcon, ui::kColorMenuItemForegroundSelected);
-    fullscreen_button_->SetImageModel(ImageButton::STATE_HOVERED,
-                                      hovered_fullscreen_image);
-    fullscreen_button_->SetImageModel(ImageButton::STATE_PRESSED,
-                                      hovered_fullscreen_image);
+        fullscreen_icon, ui::kColorMenuItemForegroundSelected);
+    fullscreen_button->SetImageModel(ImageButton::STATE_HOVERED,
+                                     hovered_fullscreen_image);
+    fullscreen_button->SetImageModel(ImageButton::STATE_PRESSED,
+                                     hovered_fullscreen_image);
 
     // all buttons on menu should must be a custom button in order for
     // the keyboard navigation to work.
-    DCHECK(Button::AsButton(fullscreen_button_));
-    AddChildView(fullscreen_button_.get());
+    DCHECK(views::IsViewClass<views::Button>(fullscreen_button.get()));
+    fullscreen_button_ = AddChildView(std::move(fullscreen_button));
 
     // The max width for `zoom_label_` should not be valid until the calls into
     // UpdateZoomControls().
-    DCHECK(!zoom_label_max_width_valid_);
+    DCHECK(!zoom_label_max_width_.has_value());
     UpdateZoomControls();
   }
   ZoomView(const ZoomView&) = delete;
@@ -632,12 +699,12 @@ class AppMenu::ZoomView : public AppMenuView {
     // An alert notification will ensure that the zoom label is always announced
     // even if is not focusable.
     zoom_label_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
-    zoom_label_max_width_valid_ = false;
+    zoom_label_max_width_.reset();
   }
 
   // Returns the max width the zoom string can be.
   int GetZoomLabelMaxWidth() const {
-    if (!zoom_label_max_width_valid_) {
+    if (!zoom_label_max_width_) {
       const gfx::FontList& font_list = zoom_label_->font_list();
       const int border_width = zoom_label_->GetInsets().width();
 
@@ -661,34 +728,28 @@ class AppMenu::ZoomView : public AppMenuView {
         max_w = gfx::GetStringWidth(base::FormatPercent(100), font_list);
       }
       zoom_label_max_width_ = max_w + border_width;
-
-      zoom_label_max_width_valid_ = true;
     }
-    return zoom_label_max_width_;
+    return zoom_label_max_width_.value();
   }
 
   base::CallbackListSubscription browser_zoom_subscription_;
 
   // Button for incrementing the zoom.
-  raw_ptr<LabelButton> increment_button_;
+  raw_ptr<Button> increment_button_ = nullptr;
 
   // Label showing zoom as a percent.
-  raw_ptr<Label> zoom_label_;
+  raw_ptr<Label> zoom_label_ = nullptr;
 
   // Button for decrementing the zoom.
-  raw_ptr<LabelButton> decrement_button_;
+  raw_ptr<Button> decrement_button_ = nullptr;
 
-  raw_ptr<ImageButton> fullscreen_button_;
+  raw_ptr<Button> fullscreen_button_ = nullptr;
 
   // Cached width of how wide the zoom label string can be. This is the width at
   // 100%. This should not be accessed directly, use GetZoomLabelMaxWidth()
   // instead. This value is cached because is depends on multiple calls to
   // gfx::GetStringWidth(...) which are expensive.
-  mutable int zoom_label_max_width_;
-
-  // Flag tracking whether calls to GetZoomLabelMaxWidth() need to re-calculate
-  // the label width, because the cached value may no longer be correct.
-  mutable bool zoom_label_max_width_valid_;
+  mutable absl::optional<int> zoom_label_max_width_;
 };
 
 BEGIN_METADATA(AppMenu, ZoomView, AppMenuView)

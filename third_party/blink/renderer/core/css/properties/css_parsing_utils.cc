@@ -4184,7 +4184,8 @@ CSSValue* ConsumeScrollFunction(CSSParserTokenRange& range,
       ConsumeIdent<CSSValueID::kBlock, CSSValueID::kInline,
                    CSSValueID::kVertical, CSSValueID::kHorizontal>(block);
   CSSValue* scroller =
-      ConsumeIdent<CSSValueID::kNearest, CSSValueID::kRoot>(block);
+      ConsumeIdent<CSSValueID::kNearest, CSSValueID::kRoot, CSSValueID::kSelf>(
+          block);
   if (!block.AtEnd()) {
     return nullptr;
   }

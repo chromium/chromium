@@ -11,6 +11,7 @@
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/assistant/test/assistant_ash_test_base.h"
+#include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_navigation_widget.h"
@@ -20,12 +21,44 @@
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
 
 namespace ash {
+
+namespace {
+
+using TestVariantsParam = std::tuple<bool, bool, bool>;
+
+bool IsRtl(TestVariantsParam param) {
+  return std::get<0>(param);
+}
+
+bool IsDarkMode(TestVariantsParam param) {
+  return std::get<1>(param);
+}
+
+bool IsTabletMode(TestVariantsParam param) {
+  return std::get<2>(param);
+}
+
+std::string GenerateTestSuffix(
+    const testing::TestParamInfo<TestVariantsParam>& info) {
+  std::string suffix;
+  suffix.append(IsRtl(info.param) ? "rtl" : "ltr");
+  suffix.append("_");
+  suffix.append(IsDarkMode(info.param) ? "dark" : "light");
+  suffix.append("_");
+  suffix.append(IsTabletMode(info.param) ? "tablet" : "clamshell");
+  return suffix;
+}
+
+}  // namespace
 
 class AppListViewPixelRTLTest
     : public AshTestBase,
@@ -188,36 +221,14 @@ TEST_P(AppListViewPixelRTLTest, GradientZone) {
       GetPrimaryShelf()->navigation_widget()));
 }
 
-class LauncherSearchIphParams {
- public:
-  LauncherSearchIphParams(bool rtl, bool dark_theme)
-      : rtl_(rtl), dark_theme_(dark_theme) {}
-
-  static std::string ToTestSuffix(
-      const testing::TestParamInfo<LauncherSearchIphParams>& info) {
-    std::string suffix;
-    suffix.append(info.param.rtl() ? "rtl" : "ltr");
-    suffix.append("_");
-    suffix.append(info.param.dark_theme() ? "dark" : "light");
-    return suffix;
-  }
-
-  bool rtl() const { return rtl_; }
-  bool dark_theme() const { return dark_theme_; }
-
- private:
-  bool rtl_;
-  bool dark_theme_;
-};
-
 class AppListViewLauncherSearchIphTest
     : public AssistantAshTestBase,
-      public testing::WithParamInterface<LauncherSearchIphParams> {
+      public testing::WithParamInterface<TestVariantsParam> {
  public:
   absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     pixel_test::InitParams init_params;
-    init_params.under_rtl = GetParam().rtl();
+    init_params.under_rtl = IsRtl(GetParam());
     return init_params;
   }
 
@@ -225,7 +236,10 @@ class AppListViewLauncherSearchIphTest
     AssistantAshTestBase::SetUp();
 
     DarkLightModeController::Get()->SetDarkModeEnabledForTest(
-        GetParam().dark_theme());
+        IsDarkMode(GetParam()));
+
+    Shell::Get()->tablet_mode_controller()->SetEnabledForTest(
+        IsTabletMode(GetParam()));
 
     AppListTestHelper* test_helper = GetAppListTestHelper();
     test_helper->ShowAppList();
@@ -237,19 +251,28 @@ class AppListViewLauncherSearchIphTest
 
 INSTANTIATE_TEST_SUITE_P(RTL,
                          AppListViewLauncherSearchIphTest,
-                         testing::Values(LauncherSearchIphParams(false, false),
-                                         LauncherSearchIphParams(false, true),
-                                         LauncherSearchIphParams(true, false),
-                                         LauncherSearchIphParams(true, true)),
-                         &LauncherSearchIphParams::ToTestSuffix);
+                         testing::Combine(testing::Bool(),
+                                          testing::Bool(),
+                                          testing::Bool()),
+                         &GenerateTestSuffix);
 
 TEST_P(AppListViewLauncherSearchIphTest, Basic) {
+  raw_ptr<SearchBoxView> search_box_view =
+      GetAppListTestHelper()->GetSearchBoxView();
+
+  // The search box needs to be active in tablet mode for IPH to be shown.
+  if (IsTabletMode(GetParam())) {
+    raw_ptr<ui::test::EventGenerator> event_generator = GetEventGenerator();
+    event_generator->MoveMouseToInHost(
+        search_box_view->GetBoundsInScreen().CenterPoint());
+    event_generator->ClickLeftButton();
+  }
+
   // Wait re-layout for adding IPH view.
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "launcher_search_iph", /*revision_number=*/0,
-      GetAppListTestHelper()->GetSearchBoxView()));
+      "launcher_search_iph", /*revision_number=*/0, search_box_view));
 }
 
 class AppListViewTabletPixelTest
@@ -335,6 +358,70 @@ TEST_P(AppListViewTabletPixelTest, SearchBoxViewActive) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "search_box_view_active", /*revision_number=*/0, search_box_view));
+}
+
+class AppListViewAssistantZeroStateParams {
+ public:
+  AppListViewAssistantZeroStateParams(bool rtl, bool dark_theme)
+      : rtl_(rtl), dark_theme_(dark_theme) {}
+
+  static std::string ToTestSuffix(
+      const testing::TestParamInfo<AppListViewAssistantZeroStateParams>& info) {
+    std::string suffix;
+    suffix.append(info.param.rtl() ? "rtl" : "ltr");
+    suffix.append("_");
+    suffix.append(info.param.dark_theme() ? "dark" : "light");
+    return suffix;
+  }
+
+  bool rtl() const { return rtl_; }
+  bool dark_theme() const { return dark_theme_; }
+
+ private:
+  bool rtl_;
+  bool dark_theme_;
+};
+
+class AppListViewAssistantZeroStateTest
+    : public AssistantAshTestBase,
+      public testing::WithParamInterface<AppListViewAssistantZeroStateParams> {
+ public:
+  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+      const override {
+    pixel_test::InitParams init_params;
+    init_params.under_rtl = GetParam().rtl();
+    return init_params;
+  }
+
+  void SetUp() override {
+    base::test::ScopedFeatureList scoped_feature_list(
+        assistant::features::kEnableAssistantLearnMore);
+
+    AssistantAshTestBase::SetUp();
+    SetNumberOfSessionsWhereOnboardingShown(
+        assistant::ui::kOnboardingMaxSessionsShown);
+    DarkLightModeController::Get()->SetDarkModeEnabledForTest(
+        GetParam().dark_theme());
+    ShowAssistantUi();
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    RTL,
+    AppListViewAssistantZeroStateTest,
+    testing::Values(AppListViewAssistantZeroStateParams(false, false),
+                    AppListViewAssistantZeroStateParams(false, true),
+                    AppListViewAssistantZeroStateParams(true, false),
+                    AppListViewAssistantZeroStateParams(true, true)),
+    &AppListViewAssistantZeroStateParams::ToTestSuffix);
+
+TEST_P(AppListViewAssistantZeroStateTest, Basic) {
+  // Wait layout.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "app_list_view_assistant_zero_state", /*revision_number=*/0,
+      page_view()));
 }
 
 }  // namespace ash

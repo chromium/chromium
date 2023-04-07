@@ -127,16 +127,6 @@ BASE_FEATURE(kSidePanelJourneysQueryless,
              "SidePanelJourneysQueryless",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if !defined(ANDROID)
-// This differs from the search companion by providing a separate WebUI that
-// contains untrusted content in an iframe.
-BASE_FEATURE(kSidePanelCompanion,
-             "SidePanelCompanion",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-constexpr base::FeatureParam<std::string> kHomepageURLForCompanion{
-    &kSidePanelCompanion, "companion-homepage-url", "https://www.example.com"};
-#endif
-
 // Enables tabs to scroll in the tabstrip. https://crbug.com/951078
 BASE_FEATURE(kScrollableTabStrip,
              "ScrollableTabStrip",

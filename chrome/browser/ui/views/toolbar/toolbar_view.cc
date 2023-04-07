@@ -21,6 +21,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_features.h"
 #include "chrome/browser/command_updater.h"
+#include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
@@ -286,7 +287,8 @@ void ToolbarView::Init() {
   std::unique_ptr<SidePanelToolbarButton> side_panel_button;
   std::unique_ptr<SidePanelToolbarContainer> side_panel_toolbar_container;
   if (browser_view_->unified_side_panel()) {
-    if (base::FeatureList::IsEnabled(features::kSidePanelCompanion)) {
+    if (base::FeatureList::IsEnabled(
+            companion::features::kSidePanelCompanion)) {
       side_panel_toolbar_container =
           std::make_unique<SidePanelToolbarContainer>(browser_view_);
     } else {

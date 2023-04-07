@@ -16,6 +16,10 @@ class RenderFrameHost;
 // test that they handle it correctly.
 void LeaveInPendingDeletionState(RenderFrameHost* rfh);
 
+// Runs a check to determine whether the runtime-enabled feature, third-party
+// storage partitioning, is disabled in the current frame.
+bool IsDisableThirdPartyStoragePartitioningEnabled(RenderFrameHost* rfh);
+
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_TEST_RENDER_FRAME_HOST_TEST_SUPPORT_H_

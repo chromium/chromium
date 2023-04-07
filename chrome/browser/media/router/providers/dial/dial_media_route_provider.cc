@@ -29,12 +29,6 @@ url::Origin CreateOrigin(const std::string& url) {
   return url::Origin::Create(GURL(url));
 }
 
-void ReportParseError(DialParseMessageResult result,
-                      const std::string& error_message) {
-  DCHECK_NE(result, DialParseMessageResult::kSuccess);
-  DialMediaRouteProviderMetrics::RecordParseMessageResult(result);
-}
-
 static constexpr int kMaxPendingDialLaunches = 10;
 
 }  // namespace
@@ -222,7 +216,6 @@ void DialMediaRouteProvider::HandleParsedRouteMessage(
         base::StrCat({"Failed to parse the route message. ", result.error()}),
         "", MediaRoute::GetMediaSourceIdFromMediaRouteId(route_id),
         MediaRoute::GetPresentationIdFromMediaRouteId(route_id));
-    ReportParseError(DialParseMessageResult::kParseError, result.error());
     return;
   }
 
@@ -234,12 +227,8 @@ void DialMediaRouteProvider::HandleParsedRouteMessage(
                       base::StrCat({"Invalid route message. ", error}), "",
                       MediaRoute::GetMediaSourceIdFromMediaRouteId(route_id),
                       MediaRoute::GetPresentationIdFromMediaRouteId(route_id));
-    ReportParseError(DialParseMessageResult::kInvalidMessage, error);
     return;
   }
-
-  DialMediaRouteProviderMetrics::RecordParseMessageResult(
-      DialParseMessageResult::kSuccess);
 
   const DialActivity* activity = activity_manager_->GetActivity(route_id);
   if (!activity) {

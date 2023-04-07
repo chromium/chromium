@@ -5,7 +5,7 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_STRING_DATA_VIEW_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_STRING_DATA_VIEW_H_
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "mojo/public/cpp/bindings/lib/array_internal.h"
 
 namespace mojo {
@@ -26,7 +26,9 @@ class StringDataView {
   size_t size() const { return data_->size(); }
 
  private:
-  raw_ptr<internal::String_Data> data_ = nullptr;
+  // `data_` is not a raw_ptr<> for performance reasons: based on this sampling
+  // profiler result on Mac. go/brp-mac-prof-diff-20230403
+  RAW_PTR_EXCLUSION internal::String_Data* data_ = nullptr;
 };
 
 }  // namespace mojo

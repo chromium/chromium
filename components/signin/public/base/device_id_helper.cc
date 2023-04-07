@@ -6,7 +6,7 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -34,7 +34,7 @@ std::string RecreateSigninScopedDeviceId(PrefService* prefs) {
 }
 
 std::string GenerateSigninScopedDeviceId() {
-  return base::GenerateGUID();
+  return base::Uuid::GenerateRandomV4().AsLowercaseString();
 }
 
 std::string GetOrCreateScopedDeviceId(PrefService* prefs) {

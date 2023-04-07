@@ -1,4 +1,0 @@
-monorail {
-  component: "UI>Browser>Shopping"
-}
-os: ANDROID

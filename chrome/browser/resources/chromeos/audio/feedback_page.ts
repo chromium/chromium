@@ -57,7 +57,7 @@ export class FeedbackPage extends Page {
   }
 
   updateAudioInfo() {
-    var audioInfoJson: FeedbackObject = {};
+    const audioInfoJson: FeedbackObject = {};
 
     const inputFeedbackObject = this.mapToObject(this.inputFeedbackMap);
     const outputFeedbackObject = this.mapToObject(this.outputFeedbackMap);

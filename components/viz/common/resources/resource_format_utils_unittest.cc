@@ -26,7 +26,7 @@ class ResourceFormatUtilTest : public testing::Test {
 
 TEST_F(ResourceFormatUtilTest, ToClosestSkColorTypeMultiPlaneYUVBiplanar8bit) {
   // 8-bit 4:2:0 Y_UV biplanar format (YUV_420_BIPLANAR)
-  SharedImageFormat format = MultiPlaneFormat::kYUV_420_BIPLANAR;
+  SharedImageFormat format = MultiPlaneFormat::kNV12;
   std::vector<SkColorType> expected_types = {kAlpha_8_SkColorType,
                                              kR8G8_unorm_SkColorType};
   TestToClosestSkColorType(expected_types, format, /*gpu_compositing=*/true);
@@ -34,7 +34,7 @@ TEST_F(ResourceFormatUtilTest, ToClosestSkColorTypeMultiPlaneYUVBiplanar8bit) {
 
 TEST_F(ResourceFormatUtilTest, ToClosestSkColorTypeMultiPlaneYVU) {
   // 8-bit 4:2:0 Y_V_U format (YVU_420)
-  SharedImageFormat format = MultiPlaneFormat::kYVU_420;
+  SharedImageFormat format = MultiPlaneFormat::kYV12;
   std::vector<SkColorType> expected_types = {
       kAlpha_8_SkColorType, kAlpha_8_SkColorType, kAlpha_8_SkColorType};
   TestToClosestSkColorType(expected_types, format, /*gpu_compositing=*/true);

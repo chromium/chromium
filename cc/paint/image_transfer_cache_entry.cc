@@ -505,6 +505,11 @@ size_t NumberOfPlanesForYUVDecodeFormat(YUVDecodeFormat format) {
 ////////////////////////////////////////////////////////////////////////////////
 // ClientImageTransferCacheEntry::Image
 
+ClientImageTransferCacheEntry::Image::Image() {}
+ClientImageTransferCacheEntry::Image::Image(const Image&) = default;
+ClientImageTransferCacheEntry::Image&
+ClientImageTransferCacheEntry::Image::operator=(const Image&) = default;
+
 ClientImageTransferCacheEntry::Image::Image(const SkPixmap* pixmap)
     : color_space(pixmap->colorSpace()) {
   DCHECK(pixmap);

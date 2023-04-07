@@ -7,16 +7,23 @@ package org.chromium.chrome.browser.omnibox.styles;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Drawable.ConstantState;
+import android.util.SparseArray;
 import android.util.TypedValue;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
-import androidx.core.content.ContextCompat;
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import com.google.android.material.color.MaterialColors;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
+import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -26,6 +33,62 @@ import org.chromium.ui.util.ColorUtils;
 /** Provides resources specific to Omnibox. */
 public class OmniboxResourceProvider {
     private static final String TAG = "OmniboxResourceProvider";
+
+    private static SparseArray<ConstantState> sDrawableCache = new SparseArray<>();
+    private static SparseArray<String> sStringCache = new SparseArray<>();
+
+    /**
+     * As {@link androidx.appcompat.content.res.AppCompatResources#getDrawable(Context, int)} but
+     * potentially augmented with caching. If caching is enabled, there is a single, unbounded cache
+     * of ConstantState shared by all contexts.
+     */
+    public static @NonNull Drawable getDrawable(Context context, @DrawableRes int res) {
+        ThreadUtils.assertOnUiThread();
+        boolean cacheResources = OmniboxFeatures.shouldCacheSuggestionResources();
+        ConstantState constantState = cacheResources ? sDrawableCache.get(res, null) : null;
+        if (constantState != null) {
+            return constantState.newDrawable(context.getResources());
+        }
+
+        Drawable drawable = AppCompatResources.getDrawable(context, res);
+        if (cacheResources) {
+            sDrawableCache.put(res, drawable.getConstantState());
+        }
+        return drawable;
+    }
+
+    /**
+     * As {@link android.content.res.Resources#getString(int, Object...)} but potentially augmented
+     * with caching. If caching is enabled, there is a single, unbounded string cache shared by all
+     * contexts. When dealing with strings with format params, the raw string is cached and
+     * formatted on demand using the default locale.
+     */
+    public static @NonNull String getString(Context context, @StringRes int res, Object... args) {
+        ThreadUtils.assertOnUiThread();
+        boolean cacheResources = OmniboxFeatures.shouldCacheSuggestionResources();
+        String string = cacheResources ? sStringCache.get(res, null) : null;
+        if (string == null) {
+            string = context.getResources().getString(res);
+            if (cacheResources) {
+                sStringCache.put(res, string);
+            }
+        }
+
+        return args.length == 0
+                ? string
+                : String.format(context.getResources().getConfiguration().getLocales().get(0),
+                        string, args);
+    }
+
+    @VisibleForTesting
+    public static SparseArray<ConstantState> getDrawableCacheForTesting() {
+        return sDrawableCache;
+    }
+
+    @VisibleForTesting
+    public static SparseArray<String> getStringCacheForTesting() {
+        return sStringCache;
+    }
 
     /**
      * Returns a drawable for a given attribute depending on a {@link BrandedColorScheme}
@@ -40,7 +103,7 @@ public class OmniboxResourceProvider {
         Context wrappedContext = maybeWrapContext(context, brandedColorScheme);
         @DrawableRes
         int resourceId = resolveAttributeToDrawableRes(wrappedContext, attributeResId);
-        return ContextCompat.getDrawable(wrappedContext, resourceId);
+        return getDrawable(wrappedContext, resourceId);
     }
 
     /**

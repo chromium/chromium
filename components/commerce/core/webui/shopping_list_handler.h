@@ -58,9 +58,9 @@ class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
   void UntrackPriceForBookmark(int64_t bookmark_id) override;
 
   // SubscriptionsObserver
-  void OnSubscribe(const std::vector<CommerceSubscription>& subscriptions,
+  void OnSubscribe(const CommerceSubscription& subscription,
                    bool succeeded) override;
-  void OnUnsubscribe(const std::vector<CommerceSubscription>& subscriptions,
+  void OnUnsubscribe(const CommerceSubscription& subscription,
                      bool succeeded) override;
 
   static std::vector<shopping_list::mojom::BookmarkProductInfoPtr>
@@ -79,9 +79,8 @@ class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
       GetAllPriceTrackedBookmarkProductInfoCallback callback,
       std::vector<const bookmarks::BookmarkNode*> bookmarks);
 
-  void HandleSubscriptionChange(
-      const std::vector<CommerceSubscription>& subscriptions,
-      bool is_tracking);
+  void HandleSubscriptionChange(const CommerceSubscription& sub,
+                                bool is_tracking);
 
   mojo::Remote<shopping_list::mojom::Page> remote_page_;
   mojo::Receiver<shopping_list::mojom::ShoppingListHandler> receiver_;

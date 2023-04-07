@@ -29,6 +29,7 @@
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/component_updater_service.h"
+#include "components/user_manager/user_manager.h"
 
 namespace crosapi {
 
@@ -388,8 +389,12 @@ void BrowserLoader::OnLoadRootfsLacros(LoadCompletionCallback callback,
     OnUpstartLacrosMounter(std::move(callback), true);
     return;
   }
+  std::vector<std::string> job_env;
+  if (user_manager::UserManager::Get()->IsLoggedInAsGuest()) {
+    job_env.emplace_back("USE_SESSION_NAMESPACE=true");
+  }
   upstart_client_->StartJob(
-      kLacrosMounterUpstartJob, {},
+      kLacrosMounterUpstartJob, job_env,
       base::BindOnce(&BrowserLoader::OnUpstartLacrosMounter,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }

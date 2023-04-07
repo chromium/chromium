@@ -287,6 +287,10 @@ int32_t BlinkAXTreeSource::GetId(AXObject* node) const {
 }
 
 size_t BlinkAXTreeSource::GetChildCount(AXObject* node) const {
+  // TODO(aleventhal) This is work that should have done earlier. The call
+  // to load inline textboxes can just ClearChildren and mark the inline text
+  // box parent dirty. That would allow removal of a lot of specialized inline
+  // textbox methods.
   if (ui::CanHaveInlineTextBoxChildren(node->RoleValue()) &&
       ShouldLoadInlineTextBoxes(node)) {
     node->LoadInlineTextBoxes();

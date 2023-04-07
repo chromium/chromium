@@ -68,6 +68,7 @@ void RecordSharedWorkerUsage(LocalDOMWindow* window) {
 
 SharedWorker::SharedWorker(ExecutionContext* context)
     : AbstractWorker(context),
+      ActiveScriptWrappable<SharedWorker>({}),
       is_being_connected_(false),
       feature_handle_for_scheduler_(context->GetScheduler()->RegisterFeature(
           SchedulingPolicy::Feature::kSharedWorker,

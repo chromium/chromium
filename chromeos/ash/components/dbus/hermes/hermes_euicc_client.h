@@ -123,6 +123,7 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
     installed_carrier_profiles() {
       return installed_carrier_profiles_;
     }
+    dbus::Property<std::vector<dbus::ObjectPath>>& profiles();
     dbus::Property<std::vector<dbus::ObjectPath>>& pending_carrier_profiles() {
       return pending_carrier_profiles_;
     }
@@ -141,6 +142,11 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
     // List of pending carrier profiles from SMDS available for
     // installation on this device.
     dbus::Property<std::vector<dbus::ObjectPath>> pending_carrier_profiles_;
+
+    // List of all carrier profiles known to the device. This includes
+    // currently installed profiles and pending profiles scanned from
+    // SM-DS or SM-DP+ servers.
+    dbus::Property<std::vector<dbus::ObjectPath>> profiles_;
 
     // Physical slot number of the Euicc.
     dbus::Property<int32_t> physical_slot_;

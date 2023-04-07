@@ -126,9 +126,9 @@ Polymer({
    * Configures the UI for showing/hiding the GAIA login flow.
    */
   configureUiForGaiaFlow() {
-    var currentUrl = new URL(this.webview_.src);
-    var template = this.$$('edu-coexistence-template');
-    var contentContainer = template.$$('div.content-container');
+    const currentUrl = new URL(this.webview_.src);
+    const template = this.$$('edu-coexistence-template');
+    const contentContainer = template.$$('div.content-container');
 
     if (currentUrl.hostname !== this.controller_.getFlowOriginHostname()) {
       this.$$('edu-coexistence-button').newOobeStyleEnabled =

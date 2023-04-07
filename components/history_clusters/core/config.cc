@@ -370,12 +370,6 @@ Config::Config() {
             internal::kHistoryClustersNavigationContextClustering,
             "cluster_triggerability_cutoff_duration_minutes",
             cluster_triggerability_cutoff_duration.InMinutes()));
-
-    fetch_persisted_clusters_after_filtered_clusters_empty =
-        GetFieldTrialParamByFeatureAsBool(
-            internal::kHistoryClustersNavigationContextClustering,
-            "fetch_persisted_clusters_after_filtered_clusters_empty",
-            fetch_persisted_clusters_after_filtered_clusters_empty);
   }
 
   // WebUI features and params.
@@ -384,6 +378,16 @@ Config::Config() {
 
     hide_visits_icon = GetFieldTrialParamByFeatureAsBool(
         internal::kHideVisits, "hide_visits_icon", hide_visits_icon);
+  }
+
+  // The `kUseUrlForDisplayCache` feature and child params.
+  {
+    use_url_for_display_cache =
+        base::FeatureList::IsEnabled(internal::kUseUrlForDisplayCache);
+
+    url_for_display_cache_size = GetFieldTrialParamByFeatureAsInt(
+        internal::kUseUrlForDisplayCache, "url_for_display_cache_size",
+        url_for_display_cache_size);
   }
 
   // Lonely features without child params.

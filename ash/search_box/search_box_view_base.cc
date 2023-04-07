@@ -78,8 +78,6 @@ constexpr base::TimeDelta kButtonFadeInDelay = base::Milliseconds(50);
 // The duration for the button fade in animation.
 constexpr base::TimeDelta kButtonFadeInDuration = base::Milliseconds(100);
 
-constexpr int kIphViewHorizontalMargin = 10;
-
 void SetupLabelView(views::Label* label,
                     const gfx::FontList& font_list,
                     gfx::Insets border_insets) {
@@ -350,14 +348,15 @@ SearchBoxViewBase::SearchBoxViewBase()
   const int between_child_spacing =
       kInnerPadding - views::LayoutProvider::Get()->GetDistanceMetric(
                           views::DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING);
-  raw_ptr<views::BoxLayoutView> main_container =
-      AddChildView(std::make_unique<views::BoxLayoutView>());
-  main_container->SetOrientation(views::BoxLayout::Orientation::kVertical);
-  main_container->SetMainAxisAlignment(
+  main_container_ = AddChildView(std::make_unique<views::BoxLayoutView>());
+  main_container_->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  main_container_->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kStretch);
+  main_container_->SetMainAxisAlignment(
       views::BoxLayout::MainAxisAlignment::kCenter);
 
   content_container_ =
-      main_container->AddChildView(std::make_unique<views::BoxLayoutView>());
+      main_container_->AddChildView(std::make_unique<views::BoxLayoutView>());
   content_container_->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
   content_container_->SetMinimumCrossAxisSize(kSearchBoxPreferredHeight);
@@ -441,12 +440,6 @@ SearchBoxViewBase::SearchBoxViewBase()
       std::make_unique<views::FillLayout>());
   content_container_->SetFlexForView(search_box_button_container_, 0,
                                      /*use_min_size=*/true);
-
-  iph_holder_ = main_container->AddChildView(std::make_unique<views::View>());
-  iph_holder_->SetLayoutManager(std::make_unique<views::FillLayout>());
-  iph_holder_->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets::VH(0, kIphViewHorizontalMargin)));
-  iph_holder_->SetVisible(false);
 }
 
 SearchBoxViewBase::~SearchBoxViewBase() = default;
@@ -521,13 +514,11 @@ void SearchBoxViewBase::SetIphView(std::unique_ptr<views::View> view) {
     DeleteIphView();
   }
 
-  iph_holder_->SetVisible(true);
-  iph_view_tracker_.SetView(iph_holder_->AddChildView(std::move(view)));
+  iph_view_tracker_.SetView(main_container_->AddChildView(std::move(view)));
 }
 
 void SearchBoxViewBase::DeleteIphView() {
-  iph_holder_->RemoveChildViewT(iph_view());
-  iph_holder_->SetVisible(false);
+  main_container_->RemoveChildViewT(iph_view());
 }
 
 void SearchBoxViewBase::MaybeSetAutocompleteGhostText(
@@ -595,7 +586,12 @@ bool SearchBoxViewBase::OnTextfieldEvent(ui::EventType type) {
 }
 
 gfx::Size SearchBoxViewBase::CalculatePreferredSize() const {
-  return gfx::Size(kSearchBoxPreferredWidth, kSearchBoxPreferredHeight);
+  const int iph_height =
+      iph_view_tracker_.view()
+          ? iph_view_tracker_.view()->GetPreferredSize().height()
+          : 0;
+  return gfx::Size(kSearchBoxPreferredWidth,
+                   kSearchBoxPreferredHeight + iph_height);
 }
 
 void SearchBoxViewBase::OnEnabledChanged() {

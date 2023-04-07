@@ -217,7 +217,6 @@ void H264Validate(const uint8_t* frame, size_t size) {
 
 void EncodeMediaFrame(MediaCodecBridge* media_codec,
                       const uint8_t* src_data,
-                      const size_t src_size,
                       const int width,
                       const int height,
                       const base::TimeDelta input_timestamp) {
@@ -236,6 +235,17 @@ void EncodeMediaFrame(MediaCodecBridge* media_codec,
   status = media_codec->GetInputFormat(&stride, &yplane_height, &encoded_size);
   ASSERT_EQ(MEDIA_CODEC_OK, status);
 
+  const gfx::Size uv_plane_size = VideoFrame::PlaneSizeInSamples(
+      PIXEL_FORMAT_NV12, VideoFrame::kUVPlane, encoded_size);
+  const size_t src_size =
+      // size of Y-plane plus padding till UV-plane
+      stride * yplane_height +
+      // size of all UV-plane lines but the last one
+      (uv_plane_size.height() - 1) * stride +
+      // size of the very last line in UV-plane (it's not padded to full stride)
+      uv_plane_size.width() * 2;
+  ASSERT_LE(src_size, capacity);
+
   // Convert to NV12 because H264 encoder is created with color format
   // COLOR_FormatYUV420SemiPlanar, both in main code path and unittest here.
   bool converted =
@@ -243,7 +253,7 @@ void EncodeMediaFrame(MediaCodecBridge* media_codec,
                           src_data + width * height * 5 / 4, width / 2, buffer,
                           stride, buffer + stride * yplane_height, stride,
                           encoded_size.width(), encoded_size.height());
-  ASSERT_TRUE(converted == true);
+  ASSERT_TRUE(converted);
 
   status = media_codec->QueueInputBuffer(input_buf_index, nullptr, src_size,
                                          input_timestamp);
@@ -429,13 +439,8 @@ TEST(MediaCodecBridgeTest, CreateUnsupportedCodec) {
   EXPECT_THAT(MediaCodecBridgeImpl::CreateVideoDecoder(config), IsNull());
 }
 
-#if BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/1402772): Fix this test.
-TEST(MediaCodecBridgeTest, DISABLED_H264VideoEncodeAndValidate) {
-#else
 // Test MediaCodec HW H264 encoding and validate the format of encoded frames.
 TEST(MediaCodecBridgeTest, H264VideoEncodeAndValidate) {
-#endif
   SKIP_TEST_IF_HW_H264_IS_NOT_AVAILABLE();
 
   const int width = 640;
@@ -489,8 +494,8 @@ TEST(MediaCodecBridgeTest, H264VideoEncodeAndValidate) {
   for (int frame = 0; frame < num_frames && frame < 3; frame++) {
     input_timestamp +=
         base::Microseconds(base::Time::kMicrosecondsPerSecond / frame_rate);
-    EncodeMediaFrame(media_codec.get(), frame_data.get(), frame_size, width,
-                     height, input_timestamp);
+    EncodeMediaFrame(media_codec.get(), frame_data.get(), width, height,
+                     input_timestamp);
   }
 
   // Reuest key frame and encode 3 more frames. The second key frame should
@@ -499,8 +504,8 @@ TEST(MediaCodecBridgeTest, H264VideoEncodeAndValidate) {
   for (int frame = 0; frame < num_frames && frame < 3; frame++) {
     input_timestamp +=
         base::Microseconds(base::Time::kMicrosecondsPerSecond / frame_rate);
-    EncodeMediaFrame(media_codec.get(), frame_data.get(), frame_size, width,
-                     height, input_timestamp);
+    EncodeMediaFrame(media_codec.get(), frame_data.get(), width, height,
+                     input_timestamp);
   }
 }
 

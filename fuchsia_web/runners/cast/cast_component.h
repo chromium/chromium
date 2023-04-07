@@ -5,6 +5,7 @@
 #ifndef FUCHSIA_WEB_RUNNERS_CAST_CAST_COMPONENT_H_
 #define FUCHSIA_WEB_RUNNERS_CAST_CAST_COMPONENT_H_
 
+#include <chromium/cast/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 
 #include <memory>
@@ -18,7 +19,6 @@
 #include "base/message_loop/message_pump_fuchsia.h"
 #include "fuchsia_web/runners/cast/api_bindings_client.h"
 #include "fuchsia_web/runners/cast/application_controller_impl.h"
-#include "fuchsia_web/runners/cast/fidl/fidl/hlcpp/chromium/cast/cpp/fidl.h"
 #include "fuchsia_web/runners/cast/named_message_port_connector_fuchsia.h"
 #include "fuchsia_web/runners/common/web_component.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

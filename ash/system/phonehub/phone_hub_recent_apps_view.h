@@ -120,9 +120,12 @@ class ASH_EXPORT PhoneHubRecentAppsView
     void StartLoadingAnimation();
     void StopLoadingAnimation();
 
+    base::WeakPtr<LoadingView> GetWeakPtr();
+
    private:
     std::vector<AppLoadingIcon*> app_loading_icons_;
     PhoneHubMoreAppsButton* more_apps_button_ = nullptr;
+    base::WeakPtrFactory<LoadingView> weak_ptr_factory_{this};
   };
 
   // Update the view to reflect the most recently opened apps.

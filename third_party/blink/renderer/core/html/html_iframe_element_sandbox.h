@@ -9,11 +9,11 @@
 
 namespace blink {
 
-class HTMLIFrameElement;
+class HTMLFrameOwnerElement;
 
 class HTMLIFrameElementSandbox final : public DOMTokenList {
  public:
-  explicit HTMLIFrameElementSandbox(HTMLIFrameElement*);
+  explicit HTMLIFrameElementSandbox(HTMLFrameOwnerElement*);
 
  private:
   bool ValidateTokenValue(const AtomicString&, ExceptionState&) const override;

@@ -8,6 +8,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/mojom/feature_observer/feature_observer.mojom-blink.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom-blink.h"
+#include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -52,6 +53,14 @@ class MODULES_EXPORT SharedStorage final : public ScriptWrappable {
 
   ScriptPromise clear(ScriptState*, ExceptionState&);
 
+  ScriptPromise get(ScriptState*, const String& key, ExceptionState&);
+
+  ScriptPromise length(ScriptState*, ExceptionState&);
+
+  ScriptPromise remainingBudget(ScriptState*, ExceptionState&);
+
+  ScriptValue context(ScriptState*, ExceptionState&) const;
+
   ScriptPromise selectURL(ScriptState*,
                           const String& name,
                           HeapVector<Member<SharedStorageUrlWithMetadata>> urls,
@@ -73,8 +82,8 @@ class MODULES_EXPORT SharedStorage final : public ScriptWrappable {
   mojom::blink::SharedStorageDocumentService* GetSharedStorageDocumentService(
       ExecutionContext* execution_context);
 
-  mojom::blink::SharedStorageDocumentService*
-  GetEmptySharedStorageDocumentService();
+  mojom::blink::SharedStorageWorkletServiceClient*
+  GetSharedStorageWorkletServiceClient(ExecutionContext* execution_context);
 
  private:
   mojo::AssociatedRemote<mojom::blink::SharedStorageDocumentService>

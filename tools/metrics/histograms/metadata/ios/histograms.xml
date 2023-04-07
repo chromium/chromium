@@ -1473,6 +1473,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.NTP.OverscrollAction" enum="IOSNTPOverscrollAction"
+    expires_after="2023-09-03">
+  <owner>guiperez@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    The type of overscroll action that occurs on the NTP. This is recorded each
+    time a user overscrolls on the NTP.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Omnibox.SearchSuggestionNumberOfLines" units="count"
     expires_after="2023-09-27">
   <owner>christianxu@chromium.org</owner>

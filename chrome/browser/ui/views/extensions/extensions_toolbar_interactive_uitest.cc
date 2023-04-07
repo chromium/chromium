@@ -7,6 +7,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -184,17 +185,9 @@ ExtensionsMenuCoordinator* ExtensionsToolbarUITest::menu_coordinator() {
 
 bool ExtensionsToolbarUITest::DidInjectScript(
     content::WebContents* web_contents) {
-  const std::u16string& title = web_contents->GetTitle();
-  if (title == u"success") {
-    return true;
-  }
-  // The original page title is "OK"; this indicates the script didn't
-  // inject.
-  if (title == u"OK") {
-    return false;
-  }
-  ADD_FAILURE() << "Unexpected page title found: " << title;
-  return false;
+  return extensions::browsertest_util::DidChangeTitle(
+      *web_contents, /*original_title=*/u"OK",
+      /*changed_title=*/u"success");
 }
 
 void ExtensionsToolbarUITest::ClickButton(views::Button* button) const {

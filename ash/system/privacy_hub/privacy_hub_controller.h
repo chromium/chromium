@@ -12,6 +12,7 @@
 #include "ash/system/privacy_hub/microphone_privacy_switch_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
+#include "geolocation_privacy_switch_controller.h"
 
 class PrefRegistrySimple;
 
@@ -43,6 +44,9 @@ class ASH_EXPORT PrivacyHubController {
   }
   MicrophonePrivacySwitchController& microphone_controller() {
     return microphone_controller_;
+  }
+  GeolocationPrivacySwitchController& geolocation_controller() {
+    return geolocation_switch_controller_;
   }
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);

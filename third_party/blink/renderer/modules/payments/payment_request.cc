@@ -1267,6 +1267,7 @@ PaymentRequest::PaymentRequest(
         mock_payment_provider,
     ExceptionState& exception_state)
     : ExecutionContextLifecycleObserver(execution_context),
+      ActiveScriptWrappable<PaymentRequest>({}),
       options_(options),
       payment_provider_(execution_context),
       client_receiver_(this, execution_context),

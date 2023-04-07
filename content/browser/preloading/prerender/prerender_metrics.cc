@@ -355,4 +355,36 @@ void AnalyzePrerenderActivationHeader(
   }
 }
 
+static_assert(
+    static_cast<int>(PrerenderBackNavigationEligibility::kMaxValue) +
+        static_cast<int>(
+            PreloadingEligibility::kPreloadingEligibilityContentStart2) <
+    static_cast<int>(PreloadingEligibility::kPreloadingEligibilityContentEnd2));
+
+PreloadingEligibility ToPreloadingEligibility(
+    PrerenderBackNavigationEligibility eligibility) {
+  if (eligibility == PrerenderBackNavigationEligibility::kEligible) {
+    return PreloadingEligibility::kEligible;
+  }
+
+  return static_cast<PreloadingEligibility>(
+      static_cast<int>(eligibility) +
+      static_cast<int>(
+          PreloadingEligibility::kPreloadingEligibilityContentStart2));
+}
+
+void RecordPrerenderBackNavigationEligibility(
+    PreloadingPredictor predictor,
+    PrerenderBackNavigationEligibility eligibility,
+    PreloadingAttempt* preloading_attempt) {
+  const std::string histogram_name =
+      std::string("Preloading.PrerenderBackNavigationEligibility.") +
+      std::string(predictor.name());
+  base::UmaHistogramEnumeration(histogram_name, eligibility);
+
+  if (preloading_attempt) {
+    preloading_attempt->SetEligibility(ToPreloadingEligibility(eligibility));
+  }
+}
+
 }  // namespace content

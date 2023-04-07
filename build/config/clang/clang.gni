@@ -14,5 +14,8 @@ declare_args() {
       is_clang && !is_nacl && current_os != "zos" &&
       default_toolchain != "//build/toolchain/cros:target"
 
+  enable_check_raw_ptr_fields =
+      build_with_chromium && !is_official_build && is_linux && !is_castos
+
   clang_base_path = default_clang_base_path
 }

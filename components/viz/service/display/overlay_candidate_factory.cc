@@ -118,8 +118,9 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuad(
   // It is currently not possible to set a color conversion matrix on an HW
   // overlay plane.
   // TODO(https://crbug.com/792757): Remove this check once the bug is resolved.
-  if (*output_color_matrix_ != SkM44())
+  if (has_custom_color_matrix_) {
     return CandidateStatus::kFailColorMatrix;
+  }
 
   const SharedQuadState* sqs = quad->shared_quad_state;
 
@@ -183,13 +184,14 @@ OverlayCandidateFactory::OverlayCandidateFactory(
     : render_pass_(render_pass),
       resource_provider_(resource_provider),
       surface_damage_rect_list_(surface_damage_rect_list),
-      output_color_matrix_(output_color_matrix),
       primary_rect_(primary_rect),
       is_delegated_context_(is_delegated_context),
       supports_clip_rect_(supports_clip_rect),
       supports_arbitrary_transform_(supports_arbitrary_transform),
       supports_rounded_display_masks_(supports_rounded_corner_masks) {
   DCHECK(supports_clip_rect_ || !supports_arbitrary_transform_);
+
+  has_custom_color_matrix_ = *output_color_matrix != SkM44();
 
   // TODO(crbug.com/1323002): Replace this set with a simple ordered linear
   // search when this bug is resolved.
@@ -366,16 +368,20 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
   AssignDamage(quad, candidate);
   candidate.resource_id = resource_id;
 
-  struct TrackingIdData {
-    gfx::Rect rect;
-    FrameSinkId frame_sink_id;
-  };
-
-  TrackingIdData track_data{quad->rect, FrameSinkId()};
   if (resource_id != kInvalidResourceId) {
     candidate.mailbox = resource_provider_->GetMailbox(resource_id);
-    track_data.frame_sink_id =
-        resource_provider_->GetSurfaceId(resource_id).frame_sink_id();
+
+    if (!is_delegated_context_) {
+      struct TrackingIdData {
+        gfx::Rect rect;
+        FrameSinkId frame_sink_id;
+      };
+
+      TrackingIdData track_data{
+          quad->rect,
+          resource_provider_->GetSurfaceId(resource_id).frame_sink_id()};
+      candidate.tracking_id = base::Hash(&track_data, sizeof(track_data));
+    }
   }
 
   // |kAggregatedRenderPass| must be clipped in 'PrepareRenderPassOverlay' as
@@ -419,7 +425,6 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
     }
   }
 
-  candidate.tracking_id = base::Hash(&track_data, sizeof(track_data));
   return CandidateStatus::kSuccess;
 }
 

@@ -9,7 +9,8 @@ namespace blink {
 
 SmartCardReaderPresenceObserver::SmartCardReaderPresenceObserver(
     ExecutionContext* context)
-    : ExecutionContextLifecycleObserver(context) {}
+    : ExecutionContextLifecycleObserver(context),
+      blink::ActiveScriptWrappable<SmartCardReaderPresenceObserver>({}) {}
 
 SmartCardReaderPresenceObserver::~SmartCardReaderPresenceObserver() = default;
 

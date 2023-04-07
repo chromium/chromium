@@ -163,7 +163,7 @@ fn main(@location(0) fragUV : vec2<f32>) -> @location(0) vec4<f32> {
     },
 
     uploadToGPUTextureTest: function(
-      device, context, canvasImageSource, options) {
+      device, context, canvasImageSource) {
       const blitPipeline = device.createRenderPipeline({
         layout: 'auto',
         vertex: {
@@ -204,23 +204,8 @@ fn main(@location(0) fragUV : vec2<f32>) -> @location(0) vec4<f32> {
                GPUTextureUsage.TEXTURE_BINDING
       });
 
-      // TODO(crbug.com/1257856): This test use the temporary origin
-      // config to fix flip issue. It should be removed when we change
-      // the default behaviour.
-      let imageCopyExternalImage;
-      if (options.isWebGLCanvas) {
-        imageCopyExternalImage = { source: canvasImageSource,
-                                   origin: {x: 0, y: 0},
-                                   temporaryOriginBottomLeftIfWebGL: false
-                                 };
-      } else {
-        imageCopyExternalImage = { source: canvasImageSource,
-                                   origin: {x: 0, y: 0}
-                                 };
-      }
-
       device.queue.copyExternalImageToTexture(
-        imageCopyExternalImage,
+        {source: canvasImageSource, origin: [0, 0]},
         {texture},
         [canvasImageSource.width, canvasImageSource.height]
       );

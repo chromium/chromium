@@ -18,7 +18,7 @@ import './google_photos_shared_album_dialog_element.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {CurrentWallpaper, WallpaperLayout, WallpaperType} from '../../personalization_app.mojom-webui.js';
+import {CurrentWallpaper, GooglePhotosPhoto, WallpaperLayout, WallpaperType} from '../../personalization_app.mojom-webui.js';
 import {isGooglePhotosSharedAlbumsEnabled, isPersonalizationJellyEnabled} from '../load_time_booleans.js';
 import {Paths} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
@@ -64,6 +64,8 @@ export class WallpaperSelected extends WithPersonalizationStore {
        * The current path of the page.
        */
       path: String,
+
+      photosByAlbumId_: Object,
 
       image_: {
         type: Object,
@@ -116,7 +118,8 @@ export class WallpaperSelected extends WithPersonalizationStore {
 
       showDailyRefreshButton_: {
         type: Boolean,
-        computed: 'isDailyRefreshable_(path,googlePhotosAlbumId)',
+        computed:
+            'isDailyRefreshable_(path,googlePhotosAlbumId,photosByAlbumId_)',
       },
 
       showRefreshButton_: {
@@ -187,6 +190,8 @@ export class WallpaperSelected extends WithPersonalizationStore {
   private centerIcon_: string;
   private error_: string;
   private googlePhotosSharedAlbumsEnabled_: boolean;
+  private photosByAlbumId_: Record<string, GooglePhotosPhoto[]|null|undefined>|
+      undefined;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -199,6 +204,9 @@ export class WallpaperSelected extends WithPersonalizationStore {
             state.wallpaper.loading.selected ||
             state.wallpaper.loading.refreshWallpaper);
     this.watch('dailyRefreshState_', state => state.wallpaper.dailyRefresh);
+    this.watch(
+        'photosByAlbumId_',
+        state => state.wallpaper.googlePhotos.photosByAlbumId);
     this.updateFromStore();
     getDailyRefreshState(getWallpaperProvider(), this.getStore());
   }
@@ -344,9 +352,14 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   private isDailyRefreshable_(
-      path: string, googlePhotosAlbumId: string|undefined) {
+      path: string, googlePhotosAlbumId: string|undefined,
+      photosByAlbumId: Record<string, GooglePhotosPhoto[]|null|undefined>) {
+    const isNonEmptyGooglePhotosAlbum = !!googlePhotosAlbumId &&
+        !!photosByAlbumId &&
+        isNonEmptyArray(photosByAlbumId[googlePhotosAlbumId]);
     return path === Paths.COLLECTION_IMAGES ||
-        (path === Paths.GOOGLE_PHOTOS_COLLECTION && !!googlePhotosAlbumId);
+        (path === Paths.GOOGLE_PHOTOS_COLLECTION &&
+         isNonEmptyGooglePhotosAlbum);
   }
 
   /**
@@ -407,6 +420,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
 
   private closeDailyRefreshConfirmationDialog_() {
     this.shouldShowDailyRefreshConfirmationDialog_ = false;
+    this.shadowRoot!.getElementById('dailyRefresh')?.focus();
   }
 
   private onAcceptDailyRefreshDialog_() {

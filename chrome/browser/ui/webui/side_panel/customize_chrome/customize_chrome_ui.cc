@@ -26,7 +26,9 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CustomizeChromeUI,
                                       kChangeChromeThemeButtonElementId);
@@ -95,6 +97,9 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       "modulesEnabled",
       ntp::HasModulesEnabled(module_id_names_,
                              IdentityManagerFactory::GetForProfile(profile_)));
+  source->AddString(
+      "chromeRefresh2023Attribute",
+      features::IsChromeRefresh2023() ? "chrome-refresh-2023" : "");
 
   webui::SetupWebUIDataSource(
       source,
@@ -145,6 +150,13 @@ void CustomizeChromeUI::BindInterface(
     help_bubble_handler_factory_receiver_.reset();
   }
   help_bubble_handler_factory_receiver_.Bind(std::move(pending_receiver));
+}
+
+void CustomizeChromeUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+        pending_receiver) {
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(pending_receiver));
 }
 
 void CustomizeChromeUI::CreatePageHandler(

@@ -59,6 +59,16 @@ class CryptohomeRecovery extends CryptohomeRecoveryBase {
         type: Boolean,
         value: false,
       },
+
+      /**
+       * Whether the buttons on the screen are disabled. Prevents sending double
+       * requests.
+       * @private {boolean}
+       */
+      disabled_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -91,6 +101,7 @@ class CryptohomeRecovery extends CryptohomeRecoveryBase {
 
   reset() {
     this.setUIStep(CryptohomeRecoveryUIState.LOADING);
+    this.disabled_ = false;
   }
 
   /**
@@ -98,6 +109,7 @@ class CryptohomeRecovery extends CryptohomeRecoveryBase {
    */
   onRecoverySucceeded() {
     this.setUIStep(CryptohomeRecoveryUIState.DONE);
+    this.disabled_ = false;
   }
 
   /**
@@ -105,6 +117,7 @@ class CryptohomeRecovery extends CryptohomeRecoveryBase {
    */
   onRecoveryFailed() {
     this.setUIStep(CryptohomeRecoveryUIState.ERROR);
+    this.disabled_ = false;
   }
 
   /**
@@ -112,13 +125,18 @@ class CryptohomeRecovery extends CryptohomeRecoveryBase {
    */
   showReauthNotification() {
     this.setUIStep(CryptohomeRecoveryUIState.REAUTH_NOTIFICATION);
+    this.disabled_ = false;
   }
 
   /**
    * Enter old password button click handler.
    * @private
    */
-  onOldPasswordEntered_() {
+  onGoToManualRecovery_() {
+    if (this.disabled_) {
+      return;
+    }
+    this.disabled_ = true;
     this.userActed('enter-old-password');
   }
 
@@ -127,6 +145,10 @@ class CryptohomeRecovery extends CryptohomeRecoveryBase {
    * @private
    */
   onRetry_() {
+    if (this.disabled_) {
+      return;
+    }
+    this.disabled_ = true;
     this.userActed('retry');
   }
 
@@ -135,6 +157,10 @@ class CryptohomeRecovery extends CryptohomeRecoveryBase {
    * @private
    */
   onDone_() {
+    if (this.disabled_) {
+      return;
+    }
+    this.disabled_ = true;
     this.userActed('done');
   }
 
@@ -143,6 +169,10 @@ class CryptohomeRecovery extends CryptohomeRecoveryBase {
    * @private
    */
   onReauthButtonClicked_() {
+    if (this.disabled_) {
+      return;
+    }
+    this.disabled_ = true;
     this.userActed('reauth');
   }
 

@@ -60,7 +60,7 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="6" label="kNotShownNonGoogleDSE"/>
   <int value="7" label="kNotShownLocalHost"/>
   <int value="8" label="kNotShownOptimizationGuideNotAllowed"/>
-  <int value="9" label="kShownWithoutMsbb"/>
+  <int value="9" label="kShownWithoutMsbb (deprecated)"/>
   <int value="10" label="kSameTabNavigation"/>
 </enum>
 
@@ -3787,6 +3787,7 @@ Unknown properties are collapsed to zero. -->
   <int value="51" label="Bruschetta app"/>
   <int value="52" label="System Info"/>
   <int value="53" label="Local image search"/>
+  <int value="54" label="Zero State Desks Admin Template"/>
 </enum>
 
 <enum name="AppListShowSource">
@@ -10979,6 +10980,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="25" label="DEPRECATED_EMF_INVALID_SOURCE_URL_FROM_WORKER"/>
   <int value="26"
       label="EMF_INVALID_OPEN_CHANNEL_TO_EXTENSION_FROM_NATIVE_HOST"/>
+  <int value="27" label="EMF_INVALID_EXTENSION_ID_FOR_WEB_PAGE"/>
 </enum>
 
 <enum name="BadMessageReasonGuestView">
@@ -26179,6 +26181,14 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="65" label="Header overrides '.headers' file edited"/>
   <int value="66" label="Local overrides enabled"/>
   <int value="67" label="Local overrides disabled"/>
+  <int value="68" label="Breakpoint removed from context menu"/>
+  <int value="69" label="Breakpoints in file removed from remove button"/>
+  <int value="70" label="Breakpoints in file removed from context menu"/>
+  <int value="71"
+      label="Breakpoints in file enabled or disabled from checkbox"/>
+  <int value="72"
+      label="Breakpoints in file enabled or disabled form context menu"/>
+  <int value="73" label="Breakpoint condition edited from sidebar"/>
 </enum>
 
 <enum name="DevToolsBackgroundService">
@@ -26196,6 +26206,7 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="2" label="Breakpoint marker context menu"/>
   <int value="3" label="Line gutter context menu"/>
   <int value="4" label="Keyboard Shortcut"/>
+  <int value="5" label="Linkifier"/>
 </enum>
 
 <enum name="DevToolsBreakpointWithConditionAdded">
@@ -35787,6 +35798,8 @@ Called by update_extension_histograms.py.-->
   <int value="1778" label="OS_EVENTS_ISEVENTSUPPORTED"/>
   <int value="1779" label="OS_EVENTS_STARTCAPTURINGEVENTS"/>
   <int value="1780" label="OS_EVENTS_STOPCAPTURINGEVENTS"/>
+  <int value="1781" label="SIDEPANEL_SETPANELBEHAVIOR"/>
+  <int value="1782" label="SIDEPANEL_GETPANELBEHAVIOR"/>
 </enum>
 
 <enum name="ExtensionIconState">
@@ -42044,6 +42057,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4538" label="GamepadTouchSurfaceId"/>
   <int value="4539" label="GamepadTouchPosition"/>
   <int value="4540" label="GamepadTouchSurfaceDimension"/>
+  <int value="4541" label="SandboxViaFencedFrame"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
@@ -53744,6 +53758,12 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="2" label="Remote suggestions collapsed"/>
 </enum>
 
+<enum name="IOSNTPOverscrollAction">
+  <int value="0" label="Open New Tab"/>
+  <int value="1" label="Pull to Refresh"/>
+  <int value="2" label="Close Tab"/>
+</enum>
+
 <enum name="IOSOpenInDownloadResult">
   <int value="0" label="Download Succeeded"/>
   <int value="1" label="Download Canceled">
@@ -58143,6 +58163,7 @@ from previous Chrome versions.
   <int value="-2038973140" label="VideoConference:enabled"/>
   <int value="-2038175774"
       label="AndroidAutofillViewStructureWithFormHierarchyLayer:enabled"/>
+  <int value="-2038132420" label="OmniboxCacheSuggestionResources:enabled"/>
   <int value="-2037390759"
       label="IncognitoBrandConsistencyForAndroid:disabled"/>
   <int value="-2037280696" label="EcheSWASendStartSignaling:disabled"/>
@@ -58556,6 +58577,7 @@ from previous Chrome versions.
   <int value="-1835592983" label="WebAppEnableLaunchHandler:disabled"/>
   <int value="-1834967404" label="DesktopCaptureLacrosV2:enabled"/>
   <int value="-1834841895" label="CrostiniWebUIUpgrader:enabled"/>
+  <int value="-1834823079" label="WebAppSyncGeneratedIconFix:disabled"/>
   <int value="-1834475132" label="IgnoreSyncEncryptionKeysLongMissing:enabled"/>
   <int value="-1834151268" label="OmniboxDynamicMaxAutocomplete:disabled"/>
   <int value="-1833149810" label="enable-accessibility-tab-switcher"/>
@@ -59383,6 +59405,7 @@ from previous Chrome versions.
   <int value="-1385221197"
       label="AllowSignedHTTPExchangeCertsWithoutExtension:enabled"/>
   <int value="-1384426209" label="SharingDeviceRegistration:disabled"/>
+  <int value="-1383674566" label="EnableProtoApiForClassifyUrl:enabled"/>
   <int value="-1383597259" label="SyncUserConsentSeparateType:disabled"/>
   <int value="-1383145700"
       label="AutofillDoNotMigrateUnsupportedLocalCards:enabled"/>
@@ -61347,6 +61370,7 @@ from previous Chrome versions.
   <int value="-308793293" label="WebShare:disabled"/>
   <int value="-308785012"
       label="QuickIntensiveWakeUpThrottlingAfterLoading:enabled"/>
+  <int value="-308107781" label="OmniboxCacheSuggestionResources:disabled"/>
   <int value="-307260007" label="ExtensionsCheckup:disabled"/>
   <int value="-306935714" label="lite-video-force-override-decision"/>
   <int value="-306885206" label="NtpModulesHeaderIcon:disabled"/>
@@ -62156,6 +62180,7 @@ from previous Chrome versions.
   <int value="121911155" label="DesktopPWAsElidedExtensionsMenu:enabled"/>
   <int value="121994167" label="kOmniboxCR23SteadyStateIcons:disabled"/>
   <int value="122959683" label="WebViewJavaJsBridgeMojo:enabled"/>
+  <int value="123008918" label="EnableProtoApiForClassifyUrl:disabled"/>
   <int value="123097915" label="FaviconsFromWebManifest:enabled"/>
   <int value="124590378" label="LensStandalone:disabled"/>
   <int value="125581289" label="WebRtcHWVP8Encoding:disabled"/>
@@ -63176,6 +63201,7 @@ from previous Chrome versions.
   <int value="693480759" label="PageInfoAboutThisSiteEn:disabled"/>
   <int value="693545401"
       label="AutofillEnableInfoBarAccountIndicationFooter:enabled"/>
+  <int value="693894532" label="LauncherOmniboxPublishLogicLog:enabled"/>
   <int value="694016981" label="query-tiles-more-trending"/>
   <int value="694165544" label="NtpComprehensiveTheming:disabled"/>
   <int value="694376282" label="OmniboxReportAssistedQueryStats:enabled"/>
@@ -64180,6 +64206,7 @@ from previous Chrome versions.
       label="SafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid:disabled"/>
   <int value="1247293682" label="topchrome-md"/>
   <int value="1248222772" label="ZeroCopyTabCapture:disabled"/>
+  <int value="1248486441" label="LauncherOmniboxPublishLogicLog:disabled"/>
   <int value="1249215617" label="SelectToSpeakNavigationControl:enabled"/>
   <int value="1249861983" label="WebViewUseMetricsUploadService:disabled"/>
   <int value="1250071868" label="disable-timezone-tracking-option"/>
@@ -65837,6 +65864,7 @@ from previous Chrome versions.
   <int value="2140453427"
       label="MigrateDefaultChromeAppToWebAppsGSuite:enabled"/>
   <int value="2141067485" label="SystemWebApps:enabled"/>
+  <int value="2141409121" label="WebAppSyncGeneratedIconFix:enabled"/>
   <int value="2141463681" label="enable-offer-upload-credit-cards"/>
   <int value="2142286279" label="ScreenSaverDuration:enabled"/>
   <int value="2142661816" label="AllowRemoteContextForNotifications:disabled"/>
@@ -68238,6 +68266,20 @@ Called by update_use_counter_css.py.-->
   <int value="7" label="Added by access code"/>
 </enum>
 
+<enum name="MediaRouterDeviceDescriptionParsingResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Invalid XML"/>
+  <int value="2" label="Failed to read UDN"/>
+  <int value="3" label="Failed to read friendly name"/>
+  <int value="4" label="Failed to read model name"/>
+  <int value="5" label="Failed to read device type"/>
+  <int value="6" label="Missing unique ID"/>
+  <int value="7" label="Missing name"/>
+  <int value="8" label="Missing app URL"/>
+  <int value="9" label="Invalid app URL"/>
+  <int value="10" label="Utility process error"/>
+</enum>
+
 <enum name="MediaRouterDialCreateRouteResult">
   <int value="0" label="Success"/>
   <int value="1" label="Sink not found"/>
@@ -68297,13 +68339,10 @@ Called by update_use_counter_css.py.-->
   <int value="28" label="Sharing Hub and remote playback"/>
 </enum>
 
-<enum name="MediaRouterDialParseMessageResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="Parse error"/>
-  <int value="2" label="Invalid message"/>
-</enum>
-
 <enum name="MediaRouterDialParsingError">
+  <obsolete>
+    Replaced by MediaRouterDeviceDescriptionParsingResult as of 2023-04-04.
+  </obsolete>
   <int value="0" label="None"/>
   <int value="1" label="Invalid XML"/>
   <int value="2" label="Failed to read UDN"/>
@@ -74166,6 +74205,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="166" label="Lock Screen"/>
   <int value="167" label="WebAppSettings App Launch"/>
   <int value="168" label="EOL Incentive"/>
+  <int value="169" label="Hotspot"/>
 </enum>
 
 <enum name="NotificationDatabaseStatus">
@@ -83340,6 +83380,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="7" label="TriggeredButOutcomeUnknown"/>
   <int value="8" label="TriggeredButUpgradedToPrerender"/>
   <int value="9" label="TriggeredButPending"/>
+  <int value="10" label="NoOp"/>
 </enum>
 
 <enum name="PreloadPagesState">
@@ -84509,6 +84550,19 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="24" label="kRequestDestination"/>
 </enum>
 
+<enum name="PrerenderBackNavigationEligibility">
+  <int value="0" label="Eligible"/>
+  <int value="1" label="No back entry"/>
+  <int value="2" label="Target is same document"/>
+  <int value="3" label="Method not get"/>
+  <int value="4" label="Target is failed navigation"/>
+  <int value="5" label="Bfcache entry exists"/>
+  <int value="6" label="Target is same site"/>
+  <int value="7" label="No HTTP cache entry"/>
+  <int value="8" label="Targeting other window"/>
+  <int value="9" label="Target is non-HTTP(S)"/>
+</enum>
+
 <enum name="PrerenderCancelledInterface">
   <int value="0" label="kUnknown"/>
   <int value="1" label="kGamepadHapticsManager"/>
@@ -85588,11 +85642,18 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
 <enum name="PrivacyHubLearnMoreSensor">
   <int value="0" label="Microphone"/>
   <int value="1" label="Camera"/>
+  <int value="2" label="Geolocation"/>
 </enum>
 
 <enum name="PrivacyHubNavigationOrigin">
   <int value="0" label="System settings"/>
   <int value="1" label="Notification"/>
+</enum>
+
+<enum name="PrivacyIndicatorsSource">
+  <int value="0" label="Apps"/>
+  <int value="1" label="Linux VM"/>
+  <int value="2" label="Screen Capture"/>
 </enum>
 
 <enum name="PrivacyIndicatorsType">
@@ -95313,7 +95374,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="11" label="[Tests] Force sign-out">
     Signout is forced. Used only for tests.
   </int>
-  <int value="12" label="User deleted account cookies">
+  <int value="12"
+      label="(Obsolete) User deleted account cookies. Deprecated in M114">
     User cleared account cookies when there's no sync consent, which has caused
     sign out.
   </int>
@@ -95360,6 +95422,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   </int>
   <int value="23" label="AccountReconcilor Reconcile">
     The reconcilor cleared the signin primary account during reconcilation.
+  </int>
+  <int value="24" label="SigninManager UpdateUnconsentedPrimaryAccount">
+    SigninManager decides to clear the prrimary (includes web sign out).
+  </int>
+  <int value="25" label="User deleted account cookies">
+    User cleared account cookies when there's no sync consent, which has caused
+    sign out.
   </int>
 </enum>
 
@@ -98354,6 +98423,18 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
       label="Storage access allowed by the top-level version of the API"/>
 </enum>
 
+<enum name="StorageBucketDurabilityParameter">
+  <int value="0" label="Not provided"/>
+  <int value="1" label="Relaxed"/>
+  <int value="2" label="Strict"/>
+</enum>
+
+<enum name="StorageBucketPersistedParameter">
+  <int value="0" label="Not provided"/>
+  <int value="1" label="Not persisted"/>
+  <int value="2" label="Persisted"/>
+</enum>
+
 <enum name="StoragePartitionRemoverTasks">
   <int value="1" label="kSynchronous"/>
   <int value="2" label="kCookies"/>
@@ -98374,6 +98455,15 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="0" label="The bubble was shown."/>
   <int value="1" label="The user ignored the bubble."/>
   <int value="2" label="The user clicked on the positive button."/>
+</enum>
+
+<enum name="StoreAffiliationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed to start transaction"/>
+  <int value="2" label="Failed to close transaction"/>
+  <int value="3" label="Failed to add set"/>
+  <int value="4" label="Failed to add affiliation"/>
+  <int value="5" label="Failed to add group"/>
 </enum>
 
 <enum name="StreamParserBufferDurationType">
@@ -108550,6 +108640,7 @@ others/histograms.xml -->
   <int value="3" label="Card authorization token is empty"/>
   <int value="4" label="Blocked by strike database"/>
   <int value="5" label="User opted in from settings"/>
+  <int value="6" label="User already opted into FIDO auth, no need to offer"/>
 </enum>
 
 <enum name="WebBluetoothConnectGATTOutcome">

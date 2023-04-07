@@ -44,6 +44,8 @@ class ArcStorageManager : public KeyedService {
       base::OnceCallback<void(bool succeeded, mojom::ApplicationsSizePtr)>;
   bool GetApplicationsSize(GetApplicationsSizeCallback callback);
 
+  static void EnsureFactoryBuilt();
+
  private:
   ArcBridgeService* const arc_bridge_service_;
 };

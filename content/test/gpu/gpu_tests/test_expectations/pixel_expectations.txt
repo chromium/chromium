@@ -329,7 +329,6 @@ crbug.com/1268144 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] Pixel_
 # Pixel 6 failures.
 crbug.com/1286915 [ android android-pixel-6 angle-disabled no-passthrough ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
 crbug.com/1287280 [ android android-pixel-6 no-passthrough android-chromium ] Pixel_CanvasDisplaySRGBAccelerated2D [ Failure ]
-crbug.com/1289884 [ android android-pixel-6 renderer-skia-vulkan android-webview-instrumentation ] * [ Failure ]
 
 crbug.com/1290953 [ android android-nexus-5x android-webview-instrumentation ] Pixel_CanvasLowLatency2D [ Failure ]
 crbug.com/1290953 [ android android-nexus-5x android-webview-instrumentation ] Pixel_CanvasLowLatency2DDrawImage [ Failure ]
@@ -379,7 +378,6 @@ crbug.com/1382332 [ android-chromium android-s android-sm-a135m angle-disabled a
 crbug.com/1382332 [ android-chromium android-s android-sm-a135m angle-disabled arm no-clang-coverage no-passthrough renderer-skia-gl target-cpu-32 ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 crbug.com/1382332 [ android-nexus-5x android-nougat angle-disabled no-passthrough qualcomm renderer-skia-gl target-cpu-64 ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 crbug.com/1382332 [ android-pixel-4 android-r no-clang-coverage qualcomm renderer-skia-gl target-cpu-32 ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
-crbug.com/1382332 [ android-pixel-6 android-t android-webview-instrumentation angle-disabled arm no-clang-coverage no-passthrough renderer-skia-vulkan target-cpu-64 ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 crbug.com/1382332 [ fuchsia ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 crbug.com/1382332 [ linux nvidia-0x2184 passthrough debug angle-vulkan ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 

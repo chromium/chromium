@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/ash/app_list/search/test/search_metrics_test_util.h"
 #include "chrome/browser/ash/app_list/test/test_app_list_controller.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chromeos/ash/components/dbus/federated/federated_client.h"
 #include "chromeos/ash/services/federated/public/cpp/fake_service_connection.h"
 #include "mojo/core/embedder/embedder.h"
@@ -80,13 +81,22 @@ class FederatedMetricsManagerTest : public testing::Test,
     FederatedClient::InitializeFake();
 
     histogram_tester_ = std::make_unique<base::HistogramTester>();
-    metrics_manager_ = std::make_unique<FederatedMetricsManager>(
-        &app_list_notifier_, &federated_service_controller_);
   }
 
   void TearDown() override { FederatedClient::Shutdown(); }
 
   base::HistogramTester* histogram_tester() { return histogram_tester_.get(); }
+
+  void SetChromeMetricsEnabled(bool value) {
+    chrome_metrics_enabled_ = value;
+    ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
+        &chrome_metrics_enabled_);
+  }
+
+  void InitFederatedMetricsManager() {
+    metrics_manager_ = std::make_unique<FederatedMetricsManager>(
+        &app_list_notifier_, &federated_service_controller_);
+  }
 
   void ExpectNoFederatedLogs() {
     const std::string histograms =
@@ -115,13 +125,38 @@ class FederatedMetricsManagerTest : public testing::Test,
   ::test::TestAppListController app_list_controller_;
   AppListNotifierImpl app_list_notifier_;
   TestFederatedServiceController federated_service_controller_;
-};
 
+  bool chrome_metrics_enabled_;
+};
 INSTANTIATE_TEST_SUITE_P(LauncherQueryFA,
                          FederatedMetricsManagerTest,
                          testing::Bool());
 
+TEST_P(FederatedMetricsManagerTest, ChromeMetricsConsentDisabled) {
+  SetChromeMetricsEnabled(false);
+  InitFederatedMetricsManager();
+
+  // Simulate various user search activities.
+  metrics_manager_->OnSearchSessionStarted();
+  metrics_manager_->OnSearchSessionEnded(u"fake_query");
+
+  metrics_manager_->OnSearchSessionStarted();
+  std::vector<Result> shown_results;
+  Result launched_result = CreateFakeResult(Type::EXTENSION_APP, "fake_id");
+  std::u16string query = u"fake_query";
+  metrics_manager_->OnSeen(Location::kAnswerCard, shown_results, query);
+  metrics_manager_->OnLaunch(Location::kList, launched_result, shown_results,
+                             query);
+  metrics_manager_->OnSearchSessionEnded(u"fake_query");
+
+  ExpectNoFederatedLogs();
+  ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(nullptr);
+}
+
 TEST_P(FederatedMetricsManagerTest, Quit) {
+  SetChromeMetricsEnabled(true);
+  InitFederatedMetricsManager();
+
   metrics_manager_->OnSearchSessionStarted();
   // Search session ends without user taking other action (e.g. without
   // launching a result).
@@ -147,9 +182,13 @@ TEST_P(FederatedMetricsManagerTest, Quit) {
   } else {
     ExpectNoFederatedLogs();
   }
+  ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(nullptr);
 }
 
 TEST_P(FederatedMetricsManagerTest, Launch) {
+  SetChromeMetricsEnabled(true);
+  InitFederatedMetricsManager();
+
   metrics_manager_->OnSearchSessionStarted();
   std::vector<Result> shown_results;
   Result launched_result = CreateFakeResult(Type::EXTENSION_APP, "fake_id");
@@ -178,9 +217,13 @@ TEST_P(FederatedMetricsManagerTest, Launch) {
   } else {
     ExpectNoFederatedLogs();
   }
+  ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(nullptr);
 }
 
 TEST_P(FederatedMetricsManagerTest, AnswerCardSeen) {
+  SetChromeMetricsEnabled(true);
+  InitFederatedMetricsManager();
+
   metrics_manager_->OnSearchSessionStarted();
   std::vector<Result> shown_results;
   std::u16string query = u"fake_query";
@@ -207,9 +250,13 @@ TEST_P(FederatedMetricsManagerTest, AnswerCardSeen) {
   } else {
     ExpectNoFederatedLogs();
   }
+  ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(nullptr);
 }
 
 TEST_P(FederatedMetricsManagerTest, AnswerCardSeenThenListResultLaunched) {
+  SetChromeMetricsEnabled(true);
+  InitFederatedMetricsManager();
+
   // Tests that a Launch event takes precedence over an AnswerCardSeen event,
   // within the same search session.
   metrics_manager_->OnSearchSessionStarted();
@@ -243,9 +290,13 @@ TEST_P(FederatedMetricsManagerTest, AnswerCardSeenThenListResultLaunched) {
   } else {
     ExpectNoFederatedLogs();
   }
+  ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(nullptr);
 }
 
 TEST_P(FederatedMetricsManagerTest, ZeroState) {
+  SetChromeMetricsEnabled(true);
+  InitFederatedMetricsManager();
+
   // Note: metrics_manager_->OnSearchSession{Started,Ended}() are not expected
   // to be called during zero state search.
 
@@ -280,6 +331,7 @@ TEST_P(FederatedMetricsManagerTest, ZeroState) {
   } else {
     ExpectNoFederatedLogs();
   }
+  ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(nullptr);
 }
 
 }  // namespace

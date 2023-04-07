@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/sessions/test_session_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_delegate.h"
@@ -33,6 +34,7 @@
 #import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/session/crw_navigation_item_storage.h"
 #import "ios/web/public/session/crw_session_storage.h"
+#import "ios/web/public/session/crw_session_user_data.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/thread/web_thread.h"
@@ -53,6 +55,77 @@ namespace {
 
 const char kURL1[] = "https://www.some.url.com";
 const char kURL2[] = "https://www.some.url2.com";
+
+// Information about a single tab that needs to be restored.
+struct TabInfo {
+  int opener_index = -1;
+  bool pinned = false;
+};
+
+// Information about a collection of N tabs that needs to be restored.
+template <size_t N>
+struct SessionInfo {
+  int active_index;
+  std::array<TabInfo, N> tab_infos;
+};
+
+// Creates a NSArray<CRWNavigationItemStorage*>*.
+NSArray<CRWNavigationItemStorage*>* CreateNavigationStorage() {
+  CRWNavigationItemStorage* item_storage =
+      [[CRWNavigationItemStorage alloc] init];
+  item_storage.virtualURL = GURL("http://init.text");
+  return @[ item_storage ];
+}
+
+// Create a CRWSessionUserData* from `tab_info`.
+CRWSessionUserData* CreateSessionUserData(TabInfo tab_info) {
+  if (!tab_info.pinned && tab_info.opener_index == -1) {
+    return nil;
+  }
+
+  CRWSessionUserData* user_data = [[CRWSessionUserData alloc] init];
+  if (tab_info.pinned) {
+    [user_data setObject:@YES forKey:@"PinnedState"];
+  }
+  if (tab_info.opener_index != -1) {
+    [user_data setObject:@(tab_info.opener_index) forKey:@"OpenerIndex"];
+    [user_data setObject:@(0) forKey:@"OpenerNavigationIndex"];
+  }
+  return user_data;
+}
+
+// Creates a CRWSessionStorage* from `tab_info`.
+CRWSessionStorage* CreateSessionStorage(TabInfo tab_info) {
+  CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
+  session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
+  session_storage.uniqueIdentifier = SessionID::NewUnique();
+  session_storage.lastCommittedItemIndex = 0;
+  session_storage.itemStorages = CreateNavigationStorage();
+  session_storage.userData = CreateSessionUserData(tab_info);
+  return session_storage;
+}
+
+// Creates a SessionWindowIOS* from `session_info`.
+template <size_t N>
+SessionWindowIOS* CreateSessionWindow(SessionInfo<N> session_info) {
+  if (session_info.active_index < 0) {
+    return nil;
+  }
+
+  if (N <= static_cast<size_t>(session_info.active_index)) {
+    return nil;
+  }
+
+  NSMutableArray<CRWSessionStorage*>* sessions =
+      [[NSMutableArray alloc] initWithCapacity:N];
+
+  for (const TabInfo& tab_info : session_info.tab_infos) {
+    [sessions addObject:CreateSessionStorage(tab_info)];
+  }
+
+  return [[SessionWindowIOS alloc] initWithSessions:sessions
+                                      selectedIndex:session_info.active_index];
+}
 
 class TestRestorationObserver : public SessionRestorationObserver {
  public:
@@ -118,26 +191,6 @@ class SessionRestorationBrowserAgentTest : public PlatformTest {
   NSString* session_id() { return session_identifier_; }
 
  protected:
-  // Creates a session window with `sessions_count` and mark the
-  // `selected_index` entry as selected.
-  SessionWindowIOS* CreateSessionWindow(int sessions_count,
-                                        int selected_index) {
-    NSMutableArray<CRWSessionStorage*>* sessions = [NSMutableArray array];
-    for (int i = 0; i < sessions_count; i++) {
-      CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
-      session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
-      session_storage.uniqueIdentifier = SessionID::NewUnique();
-      session_storage.lastCommittedItemIndex = 0;
-      CRWNavigationItemStorage* item_storage =
-          [[CRWNavigationItemStorage alloc] init];
-      item_storage.virtualURL = GURL("http://init.test");
-      session_storage.itemStorages = @[ item_storage ];
-      [sessions addObject:session_storage];
-    }
-    return [[SessionWindowIOS alloc] initWithSessions:sessions
-                                        selectedIndex:selected_index];
-  }
-
   // Creates a WebState with the given parameters and insert it in the
   // Browser's WebStateList.
   web::WebState* InsertNewWebState(const GURL& url,
@@ -199,14 +252,30 @@ TEST_F(SessionRestorationBrowserAgentTest, RestoreEmptySessions) {
 
 // Tests that restoring a session works correctly on empty WebStateList.
 TEST_F(SessionRestorationBrowserAgentTest, RestoreSessionOnEmptyWebStateList) {
-  SessionWindowIOS* window(
-      CreateSessionWindow(/*sessions_count=*/5, /*selected_index=*/1));
+  SessionWindowIOS* window =
+      CreateSessionWindow(SessionInfo<5>{.active_index = 1,
+                                         .tab_infos = {
+                                             TabInfo{.pinned = true},
+                                             TabInfo{.opener_index = 0},
+                                             TabInfo{},
+                                             TabInfo{},
+                                             TabInfo{},
+                                         }});
   session_restoration_agent_->RestoreSessionWindow(
       window, SessionRestorationScope::kAll);
 
   ASSERT_EQ(5, browser_->GetWebStateList()->count());
   EXPECT_EQ(browser_->GetWebStateList()->GetWebStateAt(1),
             browser_->GetWebStateList()->GetActiveWebState());
+
+  // Check that the opener has correctly be restored.
+  EXPECT_EQ(browser_->GetWebStateList()->GetWebStateAt(0),
+            browser_->GetWebStateList()->GetOpenerOfWebStateAt(1).opener);
+
+  // Check that the first tab is pinned if pinned tab support is enabled
+  // or that the pinned flag has been removed otherwise.
+  EXPECT_EQ(IsPinnedTabsEnabled(),
+            browser_->GetWebStateList()->IsWebStatePinnedAt(0));
 }
 
 // Tests that restoring a session works correctly on non empty WebStatelist.
@@ -215,8 +284,13 @@ TEST_F(SessionRestorationBrowserAgentTest,
   web::WebState* web_state = InsertNewWebState(
       GURL(kURL1), /*parent=*/nullptr, /*index=*/0, /*background=*/false);
 
-  SessionWindowIOS* window(
-      CreateSessionWindow(/*sessions_count=*/3, /*selected_index=*/2));
+  SessionWindowIOS* window =
+      CreateSessionWindow(SessionInfo<3>{.active_index = 2,
+                                         .tab_infos = {
+                                             TabInfo{},
+                                             TabInfo{},
+                                             TabInfo{},
+                                         }});
   session_restoration_agent_->RestoreSessionWindow(
       window, SessionRestorationScope::kAll);
 
@@ -242,8 +316,14 @@ TEST_F(SessionRestorationBrowserAgentTest, DISABLED_RestoreSessionOnNTPTest) {
   NewTabPageTabHelper::CreateForWebState(web_state);
   NewTabPageTabHelper::FromWebState(web_state)->SetDelegate(delegate);
 
-  SessionWindowIOS* window(
-      CreateSessionWindow(/*sessions_count=*/3, /*selected_index=*/2));
+  SessionWindowIOS* window =
+      CreateSessionWindow(SessionInfo<3>{.active_index = 2,
+                                         .tab_infos = {
+                                             TabInfo{},
+                                             TabInfo{},
+                                             TabInfo{},
+                                         }});
+
   session_restoration_agent_->RestoreSessionWindow(
       window, SessionRestorationScope::kAll);
 
@@ -324,8 +404,16 @@ TEST_F(SessionRestorationBrowserAgentTest, SaveAndRestoreSession) {
 // clearing the WebStatelist and restoring the session will restore the web
 // states correctly.
 TEST_F(SessionRestorationBrowserAgentTest, SaveInProgressAndRestoreSession) {
-  SessionWindowIOS* window(
-      CreateSessionWindow(/*sessions_count=*/5, /*selected_index=*/1));
+  SessionWindowIOS* window =
+      CreateSessionWindow(SessionInfo<5>{.active_index = 1,
+                                         .tab_infos = {
+                                             TabInfo{},
+                                             TabInfo{},
+                                             TabInfo{},
+                                             TabInfo{},
+                                             TabInfo{},
+                                         }});
+
   [test_session_service_ setPerformIO:YES];
   session_restoration_agent_->RestoreSessionWindow(
       window, SessionRestorationScope::kAll);
@@ -360,8 +448,14 @@ TEST_F(SessionRestorationBrowserAgentTest, ObserverCalledWithRestore) {
   TestRestorationObserver observer;
   session_restoration_agent_->AddObserver(&observer);
 
-  SessionWindowIOS* window(
-      CreateSessionWindow(/*sessions_count=*/3, /*selected_index=*/2));
+  SessionWindowIOS* window =
+      CreateSessionWindow(SessionInfo<3>{.active_index = 2,
+                                         .tab_infos = {
+                                             TabInfo{},
+                                             TabInfo{},
+                                             TabInfo{},
+                                         }});
+
   session_restoration_agent_->RestoreSessionWindow(
       window, SessionRestorationScope::kAll);
   ASSERT_EQ(4, browser_->GetWebStateList()->count());

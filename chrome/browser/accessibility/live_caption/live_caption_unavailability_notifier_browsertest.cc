@@ -84,6 +84,10 @@ class LiveCaptionUnavailabilityNotifierTest : public LiveCaptionBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(LiveCaptionUnavailabilityNotifierTest,
                        CaptionBubbleDestroyed) {
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+  // TODO(https://crbug.com/1425041): Remove when live captioning is supported.
+  GTEST_SKIP() << "Live captioning not supported on Win Arm64";
+#else
   content::RenderFrameHost* frame_host = browser()
                                              ->tab_strip_model()
                                              ->GetActiveWebContents()
@@ -101,6 +105,7 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionUnavailabilityNotifierTest,
   DestroyNotifiers();
   base::RunLoop().RunUntilIdle();
   ExpectIsWidgetVisible(false);
+#endif  // BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
 }
 
 }  // namespace captions

@@ -1160,6 +1160,7 @@ void BrowserCommandController::InitCommandState() {
       IDC_SHOW_HISTORY,
       (!profile()->IsGuestSession() && !profile()->IsSystemProfile()));
   command_updater_.UpdateCommandEnabled(IDC_SHOW_DOWNLOADS, true);
+  command_updater_.UpdateCommandEnabled(IDC_FIND_AND_EDIT_MENU, true);
   command_updater_.UpdateCommandEnabled(IDC_HELP_MENU, true);
   command_updater_.UpdateCommandEnabled(IDC_HELP_PAGE_VIA_KEYBOARD, true);
   command_updater_.UpdateCommandEnabled(IDC_HELP_PAGE_VIA_MENU, true);

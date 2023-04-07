@@ -1516,6 +1516,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetch_url));
   EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_real_url));
 }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class NoCancelSearchPreloadUnifiedBrowserTest
     : public SearchPreloadUnifiedBrowserTest {
@@ -1882,6 +1883,8 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
   WaitUntilStatusChangesTo(GetCanonicalSearchURL(expected_prefetch_url),
                            {SearchPrefetchStatus::kCanBeServed});
   std::string search_query_2 = "prer";
+  content::TestNavigationManager prerender_navigation_manager(
+      GetActiveWebContents(), expected_prerender_url);
   ChangeAutocompleteResult(search_query_2, prerender_query,
                            PrerenderHint::kEnabled, PrefetchHint::kEnabled);
 
@@ -1890,6 +1893,10 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
   registry_observer.WaitForTrigger(expected_prerender_url);
   content::test::PrerenderHostObserver prerender_observer(
       *GetActiveWebContents(), expected_prerender_url);
+
+  // Ensure prerender has started to read response body.
+  ASSERT_TRUE(prerender_navigation_manager.WaitForResponse());
+  prerender_navigation_manager.ResumeNavigation();
 
   ShutDownSearchServer();
   prerender_observer.WaitForDestroyed();
@@ -1934,6 +1941,9 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
   WaitUntilStatusChangesTo(GetCanonicalSearchURL(expected_prefetch_url),
                            {SearchPrefetchStatus::kCanBeServed});
   std::string search_query_2 = "prer";
+
+  content::TestNavigationManager prerender_navigation_manager(
+      GetActiveWebContents(), expected_prerender_url);
   ChangeAutocompleteResult(search_query_2, prerender_query,
                            PrerenderHint::kEnabled, PrefetchHint::kEnabled);
   // The suggestion service should hint `expected_prefetch_url`, and
@@ -1942,9 +1952,12 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
   int host_id = prerender_helper().GetHostForUrl(expected_prerender_url);
   content::test::PrerenderHostObserver prerender_observer(
       *GetActiveWebContents(), host_id);
+
+  // Ensure prerender has started to read response body.
+  ASSERT_TRUE(prerender_navigation_manager.WaitForResponse());
+  prerender_navigation_manager.ResumeNavigation();
   prerender_helper().CancelPrerenderedPage(host_id);
   prerender_observer.WaitForDestroyed();
-
   prefetch_status =
       search_prefetch_service()->GetSearchPrefetchStatusForTesting(
           GetCanonicalSearchURL(expected_prerender_url));
@@ -1960,6 +1973,10 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
       "Omnibox.SearchPrefetch.PrefetchFinalStatus.SuggestionPrefetch",
       SearchPrefetchStatus::kPrefetchServedForRealNavigation, 1);
 
+  CheckCorrectForwardingResultMetric(
+      histogram_tester,
+      StreamingSearchPrefetchURLLoader::ForwardingResult::kCompleted, 1);
+
   // If the prerender is completely destroyed before the final state code
   // arrives, `kServingError` will be recorded, otherwise `kCompleted` will be
   // recorded. The timing issue is not controllable due to asynchronous Mojo
@@ -1974,9 +1991,6 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
               "Omnibox.SearchPreload.ResponseDataReaderFinalStatus.Prerender",
               StreamingSearchPrefetchURLLoader::ResponseReader::
                   ResponseDataReaderStatus::kCompleted));
-  CheckCorrectForwardingResultMetric(
-      histogram_tester,
-      StreamingSearchPrefetchURLLoader::ForwardingResult::kCompleted, 1);
 }
 
 // Edge case: when the prerendering navigation is still reading from the cache,
@@ -2053,6 +2067,8 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
       1);
 }
 
+// We cannot open the result in another tab on Android.
+#if !BUILDFLAG(IS_ANDROID)
 class NoCancelSearchPreloadUnifiedFallbackBrowserTest
     : public SearchPreloadUnifiedBrowserTest {
  public:
@@ -2191,7 +2207,6 @@ IN_PROC_BROWSER_TEST_F(NoCancelSearchPreloadUnifiedFallbackBrowserTest,
       histogram_tester,
       StreamingSearchPrefetchURLLoader::ForwardingResult::kCompleted, 1);
 }
-
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace

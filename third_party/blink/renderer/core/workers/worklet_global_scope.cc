@@ -94,6 +94,7 @@ WorkletGlobalScope::WorkletGlobalScope(
           std::move(creation_params->web_worker_fetch_context),
           reporting_proxy,
           /*is_worker_loaded_from_data_url=*/false),
+      ActiveScriptWrappable<WorkletGlobalScope>({}),
       url_(creation_params->script_url),
       user_agent_(creation_params->user_agent),
       document_security_origin_(creation_params->starter_origin),

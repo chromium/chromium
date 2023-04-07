@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -42,6 +43,7 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
+#include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -81,6 +83,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#include "crypto/scoped_mock_unexportable_key_provider.h"
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
 using net::test_server::BasicHttpResponse;
 using net::test_server::HttpRequest;
 using net::test_server::HttpResponse;
@@ -101,6 +107,7 @@ enum SignoutType {
 };
 
 const char kAuthorizationCode[] = "authorization_code";
+const char kBoundTokenRegistrationJwt[] = "bound_token_registration_jwt";
 const char kDiceResponseHeader[] = "X-Chrome-ID-Consistency-Response";
 const char kChromeSyncEndpointURL[] = "/signin/chrome/sync";
 const char kEnableSyncURL[] = "/enable_sync";
@@ -284,14 +291,18 @@ std::unique_ptr<HttpResponse> HandleOAuth2TokenExchangeURL(
   std::unique_ptr<BlockedHttpResponse> http_response =
       std::make_unique<BlockedHttpResponse>(callback);
 
-  std::string content =
-      "{"
-      "  \"access_token\":\"access_token\","
-      "  \"refresh_token\":\"new_refresh_token\","
-      "  \"expires_in\":9999"
-      "}";
+  base::Value::Dict response = base::Value::Dict()
+                                   .Set("access_token", "access_token")
+                                   .Set("refresh_token", "new_refresh_token")
+                                   .Set("expires_in", 9999);
 
-  http_response->set_content(content);
+  // If the request contains binding registration token, include successful
+  // binding result in the response.
+  if (request.content.find(kBoundTokenRegistrationJwt) != std::string::npos) {
+    response.Set("refresh_token_type", "bound_to_key");
+  }
+
+  http_response->set_content(*base::WriteJson(response));
   http_response->set_content_type("text/plain");
   http_response->AddCustomHeader("Cache-Control", "no-store");
   return std::move(http_response);
@@ -705,6 +716,23 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, Signin) {
   WaitForReconcilorUnblockedCount(1);
   EXPECT_EQ(1, reconcilor_started_count_);
 }
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+// Checks that signin on Gaia triggers the fetch for a refresh token.
+IN_PROC_BROWSER_TEST_F(DiceBrowserTest, SigninWithTokenBinding) {
+  crypto::ScopedMockUnexportableKeyProvider mock_key_provider_;
+
+  // Navigate to Gaia and sign in.
+  NavigateToURL(kSigninURL);
+
+  // Check that the bound token was requested and added to the token service.
+  SendRefreshTokenResponse();
+  EXPECT_TRUE(
+      GetIdentityManager()->HasAccountWithRefreshToken(GetMainAccountID()));
+  // TODO(http://b/274463812): verify that the refresh token is bound once the
+  // binding status is propagated to `IdentityManager`.
+}
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 // Checks that the account reconcilor is blocked when where was OAuth
 // outage in Dice, and unblocked after the timeout.

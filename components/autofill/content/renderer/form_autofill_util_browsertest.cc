@@ -11,6 +11,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/content/renderer/test_utils.h"
+#include "components/autofill/core/common/autofill_constants.h"
+#include "components/autofill/core/common/autofill_data_validation.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
@@ -111,6 +113,37 @@ class FormAutofillUtilsTestWithIframesEnabled : public FormAutofillUtilsTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+// Tests that large option values/contents are truncated while building the
+// FormData.
+TEST_F(FormAutofillUtilsTest, TruncateLargeOptionValuesAndContents) {
+  std::string huge_option(kMaxStringLength + 10, 'a');
+  std::u16string trimmed_option(kMaxStringLength, 'a');
+
+  LoadHTML(base::StringPrintf(R"(
+    <form id='form'>
+      <select name='form_select' id='form_select'>
+        <option value='%s'>%s</option>
+      </select>
+    </form>
+  )",
+                              huge_option.c_str(), huge_option.c_str())
+               .c_str());
+
+  WebDocument doc = GetMainFrame()->GetDocument();
+  auto web_form = GetFormElementById(doc, "form");
+
+  FormData form_data;
+  ASSERT_TRUE(WebFormElementToFormData(
+      web_form, WebFormControlElement(), /*field_data_manager=*/nullptr,
+      EXTRACT_OPTIONS, &form_data, /*field=*/nullptr));
+
+  ASSERT_EQ(form_data.fields.size(), 1u);
+  ASSERT_EQ(form_data.fields[0].options.size(), 1u);
+  EXPECT_EQ(form_data.fields[0].options[0].value, trimmed_option);
+  EXPECT_EQ(form_data.fields[0].options[0].content, trimmed_option);
+  EXPECT_TRUE(IsValidOption(form_data.fields[0].options[0]));
+}
 
 TEST_F(FormAutofillUtilsTest, FindChildTextTest) {
   static const AutofillFieldUtilCase test_cases[] = {

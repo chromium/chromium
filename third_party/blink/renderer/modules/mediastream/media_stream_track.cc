@@ -29,6 +29,9 @@ class GetOpenDeviceRequestCallbacks final : public UserMediaRequest::Callbacks {
 
 }  // namespace
 
+MediaStreamTrack::MediaStreamTrack()
+    : ActiveScriptWrappable<MediaStreamTrack>({}) {}
+
 String ContentHintToString(
     const WebMediaStreamTrack::ContentHintType& content_hint) {
   switch (content_hint) {

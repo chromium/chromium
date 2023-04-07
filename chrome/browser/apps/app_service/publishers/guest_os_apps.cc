@@ -145,11 +145,9 @@ apps::IntentFilters CreateIntentFilterForAppService(
   // can (e.g. a proprietary file type), we should look at the file extensions
   // that the app can support. We find these extension types by checking what
   // extensions correspond to the app's supported mime types.
-  std::vector<std::string> extension_types;
-  if (ash::features::ShouldGuestOsFileTasksUseAppService()) {
-    extension_types = mime_types_service->GetExtensionTypesFromMimeTypes(
-        mime_types_set, registration.VmName(), registration.ContainerName());
-  }
+  std::vector<std::string> extension_types =
+      mime_types_service->GetExtensionTypesFromMimeTypes(
+          mime_types_set, registration.VmName(), registration.ContainerName());
   std::vector<std::string> mime_types(mime_types_set.begin(),
                                       mime_types_set.end());
 

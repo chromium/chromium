@@ -888,9 +888,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   // Used by subclasses (e.g. implemented by downstream embedders) to add
   // their own extra part objects.
-  void AddExtraPart(ChromeContentBrowserClientParts* part) {
-    extra_parts_.push_back(part);
-  }
+  // TODO: This should receive unique_ptr<ChromeContentBrowserClientParts>.
+  void AddExtraPart(ChromeContentBrowserClientParts* part);
 
  private:
   friend class DisableWebRtcEncryptionFlagTest;
@@ -969,7 +968,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   // Vector of additional ChromeContentBrowserClientParts.
   // Parts are deleted in the reverse order they are added.
-  std::vector<ChromeContentBrowserClientParts*> extra_parts_;
+  std::vector<std::unique_ptr<ChromeContentBrowserClientParts>> extra_parts_;
 
   scoped_refptr<safe_browsing::SafeBrowsingService> safe_browsing_service_;
   scoped_refptr<safe_browsing::UrlCheckerDelegate>

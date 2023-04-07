@@ -13,13 +13,9 @@
 
 class AuthenticatorMacInterface;
 
-namespace device {
-namespace fido {
-namespace mac {
+namespace device::fido::mac {
 class TouchIdContext;
-}  // namespace mac
-}  // namespace fido
-}  // namespace device
+}  // namespace device::fido::mac
 
 class DeviceAuthenticatorMac : public ChromeDeviceAuthenticatorCommon {
  public:

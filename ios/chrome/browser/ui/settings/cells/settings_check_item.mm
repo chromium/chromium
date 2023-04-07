@@ -4,12 +4,23 @@
 
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 
+#import "components/password_manager/core/common/password_manager_features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_cell.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using password_manager::features::IsPasswordCheckupEnabled;
+
+namespace {
+
+// The size of trailing symbol icons.
+constexpr NSInteger kTrailingSymbolImagePointSize = 22;
+
+}  // namespace
 
 @implementation SettingsCheckItem
 
@@ -21,7 +32,7 @@
   return self;
 }
 
-#pragma mark TableViewItem
+#pragma mark - TableViewItem
 
 - (void)configureCell:(SettingsCheckCell*)cell
            withStyler:(ChromeTableViewStyler*)styler {
@@ -59,6 +70,42 @@
   } else {
     cell.accessibilityLabel = self.text;
   }
+}
+
+#pragma mark - Setters
+
+- (void)setWarningState:(WarningState)state {
+  _warningState = state;
+  [self setUpWarningTrailingImage];
+}
+
+#pragma mark - Private
+
+// Sets up the trailing image and its tint color depending on the item's warning
+// state.
+- (void)setUpWarningTrailingImage {
+  NSString* trailingImageName;
+  NSString* trailingImageTintColorName;
+  switch (self.warningState) {
+    case WarningState::kSafe:
+      trailingImageName = kCheckmarkCircleFillSymbol;
+      trailingImageTintColorName =
+          IsPasswordCheckupEnabled() ? kGreen500Color : kGreenColor;
+      break;
+    case WarningState::kWarning:
+      trailingImageName = kErrorCircleFillSymbol;
+      trailingImageTintColorName = kYellow500Color;
+      break;
+    case WarningState::kSevereWarning:
+      trailingImageName = IsPasswordCheckupEnabled() ? kErrorCircleFillSymbol
+                                                     : kWarningFillSymbol;
+      trailingImageTintColorName =
+          IsPasswordCheckupEnabled() ? kRed500Color : kRedColor;
+      break;
+  }
+  self.trailingImage = DefaultSymbolTemplateWithPointSize(
+      trailingImageName, kTrailingSymbolImagePointSize);
+  self.trailingImageTintColor = [UIColor colorNamed:trailingImageTintColorName];
 }
 
 @end

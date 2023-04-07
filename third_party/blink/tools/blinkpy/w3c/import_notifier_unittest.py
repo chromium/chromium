@@ -262,21 +262,6 @@ class ImportNotifierTest(unittest.TestCase):
             self.notifier.find_owned_directory(
                 'virtual/gpu/external/wpt/foo/bar.html'), 'external/wpt/foo')
 
-    def test_create_bugs_for_product(self):
-        expectation_lines = {}
-        expectation_lines['external/wpt/foo/baz.html'] = \
-            'crbug/123456 external/wpt/foo/baz.html [ Failure ]'
-
-        bugs = self.notifier.create_bugs_for_product(
-            'SHA_START', 'SHA_END', 'https://crrev.com/c/12345',
-            'android_weblayer', expectation_lines)
-
-        self.assertEqual(len(bugs), 1)
-        self.assertEqual(bugs[0].body['components'], ['Internals>WebLayer'])
-        self.assertEqual(
-            bugs[0].body['summary'],
-            '[WPT] New failures introduced by import https://crrev.com/c/12345')
-
     def test_create_bugs_from_new_failures(self):
         self.host.filesystem.write_text_file(
             MOCK_WEB_TESTS + 'external/wpt/foo/OWNERS', 'foolip@chromium.org')

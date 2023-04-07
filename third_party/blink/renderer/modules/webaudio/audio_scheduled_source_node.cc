@@ -41,7 +41,7 @@
 namespace blink {
 
 AudioScheduledSourceNode::AudioScheduledSourceNode(BaseAudioContext& context)
-    : AudioNode(context) {}
+    : AudioNode(context), ActiveScriptWrappable<AudioScheduledSourceNode>({}) {}
 
 AudioScheduledSourceHandler&
 AudioScheduledSourceNode::GetAudioScheduledSourceHandler() const {

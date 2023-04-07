@@ -1325,7 +1325,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2114820389966440614">Ver las "Destacadas recientes" y otros recuerdos aquí</translation>
 <translation id="2114896190328250491">Foto de <ph name="NAME" /></translation>
 <translation id="2114995631896158695">No se insertó ninguna tarjeta SIM</translation>
-<translation id="2116020356255810305">Habilitar la ejecución de la app al inicio</translation>
 <translation id="2116619964159595185">Por lo general, los sitios se conectan a dispositivos Bluetooth para usarlos en funciones, como configurar o sincronizar una baliza electrónica, un monitor de actividad física o de salud, o una lámpara inteligente.</translation>
 <translation id="2117655453726830283">Siguiente diapositiva</translation>
 <translation id="2119349053129246860">Abrir en <ph name="APP" /></translation>
@@ -1606,7 +1605,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2336228925368920074">Agregar a favoritos todas las pestañas...</translation>
 <translation id="2336376423977300504">Siempre borrar las cookies cuando se cierren las ventanas</translation>
 <translation id="2336381494582898602">Powerwash</translation>
-<translation id="2337236196941929873">Precarga las páginas que Chrome cree que puedas visitar. Para hacerlo, es posible que Chrome utilice cookies, si las permites, encripte las páginas y las envíe a través de Google para ocultar tu identidad en los sitios.</translation>
+<translation id="2337236196941929873">Precarga las páginas que Chrome cree que puedas visitar. Para hacerlo, es posible que Chrome utilice cookies, si las permites, y que encripte las páginas y las envíe a través de Google para ocultar tu identidad en los sitios.</translation>
 <translation id="2340239562261172947">No se puede descargar el archivo <ph name="FILE_NAME" /> de forma segura</translation>
 <translation id="2342180549977909852">Tu hijo puede usar un número (PIN) en lugar de una contraseña para desbloquear este dispositivo. Puedes configurar un PIN más tarde en Configuración.</translation>
 <translation id="2342740338116612727">Se agregaron favoritos</translation>
@@ -2403,7 +2402,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3024374909719388945">Utilizar reloj de 24 horas</translation>
 <translation id="3025174326431589540">{COUNT,plural, =0{No hay contraseñas guardadas}=1{Se revisaron las contraseñas de {COUNT} sitio}other{Se revisaron las contraseñas de {COUNT} sitios y apps}}</translation>
 <translation id="3027296729579831126">Activar Compartir con Nearby</translation>
-<translation id="3027644380269727216">Según tu actividad en un sitio. Esta configuración está activada.</translation>
+<translation id="3027644380269727216">Según tu actividad en un sitio. Este parámetro de configuración está activado.</translation>
 <translation id="3029276696788198026">Sin precarga</translation>
 <translation id="3029466929721441205">Mostrar herramientas de la pluma stylus en la biblioteca</translation>
 <translation id="3029808567601324798">Hora de bloquear</translation>
@@ -2662,7 +2661,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3289856944988573801">Para comprobar si hay actualizaciones, utiliza una conexión Ethernet o Wi-Fi.</translation>
 <translation id="3289886661311231677">Puedes bloquear los temas que no quieres compartir con los sitios. Chrome también borra los temas de forma automática luego de 4 semanas.</translation>
 <translation id="3290249595466894471">También envía una pequeña muestra de páginas, descargas, información del sistema y actividad de extensiones para ayudar a descubrir nuevas amenazas.</translation>
-<translation id="3293181007446299124">Se mantendrá la privacidad del historial de navegación en tu dispositivo y los informes se enviarán con demora para proteger tu identidad</translation>
+<translation id="3293181007446299124">Se mantendrá la privacidad del historial de navegación en tu dispositivo y los informes se enviarán con demora para proteger tu identidad.</translation>
 <translation id="3293644607209440645">Enviar esta página</translation>
 <translation id="32939749466444286">No se inició el contenedor de Linux. Vuelve a intentarlo.</translation>
 <translation id="3294437725009624529">Invitado</translation>
@@ -3254,7 +3253,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="380329542618494757">Nombre</translation>
 <translation id="3803345858388753269">Calidad del video</translation>
 <translation id="3803367742635802571">Es posible que los sitios que visitas dejen de funcionar según lo diseñado</translation>
-<translation id="3803583375545057606">¿Quieres pedirle a tu madre o padre que habilite esta extensión?</translation>
 <translation id="380408572480438692">Si habilitas la recopilación de datos de rendimiento, ayudarás a Google a mejorar el sistema con el tiempo. Para que se envíen los datos, debes presentar un informe de comentarios (Alt+Mayúscula+I) e incluir datos de rendimiento. Puedes volver a esta pantalla para inhabilitar la recopilación en cualquier momento.</translation>
 <translation id="3807249107536149332">No se permite <ph name="EXTENSION_NAME" /> (ID de la extensión "<ph name="EXTENSION_ID" />") en una pantalla de acceso.</translation>
 <translation id="3807747707162121253">&amp;Cancelar</translation>
@@ -3676,7 +3674,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4169535189173047238">No permitir</translation>
 <translation id="4170314459383239649">Borrar al salir</translation>
 <translation id="417096670996204801">Elige un perfil</translation>
-<translation id="41725145403849567">¿Quieres pedirle a tu madre o padre que agregue esta extensión?</translation>
 <translation id="4175137578744761569">Púrpura claro y blanco</translation>
 <translation id="4175737294868205930">Almacenamiento persistente</translation>
 <translation id="4176463684765177261">Inhabilitado</translation>
@@ -4665,7 +4662,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="508059534790499809">Actualizar un ticket de Kerberos</translation>
 <translation id="5081960376148623587">Elige si deseas precargar páginas</translation>
 <translation id="5084328598860513926">Se interrumpió el flujo de aprovisionamiento. Vuelve a intentarlo o comunícate con el administrador o propietario de tu dispositivo. Código de error: <ph name="ERROR_CODE" />.</translation>
-<translation id="5084622689760736648">Es más probable que los sitios funcionen como esperas</translation>
+<translation id="5084622689760736648">Es más probable que los sitios funcionen como esperas.</translation>
 <translation id="5085162214018721575">Buscando actualizaciones...</translation>
 <translation id="5086082738160935172">Dispositivos de interfaz humana (HID)</translation>
 <translation id="508645147179720015">La nota tiene más de 1,000 caracteres</translation>
@@ -5089,7 +5086,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{El PIN debe tener al menos un carácter}other{El PIN debe tener al menos # caracteres}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> requiere que te conectes a una red Wi-Fi ahora y descargues una actualización. También puedes descargarla con una conexión de uso medido (es posible que se apliquen cargos).</translation>
 <translation id="5476016146231427848">Para usar Steam en la Chromebook, reinicia el dispositivo</translation>
-<translation id="5476897066181964657">Para poder agregar esta extensión, tu madre, padre o tutor debe aprobar tu solicitud</translation>
 <translation id="5481273127572794904">No puede descargar múltiples archivos de forma automática</translation>
 <translation id="5481941284378890518">Agregar impresoras cercanas</translation>
 <translation id="5483785310822538350">Revocar acceso al archivo y al dispositivo</translation>
@@ -5186,7 +5182,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5555639311269196631">Desactiva el hotspot</translation>
 <translation id="5556459405103347317">Volver a cargar</translation>
 <translation id="5558129378926964177">Acercar</translation>
-<translation id="5558247502209241936">Habilitar que se abra la app en una ventana</translation>
 <translation id="5559311991468302423">Borrar dirección</translation>
 <translation id="55601339223879446">Ajustar los límites de tu escritorio en la pantalla</translation>
 <translation id="5561162485081632007">Detecta eventos peligrosos cuando ocurren y te advierte sobre ellos.</translation>
@@ -6012,7 +6007,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6305607932814307878">Política global:</translation>
 <translation id="6305702903308659374">Reproducir a un volumen normal incluso cuando ChromeVox esté hablando</translation>
 <translation id="6305909198255586420">Instálala usando tu perfil principal</translation>
-<translation id="630750887748244481">Tu padre o madre desactivaron la opción "Permisos para sitios, apps y extensiones" para Chrome. No se permite agregar esta extensión.</translation>
 <translation id="6307990684951724544">Sistema ocupado</translation>
 <translation id="6308493641021088955">Acceso proporcionado por <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Guardar &amp;enlace como...</translation>
@@ -6838,7 +6832,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7025190659207909717">Administración del servicio de datos para celulares</translation>
 <translation id="7025895441903756761">Seguridad y privacidad</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Abrir todo en una ventana de &amp;incógnito}=1{Abrir en una ventana de &amp;incógnito}other{Abrir todo ({COUNT}) en una ventana de &amp;incógnito}}</translation>
-<translation id="7028057921476386252">Para poder habilitar esta extensión, tu madre, padre o tutor debe aprobar tu solicitud</translation>
 <translation id="7029307918966275733">No se instaló Crostini. Instálalo para ver los créditos.</translation>
 <translation id="7029809446516969842">Contraseñas</translation>
 <translation id="7030304022046916278">Envía las URL a la Navegación segura para revisarlas.</translation>
@@ -8217,7 +8210,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8251509999076836464">Vinculando con el dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">Miniatura eliminada.</translation>
 <translation id="825238165904109940">Mostrar siempre las URL completas</translation>
-<translation id="8252538334423261825">No se puede agregar la extensión</translation>
 <translation id="8252569384384439529">Subiendo…</translation>
 <translation id="8253198102038551905">Haz clic en "+" para ver las propiedades de red.</translation>
 <translation id="8255212965098517578">Fotos, notificaciones y apps recientes</translation>
@@ -9179,7 +9171,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="9100765901046053179">Configuración avanzada</translation>
 <translation id="9101691533782776290">Iniciar aplicación</translation>
 <translation id="9102610709270966160">Habilitar extensión</translation>
-<translation id="9102864637938129124">Los sitios y anunciantes pueden entender el rendimiento de los anuncios. Esta configuración está activada.</translation>
+<translation id="9102864637938129124">Los sitios y anunciantes pueden entender el rendimiento de los anuncios. Este parámetro de configuración está activado.</translation>
 <translation id="9103479157856427471">La pantalla acercada sigue el enfoque del teclado</translation>
 <translation id="9103868373786083162">Presiona para retroceder; usa el menú contextual para consultar el historial</translation>
 <translation id="9108035152087032312">Nombrar la &amp;ventana…</translation>

@@ -90,4 +90,8 @@ void RecordNTPImpression(IOSNTPImpression impression_type) {
   }
 }
 
+- (void)recordOverscrollActionForType:(OverscrollActionType)type {
+  UMA_HISTOGRAM_ENUMERATION("IOS.NTP.OverscrollAction", type);
+}
+
 @end

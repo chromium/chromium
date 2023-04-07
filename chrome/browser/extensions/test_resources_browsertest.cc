@@ -35,18 +35,10 @@ constexpr int kSentinelValue = 42;
 
 // Returns the value of window.injectedSentinel from the active web contents of
 // |browser|.
-absl::optional<int> RetrieveSentinelValue(Browser* browser) {
-  int result = 0;
+int RetrieveSentinelValue(Browser* browser) {
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
-  if (!content::ExecuteScriptAndExtractInt(
-          web_contents,
-          "domAutomationController.send(window.injectedSentinel);", &result)) {
-    ADD_FAILURE() << "Failed to execute script.";
-    return absl::nullopt;
-  }
-
-  return result;
+  return content::EvalJs(web_contents, "window.injectedSentinel;").ExtractInt();
 }
 
 class ExtensionBrowserTestWithCustomTestResourcesLocation
@@ -96,9 +88,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, TestResourcesLoad) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), extension->GetResourceURL("page.html")));
 
-  absl::optional<int> sentinel = RetrieveSentinelValue(browser());
-  ASSERT_TRUE(sentinel);
-  EXPECT_EQ(kSentinelValue, *sentinel);
+  EXPECT_EQ(kSentinelValue, RetrieveSentinelValue(browser()));
 }
 
 // Tests that resources from _test_resources work in component extensions
@@ -131,9 +121,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), extension->GetResourceURL("page.html")));
 
-  absl::optional<int> sentinel = RetrieveSentinelValue(browser());
-  ASSERT_TRUE(sentinel);
-  EXPECT_EQ(kSentinelValue, *sentinel);
+  EXPECT_EQ(kSentinelValue, RetrieveSentinelValue(browser()));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
@@ -217,9 +205,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTestWithCustomTestResourcesLocation,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), extension->GetResourceURL("page.html")));
 
-  absl::optional<int> sentinel = RetrieveSentinelValue(browser());
-  ASSERT_TRUE(sentinel);
-  EXPECT_EQ(kSentinelValue, *sentinel);
+  EXPECT_EQ(kSentinelValue, RetrieveSentinelValue(browser()));
 }
 
 }  // namespace extensions

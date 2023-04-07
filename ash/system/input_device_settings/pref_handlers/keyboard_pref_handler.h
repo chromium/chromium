@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
 
+class AccountId;
 class PrefService;
 
 namespace ash {
@@ -26,12 +27,37 @@ class ASH_EXPORT KeyboardPrefHandler {
       const mojom::KeyboardPolicies& keyboard_policies,
       mojom::Keyboard* keyboard) = 0;
 
+  // Initializes login screen device settings using the passed in `keyboard`.
+  // Settings will be stored either in `settings.keyboard.internal` or
+  // `settings.keyboard.external` based on the value of `keyboard.is_external`.
+  virtual void InitializeLoginScreenKeyboardSettings(
+      PrefService* local_state,
+      const AccountId& account_id,
+      const mojom::KeyboardPolicies& keyboard_policies,
+      mojom::Keyboard* keyboard) = 0;
+
   // Updates device settings stored in prefs to match the values in
   // `keyboard.settings`.
   virtual void UpdateKeyboardSettings(
       PrefService* pref_service,
       const mojom::KeyboardPolicies& keyboard_policies,
       const mojom::Keyboard& keyboard) = 0;
+
+  // Updates login screen device settings stored in prefs to match the values in
+  // `keyboard.settings`. Settings will be stored either in
+  // `settings.keyboard.internal` or `settings.keyboard.external` based on the
+  // value of `keyboard.is_external`.
+  virtual void UpdateLoginScreenKeyboardSettings(
+      PrefService* local_state,
+      const AccountId& account_id,
+      const mojom::KeyboardPolicies& keyboard_policies,
+      const mojom::Keyboard& keyboard) = 0;
+
+  // Updates the `settings` member of the `mojom::Keyboard` object using
+  // default settings.
+  virtual void InitializeWithDefaultKeyboardSettings(
+      const mojom::KeyboardPolicies& keyboard_policies,
+      mojom::Keyboard* keyboard) = 0;
 };
 
 }  // namespace ash

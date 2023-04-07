@@ -89,11 +89,11 @@ struct FormParsingTestCase {
   const char* description_for_logging;
   std::vector<FieldDataDescription> fields;
   // -1 just mean no checking.
-  int number_of_all_possible_passwords = -1;
-  int number_of_all_possible_usernames = -1;
+  int number_of_all_alternative_passwords = -1;
+  int number_of_all_alternative_usernames = -1;
   // null means no checking
-  raw_ptr<const AlternativeElementVector> all_possible_passwords = nullptr;
-  raw_ptr<const AlternativeElementVector> all_possible_usernames = nullptr;
+  raw_ptr<const AlternativeElementVector> all_alternative_passwords = nullptr;
+  raw_ptr<const AlternativeElementVector> all_alternative_usernames = nullptr;
   bool server_side_classification_successful = true;
   bool username_may_use_prefilled_placeholder = false;
   absl::optional<FormDataParser::ReadonlyPasswordFields> readonly_status;
@@ -380,28 +380,41 @@ class FormParserTest : public testing::Test {
                   parsed_form->form_has_autofilled_value);
 
           CheckPasswordFormFields(*parsed_form, form_data, expected_ids);
-          CheckAllValuesUnique(parsed_form->all_possible_passwords);
-          CheckAllValuesUnique(parsed_form->all_possible_usernames);
-          if (test_case.number_of_all_possible_passwords >= 0) {
+          CheckAllValuesUnique(parsed_form->all_alternative_passwords);
+          CheckAllValuesUnique(parsed_form->all_alternative_usernames);
+          if (test_case.number_of_all_alternative_passwords >= 0) {
             EXPECT_EQ(
-                static_cast<size_t>(test_case.number_of_all_possible_passwords),
-                parsed_form->all_possible_passwords.size());
+              static_cast<size_t>(
+                test_case.number_of_all_alternative_passwords
+              ),
+              parsed_form->all_alternative_passwords.size()
+            );
           }
-          if (test_case.all_possible_passwords) {
-            EXPECT_EQ(*test_case.all_possible_passwords,
-                      parsed_form->all_possible_passwords);
-          }
-          if (test_case.number_of_all_possible_usernames >= 0) {
+          if (test_case.all_alternative_passwords) {
             EXPECT_EQ(
-                static_cast<size_t>(test_case.number_of_all_possible_usernames),
-                parsed_form->all_possible_usernames.size());
+              *test_case.all_alternative_passwords,
+              parsed_form->all_alternative_passwords
+            );
           }
-          if (test_case.all_possible_usernames) {
-            EXPECT_EQ(*test_case.all_possible_usernames,
-                      parsed_form->all_possible_usernames);
+          if (test_case.number_of_all_alternative_usernames >= 0) {
+            EXPECT_EQ(
+              static_cast<size_t>(
+                test_case.number_of_all_alternative_usernames
+              ),
+              parsed_form->all_alternative_usernames.size()
+            );
+          }
+          if (test_case.all_alternative_usernames) {
+            EXPECT_EQ(
+              *test_case.all_alternative_usernames,
+              parsed_form->all_alternative_usernames
+            );
           }
           if (mode == FormDataParser::Mode::kSaving) {
-            EXPECT_EQ(test_case.fallback_only, parsed_form->only_for_fallback);
+            EXPECT_EQ(
+              test_case.fallback_only,
+              parsed_form->only_for_fallback
+            );
           }
         }
         if (test_case.readonly_status) {
@@ -435,8 +448,8 @@ TEST_F(FormParserTest, NotPasswordForm) {
                   {.form_control_type = "text"},
                   {.form_control_type = "text"},
               },
-          .number_of_all_possible_passwords = 0,
-          .number_of_all_possible_usernames = 0,
+          .number_of_all_alternative_passwords = 0,
+          .number_of_all_alternative_usernames = 0,
       },
   });
 }
@@ -453,8 +466,8 @@ TEST_F(FormParserTest, SkipNotTextFields) {
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .form_control_type = "password"},
               },
-          .number_of_all_possible_passwords = 1,
-          .number_of_all_possible_usernames = 1,
+          .number_of_all_alternative_passwords = 1,
+          .number_of_all_alternative_usernames = 1,
       },
   });
 }
@@ -468,8 +481,8 @@ TEST_F(FormParserTest, OnlyPasswordFields) {
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .form_control_type = "password"},
               },
-          .number_of_all_possible_passwords = 1,
-          .number_of_all_possible_usernames = 0,
+          .number_of_all_alternative_passwords = 1,
+          .number_of_all_alternative_usernames = 0,
       },
       {
           .description_for_logging =
@@ -526,7 +539,7 @@ TEST_F(FormParserTest, OnlyPasswordFields) {
                   {.value = u"pw2", .form_control_type = "password"},
                   {.value = u"pw3", .form_control_type = "password"},
               },
-          .number_of_all_possible_passwords = 3,
+          .number_of_all_alternative_passwords = 3,
       },
       {
           .description_for_logging =
@@ -618,7 +631,7 @@ TEST_F(FormParserTest, TestFocusability) {
                    .is_focusable = true,
                    .form_control_type = "password"},
               },
-          .number_of_all_possible_usernames = 2,
+          .number_of_all_alternative_usernames = 2,
       },
       {
           .description_for_logging =
@@ -658,7 +671,7 @@ TEST_F(FormParserTest, TestFocusability) {
                   {.is_focusable = false, .form_control_type = "password"},
               },
           // 9 distinct values in 10 password fields:
-          .number_of_all_possible_passwords = 9,
+          .number_of_all_alternative_passwords = 9,
       },
   });
 }
@@ -678,9 +691,9 @@ TEST_F(FormParserTest, TextAndPasswordFields) {
                    .value = u"",
                    .form_control_type = "password"},
               },
-          // all_possible_* only count fields with non-empty values.
-          .number_of_all_possible_passwords = 0,
-          .number_of_all_possible_usernames = 0,
+          // all_alternative_* only count fields with non-empty values.
+          .number_of_all_alternative_passwords = 0,
+          .number_of_all_alternative_usernames = 0,
       },
       {
           .description_for_logging = "Simple sign-in form with filled data",
@@ -690,7 +703,7 @@ TEST_F(FormParserTest, TextAndPasswordFields) {
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .form_control_type = "password"},
               },
-          .number_of_all_possible_passwords = 1,
+          .number_of_all_alternative_passwords = 1,
       },
       {
           .description_for_logging =
@@ -797,8 +810,8 @@ TEST_F(FormParserTest, TestAutocomplete) {
   CheckTestData({
       {
           .description_for_logging =
-              "All possible password autocomplete attributes and some fields "
-              "without autocomplete",
+              "All alternative password autocomplete attributes and some "
+              "fields without autocomplete",
           .fields =
               {
                   {.role = ElementRole::USERNAME,
@@ -820,7 +833,7 @@ TEST_F(FormParserTest, TestAutocomplete) {
                    .form_control_type = "password"},
               },
           // 4 distinct password values in 5 password fields
-          .number_of_all_possible_passwords = 4,
+          .number_of_all_alternative_passwords = 4,
           .is_new_password_reliable = true,
       },
       {
@@ -843,8 +856,8 @@ TEST_F(FormParserTest, TestAutocomplete) {
                   {.autocomplete_attribute = "password",
                    .form_control_type = "password"},
               },
-          .number_of_all_possible_passwords = 3,
-          .number_of_all_possible_usernames = 2,
+          .number_of_all_alternative_passwords = 3,
+          .number_of_all_alternative_usernames = 2,
       },
       {
           .description_for_logging =
@@ -1004,7 +1017,7 @@ TEST_F(FormParserTest, SkippingFieldsWithOTPAutocomplete) {
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .form_control_type = "password"},
               },
-          .number_of_all_possible_passwords = 2,
+          .number_of_all_alternative_passwords = 2,
       },
   });
 }
@@ -1026,7 +1039,7 @@ TEST_F(FormParserTest, DisabledFields) {
                    .is_enabled = true,
                    .form_control_type = "password"},
               },
-          .number_of_all_possible_passwords = 2,
+          .number_of_all_alternative_passwords = 2,
       },
   });
 }
@@ -1062,7 +1075,7 @@ TEST_F(FormParserTest, SkippingFieldsWithCreditCardFields) {
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .form_control_type = "password"},
               },
-          .number_of_all_possible_passwords = 2,
+          .number_of_all_alternative_passwords = 2,
       },
   });
 }
@@ -1138,7 +1151,7 @@ TEST_F(FormParserTest, ReadonlyFields) {
                    .form_control_type = "password"},
                   {.is_readonly = true, .form_control_type = "password"},
               },
-          .number_of_all_possible_passwords = 3,
+          .number_of_all_alternative_passwords = 3,
           .form_has_autofilled_value = true,
       },
       {
@@ -1159,7 +1172,7 @@ TEST_F(FormParserTest, ReadonlyFields) {
                    .form_control_type = "password"},
                   {.is_readonly = true, .form_control_type = "password"},
               },
-          .number_of_all_possible_passwords = 3,
+          .number_of_all_alternative_passwords = 3,
           .form_has_autofilled_value = true,
       },
   });
@@ -1398,7 +1411,7 @@ TEST_F(FormParserTest, ServerHints) {
                    .form_control_type = "password",
                    .prediction = {.type = autofill::PASSWORD}},
               },
-          .number_of_all_possible_passwords = 4,
+          .number_of_all_alternative_passwords = 4,
           .is_new_password_reliable = true,
       },
       {
@@ -1465,7 +1478,7 @@ TEST_F(FormParserTest, Interactability) {
                    .is_focusable = true,
                    .form_control_type = "password"},
               },
-          .number_of_all_possible_passwords = 2,
+          .number_of_all_alternative_passwords = 2,
       },
       {
           .description_for_logging =
@@ -1488,7 +1501,7 @@ TEST_F(FormParserTest, Interactability) {
                    .properties_mask = FieldPropertiesFlags::kUserTyped,
                    .form_control_type = "password"},
               },
-          .number_of_all_possible_passwords = 3,
+          .number_of_all_alternative_passwords = 3,
           .form_has_autofilled_value = true,
       },
       {
@@ -1534,7 +1547,7 @@ TEST_F(FormParserTest, Interactability) {
   });
 }
 
-TEST_F(FormParserTest, AllPossiblePasswords) {
+TEST_F(FormParserTest, AllAlternativePasswords) {
   const AlternativeElementVector kPasswords = {
       {AlternativeElement::Value(u"a"), autofill::FieldRendererId(10),
        AlternativeElement::Name(u"p1")},
@@ -1575,14 +1588,14 @@ TEST_F(FormParserTest, AllPossiblePasswords) {
                    .form_control_type = "password"},
                   {.value = u"b", .form_control_type = "password"},
               },
-          .number_of_all_possible_passwords = 2,
-          .number_of_all_possible_usernames = 2,
-          .all_possible_passwords = &kPasswords,
-          .all_possible_usernames = &kUsernames,
+          .number_of_all_alternative_passwords = 2,
+          .number_of_all_alternative_usernames = 2,
+          .all_alternative_passwords = &kPasswords,
+          .all_alternative_usernames = &kUsernames,
       },
       {
           .description_for_logging =
-              "Empty values don't get added to all_possible_passwords",
+              "Empty values don't get added to all_alternative_passwords",
           .fields =
               {
                   {.value = u"", .form_control_type = "password"},
@@ -1599,12 +1612,13 @@ TEST_F(FormParserTest, AllPossiblePasswords) {
                   {.value = u"", .form_control_type = "password"},
                   {.value = u"", .form_control_type = "password"},
               },
-          .number_of_all_possible_passwords = 0,
+          .number_of_all_alternative_passwords = 0,
       },
       {
-          .description_for_logging = "Empty values don't get added to "
-                                     "all_possible_passwords even if form gets "
-                                     "parsed",
+          .description_for_logging =
+              "Empty values don't get added to "
+              "all_alternative_passwords even if form gets "
+              "parsed",
           .fields =
               {
                   {.value = u"", .form_control_type = "password"},
@@ -1619,7 +1633,7 @@ TEST_F(FormParserTest, AllPossiblePasswords) {
                   {.value = u"", .form_control_type = "password"},
                   {.value = u"", .form_control_type = "password"},
               },
-          .number_of_all_possible_passwords = 1,
+          .number_of_all_alternative_passwords = 1,
       },
       {
           .description_for_logging =
@@ -1637,7 +1651,7 @@ TEST_F(FormParserTest, AllPossiblePasswords) {
                   {.form_control_type = "password"},
                   {.form_control_type = "password"},
               },
-          .number_of_all_possible_passwords = 3,
+          .number_of_all_alternative_passwords = 3,
       },
       {
           .description_for_logging = "A strange but not squashed form",
@@ -1651,7 +1665,7 @@ TEST_F(FormParserTest, AllPossiblePasswords) {
                   {.form_control_type = "password"},
                   {.form_control_type = "password"},
               },
-          .number_of_all_possible_passwords = 4,
+          .number_of_all_alternative_passwords = 4,
       },
   });
 }
@@ -2086,6 +2100,36 @@ TEST_F(FormParserTest, NotPasswordField) {
   });
 }
 
+// The parser should avoid identifying ONE_TIME_CODE fields as passwords.
+TEST_F(FormParserTest, OneTimeCodeField) {
+  CheckTestData({
+      {
+          .description_for_logging = "Server hints: ONE_TIME_CODE.",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME, .form_control_type = "text"},
+                  {.form_control_type = "password",
+                   .prediction = {.type = autofill::ONE_TIME_CODE}},
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .form_control_type = "password"},
+              },
+          .fallback_only = false,
+      },
+      {
+          .description_for_logging =
+              "Server hints: ONE_TIME_CODE on only password.",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME, .form_control_type = "text"},
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .form_control_type = "password",
+                   .prediction = {.type = autofill::ONE_TIME_CODE}},
+              },
+          .fallback_only = true,
+      },
+  });
+}
+
 // The parser should avoid identifying NOT_USERNAME fields as usernames.
 TEST_F(FormParserTest, NotUsernameField) {
   CheckTestData({
@@ -2186,6 +2230,38 @@ TEST_F(FormParserTest, NotPasswordFieldDespiteAutocompleteAttribute) {
                    .autocomplete_attribute = "current-password",
                    .form_control_type = "password",
                    .prediction = {.type = autofill::NOT_PASSWORD}},
+              },
+          .fallback_only = true,
+      },
+  });
+}
+
+// The parser should avoid identifying ONE_TIME_CODE fields as passwords.
+TEST_F(FormParserTest, OneTimeCodeFieldDespiteAutocompleteAttribute) {
+  CheckTestData({
+      {
+          .description_for_logging = "Server hints: ONE_TIME_CODE.",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME, .form_control_type = "text"},
+                  {.autocomplete_attribute = "current-password",
+                   .form_control_type = "password",
+                   .prediction = {.type = autofill::ONE_TIME_CODE}},
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .form_control_type = "password"},
+              },
+          .fallback_only = false,
+      },
+      {
+          .description_for_logging =
+              "Server hints: ONE_TIME_CODE on only password.",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME, .form_control_type = "text"},
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .autocomplete_attribute = "current-password",
+                   .form_control_type = "password",
+                   .prediction = {.type = autofill::ONE_TIME_CODE}},
               },
           .fallback_only = true,
       },

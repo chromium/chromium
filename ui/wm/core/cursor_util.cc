@@ -352,7 +352,7 @@ absl::optional<ui::CursorData> GetCursorData(
       bitmaps[frame] = std::move(cropped);
     }
   }
-  return ui::CursorData(std::move(bitmaps), std::move(hotspot));
+  return ui::CursorData(std::move(bitmaps), std::move(hotspot), scale);
 }
 
 void ScaleAndRotateCursorBitmapAndHotpoint(float scale,

@@ -12,6 +12,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -183,7 +184,8 @@ public class CreditCardAccessorySheetViewTest {
         // Return the cached image when
         // PersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable is called for the
         // above url.
-        when(mMockPersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable(any()))
+        when(mMockPersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable(
+                     any(), anyFloat()))
                 .thenReturn(TEST_CARD_ART_IMAGE);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -219,7 +221,8 @@ public class CreditCardAccessorySheetViewTest {
         when(iconUrl.getSpec()).thenReturn(CUSTOM_ICON_URL);
         // Return null when PersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable is
         // called for the above url.
-        when(mMockPersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable(any()))
+        when(mMockPersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable(
+                     any(), anyFloat()))
                 .thenReturn(null);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {

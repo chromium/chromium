@@ -8,6 +8,7 @@
 
 #include "ash/animation/animation_change_type.h"
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/metrics/login_unlock_throughput_recorder.h"
@@ -653,13 +654,16 @@ gfx::Rect Shelf::GetSystemTrayAnchorRect() const {
   switch (alignment_) {
     case ShelfAlignment::kBottom:
     case ShelfAlignment::kBottomLocked:
-      return gfx::Rect(
-          base::i18n::IsRTL() ? work_area.x() : work_area.right() - 1,
-          work_area.bottom() - 1, 0, 0);
+      return gfx::Rect(base::i18n::IsRTL()
+                           ? work_area.x()
+                           : work_area.right() - kShelfDisplayOffset,
+                       work_area.bottom() - kShelfDisplayOffset, 0, 0);
     case ShelfAlignment::kLeft:
-      return gfx::Rect(work_area.x(), work_area.bottom() - 1, 0, 0);
+      return gfx::Rect(work_area.x(), work_area.bottom() - kShelfDisplayOffset,
+                       0, 0);
     case ShelfAlignment::kRight:
-      return gfx::Rect(work_area.right() - 1, work_area.bottom() - 1, 0, 0);
+      return gfx::Rect(work_area.right() - kShelfDisplayOffset,
+                       work_area.bottom() - kShelfDisplayOffset, 0, 0);
   }
   NOTREACHED();
   return gfx::Rect();

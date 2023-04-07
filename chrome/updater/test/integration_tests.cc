@@ -125,6 +125,8 @@ class IntegrationTest : public ::testing::Test {
     if (!HasFailure()) {
       ExpectClean();
     }
+    ExpectNoCrashes();
+
     PrintLog();
 
     // TODO(crbug.com/1159189): Use a specific test output directory
@@ -138,6 +140,8 @@ class IntegrationTest : public ::testing::Test {
     ASSERT_TRUE(WaitForUpdaterExit());
     Clean();
   }
+
+  void ExpectNoCrashes() { test_commands_->ExpectNoCrashes(); }
 
   void CopyLog() { test_commands_->CopyLog(); }
 
@@ -153,6 +157,7 @@ class IntegrationTest : public ::testing::Test {
 
   void Uninstall() {
     ASSERT_TRUE(WaitForUpdaterExit());
+    ExpectNoCrashes();
     PrintLog();
     CopyLog();
     test_commands_->Uninstall();

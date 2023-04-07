@@ -192,25 +192,16 @@ export class SelectToSpeak {
     this.runContentScripts_();
     this.setUpEventListeners_();
 
-    const contextMenuOptionFeature =
-        chrome.accessibilityPrivate.AccessibilityFeature
-            .SELECT_TO_SPEAK_CONTEXT_MENU_OPTION;
-    chrome.accessibilityPrivate.isFeatureEnabled(
-        contextMenuOptionFeature, enabled => {
-          if (enabled) {
-            chrome.contextMenus.create({
-              title: chrome.i18n.getMessage(
-                  'select_to_speak_listen_context_menu_option_text'),
-              contexts: ['selection'],
-              onclick: () => {
-                chrome.automation.getFocus(
-                    focusedNode => this.requestSpeakSelectedText_(
-                        MetricsUtils.StartSpeechMethod.CONTEXT_MENU,
-                        focusedNode));
-              },
-            });
-          }
-        });
+    chrome.contextMenus.create({
+      title: chrome.i18n.getMessage(
+          'select_to_speak_listen_context_menu_option_text'),
+      contexts: ['selection'],
+      onclick: () => {
+        chrome.automation.getFocus(
+            focusedNode => this.requestSpeakSelectedText_(
+                MetricsUtils.StartSpeechMethod.CONTEXT_MENU, focusedNode));
+      },
+    });
   }
 
   /**

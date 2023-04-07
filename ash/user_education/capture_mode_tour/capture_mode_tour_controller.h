@@ -29,8 +29,7 @@ class ASH_EXPORT CaptureModeTourController : public TutorialController {
 
  private:
   // TutorialController:
-  std::map<user_education::TutorialIdentifier,
-           user_education::TutorialDescription>
+  std::map<TutorialId, user_education::TutorialDescription>
   GetTutorialDescriptions() override;
 };
 

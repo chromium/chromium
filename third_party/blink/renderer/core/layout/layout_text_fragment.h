@@ -25,7 +25,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text.h"
+#include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
@@ -38,7 +38,7 @@ class FirstLetterPseudoElement;
 // We cache offsets so that text transformations can be applied in such a way
 // that we can recover the original unaltered string from our corresponding DOM
 // node.
-class CORE_EXPORT LayoutTextFragment : public LayoutNGText {
+class CORE_EXPORT LayoutTextFragment : public LayoutText {
  public:
   LayoutTextFragment(Node*, const String&, int start_offset, int length);
   ~LayoutTextFragment() override;
@@ -130,7 +130,7 @@ class CORE_EXPORT LayoutTextFragment : public LayoutNGText {
   void InsertedIntoTree() final {
     NOT_DESTROYED();
     valid_ng_items_ = false;
-    LayoutNGText::InsertedIntoTree();
+    LayoutText::InsertedIntoTree();
   }
   LayoutBlock* BlockForAccompanyingFirstLetter() const;
   UChar PreviousCharacter() const override;

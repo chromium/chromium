@@ -254,6 +254,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kBookmarksRefresh,
     &kOmahaMinSdkVersionAndroid,
     &kOmniboxAdaptNarrowTabletWindows,
+    &kOmniboxCacheSuggestionResources,
     &kOmniboxConsumesImeInsets,
     &kOmniboxModernizeVisualUpdate,
     &kOpaqueOriginForIncomingIntents,
@@ -809,6 +810,10 @@ BASE_FEATURE(kOmahaMinSdkVersionAndroid,
 
 BASE_FEATURE(kOmniboxAdaptNarrowTabletWindows,
              "OmniboxAdaptNarrowTabletWindows",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kOmniboxCacheSuggestionResources,
+             "OmniboxCacheSuggestionResources",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOmniboxConsumesImeInsets,

@@ -26,11 +26,11 @@ void DesktopMessagePopupCollection::StartObserving() {
   RecomputeAlignment(display);
 }
 
-int DesktopMessagePopupCollection::GetToastOriginX(
-    const gfx::Rect& toast_bounds) const {
+int DesktopMessagePopupCollection::GetPopupOriginX(
+    const gfx::Rect& popup_bounds) const {
   if (IsFromLeft())
     return work_area_.x() + kMarginBetweenPopups;
-  return work_area_.right() - kMarginBetweenPopups - toast_bounds.width();
+  return work_area_.right() - kMarginBetweenPopups - popup_bounds.width();
 }
 
 int DesktopMessagePopupCollection::GetBaseline() const {

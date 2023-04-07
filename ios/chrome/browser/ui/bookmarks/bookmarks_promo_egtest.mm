@@ -279,4 +279,13 @@ using chrome_test_util::SecondarySignInButton;
   [SigninEarlGreyUI verifySigninPromoNotVisible];
 }
 
+// Tests that the turn on sync promo is shown if the user is signed in only.
+- (void)testTurnOnSyncPromo {
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1 enableSync:NO];
+  [BookmarkEarlGreyUI openBookmarks];
+  [SigninEarlGreyUI verifySigninPromoVisibleWithMode:
+                        SigninPromoViewModeSyncWithPrimaryAccount];
+}
+
 @end

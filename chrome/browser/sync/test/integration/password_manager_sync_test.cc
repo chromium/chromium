@@ -1038,7 +1038,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTestWithPolicy,
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTestWithPolicy,
-                       SyncTypesListDisabled) {
+                       // TODO(crbug.com/1431264): Re-enable this test
+                       DISABLED_SyncTypesListDisabled) {
   // Disable passwords via the kSyncTypesListDisabled policy. The PRE_ test is
   // required because the policy is only applied on startup.
   base::Value::List disabled_types;

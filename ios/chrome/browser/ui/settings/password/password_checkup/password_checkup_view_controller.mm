@@ -9,7 +9,6 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_commands.h"
@@ -33,9 +32,6 @@ namespace {
 // Height of the image used as a header for the table view.
 constexpr CGFloat kHeaderImageHeight = 99;
 
-// The size of the trailing icons for the items in the insecure types section.
-constexpr NSInteger kTrailingIconSize = 22;
-
 // Sections of the Password Checkup Homepage UI.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierInsecureTypes = kSectionIdentifierEnumZero,
@@ -51,13 +47,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // Section: SectionIdentifierLastPasswordCheckup
   ItemTypePasswordCheckupTimestamp,
   ItemTypeCheckPasswordsButton,
-};
-
-// Possible states for the items in the insecure types section.
-enum class ItemState {
-  kSafe,
-  kWarning,
-  kSevereWarning,
 };
 
 // Helper method to get the right header image depending on the
@@ -105,25 +94,6 @@ NSString* GetCompromisedPasswordsItemDetailText(bool has_compromised_passwords,
   return detailText;
 }
 
-// Sets up the trailing icon and its tint color for the given item. This is used
-// to set up the trailing icon of the items in the insecure types section.
-void SetUpTrailingIcon(SettingsCheckItem* item, ItemState item_state) {
-  if (item_state == ItemState::kSafe) {
-    item.trailingImage = DefaultSymbolTemplateWithPointSize(
-        kCheckmarkCircleFillSymbol, kTrailingIconSize);
-    item.trailingImageTintColor = [UIColor colorNamed:kGreen500Color];
-    return;
-  }
-
-  item.trailingImage = DefaultSymbolTemplateWithPointSize(
-      kErrorCircleFillSymbol, kTrailingIconSize);
-  if (item_state == ItemState::kWarning) {
-    item.trailingImageTintColor = [UIColor colorNamed:kYellow500Color];
-  } else {
-    item.trailingImageTintColor = [UIColor colorNamed:kRed500Color];
-  }
-}
-
 // Sets up the trailing icon and the accessory type of the given `item`
 // depending on the `password_checkup_state`, whether there are insecure
 // passwords and whether the insecure passwords are compromised. This is used to
@@ -139,12 +109,12 @@ void SetUpTrailingIconAndAccessoryType(
   switch (password_checkup_state) {
     case PasswordCheckupHomepageStateDone:
       if (has_insecure_passwords) {
-        SetUpTrailingIcon(item, has_compromised_passwords
-                                    ? ItemState::kSevereWarning
-                                    : ItemState::kWarning);
+        item.warningState = has_compromised_passwords
+                                ? WarningState::kSevereWarning
+                                : WarningState::kWarning;
         item.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
       } else {
-        SetUpTrailingIcon(item, ItemState::kSafe);
+        item.warningState = WarningState::kSafe;
       }
       break;
     case PasswordCheckupHomepageStateRunning: {
@@ -430,15 +400,15 @@ void SetUpTrailingIconAndAccessoryType(
       static_cast<ItemType>([model itemTypeForIndexPath:indexPath]);
   switch (itemType) {
     case ItemTypeCompromisedPasswords:
-      [self.handler showPasswordIssuesWithWarningType:
-                        WarningType::kCompromisedPasswordsWarning];
+      [self showPasswordIssuesWithWarningType:WarningType::
+                                                  kCompromisedPasswordsWarning];
       break;
     case ItemTypeReusedPasswords:
-      [self.handler showPasswordIssuesWithWarningType:
-                        WarningType::kReusedPasswordsWarning];
+      [self showPasswordIssuesWithWarningType:WarningType::
+                                                  kReusedPasswordsWarning];
       break;
     case ItemTypeWeakPasswords:
-      [self.handler
+      [self
           showPasswordIssuesWithWarningType:WarningType::kWeakPasswordsWarning];
       break;
     case ItemTypePasswordCheckupTimestamp:
@@ -675,6 +645,14 @@ void SetUpTrailingIconAndAccessoryType(
   [self updateWeakPasswordsItem];
   [self updatePasswordCheckupTimestampText];
   [self updateCheckPasswordsButtonItem];
+}
+
+// Opens the Password Issues list for the given `warningType` and resets the
+// navigation bar background color to what it was before getting to the
+// PasswordCheckupViewController.
+- (void)showPasswordIssuesWithWarningType:(WarningType)warningType {
+  [self.handler showPasswordIssuesWithWarningType:warningType];
+  [self updateNavigationBarBackgroundColorForDismissal:YES];
 }
 
 @end

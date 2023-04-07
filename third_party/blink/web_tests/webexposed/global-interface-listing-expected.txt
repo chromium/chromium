@@ -5522,6 +5522,7 @@ interface MLGraphBuilder
     method constant
     method constructor
     method conv2d
+    method convTranspose2d
     method div
     method gemm
     method hardSwish

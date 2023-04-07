@@ -97,8 +97,10 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_test_api.h"
 #include "ui/aura/client/cursor_client.h"
+#include "ui/aura/client/cursor_shape_client.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/window_event_dispatcher.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"  // nogncheck
 #include "ui/events/base_event_utils.h"
@@ -4007,10 +4009,11 @@ class DifferentDeviceScaleFactorDisplayTabDragControllerTest
   }
 
   float GetCursorDeviceScaleFactor() const {
-    return aura::client::GetCursorClient(
-               browser()->window()->GetNativeWindow()->GetRootWindow())
-        ->GetCursor()
-        .image_scale_factor();
+    auto* cursor_client = aura::client::GetCursorClient(
+        browser()->window()->GetNativeWindow()->GetRootWindow());
+    const auto& cursor_shape_client = aura::client::GetCursorShapeClient();
+    return cursor_shape_client.GetCursorData(cursor_client->GetCursor())
+        ->scale_factor;
   }
 };
 

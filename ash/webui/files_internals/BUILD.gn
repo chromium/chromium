@@ -20,6 +20,7 @@ static_library("files_internals") {
   ]
 
   deps = [
+    "//ash/webui/common:chrome_os_webui_config",
     "//ash/webui/files_internals/mojom",
     "//ash/webui/resources:files_internals_resources",
     "//content/public/browser",

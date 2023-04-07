@@ -113,7 +113,8 @@ class AbortCloseFunction : public ScriptFunction::Callable {
 }  // namespace
 
 SerialPort::SerialPort(Serial* parent, mojom::blink::SerialPortInfoPtr info)
-    : info_(std::move(info)),
+    : ActiveScriptWrappable<SerialPort>({}),
+      info_(std::move(info)),
       parent_(parent),
       port_(parent->GetExecutionContext()),
       client_receiver_(this, parent->GetExecutionContext()) {}

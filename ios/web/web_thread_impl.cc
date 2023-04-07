@@ -177,28 +177,6 @@ class WebThreadTaskExecutor {
   }
 
  private:
-  WebThread::ID GetWebThreadIdentifier(const base::TaskTraits& traits) {
-    DCHECK_EQ(traits.extension_id(), WebTaskTraitsExtension::kExtensionId);
-    const WebThread::ID id =
-        traits.GetExtension<WebTaskTraitsExtension>().web_thread();
-    DCHECK_LT(id, WebThread::ID_COUNT);
-
-    // TODO(crbug.com/872372): Support shutdown behavior on UI/IO threads.
-    if (traits.shutdown_behavior_set_explicitly()) {
-      if (id == WebThread::UI) {
-        DCHECK_EQ(base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
-                  traits.shutdown_behavior())
-            << "Only SKIP_ON_SHUTDOWN is supported on UI thread.";
-      } else if (id == WebThread::IO) {
-        DCHECK_EQ(base::TaskShutdownBehavior::BLOCK_SHUTDOWN,
-                  traits.shutdown_behavior())
-            << "Only BLOCK_SHUTDOWN is supported on IO thread.";
-      }
-    }
-
-    return id;
-  }
-
   static WebThreadTaskExecutor* g_instance;
 
   scoped_refptr<WebThreadTaskRunner> ui_thread_task_runner_ =

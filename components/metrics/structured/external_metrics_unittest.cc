@@ -25,11 +25,13 @@ using testing::UnorderedElementsAre;
 
 // Make a simple testing proto with one |uma_events| message for each id in
 // |ids|.
-EventsProto MakeTestingProto(const std::vector<uint64_t>& ids) {
+EventsProto MakeTestingProto(const std::vector<uint64_t>& ids,
+                             uint64_t project_name_hash = 0) {
   EventsProto proto;
 
   for (const auto id : ids) {
     auto* event = proto.add_uma_events();
+    event->set_project_name_hash(project_name_hash);
     event->set_profile_event_id(id);
   }
 
@@ -189,8 +191,9 @@ TEST_F(ExternalMetricsTest, FilterBluetoothEvents) {
   for (const auto id : {101, 1, 2, 102, 103, 3, 104}) {
     auto* event = proto.add_uma_events();
     event->set_profile_event_id(id);
-    if (id > 100)
+    if (id > 100) {
       event->set_event_name_hash(event_hash);
+    }
   }
   WriteToDisk("proto", proto);
 
@@ -218,6 +221,32 @@ TEST_F(ExternalMetricsTest, FileNumberReadCappedAndDiscarded) {
   // Number of events should be capped to the file limit since above records one
   // event per file.
   ASSERT_EQ(proto_.value().uma_events().size(), file_limit);
+
+  // And the directory should be empty too.
+  ASSERT_TRUE(base::IsDirectoryEmpty(temp_dir_.GetPath()));
+}
+
+TEST_F(ExternalMetricsTest, FilterDisallowedProjects) {
+  Init();
+  external_metrics_->AddDisallowedProjectForTest(2);
+
+  // Add 3 events with a project of 1 and 2.
+  WriteToDisk("first", MakeTestingProto({111}, 1));
+  WriteToDisk("second", MakeTestingProto({222}, 2));
+  WriteToDisk("third", MakeTestingProto({333}, 1));
+
+  CollectEvents();
+
+  // The events at second should be filtered.
+  ASSERT_EQ(proto_.value().uma_events().size(), 2);
+
+  std::vector<int64_t> ids;
+  for (const auto& event : proto_.value().uma_events()) {
+    ids.push_back(event.profile_event_id());
+  }
+
+  // Validate that only project 1 remains.
+  ASSERT_THAT(ids, UnorderedElementsAre(111, 333));
 
   // And the directory should be empty too.
   ASSERT_TRUE(base::IsDirectoryEmpty(temp_dir_.GetPath()));

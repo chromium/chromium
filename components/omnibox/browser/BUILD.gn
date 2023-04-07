@@ -55,6 +55,7 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "https_valid_in_chip.icon",
     "incognito.icon",
     "install_desktop.icon",
+    "install_desktop_chrome_refresh.icon",
     "journeys.icon",
     "keyword_search.icon",
     "offline_pin.icon",
@@ -64,7 +65,9 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "price_tracking_enabled_filled.icon",
     "product.icon",
     "product_chrome_refresh.icon",
+    "secure_page_info_chrome_refresh.icon",
     "share.icon",
+    "share_chrome_refresh.icon",
     "star.icon",
     "star_active.icon",
     "star_active_chrome_refresh.icon",
@@ -75,11 +78,21 @@ aggregate_vector_icons("omnibox_vector_icons") {
   ]
 
   if (is_mac) {
-    sources += [ "share_mac.icon" ]
+    sources += [
+      "share_mac.icon",
+      "share_mac_chrome_refresh.icon",
+    ]
   }
 
   if (is_win) {
-    sources += [ "share_win.icon" ]
+    sources += [
+      "share_win.icon",
+      "share_win_chrome_refresh.icon",
+    ]
+  }
+
+  if (is_linux) {
+    sources += [ "share_linux_chrome_refresh.icon" ]
   }
 }
 

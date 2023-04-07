@@ -209,6 +209,7 @@ void RenderAccessibilityImpl::DidCommitProvisionalLoad(
   ax_image_annotator_->Destroy();
   ax_image_annotator_.reset();
   page_language_.clear();
+  serialization_in_flight_ = false;
   weak_factory_for_pending_events_.InvalidateWeakPtrs();
   weak_factory_for_serialization_pipeline_.InvalidateWeakPtrs();
 }
@@ -240,33 +241,25 @@ void RenderAccessibilityImpl::AccessibilityModeChanged(const ui::AXMode& mode) {
   DCHECK(web_view);
   WebSettings* settings = web_view->GetSettings();
   DCHECK(settings);
-  if (mode.has_mode(ui::AXMode::kInlineTextBoxes)) {
-    settings->SetInlineTextBoxAccessibilityEnabled(true);
-    // If accessibility was already on, update it to load inline text boxes.
-    // Otherwise, just build the tree naturally.
-    if (was_on) {
-      ax_context_->UpdateAXForAllDocuments();
-      ComputeRoot().LoadInlineTextBoxes();
-    }
-  } else {
-    settings->SetInlineTextBoxAccessibilityEnabled(false);
-  }
+  // TODO(accessibility) Remove inline text box setting and just use the AXMode.
+  bool use_inline_textboxes = mode.has_mode(ui::AXMode::kInlineTextBoxes);
+  settings->SetInlineTextBoxAccessibilityEnabled(use_inline_textboxes);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
   StartOrStopLabelingImages(old_mode, mode);
 
-  if (ax_context_)
+  if (ax_context_) {
     ax_context_->SetAXMode(mode);
-  else
+  } else {
     DidCreateNewDocument();
+  }
 
   DCHECK(ax_context_);
   DCHECK_EQ(accessibility_mode_, ax_context_->GetAXMode());
 
+  // Build (or rebuild) the accessibility tree with the new mode.
   if (was_on) {
-    // When the accessibility mode changes, all state contained in the
-    // serializer, which prevents previously serialized data from being
-    // reserialized, is now out-of-date.
-    ax_context_->ResetSerializer();
+    ax_context_->MarkDocumentDirty();
   }
 
   // Fire a load complete event so that any ATs present can treat the page as
@@ -278,9 +271,7 @@ void RenderAccessibilityImpl::FireLoadCompleteIfLoaded() {
   if (GetMainDocument().IsLoaded() &&
       GetMainDocument().GetFrame()->GetEmbeddingToken()) {
     DCHECK(ax_context_);
-    ax_context_->UpdateAXForAllDocuments();
     ax_context_->FireLoadCompleteIfLoaded();
-    ax_context_->UpdateAXForAllDocuments();
   }
 }
 
@@ -429,8 +420,10 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
       break;
     case ax::mojom::Action::kBlur:
     case ax::mojom::Action::kClearAccessibilityFocus:
+    case ax::mojom::Action::kCollapse:
     case ax::mojom::Action::kDecrement:
     case ax::mojom::Action::kDoDefault:
+    case ax::mojom::Action::kExpand:
     case ax::mojom::Action::kIncrement:
     case ax::mojom::Action::kScrollToPoint:
     case ax::mojom::Action::kScrollToPositionAtRowColumn:
@@ -449,8 +442,6 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
       target->PerformAction(data);
       break;
     case ax::mojom::Action::kCustomAction:
-    case ax::mojom::Action::kCollapse:
-    case ax::mojom::Action::kExpand:
     case ax::mojom::Action::kHitTest:
     case ax::mojom::Action::kReplaceSelectedText:
     case ax::mojom::Action::kNone:
@@ -503,7 +494,6 @@ void RenderAccessibilityImpl::Reset(int32_t reset_token) {
   DCHECK(!accessibility_mode_.is_mode_off());
   reset_token_ = reset_token;
   ax_context_->ResetSerializer();
-  ax_context_->ClearDirtyObjectsAndPendingEvents();
   FireLoadCompleteIfLoaded();
 }
 
@@ -708,10 +698,6 @@ int RenderAccessibilityImpl::GetDeferredEventsDelay() {
                                       : kDelayForDeferredUpdatesBeforePageLoad;
 }
 
-bool RenderAccessibilityImpl::IsWaitingForAck() const {
-  return weak_factory_for_pending_events_.HasWeakPtrs();
-}
-
 void RenderAccessibilityImpl::AXReadyCallback() {
   if (!serialize_post_lifecycle_) {
     return;
@@ -723,8 +709,8 @@ void RenderAccessibilityImpl::AXReadyCallback() {
   DCHECK(render_frame_);
   DCHECK(render_frame_->in_frame_tree());
 
-  if (IsWaitingForAck()) {
-    // Another serialization is in flight. WHen it's finished, a new
+  if (serialization_in_flight_) {
+    // Another serialization is in flight. When it's finished, a new
     // serialization will be triggered if necessary.
     return;
   }
@@ -774,6 +760,7 @@ void RenderAccessibilityImpl::AXReadyCallback() {
   weak_factory_for_serialization_pipeline_.InvalidateWeakPtrs();
 
   last_serialization_timestamp_ = now;
+  serialization_in_flight_ = true;
 
   SendPendingAccessibilityEvents();
 }
@@ -782,7 +769,8 @@ void RenderAccessibilityImpl::ScheduleImmediateAXUpdate() {
   if (serialize_post_lifecycle_) {
     // This makes sure that we'll serialize at the next available opportunity.
     last_serialization_timestamp_ = kSerializeAtNextOpportunity;
-    if (IsWaitingForAck()) {
+    if (serialization_in_flight_) {
+      immediate_update_required_after_ack_ = true;
       return;  // Wait until current serialization message has been received.
     }
 
@@ -873,6 +861,8 @@ void RenderAccessibilityImpl::LegacyScheduleSendPendingAccessibilityEvents(
   // When no accessibility events are in-flight post a task to send
   // the events to the browser. We use PostTask so that we can queue
   // up additional events.
+  DCHECK(!serialization_in_flight_);
+  serialization_in_flight_ = true;
   render_frame_->GetTaskRunner(blink::TaskType::kInternalDefault)
       ->PostDelayedTask(
           FROM_HERE,
@@ -1243,7 +1233,7 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
                "RenderAccessibilityImpl::SendPendingAccessibilityEvents");
   base::ElapsedTimer timer;
 
-  DCHECK(!serialize_post_lifecycle_ || !IsWaitingForAck());
+  DCHECK(!serialize_post_lifecycle_ || !serialization_in_flight_);
 
   if (!serialize_post_lifecycle_) {
     // Clear status here in case we return early.
@@ -1252,6 +1242,7 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
   WebDocument document = GetMainDocument();
   DCHECK(serialize_post_lifecycle_ || !document.IsNull());
   if (document.IsNull()) {
+    serialization_in_flight_ = false;
     return;
   }
 
@@ -1308,6 +1299,7 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
       // defer so that the batch of events is larger. If any interactive events
       // come in, the batch will be processed immediately.
       legacy_event_schedule_mode_ = LegacyEventScheduleMode::kDeferEvents;
+      serialization_in_flight_ = false;
       return;
     }
 
@@ -1364,6 +1356,7 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
     DCHECK(updates_and_events->events.empty())
         << "If there are no updates, there also shouldn't be any events, "
            "because events always mark an object dirty.";
+    serialization_in_flight_ = false;
     return;
   }
 
@@ -1434,6 +1427,7 @@ void RenderAccessibilityImpl::LegacyOnAccessibilityEventsHandled() {
   DCHECK(!serialize_post_lifecycle_);
   DCHECK_EQ(legacy_event_schedule_status_,
             LegacyEventScheduleStatus::kWaitingForAck);
+  serialization_in_flight_ = false;
   legacy_event_schedule_status_ = LegacyEventScheduleStatus::kNotWaiting;
   switch (legacy_event_schedule_mode_) {
     case LegacyEventScheduleMode::kDeferEvents:
@@ -1450,7 +1444,13 @@ void RenderAccessibilityImpl::OnSerializationReceived() {
   // dirty. In that case, make sure a visual update is scheduled so that
   // AXReadyCallback() will be called. ScheduleAXUpdate() will only schedule a
   // visual update if the AXObjectCache is dirty.
-  ax_context_->ScheduleAXUpdate();
+  serialization_in_flight_ = false;
+  if (immediate_update_required_after_ack_) {
+    ScheduleImmediateAXUpdate();
+    immediate_update_required_after_ack_ = false;
+  } else {
+    ax_context_->ScheduleAXUpdate();
+  }
 }
 
 void RenderAccessibilityImpl::OnLoadInlineTextBoxes(
@@ -1505,6 +1505,7 @@ void RenderAccessibilityImpl::OnGetImageData(const ui::AXActionTarget* target,
 
 void RenderAccessibilityImpl::LegacyCancelScheduledEvents() {
   DCHECK(!serialize_post_lifecycle_);
+  serialization_in_flight_ = false;
   switch (legacy_event_schedule_status_) {
     case LegacyEventScheduleStatus::kScheduledDeferred:
     case LegacyEventScheduleStatus::kScheduledImmediate:  // Fallthrough

@@ -1334,7 +1334,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2114820389966440614">Se «Nyeste minner» og andre minner her</translation>
 <translation id="2114896190328250491">Bildet er tatt av <ph name="NAME" /></translation>
 <translation id="2114995631896158695">Det er ikke satt inn noe SIM-kort.</translation>
-<translation id="2116020356255810305">Slå på aktivering av app ved oppstart</translation>
 <translation id="2116619964159595185">Nettsteder kobler vanligvis til Bluetooth-enheter for å kunne tilby funksjoner som å konfigurere eller synkronisere lavenergi-beacons, helse- eller treningsarmbånd eller smartlyspærer</translation>
 <translation id="2117655453726830283">Neste lysbilde</translation>
 <translation id="2119349053129246860">Åpne i <ph name="APP" /></translation>
@@ -3026,6 +3025,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3609277884604412258">Hurtigsøk</translation>
 <translation id="3610241585790874201">Nettsteder som ikke har lov til å lagre data på enheten din</translation>
 <translation id="3610369246614755442">Dokkviften må på service</translation>
+<translation id="3610961622607302617">Endre passordet for <ph name="WEBSITE" /></translation>
 <translation id="361106536627977100">Flash-data</translation>
 <translation id="3611655097742243705">Gå til Play-butikken for å finne flere apper</translation>
 <translation id="3611658447322220736">Nylig lukkede nettsteder kan fullføre sending og mottak av data</translation>
@@ -3267,7 +3267,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="380329542618494757">Navn</translation>
 <translation id="3803345858388753269">Videokvalitet</translation>
 <translation id="3803367742635802571">Nettsteder du besøker, kan slutte å fungere som de skal</translation>
-<translation id="3803583375545057606">Vil du be forelderen din om å slå på denne utvidelsen?</translation>
 <translation id="380408572480438692">Aktivering av innsamling av ytelsesdata hjelper Google med å bekrefte systemet over tid, Data sendes ikke inn før du fyller ut en tilbakemeldingsrapport (Alt-Shift-I) og legger ved ytelsesdata. Du kan deaktivere innsamlingen når som helst via denne skjermen.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (utvidelses-ID «<ph name="EXTENSION_ID" />») tillates ikke på påloggingsskjermer.</translation>
 <translation id="3807747707162121253">&amp;Avbryt</translation>
@@ -3687,7 +3686,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4169535189173047238">Ikke tillat</translation>
 <translation id="4170314459383239649">Slett ved avslutning</translation>
 <translation id="417096670996204801">Velg en profil</translation>
-<translation id="41725145403849567">Vil du be forelderen din om å legge til denne utvidelsen?</translation>
 <translation id="4175137578744761569">Lys lilla og hvit</translation>
 <translation id="4175737294868205930">Permanent lagring</translation>
 <translation id="4176463684765177261">Deaktivert</translation>
@@ -5099,7 +5097,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN-koden må bestå av minst ett tegn}other{PIN-koden må bestå av minst # tegn}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> krever at du kobler til wifi nå og laster ned en oppdatering. Eller last ned via en tilkobling med datamåling (kostnader kan påløpe).</translation>
 <translation id="5476016146231427848">Start enheten på nytt for å bruke Steam på Chromebook</translation>
-<translation id="5476897066181964657">Du må få lov av en forelder eller foresatt til å legge til denne utvidelsen</translation>
 <translation id="5481273127572794904">Nettsteder som ikke har lov til å laste ned flere filer automatisk</translation>
 <translation id="5481941284378890518">Legg til skrivere i nærheten</translation>
 <translation id="5483785310822538350">Opphev fil- og enhetstilgangen</translation>
@@ -5196,7 +5193,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5555639311269196631">Slå av wifi-sone</translation>
 <translation id="5556459405103347317">Last inn på nytt</translation>
 <translation id="5558129378926964177">Zoom &amp;inn</translation>
-<translation id="5558247502209241936">Slå på åpning av app i vindu</translation>
 <translation id="5559311991468302423">Slett adressen</translation>
 <translation id="55601339223879446">Juster grensene for skrivebordet på skjermen</translation>
 <translation id="5561162485081632007">Oppdager og advarer deg om farlige hendelser idet de inntreffer</translation>
@@ -6022,7 +6018,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6305607932814307878">Globale retningslinjer:</translation>
 <translation id="6305702903308659374">Spill av med normalt volum selv når ChromeVox snakker</translation>
 <translation id="6305909198255586420">Installer via primærprofilen din</translation>
-<translation id="630750887748244481">Din forelder har slått av «Tillatelser for nettsteder, apper og utvidelser» for Chrome. Det er ikke tillatt å legge til denne utvidelsen.</translation>
 <translation id="6307990684951724544">Systemet er opptatt</translation>
 <translation id="6308493641021088955">Påloggingen leveres av <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Lagre lin&amp;ken som…</translation>
@@ -6043,6 +6038,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6318125393809743217">Inkluder en policies.json-fil med regelkonfigurasjoner.</translation>
 <translation id="6318407754858604988">Nedlastingen er startet</translation>
 <translation id="6318944945640833942">Fant ikke noen skriver. Skriv inn skriveradressen på nytt.</translation>
+<translation id="6320808462673705899">Ingen bokmerker samsvarer med søket ditt.</translation>
 <translation id="6322370287306604163">Lås opp raskere med fingeravtrykk</translation>
 <translation id="6322559670748154781">Denne filen lastes sjelden ned og er blokkert av Avansert beskyttelse</translation>
 <translation id="6324916366299863871">Endre snarvei</translation>
@@ -6848,7 +6844,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7025190659207909717">Administrering av tjenester for mobildata</translation>
 <translation id="7025895441903756761">Sikkerhet og personvern</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Åpne alle i &amp;inkognitovindu}=1{Åpne i &amp;inkognitovindu}other{Åpne alle ({COUNT}) i &amp;inkognitovindu}}</translation>
-<translation id="7028057921476386252">Du må få lov av forelder eller foresatt til å slå på denne utvidelsen</translation>
 <translation id="7029307918966275733">Crostini er ikke installert. Installer Crostini for å se anerkjennelser.</translation>
 <translation id="7029809446516969842">Passord</translation>
 <translation id="7030304022046916278">Sender nettadresser til Safe Browsing for å sjekke dem</translation>
@@ -8227,7 +8222,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8251509999076836464">Kobler til ‏<ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">Miniatyrbilde fjernet.</translation>
 <translation id="825238165904109940">Vis alltid fullstendige nettadresser</translation>
-<translation id="8252538334423261825">Kan ikke legge til utvidelsen</translation>
 <translation id="8252569384384439529">Laster opp …</translation>
 <translation id="8253198102038551905">Klikk på «+» for å gå til nettverksegenskaper</translation>
 <translation id="8255212965098517578">Nylige bilder, varsler og apper</translation>

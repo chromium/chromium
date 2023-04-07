@@ -65,6 +65,7 @@ TEST_F(PartialTranslateManagerTest, CreateContext) {
   request.selection_encoding = "UTF16";
   request.source_language = "en-US";
   request.target_language = "ja-JP";
+  request.apply_lang_hint = true;
 
   manager_->StartPartialTranslate(nullptr, request, base::DoNothing());
 
@@ -74,6 +75,7 @@ TEST_F(PartialTranslateManagerTest, CreateContext) {
   ASSERT_EQ(context.GetSurroundingText(), u"Selected text");
   ASSERT_EQ(context.GetTranslationLanguages().detected_language, "en-US");
   ASSERT_EQ(context.GetTranslationLanguages().target_language, "ja-JP");
+  ASSERT_TRUE(context.GetApplyLangHint());
 }
 
 TEST_F(PartialTranslateManagerTest, CreateResponse) {

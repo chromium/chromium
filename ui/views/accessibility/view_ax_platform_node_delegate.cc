@@ -17,7 +17,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_action_data.h"
-#include "ui/accessibility/ax_dummy_tree_manager.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_tree.h"
@@ -27,6 +26,7 @@
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
+#include "ui/accessibility/single_ax_tree_manager.h"
 #include "ui/base/layout.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/accessibility/view_accessibility_utils.h"
@@ -446,24 +446,24 @@ ViewAXPlatformNodeDelegate::CreateTextPositionAt(
   if (!IsDescendantOfAtomicTextField())
     return ui::AXNodePosition::CreateNullPosition();
 
-  if (!dummy_tree_manager_) {
+  if (!single_tree_manager_) {
     ui::AXTreeUpdate initial_state;
     initial_state.root_id = GetData().id;
     initial_state.nodes = {GetData()};
     initial_state.has_tree_data = true;
     initial_state.tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
-    auto dummy_tree = std::make_unique<ui::AXTree>(initial_state);
-    dummy_tree_manager_ =
-        std::make_unique<ui::AXDummyTreeManager>(std::move(dummy_tree));
+    auto tree = std::make_unique<ui::AXTree>(initial_state);
+    single_tree_manager_ =
+        std::make_unique<ui::SingleAXTreeManager>(std::move(tree));
   } else {
-    DCHECK(dummy_tree_manager_->ax_tree());
+    DCHECK(single_tree_manager_->ax_tree());
     ui::AXTreeUpdate update;
     update.nodes = {GetData()};
-    const_cast<ui::AXTree*>(dummy_tree_manager_->ax_tree())
+    const_cast<ui::AXTree*>(single_tree_manager_->ax_tree())
         ->Unserialize(update);
   }
 
-  return ui::AXNodePosition::CreatePosition(*dummy_tree_manager_->GetRoot(),
+  return ui::AXNodePosition::CreatePosition(*single_tree_manager_->GetRoot(),
                                             offset, affinity);
 }
 

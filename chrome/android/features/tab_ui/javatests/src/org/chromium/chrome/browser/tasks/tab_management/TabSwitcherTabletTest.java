@@ -155,7 +155,7 @@ public class TabSwitcherTabletTest {
         Layout layout = sActivityTestRule.getActivity().getLayoutManager().getOverviewLayout();
         assertNull("StartSurface layout should not be initialized", layout);
         ViewStub tabSwitcherStub = (ViewStub) sActivityTestRule.getActivity().findViewById(
-                R.id.grid_tab_switcher_view_holder_stub);
+                R.id.tab_switcher_view_holder_stub);
         assertTrue("TabSwitcher view stub should not be inflated",
                 tabSwitcherStub.getParent() != null);
 
@@ -165,7 +165,7 @@ public class TabSwitcherTabletTest {
         assertTrue("OverviewLayout should be TabSwitcherAndStartSurfaceLayout layout",
                 layout instanceof TabSwitcherAndStartSurfaceLayout);
         ViewGroup tabSwitcherViewHolder =
-                sActivityTestRule.getActivity().findViewById(R.id.grid_tab_switcher_view_holder);
+                sActivityTestRule.getActivity().findViewById(R.id.tab_switcher_view_holder);
         assertNotNull("TabSwitcher view should be inflated", tabSwitcherViewHolder);
 
         exitGTSAndVerifyThumbnailsAreReleased(1);
@@ -255,14 +255,13 @@ public class TabSwitcherTabletTest {
     @MediumTest
     public void testGridTabSwitcherOnNoNextTab() throws ExecutionException {
         // Assert the grid tab switcher is not yet showing.
-        onView(withId(R.id.grid_tab_switcher_view_holder))
-                .check(matches(withEffectiveVisibility(GONE)));
+        onView(withId(R.id.tab_switcher_view_holder)).check(matches(withEffectiveVisibility(GONE)));
 
         // Close the only tab through the tab strip.
         closeTab(false, sActivityTestRule.getActivity().getCurrentTabModel().getTabAt(0).getId());
 
         // Assert the grid tab switcher is shown automatically, since there is no next tab.
-        onView(withId(R.id.grid_tab_switcher_view_holder))
+        onView(withId(R.id.tab_switcher_view_holder))
                 .check(matches(withEffectiveVisibility(VISIBLE)));
 
         TestThreadUtils.runOnUiThreadBlocking(()
@@ -287,7 +286,7 @@ public class TabSwitcherTabletTest {
                 sActivityTestRule.getActivity().getLayoutManager().getTabSwitcherLayoutForTesting();
         assertNull("StartSurface layout should not be initialized", layout);
         ViewStub tabSwitcherStub = (ViewStub) sActivityTestRule.getActivity().findViewById(
-                R.id.grid_tab_switcher_view_holder_stub);
+                R.id.tab_switcher_view_holder_stub);
         assertTrue("TabSwitcher view stub should not be inflated",
                 tabSwitcherStub.getParent() != null);
 
@@ -299,7 +298,7 @@ public class TabSwitcherTabletTest {
         assertTrue("OverviewLayout should be TabSwitcherAndStartSurfaceLayout layout",
                 layout instanceof TabSwitcherLayout);
         ViewGroup tabSwitcherViewHolder =
-                sActivityTestRule.getActivity().findViewById(R.id.grid_tab_switcher_view_holder);
+                sActivityTestRule.getActivity().findViewById(R.id.tab_switcher_view_holder);
         assertNotNull("TabSwitcher view should be inflated", tabSwitcherViewHolder);
     }
 

@@ -30,7 +30,7 @@
 #include "chrome/browser/media_galleries/chromeos/mtp_device_task_helper_map_service.h"
 #include "chrome/browser/media_galleries/chromeos/snapshot_file_details.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "net/base/io_buffer.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 

@@ -194,6 +194,7 @@ UDPSocket* UDPSocket::Create(ScriptState* script_state,
 
 UDPSocket::UDPSocket(ScriptState* script_state)
     : Socket(script_state),
+      ActiveScriptWrappable<UDPSocket>({}),
       udp_socket_(
           MakeGarbageCollected<UDPSocketMojoRemote>(GetExecutionContext())) {}
 

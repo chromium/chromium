@@ -27,6 +27,18 @@ bool CheckBrowsingContextIsValid(ScriptState& script_state,
 bool CheckSharedStoragePermissionsPolicy(ScriptState& script_state,
                                          ExecutionContext& execution_context,
                                          ScriptPromiseResolver& resolver) {
+  // The worklet scope has to be created from the Window scope, thus the
+  // shared-storage permissions policy feature must have been enabled. Besides,
+  // the `SharedStorageWorkletGlobalScope` is currently given a null
+  // `PermissionsPolicy`, so we shouldn't attempt to check the permissions
+  // policy.
+  //
+  // TODO(crbug.com/1414951): When the `PermissionsPolicy` is properly set for
+  // `SharedStorageWorkletGlobalScope`, we can remove this.
+  if (execution_context.IsSharedStorageWorkletGlobalScope()) {
+    return true;
+  }
+
   if (!execution_context.IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kSharedStorage)) {
     resolver.Reject(V8ThrowDOMException::CreateOrEmpty(

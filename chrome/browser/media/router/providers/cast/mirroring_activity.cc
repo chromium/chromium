@@ -38,7 +38,7 @@
 #include "components/media_router/common/providers/cast/channel/enum_table.h"
 #include "components/media_router/common/route_request_result.h"
 #include "components/mirroring/mojom/session_parameters.mojom.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "media/base/media_switches.h"
 #include "media/cast/constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

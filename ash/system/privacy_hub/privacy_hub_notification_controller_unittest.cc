@@ -377,12 +377,7 @@ TEST_F(PrivacyHubNotificationControllerTest, OpenPrivacyHubSupportPage) {
 
   test_sensor(Sensor::kMicrophone, PrivacyHubLearnMoreSensor::kMicrophone);
   test_sensor(Sensor::kCamera, PrivacyHubLearnMoreSensor::kCamera);
-
-  if (DCHECK_IS_ON()) {
-    EXPECT_DEATH(
-        PrivacyHubNotificationController::OpenSupportUrl(Sensor::kLocation),
-        "");
-  }
+  test_sensor(Sensor::kLocation, PrivacyHubLearnMoreSensor::kGeolocation);
 }
 
 }  // namespace ash

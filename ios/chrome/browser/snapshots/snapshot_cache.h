@@ -56,12 +56,6 @@ class Time;
 // Removes all images from the LRU and disk.
 - (void)removeAllImages;
 
-// Moves all images for `snapshotIDs` from `sourcePath` to the current storage
-// path of this snapshot cache. Deletes the folder `sourcePath` after migration,
-// regardless of remaining files (which may be obsolete snapshots).
-- (void)migrateSnapshotsWithIDs:(NSSet<NSString*>*)snapshotIDs
-                 fromSourcePath:(const base::FilePath&)sourcePath;
-
 // Purge the cache of snapshots that are older than `date`. The snapshots for
 // `liveSnapshotIDs` will be kept. This will be done asynchronously on a
 // background thread.

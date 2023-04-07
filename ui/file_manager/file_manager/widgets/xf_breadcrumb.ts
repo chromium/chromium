@@ -6,7 +6,7 @@ import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 
-import {addCSSPrefixSelector, mouseEnterMaybeShowTooltip} from '../common/js/dom_utils.js';
+import {addCSSPrefixSelector, getCrActionMenuTop, mouseEnterMaybeShowTooltip} from '../common/js/dom_utils.js';
 import {str} from '../common/js/util.js';
 
 import {css, customElement, html, property, PropertyValues, query, state, XfBase} from './xf_base.js';
@@ -226,17 +226,7 @@ export class XfBreadcrumb extends XfBase {
     }
 
     // Show drop-down below the elider button.
-    let offsetElement: Element|null = this.$eliderButton_!;
-    let top = this.$eliderButton_!.offsetHeight;
-    // We need to go upwards to add all offsetTop all offset parents because
-    // each level can have its own offsetTop.
-    while (offsetElement instanceof HTMLElement) {
-      top += offsetElement.offsetTop;
-      offsetElement = offsetElement.offsetParent;
-    }
-    // The gap between the elider button bottom and the dropdown menu top.
-    const gap = 8;
-    top += gap;
+    const top = getCrActionMenuTop(this.$eliderButton_!, 8);
     this.$actionMenu_!.showAt(this.$eliderButton_!, {top: top});
 
     // Style drop-down and horizontal position.

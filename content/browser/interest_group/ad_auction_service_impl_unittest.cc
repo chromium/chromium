@@ -1163,14 +1163,14 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*size_group=*/"group_old",
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}",
+      /*size_group=*/"group_old");
   interest_group.ads->emplace_back(std::move(ad));
   interest_group.ad_components.emplace();
   blink::InterestGroup::Ad ad_component(
       /*render_url=*/GURL("https://example.com/render"),
-      /*size_group=*/"group_old",
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}",
+      /*size_group=*/"group_old");
   interest_group.ad_components->emplace_back(std::move(ad_component));
   interest_group.ad_sizes.emplace();
   interest_group.ad_sizes->emplace(

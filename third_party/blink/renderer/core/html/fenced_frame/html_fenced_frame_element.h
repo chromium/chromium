@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_config.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
+#include "third_party/blink/renderer/core/html/html_iframe_element_sandbox.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -72,6 +73,8 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   ~HTMLFencedFrameElement() override;
   void Trace(Visitor* visitor) const override;
 
+  DOMTokenList* sandbox() const;
+
   // HTMLFrameOwnerElement overrides.
   void DisconnectContentFrame() override;
   FrameOwnerElementType OwnerType() const override {
@@ -89,14 +92,14 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
     return mode_;
   }
 
-  // The frame size is "frozen" when the `src` attribute is set.
+  // The frame size is "frozen" when the `config` attribute is set.
   // The frozen state is kept in this element so that it can survive across
   // reattaches.
   // The size is in layout size (i.e., DSF multiplied.)
   const absl::optional<PhysicalSize> FrozenFrameSize() const;
   // True if the frame size should be frozen when the next resize completed.
-  // When `src` is set but layout is not completed yet, the frame size is frozen
-  // after the first layout.
+  // When `config` is set but layout is not completed yet, the frame size is
+  // frozen after the first layout.
   bool ShouldFreezeFrameSizeOnNextLayoutForTesting() const {
     return should_freeze_frame_size_on_next_layout_;
   }
@@ -141,7 +144,6 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
 
   // Element overrides.
   void ParseAttribute(const AttributeModificationParams&) override;
-  bool IsURLAttribute(const Attribute&) const override;
   bool IsPresentationAttribute(const QualifiedName&) const override;
   void CollectStyleForPresentationAttribute(
       const QualifiedName&,
@@ -208,6 +210,7 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   bool size_set_after_freeze_ = false;
   // Attributes that are modeled off of their iframe equivalents
   AtomicString allow_;
+  Member<HTMLIFrameElementSandbox> sandbox_;
 
   friend class FencedFrameMPArchDelegate;
   friend class FencedFrameShadowDOMDelegate;

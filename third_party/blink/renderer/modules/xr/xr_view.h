@@ -28,7 +28,9 @@ class MODULES_EXPORT XRView final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  XRView(XRFrame*, XRViewData*, const gfx::Transform&);
+  XRView(XRFrame* frame,
+         XRViewData* view_data,
+         const gfx::Transform& ref_space_from_mojo);
 
   const String& eye() const { return eye_string_; }
   device::mojom::blink::XREye EyeValue() const { return eye_; }
@@ -90,6 +92,8 @@ class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData> {
                                   double y,
                                   double canvas_width,
                                   double canvas_height);
+
+  void SetMojoFromView(const gfx::Transform& mojo_from_view);
 
   device::mojom::blink::XREye Eye() const { return eye_; }
   const gfx::Transform& MojoFromView() const { return mojo_from_view_; }

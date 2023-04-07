@@ -162,13 +162,13 @@ std::vector<std::u16string> ToValues(
   return passwords;
 }
 
-// Creates an EditableCombobox from |PasswordForm.all_possible_usernames| or
+// Creates an EditableCombobox from |PasswordForm.all_alternative_usernames| or
 // even just |PasswordForm.username_value|.
 std::unique_ptr<views::EditableCombobox> CreateUsernameEditableCombobox(
     const password_manager::PasswordForm& form) {
   std::vector<std::u16string> usernames = {form.username_value};
   for (const password_manager::AlternativeElement& other_possible_username :
-       form.all_possible_usernames) {
+       form.all_alternative_usernames) {
     if (other_possible_username.value != form.username_value)
       usernames.push_back(other_possible_username.value);
   }
@@ -191,16 +191,16 @@ std::unique_ptr<views::EditableCombobox> CreateUsernameEditableCombobox(
 }
 
 // Creates an EditablePasswordCombobox from
-// `PasswordForm.all_possible_passwords` or even just
+// `PasswordForm.all_alternative_passwords` or even just
 // `PasswordForm.password_value`.
 std::unique_ptr<views::EditablePasswordCombobox> CreateEditablePasswordCombobox(
     const password_manager::PasswordForm& form,
     views::Button::PressedCallback reveal_password_callback) {
   DCHECK(!form.IsFederatedCredential());
   std::vector<std::u16string> passwords =
-      form.all_possible_passwords.empty()
+      form.all_alternative_passwords.empty()
           ? std::vector<std::u16string>(/*n=*/1, form.password_value)
-          : ToValues(form.all_possible_passwords);
+          : ToValues(form.all_alternative_passwords);
   base::EraseIf(passwords, [](const std::u16string& password) {
     return password.empty();
   });

@@ -12,12 +12,12 @@
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
-#include "ui/accessibility/test_ax_tree_manager.h"
+#include "ui/accessibility/single_ax_tree_manager.h"
 #include "ui/accessibility/test_ax_tree_update.h"
 
 namespace ui {
 
-class AXPlatformNodeTest : public ::testing::Test, public TestAXTreeManager {
+class AXPlatformNodeTest : public ::testing::Test, public SingleAXTreeManager {
  public:
   AXPlatformNodeTest();
   ~AXPlatformNodeTest() override;

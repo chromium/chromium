@@ -76,7 +76,8 @@ TEST_P(WrappedSkImageBackingFactoryTest, Basic) {
 
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, gpu::kNullSurfaceHandle, size, kColorSpace,
-      kSurfaceOrigin, kAlphaType, kUsage, /*is_thread_safe=*/false);
+      kSurfaceOrigin, kAlphaType, kUsage, "TestLabel",
+      /*is_thread_safe=*/false);
   ASSERT_TRUE(backing);
 
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
@@ -141,7 +142,8 @@ TEST_P(WrappedSkImageBackingFactoryTest, Upload) {
 
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, gpu::kNullSurfaceHandle, size, kColorSpace,
-      kSurfaceOrigin, kAlphaType, kUsage, /*is_thread_safe=*/false);
+      kSurfaceOrigin, kAlphaType, kUsage, "TestLabel",
+      /*is_thread_safe=*/false);
   ASSERT_TRUE(backing);
 
   std::vector<SkBitmap> bitmaps = AllocateRedBitmaps(format, size);
@@ -164,18 +166,17 @@ std::string TestParamToString(
 // BGRA_1010102 fails to create backing. BGRX_8888 and BGR_565 "work" but Skia
 // just thinks is RGBX_8888 and RGB_565 respectively so upload doesn't work.
 // TODO(kylechar): Add RGBA_F16 where it works.
-const auto kFormats =
-    ::testing::Values(viz::SinglePlaneFormat::kALPHA_8,
-                      viz::SinglePlaneFormat::kR_8,
-                      viz::SinglePlaneFormat::kRG_88,
-                      viz::SinglePlaneFormat::kRGBA_4444,
-                      viz::SinglePlaneFormat::kRGB_565,
-                      viz::SinglePlaneFormat::kRGBA_8888,
-                      viz::SinglePlaneFormat::kBGRA_8888,
-                      viz::SinglePlaneFormat::kRGBX_8888,
-                      viz::SinglePlaneFormat::kRGBA_1010102,
-                      viz::MultiPlaneFormat::kYUV_420_BIPLANAR,
-                      viz::MultiPlaneFormat::kYVU_420);
+const auto kFormats = ::testing::Values(viz::SinglePlaneFormat::kALPHA_8,
+                                        viz::SinglePlaneFormat::kR_8,
+                                        viz::SinglePlaneFormat::kRG_88,
+                                        viz::SinglePlaneFormat::kRGBA_4444,
+                                        viz::SinglePlaneFormat::kRGB_565,
+                                        viz::SinglePlaneFormat::kRGBA_8888,
+                                        viz::SinglePlaneFormat::kBGRA_8888,
+                                        viz::SinglePlaneFormat::kRGBX_8888,
+                                        viz::SinglePlaneFormat::kRGBA_1010102,
+                                        viz::MultiPlaneFormat::kNV12,
+                                        viz::MultiPlaneFormat::kYV12);
 
 INSTANTIATE_TEST_SUITE_P(,
                          WrappedSkImageBackingFactoryTest,

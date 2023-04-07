@@ -108,7 +108,7 @@ specific_include_rules = {
     "+chrome/browser/profiles/profile_io_data.h",
     "+chrome/browser/ui",
     "+chrome/browser/ui/tabs",
-    "+content/public/browser/browser_task_traits.h",
+    "+content/public/browser/browser_thread.h",
   ],
   "commerce_hint_agent_browsertest\.cc" : [
     "+chrome/browser/cart",

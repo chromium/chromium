@@ -665,9 +665,14 @@ test("gpu_unittests") {
       "command_buffer/service/gles2_cmd_decoder_passthrough_unittest_drawing.cc",
       "command_buffer/service/gles2_cmd_decoder_passthrough_unittest_framebuffers.cc",
       "command_buffer/service/gles2_cmd_decoder_passthrough_unittest_textures.cc",
-      "ipc/service/gpu_channel_manager_unittest.cc",
       "ipc/service/gpu_channel_unittest.cc",
     ]
+
+    if (!is_ios) {
+      # This test depends on the test trace processor which is not currently
+      # a dependency on iOS. See //base/test:test_support.
+      sources += [ "ipc/service/gpu_channel_manager_unittest.cc" ]
+    }
   }
 
   if (use_dawn) {

@@ -258,21 +258,9 @@ const ResolvedPassData& ResolvedFrameData::GetRootRenderPassData() const {
   return resolved_passes_.back();
 }
 
-bool ResolvedFrameData::IsSameFrameAsLastAggregation() const {
+FrameDamageType ResolvedFrameData::GetFrameDamageType() const {
   DCHECK(valid_);
   DCHECK(used_in_aggregation_);
-  return previous_frame_index_ == frame_index_;
-}
-
-bool ResolvedFrameData::IsNextFrameSinceLastAggregation() const {
-  DCHECK(valid_);
-  DCHECK(used_in_aggregation_);
-  return previous_frame_index_ > kInvalidFrameIndex &&
-         frame_index_ == previous_frame_index_ + 1;
-}
-
-gfx::Rect ResolvedFrameData::GetSurfaceDamage() const {
-  DCHECK(valid_);
 
   // The |damage_rect| set in |SurfaceAnimationManager| is the |output_rect|.
   // However, we dont use |damage_rect| because when we transition from
@@ -281,16 +269,31 @@ gfx::Rect ResolvedFrameData::GetSurfaceDamage() const {
   // TODO(vmpstr): This damage may be too large, but I think it's hard to figure
   // out a small bounds on the damage given an animation that happens in
   // SurfaceAnimationManager.
-  if (surface_->HasSurfaceAnimationDamage())
-    return GetOutputRect();
-
-  if (IsSameFrameAsLastAggregation()) {
-    return gfx::Rect();
-  } else if (IsNextFrameSinceLastAggregation()) {
-    return resolved_passes_.back().render_pass().damage_rect;
+  if (surface_->HasSurfaceAnimationDamage()) {
+    return FrameDamageType::kFull;
   }
 
-  return GetOutputRect();
+  if (previous_frame_index_ == frame_index_) {
+    // This is the same frame as the one used last aggregation.
+    return FrameDamageType::kNone;
+  } else if (previous_frame_index_ > kInvalidFrameIndex &&
+             frame_index_ == previous_frame_index_ + 1) {
+    // This is the next frame after the one used last aggregation.
+    return FrameDamageType::kFrame;
+  }
+
+  return FrameDamageType::kFull;
+}
+
+gfx::Rect ResolvedFrameData::GetSurfaceDamage() const {
+  switch (GetFrameDamageType()) {
+    case FrameDamageType::kFull:
+      return GetOutputRect();
+    case FrameDamageType::kFrame:
+      return resolved_passes_.back().render_pass().damage_rect;
+    case FrameDamageType::kNone:
+      return gfx::Rect();
+  }
 }
 
 const gfx::Rect& ResolvedFrameData::GetOutputRect() const {

@@ -6,6 +6,7 @@
 
 #include "base/time/time.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable_creation_key.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_storage_estimate.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_storage_usage_details.h"

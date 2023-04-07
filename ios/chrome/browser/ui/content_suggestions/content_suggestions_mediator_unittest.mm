@@ -110,6 +110,10 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
     mediator_.consumer = consumer_;
     mediator_.webStateList = browser_.get()->GetWebStateList();
     mediator_.webState = fake_web_state_.get();
+    NTPMetrics_ = [[NTPHomeMetrics alloc]
+        initWithBrowserState:browser_->GetBrowserState()];
+    mediator_.NTPMetrics = NTPMetrics_;
+    mediator_.NTPMetrics.webState = fake_web_state_.get();
 
     promos_manager_ = std::make_unique<MockPromosManager>();
     mediator_.promosManager = promos_manager_.get();
@@ -146,6 +150,7 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
   std::unique_ptr<favicon::LargeIconServiceImpl> large_icon_service_;
   std::unique_ptr<MockPromosManager> promos_manager_;
   ContentSuggestionsMediator* mediator_;
+  NTPHomeMetrics* NTPMetrics_;
   FakeUrlLoadingBrowserAgent* url_loader_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
@@ -209,6 +214,7 @@ TEST_F(ContentSuggestionsMediatorTest, TestOpenMostRecentTab) {
                                   WebStateOpener());
   web::WebState* ntp_web_state = web_state_list_->GetActiveWebState();
   mediator_.webState = ntp_web_state;
+  mediator_.NTPMetrics.webState = ntp_web_state;
   NewTabPageTabHelper::FromWebState(ntp_web_state)->SetShowStartSurface(true);
 
   OCMExpect([consumer_ showReturnToRecentTabTileWithConfig:[OCMArg any]]);

@@ -17,7 +17,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "media/base/win/mf_initializer.h"
-#include "media/gpu/windows/media_foundation_video_encode_accelerator_win.h"
 #include "remoting/host/win/evaluate_3d_display_mode.h"
 #include "remoting/host/win/evaluate_d3d.h"
 #endif
@@ -103,9 +102,7 @@ std::string GetHostAttributes() {
 
   // TODO(crbug.com/1184041): Remove this and/or the entire HostAttributes class
   // so we can remove //remoting/host:common from //media/gpu's visibility list.
-  if (media::MediaFoundationVideoEncodeAccelerator
-      ::PreSandboxInitialization() &&
-      media::InitializeMediaFoundation()) {
+  if (media::InitializeMediaFoundation()) {
     result.push_back("HWEncoder");
   }
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

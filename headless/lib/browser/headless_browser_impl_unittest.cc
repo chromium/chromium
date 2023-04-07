@@ -4,6 +4,8 @@
 
 #include "headless/lib/browser/headless_browser_impl.h"
 
+#include "base/test/scoped_command_line.h"
+#include "components/embedder_support/switches.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,6 +33,18 @@ TEST(HeadlessBrowserTest, GetUserAgentMetadata) {
                           testing::Field(&blink::UserAgentBrandVersion::brand,
                                          testing::Eq("HeadlessChrome"))));
   }
+}
+
+TEST(HeadlessBrowserTest, CustomUserAgent) {
+  std::string custom_user_agent = "custom chrome user agent";
+  base::test::ScopedCommandLine scoped_command_line;
+  base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
+  command_line->AppendSwitchASCII(embedder_support::kUserAgent,
+                                  custom_user_agent);
+  ASSERT_TRUE(command_line->HasSwitch(embedder_support::kUserAgent));
+  // Make sure return blank values for HeadlessBrowser::GetUserAgentMetadata().
+  EXPECT_EQ(blink::UserAgentMetadata(),
+            HeadlessBrowser::GetUserAgentMetadata());
 }
 
 }  // namespace headless

@@ -9,7 +9,6 @@
           "--anarg"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "args_test args",
@@ -24,7 +23,6 @@
           "--iam"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "args_test mixins",
@@ -44,7 +42,6 @@
           "--iam"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "args_test swarming",

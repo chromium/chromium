@@ -9,8 +9,6 @@ namespace media_router {
 
 static constexpr char kHistogramDialCreateRouteResult[] =
     "MediaRouter.Dial.CreateRoute";
-static constexpr char kHistogramDialParseMessageResult[] =
-    "MediaRouter.Dial.ParseMessage";
 
 // Note on enums defined in this file:
 // These values are persisted to logs. Entries should not be renumbered and
@@ -27,17 +25,9 @@ enum class DialCreateRouteResult {
   kCount
 };
 
-enum class DialParseMessageResult {
-  kSuccess = 0,
-  kParseError = 1,
-  kInvalidMessage = 2,
-  kCount
-};
-
 class DialMediaRouteProviderMetrics {
  public:
   static void RecordCreateRouteResult(DialCreateRouteResult result);
-  static void RecordParseMessageResult(DialParseMessageResult result);
 };
 
 }  // namespace media_router

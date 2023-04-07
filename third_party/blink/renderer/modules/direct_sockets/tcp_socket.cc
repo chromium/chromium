@@ -134,6 +134,7 @@ TCPSocket* TCPSocket::CreateFromAcceptedConnection(
 
 TCPSocket::TCPSocket(ScriptState* script_state)
     : Socket(script_state),
+      ActiveScriptWrappable<TCPSocket>({}),
       tcp_socket_{GetExecutionContext()},
       socket_observer_{this, GetExecutionContext()} {}
 

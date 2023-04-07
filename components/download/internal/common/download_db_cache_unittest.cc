@@ -7,11 +7,11 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "base/uuid.h"
 #include "components/download/database/download_db_conversions.h"
 #include "components/download/database/download_db_entry.h"
 #include "components/download/database/download_db_impl.h"
@@ -35,7 +35,7 @@ DownloadDBEntry CreateDownloadDBEntry() {
   DownloadDBEntry entry;
   DownloadInfo download_info;
   download_info.in_progress_info = InProgressInfo();
-  download_info.guid = base::GenerateGUID();
+  download_info.guid = base::GenerateUuid();
   static int id = 0;
   download_info.id = ++id;
   download_info.in_progress_info->hash = "abc";

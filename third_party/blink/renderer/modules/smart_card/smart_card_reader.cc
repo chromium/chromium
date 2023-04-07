@@ -34,6 +34,7 @@ V8SmartCardReaderState::Enum V8StateFromMojoState(
 SmartCardReader::SmartCardReader(SmartCardReaderInfoPtr info,
                                  ExecutionContext* context)
     : ExecutionContextLifecycleObserver(context),
+      ActiveScriptWrappable<SmartCardReader>({}),
       name_(info->name),
       state_(V8StateFromMojoState(info->state)),
       atr_(info->atr) {}

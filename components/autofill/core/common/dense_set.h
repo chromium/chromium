@@ -183,15 +183,7 @@ class DenseSet {
   }
 
   // Returns a raw bitmask. Useful for serialization.
-  // Deprecated: use `data()` instead.
-  template <size_t kNumWords = kNumWords,
-            std::enable_if_t<kNumWords == 1, bool> = true>
-  uint64_t to_uint64() const {
-    return words_.front();
-  }
-
-  // Returns a raw bitmask. Useful for serialization.
-  base::span<const Word, kNumWords> data() const { return words_; }
+  constexpr base::span<const Word, kNumWords> data() const { return words_; }
 
   friend bool operator==(const DenseSet& a, const DenseSet& b) {
     return a.words_ == b.words_;

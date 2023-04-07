@@ -114,24 +114,18 @@ IN_PROC_BROWSER_TEST_F(FaviconFetcherBrowserTest,
   content::WebContents* web_contents =
       static_cast<TabImpl*>(shell()->tab())->web_contents();
 
-  // Initially there should be no driver (because favicons haven't been
-  // requested).
-  EXPECT_EQ(nullptr,
-            favicon::ContentFaviconDriver::FromWebContents(web_contents));
+  // Drivers are immediately created for every tab.
+  auto* favicon_driver =
+      favicon::ContentFaviconDriver::FromWebContents(web_contents);
+  EXPECT_NE(nullptr, favicon_driver);
 
   // Request a fetcher, which should trigger creating ContentFaviconDriver.
   TestFaviconFetcherDelegate fetcher_delegate;
   auto fetcher = shell()->tab()->CreateFaviconFetcher(&fetcher_delegate);
-  EXPECT_NE(nullptr,
+  // Check that the driver has not changed.
+  EXPECT_EQ(favicon_driver,
             favicon::ContentFaviconDriver::FromWebContents(web_contents));
 
-  // Destroy the fetcher, which should destroy ContentFaviconDriver.
-  fetcher.reset();
-  EXPECT_EQ(nullptr,
-            favicon::ContentFaviconDriver::FromWebContents(web_contents));
-
-  // One more time, and this time navigate.
-  fetcher = shell()->tab()->CreateFaviconFetcher(&fetcher_delegate);
   NavigateAndWaitForCompletion(
       embedded_test_server()->GetURL("/simple_page_with_favicon.html"),
       shell());

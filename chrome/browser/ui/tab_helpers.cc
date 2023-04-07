@@ -165,6 +165,7 @@
 #include "content/public/common/content_features.h"
 #else
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
+#include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/preloading/prefetch/zero_suggest_prefetch/zero_suggest_prefetch_tab_helper.h"
 #include "chrome/browser/tab_contents/form_interaction_tab_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
@@ -516,7 +517,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   if (base::FeatureList::IsEnabled(ntp_features::kNtpHistoryClustersModule)) {
     side_panel::HistoryClustersTabHelper::CreateForWebContents(web_contents);
   }
-  if (base::FeatureList::IsEnabled(features::kSidePanelCompanion)) {
+  if (base::FeatureList::IsEnabled(companion::features::kSidePanelCompanion)) {
     companion::CompanionTabHelper::CreateForWebContents(web_contents);
   }
 #endif

@@ -52,7 +52,7 @@ interface LocaleInfo {
 
 const DEFAULT_BLACK_CURSOR_COLOR: number = 0;
 
-interface SettingsManageA11yPageElement {
+export interface SettingsManageA11yPageElement {
   $: {
     pointerSubpageButton: CrLinkRowElement,
     startupSoundEnabled: CrToggleElement,
@@ -62,7 +62,8 @@ interface SettingsManageA11yPageElement {
 const SettingsManageA11yPageElementBase = PrefsMixin(DeepLinkingMixin(
     RouteOriginMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
 
-class SettingsManageA11yPageElement extends SettingsManageA11yPageElementBase {
+export class SettingsManageA11yPageElement extends
+    SettingsManageA11yPageElementBase {
   static get is() {
     return 'settings-manage-a11y-page' as const;
   }

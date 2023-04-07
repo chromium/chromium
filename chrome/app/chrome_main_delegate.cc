@@ -39,6 +39,7 @@
 #include "base/trace_event/trace_event_impl.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/buildflags.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/chrome_resource_bundle_helper.h"
 #include "chrome/browser/defaults.h"
@@ -208,10 +209,10 @@
 #include "chrome/child/pdf_child_init.h"
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 #include "chrome/browser/chrome_process_singleton.h"
 #include "chrome/browser/process_singleton.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/common/chrome_paths_lacros.h"
@@ -658,7 +659,7 @@ absl::optional<int> ChromeMainDelegate::PostEarlyInitialization(
     return absl::nullopt;
   }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
   // Configure the early process singleton experiment.
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
@@ -1613,10 +1614,10 @@ void ChromeMainDelegate::ProcessExiting(const std::string& process_type) {
         browser_shutdown::ShutdownType::kOtherExit);
   }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
   if (ChromeProcessSingleton::IsEarlySingletonFeatureEnabled())
     ChromeProcessSingleton::DeleteInstance();
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 
   if (SubprocessNeedsResourceBundle(process_type))
     ui::ResourceBundle::CleanupSharedInstance();

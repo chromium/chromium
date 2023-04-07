@@ -1329,7 +1329,6 @@
 <translation id="2114820389966440614">"حالیہ ہائی لائٹس" اور دیگر یادیں یہاں دیکھیں</translation>
 <translation id="2114896190328250491"><ph name="NAME" /> کی تصویر</translation>
 <translation id="2114995631896158695">‏کوئی SIM کارڈ داخل نہیں کیا گیا</translation>
-<translation id="2116020356255810305">شروعات میں لانچنگ ایپ فعال کریں</translation>
 <translation id="2116619964159595185">سائٹس عام طور پر کم توانائی والے بیکن کو سیٹ اپ کرنے یا مطابقت پذیر کرنے، صحت یا تندرستی کے ٹریکر یا اسمارٹ لائٹ بلب جیسی خصوصیات کے لئے بلوٹوتھ آلات سے منسلک ہوتی ہیں</translation>
 <translation id="2117655453726830283">اگلی سلائیڈ</translation>
 <translation id="2119349053129246860"><ph name="APP" /> میں کھولیں</translation>
@@ -3259,7 +3258,6 @@
 <translation id="380329542618494757">نام</translation>
 <translation id="3803345858388753269">ویڈیو کا معیار</translation>
 <translation id="3803367742635802571">جو سائٹس آپ دیکھتے ہیں وہ ڈیزائن کے مطابق کام کرنا بند کر سکتی ہیں</translation>
-<translation id="3803583375545057606">آپ کے والدین سے اس ایکسٹینشن کو فعال کرنے کو کہیں؟</translation>
 <translation id="380408572480438692">‏کارکردگی ڈیٹا کی جمع آوری کو فعال کرنے سے Google کو وقت وقت پر سسٹم کو بہتر بنانے میں مدد ملے گی۔ اس وقت تک کوئی ڈیٹا نہیں بھیجا جاتا ہے جب تک آپ ایک تاثرات رپورٹ نہ فائل کریں (Alt-Shift-I) اور کارکردگی کا ڈیٹا شامل نہ کریں۔ آپ کسی بھی وقت جمع آوری کو غیر فعال کرنے کیلئے اس اسکرین پر واپس آ سکتے ہیں۔</translation>
 <translation id="3807249107536149332">‏<ph name="EXTENSION_NAME" /> (ایکسٹینشن ID "<ph name="EXTENSION_ID" />") کی لاگ ان اسکرین پر اجازت نہیں ہے۔</translation>
 <translation id="3807747707162121253">&amp;منسوخ کریں</translation>
@@ -3681,7 +3679,6 @@
 <translation id="4169535189173047238">اجازت نہ دیں</translation>
 <translation id="4170314459383239649">باہر نکلنے پر صاف کریں</translation>
 <translation id="417096670996204801">ایک پروفائل منتخب کریں</translation>
-<translation id="41725145403849567">آپ کے والدین سے اس ایکسٹینشن کو شامل کرنے کو کہیں؟</translation>
 <translation id="4175137578744761569">ہلکا جامنی اور سفید</translation>
 <translation id="4175737294868205930">مستقل اسٹوریج</translation>
 <translation id="4176463684765177261">غیر فعال</translation>
@@ -5093,7 +5090,6 @@
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{‏PIN میں کم از کم ایک حرف ہونا چاہیے}other{‏PIN میں کم از کم # حروف ہونا چاہیے}}</translation>
 <translation id="5474859849784484111">‏<ph name="MANAGER" /> کو درکار ہے کہ آپ ابھی Wi-Fi سے منسلک ہوں اور اپ ڈیٹ ڈاؤن لوڈ کریں۔ یا میٹرڈ کنکشن سے ڈاؤن لوڈ کریں (چارجز لاگو ہو سکتے ہیں)۔</translation>
 <translation id="5476016146231427848">‏Chromebook پر Steam استعمال کرنے کے لیے براہ کرم اپنا آلہ ری اسٹارٹ کریں</translation>
-<translation id="5476897066181964657">یہ ایکسٹینشن شامل کرنے کے لئے آپ کے والدین یا سرپرست کو کہنا ہوگا کہ یہ آپ کے لئے ٹھیک ہے</translation>
 <translation id="5481273127572794904">خودکار طور پر متعدد فائلز ڈاؤن لوڈ کرنے کی اجازت نہیں ہے</translation>
 <translation id="5481941284378890518">قریبی پرنٹرز کو شامل کریں</translation>
 <translation id="5483785310822538350">فائل اور آلہ کی رسائی کو کالعدم کریں</translation>
@@ -5190,7 +5186,6 @@
 <translation id="5555639311269196631">ہاٹ اسپاٹ آف کریں</translation>
 <translation id="5556459405103347317">دوبارہ لوڈ کریں</translation>
 <translation id="5558129378926964177">زوم &amp;ان کریں</translation>
-<translation id="5558247502209241936">ونڈو میں ایپ کو کھولنا فعال کریں</translation>
 <translation id="5559311991468302423">پتہ حذف کریں</translation>
 <translation id="55601339223879446">ڈسپلے کے اندر اپنے ڈیسک ٹاپ کی حدود کو ایڈجسٹ کریں</translation>
 <translation id="5561162485081632007">جب خطرناک ایونٹس ہوتے ہیں تو ان کا پتہ لگا کر آپ کو ان کے بارے میں متنبہ کرتا ہے۔</translation>
@@ -6016,7 +6011,6 @@
 <translation id="6305607932814307878">عالمی پالیسی:</translation>
 <translation id="6305702903308659374">‏ChromeVox بول رہا ہو تب بھی حسب معمول آواز میں چلائیں</translation>
 <translation id="6305909198255586420">براہ کرم اپنی بنیادی پروفائل استعمال کر کے انسٹال کریں</translation>
-<translation id="630750887748244481">‏آپ کے والدین نے Chrome کے لیے "سائٹس، ایپس اور ایکسٹینشنز کی اجازتیں" کو آف کر دیا ہے۔ اس ایکسٹینشن کو شامل کرنے کی اجازت نہیں ہے۔</translation>
 <translation id="6307990684951724544">سسٹم مصروف ہے</translation>
 <translation id="6308493641021088955"><ph name="EXTENSION_NAME" /> کی طرف سے فراہم کردہ سائن ان</translation>
 <translation id="6308937455967653460">&amp;لنک محفوظ کریں بطور…</translation>
@@ -6842,7 +6836,6 @@
 <translation id="7025190659207909717">موبائل ڈیٹا سروس کا نظم</translation>
 <translation id="7025895441903756761">سیکیورٹی اور رازداری</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{سبھی کو &amp;پوشیدگی ونڈو میں کھولیں}=1{&amp;پوشیدگی ونڈو میں کھولیں}other{سبھی ({COUNT}) کو &amp;پوشیدگی ونڈو میں کھولیں}}</translation>
-<translation id="7028057921476386252">یہ ایکسٹینشن فعال کرنے کے لئے آپ کے والدین یا سرپرست کو کہنا ہوگا کہ یہ آپ کے لئے ٹھیک ہے</translation>
 <translation id="7029307918966275733">‏Crostini انسٹال نہیں ہے۔ کریڈٹس دیکھنے کیلئے براہ کرم Crostini انسٹال کریں۔</translation>
 <translation id="7029809446516969842">پاس ورڈز</translation>
 <translation id="7030304022046916278">‏چیک کرنے کے لیے URLs کو محفوظ براؤزنگ کو بھیجتا ہے</translation>
@@ -8220,7 +8213,6 @@
 <translation id="8251509999076836464"><ph name="DEVICE_NAME" /> سے جوڑا بنایا جا رہا ہے</translation>
 <translation id="8251578425305135684">تھمب نیل کو ہٹا دیا گیا۔</translation>
 <translation id="825238165904109940">‏ہمیشہ مکمل URLs دکھائیں</translation>
-<translation id="8252538334423261825">ایکسٹینشن شامل نہیں کر سکتے</translation>
 <translation id="8252569384384439529">اپ لوڈ ہو رہی ہے...</translation>
 <translation id="8253198102038551905">نیٹ ورک کی خصوصیات حاصل کرنے کیلئے '+' پر کلک کریں</translation>
 <translation id="8255212965098517578">حالیہ تصاویر، اطلاعات اور ایپس</translation>

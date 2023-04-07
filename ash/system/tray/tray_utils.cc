@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/bubble/bubble_constants.h"
+#include "ash/constants/ash_constants.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -72,11 +73,12 @@ void SetWarningSubText(HoverHighlightView* view, std::u16string subtext) {
 }
 
 gfx::Insets GetTrayBubbleInsets() {
-  // Decrease bottom and right insets to compensate for the adjustment of
-  // the respective edges in Shelf::GetSystemTrayAnchorRect().
+  // Decrease bottom and side insets by `kShelfDisplayOffset` to compensate for
+  // the adjustment of the respective edges in Shelf::GetSystemTrayAnchorRect().
   gfx::Insets insets = gfx::Insets::TLBR(
-      kBubbleMenuPadding, kBubbleMenuPadding, kBubbleMenuPadding - 1,
-      kBubbleMenuPadding - (base::i18n::IsRTL() ? 0 : 1));
+      kBubbleMenuPadding, kBubbleMenuPadding,
+      kBubbleMenuPadding - kShelfDisplayOffset,
+      kBubbleMenuPadding - (base::i18n::IsRTL() ? 0 : kShelfDisplayOffset));
 
   // The work area in tablet mode always uses the in-app shelf height, which is
   // shorter than the standard shelf height. In this state, we need to add back

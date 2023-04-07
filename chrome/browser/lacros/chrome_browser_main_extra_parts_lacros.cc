@@ -104,6 +104,10 @@ void ChromeBrowserMainExtraPartsLacros::PreProfileInit() {
     device_local_account_extension_installer_ =
         std::make_unique<DeviceLocalAccountExtensionInstallerLacros>();
   }
+
+  DCHECK(!g_browser_process->geolocation_manager());
+  g_browser_process->SetGeolocationManager(
+      SystemGeolocationSourceLacros::CreateGeolocationManagerOnLacros());
 }
 
 void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
@@ -258,10 +262,6 @@ void ChromeBrowserMainExtraPartsLacros::PostProfileInit(
                 crosapi::ViewsTextServicesContextMenuLacros>(menu_model,
                                                              textfield);
           }));
-
-  DCHECK(!g_browser_process->geolocation_manager());
-  g_browser_process->SetGeolocationManager(
-      SystemGeolocationSourceLacros::CreateGeolocationManagerOnLacros());
 }
 
 void ChromeBrowserMainExtraPartsLacros::PostMainMessageLoopRun() {

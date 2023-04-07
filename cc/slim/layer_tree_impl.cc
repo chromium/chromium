@@ -169,6 +169,12 @@ void LayerTreeImpl::SetNeedsRedraw() {
   SetClientNeedsOneBeginFrame();
 }
 
+void LayerTreeImpl::MaybeCompositeNow() {
+  if (frame_sink_) {
+    frame_sink_->MaybeCompositeNow();
+  }
+}
+
 const scoped_refptr<Layer>& LayerTreeImpl::root() const {
   return root_;
 }
@@ -224,6 +230,7 @@ bool LayerTreeImpl::BeginFrame(
   // Skip any delayed BeginFrame messages that arrive even after we no longer
   // need it.
   if (!NeedsDraw()) {
+    TRACE_EVENT_INSTANT0("cc", "EarlyOut_NotNeeded", TRACE_EVENT_SCOPE_THREAD);
     num_begin_frames_with_no_draw_++;
     frame_sink_->SetNeedsBeginFrame(NeedsBeginFrames());
     return false;
@@ -386,7 +393,10 @@ void LayerTreeImpl::GenerateCompositorFrame(
     viz::CompositorFrame& out_frame,
     base::flat_set<viz::ResourceId>& out_resource_ids,
     viz::HitTestRegionList& out_hit_test_region_list) {
-  TRACE_EVENT0("cc", "slim::LayerTreeImpl::ProduceFrame");
+  TRACE_EVENT_WITH_FLOW1("viz,benchmark", "Graphics.Pipeline",
+                         TRACE_ID_GLOBAL(args.trace_id),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
+                         "step", "GenerateCompositorFrame");
 
   for (auto& resource_request :
        ui_resource_manager_.TakeUIResourcesRequests()) {

@@ -190,6 +190,8 @@ absl::optional<std::u16string> GetExtraText(
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionPromptBubbleView,
                                       kPermissionPromptBubbleViewIdentifier);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionPromptBubbleView,
+                                      kAllowButtonElementId);
 
 PermissionPromptBubbleView::PermissionPromptBubbleView(
     Browser* browser,
@@ -199,13 +201,13 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
     : browser_(browser),
       delegate_(delegate),
       permission_requested_time_(permission_requested_time),
+      is_one_time_permission_(IsOneTimePermission(*delegate.get())),
       url_identity_(GetUrlIdentity(browser, *delegate)),
       accessible_window_title_(GetAccessibleWindowTitleInternal(
           url_identity_.name,
           GetVisibleRequests(*delegate.get()))),
       window_title_(
-          GetWindowTitleInternal(url_identity_.name,
-                                 IsOneTimePermission(*delegate.get()))) {
+          GetWindowTitleInternal(url_identity_.name, is_one_time_permission_)) {
   // Note that browser_ may be null in unit tests.
 
   // To prevent permissions being accepted accidentally, and as a security
@@ -235,7 +237,7 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
     extra_text_label->SetMultiLine(true);
   }
 
-  if (IsOneTimePermission(*delegate)) {
+  if (is_one_time_permission_) {
     SetButtons(ui::DIALOG_BUTTON_NONE);
 
     auto buttons_container = std::make_unique<views::View>();
@@ -255,6 +257,8 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
         base::BindRepeating(&PermissionPromptBubbleView::AcceptPermission,
                             base::Unretained(this)),
         l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_ALWAYS));
+    allow_always_button->SetProperty(views::kElementIdentifierKey,
+                                     kAllowButtonElementId);
 
     auto block_button = std::make_unique<views::MdTextButton>(
         base::BindRepeating(&PermissionPromptBubbleView::DenyPermission,
@@ -305,6 +309,11 @@ void PermissionPromptBubbleView::Show() {
   UpdateAnchorPosition();
 
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(this);
+
+  if (!is_one_time_permission_) {
+    GetOkButton()->SetProperty(views::kElementIdentifierKey,
+                               kAllowButtonElementId);
+  }
 
   if (base::FeatureList::IsEnabled(views::features::kWidgetLayering)) {
     widget->SetZOrderSublevel(ChromeWidgetSublevel::kSublevelSecurity);

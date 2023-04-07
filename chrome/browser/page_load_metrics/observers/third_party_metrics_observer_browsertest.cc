@@ -28,6 +28,12 @@ const char kAccessSessionStorageHistogram[] =
     "PageLoad.Clients.ThirdParty.Origins.SessionStorageAccess2";
 const char kSubframeFCPHistogram[] =
     "PageLoad.Clients.ThirdParty.Frames.NavigationToFirstContentfulPaint3";
+const char kOpaqueSubframeFCPHistogram[] =
+    "PageLoad.Clients.ThirdParty.Frames.Opaque."
+    "NavigationToFirstContentfulPaint";
+const char kOpaqueSubframeLCPHistogram[] =
+    "PageLoad.Clients.ThirdParty.Frames.Opaque."
+    "NavigationToLargestContentfulPaint";
 
 void InvokeStorageAccessOnFrame(content::RenderFrameHost* frame,
                                 blink::mojom::WebFeature storage_feature) {
@@ -137,11 +143,18 @@ class ThirdPartyMetricsObserverBrowserTest : public InProcessBrowserTest {
       const std::string& host,
       const std::string& path,
       page_load_metrics::PageLoadMetricsTestWaiter* waiter) {
+    GURL page = https_server()->GetURL(host, path);
+    NavigateFrameAndWaitForFCP(page, waiter);
+  }
+
+  void NavigateFrameAndWaitForFCP(
+      const GURL& url,
+      page_load_metrics::PageLoadMetricsTestWaiter* waiter) {
     // Waiting for the frame to navigate ensures that any previous RFHs for this
     // frame have been deleted and therefore won't pollute any future frame
     // expectations (such as FCP).
     waiter->AddSubframeNavigationExpectation();
-    NavigateFrameTo(host, path);
+    NavigateFrameToUrl(url);
     waiter->Wait();
 
     waiter->AddSubFrameExpectation(
@@ -225,6 +238,29 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
   histogram_tester.ExpectTotalCount(kSubframeFCPHistogram, 3);
 }
 
+IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
+                       OpaqueOriginSubframe) {
+  base::HistogramTester histogram_tester;
+
+  page_load_metrics::PageLoadMetricsTestWaiter waiter(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  NavigateToPageWithFrameAndWaitForFrame("a.com", &waiter);
+
+  // Navigate the frame to a third-party page.
+  NavigateFrameAndWaitForFCP("b.com", "/select.html", &waiter);
+
+  // Navigate the frame to an opaque origin URL.
+  NavigateFrameAndWaitForFCP(GURL("data:,hello"), &waiter);
+
+  content::RenderFrameHost* subframe_rfh =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), /*index=*/0);
+  ASSERT_TRUE(subframe_rfh->GetLastCommittedOrigin().opaque());
+
+  histogram_tester.ExpectTotalCount(kSubframeFCPHistogram, 2);
+  histogram_tester.ExpectTotalCount(kOpaqueSubframeFCPHistogram, 1);
+  histogram_tester.ExpectTotalCount(kOpaqueSubframeLCPHistogram, 1);
+}
+
 IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest, NoStorageEvent) {
   base::HistogramTester histogram_tester;
   NavigateToPageWithFrame("a.com");
@@ -289,8 +325,8 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
   NavigateFrameTo("b.com", "/set-cookie?thirdparty=1;SameSite=None;Secure");
   // 3p cookie read
   NavigateFrameTo("b.com", "/");
-  NavigateToUntrackedUrl();
   observer.Wait();
+  NavigateToUntrackedUrl();
 
   histogram_tester.ExpectUniqueSample(kReadCookieHistogram, 1, 1);
   histogram_tester.ExpectUniqueSample(kWriteCookieHistogram, 1, 1);
@@ -319,8 +355,8 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
           url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES));
   NavigateFrameToUrl(url);           // 3p cookie write
   NavigateFrameTo(url.host(), "/");  // 3p cookie read
-  NavigateToUntrackedUrl();
   observer.Wait();
+  NavigateToUntrackedUrl();
 
   histogram_tester.ExpectUniqueSample(kReadCookieHistogram, 1, 1);
   histogram_tester.ExpectUniqueSample(kWriteCookieHistogram, 1, 1);
@@ -348,8 +384,8 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
   NavigateFrameTo("c.com", "/set-cookie?thirdparty=1;SameSite=None;Secure");
   // 3p cookie read
   NavigateFrameTo("c.com", "/");
-  NavigateToUntrackedUrl();
   observer.Wait();
+  NavigateToUntrackedUrl();
 
   histogram_tester.ExpectUniqueSample(kReadCookieHistogram, 2, 1);
   histogram_tester.ExpectUniqueSample(kWriteCookieHistogram, 2, 1);
@@ -407,8 +443,8 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
 
   // Read a third-party cookie.
   EXPECT_TRUE(content::ExecJs(frame, "let x = document.cookie;"));
-  NavigateToUntrackedUrl();
   observer.Wait();
+  NavigateToUntrackedUrl();
 
   histogram_tester.ExpectUniqueSample(kReadCookieHistogram, 1, 1);
   histogram_tester.ExpectUniqueSample(kWriteCookieHistogram, 1, 1);
@@ -461,8 +497,8 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
   // Write a third-party cookie.
   EXPECT_TRUE(content::ExecJs(
       frame, "document.cookie = 'foo=bar;SameSite=None;Secure';"));
-  NavigateToUntrackedUrl();
   observer.Wait();
+  NavigateToUntrackedUrl();
 
   histogram_tester.ExpectUniqueSample(kReadCookieHistogram, 0, 1);
   histogram_tester.ExpectUniqueSample(kWriteCookieHistogram, 1, 1);

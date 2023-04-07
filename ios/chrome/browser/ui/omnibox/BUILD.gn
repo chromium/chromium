@@ -59,8 +59,8 @@ source_set("omnibox_suggestion_icon_util") {
     "resources:pedal_settings",
     "resources:search",
     "//base",
-    "//ios/chrome/browser/ui/icons:buildflags",
-    "//ios/chrome/browser/ui/icons:symbols",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/symbols:buildflags",
   ]
 }
 
@@ -83,7 +83,7 @@ source_set("omnibox_util") {
     "//components/omnibox/browser",
     "//components/security_state/core",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/ui/icons:symbols",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//third_party/omnibox_proto",
   ]
   public_deps = [
@@ -102,7 +102,7 @@ source_set("omnibox_icon_type_constants") {
   ]
   deps = [
     "//base",
-    "//ios/chrome/browser/ui/icons:symbols",
+    "//ios/chrome/browser/shared/ui/symbols",
   ]
 }
 

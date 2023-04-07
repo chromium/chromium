@@ -55,6 +55,10 @@ suite('shortcutCustomizationAppTest', function() {
 
   let handler: FakeShortcutSearchHandler;
 
+  const jellyDisabledCssUrl =
+      'chrome://resources/chromeos/colors/cros_styles.css';
+  let linkEl: HTMLLinkElement|null = null;
+
   setup(() => {
     manager = AcceleratorLookupManager.getInstance();
 
@@ -77,6 +81,11 @@ suite('shortcutCustomizationAppTest', function() {
     handler = new FakeShortcutSearchHandler();
     handler.setFakeSearchResult(fakeSearchResults);
     setShortcutSearchHandlerForTesting(handler);
+
+    // Setup link element for dynamic/jelly color tests.
+    linkEl = document.createElement('link');
+    linkEl.href = jellyDisabledCssUrl;
+    document.head.appendChild(linkEl);
   });
 
   teardown(() => {
@@ -88,6 +97,10 @@ suite('shortcutCustomizationAppTest', function() {
       page.remove();
     }
     page = null;
+    if (linkEl) {
+      document.head.removeChild(linkEl);
+    }
+    linkEl = null;
   });
 
   function getManager(): AcceleratorLookupManager {
@@ -113,6 +126,11 @@ suite('shortcutCustomizationAppTest', function() {
     const subPage = navBody!.querySelector(`#${subPageId}`);
     assertTrue(!!subPage, `Expected subpage with id ${subPageId} to exist.`);
     return subPage!.shadowRoot!.querySelectorAll('accelerator-subsection');
+  }
+
+  function getLinkEl(): HTMLLinkElement {
+    assertTrue(!!linkEl);
+    return linkEl as HTMLLinkElement;
   }
 
   async function openDialogForAcceleratorInSubsection(subsectionIndex: number) {
@@ -614,5 +632,26 @@ suite('shortcutCustomizationAppTest', function() {
     assertEquals(
         `category-${AcceleratorCategory.kWindowsAndDesks}`,
         page.$.navigationPanel.selectedItem.id);
+  });
+
+  test('IsJellyEnabledForShortcutCustomization_DisabledKeepsCSS', async () => {
+    loadTimeData.overrideValues({
+      isJellyEnabledForShortcutCustomization: false,
+    });
+
+    page = initShortcutCustomizationAppElement();
+    await flushTasks();
+
+    assertTrue(getLinkEl().href.includes(jellyDisabledCssUrl));
+  });
+
+  test('IsJellyEnabledForShortcutCustomization_EnabledUpdatesCSS', async () => {
+    loadTimeData.overrideValues({
+      isJellyEnabledForShortcutCustomization: true,
+    });
+    page = initShortcutCustomizationAppElement();
+    await flushTasks();
+
+    assertTrue(getLinkEl().href.includes('chrome://theme/colors.css'));
   });
 });

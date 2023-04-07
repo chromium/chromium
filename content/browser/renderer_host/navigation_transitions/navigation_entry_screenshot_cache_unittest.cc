@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "cc/resources/ui_resource_bitmap.h"
+#include "content/browser/browser_context_impl.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot.h"
@@ -165,8 +166,9 @@ class NavigationEntryScreenshotCacheTest : public RenderViewHostTestHarness {
   WebContents* tab2() { return tabs_[1].get(); }
   WebContents* tab3() { return tabs_[2].get(); }
 
-  base::SafeRef<NavigationEntryScreenshotManager> GetManager() {
-    return GetCacheForTab(tabs_[0].get())->GetManagerForTesting();
+  NavigationEntryScreenshotManager* GetManager() {
+    return BrowserContextImpl::From(browser_context())
+        ->GetNavigationEntryScreenshotManager();
   }
 
  private:
@@ -490,9 +492,7 @@ TEST_F(NavigationEntryScreenshotCacheTest, OnWebContentsDestroyed) {
   ASSERT_EQ(GetManager()->GetCurrentCacheSize(), 64U * 2);
 
   RemoveTab(tab1());
-  // TODO(liuwilliam): We can't call `GetManager()->IsEmpty()` because all tabs
-  // are gone, and the manager is only exposed to the test through the
-  // `NavigationEntryScreenshotCache`.
+  ASSERT_TRUE(GetManager()->IsEmpty());
 }
 
 // `base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL` signals the

@@ -27,9 +27,9 @@ struct ThumbParams {
 // bytes. Used by Chrome OS to generate thumbnails for local PDF files.
 interface PdfThumbnailer {
   // Generates a thumbnail for a PDF content.
-  // |params| dictate details (e.g., size) of the thumbnail. |pdf_region|
+  // `params` dictate details (e.g., size) of the thumbnail. `pdf_region`
   // should hold bytes of the PDF for which the thumbnail is generated.
-  // |bitmap| contains the generated PDF thumbnail.
+  // `bitmap` contains the generated PDF thumbnail.
   GetThumbnail(ThumbParams params,
                mojo_base.mojom.ReadOnlySharedMemoryRegion pdf_region)
       => (skia.mojom.BitmapN32? bitmap);

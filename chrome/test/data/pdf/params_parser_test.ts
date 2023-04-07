@@ -7,6 +7,9 @@ import {FittingType, OpenPdfParamsParser, ViewMode} from 'chrome-extension://mhj
 const URL = 'http://xyz.pdf';
 
 function getParamsParser(): OpenPdfParamsParser {
+  const getPageBoundingBoxCallback = function(_page: number) {
+    return Promise.resolve({x: 10, y: 15, width: 200, height: 300});
+  };
   const paramsParser = new OpenPdfParamsParser(function(destination: string) {
     // Set the dummy viewport dimensions for calculating the zoom level for
     // view destination with 'FitR' type.
@@ -89,7 +92,7 @@ function getParamsParser(): OpenPdfParamsParser {
     }
     return Promise.resolve(
         {messageId: 'getNamedDestination_13', pageNumber: -1});
-  });
+  }, getPageBoundingBoxCallback);
   return paramsParser;
 }
 
@@ -380,6 +383,21 @@ chrome.test.runTests([
     // Checking no relevant parameters defaults to !sidenavCollapsed.
     chrome.test.assertFalse(paramsParser.shouldShowSidenav(`${URL}`, true));
     chrome.test.assertTrue(paramsParser.shouldShowSidenav(`${URL}`, false));
+
+    chrome.test.succeed();
+  },
+  async function testParamsViewFitB() {
+    const paramsParser = getParamsParser();
+
+    // Checking #view=FitB.
+    const params =
+        await paramsParser.getViewportFromUrlParams(`${URL}#view=FitB`);
+    chrome.test.assertEq(FittingType.FIT_TO_BOUNDING_BOX, params.view);
+    chrome.test.assertTrue(params.boundingBox !== undefined);
+    chrome.test.assertEq(10, params.boundingBox.x);
+    chrome.test.assertEq(15, params.boundingBox.y);
+    chrome.test.assertEq(200, params.boundingBox.width);
+    chrome.test.assertEq(300, params.boundingBox.height);
 
     chrome.test.succeed();
   },

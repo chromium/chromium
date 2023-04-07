@@ -856,11 +856,11 @@ Request::Request(ScriptState* script_state,
                  FetchRequestData* request,
                  Headers* headers,
                  AbortSignal* signal)
-    : Body(ExecutionContext::From(script_state)),
+    : ActiveScriptWrappable<Request>({}),
+      Body(ExecutionContext::From(script_state)),
       request_(request),
       headers_(headers),
-      signal_(signal) {
-}
+      signal_(signal) {}
 
 Request::Request(ScriptState* script_state, FetchRequestData* request)
     : Request(script_state,

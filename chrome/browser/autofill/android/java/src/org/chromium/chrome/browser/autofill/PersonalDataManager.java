@@ -1381,7 +1381,8 @@ public class PersonalDataManager {
      *         it is fetched from this URL.
      * @return Bitmap if found in the local cache, else return null.
      */
-    public Bitmap getCustomImageForAutofillSuggestionIfAvailable(GURL customImageUrl) {
+    public Bitmap getCustomImageForAutofillSuggestionIfAvailable(
+            GURL customImageUrl, float cornerRadius) {
         if (mCreditCardArtImages.containsKey(customImageUrl.getSpec())) {
             return mCreditCardArtImages.get(customImageUrl.getSpec());
         }
@@ -1393,7 +1394,7 @@ public class PersonalDataManager {
             if (bitmap == null) return;
 
             mCreditCardArtImages.put(customImageUrl.getSpec(),
-                    AutofillUiUtils.getRoundedBitmap(bitmap,
+                    AutofillUiUtils.getRoundedBitmap(bitmap, cornerRadius,
                             ChromeFeatureList.isEnabled(
                                     ChromeFeatureList
                                             .AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)));

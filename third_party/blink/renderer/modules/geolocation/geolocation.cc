@@ -124,7 +124,8 @@ Geolocation* Geolocation::geolocation(Navigator& navigator) {
 }
 
 Geolocation::Geolocation(Navigator& navigator)
-    : Supplement<Navigator>(navigator),
+    : ActiveScriptWrappable<Geolocation>({}),
+      Supplement<Navigator>(navigator),
       ExecutionContextLifecycleObserver(navigator.DomWindow()),
       PageVisibilityObserver(navigator.DomWindow()->GetFrame()->GetPage()),
       one_shots_(MakeGarbageCollected<GeoNotifierSet>()),

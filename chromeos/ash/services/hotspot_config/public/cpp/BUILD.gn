@@ -10,8 +10,6 @@ source_set("cpp") {
   sources = [
     "cros_hotspot_config_observer.cc",
     "cros_hotspot_config_observer.h",
-    "hotspot_enabled_state_provider.cc",
-    "hotspot_enabled_state_provider.h",
   ]
 
   deps = [ "//chromeos/ash/services/hotspot_config/public/mojom" ]

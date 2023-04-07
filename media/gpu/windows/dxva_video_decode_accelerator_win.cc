@@ -136,10 +136,6 @@ static const CLSID CLSID_CAV1DecoderMFT = {
     0x4721,
     {0xB3, 0xF5, 0xD4, 0x84, 0xD8, 0x56, 0x1E, 0x47}};
 
-constexpr const wchar_t* const kMediaFoundationVideoDecoderDLLs[] = {
-    L"mf.dll", L"mfplat.dll", L"msmpeg2vdec.dll",
-};
-
 uint64_t GetCurrentQPC() {
   LARGE_INTEGER perf_counter_now = {};
   // Use raw QueryPerformanceCounter to avoid grabbing locks or allocating
@@ -754,6 +750,9 @@ bool DXVAVideoDecodeAccelerator::Initialize(const Config& config,
     }
   }
 
+  RETURN_ON_FAILURE(InitializeMediaFoundation(),
+                    "Could not initialize Media Foundation", false);
+
   // Not all versions of Windows 7 and later include Media Foundation DLLs.
   // Instead of crashing while delay loading the DLL when calling MFStartup()
   // below, probe whether we can successfully load the DLL now.
@@ -787,9 +786,6 @@ bool DXVAVideoDecodeAccelerator::Initialize(const Config& config,
   State state = GetState();
   RETURN_ON_FAILURE((state == kUninitialized),
                     "Initialize: invalid state: " << state, false);
-
-  RETURN_ON_FAILURE(InitializeMediaFoundation(),
-                    "Could not initialize Media Foundation", false);
 
   config_ = config;
 
@@ -1383,13 +1379,8 @@ DXVAVideoDecodeAccelerator::GetSupportedProfiles(
                "DXVAVideoDecodeAccelerator::GetSupportedProfiles");
 
   SupportedProfiles profiles;
-  for (const wchar_t* mfdll : kMediaFoundationVideoDecoderDLLs) {
-    if (!::GetModuleHandle(mfdll)) {
-      // Windows N is missing the media foundation DLLs unless the media
-      // feature pack is installed.
-      PLOG(ERROR) << "DXVAVDA fatal error: Could not load " << mfdll;
-      return profiles;
-    }
+  if (!InitializeMediaFoundation()) {
+    return profiles;
   }
 
   const auto supported_resolutions = GetSupportedD3D11VideoDecoderResolutions(
@@ -1421,16 +1412,15 @@ DXVAVideoDecodeAccelerator::GetSupportedProfiles(
 
 // static
 void DXVAVideoDecodeAccelerator::PreSandboxInitialization() {
-  for (const wchar_t* mfdll : kMediaFoundationVideoDecoderDLLs) {
-    if (!::LoadLibrary(mfdll))
-      PLOG(ERROR) << "DXVAVDA fatal error: could not LoadLibrary: " << mfdll;
+  if (!PreSandboxMediaFoundationInitialization()) {
+    return;
   }
-
-  if (!::LoadLibrary(L"dxva2.dll"))
-    PLOG(ERROR) << "DXVAVDA fatal error: could not LoadLibrary: dxva2.dll";
-
-  if (!LoadLibrary(L"msvproc.dll")) {
-    PLOG(ERROR) << "DXVAVDA fatal error: could not LoadLibrary: msvproc.dll";
+  for (const wchar_t* dll :
+       {L"msmpeg2vdec.dll", L"dxva2.dll", L"msvproc.dll"}) {
+    if (!::LoadLibrary(dll)) {
+      PLOG(ERROR) << "Fatal DXVAVDA error, could not LoadLibrary: " << dll;
+      return;
+    }
   }
 }
 

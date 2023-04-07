@@ -358,6 +358,11 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // Stops mini-ARC instance. This should only be called before login.
   void StopMiniArcIfNecessary();
 
+  // Returns whether ARC activation is delayed by ARC on Demand
+  bool IsActivationDelayed() const {
+    return activation_delay_elapsed_timer_ != nullptr;
+  }
+
  private:
   // Reports statuses of OptIn flow to UMA.
   class ScopedOptInFlowTracker;

@@ -52,7 +52,7 @@
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/variations/hashing.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/browser_test_utils.h"

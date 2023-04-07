@@ -132,21 +132,11 @@ gfx::Point ConvertPageCoordToScreenCoord(
     return point;
   }
 
-  int x;
-  if (!content::ExecuteScriptAndExtractInt(
-          guest_main_frame,
-          "window.domAutomationController.send(linkScreenPositionX);", &x)) {
-    ADD_FAILURE() << "error getting linkScreenPositionX";
-    return point;
-  }
+  int x =
+      content::EvalJs(guest_main_frame, "linkScreenPositionX;").ExtractInt();
 
-  int y;
-  if (!content::ExecuteScriptAndExtractInt(
-          guest_main_frame,
-          "window.domAutomationController.send(linkScreenPositionY);", &y)) {
-    ADD_FAILURE() << "error getting linkScreenPositionY";
-    return point;
-  }
+  int y =
+      content::EvalJs(guest_main_frame, "linkScreenPositionY;").ExtractInt();
 
   return {x, y};
 }

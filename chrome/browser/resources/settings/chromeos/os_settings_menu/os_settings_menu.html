@@ -149,57 +149,18 @@
   }
 </style>
 <iron-selector id="topMenu"
-    attr-for-selected="href" on-iron-activate="onSelectorActivate_"
-    selectable="a"
-    role="navigation" on-click="onLinkClick_">
-  <a href="/internet" class="item">
-    <iron-icon icon="os-settings:network-wifi"></iron-icon>
-    $i18n{internetPageTitle}
-  </a>
-  <a href="/bluetooth" class="item">
-    <iron-icon icon="cr:bluetooth"></iron-icon>
-    $i18n{bluetoothPageTitle}
-  </a>
-  <a id="multidevice" href="/multidevice" class="item"
-      hidden="[[isGuestMode_]]">
-    <iron-icon icon="os-settings:multidevice-better-together-suite">
-    </iron-icon>
-    $i18n{multidevicePageTitle}
-  </a>
-  <a id="osPeople" href="/osPeople" hidden="[[isGuestMode_]]" class="item">
-    <iron-icon icon="cr:person"></iron-icon>
-    $i18n{osPeoplePageTitle}
-  </a>
-  <a id="kerberos" href="/kerberos" class="item"
-      hidden="[[!showKerberosSection]]">
-    <iron-icon icon="os-settings:auth-key"></iron-icon>
-    $i18n{kerberosPageTitle}
-  </a>
-  <a href="/device" class="item">
-    <iron-icon icon="os-settings:laptop-chromebook"></iron-icon>
-    $i18n{devicePageTitle}
-  </a>
-  <a id="personalization" href="/personalization" class="item"
-      hidden="[[isGuestMode_]]">
-    <iron-icon icon="os-settings:paint-brush"></iron-icon>
-    $i18n{personalizationPageTitle}
-  </a>
-  <a href="/osSearch" class="item">
-    <iron-icon icon="cr:search"></iron-icon>
-    $i18n{osSearchPageTitle}
-  </a>
-  <a href="/osPrivacy" class="item">
-    <iron-icon icon="cr:security"></iron-icon>
-    $i18n{privacyPageTitle}
-  </a>
-  <a href="/apps" class="item">
-    <iron-icon icon="os-settings:apps"></iron-icon>
-    $i18n{appsPageTitle}
-  </a>
-  <a href="/osAccessibility" class="item">
-    <iron-icon icon="os-settings:accessibility"></iron-icon>
-    $i18n{a11yPageTitle}
-  </a>
+    selectable="a.item"
+    attr-for-selected="href"
+    role="navigation"
+    on-iron-activate="onSelectorActivate_"
+    on-click="onLinkClick_"
+    selected="[[selectedUrl_]]">
+  <template is="dom-repeat" items="[[basicMenuItems_]]" id="topMenuRepeat">
+    <a href="[[item.path]]" class="item" hidden="[[item.hidden]]">
+      <iron-icon icon="[[item.icon]]"></iron-icon>
+      [[item.label]]
+    </a>
+  </template>
   <cr-button id="advancedButton"
       aria-expanded$="[[boolToString_(advancedOpened)]]"
       on-click="onAdvancedButtonToggle_">
@@ -208,32 +169,18 @@
     </iron-icon>
   </cr-button>
   <iron-collapse id="advancedSubmenu" opened="[[advancedOpened]]">
-    <iron-selector id="subMenu" selectable="a" attr-for-selected="href"
-        role="navigation" on-click="onLinkClick_">
-      <a href="/dateTime" class="item">
-        <iron-icon icon="os-settings:access-time"></iron-icon>
-        $i18n{dateTimePageTitle}
-      </a>
-      <a href="/osLanguages" class="item">
-        <iron-icon icon="os-settings:language"></iron-icon>
-        $i18n{osLanguagesPageTitle}
-      </a>
-      <a href="/files" hidden="[[isGuestMode_]]" class="item">
-        <iron-icon icon="os-settings:folder-outline"></iron-icon>
-        $i18n{filesPageTitle}
-      </a>
-      <a href="/osPrinting" class="item">
-        <iron-icon icon="os-settings:print"></iron-icon>
-        $i18n{printingPageTitle}
-      </a>
-      <a href="/crostini" class="item">
-        <iron-icon icon="os-settings:developer-tags"></iron-icon>
-        $i18n{crostiniPageTitle}
-      </a>
-      <a id="osReset" href="/osReset" hidden="[[!showReset]]" class="item">
-        <iron-icon icon="os-settings:restore"></iron-icon>
-        $i18n{resetPageTitle}
-      </a>
+    <iron-selector id="subMenu"
+        selectable="a.item"
+        attr-for-selected="href"
+        role="navigation"
+        on-click="onLinkClick_"
+        selected="[[selectedUrl_]]">
+      <template is="dom-repeat" items="[[advancedMenuItems_]]">
+        <a href="[[item.path]]" class="item" hidden="[[item.hidden]]">
+          <iron-icon icon="[[item.icon]]"></iron-icon>
+          [[item.label]]
+        </a>
+      </template>
     </iron-selector>
   </iron-collapse>
   <div id="menuSeparator"></div>

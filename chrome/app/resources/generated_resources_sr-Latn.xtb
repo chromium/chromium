@@ -1327,7 +1327,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2114820389966440614">Ovde pogledajte „Nedavne istaknute slike“ i ostale uspomene</translation>
 <translation id="2114896190328250491">Autor slike: <ph name="NAME" /></translation>
 <translation id="2114995631896158695">Nije umetnuta SIM kartica</translation>
-<translation id="2116020356255810305">Omogući pokretanje aplikacije pri pokretanju uređaja</translation>
 <translation id="2116619964159595185">Sajtovi se obično povezuju sa Bluetooth uređajima za potrebe funkcija poput podešavanja ili sinhronizacije lokatora sa niskom potrošnjom, uređaja za praćenje zdravlja ili fitnesa ili pametne sijalice</translation>
 <translation id="2117655453726830283">Sledeći slajd</translation>
 <translation id="2119349053129246860">Otvori u <ph name="APP" /></translation>
@@ -3015,6 +3014,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3609277884604412258">Brza pretraga</translation>
 <translation id="3610241585790874201">Čuvanje podataka na uređaju nije dozvoljeno</translation>
 <translation id="3610369246614755442">Ventilatoru bazne stanice je potreban servis</translation>
+<translation id="3610961622607302617">Promenite lozinku za <ph name="WEBSITE" /></translation>
 <translation id="361106536627977100">Podaci Flash-a</translation>
 <translation id="3611655097742243705">Idite u Play prodavnicu da biste pronašli još aplikacija</translation>
 <translation id="3611658447322220736">Nedavno zatvoreni sajtovi mogu da završe slanje i prijem podataka</translation>
@@ -3256,7 +3256,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="380329542618494757">Ime</translation>
 <translation id="3803345858388753269">Kvalitet video snimka</translation>
 <translation id="3803367742635802571">Sajtovi koje posećujete mogu da prestanu sa radom kako je zamišljeno</translation>
-<translation id="3803583375545057606">Želiš da zatražiš od roditelja da omogući ovaj dodatak?</translation>
 <translation id="380408572480438692">Ako omogućite prikupljanje podataka o učinku, pomoći ćete Google-u da vremenom poboljšava sistem. Nikakvi podaci se ne šalju dok ne pošaljete izveštaj sa povratnim informacijama (Alt-Shift-I) i uvrstite podatke o učinku. U bilo kom trenutku možete da se vratite na ovaj ekran i onemogućite prikupljanje.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (ID dodatka „<ph name="EXTENSION_ID" />“) nije dozvoljen na ekranu za prijavljivanje.</translation>
 <translation id="3807747707162121253">&amp;Otkaži</translation>
@@ -3678,7 +3677,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4169535189173047238">Ne dozvoli</translation>
 <translation id="4170314459383239649">Obriši pri zatvaranju</translation>
 <translation id="417096670996204801">Odaberite profil</translation>
-<translation id="41725145403849567">Želiš da zatražiš od roditelja da doda ovaj dodatak?</translation>
 <translation id="4175137578744761569">Svetloljubičasta i bela</translation>
 <translation id="4175737294868205930">Stalni memorijski prostor</translation>
 <translation id="4176463684765177261">Onemogućeno</translation>
@@ -5090,7 +5088,6 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN mora da sadrži bar jedan znak}one{PIN mora da sadrži bar # znak}few{PIN mora da sadrži bar # znaka}other{PIN mora da sadrži bar # znakova}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> zahteva da se odmah povežete na WiFi i da preuzmete ažuriranje. Ili preuzmite pomoću veze sa ograničenjem (možda se naplaćuju troškovi).</translation>
 <translation id="5476016146231427848">Restartujte uređaj da biste koristili Steam na Chromebook-u</translation>
-<translation id="5476897066181964657">Roditelj ili staratelj mora da kaže da je u redu da dodaš ovaj dodatak</translation>
 <translation id="5481273127572794904">Nije im dozvoljeno da automatski preuzimaju više fajlova</translation>
 <translation id="5481941284378890518">Dodaj obližnje štampače</translation>
 <translation id="5483785310822538350">Opozovi pristup datotekama i uređaju</translation>
@@ -5187,7 +5184,6 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="5555639311269196631">Isključi hotspot</translation>
 <translation id="5556459405103347317">Učitaj ponovo</translation>
 <translation id="5558129378926964177">Zoom &amp;In (Uvećaj)</translation>
-<translation id="5558247502209241936">Omogući otvaranje aplikacije u prozoru</translation>
 <translation id="5559311991468302423">Izbrišite adresu</translation>
 <translation id="55601339223879446">Prilagodite granice radne površine unutar prikaza</translation>
 <translation id="5561162485081632007">Otkriva opasne događaje kada se dogode i upozorava vas na njih</translation>
@@ -6014,7 +6010,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6305607932814307878">Globalne smernice:</translation>
 <translation id="6305702903308659374">Reprodukuj pri normalnoj jačini zvuka čak i ako ChromeVox govori</translation>
 <translation id="6305909198255586420">Instalirajte pomoću primarnog profila</translation>
-<translation id="630750887748244481">Roditelj je isključio „Dozvole za sajtove, aplikacije i dodatke“ za Chrome. Dodavanje ovog dodatka nije dozvoljeno.</translation>
 <translation id="6307990684951724544">Sistem je zauzet</translation>
 <translation id="6308493641021088955">Prijavljivanje omogućava <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Sačuvaj li&amp;nk kao...</translation>
@@ -6035,6 +6030,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6318125393809743217">Uvrsti datoteku policies.json uz konfiguracije smernica.</translation>
 <translation id="6318407754858604988">Preuzimanje je započeto</translation>
 <translation id="6318944945640833942">Štampač nije otkriven. Ponovo unesite adresu štampača.</translation>
+<translation id="6320808462673705899">Nema obeleživača koji se podudaraju sa pretragom.</translation>
 <translation id="6322370287306604163">Otključavajte brže pomoću otiska prsta</translation>
 <translation id="6322559670748154781">Ovaj fajl se ne preuzima često i blokirala ga je Napredna zaštita</translation>
 <translation id="6324916366299863871">Izmeni prečicu</translation>
@@ -6844,7 +6840,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7025190659207909717">Upravljanje uslugom mobilnih podataka</translation>
 <translation id="7025895441903756761">Bezbednost i privatnost</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Otvori sve u &amp;prozoru bez arhiviranja}=1{Otvori u &amp;prozoru bez arhiviranja}one{Otvori sve ({COUNT}) u &amp;prozoru bez arhiviranja}few{Otvori sve ({COUNT}) u &amp;prozoru bez arhiviranja}other{Otvori sve ({COUNT}) u &amp;prozoru bez arhiviranja}}</translation>
-<translation id="7028057921476386252">Roditelj ili staratelj mora da kaže da je u redu da omogućiš ovaj dodatak</translation>
 <translation id="7029307918966275733">Crostini nije instaliran. Instalirajte Crostini da biste videli impresum.</translation>
 <translation id="7029809446516969842">Lozinke</translation>
 <translation id="7030304022046916278">Šalje URL-ove u Bezbedno pregledanje na proveru</translation>
@@ -8223,7 +8218,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8251509999076836464">Uparivanje sa uređajem <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">Sličica je uklonjena.</translation>
 <translation id="825238165904109940">Uvek prikazuj URL-ove u celosti</translation>
-<translation id="8252538334423261825">Dodavanje dodatka nije uspelo</translation>
 <translation id="8252569384384439529">Otprema se...</translation>
 <translation id="8253198102038551905">Kliknite na „+“ da biste videli svojstva mreže</translation>
 <translation id="8255212965098517578">Nedavne slike, obaveštenja i aplikacije</translation>

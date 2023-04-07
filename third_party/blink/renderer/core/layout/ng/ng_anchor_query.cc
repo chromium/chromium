@@ -94,6 +94,65 @@ const NGLogicalAnchorQuery& NGLogicalAnchorQuery::Empty() {
   return *empty;
 }
 
+// static
+const NGPhysicalAnchorQuery* NGPhysicalAnchorQuery::GetFromLayoutResult(
+    const LayoutObject& layout_object) {
+  if (!layout_object.IsOutOfFlowPositioned()) {
+    return nullptr;
+  }
+  LayoutBox::NGPhysicalFragmentList containing_block_fragments =
+      layout_object.ContainingBlock()->PhysicalFragments();
+  if (containing_block_fragments.IsEmpty()) {
+    return nullptr;
+  }
+  // TODO(crbug.com/1309178): Make it work when the containing block is
+  // fragmented or inline.
+  return containing_block_fragments.front().AnchorQuery();
+}
+
+// static
+NGAnchorEvaluatorImpl NGAnchorEvaluatorImpl::BuildFromLayoutResult(
+    const LayoutObject& layout_object) {
+  const NGPhysicalAnchorQuery* physical_query =
+      NGPhysicalAnchorQuery::GetFromLayoutResult(layout_object);
+  if (!physical_query) {
+    return NGAnchorEvaluatorImpl();
+  }
+
+  // TODO(crbug.com/1309178): Make it work when the containing block is
+  // fragmented or inline.
+
+  DCHECK(layout_object.IsOutOfFlowPositioned());
+  DCHECK(layout_object.ContainingBlock());
+  const LayoutBlock* container = layout_object.ContainingBlock();
+  PhysicalSize container_size = container->PhysicalFragments().front().Size();
+  WritingModeConverter container_converter(
+      container->StyleRef().GetWritingDirection(), container_size);
+
+  // TODO(crbug.com/1423493): The following doesn't support top-layer
+  // |layout_object| well. We need to include & filter "invalid" anchors.
+
+  NGLogicalAnchorQuery* logical_query =
+      MakeGarbageCollected<NGLogicalAnchorQuery>();
+  logical_query->SetFromPhysical(
+      *physical_query, container_converter,
+      LogicalOffset() /* additional_offset */,
+      NGLogicalAnchorQuery::SetOptions::kValidInOrder);
+
+  Element* element = DynamicTo<Element>(layout_object.GetNode());
+  Element* implicit_anchor =
+      element ? element->ImplicitAnchorElement() : nullptr;
+  LayoutObject* implicit_anchor_object =
+      implicit_anchor ? implicit_anchor->GetLayoutObject() : nullptr;
+
+  return NGAnchorEvaluatorImpl(*logical_query,
+                               layout_object.StyleRef().AnchorDefault(),
+                               implicit_anchor_object, container_converter,
+                               layout_object.StyleRef().GetWritingDirection(),
+                               PhysicalOffset() /* offset_to_padding_box */,
+                               layout_object.IsInTopOrViewTransitionLayer());
+}
+
 const NGPhysicalAnchorReference* NGPhysicalAnchorQuery::AnchorReference(
     const NGAnchorKey& key,
     bool can_use_invalid_anchors) const {

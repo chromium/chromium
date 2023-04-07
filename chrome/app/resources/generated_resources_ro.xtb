@@ -1329,7 +1329,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2114820389966440614">Vezi Selecții recente și alte amintiri aici</translation>
 <translation id="2114896190328250491">Fotografie de la <ph name="NAME" /></translation>
 <translation id="2114995631896158695">Nu s-a introdus un card SIM</translation>
-<translation id="2116020356255810305">Activează lansarea aplicației la pornire</translation>
 <translation id="2116619964159595185">Site-urile se conectează de obicei la dispozitive Bluetooth pentru funcții cum ar fi configurarea sau sincronizarea unui semnalizator cu consum redus de energie, a unui instrument de urmărire pentru sănătate sau fitness ori a unui bec inteligent</translation>
 <translation id="2117655453726830283">Următorul slide</translation>
 <translation id="2119349053129246860">Deschide în <ph name="APP" /></translation>
@@ -3258,7 +3257,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="380329542618494757">Nume</translation>
 <translation id="3803345858388753269">Calitatea video</translation>
 <translation id="3803367742635802571">Este posibil ca site-urile pe care le accesezi să nu mai funcționeze așa cum au fost proiectate</translation>
-<translation id="3803583375545057606">Îi ceri părintelui să activeze această extensie?</translation>
 <translation id="380408572480438692">Activarea culegerii datelor privind performanța va permite Google să îmbunătățească sistemul în timp. Nu sunt trimise date decât după ce completați un raport de feedback (Alt-Shift-I) și includeți date privind performanța. Puteți să reveniți oricând la acest ecran pentru a dezactiva culegerea datelor.</translation>
 <translation id="3807249107536149332">Extensia <ph name="EXTENSION_NAME" /> (cu ID-ul „<ph name="EXTENSION_ID" />”) nu este permisă într-un ecran de conectare.</translation>
 <translation id="3807747707162121253">&amp;Anulează</translation>
@@ -3680,7 +3678,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4169535189173047238">Nu permite</translation>
 <translation id="4170314459383239649">Șterge la ieșire</translation>
 <translation id="417096670996204801">Alege un profil</translation>
-<translation id="41725145403849567">Îi ceri părintelui să adauge această extensie?</translation>
 <translation id="4175137578744761569">Mov deschis și alb</translation>
 <translation id="4175737294868205930">Stocare persistentă</translation>
 <translation id="4176463684765177261">Dezactivat</translation>
@@ -5093,7 +5090,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Codul PIN trebuie să conțină minimum un caracter}few{Codul PIN trebuie să conțină minimum # caractere}other{Codul PIN trebuie să conțină minimum # de caractere}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> îți solicită să te conectezi acum la rețeaua Wi-Fi și să descarci o actualizare. Sau poți să descarci folosind o conexiune contorizată (se pot aplica taxe).</translation>
 <translation id="5476016146231427848">Repornește dispozitivul pentru a folosi Steam pe Chromebook</translation>
-<translation id="5476897066181964657">Părintele sau tutorele trebuie să spună că poți adăuga această extensie</translation>
 <translation id="5481273127572794904">Nu au permisiunea de a descărca automat mai multe fișiere</translation>
 <translation id="5481941284378890518">Adaugă imprimantele din apropiere</translation>
 <translation id="5483785310822538350">Revocă accesul la fișiere și la dispozitive</translation>
@@ -5190,7 +5186,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5555639311269196631">Dezactivează hotspotul</translation>
 <translation id="5556459405103347317">Reîncarcă</translation>
 <translation id="5558129378926964177">Măr&amp;ește</translation>
-<translation id="5558247502209241936">Activează deschiderea aplicației în fereastră</translation>
 <translation id="5559311991468302423">Șterge adresa</translation>
 <translation id="55601339223879446">Ajustează delimitările desktopului din afișare</translation>
 <translation id="5561162485081632007">Detectează și te avertizează cu privire la evenimentele periculoase atunci când au loc</translation>
@@ -6016,7 +6011,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6305607932814307878">Politică globală:</translation>
 <translation id="6305702903308659374">Redă la un volum normal chiar dacă ChromeVox vorbește</translation>
 <translation id="6305909198255586420">Instalează folosind profilul principal</translation>
-<translation id="630750887748244481">Părintele tău a dezactivat opțiunea Permisiuni pentru site-uri, aplicații și extensii în Chrome. Nu este permisă adăugarea acestei extensii.</translation>
 <translation id="6307990684951724544">Sistem ocupat</translation>
 <translation id="6308493641021088955">Conectare asigurată de <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Salvează lin&amp;kul ca...</translation>
@@ -6844,7 +6838,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7025190659207909717">Gestionarea serviciului de date mobile</translation>
 <translation id="7025895441903756761">Securitate și confidențialitate</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Deschide-le pe toate într-o fereastră &amp;incognito}=1{Deschide într-o fereastră &amp;incognito}few{Deschide-le pe toate ({COUNT}) într-o fereastră &amp;incognito}other{Deschide-le pe toate ({COUNT}) într-o fereastră &amp;incognito}}</translation>
-<translation id="7028057921476386252">Părintele sau tutorele trebuie să spună că poți activa această extensie</translation>
 <translation id="7029307918966275733">Crostini nu este instalat. Instalează Crostini pentru a afișa datele de conectare.</translation>
 <translation id="7029809446516969842">Parole</translation>
 <translation id="7030304022046916278">Trimite adresele URL la funcția Navigare sigură, pentru a le verifica</translation>
@@ -8223,7 +8216,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8251509999076836464">Se asociază cu <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">Miniatura a fost eliminată.</translation>
 <translation id="825238165904109940">Afișează întotdeauna adresele URL complete</translation>
-<translation id="8252538334423261825">Nu se poate adăuga extensia</translation>
 <translation id="8252569384384439529">Se încarcă...</translation>
 <translation id="8253198102038551905">Pentru a vedea proprietățile rețelei, dă clic pe „+”</translation>
 <translation id="8255212965098517578">Fotografiile, notificările și aplicațiile recente</translation>

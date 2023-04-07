@@ -1,0 +1,26 @@
+{
+  options: {
+    CSS: {
+      prefix: 'cros',
+      preblend: true,
+    },
+  },
+  colors: {
+    bg_color: {
+      light: "$white",
+      dark: "$google_grey_900",
+    },
+    highlight_color_hover: {
+      light: "rgba($black.rgb, 0.2)",
+      dark: "rgba($white.rgb, 0.4)",
+    },
+    foo_color: {
+      light: "blend($highlight_color_hover, $bg_color)",
+      dark: "blend($highlight_color_hover, $bg_color)",
+    },
+    bar_color: "blend($highlight_color_hover, $bg_color)",
+  },
+  opacities: {
+    disabled_opacity: 0.38,
+  },
+}

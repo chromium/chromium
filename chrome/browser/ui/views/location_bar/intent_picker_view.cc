@@ -16,6 +16,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 
 namespace content {
 class WebContents;
@@ -73,7 +74,8 @@ bool IntentPickerView::GetShowIcon() const {
 }
 
 const gfx::VectorIcon& IntentPickerView::GetVectorIcon() const {
-  return kOpenInNewIcon;
+  return features::IsChromeRefresh2023() ? kOpenInNewChromeRefreshIcon
+                                         : kOpenInNewIcon;
 }
 
 BEGIN_METADATA(IntentPickerView, PageActionIconView)

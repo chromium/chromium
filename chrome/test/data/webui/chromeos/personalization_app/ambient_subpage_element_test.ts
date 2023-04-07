@@ -568,7 +568,7 @@ suite('AmbientSubpageTest', function() {
 
     const action = await personalizationStore.waitForAction(
                        AmbientActionName.SET_ALBUMS) as SetAlbumsAction;
-    assertEquals(4, action.albums.length, 'action.albums.length');
+    assertEquals(6, action.albums.length, 'action.albums.length');
 
     const albumsSubpage =
         ambientSubpageElement.shadowRoot!.querySelector('albums-subpage');
@@ -626,7 +626,7 @@ suite('AmbientSubpageTest', function() {
 
     const action = await personalizationStore.waitForAction(
                        AmbientActionName.SET_ALBUMS) as SetAlbumsAction;
-    assertEquals(4, action.albums.length);
+    assertEquals(6, action.albums.length);
 
     const albumsSubpage =
         ambientSubpageElement.shadowRoot!.querySelector('albums-subpage');
@@ -678,7 +678,7 @@ suite('AmbientSubpageTest', function() {
 
     const action = await personalizationStore.waitForAction(
                        AmbientActionName.SET_ALBUMS) as SetAlbumsAction;
-    assertEquals(4, action.albums.length);
+    assertEquals(6, action.albums.length);
     const ambientPreview = ambientSubpageElement.shadowRoot!.querySelector(
         'ambient-preview-small');
     assertTrue(!!ambientPreview);
@@ -863,5 +863,49 @@ suite('AmbientSubpageTest', function() {
     assertFalse(video.disabled);
     assertTrue(googlePhotos.disabled);
     assertTrue(art.disabled);
+  });
+
+  test('cannot deselect a video album', async () => {
+    personalizationStore.setReducersEnabled(true);
+    personalizationStore.expectAction(AmbientActionName.SET_ALBUMS);
+    ambientSubpageElement = initElement(AmbientSubpage, {
+      path: Paths.AMBIENT_ALBUMS,
+      queryParams: {topicSource: TopicSource.kVideo},
+    });
+
+    await ambientProvider.whenCalled('setAmbientObserver');
+    ambientProvider.updateAmbientObserver();
+
+    const action = await personalizationStore.waitForAction(
+                       AmbientActionName.SET_ALBUMS) as SetAlbumsAction;
+    assertEquals(6, action.albums.length);
+
+    const albumsSubpage =
+        ambientSubpageElement.shadowRoot!.querySelector('albums-subpage');
+    assertTrue(!!albumsSubpage);
+    assertFalse(albumsSubpage.hidden);
+    await waitAfterNextRender(albumsSubpage);
+
+    const albumList = albumsSubpage.shadowRoot!.querySelector('album-list');
+    assertTrue(!!albumList);
+
+    // The grid may not have templated all the items yet since it was just
+    // instantiated. See crbug/1334962.
+    const grid = albumList.shadowRoot!.getElementById('grid');
+    assertTrue(!!grid, 'albums subpage has a grid');
+    await waitAfterNextRender(grid);
+
+    const albums = albumList.shadowRoot!.querySelectorAll<WallpaperGridItem>(
+        'wallpaper-grid-item:not([hidden])');
+    assertEquals(2, albums.length);
+    assertTrue(!!albums[0]);
+    assertTrue(!!albums[1]);
+    assertTrue(albums[0].selected!);
+    assertFalse(albums[1].selected!);
+
+    // Attempt to de-select the selected album and expect that the album is
+    // still selected.
+    albums[0].click();
+    assertTrue(albums[0].selected!);
   });
 });
