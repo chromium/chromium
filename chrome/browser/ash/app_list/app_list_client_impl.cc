@@ -138,6 +138,10 @@ class ScopedIphSessionImpl : public ash::ScopedIphSession {
 
   ~ScopedIphSessionImpl() override { tracker_->Dismissed(iph_feature_); }
 
+  void NotifyEvent(const std::string& event) override {
+    tracker_->NotifyEvent(event);
+  }
+
  private:
   raw_ptr<feature_engagement::Tracker> tracker_;
   const base::Feature& iph_feature_;
@@ -559,7 +563,7 @@ void AppListClientImpl::SetProfile(Profile* new_profile) {
 
   SetUpSearchUI();
   OnTemplateURLServiceChanged();
-  QueryWouldTriggerLauncherSearchIph();
+  RecalculateWouldTriggerLauncherSearchIph();
 }
 
 void AppListClientImpl::SetUpSearchUI() {
@@ -701,7 +705,7 @@ ash::AppListNotifier* AppListClientImpl::GetNotifier() {
   return app_list_notifier_.get();
 }
 
-void AppListClientImpl::QueryWouldTriggerLauncherSearchIph() {
+void AppListClientImpl::RecalculateWouldTriggerLauncherSearchIph() {
   // This can be called before a `Profile` is set to `AppListClientImpl`. If a
   // `Profile` is not set yet, return here. `AppListClientImpl::SetProfile` will
   // call this method once a `Profile` is set.
@@ -709,7 +713,7 @@ void AppListClientImpl::QueryWouldTriggerLauncherSearchIph() {
     return;
   }
 
-  current_model_updater_->QueryWouldTriggerLauncherSearchIph();
+  current_model_updater_->RecalculateWouldTriggerLauncherSearchIph();
 }
 
 std::unique_ptr<ash::ScopedIphSession>

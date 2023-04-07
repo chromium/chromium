@@ -1265,6 +1265,13 @@ void SearchBoxView::UpdateIphViewVisibility() {
     DeleteIphView();
     assistant_button()->SetBackground(nullptr);
   }
+
+  // Adding or removing IPH view can change `SearchBoxView` bounds largely.
+  // Re-layout can be necessary on parent views as well. Explicitly call
+  // `InvalidateLayout` to trigger re-layouts on all parent views. Without this,
+  // we can have unnecessary spaces in `SearchBoxView` for an IPH dismiss under
+  // some conditions.
+  InvalidateLayout();
 }
 
 void SearchBoxView::OnWouldTriggerIphChanged() {

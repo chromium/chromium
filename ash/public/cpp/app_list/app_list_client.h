@@ -118,9 +118,9 @@ class ASH_PUBLIC_EXPORT AppListClient {
   // implementation, this can return nullptr.
   virtual AppListNotifier* GetNotifier() = 0;
 
-  // Queries whether launcher search IPH should be shown and update
+  // Recalculate whether launcher search IPH should be shown and update
   // SearchBoxModel.
-  virtual void QueryWouldTriggerLauncherSearchIph() = 0;
+  virtual void RecalculateWouldTriggerLauncherSearchIph() = 0;
 
   // `feature_engagement::Tracker` needs to be initialized before this method
   // gets called. Call `WouldTriggerLauncherSearchIph` to initialize it. This

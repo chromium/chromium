@@ -29,6 +29,13 @@ class LauncherSearchIphView : public views::View {
     virtual void OpenSearchBoxIphUrl() = 0;
   };
 
+  // Event names live in a global namespace. Prefix with the feature name to
+  // prevent unintentional name collisions.
+  static constexpr char kIphEventNameChipClick[] =
+      "IPH_LauncherSearchHelpUi_chip_click";
+  static constexpr char kIphEventNameAssistantClick[] =
+      "IPH_LauncherSearchHelpUi_assistant_click";
+
   enum ViewId {
     kSelf = 1,
     kDescriptionLabel,

@@ -233,6 +233,7 @@ void LauncherSearchIphView::OnThemeChanged() {
 
 void LauncherSearchIphView::RunLauncherSearchQuery(
     const std::u16string& query) {
+  scoped_iph_session_->NotifyEvent(kIphEventNameChipClick);
   delegate_->RunLauncherSearchQuery(query);
 }
 
@@ -241,6 +242,7 @@ void LauncherSearchIphView::OnLinkClicked(const ui::Event& event) {
 }
 
 void LauncherSearchIphView::OpenAssistantPage() {
+  scoped_iph_session_->NotifyEvent(kIphEventNameAssistantClick);
   delegate_->OpenAssistantPage();
 }
 

@@ -24,9 +24,12 @@
 #include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/gtest_tags.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
@@ -49,6 +52,17 @@ namespace {
 constexpr char kScreenPlayTagName[] = "feature_id";
 constexpr char kScreenPlayTagValue[] =
     "screenplay-3adcce6b-a470-48b0-9246-f6570c5cef34";
+
+constexpr char kNotifyUsedEventUserActionName[] =
+    "InProductHelp.NotifyUsedEvent.IPH_LauncherSearchHelpUi";
+constexpr char kNotifyEventUserActionName[] =
+    "InProductHelp.NotifyEvent.IPH_LauncherSearchHelpUi";
+
+constexpr char kIphConfigParamNameEventUsed[] = "event_used";
+constexpr char kIphConfigParamNameEventTrigger[] = "event_trigger";
+constexpr char kIphConfigParamNameEvent1[] = "event_1";
+constexpr char kIphConfigParamNameAvailability[] = "availability";
+constexpr char kIphConfigParamNameSessionRate[] = "session_rate";
 
 class ViewWaiter : public views::ViewObserver {
  public:
@@ -265,13 +279,29 @@ class AppListIphBrowserTest : public MixinBasedInProcessBrowserTest,
   raw_ptr<AppListClientImpl> app_list_client_impl_ = nullptr;
 };
 
-class AppListIphBrowserTestWithDemoMode : public AppListIphBrowserTest {
+class AppListIphBrowserTestWithTestConfig : public AppListIphBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    base::FieldTrialParams params;
+    params[kIphConfigParamNameAvailability] = "any";
+    params[kIphConfigParamNameSessionRate] = "any";
+    params[kIphConfigParamNameEventUsed] =
+        base::StringPrintf("name:%s;comparator:any;window:365;storage:365",
+                           ash::LauncherSearchIphView::kIphEventNameChipClick);
+    // Trigger event is not used for this test config. Note that a trigger event
+    // gets incremented every time an IPH is shown.
+    params[kIphConfigParamNameEventTrigger] =
+        "name:IPH_LauncherSearchHelpUi_trigger;comparator:any;window:365;"
+        "storage:365";
+    params[kIphConfigParamNameEvent1] = base::StringPrintf(
+        "name:%s;comparator:==0;window:365;storage:365",
+        ash::LauncherSearchIphView::kIphEventNameAssistantClick);
+
     scoped_iph_feature_list_ =
         std::make_unique<feature_engagement::test::ScopedIphFeatureList>();
-    scoped_iph_feature_list_->InitForDemo(
-        feature_engagement::kIPHLauncherSearchHelpUiFeature);
+    scoped_iph_feature_list_->InitAndEnableFeaturesWithParameters(
+        {base::test::FeatureRefAndParams(
+            feature_engagement::kIPHLauncherSearchHelpUiFeature, params)});
 
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
   }
@@ -287,7 +317,7 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTest,
   EXPECT_FALSE(IsLauncherSearchIphViewVisible());
 }
 
-IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithDemoMode, LauncherSearchIph) {
+IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig, LauncherSearchIph) {
   OpenAppListAndWaitForIphView();
 
   EXPECT_TRUE(IsLauncherSearchIphViewVisible());
@@ -295,20 +325,14 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithDemoMode, LauncherSearchIph) {
     EXPECT_TRUE(search_box_view()->assistant_button()->GetBackground());
   }
 
-  // Dismiss the app list and show it again. IPH won't be shown this time. Note
-  // that this is IPH demo mode behavior.
+  // IPH should be kept being shown as long as the trigger condition in the test
+  // config matches.
   DismissAppList();
-  OpenAppListForSearch();
-  EXPECT_FALSE(IsLauncherSearchIphViewVisible());
-
-  if (IsClamshellModeTest()) {
-    // Launcher search iph installs a background to an assistant button in the
-    // search box. It should be removed if the iph gets dismissed.
-    EXPECT_FALSE(search_box_view()->assistant_button()->GetBackground());
-  }
+  OpenAppListAndWaitForIphView();
+  EXPECT_TRUE(IsLauncherSearchIphViewVisible());
 }
 
-IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithDemoMode,
+IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig,
                        LauncherSearchIphSearch) {
   OpenAppListAndWaitForIphView();
   EXPECT_TRUE(IsLauncherSearchIphViewVisible());
@@ -318,10 +342,10 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithDemoMode,
   EXPECT_FALSE(IsLauncherSearchIphViewVisible());
 }
 
-using AppListIphBrowserTestWithDemoModeClamshell =
-    AppListIphBrowserTestWithDemoMode;
+using AppListIphBrowserTestWithTestConfigClamshell =
+    AppListIphBrowserTestWithTestConfig;
 
-IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithDemoModeClamshell,
+IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfigClamshell,
                        LauncherSearchIphAssistantButtonInSearchBox) {
   OpenAppListAndWaitForIphView();
 
@@ -335,13 +359,17 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithDemoModeClamshell,
   EXPECT_FALSE(IsLauncherSearchIphViewVisible());
 }
 
-IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithDemoMode, ClickChip) {
+IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig, ClickChip) {
   OpenAppListAndWaitForIphView();
 
+  // Chip click is specified as EventUsed in the test config.
+  base::UserActionTester user_action_tester;
   raw_ptr<views::View> chip = search_box_view()->GetViewByID(
       ash::LauncherSearchIphView::ViewId::kChipStart);
   ASSERT_TRUE(chip);
   Click(chip);
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount(kNotifyUsedEventUserActionName));
 
   EXPECT_EQ(u"Weather",
             app_list_client_impl()->search_controller()->get_query());
@@ -349,19 +377,43 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithDemoMode, ClickChip) {
   EXPECT_FALSE(IsLauncherSearchIphViewVisible());
 }
 
-IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithDemoMode, ClickAssistant) {
+IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig, ClickAssistant) {
   OpenAppListAndWaitForIphView();
 
+  EXPECT_TRUE(IsLauncherSearchIphViewVisible());
+  if (IsClamshellModeTest()) {
+    // Confirm that a background is installed as we check that this gets removed
+    // if IPH is not shown below.
+    EXPECT_TRUE(search_box_view()->assistant_button()->GetBackground());
+  }
+
+  // Confirm that assistant event is recorded. Make sure that the initial count
+  // is 0 to distinguish this from other events.
+  base::UserActionTester user_action_tester;
+  ASSERT_EQ(0, user_action_tester.GetActionCount(kNotifyEventUserActionName));
   raw_ptr<views::View> assistant_button = search_box_view()->GetViewByID(
       ash::LauncherSearchIphView::ViewId::kAssistant);
   ASSERT_TRUE(assistant_button);
   Click(assistant_button);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kNotifyEventUserActionName));
 
   EXPECT_TRUE(IsAssistantPageActive());
   EXPECT_FALSE(IsLauncherSearchIphViewVisible());
+
+  // Dismiss the app list and show it again. IPH won't be shown this time. Note
+  // that this behavior is coming from the IPH test config.
+  DismissAppList();
+  OpenAppListForSearch();
+  EXPECT_FALSE(IsLauncherSearchIphViewVisible());
+
+  if (IsClamshellModeTest()) {
+    // Launcher search iph installs a background to an assistant button in the
+    // search box. It should be removed if the iph gets dismissed.
+    EXPECT_FALSE(search_box_view()->assistant_button()->GetBackground());
+  }
 }
 
-IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithDemoMode,
+IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig,
                        NoIphWithoutAssistant) {
   // `AssistantTestApiImpl::SetAssistantEnabled` asserts that the value has
   // taken effect, i.e. we are sure that Assistant gets disabled after this
@@ -379,7 +431,7 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithDemoMode,
   EXPECT_FALSE(search_box_view()->assistant_button()->GetBackground());
 }
 
-IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithDemoMode, ClickLink) {
+IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig, ClickLink) {
   OpenAppListAndWaitForIphView();
   raw_ptr<views::StyledLabel> description_label =
       static_cast<views::StyledLabel*>(search_box_view()->GetViewByID(
@@ -458,12 +510,12 @@ INSTANTIATE_TEST_SUITE_P(LauncherSearchIph,
                          &GenerateTestSuffix);
 
 INSTANTIATE_TEST_SUITE_P(LauncherSearchIph,
-                         AppListIphBrowserTestWithDemoMode,
+                         AppListIphBrowserTestWithTestConfig,
                          /*is_tablet=*/testing::Bool(),
                          &GenerateTestSuffix);
 
 INSTANTIATE_TEST_SUITE_P(LauncherSearchIph,
-                         AppListIphBrowserTestWithDemoModeClamshell,
+                         AppListIphBrowserTestWithTestConfigClamshell,
                          /*is_tablet=*/testing::Values(false),
                          &GenerateTestSuffix);
 

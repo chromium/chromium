@@ -290,7 +290,7 @@ void ChromeAppListModelUpdater::SetSearchEngineIsGoogle(bool is_google) {
   search_model_.SetSearchEngineIsGoogle(is_google);
 }
 
-void ChromeAppListModelUpdater::QueryWouldTriggerLauncherSearchIph() {
+void ChromeAppListModelUpdater::RecalculateWouldTriggerLauncherSearchIph() {
   raw_ptr<feature_engagement::Tracker> tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(profile_);
   if (!tracker) {

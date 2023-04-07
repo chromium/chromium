@@ -759,6 +759,9 @@ class ASH_PUBLIC_EXPORT ScopedIphSession {
 
   ScopedIphSession(const ScopedIphSession&) = delete;
   ScopedIphSession& operator=(const ScopedIphSession&) = delete;
+
+  // Notify an IPH event with name of `event`.
+  virtual void NotifyEvent(const std::string& event) = 0;
 };
 
 using SearchResultIdWithPositionIndices =

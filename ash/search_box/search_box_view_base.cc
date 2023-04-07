@@ -586,7 +586,12 @@ bool SearchBoxViewBase::OnTextfieldEvent(ui::EventType type) {
 }
 
 gfx::Size SearchBoxViewBase::CalculatePreferredSize() const {
-  return gfx::Size(kSearchBoxPreferredWidth, kSearchBoxPreferredHeight);
+  const int iph_height =
+      iph_view_tracker_.view()
+          ? iph_view_tracker_.view()->GetPreferredSize().height()
+          : 0;
+  return gfx::Size(kSearchBoxPreferredWidth,
+                   kSearchBoxPreferredHeight + iph_height);
 }
 
 void SearchBoxViewBase::OnEnabledChanged() {
