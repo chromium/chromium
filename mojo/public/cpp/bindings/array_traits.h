@@ -64,6 +64,9 @@ namespace mojo {
 //
 //     // Returning false results in deserialization failure and causes the
 //     // message pipe receiving it to be disconnected.
+//     // Note that mojo does not require that Resize preserve the original
+//     // elements in `input` it merely has to set the size of `input` to
+//     // `size`.
 //     static bool Resize(Container<T>& input, size_t size);
 //   };
 //

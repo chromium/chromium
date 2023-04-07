@@ -48,7 +48,8 @@ struct ArrayTraits<WTF::Vector<U, InlineCapacity>> {
   static bool Resize(WTF::Vector<U, InlineCapacity>& input, size_t size) {
     if (!base::IsValueInRangeForNumericType<wtf_size_t>(size))
       return false;
-    input.resize(static_cast<wtf_size_t>(size));
+    WTF::Vector<U, InlineCapacity> temp(static_cast<wtf_size_t>(size));
+    input.swap(temp);
     return true;
   }
 };
