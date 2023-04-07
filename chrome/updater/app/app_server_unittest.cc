@@ -27,8 +27,6 @@
 using testing::Invoke;
 using testing::Return;
 
-// TODO(crbug.com/1281935): Fix these test cases to work for mac.
-#if !BUILDFLAG(IS_MAC)
 namespace updater {
 
 namespace {
@@ -74,7 +72,15 @@ void ClearPrefs() {
 
 class AppServerTestCase : public testing::Test {
  public:
-  void SetUp() override { ClearPrefs(); }
+  void SetUp() override {
+// TODO(crbug.com/1428653): Fix these test cases to work for mac system scope.
+#if BUILDFLAG(IS_MAC)
+    if (GetTestScope() == UpdaterScope::kSystem) {
+      GTEST_SKIP();
+    }
+#endif  // BUILDFLAG(IS_MAC)
+    ClearPrefs();
+  }
 
  private:
   base::test::TaskEnvironment environment_;
@@ -239,4 +245,3 @@ TEST_F(AppServerTestCase, StateDirtySwapFails) {
 }
 
 }  // namespace updater
-#endif  // !BUILDFLAG(IS_MAC)
