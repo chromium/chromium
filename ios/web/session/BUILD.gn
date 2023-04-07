@@ -16,7 +16,6 @@ source_set("session") {
   sources = [
     "crw_session_certificate_policy_cache_storage.mm",
     "crw_session_storage.mm",
-    "crw_session_user_data.h",
     "crw_session_user_data.mm",
     "session_certificate_policy_cache_impl.h",
     "session_certificate_policy_cache_impl.mm",

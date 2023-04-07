@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_WEB_SESSION_CRW_SESSION_USER_DATA_H_
-#define IOS_WEB_SESSION_CRW_SESSION_USER_DATA_H_
+#ifndef IOS_WEB_PUBLIC_SESSION_CRW_SESSION_USER_DATA_H_
+#define IOS_WEB_PUBLIC_SESSION_CRW_SESSION_USER_DATA_H_
 
 #import <Foundation/Foundation.h>
 
@@ -27,4 +27,4 @@
 
 @end
 
-#endif  // IOS_WEB_SESSION_CRW_SESSION_USER_DATA_H_
+#endif  // IOS_WEB_PUBLIC_SESSION_CRW_SESSION_USER_DATA_H_

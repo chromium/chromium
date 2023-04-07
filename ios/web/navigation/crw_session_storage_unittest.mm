@@ -15,7 +15,7 @@
 #import "ios/web/navigation/serializable_user_data_manager_impl.h"
 #import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/session/crw_navigation_item_storage.h"
-#import "ios/web/session/crw_session_user_data.h"
+#import "ios/web/public/session/crw_session_user_data.h"
 #import "net/base/mac/url_conversions.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"

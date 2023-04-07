@@ -4,8 +4,8 @@
 
 #import "ios/web/public/session/serializable_user_data_manager.h"
 
+#import "ios/web/public/session/crw_session_user_data.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#import "ios/web/session/crw_session_user_data.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 

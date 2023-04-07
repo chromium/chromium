@@ -83,6 +83,8 @@ bool SessionRestorationBrowserAgent::RestoreSessionWindow(
     SessionRestorationScope scope) {
   if (!window.sessions.count)
     return false;
+
+  // Start the session restoration.
   restoring_session_ = true;
 
   for (auto& observer : observers_) {
@@ -204,7 +206,13 @@ bool SessionRestorationBrowserAgent::RestoreSessionWindow(
   for (auto& observer : observers_) {
     observer.SessionRestorationFinished(restored_web_states);
   }
+
+  // Session restoration is complete.
   restoring_session_ = false;
+
+  // Schedule a session save.
+  SaveSession(/*immediately*/ false);
+
   return closed_ntp_tab;
 }
 
@@ -272,15 +280,23 @@ SessionRestorationBrowserAgent::GetRestoredSessionStoragesForScope(
 }
 
 bool SessionRestorationBrowserAgent::CanSaveSession() {
+  // Do not schedule a save while a session restoration is in progress.
+  if (restoring_session_) {
+    return false;
+  }
+
   // A session requires an active browser state and web state list.
-  if (!browser_state_ || !web_state_list_)
-    return NO;
+  if (!browser_state_ || !web_state_list_) {
+    return false;
+  }
+
   // Sessions where there's no active tab shouldn't be saved, unless the web
   // state list is empty. This is a transitional state.
-  if (!web_state_list_->empty() && !web_state_list_->GetActiveWebState())
-    return NO;
+  if (!web_state_list_->empty() && !web_state_list_->GetActiveWebState()) {
+    return false;
+  }
 
-  return YES;
+  return true;
 }
 
 // Browser Observer methods:
