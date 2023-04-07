@@ -378,6 +378,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.AlternateServiceForDnsAlpnH3Failed" enum="NetErrorCodes"
+    expires_after="2023-09-17">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Positive net error codes that failed alternative protocol requests end with.
+    Recorded only when an DNS alpn H3 job fails, and the main job succeeds.
+  </summary>
+</histogram>
+
 <histogram name="Net.AlternativeServiceTypeForRequest"
     enum="AlternativeServiceType" expires_after="2024-04-03">
   <owner>dschinazi@chromium.org</owner>
