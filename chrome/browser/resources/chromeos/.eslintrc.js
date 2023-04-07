@@ -5,6 +5,5 @@
 module.exports = {
   'rules' : {
     'eqeqeq' : 'off',
-    'no-var' : 'off',
   },
 };
