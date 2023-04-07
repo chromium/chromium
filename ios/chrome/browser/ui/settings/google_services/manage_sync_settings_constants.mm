@@ -16,17 +16,13 @@ NSString* const kManageSyncTableViewAccessibilityIdentifier =
 
 NSString* const kSyncEverythingItemAccessibilityIdentifier =
     @"syncEverythingItemAccessibilityIdentifier";
-
 NSString* const kSyncBookmarksIdentifier = @"syncBookmarksIdentifier";
-
 NSString* const kSyncOmniboxHistoryIdentifier = @"syncOmniboxHistoryIdentifier";
-
 NSString* const kSyncPasswordsIdentifier = @"syncPasswordsIdentifier";
-
 NSString* const kSyncOpenTabsIdentifier = @"syncOpenTabsIdentifier";
-
 NSString* const kSyncAutofillIdentifier = @"syncAutofillIdentifier";
-
 NSString* const kSyncPreferencesIdentifier = @"syncPreferencesIdentifier";
-
 NSString* const kSyncReadingListIdentifier = @"syncReadingListIdentifier";
+
+NSString* const kEncryptionAccessibilityIdentifier =
+    @"EncryptionAccessibilityIdentifier";

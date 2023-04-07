@@ -291,6 +291,8 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
   // EncryptionItemType.
   self.encryptionItem =
       [[TableViewImageItem alloc] initWithType:EncryptionItemType];
+  self.encryptionItem.accessibilityIdentifier =
+      kEncryptionAccessibilityIdentifier;
   self.encryptionItem.title = GetNSString(IDS_IOS_MANAGE_SYNC_ENCRYPTION);
   // The detail text (if any) is an error message, so color it in red.
   self.encryptionItem.detailTextColor = [UIColor colorNamed:kRedColor];
