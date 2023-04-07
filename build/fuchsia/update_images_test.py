@@ -76,6 +76,22 @@ class TestGetImageLocationInfo(unittest.TestCase):
     actual = GetImageLocationInfo('my-bucket')
     self.assertEqual(actual, override_info)
 
+  def testNoAllowOverride(self, mock_image_override, mock_override_bucket,
+                          mock_image_hash):
+    override_info = {
+        'bucket': 'override-bucket',
+        'image_hash': 'override-hash',
+    }
+    mock_image_override.return_value = override_info
+    mock_override_bucket.return_value = None
+    mock_image_hash.return_value = 'image-hash'
+
+    actual = GetImageLocationInfo('my-bucket', allow_override=False)
+    self.assertEqual(actual, {
+        'bucket': 'my-bucket',
+        'image_hash': 'image-hash',
+    })
+
 
 if __name__ == '__main__':
   unittest.main()

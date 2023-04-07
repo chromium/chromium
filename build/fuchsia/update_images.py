@@ -161,22 +161,25 @@ def _GetImageOverrideInfo() -> Optional[Dict[str, str]]:
   }
 
 
-def GetImageLocationInfo(default_bucket: str) -> Dict[str, str]:
+def GetImageLocationInfo(default_bucket: str,
+                         allow_override: bool = True) -> Dict[str, str]:
   """Figures out where to pull the image from.
 
   Defaults to the provided default bucket and generates the hash from defaults.
-  If sdk_override.txt exists, it uses that bucket instead.
+  If sdk_override.txt exists (and is allowed) it uses that bucket instead.
 
   Args:
     default_bucket: a given default for what bucket to use
+    allow_override: allow SDK override to be used.
 
   Returns:
     A dictionary containing the bucket and image_hash
   """
-  # if sdk_override.txt exists, use the image from that bucket
-  override = _GetImageOverrideInfo()
-  if override:
-    return override
+  # if sdk_override.txt exists (and is allowed) use the image from that bucket.
+  if allow_override:
+    override = _GetImageOverrideInfo()
+    if override:
+      return override
 
   # Use the bucket in sdk-bucket.txt if an entry exists.
   # Otherwise use the default bucket.
@@ -209,6 +212,13 @@ def main():
       '--image-root-dir',
       default=IMAGES_ROOT,
       help='Specify the root directory of the downloaded images. Optional')
+  parser.add_argument(
+      '--allow-override',
+      default=True,
+      action=argparse.BooleanOptionalAction,
+      type=bool,
+      help='Whether sdk_override.txt can be used for fetching the image, if '
+      'it exists.')
   args = parser.parse_args()
 
   logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO)
@@ -220,7 +230,7 @@ def main():
   # Check whether there's Fuchsia support for this platform.
   get_host_os()
 
-  image_info = GetImageLocationInfo(args.default_bucket)
+  image_info = GetImageLocationInfo(args.default_bucket, args.allow_override)
 
   bucket = image_info['bucket']
   image_hash = image_info['image_hash']
