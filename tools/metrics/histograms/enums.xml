@@ -60409,6 +60409,7 @@ from previous Chrome versions.
       label="ServiceWorkerSkipIgnorableFetchHandler:enabled"/>
   <int value="-852804781"
       label="WebViewSynthesizePageLoadOnlyOnInitialMainDocumentAccess:disabled"/>
+  <int value="-851924474" label="FastPairDebugMetadata:disabled"/>
   <int value="-850821337" label="WebContentsForceDark:enabled"/>
   <int value="-849792130" label="UserMediaCaptureOnFocus:disabled"/>
   <int value="-848691867" label="DesktopPWAWindowing:enabled"/>
@@ -63355,6 +63356,7 @@ from previous Chrome versions.
   <int value="767549069" label="ScreenTime:enabled"/>
   <int value="767970385" label="ResamplingScrollEvents:enabled"/>
   <int value="768287307" label="OmniboxCr2023Umbrella:enabled"/>
+  <int value="768675159" label="FastPairDebugMetadata:enabled"/>
   <int value="768855962" label="PaymentRequestBasicCard:enabled"/>
   <int value="770680432" label="DecodeLossyWebPImagesToYUV:enabled"/>
   <int value="772272625" label="simplify-https-indicator"/>
