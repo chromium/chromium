@@ -1229,6 +1229,8 @@ bool TestRecipeReplayer::ReplayRecordedActions(
     } else if (base::CompareCaseInsensitiveASCII(*type, "waitFor") == 0) {
       if (!ExecuteWaitForStateAction(std::move(action)))
         return false;
+    } else if (base::CompareCaseInsensitiveASCII(*type, "breakpoint") == 0) {
+      execution_state.limit = execution_state.index + 1;
     } else {
       ADD_FAILURE() << "Unrecognized action type: " << *type;
     }
