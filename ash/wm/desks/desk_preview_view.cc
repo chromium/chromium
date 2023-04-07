@@ -10,7 +10,6 @@
 
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/style_util.h"
 #include "ash/wallpaper/wallpaper_base_view.h"
 #include "ash/wm/desks/desk.h"
@@ -38,6 +37,7 @@
 #include "chromeos/ui/wm/features.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/layer_type.h"
@@ -553,10 +553,9 @@ void DeskPreviewView::OnGestureEvent(ui::GestureEvent* event) {
 void DeskPreviewView::OnThemeChanged() {
   views::Button::OnThemeChanged();
 
-  highlight_overlay_->layer()->SetColor(
-      SkColorSetA(AshColorProvider::Get()->GetControlsLayerColor(
-                      AshColorProvider::ControlsLayerType::kHighlightColor1),
-                  kHighlightTransparency));
+  highlight_overlay_->layer()->SetColor(SkColorSetA(
+      GetColorProvider()->GetColor(ui::kColorHighlightBorderHighlight1),
+      kHighlightTransparency));
 }
 
 void DeskPreviewView::OnFocus() {

@@ -4,10 +4,11 @@
 
 #include "ash/wm/gestures/back_gesture/back_gesture_util.h"
 
-#include "ash/style/ash_color_provider.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/highlight_border.h"
+#include "ui/views/view.h"
 
 namespace ash {
 
@@ -18,14 +19,15 @@ constexpr float kOuterHightlightBorderThickness =
 constexpr float kInnerHightlightBorderThickness =
     views::kHighlightBorderThickness / 2.f;
 
-SkColor GetHighlightBorderInnerColor() {
-  return AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kHighlightColor1);
+SkColor GetHighlightBorderInnerColor(views::View* view) {
+  DCHECK(view);
+  return view->GetColorProvider()->GetColor(
+      ui::kColorHighlightBorderHighlight1);
 }
 
-SkColor GetHighlightBorderOuterColor() {
-  return AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kBorderColor1);
+SkColor GetHighlightBorderOuterColor(views::View* view) {
+  DCHECK(view);
+  return view->GetColorProvider()->GetColor(ui::kColorHighlightBorderBorder1);
 }
 
 cc::PaintFlags GetHighlightBorderPaintFlags() {
@@ -38,7 +40,8 @@ cc::PaintFlags GetHighlightBorderPaintFlags() {
 
 }  // namespace
 
-void DrawCircleHighlightBorder(gfx::Canvas* canvas,
+void DrawCircleHighlightBorder(views::View* view,
+                               gfx::Canvas* canvas,
                                const gfx::PointF& circle_center,
                                int radius) {
   gfx::ScopedCanvas scoped_canvas(canvas);
@@ -50,17 +53,18 @@ void DrawCircleHighlightBorder(gfx::Canvas* canvas,
   scaled_circle_center.Scale(dsf);
   cc::PaintFlags hb_flags = GetHighlightBorderPaintFlags();
 
-  hb_flags.setColor(GetHighlightBorderOuterColor());
+  hb_flags.setColor(GetHighlightBorderOuterColor(view));
   canvas->DrawCircle(scaled_circle_center,
                      scaled_corner_radius + kOuterHightlightBorderThickness,
                      hb_flags);
-  hb_flags.setColor(GetHighlightBorderInnerColor());
+  hb_flags.setColor(GetHighlightBorderInnerColor(view));
   canvas->DrawCircle(scaled_circle_center,
                      scaled_corner_radius + kInnerHightlightBorderThickness,
                      hb_flags);
 }
 
-void DrawRoundRectHighlightBorder(gfx::Canvas* canvas,
+void DrawRoundRectHighlightBorder(views::View* view,
+                                  gfx::Canvas* canvas,
                                   const gfx::Rect& bounds,
                                   int corner_radius) {
   gfx::ScopedCanvas scoped_canvas(canvas);
@@ -73,11 +77,11 @@ void DrawRoundRectHighlightBorder(gfx::Canvas* canvas,
 
   cc::PaintFlags hb_flags = GetHighlightBorderPaintFlags();
 
-  hb_flags.setColor(GetHighlightBorderOuterColor());
+  hb_flags.setColor(GetHighlightBorderOuterColor(view));
   canvas->DrawRoundRect(scaled_outer_bounds,
                         scaled_corner_radius + kOuterHightlightBorderThickness,
                         hb_flags);
-  hb_flags.setColor(GetHighlightBorderInnerColor());
+  hb_flags.setColor(GetHighlightBorderInnerColor(view));
   canvas->DrawRoundRect(scaled_inner_bounds,
                         scaled_corner_radius + kInnerHightlightBorderThickness,
                         hb_flags);

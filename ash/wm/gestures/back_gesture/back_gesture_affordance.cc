@@ -160,7 +160,7 @@ class AffordanceView : public views::View {
 
     if (chromeos::features::IsDarkLightModeEnabled())
       // Draw highlight border circles.
-      DrawCircleHighlightBorder(canvas, center_point, kBackgroundRadius);
+      DrawCircleHighlightBorder(this, canvas, center_point, kBackgroundRadius);
 
     // Draw the arrow background circle.
     cc::PaintFlags bg_flags;
