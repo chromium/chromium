@@ -4548,7 +4548,7 @@ hooks = [
   # Download Telemetry's binary dependencies via conditionals
   {
     'name': 'checkout_telemetry_binary_dependencies',
-    'condition': 'checkout_telemetry_dependencies',
+    'condition': 'checkout_telemetry_dependencies or checkout_chromium_autofill_test_dependencies or checkout_chromium_password_manager_test_dependencies',
     'pattern': '.',
     'action': [ 'vpython3',
                 'src/third_party/catapult/telemetry/bin/fetch_telemetry_binary_dependencies',
