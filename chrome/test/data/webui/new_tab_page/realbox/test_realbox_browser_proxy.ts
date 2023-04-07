@@ -20,7 +20,6 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
     super([
       'deleteAutocompleteMatch',
       'executeAction',
-      'logCharTypedToRepaintLatency',
       'onNavigationLikely',
       'openAutocompleteMatch',
       'queryAutocomplete',
@@ -49,10 +48,6 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       metaKey,
       shiftKey,
     });
-  }
-
-  logCharTypedToRepaintLatency(timeDelta: TimeDelta) {
-    this.methodCalled('logCharTypedToRepaintLatency', {timeDelta});
   }
 
   openAutocompleteMatch(

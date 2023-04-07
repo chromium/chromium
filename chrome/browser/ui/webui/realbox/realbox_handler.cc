@@ -798,11 +798,6 @@ void RealboxHandler::ToggleSuggestionGroupIdVisibility(
       profile_->GetPrefs(), group_id, !current_visibility);
 }
 
-void RealboxHandler::LogCharTypedToRepaintLatency(base::TimeDelta latency) {
-  UMA_HISTOGRAM_TIMES("NewTabPage.Realbox.CharTypedToRepaintLatency.ToPaint",
-                      latency);
-}
-
 void RealboxHandler::ExecuteAction(uint8_t line,
                                    base::TimeTicks match_selection_timestamp,
                                    uint8_t mouse_button,

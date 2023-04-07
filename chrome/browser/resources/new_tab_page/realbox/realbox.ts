@@ -125,15 +125,6 @@ export class RealboxElement extends PolymerElement {
       //========================================================================
 
       /**
-       * The time of the first character insert operation that has not yet been
-       * painted in milliseconds. Used to measure the realbox responsiveness.
-       */
-      charTypedTime_: {
-        type: Number,
-        value: 0,
-      },
-
-      /**
        * Whether user is deleting text in the input. Used to prevent the default
        * match from offering inline autocompletion.
        */
@@ -234,7 +225,6 @@ export class RealboxElement extends PolymerElement {
   matchSearchbox: boolean;
   realboxLensSearchEnabled: boolean;
   singleColoredIcons: boolean;
-  private charTypedTime_: number;
   private inputAriaLive_: string;
   private isDeletingInput_: boolean;
   private lastIgnoredEnterEvent_: KeyboardEvent|null;
@@ -384,18 +374,11 @@ export class RealboxElement extends PolymerElement {
 
     this.updateInput_({text: inputValue, inline: ''});
 
-    const charTyped = !this.isDeletingInput_ && !!inputValue.trim();
-    // If a character has been typed, update |charTypedTime_|. Otherwise reset
-    // it. If |charTypedTime_| is not 0, there's a pending typed character for
-    // which the results have not been painted yet. In that case, keep the
-    // earlier time.
-    this.charTypedTime_ =
-        charTyped ? this.charTypedTime_ || window.performance.now() : 0;
-
     // If a character has been typed, mark 'CharTyped'. Otherwise clear it. If
     // 'CharTyped' mark already exists, there's a pending typed character for
     // which the results have not been painted yet. In that case, keep the
     // earlier mark.
+    const charTyped = !this.isDeletingInput_ && !!inputValue.trim();
     const metricsReporter = MetricsReporterImpl.getInstance();
     if (charTyped) {
       if (!metricsReporter.hasLocalMark('CharTyped')) {
@@ -441,11 +424,6 @@ export class RealboxElement extends PolymerElement {
         text: text,
         inline: this.lastInput_.inline.substr(1),
       });
-
-      // If |charTypedTime_| is not 0, there's a pending typed character for
-      // which the results have not been painted yet. In that case, keep the
-      // earlier time.
-      this.charTypedTime_ = this.charTypedTime_ || window.performance.now();
 
       // If 'CharTyped' mark already exists, there's a pending typed character
       // for which the results have not been painted yet. In that case, keep the
@@ -658,17 +636,6 @@ export class RealboxElement extends PolymerElement {
    */
   private onMatchRemove_(e: CustomEvent<number>) {
     this.pageHandler_.deleteAutocompleteMatch(e.detail);
-  }
-
-  /**
-   * @param e Event containing the result repaint time.
-   */
-  private onResultRepaint_(e: CustomEvent<number>) {
-    if (this.charTypedTime_) {
-      this.pageHandler_.logCharTypedToRepaintLatency(
-          mojoTimeDelta(e.detail - this.charTypedTime_));
-      this.charTypedTime_ = 0;
-    }
   }
 
   private onVoiceSearchClick_() {

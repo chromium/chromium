@@ -80,7 +80,6 @@ class RealboxHandler : public omnibox::mojom::PageHandler,
                              bool shift_key) override;
   void DeleteAutocompleteMatch(uint8_t line) override;
   void ToggleSuggestionGroupIdVisibility(int32_t suggestion_group_id) override;
-  void LogCharTypedToRepaintLatency(base::TimeDelta latency) override;
   void ExecuteAction(uint8_t line,
                      base::TimeTicks match_selection_timestamp,
                      uint8_t mouse_button,

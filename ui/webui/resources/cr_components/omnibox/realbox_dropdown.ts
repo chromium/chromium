@@ -206,12 +206,6 @@ export class RealboxDropdownElement extends PolymerElement {
   }
 
   private onResultRepaint_() {
-    this.dispatchEvent(new CustomEvent('result-repaint', {
-      bubbles: true,
-      composed: true,
-      detail: window.performance.now(),
-    }));
-
     const metricsReporter = MetricsReporterImpl.getInstance();
     metricsReporter.measure('CharTyped')
         .then(duration => {
