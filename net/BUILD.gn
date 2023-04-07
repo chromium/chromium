@@ -1209,6 +1209,7 @@ component("net") {
 
   if (is_linux || is_chromeos || is_android) {
     sources += [
+      "base/address_map_linux.h",
       "base/address_tracker_linux.cc",
       "base/address_tracker_linux.h",
       "base/network_interfaces_linux.cc",

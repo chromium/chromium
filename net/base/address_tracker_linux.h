@@ -28,6 +28,7 @@
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
+#include "net/base/address_map_linux.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
@@ -36,10 +37,13 @@ namespace net::internal {
 
 // Keeps track of network interface addresses using rtnetlink. Used by
 // NetworkChangeNotifier to provide signals to registered IPAddressObservers.
-class NET_EXPORT_PRIVATE AddressTrackerLinux {
+//
+// In tracking mode, this class should mostly be used on a single sequence,
+// except GetAddressMap() and GetOnlineLinks() (AddressMapOwnerLinux overrides)
+// which can be called on any thread.
+// In non-tracking mode this should be used on a single thread.
+class NET_EXPORT_PRIVATE AddressTrackerLinux : public AddressMapOwnerLinux {
  public:
-  typedef std::map<IPAddress, struct ifaddrmsg> AddressMap;
-
   // Non-tracking version constructor: it takes a snapshot of the
   // current system configuration. Once Init() returns, the
   // configuration is available through GetOnlineLinks() and
@@ -61,7 +65,7 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux {
       const base::RepeatingClosure& link_callback,
       const base::RepeatingClosure& tunnel_callback,
       const std::unordered_set<std::string>& ignored_interfaces);
-  virtual ~AddressTrackerLinux();
+  ~AddressTrackerLinux() override;
 
   // In tracking mode, it starts watching the system configuration for
   // changes. The current thread must have a MessageLoopForIO. In
@@ -70,10 +74,10 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux {
   // GetAddressMap().
   void Init();
 
-  AddressMap GetAddressMap() const;
-
+  // AddressMapOwnerLinux implementation (callable on any thread):
+  AddressMap GetAddressMap() const override;
   // Returns set of interface indices for online interfaces.
-  std::unordered_set<int> GetOnlineLinks() const;
+  std::unordered_set<int> GetOnlineLinks() const override;
 
   // Implementation of NetworkChangeNotifierLinux::GetCurrentConnectionType().
   // Safe to call from any thread, but will block until Init() has completed.
