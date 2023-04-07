@@ -83,9 +83,18 @@ bool ExtensionDevToolsInfoBarDelegate::ShouldExpire(
   return false;
 }
 
+// When rendering the text is being truncated to a 10000 characters (see
+// https://source.chromium.org/chromium/chromium/src/+/main:ui/gfx/render_text_harfbuzz.cc;l=70-71;drc=736ed6e5da7f81505b547d4b03d31b30ed025a46).
+// If the extension name is longer then this limit, the part of the text saying
+// that "... is debugging the browser" would be truncated. To work this around
+// enforce more modest limit on the name length here, so that the user will see
+// '<end of extension name> is debugging the browser.
+const size_t kMaxExtensionNameLength = 1000;
+
 std::u16string ExtensionDevToolsInfoBarDelegate::GetMessageText() const {
-  return l10n_util::GetStringFUTF16(IDS_DEV_TOOLS_INFOBAR_LABEL,
-                                    extension_name_);
+  return l10n_util::GetStringFUTF16(
+      IDS_DEV_TOOLS_INFOBAR_LABEL,
+      extension_name_.substr(0, kMaxExtensionNameLength));
 }
 
 gfx::ElideBehavior ExtensionDevToolsInfoBarDelegate::GetMessageElideBehavior()
@@ -93,6 +102,7 @@ gfx::ElideBehavior ExtensionDevToolsInfoBarDelegate::GetMessageElideBehavior()
   // The important part of the message text above is at the end:
   // "... is debugging the browser". If the extension name is very long,
   // we'd rather truncate it instead. See https://crbug.com/823194.
+  // See also the comment above for the kMaxExtensionNameLength
   return gfx::ELIDE_HEAD;
 }
 
