@@ -2581,6 +2581,9 @@ Connect your device to power.
       <message name="IDS_ASH_HOTSPOT_WIFI_TURNED_OFF_MESSAGE" desc="Message displayed in the system notification shown when WiFi is turned off upon enabling hotspot.">
         We've turned off the WiFi to start using Hotspot through Mobile data. This may incur data costs.
       </message>
+      <message name="IDS_ASH_HOTSPOT_WIFI_TURNED_ON_MESSAGE" desc="Message displayed in the system notification shown when hotspot is disabled due to WiFi being turned on.">
+        Hotspot has been turned off to use WiFi. To use Hotspot, turn WiFi off.
+      </message>
       <message name="IDS_ASH_HOTSPOT_ADMIN_RESTRICTED_MESSAGE" desc="Message displayed in the system notification shown when the hotspot is turned off by the administrator.">
         Your administrator has turned Hotspot off.
       </message>
