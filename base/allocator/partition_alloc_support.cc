@@ -338,6 +338,13 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
         brp_group_name = "EnabledBeforeAllocWithoutZapping";
 #endif
         break;
+      case features::BackupRefPtrMode::kEnabledWithoutMemoryReclaimer:
+#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
+        brp_group_name = "EnabledPrevSlotWithoutMemoryReclaimer";
+#else
+        brp_group_name = "EnabledBeforeAllocWithoutMemoryReclaimer";
+#endif
+        break;
       case features::BackupRefPtrMode::kDisabledButSplitPartitions2Way:
         brp_group_name = "DisabledBut2WaySplit";
         break;
@@ -852,6 +859,7 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
   bool use_dedicated_aligned_partition = false;
   bool add_dummy_ref_count = false;
   bool process_affected_by_brp_flag = false;
+  bool disable_memory_reclaimer = false;
 
 #if (BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&  \
      BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)) || \
@@ -889,6 +897,9 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
         // Do nothing. Equivalent to !IsEnabled(kPartitionAllocBackupRefPtr).
         break;
 
+      case base::features::BackupRefPtrMode::kEnabledWithoutMemoryReclaimer:
+        disable_memory_reclaimer = true;
+        ABSL_FALLTHROUGH_INTENDED;
       case base::features::BackupRefPtrMode::kEnabled:
         enable_brp_zapping = true;
         ABSL_FALLTHROUGH_INTENDED;
@@ -929,9 +940,13 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
         // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
-  return {enable_brp,           enable_brp_zapping,
-          split_main_partition, use_dedicated_aligned_partition,
-          add_dummy_ref_count,  process_affected_by_brp_flag};
+  return {enable_brp,
+          enable_brp_zapping,
+          !disable_memory_reclaimer,
+          split_main_partition,
+          use_dedicated_aligned_partition,
+          add_dummy_ref_count,
+          process_affected_by_brp_flag};
 }
 
 void PartitionAllocSupport::ReconfigureEarlyish(
@@ -1055,6 +1070,8 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   allocator_shim::ConfigurePartitions(
       allocator_shim::EnableBrp(brp_config.enable_brp),
       allocator_shim::EnableBrpZapping(brp_config.enable_brp_zapping),
+      allocator_shim::EnableBrpPartitionMemoryReclaimer(
+          brp_config.enable_brp_partition_memory_reclaimer),
       allocator_shim::SplitMainPartition(brp_config.split_main_partition),
       allocator_shim::UseDedicatedAlignedPartition(
           brp_config.use_dedicated_aligned_partition),
