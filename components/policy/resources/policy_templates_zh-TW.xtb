@@ -4223,11 +4223,6 @@
 <translation id="4996161752665479028">啟用 Terminal System App 中的 SSH</translation>
 <translation id="4997074784107449343">在 PDF 文件的列印預覽畫面中，「以圖片形式列印」不是預設選項 (如果有)。</translation>
 <translation id="500149597848135831">啟用所有變化版本</translation>
-<translation id="5014511262203433035">這項政策可控管使用者是否能夠在「設定」中啟用僅限 HTTPS 模式。此模式會禁止瀏覽僅支援 HTTP 的網站。
-      如果將這項政策設為允許或不設定，使用者將可啟用僅限 HTTPS 模式。
-      如果將這項政策設為禁止，使用者無法啟用僅限 HTTPS 模式。
-      如果將這項政策設為 force_enabled，系統會啟用現僅限 HTTPS 模式，而且使用者無法停用。
-      自 M112 版起，系統將支援強制啟用僅限 HTTPS 模式。</translation>
 <translation id="5017369989680827157">如果將這項政策設為 True 或不設定，使用者即可控制 UI 中的地址自動填入功能。
 
       如果將這項政策設為 False，自動填入功能一律不會建議或填入地址資訊，也不會在使用者瀏覽網頁時儲存其提交的其他地址資訊。</translation>

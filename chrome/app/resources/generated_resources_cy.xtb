@@ -3033,6 +3033,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3609277884604412258">Chwilio cyflym</translation>
 <translation id="3610241585790874201">Ni chaniateir i gadw data ar eich dyfais</translation>
 <translation id="3610369246614755442">Mae angen gwasanaeth ar ffan y doc</translation>
+<translation id="3610961622607302617">Newid cyfrinair ar gyfer <ph name="WEBSITE" /></translation>
 <translation id="361106536627977100">Data Flash</translation>
 <translation id="3611655097742243705">Ewch i Play Store i ddod o hyd i ragor o apiau</translation>
 <translation id="3611658447322220736">Gall gwefannau sydd wedi'u cau'n ddiweddar orffen anfon a derbyn data</translation>
@@ -6049,6 +6050,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="6318125393809743217">Cynhwyswch ffeil policies.json gyda ffurfweddiadau polisi.</translation>
 <translation id="6318407754858604988">Wedi dechrau lawrlwytho</translation>
 <translation id="6318944945640833942">Methu â chanfod argraffydd. Rhowch gyfeiriad yr argraffydd eto.</translation>
+<translation id="6320808462673705899">Nid oes unrhyw nodau tudalen sy'n cyfateb i'ch chwiliad.</translation>
 <translation id="6322370287306604163">Datgloi'n gyflymach ag olion bysedd</translation>
 <translation id="6322559670748154781">Nid yw'r ffeil hon yn cael ei lawrlwyrtho yn aml ac mae wedi'i rhwystro gan Advanced Protection</translation>
 <translation id="6324916366299863871">Golygu'r llwybr byr</translation>

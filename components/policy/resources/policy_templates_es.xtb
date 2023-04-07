@@ -4287,11 +4287,6 @@ Esta política es temporal y se eliminará en cuanto se lance la cancelación de
 <translation id="4996161752665479028">Habilitar SSH en la aplicación del sistema Terminal</translation>
 <translation id="4997074784107449343">Cuando la opción Imprimir como imagen está disponible, no se establece como opción predeterminada en las vistas previas de impresión de documentos PDF.</translation>
 <translation id="500149597848135831">Habilitar todas las variaciones</translation>
-<translation id="5014511262203433035">Esta política controla si los usuarios pueden habilitar el modo Solo HTTPS en Configuración. El modo Solo HTTPS cambia todos los accesos a páginas al protocolo HTTPS.
-      Si esta opción no se establece o se le asigna el valor allowed, los usuarios podrán habilitar el modo Solo HTTPS.
-      Si se le asigna el valor disallowed, los usuarios no podrán habilitar el modo Solo HTTPS.
-      Si se le asigna el valor force_enabled, se habilitará el modo Solo HTTPS y los usuarios no podrán inhabilitarlo.
-      Se puede forzar la habilitación del modo Solo HTTPS a partir de la versión M112.</translation>
 <translation id="5017369989680827157">Si se asigna el valor "Verdadero" a esta política o no se le asigna ninguno, se dará a los usuarios el control de la función de autocompletar direcciones en la UI.
 
       Si se le asigna el valor "Falso", la función Autocompletar nunca sugerirá ni completará información de direcciones, ni tampoco guardará la información adicional de direcciones que envíen los usuarios mientras naveguen por la Web.</translation>

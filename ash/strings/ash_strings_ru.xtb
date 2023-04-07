@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">Устройство USB-C (порт спереди)</translation>
 <translation id="1013598600051641573">Для экрана "<ph name="DISPLAY_NAME" />" установлено разрешение <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Гц). Чтобы сохранить изменения, нажмите "Подтвердить". Предыдущие настройки восстановятся через <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Устройству <ph name="DEVICE_NAME" /> требуется разрешение на подключение через Bluetooth. Введите на нем PIN-код: <ph name="PINCODE" /></translation>
+<translation id="1017556409696559990">Свернуть верхнее окно Chrome, если нет истории изменений</translation>
 <translation id="1024364763893396229">Сохраните <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Батарея стилуса почти разряжена</translation>
 <translation id="1036073649888683237">Чтобы управлять уведомлениями, откройте настройки</translation>
@@ -343,6 +344,7 @@
 <translation id="2620436844016719705">Система</translation>
 <translation id="2621713457727696555">Защищена</translation>
 <translation id="263399434338050016">"Выбрать все"</translation>
+<translation id="2644422758626431000">Закрепить окно слева</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647092942972307022">Доступно <ph name="USED_MEMORY" /> из <ph name="TOTAL_MEMORY" /></translation>
 <translation id="2653019840645008922">Съемка окна</translation>
@@ -1053,6 +1055,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">ВКЛ</translation>
 <translation id="5920710855273935292">Микрофон отключен.</translation>
+<translation id="5922962980596822074">Показать окна, начиная с недавно использованного</translation>
 <translation id="5924855612669061715">Точка доступа включена</translation>
 <translation id="5946788582095584774">Функция "<ph name="FEATURE_NAME" />" включена</translation>
 <translation id="5947494881799873997">Отменить</translation>
@@ -1142,6 +1145,7 @@
 <translation id="6352082849089527770">Неизвестные сети</translation>
 <translation id="6359587239691116345">Получите доступ к новым функциям и улучшениям безопасности. Если вы откажетесь от этого обновления, могут возникнуть сбои в работе устройства, а также проблемы с безопасностью и производительностью.</translation>
 <translation id="6376931439017688372">Bluetooth включен</translation>
+<translation id="6378515133128829137">Закрепить окно справа</translation>
 <translation id="6381109794406942707">Чтобы разблокировать устройство, введите PIN-код.</translation>
 <translation id="638716340450135524">Разрешить доступ к камере</translation>
 <translation id="639644700271529076">CAPS LOCK отключен</translation>
@@ -1161,6 +1165,7 @@
 <translation id="6459472438155181876">Расширение экрана на <ph name="DISPLAY_NAME" /></translation>
 <translation id="6477681113376365978">Не удалось скачать файл</translation>
 <translation id="6482559668224714696">Полноэкранная лупа</translation>
+<translation id="6483727822843292440">Показать окна, начиная с наименее используемого</translation>
 <translation id="6490471652906364588">Устройство USB-C (порт справа)</translation>
 <translation id="6491071886865974820">Согласно требованиям <ph name="MANAGER" /> вам нужно обновить устройство <ph name="DEVICE_TYPE" /> до истечения срока.</translation>
 <translation id="649452524636452238">PIN-код для смарт-карты</translation>

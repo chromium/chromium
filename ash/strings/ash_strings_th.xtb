@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">อุปกรณ์ USB-C (พอร์ตด้านหน้า)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> เปลี่ยนเป็น <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) แล้ว คลิก "ยืนยัน" เพื่อเก็บการเปลี่ยนแปลงไว้ ระบบจะคืนการตั้งค่าก่อนหน้าใน <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="1013923882670373915">อุปกรณ์บลูทูธ "<ph name="DEVICE_NAME" />" ต้องการสิทธิ์ในการจับคู่ โปรดป้อนรหัส PIN นี้บนอุปกรณ์นั้น: <ph name="PINCODE" /></translation>
+<translation id="1017556409696559990">ย่อหน้าต่างด้านบนเมื่อไม่มีประวัติย้อนหลังใน Chrome</translation>
 <translation id="1024364763893396229">บันทึก <ph name="NAME" /> ของคุณ</translation>
 <translation id="1032891413405719768">แบตเตอรี่สไตลัสเหลือน้อย</translation>
 <translation id="1036073649888683237">หากต้องการจัดการการแจ้งเตือน ให้ไปที่การตั้งค่า</translation>
@@ -343,6 +344,7 @@
 <translation id="2620436844016719705">ระบบ</translation>
 <translation id="2621713457727696555">ปลอดภัย</translation>
 <translation id="263399434338050016">"เลือกทั้งหมด"</translation>
+<translation id="2644422758626431000">ปักหมุดหน้าต่างไว้ทางด้านซ้าย</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2647092942972307022">พื้นที่เหลือ <ph name="USED_MEMORY" /> จาก <ph name="TOTAL_MEMORY" /></translation>
 <translation id="2653019840645008922">การจับภาพหน้าต่าง</translation>
@@ -1049,6 +1051,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">เปิด</translation>
 <translation id="5920710855273935292">ปิดเสียงไมค์อยู่</translation>
+<translation id="5922962980596822074">ไปยังหน้าต่างต่างๆ โดยเริ่มจากหน้าต่างที่ใช้งานล่าสุด</translation>
 <translation id="5924855612669061715">ฮอตสปอตเปิดอยู่</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> เปิดอยู่</translation>
 <translation id="5947494881799873997">ย้อนกลับ</translation>
@@ -1138,6 +1141,7 @@
 <translation id="6352082849089527770">เครือข่ายที่ไม่รู้จัก</translation>
 <translation id="6359587239691116345">รับฟีเจอร์และการปรับปรุงด้านความปลอดภัยล่าสุด หากปฏิเสธการอัปเดตนี้ อุปกรณ์อาจทำงานไม่ถูกต้องอีกต่อไป และคุณอาจพบปัญหาด้านความปลอดภัยและประสิทธิภาพ</translation>
 <translation id="6376931439017688372">บลูทูธเปิดอยู่</translation>
+<translation id="6378515133128829137">ปักหมุดหน้าต่างไว้ทางด้านขวา</translation>
 <translation id="6381109794406942707">ป้อน PIN เพื่อปลดล็อกอุปกรณ์</translation>
 <translation id="638716340450135524">เปิดการเข้าถึงกล้อง</translation>
 <translation id="639644700271529076">CAPS LOCK ปิดอยู่</translation>
@@ -1157,6 +1161,7 @@
 <translation id="6459472438155181876">ขยายหน้าจอไปยัง <ph name="DISPLAY_NAME" /></translation>
 <translation id="6477681113376365978">ดาวน์โหลดไฟล์ไม่ได้</translation>
 <translation id="6482559668224714696">แว่นขยายทั้งหน้าจอ</translation>
+<translation id="6483727822843292440">ไปยังหน้าต่างต่างๆ โดยเริ่มจากหน้าต่างที่ใช้งานน้อยที่สุด</translation>
 <translation id="6490471652906364588">อุปกรณ์ USB-C (พอร์ตด้านขวา)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> กำหนดให้คุณต้องอัปเดต <ph name="DEVICE_TYPE" /> ก่อนเวลาที่กำหนด</translation>
 <translation id="649452524636452238">PIN สมาร์ทการ์ด</translation>

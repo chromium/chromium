@@ -3030,6 +3030,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3609277884604412258">Quick search</translation>
 <translation id="3610241585790874201">Not allowed to save data on your device</translation>
 <translation id="3610369246614755442">Dock fan needs service</translation>
+<translation id="3610961622607302617">Change password for <ph name="WEBSITE" /></translation>
 <translation id="361106536627977100">Flash data</translation>
 <translation id="3611655097742243705">Visit the Play Store to find more apps</translation>
 <translation id="3611658447322220736">Recently closed sites can finish sending and receiving data</translation>
@@ -6046,6 +6047,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6318125393809743217">Include a policies.json file with policy configurations.</translation>
 <translation id="6318407754858604988">Download started</translation>
 <translation id="6318944945640833942">Couldn't detect a printer. Please enter printer address again.</translation>
+<translation id="6320808462673705899">There are no bookmarks that match your search.</translation>
 <translation id="6322370287306604163">Unlock faster with fingerprint</translation>
 <translation id="6322559670748154781">This file is not commonly downloaded and has been blocked by Advanced Protection</translation>
 <translation id="6324916366299863871">Edit shortcut</translation>

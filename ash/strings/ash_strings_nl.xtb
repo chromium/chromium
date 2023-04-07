@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB-C-apparaat (poort aan voorkant)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> gewijzigd in <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Klik op Bevestigen om de wijzigingen te behouden. De vorige instellingen worden over <ph name="TIMEOUT_SECONDS" /> hersteld.</translation>
 <translation id="1013923882670373915">Bluetooth-apparaat '<ph name="DEVICE_NAME" />' wil rechten om te koppelen. Voer de volgende pincode in op dat apparaat: <ph name="PINCODE" /></translation>
+<translation id="1017556409696559990">Het bovenste venster minimaliseren als er geen geschiedenis voor teruggaan in Chrome is</translation>
 <translation id="1024364763893396229">Je <ph name="NAME" /> opslaan</translation>
 <translation id="1032891413405719768">Batterij van stylus bijna leeg</translation>
 <translation id="1036073649888683237">Ga naar Instellingen om meldingen te beheren</translation>
@@ -343,6 +344,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2620436844016719705">Systeem</translation>
 <translation id="2621713457727696555">Beveiligd</translation>
 <translation id="263399434338050016">'Alles selecteren'</translation>
+<translation id="2644422758626431000">Venster links vastzetten</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2647092942972307022"><ph name="USED_MEMORY" /> van <ph name="TOTAL_MEMORY" /> beschikbaar</translation>
 <translation id="2653019840645008922">Vensteropname</translation>
@@ -1053,6 +1055,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Aan</translation>
 <translation id="5920710855273935292">Microfoon staat uit.</translation>
+<translation id="5922962980596822074">Vensters doorlopen vanaf het meest recent gebruikte venster</translation>
 <translation id="5924855612669061715">Hotspot staat aan</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> staat aan.</translation>
 <translation id="5947494881799873997">Terugzetten</translation>
@@ -1142,6 +1145,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="6352082849089527770">Onbekende netwerken</translation>
 <translation id="6359587239691116345">Krijg de nieuwste functies en beveiligingsverbeteringen. Als je deze update weigert, werkt je apparaat misschien niet meer goed en kun je beveiligings- en prestatieproblemen ondervinden.</translation>
 <translation id="6376931439017688372">Bluetooth staat aan</translation>
+<translation id="6378515133128829137">Venster rechts vastzetten</translation>
 <translation id="6381109794406942707">Geef je pincode op om het apparaat te ontgrendelen.</translation>
 <translation id="638716340450135524">Cameratoegang aanzetten</translation>
 <translation id="639644700271529076">CAPS LOCK staat uit</translation>
@@ -1161,6 +1165,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="6459472438155181876">Scherm uitbreiden naar <ph name="DISPLAY_NAME" /></translation>
 <translation id="6477681113376365978">Kan bestand niet downloaden</translation>
 <translation id="6482559668224714696">Volledig scherm vergroten</translation>
+<translation id="6483727822843292440">Vensters doorlopen vanaf het minst gebruikte venster</translation>
 <translation id="6490471652906364588">USB-C-apparaat (poort aan rechterkant)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> vereist dat je je <ph name="DEVICE_TYPE" /> vóór de deadline updatet</translation>
 <translation id="649452524636452238">Pincode van smartkaart</translation>
@@ -1214,6 +1219,7 @@ Nieuwe installatie</translation>
 <translation id="6683022854667115063">Hoofdtelefoon</translation>
 <translation id="6696025732084565524">Je afneembare toetsenbord heeft een essentiële update nodig</translation>
 <translation id="6700713906295497288">IME-menuknop</translation>
+<translation id="6705577071209924099">Belichting aanpassen</translation>
 <translation id="6707693040195709527">Het apparaat had al moeten zijn teruggezet naar een oudere versie</translation>
 <translation id="6710213216561001401">Vorige</translation>
 <translation id="6723839937902243910">Voeding</translation>

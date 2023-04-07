@@ -4247,11 +4247,6 @@
 <translation id="4996161752665479028">启用终端系统应用中的 SSH</translation>
 <translation id="4997074784107449343">在 PDF 文档的打印预览中，“以图片形式打印”选项（若有）默认处于未选中状态。</translation>
 <translation id="500149597848135831">启用所有变体</translation>
-<translation id="5014511262203433035">此政策用于控制用户能否在“设置”中启用 HTTPS-Only 模式。HTTPS-Only 模式会将所有导航路径升级到 HTTPS。
-      如果此设置设为“allowed”或未配置，用户将能启用 HTTPS-Only 模式。
-      如果此设置设为“disallowed”，用户将无法启用 HTTPS-Only 模式。
-      如果此设置设为“force_enabled”，系统将会启用 HTTPS-Only 模式，且用户无法停用该模式。
-      从 M112 开始，系统支持强制启用 HTTPS-Only 模式。</translation>
 <translation id="5017369989680827157">如果此政策设为 True 或未设置，用户可以控制是否在界面中自动填充地址。
 
       如果此政策设为 False，“自动填充”功能一律不会建议或填充地址信息，也不会保存用户在浏览网页时提交的其他地址信息。</translation>
@@ -5326,6 +5321,7 @@
 <translation id="6049117606554031363">启用设备主板状态报告功能</translation>
 <translation id="6050796253724099706">为登录屏幕启用语音反馈</translation>
 <translation id="605132676434455096">禁止添加新的个人资料</translation>
+<translation id="6053260874233331700">禁止在登录屏幕上访问地理定位。</translation>
 <translation id="6053681087509103368">允许 WebRTC 使用已过时的 TLD/DTLS 协议版本</translation>
 <translation id="6056517174496942473">为一系列网址启用 <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> 认证流程</translation>
 <translation id="6058879286588763839">您可以通过设置 <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> 来指定电池充电模式电源管理政策（如果相应设备支持的话），除非指定了会覆盖 <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> 的 <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" />。此政策会动态地控制电池充电，尽可能减少电池应力和损耗，从而延长电池寿命。
@@ -7048,6 +7044,12 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="759957074386651883">安全浏览设置</translation>
 <translation id="7602621823177962064">停用设备内存信息报告功能</translation>
 <translation id="7604169113182304895">Android 应用可能会主动选择采纳该列表。您无法强制此类应用采纳该列表。</translation>
+<translation id="7605203688694672897">为 <ph name="PRODUCT_OS_NAME" /> 系统设置设备级地理定位访问权限级别。此设置在用户登录前有效。登录后，用户可以通过按用户进行的设置来控制地理定位访问权限级别。
+
+如果此政策未设置或设为 <ph name="ALLOW" />，受管设备将可以在登录屏幕上访问地理定位。如果发送的政策值无效，则访问权限会回退到 <ph name="DISALLOW" />。对于非受管设备，政策值始终为 <ph name="DISALLOW" />。
+
+警告：更改此设置时应小心谨慎，因为它可能会破坏其他与地理定位相关的政策（例如 <ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" />）！
+具体而言，当此政策设置为 <ph name="DISALLOW" /> 时，<ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" /> 政策的 <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS" /> 和 <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" /> 选项将失效，在<ph name="LOG_IN" />屏幕上只能使用基于 <ph name="IP" /> 的位置解析方法。</translation>
 <translation id="7608186022704392724">PIN 码自动提交功能会更改 PIN 码在 <ph name="PRODUCT_OS_NAME" /> 中的输入方式。
           该功能会显示一个特殊界面以清楚地指明用户的 PIN 码需要包含的位数，而不会显示原本用于输入密码的文本字段。因此，用户的 PIN 码长度会存储在用户加密数据之外。仅支持长度介于 6-12 位数字的 PIN 码。
 
@@ -7832,6 +7834,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果此政策已停用，当用户尝试退出时，系统不会显示警告对话框。</translation>
 <translation id="830440838848984847">允许用户登录 <ph name="PRODUCT_NAME" /></translation>
 <translation id="8306117673860983372">登录设置</translation>
+<translation id="8307340233340602723">允许或拒绝设备访问地理定位信息</translation>
 <translation id="830819203330820450">如果此政策已启用或未配置（默认），网页可以使用屏幕共享 API（例如 getDisplayMedia() 或 Desktop Capture Extension API）提示用户选择要截取的标签页、窗口或桌面。
 
       如果此政策已停用，对屏幕共享 API 的所有调用都会失败并会返回错误；但在以下情况下，系统将不会考虑此政策（相应网站将能够使用屏幕共享 API）：该网站与 <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />、<ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />、<ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" /> 或 <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" /> 政策中的来源格式匹配。
@@ -8792,6 +8795,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="9213751049772256263">停用所有变体</translation>
 <translation id="9217154963008402249">发送监控网络数据包的频率</translation>
 <translation id="9220314833408124365">使用默认引荐来源网址政策值 no-referrer-when-downgrade</translation>
+<translation id="9221827710437832530">允许在登录屏幕上访问地理定位。</translation>
 <translation id="922540222991413931">配置扩展程序、应用和用户脚本安装源</translation>
 <translation id="924557436754151212">首次运行时，从默认浏览器导入保存的密码</translation>
 <translation id="926104720905645793">此政策旨在控制 <ph name="PRODUCT_NAME" /> 云报告功能，该功能可将与浏览器操作相关的信息上传到 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />。

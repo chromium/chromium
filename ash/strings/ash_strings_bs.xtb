@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB-C uređaj (prednji priključak)</translation>
 <translation id="1013598600051641573">Rezolucija uređaja <ph name="DISPLAY_NAME" /> je promijenjena na <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) Kliknite Potvrdi da zadržite promjene. Prethodne postavke će se vratiti za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Bluetooth uređaj "<ph name="DEVICE_NAME" />" traži odobrenje za uparivanje. Unesite ovaj PIN kôd na taj uređaj: <ph name="PINCODE" /></translation>
+<translation id="1017556409696559990">Minimiziranje gornjeg prozora kada u Chromeu nema historije vraćanja</translation>
 <translation id="1024364763893396229">Sačuvajte uređaj <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Baterija pisaljke je slaba</translation>
 <translation id="1036073649888683237">Da upravljate obavještenjima, idite u Postavke</translation>
@@ -343,6 +344,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2621713457727696555">Osigurano</translation>
 <translation id="263399434338050016">"Odaberite sve"</translation>
+<translation id="2644422758626431000">Kačenje prozora na lijevoj strani</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647092942972307022">Dostupno <ph name="USED_MEMORY" /> od <ph name="TOTAL_MEMORY" /></translation>
 <translation id="2653019840645008922">Snimanje prozora</translation>
@@ -1053,6 +1055,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Uključeno</translation>
 <translation id="5920710855273935292">Mikrofon je isključen.</translation>
+<translation id="5922962980596822074">Prolazak kroz prozore od posljednjeg korištenog prozora</translation>
 <translation id="5924855612669061715">Pristupna tačka je uključena</translation>
 <translation id="5946788582095584774">Funkcija <ph name="FEATURE_NAME" /> je uključena.</translation>
 <translation id="5947494881799873997">Vrati</translation>
@@ -1142,6 +1145,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="6352082849089527770">Nepoznate mreže</translation>
 <translation id="6359587239691116345">Preuzmite najnovije funkcije i poboljšanja sigurnosti. Ako odbijete ovo ažuriranje, vaš uređaj možda više neće funkcionirati ispravno i možete iskusiti probleme sa sigurnošću i performansama.</translation>
 <translation id="6376931439017688372">Bluetooth je uključen</translation>
+<translation id="6378515133128829137">Kačenje prozora na desnoj strani</translation>
 <translation id="6381109794406942707">Da otključate uređaj, unesite PIN.</translation>
 <translation id="638716340450135524">Uključi pristup kameri</translation>
 <translation id="639644700271529076">Tipka CAPS LOCK je isključena</translation>
@@ -1161,6 +1165,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="6459472438155181876">Proširivanje ekrana na <ph name="DISPLAY_NAME" /></translation>
 <translation id="6477681113376365978">Nije moguće preuzeti datoteku</translation>
 <translation id="6482559668224714696">Povećalo za cijeli ekran</translation>
+<translation id="6483727822843292440">Prolazak kroz prozore od najmanje korištenog prozora</translation>
 <translation id="6490471652906364588">USB-C uređaj (desni priključak)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> zahtijeva da ažurirate ovaj uređaj <ph name="DEVICE_TYPE" /> prije isteka roka</translation>
 <translation id="649452524636452238">PIN pametne kartice</translation>
@@ -1214,6 +1219,7 @@ Nova instalacija</translation>
 <translation id="6683022854667115063">Slušalice</translation>
 <translation id="6696025732084565524">Vašoj odvojivoj tastaturi je potrebno važno ažuriranje</translation>
 <translation id="6700713906295497288">IME dugme menija</translation>
+<translation id="6705577071209924099">Podesi osvjetljenje</translation>
 <translation id="6707693040195709527">Kasnite s vraćanjem uređaja na prethodnu verziju</translation>
 <translation id="6710213216561001401">Nazad</translation>
 <translation id="6723839937902243910">Uključivanje/isključivanje</translation>

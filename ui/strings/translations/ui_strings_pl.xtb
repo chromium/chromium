@@ -201,6 +201,7 @@
 <translation id="8393700583063109961">Wyślij wiadomość</translation>
 <translation id="8394908167088220973">Odtwórz/wstrzymaj multimedia</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 rok}few{# lata}many{# lat}other{# roku}}</translation>
+<translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623">Plik <ph name="SAVEAS_EXTENSION_TYPE" /> (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> kB/s</translation>
 <translation id="8725488761726303204">i jeszcze <ph name="NUMBER" /></translation>

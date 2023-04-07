@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">ឧបករណ៍ USB-C (រន្ធខាងមុខ)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> បានប្ដូរទៅ <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz)។ សូមចុច "បញ្ជាក់" ដើម្បីរក្សា​ការផ្លាស់ប្ដូរ។ ការកំណត់​មុននឹងត្រូវបានរក្សាទុក​ក្នុងរយៈពេល <ph name="TIMEOUT_SECONDS" />។</translation>
 <translation id="1013923882670373915">ឧបករណ៍ប៊្លូធូស "<ph name="DEVICE_NAME" />" ចង់បានការអនុញ្ញាតដើម្បីភ្ជាប់។ សូមបញ្ចូលលេខកូដសម្គាល់នៅលើឧបករណ៍នោះ៖ <ph name="PINCODE" /></translation>
+<translation id="1017556409696559990">បង្រួម​វិនដូ​ខាង​លើជាអប្បបរមា​​​ នៅ​ពេល​មិនមាន​ប្រវត្តិ​ថយក្រោយ​នៅ​ក្នុង Chrome</translation>
 <translation id="1024364763893396229">រក្សាទុក <ph name="NAME" /> របស់អ្នក</translation>
 <translation id="1032891413405719768">ថាមពល​ថ្មរបស់ប៊ិចនៅសល់តិច</translation>
 <translation id="1036073649888683237">ដើម្បីគ្រប់គ្រងការជូនដំណឹង សូមចូលទៅកាន់ការកំណត់</translation>
@@ -343,6 +344,7 @@
 <translation id="2620436844016719705">ប្រព័ន្ធ</translation>
 <translation id="2621713457727696555">មាន​សុវត្ថិភាព</translation>
 <translation id="263399434338050016">"ជ្រើសរើសទាំងអស់"</translation>
+<translation id="2644422758626431000">ខ្ទាស់​វិនដូ​ទៅ​ឆ្វេង</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647092942972307022">អាច​ប្រើបាន <ph name="USED_MEMORY" /> នៃ <ph name="TOTAL_MEMORY" /></translation>
 <translation id="2653019840645008922">ថតវិនដូ</translation>
@@ -1053,6 +1055,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">បើក</translation>
 <translation id="5920710855273935292">បានបិទសំឡេងមីក្រូហ្វូន។</translation>
+<translation id="5922962980596822074">ពិនិត្យមើល​វិនដូ​ពី​វិនដូ​ដែល​បាន​ប្រើ​ថ្មីៗបំផុត</translation>
 <translation id="5924855612669061715">ហតស្ប៉ត​ត្រូវបានបើក</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> បាន​បើក។</translation>
 <translation id="5947494881799873997">ត្រលប់ក្រោយ</translation>
@@ -1142,6 +1145,7 @@
 <translation id="6352082849089527770">បណ្ដាញដែលមិនស្គាល់</translation>
 <translation id="6359587239691116345">ទទួលបាន​មុខងារ និងការកែលម្អផ្នែកសុវត្ថិភាពចុងក្រោយបំផុត។ ប្រសិនបើ​អ្នក​បដិសេធ​ការដំឡើងកំណែ​នេះ ឧបករណ៍​របស់អ្នក​ប្រហែលជា​មិន​ដំណើរការ​ត្រឹមត្រូវ​ទៀតទេ ហើយ​អ្នកប្រហែល​ជាជួប​បញ្ហា​ពាក់ព័ន្ធ​នឹងសុវត្ថិភាព និងប្រតិបត្តិការ។</translation>
 <translation id="6376931439017688372">ប៊្លូធូស​ត្រូវបាន​បើក</translation>
+<translation id="6378515133128829137">ខ្ទាស់​វិនដូ​ទៅ​ស្ដាំ</translation>
 <translation id="6381109794406942707">ដើម្បីដោះសោឧបករណ៍នេះ សូមបញ្ចូលកូដ PIN របស់អ្នក។</translation>
 <translation id="638716340450135524">បើក​ការ​ចូលប្រើប្រាស់​កាមេរ៉ា</translation>
 <translation id="639644700271529076">CAPS LOCK ត្រូវបានបិទ</translation>
@@ -1161,6 +1165,7 @@
 <translation id="6459472438155181876">កំពុងពង្រីកអេក្រង់ទៅ <ph name="DISPLAY_NAME" /></translation>
 <translation id="6477681113376365978">មិនអាចទាញយកឯកសារបានទេ</translation>
 <translation id="6482559668224714696">កែវ​ពង្រីក​ពេញ​អេក្រង់</translation>
+<translation id="6483727822843292440">ពិនិត្យមើល​វិនដូ​នានាពី​វិនដូ​ដែលបានប្រើ​តិច​បំផុត</translation>
 <translation id="6490471652906364588">ឧបករណ៍ USB-C (រន្ធខាងស្តាំ)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> តម្រូវឱ្យ​អ្នក​ដំឡើងកំណែ <ph name="DEVICE_TYPE" /> របស់អ្នក​ឱ្យបានមុន​ថ្ងៃផុតកំណត់</translation>
 <translation id="649452524636452238">កូដ PIN របស់​កាត​ឆ្លាតវៃ</translation>
@@ -1214,6 +1219,7 @@
 <translation id="6683022854667115063">កាស</translation>
 <translation id="6696025732084565524">ក្ដារចុច​ដែល​អាច​ផ្ដាច់ចេញបាន​របស់អ្នក​ត្រូវ​ការ​កំណែថ្មីជា​ចាំបាច់</translation>
 <translation id="6700713906295497288">ប៊ូតុងម៉ឺនុយ IME</translation>
+<translation id="6705577071209924099">កែ​តម្រូវ​ពន្លឺ</translation>
 <translation id="6707693040195709527">ការប្ដូរកំណែ​ឧបករណ៍​ទៅកំណែមុន​គឺផុតកំណត់ហើយ</translation>
 <translation id="6710213216561001401">មុន</translation>
 <translation id="6723839937902243910">ថាមពល</translation>

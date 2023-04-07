@@ -4301,11 +4301,6 @@ Bu politika geçici olup sistem ses yankısı giderme özelliği kullanıma sunu
 <translation id="4996161752665479028">Terminal Sistem Uygulaması'nda SSH'yi etkinleştir</translation>
 <translation id="4997074784107449343">Resim olarak yazdır, PDF dokümanların yazdırma önizlemelerinde kullanılabildiği durumlarda varsayılan olarak seçilmez.</translation>
 <translation id="500149597848135831">Tüm varyasyonları etkinleştirme</translation>
-<translation id="5014511262203433035">Bu politika, kullanıcıların Yalnızca HTTPS Modunu Ayarlar'da etkinleştirip etkinleştiremeyeceğini kontrol eder. Yalnızca HTTPS Modu, tüm gezinmeleri HTTPS'ye yükseltir.
-      Bu ayar belirtilmezse veya izin verildi olarak seçilirse kullanıcılar Yalnızca HTTPS Modunu etkinleştirebilir.
-      Bu ayar izin verilmedi olarak seçilirse kullanıcılar Yalnızca HTTPS Modunu etkinleştiremez.
-      Bu ayar, force_enabled değerine ayarlanırsa "yalnızca HTTPS modu" etkinleştirilir ve kullanıcılar bu modu devre dışı bırakamaz.
-      Yalnızca HTTPS modunu etkinleştirmeye zorla seçeneği, M112 ve sonraki sürümlerde desteklenir.</translation>
 <translation id="5017369989680827157">Politikayı True (Doğru) değerine ayarlamak veya ayarlamadan bırakmak, kullanıcı arayüzünde adresler için Otomatik doldurma kontrolünü kullanıcıya verir.
 
       Politikayı False (Yanlış) değerine ayarlamak, Otomatik doldurmanın hiçbir zaman öneride bulunmayacağı, adres bilgilerini doldurmayacağı ve kullanıcının web'e göz atarken gönderdiği ek adres bilgilerini kaydetmeyeceği anlamına gelir.</translation>
