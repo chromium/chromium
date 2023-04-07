@@ -138,13 +138,9 @@ void ExpectClean(UpdaterScope scope) {
   EXPECT_FALSE(SystemdUnitsInstalled(scope));
 }
 
-void EnterTestMode(const GURL& update_url,
-                   const GURL& crash_upload_url,
-                   const GURL& device_management_url) {
+void EnterTestMode(const GURL& url) {
   ASSERT_TRUE(ExternalConstantsBuilder()
-                  .SetUpdateURL({update_url.spec()})
-                  .SetCrashUploadURL(crash_upload_url.spec())
-                  .SetDeviceManagementURL(device_management_url.spec())
+                  .SetUpdateURL({url.spec()})
                   .SetUseCUP(false)
                   .SetInitialDelay(base::Milliseconds(100))
                   .SetServerKeepAliveTime(base::Seconds(1))

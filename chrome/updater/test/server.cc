@@ -8,12 +8,9 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "chrome/updater/test/integration_test_commands.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "net/http/http_status_code.h"
@@ -24,32 +21,6 @@
 
 namespace updater {
 namespace test {
-namespace {
-
-std::string SerializeRequest(const net::test_server::HttpRequest& request) {
-  std::vector<std::string> request_strs;
-
-  request_strs.push_back("Request:");
-  request_strs.push_back(
-      base::StringPrintf("Path: %s", request.relative_url.c_str()));
-  request_strs.push_back("Headers: {");
-  for (auto& header : request.headers) {
-    request_strs.push_back(base::StringPrintf(
-        "    %s: %s", header.first.c_str(), header.second.c_str()));
-  }
-  request_strs.push_back("}");
-
-  if (request.has_content) {
-    request_strs.push_back("Content:");
-    request_strs.push_back(request.content);
-  } else {
-    request_strs.push_back("Content: <no content>");
-  }
-
-  return base::JoinString(request_strs, "\n  ");
-}
-
-}  // namespace
 
 ScopedServer::ScopedServer(
     scoped_refptr<IntegrationTestCommands> integration_test_commands)
@@ -59,18 +30,16 @@ ScopedServer::ScopedServer(
       &ScopedServer::HandleRequest, base::Unretained(this)));
   EXPECT_TRUE((test_server_handle_ = test_server_->StartAndReturnHandle()));
 
-  integration_test_commands_->EnterTestMode(update_url(), crash_upload_url(),
-                                            device_management_url());
+  integration_test_commands_->EnterTestMode(test_server_->base_url());
 }
 
 ScopedServer::~ScopedServer() {
   for (const auto& request_matcher : request_matchers_) {
     // Forces `request_matcher` to log to help debugging, unless the
-    // predicate matches the empty request.
+    // predicate matches "..." string in the request.
     ADD_FAILURE() << "Unmet expectation: ";
-    base::ranges::for_each(request_matcher, [](RequestMatcherPredicate pred) {
-      pred.Run(net::test_server::HttpRequest());
-    });
+    base::ranges::for_each(
+        request_matcher, [](RequestMatcherPredicate pred) { pred.Run("..."); });
   }
 }
 
@@ -82,20 +51,20 @@ void ScopedServer::ExpectOnce(RequestMatcher request_matcher,
 
 std::unique_ptr<net::test_server::HttpResponse> ScopedServer::HandleRequest(
     const net::test_server::HttpRequest& request) {
-  VLOG(0) << "Handle " << SerializeRequest(request);
+  VLOG(0) << "HandleRequest: " << request.content;
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
   if (request_matchers_.empty()) {
     VLOG(0) << "Unexpected request.";
-    ADD_FAILURE() << "Unexpected " << SerializeRequest(request);
+    ADD_FAILURE() << "Unexpected request: " << request.content;
     response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
     return response;
   }
   if (!base::ranges::all_of(request_matchers_.front(),
                             [&request](RequestMatcherPredicate pred) {
-                              return pred.Run(request);
+                              return pred.Run(request.content);
                             })) {
     VLOG(0) << "Request did not match.";
-    ADD_FAILURE() << "Unmatched " << SerializeRequest(request);
+    ADD_FAILURE() << "Request did not match: " << request.content;
     response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
     return response;
   }

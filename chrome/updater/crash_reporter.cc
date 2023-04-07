@@ -22,14 +22,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
-#include "chrome/updater/external_constants.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"
 #include "third_party/crashpad/crashpad/handler/handler_main.h"
-#include "url/gurl.h"
 
 namespace updater {
 namespace {
@@ -88,13 +86,11 @@ void StartCrashReporter(UpdaterScope updater_scope,
   annotations["prod"] = CRASH_PRODUCT_NAME;
 
   crashpad::CrashpadClient& client = GetCrashpadClient();
-  if (!client.StartHandler(
-          handler_path, *database_path,
-          /*metrics_dir=*/base::FilePath(),
-          CreateExternalConstants()->CrashUploadURL().possibly_invalid_spec(),
-          annotations, MakeCrashHandlerArgs(updater_scope),
-          /*restartable=*/true,
-          /*asynchronous_start=*/false)) {
+  if (!client.StartHandler(handler_path, *database_path,
+                           /*metrics_dir=*/base::FilePath(), CRASH_UPLOAD_URL,
+                           annotations, MakeCrashHandlerArgs(updater_scope),
+                           /*restartable=*/true,
+                           /*asynchronous_start=*/false)) {
     VLOG(1) << "Failed to start handler.";
     return;
   }

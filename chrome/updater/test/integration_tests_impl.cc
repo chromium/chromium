@@ -147,82 +147,80 @@ std::string GetUpdateResponse(const std::string& app_id,
       GetHashHex(update_file).c_str());
 }
 
-ScopedServer::RequestMatcherPredicate GetScopePredicate(UpdaterScope scope) {
-  return base::BindLambdaForTesting(
-      [scope](const net::test_server::HttpRequest& request) {
-        const bool is_match = [&scope, &request]() {
-          const absl::optional<base::Value> doc =
-              base::JSONReader::Read(request.content);
-          if (!doc || !doc->is_dict()) {
-            return false;
-          }
-          const base::Value::Dict* object_request =
-              doc->GetDict().FindDict("request");
-          if (!object_request) {
-            return false;
-          }
-          absl::optional<bool> ismachine =
-              object_request->FindBool("ismachine");
-          if (!ismachine.has_value()) {
-            return false;
-          }
-          switch (scope) {
-            case UpdaterScope::kSystem:
-              return *ismachine;
-            case UpdaterScope::kUser:
-              return !*ismachine;
-          }
-        }();
-        if (!is_match) {
-          ADD_FAILURE() << R"(Request does not match "ismachine": )"
-                        << request.content;
-        }
-        return is_match;
-      });
+base::RepeatingCallback<bool(const std::string&)> GetScopePredicate(
+    UpdaterScope scope) {
+  return base::BindLambdaForTesting([scope](const std::string& request_body) {
+    const bool is_match = [&scope, &request_body]() {
+      const absl::optional<base::Value> doc =
+          base::JSONReader::Read(request_body);
+      if (!doc || !doc->is_dict()) {
+        return false;
+      }
+      const base::Value::Dict* object_request =
+          doc->GetDict().FindDict("request");
+      if (!object_request) {
+        return false;
+      }
+      absl::optional<bool> ismachine = object_request->FindBool("ismachine");
+      if (!ismachine.has_value()) {
+        return false;
+      }
+      switch (scope) {
+        case UpdaterScope::kSystem:
+          return *ismachine;
+        case UpdaterScope::kUser:
+          return !*ismachine;
+      }
+    }();
+    if (!is_match) {
+      ADD_FAILURE() << R"(Request does not match "ismachine": )"
+                    << request_body;
+    }
+    return is_match;
+  });
 }
 
-ScopedServer::RequestMatcherPredicate MatchAppPriority(
+base::RepeatingCallback<bool(const std::string&)> MatchAppPriority(
     const std::string& app_id,
     UpdateService::Priority priority) {
-  return base::BindLambdaForTesting(
-      [app_id, priority](const net::test_server::HttpRequest& request) {
-        const bool is_match = [&app_id, priority, &request]() {
-          const absl::optional<base::Value> doc =
-              base::JSONReader::Read(request.content);
-          if (!doc || !doc->is_dict()) {
-            return false;
-          }
-          const base::Value::List* app_list =
-              doc->GetDict().FindListByDottedPath("request.app");
-          if (!app_list) {
-            return false;
-          }
-          for (const base::Value& app : *app_list) {
-            if (const auto* dict = app.GetIfDict()) {
-              if (const auto* appid = dict->FindString("appid");
-                  *appid == app_id) {
-                if (const auto* install_source =
-                        dict->FindString("installsource")) {
-                  return (*install_source == "ondemand") ==
-                         (priority == UpdateService::Priority::kForeground);
-                }
-              }
+  return base::BindLambdaForTesting([app_id, priority](
+                                        const std::string& request_body) {
+    const bool is_match = [&app_id, priority, &request_body]() {
+      const absl::optional<base::Value> doc =
+          base::JSONReader::Read(request_body);
+      if (!doc || !doc->is_dict()) {
+        return false;
+      }
+      const base::Value::List* app_list =
+          doc->GetDict().FindListByDottedPath("request.app");
+      if (!app_list) {
+        return false;
+      }
+      for (const base::Value& app : *app_list) {
+        if (const auto* dict = app.GetIfDict()) {
+          if (const auto* appid = dict->FindString("appid"); *appid == app_id) {
+            if (const auto* install_source =
+                    dict->FindString("installsource")) {
+              return (*install_source == "ondemand") ==
+                     (priority == UpdateService::Priority::kForeground);
             }
           }
-          return priority != UpdateService::Priority::kForeground;
-        }();
-        if (!is_match) {
-          ADD_FAILURE() << R"(Request does not match "appid", "priority: )"
-                        << request.content;
         }
-        return is_match;
-      });
+      }
+      return priority != UpdateService::Priority::kForeground;
+    }();
+    if (!is_match) {
+      ADD_FAILURE() << R"(Request does not match "ismachine": )"
+                    << request_body;
+    }
+    return is_match;
+  });
 }
 
 void RunUpdaterWithSwitch(const base::Version& version,
                           UpdaterScope scope,
                           const std::string& command,
-                          absl::optional<int> expected_exit_code) {
+                          int expected_exit_code) {
   const absl::optional<base::FilePath> installed_executable_path =
       GetVersionedInstallDirectory(scope, version)
           ->Append(GetExecutableRelativePath());
@@ -232,9 +230,7 @@ void RunUpdaterWithSwitch(const base::Version& version,
   command_line.AppendSwitch(command);
   int exit_code = -1;
   Run(scope, command_line, &exit_code);
-  if (expected_exit_code) {
-    ASSERT_EQ(exit_code, expected_exit_code.value());
-  }
+  ASSERT_EQ(exit_code, expected_exit_code);
 }
 
 void ExpectUpdateCheckSequence(UpdaterScope scope,
@@ -252,20 +248,18 @@ void ExpectUpdateCheckSequence(UpdaterScope scope,
 
   // First request: update check.
   test_server->ExpectOnce(
-      {GetRequestPathPredicate(test_server->update_path()),
-       base::BindRepeating(
+      {base::BindRepeating(
            RequestMatcherRegex,
            base::StringPrintf(R"(.*"appid":"%s".*)", app_id.c_str())),
        GetScopePredicate(scope), MatchAppPriority(app_id, priority)},
-      GetUpdateResponse(app_id, "", test_server->update_url().spec(),
-                        to_version, crx_path, kDoNothingCRXRun, {}));
+      GetUpdateResponse(app_id, "", test_server->base_url().spec(), to_version,
+                        crx_path, kDoNothingCRXRun, {}));
 
   // Second request: event ping with an error because the update check response
   // is ignored by the client:
   // {errorCategory::kService, ServiceError::CHECK_FOR_UPDATE_ONLY}
   test_server->ExpectOnce(
-      {GetRequestPathPredicate(test_server->update_path()),
-       base::BindRepeating(
+      {base::BindRepeating(
            RequestMatcherRegex,
            base::StringPrintf(R"(.*"errorcat":4,"errorcode":4,)"
                               R"("eventresult":0,"eventtype":%d,)"
@@ -292,8 +286,7 @@ void ExpectUpdateSequence(UpdaterScope scope,
 
   // First request: update check.
   test_server->ExpectOnce(
-      {GetRequestPathPredicate(test_server->update_path()),
-       base::BindRepeating(
+      {base::BindRepeating(
            RequestMatcherRegex,
            base::StringPrintf(R"(.*"appid":"%s".*)", app_id.c_str())),
        base::BindRepeating(
@@ -308,7 +301,7 @@ void ExpectUpdateSequence(UpdaterScope scope,
                    : "")),
        GetScopePredicate(scope), MatchAppPriority(app_id, priority)},
       GetUpdateResponse(app_id, install_data_index,
-                        test_server->update_url().spec(), to_version, crx_path,
+                        test_server->base_url().spec(), to_version, crx_path,
                         kDoNothingCRXRun, {}));
 
   // Second request: update download.
@@ -319,8 +312,7 @@ void ExpectUpdateSequence(UpdaterScope scope,
 
   // Third request: event ping.
   test_server->ExpectOnce(
-      {GetRequestPathPredicate(test_server->update_path()),
-       base::BindRepeating(
+      {base::BindRepeating(
            RequestMatcherRegex,
            base::StringPrintf(R"(.*"eventresult":1,"eventtype":%d,)"
                               R"("nextversion":"%s","previousversion":"%s".*)",
@@ -331,46 +323,6 @@ void ExpectUpdateSequence(UpdaterScope scope,
 }
 
 }  // namespace
-
-ScopedServer::RequestMatcherPredicate GetRequestPathPredicate(
-    const std::string& expected_path_regex) {
-  return base::BindLambdaForTesting(
-      [expected_path_regex](const net::test_server::HttpRequest& request) {
-        if (!re2::RE2::FullMatch(request.relative_url, expected_path_regex)) {
-          ADD_FAILURE() << "Request path [" << request.relative_url
-                        << "], did not match expected path regex ["
-                        << expected_path_regex << "].";
-          return false;
-        }
-        return true;
-      });
-}
-
-ScopedServer::RequestMatcherPredicate GetRequestHeaderPredicate(
-    const std::string& header_name,
-    const std::string& expected_header_regex) {
-  return base::BindLambdaForTesting(
-      [header_name,
-       expected_header_regex](const net::test_server::HttpRequest& request) {
-        re2::RE2::Options opt;
-        opt.set_case_sensitive(false);
-        net::test_server::HttpRequest::HeaderMap::const_iterator it =
-            request.headers.find(header_name);
-        if (it == request.headers.end()) {
-          ADD_FAILURE() << "Request header '" << header_name
-                        << "' not found, expected regex "
-                        << expected_header_regex;
-          return false;
-        } else if (!re2::RE2::FullMatch(it->second,
-                                        re2::RE2(expected_header_regex, opt))) {
-          ADD_FAILURE() << "Request header '" << it->first << "' = '"
-                        << it->second << "', did not match expected regex "
-                        << expected_header_regex;
-          return false;
-        }
-        return true;
-      });
-}
 
 void ExitTestMode(UpdaterScope scope) {
   DeleteFileAndEmptyParentDirectories(GetOverrideFilePath(scope));
@@ -542,11 +494,6 @@ void RunWakeActive(UpdaterScope scope, int expected_exit_code) {
   RunUpdaterWithSwitch(active_version, scope, kWakeSwitch, expected_exit_code);
 }
 
-void RunCrashMe(UpdaterScope scope) {
-  RunUpdaterWithSwitch(base::Version(kUpdaterVersion), scope, kCrashMeSwitch,
-                       absl::nullopt);
-}
-
 void CheckForUpdate(UpdaterScope scope, const std::string& app_id) {
   scoped_refptr<UpdateService> update_service = CreateUpdateServiceProxy(scope);
   base::RunLoop loop;
@@ -713,13 +660,13 @@ void Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code) {
 }
 
 bool RequestMatcherRegex(const std::string& request_body_regex,
-                         const net::test_server::HttpRequest& request) {
+                         const std::string& request_body) {
   re2::RE2::Options opt;
   opt.set_case_sensitive(false);
-  if (!re2::RE2::PartialMatch(request.content,
+  if (!re2::RE2::PartialMatch(request_body,
                               re2::RE2(request_body_regex, opt))) {
-    VLOG(0) << "Request content match failed.";
-    ADD_FAILURE() << "Request with body: " << request.content
+    VLOG(0) << "Request match failed.";
+    ADD_FAILURE() << "Request with body: " << request_body
                   << " did not match expected regex " << request_body_regex;
     return false;
   }
@@ -728,8 +675,7 @@ bool RequestMatcherRegex(const std::string& request_body_regex,
 
 void ExpectUninstallPing(UpdaterScope scope, ScopedServer* test_server) {
   test_server->ExpectOnce(
-      {GetRequestPathPredicate(test_server->update_path()),
-       base::BindRepeating(RequestMatcherRegex, R"(.*"eventtype":4.*)"),
+      {base::BindRepeating(RequestMatcherRegex, R"(.*"eventtype":4.*)"),
        GetScopePredicate(scope)},
       ")]}'\n");
 }
@@ -742,13 +688,12 @@ void ExpectSelfUpdateSequence(UpdaterScope scope, ScopedServer* test_server) {
 
   // First request: update check.
   test_server->ExpectOnce(
-      {GetRequestPathPredicate(test_server->update_path()),
-       base::BindRepeating(
+      {base::BindRepeating(
            RequestMatcherRegex,
            base::StringPrintf(R"(.*"appid":"%s".*)", kUpdaterAppId)),
        GetScopePredicate(scope)},
       GetUpdateResponse(
-          kUpdaterAppId, "", test_server->update_url().spec(),
+          kUpdaterAppId, "", test_server->base_url().spec(),
           base::Version(kUpdaterVersion), crx_path, kSelfUpdateCRXRun,
           base::StrCat({"--update", IsSystemInstall(scope) ? " --system" : "",
                         " --", kEnableLoggingSwitch, " --",
@@ -763,8 +708,7 @@ void ExpectSelfUpdateSequence(UpdaterScope scope, ScopedServer* test_server) {
 
   // Third request: event ping.
   test_server->ExpectOnce(
-      {GetRequestPathPredicate(test_server->update_path()),
-       base::BindRepeating(
+      {base::BindRepeating(
            RequestMatcherRegex,
            base::StringPrintf(R"(.*"eventresult":1,"eventtype":3,)"
                               R"("nextversion":"%s",.*)",

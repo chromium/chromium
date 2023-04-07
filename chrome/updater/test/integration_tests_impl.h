@@ -13,7 +13,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/updater/test/server.h"
 #include "chrome/updater/update_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -25,14 +24,6 @@ class Value;
 class Version;
 }  // namespace base
 
-namespace net {
-namespace test_server {
-
-struct HttpRequest;
-
-}  // namespace test_server
-}  // namespace net
-
 namespace updater {
 enum class UpdaterScope;
 }  // namespace updater
@@ -43,6 +34,8 @@ enum class AppBundleWebCreateMode {
   kCreateApp = 0,
   kCreateInstalledApp = 1,
 };
+
+class ScopedServer;
 
 // Returns the path to the updater installer program (in the build output
 // directory). This is typically the updater setup, or the updater itself for
@@ -71,10 +64,9 @@ void Clean(UpdaterScope scope);
 // test.
 void ExpectClean(UpdaterScope scope);
 
-// Places the updater into test mode (redirect server URLs and disable CUP).
-void EnterTestMode(const GURL& update_url,
-                   const GURL& crash_upload_url,
-                   const GURL& device_management_url);
+// Places the updater into test mode (use `url` as the update server and disable
+// CUP).
+void EnterTestMode(const GURL& url);
 
 // Takes the updater our of the test mode by deleting the external constants
 // JSON file.
@@ -120,9 +112,6 @@ void RunWakeAll(UpdaterScope scope);
 // As RunWake, but runs the wake client for whatever version of the server is
 // active, rather than kUpdaterVersion.
 void RunWakeActive(UpdaterScope scope, int exit_code);
-
-// Starts an updater process with switch `--crash-me`.
-void RunCrashMe(UpdaterScope scope);
 
 // Invokes the active instance's UpdateService::Update (via RPC) for an app.
 void Update(UpdaterScope scope,
@@ -200,17 +189,6 @@ void RegisterApp(UpdaterScope scope, const std::string& app_id);
 
 [[nodiscard]] bool WaitForUpdaterExit(UpdaterScope scope);
 
-// Returns a predicate which returns true if the `expected_path_regex` fully
-// matches the request path.
-[[nodiscard]] ScopedServer::RequestMatcherPredicate GetRequestPathPredicate(
-    const std::string& expected_path_regex);
-
-// Returns a predicate which returns true if the `expected_header_regex` fully
-// matches the specified header in request.
-[[nodiscard]] ScopedServer::RequestMatcherPredicate GetRequestHeaderPredicate(
-    const std::string& header_name,
-    const std::string& expected_header_regex);
-
 #if BUILDFLAG(IS_WIN)
 void ExpectInterfacesRegistered(UpdaterScope scope);
 void ExpectMarshalInterfaceSucceeds(UpdaterScope scope);
@@ -243,10 +221,9 @@ void RunHandoff(UpdaterScope scope, const std::string& app_id);
 // links, or dot dot.
 int CountDirectoryFiles(const base::FilePath& dir);
 
-// Returns true if the `request_body_regex` partially matches the request
-// content.
+// Returns true if the `request_body_regex` partially matches `request_body`.
 [[nodiscard]] bool RequestMatcherRegex(const std::string& request_body_regex,
-                                       const net::test_server::HttpRequest&);
+                                       const std::string& request_body);
 
 void ExpectSelfUpdateSequence(UpdaterScope scope, ScopedServer* test_server);
 
