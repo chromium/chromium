@@ -41,7 +41,6 @@ CroStatus::Or<GpuBufferLayout> VdaVideoFramePool::Initialize(
     bool use_linear_buffers) {
   DVLOGF(3);
   DCHECK_CALLED_ON_VALID_SEQUENCE(parent_sequence_checker_);
-  DCHECK(!use_linear_buffers);
 
 #if !BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
   if (use_protected) {
