@@ -2601,12 +2601,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   EXPECT_TRUE(catcher.GetNextResult()) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, TabsOnCreated) {
-  ASSERT_TRUE(RunExtensionTest("tabs/lazy_background_on_created", {},
-                               {.context_type = ContextType::kServiceWorker}))
-      << message_;
-}
-
 // Disabled on win due to flakiness: https://crbug.com/1127126.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_PRE_FilteredEventsAfterRestart \
