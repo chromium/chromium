@@ -39,6 +39,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/i18n/rtl.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -687,6 +688,15 @@ std::unique_ptr<views::Widget> DesksBarView::CreateDesksWidget(
 void DesksBarView::Init() {
   UpdateNewMiniViews(/*initializing_bar_view=*/true,
                      /*expanding_bar_view=*/false);
+
+  // When the bar is initialized, scroll to make active desk mini view visible.
+  auto it = base::ranges::find_if(mini_views_, [](DeskMiniView* mini_view) {
+    return mini_view->desk()->is_active();
+  });
+  if (it != mini_views_.end()) {
+    ScrollToShowViewIfNecessary(*it);
+  }
+
   hover_observer_ = std::make_unique<DeskBarHoverObserver>(
       this, GetWidget()->GetNativeWindow());
 }
@@ -917,7 +927,7 @@ void DesksBarView::EndDragDesk(DeskMiniView* mini_view, bool end_by_user) {
   // drag is ended due to the start of a new drag or the end of the overview,
   // directly finalize current drag.
   if (end_by_user) {
-    ScrollToShowMiniViewIfNecessary(drag_view_);
+    ScrollToShowViewIfNecessary(drag_view_);
     drag_proxy_->SnapBackToDragView();
   } else {
     FinalizeDragDesk();
@@ -1189,19 +1199,18 @@ void DesksBarView::UpdateNewMiniViews(bool initializing_bar_view,
       begin_x - GetFirstMiniViewXOffset());
 }
 
-void DesksBarView::ScrollToShowMiniViewIfNecessary(
-    const DeskMiniView* mini_view) {
-  DCHECK(base::Contains(mini_views_, mini_view));
+void DesksBarView::ScrollToShowViewIfNecessary(const views::View* view) {
+  CHECK(base::Contains(scroll_view_contents_->children(), view));
   const gfx::Rect visible_bounds = scroll_view_->GetVisibleRect();
-  const gfx::Rect mini_view_bounds = mini_view->bounds();
-  const bool beyond_left = mini_view_bounds.x() < visible_bounds.x();
-  const bool beyond_right = mini_view_bounds.right() > visible_bounds.right();
+  const gfx::Rect view_bounds = view->bounds();
+  const bool beyond_left = view_bounds.x() < visible_bounds.x();
+  const bool beyond_right = view_bounds.right() > visible_bounds.right();
   auto* scroll_bar = scroll_view_->horizontal_scroll_bar();
   if (beyond_left) {
     scroll_view_->ScrollToPosition(
-        scroll_bar, mini_view_bounds.right() - scroll_view_->bounds().width());
+        scroll_bar, view_bounds.right() - scroll_view_->bounds().width());
   } else if (beyond_right) {
-    scroll_view_->ScrollToPosition(scroll_bar, mini_view_bounds.x());
+    scroll_view_->ScrollToPosition(scroll_bar, view_bounds.x());
   }
 }
 
@@ -1212,6 +1221,16 @@ void DesksBarView::OnNewDeskButtonPressed(
     return;
   controller->NewDesk(desks_creation_removal_source);
   NudgeDeskName(mini_views_.size() - 1);
+
+  // TODO(b/277081702): When desk order is adjusted for RTL, remove the check
+  // below to always make new desk button visible.
+  if (!base::i18n::IsRTL()) {
+    if (new_desk_button_) {
+      ScrollToShowViewIfNecessary(new_desk_button_);
+    } else if (expanded_state_new_desk_button_) {
+      ScrollToShowViewIfNecessary(expanded_state_new_desk_button_);
+    }
+  }
 }
 
 void DesksBarView::UpdateButtonsForSavedDeskGrid() {

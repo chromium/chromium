@@ -27,6 +27,7 @@ class ASH_EXPORT DeskNameView : public DeskTextfield {
   ~DeskNameView() override;
 
   // DeskTextfield:
+  void OnFocus() override;
   void OnViewHighlighted() override;
 
  private:

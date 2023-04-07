@@ -120,6 +120,10 @@ class ASH_EXPORT DesksBarView : public views::View,
     overview_grid_ = overview_grid;
   }
 
+  const views::View* scroll_view_contents() const {
+    return scroll_view_contents_;
+  }
+
   // Initializes and creates mini_views for any pre-existing desks, before the
   // bar was created. This should only be called after this view has been added
   // to a widget, as it needs to call `GetWidget()` when it's performing a
@@ -209,9 +213,10 @@ class ASH_EXPORT DesksBarView : public views::View,
   // |initializing_bar_view| is false.
   void UpdateNewMiniViews(bool initializing_bar_view, bool expanding_bar_view);
 
-  // If the focused |mini_view| is outside of the scroll view's visible bounds,
-  // scrolls the bar to make sure it can always be seen.
-  void ScrollToShowMiniViewIfNecessary(const DeskMiniView* mini_view);
+  // If the focused `view` is outside of the scroll view's visible bounds,
+  // scrolls the bar to make sure it can always be seen. Please note, `view`
+  // must be a child of `scroll_view_contents_`.
+  void ScrollToShowViewIfNecessary(const views::View* view);
 
   void OnNewDeskButtonPressed(
       DesksCreationRemovalSource desks_creation_removal_source);

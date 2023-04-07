@@ -85,6 +85,7 @@ void CrOSNextDeskButtonBase::MaybeSwapHighlightedView(bool right) {}
 
 void CrOSNextDeskButtonBase::OnViewHighlighted() {
   UpdateFocusState();
+  bar_view_->ScrollToShowViewIfNecessary(this);
 }
 
 void CrOSNextDeskButtonBase::OnViewUnhighlighted() {

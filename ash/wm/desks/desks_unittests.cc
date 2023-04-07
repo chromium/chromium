@@ -84,6 +84,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/callback_forward.h"
+#include "base/i18n/rtl.h"
 #include "base/ranges/algorithm.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
@@ -123,6 +124,7 @@
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -451,15 +453,6 @@ class DesksTest : public AshTestBase,
     }
 
     return bar_view->expanded_state_new_desk_button()->GetInnerButton();
-  }
-
-  const views::LabelButton* GetExpandedStateLibraryButton(
-      const DesksBarView* bar_view) {
-    if (GetParam().enable_jellyroll) {
-      return bar_view->library_button();
-    }
-
-    return bar_view->expanded_state_library_button()->GetInnerButton();
   }
 
   void VerifyZeroStateNewDeskButtonVisibility(const DesksBarView* bar_view,
@@ -5987,6 +5980,49 @@ TEST_P(DesksTest, FocusedMiniViewIsVisible) {
   }
 }
 
+// Tests that active desk mini view is visible when entering overview especially
+// with 16 desks.
+TEST_P(DesksTest, ActiveDeskMiniViewIsVisible) {
+  for (size_t i = 1; i < desks_util::GetMaxNumberOfDesks(); i++) {
+    // Create a new desk and go to that desk.
+    NewDesk();
+    ActivateDesk(DesksController::Get()->desks().back().get());
+
+    // Enter overview and check the active mini view is fully visible.
+    EnterOverview();
+    auto* desks_bar =
+        GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_bar_view();
+    for (auto* mini_view : desks_bar->mini_views()) {
+      if (mini_view->desk()->is_active()) {
+        EXPECT_EQ(mini_view->size(), mini_view->GetVisibleBounds().size());
+      }
+    }
+
+    ExitOverview();
+  }
+}
+
+// Tests that change the highlighted new desk button is fully visible.
+TEST_P(DesksTest, HighlightedButtonIsVisible) {
+  // Create `GetMaxNumberOfDesks() - 1` desks so that the new desk button is
+  // still enabled.
+  for (size_t i = 1; i < desks_util::GetMaxNumberOfDesks() - 1; i++) {
+    NewDesk();
+  }
+
+  EnterOverview();
+
+  auto* desk_bar =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_bar_view();
+  auto* new_desk_button = GetExpandedStateInnerNewDeskButton(desk_bar);
+  SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  EXPECT_TRUE(new_desk_button->GetVisible());
+  EXPECT_EQ(new_desk_button->size(),
+            new_desk_button->GetVisibleBounds().size());
+
+  ExitOverview();
+}
+
 // Tests that the bounds of a window that is visible on all desks is shared
 // across desks.
 TEST_P(DesksTest, VisibleOnAllDesksGlobalBounds) {
@@ -6409,6 +6445,18 @@ TEST_P(DesksTest, NewDeskButton) {
 
   for (size_t i = 1; i < desks_util::GetMaxNumberOfDesks(); i++) {
     ClickOnView(new_desk_button, event_generator);
+
+    // When a new desk is created, ensure its desk mini view fully visible.
+    auto* mini_view = desks_bar_view->mini_views().back();
+    EXPECT_EQ(mini_view->size(), mini_view->GetVisibleBounds().size());
+
+    // TODO(b/277081702): When desk order is adjusted for RTL, remove the check
+    // below to always make new desk button visible.
+    if (!base::i18n::IsRTL()) {
+      EXPECT_EQ(new_desk_button->size(),
+                new_desk_button->GetVisibleBounds().size());
+    }
+
     ClickOnView(scroll_right_button, event_generator);
   }
 

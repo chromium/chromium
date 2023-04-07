@@ -16,6 +16,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/view.h"
 
 namespace ash {
 
@@ -111,6 +112,19 @@ void DeskButtonBase::MaybeSwapHighlightedView(bool right) {}
 
 void DeskButtonBase::OnViewHighlighted() {
   UpdateFocusState();
+
+  // TODO(yongshun): When the persistent desk bar is deprecated, remove check
+  // for `bar_view_` as it will not be a nullptr.
+  if (bar_view_) {
+    views::View* view = this;
+    while (view->parent()) {
+      if (view->parent() == bar_view_->scroll_view_contents()) {
+        bar_view_->ScrollToShowViewIfNecessary(view);
+        break;
+      }
+      view = view->parent();
+    }
+  }
 }
 
 void DeskButtonBase::OnViewUnhighlighted() {

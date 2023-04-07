@@ -614,7 +614,7 @@ bool DeskPreviewView::MaybeActivateHighlightedViewOnOverviewExit(
 
 void DeskPreviewView::OnViewHighlighted() {
   mini_view_->UpdateFocusColor();
-  mini_view_->owner_bar()->ScrollToShowMiniViewIfNecessary(mini_view_);
+  mini_view_->owner_bar()->ScrollToShowViewIfNecessary(mini_view_);
 }
 
 void DeskPreviewView::OnViewUnhighlighted() {
