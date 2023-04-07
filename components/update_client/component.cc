@@ -21,6 +21,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
@@ -268,11 +269,13 @@ void UnpackCompleteOnBlockingTaskRunner(
         base::BindOnce(
             &CrxCache::Put, optional_crx_cache.value(), crx_path, id,
             fingerprint,
-            base::BindOnce(&CrxCachePutCompleteOnCrxCacheBlockingTaskRunner,
-                           main_task_runner, crx_path, result.unpack_path,
-                           result.public_key, fingerprint,
-                           std::move(install_params), installer,
-                           progress_callback, std::move(callback))));
+            base::BindPostTask(
+                base::ThreadPool::CreateSequencedTaskRunner(kTaskTraits),
+                base::BindOnce(&CrxCachePutCompleteOnCrxCacheBlockingTaskRunner,
+                               main_task_runner, crx_path, result.unpack_path,
+                               result.public_key, fingerprint,
+                               std::move(install_params), installer,
+                               progress_callback, std::move(callback)))));
   }
 }
 #else
