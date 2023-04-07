@@ -6,7 +6,10 @@
   background: blue;
   /* Stacking context by default. */
   position: relative;
+  overflow: scroll;
   z-index: 1;
+  width: 200px;
+  height: 300px;
 }
 
 .transparent {
@@ -59,21 +62,14 @@
   z-index: auto;
 }
 
-div {
-  overflow: scroll;
-  width: 200px;
-  height: 300px;
-  background: green;
-}
-
 body {
     height: 2000px;
 }
 </style>
 
 <div class="scroller" id="scroller1">
-  <div class="content" id="content1"></div>
+  <div class="content" id="content1">Content1</div>
 </div>
 <div class="scroller" id="scroller2">
-  <div class="content"></div>
+  <div class="content" id="content2">Content2</div>
 </div>

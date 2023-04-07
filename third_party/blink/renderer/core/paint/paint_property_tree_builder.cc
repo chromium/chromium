@@ -2330,6 +2330,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
         object_.GetFrameView()->RemoveUserScrollableArea(scrollable_area);
       }
 
+      state.prefers_composited_scrolling =
+          full_context_.prefers_composited_scrolling;
       state.main_thread_scrolling_reasons = GetMainThreadScrollingReasons();
 
       state.compositor_element_id = scrollable_area->GetScrollElementId();
@@ -2488,7 +2490,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
       // was also updated in LayerTreeHost::ApplyCompositorChanges.
       if (effective_change_type <=
               PaintPropertyChangeType::kChangedOnlySimpleValues &&
-          properties_->ScrollTranslation()->HasDirectCompositingReasons() &&
+          (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled() ||
+           properties_->ScrollTranslation()->HasDirectCompositingReasons()) &&
           // In platform code, only scroll translations with scroll nodes are
           // treated as scroll translations with overlap testing treatment.
           // A scroll translation for overflow:hidden doesn't have a scroll node
@@ -3146,9 +3149,11 @@ void PaintPropertyTreeBuilder::UpdateForSelf() {
   context_.was_main_thread_scrolling = false;
   if (const auto* box = DynamicTo<LayoutBox>(object_)) {
     if (auto* scrollable_area = box->GetScrollableArea()) {
-      scrollable_area->UpdateNeedsCompositedScrolling(
+      context_.prefers_composited_scrolling =
           CompositingReasonFinder::ShouldForcePreferCompositingToLCDText(
-              object_, context_.direct_compositing_reasons));
+              object_, context_.direct_compositing_reasons);
+      scrollable_area->UpdateNeedsCompositedScrolling(
+          context_.prefers_composited_scrolling);
       context_.was_main_thread_scrolling =
           scrollable_area->ShouldScrollOnMainThread();
       context_.direct_compositing_reasons =

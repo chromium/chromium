@@ -1913,7 +1913,9 @@ TEST_P(AnimationAnimationTestCompositing,
 
   auto* scroller =
       To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller"));
-  ASSERT_TRUE(scroller->UsesCompositedScrolling());
+  if (!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
+    ASSERT_TRUE(scroller->UsesCompositedScrolling());
+  }
 
   // Create ScrollTimeline
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();

@@ -17,21 +17,33 @@
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
-#define EXPECT_WHEEL_BUCKET(index, count) \
-  histogram_tester->ExpectBucketCount(    \
-      "Renderer4.MainThreadWheelScrollReason2", index, count);
+#define EXPECT_WHEEL_BUCKET(index, count)                        \
+  do {                                                           \
+    SCOPED_TRACE("EXPECT_WHEEL_BUCKET");                         \
+    histogram_tester->ExpectBucketCount(                         \
+        "Renderer4.MainThreadWheelScrollReason2", index, count); \
+  } while (false)
 
-#define EXPECT_TOUCH_BUCKET(index, count) \
-  histogram_tester->ExpectBucketCount(    \
-      "Renderer4.MainThreadGestureScrollReason2", index, count);
+#define EXPECT_TOUCH_BUCKET(index, count)                          \
+  do {                                                             \
+    SCOPED_TRACE("EXPECT_TOUCH_BUCKET");                           \
+    histogram_tester->ExpectBucketCount(                           \
+        "Renderer4.MainThreadGestureScrollReason2", index, count); \
+  } while (false)
 
-#define EXPECT_WHEEL_TOTAL(count)                                              \
-  histogram_tester->ExpectTotalCount("Renderer4.MainThreadWheelScrollReason2", \
-                                     count);
+#define EXPECT_WHEEL_TOTAL(count)                         \
+  do {                                                    \
+    SCOPED_TRACE("EXPECT_WHEEL_TOTAL");                   \
+    histogram_tester->ExpectTotalCount(                   \
+        "Renderer4.MainThreadWheelScrollReason2", count); \
+  } while (false)
 
-#define EXPECT_TOUCH_TOTAL(count)     \
-  histogram_tester->ExpectTotalCount( \
-      "Renderer4.MainThreadGestureScrollReason2", count);
+#define EXPECT_TOUCH_TOTAL(count)                           \
+  do {                                                      \
+    SCOPED_TRACE("EXPECT_TOUCH_TOTAL");                     \
+    histogram_tester->ExpectTotalCount(                     \
+        "Renderer4.MainThreadGestureScrollReason2", count); \
+  } while (false)
 
 namespace blink {
 

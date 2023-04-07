@@ -36,6 +36,7 @@ PaintPropertyChangeType ScrollPaintPropertyNode::State::ComputeChange(
           other.prevent_viewport_scrolling_from_inner ||
       max_scroll_offset_affected_by_page_scale !=
           other.max_scroll_offset_affected_by_page_scale ||
+      prefers_composited_scrolling != other.prefers_composited_scrolling ||
       main_thread_scrolling_reasons != other.main_thread_scrolling_reasons ||
       compositor_element_id != other.compositor_element_id ||
       overscroll_behavior != other.overscroll_behavior ||

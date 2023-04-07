@@ -2272,7 +2272,9 @@ TEST_P(ScrollbarsTest, PLSADisposeShouldClearPointerInLayers) {
 
   PaintLayer* paint_layer = scrollable_div->Layer();
   ASSERT_TRUE(paint_layer);
-  EXPECT_TRUE(scrollable_div->UsesCompositedScrolling());
+  if (!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
+    EXPECT_TRUE(scrollable_div->UsesCompositedScrolling());
+  }
 
   div->setAttribute(html_names::kClassAttr, "hide");
   document.UpdateStyleAndLayout(DocumentUpdateReason::kTest);
