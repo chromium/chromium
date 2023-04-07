@@ -1013,7 +1013,149 @@ TEST_F(ChromeDownloadManagerDelegateTest,
       download::DownloadItem::InsecureDownloadStatus::SAFE);
 }
 
-// Verify that downloads ending in a blob URL are considered secure.
+// Verify that downloads initiated by a non-unique hostname aren't blocked, but
+// we record that the download was from a non-unique source.
+TEST_F(ChromeDownloadManagerDelegateTest,
+       BlockedAsActiveContent_NonUniqueInitiator) {
+  const GURL kRedirectUrl("https://example.org/");
+  const GURL kFinalUrl("https://example.org/xyz.foo");
+  const auto kInitiator = Origin::Create(GURL("http://10.0.0.1"));
+
+  DetermineDownloadTargetResult result;
+  base::test::ScopedFeatureList feature_list;
+  base::HistogramTester histograms;
+
+  std::unique_ptr<download::MockDownloadItem> download_item =
+      PrepareDownloadItemForInsecureBlocking(kFinalUrl, kInitiator,
+                                             kRedirectUrl);
+
+  feature_list.InitAndEnableFeature(features::kTreatUnsafeDownloadsAsActive);
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+  // DownloadTargetDeterminer looks for plugin handlers if there's an
+  // extension.
+  content::PluginService::GetInstance()->Init();
+#endif
+
+  DetermineDownloadTarget(download_item.get(), &result);
+  EXPECT_EQ(download::DOWNLOAD_INTERRUPT_REASON_NONE, result.interrupt_reason);
+  EXPECT_EQ(download::DownloadItem::InsecureDownloadStatus::SAFE,
+            result.insecure_download_status);
+  histograms.ExpectUniqueSample(
+      kInsecureDownloadHistogramName,
+      InsecureDownloadSecurityStatus::kInitiatorInsecureNonUniqueFileSecure, 1);
+  ExpectExtensionOnlyIn(InsecureDownloadExtensions::kUnknown,
+                        kInsecureDownloadExtensionInitiatorInsecureNonUnique,
+                        kInsecureDownloadHistogramTargetSecure, histograms);
+}
+
+// Verify that downloads from a non-unique download url aren't treated as secure
+// nor do they record different metrics.
+TEST_F(ChromeDownloadManagerDelegateTest,
+       BlockedAsActiveContent_NonUniqueFinalUrl) {
+  const GURL kRedirectUrl("https://example.org/");
+  const GURL kFinalUrl("http://10.0.0.1/xyz.foo");
+  const auto kInitiator = Origin::Create(GURL("https://example.org"));
+
+  DetermineDownloadTargetResult result;
+  base::test::ScopedFeatureList feature_list;
+  base::HistogramTester histograms;
+
+  std::unique_ptr<download::MockDownloadItem> download_item =
+      PrepareDownloadItemForInsecureBlocking(kFinalUrl, kInitiator,
+                                             kRedirectUrl);
+
+  feature_list.InitAndEnableFeature(features::kTreatUnsafeDownloadsAsActive);
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+  // DownloadTargetDeterminer looks for plugin handlers if there's an
+  // extension.
+  content::PluginService::GetInstance()->Init();
+#endif
+
+  DetermineDownloadTarget(download_item.get(), &result);
+  EXPECT_EQ(download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED,
+            result.interrupt_reason);
+  EXPECT_EQ(download::DownloadItem::InsecureDownloadStatus::SILENT_BLOCK,
+            result.insecure_download_status);
+  histograms.ExpectUniqueSample(
+      kInsecureDownloadHistogramName,
+      InsecureDownloadSecurityStatus::kInitiatorSecureFileInsecure, 1);
+  ExpectExtensionOnlyIn(InsecureDownloadExtensions::kUnknown,
+                        kInsecureDownloadExtensionInitiatorSecure,
+                        kInsecureDownloadHistogramTargetInsecure, histograms);
+}
+
+// Verify that downloads coming from localhost are considered secure.
+TEST_F(ChromeDownloadManagerDelegateTest, BlockedAsActiveContent_Localhost) {
+  const GURL kRedirectUrl("https://example.org/");
+  const GURL kFinalUrl("http://127.0.0.1/xyz.foo");
+  const auto kInitiator = Origin::Create(GURL("https://example.org"));
+
+  DetermineDownloadTargetResult result;
+  base::test::ScopedFeatureList feature_list;
+  base::HistogramTester histograms;
+
+  std::unique_ptr<download::MockDownloadItem> download_item =
+      PrepareDownloadItemForInsecureBlocking(kFinalUrl, kInitiator,
+                                             kRedirectUrl);
+
+  feature_list.InitAndEnableFeature(features::kTreatUnsafeDownloadsAsActive);
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+  // DownloadTargetDeterminer looks for plugin handlers if there's an
+  // extension.
+  content::PluginService::GetInstance()->Init();
+#endif
+
+  DetermineDownloadTarget(download_item.get(), &result);
+  EXPECT_EQ(download::DOWNLOAD_INTERRUPT_REASON_NONE, result.interrupt_reason);
+  EXPECT_EQ(download::DownloadItem::InsecureDownloadStatus::SAFE,
+            result.insecure_download_status);
+  histograms.ExpectUniqueSample(
+      kInsecureDownloadHistogramName,
+      InsecureDownloadSecurityStatus::kInitiatorSecureFileSecure, 1);
+  ExpectExtensionOnlyIn(InsecureDownloadExtensions::kUnknown,
+                        kInsecureDownloadExtensionInitiatorSecure,
+                        kInsecureDownloadHistogramTargetSecure, histograms);
+}
+
+// Verify that downloads initiated by localhost are considered secure.
+TEST_F(ChromeDownloadManagerDelegateTest,
+       BlockedAsActiveContent_LocalhostInitiator) {
+  const GURL kRedirectUrl("https://example.org/");
+  const GURL kFinalUrl("https://example.org/xyz.foo");
+  const auto kInitiator = Origin::Create(GURL("http://localhost"));
+
+  DetermineDownloadTargetResult result;
+  base::test::ScopedFeatureList feature_list;
+  base::HistogramTester histograms;
+
+  std::unique_ptr<download::MockDownloadItem> download_item =
+      PrepareDownloadItemForInsecureBlocking(kFinalUrl, kInitiator,
+                                             kRedirectUrl);
+
+  feature_list.InitAndEnableFeature(features::kTreatUnsafeDownloadsAsActive);
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+  // DownloadTargetDeterminer looks for plugin handlers if there's an
+  // extension.
+  content::PluginService::GetInstance()->Init();
+#endif
+
+  DetermineDownloadTarget(download_item.get(), &result);
+  EXPECT_EQ(download::DOWNLOAD_INTERRUPT_REASON_NONE, result.interrupt_reason);
+  EXPECT_EQ(download::DownloadItem::InsecureDownloadStatus::SAFE,
+            result.insecure_download_status);
+  histograms.ExpectUniqueSample(
+      kInsecureDownloadHistogramName,
+      InsecureDownloadSecurityStatus::kInitiatorSecureFileSecure, 1);
+  ExpectExtensionOnlyIn(InsecureDownloadExtensions::kUnknown,
+                        kInsecureDownloadExtensionInitiatorSecure,
+                        kInsecureDownloadHistogramTargetSecure, histograms);
+}
+
+// Verify that insecure in a blob URL are considered secure.
 TEST_F(ChromeDownloadManagerDelegateTest,
        BlockedAsActiveContent_BlobConsideredSecure) {
   // Verifies blob URLs are not blocked for active content blocking.
