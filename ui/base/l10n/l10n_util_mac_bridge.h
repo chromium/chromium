@@ -7,17 +7,24 @@
 
 #import <UIKit/UIKit.h>
 
-// An ObjC wrapper around namespaced C++ l10n methods.
-@interface L10NUtils : NSObject
+typedef int MessageID;
 
-+ (NSString*)stringForMessageId:(int)messageId;
+// An Objective-C wrapper around namespaced C++ l10n methods.
+@interface L10nUtils : NSObject
 
-+ (NSString*)stringWithFixupForMessageId:(int)messageId;
++ (NSString*)stringForMessageID:(MessageID)messageID
+    NS_SWIFT_NAME(string(messageId:));
 
-+ (NSString*)formatStringForMessageId:(int)messageId
-                             argument:(NSString*)argument;
++ (NSString*)stringWithFixupForMessageID:(MessageID)messageID
+    NS_SWIFT_NAME(stringWithFixup(messageId:));
 
-+ (NSString*)pluralStringForMessageId:(int)messageId number:(int)number;
++ (NSString*)formatStringForMessageID:(MessageID)messageID
+                             argument:(NSString*)argument
+    NS_SWIFT_NAME(formatString(messageId:argument:));
+
++ (NSString*)pluralStringForMessageID:(MessageID)messageID
+                               number:(NSInteger)number
+    NS_SWIFT_NAME(pluralString(messageId:number:));
 
 @end
 

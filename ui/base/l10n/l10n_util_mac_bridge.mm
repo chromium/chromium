@@ -8,23 +8,24 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/base/l10n/l10n_util_mac_bridge.h"
 
-@implementation L10NUtils
+@implementation L10nUtils
 
-+ (NSString*)stringForMessageId:(int)messageId {
-  return l10n_util::GetNSString(messageId);
++ (NSString*)stringForMessageID:(int)messageID {
+  return l10n_util::GetNSString(messageID);
 }
 
-+ (NSString*)stringWithFixupForMessageId:(int)messageId {
-  return l10n_util::GetNSStringWithFixup(messageId);
++ (NSString*)stringWithFixupForMessageID:(int)messageID {
+  return l10n_util::GetNSStringWithFixup(messageID);
 }
 
-+ (NSString*)formatStringForMessageId:(int)messageId
++ (NSString*)formatStringForMessageID:(int)messageID
                              argument:(NSString*)argument {
-  return l10n_util::GetNSStringF(messageId, base::SysNSStringToUTF16(argument));
+  return l10n_util::GetNSStringF(messageID, base::SysNSStringToUTF16(argument));
 }
 
-+ (NSString*)pluralStringForMessageId:(int)messageId number:(int)number {
-  return l10n_util::GetPluralNSStringF(messageId, number);
++ (NSString*)pluralStringForMessageID:(int)messageID number:(NSInteger)number {
+  int numberInt = static_cast<int>(number);
+  return l10n_util::GetPluralNSStringF(messageID, numberInt);
 }
 
 @end
