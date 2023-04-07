@@ -178,7 +178,7 @@ export class KeyboardRemapModifierKeyRowElement extends
     this.keyMapTargets = [
       {
         value: ModifierKey.kMeta,
-        name: this.metaKeyLabel,
+        name: this.i18n('keyboardKeySearch'),
       },
       {
         value: ModifierKey.kControl,
