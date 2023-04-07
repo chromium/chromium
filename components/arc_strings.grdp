@@ -77,8 +77,12 @@
   <message name="IDS_ARC_GHOST_WINDOW_APP_LAUNCHING_THROBBER" desc="The throbber of launching app.">
     App launching throbber
   </message>
-  <message name="IDS_ARC_GHOST_WINDOW_APP_LAUNCHING_MESSAGE" desc="The word of message for indecating app is starting.">
+  <message name="IDS_ARC_GHOST_WINDOW_APP_LAUNCHING_MESSAGE" desc="The word of message for indicating app is starting.">
     Starting <ph name="APP_NAME">$1<ex>PlayStore</ex></ph>
+  </message>
+  <message name="IDS_ARC_GHOST_WINDOW_APP_LAUNCHING_AOD_MESSAGE" desc="The word of message for indicating app is starting during ARC on Demand.">
+    Loading...
+    This may take a minute.
   </message>
   <message name="IDS_ARC_GHOST_WINDOW_APP_FIXUP_MESSAGE" desc="A label of message in ARC ghost window, indicating the Android is updating and the app may not start immediately.">
     Updating Android System

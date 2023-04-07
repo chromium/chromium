@@ -13,6 +13,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_restore/arc_ghost_window_handler.h"
 #include "chrome/browser/ash/app_restore/arc_ghost_window_shell_surface.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -70,6 +71,16 @@ enum class GhostWindowType {
 
 bool IsGhostWindowNewStyleEnabled() {
   return base::FeatureList::IsEnabled(arc::kGhostWindowNewStyle);
+}
+
+std::u16string GetGhostWindowAppLaunchString(const std::string& app_name) {
+  return l10n_util::GetStringFUTF16(IDS_ARC_GHOST_WINDOW_APP_LAUNCHING_MESSAGE,
+                                    base::UTF8ToUTF16(app_name));
+}
+
+std::u16string GetGhostWindowAppLaunchAodString() {
+  return l10n_util::GetStringUTF16(
+      IDS_ARC_GHOST_WINDOW_APP_LAUNCHING_AOD_MESSAGE);
 }
 
 class Throbber : public views::View {
@@ -256,6 +267,9 @@ void ArcGhostWindowView::AddChildrenViewsForFixupType() {
 }
 
 void ArcGhostWindowView::AddChildrenViewsForAppLaunchType() {
+  auto app_launch_message = arc::ArcSessionManager::Get()->IsActivationDelayed()
+                                ? GetGhostWindowAppLaunchAodString()
+                                : GetGhostWindowAppLaunchString(app_name_);
   AddChildView(
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
@@ -267,9 +281,7 @@ void ArcGhostWindowView::AddChildrenViewsForAppLaunchType() {
                   .SetPreferredSize(gfx::Size(kThrobberDiameterNewStyle,
                                               kThrobberDiameterNewStyle)),
               views::Builder<views::Label>()
-                  .SetText(l10n_util::GetStringFUTF16(
-                      IDS_ARC_GHOST_WINDOW_APP_LAUNCHING_MESSAGE,
-                      base::UTF8ToUTF16(app_name_)))
+                  .SetText(app_launch_message)
                   .SetTextContext(views::style::CONTEXT_LABEL)
                   .SetTextStyle(views::style::STYLE_SECONDARY)
                   .SetMultiLine(true)
