@@ -270,8 +270,15 @@ void UpdateKeyboardSettingsImpl(
       devices_dict.FindDict(keyboard.device_key);
   base::Value::Dict settings_dict = ConvertSettingsToDict(
       keyboard, keyboard_policies, force_persistence, existing_settings_dict);
+
   if (existing_settings_dict) {
+    // Merge all settings except modifier remappings. Modifier remappings need
+    // to overwrite what was previously stored.
+    auto modifier_remappings_dict =
+        settings_dict.Extract(prefs::kKeyboardSettingModifierRemappings);
     existing_settings_dict->Merge(std::move(settings_dict));
+    existing_settings_dict->Set(prefs::kKeyboardSettingModifierRemappings,
+                                std::move(*modifier_remappings_dict));
   } else {
     devices_dict.Set(keyboard.device_key, std::move(settings_dict));
   }

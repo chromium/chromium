@@ -552,16 +552,6 @@ TEST_F(KeyboardPrefHandlerTest, InvalidModifierRemappings) {
                              ui::mojom::ModifierKey::kAlt));
   EXPECT_EQ(ui::mojom::ModifierKey::kControl,
             settings->modifier_remappings[ui::mojom::ModifierKey::kAlt]);
-
-  // Saved prefs should not be modified and should be left as they were in their
-  // invalid state.
-  devices_dict =
-      pref_service_->GetDict(prefs::kKeyboardDeviceSettingsDictPref).Clone();
-  settings_dict = devices_dict.FindDict(kKeyboardKey1);
-  auto* modifier_remappings_dict =
-      settings_dict->FindDict(prefs::kKeyboardSettingModifierRemappings);
-  ASSERT_NE(nullptr, modifier_remappings_dict);
-  EXPECT_EQ(invalid_modifier_remappings, *modifier_remappings_dict);
 }
 
 TEST_F(KeyboardPrefHandlerTest, KeyboardObserveredInTransitionPeriod) {
