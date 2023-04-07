@@ -4116,6 +4116,12 @@ const char kSetMarketUrlForTestingDescription[] =
     "When enabled, sets the market URL for use in testing the update menu "
     "item.";
 
+const char kShareSheetCustomActionsPolishName[] =
+    "Share sheet custom actions polish";
+const char kShareSheetCustomActionsPolishDescription[] =
+    "Polish Chrome provided custom actions for share sheet including dropping "
+    "low engagement actions, and shuffle the ordering. Android only.";
+
 const char kShareSheetMigrationAndroidName[] = "Share sheet refactor Android";
 const char kShareSheetMigrationAndroidDescription[] =
     "When enabled, use the Android OS share sheet.";

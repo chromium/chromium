@@ -128,13 +128,14 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
                     mController, params, mPrintCallback, isIncognito, this,
                     TrackerFactory.getTrackerForProfile(profile), params.getUrl(), profile,
                     chromeShareExtras, isInMultiWindow, mLinkToTextCoordinator);
-            if (actionProvider.getCustomActions().size() > 0) {
+            if (actionProvider.getCustomActions().size() > 0
+                    || actionProvider.getModifyShareAction() != null) {
                 provider = actionProvider;
             }
         }
 
         // TODO(https://crbug.com/1421783): Maybe fallback to Chrome's share sheet properly.
-        if (provider == null || provider.getCustomActions().size() == 0) {
+        if (provider == null) {
             Log.i(TAG, "No custom actions provided.");
         }
 

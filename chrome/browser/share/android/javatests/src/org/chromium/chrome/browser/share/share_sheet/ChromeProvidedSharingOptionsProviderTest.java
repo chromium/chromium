@@ -75,7 +75,8 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.WEBNOTES_STYLIZE})
 @DisableFeatures({ChromeFeatureList.UPCOMING_SHARING_FEATURES,
-        ChromeFeatureList.SEND_TAB_TO_SELF_SIGNIN_PROMO})
+        ChromeFeatureList.SEND_TAB_TO_SELF_SIGNIN_PROMO,
+        ChromeFeatureList.SHARE_SHEET_CUSTOM_ACTIONS_POLISH})
 @Config(shadows = ShadowGURL.class)
 public class ChromeProvidedSharingOptionsProviderTest {
     @Rule

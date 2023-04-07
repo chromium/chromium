@@ -39,16 +39,16 @@ import java.util.List;
  */
 class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBase
         implements ChromeCustomShareAction.Provider {
-    private final List<ChromeCustomShareAction> mCustomActions = new ArrayList<>();
-
     private static final String USER_ACTION_SHARE_HIGHLIGHT_TEXT_WITH_LINK =
             "SharingHubAndroid.AndroidShareHighlightText.WithLink";
     private static final String USER_ACTION_SHARE_HIGHLIGHT_TEXT_WITHOUT_LINK =
             "SharingHubAndroid.AndroidShareHighlightText.WithoutLink";
+    private static final Integer MAX_ACTION_SUPPORTED = 5;
 
     private final ChromeShareExtras mChromeShareExtras;
     @Nullable
     private final LinkToTextCoordinator mLinkToTextCoordinator;
+    private final List<ChromeCustomShareAction> mCustomActions = new ArrayList<>();
 
     private @Nullable ChromeCustomShareAction mModifyAction;
 
@@ -102,7 +102,7 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
         List<FirstPartyOption> options = getFirstPartyOptions(
                 ShareContentTypeHelper.getContentTypes(params, chromeShareExtras),
                 chromeShareExtras.getDetailedContentType(), isMultiWindow);
-
+        assert options.size() <= MAX_ACTION_SUPPORTED;
         for (var option : options) {
             mCustomActions.add(shareActionFromFirstPartyOption(option));
         }
@@ -142,6 +142,12 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
     protected FirstPartyOption createLongScreenshotsFirstPartyOption() {
         return null;
     }
+
+    @Override
+    protected void maybeAddWebStyleNotesFirstPartyOption() {}
+
+    @Override
+    protected void maybeAddCopyFirstPartyOption() {}
 
     private FirstPartyOption createShareHighlightTextWithLink() {
         return new FirstPartyOptionBuilder(ContentType.HIGHLIGHTED_TEXT)

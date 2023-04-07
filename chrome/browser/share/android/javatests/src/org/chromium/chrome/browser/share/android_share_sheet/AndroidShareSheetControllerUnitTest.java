@@ -93,6 +93,7 @@ import org.chromium.url.ShadowGURL;
  * Test for {@link AndroidShareSheetController} and {@link AndroidCustomActionProvider}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@Features.EnableFeatures({ChromeFeatureList.SHARE_SHEET_CUSTOM_ACTIONS_POLISH})
 @Features.DisableFeatures(
         {ChromeFeatureList.WEBNOTES_STYLIZE, ChromeFeatureList.SEND_TAB_TO_SELF_SIGNIN_PROMO})
 @Config(shadows = {ShadowShareImageFileUtils.class, ShadowGURL.class})
@@ -105,6 +106,12 @@ public class AndroidShareSheetControllerUnitTest {
     private static final String KEY_CHOOSER_ACTION_NAME = "name";
     private static final String KEY_CHOOSER_ACTION_ACTION = "action";
     private static final String SELECTOR_FOR_LINK_TO_TEXT = "selector";
+
+    private static final String USER_ACTION_SEND_TAB_TO_SELF_SELECTED =
+            "SharingHubAndroid.SendTabToSelfSelected";
+    private static final String USER_ACTION_QR_CODE_SELECTED = "SharingHubAndroid.QRCodeSelected";
+    private static final String USER_ACTION_PRINT_SELECTED = "SharingHubAndroid.PrintSelected";
+
     private static final Uri TEST_WEB_FAVICON_PREVIEW_URI =
             Uri.parse("content://test.web.favicon.preview");
     private static final Uri TEST_FALLBACK_FAVICON_PREVIEW_URI =
@@ -206,6 +213,9 @@ public class AndroidShareSheetControllerUnitTest {
         Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
         Assert.assertNotNull("Custom action is empty.",
                 intent.getParcelableArrayExtra(INTENT_EXTRA_CHOOSER_CUSTOM_ACTIONS));
+
+        assertCustomActions(intent, R.string.print_share_activity_title,
+                R.string.send_tab_to_self_share_activity_title, R.string.qr_code_share_icon_label);
     }
 
     @Test
@@ -295,6 +305,28 @@ public class AndroidShareSheetControllerUnitTest {
     }
 
     @Test
+    @Config(shadows = {ShadowChooserActionHelper.class, ShadowBuildCompatForU.class})
+    public void shareImageWithCustomActions() {
+        Uri testImageUri = Uri.parse("content://test.image.uri");
+        ShareParams params = new ShareParams.Builder(mWindow, "", "")
+                                     .setFileContentType("image/png")
+                                     .setSingleImageUri(testImageUri)
+                                     .setBypassFixingDomDistillerUrl(true)
+                                     .build();
+        ChromeShareExtras chromeShareExtras =
+                new ChromeShareExtras.Builder()
+                        .setDetailedContentType(DetailedContentType.IMAGE)
+                        .setContentUrl(JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL))
+                        .setImageSrcUrl(JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL_DOGS))
+                        .build();
+        mController.showShareSheet(params, chromeShareExtras, 1L);
+
+        Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
+        assertCustomActions(intent, R.string.send_tab_to_self_share_activity_title,
+                R.string.qr_code_share_icon_label);
+    }
+
+    @Test
     public void shareTextWithPreviewFavicon() {
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher("Sharing.PreparePreviewFaviconDuration");
@@ -370,6 +402,9 @@ public class AndroidShareSheetControllerUnitTest {
                 "\"highlight\"\n " + JUnitTestGURLs.TEXT_FRAGMENT_URL,
                 shareIntent.getStringExtra(Intent.EXTRA_TEXT));
 
+        assertCustomActions(chooserIntent, R.string.send_tab_to_self_share_activity_title,
+                R.string.qr_code_share_icon_label);
+
         // Toggle the modify action again, link is removed from text.
         runModifyActionFromChooserIntent(chooserIntent);
         Intent chooserIntent2 = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
@@ -402,6 +437,27 @@ public class AndroidShareSheetControllerUnitTest {
         PendingIntent action = modifyAction.getParcelable(KEY_CHOOSER_ACTION_ACTION);
         action.send();
         ShadowLooper.idleMainLooper();
+    }
+
+    private void assertCustomActions(Intent chooserIntent, Integer... expectedStringRes) {
+        Parcelable[] actions =
+                chooserIntent.getParcelableArrayExtra(INTENT_EXTRA_CHOOSER_CUSTOM_ACTIONS);
+        StringBuilder actualStringBuilder = new StringBuilder();
+        for (Parcelable action : actions) {
+            String name = ((Bundle) action).getString(KEY_CHOOSER_ACTION_NAME);
+            actualStringBuilder.append(",").append(name);
+        }
+
+        StringBuilder expectedStringBuilder = new StringBuilder();
+        for (int stringRes : expectedStringRes) {
+            String name = ContextUtils.getApplicationContext().getString(stringRes);
+            expectedStringBuilder.append(",").append(name);
+        }
+
+        String actualString = actualStringBuilder.toString();
+        String expectedString = expectedStringBuilder.toString();
+        Assert.assertEquals(
+                "Actions and/or the order does not match.", expectedString, actualString);
     }
 
     /**

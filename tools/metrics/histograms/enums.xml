@@ -59998,6 +59998,7 @@ from previous Chrome versions.
   <int value="-1069453905" label="CCTModuleUseIntentExtras:disabled"/>
   <int value="-1068278508" label="InfoCardAcknowledgementTracking:disabled"/>
   <int value="-1068197506" label="EnhancedNetworkVoices:enabled"/>
+  <int value="-1068084507" label="ShareSheetCustomActionsPolish:enabled"/>
   <int value="-1067635248" label="SpeculativeResourcePrefetching:disabled"/>
   <int value="-1065887406" label="PictureInPictureV2:disabled"/>
   <int value="-1065227777" label="CrOSAutoSelect:disabled"/>
@@ -60536,6 +60537,7 @@ from previous Chrome versions.
   <int value="-776686417" label="SiteExplorationUi:disabled"/>
   <int value="-775952696" label="FeedStamp:enabled"/>
   <int value="-775321548" label="UseNewDoodleApi:disabled"/>
+  <int value="-774513654" label="ShareSheetCustomActionsPolish:disabled"/>
   <int value="-773238824" label="AutoplayWhitelistSettings:disabled"/>
   <int value="-772787642" label="MediaAppCustomColors:disabled"/>
   <int value="-772679248" label="MojoVideoEncodeAccelerator:enabled"/>

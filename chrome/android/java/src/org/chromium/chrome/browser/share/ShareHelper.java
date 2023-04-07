@@ -58,8 +58,8 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
             "android.intent.extra.CHOOSER_CUSTOM_ACTIONS";
     private static final String INTENT_EXTRA_CHOOSER_MODIFY_SHARE_ACTION =
             "android.intent.extra.CHOOSER_MODIFY_SHARE_ACTION";
-    // A generous number used to allocate requestCode for pending intent used by custom actions.
-    private static final int MAX_CUSTOM_ACTION_SUPPORTED = 10;
+    // The max number of custom actions supported for custom actions.
+    private static final int MAX_CUSTOM_ACTION_SUPPORTED = 5;
     private static final int CUSTOM_ACTION_REQUEST_CODE_BASE = 112;
     @VisibleForTesting
     static final String EXTRA_SHARE_CUSTOM_ACTION = "EXTRA_SHARE_CUSTOM_ACTION";
