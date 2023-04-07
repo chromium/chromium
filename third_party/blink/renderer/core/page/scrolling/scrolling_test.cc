@@ -1114,11 +1114,6 @@ TEST_P(ScrollingTest, WheelEventRegions) {
 }
 
 TEST_P(ScrollingTest, WheelEventRegionUpdatedOnSubscrollerScrollChange) {
-  if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-    // TODO(crbug.com/1414885): Fix wheel_event_region.
-    return;
-  }
-
   SetPreferCompositingToLCDText(false);
   LoadHTML(R"HTML(
     <style>
@@ -1376,11 +1371,6 @@ TEST_P(ScrollingTest, WheelEventRegionsForPlugins) {
 }
 
 TEST_P(ScrollingTest, NonFastScrollableRegionWithBorder) {
-  if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-    // TODO(crbug.com/1414885): Fix non_fast_scrollable_region.
-    return;
-  }
-
   SetPreferCompositingToLCDText(false);
   LoadHTML(R"HTML(
           <!DOCTYPE html>
@@ -1405,11 +1395,6 @@ TEST_P(ScrollingTest, NonFastScrollableRegionWithBorder) {
 }
 
 TEST_P(ScrollingTest, ElementRegionCaptureData) {
-  if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-    // TODO(crbug.com/1414885): Fix this test.
-    return;
-  }
-
   LoadHTML(R"HTML(
               <head>
                 <style type="text/css">
@@ -1605,11 +1590,6 @@ TEST_P(ScrollingTest, setupScrollbarLayerShouldSetScrollLayerOpaque)
 }
 
 TEST_P(ScrollingTest, NestedIFramesMainThreadScrollingRegion) {
-  if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-    // TODO(crbug.com/1414885): Fix non_fast_scrollable_region.
-    return;
-  }
-
   // This page has an absolute IFRAME. It contains a scrollable child DIV
   // that's nested within an intermediate IFRAME.
   SetPreferCompositingToLCDText(false);
@@ -2260,10 +2240,6 @@ TEST_P(UnifiedScrollingSimTest,
 // scroller with an inset box shadow, and ensuring that scroller generates a
 // compositor scroll node with the proper noncomposited reasons set.
 TEST_P(UnifiedScrollingSimTest, ScrollNodeForEmbeddedScrollers) {
-  if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-    // TODO(crbug.com/1414885): Fix this test.
-    return;
-  }
   if (!base::FeatureList::IsEnabled(::features::kScrollUnification)) {
     // This test requires scroll unification.
     return;
