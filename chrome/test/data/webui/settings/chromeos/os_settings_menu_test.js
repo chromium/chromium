@@ -25,7 +25,7 @@ function setupRouter() {
   routes.BASIC = testRoutes.BASIC;
 }
 
-suite('OSSettingsMenu', function() {
+suite('OsSettingsMenu', function() {
   let settingsMenu = null;
 
   setup(function() {
@@ -44,11 +44,11 @@ suite('OSSettingsMenu', function() {
     assertFalse(settingsMenu.advancedOpened);
     settingsMenu.advancedOpened = true;
     flush();
-    assertTrue(settingsMenu.isAdvancedSubmenuOpenedForTest());
+    assertTrue(settingsMenu.$.advancedSubmenu.opened);
 
     settingsMenu.advancedOpened = false;
     flush();
-    assertFalse(settingsMenu.isAdvancedSubmenuOpenedForTest());
+    assertFalse(settingsMenu.$.advancedSubmenu.opened);
   });
 
   test('tapAdvanced', function() {
@@ -60,11 +60,11 @@ suite('OSSettingsMenu', function() {
 
     advancedToggle.click();
     flush();
-    assertTrue(settingsMenu.isAdvancedSubmenuOpenedForTest());
+    assertTrue(settingsMenu.$.advancedSubmenu.opened);
 
     advancedToggle.click();
     flush();
-    assertFalse(settingsMenu.isAdvancedSubmenuOpenedForTest());
+    assertFalse(settingsMenu.$.advancedSubmenu.opened);
   });
 
   test('upAndDownIcons', function() {

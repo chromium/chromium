@@ -145,6 +145,10 @@ export class Router {
     return this.lastRouteChangeWasPopstate_;
   }
 
+  /**
+   * @return a Route matching the |path| containing a leading "/",
+   * or null if none matched
+   */
   getRouteForPath(path: string): Route|null {
     // Allow trailing slash in paths.
     const canonicalPath = path.replace(CANONICAL_PATH_REGEX, '$1$2');
