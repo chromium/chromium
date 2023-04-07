@@ -127,7 +127,8 @@ HlsDataSourceProviderImpl::HlsDataSourceProviderImpl(
       tick_clock);
 }
 
-void HlsDataSourceProviderImpl::SetOwner(media::HlsDemuxer* owner) {
+void HlsDataSourceProviderImpl::SetOwner(
+    media::HlsManifestDemuxerEngine* owner) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   DCHECK(!owner_ && owner);
   owner_ = owner;
