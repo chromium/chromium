@@ -2594,10 +2594,11 @@ void AutofillMetrics::FormInteractionsUkmLogger::
   }
 
   if (autofill_count > 0) {
+    static_assert(autofill_skipped_status.data().size() == 1);
     builder.SetWasAutofilled(OptionalBooleanToBool(was_autofilled))
         .SetHadValueBeforeFilling(
             OptionalBooleanToBool(had_value_before_filling))
-        .SetAutofillSkippedStatus(autofill_skipped_status.to_uint64())
+        .SetAutofillSkippedStatus(autofill_skipped_status.data()[0])
         .SetWasRefill(autofill_count > 1);
   }
 

@@ -8350,7 +8350,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
           {UFIT::kIsFocusableName, true},
           {UFIT::kWasAutofilledName, i != 2},
           {UFIT::kAutofillSkippedStatusName,
-           DenseSet<SkipStatus>{status}.to_uint64()},
+           DenseSet<SkipStatus>{status}.data()[0]},
           {UFIT::kWasRefillName, false},
           {UFIT::kHadValueBeforeFillingName, false},
           {UFIT::kUserTypedIntoFieldName, i == 0},
