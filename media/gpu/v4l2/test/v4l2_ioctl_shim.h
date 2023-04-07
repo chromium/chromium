@@ -73,7 +73,6 @@ using MmappedBuffers = std::vector<scoped_refptr<MmappedBuffer>>;
 class V4L2Queue {
  public:
   V4L2Queue(enum v4l2_buf_type type,
-            uint32_t fourcc,
             const gfx::Size& size,
             enum v4l2_memory memory,
             uint32_t num_buffers);
@@ -88,6 +87,7 @@ class V4L2Queue {
 
   enum v4l2_buf_type type() const { return type_; }
   uint32_t fourcc() const { return fourcc_; }
+  void set_fourcc(uint32_t fourcc) { fourcc_ = fourcc; }
 
   gfx::Size display_size() const { return display_size_; }
   void set_display_size(gfx::Size display_size) {
@@ -131,7 +131,7 @@ class V4L2Queue {
 
  private:
   const enum v4l2_buf_type type_;
-  const uint32_t fourcc_;
+  uint32_t fourcc_;
   MmappedBuffers buffers_;
   uint32_t num_buffers_;
   // The size of the image on the screen.
@@ -172,18 +172,12 @@ class V4L2IoctlShim {
   // if the configuration was successful.
   void SetFmt(const std::unique_ptr<V4L2Queue>& queue) const;
 
-  // Retrieves the format of |queue| (via VIDIOC_G_FMT) and returns true if
-  // successful, filling in |coded_size|, |num_planes|, and |fourcc| in that
-  // case.
-  void GetFmt(const enum v4l2_buf_type type,
-              gfx::Size* coded_size,
-              uint32_t* num_planes,
-              uint32_t* fourcc) const;
+  // Retrieves the format, |fmt|, (via VIDIOC_G_FMT)
+  void GetFmt(struct v4l2_format* fmt) const;
 
-  // Tries to configure |queue|. This does not modify the underlying
-  // driver state.
+  // Tries to configure |fmt|. This does not modify the underlying driver state.
   // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/vidioc-g-fmt.html?highlight=vidioc_try_fmt#description
-  void TryFmt(const std::unique_ptr<V4L2Queue>& queue) const;
+  void TryFmt(struct v4l2_format* fmt) const;
 
   // Allocates buffers via VIDIOC_REQBUFS for |queue|.
   void ReqBufs(std::unique_ptr<V4L2Queue>& queue) const;
@@ -230,10 +224,8 @@ class V4L2IoctlShim {
   // field in |v4l2_capability| struct (obtained from VIDIOC_QUERYCAP call).
   [[nodiscard]] bool FindMediaDevice();
 
-  // Verifies |v4l_fd| supports |compressed_format| for OUTPUT queues
-  // and |uncompressed_format| for CAPTURE queues, respectively.
-  [[nodiscard]] bool VerifyCapabilities(uint32_t compressed_format,
-                                        uint32_t uncompressed_format) const;
+  // Verifies |v4l_fd| supports |compressed_format| for OUTPUT queues.
+  [[nodiscard]] bool VerifyCapabilities(uint32_t compressed_format) const;
 
   // Allocates buffers for the given |queue|.
   void QueryAndMmapQueueBuffers(std::unique_ptr<V4L2Queue>& queue) const;

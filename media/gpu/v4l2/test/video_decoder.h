@@ -69,6 +69,8 @@ class VideoDecoder {
                                               const gfx::Size& size);
 
  protected:
+  void NegotiateCAPTUREFormat();
+
   // Helper method for converting frames to YUV.
   static void ConvertToYUV(std::vector<uint8_t>& dest_y,
                            std::vector<uint8_t>& dest_u,

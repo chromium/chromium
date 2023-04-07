@@ -5,13 +5,18 @@
 #include "media/gpu/v4l2/test/video_decoder.h"
 
 #include <linux/videodev2.h>
+#include <algorithm>
+#include <vector>
 
 #include "base/bits.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "media/base/video_types.h"
 #include "media/gpu/v4l2/test/upstream_pix_fmt.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace media {
 namespace v4l2_test {
@@ -40,6 +45,65 @@ VideoDecoder::VideoDecoder(std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
 
 VideoDecoder::~VideoDecoder() = default;
 
+void VideoDecoder::NegotiateCAPTUREFormat() {
+  constexpr uint32_t kPreferredFormats[] = {V4L2_PIX_FMT_NV12,
+                                            V4L2_PIX_FMT_MM21};
+
+  struct v4l2_format fmt;
+
+  memset(&fmt, 0, sizeof(fmt));
+  fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
+
+  v4l2_ioctl_->GetFmt(&fmt);
+  uint32_t fourcc = fmt.fmt.pix_mp.pixelformat;
+
+  // Check to see if if the format returned is one that can be used. The driver
+  // may prefer a different format than what is needed. If
+  // not, negotiations need to be done to see if the preferred format can
+  // be used.
+  if (!base::Contains(kPreferredFormats, fourcc)) {
+    bool format_found = false;
+    for (const auto& preferred_fourcc : kPreferredFormats) {
+      VLOG(1) << "Trying to see if preferred format ("
+              << media::FourccToString(preferred_fourcc)
+              << ") is supported by the driver.";
+      fmt.fmt.pix_mp.pixelformat = preferred_fourcc;
+
+      v4l2_ioctl_->TryFmt(&fmt);
+      VLOG(1) << "Driver returned format ("
+              << media::FourccToString(fmt.fmt.pix_mp.pixelformat) << ").";
+
+      if (fmt.fmt.pix_mp.pixelformat == preferred_fourcc) {
+        VLOG(1) << "Preferred format ("
+                << media::FourccToString(preferred_fourcc)
+                << ") being used for CAPTURE queue.";
+        fourcc = preferred_fourcc;
+        format_found = true;
+        break;
+      }
+    }
+    if (!format_found) {
+      LOG(FATAL) << "Unable to choose preferred format, TryFmt is returning ("
+                 << media::FourccToString(fmt.fmt.pix_mp.pixelformat) << ").";
+    }
+  }
+
+  CAPTURE_queue_->set_fourcc(fourcc);
+  CAPTURE_queue_->set_coded_size(
+      gfx::Size(fmt.fmt.pix_mp.width, fmt.fmt.pix_mp.height));
+  CAPTURE_queue_->set_num_planes(fmt.fmt.pix_mp.num_planes);
+
+  v4l2_ioctl_->SetFmt(CAPTURE_queue_);
+
+  LOG_ASSERT((V4L2_PIX_FMT_MM21 == fourcc &&
+              CAPTURE_queue_->num_planes() == fmt.fmt.pix_mp.num_planes) ||
+             (V4L2_PIX_FMT_NV12 == fourcc &&
+              CAPTURE_queue_->num_planes() == fmt.fmt.pix_mp.num_planes))
+      << media::FourccToString(fourcc)
+      << " does not have the correct number of planes: "
+      << fmt.fmt.pix_mp.num_planes;
+}
+
 void VideoDecoder::Initialize() {
   // TODO(stevecho): remove VIDIOC_ENUM_FRAMESIZES ioctl call
   //   after b/193237015 is resolved.
@@ -48,28 +112,11 @@ void VideoDecoder::Initialize() {
 
   v4l2_ioctl_->SetFmt(OUTPUT_queue_);
 
-  gfx::Size coded_size;
-  uint32_t num_planes;
-  uint32_t fourcc;
-  v4l2_ioctl_->GetFmt(CAPTURE_queue_->type(), &coded_size, &num_planes,
-                      &fourcc);
+  NegotiateCAPTUREFormat();
 
-  LOG_ASSERT((V4L2_PIX_FMT_MM21 == fourcc && 2 == num_planes) ||
-             (V4L2_PIX_FMT_NV12 == fourcc && 1 == num_planes))
-      << media::FourccToString(fourcc)
-      << " does not have the correct number of planes: " << num_planes;
-
-  CAPTURE_queue_->set_coded_size(coded_size);
-  CAPTURE_queue_->set_num_planes(num_planes);
-
-  // VIDIOC_TRY_FMT() ioctl is equivalent to VIDIOC_S_FMT
-  // with one exception that it does not change driver state.
-  // VIDIOC_TRY_FMT may or may not be needed; it's used by the stateful
-  // Chromium V4L2VideoDecoder backend, see b/190733055#comment78.
-  // TODO(b/190733055): try and remove it after landing all the code.
-  v4l2_ioctl_->TryFmt(CAPTURE_queue_);
-
-  v4l2_ioctl_->SetFmt(CAPTURE_queue_);
+  LOG_ASSERT(gfx::Rect(CAPTURE_queue_->coded_size())
+                 .Contains(gfx::Rect(CAPTURE_queue_->coded_size())))
+      << "Display size is not contained within the coded size. DRC?";
 
   // If there is a dynamic resolution change, the Initialization sequence will
   // be performed again, minus the allocation of OUTPUT queue buffers.
