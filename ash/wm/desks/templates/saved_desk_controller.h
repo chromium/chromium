@@ -13,6 +13,8 @@
 
 namespace ash {
 
+class DeskTemplate;
+
 struct AdminTemplateMetadata {
   // Uniquely identifies the template.
   base::GUID uuid;
@@ -38,6 +40,18 @@ class ASH_EXPORT SavedDeskController {
   // Launch the template identified by `template_uuid`. Returns false if the
   // template doesn't exist.
   virtual bool LaunchAdminTemplate(const base::GUID& template_uuid);
+
+ private:
+  friend class SavedDeskControllerTestApi;
+
+  std::unique_ptr<DeskTemplate> GetAdminTemplate(
+      const base::GUID& template_uuid) const;
+
+  // Install an admin template that can be used by `LaunchAdminTemplate`.
+  void SetAdminTemplateForTesting(std::unique_ptr<DeskTemplate> admin_template);
+
+  // An optional admin template used for testing.
+  std::unique_ptr<DeskTemplate> admin_template_for_testing_;
 };
 
 }  // namespace ash

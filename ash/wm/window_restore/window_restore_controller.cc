@@ -15,6 +15,7 @@
 #include "ash/shell.h"
 #include "ash/wm/container_finder.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -230,13 +231,26 @@ std::vector<aura::Window*>::const_iterator
 WindowRestoreController::GetWindowToInsertBefore(
     aura::Window* window,
     const std::vector<aura::Window*>& windows) {
-  int32_t* activation_index =
+  const int32_t* activation_index =
       window->GetProperty(app_restore::kActivationIndexKey);
   DCHECK(activation_index);
 
+  // If this is an admin template window, it should be placed on top of existing
+  // windows (but relative to other desk template windows).
+  if (saved_desk_util::IsAdminTemplateWindow(window)) {
+    for (auto it = windows.begin(); it != windows.end(); ++it) {
+      const int32_t* next_activation_index =
+          (*it)->GetProperty(app_restore::kActivationIndexKey);
+      if (next_activation_index && *activation_index > *next_activation_index) {
+        return it;
+      }
+    }
+    return windows.end();
+  }
+
   auto it = windows.begin();
   while (it != windows.end()) {
-    int32_t* next_activation_index =
+    const int32_t* next_activation_index =
         (*it)->GetProperty(app_restore::kActivationIndexKey);
 
     if (!next_activation_index || *activation_index > *next_activation_index) {

@@ -9,6 +9,10 @@
 
 class PrefRegistrySimple;
 
+namespace aura {
+class Window;
+}
+
 namespace ash {
 
 class SavedDeskDialogController;
@@ -29,6 +33,9 @@ ASH_EXPORT SavedDeskDialogController* GetSavedDeskDialogController();
 
 // Will return null if overview mode is not active.
 ASH_EXPORT SavedDeskPresenter* GetSavedDeskPresenter();
+
+// Returns true if `window` was launched from an admin template.
+bool IsAdminTemplateWindow(aura::Window* window);
 
 }  // namespace saved_desk_util
 }  // namespace ash

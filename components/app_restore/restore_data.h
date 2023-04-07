@@ -192,6 +192,9 @@ class COMPONENT_EXPORT(APP_RESTORE) RestoreData {
   const AppIdToLaunchList& app_id_to_launch_list() const {
     return app_id_to_launch_list_;
   }
+  AppIdToLaunchList& mutable_app_id_to_launch_list() {
+    return app_id_to_launch_list_;
+  }
 
   void set_removing_desk_guid(const base::Uuid& removing_desk_guid) {
     removing_desk_guid_ = removing_desk_guid;
