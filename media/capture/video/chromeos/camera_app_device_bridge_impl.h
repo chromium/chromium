@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/singleton.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/video/chromeos/camera_app_device_impl.h"
@@ -85,6 +86,9 @@ class CAPTURE_EXPORT CameraAppDeviceBridgeImpl
   friend struct base::DefaultSingletonTraits<CameraAppDeviceBridgeImpl>;
 
   bool is_supported_;
+
+  // It is used for calls which should run on the mojo sequence.
+  scoped_refptr<base::SequencedTaskRunner> mojo_task_runner_;
 
   base::Lock camera_info_getter_lock_;
   CameraInfoGetter camera_info_getter_ GUARDED_BY(camera_info_getter_lock_);
