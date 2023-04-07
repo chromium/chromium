@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 
+#include "ash/constants/ash_features.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -35,10 +37,18 @@ HermesEuiccClient::Properties::Properties(
                    &installed_carrier_profiles_);
   RegisterProperty(hermes::euicc::kPendingProfilesProperty,
                    &pending_carrier_profiles_);
+  RegisterProperty(hermes::euicc::kProfilesProperty, &profiles_);
   RegisterProperty(hermes::euicc::kPhysicalSlotProperty, &physical_slot_);
 }
 
 HermesEuiccClient::Properties::~Properties() = default;
+
+// TODO(b/271854446): Inline this accessor once the feature is launched.
+dbus::Property<std::vector<dbus::ObjectPath>>&
+HermesEuiccClient::Properties::profiles() {
+  DCHECK(features::IsSmdsDbusMigrationEnabled());
+  return profiles_;
+}
 
 class HermesEuiccClientImpl : public HermesEuiccClient {
  public:
