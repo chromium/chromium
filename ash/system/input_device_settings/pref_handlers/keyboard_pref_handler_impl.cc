@@ -301,18 +301,6 @@ mojom::KeyboardSettingsPtr GetKeyboardSettingsFromOldLocalStatePrefs(
   return settings;
 }
 
-const base::Value::Dict* GetLoginScreenSettingsDict(
-    PrefService* local_state,
-    AccountId account_id,
-    const std::string& pref_name) {
-  const auto* dict_value =
-      user_manager::KnownUser(local_state).FindPath(account_id, pref_name);
-  if (!dict_value || !dict_value->is_dict()) {
-    return nullptr;
-  }
-  return &dict_value->GetDict();
-}
-
 }  // namespace
 
 KeyboardPrefHandlerImpl::KeyboardPrefHandlerImpl() = default;

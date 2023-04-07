@@ -11,6 +11,9 @@
 #include "base/values.h"
 #include "ui/events/devices/input_device.h"
 
+class AccountId;
+class PrefService;
+
 namespace ash {
 
 // Checks if a given value is within the bounds set by `ui::mojom::ModifierKey`.
@@ -74,6 +77,12 @@ extern template EXPORT_TEMPLATE_DECLARE(ASH_EXPORT) bool ShouldPersistSetting(
     int default_value,
     bool force_persistence,
     const base::Value::Dict* existing_settings_dict);
+
+// Retrieve cached internal/external device settings dictionary (if it exists).
+ASH_EXPORT const base::Value::Dict* GetLoginScreenSettingsDict(
+    PrefService* local_state,
+    AccountId account_id,
+    const std::string& pref_name);
 
 }  // namespace ash
 
