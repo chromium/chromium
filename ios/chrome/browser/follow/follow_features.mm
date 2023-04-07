@@ -37,7 +37,7 @@ double GetNumVisitMin() {
 base::TimeDelta GetVisitHistoryDuration() {
   double days = base::GetFieldTrialParamByFeatureAsDouble(
       kEnableFollowIPHExpParams, kVisitHistoryDuration,
-      14 /*default to 14 days*/);
+      28 /*default to 28 days*/);
 
   return base::Days(days);
 }
