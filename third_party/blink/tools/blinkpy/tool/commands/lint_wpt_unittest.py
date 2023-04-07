@@ -134,7 +134,7 @@ class LintWPTTest(LoggingTestCase):
             [variant.html?foo=bar/abc]
               expected: TIMEOUT
             """, 'variant.html.ini')
-        name, description, path, line = out_of_order_tests
+        name, description, path, _ = out_of_order_tests
         self.assertEqual(name, 'META-UNSORTED-SECTION')
         self.assertEqual(path, 'variant.html.ini')
         self.assertEqual(
@@ -142,10 +142,30 @@ class LintWPTTest(LoggingTestCase):
             'Section contains unsorted keys or subsection headings: '
             "'[variant.html?foo=bar/abc]' should precede "
             "'[variant.html?foo=baz]'")
-        name, description, path, line = out_of_order_subtests
+        name, description, path, _ = out_of_order_subtests
         self.assertEqual(name, 'META-UNSORTED-SECTION')
         self.assertEqual(path, 'variant.html.ini')
         self.assertEqual(
             description,
             'Section contains unsorted keys or subsection headings: '
             "'[subtest 1]' should precede '[subtest 2]'")
+
+    def test_metadata_empty_sections(self):
+        empty_subtest, empty_test = self._check_metadata(
+            """\
+            [variant.html?foo=bar/abc]
+              [empty subtest]
+
+            [variant.html?foo=baz]
+            """, 'variant.html.ini')
+        name, description, path, _ = empty_subtest
+        self.assertEqual(name, 'META-EMPTY-SECTION')
+        self.assertEqual(path, 'variant.html.ini')
+        self.assertEqual(description,
+                         "Empty section can be removed: '[empty subtest]'")
+        name, description, path, _ = empty_test
+        self.assertEqual(name, 'META-EMPTY-SECTION')
+        self.assertEqual(path, 'variant.html.ini')
+        self.assertEqual(
+            description,
+            "Empty section can be removed: '[variant.html?foo=baz]'")

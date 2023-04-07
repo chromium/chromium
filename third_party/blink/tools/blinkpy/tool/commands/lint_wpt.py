@@ -49,6 +49,16 @@ class MetadataUnsortedSection(MetadataRule):
     """
 
 
+class MetadataEmptySection(MetadataRule):
+    name = 'META-EMPTY-SECTION'
+    description = 'Empty section can be removed: %(heading)r'
+    to_fix = """
+    A section without keys or subsections has no effect and should be removed.
+    The (sub)tests represented by empty sections default to enabled and
+    all-pass.
+    """
+
+
 LintError = Tuple[str, str, str, Optional[int]]
 
 
@@ -106,6 +116,7 @@ class LintWPT(Command):
         errors = []
         for check in [
                 self._check_metadata_sorted,
+                self._check_metadata_nonempty_sections,
                 # TODO(crbug.com/1406669): Implement remaining rules.
         ]:
             errors.extend(check(path, ast))
@@ -134,6 +145,16 @@ class LintWPT(Command):
                 break
         for child in node.children:
             yield from self._check_metadata_sorted(path, child)
+
+    def _check_metadata_nonempty_sections(
+            self, path: str, node: wptnode.Node) -> Iterator[LintError]:
+        if not isinstance(node, wptnode.DataNode):
+            return
+        if not node.children:
+            context = {'heading': _format_node(node)}
+            yield MetadataEmptySection.error(path, context)
+        for child in node.children:
+            yield from self._check_metadata_nonempty_sections(path, child)
 
     def _is_metadata_file(self, repo_root: str, path: str) -> bool:
         test_path, extension = self._fs.splitext(path)
