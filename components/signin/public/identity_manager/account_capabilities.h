@@ -68,6 +68,11 @@ class AccountCapabilities {
   // with this capability.
   signin::Tribool is_allowed_for_machine_learning() const;
 
+  // Chrome must show the notice before using the privacy sandbox restricted
+  // measurement API
+  signin::Tribool
+  is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice() const;
+
   // Chrome applies enterprise policies to accounts with this capability.
   signin::Tribool is_subject_to_enterprise_policies() const;
 
