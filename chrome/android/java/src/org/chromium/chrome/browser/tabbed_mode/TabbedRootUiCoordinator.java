@@ -15,7 +15,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.CommandLine;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
@@ -227,7 +226,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param startSurfaceParentTabSupplier Supplies the parent tab for the StartSurface.
      * @param browserControlsManager Manages the browser controls.
      * @param windowAndroid The current {@link WindowAndroid}.
-     * @param jankTracker Tracks the jank in the app.
      * @param activityLifecycleDispatcher Allows observation of the activity lifecycle.
      * @param layoutManagerSupplier Supplies the {@link LayoutManager}.
      * @param menuOrKeyboardActionController Controls the menu or keyboard action controller.
@@ -271,7 +269,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderOneshotSupplier,
             @NonNull Supplier<Tab> startSurfaceParentTabSupplier,
             @NonNull BrowserControlsManager browserControlsManager,
-            @NonNull ActivityWindowAndroid windowAndroid, @NonNull JankTracker jankTracker,
+            @NonNull ActivityWindowAndroid windowAndroid,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @NonNull ObservableSupplier<LayoutManagerImpl> layoutManagerSupplier,
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
@@ -301,7 +299,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 contextualSearchManagerSupplier, tabModelSelectorSupplier, startSurfaceSupplier,
                 tabSwitcherSupplier, intentMetadataOneshotSupplier,
                 layoutStateProviderOneshotSupplier, startSurfaceParentTabSupplier,
-                browserControlsManager, windowAndroid, jankTracker, activityLifecycleDispatcher,
+                browserControlsManager, windowAndroid, activityLifecycleDispatcher,
                 layoutManagerSupplier, menuOrKeyboardActionController, activityThemeColorSupplier,
                 modalDialogManagerSupplier, appMenuBlocker, supportsAppMenuSupplier,
                 supportsFindInPage, tabCreatorManagerSupplier, fullscreenManager,

@@ -15,7 +15,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
-import org.chromium.base.jank_tracker.DummyJankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -169,7 +168,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 contextualSearchManagerSupplier, tabModelSelectorSupplier,
                 new OneshotSupplierImpl<>(), new OneshotSupplierImpl<>(),
                 new OneshotSupplierImpl<>(), new OneshotSupplierImpl<>(), () -> null,
-                browserControlsManager, windowAndroid, new DummyJankTracker(),
+                browserControlsManager, windowAndroid,
                 activityLifecycleDispatcher, layoutManagerSupplier, menuOrKeyboardActionController,
                 activityThemeColorSupplier, modalDialogManagerSupplier, appMenuBlocker,
                 supportsAppMenuSupplier, supportsFindInPage, tabCreatorManagerSupplier,

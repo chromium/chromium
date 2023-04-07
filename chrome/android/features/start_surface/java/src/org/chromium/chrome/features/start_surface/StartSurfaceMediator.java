@@ -50,8 +50,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.jank_tracker.JankScenario;
-import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -138,7 +136,6 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     private final boolean mExcludeQueryTiles;
     private final Runnable mInitializeMVTilesRunnable;
     private final Supplier<Tab> mParentTabSupplier;
-    private final JankTracker mJankTracker;
     private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
             new ObservableSupplierImpl<>();
     private final CallbackController mCallbackController = new CallbackController();
@@ -232,9 +229,9 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             BrowserControlsStateProvider browserControlsStateProvider,
             ActivityStateChecker activityStateChecker, boolean excludeQueryTiles,
             OneshotSupplier<StartSurface> startSurfaceSupplier, boolean hadWarmStart,
-            JankTracker jankTracker, Runnable initializeMVTilesRunnable,
-            Supplier<Tab> parentTabSupplier, View logoContainerView,
-            @Nullable BackPressManager backPressManager, ViewGroup feedPlaceholderParentView,
+            Runnable initializeMVTilesRunnable, Supplier<Tab> parentTabSupplier,
+            View logoContainerView, @Nullable BackPressManager backPressManager,
+            ViewGroup feedPlaceholderParentView,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             OnClickListener tabSwitcherClickHandler) {
         mTabSwitcherContainer = tabSwitcherContainer;
@@ -251,7 +248,6 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         mExcludeQueryTiles = excludeQueryTiles;
         mStartSurfaceSupplier = startSurfaceSupplier;
         mHadWarmStart = hadWarmStart;
-        mJankTracker = jankTracker;
         mLaunchOrigin = NewTabPageLaunchOrigin.UNKNOWN;
         mInitializeMVTilesRunnable = initializeMVTilesRunnable;
         mParentTabSupplier = parentTabSupplier;
@@ -615,9 +611,6 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         // This should only be called for single or carousel tab switcher.
         mController.showTabSwitcherView(animate);
 
-        // TODO(crbug.com/1315676): Record
-        // mJankTracker.finishTrackingScenario(START_SURFACE_HOMEPAGE) when layout changes, maybe in
-        // LayoutManager.
         RecordUserAction.record("StartSurface.Shown");
         RecordUserAction.record("StartSurface.SinglePane.Home");
         mayRecordHomepageSessionBegin();
@@ -677,23 +670,6 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             setOverviewStateInternal();
         }
         notifyStateChange();
-
-        // Start/Stop tracking jank for Homepage and Tab switcher. It is okay if finish or start are
-        // called multiple times consecutively.
-        switch (mStartSurfaceState) {
-            case StartSurfaceState.NOT_SHOWN:
-                mJankTracker.finishTrackingScenario(JankScenario.START_SURFACE_HOMEPAGE);
-                mJankTracker.finishTrackingScenario(JankScenario.START_SURFACE_TAB_SWITCHER);
-                break;
-            case StartSurfaceState.SHOWN_HOMEPAGE:
-                mJankTracker.startTrackingScenario(JankScenario.START_SURFACE_HOMEPAGE);
-                mJankTracker.finishTrackingScenario(JankScenario.START_SURFACE_TAB_SWITCHER);
-                break;
-            case StartSurfaceState.SHOWN_TABSWITCHER:
-                mJankTracker.finishTrackingScenario(JankScenario.START_SURFACE_HOMEPAGE);
-                mJankTracker.startTrackingScenario(JankScenario.START_SURFACE_TAB_SWITCHER);
-                break;
-        }
 
         setLaunchOrigin(launchOrigin);
         // Metrics collection

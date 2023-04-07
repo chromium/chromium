@@ -43,7 +43,6 @@ import org.chromium.base.Log;
 import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.jank_tracker.JankTrackerImpl;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -329,10 +328,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     // This is the cached value of mIntentHandler#shouldIgnoreIntent and shouldn't be read directly.
     // Use #shouldIgnoreIntent instead.
     private Boolean mShouldIgnoreIntent;
-    /*
-     *  Listens to FrameMetrics and records jank metrics.
-     */
-    private JankTrackerImpl mJankTracker;
 
     // Supplier for a dependency to inform about the type of intent used to launch Chrome.
     private OneshotSupplierImpl<ToolbarIntentMetadata> mIntentMetadataOneshotSupplier =
@@ -687,7 +682,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             // clang-format off
             mLayoutManager = new LayoutManagerChromePhone(compositorViewHolder, mContentContainer,
                     mStartSurfaceSupplier, mTabSwitcherSupplier, getTabContentManagerSupplier(),
-                    mRootUiCoordinator::getTopUiThemeColorProvider, mJankTracker);
+                    mRootUiCoordinator::getTopUiThemeColorProvider);
             mLayoutStateProviderSupplier.set(mLayoutManager);
             // clang-format on
         }
@@ -704,8 +699,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             ViewGroup tabSwitcherViewHolder = findViewById(R.id.tab_switcher_view_holder);
             mLayoutManager = new LayoutManagerChromeTablet(compositorViewHolder, mContentContainer,
                 mStartSurfaceSupplier, mTabSwitcherSupplier, getTabContentManagerSupplier(),
-                mRootUiCoordinator::getTopUiThemeColorProvider, mJankTracker,
-                tabSwitcherViewHolder, mRootUiCoordinator.getScrimCoordinator(),
+                mRootUiCoordinator::getTopUiThemeColorProvider, tabSwitcherViewHolder,
+                mRootUiCoordinator.getScrimCoordinator(),
                 getLifecycleDispatcher(), () -> createAndSetStartSurfaceForTablet());
             mLayoutStateProviderSupplier.set(mLayoutManager);
             // clang-format on
@@ -737,7 +732,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 getTabContentManager(), getModalDialogManager(),
                 /* chromeActivityNativeDelegate= */ this, getLifecycleDispatcher(),
                 getTabCreatorManagerSupplier().get(), getMenuOrKeyboardActionController(),
-                getMultiWindowModeStateDispatcher(), mJankTracker, getToolbarManager()::getToolbar,
+                getMultiWindowModeStateDispatcher(), getToolbarManager()::getToolbar,
                 mBackPressManager, mRootUiCoordinator.getIncognitoReauthControllerSupplier(),
                 v -> onTabSwitcherClicked());
     }
@@ -1710,11 +1705,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     public void performPreInflationStartup() {
-        // Create JankTracker before invoking super, because the parent class will invoke
-        // createRootUiCoordinator(...), which in our case requires the JankTracker to already have
-        // been created.
-        mJankTracker = new JankTrackerImpl(this);
-
         super.performPreInflationStartup();
 
         // Decide whether to record startup UMA histograms. This is done  early in the main
@@ -1743,8 +1733,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 getContextualSearchManagerSupplier(), getTabModelSelectorSupplier(),
                 mStartSurfaceSupplier, mTabSwitcherSupplier, mIntentMetadataOneshotSupplier,
                 mLayoutStateProviderSupplier, mStartSurfaceParentTabSupplier,
-                getBrowserControlsManager(), getWindowAndroid(), mJankTracker,
-                getLifecycleDispatcher(), getLayoutManagerSupplier(),
+                getBrowserControlsManager(), getWindowAndroid(), getLifecycleDispatcher(),
+                getLayoutManagerSupplier(),
                 /* menuOrKeyboardActionController= */ this, this::getActivityThemeColor,
                 getModalDialogManagerSupplier(),
                 /* appMenuBlocker= */ this, this::supportsAppMenu, this::supportsFindInPage,
@@ -2002,7 +1992,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     getCompositorViewHolderSupplier(), getModalDialogManagerSupplier(),
                     this::getSnackbarManager, getBrowserControlsManager(), getActivityTabProvider(),
                     getLifecycleDispatcher(), getWindowAndroid(), this::getLastUserInteractionTime,
-                    this::hadWarmStart, mJankTracker, getToolbarManager()::getToolbar);
+                    this::hadWarmStart, getToolbarManager()::getToolbar);
         }
         return mTabDelegateFactory;
     }
@@ -2741,11 +2731,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         if (mStartupPaintPreviewHelperSupplier != null) {
             mStartupPaintPreviewHelperSupplier.destroy();
-        }
-
-        if (mJankTracker != null) {
-            mJankTracker.destroy();
-            mJankTracker = null;
         }
 
         IncognitoTabHostRegistry.getInstance().unregister(mIncognitoTabHost);

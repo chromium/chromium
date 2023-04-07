@@ -12,7 +12,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -68,8 +67,8 @@ public interface TabManagementDelegate {
      * @return The {@link TabSwitcherLayout}.
      */
     Layout createTabSwitcherLayout(Context context, LayoutUpdateHost updateHost,
-            LayoutRenderHost renderHost, TabSwitcher tabSwitcher, JankTracker jankTracker,
-            ViewGroup tabSwitcherScrimAnchor, ScrimCoordinator scrimCoordinator);
+            LayoutRenderHost renderHost, TabSwitcher tabSwitcher, ViewGroup tabSwitcherScrimAnchor,
+            ScrimCoordinator scrimCoordinator);
 
     /**
      * Create the {@link TabSwitcher} to display Tabs in grid.

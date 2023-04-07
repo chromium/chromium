@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -45,9 +44,9 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 public class TabManagementDelegateImpl implements TabManagementDelegate {
     @Override
     public Layout createTabSwitcherLayout(Context context, LayoutUpdateHost updateHost,
-            LayoutRenderHost renderHost, TabSwitcher tabSwitcher, JankTracker jankTracker,
-            ViewGroup tabSwitcherScrimAnchor, ScrimCoordinator scrimCoordinator) {
-        return new TabSwitcherLayout(context, updateHost, renderHost, tabSwitcher, jankTracker,
+            LayoutRenderHost renderHost, TabSwitcher tabSwitcher, ViewGroup tabSwitcherScrimAnchor,
+            ScrimCoordinator scrimCoordinator) {
+        return new TabSwitcherLayout(context, updateHost, renderHost, tabSwitcher,
                 tabSwitcherScrimAnchor, scrimCoordinator);
     }
 

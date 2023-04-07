@@ -40,7 +40,6 @@ import org.robolectric.shadows.ShadowPausedSystemClock;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.jank_tracker.DummyJankTracker;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -134,7 +133,7 @@ public class AutocompleteMediatorUnitTest {
                     mAutocompleteDelegate, mTextStateProvider, mListModel,
                     new Handler(), () -> mModalDialogManager, null, null,
                     mLocationBarDataProvider, tab -> {}, mTabWindowManagerSupplier, url -> false,
-                    new DummyJankTracker(), mActionChipsDelegate, mOpenHistoryClustersDelegate);
+                    mActionChipsDelegate, mOpenHistoryClustersDelegate);
             mMediator.setAutocompleteProfile(mProfile);
         });
         // clang-format on

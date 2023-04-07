@@ -17,7 +17,6 @@ import androidx.core.view.ViewCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
-import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
@@ -139,7 +138,6 @@ public class LocationBarCoordinator
      * @param tabWindowManagerSupplier Supplier of glue-level TabWindowManager object.
      * @param bookmarkState State of a URL bookmark state.
      * @param isToolbarMicEnabledSupplier Whether toolbar mic is enabled or not.
-     * @param jankTracker Tracks UI jank.
      * @param merchantTrustSignalsCoordinatorSupplier Supplier of {@link
      *         MerchantTrustSignalsCoordinator}. Can be null if a store icon shouldn't be shown,
      *         such as when called from a search activity.
@@ -162,7 +160,7 @@ public class LocationBarCoordinator
             @NonNull SaveOfflineButtonState saveOfflineButtonState, @NonNull OmniboxUma omniboxUma,
             @NonNull Supplier<TabWindowManager> tabWindowManagerSupplier,
             @NonNull BookmarkState bookmarkState,
-            @NonNull BooleanSupplier isToolbarMicEnabledSupplier, JankTracker jankTracker,
+            @NonNull BooleanSupplier isToolbarMicEnabledSupplier,
             @Nullable Supplier<MerchantTrustSignalsCoordinator>
                     merchantTrustSignalsCoordinatorSupplier,
             @NonNull ActionChipsDelegate actionChipsDelegate,
@@ -208,8 +206,8 @@ public class LocationBarCoordinator
                 mOmniboxDropdownEmbedderImpl, mUrlCoordinator, modalDialogManagerSupplier,
                 activityTabSupplier, shareDelegateSupplier, locationBarDataProvider,
                 profileObservableSupplier, bringTabToFrontCallback, tabWindowManagerSupplier,
-                bookmarkState, jankTracker, actionChipsDelegate,
-                omniboxSuggestionsDropdownScrollListener, openHistoryClustersDelegate);
+                bookmarkState, actionChipsDelegate, omniboxSuggestionsDropdownScrollListener,
+                openHistoryClustersDelegate);
         StatusView statusView = mLocationBarLayout.findViewById(R.id.location_bar_status);
         mStatusCoordinator = new StatusCoordinator(isTabletWindow(), statusView, mUrlCoordinator,
                 locationBarDataProvider, templateUrlServiceSupplier, searchEngineLogoUtils,

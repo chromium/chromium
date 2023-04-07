@@ -26,7 +26,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -191,7 +190,6 @@ public class RootUiCoordinator
                    MenuOrKeyboardActionController.MenuOrKeyboardActionHandler, AppMenuBlocker {
     protected final UnownedUserDataSupplier<TabObscuringHandler> mTabObscuringHandlerSupplier =
             new TabObscuringHandlerSupplier();
-    private final JankTracker mJankTracker;
 
     protected AppCompatActivity mActivity;
     protected @Nullable AppMenuCoordinator mAppMenuCoordinator;
@@ -330,7 +328,6 @@ public class RootUiCoordinator
      * @param startSurfaceParentTabSupplier Supplies the parent tab for the StartSurface.
      * @param browserControlsManager Manages the browser controls.
      * @param windowAndroid The current {@link WindowAndroid}.
-     * @param jankTracker Tracks the jank in the app.
      * @param activityLifecycleDispatcher Allows observation of the activity lifecycle.
      * @param layoutManagerSupplier Supplies the {@link LayoutManager}.
      * @param menuOrKeyboardActionController Controls the menu or keyboard action controller.
@@ -370,7 +367,7 @@ public class RootUiCoordinator
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderOneshotSupplier,
             @NonNull Supplier<Tab> startSurfaceParentTabSupplier,
             @NonNull BrowserControlsManager browserControlsManager,
-            @NonNull ActivityWindowAndroid windowAndroid, @NonNull JankTracker jankTracker,
+            @NonNull ActivityWindowAndroid windowAndroid,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @NonNull ObservableSupplier<LayoutManagerImpl> layoutManagerSupplier,
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
@@ -392,7 +389,6 @@ public class RootUiCoordinator
             @NonNull OneshotSupplier<TabReparentingController> tabReparentingControllerSupplier,
             @NonNull Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             boolean initializeUiWithIncognitoColors, @Nullable BackPressManager backPressManager) {
-        mJankTracker = jankTracker;
         mCallbackController = new CallbackController();
         mActivity = activity;
         mWindowAndroid = windowAndroid;
@@ -1188,11 +1184,10 @@ public class RootUiCoordinator
                     mStatusBarColorController, mAppMenuDelegate, mActivityLifecycleDispatcher,
                     mStartSurfaceParentTabSupplier, mBottomSheetController, mIsWarmOnResumeSupplier,
                     mTabContentManagerSupplier.get(), mTabCreatorManagerSupplier.get(),
-                    mSnackbarManagerSupplier.get(), mJankTracker,
-                    getMerchantTrustSignalsCoordinatorSupplier(), mTabReparentingControllerSupplier,
-                    mActionChipsDelegate, mEphemeralTabCoordinatorSupplier,
-                    mInitializeUiWithIncognitoColors, mBackPressManager,
-                    openHistoryClustersDelegate);
+                    mSnackbarManagerSupplier.get(), getMerchantTrustSignalsCoordinatorSupplier(),
+                    mTabReparentingControllerSupplier, mActionChipsDelegate,
+                    mEphemeralTabCoordinatorSupplier, mInitializeUiWithIncognitoColors,
+                    mBackPressManager, openHistoryClustersDelegate);
             if (!mSupportsAppMenuSupplier.getAsBoolean()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }

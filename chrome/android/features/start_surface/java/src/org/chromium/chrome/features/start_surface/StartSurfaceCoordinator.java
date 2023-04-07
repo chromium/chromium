@@ -23,7 +23,6 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ObserverList;
-import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -262,7 +261,6 @@ public class StartSurfaceCoordinator implements StartSurface {
      * @param tabCreatorManager Manages {@link Tab} creation.
      * @param menuOrKeyboardActionController allows access to menu or keyboard actions.
      * @param multiWindowModeStateDispatcher Gives access to the multi window mode state.
-     * @param jankTracker Measures jank while feed or tab switcher are visible.
      * @param toolbarSupplier Supplies the {@link Toolbar}.
      * @param backPressManager {@link BackPressManager} to handle back press.
      * @param incognitoReauthControllerSupplier {@link OneshotSupplier<IncognitoReauthController>}
@@ -288,8 +286,7 @@ public class StartSurfaceCoordinator implements StartSurface {
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
-            @NonNull JankTracker jankTracker, @NonNull Supplier<Toolbar> toolbarSupplier,
-            BackPressManager backPressManager,
+            @NonNull Supplier<Toolbar> toolbarSupplier, BackPressManager backPressManager,
             @NonNull OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
             @NonNull OnClickListener tabSwitcherClickHandler) {
         mConstructedTimeNs = SystemClock.elapsedRealtimeNanos();
@@ -361,7 +358,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                 mTasksSurface != null ? this::initializeSecondaryTasksSurface : null,
                 mIsStartSurfaceEnabled, mActivity, mBrowserControlsManager,
                 this::isActivityFinishingOrDestroyed, excludeQueryTiles,
-                startSurfaceOneshotSupplier, hadWarmStart, jankTracker, initializeMVTilesRunnable,
+                startSurfaceOneshotSupplier, hadWarmStart, initializeMVTilesRunnable,
                 mParentTabSupplier, logoContainerView,
                 mGridTabSwitcher == null ? backPressManager : null, feedPlaceholderParentView,
                 mActivityLifecycleDispatcher, tabSwitcherClickHandler);

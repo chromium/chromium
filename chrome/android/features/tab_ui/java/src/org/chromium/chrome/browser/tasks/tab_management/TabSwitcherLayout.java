@@ -21,8 +21,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.jank_tracker.JankScenario;
-import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
@@ -86,7 +84,6 @@ public class TabSwitcherLayout extends Layout {
 
     private TabListSceneLayer mSceneLayer;
     private final TabSwitcher mTabSwitcher;
-    private final JankTracker mJankTracker;
     private final TabSwitcher.Controller mController;
     private final TabSwitcherViewObserver mTabSwitcherObserver;
     @Nullable
@@ -118,7 +115,7 @@ public class TabSwitcherLayout extends Layout {
     private PerfListener mPerfListenerForTesting;
 
     public TabSwitcherLayout(Context context, LayoutUpdateHost updateHost,
-            LayoutRenderHost renderHost, TabSwitcher tabSwitcher, JankTracker jankTracker,
+            LayoutRenderHost renderHost, TabSwitcher tabSwitcher,
             @Nullable ViewGroup tabSwitcherScrimAnchor,
             @Nullable ScrimCoordinator scrimCoordinator) {
         super(context, updateHost, renderHost);
@@ -128,7 +125,6 @@ public class TabSwitcherLayout extends Layout {
         mController = mTabSwitcher.getController();
         mTabSwitcher.setOnTabSelectingListener(this::onTabSelecting);
         mGridTabListDelegate = mTabSwitcher.getTabListDelegate();
-        mJankTracker = jankTracker;
         mScrimAnchor = tabSwitcherScrimAnchor;
         mScrimCoordinator = scrimCoordinator;
 
@@ -220,8 +216,6 @@ public class TabSwitcherLayout extends Layout {
     public void show(long time, boolean animate) {
         try (TraceEvent e = TraceEvent.scoped(TRACE_SHOW_TAB_SWITCHER)) {
             super.show(time, animate);
-
-            mJankTracker.startTrackingScenario(JankScenario.TAB_SWITCHER);
 
             // Keep the current tab in mLayoutTabs even if we are not going to show the shrinking
             // animation so that thumbnail taking is not blocked.
@@ -335,7 +329,6 @@ public class TabSwitcherLayout extends Layout {
         try (TraceEvent e = TraceEvent.scoped(TRACE_DONE_HIDING_TAB_SWITCHER)) {
             super.doneHiding();
             RecordUserAction.record("MobileExitStackView");
-            mJankTracker.finishTrackingScenario(JankScenario.TAB_SWITCHER);
         }
     }
 

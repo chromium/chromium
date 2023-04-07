@@ -74,7 +74,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.jank_tracker.DummyJankTracker;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -1864,7 +1863,7 @@ public class StartSurfaceMediatorUnitTest {
                 hasTasksView ? mSecondaryTasksSurfaceInitializer : null, isStartSurfaceEnabled,
                 ContextUtils.getApplicationContext(), mBrowserControlsStateProvider,
                 mActivityStateChecker, true /* excludeQueryTiles */, mStartSurfaceSupplier,
-                hadWarmStart, new DummyJankTracker(),
+                hadWarmStart,
                 hasTasksView || hasTabSwitcherModule ? mInitializeMVTilesRunnable : null,
                 mParentTabSupplier, mLogoContainerView, mBackPressManager,
                 null /* feedPlaceholderParentView */, mActivityLifecycleDispatcher,

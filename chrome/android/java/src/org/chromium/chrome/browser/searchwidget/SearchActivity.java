@@ -25,7 +25,6 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
-import org.chromium.base.jank_tracker.DummyJankTracker;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -245,7 +244,7 @@ public class SearchActivity extends AsyncInitializationActivity
             /*saveOfflineButtonState=*/(tab) -> false,
             /*omniboxUma*/(url, transition, isNtp) -> {},
             TabWindowManagerSingleton::getInstance, /*bookmarkState=*/(url) -> false,
-            VoiceToolbarButtonController::isToolbarMicEnabled, new DummyJankTracker(),
+            VoiceToolbarButtonController::isToolbarMicEnabled,
             /*merchantTrustSignalsCoordinatorSupplier=*/null,
             new ActionChipsDelegateImpl(this, new OneshotSupplierImpl<>(),
                 getModalDialogManagerSupplier()), null,
