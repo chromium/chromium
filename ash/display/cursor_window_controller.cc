@@ -289,6 +289,9 @@ void CursorWindowController::SetDisplay(const display::Display& display) {
 
 void CursorWindowController::OnDockedMagnifierResizingStateChanged(
     bool is_active) {
+  if (!container_) {
+    return;
+  }
   const int container_id = is_active ? kShellWindowId_DockedMagnifierContainer
                                      : kShellWindowId_MouseCursorContainer;
   SetContainer(
