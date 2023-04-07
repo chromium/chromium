@@ -92,6 +92,21 @@ class LintWPTTest(LoggingTestCase):
             path='wptrunner.blink.ini')
         self.assertEqual(errors, [])
 
+    def test_metadata_valid(self):
+        errors = self._check_metadata(
+            """\
+            [variant.html?foo=bar/abc]
+              expected: FAIL
+            [variant.html?foo=baz]
+              disabled: never completes
+              expected: TIMEOUT
+              [subtest 1]
+                expected: TIMEOUT
+              [subtest 2]
+                expected: NOTRUN
+            """, 'variant.html.ini')
+        self.assertEqual(errors, [])
+
     def test_metadata_bad_syntax(self):
         (error, ) = self._check_metadata("""\
             [test.html]
@@ -101,7 +116,36 @@ class LintWPTTest(LoggingTestCase):
         self.assertEqual(name, 'META-BAD-SYNTAX')
         self.assertEqual(path, 'test.html.ini')
         self.assertEqual(
-            'WPT metadata file could not be parsed: Junk before EOL u',
-            description)
+            description,
+            'WPT metadata file could not be parsed: Junk before EOL u')
         # Note the 1-indexed convention.
         self.assertEqual(line, 2)
+
+    def test_metadata_unsorted_sections(self):
+        out_of_order_tests, out_of_order_subtests = self._check_metadata(
+            """\
+            [variant.html?foo=baz]
+              expected: TIMEOUT
+              [subtest 2]
+                expected: NOTRUN
+              [subtest 1]
+                expected: TIMEOUT
+
+            [variant.html?foo=bar/abc]
+              expected: TIMEOUT
+            """, 'variant.html.ini')
+        name, description, path, line = out_of_order_tests
+        self.assertEqual(name, 'META-UNSORTED-SECTION')
+        self.assertEqual(path, 'variant.html.ini')
+        self.assertEqual(
+            description,
+            'Section contains unsorted keys or subsection headings: '
+            "'[variant.html?foo=bar/abc]' should precede "
+            "'[variant.html?foo=baz]'")
+        name, description, path, line = out_of_order_subtests
+        self.assertEqual(name, 'META-UNSORTED-SECTION')
+        self.assertEqual(path, 'variant.html.ini')
+        self.assertEqual(
+            description,
+            'Section contains unsorted keys or subsection headings: '
+            "'[subtest 1]' should precede '[subtest 2]'")

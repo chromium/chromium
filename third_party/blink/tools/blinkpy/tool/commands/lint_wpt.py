@@ -7,7 +7,7 @@ import argparse
 import io
 import logging
 import optparse
-from typing import List, Optional, Tuple
+from typing import Iterator, List, Optional, Tuple
 
 from blinkpy.common import path_finder
 from blinkpy.common.host import Host
@@ -17,6 +17,7 @@ path_finder.bootstrap_wpt_imports()
 from tools.lint import lint as wptlint
 from tools.lint import rules
 from wptrunner import wptmanifest
+from wptrunner.wptmanifest import node as wptnode
 
 _log = logging.getLogger(__name__)
 
@@ -34,6 +35,17 @@ class MetadataBadSyntax(MetadataRule):
 
     A common pitfall is an unescaped ']' in the section heading, which you can
     escape with a backslash '\'.
+    """
+
+
+class MetadataUnsortedSection(MetadataRule):
+    name = 'META-UNSORTED-SECTION'
+    description = ('Section contains unsorted keys or subsection headings: '
+                   '%(predecessor)r should precede %(successor)r')
+    to_fix = """
+    Within a block (indentation level), all keys must precede all headings, and
+    keys must be sorted lexographically amongst themselves (and likewise for
+    headings).
     """
 
 
@@ -91,8 +103,37 @@ class LintWPT(Command):
         except wptmanifest.parser.ParseError as error:
             context = {'detail': error.detail}
             return [MetadataBadSyntax.error(path, context, error.line)]
-        # TODO(crbug.com/1406669): Implement remaining rules.
-        return []
+        errors = []
+        for check in [
+                self._check_metadata_sorted,
+                # TODO(crbug.com/1406669): Implement remaining rules.
+        ]:
+            errors.extend(check(path, ast))
+        return errors
+
+    def _check_metadata_sorted(self, path: str,
+                               node: wptnode.Node) -> Iterator[LintError]:
+        if not isinstance(node, wptnode.DataNode):
+            return
+        sort_key = lambda child: (isinstance(child, wptnode.DataNode), child.
+                                  data or '')
+        sorted_children = sorted(node.children, key=sort_key)
+        for child, sorted_child in zip(node.children, sorted_children):
+            if child is not sorted_child:
+                # The original line numbers are lost after parsing, and
+                # attempting to rediscover them with diffing seems fragile and
+                # potentially inaccurate. Therefore, instead of reporting a line
+                # number, show the exact contents of the first pair of
+                # out-of-order lines. This is probably more helpful anyway.
+                context = {
+                    'predecessor': _format_node(sorted_child),
+                    'successor': _format_node(child),
+                }
+                yield MetadataUnsortedSection.error(path, context)
+                # Only report one error per block to avoid spam.
+                break
+        for child in node.children:
+            yield from self._check_metadata_sorted(path, child)
 
     def _is_metadata_file(self, repo_root: str, path: str) -> bool:
         test_path, extension = self._fs.splitext(path)
@@ -100,3 +141,7 @@ class LintWPT(Command):
             self._fs.relpath(repo_root, self._finder.path_from_web_tests()))
         manifest = self._default_port.wpt_manifest(wpt_dir)
         return extension == '.ini' and manifest.is_test_file(test_path)
+
+
+def _format_node(node: wptnode.Node) -> str:
+    return wptmanifest.serialize(node).splitlines()[0].strip()
