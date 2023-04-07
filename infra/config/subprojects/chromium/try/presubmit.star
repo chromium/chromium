@@ -18,8 +18,6 @@ try_.defaults.set(
     execution_timeout = 15 * time.minute,
     main_list_view = "try",
 
-    # TODO(crbug.com/1362440): remove this.
-    omit_python2 = False,
     # Default priority for buildbucket is 30, see
     # https://chromium.googlesource.com/infra/infra/+/bb68e62b4380ede486f65cd32d9ff3f1bbe288e4/appengine/cr-buildbucket/creation.py#42
     # This will improve our turnaround time for landing infra/config changes

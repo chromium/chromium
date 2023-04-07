@@ -424,10 +424,6 @@ defaults = args.defaults(
     reclient_disable_bq_upload = None,
     health_spec = None,
 
-    # This is to enable luci.buildbucket.omit_python2 experiment.
-    # TODO(crbug.com/1362440): remove this after enabling this in all builders.
-    omit_python2 = True,
-
     # Provide vars for bucket and executable so users don't have to
     # unnecessarily make wrapper functions
     bucket = args.COMPUTE,
@@ -490,7 +486,6 @@ def builder(
         reclient_cache_silo = None,
         reclient_ensure_verified = None,
         reclient_disable_bq_upload = None,
-        omit_python2 = args.DEFAULT,
         health_spec = args.DEFAULT,
         **kwargs):
     """Define a builder.
@@ -673,9 +668,6 @@ def builder(
             effect if reclient_instance is not set.
         reclient_disable_bq_upload: If True, rbe_metrics will not be uploaded to
             BigQuery after each build
-        omit_python2: If True, set luci.buildbucket.omit_python2 experiment.
-            TODO(crbug.com/1362440): remove this after enabling this in all
-            builders.
         **kwargs: Additional keyword arguments to forward on to `luci.builder`.
 
     Returns:
@@ -856,11 +848,6 @@ def builder(
         kwargs["triggered_by"] = triggered_by
 
     experiments = kwargs.pop("experiments", None) or {}
-
-    # TODO: remove this after this experiment is removed from
-    # cr-buildbucket/settings.cfg (http://shortn/_cz2s9ql61X).
-    if not defaults.get_value("omit_python2", omit_python2):
-        experiments["luci.buildbucket.omit_python2"] = 0
 
     builder = branches.builder(
         name = name,
