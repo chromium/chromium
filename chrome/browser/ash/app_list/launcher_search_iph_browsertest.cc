@@ -26,6 +26,7 @@
 #include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/test/gtest_tags.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
@@ -44,6 +45,11 @@
 #include "ui/views/view_observer.h"
 
 namespace {
+
+constexpr char kScreenPlayTagName[] = "feature_id";
+constexpr char kScreenPlayTagValue[] =
+    "screenplay-3adcce6b-a470-48b0-9246-f6570c5cef34";
+
 class ViewWaiter : public views::ViewObserver {
  public:
   ViewWaiter(raw_ptr<views::View> observed_view, int view_id)
@@ -113,6 +119,8 @@ class AppListIphBrowserTest : public MixinBasedInProcessBrowserTest,
 
     app_list_client_impl_ = AppListClientImpl::GetInstance();
     app_list_client_impl_->UpdateProfile();
+
+    base::AddTagToTestResult(kScreenPlayTagName, kScreenPlayTagValue);
 
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
   }
