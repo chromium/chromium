@@ -30,6 +30,7 @@ ts_library("build_ts") {
     "input_key_test.ts",
     "router_test.ts",
     "search_box_test.ts",
+    "search_result_bolding_test.ts",
     "search_result_row_test.ts",
     "shortcut_customization_test.ts",
     "shortcut_customization_test_util.ts",
