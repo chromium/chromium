@@ -565,6 +565,36 @@ std::vector<std::string> DIPSDatabase::GetSitesThatBounced() {
   return sites;
 }
 
+std::set<std::string> DIPSDatabase::FilterSitesWithInteraction(
+    const std::set<std::string>& sites) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!CheckDBInit()) {
+    return {};
+  }
+  ClearRowsWithExpiredInteractions();
+  sql::Statement s_interactions(db_->GetUniqueStatement(
+      base::StrCat({"SELECT site,last_user_interaction_time FROM bounces "
+                    "WHERE site IN(",
+                    base::JoinString(
+                        std::vector<base::StringPiece>(sites.size(), "?"), ","),
+                    ")"})
+          .c_str()));
+
+  int i = 0;
+  for (const auto& site : sites) {
+    s_interactions.BindString(i, site);
+    i++;
+  }
+
+  std::set<std::string> interacted_sites;
+  while (s_interactions.Step()) {
+    if (ColumnOptionalTime(&s_interactions, 1).has_value()) {
+      interacted_sites.insert(s_interactions.ColumnString(0));
+    }
+  }
+  return interacted_sites;
+}
+
 std::vector<std::string> DIPSDatabase::GetSitesThatBouncedWithState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CheckDBInit()) {
@@ -658,11 +688,11 @@ bool DIPSDatabase::RemoveRows(const std::vector<std::string>& sites) {
   }
 
   sql::Statement s_remove_rows(db_->GetUniqueStatement(
-      base::StrCat(
-          {"DELETE FROM bounces "
-           "WHERE site IN(",
-           base::JoinString(std::vector<std::string>(sites.size(), "?"), ","),
-           ")"})
+      base::StrCat({"DELETE FROM bounces "
+                    "WHERE site IN(",
+                    base::JoinString(
+                        std::vector<base::StringPiece>(sites.size(), "?"), ","),
+                    ")"})
           .c_str()));
 
   for (size_t i = 0; i < sites.size(); i++) {
@@ -985,7 +1015,7 @@ bool DIPSDatabase::ClearTimestampsBySite(bool preserve,
     return true;
 
   std::string placeholders =
-      base::JoinString(std::vector<std::string>(sites.size(), "?"), ",");
+      base::JoinString(std::vector<base::StringPiece>(sites.size(), "?"), ",");
 
   if ((type & DIPSEventRemovalType::kStorage) ==
       DIPSEventRemovalType::kStorage) {

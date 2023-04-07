@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/bind.h"
 #include "chrome/browser/dips/dips_bounce_detector.h"
 
 #include "base/files/file_path.h"
@@ -10,6 +11,8 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/dips/dips_service.h"
+#include "chrome/browser/dips/dips_service_factory.h"
 #include "chrome/browser/dips/dips_test_utils.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -18,6 +21,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -25,6 +29,7 @@
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/metrics_proto/ukm/source.pb.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -67,6 +72,12 @@ void AppendRedirects(std::vector<std::string>* vec,
   for (const auto& redirect : redirects) {
     AppendRedirect(vec, *redirect, *chain);
   }
+}
+
+void AppendSitesInReport(std::vector<std::string>* reports,
+                         const std::set<std::string>& sites) {
+  reports->push_back(base::JoinString(
+      std::vector<base::StringPiece>(sites.begin(), sites.end()), ", "));
 }
 
 }  // namespace
@@ -163,6 +174,11 @@ class DIPSBounceDetectorBrowserTest : public PlatformBrowserTest {
         });
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Prevents flakiness by handling clicks even before content is drawn.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
+  }
+
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->Start());
     host_resolver()->AddRule("a.test", "127.0.0.1");
@@ -184,6 +200,41 @@ class DIPSBounceDetectorBrowserTest : public PlatformBrowserTest {
   void StartAppendingRedirectsTo(std::vector<std::string>* redirects) {
     web_contents_observer_->SetRedirectChainHandlerForTesting(
         base::BindRepeating(&AppendRedirects, redirects));
+  }
+
+  void StartAppendingReportsTo(std::vector<std::string>* reports) {
+    web_contents_observer_->SetIssueReportingCallbackForTesting(
+        base::BindRepeating(&AppendSitesInReport, reports));
+  }
+
+  void BlockUntilHelperProcessesPendingRequests() {
+    base::SequenceBound<DIPSStorage>* storage =
+        DIPSServiceFactory::GetForBrowserContext(
+            GetActiveWebContents()->GetBrowserContext())
+            ->storage();
+    storage->FlushPostedTasksForTesting();
+  }
+
+  void StateForURL(const GURL& url, StateForURLCallback callback) {
+    DIPSService* dips_service = DIPSServiceFactory::GetForBrowserContext(
+        GetActiveWebContents()->GetBrowserContext());
+    dips_service->storage()
+        ->AsyncCall(&DIPSStorage::Read)
+        .WithArgs(url)
+        .Then(std::move(callback));
+  }
+
+  absl::optional<StateValue> GetDIPSState(const GURL& url) {
+    absl::optional<StateValue> state;
+
+    StateForURL(url, base::BindLambdaForTesting([&](DIPSState loaded_state) {
+                  if (loaded_state.was_loaded()) {
+                    state = loaded_state.ToStateValue();
+                  }
+                }));
+    BlockUntilHelperProcessesPendingRequests();
+
+    return state;
   }
 
   // Navigate to /set-cookie on `host` and wait for OnCookiesAccessed() to be
@@ -375,6 +426,60 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   // b.test had a stateful redirect, but because it was in an iframe, we ignored
   // it.
   EXPECT_THAT(redirects, IsEmpty());
+}
+
+// This test verifies that sites in a redirect chain with previous user
+// interaction are not reported in the resulting issue when a navigation
+// finishes.
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
+                       ReportRedirectorsInChain_OmitSitesWithInteraction) {
+  WebContents* web_contents = GetActiveWebContents();
+
+  std::vector<std::string> reports;
+  StartAppendingReportsTo(&reports);
+
+  // Record user activation on d.test.
+  GURL url = embedded_test_server()->GetURL("d.test", "/title1.html");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents, url));
+  UserActivationObserver observer(web_contents,
+                                  web_contents->GetPrimaryMainFrame());
+  content::WaitForHitTestData(web_contents->GetPrimaryMainFrame());
+  SimulateMouseClick(web_contents, 0, blink::WebMouseEvent::Button::kLeft);
+  observer.Wait();
+
+  // Verify interaction was recorded for d.test, before proceeding.
+  absl::optional<StateValue> state = GetDIPSState(url);
+  ASSERT_TRUE(state.has_value());
+  ASSERT_TRUE(state->user_interaction_times.has_value());
+
+  // Visit initial page on a.test.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents, embedded_test_server()->GetURL("a.test", "/title1.html")));
+
+  // Navigate with a click (not a redirect) to b.test, which S-redirects to
+  // c.test.
+  ASSERT_TRUE(content::NavigateToURLFromRenderer(
+      web_contents,
+      embedded_test_server()->GetURL("b.test",
+                                     "/cross-site/c.test/title1.html"),
+      embedded_test_server()->GetURL("c.test", "/title1.html")));
+
+  // Navigate without a click (i.e. by C-redirecting) to d.test.
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, embedded_test_server()->GetURL("d.test", "/title1.html")));
+
+  // Navigate without a click (i.e. by C-redirecting) to e.test, which
+  // S-redirects to f.test, which S-redirects to g.test.
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents,
+      embedded_test_server()->GetURL(
+          "e.test", "/cross-site/f.test/cross-site/g.test/title1.html"),
+      embedded_test_server()->GetURL("g.test", "/title1.html")));
+  EndRedirectChain();
+  BlockUntilHelperProcessesPendingRequests();
+
+  EXPECT_THAT(reports, ElementsAre(("b.test"), ("c.test"), ("e.test, f.test")));
 }
 
 // This test verifies that a third-party cookie access doesn't cause a client

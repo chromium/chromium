@@ -59,6 +59,10 @@ class DIPSDatabase {
   // other database querying methods.
   std::vector<std::string> GetAllSitesForTesting();
 
+  // Returns the subset of sites in |sites| WITH user interaction recorded.
+  std::set<std::string> FilterSitesWithInteraction(
+      const std::set<std::string>& sites);
+
   // Returns all sites which bounced the user and aren't protected from DIPS.
   //
   // A site can be protected in several ways:

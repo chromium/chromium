@@ -144,6 +144,7 @@ void DIPSStorage::RemoveEvents(base::Time delete_begin,
 
 void DIPSStorage::RemoveRows(const std::vector<std::string>& sites) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(db_);
 
   db_->RemoveRows(sites);
 }
@@ -195,6 +196,23 @@ void DIPSStorage::RecordBounce(const GURL& url,
   if (stateful) {
     state.update_stateful_bounce_time(time);
   }
+}
+
+std::set<std::string> DIPSStorage::FilterSitesWithoutInteraction(
+    std::set<std::string> sites) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(db_);
+
+  std::set<std::string> interacted_sites =
+      db_->FilterSitesWithInteraction(sites);
+
+  for (const auto& site : interacted_sites) {
+    if (sites.count(site)) {
+      sites.erase(site);
+    }
+  }
+
+  return sites;
 }
 
 std::vector<std::string> DIPSStorage::GetSitesThatBounced() const {
