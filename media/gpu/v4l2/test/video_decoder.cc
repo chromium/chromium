@@ -104,7 +104,7 @@ void VideoDecoder::NegotiateCAPTUREFormat() {
       << fmt.fmt.pix_mp.num_planes;
 }
 
-void VideoDecoder::Initialize() {
+void VideoDecoder::Initialize(bool resolution_changed) {
   // TODO(stevecho): remove VIDIOC_ENUM_FRAMESIZES ioctl call
   //   after b/193237015 is resolved.
   if (!v4l2_ioctl_->EnumFrameSizes(OUTPUT_queue_->fourcc()))
@@ -120,7 +120,7 @@ void VideoDecoder::Initialize() {
 
   // If there is a dynamic resolution change, the Initialization sequence will
   // be performed again, minus the allocation of OUTPUT queue buffers.
-  if (IsResolutionChanged()) {
+  if (resolution_changed) {
     v4l2_ioctl_->ReqBufsWithCount(CAPTURE_queue_,
                                   number_of_buffers_in_capture_queue_);
   } else {
@@ -146,7 +146,7 @@ void VideoDecoder::Initialize() {
 
 // Follows the dynamic resolution change sequence described in
 // https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/dev-stateless-decoder.html#dynamic-resolution-change
-VideoDecoder::Result VideoDecoder::HandleDynamicResolutionChange(
+void VideoDecoder::HandleDynamicResolutionChange(
     const gfx::Size& new_resolution) {
   // Call VIDIOC_STREAMOFF() on both the OUTPUT and CAPTURE queues.
   v4l2_ioctl_->StreamOff(OUTPUT_queue_->type());
@@ -164,10 +164,7 @@ VideoDecoder::Result VideoDecoder::HandleDynamicResolutionChange(
   OUTPUT_queue_->set_resolution(new_resolution);
 
   // Perform the initialization sequence again
-  Initialize();
-  is_resolution_changed_ = false;
-
-  return VideoDecoder::kOk;
+  Initialize(/* resolution_changed*/ true);
 }
 
 void VideoDecoder::ConvertToYUV(std::vector<uint8_t>& dest_y,

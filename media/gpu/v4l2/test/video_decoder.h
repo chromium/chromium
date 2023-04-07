@@ -43,7 +43,7 @@ class VideoDecoder {
 
   // Initializes setup needed for decoding.
   // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/dev-stateless-decoder.html#initialization
-  void Initialize();
+  void Initialize(bool is_resolution_changed = false);
 
   virtual Result DecodeNextFrame(std::vector<uint8_t>& y_plane,
                                  std::vector<uint8_t>& u_plane,
@@ -53,14 +53,10 @@ class VideoDecoder {
 
   // Handles dynamic resolution change with new resolution parsed from frame
   // header.
-  VideoDecoder::Result HandleDynamicResolutionChange(
-      const gfx::Size& new_resolution);
+  void HandleDynamicResolutionChange(const gfx::Size& new_resolution);
 
   // Returns whether the last decoded frame was visible.
   bool LastDecodedFrameVisible() const { return last_decoded_frame_visible_; }
-
-  // Returns whether there is a dynamic resolution change.
-  bool IsResolutionChanged() const { return is_resolution_changed_; }
 
   // Converts raw YUV of decoded frame data to PNG.
   static std::vector<uint8_t> ConvertYUVToPNG(uint8_t* y_plane,
@@ -91,9 +87,6 @@ class VideoDecoder {
 
   // Whether the last decoded frame was visible.
   bool last_decoded_frame_visible_ = false;
-
-  // Whether there is a dynamic support change.
-  bool is_resolution_changed_ = false;
 
   // Number of buffers in CAPTURE queue varied by different codecs.
   uint32_t number_of_buffers_in_capture_queue_;

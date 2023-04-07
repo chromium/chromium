@@ -551,21 +551,18 @@ VideoDecoder::Result Vp8Decoder::DecodeNextFrame(std::vector<uint8_t>& y_plane,
       break;
   }
 
-  if (frame_hdr.IsKeyframe()) {
-    is_resolution_changed_ =
-        frame_hdr.width != OUTPUT_queue_->resolution().width() ||
-        frame_hdr.height != OUTPUT_queue_->resolution().height();
-  } else {
-    frame_hdr.width = OUTPUT_queue_->resolution().width();
-    frame_hdr.height = OUTPUT_queue_->resolution().height();
-  }
-
-  if (IsResolutionChanged()) {
+  const bool resolution_changed =
+      frame_hdr.width != OUTPUT_queue_->resolution().width() ||
+      frame_hdr.height != OUTPUT_queue_->resolution().height();
+  if (frame_hdr.IsKeyframe() && resolution_changed) {
     const gfx::Size new_resolution(frame_hdr.width, frame_hdr.height);
     LOG_ASSERT(!new_resolution.IsEmpty())
         << "New key frame resolution is empty.";
 
     HandleDynamicResolutionChange(new_resolution);
+  } else {
+    frame_hdr.width = OUTPUT_queue_->resolution().width();
+    frame_hdr.height = OUTPUT_queue_->resolution().height();
   }
 
   VLOG_IF(2, !frame_hdr.show_frame) << "Not displaying frame";
