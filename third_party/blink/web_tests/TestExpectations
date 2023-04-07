@@ -6662,7 +6662,6 @@ crbug.com/1412866 http/tests/inspector-protocol/tracing/advanced-painting-instru
 # Sheriff 2023-02-14
 crbug.com/1414978 external/wpt/webrtc/RTCPeerConnection-GC.https.html [ Failure Pass ]
 crbug.com/1417178 [ Linux ] external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/same-document-traversal-cross-document-nav.html [ Failure Pass ]
-crbug.com/1416271 [ Linux ] external/wpt/js-self-profiling/time-domain.window.html [ Failure Pass ]
 
 # By default, WPTs run with "RTCLegacyCallbackBasedGetStats" enabled, which
 # suppresses the warning that is expected in this test causing it to timeout.
@@ -6704,3 +6703,9 @@ crbug.com/1362106 [ Linux ] media/video-source-error-no-candidate.html [ Failure
 crbug.com/1362106 [ Linux ] media/video-source.html [ Failure Pass ]
 crbug.com/1430215 external/wpt/dom/events/scrolling/overscroll-deltas.html [ Failure Pass ]
 crbug.com/1431085 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-source-media.html [ Failure Pass ]
+
+# Sheriff 2023-04-07
+crbug.com/1431236 external/wpt/long-animation-frame/tentative/loaf-user-callback.html [ Failure Pass ]
+crbug.com/1416265 external/wpt/js-self-profiling/class-names.https.html [ Crash Pass ]
+crbug.com/1416265 external/wpt/js-self-profiling/cross-origin-script-no-cors.sub.html [ Crash Pass ]
+crbug.com/1416271 external/wpt/js-self-profiling/time-domain.window.html [ Crash Failure Pass ]
