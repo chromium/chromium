@@ -15,6 +15,7 @@ import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
@@ -24,6 +25,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityManager;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -268,7 +271,32 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
         PartialCustomTabHandleStrategy handleStrategy = mHandleStrategyFactory.create(
                 getStrategyType(), mActivity, this::isFullHeight, () -> mStatus, this);
         toolbar.setHandleStrategy(handleStrategy);
+        var dragBar = (CustomTabDragBar) mActivity.findViewById(R.id.drag_bar);
+        dragBar.setHandleStrategy(handleStrategy);
+        View dragHandle = mActivity.findViewById(R.id.drag_handle);
+        dragHandle.setOnClickListener(v -> onDragBarTapped());
+
         updateDragBarVisibility();
+    }
+
+    private void onDragBarTapped() {
+        if (mStatus == HeightStatus.TRANSITION) {
+            mStatus = mTabAnimator.getTargetStatus();
+            mTabAnimator.cancel();
+        }
+        int newStatus;
+        switch (mStatus) {
+            case HeightStatus.INITIAL_HEIGHT:
+                newStatus = HeightStatus.TOP;
+                break;
+            case HeightStatus.TOP:
+                newStatus = HeightStatus.INITIAL_HEIGHT;
+                break;
+            default:
+                assert false : "Invalid height status: " + mStatus;
+                newStatus = HeightStatus.INITIAL_HEIGHT;
+        }
+        animateTabTo(newStatus, false);
     }
 
     // ConfigurationChangedObserver implementation.
@@ -328,7 +356,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
         // that has the rounded corner.
         getDragBarBackground().setColor(color);
 
-        ImageView handle = (ImageView) mActivity.findViewById(R.id.drag_handlebar);
+        ImageView handle = (ImageView) mActivity.findViewById(R.id.drag_handle);
         int handleColor = mActivity.getColor(R.color.drag_handlebar_color_baseline);
         if (scrimFraction > 0.f) {
             handle.setColorFilter(ColorUtils.getColorWithOverlay(
@@ -615,6 +643,16 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
             mSoftKeyboardRunnable.run();
             mSoftKeyboardRunnable = null;
             mVersionCompat.setImeStateCallback(this::onImeStateChanged);
+        }
+
+        var am = (AccessibilityManager) mActivity.getSystemService(Context.ACCESSIBILITY_SERVICE);
+        if (am != null && am.isTouchExplorationEnabled()) {
+            int textId = mStatus == HeightStatus.TOP ? R.string.accessibility_custom_tab_expanded
+                                                     : R.string.accessibility_custom_tab_collapsed;
+            var event = AccessibilityEvent.obtain();
+            event.setEventType(AccessibilityEvent.TYPE_ANNOUNCEMENT);
+            event.getText().add(mActivity.getResources().getString(textId));
+            am.sendAccessibilityEvent(event);
         }
     }
 
@@ -932,6 +970,10 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
 
         private boolean wasAutoResized() {
             return mAutoResize;
+        }
+
+        private void cancel() {
+            mAnimator.cancel();
         }
     }
 }

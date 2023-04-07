@@ -12,18 +12,25 @@ found in the LICENSE file.
     android:layout_height="match_parent"
     android:background="@drawable/custom_tabs_handle_view_shape"
     tools:ignore="UselessParent">
-    <FrameLayout
+    <org.chromium.chrome.browser.customtabs.features.partialcustomtab.CustomTabDragBar
         android:id="@+id/drag_bar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/custom_tabs_handle_height"
+        android:importantForAccessibility="no"
         android:background="@drawable/custom_tabs_handle_view_shape">
-        <ImageView
-            android:id="@+id/drag_handlebar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
-            android:importantForAccessibility="no"
-            android:src="@drawable/drag_handlebar"
-            android:tint="@macro/drag_handlebar_color" />
-    </FrameLayout>
+    </org.chromium.chrome.browser.customtabs.features.partialcustomtab.CustomTabDragBar>
+    <ImageView
+        android:id="@+id/drag_handle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center_horizontal"
+        android:clickable="true"
+        android:focusable="true"
+        android:src="@drawable/drag_handlebar"
+        android:paddingTop="@dimen/custom_tabs_drag_handle_padding_top"
+        android:paddingBottom="@dimen/custom_tabs_drag_handle_padding_bottom"
+        android:paddingStart="@dimen/custom_tabs_drag_handle_padding_side"
+        android:paddingEnd="@dimen/custom_tabs_drag_handle_padding_side"
+        android:contentDescription="@string/accessibility_custom_tab_drag_handle"
+        android:tint="@macro/drag_handlebar_color" />
 </FrameLayout>

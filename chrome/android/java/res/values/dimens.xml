@@ -226,6 +226,9 @@ found in the LICENSE file.
     <dimen name="bookmark_widget_min_height">48dp</dimen>
 
     <!-- Custom Tabs dimensions -->
+    <dimen name="custom_tabs_drag_handle_padding_top">12dp</dimen>
+    <dimen name="custom_tabs_drag_handle_padding_bottom">32dp</dimen>
+    <dimen name="custom_tabs_drag_handle_padding_side">4dp</dimen>
     <dimen name="custom_tabs_toolbar_maxWidth">60dp</dimen>
     <dimen name="custom_tabs_toolbar_vertical_padding">16dp</dimen>
     <dimen name="custom_tabs_toolbar_horizontal_margin_no_start">8dp</dimen>

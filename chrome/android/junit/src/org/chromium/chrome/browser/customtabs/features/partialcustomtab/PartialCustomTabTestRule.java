@@ -132,7 +132,7 @@ public class PartialCustomTabTestRule implements TestRule {
     @Mock
     View mToolbarCoordinator;
     @Mock
-    View mDragBar;
+    CustomTabDragBar mDragBar;
     @Mock
     View mDragHandlebar;
     @Mock
@@ -170,7 +170,7 @@ public class PartialCustomTabTestRule implements TestRule {
         when(mActivity.findViewById(R.id.custom_tabs_handle_view_stub)).thenReturn(mHandleViewStub);
         when(mActivity.findViewById(R.id.custom_tabs_handle_view)).thenReturn(mHandleView);
         when(mActivity.findViewById(R.id.drag_bar)).thenReturn(mDragBar);
-        when(mActivity.findViewById(R.id.drag_handlebar)).thenReturn(mDragHandlebar);
+        when(mActivity.findViewById(R.id.drag_handle)).thenReturn(mDragHandlebar);
         mAttributes = new WindowManager.LayoutParams();
         when(mWindow.getAttributes()).thenReturn(mAttributes);
         when(mWindow.getDecorView()).thenReturn(mDecorView);

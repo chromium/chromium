@@ -326,7 +326,7 @@ public abstract class PartialCustomTabBaseStrategy
         View dragBar = mActivity.findViewById(R.id.drag_bar);
         if (dragBar != null) dragBar.setVisibility(isFullHeight() ? View.GONE : View.VISIBLE);
 
-        View dragHandlebar = mActivity.findViewById(R.id.drag_handlebar);
+        View dragHandlebar = mActivity.findViewById(R.id.drag_handle);
         if (dragHandlebar != null) {
             dragHandlebar.setVisibility(dragHandlebarVisibility);
         }
