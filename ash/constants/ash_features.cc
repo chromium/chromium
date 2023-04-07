@@ -779,6 +779,10 @@ const base::FeatureParam<EolIncentiveParam> kEolIncentiveParam{
     &kEolIncentive, "incentive_type", EolIncentiveParam::kNoOffer,
     &eol_incentive_options};
 
+BASE_FEATURE(kEolIncentiveSettings,
+             "EolIncentiveSettings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable or disable support for touchpad with haptic feedback.
 BASE_FEATURE(kExoHapticFeedbackSupport,
              "ExoHapticFeedbackSupport",
