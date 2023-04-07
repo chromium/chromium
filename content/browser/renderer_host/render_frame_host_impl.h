@@ -1872,8 +1872,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
     // This will reduce the feature count for |feature_| for the first time, and
     // do nothing for further calls.
     inline void reset() {
-      if (render_frame_host_)
+      if (render_frame_host_) {
         render_frame_host_->OnBackForwardCacheDisablingFeatureRemoved(feature_);
+      }
       render_frame_host_ = nullptr;
     }
 
@@ -2893,13 +2894,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // last committed document.
   CookieChangeListener::CookieChangeInfo GetCookieChangeInfo();
 
-  // Sets a ResourceCache in the renderer. `remote` must have the same process
+  // Sets a ResourceCache in the renderer. `this` must be active and there must
+  // be no pending navigation. `remote` must have the same and process
   // isolation policy.
-  // TODO(https://crbug.com/1414262): Add checks to ensure the preconditions.
-  void SetResourceCache(
-      mojo::PendingRemote<blink::mojom::ResourceCache> remote);
-
-  void FlushMojomFrameRemoteForTesting();
+  void SetResourceCacheRemote(
+      mojo::PendingRemote<blink::mojom::ResourceCache> pending_remote);
 
  protected:
   friend class RenderFrameHostFactory;
@@ -2952,6 +2951,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
           topics_loader_factory,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           keep_alive_loader_factory,
+      mojo::PendingRemote<blink::mojom::ResourceCache> resource_cache_remote,
       const absl::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
       blink::mojom::PolicyContainerPtr policy_container,
       const blink::DocumentToken& document_token,

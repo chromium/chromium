@@ -3485,9 +3485,14 @@ void LocalFrame::ScheduleNextServiceForScrollSnapshotClients() {
   }
 }
 
-void LocalFrame::SetResourceCacheImpl(ResourceCacheImpl* resource_cache) {
-  DCHECK(!resource_cache_);
-  resource_cache_ = resource_cache;
+void LocalFrame::BindResourceCache(
+    mojo::PendingReceiver<mojom::blink::ResourceCache> receiver) {
+  if (resource_cache_) {
+    resource_cache_->AddReceiver(std::move(receiver));
+  } else {
+    resource_cache_ =
+        MakeGarbageCollected<ResourceCacheImpl>(this, std::move(receiver));
+  }
 }
 
 void LocalFrame::SetResourceCacheRemote(

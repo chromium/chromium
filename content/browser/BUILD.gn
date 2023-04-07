@@ -1211,6 +1211,8 @@ source_set("browser") {
     "loader/prefetch_url_loader.h",
     "loader/prefetch_url_loader_service.cc",
     "loader/prefetch_url_loader_service.h",
+    "loader/resource_cache_manager.cc",
+    "loader/resource_cache_manager.h",
     "loader/shared_cors_origin_access_list_impl.cc",
     "loader/shared_cors_origin_access_list_impl.h",
     "loader/url_loader_throttles.cc",

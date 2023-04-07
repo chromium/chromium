@@ -79,6 +79,7 @@
 #include "content/browser/loader/keep_alive_url_loader_service.h"
 #include "content/browser/loader/navigation_early_hints_manager.h"
 #include "content/browser/loader/prefetch_url_loader_service.h"
+#include "content/browser/loader/resource_cache_manager.h"
 #include "content/browser/log_console_message.h"
 #include "content/browser/media/media_interface_proxy.h"
 #include "content/browser/media/webaudio/audio_context_manager_impl.h"
@@ -1807,6 +1808,12 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   // its RenderViewHost.
   if (owned_render_widget_host_)
     owned_render_widget_host_->ShutdownAndDestroyWidget(false);
+
+  ResourceCacheManager* resource_cache_manager =
+      GetStoragePartition()->GetResourceCacheManager();
+  if (resource_cache_manager) {
+    resource_cache_manager->RenderFrameHostDeleted(*this);
+  }
 
   render_view_host_.reset();
 
@@ -9502,6 +9509,7 @@ void RenderFrameHostImpl::CommitNavigation(
 
   std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
       subresource_loader_factories;
+  mojo::PendingRemote<blink::mojom::ResourceCache> resource_cache_remote;
   if (!is_same_document || is_first_navigation) {
     recreate_default_url_loader_factory_after_network_service_crash_ = false;
     subresource_loader_factories =
@@ -9669,6 +9677,14 @@ void RenderFrameHostImpl::CommitNavigation(
         CreateURLLoaderFactoriesForIsolatedWorlds(
             subresource_loader_factories_config,
             isolated_worlds_requiring_separate_url_loader_factory_);
+
+    ResourceCacheManager* resource_cache_manager =
+        partition->GetResourceCacheManager();
+    if (resource_cache_manager) {
+      resource_cache_manager
+          ->MaybeInitializeResourceCacheRemoteOnCommitNavigation(
+              resource_cache_remote, *navigation_request);
+    }
   }
 
   // It is imperative that cross-document navigations always provide a set of
@@ -9869,7 +9885,8 @@ void RenderFrameHostImpl::CommitNavigation(
         std::move(subresource_overrides), std::move(controller),
         std::move(container_info), std::move(prefetch_loader_factory),
         std::move(topics_loader_factory), std::move(keep_alive_loader_factory),
-        manifest_policy, std::move(policy_container), *document_token,
+        std::move(resource_cache_remote), manifest_policy,
+        std::move(policy_container), *document_token,
         devtools_navigation_token);
     navigation_request->frame_tree_node()
         ->navigator()
@@ -12836,6 +12853,7 @@ void RenderFrameHostImpl::SendCommitNavigation(
     mojo::PendingRemote<network::mojom::URLLoaderFactory> topics_loader_factory,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         keep_alive_loader_factory,
+    mojo::PendingRemote<blink::mojom::ResourceCache> resource_cache_remote,
     const absl::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
     blink::mojom::PolicyContainerPtr policy_container,
     const blink::DocumentToken& document_token,
@@ -12947,7 +12965,8 @@ void RenderFrameHostImpl::SendCommitNavigation(
       std::move(keep_alive_loader_factory), document_token,
       devtools_navigation_token, permissions_policy,
       std::move(policy_container), std::move(code_cache_host),
-      std::move(cookie_manager_info), std::move(storage_info),
+      std::move(resource_cache_remote), std::move(cookie_manager_info),
+      std::move(storage_info),
       BuildCommitNavigationCallback(navigation_request));
   base::UmaHistogramTimes(
       base::StrCat({"Navigation.SendCommitNavigationTime.",
@@ -15066,14 +15085,9 @@ bool RenderFrameHostImpl::GetIsThirdPartyCookiesUserBypassEnabled() {
   return read_context.IsThirdPartyCookiesUserBypassEnabled();
 }
 
-void RenderFrameHostImpl::SetResourceCache(
-    mojo::PendingRemote<blink::mojom::ResourceCache> remote) {
-  GetMojomFrameInRenderer()->SetResourceCache(std::move(remote));
-}
-
-void RenderFrameHostImpl::FlushMojomFrameRemoteForTesting() {
-  DCHECK(frame_);
-  frame_.FlushForTesting();  // IN-TEST
+void RenderFrameHostImpl::SetResourceCacheRemote(
+    mojo::PendingRemote<blink::mojom::ResourceCache> pending_remote) {
+  GetMojomFrameInRenderer()->SetResourceCache(std::move(pending_remote));
 }
 
 }  // namespace content

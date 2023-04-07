@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RESOURCE_CACHE_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RESOURCE_CACHE_IMPL_H_
 
-#include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/loader/resource_cache.mojom-blink.h"
@@ -26,9 +25,10 @@ class CORE_EXPORT ResourceCacheImpl final
   static void Bind(LocalFrame*,
                    mojo::PendingReceiver<mojom::blink::ResourceCache>);
 
-  ResourceCacheImpl(base::PassKey<ResourceCacheImpl>,
-                    LocalFrame*,
+  ResourceCacheImpl(LocalFrame*,
                     mojo::PendingReceiver<mojom::blink::ResourceCache>);
+
+  void AddReceiver(mojo::PendingReceiver<mojom::blink::ResourceCache>);
 
   void Trace(Visitor*) const;
 
