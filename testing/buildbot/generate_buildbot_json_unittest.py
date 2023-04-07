@@ -3075,7 +3075,6 @@ TEST_QUERY_BOTS_OUTPUT = {
       {
         "test": "foo_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -3093,7 +3092,6 @@ TEST_QUERY_BOTS_OUTPUT = {
           "--recover-devices"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -3120,7 +3118,6 @@ TEST_QUERY_BOTS_OUTPUT = {
           "--recover-devices"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -3153,7 +3150,6 @@ TEST_QUERY_BOTS_TESTS_OUTPUT = {
   "Fake Android M Tester": [
     {
       "merge": {
-        "args": [],
         "script": "//testing/merge_scripts/standard_gtest_merge.py"
       },
       "test": "foo_test",
@@ -3170,7 +3166,6 @@ TEST_QUERY_BOTS_TESTS_OUTPUT = {
         "--recover-devices"
       ],
       "merge": {
-        "args": [],
         "script": "//testing/merge_scripts/standard_gtest_merge.py"
       },
       "swarming": {
@@ -3195,7 +3190,6 @@ TEST_QUERY_BOTS_TESTS_OUTPUT = {
         "--recover-devices"
       ],
       "merge": {
-        "args": [],
         "script": "//testing/merge_scripts/standard_gtest_merge.py"
       },
       "swarming": {
@@ -3233,7 +3227,6 @@ TEST_QUERY_BOT_OUTPUT = {
         "--recover-devices"
       ],
       "merge": {
-        "args": [],
         "script": "//testing/merge_scripts/standard_gtest_merge.py"
       },
       "swarming": {
@@ -3267,7 +3260,6 @@ TEST_QUERY_BOT_TESTS_OUTPUT = [
       "--recover-devices"
     ],
     "merge": {
-      "args": [],
       "script": "//testing/merge_scripts/standard_gtest_merge.py"
     },
     "swarming": {

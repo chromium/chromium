@@ -9,7 +9,6 @@
     "gtest_tests": [
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26,7 +25,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "swarming": {
@@ -44,7 +42,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -61,7 +58,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -78,7 +74,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -95,7 +90,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -112,7 +106,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "webkit_unit_tests",
@@ -130,7 +123,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -147,7 +139,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -167,7 +158,6 @@
           "--gtest_filter=-*UsingRealWebcam*"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -184,7 +174,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -201,7 +190,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -218,7 +206,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -235,7 +222,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -252,7 +238,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -275,7 +260,6 @@
           "--test-launcher-jobs=1"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -286,7 +270,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -303,7 +286,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -320,7 +302,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -337,7 +318,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -357,7 +337,6 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/cast-linux.content_browsertests.filter"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -375,7 +354,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -392,7 +370,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -409,7 +386,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -426,7 +402,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -443,7 +418,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -460,7 +434,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -477,7 +450,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -494,7 +466,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -511,7 +482,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -528,7 +498,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -545,7 +514,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -562,7 +530,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -579,7 +546,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -596,7 +562,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -613,7 +578,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -630,7 +594,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -647,7 +610,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -664,7 +626,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -681,7 +642,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -698,7 +658,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -715,7 +674,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -732,7 +690,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -749,7 +706,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -766,7 +722,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -783,7 +738,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -800,7 +754,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -817,7 +770,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -834,7 +786,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -851,7 +802,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -877,7 +827,6 @@
     "gtest_tests": [
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -894,7 +843,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "swarming": {
@@ -912,7 +860,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -929,7 +876,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -946,7 +892,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -963,7 +908,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -980,7 +924,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "webkit_unit_tests",
@@ -998,7 +941,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1015,7 +957,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1035,7 +976,6 @@
           "--gtest_filter=-*UsingRealWebcam*"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1052,7 +992,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1069,7 +1008,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1086,7 +1024,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1103,7 +1040,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1121,7 +1057,6 @@
       {
         "experiment_percentage": 100,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1138,7 +1073,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1155,7 +1089,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1178,7 +1111,6 @@
           "--test-launcher-jobs=1"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1189,7 +1121,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1206,7 +1137,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1223,7 +1153,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1240,7 +1169,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1260,7 +1188,6 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/cast-linux.content_browsertests.filter"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1278,7 +1205,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1295,7 +1221,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1312,7 +1237,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1329,7 +1253,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1346,7 +1269,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1363,7 +1285,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1380,7 +1301,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1397,7 +1317,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1414,7 +1333,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1431,7 +1349,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1448,7 +1365,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1465,7 +1381,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1482,7 +1397,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1499,7 +1413,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1516,7 +1429,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1533,7 +1445,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1550,7 +1461,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1567,7 +1477,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1584,7 +1493,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1601,7 +1509,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1618,7 +1525,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1635,7 +1541,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1652,7 +1557,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1669,7 +1573,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1686,7 +1589,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1703,7 +1605,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1720,7 +1621,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1738,7 +1638,6 @@
       {
         "experiment_percentage": 100,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1755,7 +1654,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1772,7 +1670,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1906,7 +1803,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1924,7 +1820,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1942,7 +1837,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "swarming": {
@@ -1961,7 +1855,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1979,7 +1872,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1997,7 +1889,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2015,7 +1906,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2033,7 +1923,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2051,7 +1940,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2069,7 +1957,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2087,7 +1974,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "webkit_unit_tests",
@@ -2106,7 +1992,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2124,7 +2009,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2142,7 +2026,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2164,7 +2047,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2182,7 +2064,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2200,7 +2081,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2218,7 +2098,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2236,7 +2115,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2254,7 +2132,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2272,7 +2149,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2290,7 +2166,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2308,7 +2183,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2326,7 +2200,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2345,7 +2218,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2363,7 +2235,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2381,7 +2252,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2399,7 +2269,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2417,7 +2286,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2435,7 +2303,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2453,7 +2320,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2471,7 +2337,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2489,7 +2354,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2507,7 +2371,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2525,7 +2388,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2543,7 +2405,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2561,7 +2422,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2579,7 +2439,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2597,7 +2456,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2615,7 +2473,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2633,7 +2490,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2651,7 +2507,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2669,7 +2524,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2687,7 +2541,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2705,7 +2558,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2724,7 +2576,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2742,7 +2593,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2760,7 +2610,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2778,7 +2627,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2796,7 +2644,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2814,7 +2661,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2832,7 +2678,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2850,7 +2695,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2868,7 +2712,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2886,7 +2729,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2904,7 +2746,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2922,7 +2763,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2940,7 +2780,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2958,7 +2797,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2976,7 +2814,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -2994,7 +2831,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -3012,7 +2848,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -3030,7 +2865,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -3048,7 +2882,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -3066,7 +2899,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -3084,7 +2916,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -3102,7 +2933,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -3120,7 +2950,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -3138,7 +2967,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -3156,7 +2984,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -3174,7 +3001,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -3192,7 +3018,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -3210,7 +3035,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -3228,7 +3052,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -3246,7 +3069,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -3264,7 +3086,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -3282,7 +3103,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -3300,7 +3120,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -3318,7 +3137,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -3336,7 +3154,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -3354,7 +3171,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -3372,7 +3188,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -3390,7 +3205,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "xr_browser_tests",
@@ -3409,7 +3223,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -3430,7 +3243,6 @@
         "isolate_name": "blink_python_tests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "blink_python_tests",
@@ -3452,7 +3264,6 @@
         "isolate_name": "blink_pytype",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "blink_pytype",
@@ -3555,7 +3366,6 @@
         "isolate_name": "chromedriver_py_tests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "chromedriver_py_tests",
@@ -3577,7 +3387,6 @@
         "isolate_name": "chromedriver_replay_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "chromedriver_replay_unittests",
@@ -3596,7 +3405,6 @@
         "isolate_name": "content_shell_crash_test",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "content_shell_crash_test",
@@ -3619,7 +3427,6 @@
         "isolate_name": "flatbuffers_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "flatbuffers_unittests",
@@ -3642,7 +3449,6 @@
         "isolate_name": "fuchsia_pytype",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "fuchsia_pytype",
@@ -3665,7 +3471,6 @@
         "isolate_name": "gold_common_pytype",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "gold_common_pytype",
@@ -3688,7 +3493,6 @@
         "isolate_name": "gpu_pytype",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "gpu_pytype",
@@ -3711,7 +3515,6 @@
         "isolate_name": "grit_python_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "grit_python_unittests",
@@ -3810,7 +3613,6 @@
         "isolate_name": "mojo_python_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "mojo_python_unittests",
@@ -3910,7 +3712,6 @@
         "isolate_name": "telemetry_gpu_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "telemetry_gpu_unittests",
@@ -3938,7 +3739,6 @@
         "isolate_name": "telemetry_perf_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "telemetry_perf_unittests",
@@ -3966,7 +3766,6 @@
         "isolate_name": "telemetry_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "telemetry_unittests",
@@ -3990,7 +3789,6 @@
         "isolate_name": "testing_pytype",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "testing_pytype",
@@ -4082,7 +3880,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4104,7 +3901,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4126,7 +3922,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "swarming": {
@@ -4149,7 +3944,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4171,7 +3965,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4193,7 +3986,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4215,7 +4007,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4237,7 +4028,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4259,7 +4049,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4281,7 +4070,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4303,7 +4091,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "webkit_unit_tests",
@@ -4326,7 +4113,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4348,7 +4134,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4371,7 +4156,6 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.wayland_browser_tests.filter"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4396,7 +4180,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4418,7 +4201,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4440,7 +4222,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4462,7 +4243,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4484,7 +4264,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4506,7 +4285,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4528,7 +4306,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4550,7 +4327,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4572,7 +4348,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4594,7 +4369,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4617,7 +4391,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4639,7 +4412,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4661,7 +4433,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4683,7 +4454,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4705,7 +4475,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4727,7 +4496,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4749,7 +4517,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4771,7 +4538,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4793,7 +4559,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4815,7 +4580,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4837,7 +4601,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4859,7 +4622,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4881,7 +4643,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4903,7 +4664,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4925,7 +4685,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4947,7 +4706,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4969,7 +4727,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -4991,7 +4748,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5013,7 +4769,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5036,7 +4791,6 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.interactive_ui_tests_wayland.filter"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5059,7 +4813,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5081,7 +4834,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5103,7 +4855,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5125,7 +4876,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5147,7 +4897,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5169,7 +4918,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5191,7 +4939,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5213,7 +4960,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5235,7 +4981,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5257,7 +5002,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5279,7 +5023,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5301,7 +5044,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5323,7 +5065,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5345,7 +5086,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5367,7 +5107,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5389,7 +5128,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5411,7 +5149,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5433,7 +5170,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5455,7 +5191,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5477,7 +5212,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5499,7 +5233,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5521,7 +5254,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5543,7 +5275,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5565,7 +5296,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5587,7 +5317,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5609,7 +5338,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5631,7 +5359,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5653,7 +5380,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5675,7 +5401,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5698,7 +5423,6 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.unit_tests_wayland.filter"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5720,7 +5444,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5743,7 +5466,6 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.wayland_views_unittests.filter"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5765,7 +5487,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5787,7 +5508,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5809,7 +5529,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5831,7 +5550,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5853,7 +5571,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "xr_browser_tests",
@@ -5876,7 +5593,6 @@
           "--ozone-platform=wayland"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5897,7 +5613,6 @@
     "gtest_tests": [
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5914,7 +5629,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5931,7 +5645,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "swarming": {
@@ -5949,7 +5662,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5966,7 +5678,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -5983,7 +5694,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6000,7 +5710,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6017,7 +5726,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6034,7 +5742,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6051,7 +5758,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6068,7 +5774,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "webkit_unit_tests",
@@ -6086,7 +5791,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6103,7 +5807,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6120,7 +5823,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6141,7 +5843,6 @@
           "--gtest_filter=-*UsingRealWebcam*"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6158,7 +5859,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6175,7 +5875,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6192,7 +5891,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6209,7 +5907,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6226,7 +5923,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6243,7 +5939,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6260,7 +5955,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6277,7 +5971,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6294,7 +5987,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6312,7 +6004,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6329,7 +6020,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6346,7 +6036,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6363,7 +6052,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6380,7 +6068,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6397,7 +6084,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6414,7 +6100,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6431,7 +6116,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6448,7 +6132,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6465,7 +6148,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6482,7 +6164,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6499,7 +6180,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6516,7 +6196,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6533,7 +6212,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6550,7 +6228,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6567,7 +6244,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6584,7 +6260,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6601,7 +6276,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6618,7 +6292,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6635,7 +6308,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6652,7 +6324,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6670,7 +6341,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6687,7 +6357,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6704,7 +6373,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6721,7 +6389,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6738,7 +6405,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6755,7 +6421,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6772,7 +6437,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6789,7 +6453,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6806,7 +6469,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6823,7 +6485,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6840,7 +6501,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6858,7 +6518,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6875,7 +6534,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6892,7 +6550,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6909,7 +6566,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6926,7 +6582,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6943,7 +6598,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6960,7 +6614,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6977,7 +6630,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -6994,7 +6646,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -7011,7 +6662,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -7028,7 +6678,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -7045,7 +6694,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -7062,7 +6710,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -7079,7 +6726,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -7096,7 +6742,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -7113,7 +6758,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -7130,7 +6774,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -7147,7 +6790,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -7164,7 +6806,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -7181,7 +6822,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -7198,7 +6838,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -7215,7 +6854,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -7232,7 +6870,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -7249,7 +6886,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -7266,7 +6902,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -7283,7 +6918,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -7300,7 +6934,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "xr_browser_tests",
@@ -7318,7 +6951,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -7338,7 +6970,6 @@
       {
         "isolate_name": "blink_python_tests",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "blink_python_tests",
@@ -7433,7 +7064,6 @@
       {
         "isolate_name": "content_shell_crash_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "content_shell_crash_test",
@@ -7455,7 +7085,6 @@
       {
         "isolate_name": "flatbuffers_unittests",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "flatbuffers_unittests",
@@ -7477,7 +7106,6 @@
       {
         "isolate_name": "grit_python_unittests",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "grit_python_unittests",
@@ -7535,7 +7163,6 @@
       {
         "isolate_name": "telemetry_gpu_unittests",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "telemetry_gpu_unittests",
@@ -7562,7 +7189,6 @@
         ],
         "isolate_name": "telemetry_perf_unittests",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "telemetry_perf_unittests",
@@ -7589,7 +7215,6 @@
         ],
         "isolate_name": "telemetry_unittests",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "telemetry_unittests",
@@ -7662,7 +7287,6 @@
           "--enable-features=ForceWebRequestProxyForTest"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "network_service_web_request_proxy_browser_tests",
@@ -7688,7 +7312,6 @@
           "--disable-features=BackForwardCache"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "bf_cache_browser_tests",
@@ -7710,7 +7333,6 @@
           "--disable-features=BackForwardCache"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "bf_cache_content_browsertests",
@@ -7732,7 +7354,6 @@
           "--disable-features=BackForwardCache"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "bf_cache_content_unittests",
@@ -7755,7 +7376,6 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/bfcache.unit_tests.filter"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "bf_cache_unit_tests",

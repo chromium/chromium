@@ -7,7 +7,6 @@
         "args": [],
         "description": "Variant description.",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "swarming_test a_variant",

@@ -9,7 +9,6 @@
     "gtest_tests": [
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29,7 +28,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -49,7 +47,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "test_cpp_including_rust_unittests",
@@ -70,7 +67,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "test_serde_json_lenient",
@@ -99,7 +95,6 @@
     "gtest_tests": [
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -119,7 +114,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -139,7 +133,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "test_cpp_including_rust_unittests",
@@ -160,7 +153,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "test_serde_json_lenient",
@@ -189,7 +181,6 @@
     "gtest_tests": [
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -209,7 +200,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -229,7 +219,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "test_cpp_including_rust_unittests",
@@ -250,7 +239,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "test_serde_json_lenient",
@@ -281,7 +269,6 @@
     "gtest_tests": [
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -298,7 +285,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -315,7 +301,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -332,7 +317,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "test_cpp_including_rust_unittests",
@@ -350,7 +334,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "test_serde_json_lenient",
@@ -371,7 +354,6 @@
       {
         "isolate_name": "build_rust_tests",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "build_rust_tests",
@@ -390,7 +372,6 @@
       {
         "isolate_name": "mojo_rust_tests",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "mojo_rust_tests",
@@ -418,7 +399,6 @@
     "gtest_tests": [
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -435,7 +415,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -452,7 +431,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -469,7 +447,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "test_cpp_including_rust_unittests",
@@ -487,7 +464,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "test_serde_json_lenient",
@@ -508,7 +484,6 @@
       {
         "isolate_name": "build_rust_tests",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "build_rust_tests",
@@ -527,7 +502,6 @@
       {
         "isolate_name": "mojo_rust_tests",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "mojo_rust_tests",
@@ -562,7 +536,6 @@
           "--xctest"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "resultdb": {
@@ -604,7 +577,6 @@
           "--xctest"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "resultdb": {
@@ -646,7 +618,6 @@
           "--xctest"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "resultdb": {
@@ -688,7 +659,6 @@
           "--xctest"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "test_cpp_including_rust_unittests",
@@ -731,7 +701,6 @@
           "--xctest"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "test_serde_json_lenient",
@@ -777,7 +746,6 @@
         ],
         "isolate_name": "build_rust_tests",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "build_rust_tests",
@@ -821,7 +789,6 @@
         ],
         "isolate_name": "mojo_rust_tests",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "mojo_rust_tests",
@@ -867,7 +834,6 @@
     "gtest_tests": [
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -885,7 +851,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -903,7 +868,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -921,7 +885,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "test_cpp_including_rust_unittests",
@@ -940,7 +903,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "test_serde_json_lenient",
@@ -962,7 +924,6 @@
       {
         "isolate_name": "build_rust_tests",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "build_rust_tests",
@@ -982,7 +943,6 @@
       {
         "isolate_name": "mojo_rust_tests",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "mojo_rust_tests",
@@ -1011,7 +971,6 @@
     "gtest_tests": [
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1029,7 +988,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1047,7 +1005,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -1065,7 +1022,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "test_cpp_including_rust_unittests",
@@ -1084,7 +1040,6 @@
       },
       {
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "test_serde_json_lenient",
@@ -1106,7 +1061,6 @@
       {
         "isolate_name": "build_rust_tests",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "build_rust_tests",
@@ -1126,7 +1080,6 @@
       {
         "isolate_name": "mojo_rust_tests",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "mojo_rust_tests",

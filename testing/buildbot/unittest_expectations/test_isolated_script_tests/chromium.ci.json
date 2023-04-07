@@ -6,7 +6,6 @@
       {
         "isolate_name": "foo_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "foo_test",

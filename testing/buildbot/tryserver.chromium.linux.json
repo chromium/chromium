@@ -89,7 +89,6 @@
           "--use-gpu-in-tests"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "gles2_conform_test GTX 1660",
@@ -113,7 +112,6 @@
           "--use-gpu-in-tests"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "gles2_conform_test UHD 630",
@@ -150,7 +148,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "info_collection_tests GTX 1660",
@@ -190,7 +187,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "info_collection_tests UHD 630",
@@ -226,7 +222,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "mediapipe_passthrough_tests GTX 1660",
@@ -262,7 +257,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "mediapipe_passthrough_tests UHD 630",
@@ -298,7 +292,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "trace_test GTX 1660",
@@ -334,7 +327,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "trace_test UHD 630",
@@ -370,7 +362,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webcodecs_tests GTX 1660",
@@ -406,7 +397,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webcodecs_tests UHD 630",
@@ -445,7 +435,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgl2_conformance_gl_passthrough_tests GTX 1660",
@@ -485,7 +474,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgl2_conformance_gl_passthrough_tests UHD 630",
@@ -524,7 +512,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgl_conformance_gl_passthrough_tests GTX 1660",
@@ -563,7 +550,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgl_conformance_gl_passthrough_tests UHD 630",

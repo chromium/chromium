@@ -12,7 +12,6 @@
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -49,7 +48,6 @@
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -88,7 +86,6 @@
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -125,7 +122,6 @@
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -163,7 +159,6 @@
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "resultdb": {
@@ -207,7 +202,6 @@
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -286,7 +280,6 @@
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -330,7 +323,6 @@
         ],
         "experiment_percentage": 100,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -367,7 +359,6 @@
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -404,7 +395,6 @@
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -441,7 +431,6 @@
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -478,7 +467,6 @@
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -516,7 +504,6 @@
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -553,7 +540,6 @@
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -590,7 +576,6 @@
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -629,7 +614,6 @@
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -680,7 +664,6 @@
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -718,7 +701,6 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.ozone_unittests.filter"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -755,7 +737,6 @@
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -792,7 +773,6 @@
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -831,7 +811,6 @@
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -868,7 +847,6 @@
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -905,7 +883,6 @@
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -950,7 +927,6 @@
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -995,7 +971,6 @@
         ],
         "isolate_name": "telemetry_perf_unittests",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "telemetry_perf_unittests",
@@ -1044,7 +1019,6 @@
         ],
         "isolate_name": "telemetry_unittests",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "telemetry_unittests",
@@ -1094,7 +1068,6 @@
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "resultdb": {

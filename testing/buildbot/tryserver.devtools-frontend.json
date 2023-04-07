@@ -8,7 +8,6 @@
           "--gtest_filter=*DevTools*"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "devtools_browser_tests",
@@ -102,7 +101,6 @@
           "--gtest_filter=*DevTools*"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "devtools_browser_tests",

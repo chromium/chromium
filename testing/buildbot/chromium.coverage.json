@@ -1010,7 +1010,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "resultdb": {
@@ -3651,7 +3650,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "resultdb": {
@@ -7729,7 +7727,6 @@
         "isolate_name": "android_webview_junit_tests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "android_webview_junit_tests",
@@ -7759,7 +7756,6 @@
         "isolate_name": "base_junit_tests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "base_junit_tests",
@@ -7789,7 +7785,6 @@
         "isolate_name": "build_junit_tests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "build_junit_tests",
@@ -7819,7 +7814,6 @@
         "isolate_name": "chrome_java_test_pagecontroller_junit_tests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "chrome_java_test_pagecontroller_junit_tests",
@@ -7850,7 +7844,6 @@
         "isolate_name": "chrome_junit_tests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "chrome_junit_tests",
@@ -7880,7 +7873,6 @@
         "isolate_name": "components_junit_tests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "components_junit_tests",
@@ -7958,7 +7950,6 @@
         "isolate_name": "content_junit_tests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "content_junit_tests",
@@ -7988,7 +7979,6 @@
         "isolate_name": "device_junit_tests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "device_junit_tests",
@@ -8018,7 +8008,6 @@
         "isolate_name": "junit_unit_tests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "junit_unit_tests",
@@ -8048,7 +8037,6 @@
         "isolate_name": "keyboard_accessory_junit_tests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "keyboard_accessory_junit_tests",
@@ -8078,7 +8066,6 @@
         "isolate_name": "media_base_junit_tests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "media_base_junit_tests",
@@ -8108,7 +8095,6 @@
         "isolate_name": "module_installer_junit_tests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "module_installer_junit_tests",
@@ -8139,7 +8125,6 @@
         "isolate_name": "monochrome_public_apk_checker",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "monochrome_public_apk_checker",
@@ -8185,7 +8170,6 @@
         "isolate_name": "net_junit_tests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "net_junit_tests",
@@ -8215,7 +8199,6 @@
         "isolate_name": "paint_preview_junit_tests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "paint_preview_junit_tests",
@@ -8245,7 +8228,6 @@
         "isolate_name": "password_check_junit_tests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "password_check_junit_tests",
@@ -8275,7 +8257,6 @@
         "isolate_name": "password_manager_junit_tests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "password_manager_junit_tests",
@@ -8305,7 +8286,6 @@
         "isolate_name": "services_junit_tests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "services_junit_tests",
@@ -8343,7 +8323,6 @@
         "isolate_name": "telemetry_perf_unittests_android_chrome",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "telemetry_chromium_minidump_unittests",
@@ -8394,7 +8373,6 @@
         "isolate_name": "telemetry_perf_unittests_android_monochrome",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "telemetry_monochrome_minidump_unittests",
@@ -8442,7 +8420,6 @@
         "isolate_name": "telemetry_perf_unittests_android_chrome",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "telemetry_perf_unittests",
@@ -8488,7 +8465,6 @@
         "isolate_name": "touch_to_fill_junit_tests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "touch_to_fill_junit_tests",
@@ -8518,7 +8494,6 @@
         "isolate_name": "ui_junit_tests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ui_junit_tests",
@@ -8548,7 +8523,6 @@
         "isolate_name": "webapk_client_junit_tests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webapk_client_junit_tests",
@@ -8578,7 +8552,6 @@
         "isolate_name": "webapk_shell_apk_h2o_junit_tests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webapk_shell_apk_h2o_junit_tests",
@@ -8608,7 +8581,6 @@
         "isolate_name": "webapk_shell_apk_junit_tests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webapk_shell_apk_junit_tests",
@@ -8659,7 +8631,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -8680,7 +8651,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -8701,7 +8671,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -8722,7 +8691,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -8744,7 +8712,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -8765,7 +8732,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -8786,7 +8752,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -8807,7 +8772,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -8829,7 +8793,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -8851,7 +8814,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -8872,7 +8834,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -8893,7 +8854,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -8914,7 +8874,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -8935,7 +8894,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -8956,7 +8914,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -8977,7 +8934,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -8999,7 +8955,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9023,7 +8978,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9044,7 +8998,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9066,7 +9019,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9091,7 +9043,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9113,7 +9064,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9135,7 +9085,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9156,7 +9105,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9177,7 +9125,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9198,7 +9145,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9219,7 +9165,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9240,7 +9185,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9261,7 +9205,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9282,7 +9225,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9304,7 +9246,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9325,7 +9266,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9346,7 +9286,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9368,7 +9307,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9389,7 +9327,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9411,7 +9348,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9432,7 +9368,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9453,7 +9388,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9474,7 +9408,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9496,7 +9429,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9517,7 +9449,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9538,7 +9469,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9560,7 +9490,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9582,7 +9511,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9605,7 +9533,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9626,7 +9553,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9647,7 +9573,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9668,7 +9593,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9690,7 +9614,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9712,7 +9635,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9733,7 +9655,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9754,7 +9675,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9775,7 +9695,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9796,7 +9715,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9818,7 +9736,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9839,7 +9756,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9860,7 +9776,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9882,7 +9797,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9904,7 +9818,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9926,7 +9839,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9947,7 +9859,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9970,7 +9881,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -9991,7 +9901,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -10012,7 +9921,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -10033,7 +9941,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -10054,7 +9961,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -10080,7 +9986,6 @@
         "isolate_name": "angle_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "angle_unittests",
@@ -10115,7 +10020,6 @@
         "isolate_name": "absl_hardening_tests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "absl_hardening_tests iPhone 6s 15.5",
@@ -10169,7 +10073,6 @@
         "isolate_name": "absl_hardening_tests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "absl_hardening_tests iPhone 8 16.2",
@@ -10223,7 +10126,6 @@
         "isolate_name": "base_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "base_unittests iPad Air (3rd generation) 16.2",
@@ -10277,7 +10179,6 @@
         "isolate_name": "base_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "base_unittests iPad Air 2 15.5",
@@ -10331,7 +10232,6 @@
         "isolate_name": "base_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "base_unittests iPad Pro (12.9-inch) (3rd generation) 15.5",
@@ -10385,7 +10285,6 @@
         "isolate_name": "base_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "base_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
@@ -10439,7 +10338,6 @@
         "isolate_name": "base_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "base_unittests iPhone 6s 15.5",
@@ -10493,7 +10391,6 @@
         "isolate_name": "base_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "base_unittests iPhone 6s Plus 15.5",
@@ -10547,7 +10444,6 @@
         "isolate_name": "base_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "base_unittests iPhone 8 16.2",
@@ -10601,7 +10497,6 @@
         "isolate_name": "base_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "base_unittests iPhone 8 Plus 16.2",
@@ -10655,7 +10550,6 @@
         "isolate_name": "base_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "base_unittests iPhone SE (1st generation) 15.5",
@@ -10709,7 +10603,6 @@
         "isolate_name": "base_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "base_unittests iPhone SE (3rd generation) 16.2",
@@ -10763,7 +10656,6 @@
         "isolate_name": "boringssl_crypto_tests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "boringssl_crypto_tests iPhone 6s 15.5",
@@ -10817,7 +10709,6 @@
         "isolate_name": "boringssl_crypto_tests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "boringssl_crypto_tests iPhone 8 16.2",
@@ -10871,7 +10762,6 @@
         "isolate_name": "boringssl_ssl_tests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "boringssl_ssl_tests iPhone 6s 15.5",
@@ -10925,7 +10815,6 @@
         "isolate_name": "boringssl_ssl_tests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "boringssl_ssl_tests iPhone 8 16.2",
@@ -10979,7 +10868,6 @@
         "isolate_name": "components_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "components_unittests iPad Air (3rd generation) 16.2",
@@ -11033,7 +10921,6 @@
         "isolate_name": "components_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "components_unittests iPad Air 2 15.5",
@@ -11087,7 +10974,6 @@
         "isolate_name": "components_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "components_unittests iPad Pro (12.9-inch) (3rd generation) 15.5",
@@ -11141,7 +11027,6 @@
         "isolate_name": "components_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "components_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
@@ -11195,7 +11080,6 @@
         "isolate_name": "components_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "components_unittests iPhone 6s 15.5",
@@ -11249,7 +11133,6 @@
         "isolate_name": "components_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "components_unittests iPhone 6s Plus 15.5",
@@ -11303,7 +11186,6 @@
         "isolate_name": "components_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "components_unittests iPhone 8 16.2",
@@ -11357,7 +11239,6 @@
         "isolate_name": "components_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "components_unittests iPhone 8 Plus 16.2",
@@ -11411,7 +11292,6 @@
         "isolate_name": "components_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "components_unittests iPhone SE (1st generation) 15.5",
@@ -11465,7 +11345,6 @@
         "isolate_name": "components_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "components_unittests iPhone SE (3rd generation) 16.2",
@@ -11519,7 +11398,6 @@
         "isolate_name": "crashpad_tests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "crashpad_tests iPhone 6s 15.5",
@@ -11573,7 +11451,6 @@
         "isolate_name": "crashpad_tests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "crashpad_tests iPhone 8 16.2",
@@ -11627,7 +11504,6 @@
         "isolate_name": "crypto_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "crypto_unittests iPhone 6s 15.5",
@@ -11681,7 +11557,6 @@
         "isolate_name": "crypto_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "crypto_unittests iPhone 8 16.2",
@@ -11735,7 +11610,6 @@
         "isolate_name": "gfx_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "gfx_unittests iPad Air (3rd generation) 16.2",
@@ -11789,7 +11663,6 @@
         "isolate_name": "gfx_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "gfx_unittests iPad Air 2 15.5",
@@ -11843,7 +11716,6 @@
         "isolate_name": "gfx_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "gfx_unittests iPad Pro (12.9-inch) (3rd generation) 15.5",
@@ -11897,7 +11769,6 @@
         "isolate_name": "gfx_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "gfx_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
@@ -11951,7 +11822,6 @@
         "isolate_name": "gfx_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "gfx_unittests iPhone 6s 15.5",
@@ -12005,7 +11875,6 @@
         "isolate_name": "gfx_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "gfx_unittests iPhone 6s Plus 15.5",
@@ -12059,7 +11928,6 @@
         "isolate_name": "gfx_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "gfx_unittests iPhone 8 16.2",
@@ -12113,7 +11981,6 @@
         "isolate_name": "gfx_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "gfx_unittests iPhone 8 Plus 16.2",
@@ -12167,7 +12034,6 @@
         "isolate_name": "gfx_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "gfx_unittests iPhone SE (1st generation) 15.5",
@@ -12221,7 +12087,6 @@
         "isolate_name": "gfx_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "gfx_unittests iPhone SE (3rd generation) 16.2",
@@ -12275,7 +12140,6 @@
         "isolate_name": "google_apis_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "google_apis_unittests iPhone 6s 15.5",
@@ -12329,7 +12193,6 @@
         "isolate_name": "google_apis_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "google_apis_unittests iPhone 8 16.2",
@@ -12384,7 +12247,6 @@
         "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_bookmarks_eg2tests_module iPad Air (3rd generation) 16.2",
@@ -12439,7 +12301,6 @@
         "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_bookmarks_eg2tests_module iPad Air 2 15.5",
@@ -12494,7 +12355,6 @@
         "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_bookmarks_eg2tests_module iPad Pro (12.9-inch) (3rd generation) 15.5",
@@ -12549,7 +12409,6 @@
         "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_bookmarks_eg2tests_module iPad Pro (12.9-inch) (3rd generation) 16.2",
@@ -12604,7 +12463,6 @@
         "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_bookmarks_eg2tests_module iPhone 7 15.5",
@@ -12659,7 +12517,6 @@
         "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_bookmarks_eg2tests_module iPhone 8 16.2",
@@ -12714,7 +12571,6 @@
         "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_bookmarks_eg2tests_module iPhone X 15.5",
@@ -12769,7 +12625,6 @@
         "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_bookmarks_eg2tests_module iPhone X 16.2",
@@ -12824,7 +12679,6 @@
         "isolate_name": "ios_chrome_integration_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_integration_eg2tests_module iPad Air (3rd generation) 16.2",
@@ -12880,7 +12734,6 @@
         "isolate_name": "ios_chrome_integration_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_integration_eg2tests_module iPad Air 2 15.5",
@@ -12936,7 +12789,6 @@
         "isolate_name": "ios_chrome_integration_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_integration_eg2tests_module iPad Pro (12.9-inch) (3rd generation) 15.5",
@@ -12992,7 +12844,6 @@
         "isolate_name": "ios_chrome_integration_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_integration_eg2tests_module iPad Pro (12.9-inch) (3rd generation) 16.2",
@@ -13048,7 +12899,6 @@
         "isolate_name": "ios_chrome_integration_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_integration_eg2tests_module iPhone 6s 15.5",
@@ -13104,7 +12954,6 @@
         "isolate_name": "ios_chrome_integration_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_integration_eg2tests_module iPhone 7 15.5",
@@ -13160,7 +13009,6 @@
         "isolate_name": "ios_chrome_integration_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_integration_eg2tests_module iPhone 8 16.2",
@@ -13216,7 +13064,6 @@
         "isolate_name": "ios_chrome_integration_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_integration_eg2tests_module iPhone X 16.2",
@@ -13272,7 +13119,6 @@
         "isolate_name": "ios_chrome_settings_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_settings_eg2tests_module iPad Air (3rd generation) 16.2",
@@ -13328,7 +13174,6 @@
         "isolate_name": "ios_chrome_settings_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_settings_eg2tests_module iPad Air 2 15.5",
@@ -13384,7 +13229,6 @@
         "isolate_name": "ios_chrome_settings_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_settings_eg2tests_module iPad Pro (12.9-inch) (3rd generation) 15.5",
@@ -13440,7 +13284,6 @@
         "isolate_name": "ios_chrome_settings_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_settings_eg2tests_module iPad Pro (12.9-inch) (3rd generation) 16.2",
@@ -13496,7 +13339,6 @@
         "isolate_name": "ios_chrome_settings_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_settings_eg2tests_module iPhone 7 15.5",
@@ -13552,7 +13394,6 @@
         "isolate_name": "ios_chrome_settings_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_settings_eg2tests_module iPhone 8 16.2",
@@ -13608,7 +13449,6 @@
         "isolate_name": "ios_chrome_settings_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_settings_eg2tests_module iPhone X 15.5",
@@ -13664,7 +13504,6 @@
         "isolate_name": "ios_chrome_settings_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_settings_eg2tests_module iPhone X 16.2",
@@ -13720,7 +13559,6 @@
         "isolate_name": "ios_chrome_signin_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_signin_eg2tests_module iPad Air (3rd generation) 16.2",
@@ -13776,7 +13614,6 @@
         "isolate_name": "ios_chrome_signin_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_signin_eg2tests_module iPad Air 2 15.5",
@@ -13832,7 +13669,6 @@
         "isolate_name": "ios_chrome_signin_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_signin_eg2tests_module iPad Pro (12.9-inch) (3rd generation) 15.5",
@@ -13888,7 +13724,6 @@
         "isolate_name": "ios_chrome_signin_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_signin_eg2tests_module iPad Pro (12.9-inch) (3rd generation) 16.2",
@@ -13944,7 +13779,6 @@
         "isolate_name": "ios_chrome_signin_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_signin_eg2tests_module iPhone 7 15.5",
@@ -14000,7 +13834,6 @@
         "isolate_name": "ios_chrome_signin_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_signin_eg2tests_module iPhone 8 16.2",
@@ -14056,7 +13889,6 @@
         "isolate_name": "ios_chrome_signin_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_signin_eg2tests_module iPhone X 15.5",
@@ -14112,7 +13944,6 @@
         "isolate_name": "ios_chrome_signin_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_signin_eg2tests_module iPhone X 16.2",
@@ -14168,7 +13999,6 @@
         "isolate_name": "ios_chrome_smoke_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_smoke_eg2tests_module iPad Air (3rd generation) 16.2",
@@ -14223,7 +14053,6 @@
         "isolate_name": "ios_chrome_smoke_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_smoke_eg2tests_module iPad Air 2 15.5",
@@ -14278,7 +14107,6 @@
         "isolate_name": "ios_chrome_smoke_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_smoke_eg2tests_module iPad Pro (12.9-inch) (3rd generation) 15.5",
@@ -14333,7 +14161,6 @@
         "isolate_name": "ios_chrome_smoke_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_smoke_eg2tests_module iPad Pro (12.9-inch) (3rd generation) 16.2",
@@ -14388,7 +14215,6 @@
         "isolate_name": "ios_chrome_smoke_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_smoke_eg2tests_module iPhone 7 15.5",
@@ -14443,7 +14269,6 @@
         "isolate_name": "ios_chrome_smoke_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_smoke_eg2tests_module iPhone 8 16.2",
@@ -14498,7 +14323,6 @@
         "isolate_name": "ios_chrome_smoke_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_smoke_eg2tests_module iPhone X 15.5",
@@ -14553,7 +14377,6 @@
         "isolate_name": "ios_chrome_smoke_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_smoke_eg2tests_module iPhone X 16.2",
@@ -14608,7 +14431,6 @@
         "isolate_name": "ios_chrome_ui_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_ui_eg2tests_module iPad Air (3rd generation) 16.2",
@@ -14664,7 +14486,6 @@
         "isolate_name": "ios_chrome_ui_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_ui_eg2tests_module iPad Air 2 15.5",
@@ -14720,7 +14541,6 @@
         "isolate_name": "ios_chrome_ui_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_ui_eg2tests_module iPad Pro (12.9-inch) (3rd generation) 15.5",
@@ -14776,7 +14596,6 @@
         "isolate_name": "ios_chrome_ui_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_ui_eg2tests_module iPad Pro (12.9-inch) (3rd generation) 16.2",
@@ -14832,7 +14651,6 @@
         "isolate_name": "ios_chrome_ui_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_ui_eg2tests_module iPhone 7 15.5",
@@ -14888,7 +14706,6 @@
         "isolate_name": "ios_chrome_ui_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_ui_eg2tests_module iPhone 8 16.2",
@@ -14944,7 +14761,6 @@
         "isolate_name": "ios_chrome_ui_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_ui_eg2tests_module iPhone X 15.5",
@@ -15000,7 +14816,6 @@
         "isolate_name": "ios_chrome_ui_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_ui_eg2tests_module iPhone X 16.2",
@@ -15055,7 +14870,6 @@
         "isolate_name": "ios_chrome_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_unittests iPad Air (3rd generation) 16.2",
@@ -15109,7 +14923,6 @@
         "isolate_name": "ios_chrome_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_unittests iPad Air 2 15.5",
@@ -15163,7 +14976,6 @@
         "isolate_name": "ios_chrome_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_unittests iPad Pro (12.9-inch) (3rd generation) 15.5",
@@ -15217,7 +15029,6 @@
         "isolate_name": "ios_chrome_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
@@ -15271,7 +15082,6 @@
         "isolate_name": "ios_chrome_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_unittests iPhone 6s 15.5",
@@ -15325,7 +15135,6 @@
         "isolate_name": "ios_chrome_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_unittests iPhone 6s Plus 15.5",
@@ -15379,7 +15188,6 @@
         "isolate_name": "ios_chrome_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_unittests iPhone 8 16.2",
@@ -15433,7 +15241,6 @@
         "isolate_name": "ios_chrome_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_unittests iPhone 8 Plus 16.2",
@@ -15487,7 +15294,6 @@
         "isolate_name": "ios_chrome_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_unittests iPhone SE (1st generation) 15.5",
@@ -15541,7 +15347,6 @@
         "isolate_name": "ios_chrome_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_unittests iPhone SE (3rd generation) 16.2",
@@ -15596,7 +15401,6 @@
         "isolate_name": "ios_chrome_web_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_web_eg2tests_module iPad Air (3rd generation) 16.2",
@@ -15652,7 +15456,6 @@
         "isolate_name": "ios_chrome_web_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_web_eg2tests_module iPad Air 2 15.5",
@@ -15708,7 +15511,6 @@
         "isolate_name": "ios_chrome_web_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_web_eg2tests_module iPad Pro (12.9-inch) (3rd generation) 15.5",
@@ -15764,7 +15566,6 @@
         "isolate_name": "ios_chrome_web_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_web_eg2tests_module iPad Pro (12.9-inch) (3rd generation) 16.2",
@@ -15820,7 +15621,6 @@
         "isolate_name": "ios_chrome_web_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_web_eg2tests_module iPhone 7 15.5",
@@ -15876,7 +15676,6 @@
         "isolate_name": "ios_chrome_web_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_web_eg2tests_module iPhone 8 16.2",
@@ -15932,7 +15731,6 @@
         "isolate_name": "ios_chrome_web_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_web_eg2tests_module iPhone X 15.5",
@@ -15988,7 +15786,6 @@
         "isolate_name": "ios_chrome_web_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_web_eg2tests_module iPhone X 16.2",
@@ -16043,7 +15840,6 @@
         "isolate_name": "ios_components_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_components_unittests iPhone 6s 15.5",
@@ -16097,7 +15893,6 @@
         "isolate_name": "ios_components_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_components_unittests iPhone 8 16.2",
@@ -16151,7 +15946,6 @@
         "isolate_name": "ios_net_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_net_unittests iPhone 6s 15.5",
@@ -16206,7 +16000,6 @@
         "isolate_name": "ios_net_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_net_unittests iPhone 8 16.2",
@@ -16261,7 +16054,6 @@
         "isolate_name": "ios_remoting_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_remoting_unittests iPhone 6s 15.5",
@@ -16315,7 +16107,6 @@
         "isolate_name": "ios_remoting_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_remoting_unittests iPhone 8 16.2",
@@ -16370,7 +16161,6 @@
         "isolate_name": "ios_showcase_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_showcase_eg2tests_module iPad Air (3rd generation) 16.2",
@@ -16425,7 +16215,6 @@
         "isolate_name": "ios_showcase_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_showcase_eg2tests_module iPad Air 2 15.5",
@@ -16480,7 +16269,6 @@
         "isolate_name": "ios_showcase_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_showcase_eg2tests_module iPad Pro (12.9-inch) (3rd generation) 15.5",
@@ -16535,7 +16323,6 @@
         "isolate_name": "ios_showcase_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_showcase_eg2tests_module iPad Pro (12.9-inch) (3rd generation) 16.2",
@@ -16590,7 +16377,6 @@
         "isolate_name": "ios_showcase_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_showcase_eg2tests_module iPhone 7 15.5",
@@ -16645,7 +16431,6 @@
         "isolate_name": "ios_showcase_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_showcase_eg2tests_module iPhone 8 16.2",
@@ -16700,7 +16485,6 @@
         "isolate_name": "ios_showcase_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_showcase_eg2tests_module iPhone X 15.5",
@@ -16755,7 +16539,6 @@
         "isolate_name": "ios_showcase_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_showcase_eg2tests_module iPhone X 16.2",
@@ -16809,7 +16592,6 @@
         "isolate_name": "ios_testing_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_testing_unittests iPhone 6s 15.5",
@@ -16863,7 +16645,6 @@
         "isolate_name": "ios_testing_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_testing_unittests iPhone 8 16.2",
@@ -16917,7 +16698,6 @@
         "isolate_name": "ios_web_inttests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_inttests iPad Air (3rd generation) 16.2",
@@ -16971,7 +16751,6 @@
         "isolate_name": "ios_web_inttests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_inttests iPad Air 2 15.5",
@@ -17025,7 +16804,6 @@
         "isolate_name": "ios_web_inttests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_inttests iPad Pro (12.9-inch) (3rd generation) 15.5",
@@ -17079,7 +16857,6 @@
         "isolate_name": "ios_web_inttests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_inttests iPad Pro (12.9-inch) (3rd generation) 16.2",
@@ -17133,7 +16910,6 @@
         "isolate_name": "ios_web_inttests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_inttests iPhone 6s 15.5",
@@ -17187,7 +16963,6 @@
         "isolate_name": "ios_web_inttests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_inttests iPhone 6s Plus 15.5",
@@ -17241,7 +17016,6 @@
         "isolate_name": "ios_web_inttests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_inttests iPhone 8 16.2",
@@ -17295,7 +17069,6 @@
         "isolate_name": "ios_web_inttests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_inttests iPhone 8 Plus 16.2",
@@ -17349,7 +17122,6 @@
         "isolate_name": "ios_web_inttests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_inttests iPhone SE (1st generation) 15.5",
@@ -17403,7 +17175,6 @@
         "isolate_name": "ios_web_inttests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_inttests iPhone SE (3rd generation) 16.2",
@@ -17458,7 +17229,6 @@
         "isolate_name": "ios_web_shell_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_shell_eg2tests_module iPad Air (3rd generation) 16.2",
@@ -17513,7 +17283,6 @@
         "isolate_name": "ios_web_shell_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_shell_eg2tests_module iPad Air 2 15.5",
@@ -17568,7 +17337,6 @@
         "isolate_name": "ios_web_shell_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_shell_eg2tests_module iPad Pro (12.9-inch) (3rd generation) 15.5",
@@ -17623,7 +17391,6 @@
         "isolate_name": "ios_web_shell_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_shell_eg2tests_module iPad Pro (12.9-inch) (3rd generation) 16.2",
@@ -17678,7 +17445,6 @@
         "isolate_name": "ios_web_shell_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_shell_eg2tests_module iPhone 6s 15.5",
@@ -17733,7 +17499,6 @@
         "isolate_name": "ios_web_shell_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_shell_eg2tests_module iPhone 7 15.5",
@@ -17788,7 +17553,6 @@
         "isolate_name": "ios_web_shell_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_shell_eg2tests_module iPhone 8 16.2",
@@ -17843,7 +17607,6 @@
         "isolate_name": "ios_web_shell_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_shell_eg2tests_module iPhone X 16.2",
@@ -17897,7 +17660,6 @@
         "isolate_name": "ios_web_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_unittests iPad Air (3rd generation) 16.2",
@@ -17951,7 +17713,6 @@
         "isolate_name": "ios_web_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_unittests iPad Air 2 15.5",
@@ -18005,7 +17766,6 @@
         "isolate_name": "ios_web_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_unittests iPad Pro (12.9-inch) (3rd generation) 15.5",
@@ -18059,7 +17819,6 @@
         "isolate_name": "ios_web_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
@@ -18113,7 +17872,6 @@
         "isolate_name": "ios_web_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_unittests iPhone 6s 15.5",
@@ -18167,7 +17925,6 @@
         "isolate_name": "ios_web_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_unittests iPhone 6s Plus 15.5",
@@ -18221,7 +17978,6 @@
         "isolate_name": "ios_web_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_unittests iPhone 8 16.2",
@@ -18275,7 +18031,6 @@
         "isolate_name": "ios_web_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_unittests iPhone 8 Plus 16.2",
@@ -18329,7 +18084,6 @@
         "isolate_name": "ios_web_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_unittests iPhone SE (1st generation) 15.5",
@@ -18383,7 +18137,6 @@
         "isolate_name": "ios_web_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_unittests iPhone SE (3rd generation) 16.2",
@@ -18437,7 +18190,6 @@
         "isolate_name": "ios_web_view_inttests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_view_inttests iPad Air (3rd generation) 16.2",
@@ -18491,7 +18243,6 @@
         "isolate_name": "ios_web_view_inttests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_view_inttests iPad Air 2 15.5",
@@ -18545,7 +18296,6 @@
         "isolate_name": "ios_web_view_inttests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_view_inttests iPad Pro (12.9-inch) (3rd generation) 15.5",
@@ -18599,7 +18349,6 @@
         "isolate_name": "ios_web_view_inttests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_view_inttests iPad Pro (12.9-inch) (3rd generation) 16.2",
@@ -18653,7 +18402,6 @@
         "isolate_name": "ios_web_view_inttests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_view_inttests iPhone 6s 15.5",
@@ -18707,7 +18455,6 @@
         "isolate_name": "ios_web_view_inttests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_view_inttests iPhone 6s Plus 15.5",
@@ -18761,7 +18508,6 @@
         "isolate_name": "ios_web_view_inttests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_view_inttests iPhone 8 16.2",
@@ -18815,7 +18561,6 @@
         "isolate_name": "ios_web_view_inttests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_view_inttests iPhone 8 Plus 16.2",
@@ -18869,7 +18614,6 @@
         "isolate_name": "ios_web_view_inttests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_view_inttests iPhone SE (1st generation) 15.5",
@@ -18923,7 +18667,6 @@
         "isolate_name": "ios_web_view_inttests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_view_inttests iPhone SE (3rd generation) 16.2",
@@ -18977,7 +18720,6 @@
         "isolate_name": "ios_web_view_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_view_unittests iPad Air (3rd generation) 16.2",
@@ -19031,7 +18773,6 @@
         "isolate_name": "ios_web_view_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_view_unittests iPad Air 2 15.5",
@@ -19085,7 +18826,6 @@
         "isolate_name": "ios_web_view_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_view_unittests iPad Pro (12.9-inch) (3rd generation) 15.5",
@@ -19139,7 +18879,6 @@
         "isolate_name": "ios_web_view_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_view_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
@@ -19193,7 +18932,6 @@
         "isolate_name": "ios_web_view_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_view_unittests iPhone 6s 15.5",
@@ -19247,7 +18985,6 @@
         "isolate_name": "ios_web_view_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_view_unittests iPhone 6s Plus 15.5",
@@ -19301,7 +19038,6 @@
         "isolate_name": "ios_web_view_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_view_unittests iPhone 8 16.2",
@@ -19355,7 +19091,6 @@
         "isolate_name": "ios_web_view_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_view_unittests iPhone 8 Plus 16.2",
@@ -19409,7 +19144,6 @@
         "isolate_name": "ios_web_view_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_view_unittests iPhone SE (1st generation) 15.5",
@@ -19463,7 +19197,6 @@
         "isolate_name": "ios_web_view_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_view_unittests iPhone SE (3rd generation) 16.2",
@@ -19517,7 +19250,6 @@
         "isolate_name": "net_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "net_unittests iPhone 6s 15.5",
@@ -19571,7 +19303,6 @@
         "isolate_name": "net_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "net_unittests iPhone 8 16.2",
@@ -19625,7 +19356,6 @@
         "isolate_name": "services_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "services_unittests iPhone 6s 15.5",
@@ -19679,7 +19409,6 @@
         "isolate_name": "services_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "services_unittests iPhone 8 16.2",
@@ -19733,7 +19462,6 @@
         "isolate_name": "skia_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "skia_unittests iPad Air (3rd generation) 16.2",
@@ -19787,7 +19515,6 @@
         "isolate_name": "skia_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "skia_unittests iPad Air 2 15.5",
@@ -19841,7 +19568,6 @@
         "isolate_name": "skia_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "skia_unittests iPad Pro (12.9-inch) (3rd generation) 15.5",
@@ -19895,7 +19621,6 @@
         "isolate_name": "skia_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "skia_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
@@ -19949,7 +19674,6 @@
         "isolate_name": "skia_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "skia_unittests iPhone 6s 15.5",
@@ -20003,7 +19727,6 @@
         "isolate_name": "skia_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "skia_unittests iPhone 6s Plus 15.5",
@@ -20057,7 +19780,6 @@
         "isolate_name": "skia_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "skia_unittests iPhone 8 16.2",
@@ -20111,7 +19833,6 @@
         "isolate_name": "skia_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "skia_unittests iPhone 8 Plus 16.2",
@@ -20165,7 +19886,6 @@
         "isolate_name": "skia_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "skia_unittests iPhone SE (1st generation) 15.5",
@@ -20219,7 +19939,6 @@
         "isolate_name": "skia_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "skia_unittests iPhone SE (3rd generation) 16.2",
@@ -20273,7 +19992,6 @@
         "isolate_name": "sql_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "sql_unittests iPhone 6s 15.5",
@@ -20327,7 +20045,6 @@
         "isolate_name": "sql_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "sql_unittests iPhone 8 16.2",
@@ -20381,7 +20098,6 @@
         "isolate_name": "ui_base_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ui_base_unittests iPad Air (3rd generation) 16.2",
@@ -20435,7 +20151,6 @@
         "isolate_name": "ui_base_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ui_base_unittests iPad Air 2 15.5",
@@ -20489,7 +20204,6 @@
         "isolate_name": "ui_base_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ui_base_unittests iPad Pro (12.9-inch) (3rd generation) 15.5",
@@ -20543,7 +20257,6 @@
         "isolate_name": "ui_base_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ui_base_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
@@ -20597,7 +20310,6 @@
         "isolate_name": "ui_base_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ui_base_unittests iPhone 6s 15.5",
@@ -20651,7 +20363,6 @@
         "isolate_name": "ui_base_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ui_base_unittests iPhone 6s Plus 15.5",
@@ -20705,7 +20416,6 @@
         "isolate_name": "ui_base_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ui_base_unittests iPhone 8 16.2",
@@ -20759,7 +20469,6 @@
         "isolate_name": "ui_base_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ui_base_unittests iPhone 8 Plus 16.2",
@@ -20813,7 +20522,6 @@
         "isolate_name": "ui_base_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ui_base_unittests iPhone SE (1st generation) 15.5",
@@ -20867,7 +20575,6 @@
         "isolate_name": "ui_base_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ui_base_unittests iPhone SE (3rd generation) 16.2",
@@ -20921,7 +20628,6 @@
         "isolate_name": "url_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "url_unittests iPhone 6s 15.5",
@@ -20975,7 +20681,6 @@
         "isolate_name": "url_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "url_unittests iPhone 8 16.2",
@@ -21023,7 +20728,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21041,7 +20745,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21059,7 +20762,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "swarming": {
@@ -21078,7 +20780,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21096,7 +20797,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21115,7 +20815,6 @@
         "ci_only": true,
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21133,7 +20832,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21152,7 +20850,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21170,7 +20867,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21188,7 +20884,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21206,7 +20901,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21224,7 +20918,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21242,7 +20935,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21260,7 +20952,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21278,7 +20969,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "webkit_unit_tests",
@@ -21297,7 +20987,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21315,7 +21004,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21333,7 +21021,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21355,7 +21042,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21373,7 +21059,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21391,7 +21076,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21409,7 +21093,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21427,7 +21110,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21445,7 +21127,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21463,7 +21144,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21481,7 +21161,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21499,7 +21178,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21517,7 +21195,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21535,7 +21212,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21553,7 +21229,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21572,7 +21247,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21590,7 +21264,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21608,7 +21281,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21626,7 +21298,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21644,7 +21315,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21662,7 +21332,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21680,7 +21349,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21698,7 +21366,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21716,7 +21383,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21734,7 +21400,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21752,7 +21417,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21770,7 +21434,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21788,7 +21451,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21806,7 +21468,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21824,7 +21485,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21842,7 +21502,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21860,7 +21519,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21878,7 +21536,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21896,7 +21553,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21915,7 +21571,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21933,7 +21588,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21951,7 +21605,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21969,7 +21622,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -21987,7 +21639,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22005,7 +21656,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22023,7 +21673,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22041,7 +21690,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22059,7 +21707,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22077,7 +21724,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22095,7 +21741,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22113,7 +21758,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22134,7 +21778,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22152,7 +21795,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22170,7 +21812,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22188,7 +21829,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22206,7 +21846,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22224,7 +21863,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22242,7 +21880,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22260,7 +21897,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22278,7 +21914,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22296,7 +21931,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22314,7 +21948,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22332,7 +21965,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22350,7 +21982,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22368,7 +21999,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22386,7 +22016,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22404,7 +22033,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22422,7 +22050,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22440,7 +22067,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22459,7 +22085,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22477,7 +22102,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22495,7 +22119,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22513,7 +22136,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22531,7 +22153,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22550,7 +22171,6 @@
         "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22568,7 +22188,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22586,7 +22205,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22604,7 +22222,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22622,7 +22239,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22640,7 +22256,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22658,7 +22273,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22676,7 +22290,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22698,7 +22311,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22716,7 +22328,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22734,7 +22345,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "swarming": {
@@ -22753,7 +22363,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22771,7 +22380,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22789,7 +22397,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22807,7 +22414,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22825,7 +22431,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22843,7 +22448,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22861,7 +22465,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22879,7 +22482,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "webkit_unit_tests",
@@ -22898,7 +22500,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22916,7 +22517,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22937,7 +22537,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22959,7 +22558,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22977,7 +22575,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -22995,7 +22592,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23013,7 +22609,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23031,7 +22626,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23049,7 +22643,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23067,7 +22660,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23085,7 +22677,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23103,7 +22694,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23124,7 +22714,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23143,7 +22732,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23161,7 +22749,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23179,7 +22766,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23197,7 +22783,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23215,7 +22800,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23233,7 +22817,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23251,7 +22834,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23269,7 +22851,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23287,7 +22868,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23305,7 +22885,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23323,7 +22902,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23341,7 +22919,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23359,7 +22936,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23377,7 +22953,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23395,7 +22970,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23413,7 +22987,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23431,7 +23004,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23449,7 +23021,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23467,7 +23038,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23485,7 +23055,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23503,7 +23072,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23522,7 +23090,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23540,7 +23107,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23558,7 +23124,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23576,7 +23141,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23594,7 +23158,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23612,7 +23175,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23630,7 +23192,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23648,7 +23209,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23666,7 +23226,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23684,7 +23243,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23702,7 +23260,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23720,7 +23277,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23738,7 +23294,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23756,7 +23311,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23774,7 +23328,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23792,7 +23345,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23810,7 +23362,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23828,7 +23379,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23846,7 +23396,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23864,7 +23413,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23882,7 +23430,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23900,7 +23447,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23918,7 +23464,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23936,7 +23481,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23954,7 +23498,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23972,7 +23515,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -23990,7 +23532,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -24008,7 +23549,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -24027,7 +23567,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -24045,7 +23584,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -24063,7 +23601,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -24081,7 +23618,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -24099,7 +23635,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -24117,7 +23652,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -24135,7 +23669,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -24153,7 +23686,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -24171,7 +23703,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -24189,7 +23720,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "xr_browser_tests",
@@ -24208,7 +23738,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -24229,7 +23758,6 @@
         "isolate_name": "blink_python_tests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "blink_python_tests",
@@ -24331,7 +23859,6 @@
         "isolate_name": "chromedriver_py_tests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "chromedriver_py_tests",
@@ -24353,7 +23880,6 @@
         "isolate_name": "chromedriver_replay_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "chromedriver_replay_unittests",
@@ -24372,7 +23898,6 @@
         "isolate_name": "content_shell_crash_test",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "content_shell_crash_test",
@@ -24395,7 +23920,6 @@
         "isolate_name": "flatbuffers_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "flatbuffers_unittests",
@@ -24418,7 +23942,6 @@
         "isolate_name": "fuchsia_pytype",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "fuchsia_pytype",
@@ -24441,7 +23964,6 @@
         "isolate_name": "grit_python_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "grit_python_unittests",
@@ -24540,7 +24062,6 @@
         "isolate_name": "mojo_python_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "mojo_python_unittests",
@@ -24639,7 +24160,6 @@
         "isolate_name": "telemetry_gpu_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "telemetry_gpu_unittests",
@@ -24666,7 +24186,6 @@
         "isolate_name": "telemetry_perf_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "telemetry_perf_unittests",
@@ -24694,7 +24213,6 @@
         "isolate_name": "telemetry_unittests",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "telemetry_unittests",
@@ -24851,7 +24369,6 @@
         "isolate_name": "telemetry_gpu_integration_test",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_cts_tests",
@@ -24927,7 +24444,6 @@
         "args": [],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "js_code_coverage_browser_tests",
@@ -24954,7 +24470,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -24972,7 +24487,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -24990,7 +24504,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25008,7 +24521,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25026,7 +24538,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25044,7 +24555,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25062,7 +24572,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25080,7 +24589,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25098,7 +24606,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25116,7 +24623,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "webkit_unit_tests",
@@ -25135,7 +24641,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25153,7 +24658,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25171,7 +24675,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25193,7 +24696,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25211,7 +24713,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25229,7 +24730,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25247,7 +24747,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25265,7 +24764,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25283,7 +24781,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25301,7 +24798,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25319,7 +24815,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25337,7 +24832,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25355,7 +24849,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25373,7 +24866,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25392,7 +24884,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25410,7 +24901,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25428,7 +24918,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25446,7 +24935,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25464,7 +24952,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25482,7 +24969,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25500,7 +24986,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25521,7 +25006,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25542,7 +25026,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25560,7 +25043,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25578,7 +25060,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25596,7 +25077,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25614,7 +25094,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25632,7 +25111,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25650,7 +25128,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25668,7 +25145,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25686,7 +25162,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25710,7 +25185,6 @@
         "description": "Run with ash-chrome version 113.0.5672.21",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "interactive_ui_tests Lacros version skew testing ash beta",
@@ -25743,7 +25217,6 @@
         "description": "Run with ash-chrome version 114.0.5700.0",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "interactive_ui_tests Lacros version skew testing ash canary",
@@ -25776,7 +25249,6 @@
         "description": "Run with ash-chrome version 114.0.5692.0",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "interactive_ui_tests Lacros version skew testing ash dev",
@@ -25809,7 +25281,6 @@
         "description": "Run with ash-chrome version 112.0.5615.62",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "interactive_ui_tests Lacros version skew testing ash stable",
@@ -25837,7 +25308,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -25858,7 +25328,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "lacros_chrome_browsertests",
@@ -25882,7 +25351,6 @@
         "description": "Run with ash-chrome version 113.0.5672.21",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "lacros_chrome_browsertests Lacros version skew testing ash beta",
@@ -25914,7 +25382,6 @@
         "description": "Run with ash-chrome version 114.0.5700.0",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "lacros_chrome_browsertests Lacros version skew testing ash canary",
@@ -25946,7 +25413,6 @@
         "description": "Run with ash-chrome version 114.0.5692.0",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "lacros_chrome_browsertests Lacros version skew testing ash dev",
@@ -25978,7 +25444,6 @@
         "description": "Run with ash-chrome version 112.0.5615.62",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "lacros_chrome_browsertests Lacros version skew testing ash stable",
@@ -26008,7 +25473,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "lacros_chrome_browsertests_run_in_series",
@@ -26033,7 +25497,6 @@
         "description": "Run with ash-chrome version 113.0.5672.21",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "lacros_chrome_browsertests_run_in_series Lacros version skew testing ash beta",
@@ -26066,7 +25529,6 @@
         "description": "Run with ash-chrome version 114.0.5700.0",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "lacros_chrome_browsertests_run_in_series Lacros version skew testing ash canary",
@@ -26099,7 +25561,6 @@
         "description": "Run with ash-chrome version 114.0.5692.0",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "lacros_chrome_browsertests_run_in_series Lacros version skew testing ash dev",
@@ -26132,7 +25593,6 @@
         "description": "Run with ash-chrome version 112.0.5615.62",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "lacros_chrome_browsertests_run_in_series Lacros version skew testing ash stable",
@@ -26160,7 +25620,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26178,7 +25637,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26196,7 +25654,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26214,7 +25671,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26232,7 +25688,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26250,7 +25705,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26268,7 +25722,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26286,7 +25739,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26304,7 +25756,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26322,7 +25773,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26340,7 +25790,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26358,7 +25807,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26376,7 +25824,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26394,7 +25841,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26412,7 +25858,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26430,7 +25875,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26448,7 +25892,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26466,7 +25909,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26484,7 +25926,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26502,7 +25943,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26520,7 +25960,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26538,7 +25977,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26556,7 +25994,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26574,7 +26011,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26592,7 +26028,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26610,7 +26045,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26628,7 +26062,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26646,7 +26079,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26664,7 +26096,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26682,7 +26113,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26703,7 +26133,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26721,7 +26150,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26739,7 +26167,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26757,7 +26184,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26775,7 +26201,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26797,7 +26222,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26816,7 +26240,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26835,7 +26258,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "swarming": {
@@ -26855,7 +26277,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26874,7 +26295,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26893,7 +26313,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26912,7 +26331,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26931,7 +26349,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26950,7 +26367,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -26969,7 +26385,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "webkit_unit_tests",
@@ -26989,7 +26404,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27008,7 +26422,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27030,7 +26443,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27049,7 +26461,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27068,7 +26479,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27087,7 +26497,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27106,7 +26515,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27125,7 +26533,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27144,7 +26551,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27163,7 +26569,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27185,7 +26590,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27205,7 +26609,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27224,7 +26627,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27243,7 +26645,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27262,7 +26663,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27281,7 +26681,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27300,7 +26699,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27319,7 +26717,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27338,7 +26735,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27357,7 +26753,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27376,7 +26771,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27395,7 +26789,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27414,7 +26807,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27433,7 +26825,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27452,7 +26843,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27471,7 +26861,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27490,7 +26879,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27509,7 +26897,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27528,7 +26915,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27547,7 +26933,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27566,7 +26951,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27588,7 +26972,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27608,7 +26991,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27627,7 +27009,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27646,7 +27027,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27665,7 +27045,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27684,7 +27063,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27703,7 +27081,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27722,7 +27099,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27741,7 +27117,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27760,7 +27135,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27779,7 +27153,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27798,7 +27171,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27817,7 +27189,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27836,7 +27207,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27855,7 +27225,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27874,7 +27243,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27893,7 +27261,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27912,7 +27279,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27931,7 +27297,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27950,7 +27315,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27969,7 +27333,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -27988,7 +27351,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28007,7 +27369,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28026,7 +27387,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28045,7 +27405,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28064,7 +27423,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28083,7 +27441,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28105,7 +27462,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28124,7 +27480,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28143,7 +27498,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28162,7 +27516,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28181,7 +27534,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28200,7 +27552,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28219,7 +27570,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28238,7 +27588,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28257,7 +27606,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28276,7 +27624,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "xr_browser_tests",
@@ -28296,7 +27643,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28320,7 +27666,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28338,7 +27683,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28356,7 +27700,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "swarming": {
@@ -28375,7 +27718,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28393,7 +27735,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28411,7 +27752,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28429,7 +27769,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28447,7 +27786,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28465,7 +27803,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28483,7 +27820,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28501,7 +27837,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "webkit_unit_tests",
@@ -28520,7 +27855,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28538,7 +27872,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28556,7 +27889,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28578,7 +27910,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28596,7 +27927,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28614,7 +27944,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28632,7 +27961,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28650,7 +27978,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28668,7 +27995,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28686,7 +28012,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28704,7 +28029,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28722,7 +28046,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28740,7 +28063,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28758,7 +28080,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28776,7 +28097,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28795,7 +28115,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28813,7 +28132,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28831,7 +28149,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28849,7 +28166,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28867,7 +28183,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28885,7 +28200,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28903,7 +28217,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28921,7 +28234,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28939,7 +28251,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28957,7 +28268,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28975,7 +28285,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -28993,7 +28302,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29011,7 +28319,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29029,7 +28336,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29047,7 +28353,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29065,7 +28370,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29083,7 +28387,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29101,7 +28404,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29119,7 +28421,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29137,7 +28438,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29155,7 +28455,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29173,7 +28472,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29191,7 +28489,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29209,7 +28506,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29227,7 +28523,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29246,7 +28541,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29265,7 +28559,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29283,7 +28576,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29301,7 +28593,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29319,7 +28610,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29337,7 +28627,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29355,7 +28644,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29373,7 +28661,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29391,7 +28678,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29409,7 +28695,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29427,7 +28712,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29445,7 +28729,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29463,7 +28746,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29481,7 +28763,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29499,7 +28780,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29517,7 +28797,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29535,7 +28814,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29553,7 +28831,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29571,7 +28848,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29590,7 +28866,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29608,7 +28883,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29626,7 +28900,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29644,7 +28917,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29662,7 +28934,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29681,7 +28952,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29699,7 +28969,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29717,7 +28986,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29735,7 +29003,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29753,7 +29020,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29771,7 +29037,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29789,7 +29054,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29807,7 +29071,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29825,7 +29088,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29843,7 +29105,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29861,7 +29122,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29879,7 +29139,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29897,7 +29156,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29915,7 +29173,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29933,7 +29190,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29951,7 +29207,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29969,7 +29224,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -29987,7 +29241,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -30005,7 +29258,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -30074,7 +29326,6 @@
         "isolate_name": "telemetry_gpu_integration_test",
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_cts_tests",

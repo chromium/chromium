@@ -18,7 +18,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test_android_chrome",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgl_conformance_gles_passthrough_tests",
@@ -70,7 +69,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "angle_end2end_tests iPhone X 16.2",
@@ -128,7 +126,6 @@
         ],
         "isolate_profile_data": true,
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "angle_white_box_tests iPhone X 16.2",
@@ -184,7 +181,6 @@
           "--no-xvfb"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "gl_tests_passthrough",
@@ -210,7 +206,6 @@
           "--no-xvfb"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -246,7 +241,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "info_collection_tests",
@@ -282,7 +276,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "trace_test",
@@ -321,7 +314,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgl2_conformance_gl_passthrough_tests",
@@ -360,7 +352,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgl_conformance_gl_passthrough_tests",
@@ -397,7 +388,6 @@
           "--no-xvfb"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "gl_tests_passthrough",
@@ -423,7 +413,6 @@
           "--no-xvfb"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -459,7 +448,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "info_collection_tests",
@@ -495,7 +483,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "trace_test",
@@ -534,7 +521,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgl2_conformance_gl_passthrough_tests",
@@ -573,7 +559,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgl_conformance_gl_passthrough_tests",
@@ -609,7 +594,6 @@
           "--use-gpu-in-tests"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "gl_tests_passthrough",
@@ -637,7 +621,6 @@
           "--use-gpu-in-tests"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -676,7 +659,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "info_collection_tests",
@@ -718,7 +700,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgl2_conformance_metal_passthrough_tests",
@@ -760,7 +741,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgl_conformance_gl_passthrough_tests",
@@ -802,7 +782,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgl_conformance_metal_passthrough_tests",
@@ -844,7 +823,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgl_conformance_swangle_passthrough_tests",
@@ -883,7 +861,6 @@
           "--use-gpu-in-tests"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "gl_tests_passthrough",
@@ -909,7 +886,6 @@
           "--use-gpu-in-tests"
         ],
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
@@ -946,7 +922,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "info_collection_tests",
@@ -986,7 +961,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgl2_conformance_gl_passthrough_tests",
@@ -1028,7 +1002,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgl2_conformance_metal_passthrough_tests",
@@ -1068,7 +1041,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgl_conformance_gl_passthrough_tests",
@@ -1109,7 +1081,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgl_conformance_metal_passthrough_tests",
@@ -1149,7 +1120,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgl_conformance_swangle_passthrough_tests",
@@ -1200,7 +1170,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "info_collection_tests",
@@ -1240,7 +1209,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgl2_conformance_d3d11_passthrough_tests",
@@ -1280,7 +1248,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgl_conformance_d3d11_passthrough_tests",
@@ -1320,7 +1287,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgl_conformance_d3d9_passthrough_tests",
@@ -1359,7 +1325,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgl_conformance_vulkan_passthrough_tests",
@@ -1405,7 +1370,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "info_collection_tests",
@@ -1445,7 +1409,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgl2_conformance_d3d11_passthrough_tests",
@@ -1485,7 +1448,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgl_conformance_d3d11_passthrough_tests",
@@ -1525,7 +1487,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgl_conformance_d3d9_passthrough_tests",
@@ -1564,7 +1525,6 @@
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgl_conformance_vulkan_passthrough_tests",

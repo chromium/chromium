@@ -15,7 +15,6 @@
         "autotest_name": "chromium_Graphics",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
         "merge": {
-          "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "foo_tests",
