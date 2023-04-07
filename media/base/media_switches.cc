@@ -1264,11 +1264,11 @@ BASE_FEATURE(kUseSequencedTaskRunnerForMojoVEAProvider,
 #endif
 );
 
-// Use SequencedTaskRunner for each MojoVideoEncodeAcceleratorService. Replaces
+// Use TaskRunner for each MojoVideoEncodeAcceleratorService. Replaces
 // per-accelerator encoding task runner.
-BASE_FEATURE(kUseSequencedTaskRunnerForMojoVEAService,
-             "UseSequencedTaskRunnerForMojoVEAService",
-#if BUILDFLAG(IS_APPLE)
+BASE_FEATURE(kUseTaskRunnerForMojoVEAService,
+             "kUseTaskRunnerForMojoVEAService",
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
