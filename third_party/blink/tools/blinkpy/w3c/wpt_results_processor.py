@@ -699,7 +699,7 @@ class WPTResultsProcessor:
                               artifacts_base_dir=self.fs.basename(
                                   self.artifacts_dir))
         leaf = self._leaves[result.name]
-        if result.actual != ResultType.Pass:
+        if result.actual not in [ResultType.Pass, ResultType.Skip]:
             self._write_text_results(result.name, artifacts,
                                      result.actual_metadata, result.file_path)
             screenshots = (extra or {}).get('reftest_screenshots') or []
