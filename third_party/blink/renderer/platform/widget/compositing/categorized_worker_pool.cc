@@ -35,7 +35,7 @@ namespace {
 
 BASE_FEATURE(kUseCompositorJob,
              "UseCompositorJob",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Task categories running at normal thread priority.
 constexpr cc::TaskCategory kNormalThreadPriorityCategories[] = {
