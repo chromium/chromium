@@ -76,12 +76,12 @@ def add_build_ios_to_sys_path():
 
 def bootstrap_wpt_imports():
     """Bootstrap the availability of all wpt-vended packages."""
-    path = os.path.join(get_wpt_tools_wpt_dir(), 'tools')
+    path = get_wpt_tools_wpt_dir()
     if path not in sys.path:
         sys.path.insert(0, path)
     # This module is under `//third_party/wpt_tools/wpt/tools`, and has the side
     # effect of inserting wpt-related directories into `sys.path`.
-    import localpaths  # pylint: disable=unused-import
+    from tools import localpaths  # pylint: disable=unused-import
 
 
 def add_depot_tools_dir_to_os_path():
