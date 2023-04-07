@@ -22,6 +22,7 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
+GEN('#include "chromeos/constants/chromeos_features.h"');
 
 this.OSFeedbackBrowserTest = class extends PolymerTest {
   /** @override */
@@ -32,7 +33,12 @@ this.OSFeedbackBrowserTest = class extends PolymerTest {
 
   /** @override */
   get featureList() {
-    return {enabled: ['ash::features::kOsFeedback']};
+    return {
+      enabled: [
+        'ash::features::kOsFeedback', 'ash::features::kOsFeedbackJelly',
+        'chromeos::features::kJelly'
+      ]
+    };
   }
 };
 

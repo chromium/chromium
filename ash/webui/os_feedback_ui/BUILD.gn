@@ -18,6 +18,7 @@ static_library("os_feedback_ui") {
   ]
 
   deps = [
+    "//ash/constants:constants",
     "//ash/webui/os_feedback_ui/backend",
     "//ash/webui/os_feedback_ui/mojom",
     "//ash/webui/resources:os_feedback_resources",

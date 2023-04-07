@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/webui/grit/ash_os_feedback_resources.h"
 #include "ash/webui/grit/ash_os_feedback_resources_map.h"
 #include "ash/webui/os_feedback_ui/backend/feedback_service_provider.h"
@@ -21,6 +22,7 @@
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/resources/grit/webui_resources.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/webui_allowlist.h"
 
@@ -37,6 +39,8 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
   source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
   source->AddResourcePath("test_loader_util.js",
                           IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
+  source->AddBoolean("isJellyEnabledForOsFeedback",
+                     ash::features::IsJellyEnabledForOsFeedback());
 }
 
 void AddLocalizedStrings(content::WebUIDataSource* source) {
@@ -177,6 +181,13 @@ void OSFeedbackUI::BindInterface(
     mojo::PendingReceiver<os_feedback_ui::mojom::HelpContentProvider>
         receiver) {
   help_content_provider_->BindInterface(std::move(receiver));
+}
+
+void OSFeedbackUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
+  CHECK(ash::features::IsJellyEnabledForOsFeedback());
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(OSFeedbackUI)
