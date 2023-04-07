@@ -18,6 +18,8 @@
 
 namespace ash {
 
+class HotspotFeatureUsageMetrics;
+
 // Handles enable or disable hotspot.
 //
 // Enabling the hotspot involves the following operations:
@@ -45,6 +47,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
   virtual ~HotspotController();
 
   void Init(HotspotCapabilitiesProvider* hotspot_capabilities_provider,
+            HotspotFeatureUsageMetrics* hotspot_feature_usage_metrics,
             HotspotStateHandler* hotspot_state_handler,
             TechnologyStateController* technolog_state_controller);
 
@@ -124,6 +127,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
   base::queue<std::unique_ptr<HotspotControlRequest>> queued_requests_;
   bool allow_hotspot_ = true;
   HotspotCapabilitiesProvider* hotspot_capabilities_provider_ = nullptr;
+  HotspotFeatureUsageMetrics* hotspot_feature_usage_metrics_ = nullptr;
   HotspotStateHandler* hotspot_state_handler_ = nullptr;
   TechnologyStateController* technology_state_controller_ = nullptr;
 

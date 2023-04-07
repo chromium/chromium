@@ -10,7 +10,9 @@
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
+#include "chromeos/ash/components/network/enterprise_managed_metadata_store.h"
 #include "chromeos/ash/components/network/hotspot_state_handler.h"
+#include "chromeos/ash/components/network/metrics/hotspot_feature_usage_metrics.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/services/hotspot_config/public/cpp/hotspot_enabled_state_test_observer.h"
@@ -31,18 +33,26 @@ const char kCellularServiceName[] = "cellular_name0";
 class HotspotEnabledStateNotifierTest : public ::testing::Test {
  public:
   void SetUp() override {
+    enterprise_managed_metadata_store_ =
+        std::make_unique<EnterpriseManagedMetadataStore>();
     hotspot_state_handler_ = std::make_unique<HotspotStateHandler>();
     hotspot_state_handler_->Init();
     hotspot_capabilities_provider_ =
         std::make_unique<HotspotCapabilitiesProvider>();
     hotspot_capabilities_provider_->Init(
         network_state_test_helper_.network_state_handler());
+    hotspot_feature_usage_metrics_ =
+        std::make_unique<HotspotFeatureUsageMetrics>();
+    hotspot_feature_usage_metrics_->Init(
+        enterprise_managed_metadata_store_.get(),
+        hotspot_capabilities_provider_.get());
     technology_state_controller_ =
         std::make_unique<TechnologyStateController>();
     technology_state_controller_->Init(
         network_state_test_helper_.network_state_handler());
     hotspot_controller_ = std::make_unique<HotspotController>();
     hotspot_controller_->Init(hotspot_capabilities_provider_.get(),
+                              hotspot_feature_usage_metrics_.get(),
                               hotspot_state_handler_.get(),
                               technology_state_controller_.get());
     hotspot_enabled_state_notifier_ =
@@ -149,8 +159,11 @@ class HotspotEnabledStateNotifierTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   NetworkStateTestHelper network_state_test_helper_{
       /*use_default_devices_and_services=*/false};
+  std::unique_ptr<EnterpriseManagedMetadataStore>
+      enterprise_managed_metadata_store_;
   std::unique_ptr<HotspotStateHandler> hotspot_state_handler_;
   std::unique_ptr<HotspotCapabilitiesProvider> hotspot_capabilities_provider_;
+  std::unique_ptr<HotspotFeatureUsageMetrics> hotspot_feature_usage_metrics_;
   std::unique_ptr<TechnologyStateController> technology_state_controller_;
   std::unique_ptr<HotspotController> hotspot_controller_;
   std::unique_ptr<HotspotEnabledStateNotifier> hotspot_enabled_state_notifier_;

@@ -6,6 +6,7 @@
 
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/network/hotspot_util.h"
+#include "chromeos/ash/components/network/metrics/hotspot_feature_usage_metrics.h"
 #include "chromeos/ash/components/network/metrics/hotspot_metrics_helper.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_handler_callbacks.h"
@@ -34,9 +35,11 @@ HotspotController::~HotspotController() {
 
 void HotspotController::Init(
     HotspotCapabilitiesProvider* hotspot_capabilities_provider,
+    HotspotFeatureUsageMetrics* hotspot_feature_usage_metrics,
     HotspotStateHandler* hotspot_state_handler,
     TechnologyStateController* technology_state_controller) {
   hotspot_capabilities_provider_ = hotspot_capabilities_provider;
+  hotspot_feature_usage_metrics_ = hotspot_feature_usage_metrics;
   hotspot_state_handler_ = hotspot_state_handler;
   technology_state_controller_ = technology_state_controller;
   technology_state_controller_->set_hotspot_operation_delegate(this);
@@ -188,25 +191,32 @@ void HotspotController::OnSetTetheringEnabledFailure(
 
 void HotspotController::CompleteCurrentRequest(
     hotspot_config::mojom::HotspotControlResult result) {
+  using hotspot_config::mojom::HotspotControlResult;
+
   if (current_request_->enabled &&
-      result !=
-          hotspot_config::mojom::HotspotControlResult::kAlreadyFulfilled) {
+      result != HotspotControlResult::kAlreadyFulfilled) {
     HotspotMetricsHelper::RecordEnableHotspotLatency(
         current_request_->enable_latency_timer->Elapsed());
   }
+
+  if (current_request_->enabled) {
+    hotspot_feature_usage_metrics_->RecordHotspotEnableAttempt(
+        result == HotspotControlResult::kSuccess);
+  }
+
   HotspotMetricsHelper::RecordSetTetheringEnabledResult(
       current_request_->enabled, result);
 
   NET_LOG(EVENT) << "Complete SetTetheringEnabled request, enabled: "
                  << current_request_->enabled << ", result: " << result;
   if (current_request_->wifi_turned_off && current_request_->enabled &&
-      result != hotspot_config::mojom::HotspotControlResult::kSuccess) {
+      result != HotspotControlResult::kSuccess) {
     // Turn Wifi back on if failed to enable hotspot.
     technology_state_controller_->SetTechnologiesEnabled(
         NetworkTypePattern::WiFi(), /*enabled=*/true,
         network_handler::ErrorCallback());
   }
-  if (result == hotspot_config::mojom::HotspotControlResult::kSuccess) {
+  if (result == HotspotControlResult::kSuccess) {
     if (current_request_->enabled) {
       NotifyHotspotTurnedOn(current_request_->wifi_turned_off);
     } else {

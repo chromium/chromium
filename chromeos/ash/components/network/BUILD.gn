@@ -88,6 +88,8 @@ component("network") {
     "client_cert_util.h",
     "device_state.cc",
     "device_state.h",
+    "enterprise_managed_metadata_store.cc",
+    "enterprise_managed_metadata_store.h",
     "fast_transition_observer.cc",
     "fast_transition_observer.h",
     "firewall_hole.cc",
