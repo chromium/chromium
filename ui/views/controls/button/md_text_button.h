@@ -49,6 +49,9 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
   void SetStyle(views::MdTextButton::Style button_style);
   Style GetStyle() const;
 
+  // Returns the hover color depending on the button style.
+  SkColor GetHoverColor(Style button_style);
+
   // See |bg_color_override_|.
   void SetBgColorOverride(const absl::optional<SkColor>& color);
   absl::optional<SkColor> GetBgColorOverride() const;

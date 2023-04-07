@@ -250,6 +250,7 @@
   E_CPONLY(kColorButtonForegroundDisabled) \
   E_CPONLY(kColorButtonForegroundProminent) \
   E_CPONLY(kColorButtonForegroundTonal) \
+  E_CPONLY(kColorButtonHoverBackgroundText) \
   E_CPONLY(kColorMultitaskFeedbackButtonLabelBackground) \
   E_CPONLY(kColorMultitaskFeedbackButtonLabelForeground) \
   E_CPONLY(kColorMultitaskMenuNudgePulse) \
