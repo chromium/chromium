@@ -104,7 +104,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addSectionWithIdentifier:DefaultSectionIdentifier];
 
   if (IsFollowManagementInstantReloadEnabled()) {
-    // TODO(crbug.com/1417284): show a spinner.
+    // Show a spinner.
+    [self startLoadingIndicatorWithLoadingMessage:@""];
+    // Load the followed websites.
     [self.followedWebChannelsDataSource loadFollowedWebSites];
   } else {
     NSArray<FollowedWebChannel*>* followedWebChannels =
@@ -288,6 +290,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)updateFollowedWebSites {
+  CHECK(IsFollowManagementInstantReloadEnabled());
+
+  // TODO(crbug.com/1430863): implement a timeout feature.
+
+  // Remove the spinner.
+  [self stopLoadingIndicatorWithCompletion:nil];
+
+  // Add followed website items.
   NSArray<FollowedWebChannel*>* followedWebChannels =
       self.followedWebChannelsDataSource.followedWebChannels;
   for (FollowedWebChannel* channel in followedWebChannels) {
