@@ -182,14 +182,20 @@ export class ColorSelector extends WithPersonalizationStore {
       default:
         return;
     }
-    // Remove focus state of previous button.
+    // Remove focus state of color icon in previous button.
     if (prevButton) {
-      prevButton.removeAttribute('tabindex');
+      const colorIconElem = this.getColorIconElement_(prevButton);
+      if (colorIconElem) {
+        colorIconElem.removeAttribute('tabindex');
+      }
     }
-    // Add focus state for new button.
+    // Add focus state for the color icon in new button.
     if (this.ironSelectedColor_) {
-      this.ironSelectedColor_.setAttribute('tabindex', '0');
-      this.ironSelectedColor_.focus();
+      const colorIconElem = this.getColorIconElement_(this.ironSelectedColor_);
+      if (colorIconElem) {
+        colorIconElem.setAttribute('tabindex', '0');
+        colorIconElem.focus();
+      }
     }
     e.detail.keyboardEvent.preventDefault();
   }
@@ -243,6 +249,11 @@ export class ColorSelector extends WithPersonalizationStore {
         handleNudgeShown(getKeyboardBacklightProvider(), this.getStore());
       }, 3000);
     }
+  }
+
+  private getColorIconElement_(button: HTMLElement): HTMLElement {
+    return this.shadowRoot!.getElementById(button.id)!.querySelector(
+               'color-icon') as HTMLElement;
   }
 
   private getColorSelectorAriaLabel_(): string {

@@ -8,6 +8,12 @@
     width: 642px;
   }
 
+  @media (max-width: 650px) {
+    cr-dialog::part(dialog) {
+      width: 560px;
+    }
+  }
+
   #zoneSelector {
     background-color: var(--cros-tab-slider-track-color);
     border-radius: 24px;
@@ -33,6 +39,7 @@
     cursor: pointer;
     font: var(--cros-button-2-font);
     height: 100%;
+    padding: 6px 0 6px 0;
     position: relative;
     width: 100%;
   }
@@ -46,7 +53,7 @@
     align-items: center;
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
-    padding: 6px 0 6px 0;
+    height: 100%;
     width: 100%;
   }
 

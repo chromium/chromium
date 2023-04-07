@@ -47,14 +47,16 @@ suite('ZoneCustomizationElementTest', function() {
       expectedColor: string, colorContainers: NodeListOf<Element>) {
     for (let i = 0; i < colorContainers!.length; i++) {
       const colorContainer = colorContainers[i] as HTMLElement;
+      const colorIconElem =
+          colorContainer!.querySelector('color-icon') as HTMLElement;
       const colorId = colorContainer.id;
       if (colorId === expectedColor) {
         assertEquals(
-            'true', colorContainer.ariaChecked,
+            'true', colorIconElem.ariaChecked,
             `${expectedColor} should be highlighted.`);
       } else {
         assertEquals(
-            'false', colorContainer.ariaChecked,
+            'false', colorIconElem.ariaChecked,
             `${colorId} should not be highlighted.`);
       }
     }
