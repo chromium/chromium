@@ -420,6 +420,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
 
   private closeDailyRefreshConfirmationDialog_() {
     this.shouldShowDailyRefreshConfirmationDialog_ = false;
+    this.shadowRoot!.getElementById('dailyRefresh')?.focus();
   }
 
   private onAcceptDailyRefreshDialog_() {
