@@ -283,7 +283,7 @@
 <translation id="1235924639474699896">{COUNT,plural, =1{ข้อความ}other{# ข้อความ}}</translation>
 <translation id="1236009322878349843">แก้ไขโทรศัพท์</translation>
 <translation id="1239594683407221485">สำรวจเนื้อหาของอุปกรณ์ในแอป Files</translation>
-<translation id="1240903469550363138">หากต้องการดำเนินการต่อ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> จะแชร์ชื่อ อีเมล และรูปโปรไฟล์ของคุณกับเว็บไซต์นี้ อ่าน<ph name="BEGIN_LINK1" />นโยบายความเป็นส่วนตัว<ph name="END_LINK1" />และ<ph name="BEGIN_LINK2" />ข้อกำหนดในการให้บริการ<ph name="END_LINK2" />ของเว็บไซต์</translation>
+<translation id="1240903469550363138">หากต้องการดำเนินการต่อ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> จะแชร์ชื่อ อีเมล และรูปโปรไฟล์ของคุณกับเว็บไซต์นี้ โปรดอ่าน<ph name="BEGIN_LINK1" />นโยบายความเป็นส่วนตัว<ph name="END_LINK1" />และ<ph name="BEGIN_LINK2" />ข้อกำหนดในการให้บริการ<ph name="END_LINK2" />ของเว็บไซต์</translation>
 <translation id="1241066500170667906">เลือกสถานะการทดสอบสำหรับ<ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">ภาษาเพิ่มเติม</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> ต้องการรีเซ็ตการตั้งค่าของคุณ</translation>
@@ -1899,7 +1899,7 @@
 <translation id="2605668923777146443">ไปที่<ph name="LINK_BEGIN" />การตั้งค่า<ph name="LINK_END" />เพื่อดูตัวเลือกสำหรับ Better Together</translation>
 <translation id="2606246518223360146">ลิงก์ข้อมูล</translation>
 <translation id="2606454609872547359">ไม่ ดำเนินการต่อโดยไม่ใช้ ChromeVox</translation>
-<translation id="2606568927909309675">สร้างคำบรรยายสำหรับเสียงและวิดีโอภาษาอังกฤษโดยอัตโนมัติ ระบบจะไม่ส่งเสียงและคำบรรยายออกไปจากอุปกรณ์</translation>
+<translation id="2606568927909309675">สร้างคำบรรยายแทนเสียงสำหรับเสียงและวิดีโอภาษาอังกฤษโดยอัตโนมัติ ระบบจะไม่ส่งเสียงและคำบรรยายแทนเสียงออกไปจากอุปกรณ์</translation>
 <translation id="2607101320794533334">ข้อมูลหัวเรื่องคีย์สาธารณะ</translation>
 <translation id="2609896558069604090">สร้างทางลัด...</translation>
 <translation id="2609980095400624569">เริ่มการเชื่อมต่อไม่ได้</translation>
@@ -2170,7 +2170,7 @@
 <translation id="2832124733806557606">บุตรหลานจะใช้ PIN เพื่อลงชื่อเข้าใช้หรือปลดล็อกอุปกรณ์ได้</translation>
 <translation id="2835177225987815960">ระบบจะรีเซ็ตการตั้งค่าการสแกนในปัจจุบัน ซึ่งรวมถึงสวิตช์ที่กำหนดไว้และค่ากำหนดความเร็วในการสแกนอัตโนมัติ</translation>
 <translation id="2835547721736623118">บริการการรู้จำคำพูด</translation>
-<translation id="2836232638504556905">หากต้องการดำเนินการต่อ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> จะแชร์ชื่อ อีเมล และรูปโปรไฟล์ของคุณกับเว็บไซต์นี้ ดู<ph name="BEGIN_LINK" />นโยบายความเป็นส่วนตัว<ph name="END_LINK" />ของเว็บไซต์</translation>
+<translation id="2836232638504556905">หากต้องการดำเนินการต่อ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> จะแชร์ชื่อ อีเมล และรูปโปรไฟล์ของคุณกับเว็บไซต์นี้ โปรดอ่าน<ph name="BEGIN_LINK" />นโยบายความเป็นส่วนตัว<ph name="END_LINK" />ของเว็บไซต์</translation>
 <translation id="2836269494620652131">ขัดข้อง</translation>
 <translation id="283669119850230892">หากต้องการใช้เครือข่าย <ph name="NETWORK_ID" /> ก่อนอื่น ให้เชื่อมต่ออินเทอร์เน็ตตามด้านล่างนี้</translation>
 <translation id="2838379631617906747">การติดตั้ง</translation>
@@ -2193,7 +2193,7 @@
 <translation id="2850541429955027218">เพิ่มธีม</translation>
 <translation id="2850672011315104382">รูปแบบเครื่องหมายวรรคตอน</translation>
 <translation id="2852385257476173980">รายการเว็บไซต์ที่คุณเข้าชมอาจปรากฏที่นี่เมื่อคุณท่องเว็บ</translation>
-<translation id="285241945869362924">สร้างคำบรรยายสำหรับเสียงและวิดีโอโดยอัตโนมัติ ระบบจะไม่ส่งเสียงและคำบรรยายออกไปจากอุปกรณ์</translation>
+<translation id="285241945869362924">สร้างคำบรรยายแทนเสียงสำหรับเสียงและวิดีโอโดยอัตโนมัติ ระบบจะไม่ส่งเสียงและคำบรรยายแทนเสียงออกไปจากอุปกรณ์</translation>
 <translation id="2856776373509145513">สร้างคอนเทนเนอร์ใหม่</translation>
 <translation id="2861301611394761800">การอัปเดตระบบเสร็จสมบูรณ์ โปรดรีสตาร์ทระบบ</translation>
 <translation id="2861941300086904918">ตัวจัดการความปลอดภัยไคลเอ็นต์ในระบบ</translation>
@@ -2403,7 +2403,7 @@
 <translation id="3030967311408872958">พระอาทิตย์ตกถึงพระอาทิตย์ขึ้น</translation>
 <translation id="3031417829280473749">เอเจนต์เอ็กซ์</translation>
 <translation id="3031557471081358569">เลือกรายการที่จะนำเข้าต่อไปนี้:</translation>
-<translation id="3032204772252313646">คําบรรยายอัตโนมัติ</translation>
+<translation id="3032204772252313646">คําบรรยายแทนเสียงอัตโนมัติ</translation>
 <translation id="3033348223765101500">ควบคุมข้อมูลของคุณ</translation>
 <translation id="3036327949511794916">เลยกำหนดเวลาส่งคืน <ph name="DEVICE_TYPE" /> เครื่องนี้แล้ว</translation>
 <translation id="3036546437875325427">เปิดใช้ Flash</translation>
@@ -3912,7 +3912,7 @@
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">ย้ายไปที่…</translation>
 <translation id="4406883609789734330">คำบรรยายสด</translation>
-<translation id="4407039574263172582">หากต้องการดำเนินการต่อ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> จะแชร์ชื่อ อีเมล และรูปโปรไฟล์ของคุณกับเว็บไซต์นี้ ดู<ph name="BEGIN_LINK" />ข้อกำหนดในการให้บริการ<ph name="END_LINK" />ของเว็บไซต์นี้</translation>
+<translation id="4407039574263172582">หากต้องการดำเนินการต่อ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> จะแชร์ชื่อ อีเมล และรูปโปรไฟล์ของคุณกับเว็บไซต์นี้ โปรดอ่าน<ph name="BEGIN_LINK" />ข้อกำหนดในการให้บริการ<ph name="END_LINK" />ของเว็บไซต์</translation>
 <translation id="4408599188496843485">ความ&amp;ช่วยเหลือ</translation>
 <translation id="4409271659088619928">เครื่องมือค้นหาของคุณคือ <ph name="DSE" /> ดูวิธีลบประวัติการค้นหา (หากมี) ของเครื่องมือค้นหาที่คุณใช้</translation>
 <translation id="4409697491990005945">ระยะขอบ</translation>
@@ -4877,7 +4877,7 @@
 <translation id="5288678174502918605">เ&amp;ปิดแท็บที่ถูกปิดขึ้นใหม่</translation>
 <translation id="52895863590846877">หน้านี้ไม่ใช่ภาษา<ph name="LANGUAGE" /></translation>
 <translation id="52912272896845572">ไฟล์กุญแจส่วนตัวไม่ถูกต้อง</translation>
-<translation id="5291739252352359682">สร้างคำบรรยายสำหรับสื่อในเบราว์เซอร์ Chrome โดยอัตโนมัติ (ปัจจุบันพร้อมให้บริการเป็นภาษาอังกฤษ) เสียงและคำบรรยายจะประมวลผลในอุปกรณ์และจะไม่มีการส่งออกไปจากอุปกรณ์</translation>
+<translation id="5291739252352359682">สร้างคำบรรยายแทนเสียงสำหรับสื่อในเบราว์เซอร์ Chrome โดยอัตโนมัติ (ปัจจุบันพร้อมให้บริการเป็นภาษาอังกฤษ) เสียงและคำบรรยายแทนเสียงจะประมวลผลในอุปกรณ์และจะไม่มีการส่งออกไปจากอุปกรณ์</translation>
 <translation id="529175790091471945">ฟอร์แมตอุปกรณ์นี้</translation>
 <translation id="529296195492126134">ไม่รองรับโหมดชั่วคราว โปรดติดต่อผู้ดูแลระบบ</translation>
 <translation id="5293170712604732402">คืนค่าการตั้งค่าเป็นค่าเริ่มต้นเดิม</translation>
@@ -5678,7 +5678,7 @@
 <translation id="6011193465932186973">ลายนิ้วมือ</translation>
 <translation id="6011308810877101166">ปรับปรุงการแนะนำการค้นหา</translation>
 <translation id="6011908034087870826">กำลังส่งลิงก์ไปยัง <ph name="DEVICE_NAME" /></translation>
-<translation id="6013027779243312217">รับคำบรรยายสำหรับเสียงและวิดีโอของคุณ</translation>
+<translation id="6013027779243312217">รับคำบรรยายแทนเสียงสำหรับเสียงและวิดีโอของคุณ</translation>
 <translation id="6014293228235665243">ยังไม่อ่าน</translation>
 <translation id="6015796118275082299">ปี</translation>
 <translation id="6016178549409952427">ไปที่เนื้อหาเพิ่มเติม <ph name="CURRENT_ELEMENT" /> จาก <ph name="TOTAL_ELEMENTS" /> รายการ</translation>
@@ -6480,7 +6480,7 @@
 <translation id="6740234557573873150">หยุด <ph name="FILE_NAME" /> ชั่วคราว</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />ผู้ดูแลระบบของคุณ<ph name="END_LINK" />ปิด Google Safe Browsing</translation>
 <translation id="6742339027238151589">การเข้าถึงสคริปต์</translation>
-<translation id="6742629250739345159">สร้างคำบรรยายสำหรับสื่อในเบราว์เซอร์ Chrome โดยอัตโนมัติ เสียงและคำบรรยายจะประมวลผลในอุปกรณ์และจะไม่มีการส่งออกไปจากอุปกรณ์</translation>
+<translation id="6742629250739345159">สร้างคำบรรยายแทนเสียงสำหรับสื่อในเบราว์เซอร์ Chrome โดยอัตโนมัติ เสียงและคำบรรยายแทนเสียงจะประมวลผลในอุปกรณ์และจะไม่มีการส่งออกไปจากอุปกรณ์</translation>
 <translation id="6743841972744298686">การตั้งค่าการซิงค์</translation>
 <translation id="6745592621698551453">อัปเดตเลย</translation>
 <translation id="6746124502594467657">เลื่อนลง</translation>
@@ -8093,7 +8093,7 @@
 <translation id="8158117992543756526">อุปกรณ์นี้จะไม่ได้รับการอัปเดตซอฟต์แวร์และความปลอดภัยอัตโนมัตินับตั้งแต่เดือน<ph name="MONTH_AND_YEAR" /> เป็นต้นไป <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">รับการสั่นยืนยันสำหรับการดำเนินการอย่างเช่นการแบ่งหน้าจอและการสลับเดสก์ <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">ข้อผิดพลาดในการตั้งค่าความเชื่อถือใบรับรอง</translation>
-<translation id="8160775796528709999">รับคำบรรยายสำหรับเสียงและวิดีโอของคุณโดยเปิดใช้คำบรรยายสดในการตั้งค่า</translation>
+<translation id="8160775796528709999">รับคำบรรยายแทนเสียงสำหรับเสียงและวิดีโอของคุณโดยเปิดใช้คำบรรยายแทนเสียงแบบสดในการตั้งค่า</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">โหมดผู้อ่านสำหรับหน้าเว็บ</translation>
 <translation id="8161604891089629425">แบบอักษรเส้นกรอบ</translation>
@@ -8241,7 +8241,7 @@
 <translation id="8281721647184388851">เปิดการซิงค์เบราว์เซอร์ Chrome ใช่ไหม</translation>
 <translation id="8281886186245836920">ข้าม</translation>
 <translation id="8284279544186306258">ไซต์ <ph name="WEBSITE_1" /> ทั้งหมด</translation>
-<translation id="8284326494547611709">คำบรรยาย</translation>
+<translation id="8284326494547611709">คำบรรยายแทนเสียง</translation>
 <translation id="8286036467436129157">ลงชื่อเข้าใช้</translation>
 <translation id="8286227656784970313">ใช้พจนานุกรมของระบบ</translation>
 <translation id="828642162569365647">รหัสผ่านหรือ PIN นี้ช่วยปกป้องข้อมูลใน <ph name="DEVICE_TYPE" /> เครื่องนี้และข้อมูลที่คุณเข้าถึงจากโทรศัพท์ คุณจะต้องปลดล็อกทุกครั้งที่ <ph name="DEVICE_TYPE" /> ออกจากโหมดสลีป</translation>

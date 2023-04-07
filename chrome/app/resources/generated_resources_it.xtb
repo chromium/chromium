@@ -283,7 +283,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1235924639474699896">{COUNT,plural, =1{testo}other{# segmenti di testo}}</translation>
 <translation id="1236009322878349843">Modifica telefono</translation>
 <translation id="1239594683407221485">Esplora i contenuti del dispositivo nell'app File.</translation>
-<translation id="1240903469550363138">Per continuare, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> condividerà il tuo nome, il tuo indirizzo email e l'immagine del tuo profilo con questo sito. Leggi le <ph name="BEGIN_LINK1" />norme sulla privacy<ph name="END_LINK1" /> e i <ph name="BEGIN_LINK2" />Termini di servizio<ph name="END_LINK2" /> del sito.</translation>
+<translation id="1240903469550363138">Per continuare, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> condividerà il tuo nome, il tuo indirizzo email e l'immagine del tuo profilo con questo sito. Leggi le <ph name="BEGIN_LINK1" />Norme sulla privacy<ph name="END_LINK1" /> e i <ph name="BEGIN_LINK2" />Termini di servizio<ph name="END_LINK2" /> del sito.</translation>
 <translation id="1241066500170667906">Seleziona lo stato dell'esperimento <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Altre lingue</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> vuole ripristinare le impostazioni.</translation>

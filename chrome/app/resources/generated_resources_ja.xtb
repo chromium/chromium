@@ -76,7 +76,7 @@
 <translation id="1061373870045429865">このリンクの QR コードを作成</translation>
 <translation id="1061904396131502319">もうすぐ休憩の時間です</translation>
 <translation id="1062407476771304334">置換</translation>
-<translation id="1062628064301375934">ウェブにおけるプライバシーの強化にご協力ください</translation>
+<translation id="1062628064301375934">ウェブのプライバシー強化にご協力ください</translation>
 <translation id="1067048845568873861">作成日</translation>
 <translation id="1067661089446014701">セキュリティ強化のため、Google アカウントに保存する前にデバイス上でパスワードを暗号化できます。</translation>
 <translation id="1067922213147265141">他の Google サービス</translation>
@@ -1853,7 +1853,7 @@
 <translation id="2561211427862644160">すべてのブックマークをこちらで確認できます</translation>
 <translation id="2564520396658920462">AppleScript からの JavaScript の実行がオフになっています。オンにするには、メニューバーから [表示] &gt; [デベロッパー] &gt; [Apple Events からの JavaScript を許可] を選択してください。詳しくは、https://support.google.com/chrome/?p=applescript をご覧ください。</translation>
 <translation id="2564653188463346023">拡張スペルチェック</translation>
-<translation id="2568694057933302218">シークレット モードのとき、サイトは Cookie を使用して他のサイトでの閲覧アクティビティを確認することができません。閲覧アクティビティは、広告のカスタマイズなどには使用されません。一部のサイトで機能を使用できなくなる可能性があります。</translation>
+<translation id="2568694057933302218">シークレット モードのとき、サイトは Cookie を使用して他のサイトでの閲覧アクティビティを確認することができません。閲覧アクティビティは、広告のパーソナライズなどには使用されません。一部のサイトで機能を使用できなくなる可能性があります。</translation>
 <translation id="2568774940984945469">情報バー コンテナ</translation>
 <translation id="2569972178052279830">販売店の名前</translation>
 <translation id="257088987046510401">テーマ</translation>
@@ -4125,7 +4125,7 @@
 <translation id="4595560905247879544">アプリと拡張機能は管理者（<ph name="CUSTODIAN_NAME" />）だけが変更できます。</translation>
 <translation id="4596295440756783523">これらのサーバーを識別する証明書がファイルに格納されています</translation>
 <translation id="4598345735110653698">パスキーを管理</translation>
-<translation id="4598549027014564149">シークレット モードのとき、サイトは Cookie を使用して関連サイトを含む他のサイトでの閲覧アクティビティを確認することができません。閲覧アクティビティは、広告のカスタマイズなどには使用されません。一部のサイトで機能を使用できなくなる可能性があります。</translation>
+<translation id="4598549027014564149">シークレット モードのとき、サイトは Cookie を使用して関連サイトを含む他のサイトでの閲覧アクティビティを確認することができません。閲覧アクティビティは、広告のパーソナライズなどには使用されません。一部のサイトで機能を使用できなくなる可能性があります。</translation>
 <translation id="4598556348158889687">ストレージ管理</translation>
 <translation id="4598776695426288251">複数のデバイスから Wi-Fi に接続できます</translation>
 <translation id="4600071396330666617">サジェストの候補数</translation>
@@ -4882,7 +4882,7 @@
 <translation id="5299109548848736476">Do Not Track</translation>
 <translation id="5299558715747014286">タブグループの表示と管理</translation>
 <translation id="5300287940468717207">サイトの権限をリセットしますか。</translation>
-<translation id="5300426565656326054">ブラウザベースの広告のカスタマイズ</translation>
+<translation id="5300426565656326054">ブラウザベースの広告のパーソナライズ</translation>
 <translation id="5300589172476337783">表示</translation>
 <translation id="5300719150368506519">アクセスしたページの URL を Google に送信</translation>
 <translation id="5301751748813680278">ゲストとしてログインしています。</translation>
@@ -6918,7 +6918,7 @@
 <translation id="7123302939607518173">項目に関連する広告が有用であると思われる場合、興味 / 関心またはサイトを追加してください。</translation>
 <translation id="7124013154139278147">スイッチを「前へ」に割り当てます</translation>
 <translation id="7124712201233930202">組織のポリシーに違反しています</translation>
-<translation id="7125029162161377569">プライバシー サンドボックスの試用版を使うと、使用されるユーザーデータの量を抑えつつ、同じようにサイトをブラウジングできる可能性があります。それによってユーザーのプライバシー保護が強化され、クロスサイト トラッキングが制限されます。テストの準備が整い次第、他の新しい試用版も追加されます。</translation>
+<translation id="7125029162161377569">プライバシー サンドボックスの試用版を使うと、使用するユーザー情報量を減らしながら、これまでと同様にブラウジングできる可能性があります。それによってユーザーのプライバシー保護が強化され、クロスサイト トラッキングが制限されます。テストの準備が整い次第、他の新しい試用版も追加されます。</translation>
 <translation id="7125148293026877011">Crostini を削除</translation>
 <translation id="7127980134843952133">ダウンロード履歴</translation>
 <translation id="7128151990937044829">通知がブロックされたときにアドレスバーにインジケーターを表示する</translation>
@@ -7669,7 +7669,7 @@
 <translation id="7798844538707273832"><ph name="PERMISSION" />を自動ブロック</translation>
 <translation id="7800518121066352902">反時計回りに回転(&amp;O)</translation>
 <translation id="7801679634091975683">ここで加えた変更は、Lacros Chrome ブラウザにのみ反映されます。Chrome ブラウザの設定に変更を加えるには、Chrome ブラウザを開いて [設定] に移動してください。</translation>
-<translation id="780301667611848630">いいえ、結構です</translation>
+<translation id="780301667611848630">同意しない</translation>
 <translation id="7804072833593604762">タブが閉じられました</translation>
 <translation id="7805768142964895445">ステータス</translation>
 <translation id="7805906048382884326">ヒントを閉じる</translation>
@@ -8268,7 +8268,7 @@
 <translation id="8322814362483282060">このページはマイクへのアクセスを禁止されています。</translation>
 <translation id="8323167517179506834">URL を入力してください</translation>
 <translation id="8323317289166663449">自分のパソコンとすべてのウェブサイト上にある自分の全データの読み取りと変更</translation>
-<translation id="8324784016256120271">サイトは、Cookie を使用して別のサイトでのあなたの閲覧アクティビティを確認できます（広告のカスタマイズなどが行えます）</translation>
+<translation id="8324784016256120271">サイトは、Cookie を使用して別のサイトでのあなたの閲覧アクティビティを確認できます（広告のパーソナライズなどが行えます）</translation>
 <translation id="8325413836429495820">クリップボードの読み取りを許可しないサイト</translation>
 <translation id="8326478304147373412">PKCS #7、証明書チェーン</translation>
 <translation id="8327386430364625757">数字フォント</translation>

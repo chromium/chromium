@@ -399,7 +399,7 @@
 <translation id="8324158725704657629">Ne plus me demander</translation>
 <translation id="8362795839483915693">Vous pouvez faire un zoom avant ou arrière sur les sites que vous consultez</translation>
 <translation id="8372893542064058268">Autorisez la synchronisation en arrière-plan pour un site spécifique.</translation>
-<translation id="8376384591331888629">Inclure les cookies tiers de ce site</translation>
+<translation id="8376384591331888629">Y compris les cookies tiers de ce site</translation>
 <translation id="83792324527827022">Un site utilise votre appareil photo et votre micro</translation>
 <translation id="8380167699614421159">Ce site affiche des annonces intrusives ou trompeuses</translation>
 <translation id="8394832520002899662">Appuyez pour revenir au site</translation>
@@ -417,7 +417,7 @@
 <translation id="851751545965956758">Interdire à tous les sites de se connecter à des appareils</translation>
 <translation id="8525306231823319788">Plein écran</translation>
 <translation id="8528440122773422556">L'ensemble des données et cookies stockés par tous les sites dépendant de <ph name="ORIGIN" /> ou par l'application associée sur votre écran d'accueil seront effacés</translation>
-<translation id="8541410041357371550">Ce site obtient vos thèmes publicitaires via Chrome pour vous présenter des annonces plus pertinentes</translation>
+<translation id="8541410041357371550">Ce site obtient vos thèmes d'annonces auprès de Chrome pour vous présenter des annonces plus pertinentes</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Cookies autorisés pour <ph name="FPS_MEMBERS_COUNT" /> site <ph name="FPS_OWNER" />}one{Cookies autorisés pour <ph name="FPS_MEMBERS_COUNT" /> site <ph name="FPS_OWNER" />}other{Cookies autorisés pour <ph name="FPS_MEMBERS_COUNT" /> sites <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Autorisé (recommandé)</translation>
 <translation id="8609465669617005112">Monter</translation>
