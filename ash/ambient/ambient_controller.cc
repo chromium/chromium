@@ -467,8 +467,8 @@ void AmbientController::OnAuthScanDone(
 
 void AmbientController::OnUserActivity(const ui::Event* event) {
   // The following events are handled separately so that we can consume them.
-  if (event->IsMouseEvent() || event->IsTouchEvent() || event->IsKeyEvent() ||
-      event->IsFlingScrollEvent()) {
+  if (IsShown() && (event->IsMouseEvent() || event->IsTouchEvent() ||
+                    event->IsKeyEvent() || event->IsFlingScrollEvent())) {
     return;
   }
   // While |kPreview| is loading, don't |DismissUI| on user activity.
