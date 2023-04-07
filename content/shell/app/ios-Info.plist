@@ -50,5 +50,7 @@
 	<string>LaunchScreen</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow content_shell access to microphone</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Allow content_shell access to camera</string>
 </dict>
 </plist>
