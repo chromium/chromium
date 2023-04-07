@@ -4,6 +4,7 @@
 
 #include "chrome/updater/prefs.h"
 
+#include <algorithm>
 #include <functional>
 #include <memory>
 #include <string>
@@ -43,15 +44,19 @@ const char kPrefServerStarts[] = "server_starts";
 // Serializes access to prefs.
 const char kPrefsAccessMutex[] = PREFS_ACCESS_MUTEX;
 
+// Total time to wait when creating prefs.
+constexpr base::TimeDelta kCreatePrefsWait(base::Minutes(2));
+
 // The prefs can fail to load, for example with `PREF_READ_ERROR_FILE_LOCKED`,
 // so this function retries a few times.
 std::unique_ptr<PrefService> CreatePrefService(
     const base::FilePath& prefs_dir,
-    scoped_refptr<PrefRegistrySimple> pref_registry) {
+    scoped_refptr<PrefRegistrySimple> pref_registry,
+    const base::TimeDelta& wait_period) {
   constexpr base::TimeDelta kRetryWait = base::Milliseconds(10);
-  const auto deadline = base::TimeTicks::Now() + base::Minutes(2);
+  const auto deadline(base::TimeTicks::Now() + wait_period);
 
-  while (base::TimeTicks::Now() < deadline) {
+  do {
     PrefServiceFactory pref_service_factory;
     pref_service_factory.set_user_prefs(base::MakeRefCounted<JsonPrefStore>(
         prefs_dir.Append(FILE_PATH_LITERAL("prefs.json"))));
@@ -74,7 +79,7 @@ std::unique_ptr<PrefService> CreatePrefService(
 
     // Sleep before trying again.
     base::PlatformThread::Sleep(kRetryWait);
-  }
+  } while (base::TimeTicks::Now() < deadline);
 
   return nullptr;
 }
@@ -141,8 +146,9 @@ scoped_refptr<GlobalPrefs> CreateGlobalPrefs(UpdaterScope scope) {
     return nullptr;
   }
 
+  const auto deadline(base::TimeTicks::Now() + kCreatePrefsWait);
   std::unique_ptr<ScopedLock> lock =
-      ScopedLock::Create(kPrefsAccessMutex, scope, base::Minutes(2));
+      ScopedLock::Create(kPrefsAccessMutex, scope, kCreatePrefsWait);
   if (!lock) {
     LOG(ERROR) << "Failed to acquire GlobalPrefs";
     return nullptr;
@@ -163,8 +169,9 @@ scoped_refptr<GlobalPrefs> CreateGlobalPrefs(UpdaterScope scope) {
   pref_registry->RegisterIntegerPref(kPrefServerStarts, 0);
   RegisterPersistedDataPrefs(pref_registry);
 
-  std::unique_ptr<PrefService> pref_service(
-      CreatePrefService(*global_prefs_dir, pref_registry));
+  std::unique_ptr<PrefService> pref_service(CreatePrefService(
+      *global_prefs_dir, pref_registry,
+      std::max(deadline - base::TimeTicks::Now(), base::Seconds(0))));
   if (!pref_service) {
     return nullptr;
   }
@@ -186,7 +193,7 @@ scoped_refptr<LocalPrefs> CreateLocalPrefs(UpdaterScope scope) {
   RegisterPersistedDataPrefs(pref_registry);
 
   std::unique_ptr<PrefService> pref_service(
-      CreatePrefService(*local_prefs_dir, pref_registry));
+      CreatePrefService(*local_prefs_dir, pref_registry, kCreatePrefsWait));
   if (!pref_service) {
     return nullptr;
   }
