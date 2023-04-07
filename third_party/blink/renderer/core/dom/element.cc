@@ -3527,6 +3527,12 @@ StyleRecalcChange Element::RecalcOwnStyle(
   }
   if (new_style && !ShouldStoreComputedStyle(*new_style)) {
     new_style = nullptr;
+    if (auto* ax_cache = GetDocument().ExistingAXObjectCache()) {
+      // UpdateCacheAfterNodeIsAttached is normally called from
+      // Node::AttachLayoutTree, but if this Element is display:none, there's no
+      // guarantee that AttachLayoutTree will be called.
+      ax_cache->UpdateCacheAfterNodeIsAttached(this);
+    }
   }
 
   if (HighlightRecalc highlight_recalc =
