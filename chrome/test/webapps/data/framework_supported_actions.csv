@@ -60,6 +60,7 @@ set_open_in_window_from_app_home,                      🌕, 🌕,  🌕,   🌑
 set_open_in_window_from_app_settings,                  🌕, 🌕,  🌕,   🌕
 switch_incognito_profile,                              🌕, 🌕,  🌕,   🌕,
 switch_profile_clients,                                🌕, 🌕,  🌕,   🌕,
+switch_active_profile,                                 🌕, 🌕,  🌕,   🌑,
 sync_turn_off,                                         🌕, 🌕,  🌕,   🌕,
 sync_turn_on,                                          🌕, 🌕,  🌕,   🌕,
 uninstall_from_list,                                   🌕, 🌕,  🌕,   🌕,
@@ -84,3 +85,5 @@ open_app_settings_from_app_menu,                       🌕, 🌕,  🌕,   🌑
 check_browser_navigation,                              🌕, 🌕,  🌕,   🌕,
 check_browser_navigation_is_app_settings,              🌕, 🌕,  🌕,   🌑,
 await_manifest_update,                                 🌕, 🌕,  🌕,   🌕,
+enable_file_handling,                                  🌕, 🌕,  🌕,   🌑,
+disable_file_handling,                                 🌕, 🌕,  🌕,   🌑,

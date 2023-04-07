@@ -345,6 +345,21 @@ The test behavior can change whether the site is configured to open as a window 
 | WMLC | install_or_shortcut_tabbed(FileHandler) | launch_file_expect_dialog(FileHandler, MultipleBarFiles, Allow, AskAgain) | check_tab_created(Two) | check_files_loaded_in_site(FileHandler, MultipleBarFiles) |
 | WMLC | install_or_shortcut_windowed(FileHandler) | set_open_in_tab(FileHandler) | launch_file_expect_dialog(FileHandler, MultipleBarFiles, Allow, AskAgain) | check_tab_created(Two) | check_files_loaded_in_site(FileHandler, MultipleBarFiles) |
 
+### Multi-profile behavior
+
+| #Platforms | Test -> | | | | | | | | | | | | | | | | |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| # To slightly reduce number of generated tests, and work around test name limitations, separate out some by_user and policy install cases.
+| # Launch a file in the primary profile, while the PWA is not currently open.
+| WML | install_or_shortcut_by_user_windowed(FileHandler) | maybe_close_pwa | switch_active_profile(Profile2) | install_or_shortcut(FileHandler) | maybe_close_pwa | disable_file_handling(FileHandler) | switch_active_profile(Default) | launch_file_expect_dialog(FileHandler, OneFooFile, Allow, AskAgain) | check_pwa_window_created(FileHandler, One) | check_files_loaded_in_site(FileHandler, OneFooFile) |
+| WML | install_or_shortcut_by_user_tabbed(FileHandler) | switch_active_profile(Profile2) | install_or_shortcut(FileHandler) | maybe_close_pwa | disable_file_handling(FileHandler) | switch_active_profile(Default) | launch_file_expect_dialog(FileHandler, OneFooFile, Allow, AskAgain) | check_tab_created(One) | check_files_loaded_in_site(FileHandler, OneFooFile) |
+| # Launch a file in the primary profile, while the PWA is open in the secondary profile.
+| WML | install_or_shortcut_by_user_windowed(FileHandler) | maybe_close_pwa | switch_active_profile(Profile2) | install_or_shortcut(FileHandler) | disable_file_handling(FileHandler) | switch_active_profile(Default) | launch_file_expect_dialog(FileHandler, OneFooFile, Allow, AskAgain) | check_pwa_window_created(FileHandler, One) | check_files_loaded_in_site(FileHandler, OneFooFile) |
+| WML | install_or_shortcut_by_user_tabbed(FileHandler) | switch_active_profile(Profile2) | install_or_shortcut(FileHandler) | disable_file_handling(FileHandler) | switch_active_profile(Default) | launch_file_expect_dialog(FileHandler, OneFooFile, Allow, AskAgain) | check_tab_created(One) | check_files_loaded_in_site(FileHandler, OneFooFile) |
+| WML | install_policy_app(FileHandler, ShortcutOptions::All, Windowed, WebApp) | switch_active_profile(Profile2) | install_or_shortcut(FileHandler) | disable_file_handling(FileHandler) | switch_active_profile(Default) | launch_file_expect_dialog(FileHandler, OneFooFile, Allow, AskAgain) | check_pwa_window_created(FileHandler, One) | check_files_loaded_in_site(FileHandler, OneFooFile) |
+| WML | install_policy_app(FileHandler, ShortcutOptions::All, Browser, WebApp) | switch_active_profile(Profile2) | install_or_shortcut(FileHandler) | disable_file_handling(FileHandler) | switch_active_profile(Default) | launch_file_expect_dialog(FileHandler, OneFooFile, Allow, AskAgain) | check_tab_created(One) | check_files_loaded_in_site(FileHandler, OneFooFile) |
+
+
 ### Dialog option
 
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
@@ -363,6 +378,7 @@ The test behavior can change whether the site is configured to open as a window 
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | WMLC | install_or_shortcut(FileHandler) | add_file_handling_policy_approval(FileHandler) | launch_file_expect_no_dialog(FileHandler, OneFooFile) | check_pwa_window_created(FileHandler, One) |
 | WMLC | install_or_shortcut(FileHandler) | add_file_handling_policy_approval(FileHandler) | remove_file_handling_policy_approval(FileHandler) | launch_file_expect_dialog(FileHandler, OneFooFile, Allow, AskAgain) |
+
 
 ## Sub Apps
 
