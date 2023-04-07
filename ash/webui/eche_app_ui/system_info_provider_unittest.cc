@@ -251,7 +251,8 @@ class SystemInfoProviderTest : public testing::Test {
   }
 
   void SetWifiConnectionStateList() {
-    system_info_provider_->OnWifiNetworkList(GetWifiNetworkStateList());
+    system_info_provider_->OnActiveWifiNetworkListFetched(
+        GetWifiNetworkStateList());
   }
 
   void SetOnScreenBacklightStateChanged() {
@@ -270,9 +271,53 @@ class SystemInfoProviderTest : public testing::Test {
   std::vector<network_config::mojom::NetworkStatePropertiesPtr>
   GetWifiNetworkStateList() {
     std::vector<network_config::mojom::NetworkStatePropertiesPtr> result;
-    auto network = network_config::mojom::NetworkStateProperties::New();
+
+    // Create a WiFiStatePropertiesPtr object
+    network_config::mojom::WiFiStatePropertiesPtr wifi_state_properties =
+        network_config::mojom::WiFiStateProperties::New();
+
+    // Set the required properties
+    wifi_state_properties->bssid = "00:11:22:33:44:55";
+    wifi_state_properties->frequency = 2412;
+    wifi_state_properties->hex_ssid = "48656c6c6f";
+    wifi_state_properties->security =
+        network_config::mojom::SecurityType::kNone;
+    wifi_state_properties->signal_strength = -50;
+    wifi_state_properties->ssid = "Test";
+    wifi_state_properties->hidden_ssid = false;
+
+    // Create a new NetworkTypeStateProperties object with the
+    // WiFiStateProperties
+    network_config::mojom::NetworkTypeStatePropertiesPtr
+        network_type_state_properties =
+            network_config::mojom::NetworkTypeStateProperties::NewWifi(
+                std::move(wifi_state_properties));
+
+    // auto network = network_config::mojom::NetworkStateProperties::New();
+    auto network = network_config::mojom::NetworkStateProperties::New(
+        /*connectable=*/true,
+        /*connect_requested=*/false,
+        /*connection_state=*/
+        kFakeWifiConnectionState,
+        /*error_state=*/absl::nullopt,
+        /*guid=*/"some_guid",
+        /*name=*/"some_name",
+        /*portal_state=*/
+        network_config::mojom::PortalState::kUnknown,
+        /*portal_probe_url=*/absl::nullopt,
+        /*priority=*/1,
+        /*proxy_mode=*/network_config::mojom::ProxyMode::kDirect,
+        /*dns_queries_monitored=*/false,
+        /*prohibited_by_policy=*/false,
+        /*source=*/
+        network_config::mojom::OncSource::kUser,
+        /*network_type*/ network_config::mojom::NetworkType::kWiFi,
+        /*network_type_state*/ std::move(network_type_state_properties));
+
     network->type = network_config::mojom::NetworkType::kWiFi;
     network->connection_state = kFakeWifiConnectionState;
+    // network->type_state = network_type_state_properties;
+
     result.emplace_back(std::move(network));
     return result;
   }
