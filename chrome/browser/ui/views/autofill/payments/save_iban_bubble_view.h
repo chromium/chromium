@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/controls/textfield/textfield_controller.h"
 
 namespace content {
 class WebContents;
@@ -23,7 +24,8 @@ namespace autofill {
 // the flow for when the user submits a form with an IBAN (International Bank
 // Account Number) value that Autofill has not previously saved.
 class SaveIbanBubbleView : public AutofillBubbleBase,
-                           public LocationBarBubbleDelegateView {
+                           public LocationBarBubbleDelegateView,
+                           public views::TextfieldController {
  public:
   // Bubble will be anchored to `anchor_view`.
   SaveIbanBubbleView(views::View* anchor_view,
@@ -42,6 +44,10 @@ class SaveIbanBubbleView : public AutofillBubbleBase,
   void AddedToWidget() override;
   std::u16string GetWindowTitle() const override;
   void WindowClosing() override;
+
+  // views::TextfieldController
+  void ContentsChanged(views::Textfield* sender,
+                       const std::u16string& new_contents) override;
 
  protected:
   ~SaveIbanBubbleView() override;
@@ -64,7 +70,11 @@ class SaveIbanBubbleView : public AutofillBubbleBase,
  private:
   friend class SaveIbanBubbleViewFullFormBrowserTest;
 
+  // Helper function to update value of `nickname_length_label_`;
+  void UpdateNicknameLengthLabel();
+
   raw_ptr<views::Textfield> nickname_textfield_ = nullptr;
+  raw_ptr<views::Label> nickname_length_label_ = nullptr;
 
   // The view that toggles the masking/unmasking of the IBAN value displayed in
   // the bubble.
