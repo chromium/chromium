@@ -102,6 +102,9 @@ export class ShortcutsPageElement extends PolymerElement implements
   onNavigationPageChanged({isActive}: {isActive: boolean}): void {
     if (isActive) {
       afterNextRender(this, () => {
+        // Scroll to the top of the page after the active page changes.
+        window.scrollTo({top: 0});
+
         // Scroll to the specific accelerator if this page change was caused by
         // clicking on a search result. If the page change was manual, the
         // method below will be a no-op.
