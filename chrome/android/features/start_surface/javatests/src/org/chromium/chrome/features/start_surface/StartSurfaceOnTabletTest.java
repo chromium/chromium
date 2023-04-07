@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
@@ -83,6 +84,7 @@ public class StartSurfaceOnTabletTest {
     @MediumTest
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS})
+    @DisabledTest(message = "https://crbug.com/1431467")
     public void testStartSurfaceOnTabletWithNtpExist() throws IOException {
         // The existing NTP isn't the last active Tab.
         String modifiedNtpUrl = UrlConstants.NTP_URL + "/1";
