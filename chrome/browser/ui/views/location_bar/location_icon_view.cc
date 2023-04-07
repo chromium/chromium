@@ -373,17 +373,13 @@ void LocationIconView::UpdateBorder() {
   // the bubble should be smaller, so use an empty border to shrink down the
   // content bounds so the background gets painted correctly.
   if (features::IsChromeRefresh2023()) {
-    if (ShouldShowLabel() && !ShouldShowSeparator()) {
+    gfx::Insets insets = GetLayoutInsets(LOCATION_BAR_PAGE_INFO_ICON_PADDING);
+    if (ShouldShowLabel()) {
       // An extra space between chip's label and right edge.
       const int kExtraRightPadding = 4;
-      gfx::Insets insets = GetLayoutInsets(LOCATION_BAR_PAGE_INFO_ICON_PADDING);
       insets.set_right(insets.right() + kExtraRightPadding);
-      SetBorder(views::CreateEmptyBorder(insets));
-    } else {
-      SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
-          GetLayoutInsets(LOCATION_BAR_PAGE_INFO_ICON_PADDING).top(),
-          GetLayoutInsets(LOCATION_BAR_PAGE_INFO_ICON_PADDING).left())));
     }
+    SetBorder(views::CreateEmptyBorder(insets));
   } else {
     IconLabelBubbleView::UpdateBorder();
   }
