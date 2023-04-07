@@ -2112,27 +2112,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.ExpireVisits.GetRedirectsDurationPercentage" units="%"
-    expires_after="M90">
-  <owner>calamity@chromium.org</owner>
-  <component>UI&gt;Browser&gt;History</component>
-  <summary>
-    The percentage of time taken in ExpireHistoryBackend::ExpireVisits for
-    calculating the redirect parent.
-  </summary>
-</histogram>
-
-<histogram name="History.ExpireVisits.TotalDuration" units="ms"
-    expires_after="M90">
-  <owner>calamity@chromium.org</owner>
-  <component>UI&gt;Browser&gt;History</component>
-  <summary>
-    The time taken to expire a list of visits. This is not scaled to the number
-    of visits deleted, but gives an idea of how long a single request to
-    ExpireHistoryBackend::ExpireVisits takes.
-  </summary>
-</histogram>
-
 <histogram name="History.FaviconDatabaseAdvancedMetricsTime" units="ticks"
     expires_after="M77">
   <owner>rogerm@chromium.org</owner>

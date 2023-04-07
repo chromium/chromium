@@ -291,10 +291,7 @@ void ExpireHistoryBackend::ExpireVisitsInternal(
   if (visits.empty())
     return;
 
-  base::TimeTicks start = base::TimeTicks::Now();
-
   const VisitVector visits_and_redirects = GetVisitsAndRedirectParents(visits);
-  base::TimeDelta get_redirects_time = base::TimeTicks::Now() - start;
 
   DeleteEffects effects;
   DeleteVisitRelatedInfo(visits_and_redirects, &effects);
@@ -310,15 +307,6 @@ void ExpireHistoryBackend::ExpireVisitsInternal(
 
   // Pick up any bits possibly left over.
   ParanoidExpireHistory();
-
-  base::TimeDelta expire_visits_time = base::TimeTicks::Now() - start;
-  UMA_HISTOGRAM_TIMES("History.ExpireVisits.TotalDuration", expire_visits_time);
-  if (!expire_visits_time.is_zero()) {
-    UMA_HISTOGRAM_PERCENTAGE(
-        "History.ExpireVisits.GetRedirectsDurationPercentage",
-        base::ClampRound<base::Histogram::Sample>(get_redirects_time /
-                                                  expire_visits_time * 100));
-  }
 }
 
 void ExpireHistoryBackend::ExpireHistoryBeforeForTesting(base::Time end_time) {
