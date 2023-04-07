@@ -23,6 +23,7 @@
 #include "chrome/browser/apps/platform_apps/platform_app_launch.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/file_handlers/file_handling_launch_utils.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -41,6 +42,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/url_constants.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -329,12 +331,14 @@ WebContents* OpenEnabledApplication(Profile* profile,
                             params.container);
 
   GURL url;
-  if (extensions::WebFileHandlers::SupportsWebFileHandlers(
-          extension->manifest_version()) &&
-      params.intent->activity_name.has_value()) {
+  bool supports_web_file_handlers =
+      extensions::WebFileHandlers::SupportsWebFileHandlers(
+          extension->manifest_version());
+  if (supports_web_file_handlers && params.intent->activity_name.has_value()) {
     // `params.intent->activity_name` is actually the `action` url set in the
     // manifest of the extension.
     url = extension->GetResourceURL(params.intent->activity_name.value());
+    params.container = apps::LaunchContainer::kLaunchContainerWindow;
   } else {
     url = UrlForExtension(extension, profile, params);
   }
@@ -360,6 +364,11 @@ WebContents* OpenEnabledApplication(Profile* profile,
     default:
       NOTREACHED();
       break;
+  }
+
+  if (supports_web_file_handlers) {
+    extensions::EnqueueLaunchParamsInWebContents(tab, *extension, url,
+                                                 params.launch_files);
   }
 
   return tab;
@@ -432,8 +441,9 @@ WebContents* NavigateApplicationWindow(Browser* browser,
 
   WebContents* const web_contents = nav_params.navigated_or_inserted_contents;
 
-  if (extension) {
-    DCHECK(extension->is_app());
+  // Before MV3, an extension reaching this point must have been an app. MV3
+  // added support for Web File Handlers, which don't use extension TabHelper.
+  if (extension && extension->is_app()) {
     extensions::TabHelper::FromWebContents(web_contents)
         ->SetExtensionApp(extension);
   }

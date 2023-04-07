@@ -17,6 +17,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/common/constants.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -94,6 +95,13 @@ class EntriesBuilder {
   content::FileSystemAccessEntryFactory::BindingContext context_;
 };
 
+// TODO(crbug.com/1179530): Add Lacros support.
+// TODO(crbug.com/1179530): Consider adding an {extension, pwa} enum to
+// `launch_params` instead of checking the scheme specifically for extensions?
+bool IsExtensionURL(const GURL& gurl) {
+  return gurl.SchemeIs(extensions::kExtensionScheme);
+}
+
 }  // namespace
 
 WebAppLaunchQueue::WebAppLaunchQueue(content::WebContents* web_contents,
@@ -103,8 +111,13 @@ WebAppLaunchQueue::WebAppLaunchQueue(content::WebContents* web_contents,
 WebAppLaunchQueue::~WebAppLaunchQueue() = default;
 
 void WebAppLaunchQueue::Enqueue(WebAppLaunchParams launch_params) {
-  DCHECK(registrar_->IsUrlInAppScope(launch_params.target_url,
-                                     launch_params.app_id));
+  // App scope is a web app concept that is not applicable for extensions.
+  // Therefore this check will be skipped when launching an extension URL.
+  if (!IsExtensionURL(launch_params.target_url)) {
+    DCHECK(registrar_->IsUrlInAppScope(launch_params.target_url,
+                                       launch_params.app_id));
+  }
+
   DCHECK(launch_params.dir.empty() ||
          registrar_->IsSystemApp(launch_params.app_id));
 
@@ -146,7 +159,10 @@ void WebAppLaunchQueue::DidFinishNavigation(content::NavigationHandle* handle) {
   if (pending_navigation_) {
     pending_navigation_ = false;
     // The launch navigation may have redirected out of the app scope.
-    if (!registrar_->IsUrlInAppScope(handle->GetURL(), queue_.front().app_id)) {
+    // App scope is a web app concept that is not applicable for extensions.
+    // Therefore this check will be skipped when launching an extension URL.
+    if (!IsExtensionURL(handle->GetURL()) &&
+        !registrar_->IsUrlInAppScope(handle->GetURL(), queue_.front().app_id)) {
       Reset();
       return;
     }
@@ -181,7 +197,9 @@ void WebAppLaunchQueue::SendQueuedLaunchParams(const GURL& current_url) {
 
 void WebAppLaunchQueue::SendLaunchParams(WebAppLaunchParams launch_params,
                                          const GURL& current_url) {
-  DCHECK(registrar_->IsUrlInAppScope(current_url, launch_params.app_id));
+  // App scope is a web app concept that is not applicable for extensions.
+  DCHECK(IsExtensionURL(current_url) ||
+         registrar_->IsUrlInAppScope(current_url, launch_params.app_id));
   mojo::AssociatedRemote<blink::mojom::WebLaunchService> launch_service;
   web_contents()
       ->GetPrimaryMainFrame()

@@ -17,13 +17,14 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/version_info/channel.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/file_handler_info.h"
 #include "extensions/common/manifest_handlers/web_file_handlers_info.h"
-#include "extensions/test/extension_test_message_listener.h"
+#include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/base/filename_util.h"
 #include "ui/base/window_open_disposition.h"
@@ -52,6 +53,47 @@ class ExtensionAppsChromeOsBrowserTest
     return path;
   }
 
+  // Launches the given extension from an intent and waits for a result from the
+  // chrome.test API.
+  void LaunchExtensionAndCatchResult(const extensions::Extension& extension) {
+    auto* file_handlers =
+        extensions::WebFileHandlers::GetFileHandlers(extension);
+    EXPECT_EQ(1u, file_handlers->size());
+
+    // Create file(s).
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::ScopedTempDir scoped_temp_dir;
+    ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+    auto intent = std::make_unique<apps::Intent>(apps_util::kIntentActionView);
+    intent->mime_type = "text/csv";
+    intent->activity_name = "open-csv.html";
+    const base::FilePath file_path =
+        StoreSharedFile(scoped_temp_dir.GetPath(), "a.csv", "1,2,3");
+
+    // Add file(s) to intent.
+    int64_t file_size = 0;
+    base::GetFileSize(file_path, &file_size);
+    auto file =
+        std::make_unique<apps::IntentFile>(net::FilePathToFileURL(file_path));
+    file->file_name = base::SafeBaseName::Create(file_path);
+    file->file_size = file_size;
+    file->mime_type = "text/csv";
+    intent->files.push_back(std::move(file));
+
+    // Launch app with intent.
+    extensions::ResultCatcher catcher;
+    Profile* const profile = browser()->profile();
+    const int32_t event_flags =
+        apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
+                            /*prefer_container=*/true);
+    apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
+        extension.id(), event_flags, std::move(intent),
+        apps::LaunchSource::kFromFileManager, nullptr, base::DoNothing());
+
+    // Verify launch.
+    ASSERT_TRUE(catcher.GetNextResult());
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   extensions::ScopedCurrentChannel current_channel_{version_info::Channel::DEV};
@@ -74,49 +116,49 @@ IN_PROC_BROWSER_TEST_F(ExtensionAppsChromeOsBrowserTest, LaunchWithFileIntent) {
   })";
   extensions::TestExtensionDir extension_dir;
   extension_dir.WriteManifest(kManifest);
-  extension_dir.WriteFile("open-csv.js",
-                          R"(chrome.test.sendMessage("launched");)");
+  extension_dir.WriteFile("open-csv.js", "chrome.test.succeed();");
   extension_dir.WriteFile("open-csv.html",
                           R"(<script src="/open-csv.js"></script>)");
-  ExtensionTestMessageListener listener("launched");
   const extensions::Extension* extension =
       LoadExtension(extension_dir.UnpackedPath());
-  DCHECK(extension);
-  auto* file_handlers =
-      extensions::WebFileHandlers::GetFileHandlers(*extension);
-  EXPECT_EQ(1u, file_handlers->size());
+  ASSERT_TRUE(extension);
+  LaunchExtensionAndCatchResult(*extension);
+}
 
-  // Open app.
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  base::ScopedTempDir scoped_temp_dir;
-  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
-  auto intent = std::make_unique<apps::Intent>("view");
-  intent->mime_type = "text/csv";
-  intent->activity_name = "open-csv.html";
-  const base::FilePath file_path =
-      StoreSharedFile(scoped_temp_dir.GetPath(), "a.csv", "1,2,3");
-
-  // Add file(s) to intent.
-  int64_t file_size = 0;
-  base::GetFileSize(file_path, &file_size);
-  auto file =
-      std::make_unique<apps::IntentFile>(net::FilePathToFileURL(file_path));
-  file->file_name = base::SafeBaseName::Create(file_path);
-  file->file_size = file_size;
-  file->mime_type = "text/csv";
-  intent->files.push_back(std::move(file));
-
-  // Launch app with intent.
-  Profile* const profile = browser()->profile();
-  const int32_t event_flags =
-      apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
-                          /*prefer_container=*/true);
-  apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
-      extension->id(), event_flags, std::move(intent),
-      apps::LaunchSource::kFromFileManager, nullptr, base::DoNothing());
-
-  // Verify launch.
-  ASSERT_TRUE(listener.WaitUntilSatisfied());
+// Verify window.launchQueue presence.
+IN_PROC_BROWSER_TEST_F(ExtensionAppsChromeOsBrowserTest, SetConsumerCalled) {
+  // Load extension.
+  static constexpr char kManifest[] = R"({
+    "name": "Test",
+    "version": "0.0.1",
+    "manifest_version": 3,
+    "file_handlers": [
+      {
+        "name": "Comma separated values",
+        "action": "/open-csv.html",
+        "accept": {"text/csv": [".csv"]}
+      }
+    ]
+  })";
+  extensions::TestExtensionDir extension_dir;
+  extension_dir.WriteManifest(kManifest);
+  extension_dir.WriteFile("open-csv.js", R"(
+    launchQueue.setConsumer((launchParams) => {
+      chrome.test.assertTrue('launchQueue' in window);
+      chrome.test.succeed();
+    });
+  )");
+  extension_dir.WriteFile("open-csv.html",
+                          R"(<script src="/open-csv.js"></script>"
+                            "<body>Test</body>)");
+  const extensions::Extension* extension =
+      LoadExtension(extension_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  // TODO(crbug.com/1179530): setConsumer is called, but launchParams is empty
+  // in the test. However, it is populated when run manually. Find a better way
+  // to automate launchParams testing such that it's populated in the test, like
+  // it is when executed manually.
+  LaunchExtensionAndCatchResult(*extension);
 }
 
 }  // namespace apps
