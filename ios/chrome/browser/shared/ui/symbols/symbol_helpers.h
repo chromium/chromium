@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_ICONS_SYMBOL_HELPERS_H_
-#define IOS_CHROME_BROWSER_UI_ICONS_SYMBOL_HELPERS_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_UI_SYMBOLS_SYMBOL_HELPERS_H_
+#define IOS_CHROME_BROWSER_SHARED_UI_SYMBOLS_SYMBOL_HELPERS_H_
 
 #import <UIKit/UIKit.h>
 
@@ -66,4 +66,4 @@ UIImage* CustomSettingsRootSymbol(NSString* symbol_name);
 // root screen, with multicolor enabled.
 UIImage* CustomSettingsRootMulticolorSymbol(NSString* symbol_name);
 
-#endif  // IOS_CHROME_BROWSER_UI_ICONS_SYMBOL_HELPERS_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_UI_SYMBOLS_SYMBOL_HELPERS_H_

@@ -62,7 +62,7 @@ swift_source_set("bring_android_tabs_ui_swift") {
     "resources:bring_android_tabs_icon",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/ui/icons:symbols",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/colors:swift",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ui/base",

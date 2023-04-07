@@ -101,6 +101,7 @@ source_set("password_ui") {
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:constants",
     "//ios/chrome/browser/shared/ui/table_view:styler",
@@ -109,7 +110,6 @@ source_set("password_ui") {
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin",
-    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings:settings_root_categories",
     "//ios/chrome/browser/ui/settings/cells",
@@ -153,7 +153,7 @@ source_set("title_view") {
   ]
   deps = [
     "//ios/chrome/app/strings:ios_strings_grit",
-    "//ios/chrome/browser/ui/icons:symbols",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/colors",
     "//ios/public/provider/chrome/browser/font:font_api",
     "//ui/base",

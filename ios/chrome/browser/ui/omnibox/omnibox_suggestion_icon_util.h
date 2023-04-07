@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/icons/buildflags.h"
+#import "ios/chrome/browser/shared/ui/symbols/buildflags.h"
 
 // All available icons for autocomplete suggestions in the popup.
 enum class OmniboxSuggestionIconType {

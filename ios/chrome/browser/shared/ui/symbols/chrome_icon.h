@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_ICONS_CHROME_ICON_H_
-#define IOS_CHROME_BROWSER_UI_ICONS_CHROME_ICON_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_UI_SYMBOLS_CHROME_ICON_H_
+#define IOS_CHROME_BROWSER_SHARED_UI_SYMBOLS_CHROME_ICON_H_
 
 #import <UIKit/UIKit.h>
 
@@ -28,4 +28,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_ICONS_CHROME_ICON_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_UI_SYMBOLS_CHROME_ICON_H_

@@ -37,6 +37,7 @@ source_set("cells") {
     "//components/ntp_tiles",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
@@ -44,7 +45,6 @@ source_set("cells") {
     "//ios/chrome/browser/ui/content_suggestions:feature_flags",
     "//ios/chrome/browser/ui/content_suggestions:public",
     "//ios/chrome/browser/ui/content_suggestions/identifier",
-    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/image_util",
     "//ios/chrome/browser/ui/resources:module_shadow",
     "//ios/chrome/common:string_util",
@@ -71,8 +71,8 @@ source_set("constants") {
 
   deps = [
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/ui/content_suggestions:feature_flags",
-    "//ios/chrome/browser/ui/icons:symbols",
     "//ui/base:base",
   ]
 }

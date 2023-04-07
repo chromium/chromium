@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/icons/chrome_icon.h"
+#import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
 
 #import <CoreGraphics/CoreGraphics.h>
 
@@ -17,14 +17,18 @@
 namespace {
 
 NSString* AccessibilityLabelForIconNamed(NSString* name) {
-  if ([name isEqualToString:@"ic_arrow_back"])
+  if ([name isEqualToString:@"ic_arrow_back"]) {
     return l10n_util::GetNSString(IDS_IOS_ICON_ARROW_BACK);
-  if ([name isEqualToString:@"ic_close"])
+  }
+  if ([name isEqualToString:@"ic_close"]) {
     return l10n_util::GetNSString(IDS_IOS_ICON_CLOSE);
-  if ([name isEqualToString:@"ic_info"])
+  }
+  if ([name isEqualToString:@"ic_info"]) {
     return l10n_util::GetNSString(IDS_IOS_ICON_INFO);
-  if ([name isEqualToString:@"ic_search"])
+  }
+  if ([name isEqualToString:@"ic_search"]) {
     return l10n_util::GetNSString(IDS_IOS_ICON_SEARCH);
+  }
   return nil;
 }
 

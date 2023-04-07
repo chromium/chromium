@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_ICONS_SYMBOL_CONFIGURATIONS_H_
-#define IOS_CHROME_BROWSER_UI_ICONS_SYMBOL_CONFIGURATIONS_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_UI_SYMBOLS_SYMBOL_CONFIGURATIONS_H_
+#define IOS_CHROME_BROWSER_SHARED_UI_SYMBOLS_SYMBOL_CONFIGURATIONS_H_
 
 #import <UIKit/UIKit.h>
 
@@ -42,4 +42,4 @@ NSArray<UIColor*>* LargeIncognitoPalette();
 // Returns the cloud slash tint color.
 UIColor* CloudSlashTintColor();
 
-#endif  // IOS_CHROME_BROWSER_UI_ICONS_SYMBOL_CONFIGURATIONS_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_UI_SYMBOLS_SYMBOL_CONFIGURATIONS_H_

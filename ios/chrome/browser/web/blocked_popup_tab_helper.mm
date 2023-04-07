@@ -61,7 +61,8 @@ class BlockPopupInfoBarDelegate : public ConfirmInfoBarDelegate {
   ui::ImageModel GetIcon() const override {
     if (icon_.IsEmpty()) {
       // This symbol is not created using CustomSymbolWithPointSize() because
-      // "ios/chrome/browser/ui/icons/symbols.h" cannot be imported here.
+      // "ios/chrome/browser/shared/ui/symbols/symbols.h" cannot be imported
+      // here.
       UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
           configurationWithPointSize:kSymbolImagePointSize
                               weight:UIImageSymbolWeightMedium

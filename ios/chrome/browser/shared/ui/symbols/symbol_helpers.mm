@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/icons/symbol_helpers.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbol_helpers.h"
 
 #import "base/check.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/icons/symbol_configurations.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbol_configurations.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

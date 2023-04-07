@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_ICONS_SYMBOL_NAMES_H_
-#define IOS_CHROME_BROWSER_UI_ICONS_SYMBOL_NAMES_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_UI_SYMBOLS_SYMBOL_NAMES_H_
+#define IOS_CHROME_BROWSER_SHARED_UI_SYMBOLS_SYMBOL_NAMES_H_
 
 #import <UIKit/UIKit.h>
 
 #import "build/build_config.h"
-#import "ios/chrome/browser/ui/icons/buildflags.h"
+#import "ios/chrome/browser/shared/ui/symbols/buildflags.h"
 
 /// *******
 /// Import `symbols.h` and not this file directly.
@@ -158,4 +158,4 @@ extern NSString* const kIPadSymbol;
 extern NSString* const kLaptopSymbol;
 extern NSString* const kDesktopSymbol;
 
-#endif  // IOS_CHROME_BROWSER_UI_ICONS_SYMBOL_NAMES_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_UI_SYMBOLS_SYMBOL_NAMES_H_

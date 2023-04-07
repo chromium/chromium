@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 
 #import "components/password_manager/core/common/password_manager_features.h"
-#import "ios/chrome/browser/ui/icons/symbols.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_cell.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 

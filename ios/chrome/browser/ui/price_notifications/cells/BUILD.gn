@@ -23,10 +23,10 @@ source_set("cells") {
   deps = [
     "//components/url_formatter",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/price_notifications:constants",
     "//ios/chrome/common:button_config",
     "//ios/chrome/common/ui/colors",

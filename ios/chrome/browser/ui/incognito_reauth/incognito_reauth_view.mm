@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_view.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/ui/icons/symbols.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_util.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_view_label.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"

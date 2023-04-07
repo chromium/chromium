@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_icon_type.h"
 
 #import "base/notreached.h"
-#import "ios/chrome/browser/ui/icons/symbols.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

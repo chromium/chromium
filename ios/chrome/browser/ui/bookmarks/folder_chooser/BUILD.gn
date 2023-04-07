@@ -72,6 +72,7 @@ source_set("ui") {
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/shared/ui/symbols:icons",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/signin:signin",
@@ -79,7 +80,6 @@ source_set("ui") {
     "//ios/chrome/browser/ui/bookmarks:constants",
     "//ios/chrome/browser/ui/bookmarks:utils",
     "//ios/chrome/browser/ui/bookmarks/cells",
-    "//ios/chrome/browser/ui/icons",
     "//ios/chrome/common/ui/colors",
     "//ui/base",
   ]

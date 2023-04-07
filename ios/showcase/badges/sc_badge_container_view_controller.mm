@@ -5,13 +5,13 @@
 #import "ios/showcase/badges/sc_badge_container_view_controller.h"
 
 #import "ios/chrome/browser/infobars/badge_state.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/badges/badge_button.h"
 #import "ios/chrome/browser/ui/badges/badge_button_factory.h"
 #import "ios/chrome/browser/ui/badges/badge_overflow_menu_util.h"
 #import "ios/chrome/browser/ui/badges/badge_static_item.h"
 #import "ios/chrome/browser/ui/badges/badge_tappable_item.h"
 #import "ios/chrome/browser/ui/badges/badge_type.h"
-#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/showcase/badges/sc_badge_constants.h"
 
