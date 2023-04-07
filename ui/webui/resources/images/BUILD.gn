@@ -59,6 +59,7 @@ generate_grd("build_grdp") {
       "icon_edit.svg",
       "icon_expand_less.svg",
       "icon_expand_more.svg",
+      "icon_filetype_generic.svg",
       "icon_folder_open.svg",
       "icon_journeys.svg",
       "icon_more_vert.svg",
