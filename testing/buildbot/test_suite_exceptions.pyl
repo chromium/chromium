@@ -2198,6 +2198,15 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.lsan.content_unittests.filter',
         ],
       },
+      'linux-rel-dev': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'cores': 8,
+            },
+          ],
+        },
+      },
     },
   },
   'context_lost_validating_tests': {
@@ -3958,6 +3967,15 @@
       'linux-chromeos-rel': {
         'swarming': {
           'shards': 2,
+        },
+      },
+      'linux-rel-dev': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'cores': 8,
+            },
+          ],
         },
       },
       'mac-rel-cft': {

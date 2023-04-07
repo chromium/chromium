@@ -113,7 +113,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "cores": "2",
+              "cores": 8,
               "os": "Ubuntu-18.04"
             }
           ],
@@ -165,7 +165,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "cores": "2",
+              "cores": 8,
               "os": "Ubuntu-18.04"
             }
           ],
