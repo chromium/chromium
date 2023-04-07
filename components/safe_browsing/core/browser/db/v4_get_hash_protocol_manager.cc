@@ -318,6 +318,8 @@ void V4GetHashProtocolManager::GetFullHashes(
                            &prefixes_to_request, &cached_full_hash_infos,
                            mechanism_experiment_cache_selection);
 
+  base::UmaHistogramBoolean("SafeBrowsing.V4GetHash.CacheFullyHit",
+                            prefixes_to_request.empty());
   if (prefixes_to_request.empty()) {
     // 100% cache hits (positive or negative) so we can call the callback right
     // away.

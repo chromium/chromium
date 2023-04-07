@@ -2220,6 +2220,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.V4GetHash.CacheFullyHit" enum="BooleanCacheHit"
+    expires_after="2023-07-07">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Track whether a V4 request was able to be skipped because all parts of it
+    were found in the local cache. Logged after the V4 local cache is checked.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.V4GetHash.CacheHit.Result"
     enum="SafeBrowsingV4FullHashCacheResult" expires_after="2023-09-03">
   <owner>vakh@chromium.org</owner>
