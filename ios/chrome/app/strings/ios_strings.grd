@@ -1847,7 +1847,9 @@ Handoff must also be enabled in the General section of Settings, and your device
         Never Move
       </message>
       <message name="IDS_IOS_OPTIONS_INACTIVE_TABS_THRESHOLD" desc="Current chosen threshold for the inactive tabs option. (Title case)">
-        After <ph name="THRESHOLD">$1<ex>14</ex></ph> Days
+        {COUNT, plural,
+          =1 {After 1 Day}
+          other {After {COUNT} Days}}
       </message>
       <message name="IDS_IOS_OPTIONS_MOVE_INACTIVE_TABS" desc="Title for opening the setting for when tabs should be considered inactive. (Title case)">
         Move Inactive Tabs

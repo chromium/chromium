@@ -33,6 +33,7 @@ source_set("inactive_tabs_ui") {
     "inactive_tabs_settings_table_view_controller_delegate.h",
   ]
   deps = [
+    "//base:i18n",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/browser/shared/ui/table_view:utils",
