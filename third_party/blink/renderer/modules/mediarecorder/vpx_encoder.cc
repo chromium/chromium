@@ -34,10 +34,14 @@ static int GetNumberOfThreadsForEncoding() {
 }
 
 VpxEncoder::VpxEncoder(
+    scoped_refptr<base::SequencedTaskRunner> encoding_task_runner,
     bool use_vp9,
     const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
     uint32_t bits_per_second)
-    : Encoder(on_encoded_video_cb, bits_per_second), use_vp9_(use_vp9) {
+    : Encoder(std::move(encoding_task_runner),
+              on_encoded_video_cb,
+              bits_per_second),
+      use_vp9_(use_vp9) {
   codec_config_.g_timebase.den = 0;        // Not initialized.
   alpha_codec_config_.g_timebase.den = 0;  // Not initialized.
 }

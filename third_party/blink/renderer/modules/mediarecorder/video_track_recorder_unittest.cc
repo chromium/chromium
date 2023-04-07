@@ -166,7 +166,8 @@ class VideoTrackRecorderTest
 
   void InitializeRecorder(VideoTrackRecorder::CodecProfile codec_profile) {
     video_track_recorder_ = std::make_unique<VideoTrackRecorderImpl>(
-        codec_profile, WebMediaStreamTrack(component_.Get()),
+        scheduler::GetSingleThreadTaskRunnerForTesting(), codec_profile,
+        WebMediaStreamTrack(component_.Get()),
         ConvertToBaseRepeatingCallback(
             CrossThreadBindRepeating(&VideoTrackRecorderTest::OnEncodedVideo,
                                      CrossThreadUnretained(this))),
@@ -606,6 +607,7 @@ class VideoTrackRecorderPassthroughTest
 
   void InitializeRecorder() {
     video_track_recorder_ = std::make_unique<VideoTrackRecorderPassthrough>(
+        scheduler::GetSingleThreadTaskRunnerForTesting(),
         WebMediaStreamTrack(component_.Get()),
         ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
             &VideoTrackRecorderPassthroughTest::OnEncodedVideo,

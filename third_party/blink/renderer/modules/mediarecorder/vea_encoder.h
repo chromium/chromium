@@ -33,7 +33,8 @@ namespace blink {
 class VEAEncoder final : public VideoTrackRecorder::Encoder,
                          public media::VideoEncodeAccelerator::Client {
  public:
-  VEAEncoder(const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
+  VEAEncoder(scoped_refptr<base::SequencedTaskRunner> encoding_task_runner,
+             const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
              const VideoTrackRecorder::OnErrorCB& on_error_cb,
              media::Bitrate::Mode bitrate_mode,
              uint32_t bits_per_second,

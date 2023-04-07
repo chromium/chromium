@@ -82,10 +82,13 @@ void H264Encoder::ISVCEncoderDeleter::operator()(ISVCEncoder* codec) {
 }
 
 H264Encoder::H264Encoder(
+    scoped_refptr<base::SequencedTaskRunner> encoding_task_runner,
     const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
     VideoTrackRecorder::CodecProfile codec_profile,
     uint32_t bits_per_second)
-    : Encoder(on_encoded_video_cb, bits_per_second),
+    : Encoder(std::move(encoding_task_runner),
+              on_encoded_video_cb,
+              bits_per_second),
       codec_profile_(codec_profile) {
   DCHECK_EQ(codec_profile_.codec_id, VideoTrackRecorder::CodecId::kH264);
 }

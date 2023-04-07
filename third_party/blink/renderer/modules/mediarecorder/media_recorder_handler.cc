@@ -149,6 +149,10 @@ AudioTrackRecorder::CodecId AudioStringToCodecId(const String& codecs) {
 
 }  // anonymous namespace
 
+MediaRecorderHandler::MediaRecorderHandler(
+    scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner)
+    : main_thread_task_runner_(std::move(main_thread_task_runner)) {}
+
 bool MediaRecorderHandler::CanSupportMimeType(const String& type,
                                               const String& web_codecs) {
   DCHECK(IsMainThread());
@@ -306,31 +310,36 @@ bool MediaRecorderHandler::Start(int timeslice) {
     MediaStreamVideoTrack* const video_track =
         static_cast<MediaStreamVideoTrack*>(
             video_tracks_[0]->GetPlatformTrack());
-    base::OnceClosure on_track_source_changed_cb =
-        base::BindPostTaskToCurrentDefault(
-            WTF::BindOnce(&MediaRecorderHandler::OnSourceReadyStateChanged,
-                          WrapWeakPersistent(this)));
+    base::OnceClosure on_track_source_changed_cb = base::BindPostTask(
+        main_thread_task_runner_,
+        WTF::BindOnce(&MediaRecorderHandler::OnSourceReadyStateChanged,
+                      WrapWeakPersistent(this)));
     const bool use_encoded_source_output =
         video_track->source() != nullptr &&
         video_track->source()->SupportsEncodedOutput();
     if (passthrough_enabled_ && use_encoded_source_output) {
       const VideoTrackRecorder::OnEncodedVideoCB on_passthrough_video_cb =
-          base::BindPostTaskToCurrentDefault(
+          base::BindPostTask(
+              main_thread_task_runner_,
               WTF::BindRepeating(&MediaRecorderHandler::OnPassthroughVideo,
                                  WrapWeakPersistent(this)));
       video_recorders_.emplace_back(
           std::make_unique<VideoTrackRecorderPassthrough>(
-              video_tracks_[0], std::move(on_passthrough_video_cb),
+              main_thread_task_runner_, video_tracks_[0],
+              std::move(on_passthrough_video_cb),
               std::move(on_track_source_changed_cb)));
     } else {
       const VideoTrackRecorder::OnEncodedVideoCB on_encoded_video_cb =
-          base::BindPostTaskToCurrentDefault(WTF::BindRepeating(
-              &MediaRecorderHandler::OnEncodedVideo, WrapWeakPersistent(this)));
-      auto on_video_error_cb = base::BindPostTaskToCurrentDefault(
+          base::BindPostTask(
+              main_thread_task_runner_,
+              WTF::BindRepeating(&MediaRecorderHandler::OnEncodedVideo,
+                                 WrapWeakPersistent(this)));
+      auto on_video_error_cb = base::BindPostTask(
+          main_thread_task_runner_,
           WTF::BindOnce(&MediaRecorderHandler::OnVideoEncodingError,
                         WrapWeakPersistent(this)));
       video_recorders_.emplace_back(std::make_unique<VideoTrackRecorderImpl>(
-          video_codec_profile_, video_tracks_[0],
+          main_thread_task_runner_, video_codec_profile_, video_tracks_[0],
           std::move(on_encoded_video_cb), std::move(on_track_source_changed_cb),
           std::move(on_video_error_cb), video_bits_per_second_));
     }
@@ -347,12 +356,14 @@ bool MediaRecorderHandler::Start(int timeslice) {
     UpdateTrackLiveAndEnabled(*audio_tracks_[0], /*is_video=*/false);
 
     const AudioTrackRecorder::OnEncodedAudioCB on_encoded_audio_cb =
-        base::BindPostTaskToCurrentDefault(WTF::BindRepeating(
-            &MediaRecorderHandler::OnEncodedAudio, WrapWeakPersistent(this)));
-    base::OnceClosure on_track_source_changed_cb =
-        base::BindPostTaskToCurrentDefault(
-            WTF::BindOnce(&MediaRecorderHandler::OnSourceReadyStateChanged,
-                          WrapWeakPersistent(this)));
+        base::BindPostTask(
+            main_thread_task_runner_,
+            WTF::BindRepeating(&MediaRecorderHandler::OnEncodedAudio,
+                               WrapWeakPersistent(this)));
+    base::OnceClosure on_track_source_changed_cb = base::BindPostTask(
+        main_thread_task_runner_,
+        WTF::BindOnce(&MediaRecorderHandler::OnSourceReadyStateChanged,
+                      WrapWeakPersistent(this)));
     audio_recorders_.emplace_back(std::make_unique<AudioTrackRecorder>(
         audio_codec_id_, audio_tracks_[0], std::move(on_encoded_audio_cb),
         std::move(on_track_source_changed_cb), audio_bits_per_second_,

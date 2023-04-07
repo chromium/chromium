@@ -40,9 +40,11 @@ namespace blink {
 // losing some audio at the end of the recording.
 class AudioTrackMojoEncoder : public AudioTrackEncoder {
  public:
-  AudioTrackMojoEncoder(AudioTrackRecorder::CodecId codec,
-                        OnEncodedAudioCB on_encoded_audio_cb,
-                        uint32_t bits_per_second = 0);
+  AudioTrackMojoEncoder(
+      scoped_refptr<base::SequencedTaskRunner> encoder_task_runner,
+      AudioTrackRecorder::CodecId codec,
+      OnEncodedAudioCB on_encoded_audio_cb,
+      uint32_t bits_per_second = 0);
 
   AudioTrackMojoEncoder(const AudioTrackMojoEncoder&) = delete;
   AudioTrackMojoEncoder& operator=(const AudioTrackMojoEncoder&) = delete;
@@ -78,6 +80,8 @@ class AudioTrackMojoEncoder : public AudioTrackEncoder {
     std::unique_ptr<media::AudioBus> audio_bus;
     const base::TimeTicks capture_time;
   };
+
+  const scoped_refptr<base::SequencedTaskRunner> encoder_task_runner_;
 
   AudioTrackRecorder::CodecId codec_;
 

@@ -44,6 +44,7 @@ bool VEAEncoder::OutputBuffer::IsValid() {
 }
 
 VEAEncoder::VEAEncoder(
+    scoped_refptr<base::SequencedTaskRunner> encoding_task_runner,
     const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
     const VideoTrackRecorder::OnErrorCB& on_error_cb,
     media::Bitrate::Mode bitrate_mode,
@@ -52,7 +53,8 @@ VEAEncoder::VEAEncoder(
     absl::optional<uint8_t> level,
     const gfx::Size& size,
     bool use_native_input)
-    : Encoder(on_encoded_video_cb,
+    : Encoder(std::move(encoding_task_runner),
+              on_encoded_video_cb,
               bits_per_second > 0
                   ? bits_per_second
                   : size.GetArea() * kVEADefaultBitratePerPixel),
@@ -246,7 +248,8 @@ void VEAEncoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
         video_frame->stride(media::VideoFrame::kVPlane),
         input_visible_size_.width(), input_visible_size_.height());
     video_frame->BackWithSharedMemory(&input_buffer->region);
-    video_frame->AddDestructionObserver(base::BindPostTaskToCurrentDefault(
+    video_frame->AddDestructionObserver(base::BindPostTask(
+        encoding_task_runner_,
         WTF::BindOnce(&VEAEncoder::FrameFinished, weak_factory_.GetWeakPtr(),
                       std::move(input_buffer))));
   }
