@@ -4,7 +4,11 @@
 
 #include "fuchsia_web/runners/cast/pending_cast_component.h"
 
+#include <fidl/fuchsia.io/cpp/hlcpp_conversion.h>
+#include <lib/async/default.h>
+
 #include "base/check.h"
+#include "base/fuchsia/fuchsia_component_connect.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/functional/bind.h"
@@ -16,7 +20,11 @@ PendingCastComponent::PendingCastComponent(
     fidl::InterfaceRequest<fuchsia::component::runner::ComponentController>
         controller_request,
     base::StringPiece app_id)
-    : delegate_(delegate), app_id_(app_id) {
+    : delegate_(delegate),
+      app_id_(app_id),
+      application_context_error_handler_(base::BindRepeating(
+          &PendingCastComponent::OnApplicationContextFidlError,
+          base::Unretained(this))) {
   DCHECK(startup_context);
   DCHECK(controller_request);
 
@@ -55,6 +63,8 @@ void PendingCastComponent::OnApplicationConfigReceived(
   }
 
   params_.application_config = std::move(application_config);
+  fidl::ClientEnd<fuchsia_io::Directory> startup_context_svc_dir =
+      fidl::HLCPPToNatural(params_.startup_context->svc()->CloneChannel());
 
   // Request custom API bindings from the component's Agent.
   params_.api_bindings_client = std::make_unique<ApiBindingsClient>(
@@ -83,14 +93,19 @@ void PendingCastComponent::OnApplicationConfigReceived(
         MaybeLaunchComponent();
       });
 
+  auto application_context_client_end =
+      base::fuchsia_component::ConnectAt<chromium_cast::ApplicationContext>(
+          startup_context_svc_dir.borrow());
+  if (application_context_client_end.is_error()) {
+    LOG(ERROR) << base::FidlConnectionErrorMessage(
+        application_context_client_end);
+    return;
+  }
   // Connect to the component-specific ApplicationContext to retrieve the
   // media-session identifier assigned to this instance.
-  application_context_ = params_.startup_context->svc()
-                             ->Connect<chromium::cast::ApplicationContext>();
-  application_context_.set_error_handler([this](zx_status_t status) {
-    ZX_LOG(ERROR, status) << "ApplicationContext disconnected.";
-    delegate_->CancelPendingComponent(this);
-  });
+  application_context_.Bind(std::move(application_context_client_end.value()),
+                            async_get_default_dispatcher(),
+                            &application_context_error_handler_);
 
   if (params_.application_config.has_audio_renderer_usage()) {
     DCHECK(!params_.media_settings);
@@ -100,14 +115,25 @@ void PendingCastComponent::OnApplicationConfigReceived(
   } else {
     // If `audio_renderer_usage` is not specified then `AudioConsumer` is used
     // for that app. We need to fetch `session_id` in that case.
-    application_context_->GetMediaSessionId([this](uint64_t session_id) {
-      DCHECK(!params_.media_settings);
-      params_.media_settings = fuchsia::web::FrameMediaSettings{};
-      if (session_id > 0)
-        params_.media_settings->set_audio_consumer_session_id(session_id);
+    application_context_->GetMediaSessionId().Then(
+        [this](
+            fidl::Result<chromium_cast::ApplicationContext::GetMediaSessionId>&
+                result) {
+          DCHECK(!params_.media_settings);
+          if (result.is_error()) {
+            LOG(ERROR) << base::FidlMethodResultErrorMessage(
+                result, "GetMediaSessionId");
+            delegate_->CancelPendingComponent(this);
+            return;
+          }
+          params_.media_settings = fuchsia::web::FrameMediaSettings{};
+          if (result->media_session_id() > 0) {
+            params_.media_settings->set_audio_consumer_session_id(
+                result->media_session_id());
+          }
 
-      MaybeLaunchComponent();
-    });
+          MaybeLaunchComponent();
+        });
   }
 }
 
@@ -126,7 +152,18 @@ void PendingCastComponent::MaybeLaunchComponent() {
   // user-after-free of |this|.
   params_.url_rewrite_rules_provider.set_error_handler(nullptr);
 
-  params_.application_context = application_context_.Unbind();
+  auto result = application_context_.UnbindMaybeGetEndpoint();
+  if (result.is_error()) {
+    ZX_LOG(ERROR, result.error_value().status());
+    return;
+  }
+  params_.application_context = std::move(result.value());
 
   delegate_->LaunchPendingComponent(this, std::move(params_));
+}
+
+void PendingCastComponent::OnApplicationContextFidlError(
+    fidl::UnbindInfo error) {
+  ZX_LOG(ERROR, error.status()) << "ApplicationContext disconnected.";
+  delegate_->CancelPendingComponent(this);
 }

@@ -4,7 +4,7 @@
 
 #include "fuchsia_web/runners/cast/cast_component.h"
 
-#include <chromium/cast/cpp/fidl.h>
+#include <lib/async/default.h>
 #include <lib/fidl/cpp/binding.h>
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
 
@@ -80,7 +80,8 @@ CastComponent::CastComponent(base::StringPiece debug_name,
       initial_url_rewrite_rules_(
           std::move(params.initial_url_rewrite_rules.value())),
       api_bindings_client_(std::move(params.api_bindings_client)),
-      application_context_(params.application_context.Bind()),
+      application_context_(std::move(params.application_context),
+                           async_get_default_dispatcher()),
       media_settings_(std::move(params.media_settings.value())),
       headless_disconnect_watch_(FROM_HERE) {
   base::AutoReset<bool> constructor_active_reset(&constructor_active_, true);
@@ -150,7 +151,7 @@ void CastComponent::StartComponent() {
   }
 
   application_controller_ = std::make_unique<ApplicationControllerImpl>(
-      frame(), application_context_.get());
+      frame(), application_context_);
 
   // Apply application-specific web permissions to the fuchsia.web.Frame.
   if (application_config_.has_permissions()) {
@@ -194,7 +195,9 @@ void CastComponent::DestroyComponent(int64_t exit_code) {
   // to be notified with `exit_code` set to `ZX_OK`.  All other `exit_code`
   // values, or failure to report one, indicate teardown due to error.
   if (application_controller_) {
-    application_context_->OnApplicationExit(exit_code);
+    auto result = application_context_->OnApplicationExit(exit_code);
+    LOG_IF(ERROR, result.is_error())
+        << base::FidlMethodResultErrorMessage(result, "OnApplicationExit");
   }
 
   // frame() is about to be destroyed, so there is no need to perform cleanup

@@ -52,8 +52,7 @@ class CastComponent final
     // Parameters asynchronously initialized by PendingCastComponent.
     std::unique_ptr<ApiBindingsClient> api_bindings_client;
     chromium::cast::ApplicationConfig application_config;
-    fidl::InterfaceHandle<chromium::cast::ApplicationContext>
-        application_context;
+    fidl::ClientEnd<chromium_cast::ApplicationContext> application_context;
     absl::optional<std::vector<fuchsia::web::UrlRequestRewriteRule>>
         initial_url_rewrite_rules;
     absl::optional<fuchsia::web::FrameMediaSettings> media_settings;
@@ -115,7 +114,7 @@ class CastComponent final
   std::unique_ptr<NamedMessagePortConnectorFuchsia> connector_;
   std::unique_ptr<ApiBindingsClient> api_bindings_client_;
   std::unique_ptr<ApplicationControllerImpl> application_controller_;
-  chromium::cast::ApplicationContextPtr application_context_;
+  fidl::Client<chromium_cast::ApplicationContext> application_context_;
   fuchsia::web::FrameMediaSettings media_settings_;
   zx::eventpair headless_view_token_;
 
