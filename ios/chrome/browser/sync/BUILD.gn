@@ -88,6 +88,7 @@ source_set("sync") {
     "//ios/chrome/common",
     "//ios/components/webui:url_constants",
     "//ios/web",
+    "//ios/web/common:features",
     "//ios/web/public/session",
     "//net",
     "//ui/base",
