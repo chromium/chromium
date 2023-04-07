@@ -1254,6 +1254,43 @@ chromium-metrics-reviews@google.com.
     The time from navigation start to the first contentful paint of third-party
     (in respect to scheme://eTLD+1) frames on pages. Note that this can be
     significantly delayed due to lazy loading.
+
+    Note also that all of the PageLoad.Clients.ThirdParty.Frames metrics will
+    only be recorded for the first kMaxRecordedFrames (50) active iframe
+    RenderFrameHosts (at any given time).
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.ThirdParty.Frames.Opaque.NavigationToFirstContentfulPaint"
+    units="ms" expires_after="2023-09-03">
+  <owner>awillia@chromium.org</owner>
+  <owner>djmitche@chromium.org</owner>
+  <summary>
+    The time from navigation start to the first contentful paint of third-party
+    opaque origin frames on pages. Note that this metric is only collected when
+    the top-level origin is not opaque. Also, this metric can be significantly
+    delayed due to lazy loading.
+
+    Note also that all of the PageLoad.Clients.ThirdParty.Frames metrics will
+    only be recorded for the first kMaxRecordedFrames (50) active iframe
+    RenderFrameHosts (at any given time).
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.ThirdParty.Frames.Opaque.NavigationToLargestContentfulPaint"
+    units="ms" expires_after="2023-09-03">
+  <owner>awillia@chromium.org</owner>
+  <owner>djmitche@chromium.org</owner>
+  <summary>
+    The time from navigation start to the largest contentful paint of
+    third-party opaque origin frames on pages. Note that this metric is only
+    collected when the top-level origin is not opaque.
+
+    Note also that all of the PageLoad.Clients.ThirdParty.Frames metrics will
+    only be recorded for the first kMaxRecordedFrames (50) active iframe
+    RenderFrameHosts (at any given time).
   </summary>
 </histogram>
 
