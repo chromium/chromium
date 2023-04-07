@@ -6,7 +6,6 @@
       "microdump_stackwalk",
       "system_webview_google_apk",
       "android_tools",
-      "chromium_builder_perf",
       "dump_syms",
       "push_apps_to_background_apk",
       "system_webview_apk",
@@ -160,7 +159,6 @@
       "microdump_stackwalk",
       "system_webview_google_apk",
       "android_tools",
-      "chromium_builder_perf",
       "dump_syms",
       "push_apps_to_background_apk",
       "system_webview_apk",
@@ -1215,7 +1213,6 @@
       "microdump_stackwalk",
       "system_webview_google_apk",
       "android_tools",
-      "chromium_builder_perf",
       "push_apps_to_background_apk",
       "system_webview_apk",
       "system_webview_shell_apk"
@@ -1396,7 +1393,6 @@
       "microdump_stackwalk",
       "system_webview_google_apk",
       "android_tools",
-      "chromium_builder_perf",
       "push_apps_to_background_apk",
       "system_webview_apk",
       "system_webview_shell_apk"
@@ -1650,8 +1646,7 @@
   },
   "linux-builder-perf": {
     "additional_compile_targets": [
-      "chromedriver",
-      "chromium_builder_perf"
+      "chromedriver"
     ],
     "isolated_scripts": [
       {
@@ -1684,16 +1679,8 @@
       }
     ]
   },
-  "linux-builder-perf-pgo": {
-    "additional_compile_targets": [
-      "chromium_builder_perf"
-    ]
-  },
-  "linux-builder-perf-rel": {
-    "additional_compile_targets": [
-      "chromium_builder_perf"
-    ]
-  },
+  "linux-builder-perf-pgo": {},
+  "linux-builder-perf-rel": {},
   "linux-perf": {
     "isolated_scripts": [
       {
@@ -1855,8 +1842,7 @@
   },
   "mac-arm-builder-perf": {
     "additional_compile_targets": [
-      "chromedriver",
-      "chromium_builder_perf"
+      "chromedriver"
     ],
     "isolated_scripts": [
       {
@@ -1889,15 +1875,10 @@
       }
     ]
   },
-  "mac-arm-builder-perf-pgo": {
-    "additional_compile_targets": [
-      "chromium_builder_perf"
-    ]
-  },
+  "mac-arm-builder-perf-pgo": {},
   "mac-builder-perf": {
     "additional_compile_targets": [
-      "chromedriver",
-      "chromium_builder_perf"
+      "chromedriver"
     ],
     "isolated_scripts": [
       {
@@ -1930,11 +1911,7 @@
       }
     ]
   },
-  "mac-builder-perf-pgo": {
-    "additional_compile_targets": [
-      "chromium_builder_perf"
-    ]
-  },
+  "mac-builder-perf-pgo": {},
   "mac-laptop_high_end-perf": {
     "isolated_scripts": [
       {
@@ -2624,8 +2601,7 @@
   },
   "win64-builder-perf": {
     "additional_compile_targets": [
-      "chromedriver",
-      "chromium_builder_perf"
+      "chromedriver"
     ],
     "isolated_scripts": [
       {
@@ -2658,9 +2634,5 @@
       }
     ]
   },
-  "win64-builder-perf-pgo": {
-    "additional_compile_targets": [
-      "chromium_builder_perf"
-    ]
-  }
+  "win64-builder-perf-pgo": {}
 }
