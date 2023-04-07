@@ -100,9 +100,11 @@ class SessionService : public SessionServiceBase {
   // Updates the metadata associated with a tab group. |window_id| should be
   // the window where the group currently resides. Note that a group can't be
   // split between multiple windows.
-  void SetTabGroupMetadata(SessionID window_id,
-                           const tab_groups::TabGroupId& group_id,
-                           const tab_groups::TabGroupVisualData* visual_data);
+  void SetTabGroupMetadata(
+      SessionID window_id,
+      const tab_groups::TabGroupId& group_id,
+      const tab_groups::TabGroupVisualData* visual_data,
+      const absl::optional<std::string> saved_guid = absl::nullopt);
 
   void AddTabExtraData(SessionID window_id,
                        SessionID tab_id,

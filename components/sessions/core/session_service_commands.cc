@@ -670,6 +670,23 @@ void CreateTabsAndWindows(
         std::ignore = iter.ReadBool(&is_collapsed);
         group->visual_data =
             tab_groups::TabGroupVisualData(title, color_int, is_collapsed);
+
+        // The |is_saved| boolean was added in M113 to save the saved state of a
+        // tab group. Previous versions may not have this stored.
+        bool is_saved = false;
+        std::ignore = iter.ReadBool(&is_saved);
+
+        if (is_saved) {
+          // The |saved_guid| boolean was added in M113 to save the guid of a
+          // tab group. Previous version may not have this stored.
+          std::string saved_guid;
+          if (!iter.ReadString(&saved_guid)) {
+            return;
+          }
+
+          group->saved_guid = saved_guid;
+        }
+
         break;
       }
 
@@ -991,7 +1008,8 @@ std::unique_ptr<SessionCommand> CreateTabGroupCommand(
 
 std::unique_ptr<SessionCommand> CreateTabGroupMetadataUpdateCommand(
     const tab_groups::TabGroupId group,
-    const tab_groups::TabGroupVisualData* visual_data) {
+    const tab_groups::TabGroupVisualData* visual_data,
+    const absl::optional<std::string> saved_guid) {
   base::Pickle pickle;
   WriteTokenToPickle(&pickle, group.token());
   pickle.WriteString16(visual_data->title());
@@ -999,6 +1017,14 @@ std::unique_ptr<SessionCommand> CreateTabGroupMetadataUpdateCommand(
 
   // This boolean was added in M88 to save the collapsed state.
   pickle.WriteBool(visual_data->is_collapsed());
+
+  // This booleans was added in M113 to save the saved state of a tab group.
+  pickle.WriteBool(saved_guid.has_value());
+  if (saved_guid.has_value()) {
+    // This string was  added in M113 to save the guid of a tab group.
+    pickle.WriteString(saved_guid.value());
+  }
+
   return std::make_unique<SessionCommand>(kCommandSetTabGroupMetadata2, pickle);
 }
 

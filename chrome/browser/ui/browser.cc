@@ -130,6 +130,7 @@
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -1243,8 +1244,22 @@ void Browser::OnTabGroupChanged(const TabGroupChange& change) {
           tab_strip_model_->group_model()
               ->GetTabGroup(change.group)
               ->visual_data();
+      const SavedTabGroupKeyedService* const saved_tab_group_keyed_service =
+          base::FeatureList::IsEnabled(features::kTabGroupsSave)
+              ? SavedTabGroupServiceFactory::GetForProfile(profile_)
+              : nullptr;
+      absl::optional<std::string> saved_guid;
+
+      if (saved_tab_group_keyed_service) {
+        const SavedTabGroup* const saved_group =
+            saved_tab_group_keyed_service->model()->Get(change.group);
+        if (saved_group) {
+          saved_guid = saved_group->saved_guid().AsLowercaseString();
+        }
+      }
+
       session_service->SetTabGroupMetadata(session_id(), change.group,
-                                           visual_data);
+                                           visual_data, std::move(saved_guid));
     }
   } else if (change.type == TabGroupChange::kClosed) {
     sessions::TabRestoreService* tab_restore_service =

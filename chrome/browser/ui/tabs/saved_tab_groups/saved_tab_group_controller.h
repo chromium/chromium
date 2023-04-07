@@ -30,6 +30,12 @@ class SavedTabGroupController {
   // group id and web content tokens.
   virtual void DisconnectLocalTabGroup(
       const tab_groups::TabGroupId& group_id) = 0;
+
+  // Begins listening to the Tab Group in the TabStrip. Adds the local tab group
+  // id and web content tokens.
+  virtual void ConnectLocalTabGroup(
+      const tab_groups::TabGroupId& local_group_id,
+      const base::GUID& saved_group_guid) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_CONTROLLER_H_

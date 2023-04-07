@@ -37,7 +37,6 @@ class SavedTabGroupInteractiveTest : public InteractiveBrowserTest {
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures({features::kTabGroupsSave}, {});
-    set_open_about_blank_on_browser_launch(true);
     InteractiveBrowserTest::SetUp();
   }
 
@@ -55,10 +54,10 @@ class SavedTabGroupInteractiveTest : public InteractiveBrowserTest {
                  MoveMouseTo(kTabToHover));
   }
 
-  MultiStep HoverFirstTabGroupHeader() {
+  MultiStep HoverTabGroupHeaderAt(int index) {
     const char kTabGroupHeaderToHover[] = "Tab group header to hover";
     return Steps(NameDescendantViewByType<TabGroupHeader>(
-                     kBrowserViewElementId, kTabGroupHeaderToHover, 0),
+                     kBrowserViewElementId, kTabGroupHeaderToHover, index),
                  MoveMouseTo(kTabGroupHeaderToHover));
   }
 

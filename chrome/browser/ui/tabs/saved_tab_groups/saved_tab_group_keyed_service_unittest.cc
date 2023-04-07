@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -152,4 +153,74 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, AddedTabIsListenedTo) {
   browser_1->tab_strip_model()->AddToExistingGroup({1}, group_id);
   EXPECT_EQ(2u, tab_token_mapping.size());
   EXPECT_TRUE(tab_token_mapping.contains(added_tab));
+}
+
+TEST_F(SavedTabGroupKeyedServiceUnitTest,
+       KeyedServiceLinksTabIdsToGuidsWhenModelIsLoaded) {
+  Browser* browser_1 = AddBrowser();
+  ASSERT_EQ(0, browser_1->tab_strip_model()->count());
+
+  // Add 4 tabs to the browser.
+  for (size_t i = 0; i < 4; ++i) {
+    AddTabToBrowser(browser_1, 0);
+  }
+
+  ASSERT_EQ(4, browser_1->tab_strip_model()->count());
+
+  const tab_groups::TabGroupId tab_group_id_1 =
+      browser_1->tab_strip_model()->AddToNewGroup({0});
+  const tab_groups::TabGroupId tab_group_id_2 =
+      browser_1->tab_strip_model()->AddToNewGroup({1, 2});
+  const tab_groups::TabGroupId tab_group_id_3 =
+      browser_1->tab_strip_model()->AddToNewGroup({3});
+
+  const base::GUID guid_1 = base::GUID::GenerateRandomV4();
+  const base::GUID guid_2 = base::GUID::GenerateRandomV4();
+
+  // Store the guid to tab_group_id association in the keyed service. We should
+  // expect at the end of the test, `tab_group_id_3` has no association with the
+  // SavedTabGroupModel at all.
+  service()->StoreLocalToSavedId(guid_1, tab_group_id_1);
+  service()->StoreLocalToSavedId(guid_2, tab_group_id_2);
+
+  // Populate the SavedTabGroupModel with some test data to simulate the browser
+  // loading in persisted data on startup.
+  std::vector<SavedTabGroupTab> group_1_tabs = {
+      SavedTabGroupTab(GURL("chrome://newtab"), u"New Tab", guid_1)};
+  std::vector<SavedTabGroupTab> group_2_tabs = {
+      SavedTabGroupTab(GURL("chrome://newtab"), u"New Tab", guid_2),
+      SavedTabGroupTab(GURL("chrome://newtab"), u"New Tab", guid_2)};
+
+  SavedTabGroup saved_group_1(u"Group 1", tab_groups::TabGroupColorId::kGrey,
+                              std::move(group_1_tabs), guid_1);
+  SavedTabGroup saved_group_2(u"Group 2", tab_groups::TabGroupColorId::kRed,
+                              std::move(group_2_tabs), guid_2);
+  service()->model()->Add(saved_group_1);
+  service()->model()->Add(saved_group_2);
+
+  // Notify the KeyedService that the SavedTabGroupModel has loaded all local
+  // data triggered by the completion of SavedTabGroupModel::LoadStoredEntries.
+  service()->model()->LoadStoredEntries({});
+
+  // Retrieve the 2 saved groups from the model.
+  SavedTabGroupModel* model = service()->model();
+  const SavedTabGroup* retrieved_saved_group_1 = model->Get(guid_1);
+  const SavedTabGroup* retrieved_saved_group_2 = model->Get(guid_2);
+
+  // Verify saved group 1 and 2 have the correct tab group id.
+  ASSERT_TRUE(retrieved_saved_group_1);
+  ASSERT_TRUE(retrieved_saved_group_1->local_group_id().has_value());
+  EXPECT_EQ(tab_group_id_1, retrieved_saved_group_1->local_group_id().value());
+
+  ASSERT_TRUE(retrieved_saved_group_2);
+  ASSERT_TRUE(retrieved_saved_group_2->local_group_id().has_value());
+  EXPECT_EQ(tab_group_id_2, retrieved_saved_group_2->local_group_id().value());
+
+  // Expect the model can locate tab group ids for group 1 and 2 but not
+  // group 3.
+  EXPECT_TRUE(model->Contains(tab_group_id_1));
+  EXPECT_TRUE(model->Contains(tab_group_id_2));
+  EXPECT_FALSE(model->Contains(tab_group_id_3));
+
+  EXPECT_DEATH(service()->StoreLocalToSavedId(guid_1, tab_group_id_1), "");
 }

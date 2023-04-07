@@ -453,6 +453,11 @@ SavedTabGroupModel::LoadStoredEntries(
     }
   }
 
+  is_loaded_ = true;
+  for (auto& observer : observers_) {
+    observer.SavedTabGroupModelLoaded();
+  }
+
   return tabs_missing_groups;
 }
 

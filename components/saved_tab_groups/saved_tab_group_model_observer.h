@@ -55,6 +55,12 @@ class SavedTabGroupModelObserver {
       const base::Uuid& group_guid,
       const absl::optional<base::Uuid>& tab_guid = absl::nullopt) {}
 
+  // Called when SavedTabGroupModel::LoadStoredEntries has finished loading.
+  // This is currently used to notify the SavedTabGroupKeyedService to link any
+  // tabs restore through session restore to the corresponding SavedTabGroup
+  // metadata in the SavedTabGroupModel.
+  virtual void SavedTabGroupModelLoaded() {}
+
  protected:
   SavedTabGroupModelObserver() = default;
   virtual ~SavedTabGroupModelObserver() = default;
