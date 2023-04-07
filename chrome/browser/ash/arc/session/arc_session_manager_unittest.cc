@@ -478,12 +478,14 @@ TEST_F(ArcSessionManagerTest, SignedInWorkflowWithArcOnDemand) {
 
   // By default ARC is not enabled.
   EXPECT_EQ(ArcSessionManager::State::STOPPED, arc_session_manager()->state());
+  ASSERT_FALSE(arc_session_manager()->IsActivationDelayed());
 
   // When signed-in, enabling ARC results in the READY state.
   arc_session_manager()->RequestEnable();
   ASSERT_EQ(ArcSessionManager::State::READY, arc_session_manager()->state());
   histogram_tester.ExpectUniqueSample(
       "Arc.DelayedActivation.ActivationIsDelayed", true, 1);
+  ASSERT_TRUE(arc_session_manager()->IsActivationDelayed());
 
   constexpr auto kDelay = base::Minutes(10);
   task_environment().FastForwardBy(kDelay);
