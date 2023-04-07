@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/webui/print_preview/print_preview_utils.h"
 #include "components/cloud_devices/common/cloud_device_description.h"
 #include "components/cloud_devices/common/printer_description.h"
+#include "components/device_event_log/device_event_log.h"
 #include "extensions/browser/api/device_permissions_manager.h"
 #include "extensions/browser/api/printer_provider/printer_provider_api.h"
 #include "extensions/browser/api/printer_provider/printer_provider_api_factory.h"
@@ -124,6 +125,7 @@ void ExtensionPrinterHandler::StartGetPrinters(
   DCHECK_EQ(pending_enumeration_count_, 0);
   pending_enumeration_count_ = 1;
   done_callback_ = std::move(done_callback);
+  PRINTER_LOG(DEBUG) << "ExtensionPrinterHandler::StartGetPrinters() called";
 
   bool extension_supports_usb_printers = false;
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile_);
@@ -136,6 +138,8 @@ void ExtensionPrinterHandler::StartGetPrinters(
   }
 
   if (extension_supports_usb_printers) {
+    PRINTER_LOG(DEBUG) << "ExtensionPrinterHandler::StartGetPrinters() - "
+                       << "usb printers detected";
     pending_enumeration_count_++;
     UsbDeviceManager* usb_manager = UsbDeviceManager::Get(profile_);
     DCHECK(usb_manager);
@@ -277,6 +281,9 @@ void ExtensionPrinterHandler::WrapGetPrintersCallback(
     base::Value::List printers,
     bool done) {
   DCHECK_GT(pending_enumeration_count_, 0);
+  PRINTER_LOG(DEBUG) << "ExtensionPrinterHandler::WrapGetPrintersCallback(): "
+                     << "printers.size()=" << printers.size()
+                     << " done=" << done;
   if (!printers.empty())
     callback.Run(std::move(printers));
 
@@ -314,6 +321,8 @@ void ExtensionPrinterHandler::WrapGetPrinterInfoCallback(
 void ExtensionPrinterHandler::OnUsbDevicesEnumerated(
     AddedPrintersCallback callback,
     std::vector<device::mojom::UsbDeviceInfoPtr> devices) {
+  PRINTER_LOG(DEBUG) << "ExtensionPrinterHandler::OnUsbDevicesEnumerated() "
+                     << " called";
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile_);
   DevicePermissionsManager* permissions_manager =
       DevicePermissionsManager::Get(profile_);

@@ -18,6 +18,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "chromeos/printing/printer_translator.h"
+#include "components/device_event_log/device_event_log.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -199,11 +200,19 @@ class EnterprisePrintersProviderImpl : public EnterprisePrintersProvider,
     if (device_printers_) {
       complete_ = complete_ && device_printers_is_complete_;
       const auto& printers = device_printers_->GetPrinters();
+      PRINTER_LOG(DEBUG)
+          << "EnterprisePrintersProvider::RecalculateCurrentPrintersList()"
+          << "-device-printers: complete=" << device_printers_is_complete_
+          << " count=" << printers.size();
       AddPrintersFromMap(printers, &current_printers);
     }
     if (user_printers_) {
       complete_ = complete_ && user_printers_is_complete_;
       const auto& printers = user_printers_->GetPrinters();
+      PRINTER_LOG(DEBUG)
+          << "EnterprisePrintersProvider::RecalculateCurrentPrintersList()"
+          << "-user-printers: complete=" << user_printers_is_complete_
+          << " count=" << printers.size();
       AddPrintersFromMap(printers, &current_printers);
     }
 
