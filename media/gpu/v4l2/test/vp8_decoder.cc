@@ -302,7 +302,6 @@ std::unique_ptr<Vp8Decoder> Vp8Decoder::Create(
       V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE, bitstream_coded_size, V4L2_MEMORY_MMAP,
       kNumberOfBuffersInOutputQueue);
   OUTPUT_queue->set_fourcc(kDriverCodecFourcc);
-  OUTPUT_queue->set_coded_size(bitstream_coded_size);
 
   // TODO(b/256543928): enable V4L2_MEMORY_DMABUF memory for CAPTURE queue.
   // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/pixfmt-v4l2-mplane.html#c.V4L.v4l2_plane_pix_format
@@ -554,11 +553,11 @@ VideoDecoder::Result Vp8Decoder::DecodeNextFrame(std::vector<uint8_t>& y_plane,
 
   if (frame_hdr.IsKeyframe()) {
     is_resolution_changed_ =
-        frame_hdr.width != OUTPUT_queue_->coded_size().width() ||
-        frame_hdr.height != OUTPUT_queue_->coded_size().height();
+        frame_hdr.width != OUTPUT_queue_->resolution().width() ||
+        frame_hdr.height != OUTPUT_queue_->resolution().height();
   } else {
-    frame_hdr.width = OUTPUT_queue_->coded_size().width();
-    frame_hdr.height = OUTPUT_queue_->coded_size().height();
+    frame_hdr.width = OUTPUT_queue_->resolution().width();
+    frame_hdr.height = OUTPUT_queue_->resolution().height();
   }
 
   if (IsResolutionChanged()) {
@@ -601,9 +600,9 @@ VideoDecoder::Result Vp8Decoder::DecodeNextFrame(std::vector<uint8_t>& y_plane,
   CAPTURE_queue_->DequeueBufferId(buffer_id);
 
   scoped_refptr<MmappedBuffer> buffer = CAPTURE_queue_->GetBuffer(buffer_id);
-  size = CAPTURE_queue_->display_size();
-  ConvertToYUV(y_plane, u_plane, v_plane, size, buffer->mmapped_planes(),
-               CAPTURE_queue_->coded_size(), CAPTURE_queue_->fourcc());
+  ConvertToYUV(y_plane, u_plane, v_plane, OUTPUT_queue_->resolution(),
+               buffer->mmapped_planes(), CAPTURE_queue_->resolution(),
+               CAPTURE_queue_->fourcc());
 
   const std::set<int> reusable_buffer_slots = RefreshReferenceSlots(
       frame_hdr, CAPTURE_queue_->GetBuffer(buffer_id).get(),

@@ -73,7 +73,7 @@ using MmappedBuffers = std::vector<scoped_refptr<MmappedBuffer>>;
 class V4L2Queue {
  public:
   V4L2Queue(enum v4l2_buf_type type,
-            const gfx::Size& size,
+            const gfx::Size& resolution,
             enum v4l2_memory memory,
             uint32_t num_buffers);
 
@@ -89,10 +89,8 @@ class V4L2Queue {
   uint32_t fourcc() const { return fourcc_; }
   void set_fourcc(uint32_t fourcc) { fourcc_ = fourcc; }
 
-  gfx::Size display_size() const { return display_size_; }
-  void set_display_size(gfx::Size display_size) {
-    display_size_ = display_size;
-  }
+  gfx::Size resolution() const { return resolution_; }
+  void set_resolution(gfx::Size resolution) { resolution_ = resolution; }
 
   enum v4l2_memory memory() const { return memory_; }
 
@@ -100,9 +98,6 @@ class V4L2Queue {
 
   uint32_t num_buffers() const { return num_buffers_; }
   void set_num_buffers(uint32_t num_buffers) { num_buffers_ = num_buffers; }
-
-  gfx::Size coded_size() const { return coded_size_; }
-  void set_coded_size(gfx::Size coded_size) { coded_size_ = coded_size; }
 
   uint32_t num_planes() const { return num_planes_; }
   void set_num_planes(uint32_t num_planes) { num_planes_ = num_planes; }
@@ -134,11 +129,11 @@ class V4L2Queue {
   uint32_t fourcc_;
   MmappedBuffers buffers_;
   uint32_t num_buffers_;
-  // The size of the image on the screen.
-  gfx::Size display_size_;
-  // The size of the encoded frame. Usually has an alignment of 16, 32
-  // depending on codec.
-  gfx::Size coded_size_;
+  // For the OUTPUT queue resolution refers to the coded dimensions of the
+  // video. For the CAPTURE queue resolution refers to the size of the
+  // buffer necessary for the driver to decode into and must
+  // contain the resolution of the OUTPUT queue.
+  gfx::Size resolution_;
   uint32_t num_planes_;
   const enum v4l2_memory memory_;
   // File descriptor returned by MEDIA_IOC_REQUEST_ALLOC ioctl call

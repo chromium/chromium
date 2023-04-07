@@ -89,7 +89,7 @@ void VideoDecoder::NegotiateCAPTUREFormat() {
   }
 
   CAPTURE_queue_->set_fourcc(fourcc);
-  CAPTURE_queue_->set_coded_size(
+  CAPTURE_queue_->set_resolution(
       gfx::Size(fmt.fmt.pix_mp.width, fmt.fmt.pix_mp.height));
   CAPTURE_queue_->set_num_planes(fmt.fmt.pix_mp.num_planes);
 
@@ -114,8 +114,8 @@ void VideoDecoder::Initialize() {
 
   NegotiateCAPTUREFormat();
 
-  LOG_ASSERT(gfx::Rect(CAPTURE_queue_->coded_size())
-                 .Contains(gfx::Rect(CAPTURE_queue_->coded_size())))
+  LOG_ASSERT(gfx::Rect(CAPTURE_queue_->resolution())
+                 .Contains(gfx::Rect(OUTPUT_queue_->resolution())))
       << "Display size is not contained within the coded size. DRC?";
 
   // If there is a dynamic resolution change, the Initialization sequence will
@@ -161,10 +161,7 @@ VideoDecoder::Result VideoDecoder::HandleDynamicResolutionChange(
 
   // Set the new resolution on OUTPUT queue. The driver will then pick up
   // the new resolution to be set on the coded size for CAPTURE queue.
-  OUTPUT_queue_->set_display_size(new_resolution);
-  OUTPUT_queue_->set_coded_size(new_resolution);
-
-  CAPTURE_queue_->set_display_size(new_resolution);
+  OUTPUT_queue_->set_resolution(new_resolution);
 
   // Perform the initialization sequence again
   Initialize();

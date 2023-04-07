@@ -149,12 +149,12 @@ MmappedBuffer::~MmappedBuffer() {
 }
 
 V4L2Queue::V4L2Queue(enum v4l2_buf_type type,
-                     const gfx::Size& size,
+                     const gfx::Size& resolution,
                      enum v4l2_memory memory,
                      uint32_t num_buffers)
     : type_(type),
       num_buffers_(num_buffers),
-      display_size_(size),
+      resolution_(resolution),
       num_planes_(1),
       memory_(memory) {}
 
@@ -375,8 +375,8 @@ void V4L2IoctlShim::SetFmt(const std::unique_ptr<V4L2Queue>& queue) const {
   }
 
   fmt.fmt.pix_mp.num_planes = queue->num_planes();
-  fmt.fmt.pix_mp.width = queue->display_size().width();
-  fmt.fmt.pix_mp.height = queue->display_size().height();
+  fmt.fmt.pix_mp.width = queue->resolution().width();
+  fmt.fmt.pix_mp.height = queue->resolution().height();
 
   const bool ret = Ioctl(VIDIOC_S_FMT, &fmt);
 
