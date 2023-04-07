@@ -83,7 +83,7 @@ class MediaRouterUiForTestBase {
   void StopCasting(views::View* sink_button);
 
   static CastDialogSinkButton* GetSinkButtonWithName(
-      const std::vector<CastDialogSinkButton*>& sink_buttons,
+      const std::vector<raw_ptr<CastDialogSinkView>>& sink_buttons,
       const std::string& sink_name);
 
   virtual views::View* GetSinkButton(const std::string& sink_name) const = 0;

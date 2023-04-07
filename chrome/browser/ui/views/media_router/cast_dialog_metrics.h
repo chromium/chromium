@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
 #include "chrome/browser/ui/media_router/ui_media_sink.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_sink_button.h"
+#include "chrome/browser/ui/views/media_router/cast_dialog_sink_view.h"
 #include "components/media_router/browser/media_router_metrics.h"
 #include "components/media_router/common/media_sink.h"
 
@@ -61,6 +62,8 @@ class CastDialogMetrics {
   // Records the number of sinks, which may be 0.
   void OnRecordSinkCount(
       const std::vector<CastDialogSinkButton*>& sink_buttons);
+  void OnRecordSinkCount(
+      const std::vector<raw_ptr<CastDialogSinkView>>& sink_views);
 
  private:
   // Records the first user action if it hasn't already been recorded.

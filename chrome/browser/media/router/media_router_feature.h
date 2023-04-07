@@ -60,6 +60,10 @@ BASE_DECLARE_FEATURE(kStartCastSessionWithoutTerminating);
 // fall back to audio tab mirroring when casting from the Global Media Controls.
 BASE_DECLARE_FEATURE(kFallbackToAudioTabMirroring);
 
+// If enabled, a separate 'stop' button is shown for connected sinks in the Cast
+// dialog instead of the entire sink button being a stop button.
+BASE_DECLARE_FEATURE(kCastDialogStopButton);
+
 // Registers |kMediaRouterCastAllowAllIPs| with local state pref |registry|.
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
