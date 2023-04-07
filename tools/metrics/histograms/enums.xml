@@ -15582,6 +15582,12 @@ Called by update_protocol_commands_enum.py.-->
   <int value="3" label="Set of character class members changed"/>
 </enum>
 
+<enum name="CheckBoxStatus">
+  <int value="0" label="Not shown"/>
+  <int value="1" label="Unchecked"/>
+  <int value="2" label="Checked"/>
+</enum>
+
 <enum name="CheckCRCResult">
   <int value="0" label="Stream was never read to end"/>
   <int value="1" label="CRC check not done"/>
