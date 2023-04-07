@@ -6,6 +6,7 @@
 
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/download/download_item_model.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -46,11 +47,14 @@ class DownloadBubbleRowViewTest : public TestWithBrowserView {
         browser_view()->toolbar()->download_button();
     row_list_view_ = std::make_unique<DownloadBubbleRowListView>(
         /*is_partial_view=*/true, browser());
+    const int bubble_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
+        views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
     row_view_ = std::make_unique<DownloadBubbleRowView>(
         DownloadItemModel::Wrap(
             &download_item_,
             std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>()),
-        row_list_view_.get(), button->bubble_controller(), button, browser());
+        row_list_view_.get(), button->bubble_controller(), button, browser(),
+        bubble_width);
   }
 
   void FastForward(base::TimeDelta time) {

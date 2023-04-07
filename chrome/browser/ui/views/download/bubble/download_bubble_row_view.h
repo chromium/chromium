@@ -45,7 +45,8 @@ class DownloadBubbleRowView : public views::View,
       DownloadBubbleRowListView* row_list_view,
       DownloadBubbleUIController* bubble_controller,
       DownloadBubbleNavigationHandler* navigation_handler,
-      Browser* browser);
+      Browser* browser,
+      int fixed_width);
   DownloadBubbleRowView(const DownloadBubbleRowView&) = delete;
   DownloadBubbleRowView& operator=(const DownloadBubbleRowView&) = delete;
   ~DownloadBubbleRowView() override;
@@ -252,6 +253,12 @@ class DownloadBubbleRowView : public views::View,
 
   // Tracks tasks requesting file icons.
   base::CancelableTaskTracker cancelable_task_tracker_;
+
+  // TODO(crbug.com/1349528): The size constraint is not passed down from the
+  // views tree in the first round of layout, so setting a fixed width to bound
+  // the view. This is assuming that the row view is loaded inside a bubble. It
+  // will break if the row view is loaded inside a different parent view.
+  const int fixed_width_;
 
   base::WeakPtrFactory<DownloadBubbleRowView> weak_factory_{this};
 };
