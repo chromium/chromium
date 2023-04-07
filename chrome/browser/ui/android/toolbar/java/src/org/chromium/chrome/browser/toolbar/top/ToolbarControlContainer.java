@@ -51,6 +51,7 @@ import org.chromium.components.browser_ui.widget.ViewResourceFrameLayout;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 import org.chromium.ui.util.TokenHolder;
@@ -65,6 +66,8 @@ import java.util.function.BooleanSupplier;
  */
 public class ToolbarControlContainer extends OptimizedFrameLayout implements ControlContainer {
     private final float mTabStripHeight;
+
+    private boolean mIncognito;
 
     private Toolbar mToolbar;
     private ToolbarViewResourceFrameLayout mToolbarContainer;
@@ -125,8 +128,51 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
     }
 
     @Override
+    public void onTabOrModelChanged(boolean incognito) {
+        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())
+                || getBackground() == null) {
+            return;
+        }
+
+        if (mIncognito != incognito) {
+            setBackground(getTempTabStripDrawable(incognito));
+            mIncognito = incognito;
+        }
+    }
+
+    @Override
     public void destroy() {
         ((ToolbarViewResourceAdapter) getToolbarResourceAdapter()).destroy();
+    }
+
+    private Drawable getTempTabStripDrawable(boolean incognito) {
+        if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+            Drawable bgdColor = new ColorDrawable(
+                    TabUiThemeUtil.getTabStripBackgroundColor(getContext(), incognito));
+            Drawable bdgTabImage = ResourcesCompat.getDrawable(getContext().getResources(),
+                    TabUiThemeUtil.getTSRTabResource(), getContext().getTheme());
+            bdgTabImage.setTint(
+                    TabUiThemeUtil.getTabStripContainerColor(getContext(), incognito, true, false));
+            LayerDrawable backgroundDrawable =
+                    new LayerDrawable(new Drawable[] {bgdColor, bdgTabImage});
+            // Set image size to match tab size.
+            backgroundDrawable.setPadding(0, 0, 0, 0);
+            backgroundDrawable.setLayerSize(1,
+                    ViewUtils.dpToPx(getContext(), TabUiThemeUtil.getMaxTabStripTabWidthDp()),
+                    mToolbar.getTabStripHeight());
+            // Tab should show up at start of layer based on layout.
+            backgroundDrawable.setLayerGravity(1, Gravity.START);
+
+            return backgroundDrawable;
+        } else {
+            final Drawable backgroundDrawable =
+                    AppCompatResources.getDrawable(getContext(), R.drawable.toolbar_background)
+                            .mutate();
+            backgroundDrawable.setTint(ChromeColors.getDefaultThemeColor(getContext(), incognito));
+            backgroundDrawable.setTintMode(PorterDuff.Mode.MULTIPLY);
+
+            return backgroundDrawable;
+        }
     }
 
     /**
@@ -147,6 +193,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
                     browserStateBrowserControlsVisibilityDelegate,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier) {
         mToolbar = toolbar;
+        mIncognito = isIncognito;
 
         BooleanSupplier isVisible = () -> this.getVisibility() == View.VISIBLE;
         mToolbarContainer.setPostInitializationDependencies(mToolbar, constraintsSupplier,
@@ -161,33 +208,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
             // On tablet, draw a fake tab strip and toolbar until the compositor is
             // ready to draw the real tab strip. (On phone, the toolbar is made entirely
             // of Android views, which are already initialized.)
-
-            if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
-                Drawable bgdColor = new ColorDrawable(
-                        TabUiThemeUtil.getTabStripBackgroundColor(getContext(), isIncognito));
-                Drawable bdgTabImage = ResourcesCompat.getDrawable(getContext().getResources(),
-                        TabUiThemeUtil.getTSRTabResource(), getContext().getTheme());
-                bdgTabImage.setTint(
-                        TabUiThemeUtil.getTabStripContainerColor(getContext(), false, true, false));
-                LayerDrawable backgroundDrawable =
-                        new LayerDrawable(new Drawable[] {bgdColor, bdgTabImage});
-                // Set image size to match tab size.
-                backgroundDrawable.setPadding(0, 0, 0, 0);
-                backgroundDrawable.setLayerSize(1,
-                        ViewUtils.dpToPx(getContext(), TabUiThemeUtil.getMaxTabStripTabWidthDp()),
-                        mToolbar.getTabStripHeight());
-                // Tab should show up at start of layer based on layout.
-                backgroundDrawable.setLayerGravity(1, Gravity.START);
-                setBackground(backgroundDrawable);
-            } else {
-                final Drawable backgroundDrawable =
-                        AppCompatResources.getDrawable(getContext(), R.drawable.toolbar_background)
-                                .mutate();
-                backgroundDrawable.setTint(
-                        ChromeColors.getDefaultThemeColor(getContext(), isIncognito));
-                backgroundDrawable.setTintMode(PorterDuff.Mode.MULTIPLY);
-                setBackground(backgroundDrawable);
-            }
+            setBackground(getTempTabStripDrawable(isIncognito));
         }
     }
 

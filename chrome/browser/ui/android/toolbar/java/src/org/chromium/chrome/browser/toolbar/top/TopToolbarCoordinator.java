@@ -502,6 +502,7 @@ public class TopToolbarCoordinator implements Toolbar {
      */
     public void onTabOrModelChanged() {
         mToolbarLayout.onTabOrModelChanged();
+        mControlContainer.onTabOrModelChanged(mToolbarLayout.isIncognito());
     }
 
     /**
