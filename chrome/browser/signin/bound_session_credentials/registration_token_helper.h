@@ -50,9 +50,10 @@ class RegistrationTokenHelper {
   RegistrationTokenHelper(const RegistrationTokenHelper&) = delete;
   RegistrationTokenHelper& operator=(const RegistrationTokenHelper&) = delete;
 
-  ~RegistrationTokenHelper();
+  virtual ~RegistrationTokenHelper();
 
-  void Start();
+  // virtual for testing.
+  virtual void Start();
 
  private:
   // Callback for `GenerateSigningKeySlowlyAsync()`.

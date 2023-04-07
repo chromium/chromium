@@ -6246,6 +6246,8 @@ test("unit_tests") {
     "//components/tracing:startup_tracing",
     "//components/translate/core/browser:test_support",
     "//components/ukm/content",
+    "//components/unexportable_keys",
+    "//components/unexportable_keys:test_support",
     "//components/unified_consent",
     "//components/url_formatter/spoof_checks/common_words:common",
     "//components/url_formatter/spoof_checks/common_words:common_words_dafsa",

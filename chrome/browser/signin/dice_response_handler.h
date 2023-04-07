@@ -11,15 +11,24 @@
 
 #include "base/cancelable_callback.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
+#include "chrome/common/buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#include "chrome/browser/signin/bound_session_credentials/registration_token_helper.h"  // nogncheck
+#include "components/unexportable_keys/unexportable_key_id.h"       // nogncheck
+#include "components/unexportable_keys/unexportable_key_service.h"  // nogncheck
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 class AboutSigninInternals;
 class GaiaAuthFetcher;
@@ -63,15 +72,31 @@ class ProcessDiceHeaderDelegate {
 // Processes the Dice responses from Gaia.
 class DiceResponseHandler : public KeyedService {
  public:
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  using RegistrationTokenHelperFactory =
+      base::RepeatingCallback<std::unique_ptr<RegistrationTokenHelper>(
+          base::StringPiece client_id,
+          base::StringPiece auth_code,
+          const GURL& registration_url,
+          base::OnceCallback<void(
+              absl::optional<RegistrationTokenHelper::Result>)> callback)>;
+#else
+  // A fake factory type that is always used to pass a null callback.
+  using RegistrationTokenHelperFactory = base::RepeatingClosure;
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
   // Returns the DiceResponseHandler associated with this profile.
   // May return nullptr if there is none (e.g. in incognito).
   static DiceResponseHandler* GetForProfile(Profile* profile);
 
-  DiceResponseHandler(SigninClient* signin_client,
-                      signin::IdentityManager* identity_manager,
-                      AccountReconcilor* account_reconcilor,
-                      AboutSigninInternals* about_signin_internals,
-                      const base::FilePath& profile_path_);
+  // `registration_token_helper_factory` might be null. If that's the case,
+  // Chrome won't make an attempt to bind a refresh token.
+  DiceResponseHandler(
+      SigninClient* signin_client,
+      signin::IdentityManager* identity_manager,
+      AccountReconcilor* account_reconcilor,
+      AboutSigninInternals* about_signin_internals,
+      RegistrationTokenHelperFactory registration_token_helper_factory);
 
   DiceResponseHandler(const DiceResponseHandler&) = delete;
   DiceResponseHandler& operator=(const DiceResponseHandler&) = delete;
@@ -88,19 +113,27 @@ class DiceResponseHandler : public KeyedService {
   // Sets |task_runner_| for testing.
   void SetTaskRunner(scoped_refptr<base::SequencedTaskRunner> task_runner);
 
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  // Sets a `registration_token_helper_factory_` factory callback for testing.
+  void SetRegistrationTokenHelperFactoryForTesting(
+      RegistrationTokenHelperFactory factory);
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
   static void EnsureFactoryBuilt();
 
  private:
   // Helper class to fetch a refresh token from an authorization code.
   class DiceTokenFetcher : public GaiaAuthConsumer {
    public:
-    DiceTokenFetcher(const std::string& gaia_id,
-                     const std::string& email,
-                     const std::string& authorization_code,
-                     SigninClient* signin_client,
-                     AccountReconcilor* account_reconcilor,
-                     std::unique_ptr<ProcessDiceHeaderDelegate> delegate,
-                     DiceResponseHandler* dice_response_handler);
+    DiceTokenFetcher(
+        const std::string& gaia_id,
+        const std::string& email,
+        const std::string& authorization_code,
+        SigninClient* signin_client,
+        AccountReconcilor* account_reconcilor,
+        std::unique_ptr<ProcessDiceHeaderDelegate> delegate,
+        const RegistrationTokenHelperFactory& registration_token_helper_factory,
+        DiceResponseHandler* dice_response_handler);
 
     DiceTokenFetcher(const DiceTokenFetcher&) = delete;
     DiceTokenFetcher& operator=(const DiceTokenFetcher&) = delete;
@@ -127,17 +160,32 @@ class DiceResponseHandler : public KeyedService {
         const GaiaAuthConsumer::ClientOAuthResult& result) override;
     void OnClientOAuthFailure(const GoogleServiceAuthError& error) override;
 
+    void StartTokenFetch();
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+    void StartBindingKeyGeneration(const RegistrationTokenHelperFactory&
+                                       registration_token_helper_factory);
+    void OnRegistrationTokenGenerated(
+        absl::optional<RegistrationTokenHelper::Result> result);
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
     // Lock the account reconcilor while tokens are being fetched.
     std::unique_ptr<AccountReconcilor::Lock> account_reconcilor_lock_;
 
-    std::string gaia_id_;
-    std::string email_;
-    std::string authorization_code_;
-    std::unique_ptr<ProcessDiceHeaderDelegate> delegate_;
-    raw_ptr<DiceResponseHandler> dice_response_handler_;
+    const std::string gaia_id_;
+    const std::string email_;
+    const std::string authorization_code_;
+    const std::unique_ptr<ProcessDiceHeaderDelegate> delegate_;
+    const raw_ptr<DiceResponseHandler> dice_response_handler_;
+    const raw_ptr<SigninClient> signin_client_;
     base::CancelableOnceClosure timeout_closure_;
     bool should_enable_sync_;
     std::unique_ptr<GaiaAuthFetcher> gaia_auth_fetcher_;
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+    std::unique_ptr<RegistrationTokenHelper> registration_token_helper_;
+    absl::optional<unexportable_keys::UnexportableKeyId> binding_key_id_;
+    std::string binding_registration_token_;
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   };
 
   // Deletes the token fetcher.
@@ -164,25 +212,32 @@ class DiceResponseHandler : public KeyedService {
 
   // Called after exchanging an OAuth 2.0 authorization code for a refresh token
   // after DiceAction::SIGNIN.
-  void OnTokenExchangeSuccess(DiceTokenFetcher* token_fetcher,
-                              const std::string& refresh_token,
-                              bool is_under_advanced_protection);
+  void OnTokenExchangeSuccess(
+      DiceTokenFetcher* token_fetcher,
+      const std::string& refresh_token,
+      bool is_under_advanced_protection
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+      ,
+      absl::optional<unexportable_keys::UnexportableKeyId> binding_key_id
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  );
   void OnTokenExchangeFailure(DiceTokenFetcher* token_fetcher,
                               const GoogleServiceAuthError& error);
   // Called to unlock the reconcilor after a SLO outage.
   void OnTimeoutUnlockReconcilor();
 
-  raw_ptr<SigninClient> signin_client_;
-  raw_ptr<signin::IdentityManager> identity_manager_;
-  raw_ptr<AccountReconcilor> account_reconcilor_;
-  raw_ptr<AboutSigninInternals> about_signin_internals_;
-  base::FilePath profile_path_;
+  const raw_ptr<SigninClient> signin_client_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
+  const raw_ptr<AccountReconcilor> account_reconcilor_;
+  const raw_ptr<AboutSigninInternals> about_signin_internals_;
   std::vector<std::unique_ptr<DiceTokenFetcher>> token_fetchers_;
   // Lock the account reconcilor for kLockAccountReconcilorTimeoutHours
   // when there was OAuth outage in Dice.
   std::unique_ptr<AccountReconcilor::Lock> lock_;
   std::unique_ptr<base::OneShotTimer> timer_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  // Always null unless the BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS) is set.
+  RegistrationTokenHelperFactory registration_token_helper_factory_;
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_DICE_RESPONSE_HANDLER_H_
