@@ -24,7 +24,7 @@ VideoDecoderType GetPreferredLinuxDecoderImplementation() {
     return VideoDecoderType::kUnknown;
   }
 
-  if (base::FeatureList::IsEnabled(kUseOutOfProcessVideoDecoding)) {
+  if (IsOutOfProcessVideoDecodingEnabled()) {
     return VideoDecoderType::kOutOfProcess;
   }
 
