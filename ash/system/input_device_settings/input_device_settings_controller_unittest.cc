@@ -20,6 +20,7 @@
 #include "ash/system/input_device_settings/pref_handlers/touchpad_pref_handler_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
+#include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/ranges/functional.h"
@@ -30,6 +31,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/known_user.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
@@ -39,14 +41,32 @@ namespace ash {
 using DeviceId = InputDeviceSettingsController::DeviceId;
 
 namespace {
-const ui::InputDevice kSampleKeyboardInternal = {5, ui::INPUT_DEVICE_INTERNAL,
-                                                 "kSampleKeyboardInternal"};
+const ui::InputDevice kSampleKeyboardInternal = {5,
+                                                 ui::INPUT_DEVICE_INTERNAL,
+                                                 "kSampleKeyboardInternal",
+                                                 "",
+                                                 base::FilePath(),
+                                                 0x1111,
+                                                 0x1111,
+                                                 0};
 const ui::InputDevice kSampleKeyboardBluetooth = {
     10, ui::INPUT_DEVICE_BLUETOOTH, "kSampleKeyboardBluetooth"};
-const ui::InputDevice kSampleKeyboardUsb = {15, ui::INPUT_DEVICE_USB,
-                                            "kSampleKeyboardUsb"};
-const ui::InputDevice kSampleKeyboardUsb2 = {20, ui::INPUT_DEVICE_USB,
-                                             "kSampleKeyboardUsb2"};
+const ui::InputDevice kSampleKeyboardUsb = {15,
+                                            ui::INPUT_DEVICE_USB,
+                                            "kSampleKeyboardUsb",
+                                            "",
+                                            base::FilePath(),
+                                            0x1111,
+                                            0x2222,
+                                            0};
+const ui::InputDevice kSampleKeyboardUsb2 = {20,
+                                             ui::INPUT_DEVICE_USB,
+                                             "kSampleKeyboardUsb2",
+                                             "",
+                                             base::FilePath(),
+                                             0x1111,
+                                             0x3333,
+                                             0};
 const ui::InputDevice kSampleTouchpadInternal = {1, ui::INPUT_DEVICE_INTERNAL,
                                                  "kSampleTouchpadInternal"};
 const ui::InputDevice kSamplePointingStickInternal = {
@@ -497,8 +517,10 @@ TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsUpdatedInvalidId) {
 TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsUpdateMultiple) {
   // The SetKeyboardSettings call should update both keyboards since they have
   // the same |device_key|.
+  ui::InputDevice sample_usb_keyboard_copy = kSampleKeyboardUsb;
+  sample_usb_keyboard_copy.id = kSampleKeyboardUsb2.id;
   ui::DeviceDataManagerTestApi().SetKeyboardDevices(
-      {kSampleKeyboardUsb, kSampleKeyboardUsb2});
+      {kSampleKeyboardUsb, sample_usb_keyboard_copy});
 
   EXPECT_EQ(observer_->num_keyboards_connected(), 2u);
   EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_initialized(), 2u);
@@ -538,6 +560,31 @@ TEST_F(InputDeviceSettingsControllerTest, RecordsMetricsInitialSettings) {
       "ChromeOS.Settings.Device.Keyboard.ExternalChromeOS.TopRowAreFKeys."
       "Initial",
       /*expected_count=*/4u);
+}
+
+TEST_F(InputDeviceSettingsControllerTest, GetGeneralizedTopRowAreFKeys) {
+  // If there no keyboards, return false.
+  EXPECT_EQ(false, controller_->GetGeneralizedTopRowAreFKeys());
+
+  // If there is only internal keyboard, return its top_row_are_fkeys value.
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices({kSampleKeyboardInternal});
+
+  auto internal_keyboard_settings = mojom::KeyboardSettings::New();
+  internal_keyboard_settings->top_row_are_fkeys = true;
+  controller_->SetKeyboardSettings((DeviceId)kSampleKeyboardInternal.id,
+                                   internal_keyboard_settings.Clone());
+  EXPECT_EQ(true, controller_->GetGeneralizedTopRowAreFKeys());
+
+  // If there are multiple external keyboards, return the top_row_are_fkeys
+  // value of the external keyboard which has the largest device id.
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices(
+      {kSampleKeyboardInternal, kSampleKeyboardUsb, kSampleKeyboardUsb2});
+
+  auto settings = mojom::KeyboardSettings::New();
+  settings->top_row_are_fkeys = true;
+  controller_->SetKeyboardSettings((DeviceId)kSampleKeyboardUsb.id,
+                                   settings.Clone());
+  EXPECT_EQ(false, controller_->GetGeneralizedTopRowAreFKeys());
 }
 
 }  // namespace ash

@@ -779,4 +779,25 @@ void InputDeviceSettingsControllerImpl::InitializeKeyboardSettings(
       policy_handler_->keyboard_policies(), keyboard);
 }
 
+// GetGeneralizedTopRowAreFKeys returns false if there is no keyboard. If there
+// is only internal keyboard, GetGeneralizedTopRowAreFKeys returns the
+// top_row_are_fkeys of it. If there are multiple keyboards,
+// GetGeneralizedTopRowAreFKeys returns the top_row_are_fkeys of latest external
+// keyboard which has the largest device id.
+bool InputDeviceSettingsControllerImpl::GetGeneralizedTopRowAreFKeys() {
+  auto external_iter = base::ranges::find(
+      keyboards_.rbegin(), keyboards_.rend(), /*value=*/true,
+      [](const auto& keyboard) { return keyboard.second->is_external; });
+  auto internal_iter = base::ranges::find(
+      keyboards_.rbegin(), keyboards_.rend(), /*value=*/false,
+      [](const auto& keyboard) { return keyboard.second->is_external; });
+  if (external_iter != keyboards_.rend()) {
+    return external_iter->second->settings->top_row_are_fkeys;
+  }
+  if (internal_iter != keyboards_.rend()) {
+    return internal_iter->second->settings->top_row_are_fkeys;
+  }
+  return false;
+}
+
 }  // namespace ash
