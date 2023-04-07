@@ -80,13 +80,13 @@ Check that VideoEncoder can encode in different latency and bitrate modes
       TEST.assert(errors == 0, 'Encoding errors occurred during the test');
       TEST.log('Test completed');
     }
-    addManualTestButton({
+    addManualTestButton([{
       'source_type': 'offscreen',
       'codec': 'avc1.42001E',
       'acceleration':'prefer-software',
       'bitrate_mode': 'constant',
       'latency_mode': 'realtime'
-    });
+    }]);
   </script>
 </head>
 
