@@ -1,0 +1,45 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Keep in sync with
+// http://google3/google/internal/location/nearby/presence/v1/rpcs/devices.proto
+// Messages not used in Chrome have been omitted. Last copied at cl/460540069.
+
+syntax = "proto3";
+
+package ash.nearby.proto;
+
+option optimize_for = LITE_RUNTIME;
+
+import "chromeos/ash/components/nearby/presence/proto/rpc_resources.proto";
+import "chromeos/ash/components/nearby/common/proto/field_mask.proto";
+
+// The request used to register a [location.nearby.presence.proto.Device]
+// with the server.
+message UpdateDeviceRequest {
+  Device device = 1;
+
+  // The FieldMask for updating specific columns in device table. For the
+  // 'FieldMask' definition, see
+  // https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#fieldmask
+  FieldMask update_mask = 2;
+}
+
+// The response for UpdateDeviceRequest.
+message UpdateDeviceResponse {
+  // The [Device] to be returned.
+  Device device = 1;
+
+  // Optional. The user's name as displayed to the user when selecting a share
+  // target. Ex: "Will Harmon"
+  string person_name = 2;
+
+  // Optional. The URL of an image displayed to the user when selecting a share
+  // target.
+  string image_url = 3;
+
+  // Optional. A hash like value to determine if the profile image has changed
+  // or not. Note, the image_url can change for the same image.
+  string image_token = 4;
+}

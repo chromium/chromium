@@ -1,0 +1,31 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Keep in sync with
+// //third_party/protobuf/src/google/protobuf/field_mask.proto
+// Last copied at crrev/c/2545204.
+
+syntax = "proto3";
+
+package ash.nearby.proto;
+
+option optimize_for = LITE_RUNTIME;
+
+// //third_party/protobuf/src/google/protobuf/timestamp.proto cannot be
+// directly imported to Chrome because it is not in the `protobuf_lite` source
+// and the `protobuf_full` source cannot be included in Chrome because of it's
+// large size. Therefore, this copies the proto which is small and stable to be
+// used across the codebase.
+message Timestamp {
+  // Represents seconds of UTC time since Unix epoch
+  // 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to
+  // 9999-12-31T23:59:59Z inclusive.
+  int64 seconds = 1;
+
+  // Non-negative fractions of a second at nanosecond resolution. Negative
+  // second values with fractions must still have non-negative nanos values
+  // that count forward in time. Must be from 0 to 999,999,999
+  // inclusive.
+  int32 nanos = 2;
+}
