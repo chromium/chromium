@@ -35,9 +35,6 @@ class ExistingTabGroupSubMenuModel : public ExistingBaseSubMenuModel {
                                 int context_index,
                                 TabMenuModelDelegate* tab_menu_model_delegate);
 
-  // ExistingBaseSubMenuModel:
-  std::u16string GetLabelAt(size_t index) const override;
-
   // Used for testing.
   void ExecuteExistingCommandForTesting(size_t target_index);
 

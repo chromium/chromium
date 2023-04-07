@@ -178,11 +178,6 @@ bool ExistingTabGroupSubMenuModel::ShouldShowSubmenu(
   return false;
 }
 
-std::u16string ExistingTabGroupSubMenuModel::GetLabelAt(size_t index) const {
-  return ui::EscapeMenuLabelAmpersands(
-      ExistingBaseSubMenuModel::GetLabelAt(index));
-}
-
 void ExistingTabGroupSubMenuModel::ExecuteExistingCommand(size_t target_index) {
   DCHECK_LE(size_t(target_index), target_index_to_group_mapping_.size());
   TabGroupModel* group_model = model()->group_model();
