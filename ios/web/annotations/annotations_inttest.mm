@@ -346,6 +346,30 @@ TEST_F(AnnotationTextManagerTest, DecorateTextCrossingElements) {
   CheckHtml(html);
 }
 
+// Tests annotation cases with line breaks, including tags boundaries.
+// Covers: DecorateAnnotations, RemoveDecorations
+TEST_F(AnnotationTextManagerTest, DecorateTextBreakElements) {
+  std::string html = "<html><body>"
+                     "<p>abc<br>\ndef</p>"
+                     "</body></html>";
+  LoadHtmlAndExtractText(html);
+  CheckHtml(html);
+
+  NSString* source = base::SysUTF8ToNSString(observer()->extracted_text());
+  CreateAndApplyAnnotations(source, @[ @"abc\n\ndef" ], observer() -> seq_id());
+
+  // Check the resulting html is annotating at the right place.
+  CheckHtml("<html><body>"
+            "<p><chrome_annotation>abc</chrome_annotation><br>"
+            "<chrome_annotation>\ndef</chrome_annotation></p>"
+            "</body></html>");
+
+  // Make sure it's back to the original.
+  auto* manager = AnnotationsTextManager::FromWebState(web_state());
+  manager->RemoveDecorations();
+  CheckHtml(html);
+}
+
 // Tests on click handler.
 // Covers: OnClick.
 TEST_F(AnnotationTextManagerTest, ClickAnnotation) {
