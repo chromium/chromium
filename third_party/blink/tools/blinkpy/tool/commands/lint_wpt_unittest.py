@@ -3,12 +3,16 @@
 # found in the LICENSE file.
 
 import contextlib
+import io
+import json
 import subprocess
+import textwrap
 from unittest import mock
+from typing import List
 
 from blinkpy.common import path_finder
 from blinkpy.tool.mock_tool import MockBlinkTool
-from blinkpy.tool.commands.lint_wpt import LintWPT
+from blinkpy.tool.commands.lint_wpt import LintError, LintWPT
 from blinkpy.common.system.log_testing import LoggingTestCase
 
 
@@ -22,6 +26,29 @@ class LintWPTTest(LoggingTestCase):
         self.command = LintWPT(self.tool)
         self.fs.write_text_file(self.finder.path_from_wpt_tests('lint.ignore'),
                                 '')
+        self.fs.write_text_file(
+            self.finder.path_from_wpt_tests('MANIFEST.json'),
+            json.dumps({
+                'version': 8,
+                'items': {
+                    'testharness': {
+                        'test.html': [
+                            'd933fd981d4a33ba82fb2b000234859bdda1494e',
+                            [None, {}],
+                        ],
+                        'multiglob.https.any.js': [
+                            'd6498c3e388e0c637830fa080cca78b0ab0e5305',
+                            ['dir/multiglob.https.any.html', {}],
+                            ['dir/multiglob.https.any.worker.html', {}],
+                        ],
+                        'variant.html': [
+                            'b8db5972284d1ac6bbda0da81621d9bca5d04ee7',
+                            ['variant.html?foo=bar/abc', {}],
+                            ['variant.html?foo=baz', {}],
+                        ],
+                    },
+                },
+            }))
 
     @contextlib.contextmanager
     def _patch_builtins(self):
@@ -51,3 +78,30 @@ class LintWPTTest(LoggingTestCase):
             self.logMessages())
         self.assertIn('INFO: There was 1 error (PARSE-FAILED: 1)\n',
                       self.logMessages())
+
+    def _check_metadata(self,
+                        contents: str,
+                        path: str = 'test.html.ini') -> List[LintError]:
+        return self.command.check_metadata(
+            self.finder.path_from_wpt_tests(), path,
+            io.BytesIO(textwrap.dedent(contents).encode()))
+
+    def test_non_metadata_ini_skipped(self):
+        errors = self._check_metadata(
+            'Not all .ini files are metadata; this should not be checked',
+            path='wptrunner.blink.ini')
+        self.assertEqual(errors, [])
+
+    def test_metadata_bad_syntax(self):
+        (error, ) = self._check_metadata("""\
+            [test.html]
+              [subtest with [literal] unescaped square brackets]
+            """)
+        name, description, path, line = error
+        self.assertEqual(name, 'META-BAD-SYNTAX')
+        self.assertEqual(path, 'test.html.ini')
+        self.assertEqual(
+            'WPT metadata file could not be parsed: Junk before EOL u',
+            description)
+        # Note the 1-indexed convention.
+        self.assertEqual(line, 2)
