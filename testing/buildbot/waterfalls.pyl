@@ -2599,6 +2599,14 @@
            'gtest_tests': 'chromium_dev_linux_gtests',
         },
       },
+      'linux-rel-jammy-dev': {
+        'mixins': [
+          'linux-jammy',
+        ],
+        'test_suites': {
+           'gtest_tests': 'chromium_dev_linux_gtests',
+        },
+      },
       'linux-ssd-rel-dev': {
         'mixins': [
           'linux-bionic',

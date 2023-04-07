@@ -1,4 +1,7 @@
 {
+  "ci": {
+    "linux-rel-jammy-dev": "Ubuntu-22.04"
+  },
   "try": {
     "linux-rel": "Ubuntu-22.04",
     "linux_chromium_tsan_rel_ng": "Ubuntu-22.04"
