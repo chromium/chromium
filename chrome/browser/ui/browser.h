@@ -1106,32 +1106,40 @@ class Browser : public TabStripModelObserver,
   // Shared code between Reload() and ReloadBypassingCache().
   void ReloadInternal(WindowOpenDisposition disposition, bool bypass_cache);
 
+  // See comment on SupportsWindowFeatureImpl for info on `check_can_support`.
   bool NormalBrowserSupportsWindowFeature(WindowFeature feature,
                                           bool check_can_support) const;
 
+  // See comment on SupportsWindowFeatureImpl for info on `check_can_support`.
   bool PopupBrowserSupportsWindowFeature(WindowFeature feature,
                                          bool check_can_support) const;
 
+  // See comment on SupportsWindowFeatureImpl for info on `check_can_support`.
   bool AppPopupBrowserSupportsWindowFeature(WindowFeature feature,
                                             bool check_can_support) const;
 
+  // See comment on SupportsWindowFeatureImpl for info on `check_can_support`.
   bool AppBrowserSupportsWindowFeature(WindowFeature feature,
                                        bool check_can_support) const;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // See comment on SupportsWindowFeatureImpl for info on `check_can_support`.
   bool CustomTabBrowserSupportsWindowFeature(WindowFeature feature) const;
 #endif
 
+  // See comment on SupportsWindowFeatureImpl for info on `check_can_support`.
   bool PictureInPictureBrowserSupportsWindowFeature(
       WindowFeature feature,
       bool check_can_support) const;
 
   // Implementation of SupportsWindowFeature and CanSupportWindowFeature. If
-  // |check_fullscreen| is true, the set of features reflect the actual state of
-  // the browser, otherwise the set of features reflect the possible state of
-  // the browser.
+  // `check_can_support` is true, this method returns true if this type of
+  // browser can ever support `feature`, under any conditions; if
+  // `check_can_support` is false, it returns true if the browser *in its
+  // current state* (e.g. whether or not it is currently fullscreen) supports
+  // `feature`.
   bool SupportsWindowFeatureImpl(WindowFeature feature,
-                                 bool check_fullscreen) const;
+                                 bool check_can_support) const;
 
   // Resets |bookmark_bar_state_| based on the active tab. Notifies the
   // BrowserWindow if necessary.
