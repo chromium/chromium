@@ -283,76 +283,16 @@ sql::InitStatus FaviconDatabase::Init(const base::FilePath& db_name) {
 }
 
 void FaviconDatabase::ComputeDatabaseMetrics() {
-  base::TimeTicks start_time = base::TimeTicks::Now();
-
   // Calculate the size of the favicon database.
-  {
-    sql::Statement page_count(
-        db_.GetCachedStatement(SQL_FROM_HERE, "PRAGMA page_count"));
-    int64_t page_count_bytes =
-        page_count.Step() ? page_count.ColumnInt64(0) : 0;
-    sql::Statement page_size(
-        db_.GetCachedStatement(SQL_FROM_HERE, "PRAGMA page_size"));
-    int64_t page_size_bytes = page_size.Step() ? page_size.ColumnInt64(0) : 0;
-    int size_mb =
-        static_cast<int>((page_count_bytes * page_size_bytes) / (1024 * 1024));
-    UMA_HISTOGRAM_MEMORY_MB("History.FaviconDatabaseSizeMB", size_mb);
-  }
-
-  // Count all icon URLs referenced by the DB.
-  {
-    sql::Statement favicon_count(
-        db_.GetCachedStatement(SQL_FROM_HERE, "SELECT COUNT(*) FROM favicons"));
-    UMA_HISTOGRAM_COUNTS_10000(
-        "History.NumFaviconsInDB",
-        favicon_count.Step() ? favicon_count.ColumnInt(0) : 0);
-  }
-
-  // Count all bitmap resources cached in the DB.
-  {
-    sql::Statement bitmap_count(db_.GetCachedStatement(
-        SQL_FROM_HERE, "SELECT COUNT(*) FROM favicon_bitmaps"));
-    UMA_HISTOGRAM_COUNTS_10000(
-        "History.NumFaviconBitmapsInDB",
-        bitmap_count.Step() ? bitmap_count.ColumnInt(0) : 0);
-  }
-
-  // Count "touch" icon URLs referenced by the DB.
-  {
-    sql::Statement touch_icon_count(db_.GetCachedStatement(
-        SQL_FROM_HERE,
-        "SELECT COUNT(*) FROM favicons WHERE icon_type IN (?, ?)"));
-    touch_icon_count.BindInt64(
-        0, ToPersistedIconType(favicon_base::IconType::kTouchIcon));
-    touch_icon_count.BindInt64(
-        1, ToPersistedIconType(favicon_base::IconType::kTouchPrecomposedIcon));
-    UMA_HISTOGRAM_COUNTS_10000(
-        "History.NumTouchIconsInDB",
-        touch_icon_count.Step() ? touch_icon_count.ColumnInt(0) : 0);
-  }
-
-  // Count "large" bitmap resources cached in the DB.
-  {
-    sql::Statement large_bitmap_count(db_.GetCachedStatement(
-        SQL_FROM_HERE,
-        "SELECT COUNT(*) FROM favicon_bitmaps WHERE width >= 64"));
-    UMA_HISTOGRAM_COUNTS_10000(
-        "History.NumLargeFaviconBitmapsInDB",
-        large_bitmap_count.Step() ? large_bitmap_count.ColumnInt(0) : 0);
-  }
-
-  // Count all icon mappings maintained by the DB.
-  {
-    sql::Statement mapping_count(db_.GetCachedStatement(
-        SQL_FROM_HERE, "SELECT COUNT(*) FROM icon_mapping"));
-    UMA_HISTOGRAM_CUSTOM_COUNTS(
-        "History.NumFaviconMappingsInDB",
-        (mapping_count.Step() ? mapping_count.ColumnInt(0) : 0), 1, 100000,
-        100);
-  }
-
-  UMA_HISTOGRAM_TIMES("History.FaviconDatabaseAdvancedMetricsTime",
-                      base::TimeTicks::Now() - start_time);
+  sql::Statement page_count(
+      db_.GetCachedStatement(SQL_FROM_HERE, "PRAGMA page_count"));
+  int64_t page_count_bytes = page_count.Step() ? page_count.ColumnInt64(0) : 0;
+  sql::Statement page_size(
+      db_.GetCachedStatement(SQL_FROM_HERE, "PRAGMA page_size"));
+  int64_t page_size_bytes = page_size.Step() ? page_size.ColumnInt64(0) : 0;
+  int size_mb =
+      static_cast<int>((page_count_bytes * page_size_bytes) / (1024 * 1024));
+  UMA_HISTOGRAM_MEMORY_MB("History.FaviconDatabaseSizeMB", size_mb);
 }
 
 void FaviconDatabase::BeginTransaction() {
