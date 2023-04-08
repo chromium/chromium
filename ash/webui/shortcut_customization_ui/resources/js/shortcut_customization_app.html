@@ -1,6 +1,6 @@
 <style include="shortcut-customization-shared">
   :host {
-    --cr-toolbar-field-width: 480px;
+    --cr-toolbar-field-width: 620px;
 
     font-family: var(--shortcuts-font-family-default);
     font-size: var(--shortcuts-font-size-default);
@@ -8,6 +8,17 @@
     height: 100%;
   }
 
+  /** 
+   * This breakpoint is when the NavigationViewPanel side nav shrinks to a
+   * smaller width.
+   */
+  @media (max-width: 960px) {
+    :host {
+      --cr-toolbar-field-width: 480px;
+    }
+  }
+
+  /* This breakpoint is when the NavigationViewPanel side nav collapses. */
   @media (max-width: 768px) {
     :host {
       --cr-toolbar-field-width: 80vw;
