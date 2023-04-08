@@ -86,6 +86,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "ui/base/test/ui_controls.h"
 #include "ui/base/ui_base_features.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -150,8 +151,6 @@
 #include "components/account_manager_core/chromeos/fake_account_manager_ui.h"  // nogncheck
 #include "components/variations/variations_switches.h"
 #include "content/public/test/network_connection_change_simulator.h"
-#include "ui/aura/test/ui_controls_factory_aura.h"
-#include "ui/base/test/ui_controls.h"
 #endif
 
 namespace {
@@ -352,6 +351,8 @@ InProcessBrowserTest::~InProcessBrowserTest() = default;
 void InProcessBrowserTest::SetUp() {
   // Browser tests will create their own g_browser_process later.
   DCHECK(!g_browser_process);
+
+  ui_controls::ResetUIControlsIfEnabled();
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 

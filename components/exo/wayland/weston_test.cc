@@ -235,6 +235,12 @@ static void weston_test_reset_pointer(struct wl_client* client,
     weston_test->command_pressed = false;
   }
 
+  // TODO(crbug.com/1431512): Fix this issue and the code below should not be
+  // necessary.
+  base::RunLoop run_loop;
+  ui_controls::SendMouseMoveNotifyWhenDone(0, 0, run_loop.QuitClosure());
+  run_loop.Run();
+
   // TODO(crbug.com/1414800): Should reset other key events as well.
 }
 

@@ -11,6 +11,8 @@ namespace ui {
 X11OzoneUIControlsTestHelper::X11OzoneUIControlsTestHelper() = default;
 X11OzoneUIControlsTestHelper::~X11OzoneUIControlsTestHelper() = default;
 
+void X11OzoneUIControlsTestHelper::Reset() {}
+
 bool X11OzoneUIControlsTestHelper::SupportsScreenCoordinates() const {
   return true;
 }

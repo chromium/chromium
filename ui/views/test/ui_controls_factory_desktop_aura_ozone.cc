@@ -87,6 +87,12 @@ void EnableUIControls() {
   }
 }
 
+void ResetUIControlsIfEnabled() {
+  if (g_ozone_ui_controls_test_helper) {
+    g_ozone_ui_controls_test_helper->Reset();
+  }
+}
+
 // An interface to provide Aura implementation of UI control.
 // static
 bool SendKeyPress(gfx::NativeWindow window,

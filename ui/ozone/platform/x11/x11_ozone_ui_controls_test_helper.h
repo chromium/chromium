@@ -20,6 +20,7 @@ class X11OzoneUIControlsTestHelper : public OzoneUIControlsTestHelper {
   ~X11OzoneUIControlsTestHelper() override;
 
   // OzoneUIControlsTestHelper:
+  void Reset() override;
   bool SupportsScreenCoordinates() const override;
   unsigned ButtonDownMask() const override;
   void SendKeyEvents(gfx::AcceleratedWidget widget,

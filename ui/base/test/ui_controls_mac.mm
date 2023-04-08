@@ -250,6 +250,8 @@ bool IsUIControlsEnabled() {
   return g_ui_controls_enabled;
 }
 
+void ResetUIControlsIfEnabled() {}
+
 bool SendKeyPress(gfx::NativeWindow window,
                   ui::KeyboardCode key,
                   bool control,
