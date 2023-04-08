@@ -11,6 +11,7 @@
 #include "media/base/audio_decoder_config.h"
 #include "media/base/media_export.h"
 #include "media/base/subsample_entry.h"
+#include "media/base/video_codecs.h"
 #include "media/media_buildflags.h"
 
 class IMFMediaType;
@@ -53,6 +54,12 @@ struct MediaFoundationSubsampleEntry {
 // https://learn.microsoft.com/en-us/windows/win32/medfound/mftime
 MEDIA_EXPORT MFTIME TimeDeltaToMfTime(base::TimeDelta time);
 MEDIA_EXPORT base::TimeDelta MfTimeToTimeDelta(MFTIME mf_time);
+
+// Converts `codec` into a MediaFoundation subtype. `profile` must be provided
+// when converting VideoCodec::kDolbyVision.
+MEDIA_EXPORT GUID
+VideoCodecToMFSubtype(VideoCodec codec,
+                      VideoCodecProfile profile = VIDEO_CODEC_PROFILE_UNKNOWN);
 
 }  // namespace media
 

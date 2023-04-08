@@ -4,9 +4,6 @@
 
 #include "media/gpu/windows/media_foundation_video_encode_accelerator_win.h"
 
-#pragma warning(push)
-#pragma warning(disable : 4800)  // Disable warning for added padding.
-
 #include <codecapi.h>
 #include <d3d11_1.h>
 #include <mferror.h>
@@ -37,6 +34,7 @@
 #include "media/base/video_util.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/base/win/mf_initializer.h"
+#include "media/filters/win/media_foundation_utils.h"
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/gpu/windows/vp9_video_rate_control_wrapper.h"
 #include "third_party/libvpx/source/libvpx/vp9/ratectrl_rtc.h"
@@ -67,14 +65,8 @@ namespace media {
 namespace {
 constexpr uint32_t kDefaultGOPLength = 3000;
 constexpr uint32_t kDefaultTargetBitrate = 5000000u;
-const auto kSupportedProfileModes = VideoEncodeAccelerator::kConstantMode |
-                                    VideoEncodeAccelerator::kVariableMode;
 constexpr size_t kMaxFrameRateNumerator = 30;
 constexpr size_t kMaxFrameRateDenominator = 1;
-constexpr size_t kMaxResolutionWidth = 1920;
-constexpr size_t kMaxResolutionHeight = 1088;
-constexpr size_t kMinResolutionWidth = 32;
-constexpr size_t kMinResolutionHeight = 32;
 constexpr size_t kNumInputBuffers = 3;
 // Media Foundation uses 100 nanosecond units for time, see
 // https://msdn.microsoft.com/en-us/library/windows/desktop/ms697282(v=vs.85).aspx.
@@ -95,7 +87,7 @@ constexpr uint8_t kAV1MinQuantizer = 10;
 // //third_party/webrtc/media/engine/webrtc_video_engine.h.
 constexpr uint8_t kAV1MaxQuantizer = 56;
 
-static const CLSID kIntelAV1HybridEncoderCLSID = {
+constexpr CLSID kIntelAV1HybridEncoderCLSID = {
     0x62c053ce,
     0x5357,
     0x4794,
@@ -177,23 +169,6 @@ eAVEncH265VProfile GetHEVCProfile(VideoCodecProfile profile) {
   }
 }
 
-GUID VideoCodecToMFSubtype(VideoCodec codec) {
-  switch (codec) {
-    case VideoCodec::kH264:
-      return MFVideoFormat_H264;
-    case VideoCodec::kVP8:
-      return MFVideoFormat_VP80;
-    case VideoCodec::kVP9:
-      return MFVideoFormat_VP90;
-    case VideoCodec::kHEVC:
-      return MFVideoFormat_HEVC;
-    case VideoCodec::kAV1:
-      return MFVideoFormat_AV1;
-    default:
-      return GUID_NULL;
-  }
-}
-
 MediaFoundationVideoEncodeAccelerator::DriverVendor GetDriverVendor(
     IMFActivate* encoder) {
   using DriverVendor = MediaFoundationVideoEncodeAccelerator::DriverVendor;
@@ -241,52 +216,30 @@ bool IsSvcSupported(IMFActivate* activate, VideoCodec codec) {
   Microsoft::WRL::ComPtr<IMFTransform> encoder;
   Microsoft::WRL::ComPtr<ICodecAPI> codec_api;
   HRESULT hr = activate->ActivateObject(IID_PPV_ARGS(&encoder));
-  if (FAILED(hr))
-    return false;
+  RETURN_ON_HR_FAILURE(hr, "Failed to activate encoder", false);
 
-  bool result = false;
   hr = encoder.As(&codec_api);
-  if (SUCCEEDED(hr)) {
-    result = (codec_api->IsSupported(&CODECAPI_AVEncVideoTemporalLayerCount) ==
-              S_OK);
-    if (result) {
-      VARIANT min, max, step;
-      VariantInit(&min);
-      VariantInit(&max);
-      VariantInit(&step);
+  RETURN_ON_HR_FAILURE(hr, "Failed to get encoder as CodecAPI", false);
 
-      hr = codec_api->GetParameterRange(&CODECAPI_AVEncVideoTemporalLayerCount,
-                                        &min, &max, &step);
-      if (hr != S_OK || min.ulVal > 1 || max.ulVal < 3)
-        result = false;
-
-      VariantClear(&min);
-      VariantClear(&max);
-      VariantClear(&step);
-    }
+  if (codec_api->IsSupported(&CODECAPI_AVEncVideoTemporalLayerCount) != S_OK) {
+    return false;
   }
 
-  activate->ShutdownObject();
-  return result;
+  base::win::ScopedVariant min, max, step;
+  if (FAILED(codec_api->GetParameterRange(
+          &CODECAPI_AVEncVideoTemporalLayerCount, min.AsInput(), max.AsInput(),
+          step.AsInput()))) {
+    return false;
+  }
+
+  return V_UI4(min.ptr()) <= 1u && V_UI4(max.ptr()) >= 3u;
 #endif  // defined(ARCH_CPU_X86)
 }
 
-uint32_t EnumerateHardwareEncoders(VideoCodec codec,
-                                   IMFActivate*** pp_activate) {
-  DVLOG(3) << __func__;
-
-  if (codec != VideoCodec::kH264 && codec != VideoCodec::kVP9 &&
-      codec != VideoCodec::kAV1
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-      && codec != VideoCodec::kHEVC
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
-  ) {
-    DLOG(ERROR) << "Enumerating unsupported hardware encoders.";
+uint32_t EnumerateHardwareEncoders(VideoCodec codec, IMFActivate*** activates) {
+  if (!InitializeMediaFoundation()) {
     return 0;
   }
-
-  if (!InitializeMediaFoundation())
-    return 0;
 
   uint32_t flags = MFT_ENUM_FLAG_HARDWARE | MFT_ENUM_FLAG_SORTANDFILTER;
   MFT_REGISTER_TYPE_INFO input_info;
@@ -297,15 +250,31 @@ uint32_t EnumerateHardwareEncoders(VideoCodec codec,
   output_info.guidSubtype = VideoCodecToMFSubtype(codec);
 
   uint32_t count = 0;
-  HRESULT hr = MFTEnumEx(MFT_CATEGORY_VIDEO_ENCODER, flags, &input_info,
-                         &output_info, pp_activate, &count);
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to enumerate hardware encoders for "
-                << GetCodecName(codec)
-                << ", hr=" << logging::SystemErrorCodeToString(hr);
+  RETURN_ON_HR_FAILURE(
+      MFTEnumEx(MFT_CATEGORY_VIDEO_ENCODER, flags, &input_info, &output_info,
+                activates, &count),
+      "Failed to enumerate hardware encoders for " << GetCodecName(codec), 0);
+  return count;
+}
+
+bool IsCodecSupportedForEncoding(VideoCodec codec, bool* svc_supported) {
+  base::win::ScopedCoMem<IMFActivate*> activates;
+  const auto encoder_count = EnumerateHardwareEncoders(codec, &activates);
+  if (encoder_count == 0 || !activates) {
+    DVLOG(1) << "Hardware encode acceleration is not available for "
+             << GetCodecName(codec);
+    return false;
   }
 
-  return count;
+  *svc_supported = false;
+  for (UINT32 i = 0; i < encoder_count; i++) {
+    if (!svc_supported && IsSvcSupported(activates[i], codec)) {
+      *svc_supported = true;
+    }
+    activates[i]->Release();
+  }
+
+  return true;
 }
 
 // Per
@@ -453,119 +422,64 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfiles() {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  SupportedProfiles profiles;
+  std::vector<VideoCodec> supported_codecs(
+      {VideoCodec::kH264, VideoCodec::kVP9, VideoCodec::kAV1});
 
-  if (!InitializeMediaFoundation()) {
-    return profiles;
-  }
-
-  for (auto codec : {VideoCodec::kH264, VideoCodec::kVP9, VideoCodec::kAV1,
-                     VideoCodec::kHEVC}) {
-    auto codec_profiles = GetSupportedProfilesForCodec(codec);
-    profiles.insert(profiles.end(), codec_profiles.begin(),
-                    codec_profiles.end());
-  }
-
-  ReleaseEncoderResources();
-  return profiles;
-}
-
-VideoEncodeAccelerator::SupportedProfiles
-MediaFoundationVideoEncodeAccelerator::GetSupportedProfilesForCodec(
-    VideoCodec codec) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  SupportedProfiles profiles;
-
-  if (codec == VideoCodec::kHEVC) {
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-    if (!base::FeatureList::IsEnabled(kPlatformHEVCEncoderSupport)) {
-      return profiles;
+  if (base::FeatureList::IsEnabled(kPlatformHEVCEncoderSupport)) {
+    supported_codecs.emplace_back(VideoCodec::kHEVC);
+  }
+#endif
+
+  // There's no easy way to enumerate the supported resolution bounds, so we
+  // just choose reasonable default values.
+  const SupportedProfile kDefaultProfile = []() {
+    SupportedProfile profile(VIDEO_CODEC_PROFILE_UNKNOWN,
+                             /*max_resolution=*/gfx::Size(1920, 1088),
+                             kMaxFrameRateNumerator, kMaxFrameRateDenominator,
+                             VideoEncodeAccelerator::kConstantMode |
+                                 VideoEncodeAccelerator::kVariableMode,
+                             {SVCScalabilityMode::kL1T1});
+    profile.min_resolution = gfx::Size(32, 32);
+    return profile;
+  }();
+
+  SupportedProfiles profiles;
+  for (auto codec : supported_codecs) {
+    bool svc_supported = false;
+    if (!IsCodecSupportedForEncoding(codec, &svc_supported)) {
+      continue;
     }
-#else
-    return profiles;
-#endif  // BULIDFLAG(ENABLE_PLATFORM_HEVC)
-  }
 
-  IMFActivate** pp_activate = nullptr;
-  uint32_t encoder_count = EnumerateHardwareEncoders(codec, &pp_activate);
-  if (!encoder_count) {
-    DVLOG(1)
-        << "Hardware encode acceleration is not available on this platform for "
-        << GetCodecName(codec);
-    return profiles;
-  }
-
-  bool svc_supported = false;
-  if (pp_activate) {
-    for (UINT32 i = 0; i < encoder_count; i++) {
-      if (pp_activate[i]) {
-        if (!svc_supported && IsSvcSupported(pp_activate[i], codec)) {
-          svc_supported = true;
-        }
-
-        // Release the enumerated instances if any.
-        // According to Windows Dev Center,
-        // https://docs.microsoft.com/en-us/windows/win32/api/mfapi/nf-mfapi-mftenumex
-        // The caller must release the pointers.
-        pp_activate[i]->Release();
-        pp_activate[i] = nullptr;
-      }
+    SupportedProfile profile(kDefaultProfile);
+    if (svc_supported) {
+      profile.scalability_modes.push_back(SVCScalabilityMode::kL1T2);
+      profile.scalability_modes.push_back(SVCScalabilityMode::kL1T3);
     }
-    CoTaskMemFree(pp_activate);
+
+    SupportedProfile portrait_profile(profile);
+    portrait_profile.max_resolution.Transpose();
+    portrait_profile.min_resolution.Transpose();
+
+    std::vector<VideoCodecProfile> codec_profiles;
+    if (codec == VideoCodec::kH264) {
+      codec_profiles = {H264PROFILE_BASELINE, H264PROFILE_MAIN,
+                        H264PROFILE_HIGH};
+    } else if (codec == VideoCodec::kVP9) {
+      codec_profiles = {VP9PROFILE_PROFILE0};
+    } else if (codec == VideoCodec::kAV1) {
+      codec_profiles = {AV1PROFILE_PROFILE_MAIN};
+    } else if (codec == VideoCodec::kHEVC) {
+      codec_profiles = {HEVCPROFILE_MAIN};
+    }
+
+    for (const auto codec_profile : codec_profiles) {
+      profile.profile = portrait_profile.profile = codec_profile;
+      profiles.push_back(profile);
+      profiles.push_back(portrait_profile);
+    }
   }
 
-  SupportedProfile profile;
-  // More profiles can be supported here, but they should be available in SW
-  // fallback as well.
-  profile.max_framerate_numerator = kMaxFrameRateNumerator;
-  profile.max_framerate_denominator = kMaxFrameRateDenominator;
-  profile.rate_control_modes = kSupportedProfileModes;
-  profile.max_resolution = gfx::Size(kMaxResolutionWidth, kMaxResolutionHeight);
-  profile.min_resolution = gfx::Size(kMinResolutionWidth, kMinResolutionHeight);
-  profile.scalability_modes.push_back(SVCScalabilityMode::kL1T1);
-  if (svc_supported) {
-    profile.scalability_modes.push_back(SVCScalabilityMode::kL1T2);
-    profile.scalability_modes.push_back(SVCScalabilityMode::kL1T3);
-  }
-
-  // Add SupportedProfile for portrait resolution.
-  SupportedProfile portrait_profile(profile);
-  portrait_profile.max_resolution =
-      gfx::Size(kMaxResolutionHeight, kMaxResolutionWidth);
-  portrait_profile.min_resolution =
-      gfx::Size(kMinResolutionHeight, kMinResolutionWidth);
-
-  if (codec == VideoCodec::kH264) {
-    profile.profile = H264PROFILE_BASELINE;
-    portrait_profile.profile = H264PROFILE_BASELINE;
-    profiles.push_back(profile);
-    profiles.push_back(portrait_profile);
-
-    profile.profile = H264PROFILE_MAIN;
-    portrait_profile.profile = H264PROFILE_MAIN;
-    profiles.push_back(profile);
-    profiles.push_back(portrait_profile);
-
-    profile.profile = H264PROFILE_HIGH;
-    portrait_profile.profile = H264PROFILE_HIGH;
-    profiles.push_back(profile);
-    profiles.push_back(portrait_profile);
-  } else if (codec == VideoCodec::kVP9) {
-    profile.profile = VP9PROFILE_PROFILE0;
-    portrait_profile.profile = VP9PROFILE_PROFILE0;
-    profiles.push_back(profile);
-    profiles.push_back(portrait_profile);
-  } else if (codec == VideoCodec::kAV1) {
-    profile.profile = AV1PROFILE_PROFILE_MAIN;
-    portrait_profile.profile = AV1PROFILE_PROFILE_MAIN;
-    profiles.push_back(profile);
-    profiles.push_back(portrait_profile);
-  } else if (codec == VideoCodec::kHEVC) {
-    profile.profile = HEVCPROFILE_MAIN;
-    portrait_profile.profile = HEVCPROFILE_MAIN;
-    profiles.push_back(profile);
-    profiles.push_back(portrait_profile);
-  }
   return profiles;
 }
 
@@ -605,7 +519,11 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
   } else if (config.output_profile == AV1PROFILE_PROFILE_MAIN) {
     codec_ = VideoCodec::kAV1;
   } else if (config.output_profile == HEVCPROFILE_MAIN) {
-    codec_ = VideoCodec::kHEVC;
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+    if (base::FeatureList::IsEnabled(kPlatformHEVCEncoderSupport)) {
+      codec_ = VideoCodec::kHEVC;
+    }
+#endif
   }
 
   if (codec_ == VideoCodec::kUnknown) {
