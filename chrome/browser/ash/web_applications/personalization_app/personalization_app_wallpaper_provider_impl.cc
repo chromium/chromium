@@ -617,10 +617,9 @@ void PersonalizationAppWallpaperProviderImpl::SelectGooglePhotosAlbum(
     const std::string& album_id,
     SetDailyRefreshCallback callback) {
   if (!is_google_photos_enterprise_enabled_) {
-    std::move(callback).Run(mojom::SetDailyRefreshResponse::New(
-        /*success=*/false, /*force_refresh=*/false));
-    LOG(WARNING) << "Rejected attempt to set Google Photos wallpaper while "
-                 << "disabled via enterprise setting.";
+    wallpaper_receiver_.ReportBadMessage(
+        "Rejected attempt to set Google Photos wallpaper while disabled via "
+        "enterprise setting.");
     return;
   }
 

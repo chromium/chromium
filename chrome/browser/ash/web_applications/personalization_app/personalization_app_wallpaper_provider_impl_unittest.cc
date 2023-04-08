@@ -663,30 +663,6 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
 }
 
 TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
-       SelectGooglePhotosAlbum) {
-  test_wallpaper_controller()->ClearCounts();
-  const std::string album_id = "OmnisVirLupus";
-
-  // Test selecting an album before fetching the enterprise setting.
-  wallpaper_provider_remote()->get()->SelectGooglePhotosAlbum(
-      album_id, base::BindLambdaForTesting(
-                    [](mojom::SetDailyRefreshResponsePtr response) {
-                      EXPECT_FALSE(response->success);
-                    }));
-  wallpaper_provider_remote()->FlushForTesting();
-
-  // Test selecting an album after fetching the enterprise setting.
-  FetchGooglePhotosEnabled();
-  wallpaper_provider_remote()->get()->SelectGooglePhotosAlbum(
-      album_id, base::BindLambdaForTesting(
-                    [](mojom::SetDailyRefreshResponsePtr response) {
-                      EXPECT_TRUE(response->success);
-                      EXPECT_TRUE(response->force_refresh);
-                    }));
-  wallpaper_provider_remote()->FlushForTesting();
-}
-
-TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
        SelectGooglePhotosAlbumBanned) {
   test_wallpaper_controller()->set_can_set_user_wallpaper(false);
   EXPECT_TRUE(wallpaper_provider_remote()->is_connected());
@@ -705,14 +681,6 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
   const std::string album_id = "OmnisVirLupus";
   const std::string photo_id = "DummyPhotoId";
 
-  // Test selecting an album before fetching the enterprise setting.
-  wallpaper_provider_remote()->get()->SelectGooglePhotosAlbum(
-      album_id, base::BindLambdaForTesting(
-                    [](mojom::SetDailyRefreshResponsePtr response) {
-                      EXPECT_FALSE(response->success);
-                    }));
-  wallpaper_provider_remote()->FlushForTesting();
-
   // Test selecting an album after fetching the enterprise setting.
   FetchGooglePhotosEnabled();
 
@@ -724,13 +692,16 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
 
   AddToAlbumIdMap(album_id, photo_id);
   test_wallpaper_controller()->add_dedup_key_to_wallpaper_info(photo_id);
+
+  base::RunLoop loop;
   wallpaper_provider_remote()->get()->SelectGooglePhotosAlbum(
       album_id, base::BindLambdaForTesting(
-                    [](mojom::SetDailyRefreshResponsePtr response) {
+                    [&loop](mojom::SetDailyRefreshResponsePtr response) {
                       EXPECT_TRUE(response->success);
                       EXPECT_FALSE(response->force_refresh);
+                      loop.Quit();
                     }));
-  wallpaper_provider_remote()->FlushForTesting();
+  loop.Run();
 }
 
 }  // namespace ash::personalization_app
