@@ -89,6 +89,8 @@ export class ZoneCustomizationElement extends WithPersonalizationStore {
   override ready() {
     super.ready();
     this.$.zoneKeys.target = this.$.zoneSelector;
+    // Scroll to the top of the page to view the zone customization dialog.
+    window.scrollTo(0, 0);
   }
 
   override connectedCallback() {
@@ -97,12 +99,6 @@ export class ZoneCustomizationElement extends WithPersonalizationStore {
         'currentBacklightState_',
         state => state.keyboardBacklight.currentBacklightState);
     this.updateFromStore();
-  }
-
-  showModal() {
-    this.$.dialog.showModal();
-    // Scroll to the top of the page to view the zone customization dialog.
-    window.scrollTo(0, 0);
   }
 
   private computeZoneIdxs_(): number[] {
@@ -189,13 +185,13 @@ export class ZoneCustomizationElement extends WithPersonalizationStore {
     }
   }
 
-  private getZoneTabIndex_(zoneIdx: number): string {
-    // Set only the first zone to be tabbable (tabindex="0") and others are not
-    // tabbable (tabindex="-1") by default.
-    return zoneIdx === 0 ? '0' : '-1';
+  private getZoneTabIndex_(zoneIdx: number, zoneSelected: number): string {
+    // Set only the currently selected zone to be tabbable (tabindex="0") and
+    // others are not tabbable (tabindex="-1") by default.
+    return zoneIdx === zoneSelected ? '0' : '-1';
   }
 
-  private getZoneAriaChecked_(zoneIdx: number, zoneSelected: number) {
+  private getZoneAriaSelected_(zoneIdx: number, zoneSelected: number) {
     return (zoneIdx === zoneSelected).toString();
   }
 
@@ -224,8 +220,8 @@ export class ZoneCustomizationElement extends WithPersonalizationStore {
     return staticColorIds[zoneColor];
   }
 
-  private closeZoneCustomizationDialog_() {
-    this.$.dialog.close();
+  private onClickCloseDialog_() {
+    this.$.dialog.cancel();
   }
 }
 
