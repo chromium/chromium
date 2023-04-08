@@ -134,10 +134,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler {
   // Note: the counter is expected to be 0 for the most of time.
   virtual size_t ActiveSchedulerClientsCounter() const;
 
-  // Records the metrics related to number of in-flight requests that are
-  // observed by the global resource scheduler.
-  virtual void RecordGlobalRequestCountMetrics() const;
-
   // Client functions:
 
   // Updates the priority for |request|. Modifies request->priority(), and may
