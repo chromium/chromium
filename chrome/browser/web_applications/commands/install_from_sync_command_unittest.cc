@@ -302,7 +302,7 @@ TEST_F(InstallFromSyncTest, SuccessWithoutManifest) {
           nullptr, kWebAppManifestUrl, true,
           webapps::InstallableStatusCode::NO_ERROR_DETECTED));
 
-  ExpectGetIcons(data_retriever.get(), /*skip_page_favicons=*/false,
+  ExpectGetIcons(data_retriever.get(), /*skip_page_favicons=*/true,
                  IconFetchSource::kDocument);
 
   InstallResult result = InstallFromSyncAndWait(std::move(data_retriever));
@@ -344,7 +344,7 @@ TEST_F(InstallFromSyncTest, SuccessManifestNoIcons) {
           CreateManifest(/*icons=*/false), kWebAppManifestUrl, true,
           webapps::InstallableStatusCode::NO_ERROR_DETECTED));
 
-  ExpectGetIcons(data_retriever.get(), /*skip_page_favicons=*/false,
+  ExpectGetIcons(data_retriever.get(), /*skip_page_favicons=*/true,
                  IconFetchSource::kDocument);
 
   InstallResult result = InstallFromSyncAndWait(std::move(data_retriever));
