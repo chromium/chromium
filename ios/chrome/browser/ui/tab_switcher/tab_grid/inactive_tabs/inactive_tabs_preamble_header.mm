@@ -65,7 +65,7 @@ const CGFloat kHorizontalPadding = 16;
   // Update the text view's attributed text.
   NSString* argument = [NSString stringWithFormat:@"%@", @(daysThreshold)];
   NSString* text =
-      [L10NUtils formatStringForMessageId:IDS_IOS_INACTIVE_TABS_PREAMBLE
+      [L10nUtils formatStringForMessageID:IDS_IOS_INACTIVE_TABS_PREAMBLE
                                  argument:argument];
   NSDictionary* attributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],

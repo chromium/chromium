@@ -32,6 +32,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
+import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -162,13 +163,15 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
 
     @Override
     public boolean isEnabled() {
-        return PriceTrackingFeatures.getPriceTrackingNotificationsEnabled();
+        return true;
     }
 
     @Override
     public boolean canPostNotification() {
-        if (!areAppNotificationsEnabled()
-                || !PriceTrackingFeatures.isPriceDropNotificationEligible()) {
+        // Currently we only post notifications for explicit price tracking which is gated by the
+        // "shopping list" feature flag. When we start implicit price tracking, we should use a
+        // separate flag and add the check on it here.
+        if (!areAppNotificationsEnabled() || !ShoppingFeatures.isShoppingListEligible()) {
             return false;
         }
 
@@ -184,7 +187,7 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
 
     @Override
     public boolean canPostNotificationWithMetricsRecorded() {
-        if (!PriceTrackingFeatures.isPriceDropNotificationEligible()) return false;
+        if (!ShoppingFeatures.isShoppingListEligible()) return false;
         boolean isSystemNotificationEnabled = areAppNotificationsEnabled();
         RecordHistogram.recordBooleanHistogram(
                 NOTIFICATION_ENABLED_HISTOGRAM, isSystemNotificationEnabled);

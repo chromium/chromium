@@ -955,11 +955,12 @@ const IDNTestCase kIdnCases[] = {
     // U+05D7 can look like Latin n in many fonts.
     {"xn--ceba.com", u"\u05d7\u05d7.com", kUnsafe},
 
-    // U+00FE (þ) and U+00F0 (ð) are only allowed under the .is TLD.
+    // U+00FE (þ) and U+00F0 (ð) are only allowed under the .is and .fo TLDs.
     {"xn--acdef-wva.com", u"a\u00fecdef.com", kUnsafe},
     {"xn--mnpqr-jta.com", u"mn\u00f0pqr.com", kUnsafe},
     {"xn--acdef-wva.is", u"a\u00fecdef.is", kSafe},
     {"xn--mnpqr-jta.is", u"mn\u00f0pqr.is", kSafe},
+    {"xn--mnpqr-jta.fo", u"mn\u00f0pqr.fo", kSafe},
 
     // U+0259 (ə) is only allowed under the .az TLD.
     {"xn--xample-vyc.com", u"\u0259xample.com", kUnsafe},

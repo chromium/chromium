@@ -36,7 +36,7 @@
 
 namespace base {
 class FilePath;
-}
+}  // namespace base
 
 namespace favicon_base {
 struct FaviconImageResult;
@@ -292,14 +292,12 @@ class BookmarkModel : public BookmarkUndoProvider,
                                 const base::Time delete_end);
 
   // Returns up to |max_count| bookmarks containing each term from |query| in
-  // either the title, URL, or, if |match_ancestor_titles| is true, the titles
-  // of ancestors. |matching_algorithm| determines the algorithm used by
-  // QueryParser internally to parse |query|.
+  // either the title, URL, or the titles of ancestors. |matching_algorithm|
+  // determines the algorithm used by QueryParser internally to parse |query|.
   std::vector<TitledUrlMatch> GetBookmarksMatching(
       const std::u16string& query,
       size_t max_count,
-      query_parser::MatchingAlgorithm matching_algorithm,
-      bool match_ancestor_titles = false);
+      query_parser::MatchingAlgorithm matching_algorithm);
 
   // Sets the store to NULL, making it so the BookmarkModel does not persist
   // any changes to disk. This is only useful during testing to speed up
@@ -315,8 +313,7 @@ class BookmarkModel : public BookmarkUndoProvider,
                        const std::string& value);
   void SetNodeMetaInfoMap(const BookmarkNode* node,
                           const BookmarkNode::MetaInfoMap& meta_info_map);
-  void DeleteNodeMetaInfo(const BookmarkNode* node,
-                          const std::string& key);
+  void DeleteNodeMetaInfo(const BookmarkNode* node, const std::string& key);
 
   // Sets/deletes local meta info of |node|.
   void SetNodeUnsyncedMetaInfo(const BookmarkNode* node,
@@ -343,8 +340,7 @@ class BookmarkModel : public BookmarkUndoProvider,
   // http://www.google.com/favicon.ico) have changed. It is valid to call
   // OnFaviconsChanged() with non-empty |page_urls| and an empty |icon_url| and
   // vice versa.
-  void OnFaviconsChanged(const std::set<GURL>& page_urls,
-                         const GURL& icon_url);
+  void OnFaviconsChanged(const std::set<GURL>& page_urls, const GURL& icon_url);
 
   // Returns the client used by this BookmarkModel.
   BookmarkClient* client() const { return client_.get(); }

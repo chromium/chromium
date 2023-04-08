@@ -190,6 +190,11 @@ void CastDialogMetrics::OnRecordSinkCount(
   media_router::MediaRouterMetrics::RecordDeviceCount(sink_buttons.size());
 }
 
+void CastDialogMetrics::OnRecordSinkCount(
+    const std::vector<raw_ptr<CastDialogSinkView>>& sink_views) {
+  media_router::MediaRouterMetrics::RecordDeviceCount(sink_views.size());
+}
+
 void CastDialogMetrics::MaybeRecordFirstAction(MediaRouterUserAction action) {
   if (first_action_recorded_)
     return;

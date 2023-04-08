@@ -168,11 +168,11 @@ export class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
     }
   }
 
-  private onCloseButtonTap_() {
+  private onCloseButtonClick_() {
     navigation.navigateTo({page: Page.LIST});
   }
 
-  private onClearAllTap_() {
+  private onClearAllClick_() {
     const ids = this.entries_.map(entry => entry.id);
     this.delegate.deleteErrors(this.data.id, ids);
   }
@@ -198,7 +198,7 @@ export class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
     if (!this.inDevMode) {
       // Wait until next render cycle in case error page is loading.
       setTimeout(() => {
-        this.onCloseButtonTap_();
+        this.onCloseButtonClick_();
       }, 0);
     }
   }
@@ -307,7 +307,7 @@ export class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
         .then(code => this.code_ = code);
   }
 
-  private onStackFrameTap_(
+  private onStackFrameClick_(
       e: DomRepeatEvent<chrome.developerPrivate.StackFrame>) {
     const frame = e.model.item;
     this.updateSelected_(frame);

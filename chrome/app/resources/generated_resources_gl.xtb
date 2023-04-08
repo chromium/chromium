@@ -2988,6 +2988,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3584527007414070635">Retomar o teu percorrido para <ph name="MODULE_TITLE" /></translation>
 <translation id="3586787825263265024">A aplicación <ph name="APPLICATION_NAME" /> require que OneDrive estea dispoñible.</translation>
 <translation id="3586806079541226322">Non se pode abrir este ficheiro</translation>
+<translation id="3586931643579894722">Ocultar detalles</translation>
 <translation id="3587438013689771191">Máis información sobre: <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">Todos</translation>
 <translation id="3588790464166520201">Sitios que poden instalar controladores de pagos</translation>
@@ -5830,6 +5831,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6136114942382973861">Pechar barra de descargas</translation>
 <translation id="6136287496450963112">A túa chave de seguranza non está protexida cun PIN. Para xestionar as impresións dixitais, primeiro crea un PIN.</translation>
 <translation id="6138680304137685902">Sinatura X9.62 ECDSA con SHA-384</translation>
+<translation id="6140948187512243695">Mostrar detalles</translation>
 <translation id="6141988275892716286">Confirma a descarga</translation>
 <translation id="6143186082490678276">Obter axuda</translation>
 <translation id="6143366292569327983">Escolle o idioma de orixe da páxina</translation>

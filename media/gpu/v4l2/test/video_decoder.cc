@@ -5,13 +5,18 @@
 #include "media/gpu/v4l2/test/video_decoder.h"
 
 #include <linux/videodev2.h>
+#include <algorithm>
+#include <vector>
 
 #include "base/bits.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "media/base/video_types.h"
 #include "media/gpu/v4l2/test/upstream_pix_fmt.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace media {
 namespace v4l2_test {
@@ -34,13 +39,79 @@ uint32_t FileFourccToDriverFourcc(uint32_t header_fourcc) {
 VideoDecoder::VideoDecoder(std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
                            std::unique_ptr<V4L2Queue> OUTPUT_queue,
                            std::unique_ptr<V4L2Queue> CAPTURE_queue)
-    : v4l2_ioctl_(std::move(v4l2_ioctl)),
+    : needs_init(true),
+      v4l2_ioctl_(std::move(v4l2_ioctl)),
       OUTPUT_queue_(std::move(OUTPUT_queue)),
       CAPTURE_queue_(std::move(CAPTURE_queue)) {}
 
+VideoDecoder::VideoDecoder(std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
+                           gfx::Size display_resolution)
+    : needs_init(false),
+      v4l2_ioctl_(std::move(v4l2_ioctl)),
+      display_resolution_(display_resolution) {}
+
 VideoDecoder::~VideoDecoder() = default;
 
-void VideoDecoder::Initialize() {
+void VideoDecoder::NegotiateCAPTUREFormat() {
+  constexpr uint32_t kPreferredFormats[] = {V4L2_PIX_FMT_NV12,
+                                            V4L2_PIX_FMT_MM21};
+
+  struct v4l2_format fmt;
+
+  memset(&fmt, 0, sizeof(fmt));
+  fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
+
+  v4l2_ioctl_->GetFmt(&fmt);
+  uint32_t fourcc = fmt.fmt.pix_mp.pixelformat;
+
+  // Check to see if if the format returned is one that can be used. The driver
+  // may prefer a different format than what is needed. If
+  // not, negotiations need to be done to see if the preferred format can
+  // be used.
+  if (!base::Contains(kPreferredFormats, fourcc)) {
+    bool format_found = false;
+    for (const auto& preferred_fourcc : kPreferredFormats) {
+      VLOG(1) << "Trying to see if preferred format ("
+              << media::FourccToString(preferred_fourcc)
+              << ") is supported by the driver.";
+      fmt.fmt.pix_mp.pixelformat = preferred_fourcc;
+
+      v4l2_ioctl_->TryFmt(&fmt);
+      VLOG(1) << "Driver returned format ("
+              << media::FourccToString(fmt.fmt.pix_mp.pixelformat) << ").";
+
+      if (fmt.fmt.pix_mp.pixelformat == preferred_fourcc) {
+        VLOG(1) << "Preferred format ("
+                << media::FourccToString(preferred_fourcc)
+                << ") being used for CAPTURE queue.";
+        fourcc = preferred_fourcc;
+        format_found = true;
+        break;
+      }
+    }
+    if (!format_found) {
+      LOG(FATAL) << "Unable to choose preferred format, TryFmt is returning ("
+                 << media::FourccToString(fmt.fmt.pix_mp.pixelformat) << ").";
+    }
+  }
+
+  CAPTURE_queue_->set_fourcc(fourcc);
+  CAPTURE_queue_->set_resolution(
+      gfx::Size(fmt.fmt.pix_mp.width, fmt.fmt.pix_mp.height));
+  CAPTURE_queue_->set_num_planes(fmt.fmt.pix_mp.num_planes);
+
+  v4l2_ioctl_->SetFmt(CAPTURE_queue_);
+
+  LOG_ASSERT((V4L2_PIX_FMT_MM21 == fourcc &&
+              CAPTURE_queue_->num_planes() == fmt.fmt.pix_mp.num_planes) ||
+             (V4L2_PIX_FMT_NV12 == fourcc &&
+              CAPTURE_queue_->num_planes() == fmt.fmt.pix_mp.num_planes))
+      << media::FourccToString(fourcc)
+      << " does not have the correct number of planes: "
+      << fmt.fmt.pix_mp.num_planes;
+}
+
+void VideoDecoder::Initialize(bool resolution_changed) {
   // TODO(stevecho): remove VIDIOC_ENUM_FRAMESIZES ioctl call
   //   after b/193237015 is resolved.
   if (!v4l2_ioctl_->EnumFrameSizes(OUTPUT_queue_->fourcc()))
@@ -48,32 +119,15 @@ void VideoDecoder::Initialize() {
 
   v4l2_ioctl_->SetFmt(OUTPUT_queue_);
 
-  gfx::Size coded_size;
-  uint32_t num_planes;
-  uint32_t fourcc;
-  v4l2_ioctl_->GetFmt(CAPTURE_queue_->type(), &coded_size, &num_planes,
-                      &fourcc);
+  NegotiateCAPTUREFormat();
 
-  LOG_ASSERT((V4L2_PIX_FMT_MM21 == fourcc && 2 == num_planes) ||
-             (V4L2_PIX_FMT_NV12 == fourcc && 1 == num_planes))
-      << media::FourccToString(fourcc)
-      << " does not have the correct number of planes: " << num_planes;
-
-  CAPTURE_queue_->set_coded_size(coded_size);
-  CAPTURE_queue_->set_num_planes(num_planes);
-
-  // VIDIOC_TRY_FMT() ioctl is equivalent to VIDIOC_S_FMT
-  // with one exception that it does not change driver state.
-  // VIDIOC_TRY_FMT may or may not be needed; it's used by the stateful
-  // Chromium V4L2VideoDecoder backend, see b/190733055#comment78.
-  // TODO(b/190733055): try and remove it after landing all the code.
-  v4l2_ioctl_->TryFmt(CAPTURE_queue_);
-
-  v4l2_ioctl_->SetFmt(CAPTURE_queue_);
+  LOG_ASSERT(gfx::Rect(CAPTURE_queue_->resolution())
+                 .Contains(gfx::Rect(OUTPUT_queue_->resolution())))
+      << "Display size is not contained within the coded size. DRC?";
 
   // If there is a dynamic resolution change, the Initialization sequence will
   // be performed again, minus the allocation of OUTPUT queue buffers.
-  if (IsResolutionChanged()) {
+  if (resolution_changed) {
     v4l2_ioctl_->ReqBufsWithCount(CAPTURE_queue_,
                                   number_of_buffers_in_capture_queue_);
   } else {
@@ -97,9 +151,61 @@ void VideoDecoder::Initialize() {
   v4l2_ioctl_->StreamOn(CAPTURE_queue_->type());
 }
 
+void VideoDecoder::CreateOUTPUTQueue(uint32_t compressed_fourcc) {
+  // TODO(stevecho): might need to consider using more than 1 file descriptor
+  // (fd) & buffer with the output queue for 4K60 requirement.
+  // https://buganizer.corp.google.com/issues/202214561#comment31
+  OUTPUT_queue_ = std::make_unique<V4L2Queue>(
+      V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE, display_resolution_, V4L2_MEMORY_MMAP,
+      kNumberOfBuffersInOutputQueue);
+  OUTPUT_queue_->set_fourcc(compressed_fourcc);
+
+  // TODO(stevecho): remove VIDIOC_ENUM_FRAMESIZES ioctl call
+  //   after b/193237015 is resolved.
+  if (!v4l2_ioctl_->EnumFrameSizes(OUTPUT_queue_->fourcc())) {
+    LOG(INFO) << "EnumFrameSizes for OUTPUT queue failed.";
+  }
+
+  v4l2_ioctl_->SetFmt(OUTPUT_queue_);
+  v4l2_ioctl_->ReqBufs(OUTPUT_queue_);
+  v4l2_ioctl_->QueryAndMmapQueueBuffers(OUTPUT_queue_);
+
+  int media_request_fd;
+  v4l2_ioctl_->MediaIocRequestAlloc(&media_request_fd);
+
+  OUTPUT_queue_->set_media_request_fd(media_request_fd);
+
+  v4l2_ioctl_->StreamOn(OUTPUT_queue_->type());
+}
+
+void VideoDecoder::CreateCAPTUREQueue(uint32_t num_buffers) {
+  // TODO(stevecho): enable V4L2_MEMORY_DMABUF memory for CAPTURE queue.
+  // |num_planes| represents separate memory buffers, not planes for Y, U, V.
+  // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/pixfmt-v4l2-mplane.html#c.V4L.v4l2_plane_pix_format
+  CAPTURE_queue_ = std::make_unique<V4L2Queue>(
+      V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE, gfx::Size(0, 0), V4L2_MEMORY_MMAP,
+      num_buffers);
+
+  NegotiateCAPTUREFormat();
+
+  LOG_ASSERT(gfx::Rect(CAPTURE_queue_->resolution())
+                 .Contains(gfx::Rect(OUTPUT_queue_->resolution())))
+      << "Display size is not contained within the coded size. DRC?";
+
+  v4l2_ioctl_->ReqBufs(CAPTURE_queue_);
+  v4l2_ioctl_->QueryAndMmapQueueBuffers(CAPTURE_queue_);
+  // Only 1 CAPTURE buffer is needed for 1st key frame decoding. Remaining
+  // CAPTURE buffers will be queued after that.
+  if (!v4l2_ioctl_->QBuf(CAPTURE_queue_, 0)) {
+    LOG(FATAL) << "VIDIOC_QBUF failed for CAPTURE queue.";
+  }
+
+  v4l2_ioctl_->StreamOn(CAPTURE_queue_->type());
+}
+
 // Follows the dynamic resolution change sequence described in
 // https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/dev-stateless-decoder.html#dynamic-resolution-change
-VideoDecoder::Result VideoDecoder::HandleDynamicResolutionChange(
+void VideoDecoder::HandleDynamicResolutionChange(
     const gfx::Size& new_resolution) {
   // Call VIDIOC_STREAMOFF() on both the OUTPUT and CAPTURE queues.
   v4l2_ioctl_->StreamOff(OUTPUT_queue_->type());
@@ -114,16 +220,10 @@ VideoDecoder::Result VideoDecoder::HandleDynamicResolutionChange(
 
   // Set the new resolution on OUTPUT queue. The driver will then pick up
   // the new resolution to be set on the coded size for CAPTURE queue.
-  OUTPUT_queue_->set_display_size(new_resolution);
-  OUTPUT_queue_->set_coded_size(new_resolution);
-
-  CAPTURE_queue_->set_display_size(new_resolution);
+  OUTPUT_queue_->set_resolution(new_resolution);
 
   // Perform the initialization sequence again
-  Initialize();
-  is_resolution_changed_ = false;
-
-  return VideoDecoder::kOk;
+  Initialize(/* resolution_changed*/ true);
 }
 
 void VideoDecoder::ConvertToYUV(std::vector<uint8_t>& dest_y,

@@ -173,18 +173,6 @@ INSTANTIATE_TEST_SUITE_P(
           SkColorSetARGB(0x3D, 0x8A, 0xB4, 0xF8)},
          {ColorMode::kDark, ColorProvider::ControlsLayerType::kFocusRingColor,
           SkColorSetRGB(0x8A, 0xB4, 0xF8)},
-         {ColorMode::kDark, ColorProvider::ControlsLayerType::kHighlightColor1,
-          SkColorSetARGB(0x14, 0xFF, 0xFF, 0xFF)},
-         {ColorMode::kDark, ColorProvider::ControlsLayerType::kHighlightColor2,
-          SkColorSetARGB(0x0F, 0xFF, 0xFF, 0xFF)},
-         {ColorMode::kDark, ColorProvider::ControlsLayerType::kHighlightColor3,
-          SkColorSetARGB(0x14, 0xFF, 0xFF, 0xFF)},
-         {ColorMode::kDark, ColorProvider::ControlsLayerType::kBorderColor1,
-          SkColorSetARGB(0xCC, 0x20, 0x21, 0x24)},
-         {ColorMode::kDark, ColorProvider::ControlsLayerType::kBorderColor2,
-          SkColorSetARGB(0x99, 0x20, 0x21, 0x24)},
-         {ColorMode::kDark, ColorProvider::ControlsLayerType::kBorderColor3,
-          SkColorSetARGB(0x0F, 0x0, 0x0, 0x0)},
 
          // Light mode
          {ColorMode::kLight,
@@ -208,19 +196,7 @@ INSTANTIATE_TEST_SUITE_P(
          {ColorMode::kLight, ColorProvider::ControlsLayerType::kFocusAuraColor,
           SkColorSetARGB(0x3D, 0x1A, 0x73, 0xE8)},
          {ColorMode::kLight, ColorProvider::ControlsLayerType::kFocusRingColor,
-          SkColorSetRGB(0x1A, 0x73, 0xE8)},
-         {ColorMode::kLight, ColorProvider::ControlsLayerType::kHighlightColor1,
-          SkColorSetARGB(0x4C, 0xFF, 0xFF, 0xFF)},
-         {ColorMode::kLight, ColorProvider::ControlsLayerType::kHighlightColor2,
-          SkColorSetARGB(0x33, 0xFF, 0xFF, 0xFF)},
-         {ColorMode::kLight, ColorProvider::ControlsLayerType::kHighlightColor3,
-          SkColorSetARGB(0x4C, 0xFF, 0xFF, 0xFF)},
-         {ColorMode::kLight, ColorProvider::ControlsLayerType::kBorderColor1,
-          SkColorSetARGB(0x0F, 0x0, 0x0, 0x0)},
-         {ColorMode::kLight, ColorProvider::ControlsLayerType::kBorderColor2,
-          SkColorSetARGB(0x0F, 0x0, 0x0, 0x0)},
-         {ColorMode::kLight, ColorProvider::ControlsLayerType::kBorderColor3,
-          SkColorSetARGB(0x0F, 0x0, 0x0, 0x0)}}));
+          SkColorSetRGB(0x1A, 0x73, 0xE8)}}));
 
 class AshColorProviderContentTest
     : public AshColorProviderBase<ColorProvider::ContentLayerType> {};

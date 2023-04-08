@@ -5,15 +5,15 @@
 #include <chromium/cast/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl_test_base.h>
-#include <lib/fidl/cpp/binding.h>
+#include <lib/async/default.h>
 
 #include <string>
 #include <utility>
 
+#include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "fuchsia_web/common/test/fit_adapter.h"
 #include "fuchsia_web/runners/cast/application_controller_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,13 +38,22 @@ class MockFrame : public fuchsia::web::testing::Frame_TestBase {
               (GetPrivateMemorySizeCallback callback));
 };
 
-class ApplicationControllerImplTest : public chromium::cast::ApplicationContext,
-                                      public testing::Test {
+class ApplicationControllerImplTest
+    : public fidl::Server<chromium_cast::ApplicationContext>,
+      public testing::Test {
  public:
-  ApplicationControllerImplTest()
-      : application_context_binding_(this),
-        application_context_(application_context_binding_.NewBinding().Bind()),
-        application_(&frame_, application_context_.get()) {
+  ApplicationControllerImplTest() {
+    auto application_context_endpoints =
+        fidl::CreateEndpoints<chromium_cast::ApplicationContext>();
+    ZX_CHECK(application_context_endpoints.is_ok(),
+             application_context_endpoints.status_value());
+    application_context_binding_.emplace(
+        async_get_default_dispatcher(),
+        std::move(application_context_endpoints->server), this,
+        [](fidl::UnbindInfo info) { ADD_FAILURE(); });
+    application_context_.Bind(std::move(application_context_endpoints->client),
+                              async_get_default_dispatcher());
+    application_.emplace(&frame_, application_context_);
     base::RunLoop run_loop;
     wait_for_controller_callback_ = run_loop.QuitClosure();
     run_loop.Run();
@@ -57,16 +66,18 @@ class ApplicationControllerImplTest : public chromium::cast::ApplicationContext,
   ~ApplicationControllerImplTest() override = default;
 
  protected:
-  // chromium::cast::ApplicationContext implementation.
-  void GetMediaSessionId(GetMediaSessionIdCallback callback) final {
+  // chromium_cast::ApplicationContext implementation.
+  void GetMediaSessionId(GetMediaSessionIdCompleter::Sync& completer) final {
     NOTREACHED();
+    completer.Reply({});
   }
   void SetApplicationController(
-      fidl::InterfaceHandle<chromium::cast::ApplicationController> application)
-      final {
+      SetApplicationControllerRequest& request,
+      SetApplicationControllerCompleter::Sync& ignored_completer) final {
     EXPECT_TRUE(wait_for_controller_callback_);
 
-    application_ptr_ = application.Bind();
+    application_client_.Bind(std::move(request.controller()),
+                             async_get_default_dispatcher());
     std::move(wait_for_controller_callback_).Run();
   }
 
@@ -74,12 +85,12 @@ class ApplicationControllerImplTest : public chromium::cast::ApplicationContext,
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
 
   MockFrame frame_;
-  fidl::Binding<chromium::cast::ApplicationContext>
+  absl::optional<fidl::ServerBinding<chromium_cast::ApplicationContext>>
       application_context_binding_;
-  chromium::cast::ApplicationContextPtr application_context_;
-  ApplicationControllerImpl application_;
+  fidl::Client<chromium_cast::ApplicationContext> application_context_;
+  absl::optional<ApplicationControllerImpl> application_;
 
-  chromium::cast::ApplicationControllerPtr application_ptr_;
+  fidl::Client<chromium_cast::ApplicationController> application_client_;
   base::OnceClosure wait_for_controller_callback_;
 };
 
@@ -98,9 +109,9 @@ TEST_F(ApplicationControllerImplTest, ConfigureInputTypes) {
                                   fuchsia::web::AllowInputState::DENY))
       .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
 
-  application_ptr_->SetTouchInputEnabled(true);
-  application_ptr_->SetTouchInputEnabled(true);
-  application_ptr_->SetTouchInputEnabled(false);
+  EXPECT_TRUE(application_client_->SetTouchInputEnabled(true).is_ok());
+  EXPECT_TRUE(application_client_->SetTouchInputEnabled(true).is_ok());
+  EXPECT_TRUE(application_client_->SetTouchInputEnabled(false).is_ok());
   run_loop.Run();
 }
 
@@ -113,12 +124,17 @@ TEST_F(ApplicationControllerImplTest, GetPrivateMemorySize) {
           [](chromium::cast::ApplicationController::GetPrivateMemorySizeCallback
                  callback) { callback(kMockSize); });
 
-  base::test::TestFuture<uint64_t> result;
-  application_ptr_->GetPrivateMemorySize(
-      CallbackToFitFunction(result.GetCallback()));
-  ASSERT_TRUE(result.Wait());
-
-  EXPECT_EQ(result.Get(), kMockSize);
+  base::RunLoop loop;
+  application_client_->GetPrivateMemorySize().Then(
+      [quit_closure = loop.QuitClosure(),
+       kMockSize](fidl::Result<
+                  chromium_cast::ApplicationController::GetPrivateMemorySize>&
+                      result) {
+        ASSERT_TRUE(result.is_ok());
+        EXPECT_EQ(result->size_bytes(), kMockSize);
+        quit_closure.Run();
+      });
+  loop.Run();
 }
 
 }  // namespace

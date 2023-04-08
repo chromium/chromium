@@ -237,7 +237,6 @@ class ResourceScheduler::ScheduledResourceRequestImpl
         scheduler_(scheduler),
         priority_(priority),
         fifo_ordering_(0),
-        peak_delayable_requests_in_flight_(0u),
         host_port_pair_(net::HostPortPair::FromURL(request->url())) {
     DCHECK(!request_->GetUserData(kUserDataKey));
     request_->SetUserData(kUserDataKey, std::make_unique<UnownedPointer>(this));
@@ -248,11 +247,6 @@ class ResourceScheduler::ScheduledResourceRequestImpl
       delete;
 
   ~ScheduledResourceRequestImpl() override {
-    if (!((attributes_ & kAttributeDelayable) == kAttributeDelayable)) {
-      UMA_HISTOGRAM_COUNTS_100(
-          "ResourceScheduler.PeakDelayableRequestsInFlight.NonDelayable",
-          peak_delayable_requests_in_flight_);
-    }
     request_->RemoveUserData(kUserDataKey);
     scheduler_->RemoveRequest(this);
   }
@@ -286,11 +280,6 @@ class ResourceScheduler::ScheduledResourceRequestImpl
     }
 
     ready_ = true;
-  }
-
-  void UpdateDelayableRequestsInFlight(size_t delayable_requests_in_flight) {
-    peak_delayable_requests_in_flight_ = std::max(
-        peak_delayable_requests_in_flight_, delayable_requests_in_flight);
   }
 
   void set_request_priority_params(const RequestPriorityParams& priority) {
@@ -347,8 +336,6 @@ class ResourceScheduler::ScheduledResourceRequestImpl
   RequestPriorityParams priority_;
   uint32_t fifo_ordering_;
 
-  // Maximum number of delayable requests in-flight when |this| was in-flight.
-  size_t peak_delayable_requests_in_flight_;
   // Cached to excessive recomputation in ReachedMaxRequestsPerHostPerClient().
   const net::HostPortPair host_port_pair_;
 
@@ -605,35 +592,9 @@ class ResourceScheduler::Client
         RequestStartTrigger::PEER_TO_PEER_CONNECTIONS_COUNT_CHANGED);
   }
 
-  // Records the metrics related to number of requests in flight.
-  void RecordRequestCountMetrics() const {
-    UMA_HISTOGRAM_COUNTS_100("ResourceScheduler.RequestsCount.All",
-                             in_flight_requests_.size());
-    UMA_HISTOGRAM_COUNTS_100("ResourceScheduler.RequestsCount.Delayable",
-                             in_flight_delayable_count_);
-    UMA_HISTOGRAM_COUNTS_100(
-        "ResourceScheduler.RequestsCount.NonDelayable",
-        in_flight_requests_.size() - in_flight_delayable_count_);
-
-    resource_scheduler_->RecordGlobalRequestCountMetrics();
-  }
-
   void InsertInFlightRequest(ScheduledResourceRequestImpl* request) {
     in_flight_requests_.insert(request);
     SetRequestAttributes(request, DetermineRequestAttributes(request));
-    RecordRequestCountMetrics();
-
-    if (RequestAttributesAreSet(request->attributes(), kAttributeDelayable)) {
-      // Notify all in-flight with the new count of in-flight delayable
-      // requests.
-      for (RequestSet::const_iterator it = in_flight_requests_.begin();
-           it != in_flight_requests_.end(); ++it) {
-        (*it)->UpdateDelayableRequestsInFlight(in_flight_delayable_count_);
-      }
-    } else {
-      // |request| is a non-delayable request.
-      request->UpdateDelayableRequestsInFlight(in_flight_delayable_count_);
-    }
   }
 
   void EraseInFlightRequest(ScheduledResourceRequestImpl* request) {
@@ -1132,10 +1093,6 @@ class ResourceScheduler::Client
     // 3) We do not start the request, same as above, but StartRequest() tells
     //     us there's no point in checking any further requests.
     TRACE_EVENT0("loading", "LoadAnyStartablePendingRequests");
-    if (num_skipped_scans_due_to_scheduled_start_ > 0) {
-      UMA_HISTOGRAM_COUNTS_1M("ResourceScheduler.NumSkippedScans.ScheduleStart",
-                              num_skipped_scans_due_to_scheduled_start_);
-    }
     num_skipped_scans_due_to_scheduled_start_ = 0;
     RequestQueue::NetQueue::iterator request_iter =
         pending_requests_.GetNextHighestIterator();
@@ -1371,28 +1328,6 @@ size_t ResourceScheduler::ActiveSchedulerClientsCounter() const {
     }
   }
   return active_scheduler_clients_count;
-}
-
-// Records the metrics related to number of requests in flight that are observed
-// by the global resource scheduler.
-void ResourceScheduler::RecordGlobalRequestCountMetrics() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  size_t global_delayable_count = 0;
-  size_t global_non_delayable_count = 0;
-
-  for (const auto& client : client_map_) {
-    global_delayable_count += client.second->CountInflightDelayableRequests();
-    global_non_delayable_count +=
-        client.second->CountInflightNonDelayableRequests();
-  }
-
-  UMA_HISTOGRAM_COUNTS_100("ResourceScheduler.RequestsCount.GlobalAll",
-                           global_delayable_count + global_non_delayable_count);
-  UMA_HISTOGRAM_COUNTS_100("ResourceScheduler.RequestsCount.GlobalDelayable",
-                           global_delayable_count);
-  UMA_HISTOGRAM_COUNTS_100("ResourceScheduler.RequestsCount.GlobalNonDelayable",
-                           global_non_delayable_count);
 }
 
 ResourceScheduler::Client* ResourceScheduler::GetClient(ClientId client_id) {

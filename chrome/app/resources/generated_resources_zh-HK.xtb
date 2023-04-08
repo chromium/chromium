@@ -3004,6 +3004,7 @@
 <translation id="3584527007414070635">繼續瀏覽「<ph name="MODULE_TITLE" />」</translation>
 <translation id="3586787825263265024">需要可存取 OneDrive 才能使用「<ph name="APPLICATION_NAME" />」應用程式。</translation>
 <translation id="3586806079541226322">無法開啟此檔案</translation>
+<translation id="3586931643579894722">隱藏詳情</translation>
 <translation id="3587438013689771191">進一步了解：<ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">全部</translation>
 <translation id="3588790464166520201">已允許安裝付款處理常式</translation>
@@ -4103,6 +4104,7 @@
 <translation id="4545759655004063573">權限不足，無法儲存，請儲存到其他位置。</translation>
 <translation id="4546308221697447294">使用 Google Chrome 快速瀏覽內容</translation>
 <translation id="4546345569117159016">右鍵</translation>
+<translation id="4546509872654834602">「<ph name="SUPERVISED_USER_NAME" />」要求使用此擴充程式：</translation>
 <translation id="4546692474302123343">「Google 助理」語音輸入</translation>
 <translation id="4547659257713117923">沒有其他裝置的分頁</translation>
 <translation id="4547672827276975204">自動設定</translation>
@@ -5848,6 +5850,7 @@
 <translation id="6136114942382973861">閂下載內容列</translation>
 <translation id="6136287496450963112">您的安全密鑰並未受 PIN 保護。請先建立 PIN 以管理指紋。</translation>
 <translation id="6138680304137685902">使用 SHA-384 的 X9.62 ECDSA 簽名</translation>
+<translation id="6140948187512243695">顯示詳細資料</translation>
 <translation id="6141988275892716286">確認下載</translation>
 <translation id="6143186082490678276">取得說明</translation>
 <translation id="6143366292569327983">揀要翻譯邊種語言嘅網頁</translation>

@@ -982,6 +982,7 @@
 <translation id="5578188167649348993">内存</translation>
 <translation id="5580000943347215299">库</translation>
 <translation id="558849140439112033">拖动鼠标指针即可选择要截取的区域</translation>
+<translation id="5596627076506792578">更多选项</translation>
 <translation id="5597451508971090205"><ph name="DATE" /><ph name="SHORT_WEEKDAY" /></translation>
 <translation id="5600837773213129531">按 Ctrl + Alt + Z 即可停用语音反馈。</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -1253,7 +1254,6 @@
 <translation id="6820676911989879663">休息一下！</translation>
 <translation id="6827049576281411231">关闭事件面板</translation>
 <translation id="6836499262298959512">危险文件</translation>
-<translation id="6837064795450991317">隐藏桌面栏</translation>
 <translation id="6852052252232534364">点击即可启用</translation>
 <translation id="6855029042976311970">刚刚修改过</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> 秒</translation>
@@ -1311,7 +1311,6 @@
 <translation id="7098053464892629930">请前往 Google Play 下载“<ph name="NAME" />”应用以查看所有可用功能</translation>
 <translation id="7098389117866926363">USB-C 设备（背面左侧端口）</translation>
 <translation id="7100906357717321275">显示“文件”应用内的隐藏文件</translation>
-<translation id="7106330611027933926">显示桌面栏</translation>
 <translation id="7116969082764510092">桌面 11</translation>
 <translation id="7118268675952955085">屏幕截图</translation>
 <translation id="7119327711295338600">选择下一个单词或字母</translation>

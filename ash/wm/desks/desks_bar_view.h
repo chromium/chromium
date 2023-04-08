@@ -27,7 +27,6 @@ class DeskDragProxy;
 class DeskMiniView;
 class ExpandedDesksBarButton;
 class OverviewGrid;
-class PersistentDesksBarVerticalDotsButton;
 class ScrollArrowButton;
 class ZeroStateDefaultDeskButton;
 class ZeroStateIconButton;
@@ -121,6 +120,10 @@ class ASH_EXPORT DesksBarView : public views::View,
     overview_grid_ = overview_grid;
   }
 
+  const views::View* scroll_view_contents() const {
+    return scroll_view_contents_;
+  }
+
   // Initializes and creates mini_views for any pre-existing desks, before the
   // bar was created. This should only be called after this view has been added
   // to a widget, as it needs to call `GetWidget()` when it's performing a
@@ -210,9 +213,10 @@ class ASH_EXPORT DesksBarView : public views::View,
   // |initializing_bar_view| is false.
   void UpdateNewMiniViews(bool initializing_bar_view, bool expanding_bar_view);
 
-  // If the focused |mini_view| is outside of the scroll view's visible bounds,
-  // scrolls the bar to make sure it can always be seen.
-  void ScrollToShowMiniViewIfNecessary(const DeskMiniView* mini_view);
+  // If the focused `view` is outside of the scroll view's visible bounds,
+  // scrolls the bar to make sure it can always be seen. Please note, `view`
+  // must be a child of `scroll_view_contents_`.
+  void ScrollToShowViewIfNecessary(const views::View* view);
 
   void OnNewDeskButtonPressed(
       DesksCreationRemovalSource desks_creation_removal_source);
@@ -228,8 +232,8 @@ class ASH_EXPORT DesksBarView : public views::View,
   // and the ExpandedDesksBarButton on the desk bar's state.
   void UpdateDeskButtonsVisibility();
 
-  // Udates the visibility of the `default_desk_button_` and
-  // `vertical_dots_button_` on the desks bar's state.
+  // Udates the visibility of the `default_desk_button_` on the desks bar's
+  // state.
   // TODO(conniekxu): Remove `UpdateDeskButtonsVisibility`, replace it with this
   // function, and rename this function by removing the prefix CrOSNext.
   void UpdateDeskButtonsVisibilityCrOSNext();
@@ -377,11 +381,6 @@ class ASH_EXPORT DesksBarView : public views::View,
   DeskMiniView* drag_view_ = nullptr;
   // Drag proxy for the dragged desk.
   std::unique_ptr<DeskDragProxy> drag_proxy_;
-
-  // A circular button which when clicked will open the context menu of the
-  // persistent desks bar. Note that this button will only be created when
-  // persistent desks bar should be shown.
-  PersistentDesksBarVerticalDotsButton* vertical_dots_button_ = nullptr;
 
   // ScrollView callback subscriptions.
   base::CallbackListSubscription on_contents_scrolled_subscription_;

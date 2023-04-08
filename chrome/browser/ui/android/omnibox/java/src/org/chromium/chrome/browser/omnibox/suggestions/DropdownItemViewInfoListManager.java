@@ -31,7 +31,6 @@ class DropdownItemViewInfoListManager {
     private int mLayoutDirection;
     private @BrandedColorScheme int mBrandedColorScheme;
     private List<DropdownItemViewInfo> mSourceViewInfoList;
-    private boolean mDropdownItemRoundingEnabled;
 
     private final int mListActiveOmniboxTopSmallMargin;
     private final int mListActiveOmniboxTopBigMargin;
@@ -95,9 +94,7 @@ class DropdownItemViewInfoListManager {
         mManagedModel.clear();
     }
 
-    void onNativeInitialized() {
-        mDropdownItemRoundingEnabled = OmniboxFeatures.shouldShowModernizeVisualUpdate(mContext);
-    }
+    void onNativeInitialized() {}
 
     /**
      * Specify the input list of DropdownItemViewInfo elements.
@@ -129,6 +126,7 @@ class DropdownItemViewInfoListManager {
 
         GroupSection previousSection = null;
         GroupSection currentSection;
+        boolean useModernVisuals = OmniboxFeatures.shouldShowModernizeVisualUpdate(mContext);
 
         for (int i = 0; i < mSourceViewInfoList.size(); i++) {
             final DropdownItemViewInfo item = mSourceViewInfoList.get(i);
@@ -137,7 +135,7 @@ class DropdownItemViewInfoListManager {
             model.set(SuggestionCommonProperties.COLOR_SCHEME, mBrandedColorScheme);
             model.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, deviceType);
 
-            if (mDropdownItemRoundingEnabled && item.processor.allowBackgroundRounding()) {
+            if (useModernVisuals && item.processor.allowBackgroundRounding()) {
                 var groupConfig = groupsDetails.get(item.groupId);
                 currentSection = groupConfig != null ? groupConfig.getSection()
                                                      : GroupSection.SECTION_DEFAULT;
@@ -148,10 +146,12 @@ class DropdownItemViewInfoListManager {
                 model.set(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED, applyRounding);
                 // Do not have margin for the first suggestion, otherwise the first suggestion will
                 // have a big gap with the Omnibox.
-                model.set(DropdownCommonProperties.TOP_MARGIN,
-                        previousItem == null
-                                ? getSuggestionListTopMargin(item.processor.getViewTypeId())
-                                : topMargin);
+                if (useModernVisuals) {
+                    model.set(DropdownCommonProperties.TOP_MARGIN,
+                            previousItem == null
+                                    ? getSuggestionListTopMargin(item.processor.getViewTypeId())
+                                    : topMargin);
+                }
 
                 if (previousItem != null) {
                     previousItem.model.set(
@@ -175,22 +175,6 @@ class DropdownItemViewInfoListManager {
     }
 
     /**
-     * Return if the suggestion type should have background.
-     *
-     * @param type The type of the suggestion.
-     */
-    private boolean suggestionShouldHaveBackground(@OmniboxSuggestionUiType int type) {
-        return OmniboxFeatures.shouldShowModernizeVisualUpdate(mContext)
-                && (type == OmniboxSuggestionUiType.DEFAULT
-                        || type == OmniboxSuggestionUiType.EDIT_URL_SUGGESTION
-                        || type == OmniboxSuggestionUiType.ANSWER_SUGGESTION
-                        || type == OmniboxSuggestionUiType.ENTITY_SUGGESTION
-                        || type == OmniboxSuggestionUiType.TAIL_SUGGESTION
-                        || type == OmniboxSuggestionUiType.CLIPBOARD_SUGGESTION
-                        || type == OmniboxSuggestionUiType.PEDAL_SUGGESTION);
-    }
-
-    /**
      * Return the top margin for the suggestion list in pixel size.
      * The padding size between the Omnibox and the top suggestion is dependent on the top
      * suggestion type and variations of the experiment:
@@ -202,8 +186,7 @@ class DropdownItemViewInfoListManager {
      * @param firstSuggestionUiType The type of the first suggestion.
      */
     private @Px int getSuggestionListTopMargin(@OmniboxSuggestionUiType int firstSuggestionUiType) {
-        if (!mDropdownItemRoundingEnabled
-                || firstSuggestionUiType == OmniboxSuggestionUiType.EDIT_URL_SUGGESTION) {
+        if (firstSuggestionUiType == OmniboxSuggestionUiType.EDIT_URL_SUGGESTION) {
             return 0;
         }
 

@@ -62,7 +62,7 @@ export class ExtensionsToggleRowElement extends PolymerElement {
     // Even though the native checkbox is hidden and can't be actually
     // cilcked/tapped by the user, because it resides within the <label> the
     // browser emits an extraneous event when the label is clicked. Stop
-    // propagation so that it does not interfere with |onLabelTap_| listener.
+    // propagation so that it does not interfere with |onLabelClick_| listener.
     e.stopPropagation();
   }
 

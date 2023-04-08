@@ -71,8 +71,12 @@ void MojoVideoEncodeAcceleratorProvider::CreateVideoEncodeAccelerator(
       &MojoVideoEncodeAcceleratorService::Create, std::move(receiver),
       create_vea_callback_, gpu_preferences_, gpu_workarounds_, gpu_device_);
 
-  if (base::FeatureList::IsEnabled(kUseSequencedTaskRunnerForMojoVEAService)) {
+  if (base::FeatureList::IsEnabled(kUseTaskRunnerForMojoVEAService)) {
+#if BUILDFLAG(IS_WIN)
+    base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()})
+#else
     base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+#endif
         ->PostTask(FROM_HERE, std::move(create_service_cb));
   } else {
     std::move(create_service_cb).Run();

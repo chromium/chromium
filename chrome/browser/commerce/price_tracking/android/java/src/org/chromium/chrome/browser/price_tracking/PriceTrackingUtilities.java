@@ -99,8 +99,7 @@ public class PriceTrackingUtilities {
      *         PriceDropNotificationManager#canPostNotification()}.
      */
     public static boolean isPriceAlertsMessageCardEnabled() {
-        return PriceTrackingFeatures.isPriceDropNotificationEligible()
-                && isImplicitSubscriptionsEnabled()
+        return isImplicitSubscriptionsEnabled()
                 && SHARED_PREFERENCES_MANAGER.readBoolean(
                         PRICE_ALERTS_MESSAGE_CARD, PriceTrackingFeatures.isPriceTrackingEnabled());
     }

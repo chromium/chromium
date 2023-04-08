@@ -3007,6 +3007,7 @@
 <translation id="3584527007414070635">Відновити сеанс для запиту "<ph name="MODULE_TITLE" />"</translation>
 <translation id="3586787825263265024">Щоб відкрити файл у додатку <ph name="APPLICATION_NAME" />, потрібен доступ до OneDrive.</translation>
 <translation id="3586806079541226322">Не вдається відкрити цей файл</translation>
+<translation id="3586931643579894722">Сховати докладні дані</translation>
 <translation id="3587438013689771191">Докладніше про підсторінку "<ph name="SUBPAGE_TITLE" />"</translation>
 <translation id="3587482841069643663">Все</translation>
 <translation id="3588790464166520201">Дозволено встановлювати обробники платежів</translation>
@@ -5850,6 +5851,7 @@
 <translation id="6136114942382973861">Закрити панель завантажень</translation>
 <translation id="6136287496450963112">Ваш ключ безпеки не захищено PIN-кодом. Щоб керувати відбитками пальців, спершу створіть новий PIN-код.</translation>
 <translation id="6138680304137685902">Алгоритм ECDSA X9.62 з підписом SHA-384</translation>
+<translation id="6140948187512243695">Показати докладні дані</translation>
 <translation id="6141988275892716286">Підтвердити завантаження</translation>
 <translation id="6143186082490678276">Довідка</translation>
 <translation id="6143366292569327983">Виберіть, з якої мови потрібно перекласти сторінку</translation>

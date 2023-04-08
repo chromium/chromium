@@ -397,7 +397,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'multidevice_wifi_sync_disabled_link_tests.js',
  ],
  ['MultideviceWifiSyncItem', 'multidevice_wifi_sync_item_tests.js'],
- ['NearbyShareConfirmPage', 'nearby_share_confirm_page_test.js'],
+ [
+   'NearbySharePageNearbyShareConfirmPage',
+   'nearby_share_page/nearby_share_confirm_page_test.js'
+ ],
  [
    'NearbySharePageNearbyShareHighVisibilityPage',
    'nearby_share_page/nearby_share_high_visibility_page_test.js'
@@ -468,6 +471,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['OsFilesPage', 'os_files_page/os_files_page_test.js'],
  ['OsFilesPageGoogleDrivePage', 'os_files_page/google_drive_page_test.js'],
  ['OsFilesPageOfficePage', 'os_files_page/office_page_test.js'],
+ ['OsFilesPageSmbSharesPage', 'os_files_page/smb_shares_page_tests.js'],
  [
    'OsLanguagesPageSmartInputsPage',
    'os_languages_page/smart_inputs_page_test.js'
@@ -531,7 +535,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    {enabled: ['features::kAccessibilitySelectToSpeakPageMigration']},
  ],
  ['SettingsTrafficCounters', 'settings_traffic_counters_test.js'],
- ['SmbPage', 'smb_shares_page_tests.js'],
  [
    'SwitchAccessActionAssignmentDialog',
    'switch_access_action_assignment_dialog_test.js',

@@ -8,6 +8,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -39,6 +40,9 @@ enum class RequestMethod {
 
 constexpr char kClassifyUrlDataContentType[] =
     "application/x-www-form-urlencoded";
+
+constexpr char kClassifyUrlNetOrHttpStatusMetric[] =
+    "ManagedUsers.ClassifyUrlRequest.NetOrHttpStatus";
 
 // Constants for ClassifyURL.
 constexpr char kClassifyUrlOauthConsumerName[] = "kids_url_classifier";
@@ -328,6 +332,7 @@ void KidsChromeManagementClient::OnSimpleLoaderComplete(
 
   if (net_error != net::OK) {
     DLOG(WARNING) << "Network error " << net_error;
+    base::UmaHistogramSparse(kClassifyUrlNetOrHttpStatusMetric, net_error);
     DispatchResult(it, std::move(response_proto),
                    KidsChromeManagementClient::ErrorCode::kNetworkError);
     return;
@@ -335,6 +340,7 @@ void KidsChromeManagementClient::OnSimpleLoaderComplete(
 
   if (response_code != net::HTTP_OK) {
     DLOG(WARNING) << "Response: " << response_body.get();
+    base::UmaHistogramSparse(kClassifyUrlNetOrHttpStatusMetric, response_code);
     DispatchResult(it, std::move(response_proto),
                    KidsChromeManagementClient::ErrorCode::kHttpError);
     return;

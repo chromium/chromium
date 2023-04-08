@@ -24,6 +24,7 @@
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_state.h"
+#include "ash/wm/window_state_delegate.h"
 #include "ash/wm/window_state_util.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
@@ -525,6 +526,9 @@ void TabletModeWindowState::UpdateWindow(WindowState* window_state,
   if (chromeos::IsPinnedWindowStateType(old_state_type) ||
       chromeos::IsPinnedWindowStateType(target_state)) {
     Shell::Get()->screen_pinning_controller()->SetPinnedWindow(window);
+    if (window_state->delegate()) {
+      window_state->delegate()->ToggleLockedFullscreen(window_state);
+    }
   }
 }
 

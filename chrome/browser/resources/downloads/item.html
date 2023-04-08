@@ -308,7 +308,7 @@
     <div id="title-area" role="gridcell"><!--
       Can't have any line breaks.
       --><a is="action-link" id="file-link" href="[[data.url]]"
-          on-click="onFileLinkTap_" focus-row-control
+          on-click="onFileLinkClick_" focus-row-control
           focus-type="fileLink"
           hidden="[[!completelyOnDisk_]]">[[data.fileName]]</a><!--
       Before #name.
@@ -320,7 +320,7 @@
     </div>
 
     <div role="gridcell">
-      <a id="url" target="_blank" on-click="onUrlTap_" focus-row-control
+      <a id="url" target="_blank" on-click="onUrlClick_" focus-row-control
           focus-type="url">[[chopUrl_(data.url)]]</a>
     </div>
 
@@ -343,14 +343,14 @@
 
     <div id="safe" class="controls" hidden="[[isDangerous_]]">
       <span role="gridcell" hidden="[[!hasShowInFolderLink_]]">
-        <a is="action-link" id="show" on-click="onShowTap_"
+        <a is="action-link" id="show" on-click="onShowClick_"
             focus-row-control
             focus-type="show"
             title="[[data.filePath]]">[[data.showInFolderText]]</a>
       </span>
       <template is="dom-if" if="[[data.retry]]">
         <span role="gridcell">
-          <cr-button class="action-button" on-click="onRetryTap_"
+          <cr-button class="action-button" on-click="onRetryClick_"
               focus-row-control focus-type="retry">
             $i18n{controlRetry}
           </cr-button>
@@ -358,7 +358,7 @@
       </template>
       <template is="dom-if" if="[[pauseOrResumeText_]]">
         <span role="gridcell">
-          <cr-button on-click="onPauseOrResumeTap_" id="pauseOrResume"
+          <cr-button on-click="onPauseOrResumeClick_" id="pauseOrResume"
               focus-row-control focus-type="pauseOrResume">
             [[pauseOrResumeText_]]
           </cr-button>
@@ -366,7 +366,7 @@
       </template>
       <template is="dom-if" if="[[showOpenNow_]]" restamp>
         <span role="gridcell">
-          <cr-button on-click="onOpenNowTap_" id="openNow" class="action-button"
+          <cr-button on-click="onOpenNowClick_" id="openNow" class="action-button"
                      focus-row-control focus-type="open">
             $i18n{controlOpenNow}
           </cr-button>
@@ -374,13 +374,13 @@
       </template>
       <template is="dom-if" if="[[showDeepScan_]]" restamp>
         <span role="gridcell">
-          <cr-button on-click="onDeepScanTap_" id="deepScan"
+          <cr-button on-click="onDeepScanClick_" id="deepScan"
                      class="action-button" focus-row-control focus-type="open">
             $i18n{controlDeepScan}
           </cr-button>
         </span>
         <span role="gridcell">
-          <cr-button on-click="onBypassDeepScanTap_" id="bypassDeepScan"
+          <cr-button on-click="onBypassDeepScanClick_" id="bypassDeepScan"
                      focus-row-control focus-type="open">
             $i18n{controlBypassDeepScan}
           </cr-button>
@@ -388,7 +388,7 @@
       </template>
       <template is="dom-if" if="[[showCancel_]]">
         <span role="gridcell">
-          <cr-button on-click="onCancelTap_" focus-row-control
+          <cr-button on-click="onCancelClick_" focus-row-control
               focus-type="cancel">
             $i18n{controlCancel}
           </cr-button>
@@ -402,12 +402,12 @@
         <!-- Files that enterprise policies allow to be reviewed. -->
         <template is="dom-if" if="[[isReviewable_]]">
             <span role="gridcell">
-              <cr-button on-click="onDiscardDangerousTap_"
+              <cr-button on-click="onDiscardDangerousClick_"
                   class="action-button" focus-row-control
                   focus-type="discard">$i18n{dangerDiscard}</cr-button>
             </span>
             <span role="gridcell">
-              <cr-button on-click="onReviewDangerousTap_" focus-row-control
+              <cr-button on-click="onReviewDangerousClick_" focus-row-control
                   focus-type="save">
                 $i18n{dangerReview}</cr-button>
             </span>
@@ -417,12 +417,12 @@
           <!-- Dangerous file types (e.g. .exe, .jar). -->
           <template is="dom-if" if="[[!isMalware_]]">
             <span role="gridcell">
-              <cr-button on-click="onDiscardDangerousTap_"
+              <cr-button on-click="onDiscardDangerousClick_"
                   class="action-button" focus-row-control
                   focus-type="discard">$i18n{dangerDiscard}</cr-button>
             </span>
             <span role="gridcell">
-              <cr-button on-click="onSaveDangerousTap_" focus-row-control
+              <cr-button on-click="onSaveDangerousClick_" focus-row-control
                   focus-type="save">
                 $i18n{dangerSave}</cr-button>
             </span>
@@ -431,13 +431,13 @@
           <!-- Things that safe browsing has determined to be dangerous. -->
           <template is="dom-if" if="[[isMalware_]]">
             <span role="gridcell">
-              <cr-button on-click="onDiscardDangerousTap_"
+              <cr-button on-click="onDiscardDangerousClick_"
                   class="action-button"
                   focus-row-control focus-type="discard">
                 $i18n{controlRemoveFromList}</cr-button>
             </span>
             <span role="gridcell">
-              <cr-button on-click="onSaveDangerousTap_" focus-row-control
+              <cr-button on-click="onSaveDangerousClick_" focus-row-control
                   focus-type="save">
                 $i18n{dangerRestore}</cr-button>
             </span>
@@ -452,7 +452,7 @@
           style$="[[computeRemoveStyle_(isDangerous_, showCancel_)]]"
           id="remove" title="$i18n{controlRemoveFromList}"
           aria-label$="[[controlRemoveFromListAriaLabel_]]"
-          on-click="onRemoveTap_" focus-row-control focus-type="remove">
+          on-click="onRemoveClick_" focus-row-control focus-type="remove">
       </cr-icon-button>
     </div>
     <div id="incognito" title="$i18n{inIncognito}" hidden="[[!data.otr]]"></div>

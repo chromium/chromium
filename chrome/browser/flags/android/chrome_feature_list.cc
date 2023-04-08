@@ -291,6 +291,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kFeedPositionAndroid,
     &kSearchResumptionModuleAndroid,
     &kShareSheetMigrationAndroid,
+    &kShareSheetCustomActionsPolish,
     &kShouldIgnoreIntentSkipInternalCheck,
     &kSpecialLocaleWrapper,
     &kSpecialUserDecision,
@@ -946,6 +947,10 @@ BASE_FEATURE(kSafeModeForCachedFlags,
 
 BASE_FEATURE(kShowScrollableMVTOnNTPAndroid,
              "ShowScrollableMVTOnNTPAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kShareSheetCustomActionsPolish,
+             "ShareSheetCustomActionsPolish",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kShareSheetMigrationAndroid,

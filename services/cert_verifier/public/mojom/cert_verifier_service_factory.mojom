@@ -68,18 +68,20 @@ struct ChromeRootStoreInfo {
 // CertVerifierService's, which have their own underlying CertVerifier's
 // underneath.
 interface CertVerifierServiceFactory {
-  // Gets a new CertVerifierFactory, which //net code can interface with using
+  // Gets a new CertVerifierService, which //net code can interface with using
   // cert_verifier::MojoCertVerifier.
   GetNewCertVerifier(pending_receiver<CertVerifierService> receiver,
+                     pending_remote<CertVerifierServiceClient> client,
                      CertVerifierCreationParams? creation_params);
 
   // Returns the parameters that the service was configured with.
   GetServiceParamsForTesting() => (CertVerifierServiceParams service_params);
 
   // Updates the ChromeRootStore used by the CertVerifierServiceFactory with a
-  // new version.
+  // new version. The callback will be run once the update has been processed
+  // (regardless if it was updated successfully or the update was ignored.)
   [EnableIf=is_chrome_root_store_supported]
-  UpdateChromeRootStore(ChromeRootStore new_root_store);
+  UpdateChromeRootStore(ChromeRootStore new_root_store) => ();
 
   // Returns information about the current Chrome Root Store.
   [EnableIf=is_chrome_root_store_supported]

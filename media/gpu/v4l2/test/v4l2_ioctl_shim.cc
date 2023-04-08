@@ -149,14 +149,12 @@ MmappedBuffer::~MmappedBuffer() {
 }
 
 V4L2Queue::V4L2Queue(enum v4l2_buf_type type,
-                     uint32_t fourcc,
-                     const gfx::Size& size,
+                     const gfx::Size& resolution,
                      enum v4l2_memory memory,
                      uint32_t num_buffers)
     : type_(type),
-      fourcc_(fourcc),
       num_buffers_(num_buffers),
-      display_size_(size),
+      resolution_(resolution),
       num_planes_(1),
       memory_(memory) {}
 
@@ -377,8 +375,8 @@ void V4L2IoctlShim::SetFmt(const std::unique_ptr<V4L2Queue>& queue) const {
   }
 
   fmt.fmt.pix_mp.num_planes = queue->num_planes();
-  fmt.fmt.pix_mp.width = queue->display_size().width();
-  fmt.fmt.pix_mp.height = queue->display_size().height();
+  fmt.fmt.pix_mp.width = queue->resolution().width();
+  fmt.fmt.pix_mp.height = queue->resolution().height();
 
   const bool ret = Ioctl(VIDIOC_S_FMT, &fmt);
 
@@ -386,39 +384,20 @@ void V4L2IoctlShim::SetFmt(const std::unique_ptr<V4L2Queue>& queue) const {
   LOG_ASSERT(ret) << "VIDIOC_S_FMT for " << queue->type() << " queue failed.";
 }
 
-void V4L2IoctlShim::GetFmt(const enum v4l2_buf_type type,
-                           gfx::Size* coded_size,
-                           uint32_t* num_planes,
-                           uint32_t* fourcc) const {
-  struct v4l2_format fmt;
+void V4L2IoctlShim::GetFmt(struct v4l2_format* fmt) const {
+  const bool ret = Ioctl(VIDIOC_G_FMT, fmt);
 
-  memset(&fmt, 0, sizeof(fmt));
-  fmt.type = type;
-
-  const bool ret = Ioctl(VIDIOC_G_FMT, &fmt);
-
-  coded_size->SetSize(fmt.fmt.pix_mp.width, fmt.fmt.pix_mp.height);
-  *num_planes = fmt.fmt.pix_mp.num_planes;
-  *fourcc = fmt.fmt.pix_mp.pixelformat;
-
-  LOGF(INFO) << type << " - VIDIOC_G_FMT: " << fmt.fmt.pix_mp;
+  const enum v4l2_buf_type type = static_cast<enum v4l2_buf_type>(fmt->type);
+  LOGF(INFO) << type << " - VIDIOC_G_FMT: " << fmt->fmt.pix_mp;
   LOG_ASSERT(ret) << "VIDIOC_G_FMT for " << type << " queue failed.";
 }
 
-void V4L2IoctlShim::TryFmt(const std::unique_ptr<V4L2Queue>& queue) const {
-  struct v4l2_format fmt;
+void V4L2IoctlShim::TryFmt(struct v4l2_format* fmt) const {
+  const bool ret = Ioctl(VIDIOC_TRY_FMT, fmt);
 
-  memset(&fmt, 0, sizeof(fmt));
-  fmt.type = queue->type();
-  fmt.fmt.pix_mp.pixelformat = queue->fourcc();
-  fmt.fmt.pix_mp.num_planes = queue->num_planes();
-  fmt.fmt.pix_mp.width = queue->coded_size().width();
-  fmt.fmt.pix_mp.height = queue->coded_size().height();
-
-  const bool ret = Ioctl(VIDIOC_TRY_FMT, &fmt);
-
-  LOGF(INFO) << queue->type() << " - VIDIOC_TRY_FMT: " << fmt.fmt.pix_mp;
-  LOG_ASSERT(ret) << "VIDIOC_TRY_FMT for " << queue->type() << " queue failed.";
+  const enum v4l2_buf_type type = static_cast<enum v4l2_buf_type>(fmt->type);
+  LOGF(INFO) << type << " - VIDIOC_TRY_FMT: " << fmt->fmt.pix_mp;
+  LOG_ASSERT(ret) << "VIDIOC_TRY_FMT for " << type << " queue failed.";
 }
 
 void V4L2IoctlShim::ReqBufs(std::unique_ptr<V4L2Queue>& queue) const {
@@ -704,8 +683,7 @@ bool V4L2IoctlShim::QueryFormat(enum v4l2_buf_type type,
   return false;
 }
 
-bool V4L2IoctlShim::VerifyCapabilities(uint32_t compressed_format,
-                                       uint32_t uncompressed_format) const {
+bool V4L2IoctlShim::VerifyCapabilities(uint32_t compressed_format) const {
   struct v4l2_capability cap;
   memset(&cap, 0, sizeof(cap));
 
@@ -722,14 +700,7 @@ bool V4L2IoctlShim::VerifyCapabilities(uint32_t compressed_format,
       << media::FourccToString(compressed_format)
       << " is not a supported compressed OUTPUT format.";
 
-  const bool is_uncompressed_format_supported =
-      QueryFormat(V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE, uncompressed_format);
-
-  LOG_IF(ERROR, !is_uncompressed_format_supported)
-      << media::FourccToString(uncompressed_format)
-      << " is not a supported uncompressed CAPTURE format.";
-
-  return is_compressed_format_supported && is_uncompressed_format_supported;
+  return is_compressed_format_supported;
 }
 
 void V4L2IoctlShim::QueryAndMmapQueueBuffers(

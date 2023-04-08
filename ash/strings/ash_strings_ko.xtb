@@ -980,6 +980,7 @@
 <translation id="5578188167649348993">메모리</translation>
 <translation id="5580000943347215299">라이브러리</translation>
 <translation id="558849140439112033">드래그하여 캡처할 영역을 선택하세요.</translation>
+<translation id="5596627076506792578">옵션 더보기</translation>
 <translation id="5597451508971090205"><ph name="DATE" /> <ph name="SHORT_WEEKDAY" /></translation>
 <translation id="5600837773213129531">음성 피드백을 사용 중지하려면 Ctrl + Alt + Z를 누르세요.</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -1247,7 +1248,6 @@
 <translation id="6820676911989879663">잠시 쉬어 가세요.</translation>
 <translation id="6827049576281411231">일정 창 닫기</translation>
 <translation id="6836499262298959512">위험한 파일</translation>
-<translation id="6837064795450991317">데스크바 숨기기</translation>
 <translation id="6852052252232534364">클릭하여 활성화</translation>
 <translation id="6855029042976311970">방금 수정됨</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" />초</translation>
@@ -1305,7 +1305,6 @@
 <translation id="7098053464892629930">사용할 수 있는 모든 기능을 보려면 Google Play에서 <ph name="NAME" /> 앱을 다운로드하세요</translation>
 <translation id="7098389117866926363">USB-C 기기(좌측 후면 포트)</translation>
 <translation id="7100906357717321275">파일 앱에 숨겨진 파일 표시</translation>
-<translation id="7106330611027933926">데스크바 표시</translation>
 <translation id="7116969082764510092">데스크 11</translation>
 <translation id="7118268675952955085">스크린샷</translation>
 <translation id="7119327711295338600">다음 단어 또는 글자 선택</translation>

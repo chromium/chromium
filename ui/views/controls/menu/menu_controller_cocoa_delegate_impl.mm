@@ -43,7 +43,7 @@ NSImage* NewTagImage(const ui::ColorProvider* color_provider) {
 
   DCHECK(color_provider);
   NSColor* badge_text_color = skia::SkColorToSRGBNSColor(
-      color_provider->GetColor(ui::kColorBadgeForeground));
+      color_provider->GetColor(ui::kColorBadgeInCocoaMenuForeground));
 
   NSDictionary* badge_attrs = @{
     NSFontAttributeName : badge_font.GetNativeFont(),
@@ -81,7 +81,8 @@ NSImage* NewTagImage(const ui::ColorProvider* color_provider) {
                                             yRadius:badge_radius];
         DCHECK(color_provider);
         NSColor* badge_color = skia::SkColorToSRGBNSColor(
-            color_provider->GetColor(ui::kColorBadgeBackground));
+            color_provider->GetColor(ui::kColorBadgeInCocoaMenuBackground));
+
         [badge_color set];
         [rounded_badge_rect fill];
 

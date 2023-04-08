@@ -4,17 +4,15 @@
 
 #include "ash/system/network/hotspot_notifier.h"
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/hotspot_config_service.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/components/network/hotspot_enabled_state_notifier.h"
+#include "chromeos/ash/components/network/hotspot_state_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
-#include "chromeos/ash/components/network/network_state_test_helper.h"
-#include "chromeos/ash/services/hotspot_config/cros_hotspot_config.h"
-#include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
+#include "chromeos/ash/services/hotspot_config/public/cpp/cros_hotspot_config_test_helper.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
-#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 
 namespace ash {
 
@@ -39,8 +37,11 @@ class HotspotNotifierTest : public NoSessionAshTestBase {
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
     network_handler_test_helper_->AddDefaultProfiles();
     network_handler_test_helper_->ResetDevicesAndServices();
-    GetHotspotConfigService(cros_hotspot_config_.BindNewPipeAndPassReceiver());
-    hotspot_notifier_ = std::make_unique<ash::HotspotNotifier>();
+
+    cros_network_config_test_helper_ =
+        std::make_unique<network_config::CrosNetworkConfigTestHelper>();
+    cros_hotspot_config_test_helper_ =
+        std::make_unique<hotspot_config::CrosHotspotConfigTestHelper>();
 
     NoSessionAshTestBase::SetUp();
     LogIn();
@@ -50,7 +51,8 @@ class HotspotNotifierTest : public NoSessionAshTestBase {
 
   void TearDown() override {
     NoSessionAshTestBase::TearDown();
-    network_config_helper_.reset();
+    cros_hotspot_config_test_helper_.reset();
+    cros_network_config_test_helper_.reset();
     network_handler_test_helper_.reset();
   }
 
@@ -89,16 +91,16 @@ class HotspotNotifierTest : public NoSessionAshTestBase {
     return network_handler_test_helper_.get();
   }
 
-  hotspot_config::mojom::HotspotControlResult EnableHotspot() {
-    base::RunLoop run_loop;
-    hotspot_config::mojom::HotspotControlResult out_result;
-    cros_hotspot_config_->EnableHotspot(base::BindLambdaForTesting(
-        [&](hotspot_config::mojom::HotspotControlResult result) {
-          out_result = result;
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-    return out_result;
+  void EnableHotspot() {
+    cros_hotspot_config_test_helper_->EnableHotspot();
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void NotifyHotspotTurnedOff(
+      hotspot_config::mojom::DisableReason disable_reason) {
+    NetworkHandler* network_handler = NetworkHandler::Get();
+    network_handler->hotspot_enabled_state_notifier()->OnHotspotTurnedOff(
+        disable_reason);
   }
 
   void AddActiveCellularService() {
@@ -111,9 +113,9 @@ class HotspotNotifierTest : public NoSessionAshTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<network_config::CrosNetworkConfigTestHelper>
-      network_config_helper_;
-  std::unique_ptr<HotspotNotifier> hotspot_notifier_;
-  mojo::Remote<hotspot_config::mojom::CrosHotspotConfig> cros_hotspot_config_;
+      cros_network_config_test_helper_;
+  std::unique_ptr<hotspot_config::CrosHotspotConfigTestHelper>
+      cros_hotspot_config_test_helper_;
 };
 
 TEST_F(HotspotNotifierTest, WiFiTurnedOff) {
@@ -124,10 +126,46 @@ TEST_F(HotspotNotifierTest, WiFiTurnedOff) {
       FakeShillSimulatedResult::kSuccess, shill::kTetheringEnableResultSuccess);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(hotspot_config::mojom::HotspotControlResult::kSuccess,
-            EnableHotspot());
+  EnableHotspot();
   EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
       HotspotNotifier::kWiFiTurnedOffNotificationId));
+}
+
+TEST_F(HotspotNotifierTest, AdminRestricted) {
+  SetValidHotspotCapabilities();
+  SetReadinessCheckResultReady();
+  AddActiveCellularService();
+  helper()->manager_test()->SetSimulateTetheringEnableResult(
+      FakeShillSimulatedResult::kSuccess, shill::kTetheringEnableResultSuccess);
+  base::RunLoop().RunUntilIdle();
+
+  EnableHotspot();
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
+      HotspotNotifier::kWiFiTurnedOffNotificationId));
+
+  NotifyHotspotTurnedOff(
+      hotspot_config::mojom::DisableReason::kProhibitedByPolicy);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
+      HotspotNotifier::kAdminRestrictedNotificationId));
+}
+
+TEST_F(HotspotNotifierTest, WiFiTurnedOn) {
+  SetValidHotspotCapabilities();
+  SetReadinessCheckResultReady();
+  AddActiveCellularService();
+  helper()->manager_test()->SetSimulateTetheringEnableResult(
+      FakeShillSimulatedResult::kSuccess, shill::kTetheringEnableResultSuccess);
+  base::RunLoop().RunUntilIdle();
+
+  EnableHotspot();
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
+      HotspotNotifier::kWiFiTurnedOffNotificationId));
+
+  NotifyHotspotTurnedOff(hotspot_config::mojom::DisableReason::kWifiEnabled);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
+      HotspotNotifier::kWiFiTurnedOnNotificationId));
 }
 
 }  // namespace ash

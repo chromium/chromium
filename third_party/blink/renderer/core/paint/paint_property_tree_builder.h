@@ -225,6 +225,7 @@ struct PaintPropertyTreeBuilderContext final {
 
   unsigned was_main_thread_scrolling : 1 = false;
   unsigned scroll_unification_enabled : 1 = false;
+  unsigned prefers_composited_scrolling : 1 = false;
 
   // Main thread scrolling reasons that apply to all scrollers in the current
   // LocalFrameView subtree.

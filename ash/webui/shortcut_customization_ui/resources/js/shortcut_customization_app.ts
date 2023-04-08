@@ -217,9 +217,9 @@ export class ShortcutCustomizationAppElement extends
     }
 
     // Select the correct page based on the category from the URL.
+    // Scrolling to the specific shortcut from the URL is handled
+    // in shortcuts_page.ts.
     this.$.navigationPanel.selectPageById(`category-${category}`);
-
-    // TODO(cambickel) focus on the shortcut with the action from the URL.
   }
 
   private onRequestUpdateAccelerators(e: RequestUpdateAcceleratorEvent): void {

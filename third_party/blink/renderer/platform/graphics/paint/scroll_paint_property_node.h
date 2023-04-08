@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_property_node.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -63,6 +64,8 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode
     bool prevent_viewport_scrolling_from_inner = false;
 
     bool max_scroll_offset_affected_by_page_scale = false;
+    // Used in CompositeScrollAfterPaint.
+    bool prefers_composited_scrolling = false;
     MainThreadScrollingReasons main_thread_scrolling_reasons =
         cc::MainThreadScrollingReason::kNotScrollingOnMain;
     // The scrolling element id is stored directly on the scroll node and not
@@ -151,6 +154,10 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode
   }
   bool MaxScrollOffsetAffectedByPageScale() const {
     return state_.max_scroll_offset_affected_by_page_scale;
+  }
+  bool PrefersCompositedScrolling() const {
+    DCHECK(RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled());
+    return state_.prefers_composited_scrolling;
   }
 
   // Return reason bitfield with values from cc::MainThreadScrollingReason.

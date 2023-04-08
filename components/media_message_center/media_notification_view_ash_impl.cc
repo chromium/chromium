@@ -32,13 +32,13 @@ namespace {
 constexpr auto kBorderInsets = gfx::Insets::TLBR(16, 8, 8, 8);
 constexpr auto kMainRowInsets = gfx::Insets::VH(0, 8);
 constexpr auto kInfoColumnInsets = gfx::Insets::TLBR(0, 8, 0, 0);
+constexpr auto kPlayPauseContainerInsets = gfx::Insets::VH(8, 0);
 constexpr auto kProgressViewInsets = gfx::Insets::VH(0, 14);
 constexpr auto kSourceLabelInsets = gfx::Insets::TLBR(0, 0, 10, 0);
 
 constexpr int kMainSeparator = 12;
 constexpr int kMainRowSeparator = 8;
 constexpr int kMediaInfoSeparator = 4;
-constexpr int kPlayPauseContainerSeparator = 8;
 constexpr int kPlayPauseIconSize = 26;
 constexpr int kControlsIconSize = 20;
 constexpr int kBackgroundCornerRadius = 12;
@@ -112,12 +112,10 @@ gfx::Size ScaleImageSizeToFitView(const gfx::Size& image_size,
 MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
     MediaNotificationContainer* container,
     base::WeakPtr<MediaNotificationItem> item,
-    std::unique_ptr<views::View> dismiss_button,
     NotificationTheme theme,
     MediaDisplayPage media_display_page)
     : container_(container), item_(std::move(item)), theme_(theme) {
   DCHECK(container_);
-  DCHECK(dismiss_button);
   DCHECK(item_);
 
   SetBorder(views::CreateEmptyBorder(kBorderInsets));
@@ -189,14 +187,11 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
 
   // |play_pause_container| holds the play/pause button and dismiss button.
   auto* play_pause_container =
-      main_row->AddChildView(std::make_unique<views::View>());
-  play_pause_container
-      ->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-          kPlayPauseContainerSeparator))
-      ->set_cross_axis_alignment(views::BoxLayout::CrossAxisAlignment::kEnd);
+      main_row->AddChildView(std::make_unique<views::BoxLayoutView>());
+  play_pause_container->SetInsideBorderInsets(kPlayPauseContainerInsets);
+  play_pause_container->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kEnd);
 
-  play_pause_container->AddChildView(std::move(dismiss_button));
   play_pause_button_ =
       CreateMediaButton(play_pause_container, MediaSessionAction::kPlay);
   play_pause_button_->SetBackground(views::CreateRoundedRectBackground(

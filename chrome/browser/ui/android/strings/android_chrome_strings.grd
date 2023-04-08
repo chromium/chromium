@@ -3520,6 +3520,15 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_CUSTOM_TAB_AMP_PUBLISHER_URL" desc="Text shown in a Custom Tab toolbar for a web page that is hosted by the Google content delivery network but was originally published by someone else.">
         From <ph name="PUBLISHER_ORIGIN">&lt;pub&gt;%1$s&lt;/pub&gt;<ex>example.com</ex></ph> – <ph name="BEGIN_DEEMPHASIZED">&lt;bg&gt;</ph>delivered by Google<ph name="END_DEEMPHASIZED">&lt;/bg&gt;</ph>
       </message>
+      <message name="IDS_ACCESSIBILITY_CUSTOM_TAB_DRAG_HANDLE" desc="The accesibility text for drag handle in the toolbar of the partial custom tab.">
+        Drag handle
+      </message>
+      <message name="IDS_ACCESSIBILITY_CUSTOM_TAB_EXPANDED" desc="The accesibility text informing the custom tab is expanded.">
+        Tab is expanded
+      </message>
+      <message name="IDS_ACCESSIBILITY_CUSTOM_TAB_COLLAPSED" desc="The accesibility text informing the custom tab is collapsed back to initial height.">
+        Tab is back to initial height
+      </message>
       <message name="IDS_CUSTOM_TAB_SIDE_SHEET_MAXIMIZE" desc="The accesibility text for maximize button in side-sheet custom tab.">
         Expand to full screen
       </message>

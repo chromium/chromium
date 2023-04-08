@@ -2979,6 +2979,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3584527007414070635">Wznów swoje wyszukiwanie hasła <ph name="MODULE_TITLE" /></translation>
 <translation id="3586787825263265024">Aplikacja <ph name="APPLICATION_NAME" /> wymaga dostępu do usługi OneDrive.</translation>
 <translation id="3586806079541226322">Nie można otworzyć tego pliku</translation>
+<translation id="3586931643579894722">Ukryj szczegóły</translation>
 <translation id="3587438013689771191"><ph name="SUBPAGE_TITLE" /> – więcej informacji</translation>
 <translation id="3587482841069643663">Wszystkie</translation>
 <translation id="3588790464166520201">Zezwolono na instalowanie modułów do obsługi płatności</translation>
@@ -5826,6 +5827,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="6136114942382973861">Zamknij pasek pobranych plików</translation>
 <translation id="6136287496450963112">Klucz bezpieczeństwa nie jest chroniony kodem PIN. Aby zarządzać odciskami palców, najpierw utwórz kod PIN.</translation>
 <translation id="6138680304137685902">Podpis X9.62 ECDSA z SHA-384</translation>
+<translation id="6140948187512243695">Pokaż szczegóły</translation>
 <translation id="6141988275892716286">Potwierdź pobranie</translation>
 <translation id="6143186082490678276">Uzyskaj pomoc</translation>
 <translation id="6143366292569327983">Wybierz język strony, z którego chcesz tłumaczyć</translation>

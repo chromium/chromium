@@ -2581,6 +2581,9 @@ Connect your device to power.
       <message name="IDS_ASH_HOTSPOT_WIFI_TURNED_OFF_MESSAGE" desc="Message displayed in the system notification shown when WiFi is turned off upon enabling hotspot.">
         We've turned off the WiFi to start using Hotspot through Mobile data. This may incur data costs.
       </message>
+      <message name="IDS_ASH_HOTSPOT_WIFI_TURNED_ON_MESSAGE" desc="Message displayed in the system notification shown when hotspot is disabled due to WiFi being turned on.">
+        Hotspot has been turned off to use WiFi. To use Hotspot, turn WiFi off.
+      </message>
       <message name="IDS_ASH_HOTSPOT_ADMIN_RESTRICTED_MESSAGE" desc="Message displayed in the system notification shown when the hotspot is turned off by the administrator.">
         Your administrator has turned Hotspot off.
       </message>
@@ -5628,6 +5631,18 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SNAP_GROUP_CLICK_TO_UNLOCK_WINDOWS" desc="Click to unlock the locked windows.">
         Unlock the windows
       </message>
+      <message name="IDS_ASH_SNAP_GROUP_MORE_OPTIONS" desc="Click to see more options.">
+        More options
+      </message>
+      <message name="IDS_ASH_SNAP_GROUP_SWAP_WINDOWS" desc="Swap the windows in the snap group.">
+        Swap the windows
+      </message>
+      <message name="IDS_ASH_SNAP_GROUP_UPDATE_LEFT_WINDOW" desc="Update the left window in the snap group in horizontal screen orientation.">
+        Update the left window
+      </message>
+      <message name="IDS_ASH_SNAP_GROUP_UPDATE_RIGHT_WINDOW" desc="Update the right window in the snap group in horizontal screen orientation.">
+        Update the right window
+      </message>
 
       <!-- Switch Between TABLET/LAPTOP MODE-->
       <message name="IDS_ASH_SWITCH_TO_TABLET_MODE" desc="Alert of switching to tablet mode.">
@@ -5835,16 +5850,6 @@ Here are some things you can try to get started.
       </message>
       <message name="IDS_ASH_A11Y_DICTATION_NOTIFICATION_ONLY_SODA_DOWNLOADED_DESC" desc="The description for a notification that is shown when speech recognition files download successfully. This notification is only shown if speech recognition assets are downloaded and command parsing assets are not.">
         Speech is processed locally and dictation works offline, but some voice commands won’t work.
-      </message>
-      <!-- Strings for persistent desks bar-->
-      <message name="IDS_ASH_PERSISTENT_DESKS_BAR_CONTEXT_MENU_FEEDBACK" desc="Title of the menu item in the context menu to send feedback.">
-        Feedback
-      </message>
-      <message name="IDS_ASH_PERSISTENT_DESKS_BAR_CONTEXT_MENU_SHOW_DESKS_BAR" desc="Title of the menu item in the context menu to show the desks bar.">
-        Show deskbar
-      </message>
-      <message name="IDS_ASH_PERSISTENT_DESKS_BAR_CONTEXT_MENU_HIDE_DESKS_BAR" desc="Title of the menu item in the context menu to hide the desks bar.">
-        Hide deskbar
       </message>
 
       <!-- Debugd notification strings -->

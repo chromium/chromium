@@ -2989,6 +2989,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3584527007414070635">Weiter nach <ph name="MODULE_TITLE" /> stöbern</translation>
 <translation id="3586787825263265024">Für die Anwendung <ph name="APPLICATION_NAME" /> ist OneDrive erforderlich.</translation>
 <translation id="3586806079541226322">Diese Datei kann nicht geöffnet werden</translation>
+<translation id="3586931643579894722">Details ausblenden</translation>
 <translation id="3587438013689771191">Weitere Informationen: <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">Alle</translation>
 <translation id="3588790464166520201">Dürfen Zahlungs-Handler installieren</translation>
@@ -5833,6 +5834,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6136114942382973861">Downloadleiste schließen</translation>
 <translation id="6136287496450963112">Dein Sicherheitsschlüssel ist nicht durch eine PIN geschützt. Erstelle zuerst eine PIN, um Fingerabdrücke zu verwalten.</translation>
 <translation id="6138680304137685902">X9.62-ECDSA-Signatur mit SHA-384</translation>
+<translation id="6140948187512243695">Details ansehen</translation>
 <translation id="6141988275892716286">Download bestätigen</translation>
 <translation id="6143186082490678276">Hilfe</translation>
 <translation id="6143366292569327983">Wähle die Ausgangssprache aus</translation>

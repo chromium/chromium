@@ -111,6 +111,14 @@ void TrialComparisonCertVerifierMojo::SetConfig(const Config& config) {
   trial_comparison_cert_verifier_->SetConfig(config);
 }
 
+void TrialComparisonCertVerifierMojo::AddObserver(Observer* observer) {
+  trial_comparison_cert_verifier_->AddObserver(observer);
+}
+
+void TrialComparisonCertVerifierMojo::RemoveObserver(Observer* observer) {
+  trial_comparison_cert_verifier_->RemoveObserver(observer);
+}
+
 void TrialComparisonCertVerifierMojo::UpdateChromeRootStoreData(
     scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
     const net::ChromeRootStoreData* root_store_data) {

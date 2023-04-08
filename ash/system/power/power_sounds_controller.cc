@@ -6,8 +6,10 @@
 
 #include "ash/shell.h"
 #include "ash/system/power/power_status.h"
+#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/ash/components/audio/sounds.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "ui/message_center/message_center.h"
 
 namespace ash {
@@ -32,14 +34,6 @@ Sound GetSoundKeyForBatteryLevel(int level) {
                                             : Sound::kChargeLowBattery;
 }
 
-// Returns true if the device can play sounds.
-bool CanPlaySounds() {
-  // Do not play any sound if the device is in Focus mode, in DND mode.
-  // TODO(hongyulong): When Focus mode is available, we need to add this
-  // condition here.
-  return !message_center::MessageCenter::Get()->IsQuietMode();
-}
-
 }  // namespace
 
 // static
@@ -51,6 +45,15 @@ const char PowerSoundsController::kUnpluggedBatteryLevelHistogramName[] =
     "Ash.PowerSoundsController.UnpluggedBatteryLevel";
 
 PowerSoundsController::PowerSoundsController() {
+  chromeos::PowerManagerClient* client = chromeos::PowerManagerClient::Get();
+  DCHECK(client);
+  client->AddObserver(this);
+
+  // Get the initial lid state.
+  client->GetSwitchStates(
+      base::BindOnce(&PowerSoundsController::OnReceiveSwitchStates,
+                     weak_factory_.GetWeakPtr()));
+
   PowerStatus* power_status = PowerStatus::Get();
   power_status->AddObserver(this);
 
@@ -60,6 +63,7 @@ PowerSoundsController::PowerSoundsController() {
 
 PowerSoundsController::~PowerSoundsController() {
   PowerStatus::Get()->RemoveObserver(this);
+  chromeos::PowerManagerClient::Get()->RemoveObserver(this);
 }
 
 void PowerSoundsController::OnPowerStatusChanged() {
@@ -67,6 +71,26 @@ void PowerSoundsController::OnPowerStatusChanged() {
 
   SetPowerStatus(status.GetRoundedBatteryPercent(),
                  status.IsLinePowerConnected(), status.IsBatteryCharging());
+}
+
+void PowerSoundsController::LidEventReceived(
+    chromeos::PowerManagerClient::LidState state,
+    base::TimeTicks timestamp) {
+  lid_state_ = state;
+}
+
+void PowerSoundsController::OnReceiveSwitchStates(
+    absl::optional<chromeos::PowerManagerClient::SwitchStates> switch_states) {
+  if (switch_states.has_value()) {
+    lid_state_ = switch_states->lid_state;
+  }
+}
+
+bool PowerSoundsController::CanPlaySounds() const {
+  // Do not play any sound if the device is in DND mode, or if the lid is not
+  // open.
+  return !message_center::MessageCenter::Get()->IsQuietMode() &&
+         lid_state_ == chromeos::PowerManagerClient::LidState::OPEN;
 }
 
 void PowerSoundsController::SetPowerStatus(int battery_level,

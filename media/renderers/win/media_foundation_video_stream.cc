@@ -14,6 +14,7 @@
 #include "media/base/video_codecs.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/win/mf_helpers.h"
+#include "media/filters/win/media_foundation_utils.h"
 #include "media/media_buildflags.h"
 
 namespace media {
@@ -23,44 +24,9 @@ using Microsoft::WRL::MakeAndInitialize;
 
 namespace {
 
-// This is supported by Media Foundation.
-DEFINE_MEDIATYPE_GUID(MFVideoFormat_THEORA, FCC('theo'))
-
 // MF_MT_MIN_MASTERING_LUMINANCE values are in 1/10000th of a nit (0.0001 nit).
 // https://docs.microsoft.com/en-us/windows/win32/api/dxgi1_5/ns-dxgi1_5-dxgi_hdr_metadata_hdr10
 constexpr int kMasteringDispLuminanceScale = 10000;
-
-GUID VideoCodecToMFSubtype(VideoCodec codec, VideoCodecProfile profile) {
-  switch (codec) {
-    case VideoCodec::kH264:
-      return MFVideoFormat_H264;
-    case VideoCodec::kVC1:
-      return MFVideoFormat_WVC1;
-    case VideoCodec::kMPEG2:
-      return MFVideoFormat_MPEG2;
-    case VideoCodec::kMPEG4:
-      return MFVideoFormat_MP4V;
-    case VideoCodec::kTheora:
-      return MFVideoFormat_THEORA;
-    case VideoCodec::kVP8:
-      return MFVideoFormat_VP80;
-    case VideoCodec::kVP9:
-      return MFVideoFormat_VP90;
-    case VideoCodec::kHEVC:
-      return MFVideoFormat_HEVC;
-    case VideoCodec::kDolbyVision:
-      if (profile == VideoCodecProfile::DOLBYVISION_PROFILE0 ||
-          profile == VideoCodecProfile::DOLBYVISION_PROFILE9) {
-        return MFVideoFormat_H264;
-      } else {
-        return MFVideoFormat_HEVC;
-      }
-    case VideoCodec::kAV1:
-      return MFVideoFormat_AV1;
-    default:
-      return GUID_NULL;
-  }
-}
 
 MFVideoRotationFormat VideoRotationToMF(VideoRotation rotation) {
   DVLOG(2) << __func__ << ": rotation=" << rotation;

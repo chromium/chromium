@@ -261,13 +261,12 @@ void LocationBarView::Init() {
   // Initiate the Omnibox additional-text label.
   if (OmniboxFieldTrial::RichAutocompletionShowAdditionalText()) {
     auto omnibox_additional_text_view = std::make_unique<views::Label>(
-        std::u16string(), ChromeTextContext::CONTEXT_OMNIBOX_DEEMPHASIZED,
-        views::style::STYLE_LINK);
+        std::u16string(), CONTEXT_OMNIBOX_PRIMARY, views::style::STYLE_PRIMARY);
     omnibox_additional_text_view->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    omnibox_additional_text_view->SetFontList(font_list);
     omnibox_additional_text_view->SetVisible(false);
     omnibox_additional_text_view_ =
         AddChildView(std::move(omnibox_additional_text_view));
+    omnibox_additional_text_view_->SetEnabledColorId(kColorOmniboxResultsUrl);
   }
 
   selected_keyword_view_ = AddChildView(std::make_unique<SelectedKeywordView>(
@@ -589,11 +588,19 @@ void LocationBarView::Layout() {
   // Additionally, the text should be indented further if a chip is visible
   // and the lock icon is hidden. This is treated separately, because the
   // indentation constant has a distinct value.
-  if (chip_controller_ && chip_controller_->chip()->GetVisible() &&
-      ShouldChipOverrideLocationIcon()) {
+  if (ShouldChipOverrideLocationIcon()) {
     constexpr int kTextIndentLocationBarIconOverriddenDp = 8;
     leading_edit_item_padding += kTextIndentLocationBarIconOverriddenDp;
   }
+
+  // CR23 location bar icons have solid borders. Add padding between their
+  // borders and the omnibox so that they don't touch/overlap. Pre-CR23 icons &
+  // the keyword text (both before and after CR23) don't have solid borders;
+  // they instead have invisible borders that provide sufficient padding. Don't
+  // add any more padding in those cases, as then the whitespace would be too
+  // large.
+  if (features::IsChromeRefresh2023() && !ShouldShowKeywordBubble())
+    leading_edit_item_padding += 5;
 
   // We always subtract the left padding of the OmniboxView itself to allow for
   // an extended I-beam click target without affecting actual layout.

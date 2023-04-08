@@ -13,15 +13,22 @@ class PointF;
 class Rect;
 }  // namespace gfx
 
+namespace views {
+class View;
+}  // namespace views
+
 namespace ash {
 
-// Paints the circular shaped highlight border onto `canvas`.
-void DrawCircleHighlightBorder(gfx::Canvas* canvas,
+// Paints the circular shaped highlight border onto `canvas` for `view`.
+void DrawCircleHighlightBorder(views::View* view,
+                               gfx::Canvas* canvas,
                                const gfx::PointF& circle_center,
                                int radius);
 
-// Paints the round rectangular shaped highlight border onto `canvas`.
-void DrawRoundRectHighlightBorder(gfx::Canvas* canvas,
+// Paints the round rectangular shaped highlight border onto `canvas` for
+// `view`.
+void DrawRoundRectHighlightBorder(views::View* view,
+                                  gfx::Canvas* canvas,
                                   const gfx::Rect& bounds,
                                   int corner_radius);
 

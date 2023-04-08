@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+PASS flexbox > item 1
+FAIL flexbox > item 2 assert_equals: 
+<item data-offset-y="68" data-expected-margin-bottom="0"></item>
+offsetTop expected 68 but got 8
+PASS flexbox > item 3
+FAIL flexbox > item 4 assert_equals: 
+<item data-offset-y="68" data-expected-margin-top="0"></item>
+offsetTop expected 68 but got 8
+Harness: the test ran to completion.
+

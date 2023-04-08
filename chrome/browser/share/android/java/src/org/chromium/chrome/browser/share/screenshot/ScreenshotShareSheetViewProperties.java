@@ -10,6 +10,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.lang.annotation.Retention;
@@ -25,6 +26,9 @@ class ScreenshotShareSheetViewProperties {
 
     public static final WritableObjectPropertyKey<Bitmap> SCREENSHOT_BITMAP =
             new WritableObjectPropertyKey<>();
+
+    public static final WritableBooleanPropertyKey SCREENSHOT_EDIT_DISABLED =
+            new WritableBooleanPropertyKey();
     /**
      * Set of operations that don't require additional arguments. If a callback requires an
      * argument, it should defined separately.
@@ -39,6 +43,6 @@ class ScreenshotShareSheetViewProperties {
         int INSTALL = 4;
     }
 
-    public static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {NO_ARG_OPERATION_LISTENER, SCREENSHOT_BITMAP};
+    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {
+            NO_ARG_OPERATION_LISTENER, SCREENSHOT_BITMAP, SCREENSHOT_EDIT_DISABLED};
 }

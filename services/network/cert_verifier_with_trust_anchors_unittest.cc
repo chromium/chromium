@@ -72,6 +72,12 @@ class WrappedMockCertVerifier : public net::CertVerifier {
 
     mock_cert_verifier_.SetConfig(config);
   }
+  void AddObserver(Observer* observer) override {
+    mock_cert_verifier_.AddObserver(observer);
+  }
+  void RemoveObserver(Observer* observer) override {
+    mock_cert_verifier_.RemoveObserver(observer);
+  }
 
  private:
   scoped_refptr<net::X509Certificate> server_cert_;

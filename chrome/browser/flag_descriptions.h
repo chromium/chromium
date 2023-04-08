@@ -348,9 +348,6 @@ extern const char kBackForwardCacheDescription[];
 extern const char kEnableBackForwardCacheForScreenReaderName[];
 extern const char kEnableBackForwardCacheForScreenReaderDescription[];
 
-extern const char kBentoBarName[];
-extern const char kBentoBarDescription[];
-
 extern const char kBiometricReauthForPasswordFillingName[];
 extern const char kBiometricReauthForPasswordFillingDescription[];
 
@@ -1165,9 +1162,6 @@ extern const char kOmniboxAdaptNarrowTabletWindowsDescription[];
 
 extern const char kOmniboxAssistantVoiceSearchName[];
 extern const char kOmniboxAssistantVoiceSearchDescription[];
-
-extern const char kOmniboxBookmarkPathsName[];
-extern const char kOmniboxBookmarkPathsDescription[];
 
 extern const char kOmniboxCacheSuggestionResourcesName[];
 extern const char kOmniboxCacheSuggestionResourcesDescription[];
@@ -2371,6 +2365,9 @@ extern const char kSendTabToSelfV2Description[];
 extern const char kSetMarketUrlForTestingName[];
 extern const char kSetMarketUrlForTestingDescription[];
 
+extern const char kShareSheetCustomActionsPolishName[];
+extern const char kShareSheetCustomActionsPolishDescription[];
+
 extern const char kShareSheetMigrationAndroidName[];
 extern const char kShareSheetMigrationAndroidDescription[];
 
@@ -3521,9 +3518,6 @@ extern const char kQsRevampDescription[];
 
 extern const char kReleaseNotesNotificationAllChannelsName[];
 extern const char kReleaseNotesNotificationAllChannelsDescription[];
-
-extern const char kReleaseTrackUiName[];
-extern const char kReleaseTrackUiDescription[];
 
 extern const char kRenderArcNotificationsByChromeName[];
 extern const char kRenderArcNotificationsByChromeDescription[];

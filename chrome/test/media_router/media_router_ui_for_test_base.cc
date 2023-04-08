@@ -60,17 +60,17 @@ void MediaRouterUiForTestBase::StopCasting(views::View* sink_button) {
 
 // static
 CastDialogSinkButton* MediaRouterUiForTestBase::GetSinkButtonWithName(
-    const std::vector<CastDialogSinkButton*>& sink_buttons,
+    const std::vector<raw_ptr<CastDialogSinkView>>& sink_views,
     const std::string& sink_name) {
-  auto it = base::ranges::find(sink_buttons, base::UTF8ToUTF16(sink_name),
-                               [](CastDialogSinkButton* sink_button) {
-                                 return sink_button->sink().friendly_name;
+  auto it = base::ranges::find(sink_views, base::UTF8ToUTF16(sink_name),
+                               [](CastDialogSinkView* sink_view) {
+                                 return sink_view->sink().friendly_name;
                                });
-  if (it == sink_buttons.end()) {
-    NOTREACHED() << "Sink button not found for sink: " << sink_name;
+  if (it == sink_views.end()) {
+    NOTREACHED() << "Sink view not found for sink: " << sink_name;
     return nullptr;
   } else {
-    return *it;
+    return it->get()->cast_sink_button_for_test();
   }
 }
 

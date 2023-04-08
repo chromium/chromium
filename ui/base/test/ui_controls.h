@@ -40,6 +40,10 @@ namespace ui_controls {
 // tests.
 void EnableUIControls();
 
+// Reset the state in ui controls logic that are updated by the test to the
+// initial state.
+void ResetUIControlsIfEnabled();
+
 #if BUILDFLAG(IS_APPLE)
 bool IsUIControlsEnabled();
 #endif

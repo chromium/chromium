@@ -15,7 +15,7 @@ private let kTextVerticalSpacing: CGFloat = 12
 // The view object for "Bring Android Tabs" bottom message prompt.
 struct BringAndroidTabsPromptBottomMessageView: View {
   // Number of tabs brought from Android.
-  let tabsCount: Int32
+  let tabsCount: Int
   // Provider object for the view.
   weak var provider: BringAndroidTabsPromptBottomMessageProvider?
 
@@ -31,14 +31,14 @@ struct BringAndroidTabsPromptBottomMessageView: View {
             spacing: kTextVerticalSpacing - kPromptInnerPadding
           ) {
             Text(
-              L10NUtils.pluralString(
-                forMessageId: IDS_IOS_BRING_ANDROID_TABS_PROMPT_TITLE,
+              L10nUtils.pluralString(
+                messageId: IDS_IOS_BRING_ANDROID_TABS_PROMPT_TITLE,
                 number: self.tabsCount)
             )
             .font(.body)
             Text(
-              L10NUtils.pluralString(
-                forMessageId: IDS_IOS_BRING_ANDROID_TABS_PROMPT_SUBTITLE,
+              L10nUtils.pluralString(
+                messageId: IDS_IOS_BRING_ANDROID_TABS_PROMPT_SUBTITLE,
                 number: self.tabsCount)
             )
             .font(.footnote)
@@ -56,8 +56,8 @@ struct BringAndroidTabsPromptBottomMessageView: View {
         Button(action: self.review) {
           HStack {
             Text(
-              L10NUtils.pluralString(
-                forMessageId:
+              L10nUtils.pluralString(
+                messageId:
                   IDS_IOS_BRING_ANDROID_TABS_PROMPT_REVIEW_TABS_BUTTON_BOTTOM_MESSAGE,
                 number: self.tabsCount))
             Spacer()

@@ -16,4 +16,10 @@ struct TestStructContainer {
 
 interface TestInterface {
   TestMethod(TestStruct in) => (TestStruct out);
+
+  TestMethodWithMap(map<uint8, TestStruct> in, uint8 idx) => (TestStruct out);
+
+  TestMethodWithArray(array<TestStruct> in, uint8 idx) => (TestStruct out);
+
+  TestMethodWithFixedArray(array<TestStruct, 2> in, uint8 idx) => (TestStruct out);
 };

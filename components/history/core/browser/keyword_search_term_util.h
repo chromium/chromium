@@ -34,29 +34,24 @@ extern const base::TimeDelta kAutocompleteDuplicateVisitIntervalThreshold;
 // that are more frequent and more recent (see go/local-zps-frecency-ranking).
 double GetFrecencyScore(int visit_count, base::Time visit_time, base::Time now);
 
-// Returns up to `count` keyword search terms ordered by descending recency or
-// frecency scores for use as prefix or zero-prefix suggestions in the omnibox
-// respectively.
-// `enumerator` enumerates keyword search term visits from the URLDatabase. It
-// must return visits ordered first by `normalized_term` and then by
-// `last_visit_time` in ascending order, i.e., from the oldest to the newest.
-// `ignore_duplicate_visits` specifies whether duplicative visits to a search
-// term should be ignored. A duplicative visit is defined as a visit to the
-// same search term in an interval smaller than
-// kAutocompleteDuplicateVisitIntervalThreshold. `ranking_policy` specifies
-// how the returned keyword search terms should be ordered.
+// Returns up to `count` unique keyword search terms ordered by descending
+// recency or frecency scores for use in the omnibox.
+// - `enumerator` must enumerate keyword search term visits from the URLDatabase
+//   ordered first by `normalized_term` and then by `last_visit_time` in
+//   ascending order, i.e., from the oldest to the newest.
+// - `ranking_policy` specifies how the returned keyword search terms should be
+//   ordered.
 void GetAutocompleteSearchTermsFromEnumerator(
     KeywordSearchTermVisitEnumerator& enumerator,
     const size_t count,
-    bool ignore_duplicate_visits,
     SearchTermRankingPolicy ranking_policy,
     KeywordSearchTermVisitList* search_terms);
 
-// Returns up to `count` keyword search terms ordered by descending frecency
-// scores accumulated across days for use in the Most Visited tiles.
-// `enumerator` enumerates keyword search term visits from the URLDatabase. It
-// must return visits ordered first by `normalized_term` and then by
-// `last_visit_time` in ascending order, i.e., from the oldest to the newest.
+// Returns up to `count` unique keyword search terms ordered by descending
+// frecency scores for use in the Most Visited tiles.
+// - `enumerator` must enumerate keyword search term visits from the URLDatabase
+//   ordered first by `normalized_term` and then by `last_visit_time` in
+//   ascending order, i.e., from the oldest to the newest.
 void GetMostRepeatedSearchTermsFromEnumerator(
     KeywordSearchTermVisitEnumerator& enumerator,
     const size_t count,

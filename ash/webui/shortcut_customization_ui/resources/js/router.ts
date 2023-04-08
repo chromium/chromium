@@ -4,6 +4,8 @@
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
+import {SHORTCUTS_APP_URL} from './shortcut_utils.js';
+
 export interface RouteObserver {
   onRouteChanged(url: URL): void;
 }
@@ -49,6 +51,13 @@ export class Router {
     this.routeObservers.forEach((observer) => {
       observer.onRouteChanged(url);
     });
+  }
+
+  /**
+   * Resets the route to the home page, without notifying observers.
+   */
+  resetRoute(): void {
+    window.history.pushState({}, '', SHORTCUTS_APP_URL);
   }
 }
 

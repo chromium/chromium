@@ -138,7 +138,7 @@ export class BookmarksEditDialogElement extends PolymerElement {
     return false;
   }
 
-  private onSaveButtonTap_() {
+  private onSaveButtonClick_() {
     const edit: { title: string, url?: string, parentId?: string|null } =
         { 'title': this.titleValue_ };
     if (!this.isFolder_) {
@@ -160,7 +160,7 @@ export class BookmarksEditDialogElement extends PolymerElement {
     this.$.dialog.close();
   }
 
-  private onCancelButtonTap_() {
+  private onCancelButtonClick_() {
     this.$.dialog.cancel();
   }
 }

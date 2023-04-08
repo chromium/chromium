@@ -23,7 +23,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 #include "ash/wm/default_state.h"
-#include "ash/wm/desks/persistent_desks_bar/persistent_desks_bar_controller.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/pip/pip_positioner.h"
 #include "ash/wm/splitview/split_view_constants.h"
@@ -561,11 +560,6 @@ void WindowState::OnWMEvent(const WMEvent* event) {
   // the window has a minimum size requirement.
   if (event->IsBoundsEvent())
     UpdateSnapRatio();
-
-  PersistentDesksBarController* bar_controller =
-      Shell::Get()->persistent_desks_bar_controller();
-  if (bar_controller)
-    bar_controller->UpdateBarOnWindowStateChanges(window_);
 }
 
 gfx::Rect WindowState::GetCurrentBoundsInScreen() const {
@@ -1412,11 +1406,6 @@ void WindowState::OnWindowAddedToRootWindow(aura::Window* window) {
 
 void WindowState::OnWindowDestroying(aura::Window* window) {
   DCHECK_EQ(window_, window);
-
-  PersistentDesksBarController* bar_controller =
-      Shell::Get()->persistent_desks_bar_controller();
-  if (bar_controller)
-    bar_controller->UpdateBarOnWindowDestroying(window_);
 
   // If the window is destroyed during PIP, count that as exiting.
   if (IsPip())

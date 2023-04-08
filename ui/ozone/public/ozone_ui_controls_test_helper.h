@@ -23,6 +23,9 @@ class OzoneUIControlsTestHelper {
  public:
   virtual ~OzoneUIControlsTestHelper() = default;
 
+  // Reset the internal state if any.
+  virtual void Reset() = 0;
+
   // Returns true if the underlying platform supports screen coordinates;
   virtual bool SupportsScreenCoordinates() const = 0;
 

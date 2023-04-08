@@ -22,8 +22,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -115,7 +117,8 @@ ChromeLabsBubbleView::ChromeLabsBubbleView(ChromeLabsButton* anchor_view)
   // for sizing as suggested as an initial fix by UI. Discuss a more formal
   // solution.
   constexpr int kMaxChromeLabsHeightDp = 448;
-  auto scroll_view = std::make_unique<views::ScrollView>();
+  auto scroll_view = std::make_unique<views::ScrollView>(
+      views::ScrollView::ScrollWithLayers::kEnabled);
   // TODO(elainechien): Check with UI whether we want to draw overflow
   // indicator.
   scroll_view->SetDrawOverflowIndicator(false);
@@ -133,6 +136,10 @@ ChromeLabsBubbleView::ChromeLabsBubbleView(ChromeLabsButton* anchor_view)
                   views::INSETS_DIALOG)))
           .Build());
   scroll_view->ClipHeightTo(0, kMaxChromeLabsHeightDp);
+  const int corner_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
+      views::ShapeContextTokens::kDialogRadius);
+  scroll_view->SetViewportRoundedCornerRadius(
+      gfx::RoundedCornersF(0.0f, 0.0f, corner_radius, corner_radius));
   AddChildView(std::move(scroll_view));
 
   /* base::Unretained is safe here because NotifyRestartCallback will notify a

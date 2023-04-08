@@ -254,8 +254,11 @@ DarkLightModeControllerImpl::GetNotifyOnDarkModeChangeClosure() {
 
 void DarkLightModeControllerImpl::NotifyIfDarkModeChanged(
     bool old_is_dark_mode_enabled) {
-  if (old_is_dark_mode_enabled == IsDarkModeEnabled())
+  // If this is the first check, always notify.
+  if (last_value_.has_value() &&
+      old_is_dark_mode_enabled == IsDarkModeEnabled()) {
     return;
+  }
   NotifyColorModeChanges();
 }
 

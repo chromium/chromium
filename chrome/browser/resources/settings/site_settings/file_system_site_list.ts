@@ -7,6 +7,7 @@
  * 'file-system-site-list' is an element representing a list of origin-specific
  * permission entries for the File System Access API.
  */
+import './file_system_site_entry.js';
 
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -18,7 +19,7 @@ import {getTemplate} from './file_system_site_list.html.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
 import {RawFileSystemGrant} from './site_settings_prefs_browser_proxy.js';
 
-interface FileSystemGrant {
+export interface FileSystemGrant {
   isDirectory: boolean;
   displayName: string;  // Might be a shortened file path
   origin: string;

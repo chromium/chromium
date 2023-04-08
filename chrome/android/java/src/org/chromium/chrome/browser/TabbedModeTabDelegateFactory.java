@@ -6,7 +6,6 @@ package org.chromium.chrome.browser;
 
 import android.app.Activity;
 
-import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.tab_activity_glue.ActivityTabWebContentsDelegateAndroid;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -68,7 +67,6 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     private final WindowAndroid mWindowAndroid;
     private final Supplier<Long> mLastUserInteractionTimeSupplier;
     private final BooleanSupplier mHadWarmStartSupplier;
-    private final JankTracker mJankTracker;
     private final Supplier<Toolbar> mToolbarSupplier;
 
     private NativePageFactory mNativePageFactory;
@@ -88,7 +86,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
             BrowserControlsManager browserControlsManager, Supplier<Tab> currentTabSupplier,
             ActivityLifecycleDispatcher lifecycleDispatcher, WindowAndroid windowAndroid,
             Supplier<Long> lastUserInteractionTimeSupplier, BooleanSupplier hadWarmStartSupplier,
-            JankTracker jankTracker, Supplier<Toolbar> toolbarSupplier) {
+            Supplier<Toolbar> toolbarSupplier) {
         mActivity = activity;
         mAppBrowserControlsVisibilityDelegate = appBrowserControlsVisibilityDelegate;
         mShareDelegateSupplier = shareDelegateSupplier;
@@ -110,7 +108,6 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
         mWindowAndroid = windowAndroid;
         mLastUserInteractionTimeSupplier = lastUserInteractionTimeSupplier;
         mHadWarmStartSupplier = hadWarmStartSupplier;
-        mJankTracker = jankTracker;
         mToolbarSupplier = toolbarSupplier;
     }
 
@@ -152,7 +149,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
                     mBrowserControlsManager, mCurrentTabSupplier, mSnackbarManagerSupplier,
                     mLifecycleDispatcher, mTabModelSelectorSupplier.get(), mShareDelegateSupplier,
                     mWindowAndroid, mLastUserInteractionTimeSupplier, mHadWarmStartSupplier,
-                    mJankTracker, mToolbarSupplier);
+                    mToolbarSupplier);
         }
         return mNativePageFactory.createNativePage(url, candidatePage, tab);
     }

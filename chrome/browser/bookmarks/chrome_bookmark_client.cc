@@ -15,7 +15,6 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_storage.h"
-#include "components/bookmarks/common/bookmark_features.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/bookmarks/managed/managed_bookmark_util.h"
 #include "components/favicon/core/favicon_util.h"
@@ -47,8 +46,7 @@ ChromeBookmarkClient::ChromeBookmarkClient(
   }
 }
 
-ChromeBookmarkClient::~ChromeBookmarkClient() {
-}
+ChromeBookmarkClient::~ChromeBookmarkClient() = default;
 
 void ChromeBookmarkClient::Init(bookmarks::BookmarkModel* model) {
   if (managed_bookmark_service_)
@@ -87,40 +85,14 @@ void ChromeBookmarkClient::GetTypedCountForUrls(
   if (!url_db)
     return;
 
-  static const bool kTypedUrlsMapEnabled =
-      base::FeatureList::IsEnabled(bookmarks::kTypedUrlsMap);
-  if (kTypedUrlsMapEnabled) {
-    // Create a map mapping each `GURL` to its typed count. This isn't cached
-    // since the in memory DB is updated as the user navigates and updating this
-    // as well seems like overkill.
-    std::map<const GURL, int> typed_counts;
-    history::URLDatabase::URLEnumerator history_enum;
-    // Only need significant URLs, i.e. a superset of URls with >0 typed count,
-    // since URLs not in `typed_counts` default to 0 typed count anyway.
-    url_db->InitURLEnumeratorForSignificant(&history_enum);
-    for (history::URLRow row; history_enum.GetNextURL(&row);) {
-      if (row.typed_count() > 0)
-        typed_counts[row.url()] = row.typed_count();
-    }
-
-    // Use the map to assign typed counts to `url_typed_count_map`.
-    for (auto& url_typed_count_pair : *url_typed_count_map) {
-      if (typed_counts.count(*url_typed_count_pair.first)) {
-        url_typed_count_pair.second =
-            typed_counts.count(*url_typed_count_pair.first);
-      }
-    }
-
-  } else {
-    for (auto& url_typed_count_pair : *url_typed_count_map) {
-      // The in-memory URLDatabase might not cache all URLRows, but it
-      // guarantees to contain those with `typed_count` > 0. Thus, if we cannot
-      // fetch the URLRow, it is safe to assume that its `typed_count` is 0.
-      history::URLRow url_row;
-      const GURL* url = url_typed_count_pair.first;
-      if (url && url_db->GetRowForURL(*url, &url_row))
-        url_typed_count_pair.second = url_row.typed_count();
-    }
+  for (auto& url_typed_count_pair : *url_typed_count_map) {
+    // The in-memory URLDatabase might not cache all URLRows, but it
+    // guarantees to contain those with `typed_count` > 0. Thus, if we cannot
+    // fetch the URLRow, it is safe to assume that its `typed_count` is 0.
+    history::URLRow url_row;
+    const GURL* url = url_typed_count_pair.first;
+    if (url && url_db->GetRowForURL(*url, &url_row))
+      url_typed_count_pair.second = url_row.typed_count();
   }
 }
 

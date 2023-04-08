@@ -66,13 +66,13 @@
           </div>
           <div class="item-controls">
             <cr-button hidden="[[!canEditAutoLaunch_]]"
-                on-click="onAutoLaunchButtonTap_">
+                on-click="onAutoLaunchButtonClick_">
               [[getAutoLaunchButtonLabel_(item.autoLaunch,
                   '$i18nPolymer{kioskDisableAutoLaunch}',
                   '$i18nPolymer{kioskEnableAutoLaunch}')]]
             </cr-button>
             <cr-icon-button class="icon-delete-gray"
-                on-click="onDeleteAppTap_"></cr-icon-button>
+                on-click="onDeleteAppClick_"></cr-icon-button>
           </div>
         </div>
       </template>
@@ -83,7 +83,7 @@
           invalid="[[errorAppId_]]" on-keydown="clearInputInvalid_"
           error-message="[[getErrorMessage_(
               '$i18nPolymer{kioskInvalidApp}', errorAppId_)]]">
-        <cr-button id="addButton" on-click="onAddAppTap_"
+        <cr-button id="addButton" on-click="onAddAppClick_"
             disabled="[[!addAppInput_]]" slot="suffix">
           $i18n{add}
         </cr-button>
@@ -96,7 +96,7 @@
     </cr-checkbox>
   </div>
   <div slot="button-container">
-    <cr-button class="action-button" on-click="onDoneTap_">
+    <cr-button class="action-button" on-click="onDoneClick_">
       $i18n{done}
     </cr-button>
   </div>
@@ -106,10 +106,10 @@
   <div slot="title">$i18n{kioskDisableBailoutWarningTitle}</div>
   <div slot="body">$i18n{kioskDisableBailoutWarningBody}</div>
   <div slot="button-container">
-    <cr-button class="cancel-button" on-click="onBailoutDialogCancelTap_">
+    <cr-button class="cancel-button" on-click="onBailoutDialogCancelClick_">
       $i18n{cancel}
     </cr-button>
-    <cr-button class="action-button" on-click="onBailoutDialogConfirmTap_">
+    <cr-button class="action-button" on-click="onBailoutDialogConfirmClick_">
       $i18n{confirm}
     </cr-button>
   </div>

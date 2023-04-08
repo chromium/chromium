@@ -1591,28 +1591,6 @@ constexpr FeatureEntry::FeatureVariation kOmniboxInspireMeVariants[] = {
      std::size(kOmniboxInspireMeWith10Mixed), nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
-const FeatureEntry::FeatureParam kOmniboxBookmarkPathsReplaceTitle[] = {
-    {"OmniboxBookmarkPathsUiReplaceTitle", "true"}};
-const FeatureEntry::FeatureParam kOmniboxBookmarkPathsReplaceUrl[] = {
-    {"OmniboxBookmarkPathsUiReplaceUrl", "true"}};
-const FeatureEntry::FeatureParam kOmniboxBookmarkPathsAppendAfterTitle[] = {
-    {"OmniboxBookmarkPathsUiAppendAfterTitle", "true"}};
-const FeatureEntry::FeatureParam kOmniboxBookmarkPathsDynamicReplaceUrl[] = {
-    {"OmniboxBookmarkPathsUiDynamicReplaceUrl", "true"}};
-
-const FeatureEntry::FeatureVariation kOmniboxBookmarkPathsVariations[] = {
-    {"Default UI (Title - URL)", {}, 0, nullptr},
-    {"Replace title (Path/Title - URL)", kOmniboxBookmarkPathsReplaceTitle,
-     std::size(kOmniboxBookmarkPathsReplaceTitle), nullptr},
-    {"Replace URL (Title - Path)", kOmniboxBookmarkPathsReplaceUrl,
-     std::size(kOmniboxBookmarkPathsReplaceUrl), nullptr},
-    {"Append after title (Title : Path - URL)",
-     kOmniboxBookmarkPathsAppendAfterTitle,
-     std::size(kOmniboxBookmarkPathsAppendAfterTitle), nullptr},
-    {"Dynamic Replace URL (Title - Path|URL)",
-     kOmniboxBookmarkPathsDynamicReplaceUrl,
-     std::size(kOmniboxBookmarkPathsDynamicReplaceUrl), nullptr}};
-
 const FeatureEntry::FeatureParam kOmniboxSquareSuggestionIconFavicons[] = {
     {"OmniboxSquareSuggestIconIcons", "true"}};
 const FeatureEntry::FeatureParam kOmniboxSquareSuggestionIconAnswers[] = {
@@ -3778,9 +3756,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAdaptiveChargingForTestingName,
      flag_descriptions::kAdaptiveChargingForTestingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kAdaptiveChargingForTesting)},
-    {"ash-bento-bar", flag_descriptions::kBentoBarName,
-     flag_descriptions::kBentoBarDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kBentoBar)},
     {"ash-capture-mode-demo-tools",
      flag_descriptions::kCaptureModeDemoToolsName,
      flag_descriptions::kCaptureModeDemoToolsDescription, kOsCrOS,
@@ -4823,6 +4798,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kShareSheetMigrationAndroidName,
      flag_descriptions::kShareSheetMigrationAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kShareSheetMigrationAndroid)},
+    {"share-sheet-custom-actions-polish",
+     flag_descriptions::kShareSheetCustomActionsPolishName,
+     flag_descriptions::kShareSheetCustomActionsPolishDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kShareSheetCustomActionsPolish)},
 
 #endif  // BUILDFLAG(IS_ANDROID)
     {"disallow-doc-written-script-loads",
@@ -5752,12 +5731,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxKeepSecondaryZeroSuggestName,
      flag_descriptions::kOmniboxKeepSecondaryZeroSuggestDescription, kOsAll,
      FEATURE_VALUE_TYPE(omnibox::kKeepSecondaryZeroSuggest)},
-
-    {"omnibox-bookmark-paths", flag_descriptions::kOmniboxBookmarkPathsName,
-     flag_descriptions::kOmniboxBookmarkPathsDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kBookmarkPaths,
-                                    kOmniboxBookmarkPathsVariations,
-                                    "OmniboxBundledExperimentV1")},
 
     {"omnibox-short-bookmark-suggestions",
      flag_descriptions::kOmniboxShortBookmarkSuggestionsName,
@@ -7490,9 +7463,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReleaseNotesNotificationAllChannelsDescription,
      kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kReleaseNotesNotificationAllChannels)},
-    {"release-track-ui", flag_descriptions::kReleaseTrackUiName,
-     flag_descriptions::kReleaseTrackUiDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kReleaseTrackUi)},
     {"use-stork-smds-server-address",
      flag_descriptions::kUseStorkSmdsServerAddressName,
      flag_descriptions::kUseStorkSmdsServerAddressDescription, kOsCrOS,

@@ -81,17 +81,11 @@ class SystemInfoProvider
   void SetTabletModeChanged(bool enabled);
 
   // network_config::CrosNetworkConfigObserver overrides:
-  void OnNetworkStateChanged(
-      chromeos::network_config::mojom::NetworkStatePropertiesPtr network)
-      override;
-
-  // Callback invoked from within FetchWifiNetworkSsidHash() that produces a
-  // list of networks.
-  void OnWifiNetworkListSsidFetch(
+  void OnActiveNetworksChanged(
       std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
-          networks);
+          networks) override;
   void FetchWifiNetworkList();
-  void OnWifiNetworkList(
+  void OnActiveWifiNetworkListFetched(
       std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
           networks);
 

@@ -684,8 +684,7 @@ void SearchProvider::DoHistoryQuery(bool minimal_changes) {
         default_url->id(), input_.text());
     if (enumerator) {
       history::GetAutocompleteSearchTermsFromEnumerator(
-          *enumerator, num_matches, /*ignore_duplicate_visits=*/true,
-          history::SearchTermRankingPolicy::kRecency,
+          *enumerator, num_matches, history::SearchTermRankingPolicy::kRecency,
           &raw_default_history_results_);
     }
     DCHECK_LE(raw_default_history_results_.size(), num_matches);
@@ -696,8 +695,7 @@ void SearchProvider::DoHistoryQuery(bool minimal_changes) {
         keyword_url->id(), keyword_input_.text());
     if (enumerator) {
       history::GetAutocompleteSearchTermsFromEnumerator(
-          *enumerator, num_matches, /*ignore_duplicate_visits=*/true,
-          history::SearchTermRankingPolicy::kRecency,
+          *enumerator, num_matches, history::SearchTermRankingPolicy::kRecency,
           &raw_keyword_history_results_);
     }
     DCHECK_LE(raw_keyword_history_results_.size(), num_matches);

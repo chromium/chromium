@@ -159,7 +159,7 @@ export class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
     this.expanded_ = !this.expanded_;
   }
 
-  private onLoadUnpackedTap_() {
+  private onLoadUnpackedClick_() {
     this.delegate.loadUnpacked()
         .then((success) => {
           if (success) {
@@ -174,7 +174,7 @@ export class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
     chrome.metricsPrivate.recordUserAction('Options_LoadUnpackedExtension');
   }
 
-  private onPackTap_() {
+  private onPackClick_() {
     chrome.metricsPrivate.recordUserAction('Options_PackExtension');
     this.showPackDialog_ = true;
   }
@@ -185,12 +185,12 @@ export class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
   }
 
   // <if expr="chromeos_ash">
-  private onKioskTap_() {
+  private onKioskClick_() {
     this.fire_('kiosk-tap');
   }
   // </if>
 
-  private onUpdateNowTap_() {
+  private onUpdateNowClick_() {
     // If already updating, do not initiate another update.
     if (this.isUpdating_) {
       return;

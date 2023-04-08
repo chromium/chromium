@@ -342,4 +342,19 @@ TEST_F(CertAndCTVerifierTest, CertVerifierErrorShouldSkipCT) {
   ASSERT_EQ(0u, verify_result.scts.size());
 }
 
+TEST_F(CertAndCTVerifierTest, ObserverIsForwarded) {
+  auto mock_cert_verifier_owner = std::make_unique<MockCertVerifier>();
+  MockCertVerifier* mock_cert_verifier = mock_cert_verifier_owner.get();
+
+  CertAndCTVerifier cert_and_ct_verifier(std::move(mock_cert_verifier_owner),
+                                         std::make_unique<FakeCTVerifier>());
+
+  CertVerifierObserverCounter observer(&cert_and_ct_verifier);
+  EXPECT_EQ(observer.change_count(), 0u);
+  // A CertVerifierChanged event on the wrapped verifier should be forwarded to
+  // observers registered on CertAndCTVerifier.
+  mock_cert_verifier->SimulateOnCertVerifierChanged();
+  EXPECT_EQ(observer.change_count(), 1u);
+}
+
 }  // namespace net

@@ -26,14 +26,14 @@
     spinner-active="{{spinnerActive}}" on-search-changed="onSearchChanged_">
   <cr-icon-button id="moreActions" iron-icon="cr:more-vert"
       class="dropdown-trigger" title="$i18n{moreActions}"
-      on-click="onMoreActionsTap_" aria-haspopup="menu"></cr-icon-button>
+      on-click="onMoreActionsClick_" aria-haspopup="menu"></cr-icon-button>
 </cr-toolbar>
 <cr-action-menu id="moreActionsMenu"
     role-description="$i18n{actionMenuDescription}">
-  <button class="dropdown-item clear-all" on-click="onClearAllTap_">
+  <button class="dropdown-item clear-all" on-click="onClearAllClick_">
     $i18n{clearAll}
   </button>
-  <button class="dropdown-item" on-click="onOpenDownloadsFolderTap_">
+  <button class="dropdown-item" on-click="onOpenDownloadsFolderClick_">
     $i18n{openDownloadsFolder}
   </button>
 </cr-action-menu>

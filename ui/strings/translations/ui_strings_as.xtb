@@ -201,6 +201,7 @@
 <translation id="8393700583063109961">বাৰ্তা পঠিয়াওক</translation>
 <translation id="8394908167088220973">মিডিয়া প্লে’/পজ</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{১ব}one{#ব}other{#ব}}</translation>
+<translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> ফাইল (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> কেবি/ছেকেণ্ড</translation>
 <translation id="8725488761726303204">আৰু +<ph name="NUMBER" />টা</translation>

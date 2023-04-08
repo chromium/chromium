@@ -65,7 +65,7 @@ export class ExtensionsLoadErrorElement extends PolymerElement {
     this.$.dialog.close();
   }
 
-  private onRetryTap_() {
+  private onRetryClick_() {
     this.retrying_ = true;
     this.delegate.retryLoadUnpacked(this.loadError.retryGuid)
         .then(

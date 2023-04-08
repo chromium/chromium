@@ -108,8 +108,6 @@ content::WebContents* GetActiveWebContentsForNativeBrowserWindow(
 chrome::FeedbackSource ToChromeFeedbackSource(
     ash::ShellDelegate::FeedbackSource source) {
   switch (source) {
-    case ash::ShellDelegate::FeedbackSource::kBentoBar:
-      return chrome::FeedbackSource::kFeedbackSourceBentoBar;
     case ash::ShellDelegate::FeedbackSource::kWindowLayoutMenu:
       return chrome::FeedbackSource::kFeedbackSourceWindowLayoutMenu;
   }

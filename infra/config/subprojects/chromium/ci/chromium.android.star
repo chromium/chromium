@@ -615,13 +615,10 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
-    sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "tester|tablet",
         short_name = "12L",
     ),
-    # TODO: This can be reduced when builder works.
-    execution_timeout = 4 * time.hour,
 )
 
 ci.builder(

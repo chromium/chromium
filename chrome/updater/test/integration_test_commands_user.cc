@@ -65,8 +65,11 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::ExpectCandidateUninstalled(updater_scope_);
   }
 
-  void EnterTestMode(const GURL& url) const override {
-    updater::test::EnterTestMode(url);
+  void EnterTestMode(const GURL& update_url,
+                     const GURL& crash_upload_url,
+                     const GURL& device_management_url) const override {
+    updater::test::EnterTestMode(update_url, crash_upload_url,
+                                 device_management_url);
   }
 
   void ExitTestMode() const override {
@@ -184,6 +187,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
 
   void RunWakeAll() const override {
     updater::test::RunWakeAll(updater_scope_);
+  }
+
+  void RunCrashMe() const override {
+    updater::test::RunCrashMe(updater_scope_);
   }
 
   void RunWakeActive(int exit_code) const override {

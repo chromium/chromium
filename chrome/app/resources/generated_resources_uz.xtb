@@ -2994,6 +2994,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3584527007414070635"><ph name="MODULE_TITLE" /> uchun sayohatingizni davom ettiring</translation>
 <translation id="3586787825263265024"><ph name="APPLICATION_NAME" /> ilovasi OneDrive ishlashini talab qiladi.</translation>
 <translation id="3586806079541226322">Bu fayl ochilmadi</translation>
+<translation id="3586931643579894722">Tafsilotlarni yopish</translation>
 <translation id="3587438013689771191">Batafsil: <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">Barchasi</translation>
 <translation id="3588790464166520201">Toʻlov vositalarini oʻrnatishga ruxsat berilgan</translation>
@@ -3020,6 +3021,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3609277884604412258">Tezkor qidiruv</translation>
 <translation id="3610241585790874201">Qurilmangizga maʼlumotlarni saqlashga ruxsat berilmagan</translation>
 <translation id="3610369246614755442">Dok ventilyatori ishlamayapti</translation>
+<translation id="3610961622607302617"><ph name="WEBSITE" /> parolini almashtirish</translation>
 <translation id="361106536627977100">Flash ma‘lumotlari</translation>
 <translation id="3611655097742243705">Boshqa ilovalarni topish uchun Play doʻkoniga kiring.</translation>
 <translation id="3611658447322220736">Yaqinda yopilgan saytlar axborot yuborishi va qabul qilishi mumkin</translation>
@@ -5842,6 +5844,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6136114942382973861">Yuklanmalar panelini yopish</translation>
 <translation id="6136287496450963112">Elektron kalit PIN kod bilan himoyalanmagan. Barmoq izlarini boshqarish uchun avval PIN kod yarating.</translation>
 <translation id="6138680304137685902">SHA-384 algoritmli X9.62 ECDSA imzosi</translation>
+<translation id="6140948187512243695">Tafsilotlarni ko‘rsatish</translation>
 <translation id="6141988275892716286">Yuklanishni tasdiqlang</translation>
 <translation id="6143186082490678276">Get Help</translation>
 <translation id="6143366292569327983">Sahifaning asl tilini tanlang</translation>
@@ -6038,6 +6041,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6318125393809743217">Parametrlar konfiguratsiyasiga policies.json fayli ham kiritilsin.</translation>
 <translation id="6318407754858604988">Yuklab olish boshlandi</translation>
 <translation id="6318944945640833942">Printer aniqlanmadi. Printer manzilini qayta kiriting.</translation>
+<translation id="6320808462673705899">Qidiruvingizga mos hech qanday bukmark topilmadi.</translation>
 <translation id="6322370287306604163">Barmoq izi bilan qulfni tezroq oching</translation>
 <translation id="6322559670748154781">Bu faylni yuklab olish tavsiya etilmaydi. Uni Kuchaytirilgan himoya bloklagan</translation>
 <translation id="6324916366299863871">Yorliqni tahrirlash</translation>

@@ -58,6 +58,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CertVerifierWithTrustAnchors
              std::unique_ptr<Request>* out_req,
              const net::NetLogWithSource& net_log) override;
   void SetConfig(const Config& config) override;
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
 
  private:
   net::CertVerifier::Config orig_config_;

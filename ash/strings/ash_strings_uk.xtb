@@ -980,6 +980,7 @@
 <translation id="5578188167649348993">пам’ять</translation>
 <translation id="5580000943347215299">Бібліотека</translation>
 <translation id="558849140439112033">Потягніть, щоб вибрати область, знімок якої потрібно зробити</translation>
+<translation id="5596627076506792578">Інші опції</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Натисніть Ctrl + Alt + Z, щоб вимкнути голосові підказки.</translation>
 <translation id="5601503069213153581">PIN-код</translation>
@@ -1247,7 +1248,6 @@
 <translation id="6820676911989879663">Зробіть перерву!</translation>
 <translation id="6827049576281411231">Закрити панель подій</translation>
 <translation id="6836499262298959512">Небезпечний файл</translation>
-<translation id="6837064795450991317">Сховати панель</translation>
 <translation id="6852052252232534364">Активувати</translation>
 <translation id="6855029042976311970">Змінено щойно</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> с</translation>
@@ -1305,7 +1305,6 @@
 <translation id="7098053464892629930">Завантажте додаток для <ph name="NAME" /> із Google Play, щоб мати доступ до всіх функцій</translation>
 <translation id="7098389117866926363">Пристрій, під’єднаний до порту USB-C (ліворуч на задній панелі)</translation>
 <translation id="7100906357717321275">Показати сховані файли в додатку Файли</translation>
-<translation id="7106330611027933926">Показати панель</translation>
 <translation id="7116969082764510092">Робочий стіл 11</translation>
 <translation id="7118268675952955085">знімок</translation>
 <translation id="7119327711295338600">Виділити наступне слово або літеру</translation>

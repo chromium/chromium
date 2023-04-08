@@ -635,12 +635,19 @@ class OmniboxEditModel {
   // changes.
   void OnFaviconFetched(const GURL& page_url, const gfx::Image& icon);
 
+  // Returns view text if there is a view. Until the model is made the primary
+  // data source, this should not be called when there's no view.
+  std::u16string GetText() const;
+
   // NOTE: |client_| must outlive |omnibox_controller_|, as the latter has a
   // reference to the former.
   std::unique_ptr<OmniboxClient> client_;
 
   std::unique_ptr<OmniboxController> omnibox_controller_;
 
+  // This may be null if the model is instantiated by the Realbox. Ideally,
+  // the model should not depend so much on the view as a primary data source,
+  // and the view should accurately reflect model state as source of truth.
   raw_ptr<OmniboxView> view_;
 
   raw_ptr<OmniboxEditModelDelegate> edit_model_delegate_;

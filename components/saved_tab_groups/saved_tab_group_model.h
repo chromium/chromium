@@ -36,6 +36,8 @@ class SavedTabGroupModel {
   }
   std::vector<SavedTabGroup> saved_tab_groups() { return saved_tab_groups_; }
 
+  bool is_loaded() { return is_loaded_; }
+
   // Returns the index of the SavedTabGroup if it exists in the vector. Else
   // absl::nullopt.
   absl::optional<int> GetIndexOf(
@@ -164,6 +166,10 @@ class SavedTabGroupModel {
 
   // Obsevers of the model.
   base::ObserverList<SavedTabGroupModelObserver>::Unchecked observers_;
+
+  // True when SavedTabGroupModel::LoadStoredEntries has finished, false
+  // otherwise.
+  bool is_loaded_ = false;
 
   // Storage of all saved tab groups in the order they are displayed. The
   // position of the groups must maintain sorted order as sync may not propagate

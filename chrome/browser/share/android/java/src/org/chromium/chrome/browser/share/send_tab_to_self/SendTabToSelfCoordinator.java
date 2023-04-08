@@ -218,7 +218,7 @@ public class SendTabToSelfCoordinator {
 
         /** Returns the cancel button string for the bottom sheet dialog. */
         @Override
-        public @StringRes int getCancelButton() {
+        public @StringRes int getDismissButton() {
             return R.string.cancel;
         }
     }

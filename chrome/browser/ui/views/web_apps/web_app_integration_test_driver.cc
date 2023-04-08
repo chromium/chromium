@@ -844,7 +844,7 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
         continue;
       }
       if (app->IsPolicyInstalledApp()) {
-        UninstallPolicyAppById(app_id);
+        UninstallPolicyAppById(profile, app_id);
       }
       if (provider->registrar_unsafe().IsInstalled(app_id)) {
         DCHECK(app->CanUserUninstallWebApp());
@@ -3662,11 +3662,12 @@ void WebAppIntegrationTestDriver::ApplyRunOnOsLoginPolicy(Site site,
   }
 }
 
-void WebAppIntegrationTestDriver::UninstallPolicyAppById(const AppId& id) {
+void WebAppIntegrationTestDriver::UninstallPolicyAppById(Profile* profile,
+                                                         const AppId& id) {
   base::RunLoop run_loop;
   AppReadinessWaiter app_registration_waiter(
-      profile(), id, apps::Readiness::kUninstalledByUser);
-  WebAppInstallManagerObserverAdapter observer(profile());
+      profile, id, apps::Readiness::kUninstalledByUser);
+  WebAppInstallManagerObserverAdapter observer(profile);
   observer.SetWebAppUninstalledDelegate(
       base::BindLambdaForTesting([&](const AppId& app_id) {
         if (id == app_id) {
@@ -3675,14 +3676,16 @@ void WebAppIntegrationTestDriver::UninstallPolicyAppById(const AppId& id) {
       }));
   // If there are still install sources, the app might not be fully uninstalled,
   // so this will listen for the removal of the policy install source.
-  provider()->install_finalizer().SetRemoveManagementTypeCallbackForTesting(
+  WebAppProvider* provider = WebAppProvider::GetForTest(profile);
+  provider->install_finalizer().SetRemoveManagementTypeCallbackForTesting(
       base::BindLambdaForTesting([&](const AppId& app_id) {
         if (id == app_id) {
           run_loop.Quit();
         }
       }));
 
-  const WebApp* web_app = provider()->registrar_unsafe().GetAppById(id);
+  const WebApp* web_app = provider->registrar_unsafe().GetAppById(id);
+  ASSERT_TRUE(web_app);
 
   base::flat_set<GURL> install_urls;
   {
@@ -3695,7 +3698,7 @@ void WebAppIntegrationTestDriver::UninstallPolicyAppById(const AppId& id) {
   }
 
   {
-    ScopedListPrefUpdate update(profile()->GetPrefs(),
+    ScopedListPrefUpdate update(profile->GetPrefs(),
                                 prefs::kWebAppInstallForceList);
     size_t removed_count = update->EraseIf([&](const base::Value& item) {
       const base::Value* url_value = item.GetDict().Find(kUrlKey);
@@ -3704,7 +3707,7 @@ void WebAppIntegrationTestDriver::UninstallPolicyAppById(const AppId& id) {
     ASSERT_GT(removed_count, 0U);
   }
   run_loop.Run();
-  const WebApp* app = provider()->registrar_unsafe().GetAppById(id);
+  const WebApp* app = provider->registrar_unsafe().GetAppById(id);
   // If the app was fully uninstalled, wait for the change to propagate through
   // App Service.
   if (app == nullptr) {

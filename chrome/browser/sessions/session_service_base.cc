@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
@@ -26,8 +27,11 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/command_storage_manager.h"
@@ -616,12 +620,28 @@ void SessionServiceBase::BuildCommandsForBrowser(
   TabStripModel* tab_strip = browser->tab_strip_model();
   if (tab_strip->SupportsTabGroups()) {
     TabGroupModel* group_model = tab_strip->group_model();
+    const SavedTabGroupKeyedService* const saved_tab_group_keyed_service =
+        base::FeatureList::IsEnabled(features::kTabGroupsSave)
+            ? SavedTabGroupServiceFactory::GetForProfile(browser->profile())
+            : nullptr;
+
     for (const tab_groups::TabGroupId& group_id :
          group_model->ListTabGroups()) {
       const tab_groups::TabGroupVisualData* visual_data =
           group_model->GetTabGroup(group_id)->visual_data();
+
+      absl::optional<std::string> saved_guid;
+      if (saved_tab_group_keyed_service) {
+        const SavedTabGroup* const saved_group =
+            saved_tab_group_keyed_service->model()->Get(group_id);
+        if (saved_group) {
+          saved_guid = saved_group->saved_guid().AsLowercaseString();
+        }
+      }
+
       command_storage_manager()->AppendRebuildCommand(
-          sessions::CreateTabGroupMetadataUpdateCommand(group_id, visual_data));
+          sessions::CreateTabGroupMetadataUpdateCommand(group_id, visual_data,
+                                                        std::move(saved_guid)));
     }
   }
 

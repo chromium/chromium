@@ -107,7 +107,8 @@ TEST_F(TitledUrlMatchUtilsTest, TitledUrlMatchToAutocompleteMatch) {
       {3, ACMatchClassification::URL},
   };
   ACMatchClassifications expected_description_class = {
-      {0, ACMatchClassification::MATCH}, {3, ACMatchClassification::NONE},
+      {0, ACMatchClassification::MATCH},
+      {3, ACMatchClassification::NONE},
   };
   std::u16string expected_inline_autocompletion(u"gle.com");
 
@@ -252,13 +253,11 @@ TEST_F(TitledUrlMatchUtilsTest, DontTrimHttpsSchemeIfInputHasScheme) {
 }
 
 TEST_F(TitledUrlMatchUtilsTest, EmptyInlineAutocompletion) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature({omnibox::kBookmarkPaths});
-  // The search term matches the title but not the URL. Since there is no URL
-  // match, the inline autocompletion string will be empty.
+  // Since there is no URL prefix match, the inline autocompletion string will
+  // be empty.
   std::u16string input_text(u"goo");
   std::u16string match_title(u"Email by Google");
-  GURL match_url("http://www.gmail.com/");
+  GURL match_url("http://www.gmail.com/google");
   AutocompleteMatchType::Type type = AutocompleteMatchType::BOOKMARK_TITLE;
   int relevance = 123;
   int bookmark_count = 3;
@@ -267,7 +266,8 @@ TEST_F(TitledUrlMatchUtilsTest, EmptyInlineAutocompletion) {
   bookmarks::TitledUrlMatch titled_url_match;
   titled_url_match.node = &node;
   titled_url_match.title_match_positions = {{9, 12}};
-  titled_url_match.url_match_positions = {};
+  titled_url_match.url_match_positions = {{21, 24}};
+  titled_url_match.has_ancestor_match = false;
 
   scoped_refptr<FakeAutocompleteProvider> provider =
       new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_BOOKMARK);
@@ -280,9 +280,13 @@ TEST_F(TitledUrlMatchUtilsTest, EmptyInlineAutocompletion) {
       titled_url_match, type, relevance, bookmark_count, provider.get(),
       classifier, input, fixed_up_input);
 
+  // 'goo' in 'gmail.com/google'
   ACMatchClassifications expected_contents_class = {
       {0, ACMatchClassification::URL},
+      {10, ACMatchClassification::URL | ACMatchClassification::MATCH},
+      {13, ACMatchClassification::URL},
   };
+  // 'goo' in 'Email by Google'
   ACMatchClassifications expected_description_class = {
       {0, ACMatchClassification::NONE},
       {9, ACMatchClassification::MATCH},
@@ -293,7 +297,7 @@ TEST_F(TitledUrlMatchUtilsTest, EmptyInlineAutocompletion) {
   EXPECT_EQ(type, autocomplete_match.type);
   EXPECT_EQ(relevance, autocomplete_match.relevance);
   EXPECT_EQ(match_url, autocomplete_match.destination_url);
-  EXPECT_EQ(u"gmail.com", autocomplete_match.contents);
+  EXPECT_EQ(u"gmail.com/google", autocomplete_match.contents);
   EXPECT_TRUE(base::ranges::equal(expected_contents_class,
                                   autocomplete_match.contents_class))
       << "EXPECTED: " << ACMatchClassificationsAsString(expected_contents_class)
@@ -302,7 +306,7 @@ TEST_F(TitledUrlMatchUtilsTest, EmptyInlineAutocompletion) {
   EXPECT_EQ(match_title, autocomplete_match.description);
   EXPECT_TRUE(base::ranges::equal(expected_description_class,
                                   autocomplete_match.description_class));
-  EXPECT_EQ(u"www.gmail.com", autocomplete_match.fill_into_edit);
+  EXPECT_EQ(u"www.gmail.com/google", autocomplete_match.fill_into_edit);
   EXPECT_FALSE(autocomplete_match.allowed_to_be_default_match);
   EXPECT_TRUE(autocomplete_match.inline_autocompletion.empty());
 }
@@ -341,35 +345,8 @@ TEST_F(TitledUrlMatchUtilsTest, PathsInContentsAndDescription) {
               expected_description);
   };
 
-  // Invokes |test()| with the 4 combinations of |has_url_match| true|false x
-  // |has_ancestor_match| true|false.
-  auto test_with_and_without_url_and_ancestor_matches =
-      [&](std::string title, std::string url, std::string expected_contents,
-          std::string expected_description) {
-        for (bool has_url_match : {false, true}) {
-          for (bool has_ancestor_match : {false, true}) {
-            test(title, url, has_url_match, has_ancestor_match,
-                 expected_contents, expected_description);
-          }
-        }
-      };
-
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature({omnibox::kBookmarkPaths});
-    SCOPED_TRACE("Feature disabled");
-    test_with_and_without_url_and_ancestor_matches("title", "https://url.com",
-                                                   "url.com", "title");
-  }
-  {
-    SCOPED_TRACE("Feature enabled");
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(omnibox::kBookmarkPaths);
-    test("title", "https://url.com", false, false, "grandparent/parent",
-         "title");
-    test("title", "https://url.com", true, false, "url.com", "title");
-    test("title", "https://url.com", false, true, "grandparent/parent",
-         "title");
-    test("title", "https://url.com", true, true, "grandparent/parent", "title");
-  }
+  test("title", "https://url.com", false, false, "grandparent/parent", "title");
+  test("title", "https://url.com", true, false, "url.com", "title");
+  test("title", "https://url.com", false, true, "grandparent/parent", "title");
+  test("title", "https://url.com", true, true, "grandparent/parent", "title");
 }

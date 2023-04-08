@@ -20,8 +20,7 @@ import {decodeString16, mojoString16, mojoTimeDelta} from '../utils.js';
 import {getTemplate} from './realbox.html.js';
 
 // 900px ~= 561px (max value for --ntp-search-box-width) * 1.5 + some margin.
-const showSecondaryMatchesMediaQueryList =
-    window.matchMedia('(min-width: 900px)');
+const showSecondarySideMediaQueryList = window.matchMedia('(min-width: 900px)');
 
 interface Input {
   text: string;
@@ -60,22 +59,29 @@ export class RealboxElement extends PolymerElement {
       // Public properties
       //========================================================================
 
-      /** Whether secondary matches can be shown. */
-      canShowSecondaryMatches: {
+      /**
+       * Whether the secondary side can be shown based on the feature state and
+       * the width available to the dropdown.
+       */
+      canShowSecondarySide: {
         type: Boolean,
-        value: () => showSecondaryMatchesMediaQueryList.matches &&
+        value: () => showSecondarySideMediaQueryList.matches &&
             loadTimeData.getBoolean('showSecondarySide'),
         reflectToAttribute: true,
       },
 
-      /** Whether secondary matches were at any point available to show. */
-      hadSecondaryMatches: {
+      /**
+       * Whether the secondary side was at any point available to be shown.
+       */
+      hadSecondarySide: {
         type: Boolean,
         reflectToAttribute: true,
       },
 
-      /** Whether secondary matches are currently available to show. */
-      hasSecondaryMatches: {
+      /*
+       * Whether the secondary side is currently available to be shown.
+       */
+      hasSecondarySide: {
         type: Boolean,
         reflectToAttribute: true,
       },
@@ -117,15 +123,6 @@ export class RealboxElement extends PolymerElement {
       //========================================================================
       // Private properties
       //========================================================================
-
-      /**
-       * The time of the first character insert operation that has not yet been
-       * painted in milliseconds. Used to measure the realbox responsiveness.
-       */
-      charTypedTime_: {
-        type: Number,
-        value: 0,
-      },
 
       /**
        * Whether user is deleting text in the input. Used to prevent the default
@@ -220,14 +217,14 @@ export class RealboxElement extends PolymerElement {
     };
   }
 
-  canShowSecondaryMatches: boolean;
+  canShowSecondarySide: boolean;
+  hadSecondarySide: boolean;
+  hasSecondarySide: boolean;
   isDark: boolean;
   matchesAreVisible: boolean;
   matchSearchbox: boolean;
   realboxLensSearchEnabled: boolean;
-  hadSecondaryMatches: boolean;
   singleColoredIcons: boolean;
-  private charTypedTime_: number;
   private inputAriaLive_: string;
   private isDeletingInput_: boolean;
   private lastIgnoredEnterEvent_: KeyboardEvent|null;
@@ -261,8 +258,8 @@ export class RealboxElement extends PolymerElement {
     this.autocompleteResultChangedListenerId_ =
         this.callbackRouter_.autocompleteResultChanged.addListener(
             this.onAutocompleteResultChanged_.bind(this));
-    showSecondaryMatchesMediaQueryList.addEventListener(
-        'change', this.onCanShowSecondaryMatchesChanged_.bind(this));
+    showSecondarySideMediaQueryList.addEventListener(
+        'change', this.onCanShowSecondarySideChanged_.bind(this));
   }
 
   override disconnectedCallback() {
@@ -270,8 +267,8 @@ export class RealboxElement extends PolymerElement {
     assert(this.autocompleteResultChangedListenerId_);
     this.callbackRouter_.removeListener(
         this.autocompleteResultChangedListenerId_);
-    showSecondaryMatchesMediaQueryList.removeEventListener(
-        'change', this.onCanShowSecondaryMatchesChanged_.bind(this));
+    showSecondarySideMediaQueryList.removeEventListener(
+        'change', this.onCanShowSecondarySideChanged_.bind(this));
   }
 
   override ready() {
@@ -333,8 +330,8 @@ export class RealboxElement extends PolymerElement {
   // Event handlers
   //============================================================================
 
-  private onCanShowSecondaryMatchesChanged_(e: MediaQueryListEvent) {
-    this.canShowSecondaryMatches =
+  private onCanShowSecondarySideChanged_(e: MediaQueryListEvent) {
+    this.canShowSecondarySide =
         e.matches && loadTimeData.getBoolean('showSecondarySide');
   }
 
@@ -377,18 +374,11 @@ export class RealboxElement extends PolymerElement {
 
     this.updateInput_({text: inputValue, inline: ''});
 
-    const charTyped = !this.isDeletingInput_ && !!inputValue.trim();
-    // If a character has been typed, update |charTypedTime_|. Otherwise reset
-    // it. If |charTypedTime_| is not 0, there's a pending typed character for
-    // which the results have not been painted yet. In that case, keep the
-    // earlier time.
-    this.charTypedTime_ =
-        charTyped ? this.charTypedTime_ || window.performance.now() : 0;
-
     // If a character has been typed, mark 'CharTyped'. Otherwise clear it. If
     // 'CharTyped' mark already exists, there's a pending typed character for
     // which the results have not been painted yet. In that case, keep the
     // earlier mark.
+    const charTyped = !this.isDeletingInput_ && !!inputValue.trim();
     const metricsReporter = MetricsReporterImpl.getInstance();
     if (charTyped) {
       if (!metricsReporter.hasLocalMark('CharTyped')) {
@@ -434,11 +424,6 @@ export class RealboxElement extends PolymerElement {
         text: text,
         inline: this.lastInput_.inline.substr(1),
       });
-
-      // If |charTypedTime_| is not 0, there's a pending typed character for
-      // which the results have not been painted yet. In that case, keep the
-      // earlier time.
-      this.charTypedTime_ = this.charTypedTime_ || window.performance.now();
 
       // If 'CharTyped' mark already exists, there's a pending typed character
       // for which the results have not been painted yet. In that case, keep the
@@ -651,17 +636,6 @@ export class RealboxElement extends PolymerElement {
    */
   private onMatchRemove_(e: CustomEvent<number>) {
     this.pageHandler_.deleteAutocompleteMatch(e.detail);
-  }
-
-  /**
-   * @param e Event containing the result repaint time.
-   */
-  private onResultRepaint_(e: CustomEvent<number>) {
-    if (this.charTypedTime_) {
-      this.pageHandler_.logCharTypedToRepaintLatency(
-          mojoTimeDelta(e.detail - this.charTypedTime_));
-      this.charTypedTime_ = 0;
-    }
   }
 
   private onVoiceSearchClick_() {

@@ -727,53 +727,10 @@ TEST_F(BookmarkProviderTest, GetMatchesWithBookmarkPaths) {
 
   auto short_feature = OmniboxTriggeredFeatureService::Feature::
       kShortBookmarkSuggestionsByTotalInputLength;
-  auto paths_feature = OmniboxTriggeredFeatureService::Feature::kBookmarkPaths;
 
-  {
-    // When the feature is off, should not return path matched bookmarks nor
-    // trigger counterfactual logging.
-    SCOPED_TRACE("feature disabled");
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(omnibox::kBookmarkPaths);
-    TestNumMatchesAndTriggeredFeature("carefully other", 0, {short_feature});
-  }
-
-  {
-    // When enabled without counterfactual logging, should return path matched
-    // bookmark but not trigger counterfactual logging even it path matched.
-    SCOPED_TRACE("feature enabled without counterfactual");
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(omnibox::kBookmarkPaths);
-    TestNumMatchesAndTriggeredFeature("carefully other", 1, {short_feature});
-  }
-
-  {
-    // When enabled with "control" counterfactual logging, should not return
-    // path matched bookmarks but trigger counterfactual logging if it path
-    // matched.
-    SCOPED_TRACE("feature enabled with control counterfactual");
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        omnibox::kBookmarkPaths,
-        {{OmniboxFieldTrial::kBookmarkPathsCounterfactual.name, "control"}});
-    TestNumMatchesAndTriggeredFeature("carefully", 1, {short_feature});
-    TestNumMatchesAndTriggeredFeature("carefully other", 0,
-                                      {short_feature, paths_feature});
-  }
-
-  {
-    // When enabled with "enabled" counterfactual logging, should return path
-    // matched bookmarks and trigger counterfactual logging if it path
-    // matched.
-    SCOPED_TRACE("feature enabled with enabled counterfactual");
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        omnibox::kBookmarkPaths,
-        {{OmniboxFieldTrial::kBookmarkPathsCounterfactual.name, "enabled"}});
-    TestNumMatchesAndTriggeredFeature("carefully", 1, {short_feature});
-    TestNumMatchesAndTriggeredFeature("carefully other", 1,
-                                      {short_feature, paths_feature});
-  }
+  // Should return path matched bookmark.
+  SCOPED_TRACE("feature enabled without counterfactual");
+  TestNumMatchesAndTriggeredFeature("carefully other", 1, {short_feature});
 }
 
 // Make sure that user input is trimmed correctly for starter pack keyword mode.

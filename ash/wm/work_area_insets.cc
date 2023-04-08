@@ -20,13 +20,11 @@ namespace ash {
 namespace {
 
 // Returns work area insets calculated for the provided parameters.
-gfx::Insets CalculateWorkAreaInsets(const gfx::Insets accessibility_insets,
-                                    const gfx::Insets persistent_bar_insets,
-                                    const gfx::Insets shelf_insets,
-                                    const gfx::Rect keyboard_bounds) {
+gfx::Insets CalculateWorkAreaInsets(const gfx::Insets& accessibility_insets,
+                                    const gfx::Insets& shelf_insets,
+                                    const gfx::Rect& keyboard_bounds) {
   gfx::Insets work_area_insets;
   work_area_insets += accessibility_insets;
-  work_area_insets += persistent_bar_insets;
   // The virtual keyboard always hides the shelf (in any orientation).
   // Therefore, if the keyboard is shown, there is no need to reduce the work
   // area by the size of the shelf.
@@ -39,14 +37,12 @@ gfx::Insets CalculateWorkAreaInsets(const gfx::Insets accessibility_insets,
 
 // Returns work area bounds calculated for the given |window| and given
 // parameters.
-gfx::Rect CalculateWorkAreaBounds(const gfx::Insets accessibility_insets,
-                                  const gfx::Insets persistent_bar_insets,
-                                  const gfx::Rect shelf_bounds_in_screen,
-                                  const gfx::Rect keyboard_bounds_in_screen,
+gfx::Rect CalculateWorkAreaBounds(const gfx::Insets& accessibility_insets,
+                                  const gfx::Rect& shelf_bounds_in_screen,
+                                  const gfx::Rect& keyboard_bounds_in_screen,
                                   aura::Window* window) {
   gfx::Rect work_area_bounds = screen_util::GetDisplayBoundsWithShelf(window);
   work_area_bounds.Inset(accessibility_insets);
-  work_area_bounds.Inset(persistent_bar_insets);
   work_area_bounds.Subtract(shelf_bounds_in_screen);
   work_area_bounds.Subtract(keyboard_bounds_in_screen);
   return work_area_bounds;
@@ -87,12 +83,6 @@ gfx::Insets WorkAreaInsets::GetAccessibilityInsets() const {
       accessibility_panel_height_ + docked_magnifier_height_, 0, 0, 0);
 }
 
-gfx::Insets WorkAreaInsets::GetPersistentDeskBarInsets() const {
-  if (accessibility_panel_height_ + docked_magnifier_height_ == 0)
-    return gfx::Insets::TLBR(persistent_desk_bar_height_, 0, 0, 0);
-  return gfx::Insets();
-}
-
 gfx::Rect WorkAreaInsets::ComputeStableWorkArea() const {
   aura::Window* root_window = root_window_controller_->GetRootWindow();
 
@@ -101,9 +91,9 @@ gfx::Rect WorkAreaInsets::ComputeStableWorkArea() const {
       root_window_controller_->shelf()->GetIdealBoundsForWorkAreaCalculation());
   ::wm::ConvertRectToScreen(root_window, &shelf_bounds_in_screen);
 
-  return CalculateWorkAreaBounds(
-      GetAccessibilityInsets(), GetPersistentDeskBarInsets(),
-      shelf_bounds_in_screen, keyboard_displaced_bounds_, root_window);
+  return CalculateWorkAreaBounds(GetAccessibilityInsets(),
+                                 shelf_bounds_in_screen,
+                                 keyboard_displaced_bounds_, root_window);
 }
 
 bool WorkAreaInsets::IsKeyboardShown() const {
@@ -122,21 +112,6 @@ void WorkAreaInsets::SetAccessibilityPanelHeight(int height) {
   UpdateWorkArea();
   Shell::Get()->NotifyUserWorkAreaInsetsChanged(
       root_window_controller_->GetRootWindow());
-}
-
-void WorkAreaInsets::SetPersistentDeskBarHeight(int height) {
-  if (persistent_desk_bar_height_ == height)
-    return;
-  base::AutoReset<bool> in_progress(&persistent_desk_bar_height_in_change_,
-                                    true);
-  persistent_desk_bar_height_ = height;
-  UpdateWorkArea();
-  Shell::Get()->NotifyUserWorkAreaInsetsChanged(
-      root_window_controller_->GetRootWindow());
-}
-
-bool WorkAreaInsets::PersistentDeskBarHeightInChange() {
-  return persistent_desk_bar_height_in_change_;
 }
 
 void WorkAreaInsets::SetShelfBoundsAndInsets(
@@ -178,15 +153,14 @@ void WorkAreaInsets::UpdateWorkArea() {
   // Note: Different keyboard bounds properties are used to calculate insets and
   // bounds. See ui/keyboard/keyboard_controller_observer.h for details.
   user_work_area_insets_ = CalculateWorkAreaInsets(
-      GetAccessibilityInsets(), GetPersistentDeskBarInsets(), shelf_insets_,
-      keyboard_displaced_bounds_);
+      GetAccessibilityInsets(), shelf_insets_, keyboard_displaced_bounds_);
   user_work_area_bounds_ = CalculateWorkAreaBounds(
-      GetAccessibilityInsets(), GetPersistentDeskBarInsets(), shelf_bounds_,
-      keyboard_occluded_bounds_, root_window_controller_->GetRootWindow());
+      GetAccessibilityInsets(), shelf_bounds_, keyboard_occluded_bounds_,
+      root_window_controller_->GetRootWindow());
 
   in_session_user_work_area_insets_ = CalculateWorkAreaInsets(
-      GetAccessibilityInsets(), GetPersistentDeskBarInsets(),
-      in_session_shelf_insets_, keyboard_displaced_bounds_);
+      GetAccessibilityInsets(), in_session_shelf_insets_,
+      keyboard_displaced_bounds_);
 }
 
 }  // namespace ash

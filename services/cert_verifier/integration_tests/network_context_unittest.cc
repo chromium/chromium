@@ -29,14 +29,18 @@
 namespace cert_verifier {
 namespace {
 
-mojo::PendingRemote<mojom::CertVerifierService> GetNewCertVerifierServiceRemote(
+network::mojom::CertVerifierServiceRemoteParamsPtr
+GetNewCertVerifierServiceRemoteParams(
     mojom::CertVerifierServiceFactory* cert_verifier_service_factory,
     mojom::CertVerifierCreationParamsPtr creation_params) {
   mojo::PendingRemote<mojom::CertVerifierService> cert_verifier_remote;
+  mojo::PendingReceiver<mojom::CertVerifierServiceClient> cert_verifier_client;
   cert_verifier_service_factory->GetNewCertVerifier(
       cert_verifier_remote.InitWithNewPipeAndPassReceiver(),
+      cert_verifier_client.InitWithNewPipeAndPassRemote(),
       std::move(creation_params));
-  return cert_verifier_remote;
+  return network::mojom::CertVerifierServiceRemoteParams::New(
+      std::move(cert_verifier_remote), std::move(cert_verifier_client));
 }
 
 }  // namespace
@@ -74,12 +78,9 @@ class NetworkContextWithRealCertVerifierTest : public testing::Test {
     }
 
     // Create a cert verifier service.
-    auto cert_verifier_service_remote = GetNewCertVerifierServiceRemote(
+    return GetNewCertVerifierServiceRemoteParams(
         cert_verifier_service_factory_.get(),
         std::move(cert_verifier_creation_params));
-
-    return network::mojom::CertVerifierServiceRemoteParams::New(
-        std::move(cert_verifier_service_remote));
   }
 
   virtual mojom::CertVerifierServiceParamsPtr GetCertVerifierServiceParams() {

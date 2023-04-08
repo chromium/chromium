@@ -134,9 +134,6 @@ interface PageHandler {
   // to appear in the results if they currently are not allowed to or to prevent
   // them from appearing in the results if they are currently permitted to.
   ToggleSuggestionGroupIdVisibility(int32 suggestion_group_id);
-  // Logs the time it took in milliseconds since the first character (in a
-  // series of characters) was typed until Autocomplete results were painted.
-  LogCharTypedToRepaintLatency(mojo_base.mojom.TimeDelta latency);
   // Executes the Pedal Action. match_selection_timestamp is the number of
   // microseconds since Jan. 1, 1970 (ECMAScript epoch).
   ExecuteAction(uint8 line,

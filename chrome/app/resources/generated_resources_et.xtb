@@ -2995,6 +2995,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3584527007414070635">Jätkake oma mooduli <ph name="MODULE_TITLE" /> teekonda</translation>
 <translation id="3586787825263265024">Rakendus <ph name="APPLICATION_NAME" /> nõuab, et OneDrive oleks saadaval.</translation>
 <translation id="3586806079541226322">Seda faili ei saa avada</translation>
+<translation id="3586931643579894722">Peida üksikasjad</translation>
 <translation id="3587438013689771191">Lisateave: <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">Kõik</translation>
 <translation id="3588790464166520201">Lubatud installida maksete töötlejaid</translation>
@@ -5840,6 +5841,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="6136114942382973861">Sule allalaadimiste riba</translation>
 <translation id="6136287496450963112">Teie turvavõti pole PIN-koodiga kaitstud. Sõrmejälgede haldamiseks looge esmalt PIN-kood.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA allkiri SHA-384-ga</translation>
+<translation id="6140948187512243695">Üksikasjade kuvamine</translation>
 <translation id="6141988275892716286">Allalaadimise kinnitamine</translation>
 <translation id="6143186082490678276">Abi hankimine</translation>
 <translation id="6143366292569327983">Valige lehe keel, millest soovite tõlkida</translation>

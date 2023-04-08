@@ -12,8 +12,8 @@ package nearbyshare.proto;
 
 option optimize_for = LITE_RUNTIME;
 
-import "rpc_resources.proto";
-import "field_mask.proto";
+import "chrome/browser/nearby_sharing/proto/rpc_resources.proto";
+import "chromeos/ash/components/nearby/common/proto/field_mask.proto";
 
 // The request used to register a [location.nearby.sharing.proto.Device]
 // with the server.
@@ -24,7 +24,7 @@ message UpdateDeviceRequest {
   // The FieldMask for updating specific columns in device table. For the
   // 'FieldMask' definition, see
   // https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#fieldmask
-  FieldMask update_mask = 2;
+  ash.nearby.proto.FieldMask update_mask = 2;
 }
 
 // The response for UpdateDeviceRequest.

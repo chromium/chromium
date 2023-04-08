@@ -360,12 +360,10 @@ bool SearchPrefetchService::MaybePrefetchURL(
   return true;
 }
 
-void SearchPrefetchService::OnURLOpenedFromOmnibox(
-    OmniboxLog* log,
-    content::WebContents* web_contents) {
-  DCHECK(web_contents);
-  if (!log)
+void SearchPrefetchService::OnURLOpenedFromOmnibox(OmniboxLog* log) {
+  if (!log) {
     return;
+  }
   const GURL& opened_url = log->final_destination_url;
 
   auto& match = log->result->match_at(log->selected_index);

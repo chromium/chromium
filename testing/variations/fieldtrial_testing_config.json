@@ -335,7 +335,6 @@
                     },
                     "enable_features": [
                         "RequestDesktopSiteExceptions",
-                        "RequestDesktopSiteExceptionsDowngrade",
                         "RequestDesktopSitePerSiteIph"
                     ],
                     "disable_features": [
@@ -353,13 +352,27 @@
                     },
                     "enable_features": [
                         "RequestDesktopSiteExceptions",
-                        "RequestDesktopSiteExceptionsDowngrade",
                         "RequestDesktopSitePerSiteIph"
                     ],
                     "disable_features": [
                         "RequestDesktopSiteDefaults",
                         "RequestDesktopSiteDefaultsControl",
                         "RequestDesktopSiteDefaultsDowngrade"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AndroidRdsDomainSettingsDowngrade": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RequestDesktopSiteExceptionsDowngrade"
                     ]
                 }
             ]
@@ -3885,38 +3898,6 @@
             ]
         }
     ],
-    "DesktopOmniboxBookmarkPaths": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "BookmarkLimitNumNodesForBookmarkSearchCount": "500",
-                        "OmniboxBookmarkPathsUiDynamicReplaceUrl": "true",
-                        "ShortBookmarkSuggestionsByTotalInputLengthThreshold": "3"
-                    },
-                    "enable_features": [
-                        "BookmarkApproximateNodeMatch",
-                        "BookmarkIndexPaths",
-                        "BookmarkLimitNumNodesForBookmarkSearch",
-                        "BookmarkTypedUrlsMap",
-                        "OmniboxBookmarkPaths",
-                        "OmniboxShortBookmarkSuggestionsByTotalInputLength"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopOmniboxDriveDenoise": [
         {
             "platforms": [
@@ -7297,6 +7278,7 @@
                         "Journeys",
                         "JourneysLabel",
                         "JourneysOmniboxAction",
+                        "JourneysPersistCachesToPrefs",
                         "PageContentAnnotations",
                         "PageEntitiesPageContentAnnotations"
                     ]
@@ -7342,6 +7324,26 @@
                     },
                     "enable_features": [
                         "Journeys"
+                    ]
+                }
+            ]
+        }
+    ],
+    "JourneysPersistCachesToPrefs": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230327",
+                    "enable_features": [
+                        "JourneysPersistCachesToPrefs"
                     ]
                 }
             ]
@@ -8420,6 +8422,37 @@
                     "name": "Enabled_20221129",
                     "enable_features": [
                         "NtpComprehensiveTheming"
+                    ]
+                }
+            ]
+        }
+    ],
+    "NtpHistoryClustersMetricsOnly112": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230404",
+                    "params": {
+                        "NtpHistoryClustersModuleCategoriesAllowlistParam": "/m/testparsinglogicallow,/m/testparsinglogicallow-2",
+                        "NtpHistoryClustersModuleCategoriesBlocklistParam": "/m/testparsinglogicblock,/m/testparsinglogicblock-2",
+                        "NtpHistoryClustersModuleCategoriesBoostlistParam": "/m/testparsinglogicboost,/m/testparsinglogicboost-2",
+                        "NtpHistoryClustersModuleMaxClustersParam": "0",
+                        "NtpHistoryClustersModuleMinimumImagesRequiredParam": "1"
+                    },
+                    "enable_features": [
+                        "NtpHistoryClustersMaxClusters",
+                        "NtpHistoryClustersModuleCategories",
+                        "NtpHistoryClustersModuleLoad",
+                        "NtpHistoryClustersModuleMinimumImagesRequired",
+                        "PageContentAnnotationsPersistSalientImageMetadata",
+                        "RemotePageMetadata"
                     ]
                 }
             ]
@@ -10775,26 +10808,6 @@
             ]
         }
     ],
-    "RemotePageMetadata": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "RemotePageMetadata"
-                    ]
-                }
-            ]
-        }
-    ],
     "RemoveFontLinkFallbacks": [
         {
             "platforms": [
@@ -11340,26 +11353,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ScrollUnification"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SearchPrefetchOnlyAllowDefaultMatchPreloading": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SearchPrefetchOnlyAllowDefaultMatchPreloading"
                     ]
                 }
             ]

@@ -42,7 +42,6 @@ import org.mockito.stubbing.Answer;
 
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
-import org.chromium.base.jank_tracker.DummyJankTracker;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
@@ -236,7 +235,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         mManagerPhone = new LayoutManagerChromePhone(layoutManagerHost, container,
                 mStartSurfaceSupplier,
                 mIsStartSurfaceRefactorEnabled ? mTabSwitcherSupplier : new OneshotSupplierImpl<>(),
-                tabContentManagerSupplier, () -> mTopUiThemeColorProvider, new DummyJankTracker());
+                tabContentManagerSupplier, () -> mTopUiThemeColorProvider);
 
         setUpLayouts();
 

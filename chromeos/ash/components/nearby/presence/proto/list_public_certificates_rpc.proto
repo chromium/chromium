@@ -1,0 +1,47 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Keep in sync with
+// http://google3/google/internal/location/nearby/presence/v1/rpcs/certificates.proto
+// Messages not used in Chrome have been omitted. Last copied at cl/460540069.
+
+syntax = "proto3";
+
+package ash.nearby.proto;
+
+option optimize_for = LITE_RUNTIME;
+
+import "chromeos/ash/components/nearby/presence/proto/rpc_resources.proto";
+
+// Request to list public certificate objects.
+message ListPublicCertificatesRequest {
+  // Required. The resource name determines which public certificates to list.
+  // The special prefix "users/me" lists the requester's own share targets. This
+  // is of the format "users/*/devices/*".
+  string parent = 1;
+
+  // Optional limit on the number of ShareTarget objects to check for
+  // PublicCertificates for the response. Further PublicCertificates items may
+  // be obtained by including the page_token in a subsequent request. If this is
+  // not set or zero, a reasonable default value (2000) is used.
+  int32 page_size = 2;
+
+  // Optional pagination token, returned earlier via
+  // [ListPublicCertificatesResponse.next_page_token]
+  string page_token = 3;
+
+  // Optional. Represents certificates already available on local device.
+  repeated bytes secret_ids = 4;
+}
+
+// Response that contains the public certificates available to calling device.
+message ListPublicCertificatesResponse {
+  // Optional. A token to retrieve the next page of results when used in
+  // [ListPublicCertificatesRequest].
+  string next_page_token = 1;
+
+  // Optional. Public certificates allowed to be accessed by the calling local
+  // device.
+  repeated PublicCertificate public_certificates = 2;
+}

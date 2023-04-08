@@ -120,6 +120,14 @@ void IgnoreErrorsCertVerifier::SetConfig(const Config& config) {
   verifier_->SetConfig(config);
 }
 
+void IgnoreErrorsCertVerifier::AddObserver(Observer* observer) {
+  verifier_->AddObserver(observer);
+}
+
+void IgnoreErrorsCertVerifier::RemoveObserver(Observer* observer) {
+  verifier_->RemoveObserver(observer);
+}
+
 void IgnoreErrorsCertVerifier::SetAllowlistForTesting(
     const SPKIHashSet& allowlist) {
   allowlist_ = allowlist;

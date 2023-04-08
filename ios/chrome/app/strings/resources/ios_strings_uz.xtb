@@ -20,7 +20,6 @@
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> tilidan har doim tarjima qilinsin</translation>
 <translation id="110724200315609752">Yopilmagan oynalarga oʻtish</translation>
 <translation id="1112015203684611006">Chop etilmadi.</translation>
-<translation id="1118266931011974190"><ph name="THRESHOLD" /> kundan keyin</translation>
 <translation id="1125564390852150847">Yangi sahifa ochish</translation>
 <translation id="1126013303640354461">Google Pay xizmatidagi toʻlov usullari va manzillar shifrlanmaydi. Chrome brauzer tarixi sinxronlanmaydi.
 Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli ibora ulashilmaydi va Google serverlarida saqlanmaydi. Kodli iborani unutsangiz yoki bu sozlamani oʻzgartirishni istasangiz, sinxronlash sozlamalarini tiklashingiz lozim. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
@@ -227,6 +226,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="2576499762020411840">Parollarni Google hisobiga saqlash va ishlatish</translation>
 <translation id="2578571896248130439">Bu sahifani yuborish</translation>
 <translation id="2584132361465095047">Hisob kiritish…</translation>
+<translation id="2595587704210555261">{COUNT,plural, =1{Bir kun yoki undan uzoqroq foydalanilmagan ochiq varaqlar Nofaol varaqlarga koʻchiriladi, shunda koʻp foydalanadigan varaqlarga eʼtibor qaratasiz. Buni istalgan vaqtda sozlamalardan oʻzgartirish mumkin.}other{{COUNT} kun yoki undan uzoqroq foydalanilmagan ochiq varaqlar Nofaol varaqlarga koʻchiriladi, shunda koʻp foydalanadigan varaqlarga eʼtibor qaratasiz. Buni istalgan vaqtda sozlamalardan oʻzgartirish mumkin.}}</translation>
 <translation id="2600682495497606169">Sayt cookie fayllarini tozalash</translation>
 <translation id="2609008503159898744">Barcha varaqlar yopilsinmi?</translation>
 <translation id="2625189173221582860">Parol nusxalandi</translation>
@@ -575,6 +575,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="4844899002472726590">Qiziqarli mavzularni koʻrish va tahrirlash</translation>
 <translation id="4848999860252535517"><ph name="WEBSITE" /> paroli oʻchirilsinmi?</translation>
 <translation id="4854345657858711387">Maxfiy kod o‘rnating</translation>
+<translation id="4856498338299082007">Google hisobingizda</translation>
 <translation id="4858786880085262208">Imkon boʻlganda HTTPS protokoliga yangilansin Xavfsiz saytlarda ham himoyasiz kontent joylanishi mumkin.</translation>
 <translation id="4860895144060829044">Chaqiruv</translation>
 <translation id="4872323082491632254">Parollarni tekshiring</translation>
@@ -1093,6 +1094,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="821809831108207540">Discover tasmasi va Chrome brauzerini moslashtirish uchun hisobingizga kiring va sinxronizatsiyani yoqing.</translation>
 <translation id="8225985093977202398">Keshdagi tasvir va fayllar</translation>
 <translation id="8237382152611443140">Parollarni avtomatik kiritish sozlamalarini oching</translation>
+<translation id="8248969482078657578">Nofaol varaqlar tufayli diqqatni jamlaysiz</translation>
 <translation id="8261506727792406068">O‘chirish</translation>
 <translation id="8264966119170358612">Saqlangan parollaringizdan ayrimlari Googledan boshqa tashqi xizmatlarning sizib chiqarilgan axborotlari ichidan topildi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="8265018477030547118">Faqat shu qurilmada</translation>

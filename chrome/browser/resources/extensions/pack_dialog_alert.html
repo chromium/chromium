@@ -11,10 +11,10 @@
   <div class="body" slot="body">[[model.message]]</div>
   <div class="button-container" slot="button-container">
     <cr-button class$="[[getCancelButtonClass_(confirmLabel_)]]"
-        on-click="onCancelTap_" hidden="[[!cancelLabel_]]">
+        on-click="onCancelClick_" hidden="[[!cancelLabel_]]">
       [[cancelLabel_]]
     </cr-button>
-    <cr-button class="action-button" on-click="onConfirmTap_"
+    <cr-button class="action-button" on-click="onConfirmClick_"
         hidden="[[!confirmLabel_]]">
       [[confirmLabel_]]
     </cr-button>

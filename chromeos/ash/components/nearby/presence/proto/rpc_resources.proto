@@ -1,0 +1,139 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Keep in sync with
+// http://google3/google/internal/location/nearby/presence/v1/resources.proto
+// Messages not used in Chrome have been omitted. Last copied at cl/428736503.
+
+syntax = "proto3";
+
+package ash.nearby.proto;
+
+option optimize_for = LITE_RUNTIME;
+
+import "chromeos/ash/components/nearby/common/proto/timestamp.proto";
+
+// An enum type how trust is specified.
+enum TrustType {
+  TRUST_TYPE_UNSPECIFIED = 0;
+
+  // The same user itself.
+  TRUST_TYPE_PRIVATE = 1;
+
+  // The user selects the contact from its contact list.
+  TRUST_TYPE_TRUSTED = 2;
+}
+
+// A PublicCertificate contains a secret key used when recognizing another
+// user's BLE advertisement and a public key used when establishing an encrypted
+// connection.
+//
+// How a Certificate is distributed is determined by who is on a user's contact
+// list. For example, if Will adds Ryan to his contact list, Ryan will have a
+// ShareTarget with Will's Certificate attached to it.
+// NextId=11
+message PublicCertificate {
+  // The secret (symmetric) identifier used when identifying the ShareTarget's
+  // BLE advertisement.
+  bytes secret_id = 1;
+
+  // The secret (symmetric) key is used to decrypt the name field of the
+  // ShareTarget's BLE advertisement.
+  bytes secret_key = 2;
+
+  // The public key is used to create a secure connection with the ShareTarget.
+  bytes public_key = 3;
+
+  // The time that certificate validity begins.
+  Timestamp start_time = 4;
+
+  // The time that certificate validity ends.
+  Timestamp end_time = 5;
+
+  // The encrypted metadata in bytes, contains personal information of the
+  // device/user who created this certificate. Needs to be decrypted into bytes,
+  // and converted back to EncryptedMetadata object to access fields.
+  // Definition of this object see:
+  // location/nearby/presence/proto/contact_certificates.proto
+  bytes encrypted_metadata_bytes = 6;
+
+  // The tag for verifying metadata_encryption_key.
+  bytes metadata_encryption_key_tag = 7;
+
+  // The trust type, see the comments in the enum TrustType.
+  TrustType trust_type = 8;
+}
+
+// A member of a contact list. This is not inlined on the recommendation of
+// http://go/apidosdonts##19-make-repeated-fields-messages-not-scalar-types
+// NextId=3
+message Contact {
+  // NextId=4
+  message Identifier {
+    oneof identifier {
+      string phone_number = 1;
+      string account_name = 2;
+    }
+  }
+
+  // Required. The identifier of a contact can be an obfuscated gaia id, a phone
+  // number, or an email account name.
+  Identifier identifier = 1;
+
+  // The trust type, see the comments in the enum TrustType.
+  TrustType trust_type = 2;
+}
+
+// A contact record from People backend.
+// NextId=7
+message ContactRecord {
+  // The type of the ContactRecord.
+  enum Type {
+    // The source of the contact is unknown.
+    UNKNOWN = 0;
+
+    // The source of the contact is from google (i.e. google.com/contacts).
+    GOOGLE_CONTACT = 1;
+
+    // The source of the contact is from a device.
+    DEVICE_CONTACT = 2;
+  }
+
+  // The stable id of this contact record.
+  string id = 1;
+
+  // The contact record's name.
+  string person_name = 2;
+
+  // The URL of an image displayed to the user when selecting a share
+  // target.
+  string image_url = 3;
+
+  // A list of phone numbers and emails under this contact record.
+  repeated Contact.Identifier identifiers = 4;
+
+  // The type of the ContactRecord.
+  Type type = 5;
+}
+
+// Consists of editable data inside of a device.
+// NextId=5
+message Device {
+  // Required. The resource name of this contact Device. This is of the format
+  // 'users/<user-id>/devices/<device-id>'.
+  // The special prefix 'users/me' uses the
+  // identity of the requester.
+  string name = 1;
+
+  // The device name to show members of this contact. Ex: "Joe's Pixel"
+  string display_name = 2;
+
+  // Users that this user has added to indicate that they may see this
+  // user as a ShareTarget when this user is nearby.
+  repeated Contact contacts = 3;
+
+  // The public certificates generated and uploaded from local device, to be
+  // shared with contacts.
+  repeated PublicCertificate public_certificates = 4;
+}

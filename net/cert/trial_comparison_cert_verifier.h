@@ -29,7 +29,8 @@ class ChromeRootStoreData;
 // back to the caller via a ReportCallback, allowing the caller to further
 // examine the differences.
 class NET_EXPORT TrialComparisonCertVerifier
-    : public CertVerifierWithUpdatableProc {
+    : public CertVerifierWithUpdatableProc,
+      public CertVerifier::Observer {
  public:
   using ReportCallback = base::RepeatingCallback<void(
       const std::string& hostname,
@@ -88,6 +89,8 @@ class NET_EXPORT TrialComparisonCertVerifier
              std::unique_ptr<Request>* out_req,
              const NetLogWithSource& net_log) override;
   void SetConfig(const Config& config) override;
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
   void UpdateChromeRootStoreData(
       scoped_refptr<CertNetFetcher> cert_net_fetcher,
       const ChromeRootStoreData* root_store_data) override;
@@ -101,6 +104,10 @@ class NET_EXPORT TrialComparisonCertVerifier
   CertVerifier* trial_verifier() const { return trial_verifier_.get(); }
 
   void RemoveJob(Job* job_ptr);
+  void NotifyJobsOfConfigChange();
+
+  // CertVerifier::Observer methods:
+  void OnCertVerifierChanged() override;
 
   // Whether the trial is allowed.
   bool allowed_ = false;

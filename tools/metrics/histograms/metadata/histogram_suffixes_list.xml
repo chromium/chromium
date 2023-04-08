@@ -4946,42 +4946,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="AnimatedImage.NumOfFramesSkipped"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ResourceSchedulerPeakDelayableRequestsInFlight"
-    separator=".">
-  <suffix name="LayoutBlocking"
-      label="Records the highest number of delayable requests that were
-             in-flight at the same time when a layout blocking request was
-             in-flight. Recorded every time a layout blocking request
-             finishes."/>
-  <suffix name="NonDelayable"
-      label="Records the highest number of delayable requests that were
-             in-flight at the same time when a non-delayable request was
-             in-flight. Recorded every time a non-delayable request finishes."/>
-  <affected-histogram name="ResourceScheduler.PeakDelayableRequestsInFlight"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ResourceSchedulerRequestsCount" separator=".">
-  <suffix name="All" label="All requests in-flight were counted."/>
-  <suffix name="Delayable" label="Delayable requests in-flight were counted."/>
-  <suffix name="GlobalAll"
-      label="All in-flight requests issued by all resource scheduler clients
-             were counted."/>
-  <suffix name="GlobalDelayable"
-      label="Delayable in-flight requests issued by all resource scheduler
-             clients were counted."/>
-  <suffix name="GlobalLayoutBlocking"
-      label="Layout blocking in-flight requests issued by all resource
-             scheduler clients were counted."/>
-  <suffix name="GlobalNonDelayable"
-      label="Non-delayable in-flight requests issued by all resource
-             scheduler clients were counted."/>
-  <suffix name="NonDelayable"
-      label="Non-delayable requests in-flight were counted."/>
-  <suffix name="TotalLayoutBlocking"
-      label="Layout blocking requests in-flight were counted."/>
-  <affected-histogram name="ResourceScheduler.RequestsCount"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="RoamSecurityType" separator=".">
   <suffix name="EAP"
       label="Records roams in a network using 802.1X authentication without

@@ -96,7 +96,7 @@ enum FeedbackSource {
   kFeedbackSourceCameraApp,
   kFeedbackSourceCaptureMode,
   kFeedbackSourceChromeLabs,
-  kFeedbackSourceBentoBar,
+  kFeedbackSourceBentoBar_DEPRECATED,
   kFeedbackSourceQuickAnswers,
   kFeedbackSourceWhatsNew,
   kFeedbackSourceConnectivityDiagnostics,

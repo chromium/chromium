@@ -82,7 +82,7 @@
   }
 </style>
 <div id="content">
-  <template is="dom-repeat" items="[[sideTypes_(canShowSecondaryMatches)]]"
+  <template is="dom-repeat" items="[[sideTypes_(canShowSecondarySide)]]"
       as="side">
     <div class$="[[classForSide_(side)]]">
       <template is="dom-repeat" items="[[groupIdsForSide_(side, result.matches.*)]]"

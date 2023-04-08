@@ -247,10 +247,10 @@ whenever VideoDecoderConfig changes.
       }
       TEST.log('Test completed');
     }
-    addManualTestButton({
-      'codec': 'avc1.42001E',
-      'acceleration':'prefer-software'
-    });
+    addManualTestButton([
+      {'codec': 'avc1.42001E', 'acceleration':'prefer-software'},
+      {'codec': 'avc1.42001E', 'acceleration':'prefer-hardware'},
+    ]);
   </script>
 </head>
 

@@ -397,6 +397,7 @@ class WPTAdapter:
             # '--run-by-dir=0' so that tests can be more evenly distributed
             # among workers.
             options.fail_on_unexpected_pass = False
+            options.restart_on_unexpected = False
             options.restart_on_new_group = False
             options.run_by_dir = 0
 

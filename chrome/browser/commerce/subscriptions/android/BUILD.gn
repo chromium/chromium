@@ -16,6 +16,7 @@ android_library("subscriptions_java") {
     "//base:jni_java",
     "//build/android:build_java",
     "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/commerce/android:java",
     "//chrome/browser/commerce/price_tracking/android:java",
     "//chrome/browser/endpoint_fetcher:java",
     "//chrome/browser/flags:java",

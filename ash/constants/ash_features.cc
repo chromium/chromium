@@ -234,10 +234,6 @@ BASE_FEATURE(kAvatarsCloudMigration,
              "AvatarsCloudMigration",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the persistent desks bar at the top of the screen in clamshell mode
-// when there are more than one desk.
-BASE_FEATURE(kBentoBar, "BentoBar", base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables or disables the usage of fixed Bluetooth A2DP packet size to improve
 // audio performance in noisy environment.
 BASE_FEATURE(kBluetoothFixA2dpPacketSize,
@@ -779,6 +775,10 @@ const base::FeatureParam<EolIncentiveParam> kEolIncentiveParam{
     &kEolIncentive, "incentive_type", EolIncentiveParam::kNoOffer,
     &eol_incentive_options};
 
+BASE_FEATURE(kEolIncentiveSettings,
+             "EolIncentiveSettings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable or disable support for touchpad with haptic feedback.
 BASE_FEATURE(kExoHapticFeedbackSupport,
              "ExoHapticFeedbackSupport",
@@ -842,6 +842,12 @@ BASE_FEATURE(kFastPair, "FastPair", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kFastPairBleRotation,
              "FastPairBleRotation",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Sets mode to DEBUG when fetching metadata from the Nearby server, allowing
+// debug devices to trigger Fast Pair notifications.
+BASE_FEATURE(kFastPairDebugMetadata,
+             "FastPairDebugMetadata",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables using new Handshake retry logic for Fast Pair.
 BASE_FEATURE(kFastPairHandshakeRefactor,
@@ -1848,12 +1854,6 @@ BASE_FEATURE(kReleaseNotesSuggestionChip,
              "ReleaseNotesSuggestionChip",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables or disables display of the release track in the system tray and quick
-// settings, for devices running on channels other than "stable."
-BASE_FEATURE(kReleaseTrackUi,
-             "ReleaseTrackUi",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables rendering ARC notifications using ChromeOS notification framework
 BASE_FEATURE(kRenderArcNotificationsByChrome,
              "RenderArcNotificationsByChrome",
@@ -1883,7 +1883,7 @@ BASE_FEATURE(kScreenSaverDuration,
 // Enables the "Preview" button for screensaver.
 BASE_FEATURE(kScreenSaverPreview,
              "ScreenSaverPreview",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the system tray to show more information in larger screen.
 BASE_FEATURE(kSeamlessRefreshRateSwitching,
@@ -2503,10 +2503,6 @@ bool IsBackgroundBlurEnabled() {
 #endif
 }
 
-bool IsBentoBarEnabled() {
-  return base::FeatureList::IsEnabled(kBentoBar);
-}
-
 bool IsBluetoothQualityReportEnabled() {
   return base::FeatureList::IsEnabled(kBluetoothQualityReport);
 }
@@ -2667,6 +2663,10 @@ bool IsFastPairEnabled() {
 
 bool IsFastPairBleRotationEnabled() {
   return base::FeatureList::IsEnabled(kFastPairBleRotation);
+}
+
+bool IsFastPairDebugMetadataEnabled() {
+  return base::FeatureList::IsEnabled(kFastPairDebugMetadata);
 }
 
 bool IsFastPairHandshakeRefactorEnabled() {
@@ -3243,10 +3243,6 @@ bool IsQuickDimEnabled() {
 
 bool IsPerDeskZOrderEnabled() {
   return base::FeatureList::IsEnabled(kEnablePerDeskZOrder);
-}
-
-bool IsReleaseTrackUiEnabled() {
-  return base::FeatureList::IsEnabled(kReleaseTrackUi);
 }
 
 bool IsRenderArcNotificationsByChromeEnabled() {

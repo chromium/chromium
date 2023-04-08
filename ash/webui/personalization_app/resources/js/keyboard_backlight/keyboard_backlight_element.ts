@@ -10,7 +10,6 @@ import './color_icon_element.js';
 import '../../css/common.css.js';
 import '../../css/cros_button_style.css.js';
 
-import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
@@ -25,20 +24,12 @@ import {setBacklightColor} from './keyboard_backlight_controller.js';
 import {getTemplate} from './keyboard_backlight_element.html.js';
 import {getKeyboardBacklightProvider} from './keyboard_backlight_interface_provider.js';
 import {KeyboardBacklightObserver} from './keyboard_backlight_observer.js';
-import {ZoneCustomizationElement} from './zone_customization_element.js';
-
 
 /**
  * @fileoverview
  * The keyboard backlight section that allows users to customize their keyboard
  * backlight colors.
  */
-
-export interface KeyboardBacklight {
-  $: {
-    zoneCustomizationRender: CrLazyRenderElement<ZoneCustomizationElement>,
-  };
-}
 
 export class KeyboardBacklight extends WithPersonalizationStore {
   static get is() {
@@ -93,6 +84,11 @@ export class KeyboardBacklight extends WithPersonalizationStore {
 
       /** The current wallpaper extracted color. */
       wallpaperColor_: Object,
+
+      isZoneCustomizationDialogOpen_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -105,6 +101,7 @@ export class KeyboardBacklight extends WithPersonalizationStore {
   private ironSelectedColor_: HTMLElement;
   private currentBacklightState_: CurrentBacklightState|null;
   private wallpaperColor_: SkColor|null;
+  private isZoneCustomizationDialogOpen_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -156,7 +153,11 @@ export class KeyboardBacklight extends WithPersonalizationStore {
         this.isMultiZoneRgbKeyboardSupported_,
         'zone customization dialog only available if multi-zone is supported');
     logKeyboardBacklightOpenZoneCustomizationUMA();
-    this.$.zoneCustomizationRender.get().showModal();
+    this.isZoneCustomizationDialogOpen_ = true;
+  }
+
+  private closeZoneCustomizationDialog_() {
+    this.isZoneCustomizationDialogOpen_ = false;
   }
 
   private getZoneCustomizationButtonAriaPressed_(

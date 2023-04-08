@@ -19,7 +19,6 @@ import androidx.core.view.ViewCompat;
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.StrictModeContext;
-import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
@@ -90,8 +89,7 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
             @NonNull ObservableSupplier<Profile> profileObservableSupplier,
             @NonNull Callback<Tab> bringToForegroundCallback,
             @NonNull Supplier<TabWindowManager> tabWindowManagerSupplier,
-            @NonNull BookmarkState bookmarkState, @NonNull JankTracker jankTracker,
-            @NonNull ActionChipsDelegate actionChipsDelegate,
+            @NonNull BookmarkState bookmarkState, @NonNull ActionChipsDelegate actionChipsDelegate,
             @NonNull OmniboxSuggestionsDropdownScrollListener scrollListener,
             @NonNull OpenHistoryClustersDelegate openHistoryClustersDelegate) {
         mParent = parent;
@@ -108,7 +106,7 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
         mMediator = new AutocompleteMediator(context, controllerProvider, delegate,
                 urlBarEditingTextProvider, listModel, new Handler(), modalDialogManagerSupplier,
                 activityTabSupplier, shareDelegateSupplier, locationBarDataProvider,
-                bringToForegroundCallback, tabWindowManagerSupplier, bookmarkState, jankTracker,
+                bringToForegroundCallback, tabWindowManagerSupplier, bookmarkState,
                 actionChipsDelegate, openHistoryClustersDelegate);
         mMediator.initDefaultProcessors();
 

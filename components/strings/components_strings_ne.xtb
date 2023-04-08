@@ -1982,6 +1982,7 @@
 <translation id="5872692522325383488">IBAN सेभ गरिएको छ</translation>
 <translation id="5873013647450402046">तपाईंको बैंकले यो कारबाही गर्न खोज्ने व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्न चाहन्छ।</translation>
 <translation id="5877831137320480913">सौन्दर्य तथा तन्दुरुस्ती</translation>
+<translation id="5879989559903563723">गेस्ट मोडमा अनुमति दिइएको छैन</translation>
 <translation id="5884465125445718607">Envelope Chinese #6</translation>
 <translation id="5887400589839399685">कार्ड सेभ गरियो</translation>
 <translation id="5887687176710214216">पछिल्लो पटक हिजो खोलिएको</translation>
@@ -3223,6 +3224,7 @@
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">कानुन तथा सरकार</translation>
 <translation id="8957210676456822347">क्याप्टिभ पोर्टल प्राधिकरण</translation>
+<translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">साइटका सेटिङमा जानुहोस्</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />सुझावहरू:<ph name="MARKUP_2" />तपाईँसँग डेटा जडान रहेको निश्चित गर्नुहोस्<ph name="MARKUP_3" />यो वेबपृष्ठ पछि पुन:लोड गर्नुहोस्<ph name="MARKUP_4" />तपाईँले प्रविष्ट गर्नुभएको ठेगानाको जाँच गर्नुहोस्<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">कार्ड सेभ गर्नुहोस्</translation>

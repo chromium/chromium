@@ -509,9 +509,19 @@ void SpdySessionPool::OnIPAddressChanged() {
   }
 }
 
-void SpdySessionPool::OnSSLConfigChanged(bool is_cert_database_change) {
-  CloseCurrentSessions(is_cert_database_change ? ERR_CERT_DATABASE_CHANGED
-                                               : ERR_NETWORK_CHANGED);
+void SpdySessionPool::OnSSLConfigChanged(
+    SSLClientContext::SSLConfigChangeType change_type) {
+  switch (change_type) {
+    case SSLClientContext::SSLConfigChangeType::kSSLConfigChanged:
+      CloseCurrentSessions(ERR_NETWORK_CHANGED);
+      break;
+    case SSLClientContext::SSLConfigChangeType::kCertDatabaseChanged:
+      CloseCurrentSessions(ERR_CERT_DATABASE_CHANGED);
+      break;
+    case SSLClientContext::SSLConfigChangeType::kCertVerifierChanged:
+      CloseCurrentSessions(ERR_CERT_VERIFIER_CHANGED);
+      break;
+  };
 }
 
 void SpdySessionPool::OnSSLConfigForServerChanged(const HostPortPair& server) {

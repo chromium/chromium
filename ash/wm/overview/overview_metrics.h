@@ -16,7 +16,7 @@ enum class OverviewStartAction {
   kExitHomeLauncher,
   kOverviewButton,
   kOverviewButtonLongPress,
-  kBentoBar,
+  kBentoBar_DEPRECATED,
   k3FingerVerticalScroll,
   kDevTools,
   kTests,

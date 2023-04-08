@@ -136,7 +136,7 @@ export class HistorySideBarElement extends PolymerElement {
   /**
    * Relocates the user to the clear browsing data section of the settings page.
    */
-  private onClearBrowsingDataTap_(e: Event) {
+  private onClearBrowsingDataClick_(e: Event) {
     const browserService = BrowserServiceImpl.getInstance();
     browserService.recordAction('InitClearBrowsingData');
     browserService.openClearBrowsingData();

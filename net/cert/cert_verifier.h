@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/observer_list_types.h"
 #include "base/strings/string_piece.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/hash_value.h"
@@ -29,6 +30,19 @@ class ChromeRootStoreData;
 // CertVerifiers can handle multiple requests at a time.
 class NET_EXPORT CertVerifier {
  public:
+  class NET_EXPORT Observer : public base::CheckedObserver {
+   public:
+    // Called when the certificate verifier changes internal configuration.
+    // Observers can use this method to invalidate caches that incorporate
+    // previous trust decisions.
+    //
+    // This method will not be called on `CertVerifier::SetConfig`. It is
+    // assumed that callers will know to clear their caches when calling the
+    // function. https://crbug.com/1427326 tracks migrating `SetConfig` to this
+    // mechanism.
+    virtual void OnCertVerifierChanged() = 0;
+  };
+
   struct NET_EXPORT Config {
     Config();
     Config(const Config&);
@@ -199,6 +213,13 @@ class NET_EXPORT CertVerifier {
   // should NOT attempt to change configuration for CertVerifiers they do not
   // explicitly manage.
   virtual void SetConfig(const Config& config) = 0;
+
+  // Add an observer to be notified when the CertVerifier has changed.
+  // RemoveObserver() must be called before |observer| is destroyed.
+  virtual void AddObserver(Observer* observer) = 0;
+
+  // Remove an observer added with AddObserver().
+  virtual void RemoveObserver(Observer* observer) = 0;
 
   // Creates a CertVerifier implementation that verifies certificates using
   // the preferred underlying cryptographic libraries.  |cert_net_fetcher| may

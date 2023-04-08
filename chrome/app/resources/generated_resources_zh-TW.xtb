@@ -2989,6 +2989,7 @@
 <translation id="3584527007414070635">繼續瀏覽「<ph name="MODULE_TITLE" />」</translation>
 <translation id="3586787825263265024">必須要能存取 OneDrive 才能使用「<ph name="APPLICATION_NAME" />」應用程式。</translation>
 <translation id="3586806079541226322">無法開啟這個檔案</translation>
+<translation id="3586931643579894722">隱藏詳細資訊</translation>
 <translation id="3587438013689771191">進一步瞭解<ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">全部</translation>
 <translation id="3588790464166520201">可以安裝付款處理常式</translation>
@@ -5830,6 +5831,7 @@
 <translation id="6136114942382973861">關閉下載內容列</translation>
 <translation id="6136287496450963112">你的安全金鑰未設定 PIN 碼保護，如要管理指紋，請先建立 PIN 碼。</translation>
 <translation id="6138680304137685902">使用 SHA-384 的 X9.62 ECDSA 簽章</translation>
+<translation id="6140948187512243695">顯示詳細資訊</translation>
 <translation id="6141988275892716286">確認下載</translation>
 <translation id="6143186082490678276">取得說明</translation>
 <translation id="6143366292569327983">選擇網頁的原文語言</translation>

@@ -12,6 +12,9 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/screen_layout_observer.h"
+#include "ash/wm/snap_group/snap_group.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
+#include "ash/wm/snap_group/snap_group_expanded_menu_view.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
@@ -21,13 +24,20 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/background.h"
 #include "ui/views/highlight_border.h"
 
 namespace ash {
 
 namespace {
+
+constexpr int kKebabButtonDistanceFromBottom = 24;
+constexpr gfx::Size kKebabButtonSize{4, 24};
+constexpr int kDistanceBetweenKebabButtonAndExpandedMenu = 8;
+constexpr int kExpandedMenuHeight = 150;
 
 bool IsInTabletMode() {
   TabletModeController* tablet_mode_controller =
@@ -50,6 +60,20 @@ SplitViewDividerView::SplitViewDividerView(SplitViewController* controller,
   SetBackground(
       views::CreateSolidBackground(AshColorProvider::Get()->GetBaseLayerColor(
           AshColorProvider::BaseLayerType::kOpaque)));
+
+  if (ShouldAutomaticallyGroupOnWindowsSnappedInClamshell()) {
+    kebab_button_ = AddChildView(std::make_unique<IconButton>(
+        base::BindRepeating(&SplitViewDividerView::OnKebabButtonPressed,
+                            base::Unretained(this)),
+        IconButton::Type::kMediumFloating, &kSnapGroupKebabIcon,
+        IDS_ASH_SNAP_GROUP_MORE_OPTIONS,
+        /*is_togglable=*/false,
+        /*has_border=*/false));
+    kebab_button_->SetPaintToLayer();
+    kebab_button_->layer()->SetFillsBoundsOpaquely(false);
+    kebab_button_->SetPreferredSize(kKebabButtonSize);
+    kebab_button_->SetVisible(true);
+  }
 }
 
 void SplitViewDividerView::DoSpawningAnimation(int spawn_position) {
@@ -99,6 +123,31 @@ void SplitViewDividerView::Layout() {
   SetBoundsRect(GetLocalBounds());
   divider_handler_view_->Refresh(
       split_view_controller_->is_resizing_with_divider());
+
+  if (ShouldAutomaticallyGroupOnWindowsSnappedInClamshell()) {
+    const gfx::Size kebab_button_size = kebab_button_->GetPreferredSize();
+    const gfx::Rect kebab_button_bounds(
+        (width() - kebab_button_size.width()) / 2.f,
+        height() - kebab_button_size.height() - kKebabButtonDistanceFromBottom,
+        kebab_button_size.width(), kebab_button_size.height());
+    kebab_button_->SetBoundsRect(kebab_button_bounds);
+
+    if (snap_group_expanded_menu_widget_) {
+      gfx::Rect divider_bounds_in_screen =
+          split_view_controller_->split_view_divider()
+              ->GetDividerBoundsInScreen(
+                  /*is_dragging=*/false);
+      const gfx::Rect expanded_menu_bounds(
+          divider_bounds_in_screen.x() + kSplitviewDividerShortSideLength / 2 -
+              kExpandedMenuRoundedCornerRadius,
+          kebab_button_bounds.y() - kExpandedMenuHeight -
+              kDistanceBetweenKebabButtonAndExpandedMenu,
+          kExpandedMenuRoundedCornerRadius * 2, kExpandedMenuHeight);
+      divider_bounds_in_screen.ClampToCenteredSize(
+          gfx::Size(kExpandedMenuRoundedCornerRadius * 2, kExpandedMenuHeight));
+      snap_group_expanded_menu_widget_->SetBounds(expanded_menu_bounds);
+    }
+  }
 }
 
 void SplitViewDividerView::OnThemeChanged() {
@@ -208,6 +257,30 @@ void SplitViewDividerView::OnResizeStatusChanged() {
 
   divider_handler_view_->Refresh(
       split_view_controller_->is_resizing_with_divider());
+}
+
+void SplitViewDividerView::OnKebabButtonPressed() {
+  should_show_expanded_menu_ = !should_show_expanded_menu_;
+  if (!should_show_expanded_menu_) {
+    snap_group_expanded_menu_widget_.reset();
+    snap_group_expanded_menu_view_ = nullptr;
+    return;
+  }
+
+  if (!snap_group_expanded_menu_widget_) {
+    snap_group_expanded_menu_widget_ = std::make_unique<views::Widget>();
+    snap_group_expanded_menu_widget_->Init(CreateWidgetInitParams(
+        split_view_controller_->root_window(), "SnapGroupExpandedMenuWidget"));
+    SnapGroupController* snap_group_controller =
+        Shell::Get()->snap_group_controller();
+    SnapGroup* snap_group = snap_group_controller->GetSnapGroupForGivenWindow(
+        split_view_controller_->primary_window());
+    snap_group_expanded_menu_view_ =
+        snap_group_expanded_menu_widget_->SetContentsView(
+            std::make_unique<SnapGroupExpandedMenuView>(snap_group));
+  }
+  snap_group_expanded_menu_widget_->Show();
+  Layout();
 }
 
 BEGIN_METADATA(SplitViewDividerView, views::View)

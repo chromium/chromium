@@ -52,8 +52,8 @@
       "use_remoteexec": true
     }
   },
-  "chromeos-trogdor64-chrome-skylab-fyi": {
-    "args_file": "//build/args/chromeos/trogdor64.gni",
+  "chromeos-trogdor-chrome-skylab-fyi": {
+    "args_file": "//build/args/chromeos/trogdor.gni",
     "gn_args": {
       "dcheck_always_on": true,
       "exclude_unwind_tables": false,

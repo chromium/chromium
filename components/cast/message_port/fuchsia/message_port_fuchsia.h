@@ -82,7 +82,7 @@ class MessagePortFuchsia : public cast_api_bindings::MessagePort {
       base::StringPiece message,
       std::vector<std::unique_ptr<MessagePort>> ports) final;
 
-  cast_api_bindings::MessagePort::Receiver* receiver_;
+  cast_api_bindings::MessagePort::Receiver* receiver_ = nullptr;
   base::circular_deque<fuchsia::web::WebMessage> message_queue_;
 
  private:

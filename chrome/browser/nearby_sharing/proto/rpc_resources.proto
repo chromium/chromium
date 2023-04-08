@@ -12,7 +12,7 @@ package nearbyshare.proto;
 
 option optimize_for = LITE_RUNTIME;
 
-import "timestamp.proto";
+import "chromeos/ash/components/nearby/common/proto/timestamp.proto";
 
 // A SharedCertificate contains a secret key used when recognizing another
 // user's BLE advertisement and a public key used when establishing an encrypted
@@ -35,10 +35,10 @@ message PublicCertificate {
   bytes public_key = 3;
 
   // The time that certificate validity begins.
-  Timestamp start_time = 4;
+  ash.nearby.proto.Timestamp start_time = 4;
 
   // The time that certificate validity ends.
-  Timestamp end_time = 5;
+  ash.nearby.proto.Timestamp end_time = 5;
 
   // Indicates if this public certificate is only for selected contacts.
   bool for_selected_contacts = 6;

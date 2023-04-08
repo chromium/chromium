@@ -11212,24 +11212,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ResourceScheduler.NumSkippedScans.ScheduleStart"
-    units="requests" expires_after="M85">
-  <owner>csharrison@chromium.org</owner>
-  <summary>
-    The number of LoadAnyStartablePendingRequests scans that were skipped due to
-    smarter task scheduling around reprioritization.
-  </summary>
-</histogram>
-
-<histogram name="ResourceScheduler.PeakDelayableRequestsInFlight"
-    units="requests" expires_after="2021-09-01">
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    Records the highest number of delayable requests that were in-flight when
-    the given request with higher priority was in-flight.
-  </summary>
-</histogram>
-
 <histogram name="ResourceScheduler.PeakObservedQueueingDelay" units="ms"
     expires_after="2021-09-01">
   <owner>tbansal@chromium.org</owner>
@@ -11249,16 +11231,6 @@ chromium-metrics-reviews@google.com.
     The amount of time the ResourceScheduler queued a request. Recorded in
     separate histograms based on the request loading priority at the time the
     request was dequeued.
-  </summary>
-</histogram>
-
-<histogram name="ResourceScheduler.RequestsCount" units="requests count"
-    expires_after="M82">
-  <owner>jfwang@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    Records the count of number of requests in-flight. Recorded when a request
-    is started by the resource scheduler.
   </summary>
 </histogram>
 

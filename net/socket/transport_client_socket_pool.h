@@ -68,6 +68,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
  public:
   // Reasons for closing sockets. Exposed here for testing.
   static const char kCertDatabaseChanged[];
+  static const char kCertVerifierChanged[];
   static const char kClosedConnectionReturnedToPool[];
   static const char kDataReceivedUnexpectedly[];
   static const char kIdleTimeLimitExpired[];
@@ -262,7 +263,8 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   void OnIPAddressChanged() override;
 
   // SSLClientContext::Observer methods.
-  void OnSSLConfigChanged(bool is_cert_database_change) override;
+  void OnSSLConfigChanged(
+      SSLClientContext::SSLConfigChangeType change_type) override;
   void OnSSLConfigForServerChanged(const HostPortPair& server) override;
 
  private:

@@ -278,7 +278,7 @@ UnifiedSystemInfoView::UnifiedSystemInfoView(
     // If the release track is not "stable" then channel indicator UI for quick
     // settings is put up.
     auto channel = Shell::Get()->shell_delegate()->GetChannel();
-    if (features::IsReleaseTrackUiEnabled() && !eol_notice_ &&
+    if (!eol_notice_ &&
         channel_indicator_utils::IsDisplayableChannel(channel)) {
       channel_view_ =
           AddChildView(std::make_unique<ChannelIndicatorQuickSettingsView>(

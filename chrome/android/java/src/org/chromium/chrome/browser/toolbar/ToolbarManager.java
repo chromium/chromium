@@ -31,7 +31,6 @@ import com.google.android.material.appbar.AppBarLayout;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -452,7 +451,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             @NonNull Supplier<Boolean> isWarmOnResumeSupplier,
             @NonNull TabContentManager tabContentManager,
             @NonNull TabCreatorManager tabCreatorManager, @NonNull SnackbarManager snackbarManager,
-            JankTracker jankTracker,
             @NonNull Supplier<MerchantTrustSignalsCoordinator>
                     merchantTrustSignalsCoordinatorSupplier,
             OneshotSupplier<TabReparentingController> tabReparentingControllerSupplier,
@@ -667,7 +665,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                         return mToolbar.getCurrentOptionalButtonVariant() ==
                             AdaptiveToolbarButtonVariant.VOICE;
                     },
-                    jankTracker,
                     merchantTrustSignalsCoordinatorSupplier,
                     actionChipsDelegate, mControlsVisibilityDelegate,
                     ChromePureJavaExceptionReporter::reportJavaException, backPressManager,

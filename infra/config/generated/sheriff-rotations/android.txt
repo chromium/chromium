@@ -14,6 +14,7 @@ ci/Deterministic Android (dbg)
 ci/Nougat Phone Tester
 ci/android-10-arm64-rel
 ci/android-12-x64-rel
+ci/android-12l-x64-dbg-tests
 ci/android-androidx-packager
 ci/android-bfcache-rel
 ci/android-binary-size-generator

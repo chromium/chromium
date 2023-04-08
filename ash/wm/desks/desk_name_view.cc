@@ -35,6 +35,13 @@ DeskNameView::DeskNameView(DeskMiniView* mini_view)
 
 DeskNameView::~DeskNameView() = default;
 
+void DeskNameView::OnFocus() {
+  DeskTextfield::OnFocus();
+
+  // When this gets focus, scroll to make `mini_view_` visible.
+  mini_view_->owner_bar()->ScrollToShowViewIfNecessary(mini_view_);
+}
+
 void DeskNameView::OnViewHighlighted() {
   if (!HasFocus()) {
     // When the highlight is the result of tabbing, as opposed to clicking or
@@ -47,7 +54,7 @@ void DeskNameView::OnViewHighlighted() {
   }
 
   DeskTextfield::OnViewHighlighted();
-  mini_view_->owner_bar()->ScrollToShowMiniViewIfNecessary(mini_view_);
+  mini_view_->owner_bar()->ScrollToShowViewIfNecessary(mini_view_);
 }
 
 BEGIN_METADATA(DeskNameView, DeskTextfield)

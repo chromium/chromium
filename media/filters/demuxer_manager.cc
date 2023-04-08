@@ -21,6 +21,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
+#include "media/filters/hls_manifest_demuxer_engine.h"
 #include "media/filters/manifest_demuxer.h"
 #endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 
@@ -153,7 +154,13 @@ DemuxerManager::DemuxerManager(
   DCHECK(client_);
 }
 
-DemuxerManager::~DemuxerManager() = default;
+DemuxerManager::~DemuxerManager() {
+  // ManifestDemuxer has multiple outstanding weak pointers bound to the media
+  // thread, and needs to be deleted there.
+  if (GetDemuxerType() == DemuxerType::kManifestDemuxer) {
+    media_task_runner_->DeleteSoon(FROM_HERE, std::move(demuxer_));
+  }
+}
 
 void DemuxerManager::InvalidateWeakPtrs() {
   weak_factory_.InvalidateWeakPtrs();
@@ -573,9 +580,9 @@ std::unique_ptr<Demuxer> DemuxerManager::CreateFFmpegDemuxer() {
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
 std::unique_ptr<Demuxer> DemuxerManager::CreateHlsDemuxer() {
-  return std::make_unique<ManifestDemuxer>(media_task_runner_,
-                                           client_->GetHlsDataSourceProvider(),
-                                           loaded_url_, media_log_.get());
+  auto player_impl = std::make_unique<HlsManifestDemuxerEngine>();
+  return std::make_unique<ManifestDemuxer>(
+      media_task_runner_, std::move(player_impl), media_log_.get());
 }
 #endif
 

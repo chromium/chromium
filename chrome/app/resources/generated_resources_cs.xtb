@@ -2991,6 +2991,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3584527007414070635">Pokračovat v cestě: <ph name="MODULE_TITLE" /></translation>
 <translation id="3586787825263265024">Aplikace <ph name="APPLICATION_NAME" /> vyžaduje, aby byla k dispozici služba OneDrive.</translation>
 <translation id="3586806079541226322">Soubor nelze otevřít</translation>
+<translation id="3586931643579894722">Skrýt podrobnosti</translation>
 <translation id="3587438013689771191">Další informace: <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">Vše</translation>
 <translation id="3588790464166520201">Povolení instalovat obslužné nástroje pro platby</translation>
@@ -5832,6 +5833,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6136114942382973861">Zavřít lištu se staženými soubory</translation>
 <translation id="6136287496450963112">Váš bezpečnostní klíč není chráněn kódem PIN. Pokud chcete spravovat otisky prstů, nejdříve vytvořte PIN.</translation>
 <translation id="6138680304137685902">Podpis X9.62 ECDSA s SHA-384</translation>
+<translation id="6140948187512243695">Zobrazit podrobnosti</translation>
 <translation id="6141988275892716286">Potvrzení stahování</translation>
 <translation id="6143186082490678276">Zobrazit nápovědu</translation>
 <translation id="6143366292569327983">Vyberte jazyk stránky, ze kterého chcete překládat</translation>

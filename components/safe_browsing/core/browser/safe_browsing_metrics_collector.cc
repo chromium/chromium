@@ -149,15 +149,20 @@ void SafeBrowsingMetricsCollector::RemoveOldEventsFromPref() {
   ScopedDictPrefUpdate update(pref_service_,
                               prefs::kSafeBrowsingEventTimestamps);
   base::Value::Dict& mutable_state_dict = update.Get();
+  size_t total_size = 0;
 
   for (auto state_map : mutable_state_dict) {
     for (auto event_map : state_map.second.GetDict()) {
+      total_size += event_map.second.GetList().size();
       event_map.second.GetList().EraseIf([&](const auto& timestamp) {
         return base::Time::Now() - PrefValueToTime(timestamp) >
                base::Days(kEventMaxDurationDay);
       });
     }
   }
+
+  base::UmaHistogramCounts1000(
+      "SafeBrowsing.MetricsCollectorEventCountAtCleanup", total_size);
 }
 
 void SafeBrowsingMetricsCollector::AddSafeBrowsingEventToPref(

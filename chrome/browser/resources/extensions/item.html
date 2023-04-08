@@ -282,12 +282,12 @@
               </span>
               <a class="clippable-flex-text" is="action-link"
                   title="[[computeFirstInspectTitle_(firstInspectView_)]]"
-                  on-click="onInspectTap_">
+                  on-click="onInspectClick_">
                 [[computeFirstInspectLabel_(firstInspectView_)]]
               </a>
               <a is="action-link"
                   hidden$="[[computeExtraViewsHidden_(data.views)]]"
-                  on-click="onExtraInspectTap_">
+                  on-click="onExtraInspectClick_">
                 &nbsp;[[computeExtraInspectLabel_(data.views)]]
               </a>
             </div>
@@ -298,17 +298,17 @@
   </div>
   <div id="button-strip" class="layout horizontal center cr-secondary-text">
     <div class="layout flex horizontal center">
-      <cr-button id="detailsButton" on-click="onDetailsTap_"
+      <cr-button id="detailsButton" on-click="onDetailsClick_"
           aria-describedby="a11yAssociation">
         $i18n{itemDetails}
       </cr-button>
-      <cr-button id="removeButton" on-click="onRemoveTap_"
+      <cr-button id="removeButton" on-click="onRemoveClick_"
           aria-describedby="a11yAssociation"
           hidden="[[data.mustRemainInstalled]]">
         $i18n{remove}
       </cr-button>
       <template is="dom-if" if="[[shouldShowErrorsButton_(data.*)]]">
-        <cr-button id="errors-button" on-click="onErrorsTap_"
+        <cr-button id="errors-button" on-click="onErrorsClick_"
             aria-describedby="a11yAssociation">
           $i18n{itemErrors}
         </cr-button>
@@ -317,17 +317,17 @@
     <template is="dom-if" if="[[!computeDevReloadButtonHidden_(data.*)]]">
       <cr-icon-button id="dev-reload-button" class="icon-refresh no-overlap"
           aria-label="$i18n{itemReload}" aria-describedby="a11yAssociation"
-          on-click="onReloadTap_"></cr-icon-button>
+          on-click="onReloadClick_"></cr-icon-button>
     </template>
     <template is="dom-if"
         if="[[showRepairButton_(data.disableReasons.corruptInstall)]]">
       <cr-button id="repair-button" class="action-button"
-          aria-describedby="a11yAssociation" on-click="onRepairTap_">
+          aria-describedby="a11yAssociation" on-click="onRepairClick_">
         $i18n{itemRepair}
       </cr-button>
     </template>
     <template is="dom-if" if="[[showReloadButton_(data.state)]]">
-      <cr-button id="terminated-reload-button" on-click="onReloadTap_"
+      <cr-button id="terminated-reload-button" on-click="onReloadClick_"
           aria-describedby="a11yAssociation" class="action-button">
         $i18n{itemReload}
       </cr-button>

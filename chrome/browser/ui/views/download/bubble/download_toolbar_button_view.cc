@@ -532,12 +532,14 @@ std::unique_ptr<views::View> DownloadToolbarButtonView::CreateRowListView(
       is_primary_partial_view_, browser_,
       base::BindOnce(&DownloadToolbarButtonView::DeactivateAutoClose,
                      base::Unretained(this)));
+  const int bubble_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
   for (DownloadUIModel::DownloadUIModelPtr& model : model_list) {
     // raw pointer is safe as the toolbar owns the bubble, which owns an
     // individual row view.
     row_list_view->AddChildView(std::make_unique<DownloadBubbleRowView>(
         std::move(model), row_list_view.get(), bubble_controller_.get(), this,
-        browser_));
+        browser_, bubble_width));
   }
 
   auto scroll_view = std::make_unique<views::ScrollView>();

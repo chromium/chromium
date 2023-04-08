@@ -74,7 +74,7 @@ struct InactiveTabsButton: View {
   /// Displays the button title.
   @ViewBuilder
   private func title() -> some View {
-    Text(L10NUtils.string(forMessageId: IDS_IOS_INACTIVE_TABS_BUTTON_TITLE))
+    Text(L10nUtils.string(messageId: IDS_IOS_INACTIVE_TABS_BUTTON_TITLE))
       .foregroundColor(.white)
   }
 
@@ -83,8 +83,8 @@ struct InactiveTabsButton: View {
   private func subtitle() -> some View {
     if let daysThreshold = state.daysThreshold {
       Text(
-        L10NUtils.formatString(
-          forMessageId: IDS_IOS_INACTIVE_TABS_BUTTON_SUBTITLE,
+        L10nUtils.formatString(
+          messageId: IDS_IOS_INACTIVE_TABS_BUTTON_SUBTITLE,
           argument: String(daysThreshold))
       )
       .font(.caption2)

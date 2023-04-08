@@ -8,6 +8,7 @@
 #include "ash/style/icon_button.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
+#include "ash/wm/desks/templates/saved_desk_controller.h"
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
 #include "ash/wm/desks/templates/saved_desk_icon_container.h"
 #include "ash/wm/desks/templates/saved_desk_item_view.h"
@@ -145,6 +146,17 @@ SavedDeskIconViewTestApi::SavedDeskIconViewTestApi(
 }
 
 SavedDeskIconViewTestApi::~SavedDeskIconViewTestApi() = default;
+
+SavedDeskControllerTestApi::SavedDeskControllerTestApi(
+    SavedDeskController* saved_desk_controller)
+    : saved_desk_controller_(saved_desk_controller) {}
+
+SavedDeskControllerTestApi::~SavedDeskControllerTestApi() = default;
+
+void SavedDeskControllerTestApi::SetAdminTemplate(
+    std::unique_ptr<DeskTemplate> admin_template) {
+  saved_desk_controller_->SetAdminTemplateForTesting(std::move(admin_template));
+}
 
 std::vector<SavedDeskItemView*> GetItemViewsFromDeskLibrary(
     const OverviewGrid* overview_grid) {

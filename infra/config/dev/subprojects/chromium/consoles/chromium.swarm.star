@@ -9,6 +9,7 @@ luci.console_view(
     entries = [
         luci.console_view_entry(builder = "ci/android-pie-arm64-rel-dev"),
         luci.console_view_entry(builder = "ci/linux-rel-dev"),
+        luci.console_view_entry(builder = "ci/linux-rel-jammy-dev"),
         luci.console_view_entry(builder = "ci/linux-ssd-rel-dev"),
         luci.console_view_entry(builder = "ci/mac-rel-dev"),
         luci.console_view_entry(builder = "ci/mac-arm-rel-dev"),

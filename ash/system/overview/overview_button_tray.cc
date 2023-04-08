@@ -52,19 +52,16 @@ bool ShouldButtonBeVisible() {
   }
 
   // Check whether the button should be visible for 'kOverviewButton' feature,
-  // which is running as an experiment now. It is only enabled for a specific
-  // group of existing desks users, see `kUserHasUsedDesksRecently` for more
-  // details. But we also want to enable it if the user has explicitly enabled
-  // `kOverviewButton` from chrome://flags or from the command line. Even though
-  // the user is not in the group of existing desks users. Note, can be removed
-  // once the experiment is done. Note, only check whether the feature is
-  // overridden from command line if the FeatureList is initialized.
+  // which is running as an experiment now. We want to enable it if the user has
+  // explicitly enabled `kOverviewButton` from chrome://flags or from the
+  // command line.
+  // Note: only check whether the feature is overridden from command line if the
+  // FeatureList is initialized.
   const base::FeatureList* feature_list = base::FeatureList::GetInstance();
   if ((feature_list && feature_list->IsFeatureOverriddenFromCommandLine(
                            features::kOverviewButton.name,
                            base::FeatureList::OVERRIDE_ENABLE_FEATURE)) ||
-      (base::FeatureList::IsEnabled(features::kOverviewButton) &&
-       desks_restore_util::HasPrimaryUserUsedDesksRecently())) {
+      base::FeatureList::IsEnabled(features::kOverviewButton)) {
     return true;
   }
 

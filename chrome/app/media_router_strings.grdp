@@ -126,6 +126,15 @@
   <message name="IDS_MEDIA_ROUTER_PRESENTATION_ROUTE_DESCRIPTION" desc="Description shown to indicate that a website is being presented to another display.">
     Presenting (<ph name="PAGE_ORIGIN">$1<ex>example.com</ex></ph>)
   </message>
+  <message name="IDS_MEDIA_ROUTER_SINK_VIEW_PAUSE" desc="Label for a button that, when pressed, pauses a Cast mirroring session">
+    Pause
+  </message>
+  <message name="IDS_MEDIA_ROUTER_SINK_VIEW_RESUME" desc="Label for a button that, when pressed, resumes a Cast mirroring session">
+    Resume
+  </message>
+  <message name="IDS_MEDIA_ROUTER_SINK_VIEW_STOP" desc="Label for a button that, when pressed, stops casting to a Cast device. Should be consistent with IDS_MEDIA_ROUTER_STOP_CASTING.">
+    Stop
+  </message>
 
   <!-- Media Remoting Dialog -->
   <message name="IDS_MEDIA_ROUTER_REMOTING_DIALOG_TITLE" desc="Title text shown at the top of the dialog asking the user whether they want to enable the Media Remoting feature. Media Remoting is a feature that can be enabled during a Cast session for improved playback.">

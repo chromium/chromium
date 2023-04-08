@@ -17,21 +17,33 @@
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
-#define EXPECT_WHEEL_BUCKET(index, count) \
-  histogram_tester->ExpectBucketCount(    \
-      "Renderer4.MainThreadWheelScrollReason2", index, count);
+#define EXPECT_WHEEL_BUCKET(index, count)                        \
+  do {                                                           \
+    SCOPED_TRACE("EXPECT_WHEEL_BUCKET");                         \
+    histogram_tester->ExpectBucketCount(                         \
+        "Renderer4.MainThreadWheelScrollReason2", index, count); \
+  } while (false)
 
-#define EXPECT_TOUCH_BUCKET(index, count) \
-  histogram_tester->ExpectBucketCount(    \
-      "Renderer4.MainThreadGestureScrollReason2", index, count);
+#define EXPECT_TOUCH_BUCKET(index, count)                          \
+  do {                                                             \
+    SCOPED_TRACE("EXPECT_TOUCH_BUCKET");                           \
+    histogram_tester->ExpectBucketCount(                           \
+        "Renderer4.MainThreadGestureScrollReason2", index, count); \
+  } while (false)
 
-#define EXPECT_WHEEL_TOTAL(count)                                              \
-  histogram_tester->ExpectTotalCount("Renderer4.MainThreadWheelScrollReason2", \
-                                     count);
+#define EXPECT_WHEEL_TOTAL(count)                         \
+  do {                                                    \
+    SCOPED_TRACE("EXPECT_WHEEL_TOTAL");                   \
+    histogram_tester->ExpectTotalCount(                   \
+        "Renderer4.MainThreadWheelScrollReason2", count); \
+  } while (false)
 
-#define EXPECT_TOUCH_TOTAL(count)     \
-  histogram_tester->ExpectTotalCount( \
-      "Renderer4.MainThreadGestureScrollReason2", count);
+#define EXPECT_TOUCH_TOTAL(count)                           \
+  do {                                                      \
+    SCOPED_TRACE("EXPECT_TOUCH_TOTAL");                     \
+    histogram_tester->ExpectTotalCount(                     \
+        "Renderer4.MainThreadGestureScrollReason2", count); \
+  } while (false)
 
 namespace blink {
 
@@ -147,8 +159,7 @@ TEST_P(ScrollMetricsTest, TouchAndWheelGeneralTest) {
   if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
     // cc reports the below reasons because #box is not composited.
     EXPECT_TOUCH_BUCKET(
-        BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion),
-        1);
+        BucketIndex(cc::MainThreadScrollingReason::kFailedHitTest), 1);
     EXPECT_TOUCH_BUCKET(
         BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
         1);
@@ -184,8 +195,7 @@ TEST_P(ScrollMetricsTest, TouchAndWheelGeneralTest) {
   if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
     // cc reports the below reasons because #box is not composited.
     EXPECT_WHEEL_BUCKET(
-        BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion),
-        1);
+        BucketIndex(cc::MainThreadScrollingReason::kFailedHitTest), 1);
     EXPECT_WHEEL_BUCKET(
         BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
         1);
@@ -233,8 +243,7 @@ TEST_P(ScrollMetricsTest, CompositedScrollableAreaTest) {
   if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
     // cc reports the below reasons because #box is not composited.
     EXPECT_WHEEL_BUCKET(
-        BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion),
-        1);
+        BucketIndex(cc::MainThreadScrollingReason::kFailedHitTest), 1);
     EXPECT_WHEEL_BUCKET(
         BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
         1);
@@ -296,8 +305,7 @@ TEST_P(ScrollMetricsTest, NotScrollableAreaTest) {
   if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
     // cc reports the below reasons because #box is not composited.
     EXPECT_WHEEL_BUCKET(
-        BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion),
-        1);
+        BucketIndex(cc::MainThreadScrollingReason::kFailedHitTest), 1);
     EXPECT_WHEEL_BUCKET(
         BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
         1);
@@ -334,14 +342,13 @@ TEST_P(ScrollMetricsTest, NotScrollableAreaTest) {
   if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
     // The overflow: hidden element is still a non-fast scroll region, so cc
     // reports the following for the second scroll:
-    //   kNonFastScrollableRegion
+    //   kFailedHitTest
     //   kScrollingOnMainForAnyReason
     //
     // Since #box is overflow: hidden, the hit test returns the viewport, and
     // so we do not log kNoScrollingLayer again.
     EXPECT_WHEEL_BUCKET(
-        BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion),
-        1);
+        BucketIndex(cc::MainThreadScrollingReason::kFailedHitTest), 1);
     EXPECT_WHEEL_BUCKET(
         cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
     EXPECT_WHEEL_TOTAL(2);

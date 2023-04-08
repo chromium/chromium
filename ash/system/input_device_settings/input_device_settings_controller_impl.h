@@ -82,6 +82,7 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   void OnPointingStickListUpdated(
       std::vector<ui::InputDevice> pointing_sticks_to_add,
       std::vector<DeviceId> pointing_stick_ids_to_remove);
+  bool GetGeneralizedTopRowAreFKeys();
 
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;

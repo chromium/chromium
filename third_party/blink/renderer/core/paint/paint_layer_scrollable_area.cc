@@ -2462,11 +2462,13 @@ bool PaintLayerScrollableArea::ComputeNeedsCompositedScrolling(
   const auto* box = GetLayoutBox();
   auto new_background_paint_location =
       box->ComputeBackgroundPaintLocationIfComposited();
-  bool needs_composited_scrolling = ComputeNeedsCompositedScrollingInternal(
-      new_background_paint_location, force_prefer_compositing_to_lcd_text);
-  if (!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled() &&
-      !needs_composited_scrolling) {
-    new_background_paint_location = kBackgroundPaintInBorderBoxSpace;
+  bool needs_composited_scrolling = false;
+  if (!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
+    needs_composited_scrolling = ComputeNeedsCompositedScrollingInternal(
+        new_background_paint_location, force_prefer_compositing_to_lcd_text);
+    if (!needs_composited_scrolling) {
+      new_background_paint_location = kBackgroundPaintInBorderBoxSpace;
+    }
   }
   box->GetMutableForPainting().SetBackgroundPaintLocation(
       new_background_paint_location);
@@ -2477,6 +2479,7 @@ bool PaintLayerScrollableArea::ComputeNeedsCompositedScrolling(
 bool PaintLayerScrollableArea::ComputeNeedsCompositedScrollingInternal(
     BackgroundPaintLocation background_paint_location_if_composited,
     bool force_prefer_compositing_to_lcd_text) {
+  DCHECK(!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled());
   DCHECK_EQ(background_paint_location_if_composited,
             GetLayoutBox()->ComputeBackgroundPaintLocationIfComposited());
 
@@ -2490,10 +2493,6 @@ bool PaintLayerScrollableArea::ComputeNeedsCompositedScrollingInternal(
   }
   if (force_prefer_compositing_to_lcd_text) {
     return true;
-  }
-  if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-    // We'll decide composited scrolling in PaintArtifactCompositor later.
-    return false;
   }
   if (RuntimeEnabledFeatures::PreferNonCompositedScrollingEnabled()) {
     return false;

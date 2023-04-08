@@ -33,6 +33,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotEnabledStateNotifier
           observer);
 
  private:
+  friend class HotspotNotifierTest;
   HotspotEnabledStateNotifier(HotspotStateHandler* hotspot_state_handler,
                               HotspotController* hotspot_controller);
 

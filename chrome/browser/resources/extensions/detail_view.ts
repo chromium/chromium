@@ -148,7 +148,7 @@ export class ExtensionsDetailViewElement extends
     });
   }
 
-  private onActivityLogTap_() {
+  private onActivityLogClick_() {
     navigation.navigateTo({page: Page.ACTIVITY_LOG, extensionId: this.data.id});
   }
 
@@ -166,7 +166,7 @@ export class ExtensionsDetailViewElement extends
         'itemDetailsBackButtonRoleDescription', this.data.name);
   }
 
-  private onCloseButtonTap_() {
+  private onCloseButtonClick_() {
     navigation.navigateTo({page: Page.LIST});
   }
 
@@ -227,31 +227,31 @@ export class ExtensionsDetailViewElement extends
     this.$.enableToggle.checked = this.isEnabled_();
   }
 
-  private onInspectTap_(
+  private onInspectClick_(
       e: DomRepeatEvent<chrome.developerPrivate.ExtensionView>) {
     this.delegate.inspectItemView(this.data.id, e.model.item);
   }
 
-  private onExtensionOptionsTap_() {
+  private onExtensionOptionsClick_() {
     this.delegate.showItemOptionsPage(this.data);
   }
 
-  private onReloadTap_() {
+  private onReloadClick_() {
     this.delegate.reloadItem(this.data.id).catch(loadError => {
       this.dispatchEvent(new CustomEvent(
           'load-error', {bubbles: true, composed: true, detail: loadError}));
     });
   }
 
-  private onRemoveTap_() {
+  private onRemoveClick_() {
     this.delegate.deleteItem(this.data.id);
   }
 
-  private onRepairTap_() {
+  private onRepairClick_() {
     this.delegate.repairItem(this.data.id);
   }
 
-  private onLoadPathTap_() {
+  private onLoadPathClick_() {
     this.delegate.showInFolder(this.data.id);
   }
 
@@ -279,7 +279,7 @@ export class ExtensionsDetailViewElement extends
                 '#collect-errors')!.checked);
   }
 
-  private onExtensionWebSiteTap_() {
+  private onExtensionWebSiteClick_() {
     this.delegate.openUrl(this.data.manifestHomePageUrl);
   }
 
@@ -289,7 +289,7 @@ export class ExtensionsDetailViewElement extends
             this.data.id}`);
   }
 
-  private onViewInStoreTap_() {
+  private onViewInStoreClick_() {
     this.delegate.openUrl(this.data.webStoreUrl);
   }
 

@@ -9,6 +9,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
@@ -26,7 +27,7 @@ public class ScreenshotShareSheetDialog extends DialogFragment {
     private WindowAndroid mWindowAndroid;
     private String mShareUrl;
     private ChromeOptionShareCallback mChromeOptionShareCallback;
-    private Callback<Runnable> mInstallCallback;
+    private @Nullable Callback<Runnable> mInstallCallback;
 
     /**
      * The ScreenshotShareSheetDialog constructor.
@@ -43,7 +44,7 @@ public class ScreenshotShareSheetDialog extends DialogFragment {
      */
     public void init(Bitmap screenshot, WindowAndroid windowAndroid, String shareUrl,
             ChromeOptionShareCallback chromeOptionShareCallback,
-            Callback<Runnable> installCallback) {
+            @Nullable Callback<Runnable> installCallback) {
         mScreenshot = screenshot;
         mInstallCallback = installCallback;
         mWindowAndroid = windowAndroid;

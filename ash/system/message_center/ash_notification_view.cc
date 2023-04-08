@@ -20,6 +20,7 @@
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
+#include "ash/style/typography.h"
 #include "ash/system/message_center/ash_notification_control_button_factory.h"
 #include "ash/system/message_center/ash_notification_drag_controller.h"
 #include "ash/system/message_center/ash_notification_expand_button.h"
@@ -42,6 +43,7 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/animation_throughput_reporter.h"
@@ -356,6 +358,17 @@ AshNotificationView::NotificationTitleRow::NotificationTitleRow(
   timestamp_in_collapsed_view_->SetProperty(views::kMarginsKey,
                                             kTimeStampInCollapsedStatePadding);
   timestamp_in_collapsed_view_->SetElideBehavior(gfx::ElideBehavior::NO_ELIDE);
+  if (chromeos::features::IsJellyEnabled()) {
+    ash::TypographyProvider::Get()->StyleLabel(
+        ash::TypographyToken::kCrosButton2, *title_view_);
+    title_view_->SetEnabledColorId(cros_tokens::kCrosSysSurface);
+
+    timestamp_in_collapsed_view_->SetEnabledColorId(
+        cros_tokens::kCrosSysSecondary);
+    ash::TypographyProvider::Get()->StyleLabel(
+        ash::TypographyToken::kCrosAnnotation1, *timestamp_in_collapsed_view_);
+  }
+
   title_view_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,

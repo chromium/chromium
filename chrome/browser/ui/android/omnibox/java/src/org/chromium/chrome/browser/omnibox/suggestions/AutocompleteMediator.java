@@ -22,8 +22,6 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.jank_tracker.JankScenario;
-import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -89,7 +87,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     private final @NonNull DropdownItemViewInfoListManager mDropdownViewInfoListManager;
     private final @NonNull Callback<Tab> mBringTabToFrontCallback;
     private final @NonNull Supplier<TabWindowManager> mTabWindowManagerSupplier;
-    private final @NonNull JankTracker mJankTracker;
     private final @NonNull Runnable mClearFocusCallback;
 
     private @NonNull AutocompleteResult mAutocompleteResult = AutocompleteResult.EMPTY_RESULT;
@@ -172,15 +169,13 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             @NonNull LocationBarDataProvider locationBarDataProvider,
             @NonNull Callback<Tab> bringTabToFrontCallback,
             @NonNull Supplier<TabWindowManager> tabWindowManagerSupplier,
-            @NonNull BookmarkState bookmarkState, @NonNull JankTracker jankTracker,
-            @NonNull ActionChipsDelegate actionChipsDelegate,
+            @NonNull BookmarkState bookmarkState, @NonNull ActionChipsDelegate actionChipsDelegate,
             @NonNull OpenHistoryClustersDelegate openHistoryClustersDelegate) {
         mContext = context;
         mControllerProvider = controllerProvider;
         mDelegate = delegate;
         mUrlBarEditingTextProvider = textProvider;
         mListPropertyModel = listPropertyModel;
-        mJankTracker = jankTracker;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mHandler = handler;
         mDataProvider = locationBarDataProvider;
@@ -328,7 +323,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             mOmniboxFocusResultedInNavigation = false;
             mSuggestionsListScrolled = false;
             mUrlFocusTime = System.currentTimeMillis();
-            mJankTracker.startTrackingScenario(JankScenario.OMNIBOX_FOCUS);
 
             if (!OmniboxFeatures.shouldRemoveExcessiveRecycledViewClearCalls()) {
                 setSuggestionVisibilityState(SuggestionVisibilityState.PENDING_ALLOW);
@@ -352,7 +346,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             }
         } else {
             stopMeasuringSuggestionRequestToUiModelTime();
-            mJankTracker.finishTrackingScenario(JankScenario.OMNIBOX_FOCUS);
             cancelAutocompleteRequests();
             SuggestionsMetrics.recordOmniboxFocusResultedInNavigation(
                     mOmniboxFocusResultedInNavigation);

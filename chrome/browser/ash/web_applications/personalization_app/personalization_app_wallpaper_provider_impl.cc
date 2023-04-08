@@ -165,7 +165,7 @@ void PersonalizationAppWallpaperProviderImpl::GetWallpaperAsJpegBytes(
   // user's wallpaper is being set.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::TaskPriority::USER_VISIBLE,
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&GetPreviewWallpaper), std::move(callback));
 }
@@ -617,10 +617,9 @@ void PersonalizationAppWallpaperProviderImpl::SelectGooglePhotosAlbum(
     const std::string& album_id,
     SetDailyRefreshCallback callback) {
   if (!is_google_photos_enterprise_enabled_) {
-    std::move(callback).Run(mojom::SetDailyRefreshResponse::New(
-        /*success=*/false, /*force_refresh=*/false));
-    LOG(WARNING) << "Rejected attempt to set Google Photos wallpaper while "
-                 << "disabled via enterprise setting.";
+    wallpaper_receiver_.ReportBadMessage(
+        "Rejected attempt to set Google Photos wallpaper while disabled via "
+        "enterprise setting.");
     return;
   }
 

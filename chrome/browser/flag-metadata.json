@@ -348,11 +348,6 @@
     "expiry_milestone": 112
   },
   {
-    "name": "ash-bento-bar",
-    "owners": [ "minch", "janetmac" ],
-    "expiry_milestone": 116
-  },
-  {
     "name": "ash-capture-mode-demo-tools",
     "owners": [ "michelefan", "gzadina" ],
     "expiry_milestone": 122
@@ -6401,11 +6396,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "release-track-ui",
-    "owners": [ "rtinkoff", "cros-status-area-eng@google.com" ],
-    "expiry_milestone": 114
-  },
-  {
     "name": "remove-crash-infobar",
     "owners": [ "justincohen", "bling-flags@google.com"],
     "expiry_milestone": 115
@@ -6636,6 +6626,11 @@
     "name": "sf-symbols-follow-up",
     "owners": [ "ewannpv", "gambard", "bling-flags@google.com" ],
     "expiry_milestone": 118
+  },
+  {
+    "name": "share-sheet-custom-actions-polish",
+    "owners": [ "wenyufu" ],
+    "expiry_milestone": 121
   },
   {
     "name": "share-sheet-migration-android",

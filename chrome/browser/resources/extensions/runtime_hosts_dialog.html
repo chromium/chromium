@@ -17,10 +17,10 @@
     </div>
   </div>
   <div slot="button-container">
-    <cr-button class="cancel-button" on-click="onCancelTap_">
+    <cr-button class="cancel-button" on-click="onCancelClick_">
       $i18n{cancel}
     </cr-button>
-    <cr-button class="action-button" id="submit" on-click="onSubmitTap_"
+    <cr-button class="action-button" id="submit" on-click="onSubmitClick_"
         disabled="[[computeSubmitButtonDisabled_(inputInvalid_, site_)]]">
       [[computeSubmitButtonLabel_(currentSite)]]
     </cr-button>

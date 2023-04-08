@@ -19,6 +19,9 @@ const char HotspotNotifier::kWiFiTurnedOffNotificationId[] =
 const char HotspotNotifier::kAdminRestrictedNotificationId[] =
     "cros_hotspot_notifier_ids.admin_restricted";
 
+const char HotspotNotifier::kWiFiTurnedOnNotificationId[] =
+    "cros_hotspot_notifier_ids.wifi_turned_on";
+
 const char kNotifierHotspot[] = "ash.hotspot";
 
 HotspotNotifier::HotspotNotifier() {
@@ -48,20 +51,32 @@ void HotspotNotifier::OnHotspotTurnedOn(bool wifi_turned_off) {
 
 void HotspotNotifier::OnHotspotTurnedOff(
     hotspot_config::mojom::DisableReason disable_reason) {
-  if (disable_reason ==
-      hotspot_config::mojom::DisableReason::kProhibitedByPolicy) {
-    std::unique_ptr<message_center::Notification> notification =
-        CreateNotification(IDS_ASH_HOTSPOT_OFF_TITLE,
-                           IDS_ASH_HOTSPOT_ADMIN_RESTRICTED_MESSAGE,
-                           kAdminRestrictedNotificationId,
-                           /*delegate=*/nullptr);
-
-    message_center::MessageCenter* message_center =
-        message_center::MessageCenter::Get();
-    message_center->RemoveNotification(kAdminRestrictedNotificationId,
-                                       /*by_user=*/false);
-    message_center->AddNotification(std::move(notification));
+  scoped_refptr<message_center::NotificationDelegate> delegate = nullptr;
+  int title_id;
+  int message_id;
+  const char* notification_id;
+  switch (disable_reason) {
+    case hotspot_config::mojom::DisableReason::kProhibitedByPolicy:
+      title_id = IDS_ASH_HOTSPOT_OFF_TITLE;
+      message_id = IDS_ASH_HOTSPOT_ADMIN_RESTRICTED_MESSAGE;
+      notification_id = kAdminRestrictedNotificationId;
+      break;
+    case hotspot_config::mojom::DisableReason::kWifiEnabled:
+      title_id = IDS_ASH_HOTSPOT_OFF_TITLE;
+      message_id = IDS_ASH_HOTSPOT_WIFI_TURNED_ON_MESSAGE;
+      notification_id = kWiFiTurnedOnNotificationId;
+      break;
+    default:
+      return;
   }
+  std::unique_ptr<message_center::Notification> notification =
+      CreateNotification(title_id, message_id, notification_id, delegate);
+
+  message_center::MessageCenter* message_center =
+      message_center::MessageCenter::Get();
+  message_center->RemoveNotification(notification_id,
+                                     /*by_user=*/false);
+  message_center->AddNotification(std::move(notification));
 }
 
 std::unique_ptr<message_center::Notification>

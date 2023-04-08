@@ -79,14 +79,14 @@ cc::ScrollState CreateScrollStateForGesture(const WebGestureEvent& event) {
 
         // If the target scroller comes from a main thread hit test, we're in
         // scroll unification.
-        scroll_state_data.main_thread_hit_tested_reasons =
-            event.data.scroll_begin.main_thread_hit_tested_reasons;
-        DCHECK(!event.data.scroll_begin.main_thread_hit_tested_reasons ||
+        scroll_state_data.is_main_thread_hit_tested =
+            event.data.scroll_begin.main_thread_hit_tested;
+        DCHECK(!event.data.scroll_begin.main_thread_hit_tested ||
                base::FeatureList::IsEnabled(::features::kScrollUnification));
       } else {
         // If a main thread hit test didn't yield a target we should have
         // discarded this event before this point.
-        DCHECK(!event.data.scroll_begin.main_thread_hit_tested_reasons);
+        DCHECK(!event.data.scroll_begin.main_thread_hit_tested);
       }
 
       break;
@@ -386,14 +386,11 @@ void InputHandlerProxy::ContinueScrollBeginAfterMainThreadHitTest(
   DCHECK(base::FeatureList::IsEnabled(::features::kScrollUnification));
   DCHECK_EQ(event->Event().GetType(),
             WebGestureEvent::Type::kGestureScrollBegin);
-  DCHECK(scroll_begin_main_thread_hit_test_reasons_);
+  DCHECK(hit_testing_scroll_begin_on_main_thread_);
   DCHECK(currently_active_gesture_device_);
   DCHECK(input_handler_);
 
-  uint32_t main_thread_hit_test_reasons =
-      scroll_begin_main_thread_hit_test_reasons_;
-  scroll_begin_main_thread_hit_test_reasons_ =
-      cc::MainThreadScrollingReason::kNotScrollingOnMain;
+  hit_testing_scroll_begin_on_main_thread_ = false;
 
   // HandleGestureScrollBegin has logic to end an existing scroll when an
   // unexpected scroll begin arrives. We currently think we're in a scroll
@@ -406,8 +403,7 @@ void InputHandlerProxy::ContinueScrollBeginAfterMainThreadHitTest(
   if (hit_test_result) {
     gesture_event->data.scroll_begin.scrollable_area_element_id =
         hit_test_result.GetInternalValue();
-    gesture_event->data.scroll_begin.main_thread_hit_tested_reasons =
-        main_thread_hit_test_reasons;
+    gesture_event->data.scroll_begin.main_thread_hit_tested = true;
 
     if (metrics) {
       // The event is going to be re-processed on the compositor thread; so,
@@ -520,7 +516,7 @@ bool InputHandlerProxy::HasQueuedEventsReadyForDispatch() {
   // Block flushing the compositor gesture event queue while there's an async
   // scroll begin hit test outstanding. We'll flush the queue when the hit test
   // responds.
-  if (scroll_begin_main_thread_hit_test_reasons_) {
+  if (hit_testing_scroll_begin_on_main_thread_) {
     DCHECK(base::FeatureList::IsEnabled(::features::kScrollUnification));
     return false;
   }
@@ -848,7 +844,7 @@ WebInputEventAttribution InputHandlerProxy::PerformEventAttribution(
 void InputHandlerProxy::RecordScrollBegin(
     WebGestureDevice device,
     uint32_t reasons_from_scroll_begin,
-    uint32_t main_thread_hit_tested_reasons,
+    bool was_main_thread_hit_tested,
     uint32_t main_thread_repaint_reasons) {
   if (device != WebGestureDevice::kTouchpad &&
       device != WebGestureDevice::kScrollbar &&
@@ -876,7 +872,7 @@ void InputHandlerProxy::RecordScrollBegin(
       disposition.has_value() && disposition == DID_NOT_HANDLE;
 
   bool blocked_on_main_at_begin =
-      blocked_on_main_thread_handler || main_thread_hit_tested_reasons;
+      blocked_on_main_thread_handler || was_main_thread_hit_tested;
 
   auto scroll_start_state = RecordScrollingThread(
       is_compositor_scroll, blocked_on_main_at_begin, device);
@@ -892,7 +888,9 @@ void InputHandlerProxy::RecordScrollBegin(
              ? cc::MainThreadScrollingReason::kWheelEventHandlerRegion
              : cc::MainThreadScrollingReason::kTouchEventHandlerRegion);
   }
-  reportable_reasons |= main_thread_hit_tested_reasons;
+  if (was_main_thread_hit_tested) {
+    reportable_reasons |= cc::MainThreadScrollingReason::kFailedHitTest;
+  }
 
   // With scroll unification, we never scroll "on main" from the perspective
   // of cc::InputHandler, but we still want to log reasons if the user will not
@@ -991,17 +989,16 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleGestureScrollBegin(
   // If we need a hit test from the main thread, we'll reinject this scroll
   // begin event once the hit test is complete so avoid everything below for
   // now, it'll be run on the second iteration.
-  if (scroll_status.main_thread_hit_test_reasons) {
+  if (scroll_status.needs_main_thread_hit_test) {
     DCHECK(base::FeatureList::IsEnabled(::features::kScrollUnification));
-    scroll_begin_main_thread_hit_test_reasons_ =
-        scroll_status.main_thread_hit_test_reasons;
+    hit_testing_scroll_begin_on_main_thread_ = true;
     return REQUIRES_MAIN_THREAD_HIT_TEST;
   }
 
   if (scroll_status.thread != ScrollThread::SCROLL_IGNORED) {
     RecordScrollBegin(gesture_event.SourceDevice(),
                       scroll_status.main_thread_scrolling_reasons,
-                      scroll_state.main_thread_hit_tested_reasons(),
+                      scroll_state.is_main_thread_hit_tested(),
                       scroll_status.main_thread_repaint_reasons);
   }
 

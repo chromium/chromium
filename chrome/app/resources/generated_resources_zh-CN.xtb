@@ -2984,6 +2984,7 @@
 <translation id="3584527007414070635">继续您的<ph name="MODULE_TITLE" />之旅</translation>
 <translation id="3586787825263265024"><ph name="APPLICATION_NAME" />应用要求 OneDrive 必须可用。</translation>
 <translation id="3586806079541226322">无法打开此文件</translation>
+<translation id="3586931643579894722">隐藏详细信息</translation>
 <translation id="3587438013689771191">详细了解：<ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">全部</translation>
 <translation id="3588790464166520201">允许安装付款处理程序</translation>
@@ -5826,6 +5827,7 @@
 <translation id="6136114942382973861">关闭下载内容栏</translation>
 <translation id="6136287496450963112">您尚未设置 PIN 码来保护您的安全密钥。若要管理指纹，请先创建一个 PIN 码。</translation>
 <translation id="6138680304137685902">采用 SHA-384 算法的 X9.62 ECDSA 签名</translation>
+<translation id="6140948187512243695">显示详细信息</translation>
 <translation id="6141988275892716286">确认下载</translation>
 <translation id="6143186082490678276">获取帮助</translation>
 <translation id="6143366292569327983">选择要翻译的网页语言</translation>

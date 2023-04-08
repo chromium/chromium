@@ -234,8 +234,8 @@ void ComputeParagraphAndHeadingThresholds(
   }
 }
 
-void FinishStaticNode(ui::AXNodeData** static_text_node,
-                      std::string* static_text) {
+void BuildStaticNode(ui::AXNodeData** static_text_node,
+                     std::string* static_text) {
   // If we're in the middle of building a static text node, finish it before
   // moving on to the next object.
   if (*static_text_node) {
@@ -377,7 +377,7 @@ bool IsTextRenderModeStroke(
   }
 }
 
-ui::AXNodeData* CreateNode(
+ui::AXNodeData* CreateAndAppendNode(
     ax::mojom::Role role,
     ax::mojom::Restriction restriction,
     content::RenderAccessibility* render_accessibility,
@@ -410,9 +410,9 @@ ui::AXNodeData* CreateStatusNode(
     ui::AXNodeData* pdf_root_node) {
   // Create a status node that conveys a notification message and add it under
   // the PDF root node as the first node.
-  ui::AXNodeData* node_ptr =
-      CreateNode(ax::mojom::Role::kStatus, ax::mojom::Restriction::kReadOnly,
-                 render_accessibility, nodes);
+  ui::AXNodeData* node_ptr = CreateAndAppendNode(
+      ax::mojom::Role::kStatus, ax::mojom::Restriction::kReadOnly,
+      render_accessibility, nodes);
   // Set the origin of this status node to be offscreen with a 1x1 rectangle as
   // this status node doesn't have a visual element. The origin of the doc is
   // (0, 0), so setting (-1, -1) will make this node offscreen.
@@ -543,7 +543,7 @@ class PdfAccessibilityTreeBuilder {
       // `text_run_index`, then push the link node in the paragraph.
       if (IsObjectWithRangeInTextRun(links_, current_link_index_,
                                      text_run_index)) {
-        FinishStaticNode(&static_text_node, &static_text);
+        BuildStaticNode(&static_text_node, &static_text);
         const chrome_pdf::AccessibilityLinkInfo& link =
             links_[current_link_index_++];
         AddLinkToParaNode(link, para_node, &previous_on_line_node,
@@ -554,34 +554,34 @@ class PdfAccessibilityTreeBuilder {
 
       } else if (IsObjectInTextRun(images_, current_image_index_,
                                    text_run_index)) {
-        FinishStaticNode(&static_text_node, &static_text);
+        BuildStaticNode(&static_text_node, &static_text);
         AddImageToParaNode(images_[current_image_index_++], para_node,
                            &text_run_index);
         continue;
       } else if (IsObjectWithRangeInTextRun(
                      highlights_, current_highlight_index_, text_run_index)) {
-        FinishStaticNode(&static_text_node, &static_text);
+        BuildStaticNode(&static_text_node, &static_text);
         AddHighlightToParaNode(highlights_[current_highlight_index_++],
                                para_node, &previous_on_line_node,
                                &text_run_index);
       } else if (IsObjectInTextRun(text_fields_, current_text_field_index_,
                                    text_run_index) &&
                  pdf_forms_enabled) {
-        FinishStaticNode(&static_text_node, &static_text);
+        BuildStaticNode(&static_text_node, &static_text);
         AddTextFieldToParaNode(text_fields_[current_text_field_index_++],
                                para_node, &text_run_index);
         continue;
       } else if (IsObjectInTextRun(buttons_, current_button_index_,
                                    text_run_index) &&
                  pdf_forms_enabled) {
-        FinishStaticNode(&static_text_node, &static_text);
+        BuildStaticNode(&static_text_node, &static_text);
         AddButtonToParaNode(buttons_[current_button_index_++], para_node,
                             &text_run_index);
         continue;
       } else if (IsObjectInTextRun(choice_fields_, current_choice_field_index_,
                                    text_run_index) &&
                  pdf_forms_enabled) {
-        FinishStaticNode(&static_text_node, &static_text);
+        BuildStaticNode(&static_text_node, &static_text);
         AddChoiceFieldToParaNode(choice_fields_[current_choice_field_index_++],
                                  para_node, &text_run_index);
         continue;
@@ -631,14 +631,14 @@ class PdfAccessibilityTreeBuilder {
       }
 
       if (text_run_index == text_runs_.size() - 1) {
-        FinishStaticNode(&static_text_node, &static_text);
+        BuildStaticNode(&static_text_node, &static_text);
         break;
       }
 
       if (!previous_on_line_node) {
         if (BreakParagraph(text_runs_, text_run_index,
                            paragraph_spacing_threshold_)) {
-          FinishStaticNode(&static_text_node, &static_text);
+          BuildStaticNode(&static_text_node, &static_text);
           para_node = nullptr;
         }
       }
@@ -670,9 +670,9 @@ class PdfAccessibilityTreeBuilder {
   }
 
   ui::AXNodeData* CreateParagraphNode(float font_size) {
-    ui::AXNodeData* para_node = CreateNode(ax::mojom::Role::kParagraph,
-                                           ax::mojom::Restriction::kReadOnly,
-                                           render_accessibility_, nodes_);
+    ui::AXNodeData* para_node = CreateAndAppendNode(
+        ax::mojom::Role::kParagraph, ax::mojom::Restriction::kReadOnly,
+        render_accessibility_, nodes_);
     para_node->AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
                                 true);
 
@@ -691,7 +691,7 @@ class PdfAccessibilityTreeBuilder {
 
   ui::AXNodeData* CreateStaticTextNode(
       const chrome_pdf::PageCharacterIndex& page_char_index) {
-    ui::AXNodeData* static_text_node = CreateNode(
+    ui::AXNodeData* static_text_node = CreateAndAppendNode(
         ax::mojom::Role::kStaticText, ax::mojom::Restriction::kReadOnly,
         render_accessibility_, nodes_);
     static_text_node->SetNameFrom(ax::mojom::NameFrom::kContents);
@@ -702,7 +702,7 @@ class PdfAccessibilityTreeBuilder {
   ui::AXNodeData* CreateInlineTextBoxNode(
       const chrome_pdf::AccessibilityTextRunInfo& text_run,
       const chrome_pdf::PageCharacterIndex& page_char_index) {
-    ui::AXNodeData* inline_text_box_node = CreateNode(
+    ui::AXNodeData* inline_text_box_node = CreateAndAppendNode(
         ax::mojom::Role::kInlineTextBox, ax::mojom::Restriction::kReadOnly,
         render_accessibility_, nodes_);
     inline_text_box_node->SetNameFrom(ax::mojom::NameFrom::kContents);
@@ -746,9 +746,9 @@ class PdfAccessibilityTreeBuilder {
 
   ui::AXNodeData* CreateLinkNode(
       const chrome_pdf::AccessibilityLinkInfo& link) {
-    ui::AXNodeData* link_node =
-        CreateNode(ax::mojom::Role::kLink, ax::mojom::Restriction::kReadOnly,
-                   render_accessibility_, nodes_);
+    ui::AXNodeData* link_node = CreateAndAppendNode(
+        ax::mojom::Role::kLink, ax::mojom::Restriction::kReadOnly,
+        render_accessibility_, nodes_);
 
     link_node->AddStringAttribute(ax::mojom::StringAttribute::kUrl, link.url);
     link_node->AddStringAttribute(ax::mojom::StringAttribute::kName,
@@ -764,9 +764,9 @@ class PdfAccessibilityTreeBuilder {
 
   ui::AXNodeData* CreateImageNode(
       const chrome_pdf::AccessibilityImageInfo& image) {
-    ui::AXNodeData* image_node =
-        CreateNode(ax::mojom::Role::kImage, ax::mojom::Restriction::kReadOnly,
-                   render_accessibility_, nodes_);
+    ui::AXNodeData* image_node = CreateAndAppendNode(
+        ax::mojom::Role::kImage, ax::mojom::Restriction::kReadOnly,
+        render_accessibility_, nodes_);
 
     if (image.alt_text.empty()) {
       image_node->AddStringAttribute(
@@ -782,7 +782,7 @@ class PdfAccessibilityTreeBuilder {
 
   ui::AXNodeData* CreateHighlightNode(
       const chrome_pdf::AccessibilityHighlightInfo& highlight) {
-    ui::AXNodeData* highlight_node = CreateNode(
+    ui::AXNodeData* highlight_node = CreateAndAppendNode(
         ax::mojom::Role::kPdfActionableHighlight,
         ax::mojom::Restriction::kReadOnly, render_accessibility_, nodes_);
 
@@ -800,16 +800,16 @@ class PdfAccessibilityTreeBuilder {
 
   ui::AXNodeData* CreatePopupNoteNode(
       const chrome_pdf::AccessibilityHighlightInfo& highlight) {
-    ui::AXNodeData* popup_note_node =
-        CreateNode(ax::mojom::Role::kNote, ax::mojom::Restriction::kReadOnly,
-                   render_accessibility_, nodes_);
+    ui::AXNodeData* popup_note_node = CreateAndAppendNode(
+        ax::mojom::Role::kNote, ax::mojom::Restriction::kReadOnly,
+        render_accessibility_, nodes_);
 
     popup_note_node->AddStringAttribute(
         ax::mojom::StringAttribute::kRoleDescription,
         l10n_util::GetStringUTF8(IDS_AX_ROLE_DESCRIPTION_PDF_POPUP_NOTE));
     popup_note_node->relative_bounds.bounds = highlight.bounds;
 
-    ui::AXNodeData* static_popup_note_text_node = CreateNode(
+    ui::AXNodeData* static_popup_note_text_node = CreateAndAppendNode(
         ax::mojom::Role::kStaticText, ax::mojom::Restriction::kReadOnly,
         render_accessibility_, nodes_);
 
@@ -829,8 +829,8 @@ class PdfAccessibilityTreeBuilder {
                                              ? ax::mojom::Restriction::kReadOnly
                                              : ax::mojom::Restriction::kNone;
     ui::AXNodeData* text_field_node =
-        CreateNode(ax::mojom::Role::kTextField, restriction,
-                   render_accessibility_, nodes_);
+        CreateAndAppendNode(ax::mojom::Role::kTextField, restriction,
+                            render_accessibility_, nodes_);
 
     text_field_node->AddStringAttribute(ax::mojom::StringAttribute::kName,
                                         text_field.name);
@@ -851,8 +851,8 @@ class PdfAccessibilityTreeBuilder {
                                              ? ax::mojom::Restriction::kReadOnly
                                              : ax::mojom::Restriction::kNone;
     ui::AXNodeData* button_node =
-        CreateNode(GetRoleForButtonType(button.type), restriction,
-                   render_accessibility_, nodes_);
+        CreateAndAppendNode(GetRoleForButtonType(button.type), restriction,
+                            render_accessibility_, nodes_);
     button_node->AddStringAttribute(ax::mojom::StringAttribute::kName,
                                     button.name);
     button_node->AddState(ax::mojom::State::kFocusable);
@@ -882,8 +882,8 @@ class PdfAccessibilityTreeBuilder {
       const chrome_pdf::AccessibilityChoiceFieldOptionInfo& choice_field_option,
       ax::mojom::Restriction restriction) {
     ui::AXNodeData* listbox_option_node =
-        CreateNode(ax::mojom::Role::kListBoxOption, restriction,
-                   render_accessibility_, nodes_);
+        CreateAndAppendNode(ax::mojom::Role::kListBoxOption, restriction,
+                            render_accessibility_, nodes_);
 
     listbox_option_node->AddStringAttribute(ax::mojom::StringAttribute::kName,
                                             choice_field_option.name);
@@ -902,7 +902,7 @@ class PdfAccessibilityTreeBuilder {
     ax::mojom::Restriction restriction = choice_field.is_read_only
                                              ? ax::mojom::Restriction::kReadOnly
                                              : ax::mojom::Restriction::kNone;
-    ui::AXNodeData* listbox_node = CreateNode(
+    ui::AXNodeData* listbox_node = CreateAndAppendNode(
         ax::mojom::Role::kListBox, restriction, render_accessibility_, nodes_);
 
     if (choice_field.type != chrome_pdf::ChoiceFieldType::kComboBox) {
@@ -944,8 +944,8 @@ class PdfAccessibilityTreeBuilder {
     ax::mojom::Role input_role = choice_field.has_editable_text_box
                                      ? ax::mojom::Role::kTextFieldWithComboBox
                                      : ax::mojom::Role::kComboBoxMenuButton;
-    ui::AXNodeData* combobox_input_node =
-        CreateNode(input_role, restriction, render_accessibility_, nodes_);
+    ui::AXNodeData* combobox_input_node = CreateAndAppendNode(
+        input_role, restriction, render_accessibility_, nodes_);
     combobox_input_node->AddStringAttribute(ax::mojom::StringAttribute::kName,
                                             choice_field.name);
     for (const chrome_pdf::AccessibilityChoiceFieldOptionInfo& option :
@@ -973,8 +973,8 @@ class PdfAccessibilityTreeBuilder {
                                              ? ax::mojom::Restriction::kReadOnly
                                              : ax::mojom::Restriction::kNone;
     ui::AXNodeData* combobox_node =
-        CreateNode(ax::mojom::Role::kComboBoxGrouping, restriction,
-                   render_accessibility_, nodes_);
+        CreateAndAppendNode(ax::mojom::Role::kComboBoxGrouping, restriction,
+                            render_accessibility_, nodes_);
     ui::AXNodeData* input_element =
         CreateComboboxInputNode(choice_field, restriction);
     ui::AXNodeData* list_element =
@@ -1190,9 +1190,9 @@ class PdfAccessibilityTreeBuilder {
 
     // If we don't have a paragraph node, create a new one.
     if (!para_node) {
-      para_node = CreateNode(ax::mojom::Role::kParagraph,
-                             ax::mojom::Restriction::kReadOnly,
-                             render_accessibility_, nodes_);
+      para_node = CreateAndAppendNode(ax::mojom::Role::kParagraph,
+                                      ax::mojom::Restriction::kReadOnly,
+                                      render_accessibility_, nodes_);
       page_node_->child_ids.push_back(para_node->id);
     }
     // Push all the links not anchored to any text run to the last paragraph.
@@ -1513,9 +1513,9 @@ void PdfAccessibilityTree::DoSetAccessibilityDocInfo(
 
   ClearAccessibilityNodes();
   page_count_ = doc_info.page_count;
-  doc_node_ =
-      CreateNode(ax::mojom::Role::kPdfRoot, ax::mojom::Restriction::kReadOnly,
-                 render_accessibility, &nodes_);
+  doc_node_ = CreateAndAppendNode(ax::mojom::Role::kPdfRoot,
+                                  ax::mojom::Restriction::kReadOnly,
+                                  render_accessibility, &nodes_);
   doc_node_->AddState(ax::mojom::State::kFocusable);
   doc_node_->AddStringAttribute(ax::mojom::StringAttribute::kName,
                                 l10n_util::GetPluralStringFUTF8(
@@ -1579,9 +1579,9 @@ void PdfAccessibilityTree::DoSetAccessibilityPageInfo(
   CHECK_LT(page_index, page_count_);
   ++next_page_index_;
 
-  ui::AXNodeData* page_node =
-      CreateNode(ax::mojom::Role::kRegion, ax::mojom::Restriction::kReadOnly,
-                 render_accessibility, &nodes_);
+  ui::AXNodeData* page_node = CreateAndAppendNode(
+      ax::mojom::Role::kRegion, ax::mojom::Restriction::kReadOnly,
+      render_accessibility, &nodes_);
   page_node->AddStringAttribute(
       ax::mojom::StringAttribute::kName,
       l10n_util::GetPluralStringFUTF8(IDS_PDF_PAGE_INDEX, page_index + 1));
@@ -1615,7 +1615,7 @@ void PdfAccessibilityTree::DoSetAccessibilityPageInfo(
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
   if (page_index == page_count_ - 1)
-    Finish();
+    UnserializeNodes();
 }
 
 void PdfAccessibilityTree::AddPageContent(
@@ -1641,7 +1641,7 @@ void PdfAccessibilityTree::AddPageContent(
   tree_builder.BuildPageTree();
 }
 
-void PdfAccessibilityTree::Finish() {
+void PdfAccessibilityTree::UnserializeNodes() {
   content::RenderAccessibility* render_accessibility =
       GetRenderAccessibilityIfEnabled();
   if (!render_accessibility)
@@ -1668,12 +1668,19 @@ void PdfAccessibilityTree::Finish() {
 
   base::UmaHistogramBoolean("Accessibility.PDF.HasAccessibleText",
                             did_get_a_text_run_);
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  did_unserialize_nodes_once_ = true;
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-void PdfAccessibilityTree::FinishWithStatus() {
+void PdfAccessibilityTree::SetOcrCompleteStatus() {
   VLOG(2) << "Performing OCR on PDF is complete.";
   SetStatusMessage(IDS_PDF_OCR_COMPLETED);
+
+  if (!did_unserialize_nodes_once_) {
+    return;
+  }
 
   ui::AXTreeUpdate update;
   update.root_id = doc_node_->id;
@@ -1911,13 +1918,14 @@ void PdfAccessibilityTree::OnOcrDataReceived(
   DCHECK_NE(num_remaining_ocr_requests_, 0u);
   bool is_last_ocr_request = --num_remaining_ocr_requests_ == 0u;
 
+  // TODO(crbug.com/1393069): Investigate more to understand cases in which
+  // OCR gave no results and update the status node with a relevant message.
+  if (is_last_ocr_request) {
+    SetOcrCompleteStatus();
+  }
+
   if (child_tree_id == ui::AXTreeIDUnknown()) {
     VLOG(1) << "Empty OCR data received.";
-    // TODO(crbug.com/1393069): Investigate more to understand cases in which
-    // OCR gave no results and update the status node with a relevant message.
-    if (is_last_ocr_request) {
-      FinishWithStatus();
-    }
     return;
   }
 
@@ -1937,10 +1945,9 @@ void PdfAccessibilityTree::OnOcrDataReceived(
   if (!render_accessibility)
     return;
 
-  ui::AXTreeUpdate update;
-  ui::AXNodeData* page_node =
-      CreateNode(ax::mojom::Role::kRegion, ax::mojom::Restriction::kReadOnly,
-                 render_accessibility, &nodes_);
+  ui::AXNodeData* page_node = CreateAndAppendNode(
+      ax::mojom::Role::kRegion, ax::mojom::Restriction::kReadOnly,
+      render_accessibility, &nodes_);
   page_node->AddBoolAttribute(ax::mojom::BoolAttribute::kIsPageBreakingObject,
                               true);
   // TODO(crbug.com/1278249): add an attribute to indicate that this node is
@@ -1968,16 +1975,21 @@ void PdfAccessibilityTree::OnOcrDataReceived(
   DCHECK_EQ(num_erased, 1);
   (*parent_node_iter)->child_ids.push_back(page_node->id);
 
+  if (!did_unserialize_nodes_once_) {
+    return;
+  }
+
+  // Create AXTreeUpdate only after `tree_` being unserialized in
+  // UnserializeNodes(). Otherwise, it may try updating a AXNodeData that is
+  // not existed in `tree_`, which will lead to an error.
+  ui::AXTreeUpdate update;
   update.node_id_to_clear = image_node_id;
   update.root_id = doc_node_->id;
   update.nodes.push_back(**parent_node_iter);
   update.nodes.push_back(*page_node);
 
-  if (!tree_.Unserialize(update))
+  if (!tree_.Unserialize(update)) {
     LOG(FATAL) << tree_.error();
-
-  if (is_last_ocr_request) {
-    FinishWithStatus();
   }
 
   render_accessibility->SetPluginTreeSource(this);

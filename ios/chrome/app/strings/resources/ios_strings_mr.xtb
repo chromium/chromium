@@ -20,7 +20,6 @@
 <translation id="1103523840287552314">नेहमी भाषांतर करा <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">उघड्या विंडोवर स्विच करा</translation>
 <translation id="1112015203684611006">प्रिंट अयशस्वी झाले.</translation>
-<translation id="1118266931011974190"><ph name="THRESHOLD" /> दिवसांनंतर</translation>
 <translation id="1125564390852150847">नवीन टॅब तयार करा.</translation>
 <translation id="1126013303640354461">Google Pay वरील पेमेंट पद्धती आणि पत्ते एंक्रिप्ट केले जाणार नाहीत. Chrome वरील ब्राउझिंग इतिहास सिंक होणार नाही.
 फक्त तुमचा पासफ्रेझ असलेली कोणतीही व्यक्ती तुमचा एंक्रिप्ट केलेला डेटा वाचू शकते. पासफ्रेझ Google कडे पाठवला किंवा त्याद्वारे स्टोअर केलेला नाही. तुम्ही तुमचा पासफ्रेझ विसरल्यास किंवा ही सेटिंग बदलायची असल्यास, तुम्हाला सिंक रीसेट करावे लागेल. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
@@ -217,6 +216,7 @@
 <translation id="2482878487686419369">सूचना</translation>
 <translation id="2496626742194544812">पहिल्या टॅबवर जा</translation>
 <translation id="2500374554657206846">पासवर्ड सेव्ह करण्यासाठी पर्याय</translation>
+<translation id="2502415369140591438"><ph name="COUNT" /> पुन्हा वापरलेले पासवर्ड</translation>
 <translation id="2523363575747517183">ही वेबसाइट वारंवार दुसरे अ‍ॅप्लिकेशन उघडण्याचा प्रयत्न करत आहे.</translation>
 <translation id="2529021024822217800">सर्व उघडा</translation>
 <translation id="2547458583188611426">सिंक काम करत नाही. सिंक सुरू करण्यासाठी तुमचा पासफ्रेझ एंटर करा.</translation>
@@ -294,6 +294,7 @@
 <translation id="2932085390869194046">पासवर्ड सुचवा...</translation>
 <translation id="2932765531295814441">पासवर्ड मॅन्युअली जोडा</translation>
 <translation id="2952581218264071393">१. Chrome सेटिंग्ज उघडा</translation>
+<translation id="2953871438216280742">तुमच्या Google खाते मध्ये तुमची वाचन सूची उघडण्यासाठी आणि सेव्ह करण्यासाठी साइन इन करा.</translation>
 <translation id="2958718410589002129">पासवर्ड</translation>
 <translation id="2961210776189273067">शीर्षक</translation>
 <translation id="2964349545761222050">तृतीय पक्ष कुकी ब्लॉक करा</translation>
@@ -387,6 +388,7 @@
 <translation id="3581564640715911333">पेजचे अन्य भाषांमध्ये भाषांतर उपलब्ध करा</translation>
 <translation id="3588820906588687999">नवीन टॅबमध्ये इमेज उघडा</translation>
 <translation id="3595252146048399851">काय सिंक करायचे हे तुम्ही <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> मध्ये कधीही निवडू शकता. Google तुमच्या इतिहासाच्या आधारे Search आणि इतर सेवा पर्सनलाइझ करू शकते.</translation>
+<translation id="3595588371156514964">{COUNT,plural, =1{{COUNT} कमकुवत पासवर्ड}other{{COUNT} कमकुवत पासवर्ड}}</translation>
 <translation id="3603009562372709545">लिंक URL कॉपी करा</translation>
 <translation id="3607167657931203000">ऑटोफिल डेटा</translation>
 <translation id="3608008480985212611">तुमची प्राधान्ये व्यवस्थापित करण्यासाठी साइन इन करा.</translation>
@@ -625,6 +627,7 @@
 <translation id="5197255632782567636">इंटरनेट</translation>
 <translation id="5211488077761630279">"<ph name="SITE_NAME" />" ला तुमच्या <ph name="PERMISSION" /> वापरण्याची अनुमती द्यायची आहे का?</translation>
 <translation id="5219295696240154694">प्रत्येकासाठी वेब वरील सुरक्षेमध्ये सुधारणा करण्याकरिता मदत करा</translation>
+<translation id="5221339005270097309">पासवर्ड तपासत आहे…</translation>
 <translation id="5228579091201413441">सिंक सुरू करा</translation>
 <translation id="5232485538978018676">व्यवस्थापित केलेल्या खाते यासह साइन इन करा</translation>
 <translation id="5234764350956374838">डिसमिस करा</translation>
@@ -664,6 +667,7 @@
 सेटिंग्जच्या सामान्य विभागामध्ये Handoff सक्षम केलेले असणे आवश्यक आहे आणि आपल्या डिव्हाइसेसने समान iCloud खाते वापरणे आवश्यक आहे.</translation>
 <translation id="5551897871312988470">भाषांतर उपलब्ध करा</translation>
 <translation id="5556459405103347317">रीलोड करा</translation>
+<translation id="555749644339804659">पासवर्ड तपासत आहे…</translation>
 <translation id="556042886152191864">बटण</translation>
 <translation id="5597915316964418992">टॅब ग्रिड उघडा</translation>
 <translation id="560322036295180549">तुमच्या संस्थेने बंद केले</translation>

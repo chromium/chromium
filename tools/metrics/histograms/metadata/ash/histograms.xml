@@ -1837,6 +1837,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Desks.BentoBarEnabled" enum="Boolean"
     expires_after="2023-10-01">
+  <obsolete>
+    Deprecated April 2023, the Bento Bar feature has been deleted.
+  </obsolete>
   <owner>minch@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
@@ -1848,6 +1851,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Desks.BentoBarIsVisible" enum="Boolean"
     expires_after="2023-09-24">
+  <obsolete>
+    Deprecated April 2023, the Bento Bar feature has been deleted.
+  </obsolete>
   <owner>minch@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
@@ -2310,6 +2316,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Desks.UserHasUsedDesksRecently" enum="Boolean"
     expires_after="2023-10-01">
+  <obsolete>
+    Deprecated April 2023, the Bento Bar feature has been deleted.
+  </obsolete>
   <owner>minch@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>

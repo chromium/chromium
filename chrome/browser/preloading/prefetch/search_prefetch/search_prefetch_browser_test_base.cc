@@ -429,5 +429,6 @@ AutocompleteMatch SearchPrefetchBaseBrowserTest::CreateSearchSuggestionMatch(
   match.keyword = base::UTF8ToUTF16(original_query);
   if (prefetch_hint)
     match.RecordAdditionalInfo("should_prefetch", "true");
+  match.allowed_to_be_default_match = true;
   return match;
 }

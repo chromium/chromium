@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB-C ကိရိယာ (အရှေ့ပိုင်း ပို့တ်)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> ကို <ph name="RESOLUTION" /> သို့ ပြောင်းလိုက်သည် (<ph name="REFRESH_RATE" /> Hz)။ အပြောင်းအလဲများသိမ်းရန် 'အတည်ပြုရန်' ကို နှိပ်ပါ။ ယခင်ဆက်တင်များကို <ph name="TIMEOUT_SECONDS" /> အကြာတွင် ပြန်ထားရှိပါမည်။</translation>
 <translation id="1013923882670373915">ဘလူးတုသ် ကိရိယာ"<ph name="DEVICE_NAME" />"က ချိတ်တွဲရန် ခွင့်ပြုချက် ရယူလိုသည်။ ကျေးဇူးပြုပြီး ထိုကိရိယာ ထဲသို့ ဒီPIN ကုဒ်ကို ထည့်ပေးပါ: <ph name="PINCODE" /></translation>
+<translation id="1017556409696559990">Chrome တွင် မှတ်တမ်းဟောင်း မကျန်သောအခါ ထိပ်ဆုံးဝင်းဒိုးကို ချုံ့ရန်</translation>
 <translation id="1024364763893396229">သင့် <ph name="NAME" /> ကို သိမ်းရန်</translation>
 <translation id="1032891413405719768">စတိုင်လပ်စ် ဓာတ်ခဲ အားနည်းနေသည်</translation>
 <translation id="1036073649888683237">အကြောင်းကြားချက်များ စီမံရန် ‘ဆက်တင်များ’ သို့သွားပါ</translation>
@@ -343,6 +344,7 @@
 <translation id="2620436844016719705">စနစ်</translation>
 <translation id="2621713457727696555">လုံခြုံပြီ</translation>
 <translation id="263399434338050016">"အားလုံးရွေးရန်"</translation>
+<translation id="2644422758626431000">ဝင်းဒိုးကို ဘယ်ဘက်တွင် ပင်ထိုးရန်</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647092942972307022"><ph name="TOTAL_MEMORY" /> အနက် <ph name="USED_MEMORY" /> သုံးနိုင်သည်</translation>
 <translation id="2653019840645008922">ဝင်းဒိုး ပုံဖမ်းယူမှု</translation>
@@ -980,6 +982,7 @@
 <translation id="5578188167649348993">မှတ်ဉာဏ်</translation>
 <translation id="5580000943347215299">ဒစ်ဂျစ်တိုက်</translation>
 <translation id="558849140439112033">ရိုက်ယူမည့်နေရာ ရွေးရန် ဖိဆွဲပါ</translation>
+<translation id="5596627076506792578">ပိုမို ရွေးချယ်စရာများ</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />၊ <ph name="DATE" /></translation>
 <translation id="5600837773213129531">စကားပြောတုံ့ပြန်မှုကို ပိတ်ရန် Ctrl + Alt + Z ကို နှိပ်ပါ။</translation>
 <translation id="5601503069213153581">ပင်နံပါတ်</translation>
@@ -1053,6 +1056,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">ဖွင့်ရန်</translation>
 <translation id="5920710855273935292">မိုက်ပိတ်ထားသည်။</translation>
+<translation id="5922962980596822074">လတ်တလော အသုံးအများဆုံးဝင်းဒိုးမှစ၍ ဝင်ဒိုးများ တစ်ခုစီကြည့်သွားရန်</translation>
 <translation id="5924855612669061715">ဟော့စပေါ့ ဖွင့်လိုက်သည်</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ဖွင့်ထားသည်။</translation>
 <translation id="5947494881799873997">မူလအခြေအနေ ပြန်သွားရန်</translation>
@@ -1142,6 +1146,7 @@
 <translation id="6352082849089527770">အမျိုးအမည်မသိ ကွန်ရက်များ</translation>
 <translation id="6359587239691116345">နောက်ဆုံးထုတ်ဝန်ဆောင်မှုနှင့် လုံခြုံရေးတိုးမြှင့်မှုများ ရယူနိုင်သည်။ ဤအပ်ဒိတ်ကို ငြင်းပယ်ပါက သင့်စက် မှန်ကန်စွာ အလုပ်မလုပ်တော့ဘဲ လုံခြုံရေးနှင့် စွမ်းဆောင်မှုပြဿနာများ ကြုံတွေ့ရနိုင်သည်။</translation>
 <translation id="6376931439017688372">ဘလူးတုသ်ကို ဖွင့်ထားသည်</translation>
+<translation id="6378515133128829137">ဝင်းဒိုးကို ညာဘက်တွင် ပင်ထိုးရန်</translation>
 <translation id="6381109794406942707">ဤစက်ကိုဖွင့်ရန် သင့်ပင်နံပါတ် ထည့်ပါ။</translation>
 <translation id="638716340450135524">ကင်မရာသုံးခွင့် ဖွင့်ရန်</translation>
 <translation id="639644700271529076">စာလုံးကြီးများကို နှိပ်မထား</translation>
@@ -1161,6 +1166,7 @@
 <translation id="6459472438155181876"><ph name="DISPLAY_NAME" />သို့ မျက်နှာပြင်ကို တိုးချဲ့နေ</translation>
 <translation id="6477681113376365978">ဖိုင်ကို ဒေါင်းလုဒ်လုပ်၍မရပါ</translation>
 <translation id="6482559668224714696">မျက်နှာပြင်အပြည့် မှန်ဘီလူး</translation>
+<translation id="6483727822843292440">အသုံးအနည်းဆုံးဝင်ဒိုးမှစ၍ ဝင်းဒိုးများ တစ်ခုစီကြည့်သွားရန်</translation>
 <translation id="6490471652906364588">USB-C ကိရိယာ (ညာ ပို့တ်)</translation>
 <translation id="6491071886865974820">နောက်ဆုံးသတ်မှတ်ချိန်မတိုင်မီ သင့် <ph name="DEVICE_TYPE" /> ကိုအပ်ဒိတ်လုပ်ရန် <ph name="MANAGER" /> ကသတ်မှတ်ထားသည်</translation>
 <translation id="649452524636452238">အဆင့်မြင့်ကတ် ပင်နံပါတ်</translation>
@@ -1248,7 +1254,6 @@
 <translation id="6820676911989879663">ခဏနားပါ။</translation>
 <translation id="6827049576281411231">အစီအစဉ် အကန့်ကို ပိတ်ရန်</translation>
 <translation id="6836499262298959512">အန္တရာယ်ဖိုင်</translation>
-<translation id="6837064795450991317">မျက်နှာပြင်ဘား ဝှက်ရန်</translation>
 <translation id="6852052252232534364">စတင်ရန်နှိပ်ပါ</translation>
 <translation id="6855029042976311970">ယခုလေးတင် ပြင်ဆင်ထားသည်</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sec</translation>
@@ -1306,7 +1311,6 @@
 <translation id="7098053464892629930">ရနိုင်သည့် ဝန်ဆောင်မှုအားလုံးကို ကြည့်ရန် Google Play တွင် <ph name="NAME" /> အက်ပ်ကို ဒေါင်းလုဒ်လုပ်ပါ</translation>
 <translation id="7098389117866926363">USB-C ကိရိယာ (ကျောဘက် ဘယ် ပို့တ်)</translation>
 <translation id="7100906357717321275">Files အက်ပ်တွင် ဖျောက်ထားသည့်ဖိုင်များပြပါ</translation>
-<translation id="7106330611027933926">မျက်နှာပြင်ဘား ပြရန်</translation>
 <translation id="7116969082764510092">မျက်နှာပြင် ၁၁</translation>
 <translation id="7118268675952955085">ဖန်သားပြင်ဓာတ်ပုံ</translation>
 <translation id="7119327711295338600">လာမည့်စကားလုံး (သို့) စာလုံး ရွေးရန်</translation>

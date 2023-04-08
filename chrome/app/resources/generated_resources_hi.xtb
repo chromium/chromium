@@ -3005,6 +3005,7 @@
 <translation id="3584527007414070635"><ph name="MODULE_TITLE" /> के बारे में खोजना जारी रखें</translation>
 <translation id="3586787825263265024"><ph name="APPLICATION_NAME" /> ऐप्लिकेशन का इस्तेमाल करने के लिए, डिवाइस में OneDrive ऐप्लिकेशन मौजूद होना ज़रूरी है.</translation>
 <translation id="3586806079541226322">यह फ़ाइल नहीं खुल सकती</translation>
+<translation id="3586931643579894722">विवरण छुपाएं</translation>
 <translation id="3587438013689771191"><ph name="SUBPAGE_TITLE" /> के बारे में ज़्यादा जानें</translation>
 <translation id="3587482841069643663">सभी</translation>
 <translation id="3588790464166520201">भुगतान हैंडलर इंस्टॉल करने की अनुमति है</translation>
@@ -5850,6 +5851,7 @@
 <translation id="6136114942382973861">डाउनलोड बार बंद करें</translation>
 <translation id="6136287496450963112">आपकी सुरक्षा कुंजी को पिन से सुरक्षित नहीं किया गया है. फ़िंगरप्रिंट प्रबंधित करने के लिए, पहले एक पिन बनाएं.</translation>
 <translation id="6138680304137685902">SHA-384 के साथ X9.62 ECDSA हस्ताक्षर</translation>
+<translation id="6140948187512243695">विवरण दिखाएं</translation>
 <translation id="6141988275892716286">डाउनलोड की पुष्टि करें</translation>
 <translation id="6143186082490678276">सहायता पाएं</translation>
 <translation id="6143366292569327983">वह भाषा चुनें जिसका अनुवाद करना है</translation>

@@ -694,7 +694,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerOnStartupEventTest, PRE_Event) {
 }
 
 // Flaky (crbug.com/1243815).
-IN_PROC_BROWSER_TEST_F(ServiceWorkerOnStartupEventTest, DISABLED_Event) {
+IN_PROC_BROWSER_TEST_F(ServiceWorkerOnStartupEventTest, Event) {
   EXPECT_TRUE(WaitForMessage());
 }
 
@@ -2566,34 +2566,27 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, EventsAfterRestart) {
   EXPECT_TRUE(moved_tab_listener.WaitUntilSatisfied());
 }
 
-// TODO(crbug.com/1319942): Test flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_PRE_WebRequestAfterRestart DISABLED_PRE_WebRequestAfterRestart
-#define MAYBE_WebRequestAfterRestart DISABLED_WebRequestAfterRestart
-#else
-#define MAYBE_PRE_WebRequestAfterRestart PRE_WebRequestAfterRestart
-#define MAYBE_WebRequestAfterRestart DISABLED_WebRequestAfterRestart
-#endif
+constexpr char kListenerAdded[] = "listener-added";
+using ServiceWorkerWebRequestEarlyListenerTest =
+    ServiceWorkerWithEarlyMessageListenerTest<kListenerAdded>;
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
-                       MAYBE_PRE_WebRequestAfterRestart) {
-  ExtensionTestMessageListener event_added_listener("listener-added");
-
+IN_PROC_BROWSER_TEST_F(ServiceWorkerWebRequestEarlyListenerTest,
+                       PRE_WebRequestAfterRestart) {
   base::FilePath extension_path = test_data_dir_.AppendASCII("service_worker")
                                       .AppendASCII("worker_based_background")
                                       .AppendASCII("web_request_after_restart");
   const Extension* extension =
       LoadExtension(extension_path, {.wait_for_registration_stored = true});
   ASSERT_TRUE(extension);
-  EXPECT_TRUE(event_added_listener.WaitUntilSatisfied());
+  EXPECT_TRUE(WaitForMessage());
 }
 
 // After browser restarts, this test step ensures that navigating a tab fires
 // the webRequest listener.
-IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
-                       MAYBE_WebRequestAfterRestart) {
-  ExtensionTestMessageListener event_added_listener("listener-added");
-  EXPECT_TRUE(event_added_listener.WaitUntilSatisfied());
+IN_PROC_BROWSER_TEST_F(ServiceWorkerWebRequestEarlyListenerTest,
+                       WebRequestAfterRestart) {
+  // Wait for the page to load.
+  EXPECT_TRUE(WaitForMessage());
   // Navigate and expect the listener in the extension to be triggered.
   ResultCatcher catcher;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(

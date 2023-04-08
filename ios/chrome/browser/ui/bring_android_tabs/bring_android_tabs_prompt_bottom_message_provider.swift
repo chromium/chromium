@@ -16,10 +16,10 @@ class BringAndroidTabsPromptBottomMessageProvider: NSObject {
   // command invocation.
   weak var commandHandler: BringAndroidTabsCommands?
   // Number of active tabs from Android.
-  let tabsCount: Int32
+  let tabsCount: Int
 
   init(tabsCount: Int) {
-    self.tabsCount = Int32(tabsCount)
+    self.tabsCount = tabsCount
   }
 
   // View controller that manages this view. Should be added to the view

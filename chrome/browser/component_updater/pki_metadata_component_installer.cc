@@ -138,8 +138,10 @@ void PKIMetadataComponentInstallerService::UpdateChromeRootStoreOnUI(
       cert_verifier::mojom::ChromeRootStore::New(
           base::as_bytes(base::make_span(chrome_root_store_bytes)));
   content::GetCertVerifierServiceFactory()->UpdateChromeRootStore(
-      std::move(root_store_ptr));
-  NotifyChromeRootStoreConfigured();
+      std::move(root_store_ptr),
+      base::BindOnce(&PKIMetadataComponentInstallerService::
+                         NotifyChromeRootStoreConfigured,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void PKIMetadataComponentInstallerService::NotifyChromeRootStoreConfigured() {

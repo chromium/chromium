@@ -42,9 +42,6 @@ ASH_EXPORT void UpdatePrimaryUserDeskMetricsPrefs();
 // the primary user switches an active desk.
 void UpdatePrimaryUserActiveDeskPrefs(int active_desk_index);
 
-// Returns true if pref `kUserHasUsedDesksRecently` of the primary user is true.
-ASH_EXPORT bool HasPrimaryUserUsedDesksRecently();
-
 // Returns the time from `g_override_clock_` if it is not nullptr, or time from
 // base::Time::Now() otherwise.
 const base::Time GetTimeNow();
@@ -55,7 +52,6 @@ const base::Time GetTimeNow();
 ASH_EXPORT int GetDaysFromLocalEpoch();
 
 ASH_EXPORT void OverrideClockForTesting(base::Clock* test_clock);
-ASH_EXPORT void SetPrimaryUserHasUsedDesksRecentlyForTesting(bool value);
 
 }  // namespace desks_restore_util
 

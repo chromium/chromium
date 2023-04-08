@@ -74,7 +74,7 @@
 </style>
 <div actionable$="[[isExpandable_]]"
     id="activity-item-main-row"
-    on-click="onExpandTap_">
+    on-click="onExpandClick_">
   <div id="activity-call-and-count">
     <span id="activity-type">[[data.activityType]]</span>
     <span id="activity-key" title="[[data.key]]">[[data.key]]</span>
@@ -86,7 +86,7 @@
   <div class="separator" hidden$="[[!isExpandable_]]"></div>
   <cr-icon-button id="activity-delete" class="icon-delete-gray"
       aria-describedby="api-call" aria-label="$i18n{clearEntry}"
-      on-click="onDeleteTap_"></cr-icon-button>
+      on-click="onDeleteClick_"></cr-icon-button>
 </div>
 <div id="page-url-list" hidden$="[[!data.expanded]]">
   <template is="dom-repeat" items="[[getPageUrls_(data)]]">

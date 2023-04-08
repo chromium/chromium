@@ -54,6 +54,14 @@ void CertAndCTVerifier::SetConfig(const Config& config) {
   cert_verifier_->SetConfig(config);
 }
 
+void CertAndCTVerifier::AddObserver(Observer* observer) {
+  cert_verifier_->AddObserver(observer);
+}
+
+void CertAndCTVerifier::RemoveObserver(Observer* observer) {
+  cert_verifier_->RemoveObserver(observer);
+}
+
 void CertAndCTVerifier::OnCertVerifyComplete(const RequestParams& params,
                                              CompletionOnceCallback callback,
                                              CertVerifyResult* verify_result,

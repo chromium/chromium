@@ -6,11 +6,14 @@
 #define ASH_SYSTEM_POWER_POWER_SOUNDS_CONTROLLER_H_
 
 #include "ash/system/power/power_status.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 
 namespace ash {
 
 // Controller class to manage power/battery sounds.
-class ASH_EXPORT PowerSoundsController : public PowerStatus::Observer {
+class ASH_EXPORT PowerSoundsController
+    : public PowerStatus::Observer,
+      public chromeos::PowerManagerClient::Observer {
  public:
   static const char kPluggedInBatteryLevelHistogramName[];
   static const char kUnpluggedBatteryLevelHistogramName[];
@@ -23,8 +26,19 @@ class ASH_EXPORT PowerSoundsController : public PowerStatus::Observer {
   // PowerStatus::Observer:
   void OnPowerStatusChanged() override;
 
+  // chromeos::PowerManagerClient::Observer:
+  void LidEventReceived(chromeos::PowerManagerClient::LidState state,
+                        base::TimeTicks timestamp) override;
+
  private:
   friend class PowerSoundsControllerTest;
+
+  // Updates the lid state from received switch states.
+  void OnReceiveSwitchStates(
+      absl::optional<chromeos::PowerManagerClient::SwitchStates> switch_states);
+
+  // Returns true if the device can play sounds.
+  bool CanPlaySounds() const;
 
   void SetPowerStatus(int battery_level,
                       bool line_power_connected,
@@ -48,6 +62,11 @@ class ASH_EXPORT PowerSoundsController : public PowerStatus::Observer {
   // True if line power is connected when the `OnPowerStatusChanged()` was
   // called.
   bool is_line_power_connected_;
+
+  chromeos::PowerManagerClient::LidState lid_state_ =
+      chromeos::PowerManagerClient::LidState::OPEN;
+
+  base::WeakPtrFactory<PowerSoundsController> weak_factory_{this};
 };
 
 }  // namespace ash

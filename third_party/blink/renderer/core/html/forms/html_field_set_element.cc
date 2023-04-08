@@ -115,6 +115,18 @@ void HTMLFieldSetElement::DisabledAttributeChanged() {
     focused_element->blur();
 }
 
+void HTMLFieldSetElement::AncestorDisabledStateWasChanged() {
+  if (RuntimeEnabledFeatures::NonReentrantFieldSetDisableEnabled()) {
+    ancestor_disabled_state_ = AncestorDisabledState::kUnknown;
+    // Do not re-enter HTMLFieldSetElement::DisabledAttributeChanged(), so that
+    // we only invalidate this element's own disabled state and do not traverse
+    // the descendants.
+    HTMLFormControlElement::DisabledAttributeChanged();
+  } else {
+    HTMLFormControlElement::AncestorDisabledStateWasChanged();
+  }
+}
+
 void HTMLFieldSetElement::ChildrenChanged(const ChildrenChange& change) {
   HTMLFormControlElement::ChildrenChanged(change);
   Element* focused_element = nullptr;

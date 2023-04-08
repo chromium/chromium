@@ -15,7 +15,5 @@ int main(int argc, const char* argv[]) {
   base::AtExitManager exit_manager;
 
   base::CommandLine::Init(argc, argv);
-  const base::CommandLine* command_line =
-      base::CommandLine::ForCurrentProcess();
-  return variations::evaluate_seed::EvaluateSeedMain(command_line, stdin);
+  return variations::evaluate_seed::EvaluateSeedMain(stdin);
 }

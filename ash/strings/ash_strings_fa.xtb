@@ -979,6 +979,7 @@
 <translation id="5578188167649348993">حافظه</translation>
 <translation id="5580000943347215299">کتابخانه</translation>
 <translation id="558849140439112033">برای انتخاب ناحیه گرفتن عکس، بکشید</translation>
+<translation id="5596627076506792578">گزینه‌های بیشتر</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />، <ph name="DATE" /></translation>
 <translation id="5600837773213129531">‏برای غیرفعال کردن بازخورد گفتاری، Ctrl + Alt + Z را فشار دهید.</translation>
 <translation id="5601503069213153581">پین</translation>
@@ -1246,7 +1247,6 @@
 <translation id="6820676911989879663">استراحت کنید!</translation>
 <translation id="6827049576281411231">بستن پانل رویداد</translation>
 <translation id="6836499262298959512">فایل خطرناک</translation>
-<translation id="6837064795450991317">پنهان کردن نوار میزکار</translation>
 <translation id="6852052252232534364">کلیک برای فعال‌سازی</translation>
 <translation id="6855029042976311970">لحظاتی پیش ویرایش شده است</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> ثانیه</translation>
@@ -1304,7 +1304,6 @@
 <translation id="7098053464892629930">‏برای دیدن همه ویژگی‌های موجود، برنامه مرتبط با <ph name="NAME" /> را از Google Play بارگیری کنید.</translation>
 <translation id="7098389117866926363">‏دستگاه USB-C (درگاه عقب سمت چپ)</translation>
 <translation id="7100906357717321275">‏نمایش فایل‌های پنهان‌شده در برنامه Files</translation>
-<translation id="7106330611027933926">نمایش نوار میزکار</translation>
 <translation id="7116969082764510092">میزکار ۱۱</translation>
 <translation id="7118268675952955085">نماگرفت</translation>
 <translation id="7119327711295338600">انتخاب واژه یا حرف بعدی</translation>

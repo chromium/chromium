@@ -25,6 +25,7 @@ namespace ash {
 class IconButton;
 class OverviewGrid;
 class PillButton;
+class SavedDeskController;
 class SavedDeskPresenter;
 
 // Wrapper for `SavedDeskPresenter` that exposes internal state to test
@@ -140,6 +141,22 @@ class SavedDeskIconViewTestApi {
 
  private:
   const SavedDeskIconView* saved_desk_icon_view_;
+};
+
+// Test API for `SavedDeskController`.
+class SavedDeskControllerTestApi {
+ public:
+  explicit SavedDeskControllerTestApi(
+      SavedDeskController* saved_desk_controller);
+  SavedDeskControllerTestApi(const SavedDeskControllerTestApi&) = delete;
+  SavedDeskControllerTestApi& operator=(const SavedDeskControllerTestApi&) =
+      delete;
+  ~SavedDeskControllerTestApi();
+
+  void SetAdminTemplate(std::unique_ptr<DeskTemplate> admin_template);
+
+ private:
+  SavedDeskController* saved_desk_controller_;
 };
 
 // Returns all saved desk item views from the desk library on the given

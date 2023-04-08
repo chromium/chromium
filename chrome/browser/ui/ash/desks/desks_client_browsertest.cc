@@ -21,6 +21,7 @@
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
+#include "ash/wm/desks/templates/saved_desk_controller.h"
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
 #include "ash/wm/desks/templates/saved_desk_test_util.h"
@@ -3383,4 +3384,107 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientMultiProfileTest,
 
   // Verify that the admin templates is removed.
   EXPECT_FALSE(ContainUuidInTemplates(admin_template_uuid, GetDeskTemplates()));
+}
+
+class AdminTemplateTest : public extensions::PlatformAppBrowserTest {
+ public:
+  AdminTemplateTest()
+      : scoped_feature_list_(ash::features::kAppLaunchAutomation) {
+    // Suppress the multitask menu nudge as we'll be checking the stacking order
+    // and the count of the active desk children.
+    chromeos::MultitaskMenuNudgeController::SetSuppressNudgeForTesting(true);
+  }
+  AdminTemplateTest(const AdminTemplateTest&) = delete;
+  AdminTemplateTest& operator=(const AdminTemplateTest&) = delete;
+  ~AdminTemplateTest() override = default;
+
+  // The definition of an admin template for a test.
+  struct AdminTemplateDefinition {
+    struct WindowDefinition {
+      std::vector<std::string> urls;
+    };
+
+    std::vector<WindowDefinition> windows;
+  };
+
+  // Creates an admin template with the windows and URLs given by `definition`.
+  std::unique_ptr<ash::DeskTemplate> CreateAdminTemplate(
+      const AdminTemplateDefinition& definition) {
+    // Common set of bounds to use for now. Later, get from `definition`.
+    base::Value::List bounds;
+    for (int b : {100, 50, 400, 300}) {
+      bounds.Append(b);
+    }
+
+    base::Value::Dict windows;
+    for (size_t i = 0; i != definition.windows.size(); ++i) {
+      base::Value::Dict window;
+      window.Set("title", "Chrome");
+      window.Set("window_state_type", 0);
+      window.Set("bounds", bounds.Clone());
+
+      base::Value::List urls;
+      for (const std::string& url : definition.windows[i].urls) {
+        urls.Append(url);
+      }
+      window.Set("urls", std::move(urls));
+
+      windows.Set(base::NumberToString(i + 1), std::move(window));
+    }
+
+    base::Value::Dict root;
+    root.Set(app_constants::kChromeAppId, std::move(windows));
+
+    auto admin_template = std::make_unique<ash::DeskTemplate>(
+        base::GUID::GenerateRandomV4(), ash::DeskTemplateSource::kPolicy,
+        "Admin template", base::Time::Now(), ash::DeskTemplateType::kTemplate);
+
+    admin_template->set_desk_restore_data(
+        std::make_unique<app_restore::RestoreData>(
+            base::Value(std::move(root))));
+
+    return admin_template;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// TODO(b/273803538): Add tests for lacros.
+IN_PROC_BROWSER_TEST_F(AdminTemplateTest, LaunchAdminTemplate) {
+  // Launch an admin template with a single browser. Verifies that a browser was
+  // actually launched.
+  auto admin_template =
+      CreateAdminTemplate({.windows = {{.urls = {kExampleUrl1}}}});
+  ASSERT_NE(admin_template, nullptr);
+
+  base::GUID template_uuid = admin_template->uuid();
+
+  auto* saved_desk_controller = ash::Shell::Get()->saved_desk_controller();
+  ash::SavedDeskControllerTestApi(saved_desk_controller)
+      .SetAdminTemplate(std::move(admin_template));
+
+  saved_desk_controller->LaunchAdminTemplate(template_uuid);
+
+  // Verify that there are two browsers (one from the suite and one from the
+  // test), and verify that our launched browser is stacked on top.
+  Browser* new_browser = FindLaunchedBrowserByURLs({GURL(kExampleUrl1)});
+  ASSERT_TRUE(new_browser);
+
+  aura::Window* old_browser_window = browser()->window()->GetNativeWindow();
+  aura::Window* new_browser_window = new_browser->window()->GetNativeWindow();
+
+  // Both browsers should be on the same desk.
+  ASSERT_EQ(old_browser_window->parent(), new_browser_window->parent());
+
+  // Verify that the new browser window is stacked in front of the
+  // existing. Children are ordered from bottommost to topmost. We therefore
+  // expect the new window to have an index that is higher than the old.
+  const auto& container = new_browser_window->parent()->children();
+  size_t new_index =
+      base::ranges::find(container, new_browser_window) - container.begin();
+  size_t old_index =
+      base::ranges::find(container, old_browser_window) - container.begin();
+
+  EXPECT_GT(new_index, old_index);
 }

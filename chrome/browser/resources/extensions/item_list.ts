@@ -117,7 +117,7 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
         this.shownExtensionsCount_ === 0;
   }
 
-  private onNoExtensionsTap_(e: Event) {
+  private onNoExtensionsClick_(e: Event) {
     if ((e.target as HTMLElement).tagName === 'A') {
       chrome.metricsPrivate.recordUserAction('Options_GetMoreExtensions');
     }

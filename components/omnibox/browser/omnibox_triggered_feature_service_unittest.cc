@@ -45,11 +45,11 @@ TEST_F(OmniboxTriggeredFeatureServiceTest, NoFeaturesTriggered) {
 
 TEST_F(OmniboxTriggeredFeatureServiceTest, TwoFeaturesTriggered) {
   service_.FeatureTriggered(
-      OmniboxTriggeredFeatureService::Feature::kBookmarkPaths);
+      OmniboxTriggeredFeatureService::Feature::kRemoteSearchFeature);
   service_.FeatureTriggered(OmniboxTriggeredFeatureService::Feature::
                                 kShortBookmarkSuggestionsByTotalInputLength);
   RecordAndExpectFeatures(
-      {OmniboxTriggeredFeatureService::Feature::kBookmarkPaths,
+      {OmniboxTriggeredFeatureService::Feature::kRemoteSearchFeature,
        OmniboxTriggeredFeatureService::Feature::
            kShortBookmarkSuggestionsByTotalInputLength});
 
@@ -131,14 +131,14 @@ TEST_F(OmniboxTriggeredFeatureServiceTest, RichAutocompletionTypeTriggered) {
 
 TEST_F(OmniboxTriggeredFeatureServiceTest, ResetInput) {
   service_.FeatureTriggered(
-      OmniboxTriggeredFeatureService::Feature::kBookmarkPaths);
+      OmniboxTriggeredFeatureService::Feature::kRemoteSearchFeature);
   service_.ResetInput();
   service_.FeatureTriggered(OmniboxTriggeredFeatureService::Feature::
                                 kShortBookmarkSuggestionsByTotalInputLength);
   RecordAndExpectFeatures(
       {OmniboxTriggeredFeatureService::Feature::
            kShortBookmarkSuggestionsByTotalInputLength},
-      {OmniboxTriggeredFeatureService::Feature::kBookmarkPaths,
+      {OmniboxTriggeredFeatureService::Feature::kRemoteSearchFeature,
        OmniboxTriggeredFeatureService::Feature::
            kShortBookmarkSuggestionsByTotalInputLength});
 }

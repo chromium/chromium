@@ -155,6 +155,8 @@ class GMockCertVerifier : public net::CertVerifier {
                    std::unique_ptr<net::CertVerifier::Request>* out_req,
                    const net::NetLogWithSource& net_log));
   MOCK_METHOD1(SetConfig, void(const net::CertVerifier::Config& config));
+  MOCK_METHOD1(AddObserver, void(Observer* observer));
+  MOCK_METHOD1(RemoveObserver, void(Observer* observer));
 };
 
 class MockCTPolicyEnforcer : public net::CTPolicyEnforcer {

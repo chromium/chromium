@@ -40,3 +40,4 @@ The tables in this file are parsed as action templates for critical user journey
 | InstallMode | WebApp* | WebShortcut |
 | UpdateDialogResponse | AcceptUpdate | CancelDialogAndUninstall | SkipUpdate |
 | SubAppInstallDialogOptions | UserAllow* | UserDeny | PolicyOverride |
+| ProfileName | Default | Profile2 |

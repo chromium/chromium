@@ -171,7 +171,7 @@ bool PaintArtifactCompositor::NeedsCompositedScrolling(
     auto it = scroll_translation_nodes_.find(&scroll_translation);
     if (it == scroll_translation_nodes_.end()) {
       // Negative z-index scrolling contents in a non-stacking-context scroller
-      // appears earlier than the ScrollHitTest of the scroller, and this
+      // appear earlier than the ScrollHitTest of the scroller, and this
       // method can be called before ComputeNeedsCompositedScrolling() for the
       // ScrollHitTest. If LCD-text is strongly preferred, here we assume the
       // scroller is not composited. Even if later the scroller is found to
@@ -215,6 +215,9 @@ bool PaintArtifactCompositor::ComputeNeedsCompositedScrolling(
     return false;
   }
   if (lcd_text_preference_ != LCDTextPreference::kStronglyPreferred) {
+    return true;
+  }
+  if (scroll_translation.ScrollNode()->PrefersCompositedScrolling()) {
     return true;
   }
   // Find the chunk containing the scrolling background which normally defines
@@ -1033,7 +1036,8 @@ bool PaintArtifactCompositor::DirectlyUpdateScrollOffsetTransform(
     const TransformPaintPropertyNode& transform) {
   // We can only directly-update compositor values if all content associated
   // with the node is known to be composited.
-  DCHECK(transform.HasDirectCompositingReasons());
+  DCHECK(RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled() ||
+         transform.HasDirectCompositingReasons());
   if (CanDirectlyUpdateProperties()) {
     return PropertyTreeManager::DirectlyUpdateScrollOffsetTransform(
         *root_layer_->layer_tree_host(), transform);

@@ -254,7 +254,10 @@ void AppTestHelper::FirstTaskRun() {
     // function (which should be declared in integration_tests_impl.h), and
     // then use the With* helper functions to provide its arguments.
     {"clean", WithSystemScope(Wrap(&Clean))},
-    {"enter_test_mode", WithSwitch("url", Wrap(&EnterTestMode))},
+    {"enter_test_mode",
+     WithSwitch("device_management_url",
+                WithSwitch("crash_upload_url",
+                           WithSwitch("update_url", Wrap(&EnterTestMode))))},
     {"exit_test_mode", WithSystemScope(Wrap(&ExitTestMode))},
     {"set_group_policies", WithSwitch("values", Wrap(&SetGroupPolicies))},
     {"fill_log", WithSystemScope(Wrap(&FillLog))},
@@ -313,6 +316,7 @@ void AppTestHelper::FirstTaskRun() {
     {"run_wake_all", WithSystemScope(Wrap(&RunWakeAll))},
     {"run_wake_active",
      WithSwitch("exit_code", WithSystemScope(Wrap(&RunWakeActive)))},
+    {"run_crash_me", WithSystemScope(Wrap(&RunCrashMe))},
     {"update",
      WithSwitch("install_data_index",
                 (WithSwitch("app_id", WithSystemScope(Wrap(&Update)))))},

@@ -135,8 +135,8 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
 
         /** Returns the cancel button string for the bottom sheet dialog. */
         @Override
-        public @StringRes int getCancelButton() {
-            return R.string.cancel;
+        public @StringRes int getDismissButton() {
+            return R.string.close;
         }
     }
 }

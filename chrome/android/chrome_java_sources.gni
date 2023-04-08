@@ -490,6 +490,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/customtabs/features/CustomTabNavigationBarController.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/ImmersiveModeController.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/TabInteractionRecorder.java",
+  "java/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/CustomTabDragBar.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/CustomTabHeightStrategy.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/PartialCustomTabBaseStrategy.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/PartialCustomTabBottomSheetStrategy.java",

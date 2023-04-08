@@ -20,7 +20,6 @@
 <translation id="1103523840287552314">一律翻译<ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">切换到另一个已打开的窗口</translation>
 <translation id="1112015203684611006">打印操作失败。</translation>
-<translation id="1118266931011974190"><ph name="THRESHOLD" /> 天后</translation>
 <translation id="1125564390852150847">创建新的标签页。</translation>
 <translation id="1126013303640354461">Google Pay 中的付款方式和地址不会加密。Chrome 中的浏览记录不会同步。
 只有知道您口令的人才能读取您的已加密数据。系统不会将口令发送给 Google，Google 也不会存储口令。如果您忘记了口令或想更改此设置，则需重置同步设置。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>

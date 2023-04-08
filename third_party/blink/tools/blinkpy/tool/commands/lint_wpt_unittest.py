@@ -36,11 +36,13 @@ class LintWPTTest(LoggingTestCase):
                             'd933fd981d4a33ba82fb2b000234859bdda1494e',
                             [None, {}],
                         ],
-                        'multiglob.https.any.js': [
-                            'd6498c3e388e0c637830fa080cca78b0ab0e5305',
-                            ['dir/multiglob.https.any.html', {}],
-                            ['dir/multiglob.https.any.worker.html', {}],
-                        ],
+                        'dir': {
+                            'multiglob.https.any.js': [
+                                'd6498c3e388e0c637830fa080cca78b0ab0e5305',
+                                ['dir/multiglob.https.any.html', {}],
+                                ['dir/multiglob.https.any.worker.html', {}],
+                            ],
+                        },
                         'variant.html': [
                             'b8db5972284d1ac6bbda0da81621d9bca5d04ee7',
                             ['variant.html?foo=bar/abc', {}],
@@ -92,6 +94,21 @@ class LintWPTTest(LoggingTestCase):
             path='wptrunner.blink.ini')
         self.assertEqual(errors, [])
 
+    def test_metadata_valid(self):
+        errors = self._check_metadata(
+            """\
+            [variant.html?foo=bar/abc]
+              expected: FAIL
+            [variant.html?foo=baz]
+              disabled: never completes
+              expected: TIMEOUT
+              [subtest 1]
+                expected: TIMEOUT
+              [subtest 2]
+                expected: NOTRUN
+            """, 'variant.html.ini')
+        self.assertEqual(errors, [])
+
     def test_metadata_bad_syntax(self):
         (error, ) = self._check_metadata("""\
             [test.html]
@@ -101,7 +118,81 @@ class LintWPTTest(LoggingTestCase):
         self.assertEqual(name, 'META-BAD-SYNTAX')
         self.assertEqual(path, 'test.html.ini')
         self.assertEqual(
-            'WPT metadata file could not be parsed: Junk before EOL u',
-            description)
+            description,
+            'WPT metadata file could not be parsed: Junk before EOL u')
         # Note the 1-indexed convention.
         self.assertEqual(line, 2)
+
+    def test_metadata_unsorted_sections(self):
+        out_of_order_tests, out_of_order_subtests = self._check_metadata(
+            """\
+            [variant.html?foo=baz]
+              expected: TIMEOUT
+              [subtest 2]
+                expected: NOTRUN
+              [subtest 1]
+                expected: TIMEOUT
+
+            [variant.html?foo=bar/abc]
+              expected: TIMEOUT
+            """, 'variant.html.ini')
+        name, description, path, _ = out_of_order_tests
+        self.assertEqual(name, 'META-UNSORTED-SECTION')
+        self.assertEqual(path, 'variant.html.ini')
+        self.assertEqual(
+            description,
+            'Section contains unsorted keys or subsection headings: '
+            "'[variant.html?foo=bar/abc]' should precede "
+            "'[variant.html?foo=baz]'")
+        name, description, path, _ = out_of_order_subtests
+        self.assertEqual(name, 'META-UNSORTED-SECTION')
+        self.assertEqual(path, 'variant.html.ini')
+        self.assertEqual(
+            description,
+            'Section contains unsorted keys or subsection headings: '
+            "'[subtest 1]' should precede '[subtest 2]'")
+
+    def test_metadata_empty_sections(self):
+        empty_subtest, empty_test = self._check_metadata(
+            """\
+            [variant.html?foo=bar/abc]
+              [empty subtest]
+
+            [variant.html?foo=baz]
+            """, 'variant.html.ini')
+        name, description, path, _ = empty_subtest
+        self.assertEqual(name, 'META-EMPTY-SECTION')
+        self.assertEqual(path, 'variant.html.ini')
+        self.assertEqual(description,
+                         "Empty section can be removed: '[empty subtest]'")
+        name, description, path, _ = empty_test
+        self.assertEqual(name, 'META-EMPTY-SECTION')
+        self.assertEqual(path, 'variant.html.ini')
+        self.assertEqual(
+            description,
+            "Empty section can be removed: '[variant.html?foo=baz]'")
+
+    def test_metadata_nonexistent_test(self):
+        error1, error2 = self._check_metadata(
+            """\
+            [multiglob.https.any.html]
+              expected: ERROR
+            [multiglob.https.any.serviceworker.html]
+              expected: ERROR
+            [multiglob.https.any.sharedworker.html]
+              expected: ERROR
+            [multiglob.https.any.worker.html]
+              expected: ERROR
+            """, 'dir/multiglob.https.any.js.ini')
+        name, description, path, _ = error1
+        self.assertEqual(name, 'META-UNKNOWN-TEST')
+        self.assertEqual(path, 'dir/multiglob.https.any.js.ini')
+        self.assertEqual(
+            description, 'Test ID does not exist: '
+            "'dir/multiglob.https.any.serviceworker.html'")
+        name, description, path, _ = error2
+        self.assertEqual(name, 'META-UNKNOWN-TEST')
+        self.assertEqual(path, 'dir/multiglob.https.any.js.ini')
+        self.assertEqual(
+            description, 'Test ID does not exist: '
+            "'dir/multiglob.https.any.sharedworker.html'")

@@ -37,14 +37,14 @@
   <cr-icon-button iron-icon="cr:more-vert"
         id="menuButton"
         title="$i18n{organizeButtonTitle}"
-        on-click="onMenuButtonOpenTap_"
+        on-click="onMenuButtonOpenClick_"
         aria-haspopup="menu"></cr-icon-button>
 </cr-toolbar>
 <cr-toolbar-selection-overlay show="[[showSelectionOverlay]]"
     cancel-label="$i18n{cancel}"
     selection-label="[[getItemsSelectedString_(selectedItems_.size)]]"
-    on-clear-selected-items="onClearSelectionTap_">
-  <cr-button on-click="onDeleteSelectionTap_"
+    on-clear-selected-items="onClearSelectionClick_">
+  <cr-button on-click="onDeleteSelectionClick_"
       disabled$="[[!canDeleteSelection_(selectedItems_)]]">
     $i18n{delete}
   </cr-button>

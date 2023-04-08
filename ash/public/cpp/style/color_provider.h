@@ -57,12 +57,6 @@ class ASH_PUBLIC_EXPORT ColorProvider {
     kControlBackgroundColorPositive,
     kFocusAuraColor,
     kFocusRingColor,
-    kHighlightColor1,
-    kHighlightColor2,
-    kHighlightColor3,
-    kBorderColor1,
-    kBorderColor2,
-    kBorderColor3,
   };
 
   enum class ContentLayerType {

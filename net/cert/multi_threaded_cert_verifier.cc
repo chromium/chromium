@@ -244,6 +244,7 @@ void MultiThreadedCertVerifier::UpdateChromeRootStoreData(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   verify_proc_ = verify_proc_factory_->CreateCertVerifyProc(
       std::move(cert_net_fetcher), root_store_data);
+  NotifyCertVerifierChanged();
 }
 
 void MultiThreadedCertVerifier::SetConfig(const CertVerifier::Config& config) {
@@ -284,6 +285,23 @@ void MultiThreadedCertVerifier::SetConfig(const CertVerifier::Config& config) {
   config_ = config;
   if (!config_.crl_set)
     config_.crl_set = CRLSet::BuiltinCRLSet();
+}
+
+void MultiThreadedCertVerifier::AddObserver(Observer* observer) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  observers_.AddObserver(observer);
+}
+
+void MultiThreadedCertVerifier::RemoveObserver(Observer* observer) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  observers_.RemoveObserver(observer);
+}
+
+void MultiThreadedCertVerifier::NotifyCertVerifierChanged() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  for (Observer& observer : observers_) {
+    observer.OnCertVerifierChanged();
+  }
 }
 
 }  // namespace net

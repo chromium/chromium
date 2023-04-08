@@ -1825,6 +1825,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NewTabPage.Realbox.CharTypedToRepaintLatency.ToPaint"
     units="ms" expires_after="2023-08-08">
+  <obsolete>
+    Deprecated in M114 in favor of Realbox.CharTypedToRepaintLatency.ToPaint.
+  </obsolete>
   <owner>mahmadi@chromium.org</owner>
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>

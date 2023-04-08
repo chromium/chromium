@@ -3003,6 +3003,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3584527007414070635">Keresés folytatása: <ph name="MODULE_TITLE" /></translation>
 <translation id="3586787825263265024">A(z) <ph name="APPLICATION_NAME" /> alkalmazás használatához rendelkezésre kell állnia a OneDrive-nak.</translation>
 <translation id="3586806079541226322">Nem lehet megnyitni ezt a fájlt</translation>
+<translation id="3586931643579894722">Részletek elrejtése</translation>
 <translation id="3587438013689771191">További információ: <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">Mind</translation>
 <translation id="3588790464166520201">Telepíthetnek fizetéskezelőket</translation>
@@ -3029,6 +3030,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3609277884604412258">Gyorskeresés</translation>
 <translation id="3610241585790874201">Nem menthet adatokat az eszközre</translation>
 <translation id="3610369246614755442">A dokk ventilátora javításra szorul</translation>
+<translation id="3610961622607302617">A következőhöz tartozó jelszó módosítása: <ph name="WEBSITE" /></translation>
 <translation id="361106536627977100">Flash-adatok</translation>
 <translation id="3611655097742243705">A Play Áruház oldalán további alkalmazásokat találhat</translation>
 <translation id="3611658447322220736">A nemrégiben bezárt webhelyek befejezhetik az adatok küldését és fogadását</translation>
@@ -5850,6 +5852,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6136114942382973861">A letöltéssáv bezárása</translation>
 <translation id="6136287496450963112">Biztonsági kulcsát nem védi PIN-kód. Ujjlenyomatok kezeléséhez előbb hozzon létre PIN-kódot.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA aláírás a következővel: SHA-384</translation>
+<translation id="6140948187512243695">Részletek megjelenítése</translation>
 <translation id="6141988275892716286">Letöltés megerősítése</translation>
 <translation id="6143186082490678276">Súgó</translation>
 <translation id="6143366292569327983">Válassza ki az oldal nyelvét, amelyről fordítani szeretne</translation>
@@ -6046,6 +6049,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6318125393809743217">Készüljön policies.json fájl a házirend-konfigurációkhoz.</translation>
 <translation id="6318407754858604988">A letöltés megkezdődött</translation>
 <translation id="6318944945640833942">Nem található nyomtató. Adja meg újra a nyomtató címét.</translation>
+<translation id="6320808462673705899">Nincs a keresésnek megfelelő könyvjelző.</translation>
 <translation id="6322370287306604163">Gyorsabb feloldás ujjlenyomattal</translation>
 <translation id="6322559670748154781">Ezt a fájlt nem töltik le gyakran, a Speciális védelem pedig letiltotta.</translation>
 <translation id="6324916366299863871">Billentyűparancs szerkesztése</translation>

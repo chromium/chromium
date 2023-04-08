@@ -24,11 +24,13 @@ const unsigned kTTLSecs = 1800;  // 30 minutes.
 
 CachingCertVerifier::CachingCertVerifier(std::unique_ptr<CertVerifier> verifier)
     : verifier_(std::move(verifier)), cache_(kMaxCacheEntries) {
+  verifier_->AddObserver(this);
   CertDatabase::GetInstance()->AddObserver(this);
 }
 
 CachingCertVerifier::~CachingCertVerifier() {
   CertDatabase::GetInstance()->RemoveObserver(this);
+  verifier_->RemoveObserver(this);
 }
 
 int CachingCertVerifier::Verify(const CertVerifier::RequestParams& params,
@@ -66,6 +68,14 @@ void CachingCertVerifier::SetConfig(const CertVerifier::Config& config) {
   verifier_->SetConfig(config);
   config_id_++;
   ClearCache();
+}
+
+void CachingCertVerifier::AddObserver(CertVerifier::Observer* observer) {
+  verifier_->AddObserver(observer);
+}
+
+void CachingCertVerifier::RemoveObserver(CertVerifier::Observer* observer) {
+  verifier_->RemoveObserver(observer);
 }
 
 CachingCertVerifier::CachedResult::CachedResult() = default;
@@ -167,6 +177,11 @@ void CachingCertVerifier::AddResultToCache(
   cache_.Put(
       params, cached_result, CacheValidityPeriod(start_time),
       CacheValidityPeriod(start_time, start_time + base::Seconds(kTTLSecs)));
+}
+
+void CachingCertVerifier::OnCertVerifierChanged() {
+  config_id_++;
+  ClearCache();
 }
 
 void CachingCertVerifier::OnCertDBChanged() {

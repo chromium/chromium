@@ -182,7 +182,6 @@
 #include "ash/wm/container_finder.h"
 #include "ash/wm/cursor_manager_chromeos.h"
 #include "ash/wm/desks/desks_controller.h"
-#include "ash/wm/desks/persistent_desks_bar/persistent_desks_bar_controller.h"
 #include "ash/wm/desks/templates/saved_desk_controller.h"
 #include "ash/wm/event_client_impl.h"
 #include "ash/wm/float/float_controller.h"
@@ -761,11 +760,6 @@ Shell::~Shell() {
   window_restore_controller_.reset();
   shelf_controller_->Shutdown();
   shelf_config_->Shutdown();
-
-  // Destroy PersistentDesksBarController before `overview_controller_`,
-  // `tablet_mode_controller_`, `desks_controller_` and
-  // `app_list_controller_` that it observes.
-  persistent_desks_bar_controller_.reset();
 
   // Depends on `app_list_controller_` and `tablet_mode_controller_`.
   app_list_feature_usage_metrics_.reset();
@@ -1458,14 +1452,6 @@ void Shell::Init(
   // |assistant_controller_| are put before |app_list_controller_| as they are
   // used in its constructor.
   app_list_controller_ = std::make_unique<AppListControllerImpl>();
-
-  // Create PersistentDesksBarController after `overview_controller_`,
-  // `tablet_mode_controller_`, `desks_controller_` and
-  // `app_list_controller_` that it observes.
-  if (features::IsBentoBarEnabled()) {
-    persistent_desks_bar_controller_ =
-        std::make_unique<PersistentDesksBarController>();
-  }
 
   autoclick_controller_ = std::make_unique<AutoclickController>();
 

@@ -20,6 +20,7 @@ static_library("presence") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/nearby/presence/proto",
     "//components/keyed_service/content:content",
     "//components/keyed_service/core",
     "//components/pref_registry:pref_registry",

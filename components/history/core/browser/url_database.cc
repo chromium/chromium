@@ -558,7 +558,7 @@ bool URLDatabase::GetKeywordSearchTermRows(
     row.keyword_id = statement.ColumnInt64(0);
     row.term = term;
     row.normalized_term = statement.ColumnString16(2);
-    rows->push_back(row);
+    rows->push_back(std::move(row));
   }
   return true;
 }

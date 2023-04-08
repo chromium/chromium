@@ -93,7 +93,7 @@ export class DownloadsToolbarElement extends PolymerElement {
     return this.$.toolbar.getSearchField().isSearchFocused();
   }
 
-  private onClearAllTap_(e: Event) {
+  private onClearAllClick_(e: Event) {
     assert(this.canClearAll());
     this.mojoHandler_!.clearAll();
     this.$.moreActionsMenu.close();
@@ -107,7 +107,7 @@ export class DownloadsToolbarElement extends PolymerElement {
     e.preventDefault();
   }
 
-  private onMoreActionsTap_() {
+  private onMoreActionsClick_() {
     this.$.moreActionsMenu.showAt(this.$.moreActions);
   }
 
@@ -119,7 +119,7 @@ export class DownloadsToolbarElement extends PolymerElement {
     this.updateClearAll_();
   }
 
-  private onOpenDownloadsFolderTap_() {
+  private onOpenDownloadsFolderClick_() {
     this.mojoHandler_!.openDownloadsFolderRequiringGesture();
     this.$.moreActionsMenu.close();
   }

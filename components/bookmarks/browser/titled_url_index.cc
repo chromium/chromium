@@ -16,8 +16,6 @@
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/unicodestring.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_offset_string_conversions.h"
@@ -47,41 +45,22 @@ TitledUrlIndex::TitledUrlIndex(std::unique_ptr<TitledUrlNodeSorter> sorter)
 
 TitledUrlIndex::~TitledUrlIndex() = default;
 
-void TitledUrlIndex::RecordMemoryUsage() const {
-  const auto index_size = base::trace_event::EstimateMemoryUsage(index_);
-  const auto path_index_size =
-      base::trace_event::EstimateMemoryUsage(path_index_);
-
-  base::UmaHistogramMemoryKB("Bookmarks.Memory.TitledUrlIndex",
-                             index_size + path_index_size);
-  base::UmaHistogramMemoryKB("Bookmarks.Memory.TitledUrlIndex.TitleAndUrlIndex",
-                             index_size);
-  base::UmaHistogramMemoryKB("Bookmarks.Memory.TitledUrlIndex.PathIndex",
-                             path_index_size);
-}
-
 void TitledUrlIndex::SetNodeSorter(
     std::unique_ptr<TitledUrlNodeSorter> sorter) {
   sorter_ = std::move(sorter);
 }
 
 void TitledUrlIndex::Add(const TitledUrlNode* node) {
-  SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Bookmarks.UpdateTitledUrlIndex.Add");
   for (const std::u16string& term : ExtractIndexTerms(node))
     RegisterNode(term, node);
 }
 
 void TitledUrlIndex::Remove(const TitledUrlNode* node) {
-  SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Bookmarks.UpdateTitledUrlIndex.Remove");
   for (const std::u16string& term : ExtractIndexTerms(node))
     UnregisterNode(term, node);
 }
 
 void TitledUrlIndex::AddPath(const TitledUrlNode* node) {
-  if (!index_paths_)
-    return;
-
-  SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Bookmarks.UpdateTitledUrlIndex.AddPath");
   for (const std::u16string& term :
        ExtractQueryWords(Normalize(node->GetTitledUrlNodeTitle()))) {
     path_index_[term]++;
@@ -89,11 +68,6 @@ void TitledUrlIndex::AddPath(const TitledUrlNode* node) {
 }
 
 void TitledUrlIndex::RemovePath(const TitledUrlNode* node) {
-  if (!index_paths_)
-    return;
-
-  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
-      "Bookmarks.UpdateTitledUrlIndex.RemovePath");
   for (const std::u16string& term :
        ExtractQueryWords(Normalize(node->GetTitledUrlNodeTitle()))) {
     // `path_index_.count(term)` should be > 0, since nodes can't be
@@ -107,51 +81,19 @@ void TitledUrlIndex::RemovePath(const TitledUrlNode* node) {
 std::vector<TitledUrlMatch> TitledUrlIndex::GetResultsMatching(
     const std::u16string& input_query,
     size_t max_count,
-    query_parser::MatchingAlgorithm matching_algorithm,
-    bool match_ancestor_titles) {
-  SCOPED_UMA_HISTOGRAM_TIMER("Bookmarks.GetResultsMatching.Timing.Total");
+    query_parser::MatchingAlgorithm matching_algorithm) {
   const std::u16string query = Normalize(input_query);
   std::vector<std::u16string> terms = ExtractQueryWords(query);
-  base::UmaHistogramExactLinear("Bookmarks.GetResultsMatching.Terms.TermsCount",
-                                terms.size(), 16);
   if (terms.empty())
     return {};
 
-  for (const std::u16string& term : terms) {
-    base::UmaHistogramExactLinear(
-        "Bookmarks.GetResultsMatching.Terms.TermLength", term.size(), 16);
-  }
-  // When |match_ancestor_titles| is true, |matches| shouldn't exclude nodes
-  // that don't match every query term, as the query terms may match in the
-  // ancestors. |MatchTitledUrlNodeWithQuery()| below will filter out nodes that
-  // neither match nor ancestor-match every query term.
-  TitledUrlNodeSet matches;
-  {
-    SCOPED_UMA_HISTOGRAM_TIMER(
-        "Bookmarks.GetResultsMatching.Timing.RetrievingNodes");
-    static const size_t kMaxNodes = kLimitNumNodesForBookmarkSearchCount.Get();
-    matches = match_ancestor_titles
-                  ? RetrieveNodesMatchingAnyTerms(terms, matching_algorithm,
-                                                  kMaxNodes)
-                  : RetrieveNodesMatchingAllTerms(terms, matching_algorithm);
-  }
-  base::UmaHistogramBoolean("Bookmarks.GetResultsMatching.AnyTermApproach.Used",
-                            match_ancestor_titles);
-  base::UmaHistogramCounts10000("Bookmarks.GetResultsMatching.Nodes.Count",
-                                matches.size());
-  // Slice by 3, the default value of
-  // `kShortBookmarkSuggestionsByTotalInputLengthThreshold`. Shorter inputs will
-  // likely have many fewer nodes than longer queries.
-  if (input_query.size() < 3) {
-    base::UmaHistogramCounts10000(
-        "Bookmarks.GetResultsMatching.Nodes.Count."
-        "InputsShorterThan3CharsLong",
-        matches.size());
-  } else {
-    base::UmaHistogramCounts10000(
-        "Bookmarks.GetResultsMatching.Nodes.Count.InputsAtLeast3CharsLong",
-        matches.size());
-  }
+  // `matches` shouldn't exclude nodes that don't match every query term, as the
+  // query terms may match in the ancestors. `MatchTitledUrlNodeWithQuery()`
+  // below will filter out nodes that neither match nor ancestor-match every
+  // query term.
+  static const size_t kMaxNodes = 1000;
+  TitledUrlNodeSet matches =
+      RetrieveNodesMatchingAnyTerms(terms, matching_algorithm, kMaxNodes);
 
   if (matches.empty())
     return {};
@@ -166,14 +108,8 @@ std::vector<TitledUrlMatch> TitledUrlIndex::GetResultsMatching(
   query_parser::QueryParser::ParseQueryNodes(query, matching_algorithm,
                                              &query_nodes);
 
-  std::vector<TitledUrlMatch> results = MatchTitledUrlNodesWithQuery(
-      sorted_nodes, query_nodes, terms, max_count, match_ancestor_titles);
-
-  // In practice, `max_count`, is always 50 (`kMaxBookmarkMatches`), so
-  // `results.size()` is at most 50.
-  base::UmaHistogramExactLinear(
-      "Bookmarks.GetResultsMatching.Matches.ReturnedCount", results.size(), 51);
-  return results;
+  return MatchTitledUrlNodesWithQuery(sorted_nodes, query_nodes, terms,
+                                      max_count);
 }
 
 // static
@@ -199,8 +135,6 @@ std::u16string TitledUrlIndex::Normalize(const std::u16string& text) {
 
 void TitledUrlIndex::SortMatches(const TitledUrlNodeSet& matches,
                                  TitledUrlNodes* sorted_nodes) const {
-  SCOPED_UMA_HISTOGRAM_TIMER(
-      "Bookmarks.GetResultsMatching.Timing.SortingNodes");
   if (sorter_) {
     sorter_->SortMatches(matches, sorted_nodes);
   } else {
@@ -212,35 +146,27 @@ std::vector<TitledUrlMatch> TitledUrlIndex::MatchTitledUrlNodesWithQuery(
     const TitledUrlNodes& nodes,
     const query_parser::QueryNodeVector& query_nodes,
     const std::vector<std::u16string>& query_terms,
-    size_t max_count,
-    bool match_ancestor_titles) {
-  SCOPED_UMA_HISTOGRAM_TIMER(
-      "Bookmarks.GetResultsMatching.Timing.CreatingMatches");
+    size_t max_count) {
   // The highest typed counts should be at the beginning of the `matches` vector
   // so that the best matches will always be included in the results. The loop
   // that calculates match relevance in
   // `HistoryContentsProvider::ConvertResults()` will run backwards to assure
   // higher relevance will be attributed to the best matches.
   std::vector<TitledUrlMatch> matches;
-  int nodes_considered = 0;
   for (TitledUrlNodes::const_iterator i = nodes.begin();
        i != nodes.end() && matches.size() < max_count; ++i) {
-    absl::optional<TitledUrlMatch> match = MatchTitledUrlNodeWithQuery(
-        *i, query_nodes, query_terms, match_ancestor_titles);
+    absl::optional<TitledUrlMatch> match =
+        MatchTitledUrlNodeWithQuery(*i, query_nodes, query_terms);
     if (match)
       matches.emplace_back(std::move(match).value());
-    ++nodes_considered;
   }
-  base::UmaHistogramCounts10000(
-      "Bookmarks.GetResultsMatching.Matches.ConsideredCount", nodes_considered);
   return matches;
 }
 
 absl::optional<TitledUrlMatch> TitledUrlIndex::MatchTitledUrlNodeWithQuery(
     const TitledUrlNode* node,
     const query_parser::QueryNodeVector& query_nodes,
-    const std::vector<std::u16string>& query_terms,
-    bool match_ancestor_titles) {
+    const std::vector<std::u16string>& query_terms) {
   if (!node) {
     return absl::nullopt;
   }
@@ -258,48 +184,40 @@ absl::optional<TitledUrlMatch> TitledUrlIndex::MatchTitledUrlNodeWithQuery(
   const std::u16string clean_url =
       CleanUpUrlForMatching(node->GetTitledUrlNodeUrl(), &adjustments);
   std::vector<std::u16string> lower_ancestor_titles;
-  if (match_ancestor_titles) {
-    base::ranges::transform(
-        node->GetTitledUrlNodeAncestorTitles(),
-        std::back_inserter(lower_ancestor_titles),
-        [](const auto& ancestor_title) {
-          return base::i18n::ToLower(Normalize(std::u16string(ancestor_title)));
-        });
-  }
+  base::ranges::transform(
+      node->GetTitledUrlNodeAncestorTitles(),
+      std::back_inserter(lower_ancestor_titles),
+      [](const auto& ancestor_title) {
+        return base::i18n::ToLower(Normalize(std::u16string(ancestor_title)));
+      });
 
   // Check if the input approximately matches the node. This is less strict than
   // the following check; it will return false positives. But it's also much
   // faster, so if it returns false, early exit and avoid the expensive
-  // `ExtractQueryWords()` calls. This is only necessary if
-  // `match_ancestor_titles` is true; otherwise, the previous search done before
-  // calling `MatchTitledUrlNodeWithQuery()` would have already done this.
-  if (match_ancestor_titles && approximate_node_match_) {
-    bool approximate_match =
-        base::ranges::all_of(query_terms, [&](const auto& word) {
-          if (lower_title.find(word) != std::u16string::npos)
+  // `ExtractQueryWords()` calls.
+  bool approximate_match =
+      base::ranges::all_of(query_terms, [&](const auto& word) {
+        if (lower_title.find(word) != std::u16string::npos)
+          return true;
+        if (clean_url.find(word) != std::u16string::npos)
+          return true;
+        for (const auto& ancestor_title : lower_ancestor_titles) {
+          if (ancestor_title.find(word) != std::u16string::npos)
             return true;
-          if (clean_url.find(word) != std::u16string::npos)
-            return true;
-          for (const auto& ancestor_title : lower_ancestor_titles) {
-            if (ancestor_title.find(word) != std::u16string::npos)
-              return true;
-          }
+        }
 
-          return false;
-        });
-    if (!approximate_match)
-      return absl::nullopt;
-  }
+        return false;
+      });
+  if (!approximate_match)
+    return absl::nullopt;
 
   // If `node` passed the approximate check above, to the more accurate check.
   query_parser::QueryWordVector title_words, url_words, ancestor_words;
   query_parser::QueryParser::ExtractQueryWords(clean_url, &url_words);
   query_parser::QueryParser::ExtractQueryWords(lower_title, &title_words);
-  if (match_ancestor_titles) {
-    for (const auto& ancestor_title : lower_ancestor_titles) {
-      query_parser::QueryParser::ExtractQueryWords(ancestor_title,
-                                                   &ancestor_words);
-    }
+  for (const auto& ancestor_title : lower_ancestor_titles) {
+    query_parser::QueryParser::ExtractQueryWords(ancestor_title,
+                                                 &ancestor_words);
   }
 
   query_parser::Snippet::MatchPositions title_matches, url_matches;
@@ -310,7 +228,7 @@ absl::optional<TitledUrlMatch> TitledUrlIndex::MatchTitledUrlNodeWithQuery(
     const bool has_url_matches =
         query_node->HasMatchIn(url_words, &url_matches);
     const bool has_ancestor_matches =
-        match_ancestor_titles && query_node->HasMatchIn(ancestor_words, false);
+        query_node->HasMatchIn(ancestor_words, false);
     query_has_ancestor_matches =
         query_has_ancestor_matches || has_ancestor_matches;
     if (!has_title_matches && !has_url_matches && !has_ancestor_matches)
@@ -365,20 +283,18 @@ TitledUrlIndex::TitledUrlNodeSet TitledUrlIndex::RetrieveNodesMatchingAnyTerms(
   if (terms.size() == 1)
     return RetrieveNodesMatchingAllTerms(terms, matching_algorithm);
 
-  if (index_paths_) {
-    // If any term does not match a path, short circuit the expensive union
-    // and simply resort to the `RetrieveNodesMatchingAllTerms()` intersection
-    // of the terms not matching any path. The results are guaranteed to be the
-    // same, since all terms must either title, URL, or path match; but there'll
-    // be much fewer nodes returned.
-    std::vector<std::u16string> terms_not_path;
-    base::ranges::copy_if(terms, std::back_inserter(terms_not_path),
-                          [&](const std::u16string& term) {
-                            return !DoesTermMatchPath(term, matching_algorithm);
-                          });
-    if (!terms_not_path.empty())
-      return RetrieveNodesMatchingAllTerms(terms_not_path, matching_algorithm);
-  }
+  // If any term does not match a path, short circuit the expensive union
+  // and simply resort to the `RetrieveNodesMatchingAllTerms()` intersection
+  // of the terms not matching any path. The results are guaranteed to be the
+  // same, since all terms must either title, URL, or path match; but there'll
+  // be much fewer nodes returned.
+  std::vector<std::u16string> terms_not_path;
+  base::ranges::copy_if(terms, std::back_inserter(terms_not_path),
+                        [&](const std::u16string& term) {
+                          return !DoesTermMatchPath(term, matching_algorithm);
+                        });
+  if (!terms_not_path.empty())
+    return RetrieveNodesMatchingAllTerms(terms_not_path, matching_algorithm);
 
   std::vector<TitledUrlNodes> matches_per_term;
   bool some_term_had_empty_matches = false;
@@ -388,17 +304,11 @@ TitledUrlIndex::TitledUrlNodeSet TitledUrlIndex::RetrieveNodesMatchingAnyTerms(
     // folder.
     TitledUrlNodes term_matches =
         RetrieveNodesMatchingTerm(term, matching_algorithm);
-    base::UmaHistogramCounts1000(
-        "Bookmarks.GetResultsMatching.AnyTermApproach.NodeCountPerTerm",
-        term_matches.size());
     if (term_matches.empty())
       some_term_had_empty_matches = true;
     else
       matches_per_term.push_back(std::move(term_matches));
   }
-  base::UmaHistogramExactLinear(
-      "Bookmarks.GetResultsMatching.AnyTermApproach.TermsUnionedCount",
-      matches_per_term.size(), 16);
 
   // Sort `matches_per_term` least frequent first. This prevents terms like
   // 'https', which match a lot of nodes, from wasting `max_nodes` capacity.
@@ -419,9 +329,6 @@ TitledUrlIndex::TitledUrlNodeSet TitledUrlIndex::RetrieveNodesMatchingAnyTerms(
     if (matches.size() == max_nodes)
       break;
   }
-  base::UmaHistogramCounts10000(
-      "Bookmarks.GetResultsMatching.AnyTermApproach.NodeCountAnyTerms",
-      matches.size());
 
   // Append all nodes that match every input term. This is necessary because
   // with the `max_nodes` threshold above, it's possible that `matches` is
@@ -444,13 +351,8 @@ TitledUrlIndex::TitledUrlNodeSet TitledUrlIndex::RetrieveNodesMatchingAnyTerms(
     DCHECK(all_term_matches ==
            RetrieveNodesMatchingAllTerms(terms, matching_algorithm));
   }
-  base::UmaHistogramCounts1000(
-      "Bookmarks.GetResultsMatching.AnyTermApproach.NodeCountAllTerms",
-      all_term_matches.size());
 
   matches.insert(all_term_matches.begin(), all_term_matches.end());
-  base::UmaHistogramCounts10000(
-      "Bookmarks.GetResultsMatching.AnyTermApproach.NodeCount", matches.size());
   return TitledUrlNodeSet(matches.begin(), matches.end());
 }
 

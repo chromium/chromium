@@ -41,7 +41,7 @@ class ExtensionsInstallWarningsDialogElement extends PolymerElement {
     this.$.dialog.showModal();
   }
 
-  private onOkTap_() {
+  private onOkClick_() {
     this.$.dialog.close();
   }
 }

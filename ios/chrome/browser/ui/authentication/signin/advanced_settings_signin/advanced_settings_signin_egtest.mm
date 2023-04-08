@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
+#import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
@@ -114,14 +115,17 @@ void WaitForSettingDoneButton() {
   // Open the sync passphrase editor through the sign-in flow.
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
-  [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_kindOfClassName(@"UILabel"),
-                                   grey_accessibilityLabel(
-                                       l10n_util::GetNSString(
-                                           IDS_IOS_MANAGE_SYNC_ENCRYPTION)),
-                                   nil)] performAction:grey_tap()];
+  [[[EarlGrey selectElementWithMatcher:SettingsLink()]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:grey_accessibilityID(
+                               kUnifiedConsentScrollViewIdentifier)]
+      performAction:grey_tap()];
+  [[[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                           kEncryptionAccessibilityIdentifier)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:grey_accessibilityID(
+                               kManageSyncTableViewAccessibilityIdentifier)]
+      performAction:grey_tap()];
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
                                    IDS_SYNC_FULL_ENCRYPTION_DATA))]

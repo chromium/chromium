@@ -50,10 +50,10 @@
           <div slot="title" id="title">$i18n{removeSelected}</div>
           <div slot="body" id="body">$i18n{deleteWarning}</div>
           <div slot="button-container">
-            <cr-button class="cancel-button" on-click="onDialogCancelTap_">
+            <cr-button class="cancel-button" on-click="onDialogCancelClick_">
               $i18n{cancel}
             </cr-button>
-            <cr-button class="action-button" on-click="onDialogConfirmTap_"
+            <cr-button class="action-button" on-click="onDialogConfirmClick_"
                 <if expr="is_macosx">aria-describedby="title body"</if>>
               $i18n{deleteConfirm}
             </cr-button>
@@ -68,17 +68,17 @@
           <button id="menuMoreButton" class="dropdown-item"
               hidden="[[!canSearchMoreFromSite_(
                   searchedTerm, actionMenuModel_.item.domain)]]"
-              on-click="onMoreFromSiteTap_">
+              on-click="onMoreFromSiteClick_">
             $i18n{moreFromSite}
           </button>
           <button id="menuRemoveButton" class="dropdown-item"
               hidden="[[!canDeleteHistory_]]" disabled="[[pendingDelete]]"
-              on-click="onRemoveFromHistoryTap_">
+              on-click="onRemoveFromHistoryClick_">
             $i18n{removeFromHistory}
           </button>
           <button id="menuRemoveBookmarkButton" class="dropdown-item"
               hidden="[[!actionMenuModel_.item.starred]]"
-              on-click="onRemoveBookmarkTap_">
+              on-click="onRemoveBookmarkClick_">
             $i18n{removeBookmark}
           </button>
         </cr-action-menu>

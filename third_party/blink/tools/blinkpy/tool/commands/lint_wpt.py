@@ -7,16 +7,20 @@ import argparse
 import io
 import logging
 import optparse
-from typing import List, Optional, Tuple
+import pathlib
+import urllib.parse
+from typing import Iterator, List, Optional, Tuple
 
 from blinkpy.common import path_finder
 from blinkpy.common.host import Host
 from blinkpy.tool.commands.command import Command
+from blinkpy.w3c.wpt_manifest import WPTManifest
 
 path_finder.bootstrap_wpt_imports()
 from tools.lint import lint as wptlint
 from tools.lint import rules
 from wptrunner import wptmanifest
+from wptrunner.wptmanifest import node as wptnode
 
 _log = logging.getLogger(__name__)
 
@@ -34,6 +38,35 @@ class MetadataBadSyntax(MetadataRule):
 
     A common pitfall is an unescaped ']' in the section heading, which you can
     escape with a backslash '\'.
+    """
+
+
+class MetadataUnsortedSection(MetadataRule):
+    name = 'META-UNSORTED-SECTION'
+    description = ('Section contains unsorted keys or subsection headings: '
+                   '%(predecessor)r should precede %(successor)r')
+    to_fix = """
+    Within a block (indentation level), all keys must precede all headings, and
+    keys must be sorted lexographically amongst themselves (and likewise for
+    headings).
+    """
+
+
+class MetadataEmptySection(MetadataRule):
+    name = 'META-EMPTY-SECTION'
+    description = 'Empty section can be removed: %(heading)r'
+    to_fix = """
+    A section without keys or subsections has no effect and should be removed.
+    The (sub)tests represented by empty sections default to enabled and
+    all-pass.
+    """
+
+
+class MetadataUnknownTest(MetadataRule):
+    name = 'META-UNKNOWN-TEST'
+    description = 'Test ID does not exist: %(test)r'
+    to_fix = """
+    Check that the top-level section headings are not misspelled.
     """
 
 
@@ -84,19 +117,80 @@ class LintWPT(Command):
 
     def check_metadata(self, repo_root: str, path: str,
                        metadata_file: io.BytesIO) -> List[LintError]:
-        if not self._is_metadata_file(repo_root, path):
+        # TODO(crbug.com/1406669): Check `__dir__.ini` too for relevant rules.
+        manifest = self._manifest(repo_root)
+        if not self._is_metadata_file(manifest, path):
             return []
         try:
             ast = wptmanifest.parse(metadata_file)
         except wptmanifest.parser.ParseError as error:
             context = {'detail': error.detail}
             return [MetadataBadSyntax.error(path, context, error.line)]
-        # TODO(crbug.com/1406669): Implement remaining rules.
-        return []
+        return [
+            *self._check_metadata_sorted(path, ast),
+            *self._check_metadata_nonempty_sections(path, ast),
+            *self._check_metadata_valid_test_ids(path, ast, manifest),
+            # TODO(crbug.com/1406669): Implement remaining rules.
+        ]
 
-    def _is_metadata_file(self, repo_root: str, path: str) -> bool:
-        test_path, extension = self._fs.splitext(path)
+    def _check_metadata_sorted(self, path: str,
+                               node: wptnode.Node) -> Iterator[LintError]:
+        if not isinstance(node, wptnode.DataNode):
+            return
+        sort_key = lambda child: (isinstance(child, wptnode.DataNode), child.
+                                  data or '')
+        sorted_children = sorted(node.children, key=sort_key)
+        for child, sorted_child in zip(node.children, sorted_children):
+            if child is not sorted_child:
+                # The original line numbers are lost after parsing, and
+                # attempting to rediscover them with diffing seems fragile and
+                # potentially inaccurate. Therefore, instead of reporting a line
+                # number, show the exact contents of the first pair of
+                # out-of-order lines. This is probably more helpful anyway.
+                context = {
+                    'predecessor': _format_node(sorted_child),
+                    'successor': _format_node(child),
+                }
+                yield MetadataUnsortedSection.error(path, context)
+                # Only report one error per block to avoid spam.
+                break
+        for child in node.children:
+            yield from self._check_metadata_sorted(path, child)
+
+    def _check_metadata_nonempty_sections(
+            self, path: str, node: wptnode.Node) -> Iterator[LintError]:
+        if not isinstance(node, wptnode.DataNode):
+            return
+        if not node.children:
+            context = {'heading': _format_node(node)}
+            yield MetadataEmptySection.error(path, context)
+        for child in node.children:
+            yield from self._check_metadata_nonempty_sections(path, child)
+
+    def _check_metadata_valid_test_ids(
+        self,
+        path: str,
+        node: wptnode.Node,
+        manifest: WPTManifest,
+    ) -> Iterator[LintError]:
+        for child in node.children:
+            if isinstance(child, wptnode.DataNode):
+                assert child.data
+                # Intentionally replaces the basename in `path`.
+                test_id = urllib.parse.urljoin(
+                    pathlib.Path(path).as_posix(), child.data)
+                if not manifest.is_test_url(test_id):
+                    yield MetadataUnknownTest.error(path, {'test': test_id})
+
+    def _manifest(self, repo_root: str) -> WPTManifest:
         wpt_dir = self._fs.normpath(
             self._fs.relpath(repo_root, self._finder.path_from_web_tests()))
-        manifest = self._default_port.wpt_manifest(wpt_dir)
+        return self._default_port.wpt_manifest(wpt_dir)
+
+    def _is_metadata_file(self, manifest: WPTManifest, path: str) -> bool:
+        test_path, extension = self._fs.splitext(path)
         return extension == '.ini' and manifest.is_test_file(test_path)
+
+
+def _format_node(node: wptnode.Node) -> str:
+    return wptmanifest.serialize(node).splitlines()[0].strip()

@@ -81,8 +81,8 @@ struct OverflowMenuActionRow: View {
         height: OverflowMenuActionRow.newLabelIconWidth
       )
       .overlay {
-        if let newLabelString = L10NUtils.stringWithFixup(
-          forMessageId: IDS_IOS_NEW_LABEL_FEATURE_BADGE)
+        if let newLabelString = L10nUtils.stringWithFixup(
+          messageId: IDS_IOS_NEW_LABEL_FEATURE_BADGE)
         {
           Text(newLabelString)
             .font(.system(size: 10, weight: .bold, design: .rounded))

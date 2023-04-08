@@ -335,7 +335,8 @@ DownloadBubbleRowView::DownloadBubbleRowView(
     DownloadBubbleRowListView* row_list_view,
     DownloadBubbleUIController* bubble_controller,
     DownloadBubbleNavigationHandler* navigation_handler,
-    Browser* browser)
+    Browser* browser,
+    int fixed_width)
     : model_(std::move(model)),
       context_menu_(
           std::make_unique<DownloadShelfContextMenuView>(model_->GetWeakPtr(),
@@ -355,7 +356,8 @@ DownloadBubbleRowView::DownloadBubbleRowView(
           FROM_HERE,
           base::Minutes(1),
           base::BindRepeating(&DownloadBubbleRowView::UpdateStatusText,
-                              base::Unretained(this))) {
+                              base::Unretained(this))),
+      fixed_width_(fixed_width) {
   model_->SetDelegate(this);
   SetBorder(views::CreateEmptyBorder(GetLayoutInsets(DOWNLOAD_ROW)));
 
@@ -579,13 +581,7 @@ void DownloadBubbleRowView::OnMouseCaptureLost() {
 }
 
 gfx::Size DownloadBubbleRowView::CalculatePreferredSize() const {
-  // TODO(crbug.com/1349528): The size constraint is not passed down from the
-  // views tree in the first round of layout, so setting a fixed width to bound
-  // the view. This is assuming that the row view is loaded inside a bubble. It
-  // will break if the row view is loaded inside a different parent view.
-  int fixed_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
-  return {fixed_width, GetHeightForWidth(fixed_width)};
+  return {fixed_width_, GetHeightForWidth(fixed_width_)};
 }
 
 void DownloadBubbleRowView::AddLayerToRegion(ui::Layer* layer,

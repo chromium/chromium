@@ -247,6 +247,8 @@ source_set("filters") {
     sources += [
       "hls_data_source_provider.cc",
       "hls_data_source_provider.h",
+      "hls_manifest_demuxer_engine.cc",
+      "hls_manifest_demuxer_engine.h",
       "manifest_demuxer.cc",
       "manifest_demuxer.h",
     ]
@@ -402,7 +404,10 @@ source_set("unit_tests") {
   }
 
   if (enable_hls_demuxer) {
-    sources += [ "hls_data_source_provider_unittest.cc" ]
+    sources += [
+      "hls_data_source_provider_unittest.cc",
+      "manifest_demuxer_unittest.cc",
+    ]
   }
 
   if (media_use_ffmpeg) {

@@ -1324,6 +1324,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.MetricsCollectorEventCountAtCleanup"
+    units="events" expires_after="2023-09-07">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the number of events in the metrics collector at cleanup time. This is
+    logged at the beginning of cleanup, which occurs once every 24 hours.
+  </summary>
+</histogram>
+
 <histogram
     name="SafeBrowsing.NavigationObserver.MissingInitiatorRenderFrameHostPortal"
     enum="BooleanExists" expires_after="2023-04-23">
@@ -2217,6 +2227,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     The time it takes to parse and load the SafeBrowsing database from disk, in
     milliseconds.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V4GetHash.CacheFullyHit" enum="BooleanCacheHit"
+    expires_after="2023-07-07">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Track whether a V4 request was able to be skipped because all parts of it
+    were found in the local cache. Logged after the V4 local cache is checked.
   </summary>
 </histogram>
 

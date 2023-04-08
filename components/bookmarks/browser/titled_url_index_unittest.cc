@@ -14,12 +14,10 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/bookmarks/browser/titled_url_match.h"
 #include "components/bookmarks/browser/titled_url_node.h"
 #include "components/bookmarks/browser/typed_count_sorter.h"
-#include "components/bookmarks/common/bookmark_features.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/query_parser/query_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,16 +26,6 @@ using base::UTF8ToUTF16;
 
 namespace bookmarks {
 namespace {
-
-// Helper to create vector of buckets. Each `pairs` are structured
-// `{min sample, count}`.
-std::vector<base::Bucket> CreateBuckets(
-    const std::vector<std::pair<int, int>>& pairs) {
-  std::vector<base::Bucket> buckets;
-  for (const auto& pair : pairs)
-    buckets.emplace_back(pair.first, pair.second);
-  return buckets;
-}
 
 // Used for sorting in combination with TypedCountSorter.
 class BookmarkClientMock : public TestBookmarkClient {
@@ -117,7 +105,7 @@ class TitledUrlIndexFake : public TitledUrlIndex {
     query_parser::QueryParser::ParseQueryNodes(
         query, query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH,
         &query_nodes);
-    return MatchTitledUrlNodeWithQuery(&node, query_nodes, query_terms, true);
+    return MatchTitledUrlNodeWithQuery(&node, query_nodes, query_terms);
   }
 };
 
@@ -159,13 +147,10 @@ class TitledUrlIndexTest : public testing::Test {
     return {owned_nodes_.back().get(), owned_path_nodes_.back().get()};
   }
 
-  std::vector<TitledUrlMatch> GetResultsMatching(
-      const std::string& query,
-      size_t max_count,
-      bool match_ancestor_titles = false) {
+  std::vector<TitledUrlMatch> GetResultsMatching(const std::string& query,
+                                                 size_t max_count) {
     return index_->GetResultsMatching(UTF8ToUTF16(query), max_count,
-                                      query_parser::MatchingAlgorithm::DEFAULT,
-                                      match_ancestor_titles);
+                                      query_parser::MatchingAlgorithm::DEFAULT);
   }
 
   void ExpectMatches(const std::string& query,
@@ -182,7 +167,7 @@ class TitledUrlIndexTest : public testing::Test {
                      query_parser::MatchingAlgorithm matching_algorithm,
                      const std::vector<std::string>& expected_titles) {
     std::vector<TitledUrlMatch> matches = index_->GetResultsMatching(
-        UTF8ToUTF16(query), 1000, matching_algorithm, false);
+        UTF8ToUTF16(query), 1000, matching_algorithm);
     ASSERT_EQ(expected_titles.size(), matches.size());
     for (const std::string& expected_title : expected_titles) {
       bool found = false;
@@ -226,15 +211,8 @@ class TitledUrlIndexTest : public testing::Test {
 
   void VerifyRetrieveNodesMatchingAnyTerms(
       const std::string& query,
-      const std::vector<int> expected_node_indexes,
-      bool histogram_any_term_approach_used,
-      int histogram_terms_unioned_count,
-      const std::vector<std::pair<int, int>>& histogram_term_node_counts,
-      int histogram_any_terms_nodes,
-      int histogram_all_terms_nodes,
-      int histogram_joint_nodes) {
+      const std::vector<int> expected_node_indexes) {
     SCOPED_TRACE("Query: " + query);
-    base::HistogramTester histogram_tester;
     std::vector<std::u16string> terms =
         base::SplitString(base::UTF8ToUTF16(query), u" ", base::TRIM_WHITESPACE,
                           base::SPLIT_WANT_ALL);
@@ -248,39 +226,6 @@ class TitledUrlIndexTest : public testing::Test {
           "node: " +
           base::UTF16ToUTF8(owned_nodes_[index]->GetTitledUrlNodeTitle()));
       EXPECT_TRUE(matches.contains(owned_nodes_[index].get()));
-    }
-
-    // Verify histograms.
-    if (histogram_any_term_approach_used) {
-      histogram_tester.ExpectUniqueSample(
-          "Bookmarks.GetResultsMatching.AnyTermApproach.TermsUnionedCount",
-          histogram_terms_unioned_count, 1);
-      EXPECT_EQ(
-          CreateBuckets(histogram_term_node_counts),
-          histogram_tester.GetAllSamples("Bookmarks.GetResultsMatching."
-                                         "AnyTermApproach.NodeCountPerTerm"));
-      histogram_tester.ExpectUniqueSample(
-          "Bookmarks.GetResultsMatching.AnyTermApproach.NodeCountAnyTerms",
-          histogram_any_terms_nodes, 1);
-      histogram_tester.ExpectUniqueSample(
-          "Bookmarks.GetResultsMatching.AnyTermApproach.NodeCountAllTerms",
-          histogram_all_terms_nodes, 1);
-      histogram_tester.ExpectUniqueSample(
-          "Bookmarks.GetResultsMatching.AnyTermApproach.NodeCount",
-          histogram_joint_nodes, 1);
-    } else {
-      // If AnyTermApproach wasn't used, then other histograms shouldn't be
-      // recorded.
-      histogram_tester.ExpectTotalCount(
-          "Bookmarks.GetResultsMatching.AnyTermApproach.TermsUnionedCount", 0);
-      histogram_tester.ExpectTotalCount(
-          "Bookmarks.GetResultsMatching.AnyTermApproach.NodeCountPerTerm", 0);
-      histogram_tester.ExpectTotalCount(
-          "Bookmarks.GetResultsMatching.AnyTermApproach.NodeCountAnyTerms", 0);
-      histogram_tester.ExpectTotalCount(
-          "Bookmarks.GetResultsMatching.AnyTermApproach.NodeCountAllTerms", 0);
-      histogram_tester.ExpectTotalCount(
-          "Bookmarks.GetResultsMatching.AnyTermApproach.NodeCount", 0);
     }
   }
 
@@ -605,16 +550,12 @@ TEST_F(TitledUrlIndexTest, Remove) {
 
 // Makes sure index is updated when a node is removed.
 TEST_F(TitledUrlIndexTest, Remove_PathIndex) {
-  base::test::ScopedFeatureList feature_list{kIndexPaths};
-  ResetNodes();
-
   auto* parent_dir = AddNode("foo", GURL("http://foo"), "folder").second;
-  ASSERT_EQ(0u, GetResultsMatching("foo folder", 10).size());
-  ASSERT_EQ(1U, GetResultsMatching("foo folder", 10, true).size());
+  ASSERT_EQ(1U, GetResultsMatching("foo folder", 10).size());
 
   index()->RemovePath(parent_dir);
-  ASSERT_EQ(0U, GetResultsMatching("foo folder", 10, true).size());
-  ASSERT_EQ(1U, GetResultsMatching("foo", 10, true).size());
+  ASSERT_EQ(0U, GetResultsMatching("foo folder", 10).size());
+  ASSERT_EQ(1U, GetResultsMatching("foo", 10).size());
 }
 
 // Makes sure no more than max queries is returned.
@@ -691,9 +632,6 @@ TEST_F(TitledUrlIndexTest, MatchTitledUrlNodeWithQuery) {
 }
 
 TEST_F(TitledUrlIndexTest, MatchTitledUrlNodeWithQuery_ApproximateNodeMatch) {
-  base::test::ScopedFeatureList feature_list{kApproximateNodeMatch};
-  ResetNodes();
-
   // When the query matches the node, should return non `nullopt`.
   EXPECT_TRUE(index()->MatchTitledUrlNodeWithQuery(u"matching", u"match"));
   // When the query approximately matches the node, should return `nullopt`.
@@ -733,149 +671,93 @@ TEST_F(TitledUrlIndexTest, RetrieveNodesMatchingAllTerms) {
   };
 }
 
-TEST_F(TitledUrlIndexTest, RetrieveNodesMatchingAnyTerms) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kIndexPaths);
+TEST_F(TitledUrlIndexTest, RetrieveNodesMatchingAnyTerms_PathMatch) {
   ResetNodes();
-
   AddNode("term1 term2 other xyz ab", GURL("http://foo.com"));
+  AddNode("no_match", GURL("http://no_match.com"), "path commo");
+  AddNode("common1", GURL("http://foo.com"));
+  AddNode("common2", GURL("http://foo.com"));
+  AddNode("common3", GURL("http://foo.com"));
+  AddNode("common4", GURL("http://foo.com"));
 
-  // Should return matches if any input terms match, even if not all node
-  // terms match.
-  VerifyRetrieveNodesMatchingAnyTerms("term not", {0}, true, 1,
-                                      {{0, 1}, {2, 1}}, 1, 0, 1);
+  // Should return match even if an input term does not match, as long as it's
+  // in the path index.
+  VerifyRetrieveNodesMatchingAnyTerms("term path", {0});
+  // Should not return matches if any input term is neither matching nor in the
+  // path index.
+  VerifyRetrieveNodesMatchingAnyTerms("term not", {});
+
+  // If any input term is not in the path index, should do full matching (i.e.
+  // all input terms need to be non-path matched).
+  VerifyRetrieveNodesMatchingAnyTerms("term common", {});
+  // If all input terms are in the path index, only 1 input term needs to
+  // non-path match.
+  VerifyRetrieveNodesMatchingAnyTerms("comm path", {2, 3, 4});
+
   // Should not return duplicate matches.
-  VerifyRetrieveNodesMatchingAnyTerms("term term1 term2", {0}, true, 3,
-                                      {{1, 2}, {2, 1}}, 1, 0, 1);
+  VerifyRetrieveNodesMatchingAnyTerms("term term1 term2", {0});
+
   // Should not early exit when there are no intermediate matches.
-  VerifyRetrieveNodesMatchingAnyTerms("not term", {0}, true, 1,
-                                      {{0, 1}, {2, 1}}, 1, 0, 1);
-  // Should not match midword.
-  VerifyRetrieveNodesMatchingAnyTerms("ther ther", {}, true, 0, {{0, 2}}, 0, 0,
-                                      0);
+  VerifyRetrieveNodesMatchingAnyTerms("path comm", {2, 3, 4});
+
+  // Should not match midword ('ther' in 'other').
+  VerifyRetrieveNodesMatchingAnyTerms("ther ther", {});
+
   // Short input terms should only return exact matches.
-  VerifyRetrieveNodesMatchingAnyTerms("xy xy", {}, true, 0, {{0, 2}}, 0, 0, 0);
-  VerifyRetrieveNodesMatchingAnyTerms("ab ab", {0}, true, 2, {{1, 2}}, 1, 0, 1);
+  VerifyRetrieveNodesMatchingAnyTerms("xy xy", {});
+  VerifyRetrieveNodesMatchingAnyTerms("ab ab", {0});
 
-  // Should short-circuit to `RetrieveNodesMatchingAllTerms()` if the input
-  // contains just 1 term.
-  VerifyRetrieveNodesMatchingAnyTerms("x", {}, false, 0, {}, 0, 0, 0);
-  // Should short-circuit to `RetrieveNodesMatchingAllTerms()` if at least 1
-  // term doesn't path match.
-}
-
-TEST_F(TitledUrlIndexTest, RetrieveNodesMatchingAnyTerms_MaxNodes) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kIndexPaths);
-  ResetNodes();
-
-  AddNode("common11", GURL("http://foo.com"));
-  AddNode("common12", GURL("http://foo.com"));
-  AddNode("common13 uncommon", GURL("http://foo.com"));
-  AddNode("common21 uncommon1", GURL("http://foo.com"));
-  AddNode("common22 uncommon1", GURL("http://foo.com"));
-  AddNode("common23 uncommon1", GURL("http://foo.com"));
-
-  // Should not look for all-term matches if at least 1 term matches at most
-  // `max_nodes`.
-  VerifyRetrieveNodesMatchingAnyTerms("uncommon1 uncommon1", {3, 4, 5}, true, 2,
-                                      {{3, 2}}, 3, 0, 3);
-  // Like above, but even if some terms match more than `max_nodes`. Should
-  // look for per term matches even after `max_nodes` matches have been
-  // found.
-  VerifyRetrieveNodesMatchingAnyTerms("common uncommon1", {3, 4, 5}, true, 2,
-                                      {{3, 1}, {6, 1}}, 3, 0, 3);
-  // Should look for all-term matches if all terms match more than
-  // `ma_nodes`.
-  VerifyRetrieveNodesMatchingAnyTerms("uncommon uncommon", {2, 3, 4, 5}, true,
-                                      2, {{4, 2}}, 3, 4, 4);
-  VerifyRetrieveNodesMatchingAnyTerms("common common", {0, 1, 2, 3, 4, 5}, true,
-                                      2, {{6, 2}}, 3, 6, 6);
-  VerifyRetrieveNodesMatchingAnyTerms("common uncommon", {2, 3, 4, 5}, true, 2,
-                                      {{4, 1}, {6, 1}}, 3, 4, 4);
-  VerifyRetrieveNodesMatchingAnyTerms("common x", {0, 1, 2}, true, 1,
-                                      {{0, 1}, {6, 1}}, 3, 0, 3);
-  // Should not crash if no term has matches.
-  VerifyRetrieveNodesMatchingAnyTerms("x x", {}, true, 0, {{0, 2}}, 0, 0, 0);
+  // Allows complete title/URL matches to exceed `max_nodes` (3 in tests).
+  VerifyRetrieveNodesMatchingAnyTerms("commo commo", {2, 3, 4, 5});
 }
 
 TEST_F(TitledUrlIndexTest, RetrieveNodesMatchingAnyTerms_PathIndex) {
-  base::test::ScopedFeatureList feature_list{kIndexPaths};
-  ResetNodes();
   AddNode("term1 term2 other xyz ab", GURL("http://foo.com"), "parent");
   AddNode("term1 term3", GURL("http://foo.com"), "parent2");
 
-  // Should not return matches if any of the input terms are neither path nor
-  // title/URL matches.
-  VerifyRetrieveNodesMatchingAnyTerms("term2 term2 not", {}, false, 0, {}, 0, 0,
-                                      0);
-
   // When short-circuiting to matching all terms, should not intersect with path
   // matching terms, only non-path matching terms.
+
   // Should intersect 'term1' matches only, returning both nodes, even though
   // the 1st node doesn't match 'parent2'.
-  VerifyRetrieveNodesMatchingAnyTerms("term1 parent2", {0, 1}, false, 0, {}, 0,
-                                      0, 0);
+  VerifyRetrieveNodesMatchingAnyTerms("term1 parent2", {0, 1});
   // Should intersect 'term1' and 'term2' matches returning the 1st node,
   // even though it doesn't match 'parent2'.
-  VerifyRetrieveNodesMatchingAnyTerms("term1 term2 parent2", {0}, false, 0, {},
-                                      0, 0, 0);
+  VerifyRetrieveNodesMatchingAnyTerms("term1 term2 parent2", {0});
   // Should intersect 'term2' and 'term3' matches returning 0 nodes.
-  VerifyRetrieveNodesMatchingAnyTerms("term2 term3 parent", {}, false, 0, {}, 0,
-                                      0, 0);
+  VerifyRetrieveNodesMatchingAnyTerms("term2 term3 parent", {});
 }
 
 TEST_F(TitledUrlIndexTest, GetResultsMatchingAncestors) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(bookmarks::kIndexPaths);
-  ResetNodes();
-
   TitledUrlNode* node =
       AddNode("leaf pare", GURL("http://foo.com"), "parent").first;
 
   struct TestData {
     const std::string query;
-    const bool match_ancestor_titles;
     const bool should_be_retrieved;
     const bool should_have_ancestor_match;
-    const bool histogram_any_term_approach_used;
-    const int histogram_terms_count;
-    const std::vector<std::pair<int, int>> histogram_term_lengths;
-    const bool histogram_matched_node;
   } data[] = {
-      // Should exclude matches with ancestor matches when
-      // `match_ancestor_titles` is false.
-      {"leaf parent", false, false, false, false, 2, {{4, 1}, {6, 1}}, false},
       // Should allow ancestor matches when `match_ancestor_titles` is true.
-      {"leaf parent", true, true, true, true, 2, {{4, 1}, {6, 1}}, true},
+      {"leaf parent", true, true},
       // Should not early exit when there are no accumulated non-ancestor
       // matches.
-      {"parent leaf", true, true, true, true, 2, {{4, 1}, {6, 1}}, true},
+      {"parent leaf", true, true},
       // Should still require at least 1 non-ancestor match when
       // `match_ancestor_titles` is true.
-      {"parent parent", true, false, false, true, 2, {{6, 2}}, false},
+      {"parent parent", false, false},
       // Should set `has_ancestor_match` to true even if a term matched both an
       // ancestor and title/URL.
-      {"pare", true, true, true, true, 1, {{4, 1}}, true},
+      {"pare", true, true},
       // Short inputs should only match exact title or ancestor terms.
-      {"pa pa", true, false, false, true, 2, {{2, 2}}, false},
+      {"pa pa", false, false},
       // Should not return matches if a term matches neither the title nor
       // ancestor.
-      {"leaf not parent",
-       true,
-       false,
-       false,
-       true,
-       3,
-       {{3, 1}, {4, 1}, {6, 1}},
-       true},
+      {"leaf not parent", false, false},
   };
 
   for (const TestData& test_data : data) {
     SCOPED_TRACE("Query: " + test_data.query);
-    base::HistogramTester histogram_tester;
-    auto matches = GetResultsMatching(test_data.query, 10,
-                                      test_data.match_ancestor_titles);
+    auto matches = GetResultsMatching(test_data.query, 10);
 
     // Verify whether the match.
     if (test_data.should_be_retrieved) {
@@ -885,97 +767,7 @@ TEST_F(TitledUrlIndexTest, GetResultsMatchingAncestors) {
                 test_data.should_have_ancestor_match);
     } else
       EXPECT_TRUE(matches.empty());
-
-    // Verify histograms.
-    histogram_tester.ExpectUniqueSample(
-        "Bookmarks.GetResultsMatching.Terms.TermsCount",
-        test_data.histogram_terms_count, 1);
-    EXPECT_EQ(CreateBuckets(test_data.histogram_term_lengths),
-              histogram_tester.GetAllSamples(
-                  "Bookmarks.GetResultsMatching.Terms.TermLength"));
-    histogram_tester.ExpectUniqueSample(
-        "Bookmarks.GetResultsMatching.AnyTermApproach.Used",
-        test_data.histogram_any_term_approach_used, 1);
-    histogram_tester.ExpectUniqueSample(
-        "Bookmarks.GetResultsMatching.Nodes.Count",
-        test_data.histogram_matched_node, 1);
-    if (test_data.query.size() < 3) {
-      histogram_tester.ExpectUniqueSample(
-          "Bookmarks.GetResultsMatching.Nodes.Count."
-          "InputsShorterThan3CharsLong",
-          test_data.histogram_matched_node, 1);
-      histogram_tester.ExpectTotalCount(
-          "Bookmarks.GetResultsMatching.Nodes.Count.InputsAtLeast3CharsLong",
-          0);
-    } else {
-      histogram_tester.ExpectUniqueSample(
-          "Bookmarks.GetResultsMatching.Nodes.Count.InputsAtLeast3CharsLong",
-          test_data.histogram_matched_node, 1);
-      histogram_tester.ExpectTotalCount(
-          "Bookmarks.GetResultsMatching.Nodes.Count."
-          "InputsShorterThan3CharsLong",
-          0);
-    }
-    if (test_data.histogram_matched_node) {
-      histogram_tester.ExpectUniqueSample(
-          "Bookmarks.GetResultsMatching.Matches.ConsideredCount", 1, 1);
-    } else {
-      histogram_tester.ExpectTotalCount(
-          "Bookmarks.GetResultsMatching.Matches.ConsideredCount", 0);
-    }
-    if (test_data.should_be_retrieved) {
-      histogram_tester.ExpectUniqueSample(
-          "Bookmarks.GetResultsMatching.Matches.ReturnedCount", 1, 1);
-    } else if (test_data.histogram_matched_node) {
-      histogram_tester.ExpectUniqueSample(
-          "Bookmarks.GetResultsMatching.Matches.ReturnedCount", 0, 1);
-    } else {
-      histogram_tester.ExpectTotalCount(
-          "Bookmarks.GetResultsMatching.Matches.ReturnedCount", 0);
-    }
-    EXPECT_EQ(histogram_tester
-                  .GetAllSamples("Bookmarks.GetResultsMatching.Timing.Total")
-                  .size(),
-              1u);
-    EXPECT_EQ(histogram_tester
-                  .GetAllSamples(
-                      "Bookmarks.GetResultsMatching.Timing.RetrievingNodes")
-                  .size(),
-              1u);
-    if (test_data.histogram_matched_node) {
-      EXPECT_EQ(
-          histogram_tester
-              .GetAllSamples("Bookmarks.GetResultsMatching.Timing.SortingNodes")
-              .size(),
-          1u);
-      EXPECT_EQ(histogram_tester
-                    .GetAllSamples(
-                        "Bookmarks.GetResultsMatching.Timing.CreatingMatches")
-                    .size(),
-                1u);
-    } else {
-      histogram_tester.ExpectTotalCount(
-          "Bookmarks.GetResultsMatching.Timing.SortingNodes", 0);
-      histogram_tester.ExpectTotalCount(
-          "Bookmarks.GetResultsMatching.Timing.CreatingMatches", 0);
-    }
   };
-
-  {
-    // With an empty input, most histograms should not be logged.
-    base::HistogramTester histogram_tester;
-    auto matches = GetResultsMatching("", 10, true);
-    EXPECT_EQ(histogram_tester
-                  .GetAllSamples("Bookmarks.GetResultsMatching.Timing.Total")
-                  .size(),
-              1u);
-    histogram_tester.ExpectUniqueSample(
-        "Bookmarks.GetResultsMatching.Terms.TermsCount", 0, 1);
-    histogram_tester.ExpectTotalCount(
-        "Bookmarks.GetResultsMatching.Terms.TermLength", 0);
-    histogram_tester.ExpectTotalCount(
-        "Bookmarks.GetResultsMatching.Timing.RetrievingNodes", 0);
-  }
 }
 
 }  // namespace

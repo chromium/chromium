@@ -97,7 +97,8 @@ import './os_files_page/smb_shares_page.js';
 import '../privacy_page/secure_dns.js';
 import '../privacy_page/secure_dns_input.js';
 
-export {SmbBrowserProxyImpl, SmbMountResult} from 'chrome://resources/ash/common/smb_shares/smb_browser_proxy.js';
+export {AddSmbShareDialogElement} from 'chrome://resources/ash/common/smb_shares/add_smb_share_dialog.js';
+export {SmbBrowserProxy, SmbBrowserProxyImpl, SmbMountResult} from 'chrome://resources/ash/common/smb_shares/smb_browser_proxy.js';
 export {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
 export {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
 export {CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_page/crostini_browser_proxy.js';
@@ -116,6 +117,7 @@ export {SettingsTtsSubpageElement} from './os_a11y_page/tts_subpage.js';
 export {SettingsGoogleDriveSubpageElement} from './os_files_page/google_drive_subpage.js';
 export {SettingsOfficePageElement} from './os_files_page/office_page.js';
 export {OsSettingsFilesPageElement} from './os_files_page/os_files_page.js';
+export {SettingsSmbSharesPageElement} from './os_files_page/smb_shares_page.js';
 export {LanguagesBrowserProxyImpl} from './os_languages_page/languages_browser_proxy.js';
 export {InputsShortcutReminderState, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from './os_languages_page/languages_metrics_proxy.js';
 export {OsSettingsSmartInputsPageElement} from './os_languages_page/smart_inputs_page.js';

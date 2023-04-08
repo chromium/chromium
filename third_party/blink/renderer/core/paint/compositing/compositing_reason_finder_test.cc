@@ -340,10 +340,17 @@ TEST_P(CompositingReasonFinderTest, PromoteCrossOriginIframe) {
   iframe->contentDocument()->body()->setAttribute(html_names::kStyleAttr,
                                                   "height: 2000px");
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(iframe_layer->GetScrollableArea()->NeedsCompositedScrolling());
-  EXPECT_REASONS(
-      CompositingReason::kIFrame | CompositingReason::kOverflowScrolling,
-      DirectReasonsForPaintProperties(*iframe_layout_view));
+  if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
+    EXPECT_REASONS(CompositingReason::kIFrame,
+                   DirectReasonsForPaintProperties(*iframe_layout_view));
+    EXPECT_TRUE(CompositingReasonFinder::ShouldForcePreferCompositingToLCDText(
+        *iframe_layout_view, CompositingReason::kIFrame));
+  } else {
+    EXPECT_TRUE(iframe_layer->GetScrollableArea()->NeedsCompositedScrolling());
+    EXPECT_REASONS(
+        CompositingReason::kIFrame | CompositingReason::kOverflowScrolling,
+        DirectReasonsForPaintProperties(*iframe_layout_view));
+  }
 }
 
 TEST_P(CompositingReasonFinderTest,
@@ -542,7 +549,9 @@ TEST_P(CompositingReasonFinderTest, WillChangeScrollPosition) {
   auto* target = GetLayoutObjectByElementId("target");
   EXPECT_TRUE(CompositingReasonFinder::ShouldForcePreferCompositingToLCDText(
       *target, CompositingReason::kNone));
-  EXPECT_REASONS(CompositingReason::kOverflowScrolling,
+  EXPECT_REASONS(RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()
+                     ? CompositingReason::kNone
+                     : CompositingReason::kOverflowScrolling,
                  DirectReasonsForPaintProperties(*target));
 
   GetDocument().getElementById("target")->RemoveInlineStyleProperty(

@@ -31,6 +31,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.MockSafeBrowsingApiHandler;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
@@ -324,7 +325,7 @@ public class DetachedResourceRequestTest {
     @Test
     @SmallTest
     @DisableFeatures(ChromeFeatureList.SPLIT_CACHE_BY_NETWORK_ISOLATION_KEY)
-
+    @DisabledTest(message = "https://crbug.com/1431268")
     public void testSafeBrowsingMainResource() throws Exception {
         testSafeBrowsingMainResource(true /* afterNative */, false /* splitCacheEnabled */);
     }
@@ -357,6 +358,7 @@ public class DetachedResourceRequestTest {
     @Test
     @SmallTest
     @DisableFeatures(ChromeFeatureList.SPLIT_CACHE_BY_NETWORK_ISOLATION_KEY)
+    @DisabledTest(message = "https://crbug.com/1431268")
     public void testSafeBrowsingMainResourceBeforeNative() throws Exception {
         testSafeBrowsingMainResource(false /* afterNative */, false /* splitCacheEnabled */);
     }

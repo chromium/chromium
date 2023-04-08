@@ -13,6 +13,7 @@
 
 #include "base/containers/linked_list.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
 #include "crypto/crypto_buildflags.h"
 #include "net/base/net_export.h"
@@ -53,6 +54,8 @@ class NET_EXPORT_PRIVATE MultiThreadedCertVerifier
              std::unique_ptr<Request>* out_req,
              const NetLogWithSource& net_log) override;
   void SetConfig(const CertVerifier::Config& config) override;
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
   void UpdateChromeRootStoreData(
       scoped_refptr<CertNetFetcher> cert_net_fetcher,
       const ChromeRootStoreData* root_store_data) override;
@@ -60,6 +63,10 @@ class NET_EXPORT_PRIVATE MultiThreadedCertVerifier
  private:
   class InternalRequest;
 
+  // Notify the |observers_| of an OnCertVerifierChanged event.
+  void NotifyCertVerifierChanged();
+
+  base::ObserverList<Observer> observers_;
   Config config_;
   scoped_refptr<CertVerifyProc> verify_proc_;
   scoped_refptr<CertVerifyProcFactory> verify_proc_factory_;

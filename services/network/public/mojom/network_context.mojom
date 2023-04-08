@@ -135,6 +135,10 @@ struct CertVerifierServiceRemoteParams {
   // A pipe to the CertVerifierService.
   pending_remote<cert_verifier.mojom.CertVerifierService>?
       cert_verifier_service;
+
+  // Receives notifications of changes to the CertVerifier.
+  pending_receiver<cert_verifier.mojom.CertVerifierServiceClient>?
+    cert_verifier_service_client_receiver;
 };
 
 // Client to update the custom proxy config.

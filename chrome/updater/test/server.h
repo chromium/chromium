@@ -11,7 +11,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
-#include "chrome/updater/test/integration_test_commands.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
 class GURL;
@@ -28,11 +27,13 @@ class HttpResponse;
 namespace updater {
 namespace test {
 
+class IntegrationTestCommands;
+
 class ScopedServer {
  public:
-  // Defines a generic predicate to match expectations for a `request_body`.
+  // Defines a generic predicate to match expectations for a request.
   using RequestMatcherPredicate =
-      base::RepeatingCallback<bool(const std::string& request_body)>;
+      base::RepeatingCallback<bool(const net::test_server::HttpRequest&)>;
 
   // Defines a sequence of predicates which all must pass in order to match
   // a request. This allows for combining several predicates when matching a
@@ -62,7 +63,18 @@ class ScopedServer {
   void ExpectOnce(RequestMatcher request_matcher,
                   const std::string& response_body);
 
-  const GURL& base_url() const { return test_server_->base_url(); }
+  std::string update_path() const { return "/update"; }
+  GURL update_url() const { return test_server_->GetURL(update_path()); }
+
+  std::string crash_report_path() const { return "/crash"; }
+  GURL crash_upload_url() const {
+    return test_server_->GetURL(crash_report_path());
+  }
+
+  std::string device_management_path() const { return "/dmapi"; }
+  GURL device_management_url() const {
+    return test_server_->GetURL(device_management_path());
+  }
 
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(

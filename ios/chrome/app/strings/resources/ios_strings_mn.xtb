@@ -20,7 +20,6 @@
 <translation id="1103523840287552314"><ph name="LANGUAGE" />-ийг үргэлж орчуулах</translation>
 <translation id="110724200315609752">Нээлттэй цонх руу сэлгэх</translation>
 <translation id="1112015203684611006">Хэвлэж чадсангүй.</translation>
-<translation id="1118266931011974190"><ph name="THRESHOLD" /> хоногийн дараа</translation>
 <translation id="1125564390852150847">Шинэ таб үүсгэнэ үү.</translation>
 <translation id="1126013303640354461">Google Pay-н төлбөрийн хэрэгслүүд болон хаягуудыг шифрлэхгүй. Chrome-н хөтчийн түүхийг синк хийхгүй.
 Зөвхөн таны нэвтрэх үгтэй хүн таны шифрлэгдсэн өгөгдлийг унших боломжтой. Нэвтрэх үгийг Google-д илгээдэггүй эсвэл хадгалдаггүй. Хэрэв та нэвтрэх үгээ мартсан эсвэл энэ тохиргоог өөрчлөхийг хүсвэл синкийг шинэчлэх шаардлагатай. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
@@ -217,6 +216,7 @@
 <translation id="2482878487686419369">Мэдэгдэл</translation>
 <translation id="2496626742194544812">Эхний таб руу очих</translation>
 <translation id="2500374554657206846">Нууц үг хадгалах сонголтууд</translation>
+<translation id="2502415369140591438">Дахин ашигласан <ph name="COUNT" /> нууц үг</translation>
 <translation id="2523363575747517183">Энэ вебсайт өөр апп нээхээр удаа дараа оролдож байна.</translation>
 <translation id="2529021024822217800">Бүгдийг нээх</translation>
 <translation id="2547458583188611426">Синк хийх ажиллахгүй байна. Синк хийж эхлэхийн тулд нэвтрэх үгээ оруулна уу.</translation>
@@ -293,6 +293,7 @@
 <translation id="2932085390869194046">Нууц үг санал болгох...</translation>
 <translation id="2932765531295814441">Нууц үгийг гар аргаар нэмэх</translation>
 <translation id="2952581218264071393">1. Chrome-н тохиргоог нээнэ үү</translation>
+<translation id="2953871438216280742">Google Бүртгэлдээ унших жагсаалтаа нээх болон хадгалахын тулд нэвтэрнэ үү.</translation>
 <translation id="2958718410589002129">Нууц үг</translation>
 <translation id="2961210776189273067">Цол хэргэм</translation>
 <translation id="2964349545761222050">Гуравдагч талын күүкиг блоклох</translation>
@@ -386,6 +387,7 @@
 <translation id="3581564640715911333">Хуудсыг бусад хэлээр орчуулахыг санал болгох</translation>
 <translation id="3588820906588687999">Зургийг шинэ цонхонд нээ</translation>
 <translation id="3595252146048399851">Та синк хийх зүйлээ <ph name="BEGIN_LINK" />тохиргоо<ph name="END_LINK" /> хэсгээс хүссэн үедээ сонгох боломжтой. Google таны түүхэд тулгуурлан Хайлт болон бусад үйлчилгээг хувийн болгож магадгүй.</translation>
+<translation id="3595588371156514964">{COUNT,plural, =1{{COUNT} сул нууц үг}other{{COUNT} сул нууц үг}}</translation>
 <translation id="3603009562372709545">Холбоосын URL-ыг хуулах</translation>
 <translation id="3607167657931203000">Автоматаар бөглөх хэсгийн өгөгдөл</translation>
 <translation id="3608008480985212611">Сонголтоо удирдахын тулд нэвтрээрэй.</translation>
@@ -622,6 +624,7 @@
 <translation id="5197255632782567636">Интернэт</translation>
 <translation id="5211488077761630279">"<ph name="SITE_NAME" />"-д таны <ph name="PERMISSION" />-г ашиглахыг зөвшөөрөх үү?</translation>
 <translation id="5219295696240154694">Вебийн аюулгүй байдлыг хүн бүрд сайжруулахад туслах</translation>
+<translation id="5221339005270097309">Нууц үгийг шалгаж байна…</translation>
 <translation id="5228579091201413441">Синхроныг идэвхжүүлэх</translation>
 <translation id="5232485538978018676">Тохиргоо хийгдсэн бүртгэлээр нэвтрэх</translation>
 <translation id="5234764350956374838">Хэрэгсэхгүй болго</translation>
@@ -661,6 +664,7 @@
 Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүүлсэн байх ёстой бөгөөд таны төхөөрөмжүүд ижилхэн iCloud акаунт ашиглах ёстой.</translation>
 <translation id="5551897871312988470">Орчуулахыг санал болгох</translation>
 <translation id="5556459405103347317">Дахин ачаал</translation>
+<translation id="555749644339804659">Нууц үгийг шалгаж байна…</translation>
 <translation id="556042886152191864">Товч</translation>
 <translation id="5597915316964418992">Табын хүснэгтийг нээх</translation>
 <translation id="560322036295180549">Танай байгууллага унтраасан</translation>

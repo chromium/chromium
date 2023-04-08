@@ -980,6 +980,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5578188167649348993">mémoire</translation>
 <translation id="5580000943347215299">Bibliothèque</translation>
 <translation id="558849140439112033">Faites glisser le curseur pour sélectionner une région à capturer</translation>
+<translation id="5596627076506792578">Autres options</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" /> <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Appuyez sur Ctrl + Alt + Z pour désactiver la rétroaction vocale.</translation>
 <translation id="5601503069213153581">NIP</translation>
@@ -1247,7 +1248,6 @@ Nouvelle installation</translation>
 <translation id="6820676911989879663">Prenez une pause!</translation>
 <translation id="6827049576281411231">Fermer le panneau d'événements</translation>
 <translation id="6836499262298959512">Fichier dangereux</translation>
-<translation id="6837064795450991317">Masquer deskbar</translation>
 <translation id="6852052252232534364">Cliquer pour activer</translation>
 <translation id="6855029042976311970">Modifié au cours des dernières minutes</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
@@ -1305,7 +1305,6 @@ Nouvelle installation</translation>
 <translation id="7098053464892629930">Téléchargez l'application pour <ph name="NAME" /> sur Google Play pour voir toutes les fonctionnalités offertes</translation>
 <translation id="7098389117866926363">Appareil USB-C (port arrière-gauche)</translation>
 <translation id="7100906357717321275">Afficher les fichiers cachés dans l'application Fichiers</translation>
-<translation id="7106330611027933926">Afficher deskbar</translation>
 <translation id="7116969082764510092">Bureau 11</translation>
 <translation id="7118268675952955085">Capture d'écran</translation>
 <translation id="7119327711295338600">Sélectionner le mot ou la lettre suivante</translation>

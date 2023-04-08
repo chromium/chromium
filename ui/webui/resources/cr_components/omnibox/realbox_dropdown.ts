@@ -41,23 +41,30 @@ export class RealboxDropdownElement extends PolymerElement {
       // Public properties
       //========================================================================
 
-      /** Whether secondary matches can be shown. */
-      canShowSecondaryMatches: {
+      /**
+       * Whether the secondary side can be shown based on the feature state and
+       * the width available to the dropdown.
+       */
+      canShowSecondarySide: {
         type: Boolean,
         value: false,
       },
 
-      /** Whether secondary matches were at any point available to show. */
-      hadSecondaryMatches: {
+      /**
+       * Whether the secondary side was at any point available to be shown.
+       */
+      hadSecondarySide: {
         type: Boolean,
         value: false,
         notify: true,
       },
 
-      /** Whether secondary matches are currently available to show. */
-      hasSecondaryMatches: {
+      /*
+       * Whether the secondary side is currently available to be shown.
+       */
+      hasSecondarySide: {
         type: Boolean,
-        value: false,
+        computed: `computeHasSecondarySide_(result)`,
         notify: true,
       },
 
@@ -97,9 +104,9 @@ export class RealboxDropdownElement extends PolymerElement {
     };
   }
 
-  canShowSecondaryMatches: boolean;
-  hadSecondaryMatches: boolean;
-  hasSecondaryMatches: boolean;
+  canShowSecondarySide: boolean;
+  hadSecondarySide: boolean;
+  hasSecondarySide: boolean;
   result: AutocompleteResult;
   roundCorners: boolean;
   selectedMatchIndex: number;
@@ -121,7 +128,7 @@ export class RealboxDropdownElement extends PolymerElement {
   get selectableMatchElements() {
     return this.selectableMatchElements_.filter(
         matchEl => matchEl.sideType === SideType.kDefaultPrimary ||
-            this.canShowSecondaryMatches);
+            this.canShowSecondarySide);
   }
 
   /** Unselects the currently selected match, if any. */
@@ -199,12 +206,6 @@ export class RealboxDropdownElement extends PolymerElement {
   }
 
   private onResultRepaint_() {
-    this.dispatchEvent(new CustomEvent('result-repaint', {
-      bubbles: true,
-      composed: true,
-      detail: window.performance.now(),
-    }));
-
     const metricsReporter = MetricsReporterImpl.getInstance();
     metricsReporter.measure('CharTyped')
         .then(duration => {
@@ -240,6 +241,15 @@ export class RealboxDropdownElement extends PolymerElement {
   private classForSide_(side: SideType): string {
     return side === SideType.kDefaultPrimary ? 'primary-side' :
                                                'secondary-side';
+  }
+
+  private computeHasSecondarySide_(): boolean {
+    const hasSecondarySide =
+        !!this.groupIdsForSide_(SideType.kSecondary).length;
+    if (!this.hadSecondarySide) {
+      this.hadSecondarySide = hasSecondarySide;
+    }
+    return hasSecondarySide;
   }
 
   private computeHiddenGroupIds_(): number[] {
@@ -308,26 +318,16 @@ export class RealboxDropdownElement extends PolymerElement {
    *     secondary matches are currently or were at any point available to show.
    */
   private matchesForSide_(side: SideType): AutocompleteMatch[] {
-    const matches = (this.result?.matches ?? [])
-                        .filter(
-                            match => this.sideTypeForGroup_(
-                                         match.suggestionGroupId) === side);
-
-    if (side === SideType.kSecondary) {
-      this.hasSecondaryMatches = !!matches.length;
-      if (!this.hadSecondaryMatches) {
-        this.hadSecondaryMatches = this.hasSecondaryMatches;
-      }
-    }
-
-    return matches;
+    return (this.result?.matches ?? [])
+        .filter(
+            match => this.sideTypeForGroup_(match.suggestionGroupId) === side);
   }
 
   /**
-   * @returns The list of side type to show.
+   * @returns The list of side types to show.
    */
   private sideTypes_(): SideType[] {
-    return this.canShowSecondaryMatches ?
+    return this.canShowSecondarySide ?
         [SideType.kDefaultPrimary, SideType.kSecondary] :
         [SideType.kDefaultPrimary];
   }

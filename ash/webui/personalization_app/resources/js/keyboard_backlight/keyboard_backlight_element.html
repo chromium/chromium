@@ -67,9 +67,7 @@
       </cr-button>
     </div>
   </color-selector>
-  <cr-lazy-render id="zoneCustomizationRender">
-    <template>
-      <zone-customization></zone-customization>
-    </template>
-  </cr-lazy-render>
+  <template is="dom-if" if="[[isZoneCustomizationDialogOpen_]]" restamp>
+    <zone-customization on-cancel="closeZoneCustomizationDialog_"></zone-customization>
+  </template>
 </div>

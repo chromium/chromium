@@ -57,6 +57,7 @@ class WestonTestInputEmulate : public wl::WaylandProxy::Delegate {
   WestonTestInputEmulate();
   ~WestonTestInputEmulate() override;
 
+  void Reset();
   void AddObserver(Observer* obs);
   void RemoveObserver(Observer* obs);
   void EmulatePointerMotion(gfx::AcceleratedWidget widget,

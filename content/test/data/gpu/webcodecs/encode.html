@@ -99,11 +99,11 @@ Take frames coming from various sources and check that:
       TEST.assert(errors == 0, 'Encoding errors occurred during the test');
       TEST.log('Test completed');
     }
-    addManualTestButton({
+    addManualTestButton([{
       'source_type': 'offscreen',
       'codec': 'avc1.42001E',
       'acceleration':'prefer-software'
-    });
+    }]);
   </script>
 </head>
 

@@ -274,6 +274,7 @@
 
       # These should be the same with 'Linux Builder'.
       'linux-rel-dev': 'gpu_tests_release_bot_do_typecheck_reclient',
+      'linux-rel-jammy-dev': 'gpu_tests_release_bot_do_typecheck_reclient',
       'linux-ssd-rel-dev': 'gpu_tests_release_bot_do_typecheck_reclient',
 
       # This should be the same with 'Mac Builder'.
@@ -905,7 +906,7 @@
       'chromeos-betty-pi-arc-finch-smoke-chrome': 'chromeos_betty-pi-arc_dchecks_reclient',
       'chromeos-brya-chrome-skylab-fyi': 'chromeos_brya_include_unwind_tables_official_dchecks_skylab_reclient',
       'chromeos-octopus-chrome-skylab-fyi': 'chromeos_octopus_include_unwind_tables_official_dchecks_skylab_reclient',
-      'chromeos-trogdor64-chrome-skylab-fyi': 'chromeos_trogdor64_include_unwind_tables_official_dchecks_skylab_reclient',
+      'chromeos-trogdor-chrome-skylab-fyi': 'chromeos_trogdor_include_unwind_tables_official_dchecks_skylab_reclient',
       'chromeos-volteer-chrome-skylab-fyi': 'chromeos_volteer_include_unwind_tables_official_dchecks_skylab_reclient',
       'lacros-amd64-generic-chrome-fyi': 'chromeos_amd64-generic_lacros_official_skylab_reclient',
       'lacros-arm-generic-chrome-fyi': 'chromeos_arm-generic_lacros_official_skylab_reclient',
@@ -972,7 +973,7 @@
       'chromeos-octopus-chrome-skylab': 'chromeos_octopus_include_unwind_tables_official_dchecks_skylab',
       'chromeos-octopus-compile-chrome': 'chromeos_octopus_include_unwind_tables_official_dchecks',
       'chromeos-reven-chrome': 'chromeos_reven_include_unwind_tables_official_dchecks',
-      'chromeos-trogdor64-chrome-skylab': 'chromeos_trogdor64_include_unwind_tables_official_dchecks_skylab',
+      'chromeos-trogdor-chrome-skylab': 'chromeos_trogdor_include_unwind_tables_official_dchecks_skylab',
       'chromeos-volteer-chrome-skylab': 'chromeos_volteer_include_unwind_tables_official_dchecks_skylab',
       'lacros-amd64-generic-chrome': 'chromeos_amd64-generic_lacros_official_no_symbols',
       'lacros-amd64-generic-chrome-skylab': 'chromeos_amd64-generic_lacros_official_skylab',
@@ -2320,11 +2321,11 @@
       'also_build_lacros_chrome_for_architecture_amd64', 'ozone_headless'
     ],
 
-    'chromeos_trogdor64_include_unwind_tables_official_dchecks_skylab': [
-      'chromeos_device', 'trogdor64', 'include_unwind_tables', 'official', 'dcheck_always_on', 'is_skylab',
+    'chromeos_trogdor_include_unwind_tables_official_dchecks_skylab': [
+      'chromeos_device', 'trogdor', 'include_unwind_tables', 'official', 'dcheck_always_on', 'is_skylab',
     ],
-    'chromeos_trogdor64_include_unwind_tables_official_dchecks_skylab_reclient': [
-      'chromeos_device_reclient', 'trogdor64', 'include_unwind_tables', 'official', 'dcheck_always_on', 'is_skylab', 'ozone_headless'
+    'chromeos_trogdor_include_unwind_tables_official_dchecks_skylab_reclient': [
+      'chromeos_device_reclient', 'trogdor', 'include_unwind_tables', 'official', 'dcheck_always_on', 'is_skylab', 'ozone_headless'
     ],
 
     'chromeos_volteer_include_unwind_tables_official_dchecks_skylab': [
@@ -4769,8 +4770,8 @@
       'gn_args': 'use_thin_lto=true thin_lto_enable_optimizations=true',
     },
 
-    'trogdor64': {
-      'args_file': '//build/args/chromeos/trogdor64.gni',
+    'trogdor': {
+      'args_file': '//build/args/chromeos/trogdor.gni',
     },
 
     'tsan': {

@@ -4,10 +4,14 @@
 
 #include "net/cert/caching_cert_verifier.h"
 
+#include <memory>
+
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
+#include "base/test/task_environment.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
+#include "net/cert/cert_database.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/mock_cert_verifier.h"
@@ -188,5 +192,167 @@ TEST_F(CachingCertVerifierTest, DifferentCACerts) {
   ASSERT_EQ(0u, verifier_.cache_hits());
   ASSERT_EQ(2u, verifier_.GetCacheSize());
 }
+
+TEST_F(CachingCertVerifierTest, ObserverIsForwarded) {
+  auto mock_cert_verifier = std::make_unique<MockCertVerifier>();
+  MockCertVerifier* mock_cert_verifier_ptr = mock_cert_verifier.get();
+  CachingCertVerifier cache_verifier(std::move(mock_cert_verifier));
+
+  CertVerifierObserverCounter observer_(&cache_verifier);
+  EXPECT_EQ(observer_.change_count(), 0u);
+  // A CertVerifierChanged event on the wrapped verifier should be forwarded to
+  // observers registered on CachingCertVerifier.
+  mock_cert_verifier_ptr->SimulateOnCertVerifierChanged();
+  EXPECT_EQ(observer_.change_count(), 1u);
+}
+
+namespace {
+enum class ChangeType {
+  kSetConfig,
+  kCertVerifierChanged,
+  kCertDBChanged,
+};
+}  // namespace
+
+class CachingCertVerifierCacheClearingTest
+    : public testing::TestWithParam<ChangeType> {
+ public:
+  CachingCertVerifierCacheClearingTest() {
+    auto mock_cert_verifier = std::make_unique<MockCertVerifier>();
+    mock_verifier_ = mock_cert_verifier.get();
+    verifier_ =
+        std::make_unique<CachingCertVerifier>(std::move(mock_cert_verifier));
+  }
+
+  ChangeType change_type() const { return GetParam(); }
+
+  void DoCacheClearingAction() {
+    switch (change_type()) {
+      case ChangeType::kSetConfig:
+        verifier_->SetConfig({});
+        break;
+      case ChangeType::kCertVerifierChanged:
+        mock_verifier_->SimulateOnCertVerifierChanged();
+        break;
+      case ChangeType::kCertDBChanged:
+        CertDatabase::GetInstance()->NotifyObserversCertDBChanged();
+        base::RunLoop().RunUntilIdle();
+        break;
+    }
+  }
+
+ protected:
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  std::unique_ptr<CachingCertVerifier> verifier_;
+  raw_ptr<MockCertVerifier> mock_verifier_;
+};
+
+TEST_P(CachingCertVerifierCacheClearingTest, CacheClearedSyncVerification) {
+  base::FilePath certs_dir = GetTestCertsDirectory();
+  scoped_refptr<X509Certificate> test_cert(
+      ImportCertFromFile(certs_dir, "ok_cert.pem"));
+  ASSERT_TRUE(test_cert.get());
+
+  mock_verifier_->set_async(false);
+
+  int error;
+  CertVerifyResult verify_result;
+  TestCompletionCallback callback;
+  std::unique_ptr<CertVerifier::Request> request;
+
+  error = verifier_->Verify(
+      CertVerifier::RequestParams(test_cert, "www.example.com", 0,
+                                  /*ocsp_response=*/std::string(),
+                                  /*sct_list=*/std::string()),
+      &verify_result, callback.callback(), &request, NetLogWithSource());
+  ASSERT_TRUE(IsCertificateError(error));
+  ASSERT_EQ(1u, verifier_->requests());
+  ASSERT_EQ(0u, verifier_->cache_hits());
+  ASSERT_EQ(1u, verifier_->GetCacheSize());
+
+  DoCacheClearingAction();
+  ASSERT_EQ(0u, verifier_->GetCacheSize());
+
+  error = verifier_->Verify(
+      CertVerifier::RequestParams(test_cert, "www.example.com", 0,
+                                  /*ocsp_response=*/std::string(),
+                                  /*sct_list=*/std::string()),
+      &verify_result, callback.callback(), &request, NetLogWithSource());
+  ASSERT_TRUE(IsCertificateError(error));
+  ASSERT_FALSE(request);
+  ASSERT_EQ(2u, verifier_->requests());
+  ASSERT_EQ(0u, verifier_->cache_hits());
+  ASSERT_EQ(1u, verifier_->GetCacheSize());
+}
+
+TEST_P(CachingCertVerifierCacheClearingTest, CacheClearedAsyncVerification) {
+  base::FilePath certs_dir = GetTestCertsDirectory();
+  scoped_refptr<X509Certificate> test_cert(
+      ImportCertFromFile(certs_dir, "ok_cert.pem"));
+  ASSERT_TRUE(test_cert.get());
+
+  mock_verifier_->set_async(true);
+
+  int error;
+  CertVerifyResult verify_result;
+  TestCompletionCallback callback;
+  std::unique_ptr<CertVerifier::Request> request;
+
+  error = verifier_->Verify(
+      CertVerifier::RequestParams(test_cert, "www.example.com", 0,
+                                  /*ocsp_response=*/std::string(),
+                                  /*sct_list=*/std::string()),
+      &verify_result, callback.callback(), &request, NetLogWithSource());
+  ASSERT_EQ(ERR_IO_PENDING, error);
+  ASSERT_TRUE(request);
+  ASSERT_EQ(1u, verifier_->requests());
+  ASSERT_EQ(0u, verifier_->cache_hits());
+  ASSERT_EQ(0u, verifier_->GetCacheSize());
+
+  DoCacheClearingAction();
+  ASSERT_EQ(0u, verifier_->GetCacheSize());
+
+  error = callback.WaitForResult();
+  ASSERT_TRUE(IsCertificateError(error));
+  // Async result should not have been cached since it was from a verification
+  // started before the config changed.
+  ASSERT_EQ(0u, verifier_->GetCacheSize());
+
+  error = verifier_->Verify(
+      CertVerifier::RequestParams(test_cert, "www.example.com", 0,
+                                  /*ocsp_response=*/std::string(),
+                                  /*sct_list=*/std::string()),
+      &verify_result, callback.callback(), &request, NetLogWithSource());
+  ASSERT_EQ(ERR_IO_PENDING, error);
+  ASSERT_TRUE(request);
+  ASSERT_EQ(2u, verifier_->requests());
+  ASSERT_EQ(0u, verifier_->cache_hits());
+  ASSERT_EQ(0u, verifier_->GetCacheSize());
+
+  error = callback.WaitForResult();
+  ASSERT_TRUE(IsCertificateError(error));
+  // New async result should be cached since it was from a verification started
+  // after the config changed.
+  ASSERT_EQ(1u, verifier_->GetCacheSize());
+
+  // Verify again. Result should be synchronous this time since it will get the
+  // cached result.
+  error = verifier_->Verify(
+      CertVerifier::RequestParams(test_cert, "www.example.com", 0,
+                                  /*ocsp_response=*/std::string(),
+                                  /*sct_list=*/std::string()),
+      &verify_result, callback.callback(), &request, NetLogWithSource());
+  ASSERT_TRUE(IsCertificateError(error));
+  ASSERT_FALSE(request);
+  ASSERT_EQ(3u, verifier_->requests());
+  ASSERT_EQ(1u, verifier_->cache_hits());
+  ASSERT_EQ(1u, verifier_->GetCacheSize());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CachingCertVerifierCacheClearingTest,
+                         testing::Values(ChangeType::kSetConfig,
+                                         ChangeType::kCertVerifierChanged,
+                                         ChangeType::kCertDBChanged));
 
 }  // namespace net

@@ -52,8 +52,7 @@ class BookmarkProvider : public AutocompleteProvider {
   void DoAutocomplete(const AutocompleteInput& input);
 
   // Get the matches from |local_or_syncable_bookmark_model_| using the
-  // appropriate matching algorithm, determined by |GetMatchingAlgorithm()|, and
-  // path matching algorithm, determined by the |kBookmarkPaths| base::feature.
+  // appropriate matching algorithm, determined by |GetMatchingAlgorithm()|.
   std::vector<bookmarks::TitledUrlMatch> GetMatchesWithBookmarkPaths(
       const AutocompleteInput& input,
       size_t kMaxBookmarkMatches);

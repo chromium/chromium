@@ -17,18 +17,18 @@
   }
 
   /**
-   * Maintain a larger width if at any point had secondary matches and they can
-   * currently be shown.
+   * Maintain a larger width if the secondary side can be shown and was at any
+   * point available to be shown.
    */
-  :host([can-show-secondary-matches][had-secondary-matches]) {
+  :host([can-show-secondary-side][had-secondary-side]) {
     --cr-realbox-width: calc(var(--cr-realbox-min-width) * 1.5);
   }
 
   /**
-   * Show the secondary side if currently having secondary matches and they can
-   * currently be shown.
+   * Show the secondary side if it can be shown and is currently available to be
+   * shown.
    */
-  :host([can-show-secondary-matches][has-secondary-matches]) {
+  :host([can-show-secondary-side][has-secondary-side]) {
     --cr-realbox-secondary-side-display: block;
   }
 
@@ -224,11 +224,11 @@
   </template>
   <cr-realbox-dropdown id="matches" role="listbox" result="[[result_]]"
       selected-match-index="{{selectedMatchIndex_}}"
-      can-show-secondary-matches="[[canShowSecondaryMatches]]"
-      had-secondary-matches="{{hadSecondaryMatches}}"
-      has-secondary-matches="{{hasSecondaryMatches}}"
-      on-result-repaint="onResultRepaint_" on-match-focusin="onMatchFocusin_"
-      on-match-click="onMatchClick_" on-match-remove="onMatchRemove_"
-      on-header-focusin="onHeaderFocusin_" hidden$="[[!matchesAreVisible]]">
+      can-show-secondary-side="[[canShowSecondarySide]]"
+      had-secondary-side="{{hadSecondarySide}}"
+      has-secondary-side="{{hasSecondarySide}}"
+      on-match-focusin="onMatchFocusin_" on-match-click="onMatchClick_"
+      on-match-remove="onMatchRemove_" on-header-focusin="onHeaderFocusin_"
+      hidden$="[[!matchesAreVisible]]">
   </cr-realbox-dropdown>
 </div>

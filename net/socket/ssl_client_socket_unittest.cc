@@ -1368,6 +1368,8 @@ class HangingCertVerifier : public CertVerifier {
   }
 
   void SetConfig(const Config& config) override {}
+  void AddObserver(Observer* observer) override {}
+  void RemoveObserver(Observer* observer) override {}
 
  private:
   class HangingRequest : public Request {

@@ -65,7 +65,6 @@ using omnibox::mojom::NavigationPredictor;
 namespace {
 
 constexpr char kOmniboxSuggestPrefetchQuery[] = "porgs";
-constexpr char kOmniboxSuggestPrefetchSecondItemQuery[] = "porgsandwich";
 constexpr char kOmniboxSuggestNonPrefetchQuery[] = "puffins";
 constexpr char kOmniboxErrorQuery[] = "502_on_prefetch";
 constexpr char16_t kOmniboxSuggestNonPrefetchQuery16[] = u"puffins";
@@ -1918,54 +1917,6 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
-                       OmniboxEditTriggersPrefetchForSecondMatch) {
-  // phi being set to one causes the order of prefetch suggest to be different.
-  // This should still prefetch a result for the |kOmniboxSuggestPrefetchQuery|.
-  AddNewSuggestionRule(
-      kOmniboxSuggestPrefetchQuery,
-      {kOmniboxSuggestPrefetchQuery, kOmniboxSuggestPrefetchSecondItemQuery},
-      /*prefetch_index=*/1, /*prerender_index=*/-1);
-  auto* search_prefetch_service =
-      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
-  std::string search_terms = kOmniboxSuggestPrefetchQuery;
-
-  // Trigger an omnibox suggest fetch that has a prefetch hint.
-  AutocompleteInput input(
-      base::ASCIIToUTF16(search_terms), metrics::OmniboxEventProto::BLANK,
-      ChromeAutocompleteSchemeClassifier(browser()->profile()));
-  LocationBar* location_bar = browser()->window()->GetLocationBar();
-  OmniboxView* omnibox = location_bar->GetOmniboxView();
-  AutocompleteController* autocomplete_controller =
-      omnibox->model()->autocomplete_controller();
-
-  // Prevent the stop timer from killing the hints fetch early.
-  autocomplete_controller->SetStartStopTimerDurationForTesting(
-      base::Seconds(10));
-  autocomplete_controller->Start(input);
-
-  ui_test_utils::WaitForAutocompleteDone(browser());
-  EXPECT_TRUE(autocomplete_controller->done());
-  GURL canonical_search_url = GetCanonicalSearchURL(
-      autocomplete_controller->result().match_at(1).destination_url);
-  WaitUntilStatusChangesTo(canonical_search_url,
-                           SearchPrefetchStatus::kComplete);
-  auto prefetch_status =
-      search_prefetch_service->GetSearchPrefetchStatusForTesting(
-          canonical_search_url);
-  ASSERT_TRUE(prefetch_status.has_value());
-  EXPECT_EQ(SearchPrefetchStatus::kComplete, prefetch_status.value());
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      GetSearchServerQueryURL(kOmniboxSuggestPrefetchSecondItemQuery)));
-
-  auto inner_html = GetDocumentInnerHTML();
-
-  EXPECT_FALSE(base::Contains(inner_html, "regular"));
-  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
-}
-
-IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
                        RemovingMatchCancelsInFlight) {
   set_service_deferral_type(
       SearchPreloadTestResponseDeferralType::kDeferHeader);
@@ -3783,7 +3734,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
   std::string search_terms = kOmniboxErrorQuery;
   std::string user_input = "terms";
   AddNewSuggestionRule(user_input, {user_input, search_terms},
-                       /*prefetch_index=*/1, /*prerender_index=*/-1);
+                       /*prefetch_index=*/-1, /*prerender_index=*/-1);
 
   // Trigger an omnibox suggest fetch that does not have a prefetch hint.
   AutocompleteInput input(
@@ -3801,9 +3752,12 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
 
   ui_test_utils::WaitForAutocompleteDone(browser());
   EXPECT_TRUE(autocomplete_controller->done());
-  GURL canonical_search_url = GetCanonicalSearchURL(
-      autocomplete_controller->result().match_at(1).destination_url);
 
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+  GURL canonical_search_url = GetCanonicalSearchURL(prefetch_url);
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url,
+                                                        GetWebContents()));
   WaitUntilStatusChangesTo(canonical_search_url,
                            SearchPrefetchStatus::kRequestFailed);
   auto prefetch_status =
@@ -3829,7 +3783,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
   std::string search_terms = "terms of service";
   std::string user_input = "terms";
   AddNewSuggestionRule(user_input, {user_input, search_terms},
-                       /*prefetch_index=*/1, /*prerender_index=*/-1);
+                       /*prefetch_index=*/-1, /*prerender_index=*/-1);
 
   // Trigger an omnibox suggest fetch that does not have a prefetch hint.
   AutocompleteInput input(
@@ -3847,8 +3801,12 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
 
   ui_test_utils::WaitForAutocompleteDone(browser());
   EXPECT_TRUE(autocomplete_controller->done());
-  GURL canonical_search_url = GetCanonicalSearchURL(
-      autocomplete_controller->result().match_at(1).destination_url);
+
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+  GURL canonical_search_url = GetCanonicalSearchURL(prefetch_url);
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url,
+                                                        GetWebContents()));
 
   WaitUntilStatusChangesTo(canonical_search_url,
                            SearchPrefetchStatus::kComplete);

@@ -2599,6 +2599,14 @@
            'gtest_tests': 'chromium_dev_linux_gtests',
         },
       },
+      'linux-rel-jammy-dev': {
+        'mixins': [
+          'linux-jammy',
+        ],
+        'test_suites': {
+           'gtest_tests': 'chromium_dev_linux_gtests',
+        },
+      },
       'linux-ssd-rel-dev': {
         'mixins': [
           'linux-bionic',
@@ -6717,14 +6725,14 @@
         },
         'os_type': 'chromeos',
       },
-      'chromeos-trogdor64-chrome-skylab-fyi': {
+      'chromeos-trogdor-chrome-skylab-fyi': {
         'additional_compile_targets': [
           "chrome",
           "linux_symbols",
           "symupload",
         ],
         'test_suites': {
-          'skylab_tests': 'chromeos_trogdor64_skylab_tests',
+          'skylab_tests': 'chromeos_trogdor_skylab_tests',
         },
         'os_type': 'chromeos',
       },

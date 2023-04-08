@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.compositor.layouts;
 
 import android.view.ViewGroup;
 
-import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
@@ -35,7 +34,6 @@ import java.util.concurrent.Callable;
  */
 public class LayoutManagerChromeTablet extends LayoutManagerChrome {
     // Tab Switcher
-    private final JankTracker mJankTracker;
     private final ScrimCoordinator mScrimCoordinator;
     private final Callable<ViewGroup> mCreateStartSurfaceCallable;
     // Tab Strip
@@ -65,7 +63,6 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      *         Start surface refactor is enabled.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
-     * @param jankTracker Tracker for surface jank.
      * @param tabSwitcherViewHolder {@link ViewGroup} used by tab switcher layout to show scrim
      *         when overview is visible.
      * @param scrimCoordinator {@link ScrimCoordinator} to show/hide scrim.
@@ -76,18 +73,17 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
     public LayoutManagerChromeTablet(LayoutManagerHost host, ViewGroup contentContainer,
             Supplier<StartSurface> startSurfaceSupplier, Supplier<TabSwitcher> tabSwitcherSupplier,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            Supplier<TopUiThemeColorProvider> topUiThemeColorProvider, JankTracker jankTracker,
+            Supplier<TopUiThemeColorProvider> topUiThemeColorProvider,
             ViewGroup tabSwitcherViewHolder, ScrimCoordinator scrimCoordinator,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             Callable<ViewGroup> delayedStartSurfaceCallable) {
         super(host, contentContainer, startSurfaceSupplier, tabSwitcherSupplier,
-                tabContentManagerSupplier, topUiThemeColorProvider, jankTracker,
-                tabSwitcherViewHolder, scrimCoordinator);
+                tabContentManagerSupplier, topUiThemeColorProvider, tabSwitcherViewHolder,
+                scrimCoordinator);
         mStartSurfaceSupplier = startSurfaceSupplier;
         mTabSwitcherSupplier = tabSwitcherSupplier;
         mTabStripLayoutHelperManager = new StripLayoutHelperManager(host.getContext(), host, this,
                 mHost.getLayoutRenderHost(), () -> mLayerTitleCache, lifecycleDispatcher);
-        mJankTracker = jankTracker;
         mScrimCoordinator = scrimCoordinator;
         mCreateStartSurfaceCallable = delayedStartSurfaceCallable;
         addSceneOverlay(mTabStripLayoutHelperManager);
@@ -158,7 +154,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                 if (!mStartSurfaceSupplier.hasValue() && !mTabSwitcherSupplier.hasValue()) {
                     final ViewGroup containerView = mCreateStartSurfaceCallable.call();
                     createOverviewLayout(mStartSurfaceSupplier.get(), mTabSwitcherSupplier.get(),
-                            mJankTracker, mScrimCoordinator, containerView);
+                            mScrimCoordinator, containerView);
                     mThemeColorObserver =
                             (color, shouldAnimate) -> containerView.setBackgroundColor(color);
                     mTopUiThemeColorProvider = getTopUiThemeColorProvider().get();

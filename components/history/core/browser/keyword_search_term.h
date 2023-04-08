@@ -36,8 +36,8 @@ struct KeywordSearchTermVisit {
 // Used for URLs that have a search term associated with them.
 struct KeywordSearchTermRow {
   KeywordSearchTermRow() = default;
-  KeywordSearchTermRow(const KeywordSearchTermRow& other) = default;
-  ~KeywordSearchTermRow() = default;
+  KeywordSearchTermRow(KeywordSearchTermRow&& other) = default;
+  KeywordSearchTermRow& operator=(KeywordSearchTermRow&& other) = default;
 
   KeywordID keyword_id{0};         // ID of the keyword.
   URLID url_id{0};                 // ID of the url.
@@ -56,7 +56,6 @@ class KeywordSearchTermVisitEnumerator {
       delete;
   KeywordSearchTermVisitEnumerator& operator=(
       const KeywordSearchTermVisitEnumerator&) = delete;
-
   ~KeywordSearchTermVisitEnumerator() = default;
 
   // Returns the next search term visit or nullptr if no more visits are left.

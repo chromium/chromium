@@ -4,8 +4,11 @@
 
 #include "ash/system/media/quick_settings_media_view.h"
 
+#include "ash/public/cpp/pagination/pagination_controller.h"
+#include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/pagination_view.h"
 #include "ash/system/media/quick_settings_media_view_controller.h"
 #include "components/global_media_controls/public/views/media_item_ui_view.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -96,6 +99,10 @@ QuickSettingsMediaView::QuickSettingsMediaView(
   pagination_view_->SetPaintToLayer();
   pagination_view_->layer()->SetFillsBoundsOpaquely(false);
 
+  pagination_controller_ = std::make_unique<PaginationController>(
+      pagination_model_.get(), PaginationController::SCROLL_AXIS_HORIZONTAL,
+      base::BindRepeating([](ui::EventType) {}));
+
   SetAccessibleName(l10n_util::GetStringUTF16(
       IDS_ASH_QUICK_SETTINGS_BUBBLE_MEDIA_CONTROLS_SUB_MENU_ACCESSIBLE_DESCRIPTION));
 }
@@ -121,6 +128,20 @@ void QuickSettingsMediaView::Layout() {
 
   // The pagination dots view only shows if there are multiple media items.
   pagination_view_->SetVisible(items_.size() > 1);
+}
+
+void QuickSettingsMediaView::OnGestureEvent(ui::GestureEvent* event) {
+  // The pagination controller will handle the touch gesture event to swipe
+  // between media items.
+  if (pagination_controller_->OnGestureEvent(*event, GetContentsBounds())) {
+    event->SetHandled();
+  } else if (event->type() == ui::ET_GESTURE_TAP) {
+    // A tap gesture is handled in the same way as a mouse click event. The
+    // controller does not need to know the item id for now so we do not need to
+    // record it.
+    controller_->OnMediaItemUIClicked(/*id=*/"");
+    event->SetHandled();
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -2291,6 +2291,12 @@
       base_feature: "none",
     },
     {
+      // Kill switch for crbug.com/1427047 fix.
+      // TODO(xiaochengh): Remove in M117.
+      name: "NonReentrantFieldSetDisable",
+      status: "stable",
+    },
+    {
       name: "NotificationConstructor",
       // Android won't be able to reliably support non-persistent notifications, the
       // intended behavior for which is in flux by itself.

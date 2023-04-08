@@ -2991,6 +2991,7 @@
 <translation id="3584527007414070635">Շարունակեք «<ph name="MODULE_TITLE" />» հարցումով որոնումը</translation>
 <translation id="3586787825263265024"><ph name="APPLICATION_NAME" /> հավելվածի աշխատանքի համար պահանջվում է OneDrive պահոց։</translation>
 <translation id="3586806079541226322">Չհաջողվեց բացել ֆայլը</translation>
+<translation id="3586931643579894722">Թաքցնել մանրամասները</translation>
 <translation id="3587438013689771191">Իմանալ ավելին «<ph name="SUBPAGE_TITLE" />» ենթաէջի մասին</translation>
 <translation id="3587482841069643663">Բոլորը</translation>
 <translation id="3588790464166520201">Թույլատրվում է տեղադրել վճարումների մշակիչներ</translation>
@@ -5836,6 +5837,7 @@
 <translation id="6136114942382973861">Փակել ներբեռնումների գոտին</translation>
 <translation id="6136287496450963112">Անվտանգության բանալին պաշտպանված չէ PIN-ով: Մատնահետքերը կառավարելու համար նախ ստեղծեք PIN կոդ:</translation>
 <translation id="6138680304137685902">X9.62 ECDSA ստորագրություն SHA-384-ով</translation>
+<translation id="6140948187512243695">Մանրամասներ</translation>
 <translation id="6141988275892716286">Հաստատեք ներբեռնումը</translation>
 <translation id="6143186082490678276">Օգնություն</translation>
 <translation id="6143366292569327983">Ընտրեք էջի բնագրի լեզուն</translation>
@@ -9046,7 +9048,7 @@
 <translation id="8993737615451556423">Թույլ է տալիս կառավարման տարրերի օգնությամբ արագացնել, դանդաղեցնել և դադարեցնել հնչեցումը</translation>
 <translation id="899384117894244799">Հեռացնել սահմանափակ հասանելիությամբ օգտատիրոջը</translation>
 <translation id="8993945059918628059">Մատով հպեք մատնահետքերի սկաներին։ Մատնահետքի տվյալներն ապահով պահվում են ձեր <ph name="DEVICE_TYPE" /> սարքում և երբեք չեն փոխանցվում այլ անձանց։</translation>
-<translation id="899403249577094719">Netscape-ի վկայագրերի բազայի URL</translation>
+<translation id="899403249577094719">Netscape-ի վկայագրերի բազային URL</translation>
 <translation id="899657321862108550">Ձեր Chrome-ը՝ ամենուր ձեզ հետ</translation>
 <translation id="899671834467367922">Մուտք գործեք որպես այլ օգտատեր՝ այս էջում նշումներ դիտելու և ստեղծելու համար։</translation>
 <translation id="8998078711690114234">Այս տեսակի ֆայլը կարող է վտանգավոր լինել։ Պահեք այն, միայն եթե վստահում եք <ph name="ORIGIN" /> կայքին</translation>

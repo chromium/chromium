@@ -38,7 +38,7 @@ class AccountPickerBottomSheetViewBinder {
             AccountPickerBottomSheetStrings bottomSheetStrings =
                     model.get(AccountPickerBottomSheetProperties.BOTTOM_SHEET_STRINGS);
             view.setBottomSheetStrings(bottomSheetStrings.getTitle(),
-                    bottomSheetStrings.getSubtitle(), bottomSheetStrings.getCancelButton());
+                    bottomSheetStrings.getSubtitle(), bottomSheetStrings.getDismissButton());
         }
     }
 

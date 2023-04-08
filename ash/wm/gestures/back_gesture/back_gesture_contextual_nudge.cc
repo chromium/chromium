@@ -279,7 +279,7 @@ class BackGestureContextualNudge::ContextualNudgeView
 
       if (chromeos::features::IsDarkLightModeEnabled()) {
         // Draw highlight border circles for the affordance.
-        DrawCircleHighlightBorder(canvas, center_point, kCircleRadius);
+        DrawCircleHighlightBorder(this, canvas, center_point, kCircleRadius);
       }
 
       // Draw the black round rectangle around the text.
@@ -295,7 +295,8 @@ class BackGestureContextualNudge::ContextualNudgeView
 
       if (chromeos::features::IsDarkLightModeEnabled()) {
         // Draw highlight border for the black round rectangle around the text.
-        DrawRoundRectHighlightBorder(canvas, label_bounds, kLabelCornerRadius);
+        DrawRoundRectHighlightBorder(this, canvas, label_bounds,
+                                     kLabelCornerRadius);
       }
     }
 

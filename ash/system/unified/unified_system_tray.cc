@@ -571,9 +571,8 @@ bool UnifiedSystemTray::IsShowingCalendarView() const {
 }
 
 bool UnifiedSystemTray::ShouldChannelIndicatorBeShown() const {
-  return features::IsReleaseTrackUiEnabled() &&
-         channel_indicator_utils::IsDisplayableChannel(
-             Shell::Get()->shell_delegate()->GetChannel());
+  return channel_indicator_utils::IsDisplayableChannel(
+      Shell::Get()->shell_delegate()->GetChannel());
 }
 
 void UnifiedSystemTray::SetTrayEnabled(bool enabled) {

@@ -454,11 +454,14 @@ void StartGetPreviousCrxOnBlockingTaskRunner(
       FROM_HERE,
       base::BindOnce(
           &CrxCache::Get, crx_cache, id, previous_fingerprint,
-          base::BindOnce(&StartPuffPatchOnBlockingTaskRunner, main_task_runner,
-                         pk_hash, puff_patch_path, id, fingerprint,
-                         std::move(install_params), installer,
-                         std::move(unzipper_), crx_cache, patcher_, crx_format,
-                         progress_callback, std::move(callback))));
+          base::BindPostTask(
+              base::ThreadPool::CreateSequencedTaskRunner(kTaskTraits),
+              base::BindOnce(&StartPuffPatchOnBlockingTaskRunner,
+                             main_task_runner, pk_hash, puff_patch_path, id,
+                             fingerprint, std::move(install_params), installer,
+                             std::move(unzipper_), crx_cache, patcher_,
+                             crx_format, progress_callback,
+                             std::move(callback)))));
 }
 #endif
 

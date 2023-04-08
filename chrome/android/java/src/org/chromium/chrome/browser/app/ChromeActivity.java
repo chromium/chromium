@@ -47,7 +47,6 @@ import org.chromium.base.PowerMonitor;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.jank_tracker.DummyJankTracker;
 import org.chromium.base.memory.MemoryPurgeManager;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -522,7 +521,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 getTabModelSelectorSupplier(), new OneshotSupplierImpl<>(),
                 new OneshotSupplierImpl<>(), new OneshotSupplierImpl<>(),
                 new OneshotSupplierImpl<>(), () -> null, mBrowserControlsManagerSupplier.get(),
-                getWindowAndroid(), new DummyJankTracker(), getLifecycleDispatcher(),
+                getWindowAndroid(), getLifecycleDispatcher(),
                 getLayoutManagerSupplier(), /* menuOrKeyboardActionController= */ this,
                 this::getActivityThemeColor, getModalDialogManagerSupplier(),
                 /* appMenuBlocker= */ this, this::supportsAppMenu, this::supportsFindInPage,

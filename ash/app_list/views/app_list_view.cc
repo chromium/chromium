@@ -22,9 +22,7 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/metrics_util.h"
-#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/wm/work_area_insets.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -637,16 +635,6 @@ void AppListView::SetState(AppListViewState new_state) {
   // `SetState()`.
   if (!set_state_request)
     return;
-
-  // Bail out if `WorkAreaInsets::SetPersistentDeskBarHeight(int height)` causes
-  // another call to `SetState()`. Note, the persistent desks bar is created in
-  // the primary display for now.
-  if (Shell::HasInstance() &&
-      WorkAreaInsets::ForWindow(Shell::GetPrimaryRootWindow())
-          ->PersistentDeskBarHeightInChange() &&
-      app_list_state_ == new_state) {
-    return;
-  }
 
   MaybeCreateAccessibilityEvent(new_state);
 

@@ -415,7 +415,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
                                 const bool install_as_shortcut);
   void ApplyRunOnOsLoginPolicy(Site site, const char* policy);
 
-  void UninstallPolicyAppById(const AppId& id);
+  void UninstallPolicyAppById(Profile* profile, const AppId& id);
   void ForceUpdateManifestContents(Site site,
                                    const GURL& app_url_with_manifest_param);
   void MaybeNavigateTabbedBrowserInScope(Site site);

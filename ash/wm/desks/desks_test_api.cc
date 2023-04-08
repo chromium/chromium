@@ -14,10 +14,6 @@
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
-#include "ash/wm/desks/persistent_desks_bar/persistent_desks_bar_button.h"
-#include "ash/wm/desks/persistent_desks_bar/persistent_desks_bar_context_menu.h"
-#include "ash/wm/desks/persistent_desks_bar/persistent_desks_bar_controller.h"
-#include "ash/wm/desks/persistent_desks_bar/persistent_desks_bar_view.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_test_util.h"
@@ -35,13 +31,6 @@ const DesksBarView* GetDesksBarView() {
   return overview_controller->overview_session()
       ->GetGridWithRootWindow(root_window)
       ->desks_bar_view();
-}
-
-const PersistentDesksBarView* GetPersistentDesksBarView() {
-  auto* persistent_desks_bar_controller =
-      Shell::Get()->persistent_desks_bar_controller();
-  DCHECK(persistent_desks_bar_controller);
-  return persistent_desks_bar_controller->persistent_desks_bar_view();
 }
 
 }  // namespace
@@ -64,24 +53,6 @@ views::ScrollView* DesksTestApi::GetDesksBarScrollView() {
 // static
 const DeskMiniView* DesksTestApi::GetDesksBarDragView() {
   return GetDesksBarView()->drag_view_;
-}
-
-// static
-PersistentDesksBarContextMenu* DesksTestApi::GetDesksBarContextMenu() {
-  return GetDesksBarView()->vertical_dots_button_->context_menu_.get();
-}
-
-// static
-PersistentDesksBarContextMenu*
-DesksTestApi::GetPersistentDesksBarContextMenu() {
-  return GetPersistentDesksBarView()
-      ->vertical_dots_button_->context_menu_.get();
-}
-
-// static
-const std::vector<PersistentDesksBarDeskButton*>
-DesksTestApi::GetPersistentDesksBarDeskButtons() {
-  return GetPersistentDesksBarView()->desk_buttons_;
 }
 
 // static
@@ -124,11 +95,6 @@ ui::LayerTreeOwner* DesksTestApi::GetMirroredContentsLayerTreeForRootAndDesk(
     }
   }
   return nullptr;
-}
-
-// static
-bool DesksTestApi::HasVerticalDotsButton() {
-  return GetDesksBarView()->vertical_dots_button_;
 }
 
 // static

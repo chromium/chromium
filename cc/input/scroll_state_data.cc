@@ -26,7 +26,8 @@ ScrollStateData::ScrollStateData()
       delta_granularity(ui::ScrollGranularity::kScrollByPrecisePixel),
       caused_scroll_x(false),
       caused_scroll_y(false),
-      is_scroll_chain_cut(false) {}
+      is_scroll_chain_cut(false),
+      is_main_thread_hit_tested(false) {}
 
 ScrollStateData::ScrollStateData(const ScrollStateData&) = default;
 

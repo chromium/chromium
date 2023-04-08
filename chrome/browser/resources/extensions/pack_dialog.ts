@@ -93,11 +93,11 @@ export class ExtensionsPackDialogElement extends PolymerElement {
     });
   }
 
-  private onCancelTap_() {
+  private onCancelClick_() {
     this.$.dialog.cancel();
   }
 
-  private onConfirmTap_() {
+  private onConfirmClick_() {
     this.delegate.packExtension(this.packDirectory_, this.keyFile_, 0)
         .then(response => this.onPackResponse_(response));
   }

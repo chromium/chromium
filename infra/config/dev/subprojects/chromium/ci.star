@@ -128,6 +128,18 @@ ci_builder(
 )
 
 ci_builder(
+    name = "linux-rel-jammy-dev",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(config = "chromium"),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+        ),
+    ),
+)
+
+ci_builder(
     name = "linux-ssd-rel-dev",
     description_html = "Ensures builders are using available local SSDs",
     builder_spec = builder_config.builder_spec(

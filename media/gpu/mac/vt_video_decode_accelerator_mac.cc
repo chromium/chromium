@@ -69,6 +69,11 @@ namespace media {
 
 namespace {
 
+// Controls whether InitializeVideoToolboxInternal() does preload or not.
+BASE_FEATURE(kSkipVideoToolboxPreload,
+             "SkipVideoToolboxPreload",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Parameter sets vector contain all PPSs/SPSs(/VPSs)
 using ParameterSets = std::vector<base::span<const uint8_t>>;
 
@@ -350,6 +355,15 @@ bool CreateVideoToolboxSession(
 // session fails, hardware decoding will be disabled (Initialize() will always
 // return false).
 bool InitializeVideoToolboxInternal() {
+  if (base::FeatureList::IsEnabled(kSkipVideoToolboxPreload)) {
+    // When skipping preload we still need to register vp9, otherwise it won't
+    // work at all.
+    if (__builtin_available(macOS 11.0, *)) {
+      VTRegisterSupplementalVideoDecoderIfAvailable(kCMVideoCodecType_VP9);
+    }
+    return true;
+  }
+
   VTDecompressionOutputCallbackRecord callback = {0};
   base::ScopedCFTypeRef<VTDecompressionSessionRef> session;
   gfx::Size configured_size;

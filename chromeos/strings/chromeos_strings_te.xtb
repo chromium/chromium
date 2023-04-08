@@ -140,6 +140,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">మరిన్ని సెట్టింగ్‌లు</translation>
 <translation id="2085089206770112532">డిస్‌ప్లే బ్రైట్‌నెస్‌ను తగ్గించండి</translation>
+<translation id="209751264101900360">డాన్ టు డార్క్ - క్లౌడ్ ఫ్లో</translation>
 <translation id="2102231663024125441">టెక్స్ట్‌ను ఎడిట్ చేయడం</translation>
 <translation id="2105810540595158374">పరికర రకం గేమ్ కంట్రోలర్.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, వెర్షన్ <ph name="MILESTONE_VERSION" /></translation>
@@ -370,6 +371,7 @@
 <translation id="4275663329226226506">మీడియా</translation>
 <translation id="4289540628985791613">స్థూలదృష్టి</translation>
 <translation id="4289849978083912975">స్లయిడ్ షో</translation>
+<translation id="4293621540182258188">డాన్ టు డార్క్ - ఎర్త్ ఫ్లో</translation>
 <translation id="4297501883039923494">ఆగిపోయింది - తెలియని ఎర్రర్</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ఇమేజ్‌లు</translation>
 <translation id="4311195029067684288">సంపూర్ణం</translation>
@@ -544,6 +546,7 @@
 <translation id="576835345334454681">డిస్‌ప్లే బ్రైట్‌నెస్‌ను పెంచండి</translation>
 <translation id="57838592816432529">మ్యూట్ చేయి</translation>
 <translation id="5784136236926853061">అధిక HTTPS ప్రతిస్పందన సమయం</translation>
+<translation id="5809090008577139505">అరోరా</translation>
 <translation id="5826644637650799838">ఆర్ట్ గురించి</translation>
 <translation id="5832805196449965646">వ్యక్తిని జోడించండి</translation>
 <translation id="583281660410589416">తెలియని</translation>
@@ -562,6 +565,7 @@
 <translation id="5907649332524363701">కీ రంగు</translation>
 <translation id="5916084858004523819">నిషేధించబడింది</translation>
 <translation id="5916664084637901428">ఆన్ చేయి</translation>
+<translation id="5918201491776799918">Chromebook Plus ప్రత్యేక పోస్టర్ ఇమేజ్‌ను ఎంచుకోండి</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{మీ ఫైల్ విజయవంతంగా స్కాన్ చేయబడి, <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />కు సేవ్ చేయబడింది.}other{మీ ఫైళ్లు విజయవంతంగా స్కాన్ చేయబడి, <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />కు సేవ్ చేయబడ్డాయి.}}</translation>
 <translation id="5931523347251946569">ఫైల్ కనుగొనబడలేదు</translation>
 <translation id="5939518447894949180">రీసెట్ చేయి</translation>
@@ -818,6 +822,7 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />ని ఎంచుకోండి</translation>
 <translation id="8151185429379586178">డెవలపర్ సాధనాలు</translation>
+<translation id="8153923300383192510">Chromebook Plus ప్రత్యేకం</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">అటాచ్ చేయండి</translation>
 <translation id="8206859287963243715">సెల్యులార్</translation>

@@ -397,7 +397,7 @@ void ChromeOmniboxClient::OnURLOpenedFromOmnibox(OmniboxLog* log) {
   if (web_contents) {
     if (SearchPrefetchService* search_prefetch_service =
             SearchPrefetchServiceFactory::GetForProfile(profile_)) {
-      search_prefetch_service->OnURLOpenedFromOmnibox(log, web_contents);
+      search_prefetch_service->OnURLOpenedFromOmnibox(log);
     }
 
     auto* prerender_manager = PrerenderManager::FromWebContents(web_contents);
@@ -433,9 +433,6 @@ void ChromeOmniboxClient::OpenUpdateChromeDialog() {
       // chrome::OpenUpdateChromeDialog because that call is intended for use
       // by the delayed-update/auto-nag system, possibly presenting dialogs
       // that don't apply when the goal is immediate relaunch & update.
-      // TODO(orinj): Ensure that this is the correct way to handle
-      // explicitly requested update regardless of the kind of update ready.
-      // See comments at https://crrev.com/c/1281162 for context.
       base::RecordAction(base::UserMetricsAction("UpdateChrome"));
       browser->window()->ShowUpdateChromeDialog();
     }

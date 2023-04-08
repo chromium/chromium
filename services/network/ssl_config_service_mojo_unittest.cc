@@ -97,6 +97,8 @@ class TestCertVerifierConfigObserver : public net::CertVerifier {
   void SetConfig(const Config& config) override {
     set_config_calls_.AddValue(config);
   }
+  void AddObserver(Observer* observer) override {}
+  void RemoveObserver(Observer* observer) override {}
 
   // Waits for a SSLConfig change. The first time it's called, waits for the
   // first change, if one hasn't been observed already, the second time, waits

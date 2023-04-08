@@ -250,23 +250,21 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
             maybeAddQrCodeFirstPartyOption();
             return;
         }
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEBNOTES_STYLIZE)) {
-            mOrderedFirstPartyOptions.add(createWebNotesStylizeFirstPartyOption());
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SHARE_SHEET_CUSTOM_ACTIONS_POLISH)) {
+            maybeAddLongScreenshotFirstPartyOption();
+            maybeAddPrintFirstPartyOption();
+            maybeAddSendTabToSelfFirstPartyOption();
+            maybeAddQrCodeFirstPartyOption();
+        } else {
+            maybeAddWebStyleNotesFirstPartyOption();
+            maybeAddScreenshotFirstPartyOption();
+            maybeAddLongScreenshotFirstPartyOption();
+            maybeAddCopyFirstPartyOption();
+            maybeAddSendTabToSelfFirstPartyOption();
+            maybeAddQrCodeFirstPartyOption();
+            maybeAddPrintFirstPartyOption();
+            mOrderedFirstPartyOptions.add(createSaveImageFirstPartyOption());
         }
-        maybeAddScreenshotFirstPartyOption();
-        maybeAddLongScreenshotFirstPartyOption();
-
-        mOrderedFirstPartyOptions.add(createCopyLinkFirstPartyOption());
-        mOrderedFirstPartyOptions.add(createCopyGifFirstPartyOption());
-        mOrderedFirstPartyOptions.add(createCopyImageFirstPartyOption());
-        mOrderedFirstPartyOptions.add(createCopyFirstPartyOption());
-        mOrderedFirstPartyOptions.add(createCopyTextFirstPartyOption());
-        maybeAddSendTabToSelfFirstPartyOption();
-        maybeAddQrCodeFirstPartyOption();
-        if (mTabProvider.hasValue() && UserPrefs.get(mProfile).getBoolean(Pref.PRINTING_ENABLED)) {
-            mOrderedFirstPartyOptions.add(createPrintingFirstPartyOption());
-        }
-        mOrderedFirstPartyOptions.add(createSaveImageFirstPartyOption());
     }
 
     private void maybeAddSendTabToSelfFirstPartyOption() {
@@ -299,6 +297,26 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
         if (option != null) {
             mOrderedFirstPartyOptions.add(option);
         }
+    }
+
+    private void maybeAddPrintFirstPartyOption() {
+        if (mTabProvider.hasValue() && UserPrefs.get(mProfile).getBoolean(Pref.PRINTING_ENABLED)) {
+            mOrderedFirstPartyOptions.add(createPrintingFirstPartyOption());
+        }
+    }
+
+    protected void maybeAddWebStyleNotesFirstPartyOption() {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEBNOTES_STYLIZE)) {
+            mOrderedFirstPartyOptions.add(createWebNotesStylizeFirstPartyOption());
+        }
+    }
+
+    protected void maybeAddCopyFirstPartyOption() {
+        mOrderedFirstPartyOptions.add(createCopyLinkFirstPartyOption());
+        mOrderedFirstPartyOptions.add(createCopyGifFirstPartyOption());
+        mOrderedFirstPartyOptions.add(createCopyImageFirstPartyOption());
+        mOrderedFirstPartyOptions.add(createCopyFirstPartyOption());
+        mOrderedFirstPartyOptions.add(createCopyTextFirstPartyOption());
     }
 
     private FirstPartyOption createCopyLinkFirstPartyOption() {
@@ -433,7 +451,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
                 .build();
     }
 
-    protected FirstPartyOption createWebNotesStylizeFirstPartyOption() {
+    private FirstPartyOption createWebNotesStylizeFirstPartyOption() {
         String title = mShareParams.getTitle();
         return new FirstPartyOptionBuilder(ContentType.HIGHLIGHTED_TEXT)
                 .setIcon(R.drawable.webnote, R.string.sharing_webnotes_create_card)

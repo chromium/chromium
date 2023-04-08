@@ -54,6 +54,10 @@ TabDragDropWindowsHider::TabDragDropWindowsHider(aura::Window* source_window)
   RootWindowController::ForWindow(root_window_)
       ->wallpaper_widget_controller()
       ->SetWallpaperBlur(wallpaper_constants::kOverviewBlur);
+
+  // `root_window_` might became nullptr during drag&drop. See b/276736023 for
+  // details.
+  root_window_->AddObserver(this);
 }
 
 TabDragDropWindowsHider::~TabDragDropWindowsHider() {
@@ -78,9 +82,12 @@ TabDragDropWindowsHider::~TabDragDropWindowsHider() {
       /*animate=*/false);
 
   // Clears the background wallpaper blur.
-  RootWindowController::ForWindow(root_window_)
-      ->wallpaper_widget_controller()
-      ->SetWallpaperBlur(wallpaper_constants::kClear);
+  if (root_window_) {
+    RootWindowController::ForWindow(root_window_)
+        ->wallpaper_widget_controller()
+        ->SetWallpaperBlur(wallpaper_constants::kClear);
+    root_window_->RemoveObserver(this);
+  }
 }
 
 void TabDragDropWindowsHider::OnWindowDestroying(aura::Window* window) {
@@ -89,9 +96,15 @@ void TabDragDropWindowsHider::OnWindowDestroying(aura::Window* window) {
     return;
   }
 
+  if (window == root_window_) {
+    root_window_ = nullptr;
+    return;
+  }
+
   window->RemoveObserver(this);
   window_visibility_map_.erase(window);
 }
+
 void TabDragDropWindowsHider::OnWindowVisibilityChanged(aura::Window* window,
                                                         bool visible) {
   // The window object is not necessarily the one that is being observed.

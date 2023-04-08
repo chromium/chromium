@@ -646,11 +646,6 @@ const char kEnableBackForwardCacheForScreenReaderDescription[] =
     "If enabled, allow pages to enter back/forward cache even if a screen "
     "reader is in use. The page might still not be cached for other reasons.";
 
-const char kBentoBarName[] = "Persistent desks bar";
-const char kBentoBarDescription[] =
-    "Showing a persistent desks bar at the top of the screen in clamshell mode "
-    "when there are more than one desk.";
-
 const char kBiometricReauthForPasswordFillingName[] =
     "Biometric reauth for password filling";
 const char kBiometricReauthForPasswordFillingDescription[] =
@@ -2072,12 +2067,6 @@ const char kOmniboxAssistantVoiceSearchName[] =
 const char kOmniboxAssistantVoiceSearchDescription[] =
     "When enabled, use Assistant for omnibox voice query recognition instead of"
     " Android's built-in voice recognition service. Only works on Android.";
-
-const char kOmniboxBookmarkPathsName[] = "Omnibox Bookmark Paths";
-const char kOmniboxBookmarkPathsDescription[] =
-    "Allows inputs to match with bookmark paths. E.g. 'planets jupiter' can "
-    "suggest a bookmark titled 'Jupiter' with URL "
-    "'en.wikipedia.org/wiki/Jupiter' located in a path containing 'planet.'";
 
 const char kOmniboxCacheSuggestionResourcesName[] =
     "Omnibox cache suggestion resources";
@@ -4127,6 +4116,12 @@ const char kSetMarketUrlForTestingDescription[] =
     "When enabled, sets the market URL for use in testing the update menu "
     "item.";
 
+const char kShareSheetCustomActionsPolishName[] =
+    "Share sheet custom actions polish";
+const char kShareSheetCustomActionsPolishDescription[] =
+    "Polish Chrome provided custom actions for share sheet including dropping "
+    "low engagement actions, and shuffle the ordering. Android only.";
+
 const char kShareSheetMigrationAndroidName[] = "Share sheet refactor Android";
 const char kShareSheetMigrationAndroidDescription[] =
     "When enabled, use the Android OS share sheet.";
@@ -6126,10 +6121,6 @@ const char kReleaseNotesNotificationAllChannelsName[] =
     "Release Notes Notification All Channels";
 const char kReleaseNotesNotificationAllChannelsDescription[] =
     "Enables the release notes notification for all ChromeOS channels";
-
-const char kReleaseTrackUiName[] = "Release track system tray UI";
-const char kReleaseTrackUiDescription[] =
-    "Enables the release track UI in the system tray";
 
 extern const char kRenderArcNotificationsByChromeName[] =
     "Render ARC notifications by ChromeOS";

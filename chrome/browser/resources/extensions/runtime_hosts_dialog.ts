@@ -215,7 +215,7 @@ export class ExtensionsRuntimeHostsDialogElement extends
     return getMatchingUserSpecifiedSites(this.restrictedSites, this.site_);
   }
 
-  private onCancelTap_() {
+  private onCancelClick_() {
     this.$.dialog.cancel();
   }
 
@@ -223,7 +223,7 @@ export class ExtensionsRuntimeHostsDialogElement extends
    * The tap handler for the submit button (adds the pattern and closes
    * the dialog).
    */
-  private onSubmitTap_() {
+  private onSubmitClick_() {
     chrome.metricsPrivate.recordUserAction(
         'Extensions.Settings.Hosts.AddHostDialogSubmitted');
     if (this.currentSite !== null) {

@@ -14,6 +14,7 @@ source_set("logging") {
   deps = [
     "//base",
     "//chrome/browser/nearby_sharing/common",
+    "//chromeos/ash/components/nearby/common/proto",
   ]
 }
 
@@ -37,5 +38,6 @@ source_set("util") {
   deps = [
     "//base",
     "//chrome/browser/nearby_sharing/proto",
+    "//chromeos/ash/components/nearby/common/proto",
   ]
 }

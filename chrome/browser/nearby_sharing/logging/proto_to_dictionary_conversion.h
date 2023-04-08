@@ -10,9 +10,9 @@
 #include "chrome/browser/nearby_sharing/proto/contact_rpc.pb.h"
 #include "chrome/browser/nearby_sharing/proto/device_rpc.pb.h"
 #include "chrome/browser/nearby_sharing/proto/encrypted_metadata.pb.h"
-#include "chrome/browser/nearby_sharing/proto/field_mask.pb.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
-#include "chrome/browser/nearby_sharing/proto/timestamp.pb.h"
+#include "chromeos/ash/components/nearby/common/proto/field_mask.pb.h"
+#include "chromeos/ash/components/nearby/common/proto/timestamp.pb.h"
 
 // Converts Nearby Share protos to readable, JSON-style dictionaries.
 base::Value::Dict ListPublicCertificatesRequestToReadableDictionary(
@@ -22,7 +22,7 @@ base::Value::Dict ListPublicCertificatesResponseToReadableDictionary(
 base::Value::Dict PublicCertificateToReadableDictionary(
     const nearbyshare::proto::PublicCertificate& certificate);
 base::Value::Dict TimestampToReadableDictionary(
-    const nearbyshare::proto::Timestamp& timestamp);
+    const ash::nearby::proto::Timestamp& timestamp);
 base::Value::Dict ListContactPeopleRequestToReadableDictionary(
     const nearbyshare::proto::ListContactPeopleRequest& request);
 base::Value::Dict ListContactPeopleResponseToReadableDictionary(
@@ -38,7 +38,7 @@ base::Value::Dict DeviceToReadableDictionary(
 base::Value::Dict ContactToReadableDictionary(
     const nearbyshare::proto::Contact& contact);
 base::Value::Dict FieldMaskToReadableDictionary(
-    const nearbyshare::proto::FieldMask& mask);
+    const ash::nearby::proto::FieldMask& mask);
 base::Value::Dict UpdateDeviceResponseToReadableDictionary(
     const nearbyshare::proto::UpdateDeviceResponse& response);
 base::Value::Dict EncryptedMetadataToReadableDictionary(

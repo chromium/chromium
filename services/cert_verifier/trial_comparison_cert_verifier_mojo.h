@@ -66,6 +66,8 @@ class TrialComparisonCertVerifierMojo
              std::unique_ptr<Request>* out_req,
              const net::NetLogWithSource& net_log) override;
   void SetConfig(const Config& config) override;
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
   void UpdateChromeRootStoreData(
       scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
       const net::ChromeRootStoreData* root_store_data) override;

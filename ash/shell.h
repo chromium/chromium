@@ -190,7 +190,6 @@ class PciePeripheralNotificationController;
 class UsbPeripheralNotificationController;
 class PeripheralBatteryListener;
 class PeripheralBatteryNotifier;
-class PersistentDesksBarController;
 class PersistentWindowController;
 class PolicyRecommendationRestorer;
 class PowerButtonController;
@@ -449,9 +448,6 @@ class ASH_EXPORT Shell : public SessionObserver,
     return dark_light_mode_controller_.get();
   }
   DesksController* desks_controller() { return desks_controller_.get(); }
-  PersistentDesksBarController* persistent_desks_bar_controller() {
-    return persistent_desks_bar_controller_.get();
-  }
   SavedDeskController* saved_desk_controller() {
     return saved_desk_controller_.get();
   }
@@ -985,8 +981,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<PrivacyHubController> privacy_hub_controller_;
   std::unique_ptr<UsbPeripheralNotificationController>
       usb_peripheral_notification_controller_;
-  std::unique_ptr<PersistentDesksBarController>
-      persistent_desks_bar_controller_;
   std::unique_ptr<RgbKeyboardManager> rgb_keyboard_manager_;
   std::unique_ptr<RasterScaleController> raster_scale_controller_;
   std::unique_ptr<ResizeShadowController> resize_shadow_controller_;

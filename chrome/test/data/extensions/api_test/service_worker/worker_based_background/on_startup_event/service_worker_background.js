@@ -6,4 +6,4 @@ chrome.runtime.onStartup.addListener(() => {
   chrome.test.sendMessage('onStartup event');
 });
 
-chrome.test.succeed();
+chrome.test.notifyPass();

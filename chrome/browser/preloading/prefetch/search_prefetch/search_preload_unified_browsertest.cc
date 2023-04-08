@@ -280,6 +280,7 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
                             metrics::OmniboxEventProto::BLANK,
                             ChromeAutocompleteSchemeClassifier(
                                 chrome_test_utils::GetProfile(this)));
+
     AutocompleteMatch autocomplete_match = CreateSearchSuggestionMatch(
         original_query, search_terms, prerender_hint, prefetch_hint);
     AutocompleteResult autocomplete_result;
@@ -384,6 +385,7 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
     if (prefetch_hint == PrefetchHint::kEnabled) {
       match.RecordAdditionalInfo("should_prefetch", "true");
     }
+    match.allowed_to_be_default_match = true;
     return match;
   }
 
@@ -477,13 +479,18 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
         Preloading_Prediction::kEntryName,
         content::test::kPreloadingPredictionUkmMetrics);
     EXPECT_EQ(attempt_ukm_entries.size(), 2u);
-    EXPECT_EQ(prediction_ukm_entries.size(), 1u);
+    EXPECT_EQ(prediction_ukm_entries.size(), 2u);
 
     // Prerender should succeed and should be used for the next navigation.
     std::vector<UkmEntry> expected_prediction_entries = {
         prediction_entry_builder().BuildEntry(ukm_source_id,
                                               /*confidence=*/80,
                                               /*accurate_prediction=*/true),
+        std::make_unique<content::test::PreloadingPredictionUkmEntryBuilder>(
+            chrome_preloading_predictor::kOmniboxSearchSuggestDefaultMatch)
+            ->BuildEntry(ukm_source_id,
+                         /*confidence=*/80,
+                         /*accurate_prediction=*/true),
     };
     std::vector<UkmEntry> expected_attempt_entries = {
         attempt_entry_builder().BuildEntry(

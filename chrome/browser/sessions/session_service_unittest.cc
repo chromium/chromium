@@ -1200,6 +1200,8 @@ TEST_F(SessionServiceTest, TabGroupMetadataSaved) {
                                      tab_groups::TabGroupColorId::kBlue),
       tab_groups::TabGroupVisualData(u"Bar",
                                      tab_groups::TabGroupColorId::kGreen)};
+  const std::array<absl::optional<std::string>, kNumGroups> saved_guids = {
+      base::GUID::GenerateRandomV4().AsLowercaseString(), absl::nullopt};
 
   // Create |kNumGroups| tab groups, each with one tab.
   for (int group_ndx = 0; group_ndx < kNumGroups; ++group_ndx) {
@@ -1207,7 +1209,8 @@ TEST_F(SessionServiceTest, TabGroupMetadataSaved) {
         CreateTabWithTestNavigationData(window_id, group_ndx);
     service()->SetTabGroup(window_id, tab_id, group_ids[group_ndx]);
     service()->SetTabGroupMetadata(window_id, group_ids[group_ndx],
-                                   &visual_data[group_ndx]);
+                                   &visual_data[group_ndx],
+                                   saved_guids[group_ndx]);
   }
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
@@ -1228,6 +1231,12 @@ TEST_F(SessionServiceTest, TabGroupMetadataSaved) {
     const tab_groups::TabGroupId group_id = group_ids[group_ndx];
     ASSERT_TRUE(base::Contains(tab_groups, group_id));
     EXPECT_EQ(visual_data[group_ndx], tab_groups[group_id]->visual_data);
+    if (tab_groups[group_id]->saved_guid.has_value()) {
+      EXPECT_EQ(saved_guids[group_ndx],
+                tab_groups[group_id]->saved_guid.value());
+    } else {
+      EXPECT_EQ(absl::nullopt, tab_groups[group_id]->saved_guid);
+    }
   }
 }
 

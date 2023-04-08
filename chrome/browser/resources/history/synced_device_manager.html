@@ -80,7 +80,7 @@
       <div id="turn-on-sync-promo">$i18n{turnOnSyncPromo}</div>
       <div id="turn-on-sync-promo-desc">$i18n{turnOnSyncPromoDesc}</div>
       <cr-button id="turn-on-sync-button" class="action-button"
-          on-click="onTurnOnSyncTap_">
+          on-click="onTurnOnSyncClick_">
         $i18n{turnOnSyncButton}
       </cr-button>
     </div>
@@ -89,11 +89,11 @@
       <template>
         <cr-action-menu role-description="$i18n{menu}">
           <button id="menuOpenButton" class="dropdown-item"
-              on-click="onOpenAllTap_">
+              on-click="onOpenAllClick_">
             $i18n{openAll}
           </button>
           <button id="menuDeleteButton" class="dropdown-item"
-              on-click="onDeleteSessionTap_">
+              on-click="onDeleteSessionClick_">
             $i18n{deleteSession}
           </button>
         </cr-action-menu>

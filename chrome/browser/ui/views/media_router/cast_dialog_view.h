@@ -30,7 +30,7 @@ class Canvas;
 
 namespace media_router {
 
-class CastDialogSinkButton;
+class CastDialogSinkView;
 enum class MediaRouterDialogActivationLocation;
 struct UIMediaSink;
 
@@ -85,8 +85,8 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   void KeepShownForTesting();
 
   // Called by tests.
-  const std::vector<CastDialogSinkButton*>& sink_buttons_for_test() const {
-    return sink_buttons_;
+  const std::vector<raw_ptr<CastDialogSinkView>>& sink_views_for_test() const {
+    return sink_views_;
   }
   views::ScrollView* scroll_view_for_test() { return scroll_view_; }
   views::View* no_sinks_view_for_test() { return no_sinks_view_; }
@@ -133,6 +133,8 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   void SelectSource(SourceType source);
 
   void SinkPressed(size_t index);
+  void StopPressed(size_t index);
+  void FreezePressed(size_t index);
 
   void MaybeSizeToContents();
 
@@ -163,8 +165,8 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   // the sources menu.
   SourceType selected_source_ = SourceType::kTab;
 
-  // Contains references to sink buttons in the order they appear.
-  std::vector<CastDialogSinkButton*> sink_buttons_;
+  // Contains references to sink views in the order they appear.
+  std::vector<raw_ptr<CastDialogSinkView>> sink_views_;
 
   raw_ptr<CastDialogController> controller_;
 

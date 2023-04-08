@@ -686,7 +686,8 @@ void AboutHandler::OnGetEndOfLifeInfo(
              ash::eol_incentive_util::EolIncentiveType::kEolPassedRecently ||
          eolIncentiveType ==
              ash::eol_incentive_util::EolIncentiveType::kEolPassed) &&
-            has_eol_passed);
+            has_eol_passed &&
+            base::FeatureList::IsEnabled(ash::features::kEolIncentiveSettings));
     eol_incentive_shows_offer_ =
         (ash::features::kEolIncentiveParam.Get() !=
              ash::features::EolIncentiveParam::kNoOffer &&

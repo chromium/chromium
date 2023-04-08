@@ -51,6 +51,10 @@ class ASH_EXPORT SnapGroupController {
   // given `window` has been removed successfully. Returns false otherwise.
   bool RemoveSnapGroupContainingWindow(aura::Window* window);
 
+  // Returns the corresponding `SnapGroup` if the given `window` belongs to a
+  // snap group or nullptr otherwise.
+  SnapGroup* GetSnapGroupForGivenWindow(aura::Window* window);
+
   // Returns true if the feature flag `kSnapGroup` is enabled and the feature
   // param `kAutomaticallyLockGroup` is true, i.e. a snap group will be created
   // automatically on two windows snapped.

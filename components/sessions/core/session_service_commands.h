@@ -50,7 +50,8 @@ SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateTabGroupCommand(
 SESSIONS_EXPORT std::unique_ptr<SessionCommand>
 CreateTabGroupMetadataUpdateCommand(
     const tab_groups::TabGroupId group,
-    const tab_groups::TabGroupVisualData* visual_data);
+    const tab_groups::TabGroupVisualData* visual_data,
+    const absl::optional<std::string> saved_guid = absl::nullopt);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreatePinnedStateCommand(
     SessionID tab_id,
     bool is_pinned);

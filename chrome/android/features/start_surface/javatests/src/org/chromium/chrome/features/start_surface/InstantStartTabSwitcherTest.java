@@ -46,13 +46,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.MathUtils;
-import org.chromium.base.jank_tracker.JankMetricUMARecorder;
-import org.chromium.base.jank_tracker.JankMetricUMARecorderJni;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
@@ -130,9 +127,6 @@ public class InstantStartTabSwitcherTest {
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    JankMetricUMARecorder.Natives mJankRecorderNativeMock;
-
     /**
      * {@link ParameterProvider} used for parameterized test that provides whether it's single tab
      * switcher or carousel tab switcher and whether last visited tab is a search result page.
@@ -152,7 +146,6 @@ public class InstantStartTabSwitcherTest {
 
     @Before
     public void setUp() {
-        mJniMocker.mock(JankMetricUMARecorderJni.TEST_HOOKS, mJankRecorderNativeMock);
         ReturnToChromeUtil.setSkipInitializationCheckForTesting(true);
     }
 

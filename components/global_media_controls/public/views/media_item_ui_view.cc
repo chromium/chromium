@@ -120,64 +120,65 @@ MediaItemUIView::MediaItemUIView(
   }
   swipeable_container_ = AddChildView(std::move(swipeable_container));
 
-  gfx::Size dismiss_button_size =
-      is_cros_ ? kCrOSDismissButtonSize : kDismissButtonSize;
-  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsModernUI))
-    dismiss_button_size = kModernDismissButtonSize;
-
-  auto dismiss_button_placeholder = std::make_unique<views::View>();
-  dismiss_button_placeholder->SetPreferredSize(dismiss_button_size);
-  dismiss_button_placeholder->SetLayoutManager(
-      std::make_unique<views::FillLayout>());
-  dismiss_button_placeholder_ = dismiss_button_placeholder.get();
-
-  auto dismiss_button_container = std::make_unique<views::View>();
-  dismiss_button_container->SetPreferredSize(dismiss_button_size);
-  dismiss_button_container->SetLayoutManager(
-      std::make_unique<views::FillLayout>());
-  dismiss_button_container->SetVisible(false);
-  dismiss_button_container_ = dismiss_button_placeholder_->AddChildView(
-      std::move(dismiss_button_container));
-
-  auto dismiss_button = std::make_unique<DismissButton>(base::BindRepeating(
-      &MediaItemUIView::DismissNotification, base::Unretained(this)));
-  dismiss_button->SetPreferredSize(dismiss_button_size);
-  dismiss_button->SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_GLOBAL_MEDIA_CONTROLS_DISMISS_ICON_TOOLTIP_TEXT));
-  dismiss_button_ =
-      dismiss_button_container_->AddChildView(std::move(dismiss_button));
-  UpdateDismissButtonIcon();
-
   std::unique_ptr<media_message_center::MediaNotificationView> view;
   if (use_cros_updated_ui) {
     DCHECK(theme.has_value());
     view = std::make_unique<media_message_center::MediaNotificationViewAshImpl>(
-        this, std::move(item), std::move(dismiss_button_placeholder),
-        theme.value(), media_display_page.value());
-  } else if (base::FeatureList::IsEnabled(
-                 media::kGlobalMediaControlsModernUI)) {
-    footer_view_ = footer_view_.get();
-    view =
-        std::make_unique<media_message_center::MediaNotificationViewModernImpl>(
-            this, std::move(item), std::move(dismiss_button_placeholder),
-            std::move(footer_view), kModernUIWidth, theme);
-    SetPreferredSize(kModernUISize);
+        this, std::move(item), theme.value(), media_display_page.value());
   } else {
-    view = std::make_unique<media_message_center::MediaNotificationViewImpl>(
-        this, std::move(item), std::move(dismiss_button_placeholder),
-        std::u16string(), kWidth, /*should_show_icon=*/false, theme);
+    gfx::Size dismiss_button_size =
+        is_cros_ ? kCrOSDismissButtonSize : kDismissButtonSize;
+    if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsModernUI)) {
+      dismiss_button_size = kModernDismissButtonSize;
+    }
 
-    UpdateFooterView(std::move(footer_view));
-    SetPreferredSize(kNormalSize);
+    auto dismiss_button_placeholder = std::make_unique<views::View>();
+    dismiss_button_placeholder->SetPreferredSize(dismiss_button_size);
+    dismiss_button_placeholder->SetLayoutManager(
+        std::make_unique<views::FillLayout>());
+    dismiss_button_placeholder_ = dismiss_button_placeholder.get();
+
+    auto dismiss_button_container = std::make_unique<views::View>();
+    dismiss_button_container->SetPreferredSize(dismiss_button_size);
+    dismiss_button_container->SetLayoutManager(
+        std::make_unique<views::FillLayout>());
+    dismiss_button_container->SetVisible(false);
+    dismiss_button_container_ = dismiss_button_placeholder_->AddChildView(
+        std::move(dismiss_button_container));
+
+    auto dismiss_button = std::make_unique<DismissButton>(base::BindRepeating(
+        &MediaItemUIView::DismissNotification, base::Unretained(this)));
+    dismiss_button->SetPreferredSize(dismiss_button_size);
+    dismiss_button->SetTooltipText(l10n_util::GetStringUTF16(
+        IDS_GLOBAL_MEDIA_CONTROLS_DISMISS_ICON_TOOLTIP_TEXT));
+    dismiss_button_ =
+        dismiss_button_container_->AddChildView(std::move(dismiss_button));
+    UpdateDismissButtonIcon();
+
+    slide_out_controller_ =
+        std::make_unique<views::SlideOutController>(this, this);
+
+    if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsModernUI)) {
+      footer_view_ = footer_view_.get();
+      view = std::make_unique<
+          media_message_center::MediaNotificationViewModernImpl>(
+          this, std::move(item), std::move(dismiss_button_placeholder),
+          std::move(footer_view), kModernUIWidth, theme);
+      SetPreferredSize(kModernUISize);
+    } else {
+      view = std::make_unique<media_message_center::MediaNotificationViewImpl>(
+          this, std::move(item), std::move(dismiss_button_placeholder),
+          std::u16string(), kWidth, /*should_show_icon=*/false, theme);
+
+      UpdateFooterView(std::move(footer_view));
+      SetPreferredSize(kNormalSize);
+    }
   }
   view_ = swipeable_container_->AddChildView(std::move(view));
 
   UpdateDeviceSelector(std::move(device_selector_view));
 
   ForceExpandedState();
-
-  slide_out_controller_ =
-      std::make_unique<views::SlideOutController>(this, this);
 }
 
 MediaItemUIView::~MediaItemUIView() {
@@ -375,6 +376,10 @@ views::ImageButton* MediaItemUIView::GetDismissButtonForTesting() {
 }
 
 void MediaItemUIView::UpdateDismissButtonIcon() {
+  if (!dismiss_button_) {
+    return;
+  }
+
   int icon_size =
       is_cros_ ? kCrOSDismissButtonIconSize : kDismissButtonIconSize;
   if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsModernUI))
@@ -386,6 +391,10 @@ void MediaItemUIView::UpdateDismissButtonIcon() {
 }
 
 void MediaItemUIView::UpdateDismissButtonBackground() {
+  if (!dismiss_button_container_) {
+    return;
+  }
+
   if (!has_artwork_) {
     dismiss_button_container_->SetBackground(nullptr);
     return;
@@ -396,6 +405,10 @@ void MediaItemUIView::UpdateDismissButtonBackground() {
 }
 
 void MediaItemUIView::UpdateDismissButtonVisibility() {
+  if (!dismiss_button_container_) {
+    return;
+  }
+
   bool has_focus = false;
   if (GetFocusManager()) {
     views::View* focused_view = GetFocusManager()->GetFocusedView();

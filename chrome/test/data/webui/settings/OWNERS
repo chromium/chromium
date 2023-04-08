@@ -5,6 +5,7 @@ per-file cookies_page_test.ts=sauski@google.com,rainhard@chromium.org
 per-file clear_browsing_data_test.ts=sauski@google.com
 per-file do_not_track_toggle_test.ts=sauski@google.com
 per-file do_not_track_toggle_test.ts=sauski@google.com
+per-file file_system_*=sauski@google.com
 per-file metrics_reporting_tests.ts=sauski@google.com
 per-file personalization_options_test.ts=sauski@google.com
 per-file privacy_page_test.ts=sauski@google.com,rainhard@chromium.org,sideyilmaz@chromium.org

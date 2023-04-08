@@ -2990,6 +2990,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3584527007414070635">Continuă-ți parcursul pentru <ph name="MODULE_TITLE" /></translation>
 <translation id="3586787825263265024">Aplicația <ph name="APPLICATION_NAME" /> necesită ca OneDrive să fie disponibil.</translation>
 <translation id="3586806079541226322">Fișierul nu poate fi deschis</translation>
+<translation id="3586931643579894722">Ascunde detaliile</translation>
 <translation id="3587438013689771191">Află mai multe despre: <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">Toate</translation>
 <translation id="3588790464166520201">Au permisiunea de a instala handlere pentru plăți</translation>
@@ -5835,6 +5836,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6136114942382973861">Închide bara de descărcări</translation>
 <translation id="6136287496450963112">Cheia de securitate nu este protejată printr-un cod PIN. Pentru a gestiona amprentele, creează mai întâi un cod PIN.</translation>
 <translation id="6138680304137685902">Semnătură X9.62 ECDSA cu SHA-384</translation>
+<translation id="6140948187512243695">Afișează detaliile</translation>
 <translation id="6141988275892716286">Confirmă descărcarea</translation>
 <translation id="6143186082490678276">Primiți ajutor</translation>
 <translation id="6143366292569327983">Alege limba paginii din care vrei să traduci</translation>

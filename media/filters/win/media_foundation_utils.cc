@@ -27,6 +27,9 @@ using Microsoft::WRL::MakeAndInitialize;
 
 namespace {
 
+// This is supported by Media Foundation.
+DEFINE_MEDIATYPE_GUID(MFVideoFormat_THEORA, FCC('theo'))
+
 // Given an audio format tag |wave_format|, it returns an audio subtype GUID per
 // https://docs.microsoft.com/en-us/windows/win32/medfound/audio-subtype-guids
 // |wave_format| must be one of the WAVE_FORMAT_* constants defined in mmreg.h.
@@ -213,6 +216,38 @@ MFTIME TimeDeltaToMfTime(base::TimeDelta time) {
 
 base::TimeDelta MfTimeToTimeDelta(MFTIME mf_time) {
   return base::Nanoseconds(mf_time * 100);
+}
+
+GUID VideoCodecToMFSubtype(VideoCodec codec, VideoCodecProfile profile) {
+  switch (codec) {
+    case VideoCodec::kH264:
+      return MFVideoFormat_H264;
+    case VideoCodec::kVC1:
+      return MFVideoFormat_WVC1;
+    case VideoCodec::kMPEG2:
+      return MFVideoFormat_MPEG2;
+    case VideoCodec::kMPEG4:
+      return MFVideoFormat_MP4V;
+    case VideoCodec::kTheora:
+      return MFVideoFormat_THEORA;
+    case VideoCodec::kVP8:
+      return MFVideoFormat_VP80;
+    case VideoCodec::kVP9:
+      return MFVideoFormat_VP90;
+    case VideoCodec::kHEVC:
+      return MFVideoFormat_HEVC;
+    case VideoCodec::kDolbyVision:
+      if (profile == VideoCodecProfile::DOLBYVISION_PROFILE0 ||
+          profile == VideoCodecProfile::DOLBYVISION_PROFILE9) {
+        return MFVideoFormat_H264;
+      } else {
+        return MFVideoFormat_HEVC;
+      }
+    case VideoCodec::kAV1:
+      return MFVideoFormat_AV1;
+    default:
+      return GUID_NULL;
+  }
 }
 
 }  // namespace media

@@ -16,12 +16,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.jank_tracker.JankMetricUMARecorder;
-import org.chromium.base.jank_tracker.JankMetricUMARecorderJni;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -80,9 +77,6 @@ public class StartupLoadingMetricsTest {
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    JankMetricUMARecorder.Natives mJankRecorderNativeMock;
-
     private String mTestPage;
     private String mTestPage2;
     private String mErrorPage;
@@ -99,7 +93,6 @@ public class StartupLoadingMetricsTest {
         mTestPage2 = mTestServer.getURL(TEST_PAGE_2);
         mErrorPage = mTestServer.getURL(ERROR_PAGE);
         mSlowPage = mTestServer.getURL(SLOW_PAGE);
-        mJniMocker.mock(JankMetricUMARecorderJni.TEST_HOOKS, mJankRecorderNativeMock);
     }
 
     @After

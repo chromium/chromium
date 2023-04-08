@@ -120,11 +120,11 @@ several frames and accelerated VideoDecoder needs to successfully decode them.
         errors == 0, 'Decoding or encoding errors occurred during the test');
       TEST.log('Test completed');
     }
-    addManualTestButton({
+    addManualTestButton([{
       'source_type': 'offscreen',
       'codec': 'avc1.42001E',
       'acceleration':'prefer-software'
-    });
+    }]);
   </script>
 </head>
 

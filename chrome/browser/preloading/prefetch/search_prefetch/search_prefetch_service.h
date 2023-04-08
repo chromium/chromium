@@ -207,8 +207,7 @@ class SearchPrefetchService : public KeyedService,
   // If the navigation URL matches with a prefetch that can be served, this
   // function marks that prefetch as clicked to prevent deletion when omnibox
   // closes.
-  void OnURLOpenedFromOmnibox(OmniboxLog* log,
-                              content::WebContents* web_contents);
+  void OnURLOpenedFromOmnibox(OmniboxLog* log);
 
   // Fires all timers.
   void FireAllExpiryTimerForTesting();

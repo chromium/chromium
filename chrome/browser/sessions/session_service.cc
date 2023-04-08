@@ -278,7 +278,8 @@ void SessionService::SetTabGroup(SessionID window_id,
 void SessionService::SetTabGroupMetadata(
     SessionID window_id,
     const tab_groups::TabGroupId& group_id,
-    const tab_groups::TabGroupVisualData* visual_data) {
+    const tab_groups::TabGroupVisualData* visual_data,
+    const absl::optional<std::string> saved_guid) {
   if (!ShouldTrackChangesToWindow(window_id))
     return;
 
@@ -287,8 +288,8 @@ void SessionService::SetTabGroupMetadata(
       base::Contains(window_closing_ids_, window_id))
     return;
 
-  ScheduleCommand(
-      sessions::CreateTabGroupMetadataUpdateCommand(group_id, visual_data));
+  ScheduleCommand(sessions::CreateTabGroupMetadataUpdateCommand(
+      group_id, visual_data, std::move(saved_guid)));
 }
 
 void SessionService::AddTabExtraData(SessionID window_id,

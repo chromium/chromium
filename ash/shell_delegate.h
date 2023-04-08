@@ -48,7 +48,6 @@ class UserEducationDelegate;
 class ASH_EXPORT ShellDelegate {
  public:
   enum class FeedbackSource {
-    kBentoBar,
     kWindowLayoutMenu,
   };
 

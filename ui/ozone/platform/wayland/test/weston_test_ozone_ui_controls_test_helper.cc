@@ -148,6 +148,10 @@ WestonTestOzoneUIControlsTestHelper::WestonTestOzoneUIControlsTestHelper()
 WestonTestOzoneUIControlsTestHelper::~WestonTestOzoneUIControlsTestHelper() =
     default;
 
+void WestonTestOzoneUIControlsTestHelper::Reset() {
+  input_emulate_->Reset();
+}
+
 bool WestonTestOzoneUIControlsTestHelper::SupportsScreenCoordinates() const {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return true;
@@ -220,7 +224,9 @@ void WestonTestOzoneUIControlsTestHelper::SendMouseEvent(
       NOTREACHED();
   }
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   SendMouseMotionNotifyEvent(widget, mouse_loc, mouse_screen_loc, {});
+#endif
 
   // Press accelerator keys.
   if (accelerator_state) {

@@ -578,18 +578,11 @@ std::unique_ptr<Av1Decoder> Av1Decoder::Create(
   }
 
   auto v4l2_ioctl = std::make_unique<V4L2IoctlShim>(kDriverCodecFourcc);
-  uint32_t uncompressed_fourcc = V4L2_PIX_FMT_NV12;
 
-  if (!v4l2_ioctl->VerifyCapabilities(kDriverCodecFourcc,
-                                      uncompressed_fourcc)) {
-    // Fall back to MM21 for MediaTek platforms
-    uncompressed_fourcc = V4L2_PIX_FMT_MM21;
-
-    if (!v4l2_ioctl->VerifyCapabilities(kDriverCodecFourcc,
-                                        uncompressed_fourcc)) {
-      LOG(ERROR) << "Device doesn't support the provided FourCCs.";
-      return nullptr;
-    }
+  if (!v4l2_ioctl->VerifyCapabilities(kDriverCodecFourcc)) {
+    LOG(ERROR) << "Device doesn't support "
+               << media::FourccToString(kDriverCodecFourcc) << ".";
+    return nullptr;
   }
 
   const gfx::Size bitstream_coded_size = GetResolutionFromBitstream(stream);
@@ -598,14 +591,15 @@ std::unique_ptr<Av1Decoder> Av1Decoder::Create(
   // (fd) & buffer with the output queue for 4K60 requirement.
   // https://buganizer.corp.google.com/issues/202214561#comment31
   auto OUTPUT_queue = std::make_unique<V4L2Queue>(
-      V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE, kDriverCodecFourcc,
-      bitstream_coded_size, V4L2_MEMORY_MMAP, kNumberOfBuffersInOutputQueue);
+      V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE, bitstream_coded_size, V4L2_MEMORY_MMAP,
+      kNumberOfBuffersInOutputQueue);
+  OUTPUT_queue->set_fourcc(kDriverCodecFourcc);
 
   // TODO(stevecho): enable V4L2_MEMORY_DMABUF memory for CAPTURE queue.
   // https://www.kernel.org/doc/html/v5.16/userspace-api/media/v4l/pixfmt-v4l2-mplane.html#c.V4L.v4l2_plane_pix_format
   auto CAPTURE_queue = std::make_unique<V4L2Queue>(
-      V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE, uncompressed_fourcc,
-      bitstream_coded_size, V4L2_MEMORY_MMAP, kNumberOfBuffersInCaptureQueue);
+      V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE, bitstream_coded_size,
+      V4L2_MEMORY_MMAP, kNumberOfBuffersInCaptureQueue);
 
   return base::WrapUnique(
       new Av1Decoder(std::move(ivf_parser), std::move(v4l2_ioctl),
@@ -1016,10 +1010,9 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<uint8_t>& y_plane,
     scoped_refptr<MmappedBuffer> repeated_frame_buffer =
         ref_frames_[current_frame_header.frame_to_show];
 
-    size = CAPTURE_queue_->display_size();
-    ConvertToYUV(y_plane, u_plane, v_plane, size,
+    ConvertToYUV(y_plane, u_plane, v_plane, OUTPUT_queue_->resolution(),
                  repeated_frame_buffer->mmapped_planes(),
-                 CAPTURE_queue_->coded_size(), CAPTURE_queue_->fourcc());
+                 CAPTURE_queue_->resolution(), CAPTURE_queue_->fourcc());
 
     // Repeated frames normally don't need to update reference frames. But in
     // this special case when the repeated frame is pointing to a key frame, all
@@ -1094,9 +1087,9 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<uint8_t>& y_plane,
   v4l2_ioctl_->DQBuf(CAPTURE_queue_, &buffer_id);
 
   scoped_refptr<MmappedBuffer> buffer = CAPTURE_queue_->GetBuffer(buffer_id);
-  size = CAPTURE_queue_->display_size();
-  ConvertToYUV(y_plane, u_plane, v_plane, size, buffer->mmapped_planes(),
-               CAPTURE_queue_->coded_size(), CAPTURE_queue_->fourcc());
+  ConvertToYUV(y_plane, u_plane, v_plane, OUTPUT_queue_->resolution(),
+               buffer->mmapped_planes(), CAPTURE_queue_->resolution(),
+               CAPTURE_queue_->fourcc());
 
   const std::set<int> reusable_buffer_ids = RefreshReferenceSlots(
       current_frame_header, current_frame, CAPTURE_queue_->GetBuffer(buffer_id),

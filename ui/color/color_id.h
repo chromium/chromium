@@ -229,6 +229,8 @@
   E_CPONLY(kColorAvatarIconIncognito) \
   E_CPONLY(kColorBadgeBackground) \
   E_CPONLY(kColorBadgeForeground) \
+  E_CPONLY(kColorBadgeInCocoaMenuBackground) \
+  E_CPONLY(kColorBadgeInCocoaMenuForeground) \
   E_CPONLY(kColorBubbleBackground) \
   E_CPONLY(kColorBubbleBorder) \
   E_CPONLY(kColorBubbleBorderShadowLarge) \

@@ -4,14 +4,14 @@
 # reviewer is added automatically. Thank you.
 
 ddorwin@chromium.org
-fdegans@chromium.org
 grt@chromium.org
-kmarshall@chromium.org
 sergeyu@chromium.org
 wez@chromium.org
 
-per-file linux.sdk.sha1=chromium-autoroll@skia-public.iam.gserviceaccount.com
-per-file mac.sdk.sha1=chromium-autoroll@skia-public.iam.gserviceaccount.com
+per-file *.py=chonggu@google.com
+per-file *.py=rohpavone@chromium.org
+per-file *.py=zijiehe@google.com
+
 per-file linux_internal.sdk.sha1=chromium-internal-autoroll@skia-corp.google.com.iam.gserviceaccount.com
 
 per-file SECURITY_OWNERS=set noparent
