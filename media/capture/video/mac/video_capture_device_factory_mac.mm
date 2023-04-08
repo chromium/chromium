@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "media/base/mac/video_capture_device_avfoundation_helpers.h"
 #import "media/capture/video/mac/video_capture_device_avfoundation_mac.h"
 #import "media/capture/video/mac/video_capture_device_avfoundation_utils_mac.h"
 #import "media/capture/video/mac/video_capture_device_decklink_mac.h"
@@ -38,30 +39,7 @@ media::VideoCaptureFormats GetDeviceSupportedFormats(
     const media::VideoCaptureDeviceDescriptor& descriptor) {
   media::VideoCaptureFormats formats;
 
-  NSArray<AVCaptureDevice*>* devices = nil;
-  // The awkward repeated if statements are required for the compiler to
-  // recognise that the contained code is protected by an API version check.
-  if (@available(macOS 10.15, *)) {
-    if (base::FeatureList::IsEnabled(
-            media::kUseAVCaptureDeviceDiscoverySession)) {
-      // Query for all camera device types available on macOS. The others in the
-      // enum are only supported on iOS/iPadOS.
-      NSArray* captureDeviceType = @[
-        AVCaptureDeviceTypeBuiltInWideAngleCamera,
-        AVCaptureDeviceTypeExternalUnknown
-      ];
-      AVCaptureDeviceDiscoverySession* deviceDescoverySession =
-          [AVCaptureDeviceDiscoverySession
-              discoverySessionWithDeviceTypes:captureDeviceType
-                                    mediaType:AVMediaTypeVideo
-                                     position:
-                                         AVCaptureDevicePositionUnspecified];
-      devices = deviceDescoverySession.devices;
-    }
-  }
-  if (!devices) {
-    devices = [AVCaptureDevice devices];
-  }
+  NSArray<AVCaptureDevice*>* devices = media::GetVideoCaptureDevices();
 
   AVCaptureDevice* device = nil;
   for (device in devices) {

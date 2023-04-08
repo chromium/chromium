@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "media/base/mac/video_capture_device_avfoundation_helpers.h"
 #include "media/base/media_switches.h"
 #include "media/capture/video/mac/video_capture_device_avfoundation_mac.h"
 #include "media/capture/video/mac/video_capture_device_factory_mac.h"
@@ -104,32 +105,7 @@ base::scoped_nsobject<NSDictionary> GetDeviceNames() {
   // library is loaded and initialised, by the device monitoring.
   NSMutableDictionary* deviceNames = [[NSMutableDictionary alloc] init];
 
-  NSArray<AVCaptureDevice*>* devices = nil;
-  // The awkward repeated if statements are required for the compiler to
-  // recognise that the contained code is protected by an API version check.
-  if (@available(macOS 10.15, *)) {
-    if (base::FeatureList::IsEnabled(
-            media::kUseAVCaptureDeviceDiscoverySession)) {
-      // Query for all camera device types available on macOS. The others in the
-      // enum are only supported on iOS/iPadOS.
-      NSArray* captureDeviceType = @[
-        AVCaptureDeviceTypeBuiltInWideAngleCamera,
-        AVCaptureDeviceTypeExternalUnknown
-      ];
-
-      AVCaptureDeviceDiscoverySession* deviceDescoverySession =
-          [AVCaptureDeviceDiscoverySession
-              discoverySessionWithDeviceTypes:captureDeviceType
-                                    mediaType:AVMediaTypeVideo
-                                     position:
-                                         AVCaptureDevicePositionUnspecified];
-      devices = deviceDescoverySession.devices;
-    }
-  }
-
-  if (!devices) {
-    devices = [AVCaptureDevice devices];
-  }
+  NSArray<AVCaptureDevice*>* devices = GetVideoCaptureDevices();
 
   int number_of_suspended_devices = 0;
   for (AVCaptureDevice* device in devices) {
@@ -198,9 +174,5 @@ gfx::Size GetSampleBufferSize(CMSampleBufferRef sample_buffer) {
       CMVideoFormatDescriptionGetDimensions(format_description);
   return gfx::Size(dimensions.width, dimensions.height);
 }
-
-BASE_FEATURE(kUseAVCaptureDeviceDiscoverySession,
-             "UseAVCaptureDeviceDiscoverySession",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace media

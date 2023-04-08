@@ -9,11 +9,16 @@ source_set("mac") {
   # build, if other component targets also depend on it, multiple copies of
   # the ObjC classes declared in the files below will cause warnings at
   # run-time.
-  visibility = [ "//media" ]
+  visibility = [
+    "//media",
+    "//media/device_monitors",
+  ]
 
   sources = [
     "color_space_util_mac.h",
     "color_space_util_mac.mm",
+    "video_capture_device_avfoundation_helpers.h",
+    "video_capture_device_avfoundation_helpers.mm",
     "video_frame_mac.h",
     "video_frame_mac.mm",
     "videotoolbox_helpers.cc",
