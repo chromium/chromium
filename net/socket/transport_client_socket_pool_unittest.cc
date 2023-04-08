@@ -37,6 +37,7 @@
 #include "net/http/transport_security_state.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_with_source.h"
+#include "net/log/test_net_log.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/socket/client_socket_handle.h"
 #include "net/socket/connect_job.h"
@@ -1150,10 +1151,61 @@ TEST_F(TransportClientSocketPoolTest, CloseIdleSocketsOnSSLConfigChange) {
   EXPECT_EQ(1, pool_->IdleSocketCount());
 
   // After an SSL configuration change, we should have 0 idle sockets.
+  RecordingNetLogObserver net_log_observer;
   session_deps_.ssl_config_service->NotifySSLContextConfigChange();
   base::RunLoop().RunUntilIdle();  // Notification happens async.
 
   EXPECT_EQ(0, pool_->IdleSocketCount());
+
+  // Verify the netlog messages recorded the correct reason for closing the
+  // idle sockets.
+  auto events = net_log_observer.GetEntriesWithType(
+      NetLogEventType::SOCKET_POOL_CLOSING_SOCKET);
+  ASSERT_EQ(events.size(), 1u);
+  std::string* reason = events[0].params.FindString("reason");
+  ASSERT_TRUE(reason);
+  EXPECT_EQ(*reason, TransportClientSocketPool::kNetworkChanged);
+}
+
+TEST_F(TransportClientSocketPoolTest, CloseIdleSocketsOnCertVerifierChange) {
+  TestCompletionCallback callback;
+  ClientSocketHandle handle;
+  int rv =
+      handle.Init(group_id_, params_, /*proxy_annotation_tag=*/absl::nullopt,
+                  LOW, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+                  callback.callback(), ClientSocketPool::ProxyAuthCallback(),
+                  pool_.get(), NetLogWithSource());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  EXPECT_FALSE(handle.is_initialized());
+  EXPECT_FALSE(handle.socket());
+
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+  EXPECT_TRUE(handle.is_initialized());
+  EXPECT_TRUE(handle.socket());
+
+  handle.Reset();
+
+  // Need to run all pending to release the socket back to the pool.
+  base::RunLoop().RunUntilIdle();
+
+  // Now we should have 1 idle socket.
+  EXPECT_EQ(1, pool_->IdleSocketCount());
+
+  // After a cert verifier configuration change, we should have 0 idle sockets.
+  RecordingNetLogObserver net_log_observer;
+  session_deps_.cert_verifier->SimulateOnCertVerifierChanged();
+  base::RunLoop().RunUntilIdle();  // Notification happens async.
+
+  EXPECT_EQ(0, pool_->IdleSocketCount());
+
+  // Verify the netlog messages recorded the correct reason for closing the
+  // idle sockets.
+  auto events = net_log_observer.GetEntriesWithType(
+      NetLogEventType::SOCKET_POOL_CLOSING_SOCKET);
+  ASSERT_EQ(events.size(), 1u);
+  std::string* reason = events[0].params.FindString("reason");
+  ASSERT_TRUE(reason);
+  EXPECT_EQ(*reason, TransportClientSocketPool::kCertVerifierChanged);
 }
 
 TEST_F(TransportClientSocketPoolTest, BackupSocketConnect) {

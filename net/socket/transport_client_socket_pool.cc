@@ -54,6 +54,8 @@ base::Value::Dict NetLogCreateConnectJobParams(
 
 const char TransportClientSocketPool::kCertDatabaseChanged[] =
     "Cert database changed";
+const char TransportClientSocketPool::kCertVerifierChanged[] =
+    "Cert verifier changed";
 const char TransportClientSocketPool::kClosedConnectionReturnedToPool[] =
     "Connection was closed when it was returned to the pool";
 const char TransportClientSocketPool::kDataReceivedUnexpectedly[] =
@@ -803,14 +805,20 @@ TransportClientSocketPool::TransportClientSocketPool(
 }
 
 void TransportClientSocketPool::OnSSLConfigChanged(
-    bool is_cert_database_change) {
+    SSLClientContext::SSLConfigChangeType change_type) {
   // When the user changes the SSL config, flush all idle sockets so they won't
   // get re-used.
-  if (is_cert_database_change) {
-    FlushWithError(ERR_CERT_DATABASE_CHANGED, kCertDatabaseChanged);
-  } else {
-    FlushWithError(ERR_NETWORK_CHANGED, kNetworkChanged);
-  }
+  switch (change_type) {
+    case SSLClientContext::SSLConfigChangeType::kSSLConfigChanged:
+      FlushWithError(ERR_NETWORK_CHANGED, kNetworkChanged);
+      break;
+    case SSLClientContext::SSLConfigChangeType::kCertDatabaseChanged:
+      FlushWithError(ERR_CERT_DATABASE_CHANGED, kCertDatabaseChanged);
+      break;
+    case SSLClientContext::SSLConfigChangeType::kCertVerifierChanged:
+      FlushWithError(ERR_CERT_VERIFIER_CHANGED, kCertVerifierChanged);
+      break;
+  };
 }
 
 // TODO(crbug.com/1206799): Get `server` as SchemeHostPort?

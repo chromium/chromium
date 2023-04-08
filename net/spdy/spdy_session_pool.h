@@ -304,7 +304,8 @@ class NET_EXPORT SpdySessionPool
   // SSLClientContext::Observer methods:
 
   // We perform the same flushing as described above when SSL settings change.
-  void OnSSLConfigChanged(bool is_cert_database_change) override;
+  void OnSSLConfigChanged(
+      SSLClientContext::SSLConfigChangeType change_type) override;
 
   // Makes all sessions using |server|'s SSL configuration unavailable, meaning
   // they will not be used to service new streams. Does not close any existing

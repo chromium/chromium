@@ -21,7 +21,7 @@
 #include "net/base/proxy_server.h"
 #include "net/base/request_priority.h"
 #include "net/base/test_completion_callback.h"
-#include "net/cert/cert_verifier.h"
+#include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_auth_handler_factory.h"
 #include "net/http/http_network_session.h"
@@ -180,7 +180,7 @@ struct SpdySessionDependencies {
   std::unique_ptr<MockHostResolverBase> host_resolver;
   // For using a HostResolver not derived from MockHostResolverBase.
   std::unique_ptr<HostResolver> alternate_host_resolver;
-  std::unique_ptr<CertVerifier> cert_verifier;
+  std::unique_ptr<MockCertVerifier> cert_verifier;
   std::unique_ptr<TransportSecurityState> transport_security_state;
   std::unique_ptr<CTPolicyEnforcer> ct_policy_enforcer;
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service;

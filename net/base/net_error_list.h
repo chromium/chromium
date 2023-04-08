@@ -976,6 +976,9 @@ NET_ERROR(CERT_DATABASE_CHANGED, -714)
 
 // Error -715 was removed (CHANNEL_ID_IMPORT_FAILED)
 
+// The certificate verifier configuration changed in some way.
+NET_ERROR(CERT_VERIFIER_CHANGED, -716)
+
 // DNS error codes.
 
 // DNS resolver received a malformed response.
