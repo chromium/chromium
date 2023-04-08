@@ -3005,6 +3005,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3584527007414070635">Genoptag din søgning efter <ph name="MODULE_TITLE" /></translation>
 <translation id="3586787825263265024">Appen <ph name="APPLICATION_NAME" /> kræver, at OneDrive er tilgængeligt.</translation>
 <translation id="3586806079541226322">Denne fil kan ikke åbnes</translation>
+<translation id="3586931643579894722">Skjul oplysninger</translation>
 <translation id="3587438013689771191">Få flere oplysninger om: <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">Alle</translation>
 <translation id="3588790464166520201">Har tilladelse til at installere betalingshandlere</translation>
@@ -5851,6 +5852,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6136114942382973861">Luk downloadlinje</translation>
 <translation id="6136287496450963112">Din sikkerhedsnøgle er ikke beskyttet med en pinkode. Du skal oprette en pinkode, før du kan administrere fingeraftryk.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA-signatur med SHA-384</translation>
+<translation id="6140948187512243695">Vis oplysninger</translation>
 <translation id="6141988275892716286">Bekræft download</translation>
 <translation id="6143186082490678276">Få hjælp</translation>
 <translation id="6143366292569327983">Vælg det sidesprog, der skal oversættes fra</translation>

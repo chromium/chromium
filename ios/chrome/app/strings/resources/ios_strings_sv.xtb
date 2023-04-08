@@ -20,7 +20,6 @@
 <translation id="1103523840287552314">Översätt alltid <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Byt till Öppet fönster</translation>
 <translation id="1112015203684611006">Utskriftsfel.</translation>
-<translation id="1118266931011974190">Efter <ph name="THRESHOLD" /> dagar</translation>
 <translation id="1125564390852150847">Skapa en ny flik.</translation>
 <translation id="1126013303640354461">Betalningsmetoder och adresser från Google Pay krypteras inte. Webbhistorik från Chrome synkroniseras inte.
 Din krypterade data kan endast läsas av en person som har din lösenfras. Lösenfrasen varken skickas till eller lagras av Google. Om du glömmer lösenfrasen eller vill ändra den här inställningen måste du återställa synkroniseringen. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
@@ -217,6 +216,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="2482878487686419369">Aviseringar</translation>
 <translation id="2496626742194544812">Öppna första fliken</translation>
 <translation id="2500374554657206846">Alternativ för att spara lösenord</translation>
+<translation id="2502415369140591438"><ph name="COUNT" /> återanvända lösenord</translation>
 <translation id="2523363575747517183">Webbplatsen försöker öppna ett annat program upprepade gånger.</translation>
 <translation id="2529021024822217800">Öppna alla</translation>
 <translation id="2547458583188611426">Synkroniseringen fungerar inte. Ange din lösenfras för att starta synkroniseringen.</translation>
@@ -293,6 +293,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="2932085390869194046">Föreslå lösenord …</translation>
 <translation id="2932765531295814441">Lägga till lösenord manuellt</translation>
 <translation id="2952581218264071393">1. Öppna inställningarna för Chrome</translation>
+<translation id="2953871438216280742">Logga in för att öppna och spara läslistan i ditt Google-konto.</translation>
 <translation id="2958718410589002129">Lösenord</translation>
 <translation id="2961210776189273067">Titel</translation>
 <translation id="2964349545761222050">Blockera cookies från tredje part</translation>
@@ -386,6 +387,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3581564640715911333">Erbjud översättning av sidor till andra språk</translation>
 <translation id="3588820906588687999">Öppna bild på ny flik</translation>
 <translation id="3595252146048399851">Du kan alltid välja vad som ska synkroniseras i <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" />. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
+<translation id="3595588371156514964">{COUNT,plural, =1{{COUNT} svagt lösenord}other{{COUNT} svaga lösenord}}</translation>
 <translation id="3603009562372709545">Kopiera länkens webbadress</translation>
 <translation id="3607167657931203000">Autofyll uppgifter</translation>
 <translation id="3608008480985212611">Logga in för att hantera inställningarna.</translation>
@@ -623,6 +625,7 @@ Din data har krypterats med lösenfrasen för synkronisering. Ange den om du vil
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5211488077761630279">Vill du tillåta att <ph name="SITE_NAME" /> använder din <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Hjälp till att förbättra säkerheten på webben för alla</translation>
+<translation id="5221339005270097309">Kontrollerar lösenord …</translation>
 <translation id="5228579091201413441">Aktivera synkronisering</translation>
 <translation id="5232485538978018676">Logga in med ett hanterat konto</translation>
 <translation id="5234764350956374838">Stäng</translation>
@@ -662,6 +665,7 @@ Din data har krypterats med lösenfrasen för synkronisering. Ange den om du vil
 Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och samma iCloud-konto måste användas på enheterna.</translation>
 <translation id="5551897871312988470">Erbjud översättning</translation>
 <translation id="5556459405103347317">Hämta igen</translation>
+<translation id="555749644339804659">Kontrollerar lösenord …</translation>
 <translation id="556042886152191864">Knapp</translation>
 <translation id="5597915316964418992">Öppna rutnätet med flikar</translation>
 <translation id="560322036295180549">Inaktiverat av organisationen</translation>

@@ -20,7 +20,6 @@
 <translation id="1103523840287552314">Always translate <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Switch to open window</translation>
 <translation id="1112015203684611006">Printing failed.</translation>
-<translation id="1118266931011974190">After <ph name="THRESHOLD" /> days</translation>
 <translation id="1125564390852150847">Create new tab.</translation>
 <translation id="1126013303640354461">Payment methods and addresses from Google Pay won’t be encrypted. Browsing history from Chrome won’t sync.
 Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, you’ll need to reset sync. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>

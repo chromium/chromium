@@ -2987,6 +2987,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3584527007414070635"><ph name="MODULE_TITLE" /> ile ilgili arama yolculuğunuza devam edin</translation>
 <translation id="3586787825263265024"><ph name="APPLICATION_NAME" /> uygulaması için OneDrive'ın kullanılabilir olması gerekir.</translation>
 <translation id="3586806079541226322">Bu dosya açılamıyor</translation>
+<translation id="3586931643579894722">Ayrıntıları gizle</translation>
 <translation id="3587438013689771191"><ph name="SUBPAGE_TITLE" /> hakkında daha fazla bilgi</translation>
 <translation id="3587482841069643663">Tümü</translation>
 <translation id="3588790464166520201">Ödeme işleyiciler yüklemesine izin verilen siteler</translation>
@@ -5833,6 +5834,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6136114942382973861">İndirme çubuğunu kapat</translation>
 <translation id="6136287496450963112">Güvenlik anahtarınız PIN ile korunmuyor. Parmak izlerini yönetmek için önce PIN oluşturun.</translation>
 <translation id="6138680304137685902">SHA-384 ile X9.62 ECDSA İmzası</translation>
+<translation id="6140948187512243695">Ayrıntıları göster</translation>
 <translation id="6141988275892716286">İndirme işlemini onaylayın</translation>
 <translation id="6143186082490678276">Yardım Alın</translation>
 <translation id="6143366292569327983">Sayfanın hangi dilden çevrileceğini seçin</translation>

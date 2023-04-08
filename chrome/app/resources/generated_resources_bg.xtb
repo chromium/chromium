@@ -3000,6 +3000,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3584527007414070635">Възобновяване на пътя за <ph name="MODULE_TITLE" /></translation>
 <translation id="3586787825263265024">Приложението <ph name="APPLICATION_NAME" /> изисква OneDrive, за да работи.</translation>
 <translation id="3586806079541226322">Този файл не може да се отвори</translation>
+<translation id="3586931643579894722">Скриване на подробностите</translation>
 <translation id="3587438013689771191">Научете повече за: <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">Всички</translation>
 <translation id="3588790464166520201">Сайтове с разрешение за инсталиране на инструменти за обработване на плащания</translation>
@@ -5848,6 +5849,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6136114942382973861">Затваряне на лентата на изтеглянето</translation>
 <translation id="6136287496450963112">Ключът ви за сигурност не е защитен с ПИН. За да управлявате отпечатъците, първо създайте ПИН.</translation>
 <translation id="6138680304137685902">Подпис по X9.62 ECDSA с SHA-384</translation>
+<translation id="6140948187512243695">Показване на подробностите</translation>
 <translation id="6141988275892716286">Потвърждаване на изтеглянето</translation>
 <translation id="6143186082490678276">Получаване на помощ</translation>
 <translation id="6143366292569327983">Изберете езика на страницата, от който искате да превеждате</translation>

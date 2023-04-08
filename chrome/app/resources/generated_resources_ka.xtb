@@ -2989,6 +2989,7 @@
 <translation id="3584527007414070635">გააგრძელეთ პროცესი „<ph name="MODULE_TITLE" />“</translation>
 <translation id="3586787825263265024"><ph name="APPLICATION_NAME" /> აპი ხელმისაწვდომობისთვის საჭიროებს OneDrive-ს.</translation>
 <translation id="3586806079541226322">ამ ფაილის გახსნა ვერ ხერხდება</translation>
+<translation id="3586931643579894722">დეტალების დამალვა</translation>
 <translation id="3587438013689771191">შეიტყვეთ მეტი <ph name="SUBPAGE_TITLE" />-ის შესახებ</translation>
 <translation id="3587482841069643663">ყველა</translation>
 <translation id="3588790464166520201">გადახდის დამმუშავებლების ინსტალაცია დაშვებულია</translation>
@@ -5835,6 +5836,7 @@
 <translation id="6136114942382973861">ჩამოტვირთვების ზოლის დახურვა</translation>
 <translation id="6136287496450963112">თქვენი უსაფრთხოების გასაღები არ არის დაცული PIN-კოდით. თითის ანაბეჭდების სამართავად, პირველ რიგში, შექმენით PIN-კოდი.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA ხელმოწერა SHA-384-ით</translation>
+<translation id="6140948187512243695">დეტალების ჩვენება</translation>
 <translation id="6141988275892716286">დაადასტურეთ ჩამოტვირთვა</translation>
 <translation id="6143186082490678276">დახმარების მიღება</translation>
 <translation id="6143366292569327983">აირჩიეთ, რომელი ენიდან ითარგმნოს გვერდი</translation>

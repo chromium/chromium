@@ -2992,6 +2992,7 @@
 <translation id="3584527007414070635">กลับไปท่องเว็บเกี่ยวกับ<ph name="MODULE_TITLE" />ต่อ</translation>
 <translation id="3586787825263265024">แอปพลิเคชัน <ph name="APPLICATION_NAME" /> ต้องใช้ OneDrive จึงจะแสดงได้</translation>
 <translation id="3586806079541226322">เปิดไฟล์นี้ไม่ได้</translation>
+<translation id="3586931643579894722">ซ่อนรายละเอียด</translation>
 <translation id="3587438013689771191">ดูข้อมูลเพิ่มเติมเกี่ยวกับ <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">ทั้งหมด</translation>
 <translation id="3588790464166520201">ได้รับอนุญาตให้ติดตั้งเครื่องจัดการการชำระเงิน</translation>
@@ -5836,6 +5837,7 @@
 <translation id="6136114942382973861">ปิดแถบดาวน์โหลด</translation>
 <translation id="6136287496450963112">คีย์ความปลอดภัยไม่มีการป้องกันด้วย PIN โปรดสร้าง PIN ก่อนเพื่อจัดการลายนิ้วมือ</translation>
 <translation id="6138680304137685902">ลายเซ็น X9.62 ECDSA ที่มี SHA-384</translation>
+<translation id="6140948187512243695">แสดงรายละเอียด</translation>
 <translation id="6141988275892716286">ยืนยันการดาวน์โหลด</translation>
 <translation id="6143186082490678276">รับความช่วยเหลือ</translation>
 <translation id="6143366292569327983">เลือกภาษาต้นทางของหน้า</translation>

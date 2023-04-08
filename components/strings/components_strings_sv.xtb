@@ -1985,6 +1985,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5872692522325383488">IBAN har sparats</translation>
 <translation id="5873013647450402046">Din bank vill bekräfta att det är du.</translation>
 <translation id="5877831137320480913">Skönhet och träning</translation>
+<translation id="5879989559903563723">Tillåts inte i gästläget</translation>
 <translation id="5884465125445718607">Kinesiskt nr 6-kuvert</translation>
 <translation id="5887400589839399685">Kortet har sparats</translation>
 <translation id="5887687176710214216">Besöktes senast i går</translation>
@@ -3227,6 +3228,7 @@ Mer information:
 <translation id="8949493680961858543">A1 x 4</translation>
 <translation id="8951415078585015151">Juridik och myndigheter</translation>
 <translation id="8957210676456822347">Auktorisering av infångstportal</translation>
+<translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Öppna webbplatsinställningarna</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Förslag:<ph name="MARKUP_2" />Kontrollera att du använder en dataanslutning<ph name="MARKUP_3" />Läs in den här webbsidan igen senare<ph name="MARKUP_4" />Kontrollera att du har angett rätt adress<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Spara kortet</translation>

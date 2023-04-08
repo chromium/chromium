@@ -20,7 +20,6 @@
 <translation id="1103523840287552314">Zawsze tłumacz z języka: <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Przełącz na otwarte okno</translation>
 <translation id="1112015203684611006">Drukowanie nie udało się.</translation>
-<translation id="1118266931011974190">Po <ph name="THRESHOLD" /> dniach</translation>
 <translation id="1125564390852150847">Utwórz nową kartę.</translation>
 <translation id="1126013303640354461">Formy płatności ani adresy z Google Pay nie będą szyfrowane. Historia przeglądania z Chrome nie będzie synchronizowana.
 Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie jest wysyłane do Google ani tam przechowywane. Jeśli nie pamiętasz hasła lub chcesz zmienić to ustawienie, musisz zresetować synchronizację. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>

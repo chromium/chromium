@@ -3007,6 +3007,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3584527007414070635">Tęskite veiksmus pagal užklausą „<ph name="MODULE_TITLE" />“</translation>
 <translation id="3586787825263265024">Programai „<ph name="APPLICATION_NAME" />“ reikalingas „OneDrive“.</translation>
 <translation id="3586806079541226322">Nepavyksta atidaryti šio failo</translation>
+<translation id="3586931643579894722">Slėpti išsamią informaciją</translation>
 <translation id="3587438013689771191">Sužinokite daugiau apie „<ph name="SUBPAGE_TITLE" />“</translation>
 <translation id="3587482841069643663">Visi</translation>
 <translation id="3588790464166520201">Leidžiama įdiegti mokėjimo dorokles</translation>
@@ -3033,6 +3034,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3609277884604412258">Sparčioji paieška</translation>
 <translation id="3610241585790874201">Neleidžiama išsaugoti duomenų įrenginyje</translation>
 <translation id="3610369246614755442">Reikia taisyti doko ventiliatorių</translation>
+<translation id="3610961622607302617">Keisti <ph name="WEBSITE" /> slaptažodį</translation>
 <translation id="361106536627977100">„Flash“ duomenys</translation>
 <translation id="3611655097742243705">Apsilankykite „Play“ parduotuvėje, kad rastumėte daugiau programų</translation>
 <translation id="3611658447322220736">Neseniai uždarytose svetainėse galima baigti siųsti ir gauti duomenis</translation>
@@ -5854,6 +5856,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6136114942382973861">Uždaryti atsisiuntimų juostą</translation>
 <translation id="6136287496450963112">Saugos raktas neapsaugotas PIN kodu. Kad galėtumėte tvarkyti kontrolinius kodus, pirmiausia sukurkite PIN kodą.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA parašas naudojant SHA-384</translation>
+<translation id="6140948187512243695">Rodyti išsamią informaciją</translation>
 <translation id="6141988275892716286">Atsisiuntimo patvirtinimas</translation>
 <translation id="6143186082490678276">Gauti pagalbos</translation>
 <translation id="6143366292569327983">Pasirinkite puslapio kalbą, iš kurios norite versti</translation>
@@ -6050,6 +6053,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6318125393809743217">Yra failas „policies.json“ su politikos konfigūracijomis.</translation>
 <translation id="6318407754858604988">Atsisiuntimo procesas pradėtas</translation>
 <translation id="6318944945640833942">Nepavyko aptikti spausdintuvo. Dar kartą įveskite spausdintuvo adresą.</translation>
+<translation id="6320808462673705899">Nėra paiešką atitinkančių žymių.</translation>
 <translation id="6322370287306604163">Atrakinkite greičiau kontroliniu kodu</translation>
 <translation id="6322559670748154781">Šis failas atsisiunčiamas retai ir buvo užblokuotas naudojant Papildomos apsaugos nustatymą</translation>
 <translation id="6324916366299863871">Redaguoti spartųjį klavišą</translation>

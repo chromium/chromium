@@ -2989,6 +2989,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3584527007414070635">Berrekin <ph name="MODULE_TITLE" /> bilatzeari</translation>
 <translation id="3586787825263265024"><ph name="APPLICATION_NAME" /> aplikazioak OneDrive erabilgarri egotea behar du.</translation>
 <translation id="3586806079541226322">Ezin da ireki fitxategia</translation>
+<translation id="3586931643579894722">Ezkutatu xehetasunak</translation>
 <translation id="3587438013689771191">Lortu <ph name="SUBPAGE_TITLE" /> azpiorriari buruzko informazio gehiago.</translation>
 <translation id="3587482841069643663">Guztiak</translation>
 <translation id="3588790464166520201">Ordainketa-kudeatzaileak instala ditzakete</translation>
@@ -5831,6 +5832,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="6136114942382973861">Itxi deskargen barra</translation>
 <translation id="6136287496450963112">Segurtasun-giltza ez daukazu PIN kodearekin babestuta. Hatz-markak kudeatzeko, sortu PIN bat.</translation>
 <translation id="6138680304137685902">SHA-384 ziurtagiria duen X9.62 ECDSA sinadura</translation>
+<translation id="6140948187512243695">Erakutsi xehetasunak</translation>
 <translation id="6141988275892716286">Berretsi deskarga</translation>
 <translation id="6143186082490678276">Lortu laguntza</translation>
 <translation id="6143366292569327983">Aukeratu orriko hizkuntza, hura itzultzeko</translation>

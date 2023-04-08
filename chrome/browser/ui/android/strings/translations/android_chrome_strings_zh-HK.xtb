@@ -162,6 +162,7 @@
 <translation id="1910950723001426294">閂咗分享選項清單。</translation>
 <translation id="1919130412786645364">允許登入 Chrome</translation>
 <translation id="1922362554271624559">建議的語言</translation>
+<translation id="1924255092154549435">分頁展開咗</translation>
 <translation id="1925021887439448749">輸入自訂網址</translation>
 <translation id="1928696683969751773">更新</translation>
 <translation id="19288952978244135">重新開啟 Chrome。</translation>
@@ -769,6 +770,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="5161254044473106830">必須提供標題</translation>
 <translation id="5170568018924773124">在資料夾中顯示</translation>
 <translation id="5171045022955879922">搜尋或輸入網址</translation>
+<translation id="5174700554036517242">分頁已經還原到初始高度</translation>
 <translation id="5184329579814168207">在 Chrome 中開啟</translation>
 <translation id="5191251636205085390">瞭解及控制用於取代第三方 Cookie 的全新技術</translation>
 <translation id="5193988420012215838">已複製至剪貼簿</translation>
@@ -1251,6 +1253,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="7686086654630106285">進一步瞭解網站建議的廣告</translation>
 <translation id="768618399695552958">系統會預先載入您瀏覽的部分網頁。當您從 Google 網站連至這些網頁時，系統可能會透過 Google 伺服器預先載入網頁內容。</translation>
 <translation id="7691043218961417207">探索值得追蹤的內容</translation>
+<translation id="7697383401610880082">拖曳控點</translation>
 <translation id="7698359219371678927">在 <ph name="APP_NAME" /> 中建立電郵</translation>
 <translation id="7707922173985738739">使用流動數據</translation>
 <translation id="7709094866268987903">系統會在此處顯示您已移除的興趣</translation>

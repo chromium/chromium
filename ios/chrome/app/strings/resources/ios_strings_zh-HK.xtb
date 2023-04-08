@@ -20,7 +20,6 @@
 <translation id="1103523840287552314">永遠翻譯<ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">切換至已開啟的視窗</translation>
 <translation id="1112015203684611006">無法列印。</translation>
-<translation id="1118266931011974190"><ph name="THRESHOLD" /> 天後</translation>
 <translation id="1125564390852150847">新增分頁。</translation>
 <translation id="1126013303640354461">Google Pay 上的付款方法和地址將不會加密。Chrome 上的瀏覽記錄將不會同步。
 只有知道您密碼短語的使用者，才能讀取已加密的資料。系統不會將密碼短語傳送給 Google，Google 也不會儲存密碼短語。如果您忘記自己的密碼短語，或希望變更這項設定，則必須重設同步功能。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -1014,6 +1013,7 @@
 <translation id="7781011649027948662">要翻譯網頁嗎？</translation>
 <translation id="7781069478569868053">新分頁</translation>
 <translation id="7781829728241885113">昨天</translation>
+<translation id="7786246662347093005">{COUNT,plural, =1{1 天後}other{{COUNT} 天後}}</translation>
 <translation id="778855399387580014">在新的 Chrome 分頁上開始搜尋。</translation>
 <translation id="7791543448312431591">新增</translation>
 <translation id="7807060072011926525">由 Google 提供</translation>

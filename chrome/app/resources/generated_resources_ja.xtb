@@ -2982,6 +2982,7 @@
 <translation id="3584527007414070635"><ph name="MODULE_TITLE" /> のジャーニーを再開</translation>
 <translation id="3586787825263265024">アプリケーション <ph name="APPLICATION_NAME" /> で開くには、OneDrive へのアクセスが必要です。</translation>
 <translation id="3586806079541226322">このファイルを開けません</translation>
+<translation id="3586931643579894722">詳細を非表示</translation>
 <translation id="3587438013689771191"><ph name="SUBPAGE_TITLE" /> の詳細</translation>
 <translation id="3587482841069643663">すべて</translation>
 <translation id="3588790464166520201">支払いハンドラのインストールを許可するサイト</translation>
@@ -5824,6 +5825,7 @@
 <translation id="6136114942382973861">ダウンロード バーを閉じる</translation>
 <translation id="6136287496450963112">セキュリティ キーは PIN で保護されていません。指紋を管理するには、まず PIN を作成してください。</translation>
 <translation id="6138680304137685902">X9.62 ECDSA 署名（SHA-384）</translation>
+<translation id="6140948187512243695">詳細を表示</translation>
 <translation id="6141988275892716286">ダウンロードの確認</translation>
 <translation id="6143186082490678276">ヘルプ</translation>
 <translation id="6143366292569327983">原文ページの言語を選択します</translation>

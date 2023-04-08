@@ -201,6 +201,7 @@
 <translation id="8393700583063109961">စာပို့ရန်</translation>
 <translation id="8394908167088220973">မီဒီယာ ဖွင့်ရန်/ဆိုင်းငံ့ထားရန်</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{၁ နှစ်}other{# နှစ်}}</translation>
+<translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> ဖိုင် (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>
 <translation id="8725488761726303204">နောက်ထပ် +<ph name="NUMBER" /></translation>

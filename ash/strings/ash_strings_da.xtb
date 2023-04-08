@@ -980,6 +980,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="5578188167649348993">hukommelse</translation>
 <translation id="5580000943347215299">Samling</translation>
 <translation id="558849140439112033">Træk for at vælge et område, der skal tages billeder af</translation>
+<translation id="5596627076506792578">Flere valgmuligheder</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" /> d. <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Tryk på Ctrl+Alt+Z for at deaktivere talefeedback.</translation>
 <translation id="5601503069213153581">Pinkode</translation>
@@ -1247,7 +1248,6 @@ Installeret for nylig</translation>
 <translation id="6820676911989879663">Hold en pause</translation>
 <translation id="6827049576281411231">Luk panelet for begivenheder</translation>
 <translation id="6836499262298959512">Farlig fil</translation>
-<translation id="6837064795450991317">Skjul diskbjælke</translation>
 <translation id="6852052252232534364">Aktivér</translation>
 <translation id="6855029042976311970">Redigeret lige nu</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek.</translation>
@@ -1305,7 +1305,6 @@ Installeret for nylig</translation>
 <translation id="7098053464892629930">Download appen for <ph name="NAME" /> i Google Play for at se alle tilgængelige funktioner</translation>
 <translation id="7098389117866926363">USB-C-enhed (porten bagpå i venstre side)</translation>
 <translation id="7100906357717321275">Vis skjulte filer i appen Filer</translation>
-<translation id="7106330611027933926">Vis diskbjælke</translation>
 <translation id="7116969082764510092">Skrivebord 11</translation>
 <translation id="7118268675952955085">screenshot</translation>
 <translation id="7119327711295338600">Vælg næste ord eller bogstav</translation>

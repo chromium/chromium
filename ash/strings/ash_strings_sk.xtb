@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">Zariadenie USB-C (port vpredu)</translation>
 <translation id="1013598600051641573">Obrazovka <ph name="DISPLAY_NAME" /> bola zmenená na <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Zmeny ponecháte kliknutím na Potvrdiť. Predchádzajúce nastavenia budú obnovené o <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Zariadenie Bluetooth s názvom <ph name="DEVICE_NAME" /> žiada o povolenie párovania. Zadajte na danom zariadení toto číslo PIN: <ph name="PINCODE" /></translation>
+<translation id="1017556409696559990">Minimalizácia horného okna, keď v Chrome nie je žiadna história</translation>
 <translation id="1024364763893396229">Uložte zariadenie <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Batéria dotykového pera je takmer vybitá</translation>
 <translation id="1036073649888683237">Ak chcete spravovať upozornenia, prejdite do Nastavení</translation>
@@ -343,6 +344,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2620436844016719705">Systém</translation>
 <translation id="2621713457727696555">Zabezpečená</translation>
 <translation id="263399434338050016">Vybrať všetko</translation>
+<translation id="2644422758626431000">Pripnutie okna doľava</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647092942972307022">K dispozícii <ph name="USED_MEMORY" /> z <ph name="TOTAL_MEMORY" /></translation>
 <translation id="2653019840645008922">Snímanie okna</translation>
@@ -980,6 +982,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="5578188167649348993">pamäť</translation>
 <translation id="5580000943347215299">Knižnica</translation>
 <translation id="558849140439112033">Presunutím vyberte oblasť, ktorú chcete nasnímať</translation>
+<translation id="5596627076506792578">Ďalšie možnosti</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Hovorenú spätnú väzbu zakážete kombináciou klávesov Ctrl+Alt+Z.</translation>
 <translation id="5601503069213153581">Kód PIN</translation>
@@ -1053,6 +1056,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Zapnuté</translation>
 <translation id="5920710855273935292">Mikrofón je vypnutý.</translation>
+<translation id="5922962980596822074">Prechádzanie oknami z naposledy použitého okna</translation>
 <translation id="5924855612669061715">Hotspot je zapnutý</translation>
 <translation id="5946788582095584774">Funkcia <ph name="FEATURE_NAME" /> je zapnutá.</translation>
 <translation id="5947494881799873997">Vrátiť</translation>
@@ -1142,6 +1146,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="6352082849089527770">Neznáme siete</translation>
 <translation id="6359587239691116345">Dostávajte najnovšie funkcie a zlepšenia zabezpečenia. Ak túto aktualizáciu odmietnete, vaše zariadenie už nemusí fungovať správne a môže dochádzať k problémom so zabezpečením a výkonom.</translation>
 <translation id="6376931439017688372">Rozhranie Bluetooth je zapnuté</translation>
+<translation id="6378515133128829137">Pripnutie okna doprava</translation>
 <translation id="6381109794406942707">Ak chcete odomknúť zariadenie, zadajte PIN.</translation>
 <translation id="638716340450135524">Zapnúť prístup k fotoaparátu</translation>
 <translation id="639644700271529076">CAPS LOCK je vypnutý</translation>
@@ -1161,6 +1166,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="6459472438155181876">Rozšírenie obrazovky na displej <ph name="DISPLAY_NAME" /></translation>
 <translation id="6477681113376365978">Súbor sa nedá stiahnuť</translation>
 <translation id="6482559668224714696">Lupa na celú obrazovku</translation>
+<translation id="6483727822843292440">Prechádzanie oknami z najmenej používaného okna</translation>
 <translation id="6490471652906364588">Zariadenie USB-C (port vpravo)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> vyžaduje, aby ste zariadenie <ph name="DEVICE_TYPE" /> aktualizovali do stanoveného termínu</translation>
 <translation id="649452524636452238">PIN inteligentnej karty</translation>
@@ -1214,6 +1220,7 @@ Nová inštalácia</translation>
 <translation id="6683022854667115063">Slúchadlá</translation>
 <translation id="6696025732084565524">Odoberateľná klávesnica potrebuje kritickú aktualizáciu</translation>
 <translation id="6700713906295497288">Tlačidlo ponuky IME</translation>
+<translation id="6705577071209924099">Upraviť osvetlenie</translation>
 <translation id="6707693040195709527">Termín na obnovenie predchádzajúcej verzie v zariadení vypršal</translation>
 <translation id="6710213216561001401">Späť</translation>
 <translation id="6723839937902243910">Napájanie</translation>
@@ -1247,7 +1254,6 @@ Nová inštalácia</translation>
 <translation id="6820676911989879663">Urobte si prestávku.</translation>
 <translation id="6827049576281411231">Zavrieť panel udalosti</translation>
 <translation id="6836499262298959512">Nebezpečný súbor</translation>
-<translation id="6837064795450991317">Skryť panel na ploche</translation>
 <translation id="6852052252232534364">Aktivovať kliknutím</translation>
 <translation id="6855029042976311970">Upravené teraz</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
@@ -1305,7 +1311,6 @@ Nová inštalácia</translation>
 <translation id="7098053464892629930">Stiahnite si aplikáciu zariadenia <ph name="NAME" /> na Google Play, aby ste videli všetky dostupné funkcie</translation>
 <translation id="7098389117866926363">Zariadenie USB-C (ľavý port vzadu)</translation>
 <translation id="7100906357717321275">Zobrazenie skrytých súborov v aplikácii Súbory</translation>
-<translation id="7106330611027933926">Zobraziť panel na ploche</translation>
 <translation id="7116969082764510092">11. plocha</translation>
 <translation id="7118268675952955085">snímka obrazovky</translation>
 <translation id="7119327711295338600">Výber ďalšieho slova alebo písmena</translation>

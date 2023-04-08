@@ -3006,6 +3006,7 @@
 <translation id="3584527007414070635"><ph name="MODULE_TITLE" />에 대한 여정 재개</translation>
 <translation id="3586787825263265024"><ph name="APPLICATION_NAME" /> 애플리케이션을 사용하려면 OneDrive를 사용할 수 있어야 합니다.</translation>
 <translation id="3586806079541226322">파일을 열 수 없음</translation>
+<translation id="3586931643579894722">세부정보 숨기기</translation>
 <translation id="3587438013689771191"><ph name="SUBPAGE_TITLE" />에 관해 자세히 알아보기</translation>
 <translation id="3587482841069643663">전체</translation>
 <translation id="3588790464166520201">결제 핸들러 설치가 허용됨</translation>
@@ -5850,6 +5851,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6136114942382973861">다운로드바 닫기</translation>
 <translation id="6136287496450963112">보안 키가 PIN으로 보호되어 있지 않습니다. 지문을 관리하려면 먼저 PIN을 만드세요.</translation>
 <translation id="6138680304137685902">SHA-384를 포함한 X9.62 ECDSA 서명</translation>
+<translation id="6140948187512243695">세부정보 표시</translation>
 <translation id="6141988275892716286">다운로드 확인</translation>
 <translation id="6143186082490678276">도움말 보기</translation>
 <translation id="6143366292569327983">번역할 페이지의 출발 언어 선택</translation>

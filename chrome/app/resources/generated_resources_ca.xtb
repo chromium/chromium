@@ -2989,6 +2989,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3584527007414070635">Reprèn el recorregut per a <ph name="MODULE_TITLE" /></translation>
 <translation id="3586787825263265024">L'aplicació <ph name="APPLICATION_NAME" /> requereix que OneDrive estigui disponible.</translation>
 <translation id="3586806079541226322">No es pot obrir aquest fitxer</translation>
+<translation id="3586931643579894722">Oculta els detalls</translation>
 <translation id="3587438013689771191">Més informació sobre: <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">Tots</translation>
 <translation id="3588790464166520201">Amb permís per instal·lar gestors de pagament</translation>
@@ -5832,6 +5833,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6136114942382973861">Tanca la barra de baixades</translation>
 <translation id="6136287496450963112">La clau de seguretat no està protegida amb un PIN. Crea'n un per gestionar les empremtes digitals.</translation>
 <translation id="6138680304137685902">Signatura d'ECDSA X9.62 amb SHA-384</translation>
+<translation id="6140948187512243695">Mostra els detalls</translation>
 <translation id="6141988275892716286">Confirma la baixada</translation>
 <translation id="6143186082490678276">Obtén ajuda</translation>
 <translation id="6143366292569327983">Tria l'idioma de la pàgina des del qual vulguis traduir</translation>

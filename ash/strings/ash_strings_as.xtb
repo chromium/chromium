@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB-C ডিভাইচ (সন্মুখৰ প’র্ট)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" />ক <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) লৈ সলনি কৰা হৈছে। সালসলনিসমূহ ৰাখিবলৈ নিশ্চিত কৰকত ক্লিক কৰক। পূৰ্বৱৰ্তী ছেটিংসমূহ <ph name="TIMEOUT_SECONDS" />ত পুনঃস্থাপন কৰা হ’ব।</translation>
 <translation id="1013923882670373915">ব্লুটুথ ডিভাইচ "<ph name="DEVICE_NAME" />"এ পেয়াৰ কৰিবলৈ অনুমতি বিচাৰে। অনুগ্ৰহ কৰি সেই ডিভাইচত এই পিন ক'ডটো দিয়ক: <ph name="PINCODE" /></translation>
+<translation id="1017556409696559990">Chromeত কোনো পূৰ্বৰ ইতিহাস নাথাকিলে একেবাৰে ওপৰৰ ৱিণ্ড’খন মিনিমাইজ কৰক</translation>
 <translation id="1024364763893396229">আপোনাৰ <ph name="NAME" /> ছেভ কৰক</translation>
 <translation id="1032891413405719768">ষ্টাইলাছৰ বেটাৰী কম আছে</translation>
 <translation id="1036073649888683237">জাননী পৰিচালনা কৰিবলৈ ছেটিঙলৈ যাওক</translation>
@@ -343,6 +344,7 @@
 <translation id="2620436844016719705">ছিষ্টেম</translation>
 <translation id="2621713457727696555">সুৰক্ষিত</translation>
 <translation id="263399434338050016">"আটাইবোৰ বাছনি কৰক"</translation>
+<translation id="2644422758626431000">ৱিণ্ড’ বাওঁফালে পিন কৰক</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647092942972307022">উপলব্ধ <ph name="TOTAL_MEMORY" />ৰ <ph name="USED_MEMORY" /></translation>
 <translation id="2653019840645008922">ৱিণ্ড' কেপচাৰ</translation>
@@ -980,6 +982,7 @@
 <translation id="5578188167649348993">মেম’ৰী</translation>
 <translation id="5580000943347215299">লাইব্ৰেৰী</translation>
 <translation id="558849140439112033">কেপচাৰ কৰিবৰ বাবে এটা অংশ বাছনি কৰিবলৈ টানি আনি এৰক</translation>
+<translation id="5596627076506792578">অধিক বিকল্প</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">কথিত প্ৰতিক্ৰিয়া অক্ষম কৰিবলৈ Ctrl + Alt + Z দবাওক।</translation>
 <translation id="5601503069213153581">পিন</translation>
@@ -1053,6 +1056,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">অন আছে</translation>
 <translation id="5920710855273935292">মাইক মিউট কৰা আছে।</translation>
+<translation id="5922962980596822074">আটাইতকৈ শেহতীয়াভাৱে ব্যৱহৃত ৱিণ্ড’খনৰ পৰা ৱিণ্ড’বোৰৰ মাজেৰে যাওক</translation>
 <translation id="5924855612669061715">হটস্পট অন হৈ আছে</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> অন কৰা আছে।</translation>
 <translation id="5947494881799873997">পূৰ্বাৱস্থালৈ নিয়ক</translation>
@@ -1142,6 +1146,7 @@
 <translation id="6352082849089527770">অজ্ঞাত নেটৱৰ্ক</translation>
 <translation id="6359587239691116345">শেহতীয়া সুবিধা আৰু সুৰক্ষা সম্পৰ্কীয় উন্নীতকৰণসমূহ লাভ কৰক। যদি আপুনি এই আপডে’টটো প্ৰত্যাখ্যান কৰে, তেন্তে আপোনাৰ ডিভাইচটোৱে আৰু সঠিককৈ কাম নকৰিব পাৰে আৰু আপুনি সুৰক্ষা আৰু কাৰ্যক্ষমতা সম্পৰ্কীয় সমস্যাৰ সন্মুখীন হ’ব পাৰে।</translation>
 <translation id="6376931439017688372">ব্লুটুথ অন কৰা আছে</translation>
+<translation id="6378515133128829137">ৱিণ্ড’ সোঁফালে পিন কৰক</translation>
 <translation id="6381109794406942707">ডিভাইচটো আনলক কৰিবলৈ, আপোনাৰ পিনটো দিয়ক।</translation>
 <translation id="638716340450135524">কেমেৰাৰ এক্সেছ অন কৰক</translation>
 <translation id="639644700271529076">CAPS LOCK অফ হৈ আছে</translation>
@@ -1161,6 +1166,7 @@
 <translation id="6459472438155181876">স্ক্রীণখন <ph name="DISPLAY_NAME" />লৈ বিস্তাৰ কৰা হৈছে</translation>
 <translation id="6477681113376365978">ফাইল ডাউনল’ড কৰিব নোৱাৰি</translation>
 <translation id="6482559668224714696">সম্পূর্ণ স্ক্ৰীনৰ বিৱৰ্ধক</translation>
+<translation id="6483727822843292440">আটাইতকৈ কম ব্যৱহৃত ৱিণ্ড’খনৰ পৰা ৱিণ্ড’বোৰৰ মাজেৰে যাওক</translation>
 <translation id="6490471652906364588">USB-C ডিভাইচ (সোঁফালৰ পর্ট)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" />ৰ বাবে আপুনি নিৰ্ধাৰিত সময়সীমা পাৰ হোৱাৰ পূৰ্বে এই <ph name="DEVICE_TYPE" />টো আপডে’ট কৰাৰ আৱশ্যক</translation>
 <translation id="649452524636452238">স্মার্ট কার্ডৰ পিন</translation>
@@ -1247,7 +1253,6 @@
 <translation id="6820676911989879663">বিৰতি লওক!</translation>
 <translation id="6827049576281411231">অনুষ্ঠানৰ পেনেল বন্ধ কৰক</translation>
 <translation id="6836499262298959512">বিপজ্জনক ফাইল</translation>
-<translation id="6837064795450991317">ডেস্কবাৰ লুকুৱাওক</translation>
 <translation id="6852052252232534364">সক্ৰিয় কৰিব টিপক</translation>
 <translation id="6855029042976311970">এইমাত্ৰ সম্পাদনা কৰিছে</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" />ছেকেণ্ড</translation>
@@ -1305,7 +1310,6 @@
 <translation id="7098053464892629930">উপলব্ধ আটাইবোৰ সুবিধা চাবলৈ <ph name="NAME" />ৰ বাবে Google playৰ পৰা এপ্‌টো ডাউনল’ড কৰক</translation>
 <translation id="7098389117866926363">USB-C ডিভাইচ (পিছফালৰ বাওঁফালৰ প’র্ট)</translation>
 <translation id="7100906357717321275">Files এপত লুকাই থকা ফাইলসমূহ দেখুৱাওক</translation>
-<translation id="7106330611027933926">ডেস্কবাৰ দেখুৱাওক</translation>
 <translation id="7116969082764510092">ডেস্ক ১১</translation>
 <translation id="7118268675952955085">স্ক্ৰীনশ্বট</translation>
 <translation id="7119327711295338600">পৰৱৰ্তী শব্দ অথবা বৰ্ণটো বাছনি কৰক</translation>

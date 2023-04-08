@@ -980,6 +980,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="5578188167649348993">atmintis</translation>
 <translation id="5580000943347215299">Biblioteka</translation>
 <translation id="558849140439112033">Vilkdami pasirinkite norimą užfiksuoti vietą</translation>
+<translation id="5596627076506792578">Daugiau parinkčių</translation>
 <translation id="5597451508971090205"><ph name="DATE" />, <ph name="SHORT_WEEKDAY" /></translation>
 <translation id="5600837773213129531">Paspauskite „Ctrl“ + „Alt“ + Z, kad išjungtumėte ekrano skaitymą balsu.</translation>
 <translation id="5601503069213153581">PIN kodas</translation>
@@ -1214,6 +1215,7 @@ Naujas įdiegimas</translation>
 <translation id="6683022854667115063">Ausinės</translation>
 <translation id="6696025732084565524">Atjungiamai klaviatūrai reikia pritaikyti kritinį naujinį</translation>
 <translation id="6700713906295497288">IME meniu mygtukas</translation>
+<translation id="6705577071209924099">Koreguoti apšvietimą</translation>
 <translation id="6707693040195709527">Ankstesnės įrenginio versijos grąžinimo terminas jau praėjo</translation>
 <translation id="6710213216561001401">Ankstesnė</translation>
 <translation id="6723839937902243910">Maitinimas</translation>
@@ -1247,7 +1249,6 @@ Naujas įdiegimas</translation>
 <translation id="6820676911989879663">Padarykite pertrauką!</translation>
 <translation id="6827049576281411231">Uždaryti įvykio skydelį</translation>
 <translation id="6836499262298959512">Pavojingas failas</translation>
-<translation id="6837064795450991317">Slėpti darbalaukio juostą</translation>
 <translation id="6852052252232534364">Sp. ir suakt.</translation>
 <translation id="6855029042976311970">Redaguota ką tik</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek.</translation>
@@ -1305,7 +1306,6 @@ Naujas įdiegimas</translation>
 <translation id="7098053464892629930">Atsisiųskite programą „<ph name="NAME" />“ sistemoje „Google Play“, kad peržiūrėtumėte visas pasiekiamas funkcijas</translation>
 <translation id="7098389117866926363">USB-C įrenginys (prievadas kairėje, užpakalinėje dalyje)</translation>
 <translation id="7100906357717321275">Rodyti paslėptus failus Failų programoje</translation>
-<translation id="7106330611027933926">Rodyti darbalaukio juostą</translation>
 <translation id="7116969082764510092">11 darbalaukis</translation>
 <translation id="7118268675952955085">ekrano kopija</translation>
 <translation id="7119327711295338600">Pasirinkti kitą žodį ar raidę</translation>

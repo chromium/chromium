@@ -2994,6 +2994,7 @@
 <translation id="3584527007414070635">Продолжите поиск по теме "<ph name="MODULE_TITLE" />".</translation>
 <translation id="3586787825263265024">Для работы приложения <ph name="APPLICATION_NAME" /> требуется хранилище OneDrive.</translation>
 <translation id="3586806079541226322">Не удалось открыть файл</translation>
+<translation id="3586931643579894722">Скрыть подробности</translation>
 <translation id="3587438013689771191">Подробнее: статья "<ph name="SUBPAGE_TITLE" />"</translation>
 <translation id="3587482841069643663">Все</translation>
 <translation id="3588790464166520201">Разрешить сайтам установку обработчиков платежей</translation>
@@ -5841,6 +5842,7 @@
 <translation id="6136114942382973861">Закрыть панель загрузок</translation>
 <translation id="6136287496450963112">Ваш электронный ключ не защищен PIN-кодом. Чтобы управлять отпечатками пальцев, создайте PIN-код.</translation>
 <translation id="6138680304137685902">Подпись ECDSA X9.62 с SHA-384</translation>
+<translation id="6140948187512243695">Показать подробности</translation>
 <translation id="6141988275892716286">Подтвердите скачивание</translation>
 <translation id="6143186082490678276">Справка</translation>
 <translation id="6143366292569327983">Выберите исходный язык страницы</translation>

@@ -20,7 +20,6 @@
 <translation id="1103523840287552314"><ph name="LANGUAGE" />を常に翻訳</translation>
 <translation id="110724200315609752">開いているウィンドウに切り替え</translation>
 <translation id="1112015203684611006">印刷できませんでした。</translation>
-<translation id="1118266931011974190"><ph name="THRESHOLD" /> 日後</translation>
 <translation id="1125564390852150847">新しいタブを作成。</translation>
 <translation id="1126013303640354461">Google Pay のお支払い方法と住所は暗号化されません。また、Chrome の閲覧履歴は同期されません。
 パスフレーズを知っているユーザーだけが暗号化されたデータを見ることができます。パスフレーズは Google には送信されず、保存されることもありません。パスフレーズを忘れた場合や、この設定を変更する場合は、同期をリセットする必要があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>

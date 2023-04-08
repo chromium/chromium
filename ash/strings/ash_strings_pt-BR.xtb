@@ -982,6 +982,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="5578188167649348993">memória</translation>
 <translation id="5580000943347215299">Biblioteca</translation>
 <translation id="558849140439112033">Arraste para selecionar uma área para a captura</translation>
+<translation id="5596627076506792578">Mais opções</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Pressione Ctrl + Alt + Z para desativar a resposta falada.</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -1252,7 +1253,6 @@ Nova instalação</translation>
 <translation id="6820676911989879663">Faça uma pausa</translation>
 <translation id="6827049576281411231">Fechar painel do evento</translation>
 <translation id="6836499262298959512">Arquivo perigoso</translation>
-<translation id="6837064795450991317">Ocultar barra de espaços de trabalho</translation>
 <translation id="6852052252232534364">Clique para ativar</translation>
 <translation id="6855029042976311970">Editado agora há pouco</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> segundos</translation>
@@ -1310,7 +1310,6 @@ Nova instalação</translation>
 <translation id="7098053464892629930">Faça o download do app do <ph name="NAME" /> no Google Play para ver todos os recursos disponíveis</translation>
 <translation id="7098389117866926363">Dispositivo USB-C (porta traseira da esquerda)</translation>
 <translation id="7100906357717321275">Mostrar arquivos ocultos no app Arquivos</translation>
-<translation id="7106330611027933926">Mostrar barra de espaços de trabalho</translation>
 <translation id="7116969082764510092">Espaço de trabalho 11</translation>
 <translation id="7118268675952955085">captura de tela</translation>
 <translation id="7119327711295338600">Selecionar a próxima palavra ou letra</translation>

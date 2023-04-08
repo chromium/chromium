@@ -146,6 +146,7 @@
 <translation id="1651914502370159744">開啟「記錄」頁面</translation>
 <translation id="1654477262762802994">開始語音查詢</translation>
 <translation id="1668469839109562275">內置 VPN</translation>
+<translation id="1675844249244994876">更新右邊視窗</translation>
 <translation id="1677472565718498478">電量尚餘 <ph name="TIME" /></translation>
 <translation id="1677507110654891115">「<ph name="FEATURE_NAME" />」並未連線。</translation>
 <translation id="1677582821739292812">有人正在望向您的螢幕</translation>
@@ -842,6 +843,7 @@
 <translation id="493076006037866439">縮小螢幕</translation>
 <translation id="4936329710968938986">所有人，已關閉</translation>
 <translation id="4938176435186993759">隱藏所有建議</translation>
+<translation id="4943007472417128747">已關閉熱點以使用 Wi-Fi。如要使用熱點，請關閉 Wi-Fi。</translation>
 <translation id="4945196315133970626">關閉通知</translation>
 <translation id="4946376291507881335">擷取</translation>
 <translation id="495046168593986294">向上捲動</translation>
@@ -979,6 +981,7 @@
 <translation id="5578188167649348993">記憶體</translation>
 <translation id="5580000943347215299">媒體庫</translation>
 <translation id="558849140439112033">拖曳以選取要擷取的範圍</translation>
+<translation id="5596627076506792578">更多選項</translation>
 <translation id="5597451508971090205"><ph name="DATE" /><ph name="SHORT_WEEKDAY" /></translation>
 <translation id="5600837773213129531">按下 Ctrl + Alt + Z 鍵即可停用朗讀功能。</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -1245,7 +1248,6 @@
 <translation id="6820676911989879663">休息一下！</translation>
 <translation id="6827049576281411231">閂活動面板</translation>
 <translation id="6836499262298959512">危險檔案</translation>
-<translation id="6837064795450991317">隱藏桌面列</translation>
 <translation id="6852052252232534364">按一下即可啟動</translation>
 <translation id="6855029042976311970">剛剛編輯過</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> 秒</translation>
@@ -1303,7 +1305,6 @@
 <translation id="7098053464892629930">在 Google Play 下載「<ph name="NAME" />」的應用程式，以查看所有可用功能</translation>
 <translation id="7098389117866926363">USB-C 裝置 (後方左側連接埠)</translation>
 <translation id="7100906357717321275">在「檔案」應用程式中顯示隱藏的檔案</translation>
-<translation id="7106330611027933926">顯示桌面列</translation>
 <translation id="7116969082764510092">桌面 11</translation>
 <translation id="7118268675952955085">螢幕截圖</translation>
 <translation id="7119327711295338600">選取下一個字詞或字母</translation>
@@ -1381,6 +1382,7 @@
 如要關閉裝置，請再次按住裝置的開關按鈕。</translation>
 <translation id="7526573455193969409">網絡可能會受到監控</translation>
 <translation id="7536035074519304529">IP 位址：<ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">更新左邊視窗</translation>
 <translation id="7543399541175347147">目前不支援 Linux 應用程式和無痕式視窗。系統將儲存其他應用程式。</translation>
 <translation id="7544300628205093162">鍵盤背光已開啟</translation>
 <translation id="7548434653388805669">睡覺時間到了</translation>
@@ -1461,6 +1463,7 @@
 <translation id="7893503627044934815">不想顯示此檔案</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">您已按下螢幕旋轉的鍵盤快速鍵。確定要旋轉螢幕嗎？</translation>
+<translation id="7901190436359881020">切換左右視窗位置</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">請輕觸指紋感應器</translation>
 <translation id="7904094684485781019">這個帳戶的管理員已禁止多重登入。</translation>

@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB-C यन्त्र (अगाडि पोर्ट)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> को रिजोल्युसन परिवर्तन गरी <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> हर्ज) बनाइयो। यो परिवर्तन सुरक्षित गर्न पुष्टि गर्नुहोस् नामक बटनमा क्लिक गर्नुहोस्। अबको <ph name="TIMEOUT_SECONDS" /> मा यी सेटिङ परिवर्तन गरी पहिलेको जस्तै बनाइने छ।</translation>
 <translation id="1013923882670373915">ब्लुटुथ यन्त्र "<ph name="DEVICE_NAME" />" जोडा मिलाउने अनुमति चाहन्छ। कृपया त्यस यन्त्रमा यो पिन कोड प्रविष्टि गर्नुहोस्: <ph name="PINCODE" /></translation>
+<translation id="1017556409696559990">Chrome मा ब्याक हिस्ट्री नभएका खण्डमा सिरानको विन्डो मिनिमाइज गर्नुहोस्</translation>
 <translation id="1024364763893396229"><ph name="NAME" /> सेभ गर्नुहोस्</translation>
 <translation id="1032891413405719768">स्टाइलसको ब्याट्री कम छ</translation>
 <translation id="1036073649888683237">सूचनाहरू व्यवस्थापन गर्न सेटिङमा जानुहोस्</translation>
@@ -343,6 +344,7 @@
 <translation id="2620436844016719705">सिस्टम</translation>
 <translation id="2621713457727696555">सुरक्षित पारियो</translation>
 <translation id="263399434338050016">"सबै चयन गर"</translation>
+<translation id="2644422758626431000">विन्डो बायाँतिर पिन गर्नुहोस्</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647092942972307022"><ph name="TOTAL_MEMORY" /> मध्ये <ph name="USED_MEMORY" /> उपलब्ध छ</translation>
 <translation id="2653019840645008922">विन्डो क्याप्चर</translation>
@@ -980,6 +982,7 @@
 <translation id="5578188167649348993">मेमोरी</translation>
 <translation id="5580000943347215299">लाइब्रेरी</translation>
 <translation id="558849140439112033">फोटो खिच्ने कुनै क्षेत्र चयन गर्न ड्र्याग गर्नुहोस्</translation>
+<translation id="5596627076506792578">अन्य विकल्पहरू</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">बोली प्रतिक्रिया असक्षम पार्न Ctrl + Alt + Z थिच्नुहोस्।</translation>
 <translation id="5601503069213153581">पिन</translation>
@@ -1053,6 +1056,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">अन</translation>
 <translation id="5920710855273935292">माइक म्युट गरिएको छ।</translation>
+<translation id="5922962980596822074">सबैभन्दा पछिल्लो पटक प्रयोग गरिएका विन्डोहरू क्रमैसँग खोल्नुहोस्</translation>
 <translation id="5924855612669061715">हटस्पट अन गरिएको छ</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> अन छ।</translation>
 <translation id="5947494881799873997">उल्टाउनुहोस्</translation>
@@ -1142,6 +1146,7 @@
 <translation id="6352082849089527770">अज्ञात नेटवर्कहरू</translation>
 <translation id="6359587239691116345">नयाँ सुविधा तथा सुरक्षासम्बन्धी सुधारहरू प्राप्त गर्नुहोस्। तपाईंले यो अपडेट लागू गर्नुभएन भने तपाईंको डिभाइसले राम्रोसँग काम गर्न छाड्न सक्छ र सुरक्षा तथा पर्फर्मेन्ससम्बन्धी समस्या आउन सक्छ।</translation>
 <translation id="6376931439017688372">ब्लुटुथ सक्रिय छ</translation>
+<translation id="6378515133128829137">विन्डो दायाँतिर पिन गर्नुहोस्</translation>
 <translation id="6381109794406942707">यो डिभाइस अनलक गर्न आफ्नो PIN प्रविष्टि गर्नुहोस्।</translation>
 <translation id="638716340450135524">क्यामेरा प्रयोग गर्ने अनुमति अन गर्नुहोस्</translation>
 <translation id="639644700271529076">CAPS LOCK बन्द छ</translation>
@@ -1161,6 +1166,7 @@
 <translation id="6459472438155181876">स्क्रिनलाई <ph name="DISPLAY_NAME" /> मा विस्तार गर्दै</translation>
 <translation id="6477681113376365978">यो फाइल डाउनलोड गर्न सकिएन</translation>
 <translation id="6482559668224714696">फुल स्क्रिन म्याग्निफायर</translation>
+<translation id="6483727822843292440">सबैभन्दा कम प्रयोग गरिएका विन्डोहरू क्रमैसँग खोल्नुहोस्</translation>
 <translation id="6490471652906364588">USB-C यन्त्र (दायाँ पोर्ट)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> का अनुसार तपाईंले म्याद सकिनुअघि नै आफ्नो <ph name="DEVICE_TYPE" /> अपडेट गर्नु पर्ने हुन्छ</translation>
 <translation id="649452524636452238">स्मार्ट कार्डको PIN</translation>
@@ -1247,7 +1253,6 @@
 <translation id="6820676911989879663">विश्राम लिनुहोस्!</translation>
 <translation id="6827049576281411231">इभेन्ट प्यानल बन्द गर्नुहोस्</translation>
 <translation id="6836499262298959512">खतरनाक फाइल</translation>
-<translation id="6837064795450991317">डेस्कबार लुकाइयोस्</translation>
 <translation id="6852052252232534364">सक्रिय गर्न क्लिक गर्नुहोस्</translation>
 <translation id="6855029042976311970">भर्खरै सम्पादन गरिएको</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> सेकेन्ड</translation>
@@ -1305,7 +1310,6 @@
 <translation id="7098053464892629930">तपाईं उपलब्ध सबै सुविधाहरू हेर्न चाहनुहुन्छ भने <ph name="NAME" /> एप डाउनलोड गर्नुहोस्</translation>
 <translation id="7098389117866926363">USB-C यन्त्र (पछाडिमा बाँया पोर्ट)</translation>
 <translation id="7100906357717321275">Files एपमा लुकाइएका फाइलहरू देखाइयोस्</translation>
-<translation id="7106330611027933926">डेस्कबार देखाइयोस्</translation>
 <translation id="7116969082764510092">डेस्क ११</translation>
 <translation id="7118268675952955085">स्क्रिनसट</translation>
 <translation id="7119327711295338600">अर्को शब्द वा अक्षर चयन गर्नुहोस्</translation>

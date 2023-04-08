@@ -981,6 +981,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5578188167649348993">memoria</translation>
 <translation id="5580000943347215299">Biblioteca</translation>
 <translation id="558849140439112033">Arrastra el cursor para seleccionar un área que quieras capturar</translation>
+<translation id="5596627076506792578">Más opciones</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Presiona Ctrl + Alt + Z para inhabilitar los comentarios por voz.</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -1248,7 +1249,6 @@ Nueva instalación</translation>
 <translation id="6820676911989879663">Toma un descanso</translation>
 <translation id="6827049576281411231">Cerrar el panel de eventos</translation>
 <translation id="6836499262298959512">Archivo peligroso</translation>
-<translation id="6837064795450991317">Ocultar la barra de escritorio</translation>
 <translation id="6852052252232534364">Clic para activar</translation>
 <translation id="6855029042976311970">Se editó recién</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
@@ -1306,7 +1306,6 @@ Nueva instalación</translation>
 <translation id="7098053464892629930">Descarga la app de <ph name="NAME" /> en Google Play para ver todas las funciones disponibles</translation>
 <translation id="7098389117866926363">Dispositivo USB-C (puerto izquierdo en la parte posterior)</translation>
 <translation id="7100906357717321275">Mostrar los archivos ocultos en la app de Files</translation>
-<translation id="7106330611027933926">Mostrar barra de escritorio</translation>
 <translation id="7116969082764510092">Escritorio 11</translation>
 <translation id="7118268675952955085">captura de pantalla</translation>
 <translation id="7119327711295338600">Seleccionar la palabra o letra siguiente</translation>

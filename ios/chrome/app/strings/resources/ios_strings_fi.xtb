@@ -20,7 +20,6 @@
 <translation id="1103523840287552314">Käännä <ph name="LANGUAGE" /> aina</translation>
 <translation id="110724200315609752">Vaihda avoimeen ikkunaan</translation>
 <translation id="1112015203684611006">Tulostus epäonnistui</translation>
-<translation id="1118266931011974190"><ph name="THRESHOLD" /> päivän päästä</translation>
 <translation id="1125564390852150847">Luo uusi välilehti.</translation>
 <translation id="1126013303640354461">Google Payn maksutapoja ja osoitteita ei salata. Chromen selaushistoriaa ei synkronoida.
 Salatun datasi voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä Googlelle eikä Google tallenna sitä. Jos unohdat tunnuslauseesi tai haluat muuttaa asetusta, synkronointi on nollattava. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>

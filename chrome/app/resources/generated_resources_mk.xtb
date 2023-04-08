@@ -3005,6 +3005,7 @@
 <translation id="3584527007414070635">Продолжете го патувањето за <ph name="MODULE_TITLE" /></translation>
 <translation id="3586787825263265024">Апликацијата <ph name="APPLICATION_NAME" /> бара OneDrive за да биде достапна.</translation>
 <translation id="3586806079541226322">Датотекава не може да се отвори</translation>
+<translation id="3586931643579894722">Сокриј детали</translation>
 <translation id="3587438013689771191">Дознајте повеќе за: <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">Сите</translation>
 <translation id="3588790464166520201">Дозволено им е да инсталираат ракувачи со плаќања</translation>
@@ -5851,6 +5852,7 @@
 <translation id="6136114942382973861">Затвори ја лентата за преземања</translation>
 <translation id="6136287496450963112">Вашиот безбедносен клуч не е заштитен со PIN. За да управувате со отпечатоците, прво создајте PIN.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA потпис со SHA-384</translation>
+<translation id="6140948187512243695">Прикажи детали</translation>
 <translation id="6141988275892716286">Потврдете го преземањето</translation>
 <translation id="6143186082490678276">Побарајте помош</translation>
 <translation id="6143366292569327983">Изберете го јазикот на страницата од којшто треба да се преведе</translation>
