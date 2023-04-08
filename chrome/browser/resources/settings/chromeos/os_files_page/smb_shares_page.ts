@@ -21,7 +21,8 @@ import {getTemplate} from './smb_shares_page.html.js';
 
 const SettingsSmbSharesPageElementBase = RouteObserverMixin(PolymerElement);
 
-class SettingsSmbSharesPageElement extends SettingsSmbSharesPageElementBase {
+export class SettingsSmbSharesPageElement extends
+    SettingsSmbSharesPageElementBase {
   static get is() {
     return 'settings-smb-shares-page';
   }

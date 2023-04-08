@@ -72,6 +72,13 @@ export class SmbBrowserProxy {
 
 /** @implements {SmbBrowserProxy} */
 export class SmbBrowserProxyImpl {
+  /**
+   * @param {SmbBrowserProxy} instance
+   */
+  static setInstanceForTesting(instance) {
+    SmbBrowserProxyImpl.instance_ = instance;
+  }
+
   /** @override */
   smbMount(
       smbUrl, smbName, username, password, authMethod,

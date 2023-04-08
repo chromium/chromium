@@ -35,6 +35,7 @@ export interface SmbBrowserProxy {
 }
 
 declare class SmbBrowserProxyImpl implements SmbBrowserProxy {
+  static setInstanceForTesting(instance: SmbBrowserProxy): void;
   smbMount(
       smbUrl: string, smbName: string, username: string, password: string,
       authMethod: string, shouldOpenFileManagerAfterMount: boolean,
