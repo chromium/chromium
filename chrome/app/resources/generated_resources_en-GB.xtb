@@ -7242,7 +7242,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7412226954991670867">GPU Memory</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Setup complete</translation>
-<translation id="7415484647604548662">You can block sites that you don't want. Chrome also auto-deletes sites from the list that are older than four weeks.</translation>
+<translation id="7415484647604548662">You can block sites that you don't want. Chrome also auto-deletes sites that are older than four weeks from the list.</translation>
 <translation id="7416091793702109803">Review <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Terms of Service cannot be loaded. Please check your network connection and retry.</translation>
 <translation id="7416362041876611053">Unknown network error</translation>
