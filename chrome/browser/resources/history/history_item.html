@@ -231,7 +231,7 @@
             </div>
             <template is="dom-if" if="[[item.starred]]">
               <cr-icon-button id="bookmark-star" iron-icon="cr:star"
-                  on-click="onRemoveBookmarkTap_"
+                  on-click="onRemoveBookmarkClick_"
                   title="$i18n{removeBookmark}"
                   aria-hidden="true">
               </cr-icon-button>
@@ -240,7 +240,7 @@
           <div role="gridcell" id="options">
             <cr-icon-button id="menu-button" iron-icon="cr:more-vert"
                 focus-row-control focus-type="cr-menu-button"
-                title="$i18n{actionMenuDescription}" on-click="onMenuButtonTap_"
+                title="$i18n{actionMenuDescription}" on-click="onMenuButtonClick_"
                 on-keydown="onMenuButtonKeydown_"
                 aria-haspopup="menu"
                 aria-describedby$="[[ariaDescribedByForHeading_]]">

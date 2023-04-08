@@ -180,7 +180,7 @@ export class HistorySyncedDeviceCardElement extends PolymerElement {
                     loadTimeData.getString('expandSessionButton');
   }
 
-  private onMenuButtonTap_(e: Event) {
+  private onMenuButtonClick_(e: Event) {
     this.fire_('synced-device-card-open-menu', {
       target: e.target,
       tag: this.sessionTag,

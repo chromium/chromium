@@ -240,7 +240,7 @@ export class HistoryItemElement extends HistoryItemElementBase {
   /**
    * Remove bookmark of current item when bookmark-star is clicked.
    */
-  private onRemoveBookmarkTap_() {
+  private onRemoveBookmarkClick_() {
     if (!this.item.starred) {
       return;
     }
@@ -261,7 +261,7 @@ export class HistoryItemElement extends HistoryItemElementBase {
    * Fires a custom event when the menu button is clicked. Sends the details
    * of the history item and where the menu should appear.
    */
-  private onMenuButtonTap_(e: Event) {
+  private onMenuButtonClick_(e: Event) {
     this.fire_('open-menu', {
       target: e.target,
       index: this.index,

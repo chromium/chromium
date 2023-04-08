@@ -116,7 +116,7 @@ export class AccountSelectionLacrosElement extends
         });
   }
 
-  private onProductLogoTap_() {
+  private onProductLogoClick_() {
     this.$['product-logo'].animate(
         {
           transform: ['none', 'rotate(-10turn)'],

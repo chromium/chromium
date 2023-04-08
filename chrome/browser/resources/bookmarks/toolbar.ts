@@ -82,7 +82,7 @@ export class BookmarksToolbarElement extends BookmarksToolbarElementBase {
         .getSearchField();
   }
 
-  private onMenuButtonOpenTap_(e: Event) {
+  private onMenuButtonOpenClick_(e: Event) {
     this.dispatchEvent(new CustomEvent('open-command-menu', {
       bubbles: true,
       composed: true,
@@ -93,14 +93,14 @@ export class BookmarksToolbarElement extends BookmarksToolbarElementBase {
     }));
   }
 
-  private onDeleteSelectionTap_() {
+  private onDeleteSelectionClick_() {
     const selection = this.selectedItems_;
     const commandManager = BookmarksCommandManagerElement.getInstance();
     assert(commandManager.canExecute(Command.DELETE, selection));
     commandManager.handle(Command.DELETE, selection);
   }
 
-  private onClearSelectionTap_() {
+  private onClearSelectionClick_() {
     const commandManager = BookmarksCommandManagerElement.getInstance();
     assert(
         commandManager.canExecute(Command.DESELECT_ALL, this.selectedItems_));

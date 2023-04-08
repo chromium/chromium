@@ -188,7 +188,7 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
     };
   }
 
-  private onTurnOnSyncTap_() {
+  private onTurnOnSyncClick_() {
     BrowserServiceImpl.getInstance().startTurnOnSyncFlow();
   }
 
@@ -200,7 +200,7 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
         SyncedTabsHistogram.LIMIT);
   }
 
-  private onOpenAllTap_() {
+  private onOpenAllClick_() {
     const menu = this.$.menu.getIfExists();
     assert(menu);
     const browserService = BrowserServiceImpl.getInstance();
@@ -235,7 +235,7 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
     });
   }
 
-  private onDeleteSessionTap_() {
+  private onDeleteSessionClick_() {
     const menu = this.$.menu.getIfExists();
     assert(menu);
     const browserService = BrowserServiceImpl.getInstance();

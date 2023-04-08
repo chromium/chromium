@@ -354,7 +354,7 @@ export class HistoryListElement extends HistoryListElementBase {
   /////////////////////////////////////////////////////////////////////////////
   // Event listeners:
 
-  private onDialogConfirmTap_() {
+  private onDialogConfirmClick_() {
     BrowserServiceImpl.getInstance().recordAction('ConfirmRemoveSelected');
 
     this.deleteSelected_();
@@ -363,7 +363,7 @@ export class HistoryListElement extends HistoryListElementBase {
     dialog.close();
   }
 
-  private onDialogCancelTap_() {
+  private onDialogCancelClick_() {
     BrowserServiceImpl.getInstance().recordAction('CancelRemoveSelected');
 
     const dialog = this.$.dialog.getIfExists();
@@ -416,7 +416,7 @@ export class HistoryListElement extends HistoryListElementBase {
     this.$.sharedMenu.get().showAt(target);
   }
 
-  private onMoreFromSiteTap_() {
+  private onMoreFromSiteClick_() {
     BrowserServiceImpl.getInstance().recordAction('EntryMenuShowMoreFromSite');
 
     assert(this.$.sharedMenu.getIfExists());
@@ -436,14 +436,14 @@ export class HistoryListElement extends HistoryListElementBase {
     return BrowserServiceImpl.getInstance().removeVisits(removalList);
   }
 
-  private onRemoveBookmarkTap_() {
+  private onRemoveBookmarkClick_() {
     const browserService = BrowserServiceImpl.getInstance();
     browserService.removeBookmark(this.actionMenuModel_!.item.url);
     this.fire_('remove-bookmark-stars', this.actionMenuModel_!.item.url);
     this.closeMenu_();
   }
 
-  private onRemoveFromHistoryTap_() {
+  private onRemoveFromHistoryClick_() {
     const browserService = BrowserServiceImpl.getInstance();
     browserService.recordAction('EntryMenuRemoveFromHistory');
 

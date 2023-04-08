@@ -814,11 +814,11 @@ export class BookmarksCommandManagerElement extends
     this.closeCommandMenu();
   }
 
-  private onOpenCancelTap_() {
+  private onOpenCancelClick_() {
     this.$.openDialog.get().cancel();
   }
 
-  private onOpenConfirmTap_() {
+  private onOpenConfirmClick_() {
     assert(this.confirmOpenCallback_);
     this.confirmOpenCallback_();
     this.$.openDialog.get().close();

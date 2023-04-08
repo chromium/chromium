@@ -548,28 +548,28 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     }
   }
 
-  private onCancelTap_() {
+  private onCancelClick_() {
     this.restoreFocusAfterCancel_ = true;
     this.mojoHandler_!.cancel(this.data.id);
   }
 
-  private onDiscardDangerousTap_() {
+  private onDiscardDangerousClick_() {
     this.mojoHandler_!.discardDangerous(this.data.id);
   }
 
-  private onOpenNowTap_() {
+  private onOpenNowClick_() {
     this.mojoHandler_!.openDuringScanningRequiringGesture(this.data.id);
   }
 
-  private onDeepScanTap_() {
+  private onDeepScanClick_() {
     this.mojoHandler_!.deepScan(this.data.id);
   }
 
-  private onBypassDeepScanTap_() {
+  private onBypassDeepScanClick_() {
     this.mojoHandler_!.bypassDeepScanRequiringGesture(this.data.id);
   }
 
-  private onReviewDangerousTap_() {
+  private onReviewDangerousClick_() {
     this.mojoHandler_!.reviewDangerousRequiringGesture(this.data.id);
   }
 
@@ -578,17 +578,17 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     this.mojoHandler_!.drag(this.data.id);
   }
 
-  private onFileLinkTap_(e: Event) {
+  private onFileLinkClick_(e: Event) {
     e.preventDefault();
     this.mojoHandler_!.openFileRequiringGesture(this.data.id);
   }
 
-  private onUrlTap_() {
+  private onUrlClick_() {
     chrome.send(
         'metricsHandler:recordAction', ['Downloads_OpenUrlOfDownloadedItem']);
   }
 
-  private onPauseOrResumeTap_() {
+  private onPauseOrResumeClick_() {
     if (this.isInProgress_) {
       this.mojoHandler_!.pause(this.data.id);
     } else {
@@ -596,7 +596,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     }
   }
 
-  private onRemoveTap_(e: Event) {
+  private onRemoveClick_(e: Event) {
     this.mojoHandler_!.remove(this.data.id);
     const pieces = loadTimeData.getSubstitutedStringPieces(
                        loadTimeData.getString('toastRemovedFromList'),
@@ -615,15 +615,15 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     e.preventDefault();
   }
 
-  private onRetryTap_() {
+  private onRetryClick_() {
     this.mojoHandler_!.retryDownload(this.data.id);
   }
 
-  private onSaveDangerousTap_() {
+  private onSaveDangerousClick_() {
     this.mojoHandler_!.saveDangerousRequiringGesture(this.data.id);
   }
 
-  private onShowTap_() {
+  private onShowClick_() {
     this.mojoHandler_!.show(this.data.id);
   }
 
