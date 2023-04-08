@@ -3229,6 +3229,7 @@
     {
       name: "StorageBuckets",
       status: "experimental",
+      origin_trial_feature_name: "StorageBuckets",
     },
     {
       // Gates the `locks()` method on a storage bucket.
