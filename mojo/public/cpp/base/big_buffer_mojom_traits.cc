@@ -155,6 +155,11 @@ bool UnionTraits<
       mojo_base::internal::BigBufferSharedMemoryRegion shared_memory;
       if (!data.ReadSharedMemory(&shared_memory))
         return false;
+
+      // RUN-1618: Data read from shared memory must be explicitly recorded/replayed.
+      recordreplay::RecordReplayBytes("Traits<BigBufferDataView>::Read",
+                                      shared_memory.memory(), shared_memory.size());
+
       out->SetSharedMemory(std::move(shared_memory));
       return true;
     }
