@@ -264,6 +264,9 @@ int RendererMain(MainFunctionParams parameters) {
             features::kHandleRendererThreadTypeChangesInBrowser)) {
       RendererThreadTypeHandler::Create();
     }
+#elif BUILDFLAG(IS_FUCHSIA)
+    // TODO(crbug.com/1431671) Move to using kMainThreadCompositingPriority feature in M112+
+    base::PlatformThread::SetCurrentThreadType(base::ThreadType::kCompositing);
 #endif
 
     std::unique_ptr<RenderProcess> render_process = RenderProcessImpl::Create();
