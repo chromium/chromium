@@ -1861,7 +1861,7 @@
       {
         "args": [],
         "cros_board": "eve",
-        "cros_img": "eve-release/R111-15329.59.0",
+        "cros_img": "eve-release/R112-15359.45.0",
         "name": "lacros_all_tast_tests EVE_RELEASE_STABLE",
         "resultdb": {
           "enable": true,
@@ -1981,7 +1981,7 @@
       {
         "args": [],
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R111-15329.63.0",
+        "cros_img": "jacuzzi-release/R112-15359.45.0",
         "name": "lacros_all_tast_tests JACUZZI_RELEASE_STABLE",
         "resultdb": {
           "enable": true,
