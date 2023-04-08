@@ -35,13 +35,16 @@
   }
 
   #currentPageActionButton {
+    margin: 16px 16px 0 16px;
+  }
+
+  :host-context(html:not([chrome-refresh-2023])) #currentPageActionButton {
     --disabled-border-color: var(--border-color);
     --hover-bg-color: var(--cr-icon-button-hover-background-color,
             var(--cr-hover-background-color));
     --hover-border-color: var(--border-color);
     border-radius: 4px;
     font-size: var(--mwb-primary-text-font-size);
-    margin: 16px 16px 0 16px;
     padding: 8px;
     transition: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1);
   }
@@ -50,19 +53,6 @@
     display: flex;
     margin: 0 auto 16px auto;
     width: fit-content;
-  }
-
-  #currentPageActionButtonIcon {
-    --iron-icon-fill-color: currentColor;
-    align-items: center;
-    height: 16px;
-    margin-inline-end: 5px;
-    margin-inline-start: auto;
-    width: 16px;
-  }
-
-  #currentPageActionButtonText {
-    margin-inline-end: auto;
   }
 
   .mwb-list-item:focus-within {
@@ -97,15 +87,16 @@
       heading="$i18n{emptyStateHeader}"
       body="[[getEmptyStateSubheaderText_()]]">
   </sp-empty-state>
-  <cr-button id="currentPageActionButton"
+  <cr-button id="currentPageActionButton" class="floating-button"
       aria-label="[[getCurrentPageActionButtonText_(
           currentPageActionButtonState_)]]"
       on-click="onCurrentPageActionButtonClick_"
       disabled="[[getCurrentPageActionButtonDisabled_(
           currentPageActionButtonState_)]]">
     <iron-icon id="currentPageActionButtonIcon" aria-hidden="true"
-      icon="[[getCurrentPageActionButtonIcon_(
-          currentPageActionButtonState_)]]">
+        slot="prefix-icon"
+        icon="[[getCurrentPageActionButtonIcon_(
+            currentPageActionButtonState_)]]">
     </iron-icon>
     <div id="currentPageActionButtonText" aria-hidden="true">
       [[getCurrentPageActionButtonText_(currentPageActionButtonState_)]]
