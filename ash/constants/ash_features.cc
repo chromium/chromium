@@ -1883,7 +1883,7 @@ BASE_FEATURE(kScreenSaverDuration,
 // Enables the "Preview" button for screensaver.
 BASE_FEATURE(kScreenSaverPreview,
              "ScreenSaverPreview",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the system tray to show more information in larger screen.
 BASE_FEATURE(kSeamlessRefreshRateSwitching,
