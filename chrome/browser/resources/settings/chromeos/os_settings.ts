@@ -145,6 +145,7 @@ export {MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData,
 export {NotificationAccessSetupOperationStatus} from './multidevice_page/multidevice_notification_access_setup_dialog.js';
 export {PermissionsSetupStatus, SetupFlowStatus} from './multidevice_page/multidevice_permissions_setup_dialog.js';
 export {Account, NearbyAccountManagerBrowserProxy, NearbyAccountManagerBrowserProxyImpl} from './nearby_share_page/nearby_account_manager_browser_proxy.js';
+export {NearbyShareConfirmPageElement} from './nearby_share_page/nearby_share_confirm_page.js';
 export {NearbyShareHighVisibilityPageElement} from './nearby_share_page/nearby_share_high_visibility_page.js';
 export {getReceiveManager, observeReceiveManager, setReceiveManagerForTesting} from './nearby_share_page/nearby_share_receive_manager.js';
 export {dataUsageStringToEnum, NearbyShareDataUsage} from './nearby_share_page/types.js';

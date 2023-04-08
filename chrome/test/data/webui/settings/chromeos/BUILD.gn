@@ -85,7 +85,6 @@ build_webui_tests("build") {
     "multidevice_task_continuation_item_tests.js",
     "multidevice_wifi_sync_disabled_link_tests.js",
     "multidevice_wifi_sync_item_tests.js",
-    "nearby_share_confirm_page_test.js",
     "nearby_share_receive_dialog_tests.js",
     "nearby_share_subpage_tests.js",
     "network_always_on_vpn_test.js",
@@ -203,6 +202,7 @@ build_webui_tests("build") {
 
     "keyboard_shortcut_banner/keyboard_shortcut_banner_test.ts",
 
+    "nearby_share_page/nearby_share_confirm_page_test.ts",
     "nearby_share_page/nearby_share_high_visibility_page_test.ts",
 
     "os_a11y_page/audio_and_captions_page_tests.ts",

@@ -33,7 +33,8 @@ const PROGRESS_BAR_URL_DARK: string = 'nearby_share_progress_bar_dark.json';
 
 const NearbyShareConfirmPageElementBase = I18nMixin(PolymerElement);
 
-class NearbyShareConfirmPageElement extends NearbyShareConfirmPageElementBase {
+export class NearbyShareConfirmPageElement extends
+    NearbyShareConfirmPageElementBase {
   static get is() {
     return 'nearby-share-confirm-page' as const;
   }
