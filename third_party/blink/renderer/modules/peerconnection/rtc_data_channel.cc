@@ -184,28 +184,6 @@ void IncrementErrorCounter(const webrtc::RTCError& error) {
   base::UmaHistogramEnumeration("WebRTC.DataChannelSctpErrorCode", uma_code);
 }
 
-void SendOnSignalingThread(
-    const rtc::scoped_refptr<webrtc::DataChannelInterface> channel,
-    const webrtc::DataBuffer data_buffer) {
-  // The Javascript API being synchronous, we cannot wait for the call on the
-  // signaling thread to resolve from the JS main thread. So we make sure that
-  // channel->Send() doesn't fail by replicating the checks in the Blink layer.
-  // The possible failures per the spec are:
-  // - Channel not in open state. Although we check the state in each Send()
-  // implementation, it's possible to have a short race between the WebRTC state
-  // and the Chrome state, i.e. sending while a remote close event is pending.
-  // In this case, it's safe to ignore send failures.
-  // - Data longer than the transport maxMessageSize (not yet implemented in
-  // WebRTC or Blink).
-  // - Send Buffers full (buffered amount accounting in Blink layer to check for
-  // it).
-  bool result = channel->Send(data_buffer);
-  if (!result) {
-    // TODO(orphis): Add collect UMA stats about failure.
-    LOG(ERROR) << "Send failed, channel state: " << channel->state();
-  }
-}
-
 }  // namespace
 
 static void ThrowNotOpenException(ExceptionState* exception_state) {
@@ -280,6 +258,10 @@ void RTCDataChannel::Observer::OnMessage(const webrtc::DataBuffer& buffer) {
                           std::move(new_buffer)));
 }
 
+bool RTCDataChannel::Observer::IsOkToCallOnTheNetworkThread() {
+  return true;
+}
+
 void RTCDataChannel::Observer::OnStateChangeImpl(
     webrtc::DataChannelInterface::DataState state) {
   DCHECK(main_thread_->BelongsToCurrentThread());
@@ -322,19 +304,11 @@ RTCDataChannel::RTCDataChannel(
   // on the signaling thread and RTCDataChannel construction posted on the main
   // thread. Done in a single synchronous call to the signaling thread to ensure
   // channel state consistency.
-  peer_connection_handler->RunSynchronousOnceClosureOnSignalingThread(
-      CrossThreadBindOnce(
-          [](scoped_refptr<RTCDataChannel::Observer> observer,
-             webrtc::DataChannelInterface::DataState current_state) {
-            rtc::scoped_refptr<webrtc::DataChannelInterface> channel =
-                observer->channel();
-            channel->RegisterObserver(observer.get());
-            if (channel->state() != current_state) {
-              observer->OnStateChange();
-            }
-          },
-          observer_, state_),
-      "RegisterObserverAndGetStateUpdate");
+  // TODO(tommi): Check it this^ is still possible.
+  channel->RegisterObserver(observer_.get());
+  if (channel->state() != state_) {
+    observer_->OnStateChange();
+  }
 
   IncrementCounters(*channel.get());
 }
@@ -734,9 +708,11 @@ void RTCDataChannel::SendRawData(const char* data, size_t length) {
 void RTCDataChannel::SendDataBuffer(webrtc::DataBuffer data_buffer) {
   // SCTP data channels queue the packet on failure and always return true, so
   // Send can be called asynchronously for them.
-  PostCrossThreadTask(*signaling_thread_.get(), FROM_HERE,
-                      CrossThreadBindOnce(&SendOnSignalingThread, channel(),
-                                          std::move(data_buffer)));
+  // TODO(webrtc:11547): Use SendAsync() when that has landed in WebRTC. We need
+  // to use Send() in the meantime (instead of posting first to the signaling
+  // thread as we did before) now that the call will go directly to the
+  // network thread. This is so that we can maintain correct operational order.
+  channel()->Send(data_buffer);
 }
 
 void RTCDataChannel::CreateFeatureHandleForScheduler() {
