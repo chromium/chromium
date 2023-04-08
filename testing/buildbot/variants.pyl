@@ -689,15 +689,16 @@
     'enabled': True,
     'identifier': 'STRONGBAD_RELEASE_STABLE',
   },
-  'CROS_TROGDOR64_RELEASE_LKGM': {
+  'CROS_TROGDOR_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'trogdor',
       'cros_chrome_version': '114.0.5685.0',
-      'cros_img': 'trogdor64-release/R114-15407.0.0',
+      'cros_img': 'trogdor-release/R114-15407.0.0',
       'autotest_name': 'tast.chrome-from-tls',
+      'shards': 10,
     },
     'enabled': True,
-    'identifier': 'TROGDOR64_RELEASE_LKGM',
+    'identifier': 'TROGDOR_RELEASE_LKGM',
   },
   'CROS_VOLTEER_RELEASE_LKGM': {
     'skylab': {
