@@ -261,13 +261,12 @@ void LocationBarView::Init() {
   // Initiate the Omnibox additional-text label.
   if (OmniboxFieldTrial::RichAutocompletionShowAdditionalText()) {
     auto omnibox_additional_text_view = std::make_unique<views::Label>(
-        std::u16string(), ChromeTextContext::CONTEXT_OMNIBOX_DEEMPHASIZED,
-        views::style::STYLE_LINK);
+        std::u16string(), CONTEXT_OMNIBOX_PRIMARY, views::style::STYLE_PRIMARY);
     omnibox_additional_text_view->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    omnibox_additional_text_view->SetFontList(font_list);
     omnibox_additional_text_view->SetVisible(false);
     omnibox_additional_text_view_ =
         AddChildView(std::move(omnibox_additional_text_view));
+    omnibox_additional_text_view_->SetEnabledColorId(kColorOmniboxResultsUrl);
   }
 
   selected_keyword_view_ = AddChildView(std::make_unique<SelectedKeywordView>(
