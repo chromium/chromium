@@ -8427,6 +8427,37 @@
             ]
         }
     ],
+    "NtpHistoryClustersMetricsOnly112": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230404",
+                    "params": {
+                        "NtpHistoryClustersModuleCategoriesAllowlistParam": "/m/testparsinglogicallow,/m/testparsinglogicallow-2",
+                        "NtpHistoryClustersModuleCategoriesBlocklistParam": "/m/testparsinglogicblock,/m/testparsinglogicblock-2",
+                        "NtpHistoryClustersModuleCategoriesBoostlistParam": "/m/testparsinglogicboost,/m/testparsinglogicboost-2",
+                        "NtpHistoryClustersModuleMaxClustersParam": "0",
+                        "NtpHistoryClustersModuleMinimumImagesRequiredParam": "1"
+                    },
+                    "enable_features": [
+                        "NtpHistoryClustersMaxClusters",
+                        "NtpHistoryClustersModuleCategories",
+                        "NtpHistoryClustersModuleLoad",
+                        "NtpHistoryClustersModuleMinimumImagesRequired",
+                        "PageContentAnnotationsPersistSalientImageMetadata",
+                        "RemotePageMetadata"
+                    ]
+                }
+            ]
+        }
+    ],
     "NtpRealboxRundedCorners": [
         {
             "platforms": [
@@ -10772,26 +10803,6 @@
                     },
                     "enable_features": [
                         "ReduceUserAgentPlatformOsCpu"
-                    ]
-                }
-            ]
-        }
-    ],
-    "RemotePageMetadata": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "RemotePageMetadata"
                     ]
                 }
             ]
