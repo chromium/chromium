@@ -11,14 +11,14 @@
   program: {
     runner: "elf",
     binary: "cast_runner_exe",
-    // TODO(crbug.com/1280703): Remove once web_instance is a CFv2 component.
+    // Enable graceful teardown since the web_instance uses dynamic
+    // capabilities via this Component.
     lifecycle: { stop_event: "notify" },
   },
   capabilities: [
     {
       protocol: [
         "chromium.cast.DataReset",
-        "fuchsia.sys.Runner",
         "fuchsia.web.Debug",
         "fuchsia.web.FrameHost",
       ]
@@ -31,21 +31,11 @@
       runner: "cast-runner",
       path: "/svc/fuchsia.component.runner.ComponentRunner",
     },
-
-    // Used to host services provided by CFv1 and Modular, to offer to Cast
-    // activities under the cast-runner.
-    {
-      directory: "for_dynamic_component_host",
-      rights: [ "rw*" ],
-      path: "/for_dynamic_component_host",
-    },
-
   ],
   expose: [
     {
       protocol: [
         "chromium.cast.DataReset",
-        "fuchsia.sys.Runner",
         "fuchsia.web.Debug",
         "fuchsia.web.FrameHost",
       ],
@@ -83,16 +73,6 @@
     {
       storage: "cache",
       path: "/cache",
-    },
-  ],
-
-  // Sections used to host Cast activities for the fuchsia.sys.Runner.
-  collections: [
-    {
-      name: "v1-activities",
-      durability: "transient",
-      allowed_offers: "static_and_dynamic",
-      environment: "#cast-capable-env",
     },
   ],
   environments: [

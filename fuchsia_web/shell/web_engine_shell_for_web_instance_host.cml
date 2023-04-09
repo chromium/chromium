@@ -21,7 +21,6 @@
     ],
 
     // Required to allow JIT in child processes such as renderers.
-    // Known as 'deprecated-ambient-replace-as-executable' in CFv1.
     job_policy_ambient_mark_vmo_exec: "true",
   },
   use: [

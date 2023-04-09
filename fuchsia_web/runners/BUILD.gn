@@ -204,18 +204,11 @@ test("cast_runner_integration_tests") {
   # Include cast_runner.cm as a component in the test's package.
   fuchsia_package_deps = [ ":cast_runner_component" ]
 
-  # Deploy the cast_runner and web_engine packages. cast_runner is needed only
-  # for the v1 shim integration tests.
-  package_deps = [
-    [
-      ":cast_runner_pkg",
-      "cast_runner",
-    ],
-    [
-      "//fuchsia_web/webengine:web_engine",
-      "web_engine",
-    ],
-  ]
+  # Deploy the web_engine packages
+  package_deps = [ [
+        "//fuchsia_web/webengine:web_engine",
+        "web_engine",
+      ] ]
   additional_manifest_fragments = [
     "//build/config/fuchsia/test/fonts.shard.test-cml",
     "//build/config/fuchsia/test/network.shard.test-cml",
