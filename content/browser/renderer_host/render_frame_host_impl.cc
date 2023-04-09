@@ -10083,6 +10083,7 @@ void RenderFrameHostImpl::SetWebUI(NavigationRequest& request,
   CHECK_NE(new_web_ui_type, WebUI::kNoWebUI);
 
   web_ui_ = std::move(new_web_ui);
+  web_ui_->SetRenderFrameHost(this);
 
   // It is not expected for GuestView to be able to navigate to WebUI.
   DCHECK(!GetProcess()->IsForGuestsOnly());

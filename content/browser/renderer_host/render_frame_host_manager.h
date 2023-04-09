@@ -834,6 +834,16 @@ class CONTENT_EXPORT RenderFrameHostManager {
   bool IsCandidateSameSite(RenderFrameHostImpl* candidate,
                            const UrlInfo& dest_url_info);
 
+  // Creates a new WebUI object for `request`, which will commit in
+  // `dest_site_instance`. `use_current_rfh` will be true if the navigation will
+  // reuse the current RFH instead of using a new speculative RFH. If an
+  // existing RFH is reused, this function might notify its WebUI (if it exists)
+  // that it is being reused.
+  // Returns true if a new WebUI object is created for `request`.
+  bool CreateWebUIForNavigationIfNeeded(NavigationRequest* request,
+                                        SiteInstanceImpl* dest_site_instance,
+                                        bool use_current_rfh);
+
   // Ensure that we have created all needed proxies for a new RFH with
   // SiteInstance |new_instance|: (1) create swapped-out RVHs and proxies for
   // the new RFH's opener chain if we are staying in the same BrowsingInstance;

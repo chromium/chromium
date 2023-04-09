@@ -21,6 +21,7 @@
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/renderer_host/dip_util.h"
 #include "content/browser/renderer_host/frame_tree.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -63,20 +64,17 @@ std::u16string WebUI::GetJavascriptCall(
   return result;
 }
 
-WebUIImpl::WebUIImpl(RenderFrameHostImpl* frame_host)
+WebUIImpl::WebUIImpl(WebContents* web_contents)
     : bindings_(BINDINGS_POLICY_WEB_UI),
       requestable_schemes_({kChromeUIScheme, url::kFileScheme}),
-      web_contents_(WebContentsImpl::FromRenderFrameHostImpl(frame_host)),
-      frame_host_(frame_host),
+      web_contents_(web_contents),
       web_contents_observer_(new WebUIMainFrameObserver(this, web_contents_)) {
   DCHECK(web_contents_);
-
-  // Assert that we can only open webui for the active or speculative pages.
-  DCHECK(frame_host->lifecycle_state() ==
-             RenderFrameHostImpl::LifecycleStateImpl::kActive ||
-         frame_host->lifecycle_state() ==
-             RenderFrameHostImpl::LifecycleStateImpl::kSpeculative);
 }
+
+WebUIImpl::WebUIImpl(NavigationRequest* request)
+    : WebUIImpl(
+          WebContents::FromFrameTreeNodeId(request->GetFrameTreeNodeId())) {}
 
 WebUIImpl::~WebUIImpl() {
   // Delete the controller first, since it may also be keeping a pointer to some
@@ -115,6 +113,15 @@ void WebUIImpl::Send(const std::string& message, base::Value::List args) {
   }
 
   ProcessWebUIMessage(source_url, message, std::move(args));
+}
+
+void WebUIImpl::SetRenderFrameHost(RenderFrameHost* render_frame_host) {
+  frame_host_ = static_cast<RenderFrameHostImpl*>(render_frame_host);
+  // Assert that we can only open WebUI for the active or speculative pages.
+  DCHECK(frame_host_->lifecycle_state() ==
+             RenderFrameHostImpl::LifecycleStateImpl::kActive ||
+         frame_host_->lifecycle_state() ==
+             RenderFrameHostImpl::LifecycleStateImpl::kSpeculative);
 }
 
 void WebUIImpl::WebUIRenderFrameCreated(RenderFrameHost* render_frame_host) {

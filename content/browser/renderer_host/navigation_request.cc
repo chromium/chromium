@@ -9344,11 +9344,12 @@ bool NavigationRequest::GetIsThirdPartyCookiesUserBypassEnabled() {
 }
 
 bool NavigationRequest::CreateWebUIIfNeeded(RenderFrameHostImpl* frame_host) {
-  TRACE_EVENT2("content", "NavigationRequest::CreateWebUI", "frame_host",
-               frame_host, "url", GetURL());
+  TRACE_EVENT1("content", "NavigationRequest::CreateWebUI", "url", GetURL());
+
   WebUI::TypeID new_web_ui_type =
       WebUIControllerFactoryRegistry::GetInstance()->GetWebUIType(
-          frame_host->GetSiteInstance()->GetBrowserContext(), GetURL());
+          frame_tree_node_->navigator().controller().GetBrowserContext(),
+          GetURL());
   if (new_web_ui_type == WebUI::kNoWebUI) {
     // The navigation doesn't need a WebUI.
     return false;
@@ -9360,12 +9361,12 @@ bool NavigationRequest::CreateWebUIIfNeeded(RenderFrameHostImpl* frame_host) {
   // in `frame_host`. However, it is useful to verify that its type hasn't
   // changed. Site isolation guarantees that RenderFrameHostImpl will be changed
   // if the WebUI type differs.
-  if (frame_host->web_ui()) {
+  if (frame_host && frame_host->web_ui()) {
     CHECK_EQ(new_web_ui_type, frame_host->web_ui_type());
     return false;
   }
 
-  web_ui_ = std::make_unique<WebUIImpl>(frame_host);
+  web_ui_ = std::make_unique<WebUIImpl>(this);
 
   std::unique_ptr<WebUIController> controller(
       WebUIControllerFactoryRegistry::GetInstance()

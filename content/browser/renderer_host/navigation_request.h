@@ -1175,8 +1175,9 @@ class CONTENT_EXPORT NavigationRequest
   }
 
   // Creates a WebUI object for this navigation and saves it in `web_ui_`. Later
-  // on, the WebUI created will be moved to `frame_host`. Returns true if and
-  // only if a WebUI object is successfully created and saved.
+  // on, the WebUI created will be moved to `frame_host` (if `frame_host` is
+  // null, it means a RenderFrameHost has not been picked for the navigation).
+  // Returns true iff a WebUI object is successfully created and saved.
   bool CreateWebUIIfNeeded(RenderFrameHostImpl* frame_host);
 
   bool HasWebUI() { return !!web_ui_; }
