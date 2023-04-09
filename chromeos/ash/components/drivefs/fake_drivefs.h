@@ -204,6 +204,10 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
       bool enabled,
       drivefs::mojom::DriveFs::SetDocsOfflineEnabledCallback callback) override;
 
+  void GetOfflineFilesSpaceUsage(
+      drivefs::mojom::DriveFs::GetOfflineFilesSpaceUsageCallback callback)
+      override;
+
   const base::FilePath mount_path_;
   int64_t next_stable_id_ = 1;
 

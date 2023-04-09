@@ -140,6 +140,9 @@ interface DriveFs {
 
   // Enable Docs offline explicitly.
   SetDocsOfflineEnabled(bool enabled) => (FileError error);
+
+  // Returns the total space used by files that have been pinned.
+  GetOfflineFilesSpaceUsage() => (FileError error, int64 space_used);
 };
 
 // Implemented by Chrome, used from DriveFS.

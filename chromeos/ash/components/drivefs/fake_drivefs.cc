@@ -656,4 +656,9 @@ void FakeDriveFs::SetDocsOfflineEnabled(
   std::move(callback).Run(drive::FILE_ERROR_OK);
 }
 
+void FakeDriveFs::GetOfflineFilesSpaceUsage(
+    drivefs::mojom::DriveFs::GetOfflineFilesSpaceUsageCallback callback) {
+  std::move(callback).Run(drive::FILE_ERROR_OK, 1024);
+}
+
 }  // namespace drivefs
