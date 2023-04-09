@@ -194,7 +194,25 @@ let gCurrentMessageResult;
 function sendMessage(method, params) {
   const id = gNextMessageId++;
   gCurrentMessageId = id;
-  sendCDPMessage(JSON_stringify({ method, params, id }));
+  gCurrentMessageResult = undefined;
+  const cdpArgs = JSON_stringify({ method, params, id });
+  try {
+    sendCDPMessage(cdpArgs);
+  }
+  catch (err) {
+    if (!gCurrentMessageResult) {
+      throw err;
+    }
+    else {
+      // Work around "ghostly" cross-origin (and maybe other?) errors:
+      // Generally speaking, CDP commands should not throw.
+      // If they do, there is a chance that the error was triggered by user JS
+      // and only happens to still be pending when Replay commands were 
+      // triggered.
+      // E.g.: https://linear.app/replay/issue/RUN-1680#comment-1dfa142b
+      log(`[RuntimeError][RUN-1680] sendCDPMessage(${method}) failed: ${err?.message}`);
+    }
+  }
   gCurrentMessageId = undefined;
   if (gCurrentMessageResult?.result) {
     return gCurrentMessageResult.result;
@@ -286,7 +304,7 @@ function commandCallback(method, params) {
     // that decision.
     return {
       is_error: true,
-      message: e?.message || e.toString(),
+      message: e?.message || (e + ''),
       stack: e?.stack?.split?.("\n") || e?.stack || [],
     };
   }
@@ -1275,7 +1293,7 @@ function previewBlinkNode(node) {
   }
 
   let childNodes;
-  if (node.nodeName == "IFRAME") {
+  if (node.nodeName == "IFRAME" && node.contentDocument) {
     // Treat an iframe's content document as one of its child nodes.
     childNodes = [registerPlainObject(node.contentDocument)];
   } else if (node.childNodes.length) {

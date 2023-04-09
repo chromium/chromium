@@ -114,13 +114,6 @@ void ReportOrThrowSecurityError(
   }
 }
 
-static bool RecordReplayAllowCrossDomainAccesses() {
-  // Allow cross-origin accesses from the replaying script installed to inspect
-  // DOM state. Events are disallowed when running replaying specific scripts.
-  // FIXME Use a separate API for this https://linear.app/replay/issue/RUN-1502
-  return recordreplay::IsReplaying() && recordreplay::AreEventsDisallowed();
-}
-
 bool CanAccessWindowInternal(
     const LocalDOMWindow* accessing_window,
     const DOMWindow* target_window,
@@ -130,7 +123,7 @@ bool CanAccessWindowInternal(
   DCHECK_EQ(DOMWindow::CrossDocumentAccessPolicy::kAllowed,
             *cross_document_access);
 
-  if (RecordReplayAllowCrossDomainAccesses())
+  if (recordreplay::IsInReplayCode())
     return true;
 
   // It's important to check that target_window is a LocalDOMWindow: it's
@@ -263,7 +256,7 @@ bool BindingSecurity::ShouldAllowAccessTo(
     ErrorReportOption reporting_option) {
   DCHECK(target);
 
-  if (RecordReplayAllowCrossDomainAccesses())
+  if (recordreplay::IsInReplayCode())
     return true;
 
   // TODO(https://crbug.com/723057): This is intended to match the legacy
@@ -396,7 +389,7 @@ bool ShouldAllowAccessToV8ContextInternal(
   // Workers and worklets do not support multiple contexts, so both of
   // |accessing_context| and |target_context| must be windows at this point.
 
-  if (RecordReplayAllowCrossDomainAccesses())
+  if (recordreplay::IsInReplayCode())
     return true;
 
   // remote_object->GetCreationContext() returns the empty handle. Remote
