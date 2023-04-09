@@ -2197,6 +2197,7 @@ source_set("blink_platform_unittests_sources") {
     "runtime_enabled_features_test.cc",
     "storage/blink_storage_key_mojom_traits_test.cc",
     "storage/blink_storage_key_test.cc",
+    "text/bidi_paragraph_test.cc",
     "text/bidi_resolver_test.cc",
     "text/bidi_test_harness.h",
     "text/capitalize_test.cc",

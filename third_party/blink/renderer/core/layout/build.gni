@@ -738,7 +738,6 @@ blink_core_tests_layout = [
   "ng/grid/ng_grid_layout_algorithm_test.cc",
   "ng/grid/ng_grid_track_collection_test.cc",
   "ng/inline/layout_ng_text_combine_test.cc",
-  "ng/inline/ng_bidi_paragraph_test.cc",
   "ng/inline/ng_caret_position_test.cc",
   "ng/inline/ng_fragment_item_test.cc",
   "ng/inline/ng_fragment_items_builder_test.cc",
