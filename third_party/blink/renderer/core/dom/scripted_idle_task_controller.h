@@ -102,6 +102,8 @@ class CORE_EXPORT ScriptedIdleTaskController
 
   // [RUN-1335] Allow clearing callbacks upon |Document::Shutdown|.
   void ClearCallbacks() { idle_tasks_.clear(); }
+  // [RUN-1335] We want to check for callback existence before firing.
+  bool ContainsCallback(CallbackId id) { return idle_tasks_.Contains(id); }
 
  private:
   friend class internal::IdleRequestCallbackWrapper;
