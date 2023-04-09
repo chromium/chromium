@@ -225,6 +225,7 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="2576499762020411840">Utilitza i desa contrasenyes al teu Compte de Google</translation>
 <translation id="2578571896248130439">Envia la pàgina web</translation>
 <translation id="2584132361465095047">Afegeix un compte…</translation>
+<translation id="2595587704210555261">{COUNT,plural, =1{Les pestanyes obertes que no utilitzis durant un dia o més es mouran a Pestanyes inactives perquè et puguis centrar fàcilment en les pestanyes que més facis servir. Pots canviar aquesta opció en qualsevol moment a la configuració.}other{Les pestanyes obertes que no utilitzis durant {COUNT} dies o més es mouran a Pestanyes inactives perquè et puguis centrar fàcilment en les pestanyes que més facis servir. Pots canviar aquesta opció en qualsevol moment a la configuració.}}</translation>
 <translation id="2600682495497606169">Esborra les galetes del lloc web</translation>
 <translation id="2609008503159898744">Vols tancar totes les pestanyes?</translation>
 <translation id="2625189173221582860">S'ha copiat la contrasenya</translation>
@@ -571,6 +572,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="4844899002472726590">Consulta i edita els temes que t'interessen</translation>
 <translation id="4848999860252535517">Vols suprimir la contrasenya de <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Estableix una contrasenya</translation>
+<translation id="4856498338299082007">Al teu Compte de Google</translation>
 <translation id="4858786880085262208">Actualitza a HTTPS, quan sigui possible. Els llocs web segurs poden inserir contingut no segur.</translation>
 <translation id="4860895144060829044">Truca</translation>
 <translation id="4872323082491632254">Comprova les contrasenyes</translation>
@@ -1087,6 +1089,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="821809831108207540">Per personalitzar Chrome i el tauler de Discover, inicia la sessió i activa la sincronització.</translation>
 <translation id="8225985093977202398">Fitxers i imatges a memòria cau</translation>
 <translation id="8237382152611443140">Obre la configuració de l'emplenament automàtic de contrasenyes.</translation>
+<translation id="8248969482078657578">Les pestanyes inactives t'ajuden a concentrar-te</translation>
 <translation id="8261506727792406068">Suprimeix</translation>
 <translation id="8264966119170358612">Algunes de les teves contrasenyes desades han estat exposades en haver-se produït una violació de les dades fora de Google. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="8265018477030547118">Només en aquest dispositiu</translation>

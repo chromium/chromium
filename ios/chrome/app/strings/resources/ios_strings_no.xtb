@@ -216,6 +216,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2482878487686419369">Varsler</translation>
 <translation id="2496626742194544812">Gå til første fane</translation>
 <translation id="2500374554657206846">Alternativer for passordlagring</translation>
+<translation id="2502415369140591438"><ph name="COUNT" /> gjenbrukte passord</translation>
 <translation id="2523363575747517183">Dette nettstedet prøver gjentatte ganger å åpne en annen app.</translation>
 <translation id="2529021024822217800">Åpne alle</translation>
 <translation id="2547458583188611426">Synkronisering fungerer ikke. For å starte synkroniseringen, skriv inn passordfrasen din.</translation>
@@ -293,6 +294,7 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="2932085390869194046">Foreslå passord</translation>
 <translation id="2932765531295814441">Legg til passord manuelt</translation>
 <translation id="2952581218264071393">1. Åpne Chrome-innstillingene.</translation>
+<translation id="2953871438216280742">Logg på for å åpne og lagre leselisten i Google-kontoen din.</translation>
 <translation id="2958718410589002129">Passord</translation>
 <translation id="2961210776189273067">Tittel</translation>
 <translation id="2964349545761222050">Blokkér informasjonskapsler fra tredjeparter</translation>
@@ -386,6 +388,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3581564640715911333">Tilby å oversette sider på andre språk</translation>
 <translation id="3588820906588687999">Åpne bildet i en ny fane</translation>
 <translation id="3595252146048399851">Du kan når som helst velge hva du vil synkronisere, i <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" />. Google kan gi Søk og andre tjenester personlig preg basert på loggen din.</translation>
+<translation id="3595588371156514964">{COUNT,plural, =1{{COUNT} svakt passord}other{{COUNT} svake passord}}</translation>
 <translation id="3603009562372709545">Kopiér linkadressen</translation>
 <translation id="3607167657931203000">Autofylldata</translation>
 <translation id="3608008480985212611">Logg på for å administrere preferansene dine.</translation>
@@ -624,6 +627,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5197255632782567636">Internett</translation>
 <translation id="5211488077761630279">Vil du tillate at «<ph name="SITE_NAME" />» bruker <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Bidra til å gjøre nettet sikrere for alle</translation>
+<translation id="5221339005270097309">Sjekker passord …</translation>
 <translation id="5228579091201413441">Slå på synkronisering</translation>
 <translation id="5232485538978018676">Logg på med administrert konto</translation>
 <translation id="5234764350956374838">Lukk</translation>
@@ -663,6 +667,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene må bruke samme iCloud-konto.</translation>
 <translation id="5551897871312988470">Tilby å oversette</translation>
 <translation id="5556459405103347317">Last inn på nytt</translation>
+<translation id="555749644339804659">Sjekker passord …</translation>
 <translation id="556042886152191864">Knapp</translation>
 <translation id="5597915316964418992">Åpne fanerutenettet</translation>
 <translation id="560322036295180549">Organisasjonen din har slått av denne funksjonen</translation>

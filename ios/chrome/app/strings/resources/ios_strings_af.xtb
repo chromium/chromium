@@ -216,6 +216,7 @@ Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe t
 <translation id="2482878487686419369">Kennisgewings</translation>
 <translation id="2496626742194544812">Gaan na eerste oortjie</translation>
 <translation id="2500374554657206846">Opsies om wagwoord te stoor</translation>
+<translation id="2502415369140591438"><ph name="COUNT" /> hergebruikte wagwoorde</translation>
 <translation id="2523363575747517183">Hierdie webwerf probeer herhaaldelik 'n ander program oopmaak.</translation>
 <translation id="2529021024822217800">Maak almal oop</translation>
 <translation id="2547458583188611426">Sinkronisering werk nie tans nie. Voer jou wagfrase in om sinkronisering te begin.</translation>
@@ -292,6 +293,7 @@ Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskied
 <translation id="2932085390869194046">Stel wagwoord voor …</translation>
 <translation id="2932765531295814441">Voeg wagwoorde handmatig by</translation>
 <translation id="2952581218264071393">1. Maak Chrome-instellings oop</translation>
+<translation id="2953871438216280742">Meld aan om jou leeslys in jou Google-rekening oop te maak en te stoor.</translation>
 <translation id="2958718410589002129">Wagwoorde</translation>
 <translation id="2961210776189273067">Titel</translation>
 <translation id="2964349545761222050">Blokkeer derdepartywebkoekies</translation>
@@ -385,6 +387,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3581564640715911333">Aanbieding om bladsye in ander tale te vertaal</translation>
 <translation id="3588820906588687999">Maak prent in nuwe oortjie oop</translation>
 <translation id="3595252146048399851">Jy kan altyd in <ph name="BEGIN_LINK" />instellings<ph name="END_LINK" /> kies wat om te sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
+<translation id="3595588371156514964">{COUNT,plural, =1{{COUNT} swak wagwoord}other{{COUNT} swak wagwoorde}}</translation>
 <translation id="3603009562372709545">Kopieer skakel se URL</translation>
 <translation id="3607167657931203000">Outovuldata</translation>
 <translation id="3608008480985212611">Meld aan om jou voorkeure te bestuur</translation>
@@ -622,6 +625,7 @@ Jou data is met jou sinkroniseringwagfrase geënkripteer. Voer dit in om te begi
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5211488077761630279">Laat “<ph name="SITE_NAME" />” toe om jou <ph name="PERMISSION" /> te gebruik?</translation>
 <translation id="5219295696240154694">Help om sekuriteit op die web vir almal beter te maak</translation>
+<translation id="5221339005270097309">Gaan tans wagwoorde na …</translation>
 <translation id="5228579091201413441">Aktiveer sinkronisering</translation>
 <translation id="5232485538978018676">Meld met bestuurde rekening aan</translation>
 <translation id="5234764350956374838">Verwerp</translation>
@@ -661,6 +665,7 @@ Jou data is met jou sinkroniseringwagfrase geënkripteer. Voer dit in om te begi
 Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou toestelle moet dieselfde iCloud-rekening gebruik.</translation>
 <translation id="5551897871312988470">Aanbieding om te vertaal</translation>
 <translation id="5556459405103347317">Herlaai</translation>
+<translation id="555749644339804659">Gaan tans wagwoorde na …</translation>
 <translation id="556042886152191864">Knoppie</translation>
 <translation id="5597915316964418992">Maak die oortjierooster oop</translation>
 <translation id="560322036295180549">Afgeskakel deur jou organisasie</translation>

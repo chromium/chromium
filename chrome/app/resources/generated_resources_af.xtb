@@ -699,6 +699,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1593594475886691512">Formateer tans …</translation>
 <translation id="159359590073980872">Prentkas</translation>
 <translation id="1593926297800505364">Stoor betaalmetode</translation>
+<translation id="1594703455918849716">Gaan na Kontrolebladsy</translation>
 <translation id="1595492813686795610">Linux gradeer tans op</translation>
 <translation id="1596286373007273895">Beskikbaar</translation>
 <translation id="1596709061955594992">Bluetooth is afgeskakel. Skakel Bluetooth aan om beskikbare toestelle te sien.</translation>
@@ -1694,6 +1695,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2399699884460174994">Kennisgewings is aangeskakel</translation>
 <translation id="2399939490305346086">Sekuriteitsleutel se aanmelddata</translation>
 <translation id="2400664245143453337">Onmiddellike opdatering word vereis</translation>
+<translation id="2402226831639195063">Tone</translation>
 <translation id="2406153734066939945">Vee hierdie profiel en sy data uit?</translation>
 <translation id="2408018932941436077">Stoor tans kaart</translation>
 <translation id="2408955596600435184">Voer jou PIN in</translation>
@@ -1705,6 +1707,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="241082044617551207">Onbekende inprop</translation>
 <translation id="2410940059315936967">’n Werf wat jy besoek, kan inhoud van ander werwe af inbed, byvoorbeeld prente, advertensies en teks. Webkoekies wat deur hierdie ander werwe gestel word, word derdepartywebkoekies genoem.</translation>
 <translation id="2411666601450687801">Geen virtuele masjiene word op hierdie toestel toegelaat nie</translation>
+<translation id="2412015533711271895">Jou ouer of voog moet sê dis aanvaarbaar dat jy hierdie uitbreiding gebruik</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414886740292270097">Donker</translation>
 <translation id="2416435988630956212">Sleutelbordfunksiesleutels</translation>
@@ -3087,6 +3090,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3651488188562686558">Van Wi-Fi ontkoppel</translation>
 <translation id="3652817283076144888">Inisieer tans</translation>
 <translation id="3653160965917900914">Netwerklêerdelings</translation>
+<translation id="3653887973853407813">Jy kan nie hierdie uitbreiding gebruik nie. Jou ouer of voog het “Toestemmings vir werwe, apps en uitbreidings" vir Chrome afgeskakel.</translation>
 <translation id="3653999333232393305">Hou aan om <ph name="HOST" /> toe te laat om by jou mikrofoon in te gaan</translation>
 <translation id="3654045516529121250">Lees jou toeganklikheidinstellings</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Dit het permanente toegang tot een lêer.}other{Dit het permanente toegang tot # lêers.}}</translation>
@@ -5159,6 +5163,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="5517304475148761050">Hierdie program moet toegang tot die Play Winkel hê</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">Vra wanneer 'n werf teks en foto's wat na die knipbord gekopieer is, wil sien</translation>
+<translation id="5518949581554491184">Stel op met Android-foon</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Is dit die tuisblad wat jy verwag het?</translation>
 <translation id="5522156646677899028">Die uitbreiding bevat 'n ernstige sekuriteitswakheid.</translation>
@@ -6493,6 +6498,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6725206449694821596">Internetdrukkerprotokol (IPP)</translation>
 <translation id="6725970970008349185">Getal kandidate om per bladsy te wys</translation>
 <translation id="672609503628871915">Sien wat nuut is</translation>
+<translation id="6726800386221816228">Spesiale karakters</translation>
 <translation id="67269783048918309">Stuur gebruik- en diagnostiese data. Hierdie toestel stuur tans diagnostiese, toestel- en programgebruikdata outomaties na Google toe. Dit sal nie gebruik word om jou kind te identifiseer nie en sal met stelsel- en programstabiliteit en ander verbeteringe help. Sekere saamgestelde data sal ook Google-programme en -vennote, soos Android-ontwikkelaars, help. Hierdie <ph name="BEGIN_LINK1" />instelling<ph name="END_LINK1" /> word deur die eienaar afgedwing. As die bykomende Web- en App-aktiwiteit-instelling vir jou kind aangeskakel is, kan hierdie data in hul Google-rekening gestoor word. <ph name="BEGIN_LINK2" />Kom meer te wete<ph name="END_LINK2" /></translation>
 <translation id="6728528977475057549">IBAN eindig met <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="6729192290958770680">Voer jou gebruikernaam in</translation>
@@ -6895,6 +6901,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7063129466199351735">Verwerk tans kortpaaie …</translation>
 <translation id="7063311912041006059">URL met <ph name="SPECIAL_SYMBOL" /> in die plek van 'n navraag</translation>
 <translation id="706342288220489463">Laat jou Assistent inligting op jou skerm gebruik om te help</translation>
+<translation id="70641621694466590">Gaan na Wagwoorde-bladsy</translation>
 <translation id="7064734931812204395">Stel tans die Linux-houer op. Dit kan tot 30 minute neem.</translation>
 <translation id="7065223852455347715">Hierdie toestel is gesluit in 'n modus wat onderneminginskrywing verhinder. As jy die toestel wil inskryf, moet jy eers deur toestelterugstelling gaan.</translation>
 <translation id="7065534935986314333">Meer oor stelsel</translation>
@@ -7396,6 +7403,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> met die program <ph name="APP_NAME" /></translation>
 <translation id="754207240458482646">Is met ander toestelle in jou rekening gesinkroniseer. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">Aktiveer ontfoutingkenmerke op hierdie <ph name="IDS_SHORT_PRODUCT_NAME" />-toestel</translation>
+<translation id="7544977292347272434">Vra jou ouer om ’n uitbreiding toe te laat</translation>
 <translation id="7545466883021407599">Kon nie aan die bediener koppel nie. Gaan jou netwerkverbinding na en probeer weer. Probeer om jou Chromebook te herbegin as jy steeds sukkel. Foutkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Waarskuwing: jou <ph name="PRODUCT_NAME" />-instellings is op 'n netwerkskyf gestoor. Dit kan lei tot stadige reaksies, omvalle en selfs die verlies van data.</translation>
 <translation id="7548856833046333824">Limonade</translation>
@@ -7624,6 +7632,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7728668285692163452">Kanaalverandering sal later toegepas word</translation>
 <translation id="7730449930968088409">Vang inhoud van jou skerm vas</translation>
 <translation id="7730683939467795481">Hierdie bladsy is deur die "<ph name="EXTENSION_NAME" />"-uitbreiding verander</translation>
+<translation id="773511996612364297">Aksenttekens</translation>
 <translation id="7735165285389721951">’n Ander Steam-opstelling loop tans. Wag asseblief dat dit voltooi word voordat jy weer probeer</translation>
 <translation id="7737115349420013392">Bind tans saam met "<ph name="DEVICE_NAME" />" …</translation>
 <translation id="7737203573077018777"><ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" />-instruksie is ontvang</translation>
@@ -7706,6 +7715,7 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7792388396321542707">Hou op deel</translation>
 <translation id="779308894558717334">Liggroen</translation>
 <translation id="7793098747275782155">Donkerblou</translation>
+<translation id="7796453472368605346">Diakritiese tekens</translation>
 <translation id="7797571222998226653">Af</translation>
 <translation id="7798504574384119986">Bekyk webtoestemmings</translation>
 <translation id="7798844538707273832">Het <ph name="PERMISSION" /> outomaties geblokkeer</translation>
@@ -7790,6 +7800,7 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7876027585589532670">Kan nie kortpad wysig nie</translation>
 <translation id="7877451762676714207">Onbekende bedienerfout. Probeer asseblief weer, of kontak die bedieneradministrateur.</translation>
 <translation id="7878945852730162014">Bestuur lêers terwyl hulle aflaai, en maak hulle oop wanneer hulle klaar afgelaai het</translation>
+<translation id="7879172417209159252">Kan nie uitbreiding gebruik nie</translation>
 <translation id="7879478708475862060">Volg invoermodus</translation>
 <translation id="7879631849810108578">Kortpadstel: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
 <translation id="7880823633812189969">Plaaslike data sal uitgevee word wanneer jy herbegin</translation>

@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB-C-enhet (porten foran)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> endret til <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Klikk på bekreft for å beholde endringene. De forrige innstillingene blir gjenopprettet om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Bluetooth-enheten «<ph name="DEVICE_NAME" />» ber om tillatelse til å koble til. Skriv inn denne PIN-koden på den aktuelle enheten: <ph name="PINCODE" /></translation>
+<translation id="1017556409696559990">Minimer det øverste vinduet når det ikke er noen tilbakelogg i Chrome</translation>
 <translation id="1024364763893396229">Lagre <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Pekepennen har lite batteri</translation>
 <translation id="1036073649888683237">For å administrere varsler, gå til Innstillinger</translation>
@@ -343,6 +344,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2621713457727696555">Sikret</translation>
 <translation id="263399434338050016">«Merk alt»</translation>
+<translation id="2644422758626431000">Fest vinduet til venstre</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647092942972307022"><ph name="USED_MEMORY" /> av <ph name="TOTAL_MEMORY" /> er tilgjengelig</translation>
 <translation id="2653019840645008922">Vindusopptak</translation>
@@ -1054,6 +1056,7 @@ Koble enheten til strøm.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">På</translation>
 <translation id="5920710855273935292">Lyden for mikrofonen er kuttet.</translation>
+<translation id="5922962980596822074">Gå gjennom vinduer, fra det mest nylig brukte vinduet</translation>
 <translation id="5924855612669061715">Wifi-sonen er på</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> er på.</translation>
 <translation id="5947494881799873997">Tilbakestill</translation>
@@ -1143,6 +1146,7 @@ Koble enheten til strøm.</translation>
 <translation id="6352082849089527770">Ukjente nettverk</translation>
 <translation id="6359587239691116345">Få de nyeste funksjonene og sikkerhetsforbedringene. Hvis du avviser denne oppdateringen, kan det hende at enheten slutter å fungere som den skal, og du kan oppleve sikkerhets- og ytelsesproblemer.</translation>
 <translation id="6376931439017688372">Bluetooth er på</translation>
+<translation id="6378515133128829137">Fest vinduet til høyre</translation>
 <translation id="6381109794406942707">For å låse opp enheten, skriv inn PIN-koden.</translation>
 <translation id="638716340450135524">Slå på kameratilgang</translation>
 <translation id="639644700271529076">CAPS LOCK er av</translation>
@@ -1162,6 +1166,7 @@ Koble enheten til strøm.</translation>
 <translation id="6459472438155181876">Utvider skjermen til <ph name="DISPLAY_NAME" /></translation>
 <translation id="6477681113376365978">Kan ikke laste ned filen</translation>
 <translation id="6482559668224714696">Lupe for hele skjermen</translation>
+<translation id="6483727822843292440">Gå gjennom vinduer, fra det minst brukte vinduet</translation>
 <translation id="6490471652906364588">USB-C-enhet (porten på høyre side)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> krever at du oppdaterer <ph name="DEVICE_TYPE" /> før tidsfristen</translation>
 <translation id="649452524636452238">PIN-koden til smartkortet</translation>

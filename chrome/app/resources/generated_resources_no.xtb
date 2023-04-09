@@ -696,6 +696,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1593594475886691512">Formaterer …</translation>
 <translation id="159359590073980872">Bildebuffer</translation>
 <translation id="1593926297800505364">Lagre betalingsmåten</translation>
+<translation id="1594703455918849716">Gå til sjekksiden</translation>
 <translation id="1595492813686795610">Linux oppgraderes</translation>
 <translation id="1596286373007273895">Tilgjengelig</translation>
 <translation id="1596709061955594992">Bluetooth er slått av. For å se tilgjengelige enheter, slå på Bluetooth.</translation>
@@ -1689,6 +1690,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2399699884460174994">Varsler er slått på</translation>
 <translation id="2399939490305346086">Påloggingsdata på sikkerhetsnøkkelen</translation>
 <translation id="2400664245143453337">Umiddelbar oppdatering kreves</translation>
+<translation id="2402226831639195063">Toner</translation>
 <translation id="2406153734066939945">Vil du slette denne profilen og tilhørende data?</translation>
 <translation id="2408018932941436077">Lagrer kortet</translation>
 <translation id="2408955596600435184">Skriv inn PIN-koden din</translation>
@@ -1700,6 +1702,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="241082044617551207">Ukjent programtillegg</translation>
 <translation id="2410940059315936967">Et nettsted du besøker, kan bygge inn innhold fra andre nettsteder, for eksempel bilder, annonser og tekst. Informasjonskapsler som angis av disse andre nettstedene, kalles informasjonskapsler fra tredjeparter.</translation>
 <translation id="2411666601450687801">Ingen virtuelle maskiner er tillatt på denne enheten</translation>
+<translation id="2412015533711271895">En forelder eller foresatt må gi deg lov til å bruke denne utvidelsen</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414886740292270097">Mørk</translation>
 <translation id="2416435988630956212">Funksjonstaster på tastaturet</translation>
@@ -3083,6 +3086,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3651488188562686558">koble fra wifi</translation>
 <translation id="3652817283076144888">Initialiserer</translation>
 <translation id="3653160965917900914">Fildelinger på nettverket</translation>
+<translation id="3653887973853407813">Du kan ikke bruke denne utvidelsen. En forelder eller foresatt har slått av «Tillatelser for nettsteder, apper og utvidelser» for Chrome.</translation>
 <translation id="3653999333232393305">Fortsett å tillate <ph name="HOST" /> å bruke mikrofonen din</translation>
 <translation id="3654045516529121250">lese tilgjengelighetsinnstillingene dine</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Den har permanent tilgang til én fil.}other{Den har permanent tilgang til # filer.}}</translation>
@@ -5151,6 +5155,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5517304475148761050">Denne appen krever tilgang til Play-butikken</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">Spør når et nettsted ber om å se tekst og bilder som er kopiert til utklippstavlen</translation>
+<translation id="5518949581554491184">Konfigurer med en Android-telefon</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Er dette startsiden du forventet?</translation>
 <translation id="5522156646677899028">Denne utvidelsen inneholder et alvorlig sikkerhetsproblem.</translation>
@@ -6485,6 +6490,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6725206449694821596">Internet Printing Protocol (IPP)</translation>
 <translation id="6725970970008349185">Antall kandidater som vises per side</translation>
 <translation id="672609503628871915">Se hva som er nytt</translation>
+<translation id="6726800386221816228">Spesialtegn</translation>
 <translation id="67269783048918309">Send bruks- og diagnostikkdata. Denne enheten sender for øyeblikket diagnostikk-, enhets- og appbruksdata til Google automatisk. Disse dataene brukes ikke til å identifisere barnet ditt, men bidrar til å gjøre systemet og appene bedre og mer stabile. Noen aggregerte data hjelper også Google-apper og -partnere, for eksempel Android-utviklere. Denne <ph name="BEGIN_LINK1" />innstillingen<ph name="END_LINK1" /> håndheves av eieren. Hvis du har slått på innstillingen for annen nett- og appaktivitet for barnet ditt, kan disse dataene bli lagret i barnets Google-konto. <ph name="BEGIN_LINK2" />Finn ut mer<ph name="END_LINK2" /></translation>
 <translation id="6728528977475057549">IBAN-nummer som slutter på <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="6729192290958770680">Skriv inn brukernavnet ditt</translation>
@@ -6887,6 +6893,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7063129466199351735">Behandler snarveier …</translation>
 <translation id="7063311912041006059">Nettadresse med <ph name="SPECIAL_SYMBOL" /> i stedet for søket</translation>
 <translation id="706342288220489463">La assistenten bruke informasjon på skjermen for å hjelpe deg</translation>
+<translation id="70641621694466590">Gå til Passord-siden</translation>
 <translation id="7064734931812204395">Konfigurerer Linux-beholderen. Dette kan ta opptil 30 minutter.</translation>
 <translation id="7065223852455347715">Denne enheten er låst i en modus som forhindrer bedriftsregistrering. Hvis du vil registrere enheten, må du du gjenopprette enheten først.</translation>
 <translation id="7065534935986314333">Om systemet</translation>
@@ -7388,6 +7395,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> med <ph name="APP_NAME" />-appen</translation>
 <translation id="754207240458482646">Synkronisert med andre enheter på kontoen. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">Slå på feilsøkingsfunksjoner på denne <ph name="IDS_SHORT_PRODUCT_NAME" />-enheten</translation>
+<translation id="7544977292347272434">Be forelderen din om å tillate en utvidelse</translation>
 <translation id="7545466883021407599">Kunne ikke koble til tjeneren. Kontroller nettverkstilkoblingen og prøv på nytt. Hvis du fremdeles har problemer, kan du prøve å starte Chromebook på nytt. Feilkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Advarsel: <ph name="PRODUCT_NAME" />-innstillingene dine lagres på en nettverksdisk. Dette kan forårsake forsinkelser, krasjer og til og med tap av data.</translation>
 <translation id="7548856833046333824">Limonade</translation>
@@ -7616,6 +7624,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7728668285692163452">Kanalendringen blir tatt i bruk senere.</translation>
 <translation id="7730449930968088409">ta bilde av innhold på skjermen din</translation>
 <translation id="7730683939467795481">Denne siden ble endret av utvidelsen «<ph name="EXTENSION_NAME" />»</translation>
+<translation id="773511996612364297">Aksenttegn</translation>
 <translation id="7735165285389721951">En annen Steam-konfigurering kjører. Vent til den er ferdig, før du prøver på nytt</translation>
 <translation id="7737115349420013392">Sammenkobler med «<ph name="DEVICE_NAME" />» …</translation>
 <translation id="7737203573077018777">En <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" />-instruksjon er mottatt</translation>
@@ -7698,6 +7707,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7792388396321542707">Stopp deling</translation>
 <translation id="779308894558717334">Lys grønn</translation>
 <translation id="7793098747275782155">Mørk blå</translation>
+<translation id="7796453472368605346">Diakritiske tegn</translation>
 <translation id="7797571222998226653">Av</translation>
 <translation id="7798504574384119986">Se nettillatelser</translation>
 <translation id="7798844538707273832">Automatisk blokkert <ph name="PERMISSION" /></translation>
@@ -7782,6 +7792,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7876027585589532670">Kan ikke endre snarveien</translation>
 <translation id="7877451762676714207">Ukjent tjenerfeil. Prøv på nytt eller kontakt tjeneradministratoren.</translation>
 <translation id="7878945852730162014">Administrer filer etter hvert som de lastes ned, og åpne dem når de er klare</translation>
+<translation id="7879172417209159252">Kan ikke bruke utvidelsen</translation>
 <translation id="7879478708475862060">Følg inndatamodus</translation>
 <translation id="7879631849810108578">Snarveien er angitt: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
 <translation id="7880823633812189969">Lokale data slettes når du starter på nytt</translation>

@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">Dyfais USB-C (porth blaen)</translation>
 <translation id="1013598600051641573">Mae <ph name="DISPLAY_NAME" /> wedi newid i <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Cliciwch Cadarnhau i gadw'r newidiadau. Bydd y gosodiadau blaenorol yn cael eu hadfer mewn <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Hoffai'r ddyfais Bluetooth "<ph name="DEVICE_NAME" />" gael caniatâd i baru. Rhowch y cod PIN hwn ar y ddyfais honno: <ph name="PINCODE" /></translation>
+<translation id="1017556409696559990">Lleihau'r ffenestr uchaf pan nad oes hanes ôl yn Chrome</translation>
 <translation id="1024364763893396229">Cadw eich <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Mae batri'r pwyntil yn isel</translation>
 <translation id="1036073649888683237">I reoli hysbysiadau, ewch i'r Gosodiadau</translation>
@@ -343,6 +344,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2621713457727696555">Diogel</translation>
 <translation id="263399434338050016">"Dewis y cyfan"</translation>
+<translation id="2644422758626431000">Pinio'r ffenestr i'r chwith</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647092942972307022">Mae <ph name="USED_MEMORY" /> o <ph name="TOTAL_MEMORY" /> ar gael</translation>
 <translation id="2653019840645008922">Tynnu sgrinlun o'r ffenestr</translation>
@@ -1054,6 +1056,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Ymlaen</translation>
 <translation id="5920710855273935292">Mae'r meic wedi'i ddistewi.</translation>
+<translation id="5922962980596822074">Mynd trwy ffenestri o'r ffenestr a ddefnyddiwyd yn fwyaf diweddar</translation>
 <translation id="5924855612669061715">Mae'r Boethfan wedi'i throi ymlaen</translation>
 <translation id="5946788582095584774">Mae <ph name="FEATURE_NAME" /> wedi'i droi ymlaen.</translation>
 <translation id="5947494881799873997">Dychwelyd</translation>
@@ -1143,6 +1146,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="6352082849089527770">Rhwydweithiau anhysbys</translation>
 <translation id="6359587239691116345">Cewch y nodweddion a'r gwelliannau diogelwch diweddaraf. Os byddwch yn gwrthod y diweddariad hwn, mae'n bosib na fydd eich dyfais yn gweithio'n iawn mwyach ac mae'n bosib y byddwch yn profi problemau diogelwch a pherfformiad.</translation>
 <translation id="6376931439017688372">Mae Bluetooth ymlaen</translation>
+<translation id="6378515133128829137">Pinio'r ffenestr i'r dde</translation>
 <translation id="6381109794406942707">Rhowch eich PIN i ddatgloi'r ddyfais hon.</translation>
 <translation id="638716340450135524">Trowch fynediad at y camera ymlaen</translation>
 <translation id="639644700271529076">Mae'r CAPS LOCK wedi'i ddiffodd</translation>
@@ -1162,6 +1166,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="6459472438155181876">Wrthi'n ymestyn y sgrîn i <ph name="DISPLAY_NAME" /></translation>
 <translation id="6477681113376365978">Methu â lawrlwytho'r ffeil</translation>
 <translation id="6482559668224714696">Chwyddwr sgrîn lawn</translation>
+<translation id="6483727822843292440">Mynd trwy ffenestri o'r ffenestr a ddefnyddir leiaf</translation>
 <translation id="6490471652906364588">Dyfais USB-C (porth de)</translation>
 <translation id="6491071886865974820">Mae <ph name="MANAGER" /> gofyn i chi ddiweddaru eich <ph name="DEVICE_TYPE" /> cyn y dyddiad terfyn</translation>
 <translation id="649452524636452238">PIN cerdyn smart</translation>

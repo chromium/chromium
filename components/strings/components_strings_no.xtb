@@ -1987,6 +1987,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5872692522325383488">IBAN er lagret</translation>
 <translation id="5873013647450402046">Banken din vil bekrefte at det er deg.</translation>
 <translation id="5877831137320480913">Skjønnhet og trening</translation>
+<translation id="5879989559903563723">Ikke tillatt i gjestemodus</translation>
 <translation id="5884465125445718607">Kinesisk konvolutt nr. 6</translation>
 <translation id="5887400589839399685">Kortet er lagret</translation>
 <translation id="5887687176710214216">Sist besøkt i går</translation>
@@ -3227,6 +3228,7 @@ Mer informasjon:
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Lover og offentlig administrasjon</translation>
 <translation id="8957210676456822347">Captive Portal-autorisasjon</translation>
+<translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Gå til nettstedsinnstillingene</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Forslag:<ph name="MARKUP_2" />Sjekk at du har datatilkobling.<ph name="MARKUP_3" />Last inn denne nettsiden på nytt senere.<ph name="MARKUP_4" />Kontroller adressen du har skrevet inn.<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Lagre kortet</translation>

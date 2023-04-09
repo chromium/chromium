@@ -730,6 +730,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2718207025093645426">L'usuari o el dispositiu gestionats no tenen cap política carregada.</translation>
 <translation id="2721148159707890343">Sol·licitud realitzada correctament</translation>
 <translation id="2723669454293168317">Executa una comprovació de seguretat a la configuració de Chrome</translation>
+<translation id="2725492561136085792">Prem Retorn per activar aquesta acció.</translation>
 <translation id="2726001110728089263">Safata lateral</translation>
 <translation id="2728127805433021124">El certificat del servidor està signat mitjançant un algoritme de signatura dèbil.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Executar el Diagnòstic de connectivitat<ph name="END_LINK" /></translation>
@@ -826,6 +827,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="299990983510665749">Cotxes amb porta posterior</translation>
 <translation id="3002501248619246229">Comprova el suport de la safata d'entrada</translation>
 <translation id="3005723025932146533">Mostra la còpia desada</translation>
+<translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />. Prem Tab per navegar per les accions disponibles i, a continuació, prem Retorn per executar l'acció seleccionada.</translation>
 <translation id="3013291976881901233">Dispositius MIDI</translation>
 <translation id="301521992641321250">Bloquejada automàticament</translation>
 <translation id="3016780570757425217">Saber la vostra ubicació</translation>

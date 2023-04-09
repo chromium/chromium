@@ -730,6 +730,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2718207025093645426">Upravljani uporabnik ali upravljana naprava nima naloženih pravilnikov.</translation>
 <translation id="2721148159707890343">Zahteva je uspela</translation>
 <translation id="2723669454293168317">V nastavitvah Chroma zaženite varnostno preverjanje.</translation>
+<translation id="2725492561136085792">Če želite aktivirati to dejanje, pritisnite Enter.</translation>
 <translation id="2726001110728089263">Stranski pladenj</translation>
 <translation id="2728127805433021124">Strežnikovo potrdilo je podpisano s šibkim podpisnim algoritmom.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Izvajanje orodja Diagnostika povezljivosti<ph name="END_LINK" /></translation>
@@ -826,6 +827,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="299990983510665749">Kombilimuzine</translation>
 <translation id="3002501248619246229">Preverite medije na vhodnem pladnju</translation>
 <translation id="3005723025932146533">Pokaži shranjeno kopijo</translation>
+<translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, če želite prebrskati razpoložljiva dejanja, nato pritisnite Enter, če želite izvesti izbrano dejanje.</translation>
 <translation id="3013291976881901233">Naprave MIDI</translation>
 <translation id="301521992641321250">Samodejno blokirano</translation>
 <translation id="3016780570757425217">podatke o vaši lokaciji</translation>

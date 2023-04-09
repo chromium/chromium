@@ -216,6 +216,7 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="2482878487686419369">Hysbysiadau</translation>
 <translation id="2496626742194544812">Mynd i'r Tab Cyntaf</translation>
 <translation id="2500374554657206846">Dewisiadau ar gyfer Cadw Cyfrinair</translation>
+<translation id="2502415369140591438">Mae <ph name="COUNT" /> o Gyfrineiriau wedi'u hailddefnyddio</translation>
 <translation id="2523363575747517183">Mae'r wefan hon yn ceisio agor rhaglen arall tro ar ôl tro.</translation>
 <translation id="2529021024822217800">Agor y Cyfan</translation>
 <translation id="2547458583188611426">Nid yw cysoni yn gweithio. I ddechrau cysoni, rhowch eich cyfrinymadrodd.</translation>
@@ -293,6 +294,7 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="2932085390869194046">Awgrymu Cyfrinair...</translation>
 <translation id="2932765531295814441">Ychwanegu Cyfrineiriau yn Bwrpasol</translation>
 <translation id="2952581218264071393">1. Agorwch Osodiadau Chrome</translation>
+<translation id="2953871438216280742">Mewngofnodwch i agor a chadw eich rhestr ddarllen yn eich Cyfrif Google.</translation>
 <translation id="2958718410589002129">Cyfrineiriau</translation>
 <translation id="2961210776189273067">Teitl</translation>
 <translation id="2964349545761222050">Rhwystro Cwcis Trydydd Parti</translation>
@@ -386,6 +388,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3581564640715911333">Cynnig cyfieithu tudalennau mewn ieithoedd eraill</translation>
 <translation id="3588820906588687999">Agor y Llun Mewn Tab Newydd</translation>
 <translation id="3595252146048399851">Gallwch bob amser ddewis beth i'w gysoni yn y <ph name="BEGIN_LINK" />gosodiadau<ph name="END_LINK" />. Gall Google bersonoleiddio Search a gwasanaethau eraill yn seiliedig ar eich hanes.</translation>
+<translation id="3595588371156514964">{COUNT,plural, =1{{COUNT} Cyfrinair Gwan}zero{{COUNT} Cyfrinair Gwan}two{{COUNT} Gyfrinair Gwan}few{{COUNT} Cyfrinair Gwan}many{{COUNT} Cyfrinair Gwan}other{{COUNT} Cyfrinair Gwan}}</translation>
 <translation id="3603009562372709545">Copïo Dolen URL</translation>
 <translation id="3607167657931203000">Data Awtolenwi</translation>
 <translation id="3608008480985212611">Mewngofnodwch i reoli eich dewisiadau.</translation>
@@ -624,6 +627,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5197255632782567636">Rhyngrwyd</translation>
 <translation id="5211488077761630279">Caniatáu i "<ph name="SITE_NAME" />" ddefnyddio eich <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Helpwch i Wella Diogelwch ar y We i Bawb</translation>
+<translation id="5221339005270097309">Wrthi'n Gwirio Cyfrineiriau…</translation>
 <translation id="5228579091201413441">Galluogi cysoni</translation>
 <translation id="5232485538978018676">Mewngofnodwch gyda Chyfrif a Reolir</translation>
 <translation id="5234764350956374838">Diystyru</translation>
@@ -663,6 +667,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyfeisiau ddefnyddio'r un cyfrif iCloud.</translation>
 <translation id="5551897871312988470">Cynnig Cyfieithu</translation>
 <translation id="5556459405103347317">Ail-lwytho</translation>
+<translation id="555749644339804659">Wrthi'n gwirio cyfrineiriau…</translation>
 <translation id="556042886152191864">Botwm</translation>
 <translation id="5597915316964418992">Agorwch y Grid Tabiau</translation>
 <translation id="560322036295180549">Wedi'i ddiffodd gan eich sefydliad</translation>

@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB C-toestel (poort aan voorkant)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> het verander na <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Klik Bevestig om veranderinge te hou. Die vorige instellings sal oor <ph name="TIMEOUT_SECONDS" /> teruggestel word.</translation>
 <translation id="1013923882670373915">Bluetooth-toestel "<ph name="DEVICE_NAME" />" vra toestemming om saam te bind. Voer asseblief hierdie PIN-kode op daardie toestel in: <ph name="PINCODE" /></translation>
+<translation id="1017556409696559990">Maak boonste venster klein wanneer daar geen teruggeskiedenis in Chrome is nie</translation>
 <translation id="1024364763893396229">Stoor jou <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Stilus se battery is amper pap</translation>
 <translation id="1036073649888683237">Gaan na Instellings om kennisgewings te bestuur</translation>
@@ -343,6 +344,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2620436844016719705">Stelsel</translation>
 <translation id="2621713457727696555">Beveilig</translation>
 <translation id="263399434338050016">"Kies alles"</translation>
+<translation id="2644422758626431000">Speld venster aan linkerkant vas</translation>
 <translation id="2645435784669275700">Chrome-bedryfstelsel</translation>
 <translation id="2647092942972307022"><ph name="USED_MEMORY" /> van <ph name="TOTAL_MEMORY" /> beskikbaar</translation>
 <translation id="2653019840645008922">Vensterskoot</translation>
@@ -1055,6 +1057,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Aan</translation>
 <translation id="5920710855273935292">Mikrofoon is gedemp.</translation>
+<translation id="5922962980596822074">Gaan deur vensters vanaf die venster wat mees onlangs gebruik is</translation>
 <translation id="5924855612669061715">Warmkol is aan</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> is aan.</translation>
 <translation id="5947494881799873997">Stel terug</translation>
@@ -1144,6 +1147,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6352082849089527770">Onbekende netwerke</translation>
 <translation id="6359587239691116345">Kry die jongste kenmerke en veiligheidverbeterings. As jy hierdie opdatering weier, sal jou toestel dalk nie meer reg werk nie en kan jy veiligheid- en werkverrigtingkwessies ervaar.</translation>
 <translation id="6376931439017688372">Bluetooth is aan</translation>
+<translation id="6378515133128829137">Speld venster aan regterkant vas</translation>
 <translation id="6381109794406942707">Voer jou PIN in om die toestel te ontsluit.</translation>
 <translation id="638716340450135524">Skakel kameratoegang aan</translation>
 <translation id="639644700271529076">HOOFLETTERSLOT is af</translation>
@@ -1163,6 +1167,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6459472438155181876">Brei skerm na <ph name="DISPLAY_NAME" /> uit</translation>
 <translation id="6477681113376365978">Kan nie lêer aflaai nie</translation>
 <translation id="6482559668224714696">Volskermvergrootglas</translation>
+<translation id="6483727822843292440">Gaan deur vensters vanaf die venster wat die minste gebruik is</translation>
 <translation id="6490471652906364588">USB C-toestel (poort aan regterkant)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> vereis dat jy hierdie <ph name="DEVICE_TYPE" /> voor die spertyd opdateer</translation>
 <translation id="649452524636452238">Slimkaart-PIN</translation>

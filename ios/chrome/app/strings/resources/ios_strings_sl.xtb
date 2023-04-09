@@ -225,6 +225,7 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="2576499762020411840">Uporaba in shranjevanje gesel v računu Google</translation>
 <translation id="2578571896248130439">Pošlji spletno stran</translation>
 <translation id="2584132361465095047">Dodajanje računa ...</translation>
+<translation id="2595587704210555261">{COUNT,plural, =1{Odprti zavihki, ki jih ne uporabljate en dan ali več, se premaknejo na neaktivne zavihke, da se lahko preprosto osredotočite na zavihke, ki jih najpogosteje uporabljate. To lahko kadar koli spremenite v nastavitvah.}one{Odprti zavihki, ki jih ne uporabljate {COUNT} dan ali več, se premaknejo na neaktivne zavihke, da se lahko preprosto osredotočite na zavihke, ki jih najpogosteje uporabljate. To lahko kadar koli spremenite v nastavitvah.}two{Odprti zavihki, ki jih ne uporabljate {COUNT} dneva ali več, se premaknejo na neaktivne zavihke, da se lahko preprosto osredotočite na zavihke, ki jih najpogosteje uporabljate. To lahko kadar koli spremenite v nastavitvah.}few{Odprti zavihki, ki jih ne uporabljate {COUNT} dni ali več, se premaknejo na neaktivne zavihke, da se lahko preprosto osredotočite na zavihke, ki jih najpogosteje uporabljate. To lahko kadar koli spremenite v nastavitvah.}other{Odprti zavihki, ki jih ne uporabljate {COUNT} dni ali več, se premaknejo na neaktivne zavihke, da se lahko preprosto osredotočite na zavihke, ki jih najpogosteje uporabljate. To lahko kadar koli spremenite v nastavitvah.}}</translation>
 <translation id="2600682495497606169">Brisanje piškotkov spletnega mesta</translation>
 <translation id="2609008503159898744">Želite zapreti vse zavihke?</translation>
 <translation id="2625189173221582860">Geslo kopirano</translation>
@@ -571,6 +572,7 @@ Podatki so šifrirani z vašim geslom za sinhronizacijo. Vnesite ga, če želite
 <translation id="4844899002472726590">Ogled in urejanje tem, ki vas zanimajo</translation>
 <translation id="4848999860252535517">Želite izbrisati geslo za <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Nastavitev gesla</translation>
+<translation id="4856498338299082007">V računu Google</translation>
 <translation id="4858786880085262208">Če je mogoče, nadgradite na HTTPS. Varna spletna mesta morda vdelajo vsebino, ki ni varna.</translation>
 <translation id="4860895144060829044">Pokličite</translation>
 <translation id="4872323082491632254">Preverjanje gesel</translation>
@@ -1087,6 +1089,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="821809831108207540">Če želite osebno prilagoditi vir Odkrivanje in Chrome, se prijavite in vklopite sinhronizacijo.</translation>
 <translation id="8225985093977202398">Cached Images and Files</translation>
 <translation id="8237382152611443140">Odprite nastavitve za samodejno izpolnjevanje gesel.</translation>
+<translation id="8248969482078657578">Neaktivni zavihki vam pomagajo pri osredotočenosti</translation>
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="8264966119170358612">Nekatera shranjena gesla so bila razkrita v podatkovni kršitvi pri ponudniku, ki ni Google. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="8265018477030547118">Samo v tej napravi</translation>

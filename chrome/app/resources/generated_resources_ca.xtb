@@ -3016,6 +3016,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3609277884604412258">Cerca ràpida</translation>
 <translation id="3610241585790874201">Sense permís per desar dades al dispositiu</translation>
 <translation id="3610369246614755442">Cal reparar el ventilador de la base</translation>
+<translation id="3610961622607302617">Canvia la contrasenya per a <ph name="WEBSITE" /></translation>
 <translation id="361106536627977100">Dades Flash</translation>
 <translation id="3611655097742243705">Visita Play Store per trobar més aplicacions</translation>
 <translation id="3611658447322220736">Els llocs web tancats recentment poden acabar d'enviar i de rebre dades</translation>
@@ -6030,6 +6031,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6318125393809743217">Inclou un fitxer policies.json amb les configuracions de la política.</translation>
 <translation id="6318407754858604988">S'ha iniciat la baixada</translation>
 <translation id="6318944945640833942">No es detecta cap impressora. Torna a introduir-ne l'adreça.</translation>
+<translation id="6320808462673705899">No hi ha cap adreça d'interès que coincideixi amb la teva cerca.</translation>
 <translation id="6322370287306604163">Desbloqueja el dispositiu més ràpidament amb l'empremta digital</translation>
 <translation id="6322559670748154781">Aquest fitxer no se sol baixar i la Protecció avançada l'ha bloquejat</translation>
 <translation id="6324916366299863871">Edita la drecera</translation>

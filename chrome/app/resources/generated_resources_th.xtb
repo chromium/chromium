@@ -3019,6 +3019,7 @@
 <translation id="3609277884604412258">ค้นหาด่วน</translation>
 <translation id="3610241585790874201">ไม่ได้รับอนุญาตให้บันทึกข้อมูลลงในอุปกรณ์</translation>
 <translation id="3610369246614755442">ต้องซ่อมพัดลมของแท่นชาร์จ</translation>
+<translation id="3610961622607302617">เปลี่ยนรหัสผ่านสำหรับ <ph name="WEBSITE" /></translation>
 <translation id="361106536627977100">ข้อมูล Flash</translation>
 <translation id="3611655097742243705">ไปที่ Play Store เพื่อดูแอปเพิ่มเติม</translation>
 <translation id="3611658447322220736">เว็บไซต์ที่เพิ่งปิดไปจะส่งและรับข้อมูลจนเสร็จสิ้นได้</translation>
@@ -6034,6 +6035,7 @@
 <translation id="6318125393809743217">รวมไฟล์ policies.json พร้อมการกำหนดค่านโยบาย</translation>
 <translation id="6318407754858604988">เริ่มดาวน์โหลดแล้ว</translation>
 <translation id="6318944945640833942">ไม่พบเครื่องพิมพ์ โปรดป้อนที่อยู่เครื่องพิมพ์อีกครั้ง</translation>
+<translation id="6320808462673705899">ไม่มีบุ๊กมาร์กที่ตรงกับการค้นหาของคุณ</translation>
 <translation id="6322370287306604163">ปลดล็อกได้เร็วขึ้นด้วยลายนิ้วมือ</translation>
 <translation id="6322559670748154781">ไฟล์นี้ไม่ได้มีการดาวน์โหลดกันโดยทั่วไปและการปกป้องขั้นสูงได้บล็อกไว้</translation>
 <translation id="6324916366299863871">แก้ไขทางลัด</translation>

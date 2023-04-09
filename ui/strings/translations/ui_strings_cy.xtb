@@ -201,6 +201,7 @@
 <translation id="8393700583063109961">Anfon neges</translation>
 <translation id="8394908167088220973">Chwarae/Seibio Cyfryngau</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1f}zero{#b}two{#f}few{#b}many{#b}other{#b}}</translation>
+<translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623">Ffeil <ph name="SAVEAS_EXTENSION_TYPE" /> (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> kB/e</translation>
 <translation id="8725488761726303204">+<ph name="NUMBER" /> arall</translation>
