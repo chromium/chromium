@@ -4,6 +4,7 @@
 
 #include "chrome/updater/win/installer_api.h"
 
+#include <algorithm>
 #include <iterator>
 #include <string>
 #include <vector>
@@ -11,7 +12,6 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -143,7 +143,7 @@ int GetInstallerProgress(UpdaterScope updater_scope,
                   ERROR_SUCCESS) {
     return -1;
   }
-  return base::clamp(progress, DWORD{0}, DWORD{100});
+  return std::clamp(progress, DWORD{0}, DWORD{100});
 }
 
 bool SetInstallerProgressForTesting(UpdaterScope updater_scope,

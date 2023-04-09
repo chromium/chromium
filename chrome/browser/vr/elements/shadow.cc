@@ -4,7 +4,8 @@
 
 #include "chrome/browser/vr/elements/shadow.h"
 
-#include "base/cxx17_backports.h"
+#include <algorithm>
+
 #include "chrome/browser/vr/ui_element_renderer.h"
 #include "device/vr/vr_gl_util.h"
 #include "ui/gfx/animation/tween.h"
@@ -143,7 +144,7 @@ void Shadow::LayOutContributingChildren() {
       shadow_caster_ ? shadow_caster_.get() : children().back().get();
   gfx::Point3F p = shadow_caster->LocalTransform().MapPoint(gfx::Point3F());
   DCHECK_GE(kMaximumChildDepth, p.z());
-  depth_ = base::clamp(p.z() / kMaximumChildDepth, 0.0f, 1.0f);
+  depth_ = std::clamp(p.z() / kMaximumChildDepth, 0.0f, 1.0f);
   // This is an arbitrary function that quickly accelerates from 0 toward 1.
   set_padding(gfx::Tween::FloatValueBetween(depth_, kXMinShadowGradientFactor,
                                             kXMaxShadowGradientFactor),

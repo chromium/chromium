@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
@@ -285,7 +284,7 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
   // If index is specified, honor the value, but keep it bound to
   // -1 <= index <= tab_strip->count() where -1 invokes the default behavior.
   int index = params.index.value_or(-1);
-  index = base::clamp(index, -1, browser->tab_strip_model()->count());
+  index = std::clamp(index, -1, browser->tab_strip_model()->count());
 
   int add_types = active ? AddTabTypes::ADD_ACTIVE : AddTabTypes::ADD_NONE;
   add_types |= AddTabTypes::ADD_FORCE_INDEX;

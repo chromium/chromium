@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/session/session_types.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
@@ -616,7 +616,7 @@ void SessionControllerClientImpl::SendSessionLengthLimit() {
   base::TimeDelta session_length_limit;
   if (local_state->HasPrefPath(prefs::kSessionLengthLimit)) {
     session_length_limit = base::Milliseconds(
-        base::clamp(local_state->GetInteger(prefs::kSessionLengthLimit),
+        std::clamp(local_state->GetInteger(prefs::kSessionLengthLimit),
                     kSessionLengthLimitMinMs, kSessionLengthLimitMaxMs));
   }
   base::Time session_start_time;

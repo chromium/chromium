@@ -4,8 +4,9 @@
 
 #include "chrome/browser/ui/views/tabs/tab_strip_scroll_session.h"
 
+#include <algorithm>
+
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/controls/scroll_view.h"
@@ -100,11 +101,11 @@ int TabStripScrollSessionWithTimer::CalculateSpeed() {
     case TabStripScrollSessionWithTimer::ScrollSessionTimerType::kVariableTimer:
       if (scroll_direction_ == TabScrollDirection::kScrollTowardsTrailingTabs) {
         return ceil(
-            base::clamp(GetRatioInScrollableRegion() * tab_scroll_offset, 0.0,
+            std::clamp(GetRatioInScrollableRegion() * tab_scroll_offset, 0.0,
                         CalculateBaseScrollOffset() * 3));
       } else {
         return floor(
-            base::clamp(GetRatioInScrollableRegion() * tab_scroll_offset,
+            std::clamp(GetRatioInScrollableRegion() * tab_scroll_offset,
                         CalculateBaseScrollOffset() * -3, 0.0));
       }
     default:

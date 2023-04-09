@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ash/arc/input_overlay/actions/action_move.h"
 
+#include <algorithm>
+
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
@@ -546,10 +547,10 @@ void ActionMove::CalculateMoveVector(gfx::PointF& touch_press_pos,
   float x = last_touch_root_location_.x();
   float y = last_touch_root_location_.y();
   last_touch_root_location_.set_x(
-      base::clamp(x, content_bounds.x() * display_scale_factor,
+      std::clamp(x, content_bounds.x() * display_scale_factor,
                   content_bounds.right() * display_scale_factor));
   last_touch_root_location_.set_y(
-      base::clamp(y, content_bounds.y() * display_scale_factor,
+      std::clamp(y, content_bounds.y() * display_scale_factor,
                   content_bounds.bottom() * display_scale_factor));
   if (rotation_transform) {
     last_touch_root_location_ =

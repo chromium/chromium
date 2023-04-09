@@ -15,7 +15,6 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -838,7 +837,7 @@ void ThumbnailCache::JpegProcessingTask(
   // portrait mode, or it would be shown in the wrong aspect ratio in
   // landscape mode.
   int scale = 2;
-  double aspect_ratio = base::clamp(jpeg_aspect_ratio, 0.5, 2.0);
+  double aspect_ratio = std::clamp(jpeg_aspect_ratio, 0.5, 2.0);
 
   int width = std::min(bitmap.width() / scale,
                        (int)(bitmap.height() * aspect_ratio / scale));

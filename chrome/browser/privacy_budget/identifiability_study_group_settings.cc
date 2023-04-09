@@ -4,10 +4,10 @@
 
 #include "chrome/browser/privacy_budget/identifiability_study_group_settings.h"
 
+#include <algorithm>
 #include <numeric>
 
 #include "base/containers/flat_map.h"
-#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/common/privacy_budget/privacy_budget_features.h"
@@ -78,11 +78,11 @@ IdentifiabilityStudyGroupSettings::IdentifiabilityStudyGroupSettings(
     std::vector<int> reid_blocks_bits,
     std::vector<double> reid_blocks_noise_probabilities)
     : enabled_(enabled),
-      expected_surface_count_(base::clamp<int>(
+      expected_surface_count_(std::clamp<int>(
           expected_surface_count,
           0,
           features::kMaxIdentifiabilityStudyExpectedSurfaceCount)),
-      surface_budget_(base::clamp<int>(
+      surface_budget_(std::clamp<int>(
           surface_budget,
           0,
           features::kMaxIdentifiabilityStudyActiveSurfaceBudget)),

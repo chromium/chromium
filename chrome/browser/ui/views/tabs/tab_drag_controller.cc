@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
 
+#include <algorithm>
 #include <limits>
 #include <set>
 #include <utility>
@@ -11,7 +12,6 @@
 #include "base/auto_reset.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -1657,7 +1657,7 @@ gfx::Point TabDragController::GetAttachedDragPoint(
   const int max_x =
       std::max(0, attached_context_->GetTabDragAreaWidth() -
                       TabStrip::GetSizeNeededForViews(attached_views_));
-  return gfx::Point(base::clamp(x, 0, max_x), 0);
+  return gfx::Point(std::clamp(x, 0, max_x), 0);
 }
 
 std::vector<TabSlotView*> TabDragController::GetViewsMatchingDraggedContents(

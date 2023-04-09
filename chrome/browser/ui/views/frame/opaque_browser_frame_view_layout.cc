@@ -11,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/containers/cxx20_erase.h"
-#include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -519,7 +518,7 @@ void OpaqueBrowserFrameViewLayout::SetBoundsForButton(
     const int height =
         delegate_->GetTopAreaHeight() - FrameEdgeInsets(false).top();
     const int corner_radius =
-        base::clamp((height - kCaptionButtonCenterSize) / 2, 0,
+        std::clamp((height - kCaptionButtonCenterSize) / 2, 0,
                     views::kCaptionButtonInkDropDefaultCornerRadius);
     button_size = gfx::Size(views::kCaptionButtonWidth, height);
     button->SetPreferredSize(button_size);

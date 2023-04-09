@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ui/ash/network/tether_notification_presenter.h"
 
+#include <algorithm>
 #include <string>
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/network_icon_image_source.h"
 #include "ash/public/cpp/notification_utils.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
@@ -85,7 +85,7 @@ class SettingsUiDelegateImpl
 const gfx::ImageSkia GetImageForSignalStrength(int signal_strength) {
   // Convert the [0, 100] range to [0, 4], since there are 5 distinct signal
   // strength icons (0 bars to 4 bars).
-  int normalized_signal_strength = base::clamp(signal_strength / 25, 0, 4);
+  int normalized_signal_strength = std::clamp(signal_strength / 25, 0, 4);
 
   return gfx::CanvasImageSource::MakeImageSkia<
       network_icon::SignalStrengthImageSource>(

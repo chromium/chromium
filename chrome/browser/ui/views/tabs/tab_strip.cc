@@ -18,7 +18,6 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -1313,7 +1312,7 @@ absl::optional<int> TabStrip::GetFocusedTabIndex() const {
 }
 
 views::View* TabStrip::GetTabViewForPromoAnchor(int index_hint) {
-  return tab_at(base::clamp(index_hint, 0, GetTabCount() - 1));
+  return tab_at(std::clamp(index_hint, 0, GetTabCount() - 1));
 }
 
 views::View* TabStrip::GetDefaultFocusableChild() {

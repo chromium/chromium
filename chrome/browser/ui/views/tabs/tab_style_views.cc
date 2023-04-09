@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
@@ -729,7 +728,7 @@ float GM2TabStyle::GetHoverOpacity() const {
   const float range_start = static_cast<float>(GetStandardWidth());
   constexpr float kWidthForMaxHoverOpacity = 32.0f;
   const float value_in_range = static_cast<float>(tab_->width());
-  const float t = base::clamp(
+  const float t = std::clamp(
       (value_in_range - range_start) / (kWidthForMaxHoverOpacity - range_start),
       0.0f, 1.0f);
   return tab_->controller()->GetHoverOpacityForTab(t * t);
@@ -939,7 +938,7 @@ float GM2TabStyle::GetTopCornerRadiusForWidth(int width) {
   // To maintain a round-rect appearance, ensure at least one third of the top
   // of the tab is flat.
   const float radius = top_width / 3.f;
-  return base::clamp<float>(radius, 0, ideal_radius);
+  return std::clamp<float>(radius, 0, ideal_radius);
 }
 
 // static

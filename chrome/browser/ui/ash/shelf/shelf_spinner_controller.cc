@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "ash/public/cpp/shelf_model.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
@@ -40,7 +40,7 @@ constexpr double kInactiveTransparency = 0.5;
 double TimeProportionSince(const base::Time& t1,
                            const base::Time& t2,
                            const base::TimeDelta& d) {
-  return base::clamp((t2 - t1) / d, 0.0, 1.0);
+  return std::clamp((t2 - t1) / d, 0.0, 1.0);
 }
 
 }  // namespace

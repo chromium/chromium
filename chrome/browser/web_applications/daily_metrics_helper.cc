@@ -5,12 +5,12 @@
 #include "chrome/browser/web_applications/daily_metrics_helper.h"
 
 #include <stdint.h>
+
 #include <algorithm>
 #include <string>
 #include <utility>
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/numerics/clamped_math.h"
 #include "base/strings/string_piece_forward.h"
@@ -38,7 +38,7 @@ namespace web_app {
 namespace {
 
 int BucketedDailySeconds(base::TimeDelta delta) {
-  int64_t sample = base::clamp(delta.InSeconds(), static_cast<int64_t>(0),
+  int64_t sample = std::clamp(delta.InSeconds(), static_cast<int64_t>(0),
                                base::Days(1).InSeconds());
   // Result between 1 sec and 1 day, in 50 linear buckets per day.
   int32_t bucket_size = base::Days(1).InSeconds() / 50;

@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 
@@ -14,7 +15,6 @@
 #include "base/check.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
@@ -451,7 +451,7 @@ int InternalAuthVerification::get_verification_window_ticks() {
   if (verification_window_seconds_ > 0)
     candidate = verification_window_seconds_ *
         base::Time::kMicrosecondsPerSecond / kTickUs;
-  return base::clamp(candidate, 1, kVerificationWindowTicks);
+  return std::clamp(candidate, 1, kVerificationWindowTicks);
 }
 
 int InternalAuthVerification::verification_window_seconds_ = 0;

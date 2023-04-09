@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -153,7 +152,7 @@ class BackgroundTaskCoordinatorHelper {
 
     base::TimeDelta window_start_time =
         background_task_time_.value() - clock_->Now();
-    window_start_time = base::clamp(window_start_time, base::TimeDelta(),
+    window_start_time = std::clamp(window_start_time, base::TimeDelta(),
                                     base::TimeDelta::Max());
 
     // TODO(xingliu): Remove SchedulerTaskTime.

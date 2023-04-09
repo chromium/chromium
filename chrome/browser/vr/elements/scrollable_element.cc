@@ -4,7 +4,8 @@
 
 #include "chrome/browser/vr/elements/scrollable_element.h"
 
-#include "base/cxx17_backports.h"
+#include <algorithm>
+
 #include "base/numerics/ranges.h"
 #include "chrome/browser/vr/input_event.h"
 #include "ui/gfx/animation/keyframe/transition.h"
@@ -115,7 +116,7 @@ void ScrollableElement::OnScrollUpdate(std::unique_ptr<InputEvent> gesture,
     scroll_offset_ -= gesture->scroll_data.delta_y * kScrollScaleFactor;
   }
   scroll_offset_ =
-      base::clamp(scroll_offset_, -half_scroll_span, half_scroll_span);
+      std::clamp(scroll_offset_, -half_scroll_span, half_scroll_span);
 }
 
 void ScrollableElement::OnScrollEnd(std::unique_ptr<InputEvent> gesture,

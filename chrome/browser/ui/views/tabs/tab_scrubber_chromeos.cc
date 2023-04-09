@@ -8,7 +8,6 @@
 
 #include <algorithm>
 
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ui/browser.h"
@@ -331,7 +330,7 @@ void TabScrubberChromeOS::UpdateSwipeX(float x_offset) {
   float max = x_offset;
   if (x_offset < 0)
     std::swap(min, max);
-  swipe_x_ += base::clamp(
+  swipe_x_ += std::clamp(
       x_offset - (tab_strip_->GetTabCount() * 0.02f * x_offset), min, max);
 
   // In an RTL layout, everything is mirrored, i.e. the index of the first tab

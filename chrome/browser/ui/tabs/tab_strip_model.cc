@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <string>
@@ -13,7 +14,6 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -943,7 +943,7 @@ void TabStripModel::AddWebContents(
       gfx::Range grouped_tabs =
           group_model_->GetTabGroup(group.value())->ListTabs();
       if (grouped_tabs.length() > 0) {
-        index = base::clamp(index, static_cast<int>(grouped_tabs.start()),
+        index = std::clamp(index, static_cast<int>(grouped_tabs.start()),
                             static_cast<int>(grouped_tabs.end()));
       }
     } else if (GetTabGroupForTab(index - 1) == GetTabGroupForTab(index)) {
@@ -1704,14 +1704,14 @@ bool TabStripModel::ShouldRunUnloadListenerBeforeClosing(
 }
 
 int TabStripModel::ConstrainInsertionIndex(int index, bool pinned_tab) const {
-  return pinned_tab ? base::clamp(index, 0, IndexOfFirstNonPinnedTab())
-                    : base::clamp(index, IndexOfFirstNonPinnedTab(), count());
+  return pinned_tab ? std::clamp(index, 0, IndexOfFirstNonPinnedTab())
+                    : std::clamp(index, IndexOfFirstNonPinnedTab(), count());
 }
 
 int TabStripModel::ConstrainMoveIndex(int index, bool pinned_tab) const {
   return pinned_tab
-             ? base::clamp(index, 0, IndexOfFirstNonPinnedTab() - 1)
-             : base::clamp(index, IndexOfFirstNonPinnedTab(), count() - 1);
+             ? std::clamp(index, 0, IndexOfFirstNonPinnedTab() - 1)
+             : std::clamp(index, IndexOfFirstNonPinnedTab(), count() - 1);
 }
 
 std::vector<int> TabStripModel::GetIndicesForCommand(int index) const {

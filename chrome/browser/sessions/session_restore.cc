@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <iterator>
 #include <list>
 #include <map>
@@ -16,7 +17,6 @@
 
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
-#include "base/cxx17_backports.h"
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -784,7 +784,7 @@ class SessionRestoreImpl : public BrowserListObserver {
     // yet due the ordering of TabStripModelObserver notifications in an edge
     // case.
 
-    const int selected_tab_index = base::clamp(
+    const int selected_tab_index = std::clamp(
         window.selected_tab_index, 0, static_cast<int>(window.tabs.size() - 1));
 
     for (int i = 0; i < static_cast<int>(window.tabs.size()); ++i) {

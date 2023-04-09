@@ -4,11 +4,11 @@
 
 #include "chrome/browser/notifications/scheduler/internal/impression_history_tracker.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
@@ -413,7 +413,7 @@ void ImpressionHistoryTrackerImpl::ApplyPositiveImpression(
 
   // Increase |current_max_daily_show| by 1.
   client_state->current_max_daily_show =
-      base::clamp(client_state->current_max_daily_show + 1, 0,
+      std::clamp(client_state->current_max_daily_show + 1, 0,
                   config_->max_daily_shown_per_type);
 }
 

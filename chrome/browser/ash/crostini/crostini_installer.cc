@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/crostini/crostini_installer.h"
 
+#include <algorithm>
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -385,7 +385,7 @@ void CrostiniInstaller::OnDiskImageCreated(bool success,
 }
 
 void CrostiniInstaller::OnContainerDownloading(int32_t download_percent) {
-  container_download_percent_ = base::clamp(download_percent, 0, 100);
+  container_download_percent_ = std::clamp(download_percent, 0, 100);
   RunProgressCallback();
 }
 
@@ -465,7 +465,7 @@ void CrostiniInstaller::RunProgressCallback() {
   // TODO(https://crbug.com/1000173): Calculate configure container step
   // progress based on real progress.
 
-  double progress = state_start_mark + base::clamp(state_fraction, 0.0, 1.0) *
+  double progress = state_start_mark + std::clamp(state_fraction, 0.0, 1.0) *
                                            (state_end_mark - state_start_mark);
   progress_callback_.Run(installing_state_, progress);
 }

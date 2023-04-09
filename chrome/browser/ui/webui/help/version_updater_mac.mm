@@ -8,10 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
+#include <algorithm>
 #include <string>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -85,7 +85,7 @@ namespace {
 int GetDownloadProgress(int64_t downloaded_bytes, int64_t total_bytes) {
   if (downloaded_bytes < 0 || total_bytes <= 0)
     return -1;
-  return 100 * base::clamp(static_cast<double>(downloaded_bytes) / total_bytes,
+  return 100 * std::clamp(static_cast<double>(downloaded_bytes) / total_bytes,
                            0.0, 1.0);
 }
 

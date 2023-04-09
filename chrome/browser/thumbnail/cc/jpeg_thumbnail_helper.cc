@@ -4,7 +4,8 @@
 
 #include "chrome/browser/thumbnail/cc/jpeg_thumbnail_helper.h"
 
-#include "base/cxx17_backports.h"
+#include <algorithm>
+
 #include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
@@ -25,7 +26,7 @@ void CompressTask(
   // portrait mode, or it would be shown in the wrong aspect ratio in
   // landscape mode.
   constexpr int kScale = 2;
-  double aspect_ratio = base::clamp(jpeg_aspect_ratio, 0.5, 2.0);
+  double aspect_ratio = std::clamp(jpeg_aspect_ratio, 0.5, 2.0);
 
   int width = std::min(bitmap.width() / kScale,
                        (int)(bitmap.height() * aspect_ratio / kScale));

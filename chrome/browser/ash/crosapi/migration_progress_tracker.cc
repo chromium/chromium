@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ash/crosapi/migration_progress_tracker.h"
 
-#include "base/cxx17_backports.h"
+#include <algorithm>
+
 #include "base/logging.h"
 
 namespace ash {
@@ -26,7 +27,7 @@ void MigrationProgressTrackerImpl::UpdateProgress(int64_t size) {
   size_copied_ += size;
 
   int new_progress = static_cast<int>(size_copied_ * 100 / total_size_to_copy_);
-  new_progress = base::clamp(new_progress, 0, 100);
+  new_progress = std::clamp(new_progress, 0, 100);
 
   if (progress_ < new_progress) {
     progress_ = new_progress;

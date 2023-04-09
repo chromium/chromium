@@ -13,7 +13,6 @@
 #include <string>
 
 #include "base/containers/lru_cache.h"
-#include "base/cxx17_backports.h"
 #include "base/i18n/break_iterator.h"
 #include "base/i18n/char_iterator.h"
 #include "base/memory/raw_ptr.h"
@@ -983,7 +982,7 @@ absl::optional<double> TabHoverCardBubbleView::GetPreviewImageCrossfadeStart() {
       features::kTabHoverCardImages,
       features::kTabHoverCardImagesCrossfadePreviewAtParameterName, 0.25);
   return start_percent >= 0.0
-             ? absl::make_optional(base::clamp(start_percent, 0.0, 1.0))
+             ? absl::make_optional(std::clamp(start_percent, 0.0, 1.0))
              : absl::nullopt;
 }
 
