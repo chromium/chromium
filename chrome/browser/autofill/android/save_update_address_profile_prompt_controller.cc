@@ -109,6 +109,16 @@ SaveUpdateAddressProfilePromptController::GetPositiveButtonText() {
 
 std::u16string
 SaveUpdateAddressProfilePromptController::GetNegativeButtonText() {
+  if (is_migration_to_account_) {
+    return l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_MIGRATE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL);
+  }
+  if (!original_profile_ &&
+      profile_.source() == AutofillProfile::Source::kAccount) {
+    return l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_SAVE_IN_ACCOUNT_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL);
+  }
+
   return l10n_util::GetStringUTF16(
       IDS_ANDROID_AUTOFILL_SAVE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL);
 }
@@ -193,7 +203,9 @@ void SaveUpdateAddressProfilePromptController::OnUserDeclined(
     const base::android::JavaParamRef<jobject>& obj) {
   had_user_interaction_ = true;
   RunSaveAddressProfileCallback(
-      AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined);
+      is_migration_to_account_
+          ? AutofillClient::SaveAddressProfileOfferUserDecision::kNever
+          : AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined);
 }
 
 void SaveUpdateAddressProfilePromptController::OnUserEdited(

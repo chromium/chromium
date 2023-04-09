@@ -6,6 +6,7 @@
 
 #include <jni.h>
 #include <memory>
+#include <string>
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
@@ -87,6 +88,7 @@ class SaveUpdateAddressProfilePromptControllerTest
 
  protected:
   bool ShouldShowFooter() const;
+  std::u16string GetExpectedNegativeButtonText() const;
   void SetUpController(bool is_update);
 
   std::string GetLocale() { return "en-US"; }
@@ -95,6 +97,7 @@ class SaveUpdateAddressProfilePromptControllerTest
   raw_ptr<MockSaveUpdateAddressProfilePromptView> prompt_view_;
   AutofillProfile profile_;
   AutofillProfile original_profile_;
+  bool is_update_;
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback>
       decision_callback_;
   base::MockCallback<base::OnceCallback<void()>> dismissal_callback_;
@@ -108,8 +111,26 @@ bool SaveUpdateAddressProfilePromptControllerTest::ShouldShowFooter() const {
          profile_source() == AutofillProfile::Source::kAccount;
 }
 
+std::u16string
+SaveUpdateAddressProfilePromptControllerTest::GetExpectedNegativeButtonText()
+    const {
+  if (is_migration_to_account()) {
+    return l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_MIGRATE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL);
+  }
+
+  if (!is_update_ && profile_.source() == AutofillProfile::Source::kAccount) {
+    return l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_SAVE_IN_ACCOUNT_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL);
+  }
+
+  return l10n_util::GetStringUTF16(
+      IDS_ANDROID_AUTOFILL_SAVE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL);
+}
+
 void SaveUpdateAddressProfilePromptControllerTest::SetUpController(
     bool is_update) {
+  is_update_ = is_update;
   auto prompt_view = std::make_unique<MockSaveUpdateAddressProfilePromptView>();
   prompt_view_ = prompt_view.get();
   controller_ = std::make_unique<SaveUpdateAddressProfilePromptController>(
@@ -166,7 +187,9 @@ TEST_P(SaveUpdateAddressProfilePromptControllerTest,
 
   EXPECT_CALL(
       decision_callback_,
-      Run(AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined,
+      Run(is_migration_to_account()
+              ? AutofillClient::SaveAddressProfileOfferUserDecision::kNever
+              : AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined,
           profile_));
   controller_->OnUserDeclined(env_, mock_caller_);
 }
@@ -230,8 +253,7 @@ TEST_P(SaveUpdateAddressProfilePromptControllerTest,
   EXPECT_EQ(u"johndoe@hades.com", controller_->GetEmail());
   EXPECT_EQ(u"16502111111", controller_->GetPhoneNumber());
 
-  EXPECT_EQ(l10n_util::GetStringUTF16(
-                IDS_ANDROID_AUTOFILL_SAVE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL),
+  EXPECT_EQ(GetExpectedNegativeButtonText(),
             controller_->GetNegativeButtonText());
 
   if (ShouldShowFooter()) {
@@ -259,8 +281,7 @@ TEST_P(SaveUpdateAddressProfilePromptControllerTest,
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL),
             controller_->GetPositiveButtonText());
-  EXPECT_EQ(l10n_util::GetStringUTF16(
-                IDS_ANDROID_AUTOFILL_SAVE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL),
+  EXPECT_EQ(GetExpectedNegativeButtonText(),
             controller_->GetNegativeButtonText());
 
   if (ShouldShowFooter()) {
