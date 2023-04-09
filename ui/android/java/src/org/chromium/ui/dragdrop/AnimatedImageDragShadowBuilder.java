@@ -22,7 +22,6 @@ import android.view.View;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.ui.R;
-import org.chromium.ui.dragdrop.DragAndDropDelegateImpl.DragShadowSpec;
 
 /**
  * A {@link View.DragShadowBuilder} that animate the drag shadow from the original image in the web
@@ -64,7 +63,6 @@ class AnimatedImageDragShadowBuilder extends View.DragShadowBuilder {
     private final Matrix mTransformMatrix;
     private final View mContainerView;
     private final int mBorderSize;
-    private final boolean mIsTruncated;
 
     private final RectF mStartBounds = new RectF();
     private final RectF mEndBounds = new RectF();
@@ -86,7 +84,6 @@ class AnimatedImageDragShadowBuilder extends View.DragShadowBuilder {
     public AnimatedImageDragShadowBuilder(View containerView, Bitmap bitmap, float startX,
             float startY, DragShadowSpec dragShadowSpec) {
         this.mContainerView = containerView;
-        this.mIsTruncated = dragShadowSpec.isTruncated;
         Bitmap croppedDragShadow =
                 ThumbnailUtils.extractThumbnail(bitmap, dragShadowSpec.startWidth,
                         dragShadowSpec.startHeight, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
@@ -141,7 +138,7 @@ class AnimatedImageDragShadowBuilder extends View.DragShadowBuilder {
         outShadowTouchPoint.set(Math.round(mEndBounds.centerX()), Math.round(mEndBounds.centerY()));
         ObjectAnimator animator = ObjectAnimator.ofFloat(this, mProgressProperty, 1f);
         animator.setAutoCancel(true);
-        animator.setDuration(mIsTruncated ? 0 : ANIMATION_DURATION_MS);
+        animator.setDuration(ANIMATION_DURATION_MS);
         animator.start();
     }
 
@@ -186,7 +183,8 @@ class AnimatedImageDragShadowBuilder extends View.DragShadowBuilder {
         float startHeight = imageHeight;
         float targetWidth = startWidth;
         float targetHeight = startHeight;
-        boolean isTruncated = false;
+        float truncatedWidth = 0f;
+        float truncatedHeight = 0f;
 
         // Calculate the default scaled width / height.
         final float resizeRatio =
@@ -217,7 +215,7 @@ class AnimatedImageDragShadowBuilder extends View.DragShadowBuilder {
             if (targetHeight > maxHeightPx) {
                 targetHeight = maxHeightPx;
                 startHeight = targetHeight / targetWidth * startWidth;
-                isTruncated = true;
+                truncatedHeight = (imageHeight - startHeight) / 2;
             }
         } else if (targetHeight < minSizePx) {
             float scaleUpRatio = minSizePx / targetHeight;
@@ -226,11 +224,46 @@ class AnimatedImageDragShadowBuilder extends View.DragShadowBuilder {
             if (targetWidth > maxWidthPx) {
                 targetWidth = maxWidthPx;
                 startWidth = targetWidth / targetHeight * startHeight;
-                isTruncated = true;
+                truncatedWidth = (imageWidth - startWidth) / 2;
             }
         }
         return new DragShadowSpec(Math.round(startWidth), Math.round(startHeight),
-                Math.round(targetWidth), Math.round(targetHeight), isTruncated);
+                Math.round(targetWidth), Math.round(targetHeight), Math.round(truncatedWidth),
+                Math.round(truncatedHeight));
+    }
+
+    /**
+     * Return the adjusted {@link CursorOffset} based on the drag object size and shadow size.
+     */
+    static CursorOffset adjustCursorOffset(float cursorOffsetX, float cursorOffsetY,
+            int dragObjRectWidth, int dragObjRectHeight, DragShadowSpec dragShadowSpec) {
+        assert dragShadowSpec.truncatedHeight == 0
+                || dragShadowSpec.truncatedWidth
+                        == 0 : "Drag shadow should not be truncated in both dimensions";
+        float adjustedOffsetX = cursorOffsetX;
+        float adjustedOffsetY = cursorOffsetY;
+        if (dragShadowSpec.truncatedHeight != 0) {
+            float scaleFactor = (float) dragShadowSpec.startWidth / dragObjRectWidth;
+            adjustedOffsetX *= scaleFactor;
+            adjustedOffsetY *= scaleFactor;
+            adjustedOffsetY -= dragShadowSpec.truncatedHeight;
+            adjustedOffsetY = Math.max(0, adjustedOffsetY);
+            adjustedOffsetY = Math.min(dragShadowSpec.startHeight, adjustedOffsetY);
+            return new CursorOffset(adjustedOffsetX, adjustedOffsetY);
+        }
+        if (dragShadowSpec.truncatedWidth != 0) {
+            float scaleFactor = (float) dragShadowSpec.startHeight / dragObjRectHeight;
+            adjustedOffsetX *= scaleFactor;
+            adjustedOffsetY *= scaleFactor;
+            adjustedOffsetX -= dragShadowSpec.truncatedWidth;
+            adjustedOffsetX = Math.max(0, adjustedOffsetX);
+            adjustedOffsetX = Math.min(dragShadowSpec.startWidth, adjustedOffsetX);
+            return new CursorOffset(adjustedOffsetX, adjustedOffsetY);
+        }
+        float scaleFactor = (float) dragShadowSpec.startWidth / dragObjRectWidth;
+        adjustedOffsetX *= scaleFactor;
+        adjustedOffsetY *= scaleFactor;
+        return new CursorOffset(adjustedOffsetX, adjustedOffsetY);
     }
 
     /**
@@ -238,5 +271,34 @@ class AnimatedImageDragShadowBuilder extends View.DragShadowBuilder {
      */
     static int getDragShadowMinSize(Resources resources) {
         return resources.getDimensionPixelSize(R.dimen.drag_shadow_min_size);
+    }
+
+    static class DragShadowSpec {
+        public final int startWidth;
+        public final int startHeight;
+        public final int targetWidth;
+        public final int targetHeight;
+        public final int truncatedWidth;
+        public final int truncatedHeight;
+
+        DragShadowSpec(int startWidth, int startHeight, int targetWidth, int targetHeight,
+                int truncatedWidth, int truncatedHeight) {
+            this.startWidth = startWidth;
+            this.startHeight = startHeight;
+            this.targetWidth = targetWidth;
+            this.targetHeight = targetHeight;
+            this.truncatedWidth = truncatedWidth;
+            this.truncatedHeight = truncatedHeight;
+        }
+    }
+
+    static class CursorOffset {
+        public final float x;
+        public final float y;
+
+        CursorOffset(float x, float y) {
+            this.x = x;
+            this.y = y;
+        }
     }
 }
