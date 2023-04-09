@@ -4,6 +4,9 @@
 
 #include "chrome/updater/test/server.h"
 
+#include <algorithm>
+#include <cctype>
+#include <iterator>
 #include <list>
 #include <memory>
 #include <string>
@@ -40,8 +43,20 @@ std::string SerializeRequest(const net::test_server::HttpRequest& request) {
   request_strs.push_back("}");
 
   if (request.has_content) {
-    request_strs.push_back("Content:");
-    request_strs.push_back(request.content);
+    const size_t dump_limit = std::min(request.content.size(), size_t{2048});
+    request_strs.push_back(
+        base::StringPrintf("Content (size=%zu):", request.content.size()));
+    std::string printable_content;
+    printable_content.reserve(dump_limit);
+    base::ranges::transform(request.content.begin(),
+                            request.content.begin() + dump_limit,
+                            std::back_inserter(printable_content),
+                            [](char c) { return std::isprint(c) ? c : '.'; });
+    request_strs.push_back(printable_content);
+    if (request.content.size() > dump_limit) {
+      request_strs.push_back(base::StringPrintf(
+          "<Skipped printing %zu bytes>", request.content.size() - dump_limit));
+    }
   } else {
     request_strs.push_back("Content: <no content>");
   }
@@ -82,7 +97,8 @@ void ScopedServer::ExpectOnce(RequestMatcher request_matcher,
 
 std::unique_ptr<net::test_server::HttpResponse> ScopedServer::HandleRequest(
     const net::test_server::HttpRequest& request) {
-  VLOG(0) << "Handle " << SerializeRequest(request);
+  VLOG(0) << "Handle request at path:" << request.relative_url;
+  VLOG(3) << SerializeRequest(request);
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
   if (request_matchers_.empty()) {
     VLOG(0) << "Unexpected request.";
