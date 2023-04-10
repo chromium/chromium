@@ -200,6 +200,16 @@ found in the LICENSE file.
         on-input="onBrailleColumnsInput_" on-focusout="onBrailleColumnsFocusout_">
     </cr-input>
   </div>
+  <div class="settings-box continuation indented">
+    <div class="start settings-box-text" aria-hidden="true">
+      $i18n{chromeVoxVirtualBrailleDisplayStyleLabel}
+    </div>
+    <settings-dropdown-menu id="virtualBrailleDisplayStyleDropdown"
+        label="$i18n{chromeVoxVirtualBrailleDisplayStyleLabel}"
+        pref="{{prefs.settings.a11y.chromevox.braille_side_by_side}}"
+        menu-options="[[virtualBrailleDisplayStyleOptions_]]">
+    </settings-dropdown-menu>
+  </div>
 </div>
 <cr-expand-button id="developerOptionsExpandButton" class="hr"
     expanded="{{developerOptionsExpanded_}}">

@@ -170,6 +170,28 @@ class SettingsChromeVoxSubpageElement extends
       },
 
       /**
+       * Dropdown menu choices for virtual braille display style options.
+       */
+      virtualBrailleDisplayStyleOptions_: {
+        readOnly: true,
+        type: Array,
+        value() {
+          return [
+            {
+              value: false,
+              name: loadTimeData.getString(
+                  'chromeVoxVirtualBrailleDisplayStyleInterleave'),
+            },
+            {
+              value: true,
+              name: loadTimeData.getString(
+                  'chromeVoxVirtualBrailleDisplayStyleSideBySide'),
+            },
+          ];
+        },
+      },
+
+      /**
        * Dropdown menu choices for voice options.
        */
       voiceOptions_: {
@@ -261,6 +283,7 @@ class SettingsChromeVoxSubpageElement extends
   private punctuationEchoOptions_: DropdownMenuOptionList;
   private audioStrategyOptions_: DropdownMenuOptionList;
   private voiceOptions_: DropdownMenuOptionList;
+  private virtualBrailleDisplayStyleOptions_: DropdownMenuOptionList;
   private chromeVoxBrowserProxy_: ChromeVoxSubpageBrowserProxy;
 
   // TODO(270619855): Add tests to verify these controls change their prefs.

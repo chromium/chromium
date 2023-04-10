@@ -147,6 +147,13 @@ suite('ChromeVoxSubpageTests', function() {
       secondaryValue: true,
       type: ControlType.TOGGLE,
     },
+    {
+      id: 'virtualBrailleDisplayStyleDropdown',
+      prefKey: 'settings.a11y.chromevox.braille_side_by_side',
+      defaultValue: true,
+      secondaryValue: false,
+      type: ControlType.DROPDOWN,
+    },
   ];
 
   settingsControls.forEach(control => {
@@ -176,7 +183,7 @@ suite('ChromeVoxSubpageTests', function() {
           // Make sure dropdown is set to the default value.
           await waitAfterNextRender(control);
           const selectElement = control.shadowRoot.querySelector('select');
-          assertEquals(defaultValue, selectElement.value);
+          assertEquals(String(defaultValue), selectElement.value);
           // Update dropdown to secondary value.
           selectElement.value = secondaryValue;
           selectElement.dispatchEvent(

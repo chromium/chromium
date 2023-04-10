@@ -1208,6 +1208,15 @@
   <message name="IDS_SETTINGS_CHROMEVOX_VIRTUAL_BRAILLE_DISPLAY_COLUMNS" desc="In the ChromeVox settings subpage, the label for a numberic input field where the user can choose the number of cells in each line of a grid (virtual braille display) that allows the user to control a simulation of a refreshable braille display (a physical hardware device) in the panel at the top of the screen.">
     Cells in each line:
   </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_VIRTUAL_BRAILLE_DISPLAY_STYLE_LABEL" desc="A label for the dropdown that lets the user select the display style of the virtual display - interleaving braille and regular text (one on top of the other), or side by side where regular text is on the left and braille is on the right">
+    Display style
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_VIRTUAL_BRAILLE_DISPLAY_STYLE_INTERLEAVE" desc="A dropdown item that lets the user enable the display style of the virtual display that interleaves braille and regular text, one on top of the other.">
+    Interleave
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_VIRTUAL_BRAILLE_DISPLAY_STYLE_SIDE_BY_SIDE" desc="A dropdown item that lets the user enable the display style of the virtual display that is side by side, where regular text is on the left and braille is on the right.">
+    Side-by-side
+  </message>
   <message name="IDS_SETTINGS_SCREEN_MAGNIFIER_LABEL" desc="Label for checkbox which enables the fullscreen magnifier">
     Full-screen magnifier
   </message>
