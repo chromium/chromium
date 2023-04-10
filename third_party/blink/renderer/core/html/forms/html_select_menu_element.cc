@@ -394,14 +394,18 @@ void HTMLSelectMenuElement::CloseListbox() {
           HidePopoverFocusBehavior::kNone,
           HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
           /*exception_state=*/nullptr);
-      PseudoStateChanged(CSSSelector::kPseudoClosed);
-      PseudoStateChanged(CSSSelector::kPseudoOpen);
     }
-    if (button_part_) {
-      button_part_->Focus();
-    }
-    if (selectedOption() != selected_option_when_listbox_opened_)
-      DispatchChangeEvent();
+  }
+}
+
+void HTMLSelectMenuElement::ListboxWasClosed() {
+  PseudoStateChanged(CSSSelector::kPseudoClosed);
+  PseudoStateChanged(CSSSelector::kPseudoOpen);
+  if (button_part_) {
+    button_part_->Focus();
+  }
+  if (selectedOption() != selected_option_when_listbox_opened_) {
+    DispatchChangeEvent();
   }
 }
 

@@ -1785,6 +1785,10 @@ void HTMLElement::HidePopoverInternal(
           /*gate_on_user_activation=*/true));
     }
   }
+
+  if (auto* selectmenu = ownerSelectMenuElement()) {
+    selectmenu->ListboxWasClosed();
+  }
 }
 
 void HTMLElement::SetPopoverFocusOnShow() {
