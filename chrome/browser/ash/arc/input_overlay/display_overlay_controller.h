@@ -8,6 +8,8 @@
 #include "ash/public/cpp/style/color_mode_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
+#include "ui/aura/window_observer.h"
+#include "ui/compositor/property_change_reason.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/point.h"
@@ -41,7 +43,8 @@ class TouchInjector;
 // |ActionEditMenu| and |MessageView| by listening to the |LocatedEvent|.
 class DisplayOverlayController : public ui::EventHandler,
                                  public ash::ColorModeObserver,
-                                 public views::WidgetObserver {
+                                 public views::WidgetObserver,
+                                 public aura::WindowObserver {
  public:
   DisplayOverlayController(TouchInjector* touch_injector, bool first_launch);
   DisplayOverlayController(const DisplayOverlayController&) = delete;
@@ -97,6 +100,12 @@ class DisplayOverlayController : public ui::EventHandler,
   // views::WidgetObserver:
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
+
+  // aura::WindowObserver:
+  void OnWindowBoundsChanged(aura::Window* window,
+                             const gfx::Rect& old_bounds,
+                             const gfx::Rect& new_bounds,
+                             ui::PropertyChangeReason reason) override;
 
   const TouchInjector* touch_injector() const { return touch_injector_; }
 
@@ -177,6 +186,8 @@ class DisplayOverlayController : public ui::EventHandler,
   void EnsureTaskWindowToFrontForViewMode(views::Widget* overlay_widget);
 
   bool ShowingNudge();
+
+  void UpdateForBoundsChanged(const gfx::Rect& bounds);
 
   // For test:
   gfx::Rect GetInputMappingViewBoundsForTesting();

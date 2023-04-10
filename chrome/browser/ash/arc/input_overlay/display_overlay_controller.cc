@@ -100,6 +100,8 @@ gfx::Rect DisplayOverlayController::GetInputMappingViewBoundsForTesting() {
 
 void DisplayOverlayController::AddOverlay(DisplayMode display_mode) {
   RemoveOverlayIfAny();
+  touch_injector_->window()->AddObserver(this);
+
   auto* shell_surface_base =
       exo::GetShellSurfaceBaseForWindow(touch_injector_->window());
   if (!shell_surface_base) {
@@ -138,6 +140,8 @@ void DisplayOverlayController::RemoveOverlayIfAny() {
 
     shell_surface_base->RemoveOverlay();
   }
+
+  touch_injector_->window()->RemoveObserver(this);
 }
 
 void DisplayOverlayController::SetEventTarget(views::Widget* overlay_widget,
@@ -454,7 +458,10 @@ void DisplayOverlayController::OnActionTrashButtonPressed(Action* action) {
 views::Widget* DisplayOverlayController::GetOverlayWidget() {
   auto* shell_surface_base =
       exo::GetShellSurfaceBaseForWindow(touch_injector_->window());
-  DCHECK(shell_surface_base);
+  // Shell surface is null for test.
+  if (!shell_surface_base) {
+    return nullptr;
+  }
 
   return shell_surface_base ? static_cast<views::Widget*>(
                                   shell_surface_base->GetFocusTraversable())
@@ -738,23 +745,22 @@ void DisplayOverlayController::OnColorModeChanged(bool dark_mode_enabled) {
 void DisplayOverlayController::OnWidgetBoundsChanged(
     views::Widget* widget,
     const gfx::Rect& new_bounds) {
-  touch_injector_->UpdateForOverlayBoundsChanged(gfx::RectF(new_bounds));
+  UpdateForBoundsChanged(new_bounds);
+}
 
-  // Overlay |widget| is null for test.
-  if (!widget) {
+void DisplayOverlayController::OnWindowBoundsChanged(
+    aura::Window* window,
+    const gfx::Rect& old_bounds,
+    const gfx::Rect& new_bounds,
+    ui::PropertyChangeReason reason) {
+  // Disregard the bounds from animation and only care final window bounds.
+  if (reason == ui::PropertyChangeReason::FROM_ANIMATION) {
     return;
   }
 
-  auto mode = display_mode_;
-  SetDisplayMode(DisplayMode::kNone);
-  // Transition to |kView| mode except while on |kEducation| mode since
-  // displaying this UI needs to be ensured as the user shouldn't be able to
-  // manually access said view.
-  if (mode != DisplayMode::kEducation) {
-    mode = DisplayMode::kView;
-  }
-
-  SetDisplayMode(mode);
+  auto bounds = CalculateWindowContentBounds(window);
+  UpdateForBoundsChanged(
+      gfx::Rect(bounds.x(), bounds.y(), bounds.width(), bounds.height()));
 }
 
 bool DisplayOverlayController::HasMenuView() const {
@@ -872,6 +878,25 @@ void DisplayOverlayController::EnsureTaskWindowToFrontForViewMode(
 
 bool DisplayOverlayController::ShowingNudge() {
   return nudge_view_ || nudge_view_alpha_;
+}
+
+void DisplayOverlayController::UpdateForBoundsChanged(const gfx::Rect& bounds) {
+  touch_injector_->UpdateForOverlayBoundsChanged(gfx::RectF(bounds));
+
+  // Overlay widget is null for test.
+  if (!GetOverlayWidget()) {
+    return;
+  }
+
+  auto mode = display_mode_;
+  SetDisplayMode(DisplayMode::kNone);
+  // Transition to |kView| mode except while on |kEducation| mode since the
+  // educational banner needs to remain visible until dismissed by the user.
+  if (mode != DisplayMode::kEducation) {
+    mode = DisplayMode::kView;
+  }
+
+  SetDisplayMode(mode);
 }
 
 void DisplayOverlayController::DismissEducationalViewForTesting() {
