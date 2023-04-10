@@ -394,7 +394,10 @@ void ServiceWorkerRegisterJob::OnUpdateCheckFinished(
       // for the completion.
       context_->registry()->UpdateResourceSha256Checksums(
           registration()->id(), key_, updated_checksum_map,
-          /*callback=*/base::DoNothing());
+          base::BindOnce([](blink::ServiceWorkerStatusCode status) {
+            UMA_HISTOGRAM_ENUMERATION(
+                "ServiceWorker.UpdateResourceSha256ChecksumsResult", status);
+          }));
     }
     ResolvePromise(blink::ServiceWorkerStatusCode::kOk, std::string(),
                    registration());
