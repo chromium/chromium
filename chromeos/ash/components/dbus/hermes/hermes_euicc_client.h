@@ -98,6 +98,13 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
     // method call.
     virtual void QueueHermesErrorStatus(HermesResponseStatus status) = 0;
 
+    // Sets the return for the next call to
+    // HermesEuiccClient::InstallProfileFromActivationCode(). The implementation
+    // of this method should only accept error statuses since clients expect
+    // addition information about the installed profile on success.
+    virtual void SetNextInstallProfileFromActivationCodeResult(
+        HermesResponseStatus status) = 0;
+
     // Set delay for interactive methods.
     virtual void SetInteractiveDelay(base::TimeDelta delay) = 0;
 

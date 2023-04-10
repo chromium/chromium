@@ -234,6 +234,12 @@ void FakeHermesEuiccClient::QueueHermesErrorStatus(
   error_status_queue_.push(status);
 }
 
+void FakeHermesEuiccClient::SetNextInstallProfileFromActivationCodeResult(
+    HermesResponseStatus status) {
+  CHECK(status != HermesResponseStatus::kSuccess);
+  next_install_profile_result_ = status;
+}
+
 void FakeHermesEuiccClient::SetInteractiveDelay(base::TimeDelta delay) {
   interactive_delay_ = delay;
 }
@@ -252,6 +258,13 @@ void FakeHermesEuiccClient::InstallProfileFromActivationCode(
     const std::string& activation_code,
     const std::string& confirmation_code,
     InstallCarrierProfileCallback callback) {
+  if (next_install_profile_result_.has_value()) {
+    std::move(callback).Run(next_install_profile_result_.value(),
+                            /*carrier_profile_path=*/nullptr);
+    next_install_profile_result_ = absl::nullopt;
+    return;
+  }
+
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&FakeHermesEuiccClient::DoInstallProfileFromActivationCode,

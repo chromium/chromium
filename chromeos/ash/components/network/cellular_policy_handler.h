@@ -66,6 +66,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
                    const base::Value::Dict& onc_config);
 
  private:
+  // This enum allows us to treat a retry differently depending on what the
+  // reason for retrying is.
+  enum class InstallRetryReason {
+    kMissingNonCellularConnectivity = 0,
+    kOther,
+  };
+
   friend class CellularPolicyHandlerTest;
 
   // Represents policy eSIM install request parameters. Requests are queued and
@@ -110,7 +117,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
       HermesResponseStatus hermes_status,
       absl::optional<dbus::ObjectPath> profile_path,
       absl::optional<std::string> service_path);
-  void ScheduleRetry(std::unique_ptr<InstallPolicyESimRequest> request);
+  void ScheduleRetry(std::unique_ptr<InstallPolicyESimRequest> request,
+                     InstallRetryReason reason);
   void PushRequestAndProcess(std::unique_ptr<InstallPolicyESimRequest> request);
   void PopRequest();
   absl::optional<dbus::ObjectPath> FindExistingMatchingESimProfile();
