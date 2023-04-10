@@ -691,8 +691,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
             }
         }
         if (mMode == TabListCoordinator.TabListMode.GRID
-                && PriceTrackingUtilities.isTabModelPriceTrackingEligible(
-                        mTabModelSelector.getCurrentModel())
+                && !mTabModelSelector.getCurrentModel().getProfile().isOffTheRecord()
                 && PriceTrackingUtilities.isTrackPricesOnTabsEnabled()) {
             RecordUserAction.record("Commerce.TabGridSwitched."
                     + (ShoppingPersistedTabData.hasPriceDrop(tab) ? "HasPriceDrop"

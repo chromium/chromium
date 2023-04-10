@@ -23,7 +23,6 @@ android_library("java") {
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/signin/services/android:java",
-    "//chrome/browser/tabmodel:java",
     "//components/signin/public/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
