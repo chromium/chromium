@@ -35,6 +35,10 @@
 #include "printing/printing_features.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "base/strings/utf_string_conversions.h"
+#endif
+
 namespace printing {
 
 namespace {
@@ -245,6 +249,34 @@ void PrinterQuery::SetSettingsFromPOD(
       base::BindOnce(&PrinterQuery::PostSettingsDone, base::Unretained(this),
                      std::move(callback),
                      /*maybe_is_modifiable=*/absl::nullopt));
+}
+#endif
+
+#if BUILDFLAG(IS_WIN)
+// static
+bool PrinterQuery::UpdatePrintableArea(PrintSettings& print_settings) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  scoped_refptr<PrintBackend> print_backend =
+      PrintBackend::CreateInstance(g_browser_process->GetApplicationLocale());
+
+  // Blocking is needed here because Windows printer drivers are oftentimes
+  // not thread-safe and have to be accessed on the UI thread.
+  base::ScopedAllowBlocking allow_blocking;
+  std::string printer_name = base::UTF16ToUTF8(print_settings.device_name());
+  crash_keys::ScopedPrinterInfo crash_key(
+      print_backend->GetPrinterDriverInfo(printer_name));
+
+  const PrintSettings::RequestedMedia& media = print_settings.requested_media();
+  absl::optional<gfx::Rect> printable_area_um =
+      print_backend->GetPaperPrintableArea(
+          base::UTF16ToUTF8(print_settings.device_name()), media.vendor_id,
+          media.size_microns);
+  if (!printable_area_um.has_value()) {
+    return false;
+  }
+
+  print_settings.UpdatePrinterPrintableArea(printable_area_um.value());
+  return true;
 }
 #endif
 
