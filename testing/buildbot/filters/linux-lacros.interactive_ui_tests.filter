@@ -83,7 +83,6 @@
 -TabDragging/DetachToBrowserTabDragControllerTest.DragToSeparateWindow/*
 -TabDragging/DetachToBrowserTabDragControllerTest.DragWindowIntoGroup/*
 -TabDragging/DetachToBrowserTabDragControllerTest.DragWithMaskedWindows/*
--TabDragging/DetachToBrowserTabDragControllerTest.KeyPressShouldEndDragTest/*
 -TabDragging/DetachToBrowserTabDragControllerTest.OffsetForDraggingTab/*
 -TabDragging/DetachToBrowserTabDragControllerTest.Revert*
 -TabDragging/DetachToBrowserTabDragControllerTest.SelectTabDuringDrag/*
