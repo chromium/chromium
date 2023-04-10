@@ -8,6 +8,7 @@ import("//chrome/browser/buildflags.gni")
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/selectable_rounded_rectangle.xml",
     "java/res/layout/empty_text_view.xml",
     "java/res/layout/history_cluster.xml",
     "java/res/layout/history_cluster_visit.xml",

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+Level list drawable that uses the same rounded rect bg at each level to satisfy the requirements of CheckableSelectableItemView.
+-->
+<level-list xmlns:android="http://schemas.android.com/apk/res/android">
+  <item android:maxLevel="@integer/list_item_level_default" android:drawable="@drawable/rounded_rectangle_surface_1" />
+  <item android:maxLevel="@integer/list_item_level_selected" android:drawable="@drawable/rounded_rectangle_surface_1"/>
+  <item android:maxLevel="@integer/list_item_level_incognito" android:drawable="@drawable/rounded_rectangle_surface_1"/>
+</level-list>

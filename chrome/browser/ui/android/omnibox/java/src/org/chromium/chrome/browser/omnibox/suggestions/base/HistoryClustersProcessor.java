@@ -85,9 +85,12 @@ public class HistoryClustersProcessor extends BasicSuggestionProcessor {
                 () -> onJourneysSuggestionClicked(pedal, position));
         SuggestionDrawableState sds =
                 SuggestionDrawableState.Builder.forDrawableRes(mContext, pedal.icon.iconRes)
-                        .setAllowTint(true)
+                        .setAllowTint(false)
                         .build();
         model.set(BaseSuggestionViewProperties.ICON, sds);
+        // We want to behave like a search suggestion w.r.t. secondary text coloring.
+        model.set(SuggestionViewProperties.IS_SEARCH_SUGGESTION, true);
+        setActionButtons(model, null);
         mJourneysActionShownPosition = position;
     }
 

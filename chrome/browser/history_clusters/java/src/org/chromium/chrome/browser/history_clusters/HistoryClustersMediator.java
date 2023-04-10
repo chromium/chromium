@@ -439,7 +439,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
                                 .with(HistoryClustersItemProperties.START_ICON_VISIBILITY,
                                         View.VISIBLE)
                                 .with(HistoryClustersItemProperties.START_ICON_BACKGROUND_RES,
-                                        R.drawable.rounded_rectangle_surface_1)
+                                        R.drawable.selectable_rounded_rectangle)
                                 .with(HistoryClustersItemProperties.CLICK_HANDLER,
                                         (v)
                                                 -> setQueryState(QueryState.forQuery(rawLabel,
