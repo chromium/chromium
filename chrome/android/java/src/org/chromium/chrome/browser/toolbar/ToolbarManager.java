@@ -739,10 +739,12 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 assert tab == mLocationBarModel.getTab();
                 mLocationBarModel.notifySecurityStateChanged();
                 mLocationBarModel.notifyUrlChanged();
+                onBackPressStateChanged();
             }
 
             @Override
             public void onTitleUpdated(Tab tab) {
+                onBackPressStateChanged();
                 mLocationBarModel.notifyTitleChanged();
             }
 
@@ -751,6 +753,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 // Update the SSL security state as a result of this notification as it will
                 // sometimes be the only update we receive.
                 updateTabLoadingState(true);
+                onBackPressStateChanged();
 
                 // A URL update is a decent enough indicator that the toolbar widget is in
                 // a stable state to capture its bitmap for use in fullscreen.
@@ -788,12 +791,14 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 maybeShowCursorInLocationBar();
                 // Paint preview status might have been changed. Update the omnibox chip.
                 mLocationBarModel.notifySecurityStateChanged();
+                onBackPressStateChanged();
             }
 
             @Override
             public void onWebContentsSwapped(Tab tab, boolean didStartLoad, boolean didFinishLoad) {
                 if (!didStartLoad) return;
                 mLocationBarModel.notifyUrlChanged();
+                onBackPressStateChanged();
                 mLocationBarModel.notifySecurityStateChanged();
             }
 
@@ -2169,6 +2174,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     tab != null && tab.isDestroyed());
             assert false : msg;
         }
+        onBackPressStateChanged();
         return ret ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
     }
 
