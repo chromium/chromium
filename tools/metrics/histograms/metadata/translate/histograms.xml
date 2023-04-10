@@ -211,16 +211,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Translate.DeclineTranslateCloseInfobar" units="units"
-    expires_after="2023-01-15">
-  <owner>megjablon@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    The number of times the translate infobar was closed by clicking the X
-    button without the user translating the page.
-  </summary>
-</histogram>
-
 <histogram name="Translate.ExplicitLanguageAsk.Event"
     enum="TranslateExplicitAskPromptEventType" expires_after="2023-06-04">
   <owner>megjablon@google.com</owner>

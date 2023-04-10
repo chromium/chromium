@@ -393,7 +393,6 @@ void TranslateInfoBarDelegate::InfoBarDismissed() {
   if (declined) {
     // The user closed the infobar without clicking the translate button.
     TranslationDeclined();
-    UMA_HISTOGRAM_BOOLEAN("Translate.DeclineTranslateCloseInfobar", true);
   }
 }
 
