@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Dummy earcons implementation for testing.
+ * @fileoverview Testing implementation for earcons.
  *
  */
 

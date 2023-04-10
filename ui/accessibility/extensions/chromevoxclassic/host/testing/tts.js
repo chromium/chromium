@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Dummy implementation of TTS for testing.
+ * @fileoverview Testing implementation of TTS.
  *
  */
 

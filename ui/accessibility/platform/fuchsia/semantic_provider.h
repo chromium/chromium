@@ -70,7 +70,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXFuchsiaSemanticProvider {
   virtual bool Clear() = 0;
 
   // Sends an accessibility event to Fuchsia. Please consult
-  // https://cs.opensource.google/fuchsia/fuchsia/+/master:sdk/fidl/fuchsia.accessibility.semantics/semantics_manager.fidl
+  // https://cs.opensource.google/fuchsia/fuchsia/+/main:sdk/fidl/fuchsia.accessibility.semantics/semantics_manager.fidl
   // for documentation on events.
   virtual void SendEvent(
       fuchsia::accessibility::semantics::SemanticEvent event) = 0;

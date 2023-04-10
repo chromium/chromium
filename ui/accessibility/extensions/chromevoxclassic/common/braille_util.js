@@ -129,10 +129,10 @@ cvox.BrailleUtil.expandStateMsgs_ = function(stateMsgs) {
     //
     // Note: many messages are templatized, and if we don't pass any
     // argument to substitute, getMsg might throw an error if the
-    // resulting string is empty. To avoid this, we pass a dummy
+    // resulting string is empty. To avoid this, we pass a test
     // substitution string array here.
-    var dummySubs = ['dummy', 'dummy', 'dummy'];
-    if (Msgs.getMsg(state[0] + '_brl', dummySubs)) {
+    var testSubs = ['test', 'test', 'test'];
+    if (Msgs.getMsg(state[0] + '_brl', testSubs)) {
       state[0] += '_brl';
     }
   });

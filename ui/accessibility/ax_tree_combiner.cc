@@ -129,7 +129,7 @@ void AXTreeCombiner::ProcessTree(const AXTreeUpdate* tree) {
       }
     }
 
-    // See if this node has a child tree. As a sanity check make sure the
+    // See if this node has a child tree. As a confidence check, make sure the
     // child tree lists this tree as its parent tree id.
     const AXTreeUpdate* child_tree = nullptr;
     if (tree_id_map_.find(child_tree_id) != tree_id_map_.end()) {

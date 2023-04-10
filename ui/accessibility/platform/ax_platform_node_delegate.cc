@@ -377,10 +377,10 @@ AXPlatformNodeDelegate::GetHypertextOffsetToHyperlinkChildIndex() const {
   if (node_)
     return node_->GetHypertextOffsetToHyperlinkChildIndex();
 
-  // TODO(nektar): Remove this dummy method once hypertext computation and
+  // TODO(nektar): Remove this method once hypertext computation and
   // selection handling has moved entirely to AXNode / AXPosition.
-  static base::NoDestructor<std::map<int, int>> dummy_map;
-  return *dummy_map;
+  static base::NoDestructor<std::map<int, int>> empty_map;
+  return *empty_map;
 }
 
 bool AXPlatformNodeDelegate::SetHypertextSelection(int start_offset,
@@ -538,8 +538,8 @@ std::u16string AXPlatformNodeDelegate::GetAuthorUniqueId() const {
 }
 
 const AXUniqueId& AXPlatformNodeDelegate::GetUniqueId() const {
-  static base::NoDestructor<AXUniqueId> dummy_unique_id;
-  return *dummy_unique_id;
+  static base::NoDestructor<AXUniqueId> empty_unique_id;
+  return *empty_unique_id;
 }
 
 AXPlatformNodeDelegate* AXPlatformNodeDelegate::GetParentDelegate() const {

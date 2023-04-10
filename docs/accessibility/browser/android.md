@@ -526,8 +526,6 @@ tools/mb/mb.py run -s --no-default-dimensions \
     -f "*WebContentsAccessibilityTreeTest*testExample"
 ```
 
-Piece of cake!
-
 ## Common Android accessibility "gotchas"
 
 - "name" vs. "text"

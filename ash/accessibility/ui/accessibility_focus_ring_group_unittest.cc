@@ -93,7 +93,7 @@ TEST_F(AccessibilityFocusRingGroupTest, ClipToBounds) {
 }
 
 TEST_F(AccessibilityFocusRingGroupTest, RectsToRingsSimpleBoundsCheck) {
-  // Easy sanity check. Given a single rectangle, make sure we get back
+  // Easy confidence check. Given a single rectangle, make sure we get back
   // a focus ring with the same bounds.
   std::vector<gfx::Rect> rects;
   rects.push_back(gfx::Rect(20, 30, 70, 150));
