@@ -590,11 +590,6 @@ void BluetoothDeviceFloss::UpgradeToFullDiscovery() {
 }
 
 void BluetoothDeviceFloss::DisconnectGatt() {
-  if (IsPaired()) {
-    BLUETOOTH_LOG(ERROR) << "Leaking connection to paired device.";
-    return;
-  }
-
   FlossDBusManager::Get()->GetGattManagerClient()->Disconnect(base::DoNothing(),
                                                               address_);
 }
