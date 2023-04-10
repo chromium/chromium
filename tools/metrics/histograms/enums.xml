@@ -17386,7 +17386,7 @@ In case of new special images, values 3 to 9 can be used. -->
 </enum>
 
 <enum name="ClearSiteDataParameters">
-  <int value="0" label="No datatypes"/>
+  <int value="0" label="No valid types"/>
   <int value="1" label="Cookies"/>
   <int value="2" label="Storage"/>
   <int value="3" label="Cookies and Storage"/>
@@ -17394,6 +17394,14 @@ In case of new special images, values 3 to 9 can be used. -->
   <int value="5" label="Cookies and Cache"/>
   <int value="6" label="Storage and Cache"/>
   <int value="7" label="Cookies, Storage, and Cache"/>
+  <int value="8" label="Storage buckets"/>
+  <int value="9" label="Storage buckets, Cookies"/>
+  <int value="10" label="Storage buckets, Storage"/>
+  <int value="11" label="Storage buckets, Cookies and Storage"/>
+  <int value="12" label="Storage buckets, Cache"/>
+  <int value="13" label="Storage buckets, Cookies and Cache"/>
+  <int value="14" label="Storage buckets, Storage and Cache"/>
+  <int value="15" label="Storage buckets, Cookies, Storage, and Cache"/>
 </enum>
 
 <enum name="ClickToCallDeviceState">

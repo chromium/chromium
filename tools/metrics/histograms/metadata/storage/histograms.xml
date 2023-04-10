@@ -384,6 +384,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.ClearSiteDataHeader.Parameters"
+    enum="ClearSiteDataParameters" expires_after="2024-04-01">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    A Clear-Site-Data response header was seen with the given values.
+  </summary>
+</histogram>
+
 <histogram name="Storage.FileSystemAccess.PersistedPermissions.Age.{Type}"
     units="ms" expires_after="2024-05-01">
   <owner>asully@chromium.org</owner>
