@@ -60,7 +60,7 @@ constexpr char kUsageMsg[] =
     "           [--out-prefix=<path prefix of decoded frame PNGs>]\n"
     "           [--md5[=<checksum path>]]\n"
     "           [--visible]\n"
-    "           [--loop]\n"
+    "           [--loop[=<n>]]\n"
     "           [--v=<log verbosity>]\n"
     "           [--help]\n";
 
@@ -113,10 +113,11 @@ constexpr char kHelpMsg[] =
     "    --visible\n"
     "        Optional. If specified, applies post-decode processing (PNG\n"
     "        output, md5 hash) only to visible frames.\n"
-    "    --loop\n"
-    "        Optional. If specified, loops decoding until terminated\n"
-    "        externally or until an error occurs, at which point execution\n"
-    "        will immediately terminate.\n"
+    "    --loop[=<n>]\n"
+    "        Optional. If specified with a value, loops decoding specified\n"
+    "        times. If specified without, loops until terminated externally\n"
+    "        or until an error occurs, at which point execution will\n"
+    "        immediately terminate.\n"
     "        If specified with --frames, loops decoding that number of\n"
     "        leading frames. If specified with --out-prefix, loops decoding,\n"
     "        but only saves the first iteration of decoded frames.\n"
@@ -262,6 +263,15 @@ int main(int argc, char** argv) {
 
   const VaapiDevice va_device;
   const bool loop_decode = cmd->HasSwitch("loop");
+  const std::string loops = cmd->GetSwitchValueASCII("loop");
+  int n_loops;
+  if (loops.empty()) {
+    n_loops = 0;
+  } else if (!base::StringToInt(loops, &n_loops) || n_loops <= 0) {
+    LOG(ERROR) << "Number of times to loop decode must be positive integer, "
+               << "got " << frames;
+    return EXIT_FAILURE;
+  }
   bool first_loop = true;
 
   const auto fetch_policy =
@@ -302,7 +312,8 @@ int main(int argc, char** argv) {
     }
 
     first_loop = false;
-  } while (loop_decode);
+    n_loops--;
+  } while (loop_decode && (loops.empty() || n_loops > 0));
 
   LOG(INFO) << "Done reading.";
 
