@@ -281,7 +281,7 @@ void MultitaskMenuView::OnThemeChanged() {
 }
 
 // static
-void MultitaskMenuView::SetSkipMouseOutDelayFoTesting(bool val) {
+void MultitaskMenuView::SetSkipMouseOutDelayForTesting(bool val) {
   g_skip_mouse_out_delay_for_testing = val;
 }
 

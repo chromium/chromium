@@ -944,7 +944,7 @@ TEST_F(MultitaskMenuTest, CloseOnClickOutside) {
 // Tests that moving the mouse outside the menu will close the menu, if opened
 // via hovering on the frame size button.
 TEST_F(MultitaskMenuTest, MoveMouseOutsideMenu) {
-  chromeos::MultitaskMenuView::SetSkipMouseOutDelayFoTesting(true);
+  chromeos::MultitaskMenuView::SetSkipMouseOutDelayForTesting(true);
 
   // Simulate opening the menu by moving the mouse to the frame size button and
   // opening the menu.

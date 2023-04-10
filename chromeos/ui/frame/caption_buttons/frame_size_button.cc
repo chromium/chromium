@@ -320,7 +320,8 @@ void FrameSizeButton::OnGestureEvent(ui::GestureEvent* event) {
     SetButtonsToNormalMode(FrameSizeButtonDelegate::Animate::kYes);
     return;
   }
-  if (event->type() == ui::ET_GESTURE_TAP_DOWN && delegate_->CanSnap()) {
+  if (event->type() == ui::ET_GESTURE_TAP_DOWN && delegate_->CanSnap() &&
+      !TabletState::Get()->InTabletMode()) {
     StartLongTapDelayTimer(*event);
 
     // Go through FrameCaptionButton's handling so that the button gets pressed.

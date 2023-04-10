@@ -127,7 +127,8 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
   bool IsVisible(views::CaptionButtonIcon type) const override {
     switch (type) {
       case views::CAPTION_BUTTON_ICON_MINIMIZE:
-        return frame_->widget_delegate()->CanMinimize();
+        return frame_->widget_delegate()->CanMinimize() &&
+               !TabletState::Get()->InTabletMode();
       case views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE: {
         if (!frame_->widget_delegate()->CanMaximize()) {
           return false;
