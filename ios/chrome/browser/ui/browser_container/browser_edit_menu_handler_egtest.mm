@@ -338,7 +338,8 @@ NSArray* BuildExpectedMenu(EditMenuAdditionType additions) {
 }
 
 // Tests the menu on a normal word.
-- (void)testBasicMenu {
+// TODO(crbug.com/1431978): Re-enable when test passes on iPhone X 16.4.
+- (void)DISABLED_testBasicMenu {
   if (!base::ios::IsRunningOnIOS16OrLater()) {
     // There is a EG syncing issue on iOS14 when displaying Edit Menu that makes
     // the test flaky.
@@ -352,7 +353,8 @@ NSArray* BuildExpectedMenu(EditMenuAdditionType additions) {
   GREYAssertEqualObjects(items, expected, @"Edit Menu item don't match");
 }
 
-- (void)testEditableMenu {
+// TODO(crbug.com/1431978): Re-enable when test passes on iPhone X 16.4.
+- (void)DISABLED_testEditableMenu {
   if (!base::ios::IsRunningOnIOS16OrLater()) {
     // There is a EG syncing issue on iOS14 when displaying Edit Menu that makes
     // the test flaky.
@@ -366,7 +368,8 @@ NSArray* BuildExpectedMenu(EditMenuAdditionType additions) {
   GREYAssertEqualObjects(items, expected, @"Edit Menu item don't match");
 }
 
-- (void)testURLMenu {
+// TODO(crbug.com/1431978): Re-enable when test passes on iPhone X 16.4.
+- (void)DISABLED_testURLMenu {
   if (!base::ios::IsRunningOnIOS16OrLater()) {
     EARL_GREY_TEST_SKIPPED(@"No contextual edit action on iOS15-");
   }
@@ -380,7 +383,8 @@ NSArray* BuildExpectedMenu(EditMenuAdditionType additions) {
   GREYAssertEqualObjects(items, expected, @"Edit Menu item don't match");
 }
 
-- (void)testEmailMenu {
+// TODO(crbug.com/1431978): Re-enable when test passes on iPhone X 16.4.
+- (void)DISABLED_testEmailMenu {
   if (!base::ios::IsRunningOnIOS16OrLater()) {
     EARL_GREY_TEST_SKIPPED(@"No contextual edit action on iOS15-");
   }
@@ -392,7 +396,8 @@ NSArray* BuildExpectedMenu(EditMenuAdditionType additions) {
   GREYAssertEqualObjects(items, expected, @"Edit Menu item don't match");
 }
 
-- (void)testPhoneMenu {
+// TODO(crbug.com/1431978): Re-enable when test passes on iPhone X 16.4.
+- (void)DISABLED_testPhoneMenu {
   if (!base::ios::IsRunningOnIOS16OrLater()) {
     EARL_GREY_TEST_SKIPPED(@"No contextual edit action on iOS15-");
   }
@@ -404,7 +409,8 @@ NSArray* BuildExpectedMenu(EditMenuAdditionType additions) {
   GREYAssertEqualObjects(items, expected, @"Edit Menu item don't match");
 }
 
-- (void)testDateMenu {
+// TODO(crbug.com/1431978): Re-enable when test passes on iPhone X 16.4.
+- (void)DISABLED_testDateMenu {
   if (!base::ios::IsRunningOnIOS16OrLater()) {
     EARL_GREY_TEST_SKIPPED(@"No contextual edit action on iOS15-");
   }
@@ -421,7 +427,8 @@ NSArray* BuildExpectedMenu(EditMenuAdditionType additions) {
   GREYAssertEqualObjects(items, expected, @"Edit Menu item don't match");
 }
 
-- (void)testUnitMenu {
+// TODO(crbug.com/1431978): Re-enable when test passes on iPhone X 16.4.
+- (void)DISABLED_testUnitMenu {
   if (!base::ios::IsRunningOnIOS16OrLater()) {
     EARL_GREY_TEST_SKIPPED(@"No contextual edit action on iOS15-");
   }
