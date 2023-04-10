@@ -20,7 +20,6 @@ var expected = [
   'loadTimes',
   'management',
   'metricsPrivate',
-  'readAnything',
   'runtime',
   'send',
   'test',

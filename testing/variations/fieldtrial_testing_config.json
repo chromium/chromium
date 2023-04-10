@@ -10703,26 +10703,6 @@
             ]
         }
     ],
-    "ReadAnything": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ReadAnything",
-                        "ReadAnythingWithScreen2x"
-                    ]
-                }
-            ]
-        }
-    ],
     "ReadLaterReminderNotification": [
         {
             "platforms": [
