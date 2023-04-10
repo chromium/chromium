@@ -131,6 +131,21 @@
             ]
         }
     ],
+    "AndroidAnimatedImageDragShadow": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AnimatedImageDragShadow"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidBackPressRefactor": [
         {
             "platforms": [
