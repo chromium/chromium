@@ -8452,7 +8452,7 @@
             ]
         }
     ],
-    "NtpRealboxRundedCorners": [
+    "NtpRealboxRoundedCorners": [
         {
             "platforms": [
                 "chromeos",
