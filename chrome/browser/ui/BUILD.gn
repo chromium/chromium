@@ -5628,8 +5628,12 @@ static_library("ui") {
         sources += [
           "views/chrome_browser_main_extra_parts_views_linux.cc",
           "views/chrome_browser_main_extra_parts_views_linux.h",
+          "views/dark_mode_manager_linux.cc",
+          "views/dark_mode_manager_linux.h",
         ]
         deps += [
+          "//components/dbus/thread_linux",
+          "//dbus",
           "//ui/base/cursor",
           "//ui/ozone",
         ]

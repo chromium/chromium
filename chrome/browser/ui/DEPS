@@ -42,6 +42,9 @@ specific_include_rules = {
   "browser_navigator_browsertest\.cc": [
     "+ash/shell.h",
   ],
+  "dark_mode_manager_linux\.cc": [
+    "+dbus",
+  ],
   "fullscreen_controller_interactive_browsertest\.cc": [
     "+ash/shell.h",
   ],

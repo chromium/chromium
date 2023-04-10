@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/themes/theme_service_aura_linux.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/views/dark_mode_manager_linux.h"
 #include "chrome/browser/ui/views/theme_profile_key.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/cursor/cursor_factory.h"
@@ -56,6 +57,8 @@ void ChromeBrowserMainExtraPartsViewsLinux::ToolkitInitialized() {
     UMA_HISTOGRAM_ENUMERATION("Linux.SystemTheme.Default",
                               linux_ui_theme->GetNativeTheme()->system_theme());
   }
+
+  dark_mode_manager_ = std::make_unique<ui::DarkModeManagerLinux>();
 }
 
 void ChromeBrowserMainExtraPartsViewsLinux::PreCreateThreads() {
