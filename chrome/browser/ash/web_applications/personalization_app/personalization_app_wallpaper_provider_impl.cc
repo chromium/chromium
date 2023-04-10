@@ -615,7 +615,7 @@ void PersonalizationAppWallpaperProviderImpl::SelectGooglePhotosPhoto(
 
 void PersonalizationAppWallpaperProviderImpl::SelectGooglePhotosAlbum(
     const std::string& album_id,
-    SetDailyRefreshCallback callback) {
+    SelectGooglePhotosAlbumCallback callback) {
   if (!is_google_photos_enterprise_enabled_) {
     wallpaper_receiver_.ReportBadMessage(
         "Rejected attempt to set Google Photos wallpaper while disabled via "
@@ -626,16 +626,14 @@ void PersonalizationAppWallpaperProviderImpl::SelectGooglePhotosAlbum(
   auto* wallpaper_controller = WallpaperController::Get();
   DCHECK(wallpaper_controller);
   if (!wallpaper_controller->CanSetUserWallpaper(GetAccountId(profile_))) {
-    wallpaper_receiver_.ReportBadMessage("Invalid request to set wallpaper");
+    wallpaper_receiver_.ReportBadMessage(
+        "Invalid request to select google photos album");
     return;
   }
 
   if (pending_set_daily_refresh_callback_) {
-    std::move(pending_set_daily_refresh_callback_)
-        .Run(mojom::SetDailyRefreshResponse::New(/*success=*/false,
-                                                 /*force_refresh=*/false));
+    std::move(pending_set_daily_refresh_callback_).Run(/*success=*/false);
   }
-  pending_set_daily_refresh_callback_ = std::move(callback);
   WallpaperControllerClientImpl* client = WallpaperControllerClientImpl::Get();
   DCHECK(client);
 
@@ -663,14 +661,16 @@ void PersonalizationAppWallpaperProviderImpl::SelectGooglePhotosAlbum(
       GetAccountId(profile_), album_id);
 
   if (force_refresh) {
+    pending_set_daily_refresh_callback_ = std::move(callback);
     wallpaper_controller->UpdateDailyRefreshWallpaper(base::BindOnce(
         &PersonalizationAppWallpaperProviderImpl::OnDailyRefreshWallpaperForced,
         backend_weak_ptr_factory_.GetWeakPtr()));
     return;
   }
-  std::move(pending_set_daily_refresh_callback_)
-      .Run(mojom::SetDailyRefreshResponse::New(
-          /*success=*/true, /*force_refresh=*/false));
+  std::move(callback).Run(/*success=*/true);
+  // Trigger a `NotifyWallpaperChanged` to clear loading state in
+  // Personalization App so it can't get stuck.
+  OnWallpaperResized();
 }
 
 void PersonalizationAppWallpaperProviderImpl::
@@ -689,13 +689,10 @@ void PersonalizationAppWallpaperProviderImpl::SetCurrentWallpaperLayout(
 
 void PersonalizationAppWallpaperProviderImpl::SetDailyRefreshCollectionId(
     const std::string& collection_id,
-    SetDailyRefreshCallback callback) {
+    SetDailyRefreshCollectionIdCallback callback) {
   if (pending_set_daily_refresh_callback_) {
-    std::move(pending_set_daily_refresh_callback_)
-        .Run(mojom::SetDailyRefreshResponse::New(/*success=*/false,
-                                                 /*force_refresh=*/false));
+    std::move(pending_set_daily_refresh_callback_).Run(/*success=*/false);
   }
-  pending_set_daily_refresh_callback_ = std::move(callback);
 
   auto* wallpaper_controller = WallpaperController::Get();
   DCHECK(wallpaper_controller);
@@ -709,11 +706,11 @@ void PersonalizationAppWallpaperProviderImpl::SetDailyRefreshCollectionId(
   absl::optional<ash::WallpaperInfo> info =
       wallpaper_controller->GetActiveUserWallpaperInfo();
   DCHECK(info);
-  if (info->type != WallpaperType::kDaily) {
+
+  if (collection_id.empty()) {
     // Daily refresh is disabled.
-    std::move(pending_set_daily_refresh_callback_)
-        .Run(mojom::SetDailyRefreshResponse::New(
-            /*success=*/true, /*force_refresh=*/false));
+    std::move(callback).Run(/*success=*/info &&
+                            info->type != WallpaperType::kDaily);
     return;
   }
 
@@ -730,15 +727,14 @@ void PersonalizationAppWallpaperProviderImpl::SetDailyRefreshCollectionId(
            << " collection_id=" << collection_id
            << " force_refresh=" << force_refresh;
   if (force_refresh) {
+    pending_set_daily_refresh_callback_ = std::move(callback);
     wallpaper_controller->UpdateDailyRefreshWallpaper(base::BindOnce(
         &PersonalizationAppWallpaperProviderImpl::OnDailyRefreshWallpaperForced,
         weak_ptr_factory_.GetWeakPtr()));
     return;
   }
 
-  std::move(pending_set_daily_refresh_callback_)
-      .Run(mojom::SetDailyRefreshResponse::New(
-          /*success=*/true, /*force_refresh=*/false));
+  std::move(callback).Run(/*success=*/true);
 }
 
 void PersonalizationAppWallpaperProviderImpl::GetDailyRefreshCollectionId(
@@ -968,10 +964,9 @@ void PersonalizationAppWallpaperProviderImpl::OnDailyRefreshWallpaperUpdated(
 
 void PersonalizationAppWallpaperProviderImpl::OnDailyRefreshWallpaperForced(
     bool success) {
-  DCHECK(pending_set_daily_refresh_callback_);
-  std::move(pending_set_daily_refresh_callback_)
-      .Run(
-          mojom::SetDailyRefreshResponse::New(success, /*force_refresh=*/true));
+  if (pending_set_daily_refresh_callback_) {
+    std::move(pending_set_daily_refresh_callback_).Run(success);
+  }
 }
 
 void PersonalizationAppWallpaperProviderImpl::FindAttribution(

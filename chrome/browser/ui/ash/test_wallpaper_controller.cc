@@ -12,6 +12,7 @@
 #include "base/containers/adapters.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_type.h"
 #include "test_wallpaper_controller.h"
@@ -36,6 +37,7 @@ void TestWallpaperController::ClearCounts() {
   wallpaper_info_ = absl::nullopt;
   update_current_wallpaper_layout_count_ = 0;
   update_current_wallpaper_layout_layout_ = absl::nullopt;
+  update_daily_refresh_wallpaper_count_ = 0;
 }
 
 void TestWallpaperController::SetClient(
@@ -320,7 +322,9 @@ std::string TestWallpaperController::GetDailyRefreshCollectionId(
 
 void TestWallpaperController::UpdateDailyRefreshWallpaper(
     RefreshWallpaperCallback callback) {
-  NOTIMPLEMENTED();
+  update_daily_refresh_wallpaper_count_++;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), /*success=*/true));
 }
 
 void TestWallpaperController::SyncLocalAndRemotePrefs(

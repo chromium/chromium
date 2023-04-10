@@ -5,12 +5,13 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {cancelPreviewWallpaper, DailyRefreshType, DefaultImageSymbol, DisplayableImage, fetchCollections, fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchGooglePhotosEnabled, fetchLocalData, getDefaultImageThumbnail, GooglePhotosEnablementState, GooglePhotosPhoto, initializeBackdropData, isDefaultImage, isFilePath, isGooglePhotosPhoto, isWallpaperImage, kDefaultImageSymbol, selectGooglePhotosAlbum, selectWallpaper, updateDailyRefreshWallpaper, WallpaperLayout, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
+import {cancelPreviewWallpaper, DailyRefreshType, DefaultImageSymbol, DisplayableImage, fetchCollections, fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchGooglePhotosEnabled, fetchGooglePhotosPhotos, fetchLocalData, getDefaultImageThumbnail, GooglePhotosEnablementState, GooglePhotosPhoto, initializeBackdropData, isDefaultImage, isFilePath, isGooglePhotosPhoto, isWallpaperImage, kDefaultImageSymbol, selectGooglePhotosAlbum, selectWallpaper, setDailyRefreshCollectionId, updateDailyRefreshWallpaper, WallpaperLayout, WallpaperObserver, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
+import {baseSetup} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
@@ -36,6 +37,22 @@ function filterAndFlattenState(keys: string[]): (state: any) => any {
     }
     return result;
   };
+}
+
+function getImageKey(image: DisplayableImage): string|undefined {
+  if (isDefaultImage(image)) {
+    return undefined;
+  }
+  if (isGooglePhotosPhoto(image)) {
+    return image.dedupKey ? image.dedupKey : image.id;
+  }
+  if (isWallpaperImage(image)) {
+    return image.unitId.toString();
+  }
+  if (isFilePath(image)) {
+    return image.path;
+  }
+  assertNotReached('unknown wallpaper type');
 }
 
 suite('Personalization app controller', () => {
@@ -566,10 +583,7 @@ suite('Personalization app controller', () => {
   });
 
   test('fails to enable Google Photos daily refresh', async () => {
-    wallpaperProvider.selectGooglePhotosAlbumResponse = {
-      success: false,
-      forceRefresh: true,
-    };
+    wallpaperProvider.selectGooglePhotosAlbumResponse = false;
 
     wallpaperProvider.albumId = 'albumId';
     wallpaperProvider.collectionId = '';
@@ -586,6 +600,9 @@ suite('Personalization app controller', () => {
 
     assertDeepEquals(
         [
+          {
+            name: 'begin_update_daily_refresh_image',
+          },
           // Set error action when daily refresh failed.
           {
             name: 'set_error',
@@ -597,7 +614,8 @@ suite('Personalization app controller', () => {
             albumId: 'albumId',
           },
         ],
-        personalizationStore.actions);
+        personalizationStore.actions,
+        JSON.stringify(personalizationStore.actions));
   });
 
   test(
@@ -858,22 +876,6 @@ suite('does not respond to re-selecting the current wallpaper', () => {
     wallpaperProvider.isInTabletModeResponse = false;
   });
 
-  function getImageKey(image: DisplayableImage): string|undefined {
-    if (isDefaultImage(image)) {
-      return undefined;
-    }
-    if (isGooglePhotosPhoto(image)) {
-      return image.dedupKey ? image.dedupKey : image.id;
-    }
-    if (isWallpaperImage(image)) {
-      return image.unitId.toString();
-    }
-    if (isFilePath(image)) {
-      return image.path;
-    }
-    assertNotReached('unknown wallpaper type');
-  }
-
   function getImageType(image: DisplayableImage): WallpaperType {
     if (isDefaultImage(image)) {
       return WallpaperType.kDefault;
@@ -1070,16 +1072,223 @@ suite('updates default image', () => {
         personalizationStore.data.wallpaper.local.data[kDefaultImageSymbol],
         'default image thumbnail is still set');
   });
+});
 
-  test('enable Google Photos daily refresh triggers loading UI', async () => {
-    await selectGooglePhotosAlbum(
-        'albumId', wallpaperProvider, personalizationStore);
-    // Reset the history of actions and prior states, but keep the current
-    // state.
-    personalizationStore.reset(personalizationStore.data);
+suite('daily refresh loading', () => {
+  let wallpaperProvider: TestWallpaperProvider;
+  let personalizationStore: TestPersonalizationStore;
 
-    assertTrue(
-        personalizationStore.data.wallpaper.loading.refreshWallpaper,
-        'loading refresh wallpaper.');
+  setup(async () => {
+    const mocks = baseSetup();
+    wallpaperProvider = mocks.wallpaperProvider;
+    personalizationStore = mocks.personalizationStore;
+    personalizationStore.setReducersEnabled(true);
+    wallpaperProvider.isInTabletModeResponse = false;
+    WallpaperObserver.initWallpaperObserverIfNeeded();
+    await wallpaperProvider.whenCalled('getDailyRefreshCollectionId');
+  });
+
+  teardown(() => {
+    WallpaperObserver.shutdown();
+  });
+
+  suite('google photos', () => {
+    const mockAlbum = {
+      id: 'google-photos-album-0',
+      title: '',
+      photoCount: 0,
+      isShared: false,
+      preview: {url: 'bar.com'},
+      timestamp: {internalValue: BigInt(0)},
+    };
+
+    const mockPhotos: GooglePhotosPhoto[] = [
+      {
+        id: 'google-photos-photo-0',
+        dedupKey: 'google-photos-photo-0',
+        name: 'photo 0',
+        date: {data: []},
+        url: {url: ''},
+        location: 'home',
+      },
+      {
+        id: 'google-photos-photo-1',
+        dedupKey: 'google-photos-photo-1',
+        name: 'photo 1',
+        date: {data: []},
+        url: {url: ''},
+        location: 'home',
+      },
+    ];
+
+    setup(async () => {
+      wallpaperProvider.setGooglePhotosPhotos(mockPhotos);
+      wallpaperProvider.setGooglePhotosAlbums([mockAlbum]);
+      wallpaperProvider.setGooglePhotosPhotosByAlbumId(
+          mockAlbum.id, mockPhotos);
+
+      await fetchGooglePhotosEnabled(wallpaperProvider, personalizationStore);
+      await fetchGooglePhotosPhotos(wallpaperProvider, personalizationStore);
+      await fetchGooglePhotosAlbums(wallpaperProvider, personalizationStore);
+      await fetchGooglePhotosAlbum(
+          wallpaperProvider, personalizationStore, mockAlbum.id);
+      personalizationStore.reset(personalizationStore.data);
+    });
+
+    test('triggers loading if select new album', async () => {
+      // Set new daily refresh state to return after
+      // `selectGooglePhotosAlbum`.
+      wallpaperProvider.collectionId = '';
+      wallpaperProvider.albumId = mockAlbum.id;
+
+      assertFalse(
+          personalizationStore.data.wallpaper.loading.refreshWallpaper,
+          'daily refresh not loading');
+
+      await selectGooglePhotosAlbum(
+          mockAlbum.id, wallpaperProvider, personalizationStore);
+
+      assertDeepEquals(
+          [
+            {name: 'begin_update_daily_refresh_image'},
+            {
+              name: 'set_google_photos_daily_refresh_album_id',
+              albumId: 'google-photos-album-0',
+            },
+          ],
+          personalizationStore.actions,
+          'begin update daily refresh action sent');
+
+      assertTrue(
+          personalizationStore.data.wallpaper.loading.refreshWallpaper,
+          'daily refresh loading should be set');
+
+      wallpaperProvider.resetResolver('getGooglePhotosDailyRefreshAlbumId');
+      wallpaperProvider.wallpaperObserverRemote!.onWallpaperChanged({
+        attribution: [],
+        layout: WallpaperLayout.kCenterCropped,
+        type: WallpaperType.kDailyGooglePhotos,
+        key: getImageKey(mockPhotos[0]!)!,
+      });
+      // Wait for observer to handle the above event.
+      await wallpaperProvider.whenCalled('getGooglePhotosDailyRefreshAlbumId');
+
+      assertFalse(
+          personalizationStore.data.wallpaper.loading.refreshWallpaper,
+          'daily refresh no longer loading after receiving new wallpaper');
+    });
+
+    test('no loading for already selected album', async () => {
+      // Set new daily refresh state to return after `selectGooglePhotosAlbum`.
+      wallpaperProvider.collectionId = '';
+      wallpaperProvider.albumId = mockAlbum.id;
+
+      assertFalse(
+          personalizationStore.data.wallpaper.loading.refreshWallpaper,
+          'daily refresh not loading');
+
+      personalizationStore.data.wallpaper.currentSelected = {
+        attribution: [],
+        layout: WallpaperLayout.kCenter,
+        type: WallpaperType.kOnceGooglePhotos,
+        key: mockPhotos[0]!.dedupKey!,
+      };
+
+      await selectGooglePhotosAlbum(
+          mockAlbum.id, wallpaperProvider, personalizationStore);
+
+      assertDeepEquals(
+          [
+            {
+              name: 'set_google_photos_daily_refresh_album_id',
+              albumId: 'google-photos-album-0',
+            },
+          ],
+          personalizationStore.actions, 'no begin update daily refresh action');
+
+      assertFalse(
+          personalizationStore.data.wallpaper.loading.refreshWallpaper,
+          'daily refresh still not loading');
+    });
+  });
+
+  suite('backdrop', () => {
+    setup(async () => {
+      await initializeBackdropData(wallpaperProvider, personalizationStore);
+      personalizationStore.reset(personalizationStore.data);
+    });
+
+    test('sets loading state for new collectionId', async () => {
+      // Set daily refresh state response.
+      wallpaperProvider.setDailyRefreshCollectionIdResponse = {success: true};
+      wallpaperProvider.albumId = '';
+      wallpaperProvider.collectionId = wallpaperProvider.collections![0]!.id;
+      // Reset any wallpaper that is selected.
+      personalizationStore.data.wallpaper.currentSelected = null;
+
+      await setDailyRefreshCollectionId(
+          wallpaperProvider.collectionId, wallpaperProvider,
+          personalizationStore);
+
+      assertDeepEquals(
+          [
+            {
+              name: 'begin_update_daily_refresh_image',
+            },
+            {
+              name: 'set_daily_refresh_collection_id',
+              collectionId: 'id_0',
+            },
+          ],
+          personalizationStore.actions,
+          'sends begin update daily refresh action' +
+              JSON.stringify(personalizationStore.actions));
+
+      assertTrue(
+          personalizationStore.data.wallpaper.loading.refreshWallpaper,
+          'daily refresh still loading');
+
+      wallpaperProvider.resetResolver('getDailyRefreshCollectionId');
+      wallpaperProvider.wallpaperObserverRemote!.onWallpaperChanged({
+        attribution: [],
+        layout: WallpaperLayout.kCenterCropped,
+        type: WallpaperType.kDailyGooglePhotos,
+        key: getImageKey(wallpaperProvider.images![0]!)!,
+      });
+      // Wait for observer to handle the above event.
+      await wallpaperProvider.whenCalled('getDailyRefreshCollectionId');
+
+      assertFalse(
+          personalizationStore.data.wallpaper.loading.refreshWallpaper,
+          'daily refresh no longer loading after receiving new wallpaper');
+    });
+
+    test('no loading state for already selected collection', async () => {
+      wallpaperProvider.setDailyRefreshCollectionIdResponse = {success: true};
+      wallpaperProvider.albumId = '';
+      wallpaperProvider.collectionId = wallpaperProvider.collections![0]!.id;
+
+      personalizationStore.data.wallpaper.currentSelected = {
+        attribution: [],
+        layout: WallpaperLayout.kCenter,
+        type: WallpaperType.kOnline,
+        key: getImageKey(wallpaperProvider.images![0]!)!,
+      };
+
+      await setDailyRefreshCollectionId(
+          wallpaperProvider.collectionId, wallpaperProvider,
+          personalizationStore);
+
+      assertDeepEquals(
+          [
+            {
+              name: 'set_daily_refresh_collection_id',
+              collectionId: 'id_0',
+            },
+          ],
+          personalizationStore.actions,
+          'no begin update daily refresh action' +
+              JSON.stringify(personalizationStore.actions));
+    });
   });
 });

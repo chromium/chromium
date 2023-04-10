@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CurrentWallpaper, DefaultImageSymbol, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, kDefaultImageSymbol, OnlineImageType, SetDailyRefreshResponse, WallpaperCollection, WallpaperImage, WallpaperLayout, WallpaperObserverInterface, WallpaperObserverRemote, WallpaperProviderInterface, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
+import {CurrentWallpaper, DefaultImageSymbol, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, kDefaultImageSymbol, OnlineImageType, WallpaperCollection, WallpaperImage, WallpaperLayout, WallpaperObserverInterface, WallpaperObserverRemote, WallpaperProviderInterface, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
@@ -176,13 +176,11 @@ export class TestWallpaperProvider extends TestBrowserProxy implements
   currentWallpaper: CurrentWallpaper;
   albumId: string;
   collectionId: string;
+  setDailyRefreshCollectionIdResponse = {success: false};
   timeOfDayCollectionId: string;
   selectWallpaperResponse = true;
   selectGooglePhotosPhotoResponse = true;
-  selectGooglePhotosAlbumResponse: SetDailyRefreshResponse = {
-    success: true,
-    forceRefresh: true,
-  };
+  selectGooglePhotosAlbumResponse = true;
   selectDefaultImageResponse = true;
   selectLocalImageResponse = true;
   updateDailyRefreshWallpaperResponse = true;
@@ -298,7 +296,7 @@ export class TestWallpaperProvider extends TestBrowserProxy implements
 
   selectGooglePhotosAlbum(id: string) {
     this.methodCalled('selectGooglePhotosAlbum', id);
-    return Promise.resolve({response: this.selectGooglePhotosAlbumResponse});
+    return Promise.resolve({success: this.selectGooglePhotosAlbumResponse});
   }
 
   getGooglePhotosDailyRefreshAlbumId() {
@@ -318,7 +316,7 @@ export class TestWallpaperProvider extends TestBrowserProxy implements
 
   setDailyRefreshCollectionId(collectionId: string) {
     this.methodCalled('setDailyRefreshCollectionId', collectionId);
-    return Promise.resolve({response: {success: false, forceRefresh: false}});
+    return Promise.resolve(this.setDailyRefreshCollectionIdResponse);
   }
 
   getDailyRefreshCollectionId() {
