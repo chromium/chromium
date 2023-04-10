@@ -151,8 +151,7 @@ void BluetoothGetDevicesFunction::DoWork(
   BluetoothAdapter::DeviceList devices;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Default filter values.
-  bluetooth_api::FilterType filter_type =
-      bluetooth_api::FilterType::FILTER_TYPE_ALL;
+  bluetooth_api::FilterType filter_type = bluetooth_api::FilterType::kAll;
   int limit = 0; /*no limit*/
   if (params_->filter) {
     filter_type = params_->filter->filter_type;
