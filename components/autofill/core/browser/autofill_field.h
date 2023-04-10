@@ -314,7 +314,7 @@ class AutofillField : public FormFieldData {
     return autofill_source_profile_guid_;
   }
 
-  FormControlType FormControlType() const;
+  enum FormControlType FormControlType() const;
 
  private:
   explicit AutofillField(FieldSignature field_signature);
