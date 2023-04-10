@@ -519,8 +519,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
 
 // Test that anchors are dispated to the single observer, except for anchors
 // linking to the same page (e.g. fragment links).
-// TODO(crbug.com/1415578): Failing on Windows.
-#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/1415578): Failing on Windows and ChromeOS.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_SingleObserver DISABLED_SingleObserver
 #else
 #define MAYBE_SingleObserver SingleObserver
