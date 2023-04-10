@@ -5,9 +5,7 @@
 
 """Tests for generate_buildbot_json.py."""
 
-import argparse
 import contextlib
-import inspect
 import json
 import os
 import unittest
@@ -32,15 +30,19 @@ class TestCase(fake_filesystem_unittest.TestCase):
   def setUp(self):
     self.setUpPyfakefs()
     self.fs.cwd = THIS_DIR
-    self.args = generate_buildbot_json.BBJSONGenerator.parse_args([])
+
+    expectations_dir = os.path.join(THIS_DIR, 'unittest_expectations')
+    self.output_dir = os.path.join(expectations_dir, self.id().split('.')[-1])
 
     # This allows reads into this directory to fallback to the real fs, which we
     # want so each test case's json can be checked-in.
-    self.fs.add_real_directory(os.path.join(THIS_DIR, 'unittest_expectations'))
+    self.fs.add_real_directory(expectations_dir)
 
-  def override_args(self, **kwargs):
-    for k, v in kwargs.items():
-      setattr(self.args, k, v)
+    self.set_args()
+
+  def set_args(self, *args):
+    self.args = generate_buildbot_json.BBJSONGenerator.parse_args(
+        args + ('--output-dir', self.output_dir))
 
   def regen_test_json(self, fakebb):
     """Regenerates a unittest's json files.
@@ -80,27 +82,23 @@ class FakeBBGen(generate_buildbot_json.BBJSONGenerator):
     pyl_files_dir = args.pyl_files_dir or THIS_DIR
     infra_config_dir = args.infra_config_dir
 
-    # Gets the name of the calling method. A little hacky, but saves us from
-    # having to pass the name down in each test case.
-    unittest_name = inspect.stack()[1][3]
-    self.json_sub_dir = os.path.join('unittest_expectations', unittest_name)
-
     files = {
-        (pyl_files_dir, 'waterfalls.pyl'): waterfalls,
-        (pyl_files_dir, 'test_suites.pyl'): test_suites,
-        (pyl_files_dir, 'test_suite_exceptions.pyl'): exceptions,
-        (pyl_files_dir, 'mixins.pyl'): mixins,
-        (pyl_files_dir, 'gn_isolate_map.pyl'): gn_isolate_map,
-        (pyl_files_dir, 'gn_isolate_map2.pyl'): GPU_TELEMETRY_GN_ISOLATE_MAP,
-        (pyl_files_dir, 'variants.pyl'): variants,
-        (infra_config_dir, 'generated/project.pyl'): project_pyl,
-        (infra_config_dir, 'generated/luci/luci-milo.cfg'): luci_milo_cfg,
-        (infra_config_dir, 'generated/luci/luci-milo-dev.cfg'): '',
+        args.waterfalls_pyl_path: waterfalls,
+        args.test_suites_pyl_path: test_suites,
+        args.test_suite_exceptions_pyl_path: exceptions,
+        args.mixins_pyl_path: mixins,
+        args.gn_isolate_map_pyl_path: gn_isolate_map,
+        args.variants_pyl_path: variants,
+        os.path.join(pyl_files_dir, 'gn_isolate_map2.pyl'):
+        GPU_TELEMETRY_GN_ISOLATE_MAP,
+        os.path.join(infra_config_dir, 'generated/project.pyl'): project_pyl,
+        os.path.join(infra_config_dir, 'generated/luci/luci-milo.cfg'):
+        luci_milo_cfg,
+        os.path.join(infra_config_dir, 'generated/luci/luci-milo-dev.cfg'): '',
     }
-    for (d, filename), content in files.items():
+    for path, content in files.items():
       if content is None:
         continue
-      path = os.path.join(d, filename)
       parent = os.path.abspath(os.path.dirname(path))
       if not os.path.exists(parent):
         os.makedirs(parent)
@@ -2128,7 +2126,7 @@ class UnitTest(TestCase):
     self.assertFalse(fbb.printed_lines)
 
   def test_relative_pyl_file_dir(self):
-    self.override_args(pyl_files_dir='relative/path/', waterfall_filters=[])
+    self.set_args('--pyl-files-dir=relative/path')
     fbb = FakeBBGen(self.args,
                     FOO_GTESTS_WATERFALL,
                     REUSING_TEST_WITH_DIFFERENT_NAME,
@@ -2174,7 +2172,9 @@ class UnitTest(TestCase):
                     TEST_SUITE_SORTED, LUCI_MILO_CFG_WATERFALL_SORTING)
     with self.assertRaisesRegex(
         generate_buildbot_json.BBGenErr,
-        'The following files have invalid keys: waterfalls.pyl'):
+        ('The following files have invalid keys: ' +
+         self.args.waterfalls_pyl_path),
+    ):
       fbb.check_input_file_consistency(verbose=True)
     joined_lines = '\n'.join(fbb.printed_lines)
     self.assertRegex(joined_lines, '.*\+ chromium\..*test.*')
@@ -2186,7 +2186,9 @@ class UnitTest(TestCase):
                     TEST_SUITE_SORTED, LUCI_MILO_CFG_WATERFALL_SORTING)
     with self.assertRaisesRegex(
         generate_buildbot_json.BBGenErr,
-        'The following files have invalid keys: waterfalls.pyl'):
+        ('The following files have invalid keys: ' +
+         self.args.waterfalls_pyl_path),
+    ):
       fbb.check_input_file_consistency(verbose=True)
     joined_lines = ' '.join(fbb.printed_lines)
     self.assertRegex(joined_lines, '.*\+.*Fake Tester.*')
@@ -2870,7 +2872,7 @@ class MixinTests(TestCase):
                     mixins=SWARMING_MIXINS_DUPLICATED)
     with self.assertRaisesRegex(
         generate_buildbot_json.BBGenErr,
-        'The following files have invalid keys: mixins.pyl'):
+        f'The following files have invalid keys: {self.args.mixins_pyl_path}'):
       fbb.check_input_file_consistency(verbose=True)
     joined_lines = '\n'.join(fbb.printed_lines)
     self.assertRegex(joined_lines, '.*\- builder_mixin')
@@ -2882,7 +2884,9 @@ class MixinTests(TestCase):
                     LUCI_MILO_CFG)
     with self.assertRaisesRegex(
         generate_buildbot_json.BBGenErr,
-        'The following files have invalid keys: test_suites.pyl'):
+        ('The following files have invalid keys: ' +
+         self.args.test_suites_pyl_path),
+    ):
       fbb.check_input_file_consistency(verbose=True)
     joined_lines = '\n'.join(fbb.printed_lines)
     self.assertRegex(joined_lines, '.*\- a_test')
@@ -2893,11 +2897,12 @@ class MixinTests(TestCase):
   def test_type_assert_printing_help(self):
     fbb = FakeBBGen(self.args, FOO_GTESTS_WATERFALL, TEST_SUITES_SYNTAX_ERROR,
                     LUCI_MILO_CFG)
-    with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
-                                'Invalid \.pyl file \'test_suites.pyl\'.*'):
+    with self.assertRaisesRegex(
+        generate_buildbot_json.BBGenErr,
+        f'Invalid \.pyl file \'{self.args.test_suites_pyl_path}\'.*'):
       fbb.check_input_file_consistency(verbose=True)
     self.assertEqual(fbb.printed_lines, [
-        '== test_suites.pyl ==',
+        f'== {self.args.test_suites_pyl_path} ==',
         '<snip>',
         '1 {',
         "2   'basic_suites': {",
@@ -3319,11 +3324,7 @@ TEST_QUERY_TEST_BOTS_NO_BOTS_OUTPUT = []
 class QueryTests(TestCase):
   """Tests for the query feature."""
   def test_query_bots(self):
-    self.override_args(query='bots',
-                       check=False,
-                       pyl_files_dir=None,
-                       json=None,
-                       waterfall_filters=[])
+    self.set_args('--query=bots')
     fbb = FakeBBGen(self.args,
                     ANDROID_WATERFALL,
                     GOOD_COMPOSITION_TEST_SUITES,
@@ -3334,11 +3335,7 @@ class QueryTests(TestCase):
     self.assertEqual(query_json, TEST_QUERY_BOTS_OUTPUT)
 
   def test_query_bots_invalid(self):
-    self.override_args(query='bots/blah/blah',
-                       check=False,
-                       pyl_files_dir=None,
-                       json=None,
-                       waterfall_filters=[])
+    self.set_args('--query=bots/blah/blah')
     fbb = FakeBBGen(self.args,
                     ANDROID_WATERFALL,
                     GOOD_COMPOSITION_TEST_SUITES,
@@ -3350,11 +3347,7 @@ class QueryTests(TestCase):
     self.assertTrue(fbb.printed_lines)
 
   def test_query_bots_json(self):
-    self.override_args(query='bots',
-                       check=False,
-                       pyl_files_dir=None,
-                       json='result.json',
-                       waterfall_filters=[])
+    self.set_args('--query=bots', '--json=result.json')
     fbb = FakeBBGen(self.args,
                     ANDROID_WATERFALL,
                     GOOD_COMPOSITION_TEST_SUITES,
@@ -3364,11 +3357,7 @@ class QueryTests(TestCase):
     self.assertFalse(fbb.printed_lines)
 
   def test_query_bots_tests(self):
-    self.override_args(query='bots/tests',
-                       check=False,
-                       pyl_files_dir=None,
-                       json=None,
-                       waterfall_filters=[])
+    self.set_args('--query=bots/tests')
     fbb = FakeBBGen(self.args,
                     ANDROID_WATERFALL,
                     GOOD_COMPOSITION_TEST_SUITES,
@@ -3379,11 +3368,7 @@ class QueryTests(TestCase):
     self.assertEqual(query_json, TEST_QUERY_BOTS_TESTS_OUTPUT)
 
   def test_query_invalid_bots_tests(self):
-    self.override_args(query='bots/tdfjdk',
-                       check=False,
-                       pyl_files_dir=None,
-                       json=None,
-                       waterfall_filters=[])
+    self.set_args('--query=bots/tdfjdk')
     fbb = FakeBBGen(self.args,
                     ANDROID_WATERFALL,
                     GOOD_COMPOSITION_TEST_SUITES,
@@ -3395,11 +3380,7 @@ class QueryTests(TestCase):
     self.assertTrue(fbb.printed_lines)
 
   def test_query_bot(self):
-    self.override_args(query='bot/Fake Android K Tester',
-                       check=False,
-                       pyl_files_dir=None,
-                       json=None,
-                       waterfall_filters=[])
+    self.set_args('--query=bot/Fake Android K Tester')
     fbb = FakeBBGen(self.args,
                     ANDROID_WATERFALL,
                     GOOD_COMPOSITION_TEST_SUITES,
@@ -3411,11 +3392,7 @@ class QueryTests(TestCase):
     self.assertEqual(query_json, TEST_QUERY_BOT_OUTPUT)
 
   def test_query_bot_invalid_id(self):
-    self.override_args(query='bot/bot1',
-                       check=False,
-                       pyl_files_dir=None,
-                       json=None,
-                       waterfall_filters=[])
+    self.set_args('--query=bot/bot1')
     fbb = FakeBBGen(self.args,
                     ANDROID_WATERFALL,
                     GOOD_COMPOSITION_TEST_SUITES,
@@ -3427,11 +3404,7 @@ class QueryTests(TestCase):
     self.assertTrue(fbb.printed_lines)
 
   def test_query_bot_invalid_query_too_many(self):
-    self.override_args(query='bot/Fake Android K Tester/blah/blah',
-                       check=False,
-                       pyl_files_dir=None,
-                       json=None,
-                       waterfall_filters=[])
+    self.set_args('--query=bot/Fake Android K Tester/blah/blah')
     fbb = FakeBBGen(self.args,
                     ANDROID_WATERFALL,
                     GOOD_COMPOSITION_TEST_SUITES,
@@ -3443,11 +3416,7 @@ class QueryTests(TestCase):
     self.assertTrue(fbb.printed_lines)
 
   def test_query_bot_invalid_query_no_tests(self):
-    self.override_args(query='bot/Fake Android K Tester/blahs',
-                       check=False,
-                       pyl_files_dir=None,
-                       json=None,
-                       waterfall_filters=[])
+    self.set_args('--query=bot/Fake Android K Tester/blahs')
     fbb = FakeBBGen(self.args,
                     ANDROID_WATERFALL,
                     GOOD_COMPOSITION_TEST_SUITES,
@@ -3459,11 +3428,7 @@ class QueryTests(TestCase):
     self.assertTrue(fbb.printed_lines)
 
   def test_query_bot_tests(self):
-    self.override_args(query='bot/Fake Android L Tester/tests',
-                       check=False,
-                       pyl_files_dir=None,
-                       json=None,
-                       waterfall_filters=[])
+    self.set_args('--query=bot/Fake Android L Tester/tests')
     fbb = FakeBBGen(self.args,
                     ANDROID_WATERFALL,
                     GOOD_COMPOSITION_TEST_SUITES,
@@ -3474,11 +3439,7 @@ class QueryTests(TestCase):
     self.assertEqual(query_json, TEST_QUERY_BOT_TESTS_OUTPUT)
 
   def test_query_tests(self):
-    self.override_args(query='tests',
-                       check=False,
-                       pyl_files_dir=None,
-                       json=None,
-                       waterfall_filters=[])
+    self.set_args('--query=tests')
     fbb = FakeBBGen(self.args,
                     ANDROID_WATERFALL,
                     GOOD_COMPOSITION_TEST_SUITES,
@@ -3489,11 +3450,7 @@ class QueryTests(TestCase):
     self.assertEqual(query_json, TEST_QUERY_TESTS_OUTPUT)
 
   def test_query_tests_invalid(self):
-    self.override_args(query='tests/blah/blah',
-                       check=False,
-                       pyl_files_dir=None,
-                       json=None,
-                       waterfall_filters=[])
+    self.set_args('--query=tests/blah/blah')
     fbb = FakeBBGen(self.args,
                     ANDROID_WATERFALL,
                     GOOD_COMPOSITION_TEST_SUITES,
@@ -3505,11 +3462,7 @@ class QueryTests(TestCase):
     self.assertTrue(fbb.printed_lines)
 
   def test_query_tests_multiple_params(self):
-    self.override_args(query='tests/--jobs=1&--verbose',
-                       check=False,
-                       pyl_files_dir=None,
-                       json=None,
-                       waterfall_filters=[])
+    self.set_args('--query=tests/--jobs=1&--verbose')
     fbb = FakeBBGen(self.args,
                     ANDROID_WATERFALL,
                     TEST_SUITE_WITH_PARAMS,
@@ -3520,11 +3473,7 @@ class QueryTests(TestCase):
     self.assertEqual(query_json, TEST_QUERY_TESTS_MULTIPLE_PARAMS_OUTPUT)
 
   def test_query_tests_invalid_params(self):
-    self.override_args(query='tests/device_os?',
-                       check=False,
-                       pyl_files_dir=None,
-                       json=None,
-                       waterfall_filters=[])
+    self.set_args('--query=tests/device_os?')
     fbb = FakeBBGen(self.args,
                     ANDROID_WATERFALL,
                     TEST_SUITE_WITH_PARAMS,
@@ -3536,11 +3485,7 @@ class QueryTests(TestCase):
     self.assertTrue(fbb.printed_lines)
 
   def test_query_tests_dimension_params(self):
-    self.override_args(query='tests/device_os:NMF26U',
-                       check=False,
-                       pyl_files_dir=None,
-                       json=None,
-                       waterfall_filters=[])
+    self.set_args('--query=tests/device_os:NMF26U')
     fbb = FakeBBGen(self.args,
                     ANDROID_WATERFALL,
                     TEST_SUITE_WITH_PARAMS,
@@ -3551,11 +3496,7 @@ class QueryTests(TestCase):
     self.assertEqual(query_json, TEST_QUERY_TESTS_DIMENSION_PARAMS_OUTPUT)
 
   def test_query_tests_swarming_params(self):
-    self.override_args(query='tests/hard_timeout:1000',
-                       check=False,
-                       pyl_files_dir=None,
-                       json=None,
-                       waterfall_filters=[])
+    self.set_args('--query=tests/hard_timeout:1000')
     fbb = FakeBBGen(self.args,
                     ANDROID_WATERFALL,
                     TEST_SUITE_WITH_PARAMS,
@@ -3566,11 +3507,7 @@ class QueryTests(TestCase):
     self.assertEqual(query_json, TEST_QUERY_TESTS_SWARMING_PARAMS_OUTPUT)
 
   def test_query_tests_params(self):
-    self.override_args(query='tests/should_retry_with_patch:true',
-                       check=False,
-                       pyl_files_dir=None,
-                       json=None,
-                       waterfall_filters=[])
+    self.set_args('--query=tests/should_retry_with_patch:true')
     fbb = FakeBBGen(self.args,
                     ANDROID_WATERFALL,
                     TEST_SUITE_WITH_PARAMS,
@@ -3581,11 +3518,7 @@ class QueryTests(TestCase):
     self.assertEqual(query_json, TEST_QUERY_TESTS_PARAMS_OUTPUT)
 
   def test_query_tests_params_false(self):
-    self.override_args(query='tests/should_retry_with_patch:false',
-                       check=False,
-                       pyl_files_dir=None,
-                       json=None,
-                       waterfall_filters=[])
+    self.set_args('--query=tests/should_retry_with_patch:false')
     fbb = FakeBBGen(self.args,
                     ANDROID_WATERFALL,
                     TEST_SUITE_WITH_PARAMS,
@@ -3596,11 +3529,7 @@ class QueryTests(TestCase):
     self.assertEqual(query_json, TEST_QUERY_TESTS_PARAMS_FALSE_OUTPUT)
 
   def test_query_test(self):
-    self.override_args(query='test/foo_test',
-                       check=False,
-                       pyl_files_dir=None,
-                       json=None,
-                       waterfall_filters=[])
+    self.set_args('--query=test/foo_test')
     fbb = FakeBBGen(self.args,
                     ANDROID_WATERFALL,
                     GOOD_COMPOSITION_TEST_SUITES,
@@ -3611,11 +3540,7 @@ class QueryTests(TestCase):
     self.assertEqual(query_json, TEST_QUERY_TEST_OUTPUT)
 
   def test_query_test_invalid_id(self):
-    self.override_args(query='test/foo_foo',
-                       check=False,
-                       pyl_files_dir=None,
-                       json=None,
-                       waterfall_filters=[])
+    self.set_args('--query=test/foo_foo')
     fbb = FakeBBGen(self.args,
                     ANDROID_WATERFALL,
                     GOOD_COMPOSITION_TEST_SUITES,
@@ -3627,11 +3552,7 @@ class QueryTests(TestCase):
     self.assertTrue(fbb.printed_lines)
 
   def test_query_test_invalid_length(self):
-    self.override_args(query='test/foo_tests/foo/foo',
-                       check=False,
-                       pyl_files_dir=None,
-                       json=None,
-                       waterfall_filters=[])
+    self.set_args('--query=test/foo_tests/foo/foo')
     fbb = FakeBBGen(self.args,
                     ANDROID_WATERFALL,
                     GOOD_COMPOSITION_TEST_SUITES,
@@ -3643,11 +3564,7 @@ class QueryTests(TestCase):
     self.assertTrue(fbb.printed_lines)
 
   def test_query_test_bots(self):
-    self.override_args(query='test/foo_test/bots',
-                       check=False,
-                       pyl_files_dir=None,
-                       json=None,
-                       waterfall_filters=[])
+    self.set_args('--query=test/foo_test/bots')
     fbb = FakeBBGen(self.args,
                     ANDROID_WATERFALL,
                     GOOD_COMPOSITION_TEST_SUITES,
@@ -3658,11 +3575,7 @@ class QueryTests(TestCase):
     self.assertEqual(query_json, TEST_QUERY_TEST_BOTS_OUTPUT)
 
   def test_query_test_bots_isolated_scripts(self):
-    self.override_args(query='test/foo_test/bots',
-                       check=False,
-                       pyl_files_dir=None,
-                       json=None,
-                       waterfall_filters=[])
+    self.set_args('--query=test/foo_test/bots')
     fbb = FakeBBGen(self.args,
                     FOO_ISOLATED_SCRIPTS_WATERFALL,
                     GOOD_COMPOSITION_TEST_SUITES,
@@ -3673,11 +3586,7 @@ class QueryTests(TestCase):
     self.assertEqual(query_json, TEST_QUERY_TEST_BOTS_ISOLATED_SCRIPTS_OUTPUT)
 
   def test_query_test_bots_invalid(self):
-    self.override_args(query='test/foo_tests/foo',
-                       check=False,
-                       pyl_files_dir=None,
-                       json=None,
-                       waterfall_filters=[])
+    self.set_args('--query=test/foo_tests/foo')
     fbb = FakeBBGen(self.args,
                     ANDROID_WATERFALL,
                     GOOD_COMPOSITION_TEST_SUITES,
@@ -3689,11 +3598,7 @@ class QueryTests(TestCase):
     self.assertTrue(fbb.printed_lines)
 
   def test_query_test_bots_no_bots(self):
-    self.override_args(query='test/bar_tests/bots',
-                       check=False,
-                       pyl_files_dir=None,
-                       json=None,
-                       waterfall_filters=[])
+    self.set_args('--query=test/bar_tests/bots')
     fbb = FakeBBGen(self.args,
                     ANDROID_WATERFALL,
                     GOOD_COMPOSITION_TEST_SUITES,
@@ -3704,11 +3609,7 @@ class QueryTests(TestCase):
     self.assertEqual(query_json, TEST_QUERY_TEST_BOTS_NO_BOTS_OUTPUT)
 
   def test_query_invalid(self):
-    self.override_args(query='foo',
-                       check=False,
-                       pyl_files_dir=None,
-                       json=None,
-                       waterfall_filters=[])
+    self.set_args('--query=foo')
     fbb = FakeBBGen(self.args,
                     ANDROID_WATERFALL,
                     GOOD_COMPOSITION_TEST_SUITES,

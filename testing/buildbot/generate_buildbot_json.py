@@ -323,10 +323,6 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     self.gn_isolate_map = None
     self.variants = None
 
-    # Relative sub dir of the pyl dir where the JSON files will be written.
-    # Used only for unit testing.
-    self.json_sub_dir = None
-
   @staticmethod
   def parse_args(argv):
 
@@ -369,6 +365,12 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
             "  List all bots running 'test1' " +
             "(make sure you have quotes):\n" + "    --query test/'test1'/bots"))
     parser.add_argument(
+        '--json',
+        metavar='JSON_FILE_PATH',
+        type=os.path.abspath,
+        help='Outputs results into a json file. Only works with query function.'
+    )
+    parser.add_argument(
         '-n',
         '--new-files',
         action='store_true',
@@ -386,60 +388,68 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
                         help='Optional list of waterfalls to generate.')
     parser.add_argument(
         '--pyl-files-dir',
-        type=os.path.realpath,
-        help='Path to the directory containing the input .pyl files.')
+        type=os.path.abspath,
+        help=('Path to the directory containing the input .pyl files.'
+              ' By default the directory containing this script will be used.'))
     parser.add_argument(
-        '--json',
-        metavar='JSON_FILE_PATH',
-        help='Outputs results into a json file. Only works with query function.'
-    )
+        '--output-dir',
+        type=os.path.abspath,
+        help=('Path to the directory to output generated .json files.'
+              'By default, the pyl files directory will be used.'))
     parser.add_argument('--isolate-map-file',
                         metavar='PATH',
                         help='path to additional isolate map files.',
+                        type=os.path.abspath,
                         default=[],
                         action='append',
                         dest='isolate_map_files')
     parser.add_argument(
         '--infra-config-dir',
         help='Path to the LUCI services configuration directory',
-        default=os.path.abspath(
-            os.path.join(os.path.dirname(__file__), '..', '..', 'infra',
-                         'config')))
+        type=os.path.abspath,
+        default=os.path.join(os.path.dirname(__file__), '..', '..', 'infra',
+                             'config'))
+
     args = parser.parse_args(argv)
     if args.json and not args.query:
       parser.error(
           "The --json flag can only be used with --query.")  # pragma: no cover
-    args.infra_config_dir = os.path.abspath(args.infra_config_dir)
-    return args
 
-  def generate_abs_file_path(self, relative_path):
-    return os.path.join(self.this_dir, relative_path)
+    args.pyl_files_dir = args.pyl_files_dir or THIS_DIR
+    args.output_dir = args.output_dir or args.pyl_files_dir
+
+    def pyl_file_path(filename):
+      return os.path.join(args.pyl_files_dir, filename)
+
+    args.waterfalls_pyl_path = pyl_file_path('waterfalls.pyl')
+    args.mixins_pyl_path = pyl_file_path('mixins.pyl')
+    args.test_suites_pyl_path = pyl_file_path('test_suites.pyl')
+    args.test_suite_exceptions_pyl_path = pyl_file_path(
+        'test_suite_exceptions.pyl')
+    args.gn_isolate_map_pyl_path = pyl_file_path('gn_isolate_map.pyl')
+    args.variants_pyl_path = pyl_file_path('variants.pyl')
+
+    return args
 
   def print_line(self, line):
     # Exists so that tests can mock
     print(line)  # pragma: no cover
 
   def read_file(self, relative_path):
-    with open(self.generate_abs_file_path(relative_path)) as fp:
+    with open(relative_path) as fp:
       return fp.read()
 
-  def write_file(self, relative_path, contents):
-    with open(self.generate_abs_file_path(relative_path), 'wb') as fp:
-      fp.write(contents.encode('utf-8'))
-
-  def pyl_file_path(self, filename):
-    if self.args and self.args.pyl_files_dir:
-      return os.path.join(self.args.pyl_files_dir, filename)
-    return filename
+  def write_file(self, file_path, contents):
+    with open(file_path, 'w') as fp:
+      fp.write(contents)
 
   # pylint: disable=inconsistent-return-statements
-  def load_pyl_file(self, filename):
+  def load_pyl_file(self, pyl_file_path):
     try:
-      return ast.literal_eval(self.read_file(
-          self.pyl_file_path(filename)))
+      return ast.literal_eval(self.read_file(pyl_file_path))
     except (SyntaxError, ValueError) as e: # pragma: no cover
       six.raise_from(
-          BBGenErr('Failed to parse pyl file "%s": %s' % (filename, e)),
+          BBGenErr('Failed to parse pyl file "%s": %s' % (pyl_file_path, e)),
           e)  # pragma: no cover
     # pylint: enable=inconsistent-return-statements
 
@@ -1316,11 +1326,12 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
           tester['test_suites'][suite] = self.test_suites[value]
 
   def load_configuration_files(self):
-    self.waterfalls = self.load_pyl_file('waterfalls.pyl')
-    self.test_suites = self.load_pyl_file('test_suites.pyl')
-    self.exceptions = self.load_pyl_file('test_suite_exceptions.pyl')
-    self.mixins = self.load_pyl_file('mixins.pyl')
-    self.gn_isolate_map = self.load_pyl_file('gn_isolate_map.pyl')
+    self.waterfalls = self.load_pyl_file(self.args.waterfalls_pyl_path)
+    self.test_suites = self.load_pyl_file(self.args.test_suites_pyl_path)
+    self.exceptions = self.load_pyl_file(
+        self.args.test_suite_exceptions_pyl_path)
+    self.mixins = self.load_pyl_file(self.args.mixins_pyl_path)
+    self.gn_isolate_map = self.load_pyl_file(self.args.gn_isolate_map_pyl_path)
     for isolate_map in self.args.isolate_map_files:
       isolate_map = self.load_pyl_file(isolate_map)
       duplicates = set(isolate_map).intersection(self.gn_isolate_map)
@@ -1329,7 +1340,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
                        ', '.join(duplicates))
       self.gn_isolate_map.update(isolate_map)
 
-    self.variants = self.load_pyl_file('variants.pyl')
+    self.variants = self.load_pyl_file(self.args.variants_pyl_path)
 
   def resolve_configuration_files(self):
     self.resolve_test_id_prefixes()
@@ -1589,9 +1600,8 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
 
     for filename, contents in result.items():
       jsonstr = self.jsonify(contents)
-      if self.json_sub_dir:
-        filename = os.path.join(self.json_sub_dir, filename)
-      self.write_file(self.pyl_file_path(filename + suffix), jsonstr)
+      file_path = os.path.join(self.args.output_dir, filename + suffix)
+      self.write_file(file_path, jsonstr)
 
   def get_valid_bot_names(self):
     # Extract bot names from infra/config/generated/luci/luci-milo.cfg.
@@ -1770,7 +1780,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
                      'key.' % str(missing_variants))
 
 
-  def type_assert(self, node, typ, filename, verbose=False):
+  def type_assert(self, node, typ, file_path, verbose=False):
     """Asserts that the Python AST node |node| is of type |typ|.
 
     If verbose is set, it prints out some helpful context lines, showing where
@@ -1778,24 +1788,31 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     """
     if not isinstance(node, typ):
       if verbose:
-        lines = [""] + self.read_file(filename).splitlines()
+        lines = [""] + self.read_file(file_path).splitlines()
 
         context = 2
         lines_start = max(node.lineno - context, 0)
         # Add one to include the last line
         lines_end = min(node.lineno + context, len(lines)) + 1
-        lines = (
-            ['== %s ==\n' % filename] +
-            ["<snip>\n"] +
-            ['%d %s' % (lines_start + i, line) for i, line in enumerate(
-                lines[lines_start:lines_start + context])] +
-            ['-' * 80 + '\n'] +
-            ['%d %s' % (node.lineno, lines[node.lineno])] +
-            ['-' * (node.col_offset + 3) + '^' + '-' * (
-                80 - node.col_offset - 4) + '\n'] +
-            ['%d %s' % (node.lineno + 1 + i, line) for i, line in enumerate(
-                lines[node.lineno + 1:lines_end])] +
-            ["<snip>\n"]
+        lines = itertools.chain(
+            ['== %s ==\n' % file_path],
+            ["<snip>\n"],
+            [
+                '%d %s' % (lines_start + i, line)
+                for i, line in enumerate(lines[lines_start:lines_start +
+                                               context])
+            ],
+            ['-' * 80 + '\n'],
+            ['%d %s' % (node.lineno, lines[node.lineno])],
+            [
+                '-' * (node.col_offset + 3) + '^' + '-' *
+                (80 - node.col_offset - 4) + '\n'
+            ],
+            [
+                '%d %s' % (node.lineno + 1 + i, line)
+                for i, line in enumerate(lines[node.lineno + 1:lines_end])
+            ],
+            ["<snip>\n"],
         )
         # Print out a useful message when a type assertion fails.
         for l in lines:
@@ -1808,11 +1825,13 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         node_dumped = node_dumped[:30] + '  <SNIP>  ' + node_dumped[-30:]
       raise BBGenErr(
           'Invalid .pyl file %r. Python AST node %r on line %s expected to'
-          ' be %s, is %s' % (
-              filename, node_dumped,
-              node.lineno, typ, type(node)))
+          ' be %s, is %s' %
+          (file_path, node_dumped, node.lineno, typ, type(node)))
 
-  def check_ast_list_formatted(self, keys, filename, verbose,
+  def check_ast_list_formatted(self,
+                               keys,
+                               file_path,
+                               verbose,
                                check_sorting=True):
     """Checks if a list of ast keys are correctly formatted.
 
@@ -1825,7 +1844,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
             It's a list of AST nodes instead of a list of strings because
             when verbose is set, it tries to print out context of where the
             diffs are in the file.
-      filename: The name of the file this node is from.
+      file_path: The path to the file this node is from.
       verbose: If set, print out diff information about how the keys are
                incorrectly formatted.
       check_sorting: If true, checks if the list is sorted.
@@ -1863,21 +1882,23 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
 
       self.print_line('=' * 80)
       self.print_line('(First line of keys is %s)' % line_num)
-      for line in difflib.context_diff(
-          keys, keys_to_diff_against,
-          fromfile='current (%r)' % filename, tofile='sorted', lineterm=''):
+      for line in difflib.context_diff(keys,
+                                       keys_to_diff_against,
+                                       fromfile='current (%r)' % file_path,
+                                       tofile='sorted',
+                                       lineterm=''):
         self.print_line(line)
       self.print_line('=' * 80)
 
     return False
 
-  def check_ast_dict_formatted(self, node, filename, verbose):
+  def check_ast_dict_formatted(self, node, file_path, verbose):
     """Checks if an ast dictionary's keys are correctly formatted.
 
     Just a simple wrapper around check_ast_list_formatted.
     Args:
       node: An AST node. Assumed to be a dictionary.
-      filename: The name of the file this node is from.
+      file_path: The path to the file this node is from.
       verbose: If set, print out diff information about how the keys are
                incorrectly formatted.
       check_sorting: If true, checks if the list is sorted.
@@ -1889,112 +1910,112 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     # dictionary keys are given an arbitrary order, but since we parsed the
     # file itself, the order as given in the file is preserved.
     for key in node.keys:
-      self.type_assert(key, ast.Str, filename, verbose)
+      self.type_assert(key, ast.Str, file_path, verbose)
       keys.append(key)
 
-    return self.check_ast_list_formatted(keys, filename, verbose)
+    return self.check_ast_list_formatted(keys, file_path, verbose)
 
   def check_input_files_sorting(self, verbose=False):
     # TODO(https://crbug.com/886993): Add the ability for this script to
     # actually format the files, rather than just complain if they're
     # incorrectly formatted.
     bad_files = set()
-    def parse_file(filename):
+
+    def parse_file(file_path):
       """Parses and validates a .pyl file.
 
       Returns an AST node representing the value in the pyl file."""
-      parsed = ast.parse(self.read_file(self.pyl_file_path(filename)))
+      parsed = ast.parse(self.read_file(file_path))
 
       # Must be a module.
-      self.type_assert(parsed, ast.Module, filename, verbose)
+      self.type_assert(parsed, ast.Module, file_path, verbose)
       module = parsed.body
 
       # Only one expression in the module.
-      self.type_assert(module, list, filename, verbose)
+      self.type_assert(module, list, file_path, verbose)
       if len(module) != 1: # pragma: no cover
-        raise BBGenErr('Invalid .pyl file %s' % filename)
+        raise BBGenErr('Invalid .pyl file %s' % file_path)
       expr = module[0]
-      self.type_assert(expr, ast.Expr, filename, verbose)
+      self.type_assert(expr, ast.Expr, file_path, verbose)
 
       return expr.value
 
     # Handle this separately
-    filename = 'waterfalls.pyl'
-    value = parse_file(filename)
+    value = parse_file(self.args.waterfalls_pyl_path)
     # Value should be a list.
-    self.type_assert(value, ast.List, filename, verbose)
+    self.type_assert(value, ast.List, self.args.waterfalls_pyl_path, verbose)
 
     keys = []
     for elm in value.elts:
-      self.type_assert(elm, ast.Dict, filename, verbose)
+      self.type_assert(elm, ast.Dict, self.args.waterfalls_pyl_path, verbose)
       waterfall_name = None
       for key, val in zip(elm.keys, elm.values):
-        self.type_assert(key, ast.Str, filename, verbose)
+        self.type_assert(key, ast.Str, self.args.waterfalls_pyl_path, verbose)
         if key.s == 'machines':
-          if not self.check_ast_dict_formatted(val, filename, verbose):
-            bad_files.add(filename)
+          if not self.check_ast_dict_formatted(
+              val, self.args.waterfalls_pyl_path, verbose):
+            bad_files.add(self.args.waterfalls_pyl_path)
 
         if key.s == "name":
-          self.type_assert(val, ast.Str, filename, verbose)
+          self.type_assert(val, ast.Str, self.args.waterfalls_pyl_path, verbose)
           waterfall_name = val
       assert waterfall_name
       keys.append(waterfall_name)
 
-    if not self.check_ast_list_formatted(keys, filename, verbose):
-      bad_files.add(filename)
+    if not self.check_ast_list_formatted(keys, self.args.waterfalls_pyl_path,
+                                         verbose):
+      bad_files.add(self.args.waterfalls_pyl_path)
 
-    for filename in (
-        'mixins.pyl',
-        'test_suites.pyl',
-        'test_suite_exceptions.pyl',
+    for file_path in (
+        self.args.mixins_pyl_path,
+        self.args.test_suites_pyl_path,
+        self.args.test_suite_exceptions_pyl_path,
     ):
-      value = parse_file(filename)
+      value = parse_file(file_path)
       # Value should be a dictionary.
-      self.type_assert(value, ast.Dict, filename, verbose)
+      self.type_assert(value, ast.Dict, file_path, verbose)
 
-      if not self.check_ast_dict_formatted(
-          value, filename, verbose):
-        bad_files.add(filename)
+      if not self.check_ast_dict_formatted(value, file_path, verbose):
+        bad_files.add(file_path)
 
-      if filename == 'test_suites.pyl':
+      if file_path == self.args.test_suites_pyl_path:
         expected_keys = ['basic_suites',
                          'compound_suites',
                          'matrix_compound_suites']
         actual_keys = [node.s for node in value.keys]
         assert all(key in expected_keys for key in actual_keys), (
-                    'Invalid %r file; expected keys %r, got %r' % (
-                        filename, expected_keys, actual_keys))
+            'Invalid %r file; expected keys %r, got %r' %
+            (file_path, expected_keys, actual_keys))
         suite_dicts = list(value.values)
         # Only two keys should mean only 1 or 2 values
         assert len(suite_dicts) <= 3
         for suite_group in suite_dicts:
-          if not self.check_ast_dict_formatted(
-              suite_group, filename, verbose):
-            bad_files.add(filename)
+          if not self.check_ast_dict_formatted(suite_group, file_path, verbose):
+            bad_files.add(file_path)
 
         for key, suite in zip(value.keys, value.values):
           # The compound suites are checked in
           # 'check_composition_type_test_suites()'
           if key.s == 'basic_suites':
             for group in suite.values:
-              if not self.check_ast_dict_formatted(group, filename, verbose):
-                bad_files.add(filename)
+              if not self.check_ast_dict_formatted(group, file_path, verbose):
+                bad_files.add(file_path)
             break
 
-      elif filename == 'test_suite_exceptions.pyl':
+      elif file_path == self.args.test_suite_exceptions_pyl_path:
         # Check the values for each test.
         for test in value.values:
           for kind, node in zip(test.keys, test.values):
             if isinstance(node, ast.Dict):
-              if not self.check_ast_dict_formatted(node, filename, verbose):
-                bad_files.add(filename)
+              if not self.check_ast_dict_formatted(node, file_path, verbose):
+                bad_files.add(file_path)
             elif kind.s == 'remove_from':
               # Don't care about sorting; these are usually grouped, since the
               # same bug can affect multiple builders. Do want to make sure
               # there aren't duplicates.
-              if not self.check_ast_list_formatted(node.elts, filename, verbose,
-                                               check_sorting=False):
-                bad_files.add(filename)
+              if not self.check_ast_list_formatted(
+                  node.elts, file_path, verbose, check_sorting=False):
+                bad_files.add(file_path)
 
     if bad_files:
       raise BBGenErr(
@@ -2011,9 +2032,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     outputs = self.generate_outputs()
     for filename, expected_contents in outputs.items():
       expected = self.jsonify(expected_contents)
-      file_path = self.pyl_file_path(filename + '.json')
-      if self.json_sub_dir:
-        file_path = os.path.join(self.json_sub_dir, file_path)
+      file_path = os.path.join(self.args.output_dir, filename + '.json')
       current = self.read_file(file_path)
       if expected != current:
         ungenerated_files.add(filename)
