@@ -4665,6 +4665,21 @@
             ]
         }
     ],
+    "EnableFallbackFontsCrashReporting": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230404",
+                    "enable_features": [
+                        "EnableFallbackFontsCrashReporting"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableFrameSinkDesktopCapturerInCrd": [
         {
             "platforms": [

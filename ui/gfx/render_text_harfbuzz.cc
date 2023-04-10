@@ -11,6 +11,9 @@
 #include "base/containers/contains.h"
 #include "base/containers/lru_cache.h"
 #include "base/containers/span.h"
+#include "base/debug/alias.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/i18n/base_i18n_switches.h"
@@ -816,6 +819,34 @@ BASE_FEATURE(kRemoveFontLinkFallbacks,
 
 bool IsRemoveFontLinkFallbacks() {
   return base::FeatureList::IsEnabled(kRemoveFontLinkFallbacks);
+}
+
+BASE_FEATURE(kEnableFallbackFontsCrashReporting,
+             "EnableFallbackFontsCrashReporting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsEnableFallbackFontsCrashReporting() {
+  return base::FeatureList::IsEnabled(kEnableFallbackFontsCrashReporting);
+}
+
+// Append to `in_out_report` the font name and the text correlating to the runs
+// shaped by that font. This crash report will be used to debug why text is
+// being shaped through the GetFallbackFonts path as we shouldn't need to
+// fallback to that call path. crbug.com/995789
+void AppendFontNameAndShapedTextToCrashDumpReport(
+    const std::u16string& text,
+    const std::vector<internal::TextRunHarfBuzz*>& shaped_runs,
+    const std::string& font_name,
+    std::u16string& report) {
+  const std::u16string font_name_seperator = u"[font name] ";
+  const std::u16string run_start = u"[run start] ";
+  const std::u16string run_end = u" [run end]";
+  report += font_name_seperator + base::ASCIIToUTF16(font_name.c_str());
+  for (internal::TextRunHarfBuzz* run : shaped_runs) {
+    std::u16string text_substring =
+        text.substr(run->range.start(), run->range.end());
+    report += run_start + text_substring + run_end;
+  }
 }
 
 }  // namespace
@@ -2082,7 +2113,11 @@ void RenderTextHarfBuzz::ShapeRuns(
   }
 
   if (!IsRemoveFontLinkFallbacks()) {
+    // Used for crash reporting below.
+    static bool is_first_crash = true;
+
     std::vector<Font> fallback_font_list;
+    std::u16string crash_report_string;
     {
       SCOPED_UMA_HISTOGRAM_LONG_TIMER(
           "RenderTextHarfBuzz.GetFallbackFontsTime");
@@ -2133,13 +2168,20 @@ void RenderTextHarfBuzz::ShapeRuns(
       FontRenderParams fallback_render_params =
           GetFontRenderParams(query, nullptr);
       internal::TextRunHarfBuzz::FontParams test_font_params = font_params;
+      std::vector<internal::TextRunHarfBuzz*> fallback_fonts_shaped_runs;
       if (test_font_params.SetRenderParamsOverrideSkiaFaceFromFont(
               font, fallback_render_params) &&
           !FontWasAlreadyTried(test_font_params.skia_face,
                                &fallback_fonts_already_tried)) {
-        ShapeRunsWithFont(text, test_font_params, &runs);
+        ShapeRunsWithFont(text, test_font_params, &runs,
+                          &fallback_fonts_shaped_runs);
         MarkFontAsTried(test_font_params.skia_face,
                         &fallback_fonts_already_tried);
+        if (fallback_fonts_shaped_runs.size() > 0 && is_first_crash &&
+            IsEnableFallbackFontsCrashReporting()) {
+          AppendFontNameAndShapedTextToCrashDumpReport(
+              text, fallback_fonts_shaped_runs, font_name, crash_report_string);
+        }
       }
       if (runs.empty()) {
         TRACE_EVENT_INSTANT2("ui", "RenderTextHarfBuzz::FallbackFont",
@@ -2147,6 +2189,23 @@ void RenderTextHarfBuzz::ShapeRuns(
                              TRACE_STR_COPY(font_name.c_str()),
                              "primary_font_name", primary_font.GetFontName());
         RecordShapeRunsFallback(ShapeRunFallback::FALLBACKS);
+        // Resolving fallback fonts using the registry keys on windows will be
+        // deprecated and removed (see: http://crbug.com/995789). The crashes
+        // reported here should be fixed before deprecating the code.
+        if (is_first_crash && IsEnableFallbackFontsCrashReporting()) {
+          is_first_crash = false;
+          const size_t crash_report_size = 256;
+          DEBUG_ALIAS_FOR_U16CSTR(aliased_crash_report_string,
+                                  crash_report_string.c_str(),
+                                  crash_report_size);
+          DEBUG_ALIAS_FOR_U16CSTR(aliased_full_text, text.c_str(),
+                                  crash_report_size);
+          SCOPED_CRASH_KEY_STRING32("RenderTextFallbacks", "primaryfont_name",
+                                    primary_font.GetFontName());
+          SCOPED_CRASH_KEY_STRING32("RenderTextFallbacks", "primaryfont_script",
+                                    uscript_getShortName(font_params.script));
+          base::debug::DumpWithoutCrashing();
+        }
         return;
       }
   }
@@ -2165,11 +2224,12 @@ void RenderTextHarfBuzz::ShapeRuns(
 void RenderTextHarfBuzz::ShapeRunsWithFont(
     const std::u16string& text,
     const internal::TextRunHarfBuzz::FontParams& font_params,
-    std::vector<internal::TextRunHarfBuzz*>* in_out_runs) {
-  // ShapeRunWithFont can be extremely slow, so use cached results if possible.
-  // Only do this on the UI thread, to avoid synchronization overhead (and
-  // because almost all calls are on the UI thread. Also avoid caching long
-  // strings, to avoid blowing up the cache size.
+    std::vector<internal::TextRunHarfBuzz*>* in_out_runs,
+    std::vector<internal::TextRunHarfBuzz*>* successfully_shaped_runs) {
+  // ShapeRunWithFont can be extremely slow, so use cached results if
+  // possible. Only do this on the UI thread, to avoid synchronization
+  // overhead (and because almost all calls are on the UI thread. Also avoid
+  // caching long strings, to avoid blowing up the cache size.
   constexpr size_t kMaxRunLengthToCache = 25;
   static base::NoDestructor<internal::ShapeRunCache> cache;
 
@@ -2202,8 +2262,11 @@ void RenderTextHarfBuzz::ShapeRunsWithFont(
     }
 
     // Check to see if we still have missing glyphs.
-    if (run->shape.missing_glyph_count)
+    if (run->shape.missing_glyph_count) {
       runs_with_missing_glyphs.push_back(run);
+    } else if (successfully_shaped_runs) {
+      successfully_shaped_runs->push_back(run);
+    }
   }
   in_out_runs->swap(runs_with_missing_glyphs);
 }
