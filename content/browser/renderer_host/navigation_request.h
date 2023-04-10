@@ -35,6 +35,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
+#include "content/browser/webui/web_ui_impl.h"
 #include "content/common/content_export.h"
 #include "content/common/navigation_client.mojom-forward.h"
 #include "content/public/browser/global_routing_id.h"
