@@ -8294,11 +8294,9 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "NetworkServiceFileAllowlist",
                         "NetworkServiceSandbox",
                         "NetworkServiceSyscallFilter"
-                    ],
-                    "disable_features": [
-                        "NetworkServiceFileAllowlist"
                     ]
                 }
             ]
