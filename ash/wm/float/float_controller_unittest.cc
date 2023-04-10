@@ -999,10 +999,8 @@ class TabletWindowFloatTest : public WindowFloatTest,
   // Drags `window` so that it magnetizes to `corner`.
   void MagnetizeWindow(aura::Window* window,
                        FloatController::MagnetismCorner corner) {
-    // Drag to a point outside of `kScreenEdgeInsetForSnap` from the edge of the
-    // screen to avoid snapping.
-    gfx::Rect area = WorkAreaInsets::ForWindow(window)->user_work_area_bounds();
-    area.Inset(kScreenEdgeInsetForSnap + 5);
+    const gfx::Rect area =
+        WorkAreaInsets::ForWindow(window)->user_work_area_bounds();
 
     gfx::Point end;
     switch (corner) {
@@ -1459,41 +1457,6 @@ TEST_F(TabletWindowFloatTest, DraggingMagnetism) {
   UpdateDisplay("1000x1600");
   MagnetizeWindow(window.get(), FloatController::MagnetismCorner::kBottomLeft);
   CheckMagnetized(window.get(), FloatController::MagnetismCorner::kBottomLeft);
-}
-
-// Tests that if a floating window is dragged to the edges, it will snap.
-TEST_F(TabletWindowFloatTest, DraggingSnapping) {
-  // Use a set display size so we can drag to specific spots.
-  UpdateDisplay("1600x1000");
-
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-
-  std::unique_ptr<aura::Window> window = CreateFloatedWindow();
-
-  auto* split_view_controller =
-      SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  ASSERT_FALSE(split_view_controller->primary_window());
-  ASSERT_FALSE(split_view_controller->secondary_window());
-
-  // Move finger towards the right edge. Test that on release, it snaps right.
-  // Don't scroll too fast or we will tuck the window.
-  chromeos::HeaderView* header_view = GetHeaderView(window.get());
-  auto* event_generator = GetEventGenerator();
-  event_generator->GestureScrollSequence(
-      header_view->GetBoundsInScreen().CenterPoint(), gfx::Point(1580, 500),
-      base::Milliseconds(500), /*steps=*/50);
-  EXPECT_EQ(split_view_controller->secondary_window(), window.get());
-  ASSERT_TRUE(WindowState::Get(window.get())->IsSnapped());
-
-  // Float the window so we can drag it again.
-  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
-  ASSERT_TRUE(WindowState::Get(window.get())->IsFloated());
-
-  // Move finger towards the left edge. Test that on release, it snaps left.
-  event_generator->GestureScrollSequence(
-      header_view->GetBoundsInScreen().CenterPoint(), gfx::Point(20, 500),
-      base::Milliseconds(500), /*steps=*/50);
-  EXPECT_EQ(split_view_controller->primary_window(), window.get());
 }
 
 TEST_F(TabletWindowFloatTest, UntuckWindowOnExitTabletMode) {
@@ -1989,6 +1952,8 @@ TEST_F(TabletWindowFloatTest, EducationPreferences) {
 
   // Counter should not increment as nudge was not shown.
   EXPECT_EQ(3, nudge_counter.nudge_count());
+
+  TabletModeTuckEducation::SetOverrideClockForTesting(nullptr);
 }
 
 using TabletWindowFloatSplitviewTest = TabletWindowFloatTest;
