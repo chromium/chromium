@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/threading/thread_checker.h"
 #include "components/cast/message_port/message_port.h"
 #include "third_party/openscreen/src/cast/common/public/message_port.h"
 
@@ -51,6 +52,7 @@ class CastMessagePortSenderImpl final
   base::OnceClosure on_close_;
   base::OnceClosure on_system_sender_message_received_;
   bool is_closed_ = false;
+  THREAD_CHECKER(thread_checker_);
 };
 
 }  // namespace cast_streaming
