@@ -33,6 +33,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "base/notreached.h"
+#include "base/record_replay.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
@@ -3003,6 +3004,11 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   void Remove() {
     NOT_DESTROYED();
+    recordreplay::Assert(
+      "[RUN-1219-1694] LayoutObject::Remove %d parent=%d",
+      this->RecordReplayId(),
+      this->Parent() ? this->Parent()->RecordReplayId() : -1
+    );
     if (Parent())
       Parent()->RemoveChild(this);
   }

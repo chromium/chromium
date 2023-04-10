@@ -36,6 +36,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
+#include "base/record_replay.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
@@ -479,6 +480,8 @@ String CanvasRenderingContext2D::font() const {
 }
 
 void CanvasRenderingContext2D::setFont(const String& new_font) {
+  recordreplay::Assert("[RUN-1219-1694] CanvasRenderingContext2D::setFont %s",
+    new_font.Utf8().c_str());
   // The style resolution required for fonts is not available in frame-less
   // documents.
   if (!canvas()->GetDocument().GetFrame())

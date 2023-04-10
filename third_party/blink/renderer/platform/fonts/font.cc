@@ -60,6 +60,10 @@ FontFallbackMap& GetFontFallbackMap(FontSelector* font_selector) {
 scoped_refptr<FontFallbackList> GetOrCreateFontFallbackList(
     const FontDescription& font_description,
     FontSelector* font_selector) {
+  recordreplay::Assert("[RUN-1219-1694] GetOrCreateFontFallbackList descr=(%s) sel=%d",
+    font_description.ToString().Utf8().c_str(),
+    (int) !!font_selector
+  );
   return GetFontFallbackMap(font_selector).Get(font_description);
 }
 
