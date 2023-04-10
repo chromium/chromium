@@ -20,16 +20,16 @@ system_display::LayoutPosition GetLayoutPositionFromMojo(
     crosapi::mojom::DisplayLayoutPosition position) {
   switch (position) {
     case crosapi::mojom::DisplayLayoutPosition::kTop:
-      return system_display::LayoutPosition::LAYOUT_POSITION_TOP;
+      return system_display::LayoutPosition::kTop;
     case crosapi::mojom::DisplayLayoutPosition::kRight:
-      return system_display::LayoutPosition::LAYOUT_POSITION_RIGHT;
+      return system_display::LayoutPosition::kRight;
     case crosapi::mojom::DisplayLayoutPosition::kBottom:
-      return system_display::LayoutPosition::LAYOUT_POSITION_BOTTOM;
+      return system_display::LayoutPosition::kBottom;
     case crosapi::mojom::DisplayLayoutPosition::kLeft:
-      return system_display::LayoutPosition::LAYOUT_POSITION_LEFT;
+      return system_display::LayoutPosition::kLeft;
   }
   NOTREACHED();
-  return system_display::LayoutPosition::LAYOUT_POSITION_LEFT;
+  return system_display::LayoutPosition::kLeft;
 }
 }  // namespace
 
@@ -68,14 +68,14 @@ display::Display GetDisplayForId(const std::string& display_id_str) {
 crosapi::mojom::DisplayLayoutPosition GetDisplayLayoutPosition(
     system_display::LayoutPosition position) {
   switch (position) {
-    case system_display::LAYOUT_POSITION_TOP:
+    case system_display::LayoutPosition::kTop:
       return crosapi::mojom::DisplayLayoutPosition::kTop;
-    case system_display::LAYOUT_POSITION_RIGHT:
+    case system_display::LayoutPosition::kRight:
       return crosapi::mojom::DisplayLayoutPosition::kRight;
-    case system_display::LAYOUT_POSITION_BOTTOM:
+    case system_display::LayoutPosition::kBottom:
       return crosapi::mojom::DisplayLayoutPosition::kBottom;
-    case system_display::LAYOUT_POSITION_LEFT:
-    case system_display::LAYOUT_POSITION_NONE:
+    case system_display::LayoutPosition::kLeft:
+    case system_display::LayoutPosition::kNone:
       return crosapi::mojom::DisplayLayoutPosition::kLeft;
   }
   NOTREACHED();

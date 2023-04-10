@@ -90,7 +90,7 @@ class MockDisplayInfoProvider : public DisplayInfoProvider {
   MockScreen screen_;
 
   api::system_display::MirrorMode mirror_mode_ =
-      api::system_display::MIRROR_MODE_OFF;
+      api::system_display::MirrorMode::kOff;
 };
 
 }  // namespace extensions
