@@ -348,10 +348,11 @@ void LocationBarView::Init() {
   if (browser_ && !is_popup_mode_)
     params.types_enabled.push_back(PageActionIconType::kBookmarkStar);
 
-  params.icon_color = features::IsChromeRefresh2023()
+  params.icon_color = OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
                           ? ui::kColorSysOnSurfaceSubtle
                           : icon_color;
-  params.between_icon_spacing = features::IsChromeRefresh2023() ? 8 : 0;
+  params.between_icon_spacing =
+      OmniboxFieldTrial::IsChromeRefreshIconsEnabled() ? 8 : 0;
   params.font_list = &font_list;
   params.browser = browser_;
   params.command_updater = command_updater();
@@ -599,8 +600,10 @@ void LocationBarView::Layout() {
   // they instead have invisible borders that provide sufficient padding. Don't
   // add any more padding in those cases, as then the whitespace would be too
   // large.
-  if (features::IsChromeRefresh2023() && !ShouldShowKeywordBubble())
+  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled() &&
+      !ShouldShowKeywordBubble()) {
     leading_edit_item_padding += 5;
+  }
 
   // We always subtract the left padding of the OmniboxView itself to allow for
   // an extended I-beam click target without affecting actual layout.
@@ -617,15 +620,15 @@ void LocationBarView::Layout() {
   // positioned relative to them (e.g. the "bookmark added" bubble if the user
   // hits ctrl-d).
   const int vertical_padding =
-      features::IsChromeRefresh2023()
+      OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
           ? GetLayoutConstant(LOCATION_BAR_PAGE_INFO_ICON_VERTICAL_PADDING)
           : GetLayoutConstant(LOCATION_BAR_ELEMENT_PADDING);
   const int leading_decorations_edge_padding =
-      features::IsChromeRefresh2023()
+      OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
           ? GetLayoutConstant(LOCATION_BAR_LEADING_DECORATION_EDGE_PADDING)
           : edge_padding;
   const int trailing_decorations_edge_padding =
-      features::IsChromeRefresh2023()
+      OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
           ? GetLayoutConstant(LOCATION_BAR_TRAILING_DECORATION_EDGE_PADDING)
           : edge_padding;
 
@@ -1417,14 +1420,15 @@ void LocationBarView::OnLocationIconDragged(const ui::MouseEvent& event) {
 
 SkColor LocationBarView::GetSecurityChipColor(
     security_state::SecurityLevel security_level) const {
-  ui::ColorId id = features::IsChromeRefresh2023()
+  ui::ColorId id = OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
                        ? kColorOmniboxText
                        : kColorOmniboxSecurityChipDefault;
   if (security_level == security_state::SECURE_WITH_POLICY_INSTALLED_CERT)
     id = kColorOmniboxTextDimmed;
   else if (security_level == security_state::SECURE)
-    id = features::IsChromeRefresh2023() ? kColorOmniboxText
-                                         : kColorOmniboxSecurityChipSecure;
+    id = OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
+             ? kColorOmniboxText
+             : kColorOmniboxSecurityChipSecure;
   else if (security_level == security_state::DANGEROUS)
     id = kColorOmniboxSecurityChipDangerous;
   return GetColorProvider()->GetColor(id);

@@ -68,7 +68,7 @@ LocationIconView::LocationIconView(
 
   SetAccessibleProperties(/*is_initialization*/ true);
 
-  if (features::IsChromeRefresh2023()) {
+  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
     // TODO(crbug/1399991): Use the ConfigureInkdropForRefresh2023 method once
     // you do not need to hardcode color values.
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
@@ -124,7 +124,7 @@ SkColor LocationIconView::GetForegroundColor() const {
 }
 
 bool LocationIconView::ShouldShowSeparator() const {
-  return !features::IsChromeRefresh2023() && ShouldShowLabel();
+  return !OmniboxFieldTrial::IsChromeRefreshIconsEnabled() && ShouldShowLabel();
 }
 
 bool LocationIconView::ShowBubble(const ui::Event& event) {
@@ -192,7 +192,7 @@ int LocationIconView::GetInternalSpacing() const {
 
   return (ui::TouchUiController::Get()->touch_ui()
               ? kDefaultInternalSpacingTouchUI
-              : (features::IsChromeRefresh2023()
+              : (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
                      ? kDefaultInternalSpacingChromeRefresh
                      : kDefaultInternalSpacing)) +
          GetExtraInternalSpacing();
@@ -298,7 +298,7 @@ void LocationIconView::UpdateIcon() {
 }
 
 void LocationIconView::UpdateBackground() {
-  if (features::IsChromeRefresh2023()) {
+  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
     SetBackground(views::CreateRoundedRectBackground(
         GetColorProvider()->GetColor(ui::kColorSysBaseContainerElevated),
         height() / 2));
@@ -372,7 +372,7 @@ void LocationIconView::UpdateBorder() {
   // child views in the location bar have the same height. The visible height of
   // the bubble should be smaller, so use an empty border to shrink down the
   // content bounds so the background gets painted correctly.
-  if (features::IsChromeRefresh2023()) {
+  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
     gfx::Insets insets = GetLayoutInsets(LOCATION_BAR_PAGE_INFO_ICON_PADDING);
     if (ShouldShowLabel()) {
       // An extra space between chip's label and right edge.
