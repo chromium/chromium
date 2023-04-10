@@ -110,6 +110,7 @@ export {CROSTINI_TYPE, GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsShar
 export {TetherConnectionDialogElement} from './internet_page/tether_connection_dialog.js';
 export {KeyboardShortcutBanner} from './keyboard_shortcut_banner/keyboard_shortcut_banner.js';
 export {SettingsAudioAndCaptionsPageElement} from './os_a11y_page/audio_and_captions_page.js';
+export {SettingsCursorAndTouchpadPageElement} from './os_a11y_page/cursor_and_touchpad_page.js';
 export {SettingsKeyboardAndTextInputPageElement} from './os_a11y_page/keyboard_and_text_input_page.js';
 export {SettingsManageA11yPageElement} from './os_a11y_page/manage_a11y_page.js';
 export {SettingsTextToSpeechPageElement} from './os_a11y_page/text_to_speech_page.js';

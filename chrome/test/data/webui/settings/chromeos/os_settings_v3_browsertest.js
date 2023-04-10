@@ -253,10 +253,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['CupsPrinterEntry', 'cups_printer_entry_tests.js'],
  ['CupsPrinterLandingPage', 'cups_printer_landing_page_tests.js'],
  ['CupsPrinterPage', 'cups_printer_page_tests.js'],
- [
-   'CursorAndTouchpadPage',
-   'cursor_and_touchpad_page_tests.js',
- ],
  ['DateTimePage', 'date_time_page_tests.js'],
  ['DateTimePageTimezoneSelector', 'date_time_page/timezone_selector_test.js'],
  ['DateTimePageTimezoneSubpage', 'date_time_page/timezone_subpage_test.js'],
@@ -423,6 +419,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  [
    'OsA11yPageAudioAndCaptionsPage',
    'os_a11y_page/audio_and_captions_page_tests.js',
+ ],
+ [
+   'OsA11yPageCursorAndTouchpadPage',
+   'os_a11y_page/cursor_and_touchpad_page_tests.js',
  ],
  [
    'OsA11yPageKeyboardAndTextInputPage',

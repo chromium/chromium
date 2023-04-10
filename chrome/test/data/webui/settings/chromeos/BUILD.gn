@@ -31,7 +31,6 @@ build_webui_tests("build") {
     "cups_printer_landing_page_tests.js",
     "cups_printer_page_tests.js",
     "cups_printer_test_utils.js",
-    "cursor_and_touchpad_page_tests.js",
     "date_time_page_tests.js",
     "display_and_magnification_page_tests.js",
     "esim_install_error_dialog_test.js",
@@ -206,6 +205,7 @@ build_webui_tests("build") {
     "nearby_share_page/nearby_share_high_visibility_page_test.ts",
 
     "os_a11y_page/audio_and_captions_page_tests.ts",
+    "os_a11y_page/cursor_and_touchpad_page_tests.ts",
     "os_a11y_page/keyboard_and_text_input_page_tests.ts",
     "os_a11y_page/manage_accessibility_page_tests.ts",
     "os_a11y_page/os_a11y_page_tests.ts",
