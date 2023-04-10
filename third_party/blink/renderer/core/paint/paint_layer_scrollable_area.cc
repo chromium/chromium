@@ -2457,6 +2457,20 @@ bool PaintLayerScrollableArea::ShouldScrollOnMainThread() const {
   return !properties->ScrollTranslation()->HasDirectCompositingReasons();
 }
 
+bool PaintLayerScrollableArea::PrefersNonCompositedScrolling() const {
+  if (Node* node = GetLayoutBox()->GetNode()) {
+    if (IsA<HTMLSelectElement>(node)) {
+      return true;
+    }
+    if (TextControlElement* text_control = EnclosingTextControl(node)) {
+      if (IsA<HTMLInputElement>(text_control)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 bool PaintLayerScrollableArea::ComputeNeedsCompositedScrolling(
     bool force_prefer_compositing_to_lcd_text) {
   const auto* box = GetLayoutBox();
@@ -2495,6 +2509,9 @@ bool PaintLayerScrollableArea::ComputeNeedsCompositedScrollingInternal(
     return true;
   }
   if (RuntimeEnabledFeatures::PreferNonCompositedScrollingEnabled()) {
+    return false;
+  }
+  if (PrefersNonCompositedScrolling()) {
     return false;
   }
 
