@@ -1314,7 +1314,7 @@ void ReadableByteStreamController::Respond(
       controller->controlled_readable_stream_->state_;
   // 4. If state is "closed",
   if (state == ReadableStream::kClosed) {
-    //   a. If bytesWtitten is not 0, throw a TypeError exception.
+    //   a. If bytesWritten is not 0, throw a TypeError exception.
     if (bytes_written != 0) {
       exception_state.ThrowTypeError("bytes written is not 0");
       return;
