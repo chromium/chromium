@@ -281,9 +281,6 @@ void Dualshock4Controller::DoShutdown() {
   writer_.reset();
 }
 
-#include <bitset>
-#include <tuple>
-
 bool Dualshock4Controller::ProcessInputReport(uint8_t report_id,
                                               base::span<const uint8_t> report,
                                               Gamepad* pad,
