@@ -530,7 +530,7 @@ TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsUpdateMultiple) {
   EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_updated(), 1u);
 }
 
-TEST_F(InputDeviceSettingsControllerTest, RecordsMetricsInitialSettings) {
+TEST_F(InputDeviceSettingsControllerTest, RecordsMetricsSettings) {
   // Initially expect no user preferences recorded.
   base::HistogramTester histogram_tester;
 
@@ -560,6 +560,21 @@ TEST_F(InputDeviceSettingsControllerTest, RecordsMetricsInitialSettings) {
       "ChromeOS.Settings.Device.Keyboard.ExternalChromeOS.TopRowAreFKeys."
       "Initial",
       /*expected_count=*/4u);
+
+  // Test Metrics Updates when setKeyboardSettings is called.
+  auto updated_settings = mojom::KeyboardSettings::New();
+  updated_settings.get()->top_row_are_fkeys = true;
+
+  controller_->SetKeyboardSettings(kKeyboardUsbWithDeviceKey.id,
+                                   std::move(updated_settings));
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.ExternalChromeOS.TopRowAreFKeys."
+      "Changed",
+      /*expected_count=*/1u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.ExternalChromeOS."
+      "BlockMetaFKeyRewrites.Changed",
+      /*expected_count=*/0);
 }
 
 TEST_F(InputDeviceSettingsControllerTest, GetGeneralizedTopRowAreFKeys) {

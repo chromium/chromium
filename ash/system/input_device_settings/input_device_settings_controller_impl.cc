@@ -466,10 +466,12 @@ void InputDeviceSettingsControllerImpl::SetKeyboardSettings(
     return;
   }
   RecordSetKeyboardSetttingsValidMetric(/*is_valid=*/true);
+  const auto old_settings = std::move(found_keyboard.settings);
   found_keyboard.settings = settings.Clone();
   keyboard_pref_handler_->UpdateKeyboardSettings(
       active_pref_service_, policy_handler_->keyboard_policies(),
       found_keyboard);
+  metrics_manager_->RecordKeyboardChangedMetrics(found_keyboard, *old_settings);
   DispatchKeyboardSettingsChanged(id);
   // Check the list of keyboards to see if any have the same |device_key|.
   // If so, their settings need to also be updated.
