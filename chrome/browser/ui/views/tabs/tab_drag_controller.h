@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -660,6 +661,10 @@ class TabDragController : public views::WidgetObserver,
   // The group that is being dragged. Only set if the drag originated from a
   // group header, indicating that the entire group is being dragged together.
   absl::optional<tab_groups::TabGroupId> group_;
+
+  // The GUID of the saved tab group whose tracking is paused between paired
+  // Detach() and Attach() calls, if dragging a saved tab group between windows.
+  absl::optional<base::GUID> paused_saved_group_id_;
 
   // True until MoveAttached() is first invoked.
   bool initial_move_;

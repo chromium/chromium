@@ -31,6 +31,8 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -1333,6 +1335,21 @@ void TabDragController::Attach(TabDragContext* attached_context,
     }
 
     views = GetViewsMatchingDraggedContents(attached_context_);
+
+    // If we're dragging a saved group, resume tracking now that the group is
+    // re-attached.
+    if (header_drag_ &&
+        base::FeatureList::IsEnabled(features::kTabGroupsSave) &&
+        paused_saved_group_id_.has_value()) {
+      Browser* browser = BrowserView::GetBrowserViewForNativeWindow(
+                             GetAttachedBrowserWidget()->GetNativeWindow())
+                             ->browser();
+      SavedTabGroupKeyedService* const saved_tab_group_service =
+          SavedTabGroupServiceFactory::GetForProfile(browser->profile());
+      saved_tab_group_service->ResumeTrackingLocalTabGroup(
+          paused_saved_group_id_.value(), group_.value());
+      paused_saved_group_id_ = absl::nullopt;
+    }
   }
   DCHECK_EQ(views.size(), drag_data_.size());
   for (size_t i = 0; i < drag_data_.size(); ++i) {
@@ -1392,6 +1409,21 @@ std::unique_ptr<TabDragController> TabDragController::Detach(
     attached_context_->GetWidget()->ReleaseCapture();
 
   TabStripModel* attached_model = attached_context_->GetTabStripModel();
+
+  // If we're dragging a saved tab group, suspend tracking between Detach and
+  // Attach. Otherwise, the group will get emptied out as we close all the tabs.
+  if (header_drag_ && base::FeatureList::IsEnabled(features::kTabGroupsSave)) {
+    Browser* browser = BrowserView::GetBrowserViewForNativeWindow(
+                           GetAttachedBrowserWidget()->GetNativeWindow())
+                           ->browser();
+    SavedTabGroupKeyedService* const saved_tab_group_service =
+        SavedTabGroupServiceFactory::GetForProfile(browser->profile());
+    if (saved_tab_group_service->model()->Contains(group_.value())) {
+      paused_saved_group_id_ =
+          saved_tab_group_service->model()->Get(group_.value())->saved_guid();
+      saved_tab_group_service->PauseTrackingLocalTabGroup(group_.value());
+    }
+  }
 
   for (size_t i = first_tab_index(); i < drag_data_.size(); ++i) {
     int index = attached_model->GetIndexOfWebContents(drag_data_[i].contents);

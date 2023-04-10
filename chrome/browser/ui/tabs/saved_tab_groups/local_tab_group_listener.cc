@@ -6,10 +6,15 @@
 
 #include "base/token.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
+
+namespace content {
+class WebContents;
+}
 
 LocalTabGroupListener::LocalTabGroupListener(
     const tab_groups::TabGroupId local_id,
@@ -32,9 +37,39 @@ LocalTabGroupListener::LocalTabGroupListener(
 
 LocalTabGroupListener::~LocalTabGroupListener() = default;
 
+void LocalTabGroupListener::PauseTracking() {
+  paused_ = true;
+}
+
+void LocalTabGroupListener::ResumeTracking() {
+  paused_ = false;
+
+  // Thoroughly check for consistency between the data structures we're linking.
+  // The saved tabs and the local tabs should match up in the same order.
+  const std::vector<SavedTabGroupTab>& saved_tabs = saved_group()->saved_tabs();
+  const std::vector<content::WebContents*> local_tabs =
+      SavedTabGroupUtils::GetWebContentsesInGroup(local_id_);
+
+  CHECK_EQ(saved_tabs.size(), local_tabs.size());
+  for (size_t i = 0; i < saved_tabs.size(); ++i) {
+    const SavedTabGroupTab& saved_tab = saved_tabs[i];
+    content::WebContents* const local_tab = local_tabs[i];
+
+    const auto map_entry = web_contents_to_tab_id_map_.find(local_tab);
+    CHECK(map_entry != web_contents_to_tab_id_map_.end());
+
+    const SavedTabGroupWebContentsListener& listener = map_entry->second;
+    CHECK_EQ(saved_tab.local_tab_id().value(), listener.token());
+  }
+}
+
 void LocalTabGroupListener::AddWebContents(content::WebContents* web_contents,
                                            TabStripModel* tab_strip_model,
                                            int index) {
+  if (paused_) {
+    return;
+  }
+
   CHECK(model_->Contains(saved_guid_));
   CHECK(tab_strip_model->group_model()->ContainsTabGroup(local_id_));
 
@@ -63,6 +98,10 @@ void LocalTabGroupListener::AddWebContents(content::WebContents* web_contents,
 
 void LocalTabGroupListener::RemoveWebContentsIfPresent(
     content::WebContents* web_contents) {
+  if (paused_) {
+    return;
+  }
+
   if (web_contents_to_tab_id_map_.count(web_contents) == 0) {
     return;
   }

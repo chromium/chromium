@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
@@ -287,7 +288,7 @@ void SavedTabGroupButton::TabMenuItemPressed(const GURL& url, int event_flags) {
 void SavedTabGroupButton::MoveGroupToNewWindowPressed(int event_flags) {
   Browser* const browser_with_local_group_id =
       local_group_id_.has_value()
-          ? service_->listener()->GetBrowserWithTabGroupId(
+          ? SavedTabGroupUtils::GetBrowserWithTabGroupId(
                 local_group_id_.value())
           : base::to_address(browser_);
 
@@ -306,7 +307,7 @@ void SavedTabGroupButton::MoveGroupToNewWindowPressed(int event_flags) {
 void SavedTabGroupButton::DeleteGroupPressed(int event_flags) {
   if (local_group_id_.has_value()) {
     const Browser* const browser_with_local_group_id =
-        service_->listener()->GetBrowserWithTabGroupId(local_group_id_.value());
+        SavedTabGroupUtils::GetBrowserWithTabGroupId(local_group_id_.value());
 
     // Keep the opened tab group in the tabstrip but remove the SavedTabGroup
     // data from the model.

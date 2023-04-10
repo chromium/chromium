@@ -2,15 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model_listener.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 
 #include <memory>
 
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model_listener.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/test/browser_task_environment.h"
@@ -82,8 +85,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, GetBrowserWithTabGroupId) {
   tab_groups::TabGroupId group_id =
       browser_1->tab_strip_model()->AddToNewGroup({0});
 
-  EXPECT_EQ(browser_1,
-            service()->listener()->GetBrowserWithTabGroupId(group_id));
+  EXPECT_EQ(browser_1, SavedTabGroupUtils::GetBrowserWithTabGroupId(group_id));
 }
 
 TEST_F(SavedTabGroupKeyedServiceUnitTest,
@@ -223,4 +225,83 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   EXPECT_FALSE(model->Contains(tab_group_id_3));
 
   EXPECT_DEATH(service()->StoreLocalToSavedId(guid_1, tab_group_id_1), "");
+}
+
+TEST_F(SavedTabGroupKeyedServiceUnitTest, PauseResumeTracking) {
+  Browser* browser_1 = AddBrowser();
+
+  // Create a saved tab group with two tabs, one in a saved group.
+  ASSERT_EQ(0, browser_1->tab_strip_model()->count());
+  AddTabToBrowser(browser_1, 0);
+  content::WebContents* grouped_tab_ptr = AddTabToBrowser(browser_1, 1);
+  ASSERT_EQ(2, browser_1->tab_strip_model()->count());
+  tab_groups::TabGroupId group_id =
+      browser_1->tab_strip_model()->AddToNewGroup({1});
+  service()->SaveGroup(group_id);
+  base::GUID saved_group_id = service()->model()->Get(group_id)->saved_guid();
+
+  // We should be listening to one group and one tab in that group.
+  auto& group_listener_map =
+      service()->listener()->GetLocalTabGroupListenerMapForTesting();
+  ASSERT_EQ(1u, group_listener_map.count(group_id));
+  auto& tab_token_mapping =
+      group_listener_map.at(group_id).GetWebContentsTokenMapForTesting();
+  ASSERT_EQ(1u, tab_token_mapping.size());
+  ASSERT_EQ(1u, tab_token_mapping.count(grouped_tab_ptr));
+
+  // Pause tracking.
+  service()->PauseTrackingLocalTabGroup(group_id);
+
+  // Remove the tab in the group.
+  tab_groups::TabGroupVisualData visual_data = *(browser_1->tab_strip_model()
+                                                     ->group_model()
+                                                     ->GetTabGroup(group_id)
+                                                     ->visual_data());
+  std::unique_ptr<content::WebContents> tab =
+      browser_1->tab_strip_model()->DetachWebContentsAtForInsertion(1);
+  // This kills the group.
+  ASSERT_FALSE(
+      browser_1->tab_strip_model()->group_model()->ContainsTabGroup(group_id));
+
+  // Recreate the local group and add the tab to it (same browser is fine).
+  browser_1->tab_strip_model()->group_model()->AddTabGroup(group_id,
+                                                           visual_data);
+  browser_1->tab_strip_model()->InsertWebContentsAt(
+      1, std::move(tab), AddTabTypes::ADD_NONE, group_id);
+
+  // Resume tracking.
+  service()->ResumeTrackingLocalTabGroup(saved_group_id, group_id);
+
+  // Validate that tracking still works.
+  // Check that the local and saved ids are still linked in the model.
+  EXPECT_EQ(saved_group_id, service()->model()->Get(group_id)->saved_guid());
+  // Check that there is still one tab in the model's saved group.
+  EXPECT_EQ(1u, service()->model()->Get(group_id)->saved_tabs().size());
+  // The listener state should be the same as well.
+  EXPECT_EQ(1u, group_listener_map.count(group_id));
+  EXPECT_EQ(1u, tab_token_mapping.size());
+  EXPECT_EQ(1u, tab_token_mapping.count(grouped_tab_ptr));
+}
+
+TEST_F(SavedTabGroupKeyedServiceUnitTest, ResumeTrackingValidatesConsistency) {
+  Browser* browser_1 = AddBrowser();
+
+  // Create a saved tab group with two tabs.
+  ASSERT_EQ(0, browser_1->tab_strip_model()->count());
+  AddTabToBrowser(browser_1, 0);
+  AddTabToBrowser(browser_1, 1);
+  ASSERT_EQ(2, browser_1->tab_strip_model()->count());
+  tab_groups::TabGroupId group_id =
+      browser_1->tab_strip_model()->AddToNewGroup({0, 1});
+  service()->SaveGroup(group_id);
+  base::GUID saved_group_id = service()->model()->Get(group_id)->saved_guid();
+
+  // Pause tracking.
+  service()->PauseTrackingLocalTabGroup(group_id);
+
+  // Swap the order of the tabs.
+  browser_1->tab_strip_model()->MoveWebContentsAt(0, 1, false);
+
+  EXPECT_DEATH(service()->ResumeTrackingLocalTabGroup(saved_group_id, group_id),
+               "");
 }

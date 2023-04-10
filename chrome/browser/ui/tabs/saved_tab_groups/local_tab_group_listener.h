@@ -28,10 +28,21 @@ class LocalTabGroupListener {
       std::vector<std::pair<content::WebContents*, base::GUID>> mapping);
   virtual ~LocalTabGroupListener();
 
+  // Pauses listening to changes to the local tab group. Call this before
+  // beginning a multi-step operation that will have no net effect on the group
+  // (e.g. moving it to another window).
+  void PauseTracking();
+
+  // Resumes listening to changes to the local tab group. The tab group must be
+  // in the same configuration it was in when PauseTracking was called (this is
+  // CHECKed).
+  void ResumeTracking();
+
   // Updates the saved group with the new tab and tracks it for further changes.
   void AddWebContents(content::WebContents* web_contents,
                       TabStripModel* tab_strip_model,
                       int index);
+
   // If `web_contents` is in this listener's local tab group, removes it from
   // the saved tab group and stops tracking it.
   void RemoveWebContentsIfPresent(content::WebContents* web_contents);
@@ -44,6 +55,10 @@ class LocalTabGroupListener {
 
  private:
   const SavedTabGroup* saved_group() const { return model_->Get(saved_guid_); }
+
+  // Whether local tab group changes will be ignored (`paused_` is true) or
+  // reflected in the saved group (`paused_` is false).
+  bool paused_ = false;
 
   std::unordered_map<content::WebContents*, SavedTabGroupWebContentsListener>
       web_contents_to_tab_id_map_;

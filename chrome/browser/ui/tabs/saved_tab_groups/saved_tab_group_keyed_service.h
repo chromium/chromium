@@ -14,7 +14,6 @@
 #include "components/tab_groups/tab_group_id.h"
 
 class Profile;
-class TabGroup;
 
 // Serves to instantiate and own the SavedTabGroup infrastructure for the
 // browser.
@@ -44,6 +43,11 @@ class SavedTabGroupKeyedService : public KeyedService,
                                   const base::GUID& saved_group_guid) override;
   void SaveGroup(const tab_groups::TabGroupId& group_id) override;
   void UnsaveGroup(const tab_groups::TabGroupId& group_id) override;
+  void PauseTrackingLocalTabGroup(
+      const tab_groups::TabGroupId& group_id) override;
+  void ResumeTrackingLocalTabGroup(
+      const base::GUID& saved_group_guid,
+      const tab_groups::TabGroupId& group_id) override;
   void DisconnectLocalTabGroup(const tab_groups::TabGroupId& group_id) override;
   void ConnectLocalTabGroup(const tab_groups::TabGroupId& group_id,
                             const base::GUID& saved_group_guid) override;
@@ -56,13 +60,13 @@ class SavedTabGroupKeyedService : public KeyedService,
   const TabStripModel* GetTabStripModelWithTabGroupId(
       const tab_groups::TabGroupId& local_group_id);
 
-  // Notifies observers that `tab_group`'s visual data was changed using data
-  // found in `saved_group`.
-  void UpdateTabGroupVisualData(TabGroup* const tab_group,
-                                const SavedTabGroup* saved_group);
-
   // Returns the ModelTypeStoreFactory tied to the current profile.
   syncer::OnceModelTypeStoreFactory GetStoreFactory();
+
+  // Notifies observers that the tab group with id `group_id`'s visual data was
+  // changed using data found in `saved_group_guid`.
+  void UpdateGroupVisualData(base::GUID saved_group_guid,
+                             tab_groups::TabGroupId group_id);
 
   // The profile used to instantiate the keyed service.
   raw_ptr<Profile> profile_ = nullptr;

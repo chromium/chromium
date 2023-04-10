@@ -40,7 +40,11 @@ class SavedTabGroupModelListener : public BrowserListObserver,
       const SavedTabGroupModelListener& other) = delete;
   ~SavedTabGroupModelListener() override;
 
-  Browser* GetBrowserWithTabGroupId(tab_groups::TabGroupId group_id) const;
+  // Start ignoring tab added/removed notifications that pertain to this group.
+  void PauseTrackingLocalTabGroup(const tab_groups::TabGroupId& group_id);
+
+  // Stop ignoring tab added/removed notifications that pertain to this group.
+  void ResumeTrackingLocalTabGroup(const tab_groups::TabGroupId& group_id);
 
   // Start keeping `saved_tab_group` up to date with changes to its
   // corresponding local group.
