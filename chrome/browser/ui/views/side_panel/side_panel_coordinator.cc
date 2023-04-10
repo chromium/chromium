@@ -627,7 +627,6 @@ std::unique_ptr<views::View> SidePanelCoordinator::CreateHeader() {
   header_combobox_->SetProperty(views::kElementIdentifierKey,
                                 kSidePanelComboboxElementId);
 
-  // TODO(corising): Update icon and tooltip once provided by UX.
   header_pin_button_ =
       header->AddChildView(CreatePinToggleButton(base::BindRepeating(
           &SidePanelCoordinator::UpdatePinState, base::Unretained(this))));

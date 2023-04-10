@@ -6,6 +6,7 @@
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "chrome/browser/companion/core/features.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -21,7 +22,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
                                 base::i18n::IsRTL() ? false : true);
   if (base::FeatureList::IsEnabled(companion::features::kSidePanelCompanion)) {
     registry->RegisterBooleanPref(
-        prefs::kSidePanelCompanionEntryPinnedToToolbar, true,
+        prefs::kSidePanelCompanionEntryPinnedToToolbar,
+        base::FeatureList::IsEnabled(
+            features::kSidePanelCompanionDefaultPinned),
         user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   }
 }

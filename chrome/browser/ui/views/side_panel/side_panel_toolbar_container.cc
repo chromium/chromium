@@ -11,6 +11,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
@@ -115,6 +116,19 @@ SidePanelToolbarContainer::SidePanelToolbarContainer(BrowserView* browser_view)
   side_panel_button_->SetProperty(views::kFlexBehaviorKey,
                                   views::FlexSpecification());
   AddMainItem(side_panel_button_);
+  // Before creating the pinned buttons, verify that the pref value is correct
+  // and update it if not. If the user has been moved into a different default
+  // pin state group (i.e. from the default being false to the default being
+  // true) we want to make sure their pin state changes if they have not
+  // explicitly changed it themselves.
+  PrefService* pref_service = browser_view_->GetProfile()->GetPrefs();
+  if (pref_service) {
+    bool companion_should_be_default_pinned = base::FeatureList::IsEnabled(
+        features::kSidePanelCompanionDefaultPinned);
+    pref_service->SetDefaultPrefValue(
+        prefs::kSidePanelCompanionEntryPinnedToToolbar,
+        base::Value(companion_should_be_default_pinned));
+  }
   CreatePinnedEntryButtons();
 }
 
@@ -180,6 +194,7 @@ void SidePanelToolbarContainer::AddPinnedEntryButtonFor(
   }
   auto button = std::make_unique<PinnedSidePanelToolbarButton>(browser_view_,
                                                                id, name, icon);
+  button->SetVisible(false);
   ObserveButton(button.get());
   pinned_entry_buttons_.push_back(AddChildView(std::move(button)));
 
@@ -224,6 +239,9 @@ void SidePanelToolbarContainer::OnPinnedButtonPrefChanged() {
 }
 
 void SidePanelToolbarContainer::UpdatePinnedButtonsVisibility() {
+  if (pinned_entry_buttons_.empty()) {
+    return;
+  }
   PrefService* pref_service = browser_view_->GetProfile()->GetPrefs();
   if (pref_service) {
     bool should_be_pinned = pref_service->GetBoolean(

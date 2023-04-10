@@ -77,6 +77,10 @@ extern const char kScrollableTabStripOverflowModeName[];
 
 BASE_DECLARE_FEATURE(kSidePanelWebView);
 
+#if !defined(ANDROID)
+BASE_DECLARE_FEATURE(kSidePanelCompanionDefaultPinned);
+#endif
+
 BASE_DECLARE_FEATURE(kSidePanelJourneysQueryless);
 BASE_DECLARE_FEATURE(kSidePanelSearchCompanion);
 

@@ -127,6 +127,12 @@ BASE_FEATURE(kSidePanelJourneysQueryless,
              "SidePanelJourneysQueryless",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if !defined(ANDROID)
+BASE_FEATURE(kSidePanelCompanionDefaultPinned,
+             "SidePanelCompanionDefaultPinned",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // Enables tabs to scroll in the tabstrip. https://crbug.com/951078
 BASE_FEATURE(kScrollableTabStrip,
              "ScrollableTabStrip",
