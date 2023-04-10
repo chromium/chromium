@@ -5946,6 +5946,11 @@
     "expiry_milestone": 121
   },
   {
+    "name": "passpoint-settings",
+    "owners": [ "cros-networking@google.com" ],
+    "expiry_milestone": 121
+  },
+  {
     "name": "passthrough-yuv-rgb-conversion",
     "owners": [ "hitawala", "vasilyt" ],
     "expiry_milestone": 120

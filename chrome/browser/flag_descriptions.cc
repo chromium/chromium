@@ -5411,6 +5411,11 @@ const char kPasspointARCSupportDescription[] =
     "Feature to allow Android apps (running on ARC) to provision WiFi networks "
     "through Passpoint.";
 
+const char kPasspointSettingsName[] = "Enable Passpoint settings";
+const char kPasspointSettingsDescription[] =
+    "Enables displaying Passpoint subscription information in network "
+    "settings.";
+
 const char kEnableEdidBasedDisplayIdsName[] = "Enable EDID-based display IDs";
 const char kEnableEdidBasedDisplayIdsDescription[] =
     "When enabled, a display's ID will be produced by hashing certain values "

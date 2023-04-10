@@ -146,6 +146,9 @@ extern const char kMainThreadCompositingPriorityDescription[];
 extern const char kPasspointARCSupportName[];
 extern const char kPasspointARCSupportDescription[];
 
+extern const char kPasspointSettingsName[];
+extern const char kPasspointSettingsDescription[];
+
 extern const char kPasswordNotesWithBackupName[];
 extern const char kPasswordNotesWithBackupDescription[];
 

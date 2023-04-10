@@ -60209,6 +60209,7 @@ from previous Chrome versions.
   <int value="-964676765" label="enable-accelerated-mjpeg-decode"/>
   <int value="-964620377" label="CSSOMViewScrollCoordinates:enabled"/>
   <int value="-963683462" label="EnablePalmSuppression:enabled"/>
+  <int value="-962233051" label="PasspointSettings:enabled"/>
   <int value="-962030536" label="ChromeDuetLabeled:enabled"/>
   <int value="-961427615" label="WebviewTagMPArchBehavior:enabled"/>
   <int value="-960851702" label="EcheSWADisableStunServer:disabled"/>
@@ -65758,6 +65759,7 @@ from previous Chrome versions.
   <int value="2085186092" label="BulkPrinters:disabled"/>
   <int value="2085438501" label="ChromeHome:enabled"/>
   <int value="2087069781" label="ui-debug-tools:enabled"/>
+  <int value="2087994185" label="PasspointSettings:disabled"/>
   <int value="2088061188" label="LibinputHandleTouchpad:enabled"/>
   <int value="2088446947" label="enable-ephemeral-guest-profiles-on-desktop"/>
   <int value="2089897928" label="enable-audio-focus"/>

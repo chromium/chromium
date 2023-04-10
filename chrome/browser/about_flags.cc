@@ -4044,6 +4044,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"passpoint-arc-support", flag_descriptions::kPasspointARCSupportName,
      flag_descriptions::kPasspointARCSupportDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kPasspointARCSupport)},
+    {"passpoint-settings", flag_descriptions::kPasspointSettingsName,
+     flag_descriptions::kPasspointSettingsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kPasspointSettings)},
     {"policy-provided-trust-anchors-allowed-at-lock-screen",
      flag_descriptions::kPolicyProvidedTrustAnchorsAllowedAtLockScreenName,
      flag_descriptions::
