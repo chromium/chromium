@@ -33,6 +33,7 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkYUVAPixmaps.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
@@ -289,9 +290,9 @@ PaintImage CreateNonDiscardablePaintImage(const gfx::Size& size) {
   bitmap.eraseColor(SK_AlphaTRANSPARENT);
   return PaintImageBuilder::WithDefault()
       .set_id(PaintImage::GetNextId())
-      .set_texture_image(
-          SkImages::RasterFromBitmap(bitmap)->makeTextureImage(context.get()),
-          PaintImage::GetNextContentId())
+      .set_texture_image(SkImages::TextureFromImage(
+                             context.get(), SkImages::RasterFromBitmap(bitmap)),
+                         PaintImage::GetNextContentId())
       .TakePaintImage();
 }
 

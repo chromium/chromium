@@ -18,6 +18,7 @@
 #include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "ui/gl/trace_util.h"
 
 namespace gpu {
@@ -43,8 +44,12 @@ void DumpMemoryForImageTransferCacheEntry(
   dump->AddScalar(MemoryAllocatorDump::kNameSize,
                   MemoryAllocatorDump::kUnitsBytes, entry->CachedSize());
 
-  GrBackendTexture image_backend_texture =
-      entry->image()->getBackendTexture(false /* flushPendingGrContextIO */);
+  GrBackendTexture image_backend_texture;
+  if (!SkImages::GetBackendTextureFromImage(
+          entry->image(), &image_backend_texture,
+          false /* flushPendingGrContextIO */)) {
+    return;
+  }
   GrGLTextureInfo info;
   if (image_backend_texture.getGLTextureInfo(&info)) {
     auto guid = gl::GetGLTextureRasterGUIDForTracing(info.fID);
@@ -98,9 +103,12 @@ void DumpMemoryForYUVImageTransferCacheEntry(
     // If entry->image() is backed by multiple textures,
     // getBackendTexture() would end up flattening them to RGB, which is
     // undesirable.
-    GrBackendTexture image_backend_texture =
-        entry->GetPlaneImage(i)->getBackendTexture(
-            false /* flushPendingGrContextIO */);
+    GrBackendTexture image_backend_texture;
+    if (!SkImages::GetBackendTextureFromImage(
+            entry->GetPlaneImage(i), &image_backend_texture,
+            false /* flushPendingGrContextIO */)) {
+      return;
+    }
     GrGLTextureInfo info;
     if (image_backend_texture.getGLTextureInfo(&info)) {
       auto guid = gl::GetGLTextureRasterGUIDForTracing(info.fID);

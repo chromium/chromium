@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/gpu/GrDirectContext.h"
 
 namespace blink {
 
@@ -110,10 +111,15 @@ bool MailboxTextureBacking::readPixels(const SkImageInfo& dst_info,
 
 void MailboxTextureBacking::FlushPendingSkiaOps() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!context_provider_wrapper_ || !sk_image_)
+  if (!context_provider_wrapper_ || !sk_image_) {
     return;
-  sk_image_->flushAndSubmit(
-      context_provider_wrapper_->ContextProvider()->GetGrContext());
+  }
+  GrDirectContext* ctx =
+      context_provider_wrapper_->ContextProvider()->GetGrContext();
+  if (!ctx) {
+    return;
+  }
+  ctx->flushAndSubmit(sk_image_);
 }
 
 }  // namespace blink

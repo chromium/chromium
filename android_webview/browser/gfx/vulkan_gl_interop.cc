@@ -352,9 +352,13 @@ void VulkanGLInterop::PostDrawVk() {
 
   // Get the final state of the SkImage so that we can pass this back to Skia
   // during re-use.
-  GrBackendTexture backend_texture =
-      pending_draw->ahb_skimage->getBackendTexture(
-          true /* flushPendingGrContextIO */);
+  GrBackendTexture backend_texture;
+  if (!SkImages::GetBackendTextureFromImage(
+          pending_draw->ahb_skimage, &backend_texture,
+          true /* flushPendingGrContextIO */)) {
+    LOG(ERROR) << "Could not get Vk backend texture.";
+    return;
+  }
   GrVkImageInfo image_info;
   if (!backend_texture.getVkImageInfo(&image_info)) {
     LOG(ERROR) << "Could not get Vk image info.";

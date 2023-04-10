@@ -45,6 +45,9 @@ config("skia_config") {
     "SK_USER_CONFIG_HEADER=\"../../skia/config/SkUserConfig.h\"",
     "SK_WIN_FONTMGR_NO_SIMULATIONS",
     "SK_DISABLE_LEGACY_IMAGE_FACTORIES",
+    "SK_DISABLE_LEGACY_MAKE_TEXTURE_IMAGE",
+    "SK_DISABLE_LEGACY_IMAGE_FLUSH",
+    "SK_DISABLE_LEGACY_GET_BACKEND_TEXTURE",
   ]
 
   include_dirs = [ "//third_party/skia" ]
