@@ -59,12 +59,27 @@ public final class BaseSuggestionViewBinder<T extends View>
     private static boolean sFocusableDrawableStateInNightMode;
     private final ViewBinder<PropertyModel, T, PropertyKey> mContentBinder;
 
+    private static boolean sDimensionsInitialized;
+    private static int sIconWidthPx;
+    private static int sPaddingStart;
+    private static int sPaddingStartLargeIcon;
+    private static int sPaddingEnd;
+    private static int sPaddingEndLargeIcon;
+    private static int sEdgeSize;
+    private static int sEdgeSizeLargeIcon;
+    private static int sSideSpacing;
+
     public BaseSuggestionViewBinder(ViewBinder<PropertyModel, T, PropertyKey> contentBinder) {
         mContentBinder = contentBinder;
     }
 
     @Override
     public void bind(PropertyModel model, BaseSuggestionView<T> view, PropertyKey propertyKey) {
+        if (!sDimensionsInitialized) {
+            initializeDimensions(view.getContext());
+            sDimensionsInitialized = true;
+        }
+
         mContentBinder.bind(model, view.getContentView(), propertyKey);
         ActionChipsBinder.bind(model, view.getActionChipsView(), propertyKey);
 
@@ -176,29 +191,13 @@ public final class BaseSuggestionViewBinder<T extends View>
         final SuggestionDrawableState sds = model.get(BaseSuggestionViewProperties.ICON);
 
         if (sds != null) {
-            final Resources res = rciv.getContext().getResources();
-            boolean showModernizeVisualUpdate =
-                    OmniboxFeatures.shouldShowModernizeVisualUpdate(rciv.getContext());
-            int iconWidthPx = res.getDimensionPixelSize(showModernizeVisualUpdate
-                            ? R.dimen.omnibox_suggestion_icon_area_size_modern
-                            : R.dimen.omnibox_suggestion_icon_area_size);
-
-            rciv.setLayoutParams(new SuggestionLayout.LayoutParams(iconWidthPx,
+            rciv.setLayoutParams(new SuggestionLayout.LayoutParams(sIconWidthPx,
                     ViewGroup.LayoutParams.WRAP_CONTENT,
                     SuggestionLayout.LayoutParams.SuggestionViewType.DECORATION));
 
-            final int paddingStart = res.getDimensionPixelSize(sds.isLarge
-                            ? R.dimen.omnibox_suggestion_36dp_icon_margin_start
-                            : showModernizeVisualUpdate
-                            ? R.dimen.omnibox_suggestion_24dp_icon_margin_start_modern
-                            : R.dimen.omnibox_suggestion_24dp_icon_margin_start);
-            final int paddingEnd = res.getDimensionPixelSize(sds.isLarge
-                            ? R.dimen.omnibox_suggestion_36dp_icon_margin_end
-                            : R.dimen.omnibox_suggestion_24dp_icon_margin_end);
-            final int edgeSize = res.getDimensionPixelSize(sds.isLarge
-                            ? R.dimen.omnibox_suggestion_36dp_icon_size
-                            : R.dimen.omnibox_suggestion_24dp_icon_size);
-
+            int paddingStart = sds.isLarge ? sPaddingStartLargeIcon : sPaddingStart;
+            int paddingEnd = sds.isLarge ? sPaddingEndLargeIcon : sPaddingEnd;
+            int edgeSize = sds.isLarge ? sEdgeSizeLargeIcon : sEdgeSize;
             rciv.setPadding(paddingStart, 0, paddingEnd, 0);
             rciv.setMinimumHeight(edgeSize);
             rciv.setClipToOutline(sds.useRoundedCorners);
@@ -311,10 +310,8 @@ public final class BaseSuggestionViewBinder<T extends View>
         if (layoutParams instanceof MarginLayoutParams) {
             int topSpacing = model.get(DropdownCommonProperties.TOP_MARGIN);
             int bottomSpacing = model.get(DropdownCommonProperties.BOTTOM_MARGIN);
-            int sideSpacing = view.getContext().getResources().getDimensionPixelOffset(
-                    R.dimen.omnibox_suggestion_side_spacing);
             ((MarginLayoutParams) layoutParams)
-                    .setMargins(sideSpacing, topSpacing, sideSpacing, bottomSpacing);
+                    .setMargins(sSideSpacing, topSpacing, sSideSpacing, bottomSpacing);
         }
         view.setLayoutParams(layoutParams);
     }
@@ -354,6 +351,29 @@ public final class BaseSuggestionViewBinder<T extends View>
                 (RoundedCornerOutlineProvider) outlineProvider;
         roundedCornerOutlineProvider.setRoundingEdges(true, roundTopEdge, true, roundBottomEdge);
         view.setClipToOutline(true);
+    }
+
+    private static void initializeDimensions(Context context) {
+        boolean showModernizeVisualUpdate =
+                OmniboxFeatures.shouldShowModernizeVisualUpdate(context);
+        Resources resources = context.getResources();
+        sIconWidthPx = resources.getDimensionPixelSize(showModernizeVisualUpdate
+                        ? R.dimen.omnibox_suggestion_icon_area_size_modern
+                        : R.dimen.omnibox_suggestion_icon_area_size);
+
+        sPaddingStart = resources.getDimensionPixelSize(showModernizeVisualUpdate
+                        ? R.dimen.omnibox_suggestion_24dp_icon_margin_start_modern
+                        : R.dimen.omnibox_suggestion_24dp_icon_margin_start);
+        sPaddingStartLargeIcon =
+                resources.getDimensionPixelSize(R.dimen.omnibox_suggestion_36dp_icon_margin_start);
+        sPaddingEnd =
+                resources.getDimensionPixelSize(R.dimen.omnibox_suggestion_24dp_icon_margin_end);
+        sPaddingEndLargeIcon =
+                resources.getDimensionPixelSize(R.dimen.omnibox_suggestion_36dp_icon_margin_end);
+        sEdgeSize = resources.getDimensionPixelSize(R.dimen.omnibox_suggestion_24dp_icon_size);
+        sEdgeSizeLargeIcon =
+                resources.getDimensionPixelSize(R.dimen.omnibox_suggestion_36dp_icon_size);
+        sSideSpacing = resources.getDimensionPixelOffset(R.dimen.omnibox_suggestion_side_spacing);
     }
 
     /** @return Cached ConstantState for testing. */
