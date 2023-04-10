@@ -1019,10 +1019,10 @@ void PrerenderHostRegistry::DidStartNavigation(
     return;
   }
 
-  // PrerenderHost owns ongoing `navigation_request` indirectly until it is
-  // ready to commit, so `prerender_host` should always be non-null here.
-  auto* prerender_host = PrerenderHost::GetPrerenderHostFromFrameTreeNode(
-      *navigation_request->frame_tree_node());
+  // This navigation is running on the main frame in the prerendered page, so
+  // its FrameTree::Delegate should be PrerenderHost.
+  auto* prerender_host = static_cast<PrerenderHost*>(
+      navigation_request->frame_tree_node()->frame_tree().delegate());
   CHECK(prerender_host);
 
   prerender_host->DidStartNavigation(navigation_handle);
