@@ -140,6 +140,19 @@ class DEVICE_BLUETOOTH_EXPORT FlossSocketManager : public FlossDBusClient {
                                 ConnectionStateChanged ready_cb,
                                 ConnectionAccepted new_connection_cb);
 
+  // Listen for connections using an RFCOMM channel. This API exposes all of the
+  // options supported by Floss and should only be used if there are no safer
+  // variants capable of supporting a use-case, such as when manually
+  // constructing SDP records for a listening socket.
+  virtual void ListenUsingRfcommAlt(
+      const absl::optional<std::string> name,
+      const absl::optional<device::BluetoothUUID> application_uuid,
+      const absl::optional<int> channel,
+      const absl::optional<int> flags,
+      ResponseCallback<BtifStatus> callback,
+      ConnectionStateChanged ready_cb,
+      ConnectionAccepted new_connection_cb);
+
   // Listen for connections using an RFCOMM channel. Creates SDP record with
   // given name and UUID.
   virtual void ListenUsingRfcomm(const std::string& name,

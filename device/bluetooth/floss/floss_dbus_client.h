@@ -127,6 +127,7 @@ extern DEVICE_BLUETOOTH_EXPORT const char kListenUsingInsecureL2capChannel[];
 extern DEVICE_BLUETOOTH_EXPORT const char
     kListenUsingInsecureRfcommWithServiceRecord[];
 extern DEVICE_BLUETOOTH_EXPORT const char kListenUsingL2capChannel[];
+extern DEVICE_BLUETOOTH_EXPORT const char kListenUsingRfcomm[];
 extern DEVICE_BLUETOOTH_EXPORT const char kListenUsingRfcommWithServiceRecord[];
 extern DEVICE_BLUETOOTH_EXPORT const char kCreateInsecureL2capChannel[];
 extern DEVICE_BLUETOOTH_EXPORT const char

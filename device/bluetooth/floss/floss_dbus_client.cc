@@ -123,6 +123,7 @@ const char kListenUsingInsecureL2capChannel[] =
 const char kListenUsingInsecureRfcommWithServiceRecord[] =
     "ListenUsingInsecureRfcommWithServiceRecord";
 const char kListenUsingL2capChannel[] = "ListenUsingL2capChannel";
+const char kListenUsingRfcomm[] = "ListenUsingRfcomm";
 const char kListenUsingRfcommWithServiceRecord[] =
     "ListenUsingRfcommWithServiceRecord";
 const char kCreateInsecureL2capChannel[] = "CreateInsecureL2capChannel";

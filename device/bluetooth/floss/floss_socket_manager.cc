@@ -343,6 +343,27 @@ void FlossSocketManager::ListenUsingL2cap(
       method, callback_id_);
 }
 
+void FlossSocketManager::ListenUsingRfcommAlt(
+    const absl::optional<std::string> name,
+    const absl::optional<device::BluetoothUUID> application_uuid,
+    const absl::optional<int> channel,
+    const absl::optional<int> flags,
+    ResponseCallback<BtifStatus> callback,
+    ConnectionStateChanged ready_cb,
+    ConnectionAccepted new_connection_cb) {
+  if (callback_id_ == kInvalidCallbackId) {
+    std::move(callback).Run(
+        base::unexpected(Error(kErrorInvalidCallback, /*message=*/"")));
+    return;
+  }
+  CallSocketMethod(
+      base::BindOnce(&FlossSocketManager::CompleteListen,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(ready_cb), std::move(new_connection_cb)),
+      socket_manager::kListenUsingRfcomm, callback_id_, channel,
+      application_uuid, name, flags);
+}
+
 void FlossSocketManager::ListenUsingRfcomm(
     const std::string& name,
     const device::BluetoothUUID& uuid,
