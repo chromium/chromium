@@ -13,12 +13,6 @@ namespace ash {
 
 namespace {
 
-enum class KeyboardType {
-  kExternal = 0,
-  kExternalChromeOS,
-  kInternal,
-};
-
 enum class PointerSensitivity {
   kLowest = 1,
   kLow = 2,
@@ -28,14 +22,14 @@ enum class PointerSensitivity {
   kMaxValue = kHighest,
 };
 
-KeyboardType GetKeyboardType(const mojom::Keyboard& keyboard) {
+std::string GetKeyboardMetricsPrefix(const mojom::Keyboard& keyboard) {
   if (!keyboard.is_external) {
-    return KeyboardType::kInternal;
+    return "ChromeOS.Settings.Device.Keyboard.Internal.";
   } else if (keyboard.meta_key == mojom::MetaKey::kLauncher ||
              keyboard.meta_key == mojom::MetaKey::kSearch) {
-    return KeyboardType::kExternalChromeOS;
+    return "ChromeOS.Settings.Device.Keyboard.ExternalChromeOS.";
   } else {
-    return KeyboardType::kExternal;
+    return "ChromeOS.Settings.Device.Keyboard.External.";
   }
 }
 
@@ -59,32 +53,38 @@ void InputDeviceSettingsMetricsManager::RecordKeyboardInitialMetrics(
   }
   recorded_keyboards_[account_id].insert(keyboard.device_key);
 
-  const KeyboardType keyboard_type = GetKeyboardType(keyboard);
-  switch (keyboard_type) {
-    case KeyboardType::kExternal:
-      base::UmaHistogramBoolean(
-          "ChromeOS.Settings.Device.Keyboard.External.BlockMetaFKeyRewrites."
-          "Initial",
-          keyboard.settings->suppress_meta_fkey_rewrites);
-      base::UmaHistogramBoolean(
-          "ChromeOS.Settings.Device.Keyboard.External.TopRowAreFKeys.Initial",
-          keyboard.settings->top_row_are_fkeys);
-      break;
-    case KeyboardType::kExternalChromeOS:
-      base::UmaHistogramBoolean(
-          "ChromeOS.Settings.Device.Keyboard.ExternalChromeOS."
-          "BlockMetaFKeyRewrites.Initial",
-          keyboard.settings->suppress_meta_fkey_rewrites);
-      base::UmaHistogramBoolean(
-          "ChromeOS.Settings.Device.Keyboard.ExternalChromeOS.TopRowAreFKeys."
-          "Initial",
-          keyboard.settings->top_row_are_fkeys);
-      break;
-    case KeyboardType::kInternal:
-      base::UmaHistogramBoolean(
-          "ChromeOS.Settings.Device.Keyboard.Internal.TopRowAreFKeys.Initial",
-          keyboard.settings->top_row_are_fkeys);
-      break;
+  const std::string keyboard_metrics_prefix =
+      GetKeyboardMetricsPrefix(keyboard);
+
+  base::UmaHistogramBoolean(keyboard_metrics_prefix + "TopRowAreFKeys.Initial",
+                            keyboard.settings->top_row_are_fkeys);
+  // Only record BlockMetaFKeyRewrites when keyboard is external/external
+  // chromeos.
+  if (keyboard.is_external) {
+    base::UmaHistogramBoolean(
+        keyboard_metrics_prefix + "BlockMetaFKeyRewrites.Initial",
+        keyboard.settings->suppress_meta_fkey_rewrites);
+  }
+}
+
+void InputDeviceSettingsMetricsManager::RecordKeyboardChangedMetrics(
+    const mojom::Keyboard& keyboard,
+    const mojom::KeyboardSettings& old_settings) {
+  const std::string keyboard_metrics_prefix =
+      GetKeyboardMetricsPrefix(keyboard);
+
+  if (keyboard.settings->top_row_are_fkeys != old_settings.top_row_are_fkeys) {
+    base::UmaHistogramBoolean(
+        keyboard_metrics_prefix + "TopRowAreFKeys.Changed",
+        keyboard.settings->top_row_are_fkeys);
+  }
+  // Only record BlockMetaFKeyRewrites when keyboard is external/external
+  // chromeos.
+  if (keyboard.is_external && keyboard.settings->suppress_meta_fkey_rewrites !=
+                                  old_settings.suppress_meta_fkey_rewrites) {
+    base::UmaHistogramBoolean(
+        keyboard_metrics_prefix + "BlockMetaFKeyRewrites.Changed",
+        keyboard.settings->suppress_meta_fkey_rewrites);
   }
 }
 

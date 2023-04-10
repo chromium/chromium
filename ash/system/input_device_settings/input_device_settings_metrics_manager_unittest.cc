@@ -112,6 +112,26 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordsKeyboardSettings) {
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Keyboard.Internal.TopRowAreFKeys.Initial",
       /*expected_count=*/1u);
+
+  // Call RecordKeyboardChangedMetrics with the same settings, metrics will
+  // not be recoreded.
+  const mojom::KeyboardSettingsPtr old_settings =
+      keyboard_internal.settings.Clone();
+  manager_.get()->RecordKeyboardChangedMetrics(keyboard_internal,
+                                               *old_settings);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.Internal.TopRowAreFKeys.Changed",
+      /*expected_count=*/0);
+
+  // Call RecordKeyboardChangedMetrics with different settings, metrics will
+  // be recoreded.
+  keyboard_internal.settings->top_row_are_fkeys =
+      !keyboard_internal.settings->top_row_are_fkeys;
+  manager_.get()->RecordKeyboardChangedMetrics(keyboard_internal,
+                                               *old_settings);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.Internal.TopRowAreFKeys.Changed",
+      /*expected_count=*/1u);
 }
 
 TEST_F(InputDeviceSettingsMetricsManagerTest, RecordMetricOncePerKeyboard) {
