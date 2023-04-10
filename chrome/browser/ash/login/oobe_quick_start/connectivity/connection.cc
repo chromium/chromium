@@ -23,6 +23,7 @@ Connection::Connection(NearbyConnection* nearby_connection,
                        RandomSessionId session_id)
     : nearby_connection_(nearby_connection), random_session_id_(session_id) {
   crypto::RandBytes(shared_secret_);
+  crypto::RandBytes(secondary_shared_secret_);
 }
 
 void Connection::SendPayload(const base::Value::Dict& message_payload) {

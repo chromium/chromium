@@ -69,7 +69,8 @@ void AuthenticatedConnection::RequestWifiCredentials(
     int32_t session_id,
     RequestWifiCredentialsCallback callback) {
   // Build the Wifi Credential Request payload
-  std::string shared_secret_str(shared_secret_.begin(), shared_secret_.end());
+  std::string shared_secret_str(secondary_shared_secret_.begin(),
+                                secondary_shared_secret_.end());
   SendMessage(
       requests::BuildRequestWifiCredentialsMessage(session_id,
                                                    shared_secret_str),

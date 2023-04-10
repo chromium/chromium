@@ -43,6 +43,7 @@ class Connection {
   NearbyConnection* nearby_connection_;
   RandomSessionId random_session_id_;
   SharedSecret shared_secret_;
+  SharedSecret secondary_shared_secret_;
 };
 
 }  // namespace ash::quick_start
