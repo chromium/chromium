@@ -27,7 +27,7 @@
   <div id="rowList">
     <template id="list" is="dom-repeat" items="[[accelRowDataArray]]">
       <accelerator-row
-          accelerator-infos="[[item.acceleratorInfos]]"
+          accelerator-infos="[[getSortedAccelerators(item.acceleratorInfos)]]"
           action="[[item.layoutInfo.action]]"
           description="[[item.layoutInfo.description]]"
           layout-style="[[item.layoutInfo.style]]"

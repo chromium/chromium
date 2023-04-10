@@ -7,8 +7,8 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CycleTabsTextSearchResult, SnapWindowLeftSearchResult, TakeScreenshotSearchResult} from 'chrome://shortcut-customization/js/fake_data.js';
 import {stringToMojoString16} from 'chrome://shortcut-customization/js/mojo_utils.js';
-import {Accelerator, AcceleratorCategory, Modifier, MojoAccelerator, TextAcceleratorPart, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
-import {areAcceleratorsEqual, getAccelerator, getAcceleratorId, getModifiersForAcceleratorInfo, getModifierString, getSortedModifiers, getURLForSearchResult, isCustomizationDisabled, isSearchEnabled, isStandardAcceleratorInfo, isTextAcceleratorInfo, SHORTCUTS_APP_URL} from 'chrome://shortcut-customization/js/shortcut_utils.js';
+import {Accelerator, AcceleratorCategory, Modifier, MojoAccelerator, StandardAcceleratorInfo, TextAcceleratorPart, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {areAcceleratorsEqual, compareAcceleratorInfos, getAccelerator, getAcceleratorId, getModifiersForAcceleratorInfo, getModifierString, getSortedModifiers, getURLForSearchResult, isCustomizationDisabled, isSearchEnabled, isStandardAcceleratorInfo, isTextAcceleratorInfo, SHORTCUTS_APP_URL} from 'chrome://shortcut-customization/js/shortcut_utils.js';
 import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {createStandardAcceleratorInfo, createTextAcceleratorInfo} from './shortcut_customization_test_util.js';
@@ -17,6 +17,22 @@ function areModifiersEqual(
     modifiersA: string[], modifiersB: string[]): boolean {
   return modifiersA.length === modifiersB.length &&
       modifiersA.every((val, index) => val === modifiersB[index]);
+}
+
+function areStandardAcceleratorInfosEqual(
+    first: StandardAcceleratorInfo[], second: StandardAcceleratorInfo[]) {
+  assertEquals(first.length, second.length);
+  for (let i = 0; i < first.length; ++i) {
+    const firstAccelerator = first[i]!.layoutProperties.standardAccelerator;
+    const secondAccelerator = second[i]!.layoutProperties.standardAccelerator;
+    assertEquals(
+        firstAccelerator.accelerator.modifiers,
+        secondAccelerator.accelerator.modifiers);
+    assertEquals(
+        firstAccelerator.accelerator.keyCode,
+        secondAccelerator.accelerator.keyCode);
+    assertEquals(firstAccelerator.keyDisplay, secondAccelerator.keyDisplay);
+  }
 }
 
 suite('shortcutUtilsTest', function() {
@@ -191,5 +207,74 @@ suite('shortcutUtilsTest', function() {
         `${SHORTCUTS_APP_URL}/?action=2&category=${
             AcceleratorCategory.kWindowsAndDesks}`,
         getURLForSearchResult(TakeScreenshotSearchResult).href);
+  });
+
+  test('sortStandardAcceleratorInfo', () => {
+    const standardAcceleratorInfo1 = createStandardAcceleratorInfo(
+        Modifier.ALT,
+        /*keyCode=*/ 221,
+        /*keyDisplay=*/ ']');
+
+    // No modifier, this should get the highest priority.
+    const standardAcceleratorInfo2 = createStandardAcceleratorInfo(
+        Modifier.NONE,
+        /*keyCode=*/ 221,
+        /*keyDisplay=*/ ']');
+
+    const standardAcceleratorInfo3 = createStandardAcceleratorInfo(
+        Modifier.ALT | Modifier.SHIFT | Modifier.COMMAND,
+        /*keyCode=*/ 221,
+        /*keyDisplay=*/ ']');
+
+    const standardAcceleratorInfo4 = createStandardAcceleratorInfo(
+        Modifier.ALT | Modifier.SHIFT,
+        /*keyCode=*/ 221,
+        /*keyDisplay=*/ ']');
+
+    const initialOrder = [
+      standardAcceleratorInfo1,
+      standardAcceleratorInfo2,
+      standardAcceleratorInfo3,
+      standardAcceleratorInfo4,
+    ];
+    const expectedOrder = [
+      standardAcceleratorInfo2,
+      standardAcceleratorInfo1,
+      standardAcceleratorInfo4,
+      standardAcceleratorInfo3,
+    ];
+    initialOrder.sort(compareAcceleratorInfos);
+    areStandardAcceleratorInfosEqual(expectedOrder, initialOrder);
+  });
+
+  test('sortStandardAcceleratorInfoStableOrder', async () => {
+    const standardAcceleratorInfo1 = createStandardAcceleratorInfo(
+        Modifier.ALT,
+        /*keyCode=*/ 221,
+        /*keyDisplay=*/ ']');
+
+    // No modifier, this should get the highest priority.
+    const standardAcceleratorInfo2 = createStandardAcceleratorInfo(
+        Modifier.COMMAND,
+        /*keyCode=*/ 221,
+        /*keyDisplay=*/ ']');
+
+    const standardAcceleratorInfo3 = createStandardAcceleratorInfo(
+        Modifier.CONTROL,
+        /*keyCode=*/ 221,
+        /*keyDisplay=*/ ']');
+
+    const initialOrder = [
+      standardAcceleratorInfo1,
+      standardAcceleratorInfo2,
+      standardAcceleratorInfo3,
+    ];
+    const expectedOrder = [
+      standardAcceleratorInfo1,
+      standardAcceleratorInfo2,
+      standardAcceleratorInfo3,
+    ];
+    initialOrder.sort(compareAcceleratorInfos);
+    areStandardAcceleratorInfosEqual(expectedOrder, initialOrder);
   });
 });
