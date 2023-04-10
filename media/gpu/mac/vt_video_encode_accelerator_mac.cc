@@ -196,11 +196,10 @@ VideoEncoderInfo GetVideoEncoderInfo(VTSessionRef compression_session,
 }  // namespace
 
 struct VTVideoEncodeAccelerator::InProgressFrameEncode {
-  InProgressFrameEncode(base::TimeDelta rtp_timestamp,
+  InProgressFrameEncode(scoped_refptr<VideoFrame> frame,
                         const gfx::ColorSpace& frame_cs)
-      : timestamp(rtp_timestamp), encoded_color_space(frame_cs) {}
-
-  const base::TimeDelta timestamp;
+      : frame(frame), encoded_color_space(frame_cs) {}
+  const scoped_refptr<VideoFrame> frame;
   const gfx::ColorSpace encoded_color_space;
 };
 
@@ -212,7 +211,7 @@ struct VTVideoEncodeAccelerator::EncodeOutput {
                const InProgressFrameEncode& frame_info)
       : info(info_flags),
         sample_buffer(sbuf, base::scoped_policy::RETAIN),
-        capture_timestamp(frame_info.timestamp),
+        capture_timestamp(frame_info.frame->timestamp()),
         encoded_color_space(frame_info.encoded_color_space) {}
 
   EncodeOutput(const EncodeOutput&) = delete;
@@ -478,19 +477,19 @@ void VTVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
           kVTEncodeFrameOptionKey_ForceKeyFrame,
           force_keyframe ? kCFBooleanTrue : kCFBooleanFalse);
 
+  auto timestamp_cm =
+      CMTimeMake(frame->timestamp().InMicroseconds(), USEC_PER_SEC);
+
   // Wrap information we'll need after the frame is encoded in a heap object.
   // We'll get the pointer back from the VideoToolbox completion callback.
   auto request = std::make_unique<InProgressFrameEncode>(
-      frame->timestamp(), encoder_color_space_.value_or(gfx::ColorSpace()));
+      std::move(frame), encoder_color_space_.value_or(gfx::ColorSpace()));
 
   if (bitrate_.mode() == Bitrate::Mode::kConstant) {
     // In CBR mode, we adjust bitrate before every encode based on past history
     // of bitrate adherence.
     SetAdjustedConstantBitrate(bitrate_adjuster_.GetAdjustedBitrateBps());
   }
-
-  auto timestamp_cm =
-      CMTimeMake(frame->timestamp().InMicroseconds(), USEC_PER_SEC);
 
   // We can pass the ownership of |request| to the encode callback if
   // successful. Otherwise let it fall out of scope.
