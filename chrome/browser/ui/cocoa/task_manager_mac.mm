@@ -272,6 +272,7 @@ NSString* ColumnIdentifier(int id) {
   // Use only half the margin, since the full margin is too much whitespace.
   buttonFrame.origin.y = kMargin / 2;
   [_endProcessButton setFrame:buttonFrame];
+  [_endProcessButton setKeyEquivalent:@"\r"];
   [contentView addSubview:_endProcessButton];
 
   // Create a scroll view to house the table view.
