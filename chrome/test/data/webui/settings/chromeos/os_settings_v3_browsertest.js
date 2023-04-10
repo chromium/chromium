@@ -596,11 +596,6 @@ function registerTest(testName, module, featureList) {
       mocha.grep('SearchFeedback_OfficialBuild').run();
     });
     GEN('#endif');
-  } else if (testName === 'OsSettingsPage') {
-    // TODO(crbug.com/1411677): times out (flaky) debug builds
-    GEN('#if defined(NDEBUG)');
-    TEST_F(className, 'All', () => mocha.run());
-    GEN('#endif');
   } else {
     TEST_F(className, 'All', () => mocha.run());
   }
