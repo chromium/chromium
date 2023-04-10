@@ -1495,7 +1495,6 @@ std::vector<GURL> ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
         GURL(chrome::kChromeUICrostiniUpgraderUrl),
         GURL(chrome::kChromeUICryptohomeURL),
         GURL(chrome::kOsUIDeviceEmulatorURL), GURL(chrome::kOsUIDeviceLogURL),
-        GURL(chrome::kChromeUIDiagnosticsAppURL),
         GURL(chrome::kChromeUIDriveInternalsUrl),
         GURL(chrome::kOsUIDriveInternalsURL),
         GURL(chrome::kChromeUIEmojiPickerURL),
