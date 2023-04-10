@@ -81,6 +81,7 @@ class CppTypeGenerator(object):
     Output examples:
       SHOUTY_CASE: kShoutyCase
       underscore_case: kUnderscoreCase
+      dash-case: kDashCase
       camelCaseWithLowerFirst: kCamelCaseWithLowerFirst
       CamelCaseWithUpperFirst: kCamelCaseWithUpperFirst.
     """
@@ -88,7 +89,7 @@ class CppTypeGenerator(object):
     last_was_lower = True
     result = ''
     for char in name:
-      if char == '_':
+      if char in {'_', '-'}:
         change_to_upper=True
       elif change_to_upper:
         result += char.upper()

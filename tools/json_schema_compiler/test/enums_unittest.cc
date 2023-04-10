@@ -290,4 +290,6 @@ TEST(JsonSchemaCompilerEnumsTest, EnumCaptalisationTest) {
             enums::ParseEnumNameTransformation("FourthEntryExample"));
   EXPECT_EQ(enums::EnumNameTransformation::kFifthEntryExample1234,
             enums::ParseEnumNameTransformation("FIFTH_ENTRY_EXAMPLE_1234"));
+  EXPECT_EQ(enums::EnumNameTransformation::kSixthEntryExample,
+            enums::ParseEnumNameTransformation("sixth-entry-example"));
 }
