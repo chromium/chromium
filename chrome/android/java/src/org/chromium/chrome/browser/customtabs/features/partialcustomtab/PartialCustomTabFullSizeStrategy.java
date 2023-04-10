@@ -128,7 +128,7 @@ public class PartialCustomTabFullSizeStrategy extends PartialCustomTabBaseStrate
     }
 
     @Override
-    protected void drawDividerLine(CustomTabToolbar toolbar) {}
+    protected void drawDividerLine() {}
 
     private void positionOnWindow() {
         WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();

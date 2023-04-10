@@ -290,7 +290,7 @@ public abstract class PartialCustomTabBaseStrategy
 
     protected abstract boolean isMaximized();
 
-    protected abstract void drawDividerLine(CustomTabToolbar toolbar);
+    protected abstract void drawDividerLine();
 
     protected abstract boolean shouldDrawDividerLine();
 
@@ -374,7 +374,7 @@ public abstract class PartialCustomTabBaseStrategy
         if (dragBar.getBackground() instanceof InsetDrawable) resetCoordinatorLayoutInsets();
 
         if (shouldDrawDividerLine()) {
-            drawDividerLine(toolbar);
+            drawDividerLine();
         } else {
             adjustCornerRadius(dragBarBackground, toolbarCornerRadius);
             dragBar.setBackground(dragBarBackground);
@@ -387,8 +387,7 @@ public abstract class PartialCustomTabBaseStrategy
         mActivity.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
     }
 
-    protected void drawDividerLineBase(
-            int leftInset, int topInset, int rightInset, CustomTabToolbar toolbar) {
+    protected void drawDividerLineBase(int leftInset, int topInset, int rightInset) {
         View handleView = mActivity.findViewById(R.id.custom_tabs_handle_view);
         View dragBar = handleView.findViewById(R.id.drag_bar);
         GradientDrawable cctBackground = (GradientDrawable) handleView.getBackground();

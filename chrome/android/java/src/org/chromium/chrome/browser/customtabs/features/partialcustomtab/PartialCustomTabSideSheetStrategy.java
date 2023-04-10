@@ -137,8 +137,10 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
     boolean toggleMaximize(boolean animate) {
         mIsMaximized = !mIsMaximized;
         if (mIsMaximized) {
+            if (shouldDrawDividerLine()) resetCoordinatorLayoutInsets();
             setTopMargins(0, 0);
         } else {
+            if (shouldDrawDividerLine()) drawDividerLine();
             updateShadowOffset();
         }
 
@@ -359,22 +361,25 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
     }
 
     @Override
-    protected void drawDividerLine(CustomTabToolbar toolbar) {
+    protected void drawDividerLine() {
         int width =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_outline_width);
         int leftDividerInset = mSheetOnRight ? width : 0;
         int rightDividerInset = !mSheetOnRight ? width : 0;
 
-        drawDividerLineBase(leftDividerInset, 0, rightDividerInset, toolbar);
+        drawDividerLineBase(leftDividerInset, 0, rightDividerInset);
     }
 
     @Override
     protected boolean shouldDrawDividerLine() {
+        boolean notMaxWidthSideSheet =
+                calculateWidth(mUnclampedInitialWidth) != mVersionCompat.getDisplayWidth();
         // Elevation shadows are only rendered properly on devices >= Android Q
-        return SysUtils.isLowEndDevice()
-                || mDecorationType == ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER
-                || (mDecorationType == ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW
-                        && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q);
+        return notMaxWidthSideSheet
+                && (SysUtils.isLowEndDevice()
+                        || mDecorationType == ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER
+                        || (mDecorationType == ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW
+                                && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q));
     }
 
     @Override
