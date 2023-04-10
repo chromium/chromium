@@ -143,8 +143,9 @@ void GetEVPolicyOids(const EVRootCAMetadata* ev_metadata,
     return;
 
   for (const der::Input& oid : cert->policy_oids()) {
-    if (ev_metadata->IsEVPolicyOIDGivenBytes(oid))
+    if (ev_metadata->IsEVPolicyOID(oid)) {
       oids->insert(oid);
+    }
   }
 }
 
@@ -359,8 +360,9 @@ class PathBuilderDelegateImpl : public SimplePathBuilderDelegate {
                              sizeof(root_fingerprint.data));
 
     for (const der::Input& oid : path->user_constrained_policy_set) {
-      if (ev_metadata_->HasEVPolicyOIDGivenBytes(root_fingerprint, oid))
+      if (ev_metadata_->HasEVPolicyOID(root_fingerprint, oid)) {
         return true;
+      }
     }
 
     return false;
