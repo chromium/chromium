@@ -58,6 +58,19 @@ std::string GenerateTestSuffix(
   return suffix;
 }
 
+void UseFixedPlaceholderTextAndHideCursor(
+    raw_ptr<SearchBoxView> search_box_view) {
+  ASSERT_TRUE(search_box_view);
+
+  // Use a fixed placeholder text instead of the one picked randomly to
+  // avoid the test flakiness.
+  search_box_view->UseFixedPlaceholderTextForTest();
+
+  // Hide the search box cursor to avoid the flakiness due to the blinking.
+  views::TextfieldTestApi(search_box_view->search_box())
+      .SetCursorLayerOpacity(0.f);
+}
+
 }  // namespace
 
 class AppListViewPixelRTLTest
@@ -75,18 +88,6 @@ class AppListViewPixelRTLTest
   void ShowAppList() {
     AppListTestHelper* test_helper = GetAppListTestHelper();
     test_helper->ShowAppList();
-
-    // Use a fixed placeholder text instead of the one picked randomly to
-    // avoid the test flakiness.
-    test_helper->GetSearchBoxView()->UseFixedPlaceholderTextForTest();
-  }
-
-  // Hide the search box cursor to avoid the flakiness due to the
-  // blinking.
-  void HideCursor() {
-    views::TextfieldTestApi(
-        GetAppListTestHelper()->GetBubbleSearchBoxView()->search_box())
-        .SetCursorLayerOpacity(0.f);
   }
 
   void SetUpAnswerCardResult(SearchModel::SearchResults* results,
@@ -158,7 +159,7 @@ TEST_P(AppListViewPixelRTLTest, AnswerCardSearchResult) {
   // OnSearchResultContainerResultsChanged will schedule show animations().
   base::RunLoop().RunUntilIdle();
 
-  HideCursor();
+  UseFixedPlaceholderTextAndHideCursor(test_helper->GetSearchBoxView());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "bubble_launcher_answer_card_search_results",
       /*revision_number=*/0, GetAppListTestHelper()->GetBubbleView(),
@@ -180,7 +181,7 @@ TEST_P(AppListViewPixelRTLTest, URLSearchResult) {
   // OnSearchResultContainerResultsChanged will schedule show animations().
   base::RunLoop().RunUntilIdle();
 
-  HideCursor();
+  UseFixedPlaceholderTextAndHideCursor(test_helper->GetSearchBoxView());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "bubble_launcher_url_search_results",
       /*revision_number=*/0, GetAppListTestHelper()->GetBubbleView(),
@@ -193,7 +194,8 @@ TEST_P(AppListViewPixelRTLTest, Basics) {
       /*num_apps=*/2, AppListTestHelper::IconColorType::kAlternativeColor,
       /*set_name=*/true);
   ShowAppList();
-  HideCursor();
+  UseFixedPlaceholderTextAndHideCursor(
+      GetAppListTestHelper()->GetSearchBoxView());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "bubble_launcher_basics",
       /*revision_number=*/0, GetAppListTestHelper()->GetBubbleView(),
@@ -206,7 +208,8 @@ TEST_P(AppListViewPixelRTLTest, GradientZone) {
       /*num_apps=*/22, AppListTestHelper::IconColorType::kAlternativeColor,
       /*set_name=*/true);
   ShowAppList();
-  HideCursor();
+  UseFixedPlaceholderTextAndHideCursor(
+      GetAppListTestHelper()->GetSearchBoxView());
   views::ScrollView* scroll_view =
       GetAppListTestHelper()->GetBubbleAppsPage()->scroll_view();
 
@@ -271,6 +274,7 @@ TEST_P(AppListViewLauncherSearchIphTest, Basic) {
   // Wait re-layout for adding IPH view.
   base::RunLoop().RunUntilIdle();
 
+  UseFixedPlaceholderTextAndHideCursor(search_box_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "launcher_search_iph", /*revision_number=*/1, search_box_view));
 }
