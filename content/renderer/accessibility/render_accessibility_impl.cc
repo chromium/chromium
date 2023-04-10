@@ -543,10 +543,7 @@ void RenderAccessibilityImpl::HandleAXEvent(const ui::AXEvent& event) {
   DCHECK(!document.IsNull());
 
   auto obj = WebAXObject::FromWebDocumentByID(document, event.id);
-  DCHECK(!obj.IsDetached() || serialize_post_lifecycle_);
-  if (obj.IsDetached()) {
-    return;
-  }
+  DCHECK(!obj.IsDetached());
 
 #if BUILDFLAG(IS_ANDROID)
   // Inline text boxes are needed to support moving by character/word/line.
@@ -563,7 +560,9 @@ void RenderAccessibilityImpl::HandleAXEvent(const ui::AXEvent& event) {
     return;
   }
 
-  DCHECK(!obj.IsDetached() || !serialize_post_lifecycle_);
+  MarkWebAXObjectDirty(obj, /* subtree= */ false, event.event_from,
+                       event.event_from_action, event.event_intents,
+                       event.event_type);
 
   if (IsImmediateProcessingRequiredForEvent(event)) {
     if (serialize_post_lifecycle_) {
@@ -572,12 +571,6 @@ void RenderAccessibilityImpl::HandleAXEvent(const ui::AXEvent& event) {
       legacy_event_schedule_mode_ =
           LegacyEventScheduleMode::kProcessEventsImmediately;
     }
-  }
-
-  if (!serialize_post_lifecycle_ || !obj.IsDetached()) {
-    MarkWebAXObjectDirty(obj, /* subtree= */ false, event.event_from,
-                         event.event_from_action, event.event_intents,
-                         event.event_type);
   }
 
   if (!serialize_post_lifecycle_) {
