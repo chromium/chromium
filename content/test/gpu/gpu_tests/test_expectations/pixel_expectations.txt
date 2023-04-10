@@ -393,8 +393,6 @@ crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_OffscreenCanvasAcceler
 crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_OffscreenCanvasWebGLDefaultWorker [ RetryOnFailure ]
 
 
-crbug.com/1429731 [ chromeos chromeos-board-kevin ] Pixel_WebGL2_ClearBufferfv_Result_Displayed [ Failure ]
-crbug.com/1429731 [ chromeos chromeos-board-kevin ] Pixel_WebGLFloat [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
