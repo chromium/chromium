@@ -64,6 +64,9 @@ class MEDIA_EXPORT VideoCodecConfig {
   // called on an arbitrary thread, so use base::BindPostTaskToCurrentDefault if
   // needed.
   base::RepeatingClosure on_buffers_available_cb;
+
+  // The name of decoder/encoder. It's used to create the MediaCodec instance.
+  std::string name;
 };
 
 // A bridge to a Java MediaCodec.
