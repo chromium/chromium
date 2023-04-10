@@ -34,6 +34,7 @@ class ASH_EXPORT HotspotNotifier
   static const char kWiFiTurnedOffNotificationId[];
   static const char kAdminRestrictedNotificationId[];
   static const char kWiFiTurnedOnNotificationId[];
+  static const char kAutoDisabledNotificationId[];
 
  private:
   friend class HotspotNotifierTest;
@@ -48,6 +49,9 @@ class ASH_EXPORT HotspotNotifier
       const int message_id,
       const char* notification_id,
       scoped_refptr<message_center::NotificationDelegate> delegate);
+
+  void EnableHotspotHandler(const char* notification_id,
+                            absl::optional<int> index);
 
   mojo::Remote<hotspot_config::mojom::CrosHotspotConfig>
       remote_cros_hotspot_config_;

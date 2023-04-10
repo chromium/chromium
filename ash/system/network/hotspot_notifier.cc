@@ -22,6 +22,9 @@ const char HotspotNotifier::kAdminRestrictedNotificationId[] =
 const char HotspotNotifier::kWiFiTurnedOnNotificationId[] =
     "cros_hotspot_notifier_ids.wifi_turned_on";
 
+const char HotspotNotifier::kAutoDisabledNotificationId[] =
+    "cros_hotspot_notifier_ids.auto_disabled";
+
 const char kNotifierHotspot[] = "ash.hotspot";
 
 HotspotNotifier::HotspotNotifier() {
@@ -55,6 +58,7 @@ void HotspotNotifier::OnHotspotTurnedOff(
   int title_id;
   int message_id;
   const char* notification_id;
+  std::vector<message_center::ButtonInfo> notification_actions;
   switch (disable_reason) {
     case hotspot_config::mojom::DisableReason::kProhibitedByPolicy:
       title_id = IDS_ASH_HOTSPOT_OFF_TITLE;
@@ -66,17 +70,55 @@ void HotspotNotifier::OnHotspotTurnedOff(
       message_id = IDS_ASH_HOTSPOT_WIFI_TURNED_ON_MESSAGE;
       notification_id = kWiFiTurnedOnNotificationId;
       break;
+    case hotspot_config::mojom::DisableReason::kAutoDisabled:
+      title_id = IDS_ASH_HOTSPOT_OFF_TITLE;
+      message_id = IDS_ASH_HOTSPOT_AUTO_DISABLED_MESSAGE;
+      notification_id = kAutoDisabledNotificationId;
+      delegate =
+          base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+              base::BindRepeating(&HotspotNotifier::EnableHotspotHandler,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  notification_id));
+      notification_actions.push_back(
+          message_center::ButtonInfo(l10n_util::GetStringUTF16(
+              IDS_ASH_HOTSPOT_NOTIFICATION_TURN_ON_BUTTON)));
+      break;
     default:
       return;
   }
   std::unique_ptr<message_center::Notification> notification =
       CreateNotification(title_id, message_id, notification_id, delegate);
 
+  if (notification_actions.size() > 0) {
+    notification->set_buttons(notification_actions);
+  }
+
   message_center::MessageCenter* message_center =
       message_center::MessageCenter::Get();
   message_center->RemoveNotification(notification_id,
                                      /*by_user=*/false);
   message_center->AddNotification(std::move(notification));
+}
+
+void HotspotNotifier::EnableHotspotHandler(const char* notification_id,
+                                           absl::optional<int> button_index) {
+  if (!button_index) {
+    return;
+  }
+
+  if (button_index.value() == 0) {
+    remote_cros_hotspot_config_->EnableHotspot(
+        base::BindOnce([](hotspot_config::mojom::HotspotControlResult result) {
+          if (result == hotspot_config::mojom::HotspotControlResult::kSuccess ||
+              result == hotspot_config::mojom::HotspotControlResult::
+                            kAlreadyFulfilled) {
+            message_center::MessageCenter* message_center =
+                message_center::MessageCenter::Get();
+            message_center->RemoveNotification(kAutoDisabledNotificationId,
+                                               /*by_user=*/false);
+          }
+        }));
+  }
 }
 
 std::unique_ptr<message_center::Notification>

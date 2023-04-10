@@ -168,4 +168,29 @@ TEST_F(HotspotNotifierTest, WiFiTurnedOn) {
       HotspotNotifier::kWiFiTurnedOnNotificationId));
 }
 
+TEST_F(HotspotNotifierTest, AutoDisabled) {
+  SetValidHotspotCapabilities();
+  SetReadinessCheckResultReady();
+  AddActiveCellularService();
+  helper()->manager_test()->SetSimulateTetheringEnableResult(
+      FakeShillSimulatedResult::kSuccess, shill::kTetheringEnableResultSuccess);
+  base::RunLoop().RunUntilIdle();
+
+  EnableHotspot();
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
+      HotspotNotifier::kWiFiTurnedOffNotificationId));
+
+  NotifyHotspotTurnedOff(hotspot_config::mojom::DisableReason::kAutoDisabled);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
+      HotspotNotifier::kAutoDisabledNotificationId));
+
+  message_center::MessageCenter::Get()->ClickOnNotificationButton(
+      HotspotNotifier::kAutoDisabledNotificationId, 0);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          HotspotNotifier::kAutoDisabledNotificationId));
+}
+
 }  // namespace ash
