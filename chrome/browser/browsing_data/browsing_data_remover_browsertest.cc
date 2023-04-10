@@ -1572,7 +1572,20 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
 
 // Some storage backend use a different code path for full deletions and
 // partial deletions, so we need to test both.
-INSTANTIATE_TEST_SUITE_P(All,
-                         BrowsingDataRemoverBrowserTestP,
-                         ::testing::Values(TimeEnum::kDefault,
-                                           TimeEnum::kLastHour));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    BrowsingDataRemoverBrowserTestP,
+    ::testing::Values(TimeEnum::kDefault, TimeEnum::kLastHour),
+    [](const ::testing::TestParamInfo<
+        BrowsingDataRemoverBrowserTestP::ParamType>& info) {
+      switch (info.param) {
+        case TimeEnum::kDefault:
+          return "kDefault";
+        case TimeEnum::kLastHour:
+          return "kLastHour";
+        case TimeEnum::kStart:
+          return "kStart";
+        case TimeEnum::kMax:
+          return "kMax";
+      }
+    });
