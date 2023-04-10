@@ -145,6 +145,7 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         AnimatorUpdateListener updateListener;
         WindowManager.LayoutParams windowLayout = mActivity.getWindow().getAttributes();
         int displayWidth = mVersionCompat.getDisplayWidth();
+        int clampedInitialWidth = calculateWidth(mUnclampedInitialWidth);
         int start;
         int end;
         if (mSheetOnRight) {
@@ -152,11 +153,11 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
             setWindowWidth(displayWidth);
             int xOffset = mVersionCompat.getXOffset();
             start = windowLayout.x;
-            end = (mIsMaximized ? 0 : displayWidth - mUnclampedInitialWidth) + xOffset;
+            end = (mIsMaximized ? 0 : displayWidth - clampedInitialWidth) + xOffset;
             updateListener = (anim) -> setWindowX((int) anim.getAnimatedValue());
         } else {
             start = windowLayout.width;
-            end = calculateWidth(mIsMaximized ? displayWidth : mUnclampedInitialWidth);
+            end = mIsMaximized ? displayWidth : clampedInitialWidth;
             updateListener = (anim) -> setWindowWidth((int) anim.getAnimatedValue());
         }
         // Keep the WebContents invisible during the animation to hide the jerky visual artifacts
