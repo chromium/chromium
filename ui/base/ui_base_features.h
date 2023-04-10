@@ -236,6 +236,16 @@ ChromeRefresh2023Level GetChromeRefresh2023Level();
 
 COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kWebUiSystemFont);
 
+#if BUILDFLAG(IS_MAC)
+// Font Smoothing, a CoreText technique, simulates optical sizes to enhance text
+// readability at smaller scales. In practice, it leads to an increased
+// perception of text weight, creating discrepancies between renderings in UX
+// design tools and actual macOS displays. This feature is only effective when
+// ChromeRefresh2023 is enabled.
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kCr2023MacFontSmoothing);
+#endif
+
 // Сreating a MotionEvent from Java MotionEvent use the event time in
 // nanoseconds instead of milliseconds.
 COMPONENT_EXPORT(UI_BASE_FEATURES)

@@ -8059,6 +8059,13 @@ const FeatureEntry kFeatureEntries[] = {
                                     kChromeRefresh2023Variations,
                                     "ChromeRefresh2023")},
 
+#if BUILDFLAG(IS_MAC)
+    {"cr2023-mac-font-smoothing",
+     flag_descriptions::kCr2023MacFontSmoothingName,
+     flag_descriptions::kCr2023MacFontSmoothingDescription, kOsMac,
+     FEATURE_VALUE_TYPE(features::kCr2023MacFontSmoothing)},
+#endif
+
     {"enable-first-party-sets", flag_descriptions::kEnableFirstPartySetsName,
      flag_descriptions::kEnableFirstPartySetsDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFirstPartySets)},

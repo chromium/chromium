@@ -415,6 +415,8 @@ component("gfx") {
       "CoreGraphics.framework",
       "CoreText.framework",
     ]
+
+    deps += [ "//ui/base:features" ]
   }
 
   if ((!use_aura && !toolkit_views) || is_ios) {

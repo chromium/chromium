@@ -59408,6 +59408,7 @@ from previous Chrome versions.
   <int value="-1384426209" label="SharingDeviceRegistration:disabled"/>
   <int value="-1383674566" label="EnableProtoApiForClassifyUrl:enabled"/>
   <int value="-1383597259" label="SyncUserConsentSeparateType:disabled"/>
+  <int value="-1383226125" label="Cr2023MacFontSmoothing:enabled"/>
   <int value="-1383145700"
       label="AutofillDoNotMigrateUnsupportedLocalCards:enabled"/>
   <int value="-1382918690" label="VirtualKeyboardApi:enabled"/>
@@ -62966,6 +62967,7 @@ from previous Chrome versions.
   <int value="559695461" label="UseChimeAndroidSdk:enabled"/>
   <int value="559903013"
       label="AutofillEnableMerchantOptOutErrorDialog:enabled"/>
+  <int value="560062958" label="Cr2023MacFontSmoothing:disabled"/>
   <int value="560369327" label="LauncherImageSearch:disabled"/>
   <int value="560953355"
       label="ExtractRelatedSearchesFromPrefetchedZPSResponse:disabled"/>
