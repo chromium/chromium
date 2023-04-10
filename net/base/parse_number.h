@@ -104,7 +104,7 @@ enum class ParseIntError {
 // The ParseUint*() functions parse a string representing a number.
 //
 // These are equivalent to calling ParseInt*(), except with unsigned output
-// types. ParseIntFormat may onlu be one of {NON_NEGATIVE, STRICT_NON_NEGATIVE}.
+// types. ParseIntFormat may only be one of {NON_NEGATIVE, STRICT_NON_NEGATIVE}.
 [[nodiscard]] NET_EXPORT bool ParseUint32(
     base::StringPiece input,
     ParseIntFormat format,
