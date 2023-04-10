@@ -64,9 +64,7 @@ DeskButtonBase::DeskButtonBase(const std::u16string& text,
 DeskButtonBase::~DeskButtonBase() = default;
 
 void DeskButtonBase::OnFocus() {
-  // TODO(yongshun): When the persistent desk bar is deprecated, remove check
-  // for `bar_view_` as it will not be a nullptr.
-  if (bar_view_ && bar_view_->overview_grid()) {
+  if (bar_view_->overview_grid()) {
     UpdateOverviewHighlightForFocusAndSpokenFeedback(this);
   }
 
@@ -113,17 +111,13 @@ void DeskButtonBase::MaybeSwapHighlightedView(bool right) {}
 void DeskButtonBase::OnViewHighlighted() {
   UpdateFocusState();
 
-  // TODO(yongshun): When the persistent desk bar is deprecated, remove check
-  // for `bar_view_` as it will not be a nullptr.
-  if (bar_view_) {
-    views::View* view = this;
-    while (view->parent()) {
-      if (view->parent() == bar_view_->scroll_view_contents()) {
-        bar_view_->ScrollToShowViewIfNecessary(view);
-        break;
-      }
-      view = view->parent();
+  views::View* view = this;
+  while (view->parent()) {
+    if (view->parent() == bar_view_->scroll_view_contents()) {
+      bar_view_->ScrollToShowViewIfNecessary(view);
+      break;
     }
+    view = view->parent();
   }
 }
 

@@ -16,10 +16,7 @@ namespace ash {
 class DesksBarView;
 
 // The base class of buttons that appear in the desk bar view classes. It's
-// guaranteed this button always lives under a desk bar view except
-// `PersistentDesksBarDeskButton`.
-// TODO(yongshun): When the persistent desk bar is deprecated, update this
-// comment.
+// guaranteed this button always lives under a desk bar view.
 class ASH_EXPORT DeskButtonBase : public views::LabelButton,
                                   public OverviewHighlightableView {
  public:
@@ -71,9 +68,6 @@ class ASH_EXPORT DeskButtonBase : public views::LabelButton,
 
  protected:
   // The desk bar view instance above this button in the view hierarchy.
-  // TODO(yongshun): This might be nullptr only because the persistent bento bar
-  // reuses this base class. When the persistent desk bar is deprecated, update
-  // this comment.
   DesksBarView* bar_view_;
 
  private:
