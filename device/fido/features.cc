@@ -36,10 +36,6 @@ BASE_FEATURE(kWebAuthPasskeysUI,
              "WebAuthenticationPasskeysUI",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWebAuthnNoEmptyDisplayNameCBOR,
-             "WebAuthenticationNoEmptyDisplayNameCBOR",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kWebAuthnNonDiscoverableMakeCredentialQRFlag,
              "WebAuthenticationNonDiscoverableMakeCredentialQRFlag",
              base::FEATURE_ENABLED_BY_DEFAULT);

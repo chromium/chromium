@@ -36,10 +36,6 @@ BASE_DECLARE_FEATURE(kWebAuthnGoogleCorpRemoteDesktopClientPrivilege);
 // Enable some experimental UI changes
 COMPONENT_EXPORT(DEVICE_FIDO) BASE_DECLARE_FEATURE(kWebAuthPasskeysUI);
 
-// Don't send empty displayName values to security keys when creating
-// credentials.
-BASE_DECLARE_FEATURE(kWebAuthnNoEmptyDisplayNameCBOR);
-
 // Include an indication for non-discoverable makeCredential calls in caBLE QR
 // codes.
 BASE_DECLARE_FEATURE(kWebAuthnNonDiscoverableMakeCredentialQRFlag);
