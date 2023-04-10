@@ -2593,6 +2593,9 @@ Connect your device to power.
       <message name="IDS_ASH_HOTSPOT_AUTO_DISABLED_MESSAGE" desc="Message displayed in the system notification shown when the hotspot is turned off due to inactivity.">
         Due to inactivity, hotspot has been turned off.
       </message>
+      <message name="IDS_ASH_HOTSPOT_INTERNAL_ERROR_MESSAGE" desc="Message displayed in the system notification shown when the hotspot is turned off due to internal error.">
+        Due to internal error, hotspot has been turned off. Try reconnecting in a few minutes.
+      </message>
       <message name="IDS_ASH_NETWORK_AUTOCONNECT" desc="Text used for the toast shown when a network has been auto-connected (e.g., when an enterprise policy is applied which initiates a connection to a corporate network like Google-A).">
         We've switched you to a better network
       </message>

@@ -35,6 +35,7 @@ class ASH_EXPORT HotspotNotifier
   static const char kAdminRestrictedNotificationId[];
   static const char kWiFiTurnedOnNotificationId[];
   static const char kAutoDisabledNotificationId[];
+  static const char kInternalErrorNotificationId[];
 
  private:
   friend class HotspotNotifierTest;

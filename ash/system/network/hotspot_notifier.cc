@@ -25,6 +25,9 @@ const char HotspotNotifier::kWiFiTurnedOnNotificationId[] =
 const char HotspotNotifier::kAutoDisabledNotificationId[] =
     "cros_hotspot_notifier_ids.auto_disabled";
 
+const char HotspotNotifier::kInternalErrorNotificationId[] =
+    "cros_hotspot_notifier_ids.internal_error";
+
 const char kNotifierHotspot[] = "ash.hotspot";
 
 HotspotNotifier::HotspotNotifier() {
@@ -83,6 +86,19 @@ void HotspotNotifier::OnHotspotTurnedOff(
           message_center::ButtonInfo(l10n_util::GetStringUTF16(
               IDS_ASH_HOTSPOT_NOTIFICATION_TURN_ON_BUTTON)));
       break;
+    case hotspot_config::mojom::DisableReason::kInternalError:
+      title_id = IDS_ASH_HOTSPOT_OFF_TITLE;
+      message_id = IDS_ASH_HOTSPOT_INTERNAL_ERROR_MESSAGE;
+      notification_id = kInternalErrorNotificationId;
+      delegate =
+          base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+              base::BindRepeating(&HotspotNotifier::EnableHotspotHandler,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  notification_id));
+      notification_actions.push_back(
+          message_center::ButtonInfo(l10n_util::GetStringUTF16(
+              IDS_ASH_HOTSPOT_NOTIFICATION_TURN_ON_BUTTON)));
+      break;
     default:
       return;
   }
@@ -115,6 +131,8 @@ void HotspotNotifier::EnableHotspotHandler(const char* notification_id,
             message_center::MessageCenter* message_center =
                 message_center::MessageCenter::Get();
             message_center->RemoveNotification(kAutoDisabledNotificationId,
+                                               /*by_user=*/false);
+            message_center->RemoveNotification(kInternalErrorNotificationId,
                                                /*by_user=*/false);
           }
         }));
