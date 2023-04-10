@@ -800,6 +800,13 @@ void ClientControlledShellSurface::SetFloat() {
 
 ////////////////////////////////////////////////////////////////////////////////
 // aura::WindowObserver overrides:
+void ClientControlledShellSurface::OnWindowDestroying(aura::Window* window) {
+  if (client_controlled_state_) {
+    client_controlled_state_->ResetDelegate();
+    client_controlled_state_ = nullptr;
+  }
+  ShellSurfaceBase::OnWindowDestroying(window);
+}
 
 void ClientControlledShellSurface::OnWindowAddedToRootWindow(
     aura::Window* window) {
@@ -1299,8 +1306,10 @@ void ClientControlledShellSurface::OnPostWidgetCommit() {
 }
 
 void ClientControlledShellSurface::OnSurfaceDestroying(Surface* surface) {
-  if (client_controlled_state_)
+  if (client_controlled_state_) {
     client_controlled_state_->ResetDelegate();
+    client_controlled_state_ = nullptr;
+  }
   ShellSurfaceBase::OnSurfaceDestroying(surface);
 }
 

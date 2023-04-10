@@ -959,36 +959,6 @@ TEST_F(ShellSurfaceTest, SurfaceDestroyedCallback) {
   EXPECT_FALSE(shell_surface.get());
 }
 
-void DestroyedCallbackCounter(int* count) {
-  *count += 1;
-}
-
-TEST_F(ShellSurfaceTest, ForceClose) {
-  gfx::Size buffer_size(64, 64);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
-  std::unique_ptr<Surface> surface(new Surface);
-  std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
-  surface->Attach(buffer.get());
-  surface->Commit();
-  ASSERT_TRUE(shell_surface->GetWidget());
-
-  int surface_destroyed_ctr = 0;
-  shell_surface->set_surface_destroyed_callback(base::BindOnce(
-      &DestroyedCallbackCounter, base::Unretained(&surface_destroyed_ctr)));
-
-  // Since we did not set the close callback, closing this widget will have no
-  // effect.
-  shell_surface->GetWidget()->Close();
-  EXPECT_TRUE(shell_surface->GetWidget());
-  EXPECT_EQ(surface_destroyed_ctr, 0);
-
-  // CloseNow() will always destroy the widget.
-  shell_surface->GetWidget()->CloseNow();
-  EXPECT_FALSE(shell_surface->GetWidget());
-  EXPECT_EQ(surface_destroyed_ctr, 1);
-}
-
 TEST_F(ShellSurfaceTest, ConfigureCallback) {
   // Must be before shell_surface so it outlives it, for shell_surface's
   // destructor calls Configure() referencing these 4 variables.

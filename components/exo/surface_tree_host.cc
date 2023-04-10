@@ -125,7 +125,6 @@ SurfaceTreeHost::~SurfaceTreeHost() {
   SetRootSurface(nullptr);
   LayerTreeFrameSinkHolder::DeleteWhenLastResourceHasBeenReclaimed(
       std::move(layer_tree_frame_sink_holder_));
-
   CleanUpCallbacks();
 }
 

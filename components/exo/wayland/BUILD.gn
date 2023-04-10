@@ -301,6 +301,7 @@ source_set("unit_tests") {
     "clients/security_delegate_binding_test.cc",
     "output_metrics_unittest.cc",
     "server_unittest.cc",
+    "shell_unittest.cc",
     "surface_augmenter_unittest.cc",
     "surface_unittest.cc",
     "wayland_aura_shell_server_test.cc",
