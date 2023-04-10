@@ -491,6 +491,43 @@ std::vector<IPEndPoint> FilterAddresses(std::vector<IPEndPoint> addresses,
   return addresses;
 }
 
+void RecordResolveTimeDiffForBucket(const char* histogram_variant,
+                                    const char* histogram_bucket,
+                                    base::TimeDelta diff) {
+  base::UmaHistogramTimes(
+      base::StrCat({"Net.Dns.ResolveTimeDiff.", histogram_variant,
+                    ".FirstRecord", histogram_bucket}),
+      diff);
+}
+
+void RecordResolveTimeDiff(const char* histogram_variant,
+                           base::TimeTicks start_time,
+                           base::TimeTicks first_record_end_time,
+                           base::TimeTicks second_record_end_time) {
+  CHECK_LE(start_time, first_record_end_time);
+  CHECK_LE(first_record_end_time, second_record_end_time);
+  base::TimeDelta first_elapsed = first_record_end_time - start_time;
+  base::TimeDelta diff = second_record_end_time - first_record_end_time;
+
+  if (first_elapsed < base::Milliseconds(10)) {
+    RecordResolveTimeDiffForBucket(histogram_variant, "FasterThan10ms", diff);
+  } else if (first_elapsed < base::Milliseconds(25)) {
+    RecordResolveTimeDiffForBucket(histogram_variant, "10msTo25ms", diff);
+  } else if (first_elapsed < base::Milliseconds(50)) {
+    RecordResolveTimeDiffForBucket(histogram_variant, "25msTo50ms", diff);
+  } else if (first_elapsed < base::Milliseconds(100)) {
+    RecordResolveTimeDiffForBucket(histogram_variant, "50msTo100ms", diff);
+  } else if (first_elapsed < base::Milliseconds(250)) {
+    RecordResolveTimeDiffForBucket(histogram_variant, "100msTo250ms", diff);
+  } else if (first_elapsed < base::Milliseconds(500)) {
+    RecordResolveTimeDiffForBucket(histogram_variant, "250msTo500ms", diff);
+  } else if (first_elapsed < base::Seconds(1)) {
+    RecordResolveTimeDiffForBucket(histogram_variant, "500msTo1s", diff);
+  } else {
+    RecordResolveTimeDiffForBucket(histogram_variant, "SlowerThan1s", diff);
+  }
+}
+
 }  // namespace
 
 //-----------------------------------------------------------------------------
@@ -1209,7 +1246,8 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     TransactionInfo transaction_info = std::move(
         transactions_in_progress_.extract(transaction_info_it).value());
 
-    base::TimeDelta elapsed_time = tick_clock_->NowTicks() - task_start_time_;
+    const base::TimeTicks now = tick_clock_->NowTicks();
+    base::TimeDelta elapsed_time = now - task_start_time_;
     enum HttpssvcDnsRcode rcode_for_httpssvc = HttpssvcDnsRcode::kNoError;
     if (httpssvc_metrics_) {
       if (net_error == ERR_DNS_TIMED_OUT) {
@@ -1310,6 +1348,34 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     }
 
     HideMetadataResultsIfNotDesired(results);
+
+    switch (transaction_info.type) {
+      case DnsQueryType::A:
+        a_record_end_time_ = now;
+        if (!aaaa_record_end_time_.is_null()) {
+          RecordResolveTimeDiff("AAAABeforeA", task_start_time_,
+                                aaaa_record_end_time_, a_record_end_time_);
+        }
+        break;
+      case DnsQueryType::AAAA:
+        aaaa_record_end_time_ = now;
+        if (!a_record_end_time_.is_null()) {
+          RecordResolveTimeDiff("ABeforeAAAA", task_start_time_,
+                                a_record_end_time_, aaaa_record_end_time_);
+        }
+        break;
+      case DnsQueryType::HTTPS: {
+        base::TimeTicks first_address_end_time =
+            std::min(a_record_end_time_, aaaa_record_end_time_);
+        if (!first_address_end_time.is_null()) {
+          RecordResolveTimeDiff("AddressRecordBeforeHTTPS", task_start_time_,
+                                first_address_end_time, now);
+        }
+        break;
+      }
+      default:
+        break;
+    }
 
     // Merge results with saved results from previous transactions.
     if (saved_results_) {
@@ -1665,6 +1731,10 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
   // individual entries should not be modified or removed until completion or
   // cancellation of the transaction.
   std::set<TransactionInfo> transactions_in_progress_;
+
+  // For histograms.
+  base::TimeTicks a_record_end_time_;
+  base::TimeTicks aaaa_record_end_time_;
 
   absl::optional<HostCache::Entry> saved_results_;
   bool saved_results_is_failure_ = false;

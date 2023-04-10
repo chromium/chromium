@@ -27,6 +27,23 @@ chromium-metrics-reviews@google.com.
   <variant name="Secure" summary="DoH is enabled"/>
 </variants>
 
+<variants name="DnsResolveTimeDiffBucket">
+  <variant name="FirstRecord10msTo25ms"
+      summary="between 10ms (inclusive) and 25ms (exclusive)"/>
+  <variant name="FirstRecord25msTo50ms"
+      summary="between 25ms (inclusive) and 50ms (exclusive)"/>
+  <variant name="FirstRecord50msTo100ms"
+      summary="between 50ms (inclusive) and 100ms (exclusive)"/>
+  <variant name="FirstRecord100msTo250ms"
+      summary="between 100ms (inclusive) and 250ms (exclusive)"/>
+  <variant name="FirstRecord250msTo500ms"
+      summary="between 250ms (inclusive) and 500ms (exclusive)"/>
+  <variant name="FirstRecord500msTo1s"
+      summary="between 500ms (inclusive) and 1s (exclusive)"/>
+  <variant name="FirstRecordFasterThan10ms" summary="less than 10ms"/>
+  <variant name="FirstRecordSlowerThan1s" summary="more than or equal to 1s"/>
+</variants>
+
 <variants name="URLLoaderThrottleStages">
   <variant name="BeforeWillProcessResponse"/>
   <variant name="WillOnCompleteWithError"/>
@@ -1506,6 +1523,33 @@ chromium-metrics-reviews@google.com.
     resolve a hostname from start to finish. Excludes jobs where all requests
     are speculative.
   </summary>
+</histogram>
+
+<histogram name="Net.DNS.ResolveTimeDiff.AddressRecordBeforeHTTPS.{Bucket}"
+    units="ms" expires_after="2023-10-06">
+  <owner>bashi@chromium.org</owner>
+  <owner>chrome-network-stack@google.com</owner>
+  <summary>
+    Time difference between the first address record (A or AAAA) and HTTPS
+    record were resolved. Recorded when an address record was resolved before
+    HTTPS record and the address record was resolved {Bucket}.
+  </summary>
+  <token key="Bucket" variants="DnsResolveTimeDiffBucket"/>
+</histogram>
+
+<histogram name="Net.DNS.ResolveTimeDiff.{Variant}.{Bucket}" units="ms"
+    expires_after="2023-10-06">
+  <owner>bashi@chromium.org</owner>
+  <owner>chrome-network-stack@google.com</owner>
+  <summary>
+    Time difference between A and AAAA records were resolved. Recorded when
+    {Variant}, and the first one was resolved {Bucket}.
+  </summary>
+  <token key="Bucket" variants="DnsResolveTimeDiffBucket"/>
+  <token key="Variant">
+    <variant name="AAAABeforeA" summary="AAAA resolved before A"/>
+    <variant name="ABeforeAAAA" summary="A resolved before AAAA"/>
+  </token>
 </histogram>
 
 <histogram name="Net.DNS.SecureDnsMode.Automatic.ResolveTime" units="ms"
