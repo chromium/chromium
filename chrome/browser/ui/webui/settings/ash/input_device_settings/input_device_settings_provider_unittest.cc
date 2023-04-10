@@ -230,6 +230,9 @@ class FakeInputDeviceSettingsController : public InputDeviceSettingsController {
   const ::ash::mojom::KeyboardPolicies& GetKeyboardPolicies() override {
     return *keyboard_policies_;
   }
+  const ::ash::mojom::MousePolicies& GetMousePolicies() override {
+    return *mouse_policies_;
+  }
   void SetKeyboardSettings(
       DeviceId id,
       ::ash::mojom::KeyboardSettingsPtr settings) override {
@@ -341,6 +344,8 @@ class FakeInputDeviceSettingsController : public InputDeviceSettingsController {
   std::vector<::ash::mojom::PointingStickPtr> pointing_sticks_;
   ::ash::mojom::KeyboardPoliciesPtr keyboard_policies_ =
       ::ash::mojom::KeyboardPolicies::New();
+  ::ash::mojom::MousePoliciesPtr mouse_policies_ =
+      ::ash::mojom::MousePolicies::New();
 
   raw_ptr<InputDeviceSettingsController::Observer> observer_ = nullptr;
   int num_times_set_keyboard_settings_called_ = 0;

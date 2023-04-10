@@ -56,6 +56,7 @@ class ASH_PUBLIC_EXPORT MockInputDeviceSettingsController
               GetKeyboardPolicies,
               (),
               (override));
+  MOCK_METHOD(const mojom::MousePolicies&, GetMousePolicies, (), (override));
   MOCK_METHOD(void,
               SetKeyboardSettings,
               (DeviceId id, mojom::KeyboardSettingsPtr settings),

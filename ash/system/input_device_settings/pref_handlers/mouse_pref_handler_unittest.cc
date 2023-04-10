@@ -174,7 +174,8 @@ class MousePrefHandlerTest : public AshTestBase {
     mouse->settings = settings.Clone();
     mouse->device_key = device_key;
 
-    pref_handler_->UpdateMouseSettings(pref_service_.get(), *mouse);
+    pref_handler_->UpdateMouseSettings(pref_service_.get(),
+                                       /*mouse_policies=*/{}, *mouse);
   }
 
   mojom::MouseSettingsPtr CallInitializeMouseSettings(
@@ -182,7 +183,8 @@ class MousePrefHandlerTest : public AshTestBase {
     mojom::MousePtr mouse = mojom::Mouse::New();
     mouse->device_key = device_key;
 
-    pref_handler_->InitializeMouseSettings(pref_service_.get(), mouse.get());
+    pref_handler_->InitializeMouseSettings(pref_service_.get(),
+                                           /*mouse_policies=*/{}, mouse.get());
     return std::move(mouse->settings);
   }
 
@@ -305,7 +307,8 @@ TEST_F(MousePrefHandlerTest, NewSettingAddedRoundTrip) {
 TEST_F(MousePrefHandlerTest, DefaultSettingsWhenPrefServiceNull) {
   mojom::Mouse mouse;
   mouse.device_key = kMouseKey1;
-  pref_handler_->InitializeMouseSettings(nullptr, &mouse);
+  pref_handler_->InitializeMouseSettings(nullptr, /*mouse_policies=*/{},
+                                         &mouse);
   EXPECT_EQ(kMouseSettingsDefault, *mouse.settings);
 }
 

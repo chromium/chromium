@@ -273,8 +273,8 @@ void InputDeviceSettingsControllerImpl::RefreshAllDeviceSettings() {
     DispatchTouchpadSettingsChanged(id);
   }
   for (const auto& [id, mouse] : mice_) {
-    mouse_pref_handler_->InitializeMouseSettings(active_pref_service_,
-                                                 mouse.get());
+    mouse_pref_handler_->InitializeMouseSettings(
+        active_pref_service_, policy_handler_->mouse_policies(), mouse.get());
     if (active_pref_service_) {
       metrics_manager_->RecordMouseInitialMetrics(*mouse);
     }
@@ -341,13 +341,27 @@ void InputDeviceSettingsControllerImpl::OnKeyboardPoliciesChanged() {
 }
 
 void InputDeviceSettingsControllerImpl::OnMousePoliciesChanged() {
-  // TODO(dpad): Reinitialize mouse settings and inform observers.
+  for (const auto& [id, mouse] : mice_) {
+    mouse_pref_handler_->InitializeMouseSettings(
+        active_pref_service_, policy_handler_->mouse_policies(), mouse.get());
+    DispatchMouseSettingsChanged(id);
+  }
+
+  for (auto& observer : observers_) {
+    observer.OnMousePoliciesUpdated(policy_handler_->mouse_policies());
+  }
 }
 
 const mojom::KeyboardPolicies&
 InputDeviceSettingsControllerImpl::GetKeyboardPolicies() {
   CHECK(policy_handler_);
   return policy_handler_->keyboard_policies();
+}
+
+const mojom::MousePolicies&
+InputDeviceSettingsControllerImpl::GetMousePolicies() {
+  CHECK(policy_handler_);
+  return policy_handler_->mouse_policies();
 }
 
 const mojom::KeyboardSettings*
@@ -516,7 +530,8 @@ void InputDeviceSettingsControllerImpl::SetMouseSettings(
 
   auto& found_mouse = *found_mouse_iter->second;
   found_mouse.settings = settings.Clone();
-  mouse_pref_handler_->UpdateMouseSettings(active_pref_service_, found_mouse);
+  mouse_pref_handler_->UpdateMouseSettings(
+      active_pref_service_, policy_handler_->mouse_policies(), found_mouse);
   DispatchMouseSettingsChanged(id);
   // Check the list of mice to see if any have the same |device_key|.
   // If so, their settings need to also be updated.
@@ -722,8 +737,9 @@ void InputDeviceSettingsControllerImpl::OnMouseListUpdated(
     std::vector<DeviceId> mouse_ids_to_remove) {
   for (const auto& mouse : mice_to_add) {
     auto mojom_mouse = BuildMojomMouse(mouse);
-    mouse_pref_handler_->InitializeMouseSettings(active_pref_service_,
-                                                 mojom_mouse.get());
+    mouse_pref_handler_->InitializeMouseSettings(
+        active_pref_service_, policy_handler_->mouse_policies(),
+        mojom_mouse.get());
     if (active_pref_service_) {
       metrics_manager_->RecordMouseInitialMetrics(*mojom_mouse);
     }
