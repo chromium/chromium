@@ -61,6 +61,13 @@ namespace {
 // both IE and FF restrict the max width of a menu.
 const int kMaxMenuWidth = 400;
 
+ui::ImageModel GetFaviconForNode(BookmarkModel* model,
+                                 const BookmarkNode* node) {
+  const gfx::Image& image = model->GetFavicon(node);
+  return image.IsEmpty() ? favicon::GetDefaultFaviconModel()
+                         : ui::ImageModel::FromImage(image);
+}
+
 // The current behavior is that the menu gets closed (see MenuController) after
 // a drop is initiated, which deletes BookmarkMenuDelegate before the drop
 // callback is run. That's why the drop callback shouldn't be tied to
@@ -438,11 +445,7 @@ void BookmarkMenuDelegate::BookmarkNodeFaviconChanged(
   if (menu_pair == node_to_menu_map_.end())
     return;  // We're not showing a menu item for the node.
 
-  const gfx::Image& image = model->GetFavicon(node);
-  const gfx::ImageSkia* icon = image.IsEmpty()
-                                   ? favicon::GetDefaultFavicon().ToImageSkia()
-                                   : image.ToImageSkia();
-  menu_pair->second->SetIcon(ui::ImageModel::FromImageSkia(*icon));
+  menu_pair->second->SetIcon(GetFaviconForNode(model, node));
 }
 
 void BookmarkMenuDelegate::WillRemoveBookmarks(
@@ -601,13 +604,9 @@ void BookmarkMenuDelegate::BuildMenu(const BookmarkNode* parent,
     const int id = GetAndIncrementNextMenuID();
     MenuItemView* child_menu_item;
     if (node->is_url()) {
-      const gfx::Image& image = GetBookmarkModel()->GetFavicon(node);
-      const gfx::ImageSkia* icon =
-          (image.IsEmpty() ? favicon::GetDefaultFavicon() : image)
-              .ToImageSkia();
       child_menu_item =
           menu->AppendMenuItem(id, MaybeEscapeLabel(node->GetTitle()),
-                               ui::ImageModel::FromImageSkia(*icon));
+                               GetFaviconForNode(GetBookmarkModel(), node));
       child_menu_item->GetViewAccessibility().OverrideDescription(
           url_formatter::FormatUrl(
               node->url(), url_formatter::kFormatUrlOmitDefaults,

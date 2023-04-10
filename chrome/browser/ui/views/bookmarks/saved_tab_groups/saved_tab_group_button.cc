@@ -363,7 +363,8 @@ SavedTabGroupButton::CreateDialogModelForContextMenu() {
     const ui::ImageModel& image =
         tab.favicon().has_value()
             ? ui::ImageModel::FromImage(tab.favicon().value())
-            : ui::ImageModel::FromImage(favicon::GetDefaultFavicon());
+            : favicon::GetDefaultFaviconModel(
+                  GetTabGroupBookmarkColorId(tab_group_color_id_));
     const std::u16string title =
         tab.title().empty() ? base::UTF8ToUTF16(tab.url().spec()) : tab.title();
     dialog_model.AddMenuItem(

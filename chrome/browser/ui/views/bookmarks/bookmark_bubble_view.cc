@@ -49,6 +49,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/image_model.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -82,18 +83,21 @@ void FetchImageForUrl(const GURL& url, Profile* profile) {
 }
 
 gfx::ImageSkia GetFaviconForWebContents(content::WebContents* web_contents) {
+  const auto& color_provider = web_contents->GetColorProvider();
   const gfx::Image url_favicon =
       favicon::TabFaviconFromWebContents(web_contents);
-  const gfx::Image favicon =
-      url_favicon.IsEmpty() ? favicon::GetDefaultFavicon() : url_favicon;
-  const ui::NativeTheme* native_theme =
-      ui::NativeTheme::GetInstanceForNativeUi();
-  const bool is_dark = native_theme && native_theme->ShouldUseDarkColors();
+  const gfx::ImageSkia favicon =
+      url_favicon.IsEmpty()
+          ? favicon::GetDefaultFaviconModel(ui::kColorBubbleBackground)
+                .Rasterize(&color_provider)
+          : url_favicon.AsImageSkia();
+  const bool is_dark =
+      color_utils::IsDark(color_provider.GetColor(ui::kColorBubbleBackground));
   constexpr int kMainImageDimension = 112;
   gfx::ImageSkia centered_favicon =
       gfx::ImageSkiaOperations::CreateImageWithRoundRectBackground(
           kMainImageDimension, 0, is_dark ? SK_ColorBLACK : SK_ColorWHITE,
-          favicon.AsImageSkia());
+          favicon);
   return centered_favicon;
 }
 }  // namespace

@@ -1339,7 +1339,7 @@ void BookmarkBarView::WriteDragDataForView(View* sender,
   if (node->is_url()) {
     const gfx::Image& image = bookmark_model_->GetFavicon(node);
     icon = image.IsEmpty()
-               ? ui::ImageModel::FromImage(favicon::GetDefaultFavicon())
+               ? favicon::GetDefaultFaviconModel(kColorBookmarkBarBackground)
                : ui::ImageModel::FromImage(image);
   } else {
     icon = chrome::GetBookmarkFolderIcon(
@@ -1682,8 +1682,11 @@ void BookmarkBarView::ConfigureButton(const BookmarkNode* node,
     // Themify chrome:// favicons and the default one. This is similar to
     // code in the tabstrip.
     bool themify_icon = node->url().SchemeIs(content::kChromeUIScheme);
-    gfx::ImageSkia favicon = bookmark_model_->GetFavicon(node).AsImageSkia();
-    if (favicon.isNull()) {
+
+    // TODO(crbug.com/1099602): BookmarkModel::GetFavicon should be updated to
+    // support ImageModel.
+    auto favicon = ui::ImageModel::FromImage(bookmark_model_->GetFavicon(node));
+    if (favicon.IsEmpty()) {
       if (ui::TouchUiController::Get()->touch_ui() && cp) {
         // This favicon currently does not match the default favicon icon used
         // elsewhere in the codebase.
@@ -1694,9 +1697,10 @@ void BookmarkBarView::ConfigureButton(const BookmarkNode* node,
         // the alpha channel matters.
         const gfx::ImageSkia mask =
             gfx::CreateVectorIcon(kDefaultTouchFaviconMaskIcon, SK_ColorWHITE);
-        favicon = gfx::ImageSkiaOperations::CreateMaskedImage(icon, mask);
+        favicon = ui::ImageModel::FromImageSkia(
+            gfx::ImageSkiaOperations::CreateMaskedImage(icon, mask));
       } else {
-        favicon = favicon::GetDefaultFavicon().AsImageSkia();
+        favicon = favicon::GetDefaultFaviconModel(kColorBookmarkBarBackground);
       }
       themify_icon = true;
     }
@@ -1704,13 +1708,13 @@ void BookmarkBarView::ConfigureButton(const BookmarkNode* node,
     if (themify_icon && cp) {
       SkColor favicon_color = cp->GetColor(kColorBookmarkFavicon);
       if (favicon_color != SK_ColorTRANSPARENT) {
-        favicon =
-            gfx::ImageSkiaOperations::CreateColorMask(favicon, favicon_color);
+        favicon = ui::ImageModel::FromImageSkia(
+            gfx::ImageSkiaOperations::CreateColorMask(favicon.Rasterize(cp),
+                                                      favicon_color));
       }
     }
 
-    button->SetImageModel(views::Button::STATE_NORMAL,
-                          ui::ImageModel::FromImageSkia(favicon));
+    button->SetImageModel(views::Button::STATE_NORMAL, std::move(favicon));
   }
 
   button->SetMaxSize(gfx::Size(bookmark_button_util::kMaxButtonWidth, 0));
