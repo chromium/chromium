@@ -2685,6 +2685,39 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER_NON_SYNCING" desc="Disclaimer telling non-syncing users what will happen to their passwords">
         Your password will be saved to your device.
       </message>
+      <message name="IDS_IOS_SET_UP_LIST_ALL_SET_DESCRIPTION" desc="Description for the Set Up List item that tells the user they have completed all tasks.">
+        You'll now get the most out of Chrome on your device.
+      </message>
+      <message name="IDS_IOS_SET_UP_LIST_ALL_SET_TITLE" desc="Title for the Set Up List item that tells the user they have completed all tasks.">
+        You're All Set
+      </message>
+      <message name="IDS_IOS_SET_UP_LIST_AUTOFILL_DESCRIPTION" desc="Description for the Set Up List item that encourages the user to set up Chrome's autofill settings.">
+        Access your Chrome passwords and more across other apps on this device.
+      </message>
+      <message name="IDS_IOS_SET_UP_LIST_AUTOFILL_TITLE" desc="Title for the Set Up List item that encourages the user to set up Chrome's autofill settings.">
+        Use Chrome for Autofill
+      </message>
+      <message name="IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_DESCRIPTION" desc="Description for the Set Up List item that encourages the user to set Chrome as their default browser.">
+        Use Chrome anytime you tap links in messages, documents, and other apps.
+      </message>
+      <message name="IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_TITLE" desc="Title for the Set Up List item that encourages the user to set Chrome as their default browser.">
+        Use Chrome by Default
+      </message>
+      <message name="IDS_IOS_SET_UP_LIST_SETTINGS_TURN_OFF" desc="Title for the item to turn off the Set Up List, in the Set Up List Settings action sheet.">
+        Turn off
+      </message>
+      <message name="IDS_IOS_SET_UP_LIST_SETTINGS_CANCEL" desc="Title for the item to cancel opening the Set Up List Settings action sheet.">
+        Cancel
+      </message>
+      <message name="IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_DESCRIPTION" desc="Description for the Set Up List item that encourages the user to sign in and set up syncing.">
+        Sign in with your Google Account to sync your passwords, history, and more.
+      </message>
+      <message name="IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_TITLE" desc="Title for the Set Up List item that encourages the user to sign in and set up syncing.">
+        Sign in and Sync
+      </message>
+      <message name="IDS_IOS_SET_UP_LIST_TITLE" desc="Title for the Set Up List - a list of tasks the user might want to complete when first using Chrome.">
+        Get the most out of Chrome
+      </message>
       <message name="IDS_IOS_LEAK_CHECK_SWITCH" desc="Title for the switch toggling whether Chrome should check that entered credentials have been part of a leak.">
         Warn You if Passwords Are Exposed in a Data Breach
       </message>
