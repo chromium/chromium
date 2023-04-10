@@ -4,37 +4,32 @@
       "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "LayoutNGTextControlSingleLine INPUT id='root'",
-      "position": [-1, -1],
-      "bounds": [74, 24],
-      "contentsOpaqueForText": true,
       "backgroundColor": "#FFFFFF",
       "invalidations": [
-        [0, 0, 74, 24]
-      ],
+        [7, 7, 67, 24]
+      ]
+    },
+    {
+      "name": "LayoutNGTextControlInnerEditor DIV",
+      "bounds": [57, 16],
+      "drawsContent": false,
       "transform": 1
     },
     {
-      "name": "Caret",
-      "position": [63, 0],
-      "bounds": [1, 16],
-      "contentsOpaque": true,
+      "name": "LayoutNGTextControlInnerEditor DIV",
+      "bounds": [74, 16],
       "invalidations": [
-        [0, 0, 1, 16]
+        [0, 0, 74, 16]
       ],
       "transform": 2
     },
     {
-      "name": "LayoutNGTextControlSingleLine INPUT id='root'",
-      "position": [-1, -1],
-      "bounds": [74, 24],
+      "name": "LayoutNGTextControlSingleLine INPUT id='target'",
+      "position": [7, 7],
+      "bounds": [67, 24],
       "invalidations": [
-        [0, 0, 74, 24]
-      ],
-      "transform": 1
+        [0, 0, 67, 24]
+      ]
     }
   ],
   "transforms": [
@@ -44,7 +39,7 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [8, 8, 0, 1]
+        [12, 11, 0, 1]
       ]
     },
     {
@@ -54,7 +49,7 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [4, 3, 0, 1]
+        [-17, 0, 0, 1]
       ]
     }
   ]

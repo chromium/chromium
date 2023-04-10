@@ -214,10 +214,15 @@ bool PaintArtifactCompositor::ComputeNeedsCompositedScrolling(
       !scroll_translation.ScrollNode()->UserScrollableVertical()) {
     return false;
   }
-  if (lcd_text_preference_ != LCDTextPreference::kStronglyPreferred) {
+  auto preference =
+      scroll_translation.ScrollNode()->GetCompositedScrollingPreference();
+  if (preference == CompositedScrollingPreference::kNotPreferred) {
+    return false;
+  }
+  if (preference == CompositedScrollingPreference::kPreferred) {
     return true;
   }
-  if (scroll_translation.ScrollNode()->PrefersCompositedScrolling()) {
+  if (lcd_text_preference_ != LCDTextPreference::kStronglyPreferred) {
     return true;
   }
   // Find the chunk containing the scrolling background which normally defines

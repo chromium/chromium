@@ -448,6 +448,10 @@ class CORE_EXPORT PaintLayerScrollableArea final
   }
 #endif
 
+  // TODO(crbug.com/1414885): Move this function into
+  // paint_property_tree_builder.cc as a local function.
+  bool PrefersNonCompositedScrolling() const;
+
   gfx::Rect ResizerCornerRect(ResizerHitTestType) const;
 
   PaintLayer* Layer() const override;
