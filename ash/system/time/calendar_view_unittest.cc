@@ -2129,13 +2129,6 @@ class CalendarViewWithMessageCenterTest : public AshTestBase {
       const CalendarViewWithMessageCenterTest&) = delete;
   ~CalendarViewWithMessageCenterTest() override = default;
 
-  void SetUp() override {
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatures({features::kNotificationsRefresh},
-                                           {});
-    AshTestBase::SetUp();
-  }
-
   views::FocusManager* message_center_focus_manager() {
     return GetPrimaryUnifiedSystemTray()
         ->message_center_bubble()
@@ -2195,9 +2188,6 @@ class CalendarViewWithMessageCenterTest : public AshTestBase {
     ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
     generator.PressKey(ui::KeyboardCode::VKEY_TAB, ui::EF_SHIFT_DOWN);
   }
-
- private:
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
 // Tests `Tab` / `Shift+Tab` navigation within two bubbles.

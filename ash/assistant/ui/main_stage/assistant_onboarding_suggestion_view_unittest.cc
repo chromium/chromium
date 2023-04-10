@@ -134,9 +134,7 @@ TEST_F(AssistantOnboardingSuggestionViewTest, DarkAndLightTheme) {
 
 TEST_F(AssistantOnboardingSuggestionViewTest, DarkAndLightModeFlagOff) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{}, /*disabled_features=*/{
-          chromeos::features::kDarkLightMode, features::kNotificationsRefresh});
+  scoped_feature_list.InitAndDisableFeature(chromeos::features::kDarkLightMode);
 
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
 

@@ -4,7 +4,6 @@
 
 #include "ash/system/message_center/metrics_utils.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/notification_center/notification_center_view.h"
@@ -12,7 +11,6 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
@@ -126,10 +124,7 @@ namespace ash {
 class MessageCenterMetricsUtilsTest : public AshTestBase {
  public:
   MessageCenterMetricsUtilsTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitAndEnableFeature(features::kNotificationsRefresh);
-  }
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   MessageCenterMetricsUtilsTest(const MessageCenterMetricsUtilsTest&) = delete;
   MessageCenterMetricsUtilsTest& operator=(
       const MessageCenterMetricsUtilsTest&) = delete;
@@ -216,7 +211,6 @@ class MessageCenterMetricsUtilsTest : public AshTestBase {
 
  private:
   scoped_refptr<message_center::NotificationDelegate> test_delegate_;
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 
   // Used to create test notification. This represents the current available
   // number that we can use to create the next test notification. This id will

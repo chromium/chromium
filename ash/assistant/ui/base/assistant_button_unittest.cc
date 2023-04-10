@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "ash/assistant/ui/base/assistant_button.h"
+
 #include <memory>
 
 #include "ash/assistant/model/assistant_ui_model.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -140,10 +140,7 @@ TEST_F(AssistantButtonTest, IconColorType) {
 
 TEST_F(AssistantButtonTest, FocusAndHoverColor) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kNotificationsRefresh,
-                             chromeos::features::kDarkLightMode});
+  scoped_feature_list.InitAndDisableFeature(chromeos::features::kDarkLightMode);
 
   AssistantButton::InitParams params;
   params.size_in_dip = kSizeInDip;
