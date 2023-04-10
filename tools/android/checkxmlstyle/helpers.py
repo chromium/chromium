@@ -19,7 +19,7 @@ VALID_COLOR_PATTERN = re.compile(
     r'^#([0-9A-F][0-9A-E]|[0-9A-E][0-9A-F])?[0-9A-F]{6}$')
 XML_APP_NAMESPACE_PATTERN = re.compile(
     r'xmlns:(\w+)="http://schemas.android.com/apk/res-auto"')
-TEXT_APPEARANCE_STYLE_PATTERN = re.compile(r'^TextAppearance\.')
+TEXT_APPEARANCE_STYLE_PATTERN = re.compile(r'^TextAppearance\.?')
 INCLUDED_PATHS = [
     r'^(chrome|ui|components|content)[\\/](.*[\\/])?java[\\/]res.+\.xml$'
 ]
