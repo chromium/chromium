@@ -138,6 +138,9 @@ class AutocompleteResult {
   // Called after matches are deduped and sorted and before they are culled.
   void GroupAndDemoteMatchesInGroups();
 
+  // Filter and remove OmniboxActions according to Platform-specific rules.
+  void TrimOmniboxActions();
+
   // Sets |action| in matches that have Pedal-triggering text.
   void AttachPedalsToMatches(const AutocompleteInput& input,
                              const AutocompleteProviderClient& client);

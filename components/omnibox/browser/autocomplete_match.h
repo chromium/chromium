@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "build/build_config.h"
+#include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/buildflags.h"
@@ -503,6 +504,11 @@ struct AutocompleteMatch {
   // providers.
   bool IsOnDeviceSearchSuggestion() const;
 
+  // Filter OmniboxActions based on the supplied qualifiers.
+  // The order of the supplied qualifiers determines the preference.
+  void FilterOmniboxActions(
+      const std::vector<OmniboxActionId>& allowed_action_ids);
+
   // Returns whether the autocompletion is trivial enough that we consider it
   // an autocompletion for which the omnibox autocompletion code did not add
   // any value.
@@ -583,11 +589,8 @@ struct AutocompleteMatch {
   // need to be selected. If no such action is found, returns nullptr.
   template <typename Predicate>
   OmniboxAction* GetActionWhere(Predicate predicate) const {
-    auto it = std::find_if(actions.begin(), actions.end(), predicate);
-    if (it == actions.end()) {
-      return nullptr;
-    }
-    return it->get();
+    auto it = base::ranges::find_if(actions, std::move(predicate));
+    return it != actions.end() ? it->get() : nullptr;
   }
 
   // The provider of this match, used to remember which provider the user had

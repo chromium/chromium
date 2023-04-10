@@ -50,6 +50,18 @@ using metrics::OmniboxEventProto;
 
 namespace {
 
+class FakeOmniboxAction : public OmniboxAction {
+ public:
+  explicit FakeOmniboxAction(OmniboxActionId id)
+      : OmniboxAction(LabelStrings(u"", u"", u"", u""), GURL{}, false),
+        id_(id) {}
+  OmniboxActionId ActionId() const override { return id_; }
+
+ private:
+  ~FakeOmniboxAction() override = default;
+  OmniboxActionId id_{};
+};
+
 struct AutocompleteMatchTestData {
   std::string destination_url;
   AutocompleteMatch::Type type;
@@ -2884,6 +2896,130 @@ TEST_F(AutocompleteResultTest, Android_InspireMe) {
         {4, 1, 460, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
     }};
     AssertResultMatches(result, expected_data.begin(), expected_data.size());
+  }
+}
+
+TEST_F(AutocompleteResultTest, Android_TrimOmniboxActions) {
+  scoped_refptr<FakeAutocompleteProvider> provider =
+      new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_SEARCH);
+  const OmniboxAction::LabelStrings dummy_labels(u"", u"", u"", u"");
+
+  using OmniboxActionId::ACTION_IN_SUGGEST;
+  using OmniboxActionId::HISTORY_CLUSTERS;
+  using OmniboxActionId::PEDAL;
+  using OmniboxActionId::UNKNOWN;
+  const std::set<OmniboxActionId> all_actions_to_test{ACTION_IN_SUGGEST,
+                                                      HISTORY_CLUSTERS, PEDAL};
+
+  struct FilterOmniboxActionsTestData {
+    std::string test_name;
+    std::vector<std::vector<OmniboxActionId>> input_matches_and_actions;
+    std::vector<std::vector<OmniboxActionId>> result_matches_and_actions;
+  } test_cases[]{
+      {"No actions attached to matches", {{}, {}, {}, {}}, {{}, {}, {}, {}}},
+      {"Pedals shown only in top three slots",
+       {{PEDAL}, {PEDAL}, {PEDAL}, {PEDAL}},
+       {{PEDAL}, {PEDAL}, {PEDAL}, {}}},
+      {"Actions are shown only in top two slots",
+       {{ACTION_IN_SUGGEST},
+        {ACTION_IN_SUGGEST},
+        {ACTION_IN_SUGGEST},
+        {ACTION_IN_SUGGEST}},
+       {{ACTION_IN_SUGGEST}, {ACTION_IN_SUGGEST}, {}, {}}},
+      {"History Clusters are allowed everywhere",
+       {{HISTORY_CLUSTERS},
+        {HISTORY_CLUSTERS},
+        {HISTORY_CLUSTERS},
+        {HISTORY_CLUSTERS}},
+       {{HISTORY_CLUSTERS},
+        {HISTORY_CLUSTERS},
+        {HISTORY_CLUSTERS},
+        {HISTORY_CLUSTERS}}},
+      {"Actions are promoted over Pedals; positions dictate preference",
+       {{ACTION_IN_SUGGEST, PEDAL},
+        {ACTION_IN_SUGGEST, PEDAL},
+        {ACTION_IN_SUGGEST, PEDAL},
+        {ACTION_IN_SUGGEST, PEDAL}},
+       {{ACTION_IN_SUGGEST}, {ACTION_IN_SUGGEST}, {PEDAL}, {}}},
+      {"Actions are promoted over History clusters; positions dictate "
+       "preference",
+       {{ACTION_IN_SUGGEST, PEDAL},
+        {ACTION_IN_SUGGEST, PEDAL},
+        {ACTION_IN_SUGGEST, PEDAL},
+        {ACTION_IN_SUGGEST, PEDAL}},
+       {{ACTION_IN_SUGGEST}, {ACTION_IN_SUGGEST}, {PEDAL}, {}}},
+      {"Actions are promoted over History clusters; positions dictate "
+       "preference",
+       {{ACTION_IN_SUGGEST, HISTORY_CLUSTERS},
+        {ACTION_IN_SUGGEST, HISTORY_CLUSTERS},
+        {ACTION_IN_SUGGEST, HISTORY_CLUSTERS},
+        {ACTION_IN_SUGGEST, HISTORY_CLUSTERS}},
+       {{ACTION_IN_SUGGEST},
+        {ACTION_IN_SUGGEST},
+        {HISTORY_CLUSTERS},
+        {HISTORY_CLUSTERS}}},
+      {"History clusters are promoted over Pedals; positions dictate "
+       "preference",
+       {{PEDAL, HISTORY_CLUSTERS},
+        {PEDAL, HISTORY_CLUSTERS},
+        {PEDAL, HISTORY_CLUSTERS},
+        {PEDAL, HISTORY_CLUSTERS}},
+       {{HISTORY_CLUSTERS},
+        {HISTORY_CLUSTERS},
+        {HISTORY_CLUSTERS},
+        {HISTORY_CLUSTERS}}},
+      {"All variants for every position leaves only one appropriate variant",
+       {{PEDAL, ACTION_IN_SUGGEST, HISTORY_CLUSTERS},
+        {PEDAL, ACTION_IN_SUGGEST, HISTORY_CLUSTERS},
+        {PEDAL, ACTION_IN_SUGGEST, HISTORY_CLUSTERS},
+        {PEDAL, ACTION_IN_SUGGEST, HISTORY_CLUSTERS}},
+       {{ACTION_IN_SUGGEST},
+        {ACTION_IN_SUGGEST},
+        {HISTORY_CLUSTERS},
+        {HISTORY_CLUSTERS}}},
+  };
+
+  // Crete matches following the `input_matches_and_actions` input.
+  // The input specifies what type of OMNIBOX_ACTION should be added to every
+  // individual match.
+  // Once done, run the trimming and verify that the output contains exactly the
+  // matches we want to see.
+  auto run_test = [&](const FilterOmniboxActionsTestData& data) {
+    // Create AutocompleteResult from the test data
+    AutocompleteResult result;
+    for (const auto& actions : data.input_matches_and_actions) {
+      AutocompleteMatch match(provider.get(), 1, false,
+                              AutocompleteMatchType::SEARCH_SUGGEST_ENTITY);
+      for (auto& action_id : actions) {
+        match.actions.push_back(
+            base::MakeRefCounted<FakeOmniboxAction>(action_id));
+      }
+      result.AppendMatches({std::move(match)});
+    }
+
+    // Run the trimmer.
+    result.TrimOmniboxActions();
+
+    // Check results.
+    EXPECT_EQ(result.size(), data.result_matches_and_actions.size())
+        << "while testing variant: " << data.test_name;
+
+    for (size_t index = 0u; index < result.size(); ++index) {
+      const auto* match = result.match_at(index);
+      const auto& expected_actions = data.result_matches_and_actions[index];
+      EXPECT_EQ(match->actions.size(), expected_actions.size());
+      for (size_t action_index = 0u; action_index < expected_actions.size();
+           ++action_index) {
+        EXPECT_EQ(expected_actions[action_index],
+                  match->actions[action_index]->ActionId())
+            << "match " << index << "action " << action_index
+            << " while testing variant: " << data.test_name;
+      }
+    }
+  };
+
+  for (const auto& test_case : test_cases) {
+    run_test(test_case);
   }
 }
 #endif  // BUILDFLAG(IS_ANDROID)

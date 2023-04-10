@@ -10,14 +10,30 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/omnibox/browser/actions/omnibox_action.h"
+#include "components/omnibox/browser/actions/omnibox_pedal.h"
+#include "components/omnibox/browser/actions/omnibox_pedal_concepts.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/fake_autocomplete_provider.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace {
+
+class FakeOmniboxAction : public OmniboxAction {
+ public:
+  explicit FakeOmniboxAction(OmniboxActionId id)
+      : OmniboxAction(LabelStrings(u"", u"", u"", u""), GURL{}, false),
+        id_(id) {}
+  OmniboxActionId ActionId() const override { return id_; }
+
+ private:
+  ~FakeOmniboxAction() override = default;
+  OmniboxActionId id_{};
+};
 
 void TestSetAllowedToBeDefault(int caseI,
                                const std::string input_text,
@@ -996,4 +1012,98 @@ TEST_F(AutocompleteMatchTest, BetterDuplicate) {
   EXPECT_FALSE(
       AutocompleteMatch::BetterDuplicate(create_match(history_provider, 500),
                                          create_match(history_provider, 510)));
+}
+
+TEST_F(AutocompleteMatchTest, FilterOmniboxActions) {
+  scoped_refptr<FakeAutocompleteProvider> provider =
+      new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_SEARCH);
+  const OmniboxAction::LabelStrings dummy_labels(u"", u"", u"", u"");
+
+  using OmniboxActionId::ACTION_IN_SUGGEST;
+  using OmniboxActionId::HISTORY_CLUSTERS;
+  using OmniboxActionId::PEDAL;
+
+  struct FilterOmniboxActionsTestData {
+    std::string test_name;
+    // This is what will get added to the AutocompleteMatch.
+    std::vector<OmniboxActionId> actions_attached_to_match;
+    // This is the filter. Order of elements specifies the preference.
+    std::vector<OmniboxActionId> allowed_actions;
+    // This is the expected result.
+    std::vector<OmniboxActionId> resulting_actions;
+  } test_cases[]{
+      {"have nothing, want nothing", {}, {}, {}},
+      {"have nothing, want Pedals", {}, {PEDAL}, {}},
+      {"have Pedals, want nothing", {PEDAL}, {}, {}},
+      {"have Pedals, want Pedals", {PEDAL}, {PEDAL}, {PEDAL}},
+      {"have Pedals, want History Clusters", {PEDAL}, {HISTORY_CLUSTERS}, {}},
+      {"have Pedals, want History Clusters, then Pedals",
+       {PEDAL},
+       {HISTORY_CLUSTERS, PEDAL},
+       {PEDAL}},
+      {"have Pedals and History Clusters, want History Clusters, then Pedals",
+       {PEDAL, HISTORY_CLUSTERS},
+       {HISTORY_CLUSTERS, PEDAL},
+       {HISTORY_CLUSTERS}},
+      {"have Pedals and History Clusters, want Pedals, then History Clusters",
+       {PEDAL, HISTORY_CLUSTERS},
+       {PEDAL, HISTORY_CLUSTERS},
+       {PEDAL}},
+      {"have Pedals and History Clusters, want Actions in Suggest",
+       {PEDAL, HISTORY_CLUSTERS},
+       {ACTION_IN_SUGGEST},
+       {}},
+      {"have Pedals and History Clusters, want Actions in Suggest, then Pedals",
+       {PEDAL, HISTORY_CLUSTERS},
+       {ACTION_IN_SUGGEST, PEDAL},
+       {PEDAL}},
+      {"have Pedals, Actions and History Clusters, want Pedals",
+       {ACTION_IN_SUGGEST, PEDAL, HISTORY_CLUSTERS},
+       {PEDAL},
+       {PEDAL}},
+      {"have multiple, want Actions, then History Clusters, then Pedals",
+       // Mix: 4 pedals, 3 history clusters, 2 actions.
+       {PEDAL, ACTION_IN_SUGGEST, HISTORY_CLUSTERS, PEDAL, ACTION_IN_SUGGEST,
+        HISTORY_CLUSTERS, PEDAL, HISTORY_CLUSTERS, PEDAL},
+       {ACTION_IN_SUGGEST, HISTORY_CLUSTERS, PEDAL},
+       {ACTION_IN_SUGGEST, ACTION_IN_SUGGEST}},
+      {"have multiple, want History Clusters, then Actions, then Pedals",
+       // Mix: 4 pedals, 3 history clusters, 2 actions.
+       {PEDAL, ACTION_IN_SUGGEST, HISTORY_CLUSTERS, PEDAL, ACTION_IN_SUGGEST,
+        HISTORY_CLUSTERS, PEDAL, HISTORY_CLUSTERS, PEDAL},
+       {HISTORY_CLUSTERS, ACTION_IN_SUGGEST, PEDAL},
+       {HISTORY_CLUSTERS, HISTORY_CLUSTERS, HISTORY_CLUSTERS}},
+      {"have multiple, want Pedals, then History Clusters, then Actions",
+       // Mix: 4 pedals, 3 history clusters, 2 actions.
+       {PEDAL, ACTION_IN_SUGGEST, HISTORY_CLUSTERS, PEDAL, ACTION_IN_SUGGEST,
+        HISTORY_CLUSTERS, PEDAL, HISTORY_CLUSTERS, PEDAL},
+       {PEDAL, HISTORY_CLUSTERS, ACTION_IN_SUGGEST},
+       {PEDAL, PEDAL, PEDAL, PEDAL}},
+      {"have multiple, want nothing",
+       // Mix: 4 pedals, 3 history clusters, 2 actions.
+       {PEDAL, ACTION_IN_SUGGEST, HISTORY_CLUSTERS, PEDAL, ACTION_IN_SUGGEST,
+        HISTORY_CLUSTERS, PEDAL, HISTORY_CLUSTERS, PEDAL},
+       {},
+       {}}};
+
+  for (const auto& test_case : test_cases) {
+    AutocompleteMatch match(provider.get(), 1, false,
+                            AutocompleteMatchType::SEARCH_SUGGEST_ENTITY);
+
+    // Populate match with requested actions.
+    for (auto& action_id : test_case.actions_attached_to_match) {
+      match.actions.push_back(
+          base::MakeRefCounted<FakeOmniboxAction>(action_id));
+    }
+
+    match.FilterOmniboxActions(test_case.allowed_actions);
+    EXPECT_EQ(match.actions.size(), test_case.resulting_actions.size())
+        << "while testing variant: " << test_case.test_name;
+
+    for (size_t index = 0u; index < match.actions.size(); ++index) {
+      EXPECT_EQ(match.actions[index]->ActionId(),
+                test_case.resulting_actions[index])
+          << "while testing variant: " << test_case.test_name;
+    }
+  }
 }

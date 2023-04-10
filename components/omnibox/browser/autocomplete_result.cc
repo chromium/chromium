@@ -25,6 +25,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "components/history_clusters/core/config.h"
+#include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/autocomplete_grouper_sections.h"
@@ -525,6 +526,34 @@ void AutocompleteResult::SortAndCull(
         << debug_info;
   }
 #endif
+
+  if constexpr (is_android) {
+    TrimOmniboxActions();
+  }
+}
+
+void AutocompleteResult::TrimOmniboxActions() {
+  // Platform rules:
+  // Android:
+  // - First two positions allow all types of OmniboxActionId
+  // - Third slot permits only PEDALs and HISTORY_CLUSTERS.
+  // - Slots 4 and beyond permit only HISTORY_CLUSTERS.
+  // - In every case, ACTION_IN_SUGGEST is preferred over HISTORY_CLUSTERS
+  // - In every case, HISTORY_CLUSTERS is preferred over PEDALs.
+  std::vector<OmniboxActionId> include_all{OmniboxActionId::ACTION_IN_SUGGEST,
+                                           OmniboxActionId::HISTORY_CLUSTERS,
+                                           OmniboxActionId::PEDAL};
+  std::vector<OmniboxActionId> include_at_most_pedals{
+      OmniboxActionId::HISTORY_CLUSTERS, OmniboxActionId::PEDAL};
+  std::vector<OmniboxActionId> include_at_most_history_clusters{
+      OmniboxActionId::HISTORY_CLUSTERS};
+
+  for (size_t index = 0u; index < matches_.size(); ++index) {
+    matches_[index].FilterOmniboxActions(
+        index < 2   ? include_all
+        : index < 3 ? include_at_most_pedals
+                    : include_at_most_history_clusters);
+  }
 }
 
 void AutocompleteResult::GroupAndDemoteMatchesInGroups() {
