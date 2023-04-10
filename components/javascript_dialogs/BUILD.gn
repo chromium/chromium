@@ -10,6 +10,7 @@ static_library("javascript_dialogs") {
     "app_modal_dialog_controller.h",
     "app_modal_dialog_manager.cc",
     "app_modal_dialog_manager.h",
+    "app_modal_dialog_manager_delegate.h",
     "app_modal_dialog_queue.cc",
     "app_modal_dialog_queue.h",
     "app_modal_dialog_view.h",

@@ -115,6 +115,8 @@ static_library("ui") {
     "interventions/intervention_delegate.h",
     "interventions/intervention_infobar_delegate.cc",
     "interventions/intervention_infobar_delegate.h",
+    "javascript_dialogs/chrome_app_modal_dialog_manager_delegate.cc",
+    "javascript_dialogs/chrome_app_modal_dialog_manager_delegate.h",
     "javascript_dialogs/chrome_javascript_app_modal_dialog_view_factory.h",
     "lens/lens_core_tab_side_panel_helper.h",
     "login/login_handler.cc",

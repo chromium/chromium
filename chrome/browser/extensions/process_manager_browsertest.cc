@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
+#include "chrome/browser/ui/javascript_dialogs/chrome_javascript_app_modal_dialog_view_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
@@ -55,6 +57,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
@@ -1788,12 +1791,16 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, HostedAppAlerts) {
   EXPECT_EQ(hosted_app_url, tab->GetLastCommittedURL());
   ProcessManager* pm = ProcessManager::Get(profile());
   EXPECT_EQ(extension, pm->GetExtensionForWebContents(tab));
+  SetChromeAppModalDialogManagerDelegate();
   javascript_dialogs::AppModalDialogManager* js_dialog_manager =
       javascript_dialogs::AppModalDialogManager::GetInstance();
-  std::u16string hosted_app_title = u"hosted_app";
-  EXPECT_EQ(hosted_app_title,
-            js_dialog_manager->GetTitle(
-                tab, tab->GetPrimaryMainFrame()->GetLastCommittedOrigin()));
+
+  EXPECT_EQ(
+      base::StrCat({u"localhost:",
+                    base::NumberToString16(embedded_test_server()->port()),
+                    u" says"}),
+      js_dialog_manager->GetTitle(
+          tab, tab->GetPrimaryMainFrame()->GetLastCommittedOrigin()));
 
   GURL web_url = embedded_test_server()->GetURL("/title1.html");
   ASSERT_TRUE(content::ExecuteScript(
@@ -1805,7 +1812,9 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, HostedAppAlerts) {
   EXPECT_EQ(web_url, new_tab->GetLastCommittedURL());
   EXPECT_EQ(nullptr, pm->GetExtensionForWebContents(new_tab));
   EXPECT_NE(
-      hosted_app_title,
+      base::StrCat({u"localhost:",
+                    base::NumberToString16(embedded_test_server()->port()),
+                    u" says"}),
       js_dialog_manager->GetTitle(
           new_tab, new_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin()));
 }

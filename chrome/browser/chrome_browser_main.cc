@@ -1195,7 +1195,12 @@ void ChromeBrowserMainParts::PreProfileInit() {
     InstallChromeJavaScriptAppModalDialogViewCocoaFactory();
 #else
   InstallChromeJavaScriptAppModalDialogViewFactory();
-#endif
+#endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  SetChromeAppModalDialogManagerDelegate();
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
   media_router::ChromeMediaRouterFactory::DoPlatformInit();
 }
 

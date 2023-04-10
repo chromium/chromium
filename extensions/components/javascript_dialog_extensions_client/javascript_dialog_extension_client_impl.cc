@@ -12,7 +12,6 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/extension.h"
 #include "ui/gfx/native_widget_types.h"
-#include "url/origin.h"
 
 namespace javascript_dialog_extensions_client {
 namespace {
@@ -67,18 +66,6 @@ class JavaScriptDialogExtensionsClientImpl
       pm->DecrementLazyKeepaliveCount(
           extension, extensions::Activity::MODAL_DIALOG,
           web_contents->GetLastCommittedURL().spec());
-  }
-  bool GetExtensionName(content::WebContents* web_contents,
-                        const url::Origin& alerting_frame_origin,
-                        std::string* name_out) override {
-    const Extension* extension = GetExtensionForWebContents(web_contents);
-    if (extension &&
-        alerting_frame_origin.IsSameOriginWith(
-            web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin())) {
-      *name_out = extension->name();
-      return true;
-    }
-    return false;
   }
 };
 
