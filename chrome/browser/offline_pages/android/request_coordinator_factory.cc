@@ -34,6 +34,8 @@ class NetworkQualityTracker;
 
 namespace offline_pages {
 
+namespace {
+
 class ActiveTabInfo : public RequestCoordinator::ActiveTabInfo {
  public:
   explicit ActiveTabInfo(Profile* profile) : profile_(profile) {}
@@ -59,6 +61,8 @@ class ActiveTabInfo : public RequestCoordinator::ActiveTabInfo {
  private:
   raw_ptr<Profile> profile_;
 };
+
+}  // namespace
 
 RequestCoordinatorFactory::RequestCoordinatorFactory()
     : ProfileKeyedServiceFactory(
