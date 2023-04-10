@@ -111,6 +111,7 @@
         <search-result-row
             selected="[[isItemSelected(item, selectedItem)]]"
             search-result="[[item]]"
+            search-query="[[getCurrentQuery(searchResults)]]"
             last-focused="{{lastFocused}}"
             list-blurred="{{listBlurred}}"
             on-navigated-to-result-route="onNavigatedToResultRowRoute"

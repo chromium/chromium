@@ -16,6 +16,7 @@ import {LayoutStyle, MojoAcceleratorInfo, MojoSearchResult, StandardAcceleratorI
 import {getModifiersForAcceleratorInfo, getURLForSearchResult, isStandardAcceleratorInfo, isTextAcceleratorInfo} from '../shortcut_utils.js';
 import {TextAcceleratorElement} from '../text_accelerator.js';
 
+import {getBoldedDescription} from './search_result_bolding.js';
 import {getTemplate} from './search_result_row.html.js';
 
 /**
@@ -36,6 +37,11 @@ export class SearchResultRowElement extends SearchResultRowElementBase {
         type: Object,
       },
 
+      /** The query used to fetch this result. */
+      searchQuery: {
+        type: String,
+      },
+
       /** Whether the search result row is selected. */
       selected: {
         type: Boolean,
@@ -45,15 +51,11 @@ export class SearchResultRowElement extends SearchResultRowElementBase {
   }
 
   searchResult: MojoSearchResult;
+  searchQuery: string;
   selected: boolean;
 
   static get template(): HTMLTemplateElement {
     return getTemplate();
-  }
-
-  private getSearchResultDescription(): string {
-    return mojoString16ToString(
-        this.searchResult.acceleratorLayoutInfo.description);
   }
 
   private isStandardLayout(): boolean {
@@ -132,6 +134,13 @@ export class SearchResultRowElement extends SearchResultRowElementBase {
     Router.getInstance().navigateTo(getURLForSearchResult(this.searchResult));
     this.dispatchEvent(new CustomEvent(
         'navigated-to-result-route', {bubbles: true, composed: true}));
+  }
+
+  private getSearchResultDescriptionInnerHtml(): string {
+    return getBoldedDescription(
+        mojoString16ToString(
+            this.searchResult.acceleratorLayoutInfo.description),
+        this.searchQuery);
   }
 }
 

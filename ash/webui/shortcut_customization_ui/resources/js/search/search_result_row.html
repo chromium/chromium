@@ -55,6 +55,11 @@
     margin: var(--cr-toolbar-icon-margin);
     width: var(--cr-toolbar-icon-container-size);
   }
+
+  /* Bolding occurs in the JS. */
+  b {
+    color: var(--cros-text-color-primary);
+  }
 </style>
 
 <div id="searchResultRow" focus-row-container>
@@ -65,7 +70,9 @@
       on-click="onSearchResultSelected"
       on-keypress="onKeyPress"
       selectable>
-      <div id="description">[[getSearchResultDescription(searchResult)]]</div>
+      <div id="description" aria-hidden="true"
+          inner-h-t-m-l="[[getSearchResultDescriptionInnerHtml(searchResult)]]">
+      </div>
       <div id="accelerators">
         <template is="dom-if" if="[[isStandardLayout(searchResult)]]">
           <template is="dom-repeat"
