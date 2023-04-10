@@ -4,6 +4,7 @@
 
 // Use the <code>chrome.serial</code> API to read from and write to a device
 // connected to a serial port.
+[modernised_enums]
 namespace serial {
 
   dictionary DeviceInfo {

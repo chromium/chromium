@@ -79,10 +79,10 @@ TEST_F(ViscaWebcamTest, Zoom) {
 
   EXPECT_CALL(*serial_connection(), Send(ToByteVector(kGetZoomCommand), _))
       .WillOnce(RunOnceCallback<1>(sizeof(kGetZoomCommand),
-                                   api::serial::SEND_ERROR_NONE));
+                                   api::serial::SendError::kNone));
   EXPECT_CALL(*serial_connection(), StartPolling(_))
       .WillOnce(RunCallback<0>(ToByteVector(kGetZoomResponse),
-                               api::serial::RECEIVE_ERROR_NONE));
+                               api::serial::ReceiveError::kNone));
 
   {
     base::RunLoop loop;
@@ -109,10 +109,10 @@ TEST_F(ViscaWebcamTest, Zoom) {
 
   EXPECT_CALL(*serial_connection(), Send(ToByteVector(kSetZoomCommand), _))
       .WillOnce(RunOnceCallback<1>(sizeof(kSetZoomCommand),
-                                   api::serial::SEND_ERROR_NONE));
+                                   api::serial::SendError::kNone));
   EXPECT_CALL(*serial_connection(), StartPolling(_))
       .WillOnce(RunCallback<0>(ToByteVector(kSetZoomResponse),
-                               api::serial::RECEIVE_ERROR_NONE));
+                               api::serial::ReceiveError::kNone));
 
   {
     base::RunLoop loop;

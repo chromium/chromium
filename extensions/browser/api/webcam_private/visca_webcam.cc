@@ -172,9 +172,9 @@ void ViscaWebcam::Open(const std::string& extension_id,
   // Enable send and receive timeout error.
   options.receive_timeout = 3000;
   options.send_timeout = 3000;
-  options.data_bits = api::serial::DATA_BITS_EIGHT;
-  options.parity_bit = api::serial::PARITY_BIT_NO;
-  options.stop_bits = api::serial::STOP_BITS_ONE;
+  options.data_bits = api::serial::DataBits::kEight;
+  options.parity_bit = api::serial::ParityBit::kNo;
+  options.stop_bits = api::serial::StopBits::kOne;
 
   serial_connection_ = std::make_unique<SerialConnection>(extension_id);
   serial_connection_->Open(
@@ -233,7 +233,7 @@ void ViscaWebcam::OnSendCompleted(const CommandCompleteCallback& callback,
                                   uint32_t bytes_sent,
                                   api::serial::SendError error) {
   // TODO(xdai): Check |bytes_sent|?
-  if (error == api::serial::SEND_ERROR_NONE) {
+  if (error == api::serial::SendError::kNone) {
     serial_connection_->StartPolling(base::BindRepeating(
         &ViscaWebcam::OnReceiveEvent, base::Unretained(this), callback));
   } else {
@@ -246,7 +246,7 @@ void ViscaWebcam::OnReceiveEvent(const CommandCompleteCallback& callback,
                                  api::serial::ReceiveError error) {
   data_buffer_.insert(data_buffer_.end(), data.begin(), data.end());
 
-  if (error != api::serial::RECEIVE_ERROR_NONE || data_buffer_.empty()) {
+  if (error != api::serial::ReceiveError::kNone || data_buffer_.empty()) {
     // Clear |data_buffer_|.
     std::vector<char> response;
     response.swap(data_buffer_);
