@@ -1840,10 +1840,6 @@ component("platform") {
     deps += [ "//third_party/pffft" ]
   }
 
-  if (skia_use_dawn) {
-    deps += [ "//third_party/dawn/src/dawn:cpp" ]
-  }
-
   if (!is_debug && !optimize_for_size) {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]

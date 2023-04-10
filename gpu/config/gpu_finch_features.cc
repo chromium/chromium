@@ -328,9 +328,12 @@ const base::FeatureParam<std::string> kDrDcBlockListByAndroidBuildFP{
     &kEnableDrDc, "BlockListByAndroidBuildFP", ""};
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// Enable SkiaRenderer Dawn graphics backend. On Windows this will use D3D12,
-// and on Linux this will use Vulkan.
-BASE_FEATURE(kSkiaDawn, "SkiaDawn", base::FEATURE_DISABLED_BY_DEFAULT);
+// Enable Skia Graphite. This will use the Dawn backend by default, but can be
+// overridden with command line flags for testing on non-official developer
+// builds. See --skia-graphite-backend flag in gpu_switches.h.
+BASE_FEATURE(kSkiaGraphite,
+             "SkiaUseGraphite",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable GrShaderCache to use with Vulkan backend.
 BASE_FEATURE(kEnableGrShaderCacheForVulkan,

@@ -318,12 +318,10 @@ class SkiaOutputSurfaceImplOnGpu
     return !!vulkan_context_provider_ &&
            gpu_preferences_.gr_context_type == gpu::GrContextType::kVulkan;
   }
-  bool is_using_dawn() const {
-    return !!dawn_context_provider_ &&
-           gpu_preferences_.gr_context_type == gpu::GrContextType::kDawn;
-  }
 
-  bool is_using_gl() const { return !is_using_vulkan() && !is_using_dawn(); }
+  bool is_using_gl() const {
+    return gpu_preferences_.gr_context_type == gpu::GrContextType::kGL;
+  }
 
   // Helper for `CopyOutput()` method, handles the RGBA format.
   void CopyOutputRGBA(SkSurface* surface,

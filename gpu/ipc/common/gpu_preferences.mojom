@@ -36,10 +36,10 @@ enum WebGPUPowerPreference {
 
 // Corresponds to gpu::GrContextType.
 enum GrContextType {
-  kGL,
-  kVulkan,
-  kDawn,
-  kLast = kDawn,
+  kGL,  // Ganesh
+  kVulkan,  // Ganesh
+  kGraphiteDawn,
+  kGraphiteMetal,
 };
 
 // Corresponds to gpu::DawnBackendValidationLevel

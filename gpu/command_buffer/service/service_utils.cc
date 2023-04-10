@@ -183,7 +183,7 @@ GpuPreferences ParseGpuPreferences(const base::CommandLine* command_line) {
         command_line->GetSwitchValueASCII(switches::kDisableDawnFeatures), ",",
         base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   }
-  gpu_preferences.gr_context_type = ParseGrContextType();
+  gpu_preferences.gr_context_type = ParseGrContextType(command_line);
   gpu_preferences.use_vulkan = ParseVulkanImplementationName(command_line);
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -200,14 +200,27 @@ GpuPreferences ParseGpuPreferences(const base::CommandLine* command_line) {
   return gpu_preferences;
 }
 
-GrContextType ParseGrContextType() {
+GrContextType ParseGrContextType(const base::CommandLine* command_line) {
+#if BUILDFLAG(ENABLE_SKIA_GRAPHITE)
+  if (base::FeatureList::IsEnabled(features::kSkiaGraphite)) {
+    [[maybe_unused]] auto value =
+        command_line->GetSwitchValueASCII(switches::kSkiaGraphiteBackend);
 #if BUILDFLAG(SKIA_USE_DAWN)
-  if (base::FeatureList::IsEnabled(features::kSkiaDawn))
-    return GrContextType::kDawn;
-#endif
+    if (value.empty() || value == switches::kSkiaGraphiteBackendDawn) {
+      return GrContextType::kGraphiteDawn;
+    }
+#endif  // BUILDFLAG(SKIA_USE_DAWN)
+#if BUILDFLAG(SKIA_USE_METAL)
+    if (value == switches::kSkiaGraphiteBackendMetal) {
+      return GrContextType::kGraphiteMetal;
+    }
+#endif  // BUILDFLAG(SKIA_USE_METAL)
+  }
+#endif  // BUILDFLAG(ENABLE_SKIA_GRAPHITE)
 
-  if (features::IsUsingVulkan())
+  if (features::IsUsingVulkan()) {
     return GrContextType::kVulkan;
+  }
 
   return GrContextType::kGL;
 }

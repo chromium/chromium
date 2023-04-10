@@ -20,16 +20,4 @@ source_set("skia_bindings") {
     "//gpu/ipc/common:interfaces",
     "//skia",
   ]
-  if (skia_use_dawn) {
-    sources += [
-      "grcontext_for_webgpu_interface.cc",
-      "grcontext_for_webgpu_interface.h",
-    ]
-    deps += [
-      "//gpu/command_buffer/client:webgpu_interface",
-      "//third_party/dawn/src/dawn:cpp",
-      "//third_party/dawn/src/dawn:proc",
-      "//third_party/dawn/src/dawn/native",
-    ]
-  }
 }

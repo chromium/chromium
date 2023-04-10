@@ -59,10 +59,10 @@ enum class WebGPUPowerPreference : uint32_t {
 };
 
 enum class GrContextType : uint32_t {
-  kGL,
-  kVulkan,
-  kDawn,
-  kLast = kDawn,
+  kGL,      // Ganesh
+  kVulkan,  // Ganesh
+  kGraphiteDawn,
+  kGraphiteMetal,
 };
 
 enum class DawnBackendValidationLevel : uint32_t {
@@ -218,7 +218,7 @@ struct GPU_EXPORT GpuPreferences {
 
   // ===================================
   // Settings from //gpu/command_buffer/service/gpu_switches.h
-  // The type of the GrContext.
+  // The type of the GrContext or Graphite Context.
   GrContextType gr_context_type = GrContextType::kGL;
 
   // Use Vulkan for rasterization and display compositing.

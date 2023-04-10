@@ -35,9 +35,12 @@ GPU_GLES2_EXPORT GpuPreferences
 ParseGpuPreferences(const base::CommandLine* command_line);
 
 // Determine which Skia GrContext backend will be used for GPU compositing and
-// rasterization (if enabled) by checking the feature flags for Vulkan and
-// Metal. If they are not enabled, default to GL.
-GPU_GLES2_EXPORT GrContextType ParseGrContextType();
+// rasterization (if enabled) by checking the feature flags for Vulkan and/or
+// Graphite. If they are not enabled, default to GL.
+// If Graphite is enabled, the backend is Dawn by default or cn be specified
+// using the --skia-graphite-backend flag.
+GPU_GLES2_EXPORT GrContextType
+ParseGrContextType(const base::CommandLine* command_line);
 
 // Parse the value of --use-vulkan from the command line. If unspecified and
 // features::kVulkan is enabled (GrContext is going to use vulkan), default to

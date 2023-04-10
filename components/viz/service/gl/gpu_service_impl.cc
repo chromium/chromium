@@ -27,7 +27,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/viz/common/features.h"
-#include "components/viz/common/gpu/metal_context_provider.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/command_buffer/service/scheduler.h"
@@ -118,6 +117,10 @@
 
 #if BUILDFLAG(SKIA_USE_DAWN)
 #include "components/viz/common/gpu/dawn_context_provider.h"
+#endif
+
+#if BUILDFLAG(SKIA_USE_METAL)
+#include "components/viz/common/gpu/metal_context_provider.h"
 #endif
 
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
@@ -362,7 +365,7 @@ GpuServiceImpl::GpuServiceImpl(
 #endif
 
 #if BUILDFLAG(SKIA_USE_DAWN)
-  if (gpu_preferences_.gr_context_type == gpu::GrContextType::kDawn) {
+  if (gpu_preferences_.gr_context_type == gpu::GrContextType::kGraphiteDawn) {
     dawn_context_provider_ = DawnContextProvider::Create();
     if (!dawn_context_provider_) {
       DLOG(ERROR) << "Failed to create Dawn context provider.";
@@ -585,7 +588,7 @@ void GpuServiceImpl::InitializeWithHost(
       gpu_memory_buffer_factory_.get(), gpu_feature_info_,
       std::move(activity_flags), std::move(default_offscreen_surface),
       image_decode_accelerator_worker_.get(), vulkan_context_provider(),
-      metal_context_provider_.get(), dawn_context_provider());
+      metal_context_provider(), dawn_context_provider());
 
   media_gpu_channel_manager_ = std::make_unique<media::MediaGpuChannelManager>(
       gpu_channel_manager_.get());

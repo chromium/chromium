@@ -39,6 +39,7 @@
 #include "gpu/vulkan/buildflags.h"
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
+#include "skia/buildflags.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gl/gl_switches.h"
@@ -220,6 +221,13 @@ const GpuFeatureData GetGpuFeatureData(
      DisableInfo::Problem(
          "WebGPU has been disabled via blocklist or the command line."),
      false},
+#if BUILDFLAG(ENABLE_SKIA_GRAPHITE)
+    {"skia_graphite",
+     SafeGetFeatureStatus(gpu_feature_info,
+                          gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE),
+     !base::FeatureList::IsEnabled(features::kSkiaGraphite),
+     DisableInfo::NotProblem(), false},
+#endif  // BUILDFLAG(ENABLE_SKIA_GRAPHITE)
   };
   DCHECK(index < std::size(kGpuFeatureData));
   *eof = (index == std::size(kGpuFeatureData) - 1);

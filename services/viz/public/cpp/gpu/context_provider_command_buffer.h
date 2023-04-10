@@ -56,7 +56,6 @@ class WebGPUInterface;
 
 namespace skia_bindings {
 class GrContextForGLES2Interface;
-class GrContextForWebGPUInterface;
 }
 
 namespace viz {
@@ -177,10 +176,7 @@ class ContextProviderCommandBuffer
   raw_ptr<gpu::ImplementationBase> impl_;
 
   std::unique_ptr<skia_bindings::GrContextForGLES2Interface> gr_context_;
-#if BUILDFLAG(SKIA_USE_DAWN)
-  std::unique_ptr<skia_bindings::GrContextForWebGPUInterface>
-      webgpu_gr_context_;
-#endif
+
   std::unique_ptr<ContextCacheController> cache_controller_;
 
   base::ObserverList<ContextLostObserver>::Unchecked observers_;

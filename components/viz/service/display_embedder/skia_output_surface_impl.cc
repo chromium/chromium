@@ -1267,7 +1267,7 @@ GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
     int plane_index,
     uint32_t gl_texture_target,
     const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info) {
-  if (dependency_->IsUsingVulkan()) {
+  if (dependency_->gr_context_type() == gpu::GrContextType::kVulkan) {
 #if BUILDFLAG(ENABLE_VULKAN)
     if (!ycbcr_info) {
       return GrBackendFormat::MakeVk(gpu::ToVkFormat(si_format, plane_index));
@@ -1288,19 +1288,8 @@ GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
     return GrBackendFormat::MakeVk(gr_ycbcr_info);
 #endif  // BUILDFLAG(IS_LINUX)
 #endif  // BUILDFLAG(ENABLE_VULKAN)
-  } else if (dependency_->IsUsingDawn()) {
-#if BUILDFLAG(SKIA_USE_DAWN)
-    // TODO(hitawala): Add multiplanar support for Skia-Dawn.
-    wgpu::TextureFormat wgpu_format = gpu::ToDawnFormat(si_format);
-    // Return an invalid backend format if we can't find an appropriate Dawn
-    // format, otherwise Skia will end up calling Dawn CreateTexture with the
-    // wgou::TextureFormat::Undefined which can cause security issues.
-    if (wgpu_format == wgpu::TextureFormat::Undefined) {
-      return GrBackendFormat();
-    }
-    return GrBackendFormat::MakeDawn(wgpu_format);
-#endif
   } else {
+    CHECK_EQ(dependency_->gr_context_type(), gpu::GrContextType::kGL);
     // Convert internal format from GLES2 to platform GL.
     bool use_angle_rgbx_format = impl_on_gpu_->GetFeatureInfo()
                                      ->feature_flags()
@@ -1316,8 +1305,6 @@ GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
 
     return GrBackendFormat::MakeGL(texture_storage_format, gl_texture_target);
   }
-  NOTREACHED();
-  return GrBackendFormat();
 }
 
 bool SkiaOutputSurfaceImpl::IsDisplayedAsOverlayPlane() const {

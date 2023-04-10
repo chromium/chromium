@@ -344,26 +344,27 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   }
 
 #if BUILDFLAG(ENABLE_VULKAN)
-  bool is_using_vulkan() const {
-    return !!vulkan_context_provider_ &&
-           gpu_preferences_.gr_context_type == gpu::GrContextType::kVulkan;
-  }
-  VulkanContextProvider* vulkan_context_provider() {
+  VulkanContextProvider* vulkan_context_provider() const {
     return vulkan_context_provider_.get();
   }
 #else
-  bool is_using_vulkan() const { return false; }
-  VulkanContextProvider* vulkan_context_provider() { return nullptr; }
+  VulkanContextProvider* vulkan_context_provider() const { return nullptr; }
+#endif
+
+#if BUILDFLAG(SKIA_USE_METAL)
+  MetalContextProvider* metal_context_provider() const {
+    return metal_context_provider_.get();
+  }
+#else
+  MetalContextProvider* metal_context_provider() const { return nullptr; }
 #endif
 
 #if BUILDFLAG(SKIA_USE_DAWN)
-  bool is_using_dawn() const { return !!dawn_context_provider_; }
-  DawnContextProvider* dawn_context_provider() {
+  DawnContextProvider* dawn_context_provider() const {
     return dawn_context_provider_.get();
   }
 #else
-  bool is_using_dawn() const { return false; }
-  DawnContextProvider* dawn_context_provider() { return nullptr; }
+  DawnContextProvider* dawn_context_provider() const { return nullptr; }
 #endif
 
   base::ProcessId host_process_id() const { return host_process_id_; }
@@ -478,7 +479,9 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   raw_ptr<gpu::VulkanImplementation> vulkan_implementation_;
   scoped_refptr<VulkanContextProvider> vulkan_context_provider_;
 #endif
+#if BUILDFLAG(SKIA_USE_METAL)
   std::unique_ptr<MetalContextProvider> metal_context_provider_;
+#endif
 #if BUILDFLAG(SKIA_USE_DAWN)
   std::unique_ptr<DawnContextProvider> dawn_context_provider_;
 #endif

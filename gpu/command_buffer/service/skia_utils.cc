@@ -385,14 +385,6 @@ uint64_t GrBackendTextureTracingID(const GrBackendTexture& backend_texture) {
       break;
     }
 #endif
-#if BUILDFLAG(SKIA_USE_DAWN)
-    case GrBackendApi::kDawn: {
-      GrDawnTextureInfo tex_info;
-      if (backend_texture.getDawnTextureInfo(&tex_info))
-        return reinterpret_cast<uint64_t>(tex_info.fTexture.Get());
-      break;
-    }
-#endif
     default:
       break;
   }

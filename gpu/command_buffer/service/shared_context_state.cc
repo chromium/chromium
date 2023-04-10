@@ -44,7 +44,7 @@
 #include "gpu/vulkan/fuchsia/vulkan_fuchsia_ext.h"
 #endif
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(SKIA_USE_METAL)
 #include "components/viz/common/gpu/metal_context_provider.h"
 #endif
 
@@ -174,11 +174,13 @@ SharedContextState::SharedContextState(
       base::StringPrintf("%u", static_cast<uint32_t>(gr_context_type_)));
   // If |gr_context_type_| is not GL, then initialize |gr_context_| here. In
   // the case of GL, |gr_context_| will be initialized in InitializeGrContext.
-  // Note that if |gr_context_| is not GL and also not initialized here (e.g,
-  // due to vk/metal/dawn_context_provider_ being nullptr), then
-  // InitializeGrContext will fail.
+  // Note that if |gr_context_| is not GL and also not initialized here e.g.
+  // due to vk/metal_context_provider_ being nullptr, then InitializeGrContext
+  // will fail.
   switch (gr_context_type_) {
     case GrContextType::kGL:
+    case GrContextType::kGraphiteDawn:
+    case GrContextType::kGraphiteMetal:
       break;
     case GrContextType::kVulkan:
       if (vk_context_provider_) {
@@ -187,15 +189,6 @@ SharedContextState::SharedContextState(
             std::make_unique<ExternalSemaphorePool>(this);
 #endif
         use_virtualized_gl_contexts_ = false;
-      }
-      break;
-    case GrContextType::kDawn:
-      if (dawn_context_provider_) {
-#if BUILDFLAG(SKIA_USE_DAWN)
-        gr_context_ = dawn_context_provider_->GetGrContext();
-#endif
-        use_virtualized_gl_contexts_ = false;
-        DCHECK(gr_context_);
       }
       break;
   }
@@ -271,7 +264,8 @@ bool SharedContextState::InitializeGrContext(
   progress_reporter_ = progress_reporter;
   gr_shader_cache_ = cache;
 
-#if BUILDFLAG(IS_APPLE)
+  // TODO(sunnyps): Move this to InitializeGraphiteContext once that's a thing.
+#if BUILDFLAG(SKIA_USE_METAL)
   if (metal_context_provider_)
     metal_context_provider_->SetProgressReporter(progress_reporter);
 #endif

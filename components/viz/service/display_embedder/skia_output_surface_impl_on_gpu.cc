@@ -554,9 +554,6 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
       release_fence = CreateReleaseFenceForGL();
     }
 
-    if (!return_release_fence_cb.is_null() && is_using_dawn())
-      NOTIMPLEMENTED() << "Release fences with dawn are not supported.";
-
     if (!return_release_fence_cb.is_null()) {
       // Returning fences for Vulkan is delayed. See the comment above.
       DCHECK(!is_using_vulkan());
@@ -746,9 +743,6 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
       DCHECK(release_fence.is_null());
       release_fence = CreateReleaseFenceForGL();
     }
-
-    if (!return_release_fence_cb.is_null() && is_using_dawn())
-      NOTIMPLEMENTED() << "Release fences with dawn are not supported.";
 
     if (!return_release_fence_cb.is_null()) {
       // Returning fences for Vulkan is delayed. See the comment above.
@@ -1702,9 +1696,6 @@ bool SkiaOutputSurfaceImplOnGpu::Initialize() {
 
   if (is_using_vulkan()) {
     if (!InitializeForVulkan())
-      return false;
-  } else if (is_using_dawn()) {
-    if (!InitializeForDawn())
       return false;
   } else {
     if (!InitializeForGL())
