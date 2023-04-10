@@ -42,6 +42,7 @@
 #include "net/dns/resolve_context.h"
 #include "net/dns/system_dns_config_change_notifier.h"
 #include "net/log/net_log_with_source.h"
+#include "net/socket/datagram_client_socket.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
@@ -297,10 +298,6 @@ class NET_EXPORT HostResolverManager
   // Returns true if the task is local, synchronous, and instantaneous.
   static bool IsLocalTask(TaskType task);
 
-  // Attempts host resolution for |request|. Generally only expected to be
-  // called from RequestImpl::Start().
-  int Resolve(RequestImpl* request);
-
   // Attempts host resolution using fast local sources: IP literal resolution,
   // cache lookup, HOSTS lookup (if enabled), and localhost. Returns results
   // with error() OK if successful, ERR_NAME_NOT_RESOLVED if input is invalid,
@@ -317,6 +314,7 @@ class NET_EXPORT HostResolverManager
   // If |cache_usage == ResolveHostParameters::CacheUsage::STALE_ALLOWED|, then
   // stale cache entries can be returned.
   HostCache::Entry ResolveLocally(
+      bool only_ipv6_reachable,
       const JobKey& job_key,
       const IPAddress& ip_address,
       ResolveHostParameters::CacheUsage cache_usage,
@@ -424,17 +422,36 @@ class NET_EXPORT HostResolverManager
       HostResolverFlags* out_effective_flags,
       SecureDnsMode* out_effective_secure_dns_mode);
 
-  // Probes IPv6 support and returns true if IPv6 support is enabled.
-  // Results are cached, i.e. when called repeatedly this method returns result
-  // from the first probe for some time before probing again.
-  bool IsIPv6Reachable(const NetLogWithSource& net_log);
+  // Schedules probes to check IPv6 support. Returns OK if probe results are
+  // already cached, and ERR_IO_PENDING when a probe is scheduled to be
+  // completed asynchronously. When called repeatedly this method returns OK to
+  // confirm that results have been cached.
+  int StartIPv6ReachabilityCheck(const NetLogWithSource& net_log,
+                                 CompletionOnceCallback callback);
+
+  void FinishIPv6ReachabilityCheck(CompletionOnceCallback callback, int rv);
 
   // Sets |last_ipv6_probe_result_| and updates |last_ipv6_probe_time_|.
   void SetLastIPv6ProbeResult(bool last_ipv6_probe_result);
 
-  // Attempts to connect a UDP socket to |dest|:53. Virtual for testing.
-  virtual bool IsGloballyReachable(const IPAddress& dest,
-                                   const NetLogWithSource& net_log);
+  // Attempts to connect a UDP socket to |dest|:53. Virtual for testing. Returns
+  // the value of the attempted socket connection and the reachability check. If
+  // the return value from the connection is not ERR_IO_PENDING, callers must
+  // handle the results of the reachability check themselves. Otherwise the
+  // result of the reachability check will be set when `callback` is run.
+  // Returns OK if the reachability check succeeded, ERR_FAILED if it failed,
+  // ERR_IO_PENDING if it will be asynchronous.
+  virtual int StartGloballyReachableCheck(const IPAddress& dest,
+                                          const NetLogWithSource& net_log,
+                                          CompletionOnceCallback callback);
+
+  bool FinishGloballyReachableCheck(DatagramClientSocket* socket, int rv);
+
+  void RunFinishGloballyReachableCheck(
+      scoped_refptr<base::RefCountedData<std::unique_ptr<DatagramClientSocket>>>
+          socket,
+      CompletionOnceCallback callback,
+      int rv);
 
   // Asynchronously checks if only loopback IPs are available.
   virtual void RunLoopbackProbeJob();
@@ -534,6 +551,7 @@ class NET_EXPORT HostResolverManager
 
   base::TimeTicks last_ipv6_probe_time_;
   bool last_ipv6_probe_result_ = true;
+  bool probing_ipv6_ = false;
 
   // Any resolver flags that should be added to a request by default.
   HostResolverFlags additional_resolver_flags_ = 0;
@@ -556,6 +574,8 @@ class NET_EXPORT HostResolverManager
 
   // An experimental flag for features::kUseDnsHttpsSvcb.
   HostResolver::HttpsSvcbOptions https_svcb_options_;
+
+  std::vector<CompletionOnceCallback> ipv6_request_callbacks_;
 
   THREAD_CHECKER(thread_checker_);
 

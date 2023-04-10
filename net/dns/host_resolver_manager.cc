@@ -101,6 +101,7 @@
 #include "net/dns/record_parsed.h"
 #include "net/dns/resolve_context.h"
 #include "net/dns/test_dns_config_service.h"
+#include "net/http/http_network_session.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_event_type.h"
@@ -108,7 +109,7 @@
 #include "net/log/net_log_source_type.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/client_socket_factory.h"
-#include "net/socket/datagram_client_socket.h"
+#include "net/url_request/url_request_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/scheme_host_port.h"
@@ -201,6 +202,17 @@ bool ConfigureAsyncDnsNoFallbackFieldTrial() {
                             base::CompareCase::INSENSITIVE_ASCII);
   }
   return kDefault;
+}
+
+// Returns true if NAT64 can be used in place of an IPv4 address during host
+// resolution.
+bool MayUseNAT64ForIPv4Literal(HostResolverFlags flags,
+                               HostResolverSource source,
+                               const IPAddress& ip_address) {
+  return !(flags & HOST_RESOLVER_DEFAULT_FAMILY_SET_DUE_TO_NO_IPV6) &&
+         ip_address.IsValid() && ip_address.IsIPv4() &&
+         base::FeatureList::IsEnabled(features::kUseNAT64ForIPv4Literal) &&
+         (source != HostResolverSource::LOCAL_ONLY);
 }
 
 //-----------------------------------------------------------------------------
@@ -544,6 +556,57 @@ bool ResolveLocalHostname(base::StringPiece host,
   return true;
 }
 
+struct HostResolverManager::JobKey {
+  explicit JobKey(ResolveContext* resolve_context)
+      : resolve_context(resolve_context->AsSafeRef()) {}
+
+  bool operator<(const JobKey& other) const {
+    return std::forward_as_tuple(query_types.ToEnumBitmask(), flags, source,
+                                 secure_dns_mode, &*resolve_context, host,
+                                 network_anonymization_key) <
+           std::forward_as_tuple(other.query_types.ToEnumBitmask(), other.flags,
+                                 other.source, other.secure_dns_mode,
+                                 &*other.resolve_context, other.host,
+                                 other.network_anonymization_key);
+  }
+
+  bool operator==(const JobKey& other) const {
+    return !(*this < other || other < *this);
+  }
+
+  absl::variant<url::SchemeHostPort, std::string> host;
+  NetworkAnonymizationKey network_anonymization_key;
+  DnsQueryTypeSet query_types;
+  HostResolverFlags flags;
+  HostResolverSource source;
+  SecureDnsMode secure_dns_mode;
+  base::SafeRef<ResolveContext> resolve_context;
+
+  HostCache::Key ToCacheKey(bool secure) const {
+    if (query_types.Size() != 1) {
+      // This function will produce identical cache keys for `JobKey` structs
+      // that differ only in their (non-singleton) `query_types` fields. When we
+      // enable new query types, this behavior could lead to subtle bugs. That
+      // is why the following DCHECK restricts the allowable query types.
+      DCHECK(Difference(query_types,
+                        DnsQueryTypeSet(DnsQueryType::A, DnsQueryType::AAAA,
+                                        DnsQueryType::HTTPS))
+                 .Empty());
+    }
+    const DnsQueryType query_type_for_key = query_types.Size() == 1
+                                                ? *query_types.begin()
+                                                : DnsQueryType::UNSPECIFIED;
+    HostCache::Key key(host, query_type_for_key, flags, source,
+                       network_anonymization_key);
+    key.secure = secure;
+    return key;
+  }
+
+  handles::NetworkHandle GetTargetNetwork() const {
+    return resolve_context->GetTargetNetwork();
+  }
+};
+
 // Holds the callback and request parameters for an outstanding request.
 //
 // The RequestImpl is owned by the end user of host resolution. Deletion prior
@@ -580,6 +643,7 @@ class HostResolverManager::RequestImpl
         host_resolver_flags_(
             HostResolver::ParametersToHostResolverFlags(parameters_)),
         priority_(parameters_.initial_priority),
+        job_key_(JobKey(resolve_context_.get())),
         resolver_(std::move(resolver)),
         tick_clock_(tick_clock) {}
 
@@ -606,18 +670,147 @@ class HostResolverManager::RequestImpl
     }
 
     LogStartRequest();
-    int rv = resolver_->Resolve(this);
-    DCHECK(!complete_);
-    if (rv == ERR_IO_PENDING) {
-      CHECK(job_.has_value());
-      callback_ = std::move(callback);
-    } else {
-      CHECK(!job_.has_value());
-      complete_ = true;
-      LogFinishRequest(rv, false /* async_completion */);
-    }
-    resolver_.reset();
 
+    next_state_ = STATE_IPV6_REACHABILITY;
+    callback_ = std::move(callback);
+
+    int rv = OK;
+    rv = DoLoop(rv);
+    return rv;
+  }
+
+  int DoLoop(int rv) {
+    do {
+      ResolveState state = next_state_;
+      next_state_ = STATE_NONE;
+      switch (state) {
+        case STATE_IPV6_REACHABILITY:
+          rv = DoIPv6Reachability();
+          break;
+        case STATE_GET_PARAMETERS:
+          DCHECK_EQ(OK, rv);
+          rv = DoGetParameters();
+          break;
+        case STATE_GET_PARAMETERS_COMPLETE:
+          rv = DoGetParametersComplete(rv);
+          break;
+        case STATE_RESOLVE_LOCALLY:
+          rv = DoResolveLocally();
+          break;
+        case STATE_START_JOB:
+          rv = DoStartJob();
+          break;
+        case STATE_FINISH_REQUEST:
+          rv = DoFinishRequest(rv);
+          break;
+        default:
+          NOTREACHED() << "next_state_: " << next_state_;
+          break;
+      }
+    } while (next_state_ != STATE_NONE && rv != ERR_IO_PENDING);
+
+    return rv;
+  }
+
+  void OnIOComplete(int rv) {
+    rv = DoLoop(rv);
+    if (rv != ERR_IO_PENDING && !callback_.is_null()) {
+      std::move(callback_).Run(rv);
+    }
+  }
+
+  int DoIPv6Reachability() {
+    next_state_ = STATE_GET_PARAMETERS;
+    // If a single reachability probe has not been completed, and the latest
+    // probe will return asynchronously, return ERR_NAME_NOT_RESOLVED when the
+    // request source is LOCAL_ONLY. This is due to LOCAL_ONLY requiring a
+    // synchronous response, so it cannot wait on an async probe result and
+    // cannot make assumptions about reachability.
+    if (parameters_.source == HostResolverSource::LOCAL_ONLY) {
+      int rv = resolver_->StartIPv6ReachabilityCheck(
+          source_net_log_, base::DoNothingAs<void(int)>());
+      if (rv == ERR_IO_PENDING) {
+        next_state_ = STATE_FINISH_REQUEST;
+        return ERR_NAME_NOT_RESOLVED;
+      }
+      return OK;
+    }
+    return resolver_->StartIPv6ReachabilityCheck(
+        source_net_log_, base::BindOnce(&RequestImpl::OnIOComplete,
+                                        weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  int DoGetParameters() {
+    job_key_.host =
+        CreateHostForJobKey(request_host_, parameters_.dns_query_type,
+                            resolver_->https_svcb_options_.enable);
+    job_key_.network_anonymization_key = network_anonymization_key_;
+    job_key_.source = parameters_.source;
+
+    bool is_ip = ip_address_.AssignFromIPLiteral(GetHostname(job_key_.host));
+
+    resolver_->GetEffectiveParametersForRequest(
+        job_key_.host, parameters_.dns_query_type, host_resolver_flags_,
+        parameters_.secure_dns_policy, is_ip, source_net_log_,
+        &job_key_.query_types, &job_key_.flags, &job_key_.secure_dns_mode);
+
+    // A reachability probe to determine if the network is only reachable on
+    // IPv6 will be scheduled if the parameters are met for using NAT64 in place
+    // of an IPv4 address.
+    if (MayUseNAT64ForIPv4Literal(job_key_.flags, parameters_.source,
+                                  ip_address_) &&
+        resolver_->last_ipv6_probe_result_) {
+      next_state_ = STATE_GET_PARAMETERS_COMPLETE;
+      return resolver_->StartGloballyReachableCheck(
+          ip_address_, source_net_log_,
+          base::BindOnce(&RequestImpl::OnIOComplete,
+                         weak_ptr_factory_.GetWeakPtr()));
+    }
+    next_state_ = STATE_RESOLVE_LOCALLY;
+    return OK;
+  }
+
+  int DoGetParametersComplete(int rv) {
+    next_state_ = STATE_RESOLVE_LOCALLY;
+    only_ipv6_reachable_ = (rv == ERR_FAILED) ? true : false;
+    return OK;
+  }
+
+  int DoResolveLocally() {
+    absl::optional<HostCache::EntryStaleness> stale_info;
+    HostCache::Entry results = resolver_->ResolveLocally(
+        only_ipv6_reachable_, job_key_, ip_address_, parameters_.cache_usage,
+        parameters_.secure_dns_policy, parameters_.source, source_net_log_,
+        host_cache_, &tasks_, &stale_info);
+    if (results.error() != ERR_DNS_CACHE_MISS ||
+        parameters_.source == HostResolverSource::LOCAL_ONLY ||
+        tasks_.empty()) {
+      if (results.error() == OK && !parameters_.is_speculative) {
+        set_results(results.CopyWithDefaultPort(request_host_.GetPort()));
+      }
+      if (stale_info && !parameters_.is_speculative) {
+        set_stale_info(std::move(stale_info).value());
+      }
+      next_state_ = STATE_FINISH_REQUEST;
+      return results.error();
+    }
+    next_state_ = STATE_START_JOB;
+    return OK;
+  }
+
+  int DoStartJob() {
+    resolver_->CreateAndStartJob(std::move(job_key_), std::move(tasks_), this);
+    DCHECK(!complete_);
+    resolver_.reset();
+    return ERR_IO_PENDING;
+  }
+
+  int DoFinishRequest(int rv) {
+    CHECK(!job_.has_value());
+    complete_ = true;
+    set_error_info(rv, /*is_secure_network_error=*/false);
+    rv = HostResolver::SquashErrorCode(rv);
+    LogFinishRequest(rv, /*async_completion=*/false);
     return rv;
   }
 
@@ -754,6 +947,16 @@ class HostResolverManager::RequestImpl
   bool complete() const { return complete_; }
 
  private:
+  enum ResolveState {
+    STATE_IPV6_REACHABILITY,
+    STATE_GET_PARAMETERS,
+    STATE_GET_PARAMETERS_COMPLETE,
+    STATE_RESOLVE_LOCALLY,
+    STATE_START_JOB,
+    STATE_FINISH_REQUEST,
+    STATE_NONE,
+  };
+
   void FixUpEndpointAndAliasResults() {
     DCHECK(results_.has_value());
     DCHECK(!legacy_address_results_.has_value());
@@ -835,6 +1038,11 @@ class HostResolverManager::RequestImpl
 
   RequestPriority priority_;
 
+  ResolveState next_state_;
+  JobKey job_key_;
+  IPAddress ip_address_;
+
+  std::deque<TaskType> tasks_;
   // The resolve job that this request is dependent on.
   absl::optional<base::SafeRef<Job>> job_;
   base::WeakPtr<HostResolverManager> resolver_ = nullptr;
@@ -843,6 +1051,7 @@ class HostResolverManager::RequestImpl
   CompletionOnceCallback callback_;
 
   bool complete_ = false;
+  bool only_ipv6_reachable_ = false;
   absl::optional<HostCache::Entry> results_;
   absl::optional<HostCache::EntryStaleness> stale_info_;
   absl::optional<AddressList> legacy_address_results_;
@@ -854,6 +1063,8 @@ class HostResolverManager::RequestImpl
   base::TimeTicks request_time_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<RequestImpl> weak_ptr_factory_{this};
 };
 
 class HostResolverManager::ProbeRequestImpl
@@ -1758,57 +1969,6 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
 
 //-----------------------------------------------------------------------------
 
-struct HostResolverManager::JobKey {
-  explicit JobKey(ResolveContext* resolve_context)
-      : resolve_context(resolve_context->AsSafeRef()) {}
-
-  bool operator<(const JobKey& other) const {
-    return std::forward_as_tuple(query_types.ToEnumBitmask(), flags, source,
-                                 secure_dns_mode, &*resolve_context, host,
-                                 network_anonymization_key) <
-           std::forward_as_tuple(other.query_types.ToEnumBitmask(), other.flags,
-                                 other.source, other.secure_dns_mode,
-                                 &*other.resolve_context, other.host,
-                                 other.network_anonymization_key);
-  }
-
-  bool operator==(const JobKey& other) const {
-    return !(*this < other || other < *this);
-  }
-
-  absl::variant<url::SchemeHostPort, std::string> host;
-  NetworkAnonymizationKey network_anonymization_key;
-  DnsQueryTypeSet query_types;
-  HostResolverFlags flags;
-  HostResolverSource source;
-  SecureDnsMode secure_dns_mode;
-  base::SafeRef<ResolveContext> resolve_context;
-
-  HostCache::Key ToCacheKey(bool secure) const {
-    if (query_types.Size() != 1) {
-      // This function will produce identical cache keys for `JobKey` structs
-      // that differ only in their (non-singleton) `query_types` fields. When we
-      // enable new query types, this behavior could lead to subtle bugs. That
-      // is why the following DCHECK restricts the allowable query types.
-      DCHECK(Difference(query_types,
-                        DnsQueryTypeSet(DnsQueryType::A, DnsQueryType::AAAA,
-                                        DnsQueryType::HTTPS))
-                 .Empty());
-    }
-    const DnsQueryType query_type_for_key = query_types.Size() == 1
-                                                ? *query_types.begin()
-                                                : DnsQueryType::UNSPECIFIED;
-    HostCache::Key key(host, query_type_for_key, flags, source,
-                       network_anonymization_key);
-    key.secure = secure;
-    return key;
-  }
-
-  handles::NetworkHandle GetTargetNetwork() const {
-    return resolve_context->GetTargetNetwork();
-  }
-};
-
 // Aggregates all Requests for the same Key. Dispatched via
 // PrioritizedDispatcher.
 class HostResolverManager::Job : public PrioritizedDispatcher::Job,
@@ -2694,7 +2854,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
       }
       req->OnJobCompleted(
           key_, results.error(),
-          secure && results.error() != OK /* is_secure_network_error */);
+          /*is_secure_network_error=*/secure && results.error() != OK);
 
       // Check if the resolver was destroyed as a result of running the
       // callback. If it was, we could continue, but we choose to bail.
@@ -3119,61 +3279,8 @@ bool HostResolverManager::IsLocalTask(TaskType task) {
   }
 }
 
-int HostResolverManager::Resolve(RequestImpl* request) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  // Request should not yet have a scheduled Job.
-  DCHECK(!request->HasJob());
-  // Request may only be resolved once.
-  DCHECK(!request->complete());
-  // MDNS requests do not support skipping cache or stale lookups.
-  // TODO(crbug.com/926300): Either add support for skipping the MDNS cache, or
-  // merge to use the normal host cache for MDNS requests.
-  DCHECK(request->parameters().source != HostResolverSource::MULTICAST_DNS ||
-         request->parameters().cache_usage ==
-             ResolveHostParameters::CacheUsage::ALLOWED);
-  DCHECK(!invalidation_in_progress_);
-
-  const auto& parameters = request->parameters();
-  JobKey job_key(request->resolve_context());
-  job_key.host =
-      CreateHostForJobKey(request->request_host(), parameters.dns_query_type,
-                          https_svcb_options_.enable);
-  job_key.network_anonymization_key = request->network_anonymization_key();
-  job_key.source = parameters.source;
-
-  IPAddress ip_address;
-  bool is_ip = ip_address.AssignFromIPLiteral(GetHostname(job_key.host));
-
-  GetEffectiveParametersForRequest(
-      job_key.host, parameters.dns_query_type, request->host_resolver_flags(),
-      parameters.secure_dns_policy, is_ip, request->source_net_log(),
-      &job_key.query_types, &job_key.flags, &job_key.secure_dns_mode);
-
-  std::deque<TaskType> tasks;
-  absl::optional<HostCache::EntryStaleness> stale_info;
-  HostCache::Entry results = ResolveLocally(
-      job_key, ip_address, parameters.cache_usage, parameters.secure_dns_policy,
-      parameters.source, request->source_net_log(), request->host_cache(),
-      &tasks, &stale_info);
-  if (results.error() != ERR_DNS_CACHE_MISS ||
-      request->parameters().source == HostResolverSource::LOCAL_ONLY ||
-      tasks.empty()) {
-    if (results.error() == OK && !request->parameters().is_speculative) {
-      request->set_results(
-          results.CopyWithDefaultPort(request->request_host().GetPort()));
-    }
-    if (stale_info && !request->parameters().is_speculative)
-      request->set_stale_info(std::move(stale_info).value());
-    request->set_error_info(results.error(),
-                            false /* is_secure_network_error */);
-    return HostResolver::SquashErrorCode(results.error());
-  }
-
-  CreateAndStartJob(std::move(job_key), std::move(tasks), request);
-  return ERR_IO_PENDING;
-}
-
 HostCache::Entry HostResolverManager::ResolveLocally(
+    bool only_ipv6_reachable,
     const JobKey& job_key,
     const IPAddress& ip_address,
     ResolveHostParameters::CacheUsage cache_usage,
@@ -3218,10 +3325,8 @@ HostCache::Entry HostResolverManager::ResolveLocally(
 
   if (ip_address.IsValid()) {
     // Use NAT64Task for IPv4 literal when the network is IPv6 only.
-    if (!default_family_due_to_no_ipv6 && ip_address.IsIPv4() &&
-        base::FeatureList::IsEnabled(features::kUseNAT64ForIPv4Literal) &&
-        source != HostResolverSource::LOCAL_ONLY &&
-        !IsGloballyReachable(IPAddress(ip_address), source_net_log)) {
+    if (MayUseNAT64ForIPv4Literal(job_key.flags, source, ip_address) &&
+        only_ipv6_reachable) {
       out_tasks->push_front(TaskType::NAT64);
       return HostCache::Entry(ERR_DNS_CACHE_MISS,
                               HostCache::Entry::SOURCE_UNKNOWN);
@@ -3781,7 +3886,7 @@ void HostResolverManager::GetEffectiveParametersForRequest(
   // resolution based on a probe. Prior logic ensures that this is an automatic
   // query, so the code requesting the resolution should be amenable to
   // receiving an IPv6 resolution.
-  if (!use_local_ipv6 && !is_ip && !IsIPv6Reachable(net_log)) {
+  if (!use_local_ipv6 && !is_ip && !last_ipv6_probe_result_) {
     *out_effective_flags |= HOST_RESOLVER_DEFAULT_FAMILY_SET_DUE_TO_NO_IPV6;
     effective_types.Remove(DnsQueryType::AAAA);
   }
@@ -3815,57 +3920,123 @@ bool RequestWillUseWiFi(handles::NetworkHandle network) {
 
 }  // namespace
 
-bool HostResolverManager::IsIPv6Reachable(const NetLogWithSource& net_log) {
+void HostResolverManager::FinishIPv6ReachabilityCheck(
+    CompletionOnceCallback callback,
+    int rv) {
+  SetLastIPv6ProbeResult((rv == OK) ? true : false);
+  std::move(callback).Run(OK);
+  if (!ipv6_request_callbacks_.empty()) {
+    for (auto& request_callback : ipv6_request_callbacks_) {
+      std::move(request_callback).Run(OK);
+    }
+    ipv6_request_callbacks_.clear();
+  }
+}
+
+int HostResolverManager::StartIPv6ReachabilityCheck(
+    const NetLogWithSource& net_log,
+    CompletionOnceCallback callback) {
   // Don't bother checking if the request will use WiFi and IPv6 is assumed to
   // not work on WiFi.
-  if (!check_ipv6_on_wifi_ && RequestWillUseWiFi(target_network_))
-    return false;
+  if (!check_ipv6_on_wifi_ && RequestWillUseWiFi(target_network_)) {
+    probing_ipv6_ = false;
+    last_ipv6_probe_result_ = false;
+    last_ipv6_probe_time_ = base::TimeTicks();
+    return OK;
+  }
 
+  if (probing_ipv6_) {
+    ipv6_request_callbacks_.push_back(std::move(callback));
+    return ERR_IO_PENDING;
+  }
   // Cache the result for kIPv6ProbePeriodMs (measured from after
-  // IsGloballyReachable() completes).
+  // StartGloballyReachableCheck() completes).
+  int rv = OK;
   bool cached = true;
   if (last_ipv6_probe_time_.is_null() ||
       (tick_clock_->NowTicks() - last_ipv6_probe_time_).InMilliseconds() >
           kIPv6ProbePeriodMs) {
-    SetLastIPv6ProbeResult(
-        IsGloballyReachable(IPAddress(kIPv6ProbeAddress), net_log));
+    probing_ipv6_ = true;
+    rv = StartGloballyReachableCheck(
+        IPAddress(kIPv6ProbeAddress), net_log,
+        base::BindOnce(&HostResolverManager::FinishIPv6ReachabilityCheck,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    if (rv != ERR_IO_PENDING) {
+      SetLastIPv6ProbeResult((rv == OK) ? true : false);
+      rv = OK;
+    }
     cached = false;
   }
   net_log.AddEvent(
       NetLogEventType::HOST_RESOLVER_MANAGER_IPV6_REACHABILITY_CHECK, [&] {
         return NetLogIPv6AvailableParams(last_ipv6_probe_result_, cached);
       });
-  return last_ipv6_probe_result_;
+  return rv;
 }
 
 void HostResolverManager::SetLastIPv6ProbeResult(bool last_ipv6_probe_result) {
+  probing_ipv6_ = false;
   last_ipv6_probe_result_ = last_ipv6_probe_result;
   last_ipv6_probe_time_ = tick_clock_->NowTicks();
 }
 
-bool HostResolverManager::IsGloballyReachable(const IPAddress& dest,
-                                              const NetLogWithSource& net_log) {
-  std::unique_ptr<DatagramClientSocket> socket(
+int HostResolverManager::StartGloballyReachableCheck(
+    const IPAddress& dest,
+    const NetLogWithSource& net_log,
+    CompletionOnceCallback callback) {
+  std::unique_ptr<DatagramClientSocket> probing_socket =
       ClientSocketFactory::GetDefaultFactory()->CreateDatagramClientSocket(
-          DatagramSocket::DEFAULT_BIND, net_log.net_log(), net_log.source()));
-  int rv = socket->Connect(IPEndPoint(dest, 53));
-  if (rv != OK)
+          DatagramSocket::DEFAULT_BIND, net_log.net_log(), net_log.source());
+  DatagramClientSocket* probing_socket_ptr = probing_socket.get();
+  auto refcounted_socket = base::MakeRefCounted<
+      base::RefCountedData<std::unique_ptr<DatagramClientSocket>>>(
+      std::move(probing_socket));
+  int rv = probing_socket_ptr->ConnectAsync(
+      IPEndPoint(dest, 53),
+      base::BindOnce(&HostResolverManager::RunFinishGloballyReachableCheck,
+                     weak_ptr_factory_.GetWeakPtr(), refcounted_socket,
+                     std::move(callback)));
+  if (rv != ERR_IO_PENDING) {
+    rv = FinishGloballyReachableCheck(probing_socket_ptr, rv) ? OK : ERR_FAILED;
+  }
+  return rv;
+}
+
+bool HostResolverManager::FinishGloballyReachableCheck(
+    DatagramClientSocket* socket,
+    int rv) {
+  if (rv != OK) {
     return false;
+  }
   IPEndPoint endpoint;
   rv = socket->GetLocalAddress(&endpoint);
-  if (rv != OK)
+
+  if (rv != OK) {
     return false;
+  }
   const IPAddress& address = endpoint.address();
 
-  if (address.IsLinkLocal())
+  if (address.IsLinkLocal()) {
     return false;
+  }
 
   if (address.IsIPv6()) {
     const uint8_t kTeredoPrefix[] = {0x20, 0x01, 0, 0};
-    if (IPAddressStartsWith(address, kTeredoPrefix))
+    if (IPAddressStartsWith(address, kTeredoPrefix)) {
       return false;
+    }
   }
+
   return true;
+}
+
+void HostResolverManager::RunFinishGloballyReachableCheck(
+    scoped_refptr<base::RefCountedData<std::unique_ptr<DatagramClientSocket>>>
+        socket,
+    CompletionOnceCallback callback,
+    int rv) {
+  bool is_reachable = FinishGloballyReachableCheck(socket->data.get(), rv);
+  std::move(callback).Run(is_reachable ? OK : ERR_FAILED);
 }
 
 void HostResolverManager::RunLoopbackProbeJob() {
@@ -4135,7 +4306,10 @@ HostResolverManager::RequestImpl::~RequestImpl() {
 void HostResolverManager::RequestImpl::ChangeRequestPriority(
     RequestPriority priority) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(job_.has_value());
+  if (!job_.has_value()) {
+    priority_ = priority;
+    return;
+  }
   job_.value()->ChangeRequestPriority(this, priority);
 }
 
