@@ -2313,8 +2313,7 @@ bool PrintRenderFrameHelper::PrintPagesNative(
   std::unique_ptr<content::AXTreeSnapshotter> snapshotter;
   if (delegate_->ShouldGenerateTaggedPDF()) {
     snapshotter = render_frame()->CreateAXTreeSnapshotter(ui::AXMode::kPDF);
-    snapshotter->Snapshot(/* exclude_offscreen= */ false,
-                          /* max_node_count= */ 0,
+    snapshotter->Snapshot(/* max_node_count= */ 0,
                           /* timeout= */ {}, &metafile.accessibility_tree());
   }
 
@@ -2784,8 +2783,7 @@ bool PrintRenderFrameHelper::PreviewPageRendered(
   // http://crbug.com/1039817
   if (snapshotter_ && page_number == 0) {
     ui::AXTreeUpdate accessibility_tree;
-    snapshotter_->Snapshot(/* exclude_offscreen= */ false,
-                           /* max_node_count= */ 0,
+    snapshotter_->Snapshot(/* max_node_count= */ 0,
                            /* timeout= */ {}, &accessibility_tree);
     GetPrintManagerHost()->SetAccessibilityTree(
         print_pages_params_->params->document_cookie, accessibility_tree);

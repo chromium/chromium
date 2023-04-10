@@ -23,8 +23,7 @@ class AXTreeSnapshotterImpl : public AXTreeSnapshotter {
   ~AXTreeSnapshotterImpl() override;
 
   // AXTreeSnapshotter implementation.
-  void Snapshot(bool exclude_offscreen,
-                size_t max_node_count,
+  void Snapshot(size_t max_node_count,
                 base::TimeDelta timeout,
                 ui::AXTreeUpdate* accessibility_tree) override;
 

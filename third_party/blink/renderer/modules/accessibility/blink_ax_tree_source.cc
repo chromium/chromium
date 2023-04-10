@@ -327,10 +327,6 @@ AXObject* BlinkAXTreeSource::ChildAt(AXObject* node, size_t index) const {
   CheckParentUnignoredOf(node, child);
 #endif
 
-  if (exclude_offscreen_ && child->IsOffScreen()) {
-    return nullptr;
-  }
-
   return child;
 }
 

@@ -2189,8 +2189,7 @@ void RenderFrameImpl::SnapshotAccessibilityTree(
     SnapshotAccessibilityTreeCallback callback) {
   ui::AXTreeUpdate response;
   AXTreeSnapshotterImpl snapshotter(this, ui::AXMode(params->ax_mode));
-  snapshotter.Snapshot(params->exclude_offscreen, params->max_nodes,
-                       params->timeout, &response);
+  snapshotter.Snapshot(params->max_nodes, params->timeout, &response);
   std::move(callback).Run(response);
 }
 

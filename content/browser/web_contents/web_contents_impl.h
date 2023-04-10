@@ -382,7 +382,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   const std::u16string& GetLoadStateHost() override;
   void RequestAXTreeSnapshot(AXTreeSnapshotCallback callback,
                              ui::AXMode ax_mode,
-                             bool exclude_offscreen,
                              size_t max_nodes,
                              base::TimeDelta timeout) override;
   uint64_t GetUploadSize() override;

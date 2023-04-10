@@ -379,10 +379,7 @@ bool AXTreeSerializer<AXSourceNode>::AnyDescendantWasReparented(
   auto num_children = tree_->GetChildCount(node);
   for (size_t i = 0; i < num_children; ++i) {
     AXSourceNode child = tree_->ChildAt(node, i);
-    if (!child) {
-      continue;
-    }
-
+    DCHECK(child);
     DCHECK(tree_->IsValid(child));
     int child_id = tree_->GetId(child);
     ClientTreeNode* client_child = ClientTreeNodeById(child_id);
@@ -695,13 +692,9 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
     tree_->CacheChildrenIfNeeded(node);
     num_children = tree_->GetChildCount(node);
   }
-  size_t actual_num_children = 0;
   for (size_t i = 0; i < num_children; ++i) {
     AXSourceNode child = tree_->ChildAt(node, i);
-    if (!child) {
-      continue;
-    }
-    actual_num_children++;
+    DCHECK(child);
 
     int new_child_id = tree_->GetId(child);
     new_child_ids.insert(new_child_id);
@@ -790,12 +783,10 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
   // Iterate over the children, serialize them, and update the ClientTreeNode
   // data structure to reflect the new tree.
   std::vector<AXNodeID> actual_serialized_node_child_ids;
-  client_node->children.reserve(actual_num_children);
+  client_node->children.reserve(num_children);
   for (size_t i = 0; i < num_children; ++i) {
     AXSourceNode child = tree_->ChildAt(node, i);
-    if (!child) {
-      continue;
-    }
+    DCHECK(child);
 
     int child_id = tree_->GetId(child);
 

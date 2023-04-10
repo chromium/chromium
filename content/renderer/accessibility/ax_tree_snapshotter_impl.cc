@@ -28,17 +28,16 @@ AXTreeSnapshotterImpl::AXTreeSnapshotterImpl(RenderFrameImpl* render_frame,
 
 AXTreeSnapshotterImpl::~AXTreeSnapshotterImpl() = default;
 
-void AXTreeSnapshotterImpl::Snapshot(bool exclude_offscreen,
-                                     size_t max_node_count,
+void AXTreeSnapshotterImpl::Snapshot(size_t max_node_count,
                                      base::TimeDelta timeout,
                                      ui::AXTreeUpdate* response) {
   if (!render_frame_->GetWebFrame())
     return;
   context_->UpdateAXForAllDocuments();
 
-  if (context_->SerializeEntireTree(exclude_offscreen, max_node_count, timeout,
-                                    response))
+  if (context_->SerializeEntireTree(max_node_count, timeout, response)) {
     return;
+  }
 
   // It failed again. Clear the response object because it might have errors.
   *response = ui::AXTreeUpdate();

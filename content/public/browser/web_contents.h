@@ -486,7 +486,6 @@ class WebContents : public PageNavigator,
       base::OnceCallback<void(const ui::AXTreeUpdate&)>;
   virtual void RequestAXTreeSnapshot(AXTreeSnapshotCallback callback,
                                      ui::AXMode ax_mode,
-                                     bool exclude_offscreen,
                                      size_t max_nodes,
                                      base::TimeDelta timeout) = 0;
 

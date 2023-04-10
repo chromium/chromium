@@ -3910,13 +3910,10 @@ void AXObjectCacheImpl::SerializeLocationChanges() {
   }
 }
 
-bool AXObjectCacheImpl::SerializeEntireTree(bool exclude_offscreen,
-                                            size_t max_node_count,
+bool AXObjectCacheImpl::SerializeEntireTree(size_t max_node_count,
                                             base::TimeDelta timeout,
                                             ui::AXTreeUpdate* response) {
   BlinkAXTreeSource* tree_source = BlinkAXTreeSource::Create(*this);
-
-  tree_source->set_exclude_offscreen(exclude_offscreen);
 
   // The serializer returns an ui::AXTreeUpdate, which can store a complete
   // or a partial accessibility tree. AXTreeSerializer is stateful, but the

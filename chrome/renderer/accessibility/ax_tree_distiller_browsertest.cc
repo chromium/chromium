@@ -33,7 +33,7 @@ class AXTreeDistillerTestBase : public ChromeRenderViewTest {
     const ui::AXMode ax_mode = ui::AXMode::kWebContents | ui::AXMode::kHTML |
                                ui::AXMode::kScreenReader;
     render_frame->CreateAXTreeSnapshotter(ax_mode)->Snapshot(
-        /* exclude_offscreen= */ false, /* max_nodes= */ 0,
+        /* max_nodes= */ 0,
         /* timeout= */ {}, &snapshot);
     ui::AXTree tree(snapshot);
     distiller_ = std::make_unique<AXTreeDistiller>(
