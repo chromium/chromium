@@ -191,8 +191,15 @@ void PreloadingAttemptImpl::RecordPreloadingAttemptMetrics(
   // Ensure that when the `triggering_outcome_` is kSuccess, then the
   // accurate_triggering should be true.
   if (triggering_outcome_ == PreloadingTriggeringOutcome::kSuccess) {
-    DCHECK(is_accurate_triggering_)
-        << "TriggeringOutcome set to kSuccess without correct prediction\n";
+    // TODO(https://crbug.com/1431055): Fix PreloadingAttempt for Prefetching in
+    // a different WebContents. It is allowed to activate a prefetched result in
+    // another WebContents instance, and the WebContents that stores `this`
+    // instance does not have the opportunity to set the
+    // `is_accurate_triggering_` flag to true in this case.
+    if (preloading_type_ != PreloadingType::kPrefetch) {
+      DCHECK(is_accurate_triggering_)
+          << "TriggeringOutcome set to kSuccess without correct prediction\n";
+    }
   }
 
   // Always record UMA, regardless of sampling.
