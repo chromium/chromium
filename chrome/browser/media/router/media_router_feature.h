@@ -32,6 +32,11 @@ BASE_DECLARE_FEATURE(kMediaRouterOTRInstance);
 // If enabled, the sink discovery on Caf MRP is run asynchronously when the main
 // thread is idle.
 BASE_DECLARE_FEATURE(kCafMRPDeferredDiscovery);
+
+// If enabled, and the HTMLMediaElement source changes (e.g. started observing
+// new source, and stopped observing the first one), the new source is cast
+// instead.
+BASE_DECLARE_FEATURE(kCastAnotherContentWhileCasting);
 #else
 
 // Enables the media router. Can be disabled in tests unrelated to

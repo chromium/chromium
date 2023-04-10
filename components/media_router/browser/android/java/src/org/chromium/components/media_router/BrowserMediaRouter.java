@@ -206,6 +206,14 @@ public class BrowserMediaRouter implements MediaRouteManager {
         }
     }
 
+    @Override
+    public void onRouteMediaSourceUpdated(String mediaRouteId, String mediaSourceId) {
+        if (mNativeMediaRouterAndroidBridge != 0) {
+            BrowserMediaRouterJni.get().onRouteMediaSourceUpdated(mNativeMediaRouterAndroidBridge,
+                    BrowserMediaRouter.this, mediaRouteId, mediaSourceId);
+        }
+    }
+
     /**
      * Initializes the media router and its providers.
      * @param nativeMediaRouterAndroidBridge the handler for the native counterpart of this instance
@@ -426,5 +434,7 @@ public class BrowserMediaRouter implements MediaRouteManager {
                 String mediaRouteId, String message);
         void onMessage(long nativeMediaRouterAndroidBridge, BrowserMediaRouter caller,
                 String mediaRouteId, String message);
+        void onRouteMediaSourceUpdated(long nativeMediaRouterAndroidBridge,
+                BrowserMediaRouter caller, String mediaRouteId, String mediaSourceId);
     }
 }

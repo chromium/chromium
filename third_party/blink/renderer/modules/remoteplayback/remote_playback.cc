@@ -87,6 +87,14 @@ bool IsBackgroundAvailabilityMonitoringDisabled() {
   return MemoryPressureListenerRegistry::IsLowEndDevice();
 }
 
+void RemotingStarting(HTMLMediaElement& media_element) {
+  if (auto* video_element = DynamicTo<HTMLVideoElement>(&media_element)) {
+    // TODO(xjz): Pass the remote device name.
+    video_element->MediaRemotingStarted(WebString());
+  }
+  media_element.FlingingStarted();
+}
+
 }  // anonymous namespace
 
 // static
@@ -394,13 +402,7 @@ void RemotePlayback::StateChanged(
   state_ = state;
   if (state_ == mojom::blink::PresentationConnectionState::CONNECTING) {
     DispatchEvent(*Event::Create(event_type_names::kConnecting));
-    if (auto* video_element =
-            DynamicTo<HTMLVideoElement>(media_element_.Get())) {
-      // TODO(xjz): Pass the remote device name.
-
-      video_element->MediaRemotingStarted(WebString());
-    }
-    media_element_->FlingingStarted();
+    RemotingStarting(*media_element_);
   } else if (state_ == mojom::blink::PresentationConnectionState::CONNECTED) {
     DispatchEvent(*Event::Create(event_type_names::kConnect));
   } else if (state_ == mojom::blink::PresentationConnectionState::CLOSED ||
@@ -456,8 +458,14 @@ void RemotePlayback::SourceChanged(const WebURL& source,
   StopListeningForAvailability();
 
   availability_urls_.clear();
-  if (!new_url.IsEmpty())
+  if (!new_url.IsEmpty()) {
     availability_urls_.push_back(new_url);
+
+    if (state_ == mojom::blink::PresentationConnectionState::CONNECTED) {
+      RemotingStarting(*media_element_);
+      presentation_url_ = new_url;
+    }
+  }
 
   MaybeStartListeningForAvailability();
 }
@@ -587,13 +595,15 @@ void RemotePlayback::OnConnectionError(
   // (1) A request to start a presentation failed.
   // (2) A PresentationRequest is cancelled. i.e. the user closed the device
   // selection or the route controller dialog.
-  presentation_id_ = "";
-  presentation_url_ = KURL();
+
   if (error.error_type ==
       mojom::blink::PresentationErrorType::PRESENTATION_REQUEST_CANCELLED) {
     PromptCancelled();
     return;
   }
+
+  presentation_id_ = "";
+  presentation_url_ = KURL();
 
   StateChanged(mojom::blink::PresentationConnectionState::CLOSED);
   RemotePlaybackMetrics::RecordRemotePlaybackStartSessionResult(

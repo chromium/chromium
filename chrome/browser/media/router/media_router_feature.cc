@@ -44,6 +44,10 @@ BASE_FEATURE(kMediaRouterOTRInstance,
 BASE_FEATURE(kCafMRPDeferredDiscovery,
              "CafMRPDeferredDiscovery",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCastAnotherContentWhileCasting,
+             "CastAnotherContentWhileCasting",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #else
 BASE_FEATURE(kMediaRouter, "MediaRouter", base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kCastAllowAllIPsFeature,

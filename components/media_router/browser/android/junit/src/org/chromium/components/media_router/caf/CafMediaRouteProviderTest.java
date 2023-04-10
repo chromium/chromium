@@ -146,7 +146,7 @@ public class CafMediaRouteProviderTest {
         assertEquals(mProvider.mRoutes.size(), 1);
         MediaRoute route = (MediaRoute) (mProvider.mRoutes.values().toArray()[0]);
         assertEquals(route.sinkId, "sink-id");
-        assertEquals(route.sourceId, "source-id-1");
+        assertEquals(route.getSourceId(), "source-id-1");
         assertEquals(route.presentationId, "presentation-id-1");
 
         // No source.

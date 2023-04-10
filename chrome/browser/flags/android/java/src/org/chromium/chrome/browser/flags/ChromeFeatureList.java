@@ -220,6 +220,8 @@ public abstract class ChromeFeatureList {
             "CacheDeprecatedSystemLocationSetting";
     public static final String CAF_MRP_DEFERRED_DISCOVERY = "CafMRPDeferredDiscovery";
     public static final String CAPTIVE_PORTAL_CERTIFICATE_LIST = "CaptivePortalCertificateList";
+    public static final String CAST_ANOTHER_CONTENT_WHILE_CASTING =
+            "CastAnotherContentWhileCasting";
     public static final String CCT_ALLOW_CROSS_UID_ACTIVITY_SWITCH_FROM_BELOW =
             "CCTAllowCrossUidActivitySwitchFromBelow";
     public static final String CCT_AUTO_TRANSLATE = "CCTAutoTranslate";

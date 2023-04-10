@@ -283,7 +283,7 @@ public class CafBaseMediaRouteProviderTest {
         inOrder.verify(mSessionController).requestSessionLaunch();
         CreateRouteRequestInfo pendingCreateRouteRequestInfo =
                 mProvider.getPendingCreateRouteRequestInfo();
-        assertEquals(pendingCreateRouteRequestInfo.source, mockSource);
+        assertEquals(pendingCreateRouteRequestInfo.getMediaSource(), mockSource);
         assertEquals(pendingCreateRouteRequestInfo.sink.getId(), "cast-route");
         assertEquals(pendingCreateRouteRequestInfo.presentationId, "presentation-id");
         assertEquals(pendingCreateRouteRequestInfo.origin, "origin");
@@ -300,7 +300,7 @@ public class CafBaseMediaRouteProviderTest {
         inOrder.verify(mSessionManager).addSessionManagerListener(mProvider, CastSession.class);
         inOrder.verify(mSessionController).requestSessionLaunch();
         pendingCreateRouteRequestInfo = mProvider.getPendingCreateRouteRequestInfo();
-        assertEquals(pendingCreateRouteRequestInfo.source, mockSource);
+        assertEquals(pendingCreateRouteRequestInfo.getMediaSource(), mockSource);
         assertEquals(pendingCreateRouteRequestInfo.sink.getId(), "other-cast-route");
         assertEquals(pendingCreateRouteRequestInfo.presentationId, "presentation-id-2");
         assertEquals(pendingCreateRouteRequestInfo.origin, "origin-2");
@@ -406,7 +406,7 @@ public class CafBaseMediaRouteProviderTest {
 
         MediaRoute route = (MediaRoute) (mProvider.mRoutes.values().toArray()[0]);
         assertEquals(route.sinkId, "cast-route");
-        assertEquals(route.sourceId, "source-id");
+        assertEquals(route.getSourceId(), "source-id");
         assertEquals(route.presentationId, "presentation-id");
         assertNull(mProvider.getPendingCreateRouteRequestInfo());
     }
@@ -452,7 +452,7 @@ public class CafBaseMediaRouteProviderTest {
 
         MediaRoute route = (MediaRoute) (mProvider.mRoutes.values().toArray()[0]);
         assertEquals(route.sinkId, "cast-route");
-        assertEquals(route.sourceId, "source-id");
+        assertEquals(route.getSourceId(), "source-id");
         assertEquals(route.presentationId, "presentation-id");
         assertNull(mProvider.getPendingCreateRouteRequestInfo());
 
@@ -465,7 +465,7 @@ public class CafBaseMediaRouteProviderTest {
 
         route = (MediaRoute) (mProvider.mRoutes.values().toArray()[0]);
         assertEquals(route.sinkId, "cast-route");
-        assertEquals(route.sourceId, "source-id");
+        assertEquals(route.getSourceId(), "source-id");
         assertEquals(route.presentationId, "presentation-id");
         assertNull(mProvider.getPendingCreateRouteRequestInfo());
     }

@@ -4,7 +4,9 @@
 
 package org.chromium.components.media_router;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.isNull;
@@ -208,7 +210,9 @@ public class DiscoveryCallbackTest extends BrowserMediaRouterTestBase {
                 new DiscoveryCallback(SOURCE_ID1, knownSinks, mDiscoveryDelegate, null);
 
         callback.onRouteAdded(null, createMockRouteInfo(SINK_ID1, SINK_NAME1));
+        assertTrue(callback.containsSourceUrn(SOURCE_ID1));
         callback.removeSourceUrn(SOURCE_ID1);
+        assertFalse(callback.containsSourceUrn(SOURCE_ID1));
 
         List<MediaSink> expectedSinks = new ArrayList<MediaSink>();
         // Only the one time for init.

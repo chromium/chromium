@@ -345,6 +345,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &language::kTranslateAssistContent,
     &language::kTranslateIntent,
     &media_router::kCafMRPDeferredDiscovery,
+    &media_router::kCastAnotherContentWhileCasting,
     &messages::kMessagesForAndroidInfrastructure,
     &messages::kMessagesForAndroidSaveCard,
     &offline_pages::kOfflinePagesCTFeature,  // See crbug.com/620421.

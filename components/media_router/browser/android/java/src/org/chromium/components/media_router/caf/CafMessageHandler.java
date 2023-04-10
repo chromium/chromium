@@ -713,7 +713,9 @@ public class CafMessageHandler {
                 jsonMessage.put("appId", applicationMetadata.getApplicationId());
             } else {
                 jsonMessage.put("appId",
-                        mSessionController.getRouteCreationInfo().source.getApplicationId());
+                        mSessionController.getRouteCreationInfo()
+                                .getMediaSource()
+                                .getApplicationId());
             }
             jsonMessage.put("displayName",
                     mSessionController.getSession().getCastDevice().getFriendlyName());
