@@ -15,8 +15,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
 
 import java.util.ArrayList;
@@ -32,7 +30,6 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
     private static final float DEFAULT_VIEW_LOG_THRESHOLD = .66f;
     private static final float GOOD_VISITS_EXPOSURE_THRESHOLD = 0.5f;
     private static final float GOOD_VISITS_COVERAGE_THRESHOLD = 0.25f;
-    private static final float VISIBLE_CHANGE_LOG_THRESHOLD = 0.05f;
 
     private class VisibilityObserver {
         final float mVisibilityThreshold;
@@ -52,8 +49,6 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
     private ListLayoutHelper mLayoutHelper;
     // The set of content keys already reported as visible.
     private HashSet<String> mContentKeysVisible = new HashSet<String>();
-    // Map from content key to the runnable that is used to notify the completion of the rendering.
-    private HashMap<String, Runnable> mVisibleChangeMap = new HashMap<>();
     private boolean mFeedContentVisible;
     @Nullable
     private Observer mObserver;
@@ -74,13 +69,6 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
         // Invoked when feed content is first visible. This can happens as soon as an xsurface view
         // is partially visible.
         void feedContentVisible();
-
-        // For reporting to feed user interaction reliability log.
-        //
-        // Called the first time a slice view is 5% visible.
-        void reportViewFirstVisible(View view);
-        // Called the first time a slice view is rendered.
-        void reportViewFirstRendered(View view);
     }
 
     public FeedSliceViewTracker(@NonNull RecyclerView rootView, @NonNull Activity activity,
@@ -126,7 +114,6 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
         if (mWatchedSliceMap != null) {
             mWatchedSliceMap.clear();
         }
-        mVisibleChangeMap.clear();
     }
 
     /**
@@ -223,24 +210,13 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
                     || isViewVisible(childView, GOOD_VISITS_EXPOSURE_THRESHOLD)
                     || isViewCoveringViewport(childView, GOOD_VISITS_COVERAGE_THRESHOLD);
 
-            if (!mContentKeysVisible.contains(contentKey)
-                    && isViewVisible(childView, DEFAULT_VIEW_LOG_THRESHOLD)) {
-                mContentKeysVisible.add(contentKey);
-                mObserver.sliceVisible(contentKey);
+            if (mContentKeysVisible.contains(contentKey)
+                    || !isViewVisible(childView, DEFAULT_VIEW_LOG_THRESHOLD)) {
+                continue;
             }
 
-            if (mVisibleChangeMap.get(contentKey) == null
-                    && isViewVisible(childView, VISIBLE_CHANGE_LOG_THRESHOLD)) {
-                mObserver.reportViewFirstVisible(childView);
-                // There is not a system way to measure the render latency. Here we mimic how
-                // Time To First Draw Done is measured, which is done by posting a runnable after
-                // onPreDraw.
-                Runnable renderedRunnable = () -> {
-                    mObserver.reportViewFirstRendered(childView);
-                };
-                PostTask.postTask(TaskTraits.UI_DEFAULT, renderedRunnable);
-                mVisibleChangeMap.put(contentKey, renderedRunnable);
-            }
+            mContentKeysVisible.add(contentKey);
+            mObserver.sliceVisible(contentKey);
         }
 
         reportTimeForGoodVisitsIfNeeded();
