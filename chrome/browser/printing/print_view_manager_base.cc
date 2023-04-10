@@ -634,6 +634,21 @@ void PrintViewManagerBase::UpdatePrintSettings(
     return;
   }
 
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/1424368):  Remove this if the printable areas can be made
+  // fully available from `PrintBackend::GetPrinterSemanticCapsAndDefaults()`
+  // for in-browser queries.
+  if (printer_type == mojom::PrinterType::kLocal &&
+      !base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers)) {
+    if (!PrinterQuery::UpdatePrintableArea(*print_settings)) {
+      PRINTER_LOG(ERROR) << "Unable to update printable area for "
+                         << base::UTF16ToUTF8(print_settings->device_name());
+      std::move(callback).Run(nullptr);
+      return;
+    }
+  }
+#endif
+
   mojom::PrintPagesParamsPtr settings = mojom::PrintPagesParams::New();
   settings->pages = GetPageRangesFromJobSettings(job_settings);
   settings->params = mojom::PrintParams::New();
