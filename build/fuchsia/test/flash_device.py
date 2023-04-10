@@ -18,7 +18,6 @@ from common import BootMode, boot_device, check_ssh_config_file, \
     get_system_info, find_image_in_sdk, register_device_args
 from compatible_utils import get_sdk_hash, get_ssh_keys, pave, \
     running_unattended, add_exec_to_file, get_host_arch
-from ffx_integration import ScopedFfxConfig
 from lockfile import lock
 
 # Flash-file lock. Used to restrict number of flash operations per host.
@@ -38,8 +37,7 @@ def _get_system_info(target: Optional[str]) -> Tuple[str, str]:
     # TODO(b/242191374): Remove when devices in swarming are no longer booted
     # into zedboot.
     if running_unattended():
-        with ScopedFfxConfig('discovery.zedboot.enabled', 'true'):
-            boot_device(target, BootMode.REGULAR)
+        boot_device(target, BootMode.REGULAR)
         wait_cmd = common.run_ffx_command(('target', 'wait', '-t', '180'),
                                           target,
                                           check=False)
@@ -114,7 +112,8 @@ def _run_flash_command(system_image_dir: str, target_id: Optional[str]):
         ('target', 'flash', manifest, '--no-bootloader-reboot'),
         target_id=target_id,
         configs=[
-            'fastboot.usb.disabled=true', 'ffx.fastboot.inline_target=true'
+            'fastboot.usb.disabled=true', 'ffx.fastboot.inline_target=true',
+            'fastboot.reboot.reconnect_timeout=120'
         ])
 
 
@@ -136,11 +135,9 @@ def flash(system_image_dir: str,
     # Flash only with a file lock acquired.
     # This prevents multiple fastboot binaries from flashing concurrently,
     # which should increase the odds of flashing success.
-    with ScopedFfxConfig('fastboot.reboot.reconnect_timeout', '120'), \
-        lock(_FF_LOCK, timeout=_FF_LOCK_ACQ_TIMEOUT):
+    with lock(_FF_LOCK, timeout=_FF_LOCK_ACQ_TIMEOUT):
         if serial_num:
-            with ScopedFfxConfig('discovery.zedboot.enabled', 'true'):
-                boot_device(target, BootMode.BOOTLOADER)
+            boot_device(target, BootMode.BOOTLOADER)
             for _ in range(10):
                 time.sleep(10)
                 if common.run_ffx_command(('target', 'list', serial_num),
@@ -179,8 +176,7 @@ def update(system_image_dir: str,
                 # TODO(crbug.com/1405525): We should check the device state
                 # before and after rebooting it to avoid unnecessary reboot or
                 # undesired state.
-                with ScopedFfxConfig('discovery.zedboot.enabled', 'true'):
-                    boot_device(target, BootMode.RECOVERY)
+                boot_device(target, BootMode.RECOVERY)
             try:
                 pave(system_image_dir, target)
                 time.sleep(180)

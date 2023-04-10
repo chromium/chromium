@@ -26,6 +26,7 @@ IMAGES_ROOT = os.path.join(DIR_SRC_ROOT, 'third_party', 'fuchsia-sdk',
 REPO_ALIAS = 'fuchsia.com'
 SDK_ROOT = os.path.join(DIR_SRC_ROOT, 'third_party', 'fuchsia-sdk', 'sdk')
 SDK_TOOLS_DIR = os.path.join(SDK_ROOT, 'tools', get_host_arch())
+_ENABLE_ZEDBOOT = 'discovery.zedboot.enabled=true'
 _FFX_TOOL = os.path.join(SDK_TOOLS_DIR, 'ffx')
 
 # This global variable is used to set the environment variable
@@ -113,6 +114,7 @@ def get_target_state(target_id: Optional[str]) -> TargetState:
     """
     targets = json.loads(
         run_ffx_command(('target', 'list'),
+                        configs=[_ENABLE_ZEDBOOT],
                         check=True,
                         capture_output=True,
                         json_out=True).stdout.strip())
@@ -533,7 +535,10 @@ def _boot_device_ffx(target_id: Optional[str], mode: BootMode):
     else:
         raise NotImplementedError(f'BootMode {mode} not supported')
 
-    run_ffx_command(cmd, target_id=target_id, check=False)
+    run_ffx_command(cmd,
+                    target_id=target_id,
+                    configs=[_ENABLE_ZEDBOOT],
+                    check=False)
 
 
 def _boot_device_dm(target_id: Optional[str], mode: BootMode):
