@@ -3251,6 +3251,7 @@ Additional details:
 <translation id="8949493680961858543">A1 x 4</translation>
 <translation id="8951415078585015151">Law and government</translation>
 <translation id="8957210676456822347">Captive Portal Authorisation</translation>
+<translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Go to site settings</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Suggestions:<ph name="MARKUP_2" />Make sure that you have a data connection<ph name="MARKUP_3" />Reload this web page later<ph name="MARKUP_4" />Check the address that you entered<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Save card</translation>

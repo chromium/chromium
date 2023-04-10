@@ -1489,7 +1489,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2251218783371366160">Otvori u pregledniku sistema</translation>
 <translation id="225163402930830576">Osvježi mreže</translation>
 <translation id="2251809247798634662">Novi anonimni prozor</translation>
-<translation id="2252017960592955005">Zaštita pregleda (beta verzija)</translation>
+<translation id="2252017960592955005">Zaštita od pregleda (beta verzija)</translation>
 <translation id="225240747099314620">Dozvoli identifikatore za zaštićeni sadržaj (može biti potrebno ponovno pokretanje računara)</translation>
 <translation id="2253318212986772520">Nije moguće dohvatiti PPD za štampač <ph name="PRINTER_NAME" />.</translation>
 <translation id="2255077166240162850">Ovaj uređaj je bio zaključan za neku drugu domenu ili način rada.</translation>
@@ -8363,7 +8363,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8380266723152870797">Naziv prozora</translation>
 <translation id="8380941800586852976">Opasno</translation>
 <translation id="8382677870544805359">Morat ćete vratiti uređaj na fabričke postavke da koristite funkcije za preduzeća.</translation>
-<translation id="8382715499079447151">Zaštita pregleda</translation>
+<translation id="8382715499079447151">Zaštita od pregleda</translation>
 <translation id="8382913212082956454">Kopiraj adresu &amp;e-pošte</translation>
 <translation id="8383266303049437646"><ph name="BEGIN_PARAGRAPH1" />Pokušajte s ovim koracima za rješavanje problema:
     <ph name="BEGIN_LIST" />

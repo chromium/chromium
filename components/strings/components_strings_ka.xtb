@@ -3251,6 +3251,7 @@
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">სამართალი და მთავრობა</translation>
 <translation id="8957210676456822347">დაკავებული პორტალების ავტორიზაცია</translation>
+<translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">საიტის პარამეტრებზე გადასვლა</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />მითითებები:<ph name="MARKUP_2" />დარწმუნდით, რომ მონაცემთა კავშირი გაქვთ<ph name="MARKUP_3" />ხელახლა ჩატვირთეთ გვერდი მოგვიანებით<ph name="MARKUP_4" />შეამოწმეთ თქვენ მიერ შეყვანილი მისამართი<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">ბარათის შენახვა</translation>
