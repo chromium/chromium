@@ -82,6 +82,12 @@ void ImmersiveModeTabbedController::Enable() {
   [tab_content_view_.widthAnchor
       constraintEqualToAnchor:tab_content_view_.superview.widthAnchor]
       .active = YES;
+  [tab_content_view_.centerXAnchor
+      constraintEqualToAnchor:tab_content_view_.superview.centerXAnchor]
+      .active = YES;
+  [tab_content_view_.centerYAnchor
+      constraintEqualToAnchor:tab_content_view_.superview.centerYAnchor]
+      .active = YES;
 
   ObserveChildWindows(tab_window_);
 }
@@ -189,13 +195,6 @@ void ImmersiveModeTabbedController::TitlebarReveal() {
 void ImmersiveModeTabbedController::TitlebarHide() {
   browser_window().toolbar.visible = NO;
 }
-
-// The titlebar hosts the tab strip. This causes the titlebar to be
-// revealed/hidden during RevealLock()/RevealUnlock(). Override TitlebarLock()
-// and TitlebarUnlock() to do nothing.
-void ImmersiveModeTabbedController::TitlebarLock() {}
-
-void ImmersiveModeTabbedController::TitlebarUnlock() {}
 
 void ImmersiveModeTabbedController::OnTitlebarFrameDidChange(NSRect frame) {
   ImmersiveModeController::OnTitlebarFrameDidChange(frame);

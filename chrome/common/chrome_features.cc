@@ -640,11 +640,12 @@ BASE_FEATURE(kImmersiveFullscreen,
 // for this feature to have an effect.
 BASE_FEATURE(kImmersiveFullscreenTabs,
              "ImmersiveFullscreenTabs",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables immersive fullscreen mode for PWA windows. PWA windows will use
-// immersive fullscreen mode if and only if both this and the previous feature
-// are enabled.
+// immersive fullscreen mode if and only if both this and kImmersiveFullscreen
+// are enabled. PWA windows currently do not use ImmersiveFullscreenTabs even if
+// the feature is enabled.
 BASE_FEATURE(kImmersiveFullscreenPWAs,
              "ImmersiveFullscreenPWAs",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -355,7 +355,7 @@ void BrowserRootView::PaintChildren(const views::PaintInfo& paint_info) {
         // view.
         if (browser_view_->immersive_mode_controller()->IsRevealed()) {
           tabstrip_root =
-              base::FeatureList::IsEnabled(features::kImmersiveFullscreenTabs)
+              browser_view_->UsesImmersiveFullscreenTabbedMode()
                   ? browser_view_->tab_overlay_widget()->GetRootView()
                   : browser_view_->overlay_widget()->GetRootView();
         }

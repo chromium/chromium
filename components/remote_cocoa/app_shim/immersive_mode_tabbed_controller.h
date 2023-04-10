@@ -37,8 +37,6 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeTabbedController
   void OnTopViewBoundsChanged(const gfx::Rect& bounds) override;
   void RevealLock() override;
   void RevealUnlock() override;
-  void TitlebarLock() override;
-  void TitlebarUnlock() override;
   void OnTitlebarFrameDidChange(NSRect frame) override;
   void OnChildWindowAdded(NSWindow* child) override;
   void OnChildWindowRemoved(NSWindow* child) override;
