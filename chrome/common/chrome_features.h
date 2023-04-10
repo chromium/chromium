@@ -891,11 +891,8 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 bool IsParentAccessCodeForOnlineLoginEnabled();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// This flag is used for enabling Omnibox triggered prerendering and
-// blink::WebRuntimeFeatures::Prerender2RelatedFeatures that enables Prerender2
-// related web exposed features. This flag takes effect only when
-// blink::features::Prerender2 is enabled. See crbug.com/1166085 for more
-// details of Omnibox triggered prerendering.
+// This flag is used for enabling Omnibox triggered prerendering. See
+// crbug.com/1166085 for more details of Omnibox triggered prerendering.
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kOmniboxTriggerForPrerender2);
 

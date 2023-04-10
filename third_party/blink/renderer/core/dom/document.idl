@@ -172,7 +172,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     readonly attribute boolean wasDiscarded;
 
     // https://wicg.github.io/nav-speculation/prerendering.html#dom-document-prerendering
-    [RuntimeEnabled=Prerender2RelatedFeatures, Measure] readonly attribute boolean prerendering;
+    [Measure] readonly attribute boolean prerendering;
 
     // Non-exposed API, used to evaluate and test soft navigation heuristics
     [RuntimeEnabled=SoftNavigationHeuristics] readonly attribute unsigned long softNavigations;
@@ -212,7 +212,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     attribute EventHandler onbeforecut;
     attribute EventHandler onbeforepaste;
     attribute EventHandler onfreeze;
-    [RuntimeEnabled=Prerender2RelatedFeatures, Measure] attribute EventHandler onprerenderingchange;
+    [Measure] attribute EventHandler onprerenderingchange;
     attribute EventHandler onresume;
     attribute EventHandler onsearch;
     attribute EventHandler onvisibilitychange;

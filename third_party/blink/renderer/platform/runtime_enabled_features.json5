@@ -2673,19 +2673,6 @@
       name: "Prerender2",
       status: "stable",
     },
-    // This RTE feature is used to indicate the status of RTE feature Prerender2
-    // and an embedder feature flag that enables the Prerender2. With this flag
-    // on, the related functions document.prerendering,
-    // document.onprerenderingchange, and activationStart will be exported.
-    {
-      name: "Prerender2RelatedFeatures",
-      implied_by: ["Prerender2"],
-      base_feature: "none",
-      // This is not going into origin trial, "origin_trial_feature_name" is
-      // required for using the "implied_by" behaviour.
-      origin_trial_feature_name: "Prerender2RelatedFeatures__DONOTUSE",
-      public: true,
-    },
     {
       name: "Presentation",
       public: true,

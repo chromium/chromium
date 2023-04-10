@@ -9113,16 +9113,7 @@ void Document::ActivateForPrerendering(
 
   // https://wicg.github.io/nav-speculation/prerendering.html#prerendering-browsing-context-activate
   // Step 8.3.4 "Fire an event named prerenderingchange at doc."
-  if (RuntimeEnabledFeatures::Prerender2RelatedFeaturesEnabled(
-          GetExecutionContext())) {
-    DispatchEvent(*Event::Create(event_type_names::kPrerenderingchange));
-  } else {
-    AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kJavaScript,
-        mojom::blink::ConsoleMessageLevel::kWarning,
-        "Failed to dispatch 'prerenderingchange' event: Prerender2 feature is "
-        "not enabled on the document."));
-  }
+  DispatchEvent(*Event::Create(event_type_names::kPrerenderingchange));
 
   // Step 8.3.5 "For each steps in doc’s post-prerendering activation steps
   // list:"
