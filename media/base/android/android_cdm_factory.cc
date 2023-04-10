@@ -56,6 +56,7 @@ void AndroidCdmFactory::Create(
 
   // Create AesDecryptor here to support External Clear Key key system.
   // This is used for testing.
+  // TODO (b/263310318) Remove AesDecryptor once ClearKey on Android is fixed.
   if (base::FeatureList::IsEnabled(media::kExternalClearKeyForTesting) &&
       IsExternalClearKey(cdm_config.key_system)) {
     scoped_refptr<ContentDecryptionModule> cdm(
@@ -64,8 +65,6 @@ void AndroidCdmFactory::Create(
     std::move(bound_cdm_created_cb).Run(cdm, "");
     return;
   }
-
-  std::string error_message;
 
   if (!MediaDrmBridge::IsKeySystemSupported(cdm_config.key_system)) {
     ReportMediaDrmBridgeKeySystemSupport(false);

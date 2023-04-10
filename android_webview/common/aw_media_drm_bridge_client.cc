@@ -65,6 +65,9 @@ AwMediaDrmBridgeClient::GetMediaDrmBridgeDelegate(
     const media::UUID& scheme_uuid) {
   if (scheme_uuid == widevine_delegate_.GetUUID())
     return &widevine_delegate_;
+  if (scheme_uuid == clearkey_delegate_.GetUUID()) {
+    return &clearkey_delegate_;
+  }
   return nullptr;
 }
 

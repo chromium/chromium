@@ -35,6 +35,7 @@
 #include "media/base/media_drm_key_type.h"
 #include "media/base/media_switches.h"
 #include "media/base/provision_fetcher.h"
+#include "media/cdm/clear_key_cdm_common.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
 
 using base::android::AttachCurrentThread;
@@ -181,6 +182,9 @@ KeySystemManager::KeySystemManager() {
   // Widevine is always supported in Android.
   key_system_uuid_map_[kWidevineKeySystem] =
       UUID(kWidevineUuid, kWidevineUuid + std::size(kWidevineUuid));
+  // ClearKey is always supported in Android.
+  key_system_uuid_map_[kExternalClearKeyKeySystem] =
+      UUID(kClearKeyUuid, kClearKeyUuid + std::size(kClearKeyUuid));
   MediaDrmBridgeClient* client = GetMediaDrmBridgeClient();
   if (client)
     client->AddKeySystemUUIDMappings(&key_system_uuid_map_);
@@ -837,8 +841,6 @@ MediaDrmBridge::MediaDrmBridge(
       media_crypto_context_(this) {
   DVLOG(1) << __func__;
 
-  DCHECK(storage_);
-
   JNIEnv* env = AttachCurrentThread();
   CHECK(env);
 
@@ -849,15 +851,13 @@ MediaDrmBridge::MediaDrmBridge(
   ScopedJavaLocalRef<jstring> j_security_level =
       ConvertUTF8ToJavaString(env, security_level_str);
 
-  bool use_origin_isolated_storage =
-      // origin id can be empty when MediaDrmBridge is created by
-      // CreateWithoutSessionSupport, which is used for unprovisioning.
-      !origin_id.empty();
+  // origin id can be empty when MediaDrmBridge is created by
+  // CreateWithoutSessionSupport, which is used for unprovisioning, or for
+  // some key systems (like Clear Key) that don't support origin isolated
+  // storage.
+  ScopedJavaLocalRef<jstring> j_security_origin =
+      ConvertUTF8ToJavaString(env, origin_id);
 
-  ScopedJavaLocalRef<jstring> j_security_origin = ConvertUTF8ToJavaString(
-      env, use_origin_isolated_storage ? origin_id : "");
-
-  // Note: OnMediaCryptoReady() could be called in this call.
   j_media_drm_.Reset(Java_MediaDrmBridge_create(
       env, j_scheme_uuid, j_security_origin, j_security_level,
       requires_media_crypto, reinterpret_cast<intptr_t>(this),

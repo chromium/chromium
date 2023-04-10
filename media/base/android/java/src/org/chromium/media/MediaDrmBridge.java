@@ -68,9 +68,12 @@ public class MediaDrmBridge {
     private static final long INVALID_NATIVE_MEDIA_DRM_BRIDGE = 0;
     private static final String FIRST_API_LEVEL = "ro.product.first_api_level";
 
-    // Scheme UUID for Widevine. See http://dashif.org/identifiers/protection/
+    // See http://dashif.org/identifiers/content_protection/ for Scheme UUIDs for different Key
+    // systems.
     private static final UUID WIDEVINE_UUID =
             UUID.fromString("edef8ba9-79d6-4ace-a3c8-27dcd51d21ed");
+    private static final UUID CLEARKEY_UUID =
+            UUID.fromString("e2719d58-a985-b3c9-781a-b030af78d30e");
 
     // On Android L and before, MediaDrm doesn't support KeyStatus at all. On later Android
     // versions, key IDs are not available on sessions where getKeyRequest() has been called with
@@ -258,6 +261,10 @@ public class MediaDrmBridge {
 
     private boolean isWidevine() {
         return mSchemeUUID.equals(WIDEVINE_UUID);
+    }
+
+    private boolean isClearKey() {
+        return mSchemeUUID.equals(CLEARKEY_UUID);
     }
 
     private MediaDrmBridge(UUID schemeUUID, boolean requiresMediaCrypto, long nativeMediaDrmBridge,
@@ -1393,10 +1400,10 @@ public class MediaDrmBridge {
             }
 
             SessionInfo sessionInfo = mSessionManager.get(sessionId);
+            MediaDrm.KeyRequest request = null;
             switch (event) {
                 case MediaDrm.EVENT_KEY_REQUIRED:
                     Log.d(TAG, "MediaDrm.EVENT_KEY_REQUIRED");
-                    MediaDrm.KeyRequest request = null;
                     try {
                         request = getKeyRequest(sessionId, data, sessionInfo.mimeType(),
                                 sessionInfo.keyType(), null);
@@ -1414,13 +1421,28 @@ public class MediaDrmBridge {
                 case MediaDrm.EVENT_KEY_EXPIRED:
                     Log.d(TAG, "MediaDrm.EVENT_KEY_EXPIRED");
                     break;
+                // (b/271451225) This event is generated during ClearKey implementation in Android.
                 case MediaDrm.EVENT_VENDOR_DEFINED:
                     Log.d(TAG, "MediaDrm.EVENT_VENDOR_DEFINED");
-                    assert false; // Should never happen.
+                    try {
+                        request = getKeyRequest(sessionId, data, sessionInfo.mimeType(),
+                                sessionInfo.keyType(), null);
+                    } catch (android.media.NotProvisionedException e) {
+                        // Device does not need to be provisioned for Clear Key, shouldn't hit this
+                        // error.
+                        Log.e(TAG, "Device not provisioned", e);
+                        return;
+                    }
+                    if (request != null) {
+                        onSessionMessage(sessionId, request);
+                    } else {
+                        Log.e(TAG, "EventListener: getKeyRequest failed.");
+                        return;
+                    }
                     break;
                 default:
                     Log.e(TAG, "Invalid DRM event " + event);
-                    return;
+                    break;
             }
         }
     }
