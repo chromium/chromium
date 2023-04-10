@@ -214,28 +214,31 @@ static_library("video_player_test_environment") {
   ]
 }
 
-static_library("video_encoder") {
-  testonly = true
-  sources = [
-    "bitstream_helpers.cc",
-    "bitstream_helpers.h",
-    "video_encoder/bitstream_file_writer.cc",
-    "video_encoder/bitstream_file_writer.h",
-    "video_encoder/bitstream_validator.cc",
-    "video_encoder/bitstream_validator.h",
-    "video_encoder/decoder_buffer_validator.cc",
-    "video_encoder/decoder_buffer_validator.h",
-    "video_encoder/video_encoder.cc",
-    "video_encoder/video_encoder.h",
-    "video_encoder/video_encoder_client.cc",
-    "video_encoder/video_encoder_client.h",
-  ]
-  deps = [
-    ":test_helpers",
-    "//media/gpu",
-    "//media/parsers",
-    "//testing/gtest:gtest",
-  ]
+if (use_libgav1_parser) {
+  static_library("video_encoder") {
+    testonly = true
+    sources = [
+      "bitstream_helpers.cc",
+      "bitstream_helpers.h",
+      "video_encoder/bitstream_file_writer.cc",
+      "video_encoder/bitstream_file_writer.h",
+      "video_encoder/bitstream_validator.cc",
+      "video_encoder/bitstream_validator.h",
+      "video_encoder/decoder_buffer_validator.cc",
+      "video_encoder/decoder_buffer_validator.h",
+      "video_encoder/video_encoder.cc",
+      "video_encoder/video_encoder.h",
+      "video_encoder/video_encoder_client.cc",
+      "video_encoder/video_encoder_client.h",
+    ]
+    deps = [
+      ":test_helpers",
+      "//media/gpu",
+      "//media/parsers",
+      "//testing/gtest:gtest",
+      "//third_party/libgav1:libgav1_parser",
+    ]
+  }
 }
 
 static_library("video_encoder_test_environment") {

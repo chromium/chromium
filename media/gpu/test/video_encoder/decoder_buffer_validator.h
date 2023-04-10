@@ -13,6 +13,7 @@
 #include "media/gpu/test/bitstream_helpers.h"
 #include "media/parsers/vp8_parser.h"
 #include "media/video/h264_parser.h"
+#include "third_party/libgav1/src/src/obu_parser.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace media {
@@ -131,6 +132,24 @@ class VP9Validator : public DecoderBufferValidator {
   // A nullopt indicates either keyframe not yet seen, or that a
   // buffer has been invalidated (e.g. due to sync points).
   std::array<absl::optional<BufferState>, kVp9NumRefFrames> reference_buffers_;
+};
+
+class AV1Validator : public DecoderBufferValidator {
+ public:
+  // TODO(greenjustin): Add support for more than 1 spatial and temporal layer
+  // if we need it.
+  explicit AV1Validator(const gfx::Rect& visible_rect);
+  ~AV1Validator() override = default;
+
+ private:
+  bool Validate(const DecoderBuffer& decoder_buffer,
+                const BitstreamBufferMetadata& metadata) override;
+
+  libgav1::InternalFrameBufferList buffer_list_;
+  libgav1::BufferPool buffer_pool_;
+  libgav1::DecoderState decoder_state_;
+  absl::optional<libgav1::ObuSequenceHeader> sequence_header_ = absl::nullopt;
+  uint64_t frame_num_ = 0;
 };
 }  // namespace test
 }  // namespace media

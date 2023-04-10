@@ -18,6 +18,7 @@
 #include "media/base/media_util.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_frame.h"
+#include "media/filters/dav1d_video_decoder.h"
 #include "media/filters/ffmpeg_video_decoder.h"
 #include "media/filters/vpx_video_decoder.h"
 #include "media/gpu/macros.h"
@@ -35,6 +36,13 @@ std::unique_ptr<VideoDecoder> CreateDecoder(
     VideoCodec codec,
     std::unique_ptr<MediaLog>* media_log) {
   std::unique_ptr<VideoDecoder> decoder;
+
+  if (codec == VideoCodec::kAV1) {
+#if BUILDFLAG(ENABLE_DAV1D_DECODER)
+    *media_log = std::make_unique<NullMediaLog>();
+    decoder = std::make_unique<Dav1dVideoDecoder>(media_log->get());
+#endif
+  }
 
   if (codec == VideoCodec::kVP8 || codec == VideoCodec::kVP9) {
 #if BUILDFLAG(ENABLE_LIBVPX)

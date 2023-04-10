@@ -65,7 +65,7 @@ The following arguments are supported:
   --vmodule             enable verbose mode for the specified module,
 
   --codec               codec profile to encode, "h264 (baseline)",
-                        "h264main, "h264high", "vp8" and "vp9"
+                        "h264main, "h264high", "vp8", "vp9", "av1".
   --num_spatial_layers  the number of spatial layers of the encoded
                         bitstream. A default value is 1. Only affected
                         if --codec=vp9 currently.
