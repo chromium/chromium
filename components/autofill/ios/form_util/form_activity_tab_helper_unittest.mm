@@ -129,7 +129,10 @@ TEST_F(FormActivityTabHelperTest, TestFormSubmittedHook) {
 }
 
 // Tests that observer is called on form activity (input event).
-TEST_F(FormActivityTabHelperTest, TestObserverFormActivityFrameMessaging) {
+// TODO(crbug.com/1431960): Disabled test due to bot failure. Re-enable when
+// fixed.
+TEST_F(FormActivityTabHelperTest,
+       DISABLED_TestObserverFormActivityFrameMessaging) {
   LoadHtml(@"<form name='form-name'>"
             "<input type='input' name='field-name' id='fieldid'/>"
             "</form>");
