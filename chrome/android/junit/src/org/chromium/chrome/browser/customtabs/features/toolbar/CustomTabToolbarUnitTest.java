@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.customtabs.features.toolbar;
 
-import static androidx.browser.customtabs.CustomTabsIntent.CLOSE_BUTTON_POSITION_END;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -28,7 +26,9 @@ import android.os.Looper;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.MeasureSpec;
 import android.widget.FrameLayout;
+import android.widget.FrameLayout.LayoutParams;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -379,18 +379,29 @@ public class CustomTabToolbarUnitTest {
         mToolbar.initSideSheetMaximizeButton(/*maximizedOnInit=*/false, () -> true);
         var maximizeButton =
                 (ImageButton) mToolbar.findViewById(R.id.custom_tabs_sidepanel_maximize);
+        assertEquals("Maximize button should be invisible upon start", View.GONE,
+                maximizeButton.getVisibility());
+
+        mToolbar.onFinishInflate();
+        View titleUrlContainer = Mockito.mock(View.class);
+        mLocationBar.setTitleUrlContainerForTesting(titleUrlContainer);
+        int maximizeButtonWidth = mActivity.getResources().getDimensionPixelSize(
+                R.dimen.location_bar_action_icon_width);
+        int titleUrlPaddingEnd =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.toolbar_edge_padding);
+        int threshold = maximizeButtonWidth * 2 - titleUrlPaddingEnd;
+
+        when(titleUrlContainer.getWidth()).thenReturn(threshold + 10);
+        when(titleUrlContainer.getLayoutParams())
+                .thenReturn(new FrameLayout.LayoutParams(
+                        LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+        mToolbar.onMeasure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
         assertEquals(
                 "Maximize button should be visible", View.VISIBLE, maximizeButton.getVisibility());
 
-        // Check margin from the right end.
-        var lp = (FrameLayout.LayoutParams) maximizeButton.getLayoutParams();
-        assertEquals(0, lp.rightMargin);
-        mToolbar.setCloseButtonPosition(CLOSE_BUTTON_POSITION_END);
-        mToolbar.onMenuButtonDisabled();
-        int closeButtonWidth =
-                mToolbar.getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
-        assertEquals("Maximize button should be next to close button.", closeButtonWidth,
-                lp.rightMargin);
+        when(titleUrlContainer.getWidth()).thenReturn(threshold - 10);
+        mToolbar.onMeasure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+        assertEquals("Maximize button should be hidden", View.GONE, maximizeButton.getVisibility());
 
         mToolbar.removeSideSheetMaximizeButton();
         assertEquals("Maximize button should be hidden", View.GONE, maximizeButton.getVisibility());

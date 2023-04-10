@@ -227,8 +227,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         // Add the view at the beginning of the child list.
         mCustomActionButtons.addView(button, 0);
-
-        updateMaximizeButtonPosition();
     }
 
     @Override
@@ -237,7 +235,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 mCustomActionButtons.getChildCount() - 1 - index);
         assert button != null;
         updateCustomActionButtonVisuals(button, drawable, description);
-        updateMaximizeButtonPosition();
     }
 
     /**
@@ -274,16 +271,39 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             boolean maximizedOnInit, MaximizeButtonCallback callback) {
         if (!ChromeFeatureList.sCctResizableSideSheet.isEnabled()) return;
         var maximizeButton = (ImageButton) findViewById(R.id.custom_tabs_sidepanel_maximize);
-        boolean buttonExists = maximizeButton != null;
-        if (buttonExists) {
-            maximizeButton.setVisibility(View.VISIBLE);
-        } else {
+        if (maximizeButton == null) {
             ViewStub maximizeButtonStub = findViewById(R.id.maximize_button_stub);
             maximizeButtonStub.inflate();
             maximizeButton = (ImageButton) findViewById(R.id.custom_tabs_sidepanel_maximize);
         }
+        // The visibility will get updated after the location bar completes its layout.
+        maximizeButton.setVisibility(View.GONE);
         setMaximizeButtonDrawable(maximizedOnInit);
         maximizeButton.setOnClickListener((v) -> setMaximizeButtonDrawable(callback.onClick()));
+    }
+
+    private void setMaximizeButtonVisibility() {
+        var maximizeButton = (ImageButton) findViewById(R.id.custom_tabs_sidepanel_maximize);
+        if (maximizeButton == null) return;
+
+        // Find the title/url width threshold that turns the maximize button visible.
+        int containerWidthPx = mLocationBar.mTitleUrlContainer.getWidth();
+        int maximizeButtonWidthPx =
+                getResources().getDimensionPixelSize(R.dimen.location_bar_action_icon_width);
+        int titleUrlPaddingEndPx =
+                getResources().getDimensionPixelSize(R.dimen.toolbar_edge_padding);
+        if (containerWidthPx < maximizeButtonWidthPx * 2 - titleUrlPaddingEndPx) {
+            // We expect to see at least as much URL text as the width of the maximize button.
+            // Hide the button if we can't.
+            maximizeButton.setVisibility(View.GONE);
+        } else {
+            // Take some space from the title/url for maximization button.
+            var lpTitle = (ViewGroup.MarginLayoutParams) mLocationBar.mTitleBar.getLayoutParams();
+            var lpUrl = (ViewGroup.MarginLayoutParams) mLocationBar.mUrlBar.getLayoutParams();
+            lpTitle.rightMargin = maximizeButtonWidthPx;
+            lpUrl.rightMargin = maximizeButtonWidthPx;
+            maximizeButton.setVisibility(View.VISIBLE);
+        }
     }
 
     private void setMaximizeButtonDrawable(boolean maximized) {
@@ -293,9 +313,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                                      : R.string.custom_tab_side_sheet_maximize;
         var maximizeButton = (ImageButton) findViewById(R.id.custom_tabs_sidepanel_maximize);
         var d = UiUtils.getTintedDrawable(getContext(), drawableId, mTint);
-        updateCustomActionButtonVisuals(maximizeButton, d, null);
-        maximizeButton.setImageDrawable(d);
-        maximizeButton.setContentDescription(getResources().getString(buttonDescId));
+        updateCustomActionButtonVisuals(maximizeButton, d, getResources().getString(buttonDescId));
     }
 
     /**
@@ -306,23 +324,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         var maximizeButton = (ImageButton) findViewById(R.id.custom_tabs_sidepanel_maximize);
         maximizeButton.setOnClickListener(null);
         maximizeButton.setVisibility(View.GONE);
-    }
-
-    private void updateMaximizeButtonPosition() {
-        ImageButton maximizeButton =
-                (ImageButton) findViewById(R.id.custom_tabs_sidepanel_maximize);
-        if (maximizeButton != null) {
-            FrameLayout.LayoutParams lp =
-                    (FrameLayout.LayoutParams) maximizeButton.getLayoutParams();
-            View buttonAtEnd =
-                    mCloseButtonPosition == CLOSE_BUTTON_POSITION_END ? mCloseButton : mMenuButton;
-            int margin = buttonAtEnd.getVisibility() == View.GONE
-                    ? 0
-                    : getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
-            if (mCustomActionButtons != null) margin += mCustomActionButtons.getWidth();
-            lp.setMarginEnd(margin);
-            maximizeButton.setLayoutParams(lp);
-        }
     }
 
     private void updateCustomActionButtonVisuals(
@@ -660,8 +661,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         maybeSwapCloseAndMenuButtons();
         updateToolbarLayoutMargin();
         maybeAdjustButtonSpacingForCloseButtonPosition();
+        setMaximizeButtonVisibility();
 
-        updateMaximizeButtonPosition();
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
@@ -717,7 +718,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 (ViewGroup.MarginLayoutParams) mCustomActionButtons.getLayoutParams();
         p.setMarginEnd(0);
         mCustomActionButtons.setLayoutParams(p);
-        updateMaximizeButtonPosition();
     }
 
     @Override
@@ -1339,6 +1339,11 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         @VisibleForTesting
         void setAnimDelegateForTesting(CustomTabToolbarAnimationDelegate animDelegate) {
             mAnimDelegate = animDelegate;
+        }
+
+        @VisibleForTesting
+        void setTitleUrlContainerForTesting(View titleUrlContainer) {
+            mTitleUrlContainer = titleUrlContainer;
         }
     }
 }
