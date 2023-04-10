@@ -1603,6 +1603,12 @@ const char kFullUserAgentDescription[] =
     "If set, use the full (non-reduced) user agent string for the User-Agent "
     "request header and the JS APIs.";
 
+const char kFullscreenPopupWindowsName[] = "Fullscreen popup windows";
+const char kFullscreenPopupWindowsDescription[] =
+    "Enables sites with Window Management permission to open fullscreen popup "
+    "windows with a `fullscreen` window.open() features parameter. See "
+    "https://chromestatus.com/feature/6002307972464640 for more information.";
+
 const char kGalleryAppPdfEditNotificationName[] =
     "Gallery App Pdf Edit Notification";
 const char kGalleryAppPdfEditNotificationDescription[] =

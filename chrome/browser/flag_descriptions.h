@@ -899,6 +899,9 @@ extern const char kForceUiDirectionDescription[];
 extern const char kFullUserAgentName[];
 extern const char kFullUserAgentDescription[];
 
+extern const char kFullscreenPopupWindowsName[];
+extern const char kFullscreenPopupWindowsDescription[];
+
 extern const char kGalleryAppPdfEditNotificationName[];
 extern const char kGalleryAppPdfEditNotificationDescription[];
 

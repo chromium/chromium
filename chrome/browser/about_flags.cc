@@ -7496,6 +7496,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFullUserAgentDescription, kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(blink::features::kFullUserAgent)},
 
+    {"fullscreen-popup-windows", flag_descriptions::kFullscreenPopupWindowsName,
+     flag_descriptions::kFullscreenPopupWindowsDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(blink::features::kFullscreenPopupWindows)},
+
 #if BUILDFLAG(IS_WIN)
     {"run-video-capture-service-in-browser",
      flag_descriptions::kRunVideoCaptureServiceInBrowserProcessName,

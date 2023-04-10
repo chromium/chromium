@@ -4150,6 +4150,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "fullscreen-popup-windows",
+    "owners": [ "btriebw", "msw" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "fullscreen-promos-manager",
     "owners": [ "bwwilliams@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 113
