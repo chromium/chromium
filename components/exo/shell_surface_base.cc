@@ -1241,6 +1241,7 @@ void ShellSurfaceBase::OnWidgetClosing(views::Widget* widget) {
   //    problematic with X11 as all of xwayland shares the same client.
   //  - Transitively kill all the wl_resources rooted at this window's
   //    wl_surface, which is not really supported in wayland.
+  surface_destroyed_callback_.Reset();
   OnSurfaceDestroying(root_surface());
 }
 
@@ -1285,11 +1286,14 @@ views::FocusTraversable* ShellSurfaceBase::GetFocusTraversable() {
 // aura::WindowObserver overrides:
 
 void ShellSurfaceBase::OnWindowDestroying(aura::Window* window) {
+  surface_destroyed_callback_.Reset();
+
   if (window == parent_)
     SetParentInternal(nullptr);
   window->RemoveObserver(this);
-  if (widget_ && window == widget_->GetNativeWindow() && root_surface())
+  if (widget_ && window == widget_->GetNativeWindow() && root_surface()) {
     root_surface()->ThrottleFrameRate(false);
+  }
 }
 
 void ShellSurfaceBase::OnWindowPropertyChanged(aura::Window* window,
