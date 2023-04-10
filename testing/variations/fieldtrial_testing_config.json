@@ -8598,6 +8598,21 @@
             ]
         }
     ],
+    "OmniboxConsumesImeInsets": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OmniboxConsumesImeInsets"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxFuzzyUrlSuggestions": [
         {
             "platforms": [
