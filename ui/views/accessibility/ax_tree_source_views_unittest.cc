@@ -121,8 +121,7 @@ TEST_F(AXTreeSourceViewsTest, Basics) {
   EXPECT_EQ(textfield, tree.GetFromId(textfield->GetUniqueId()));
 
   // Validity.
-  EXPECT_TRUE(tree.IsValid(root));
-  EXPECT_FALSE(tree.IsValid(nullptr));
+  EXPECT_TRUE(root != nullptr);
 
   // Comparisons.
   EXPECT_TRUE(tree.IsEqual(label1, label1));
@@ -152,7 +151,7 @@ TEST_F(AXTreeSourceViewsTest, IgnoredView) {
 
   AXAuraObjCache cache;
   TestAXTreeSourceViews tree(cache.GetOrCreate(widget_.get()), &cache);
-  EXPECT_TRUE(tree.IsValid(cache.GetOrCreate(ignored_view)));
+  EXPECT_TRUE(cache.GetOrCreate(ignored_view) != nullptr);
 }
 
 TEST_F(AXTreeSourceViewsTest, ViewWithChildTreeHasNoChildren) {
@@ -163,7 +162,7 @@ TEST_F(AXTreeSourceViewsTest, ViewWithChildTreeHasNoChildren) {
   AXAuraObjCache cache;
   TestAXTreeSourceViews tree(cache.GetOrCreate(widget_.get()), &cache);
   auto* ax_obj = cache.GetOrCreate(contents_view);
-  EXPECT_TRUE(tree.IsValid(ax_obj));
+  EXPECT_TRUE(ax_obj != nullptr);
   tree.CacheChildrenIfNeeded(ax_obj);
   EXPECT_EQ(0u, tree.GetChildCount(ax_obj));
   EXPECT_EQ(nullptr, cache.GetOrCreate(textfield_)->GetParent());

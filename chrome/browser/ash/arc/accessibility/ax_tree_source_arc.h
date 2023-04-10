@@ -185,7 +185,6 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*>,
   void ClearChildCache(AccessibilityInfoDataWrapper*) override;
 
   bool IsIgnored(AccessibilityInfoDataWrapper* info_data) const override;
-  bool IsValid(AccessibilityInfoDataWrapper* info_data) const override;
   bool IsEqual(AccessibilityInfoDataWrapper* info_data1,
                AccessibilityInfoDataWrapper* info_data2) const override;
   AccessibilityInfoDataWrapper* GetNull() const override;

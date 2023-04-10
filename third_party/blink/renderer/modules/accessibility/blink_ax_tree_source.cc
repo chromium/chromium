@@ -279,7 +279,14 @@ AXObject* BlinkAXTreeSource::GetFocusedObject() const {
 }
 
 AXObject* BlinkAXTreeSource::GetFromId(int32_t id) const {
-  return ax_object_cache_->ObjectFromAXID(id);
+  AXObject* result = ax_object_cache_->ObjectFromAXID(id);
+  DCHECK(result);
+  if (!result->AccessibilityIsIncludedInTree()) {
+    DCHECK(false) << "Should not serialize an unincluded object:"
+                  << "\nChild: " << result->ToString(true).Utf8();
+    return nullptr;
+  }
+  return result;
 }
 
 int32_t BlinkAXTreeSource::GetId(AXObject* node) const {
@@ -348,10 +355,6 @@ bool BlinkAXTreeSource::IsIgnored(AXObject* node) const {
   if (!node || node->IsDetached())
     return false;
   return node->AccessibilityIsIgnored();
-}
-
-bool BlinkAXTreeSource::IsValid(AXObject* node) const {
-  return node && !node->IsDetached();
 }
 
 bool BlinkAXTreeSource::IsEqual(AXObject* node1, AXObject* node2) const {

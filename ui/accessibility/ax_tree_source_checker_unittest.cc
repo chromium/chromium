@@ -69,10 +69,6 @@ class FakeAXTreeSource : public AXTreeSource<const FakeAXNode*> {
 
   bool IsIgnored(const FakeAXNode* node) const override { return false; }
 
-  bool IsValid(const FakeAXNode* node) const override {
-    return node != nullptr;
-  }
-
   bool IsEqual(const FakeAXNode* node1,
                const FakeAXNode* node2) const override {
     return node1 == node2;
@@ -117,7 +113,7 @@ TEST(AXTreeSourceCheckerTest, BadRoot) {
   std::string error_string;
   EXPECT_FALSE(checker.CheckAndGetErrorString(&error_string));
   CleanAXNodeDataString(&error_string);
-  EXPECT_EQ("Root is not valid.", error_string);
+  EXPECT_EQ("Root is not present.", error_string);
 }
 
 TEST(AXTreeSourceCheckerTest, BadNodeIdOfRoot) {

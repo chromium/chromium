@@ -311,11 +311,12 @@ template <typename AXSourceNode>
 AXSourceNode AXTreeSerializer<AXSourceNode>::LeastCommonAncestor(
     AXSourceNode node,
     ClientTreeNode* client_node) {
-  if (!tree_->IsValid(node) || client_node == nullptr)
+  if (!node || client_node == nullptr) {
     return tree_->GetNull();
+  }
 
   std::vector<AXSourceNode> ancestors;
-  while (tree_->IsValid(node)) {
+  while (node) {
     ancestors.push_back(node);
     node = tree_->GetParent(node);
   }
@@ -355,7 +356,7 @@ AXSourceNode AXTreeSerializer<AXSourceNode>::LeastCommonAncestor(
   // that we're inside of a dirty subtree that all needs to be re-serialized, so
   // the LCA should be higher.
   ClientTreeNode* client_node = ClientTreeNodeById(tree_->GetId(node));
-  while (tree_->IsValid(node)) {
+  while (node) {
     if (client_node) {
       ClientTreeNode* parent = GetClientTreeNodeParent(client_node);
       if (!parent || !parent->in_dirty_subtree) {
@@ -363,8 +364,9 @@ AXSourceNode AXTreeSerializer<AXSourceNode>::LeastCommonAncestor(
       }
     }
     node = tree_->GetParent(node);
-    if (tree_->IsValid(node))
+    if (node) {
       client_node = ClientTreeNodeById(tree_->GetId(node));
+    }
   }
   return LeastCommonAncestor(node, client_node);
 }
@@ -379,8 +381,7 @@ bool AXTreeSerializer<AXSourceNode>::AnyDescendantWasReparented(
   auto num_children = tree_->GetChildCount(node);
   for (size_t i = 0; i < num_children; ++i) {
     AXSourceNode child = tree_->ChildAt(node, i);
-    DCHECK(child);
-    DCHECK(tree_->IsValid(child));
+    CHECK(child);
     int child_id = tree_->GetId(child);
     ClientTreeNode* client_child = ClientTreeNodeById(child_id);
     if (client_child) {
@@ -472,22 +473,20 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChanges(
   do {
     need_delete = false;
     if (client_root_) {
-      if (tree_->IsValid(lca)) {
+      if (lca) {
         // Check for any reparenting within this subtree - if there is
         // any, we need to delete and reserialize the whole subtree
         // that contains the old and new parents of the reparented node.
-        if (AnyDescendantWasReparented(lca, &lca))
+        if (AnyDescendantWasReparented(lca, &lca)) {
           need_delete = true;
+        }
       }
 
-      if (!tree_->IsValid(lca)) {
+      if (!lca) {
         // If there's no LCA, just tell the client to destroy the whole
         // tree and then we'll serialize everything from the new root.
-        // Cases where this occurs:
-        // - A new document is loaded (main or iframe)
-        // - document.body.innerHTML is changed
-        // - A modal <dialog> is opened
-        // - Full screen mode is toggled
+        // TODO(accessibility) Consider removal of this special case, as this is
+        // only currently only known to occur in unit tests.
         out_update->node_id_to_clear = client_root_->id;
         InternalReset();
       } else if (need_delete) {
@@ -503,8 +502,10 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChanges(
   } while (need_delete);
 
   // Serialize from the LCA, or from the root if there isn't one.
-  if (!tree_->IsValid(lca))
+  if (!lca) {
     lca = tree_->GetRoot();
+    DCHECK(lca);
+  }
 
   if (!SerializeChangedNodes(lca, out_update))
     return false;
@@ -694,7 +695,7 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
   }
   for (size_t i = 0; i < num_children; ++i) {
     AXSourceNode child = tree_->ChildAt(node, i);
-    DCHECK(child);
+    CHECK(child);
 
     int new_child_id = tree_->GetId(child);
     new_child_ids.insert(new_child_id);
@@ -786,16 +787,9 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
   client_node->children.reserve(num_children);
   for (size_t i = 0; i < num_children; ++i) {
     AXSourceNode child = tree_->ChildAt(node, i);
-    DCHECK(child);
+    CHECK(child);
 
     int child_id = tree_->GetId(child);
-
-    // Skip if the child isn't valid.
-    // TODO(accessibility) Turn into a DCHECK() once it's proven not to occur.
-    if (!tree_->IsValid(child)) {
-      NOTREACHED();
-      continue;
-    }
 
     // Skip if the same child is included more than once.
     if (new_child_ids.find(child_id) == new_child_ids.end())

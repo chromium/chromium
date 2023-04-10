@@ -50,7 +50,6 @@ class MODULES_EXPORT BlinkAXTreeSource
   AXObject* GetParent(AXObject* node) const override;
   void SerializeNode(AXObject* node, ui::AXNodeData* out_data) const override;
   bool IsIgnored(AXObject* node) const override;
-  bool IsValid(AXObject* node) const override;
   bool IsEqual(AXObject* node1, AXObject* node2) const override;
   AXObject* GetNull() const override;
   std::string GetDebugString(AXObject* node) const override;

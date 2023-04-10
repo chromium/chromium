@@ -864,7 +864,6 @@ class MockPluginAccessibilityTreeSource : public content::PluginAXTreeSource {
   ui::AXNode* GetParent(const ui::AXNode* node) const override {
     return nullptr;
   }
-  bool IsValid(const ui::AXNode* node) const override { return true; }
   bool IsEqual(const ui::AXNode* node1,
                const ui::AXNode* node2) const override {
     return (node1 == node2);

@@ -115,7 +115,6 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
   void ClearChildCache(const ui::AXNode*) override {}
   ui::AXNode* GetParent(const ui::AXNode* node) const override;
   bool IsIgnored(const ui::AXNode* node) const override;
-  bool IsValid(const ui::AXNode* node) const override;
   bool IsEqual(const ui::AXNode* node1, const ui::AXNode* node2) const override;
   const ui::AXNode* GetNull() const override;
   void SerializeNode(const ui::AXNode* node,

@@ -319,8 +319,9 @@ void AXTreeSourceArc::ComputeEnclosingBoundsInternal(
 AccessibilityInfoDataWrapper*
 AXTreeSourceArc::FindFirstFocusableNodeInFullFocusMode(
     AccessibilityInfoDataWrapper* info_data) const {
-  if (!IsValid(info_data))
+  if (!info_data) {
     return nullptr;
+  }
 
   if (info_data->IsVisibleToUser() && info_data->IsFocusableInFullFocusMode())
     return info_data;
@@ -357,8 +358,9 @@ bool AXTreeSourceArc::UpdateAndroidFocusedId(const AXEventData& event_data) {
           UseFullFocusMode()
               ? FindFirstFocusableNodeInFullFocusMode(source_node)
               : source_node;
-      if (IsValid(adjusted_node))
+      if (adjusted_node) {
         android_focused_id_ = adjusted_node->GetId();
+      }
     }
   } else if (event_data.event_type == AXEventType::VIEW_ACCESSIBILITY_FOCUSED &&
              UseFullFocusMode()) {
@@ -418,15 +420,16 @@ bool AXTreeSourceArc::UpdateAndroidFocusedId(const AXEventData& event_data) {
           GetFromId(event_data.source_id));
     }
 
-    if (IsValid(new_focus))
+    if (new_focus) {
       android_focused_id_ = new_focus->GetId();
+    }
   }
 
   if (!android_focused_id_ || !GetFromId(*android_focused_id_)) {
     // Because we only handle events from the focused window, let's reset the
     // focus to the root window.
     AccessibilityInfoDataWrapper* root = GetRoot();
-    DCHECK(IsValid(root));
+    CHECK(root);
     android_focused_id_ = root_id_;
   }
 
@@ -580,10 +583,6 @@ void AXTreeSourceArc::ClearChildCache(AccessibilityInfoDataWrapper* info_data) {
 
 bool AXTreeSourceArc::IsIgnored(AccessibilityInfoDataWrapper* info_data) const {
   return false;
-}
-
-bool AXTreeSourceArc::IsValid(AccessibilityInfoDataWrapper* info_data) const {
-  return info_data;
 }
 
 bool AXTreeSourceArc::IsEqual(AccessibilityInfoDataWrapper* info_data1,

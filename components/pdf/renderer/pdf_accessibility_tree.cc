@@ -1861,10 +1861,6 @@ bool PdfAccessibilityTree::IsIgnored(const ui::AXNode* node) const {
   return node->IsIgnored();
 }
 
-bool PdfAccessibilityTree::IsValid(const ui::AXNode* node) const {
-  return node != nullptr;
-}
-
 bool PdfAccessibilityTree::IsEqual(const ui::AXNode* node1,
                                    const ui::AXNode* node2) const {
   return node1 == node2;
