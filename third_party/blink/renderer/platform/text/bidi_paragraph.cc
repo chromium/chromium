@@ -42,14 +42,52 @@ bool BidiParagraph::SetParagraph(const String& text,
 }
 
 // static
-TextDirection BidiParagraph::BaseDirectionForString(const StringView& text) {
-  DCHECK(!text.Is8Bit());
-  if (text.Is8Bit()) {
-    return TextDirection::kLtr;
+template <>
+absl::optional<TextDirection> BidiParagraph::BaseDirectionForString(
+    base::span<const LChar> text) {
+  for (const LChar ch : text) {
+    if (u_charDirection(ch) == U_LEFT_TO_RIGHT) {
+      return TextDirection::kLtr;
+    }
+
+    if (ch == kNewlineCharacter) {
+      break;
+    }
   }
-  UBiDiDirection direction =
-      ubidi_getBaseDirection(text.Characters16(), text.length());
-  return direction == UBIDI_RTL ? TextDirection::kRtl : TextDirection::kLtr;
+  return absl::nullopt;
+}
+
+// static
+template <>
+absl::optional<TextDirection> BidiParagraph::BaseDirectionForString(
+    base::span<const UChar> text) {
+  const UChar* data = text.data();
+  const size_t len = text.size();
+  for (size_t i = 0; i < len;) {
+    UChar32 ch;
+    U16_NEXT(data, i, len, ch);
+    switch (u_charDirection(ch)) {
+      case U_LEFT_TO_RIGHT:
+        return TextDirection::kLtr;
+      case U_RIGHT_TO_LEFT:
+      case U_RIGHT_TO_LEFT_ARABIC:
+        return TextDirection::kRtl;
+      default:
+        break;
+    }
+
+    if (ch == kNewlineCharacter) {
+      break;
+    }
+  }
+  return absl::nullopt;
+}
+
+// static
+absl::optional<TextDirection> BidiParagraph::BaseDirectionForString(
+    const StringView& text) {
+  return text.Is8Bit() ? BaseDirectionForString(text.Span8())
+                       : BaseDirectionForString(text.Span16());
 }
 
 // static

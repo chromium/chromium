@@ -8,6 +8,7 @@
 #include <unicode/ubidi.h>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -52,10 +53,12 @@ class PLATFORM_EXPORT BidiParagraph {
   TextDirection BaseDirection() const { return base_direction_; }
 
   // Compute the base direction for a given string using the heuristic
-  // rules defined in UAX#9.
-  // This is generally determined by the first strong character.
+  // rules defined in UAX#9. It determines the direction by the first strong
+  // character, or returns `nullopt` if no strong characters are found before
+  // the first segment break.
   // http://unicode.org/reports/tr9/#The_Paragraph_Level
-  static TextDirection BaseDirectionForString(const StringView&);
+  static absl::optional<TextDirection> BaseDirectionForString(
+      const StringView&);
 
   // Create a string that enforces directional override by wrapping the given
   // string with a Unicode BiDi override character (LRO or ROL) and PDF.
@@ -104,6 +107,10 @@ class PLATFORM_EXPORT BidiParagraph {
       Vector<int32_t, 32>* indices_in_visual_order_out);
 
  private:
+  template <typename TChar>
+  static absl::optional<TextDirection> BaseDirectionForString(
+      base::span<const TChar>);
+
   struct UBiDiDeleter {
     void operator()(UBiDi* ubidi) const { ubidi_close(ubidi); }
   };

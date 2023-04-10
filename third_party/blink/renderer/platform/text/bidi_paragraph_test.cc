@@ -37,4 +37,44 @@ TEST(BidiParagraph, GetLogicalRuns) {
                                 BidiParagraph::Run(7, 11, 1)));
 }
 
+static struct BaseDirectionData {
+  const UChar* text;
+  absl::optional<TextDirection> direction;
+} base_direction_data[] = {
+    {u"A", TextDirection::kLtr},
+    {u"\u05D0", TextDirection::kRtl},
+    // "!" is a neutral character in the ASCII range.
+    {u"!", absl::nullopt},
+    // Surrogate pair, Avestan is RTL. crbug.com/488904.
+    {u"\U00010B15", TextDirection::kRtl},
+    // Surrogate pair, Emoji is neutral. crbug.com/559932.
+    {u"\U0001F62D", absl::nullopt},
+    // Leading neutral characters should be ignored.
+    {u"!A", TextDirection::kLtr},
+    {u"!A\u05D0", TextDirection::kLtr},
+    {u"!\u05D0Z", TextDirection::kRtl},
+    // Strong characters after a segment break should be ignored.
+    {u"!\nA", absl::nullopt},
+    {u"!\nA\u05D0", absl::nullopt},
+    {u"!\n\u05D0Z", absl::nullopt}};
+class BaseDirectionTest : public testing::TestWithParam<BaseDirectionData> {};
+INSTANTIATE_TEST_SUITE_P(BidiParagraph,
+                         BaseDirectionTest,
+                         testing::ValuesIn(base_direction_data));
+
+TEST_P(BaseDirectionTest, Data) {
+  const BaseDirectionData& test = GetParam();
+  String text(test.text);
+  EXPECT_EQ(BidiParagraph::BaseDirectionForString(text), test.direction)
+      << text;
+
+  // Test the 8 bits code path if all characters are 8 bits.
+  if (text.IsAllSpecialCharacters<[](UChar ch) { return ch <= 0x00FF; }>()) {
+    String text8 =
+        String::Make8BitFrom16BitSource(text.Characters16(), text.length());
+    EXPECT_EQ(BidiParagraph::BaseDirectionForString(text8), test.direction)
+        << text;
+  }
+}
+
 }  // namespace blink

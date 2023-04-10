@@ -480,11 +480,13 @@ void NGLineBreaker::ComputeBaseDirection() {
     ++start_offset;
   }
 
-  wtf_size_t end_offset = text.find(kNewlineCharacter, offset_);
-  base_direction_ = NGBidiParagraph::BaseDirectionForString(
-      end_offset == kNotFound
-          ? StringView(text, start_offset)
-          : StringView(text, start_offset, end_offset - start_offset));
+  base_direction_ =
+      NGBidiParagraph::BaseDirectionForString(StringView(text, start_offset))
+          // `plaintext` uses P2 and P3 of UAX#9:
+          // https://w3c.github.io/csswg-drafts/css-writing-modes-3/#valdef-unicode-bidi-plaintext
+          // which sets to LTR if no strong characters.
+          // https://unicode.org/reports/tr9/#P3
+          .value_or(TextDirection::kLtr);
 }
 
 void NGLineBreaker::RecalcClonedBoxDecorations() {
