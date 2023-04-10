@@ -199,8 +199,8 @@ const NonConfigurableActionsMap& GetNonConfigurableActionsMap() {
                {TextAcceleratorPart(ui::EF_SHIFT_DOWN),
                 TextAcceleratorPart(ui::EF_ALT_DOWN),
                 TextAcceleratorPart(ui::KeyboardCode::VKEY_I),
-                TextAcceleratorPart(ui::KeyboardCode::VKEY_TAB),
                 TextAcceleratorPart(ui::EF_SHIFT_DOWN),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_TAB),
                 TextAcceleratorPart(ui::KeyboardCode::VKEY_LEFT)})},
           {NonConfigurableActions::kAmbientOpenHighlightedItemOnShelf,
            NonConfigurableAcceleratorDetails(
