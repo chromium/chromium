@@ -229,8 +229,6 @@ class BookmarkButtonBase : public views::LabelButton {
   }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    if (GetAccessibleName().empty())
-      node_data->SetNameExplicitlyEmpty();
     views::LabelButton::GetAccessibleNodeData(node_data);
     node_data->AddStringAttribute(
         ax::mojom::StringAttribute::kRoleDescription,
@@ -296,6 +294,19 @@ class BookmarkButton : public BookmarkButtonBase {
           max_tooltip_width_, tooltip_manager->GetFontList(), *url_, GetText());
     }
     return tooltip_text_;
+  }
+
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
+    BookmarkButtonBase::GetAccessibleNodeData(node_data);
+    const std::u16string name = GetAccessibleName();
+    node_data->SetNameChecked(
+        name.empty()
+            ? l10n_util::GetStringFUTF16(
+                  IDS_UNNAMED_BOOKMARK_BUTTON_ACCESSIBLE_NAME,
+                  url_formatter::FormatUrl(
+                      url_.get(), url_formatter::kFormatUrlOmitDefaults,
+                      base::UnescapeRule::NORMAL, nullptr, nullptr, nullptr))
+            : name);
   }
 
   void SetText(const std::u16string& text) override {

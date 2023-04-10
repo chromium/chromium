@@ -21,6 +21,9 @@
     <message name="IDS_BOOKMARK_GROUP" desc="The group name of bookmarks imported from a file">
       Imported
     </message>
+    <message name="IDS_UNNAMED_BOOKMARK_BUTTON_ACCESSIBLE_NAME" desc="Accessible name for unnamed bookmark buttons. Provides something to screen readers.">
+      Unnamed bookmark for <ph name="url">$1<ex>https://example.com</ex></ph>
+    </message>
   </if>
 
   <if expr="not use_titlecase">
