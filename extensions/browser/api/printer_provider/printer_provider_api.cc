@@ -464,9 +464,9 @@ bool PendingPrintRequests::Complete(
   pending_requests_.erase(it);
 
   base::Value error_value;
-  if (error != api::printer_provider_internal::PRINT_ERROR_OK) {
+  if (error != api::printer_provider_internal::PrintError::kOk) {
     const std::string error_str =
-        error == api::printer_provider_internal::PRINT_ERROR_NONE
+        error == api::printer_provider_internal::PrintError::kNone
             ? PrinterProviderAPI::GetDefaultPrintError()
             : api::printer_provider_internal::ToString(error);
     error_value = base::Value(error_str);
@@ -624,7 +624,7 @@ void PrinterProviderAPIImpl::DispatchPrintRequested(PrinterProviderPrintJob job,
   if (!api::printer_provider::PrintJob::Ticket::Populate(job.ticket,
                                                          print_job.ticket)) {
     std::move(callback).Run(base::Value(api::printer_provider::ToString(
-        api::printer_provider::PRINT_ERROR_INVALID_TICKET)));
+        api::printer_provider::PrintError::kInvalidTicket)));
     return;
   }
 
@@ -786,7 +786,7 @@ PrinterProviderAPI* PrinterProviderAPI::Create(
 // static
 std::string PrinterProviderAPI::GetDefaultPrintError() {
   return api::printer_provider_internal::ToString(
-      api::printer_provider_internal::PRINT_ERROR_FAILED);
+      api::printer_provider_internal::PrintError::kFailed);
 }
 
 }  // namespace extensions
