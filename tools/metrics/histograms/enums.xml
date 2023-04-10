@@ -92221,30 +92221,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Scroll on main-thread"/>
 </enum>
 
-<enum name="SCStatusCode">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="OK"/>
-  <int value="2" label="Failed"/>
-  <int value="3" label="Invalid argument"/>
-  <int value="4" label="Access error"/>
-  <int value="5" label="No key"/>
-  <int value="6" label="Key exists"/>
-  <int value="7" label="Locked"/>
-  <int value="8" label="Need lock"/>
-  <int value="9" label="No store session"/>
-  <int value="10" label="No store server"/>
-  <int value="11" label="Notifier active"/>
-  <int value="12" label="No prefs session"/>
-  <int value="13" label="Prefs busy"/>
-  <int value="14" label="No config file"/>
-  <int value="15" label="No link"/>
-  <int value="16" label="Stale"/>
-  <int value="17" label="Max link"/>
-  <int value="18" label="Reachability unknown"/>
-  <int value="19" label="No service"/>
-  <int value="20" label="Ignore"/>
-</enum>
-
 <enum name="SCTAuditingReportCompletionStatus">
   <int value="0" label="kSuccessFirstTry">Succeeded on first try</int>
   <int value="1" label="kSuccessAfterRetries">Succeeded after retrying</int>

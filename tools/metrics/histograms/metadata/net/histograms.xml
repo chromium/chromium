@@ -2152,39 +2152,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.NetworkConfigWatcherMac.SCDynamicStore.Create"
-    enum="SCStatusCode" expires_after="M85">
-  <owner>mef@chromium.org</owner>
-  <owner>pauljensen@chromium.org</owner>
-  <summary>
-    This is logged when SCDynamicStoreCreate fails in
-    network_config_watcher_mac.cc.
-  </summary>
-</histogram>
-
-<histogram
-    name="Net.NetworkConfigWatcherMac.SCDynamicStore.Create.RunLoopSource"
-    enum="SCStatusCode" expires_after="M85">
-  <owner>mef@chromium.org</owner>
-  <owner>pauljensen@chromium.org</owner>
-  <summary>
-    This is logged when SCDynamicStoreCreateRunLoopSource fails in
-    network_config_watcher_mac.cc.
-  </summary>
-</histogram>
-
-<histogram name="Net.NetworkConfigWatcherMac.SCDynamicStore.NumRetry"
-    units="retries" expires_after="M85">
-  <owner>mef@chromium.org</owner>
-  <owner>pauljensen@chromium.org</owner>
-  <summary>
-    This is logged when retrying SCDynamicStore has stopped after either
-    receiving a success or hitting the maximum number of retries in
-    network_config_watcher_mac.cc. The 0 bucket is where no retry is performed,
-    and the maximal bucket is where all retries have failed.
-  </summary>
-</histogram>
-
 <histogram name="Net.NetworkErrorLogging.SignedExchangeRequestOutcome"
     enum="NetNetworkErrorLoggingRequestOutcome" expires_after="2023-03-29">
   <owner>ksakamoto@chromium.org</owner>
