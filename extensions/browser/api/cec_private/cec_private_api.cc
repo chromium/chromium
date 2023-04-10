@@ -22,28 +22,28 @@ ConvertCecServiceClientPowerState(
     ash::CecServiceClient::PowerState power_state) {
   switch (power_state) {
     case ash::CecServiceClient::PowerState::kError:
-      return extensions::api::cec_private::DISPLAY_CEC_POWER_STATE_ERROR;
+      return extensions::api::cec_private::DisplayCecPowerState::kError;
     case ash::CecServiceClient::PowerState::kAdapterNotConfigured:
-      return extensions::api::cec_private::
-          DISPLAY_CEC_POWER_STATE_ADAPTERNOTCONFIGURED;
+      return extensions::api::cec_private::DisplayCecPowerState::
+          kAdapterNotConfigured;
     case ash::CecServiceClient::PowerState::kNoDevice:
-      return extensions::api::cec_private::DISPLAY_CEC_POWER_STATE_NODEVICE;
+      return extensions::api::cec_private::DisplayCecPowerState::kNoDevice;
     case ash::CecServiceClient::PowerState::kOn:
-      return extensions::api::cec_private::DISPLAY_CEC_POWER_STATE_ON;
+      return extensions::api::cec_private::DisplayCecPowerState::kOn;
     case ash::CecServiceClient::PowerState::kStandBy:
-      return extensions::api::cec_private::DISPLAY_CEC_POWER_STATE_STANDBY;
+      return extensions::api::cec_private::DisplayCecPowerState::kStandby;
     case ash::CecServiceClient::PowerState::kTransitioningToOn:
-      return extensions::api::cec_private::
-          DISPLAY_CEC_POWER_STATE_TRANSITIONINGTOON;
+      return extensions::api::cec_private::DisplayCecPowerState::
+          kTransitioningToOn;
     case ash::CecServiceClient::PowerState::kTransitioningToStandBy:
-      return extensions::api::cec_private::
-          DISPLAY_CEC_POWER_STATE_TRANSITIONINGTOSTANDBY;
+      return extensions::api::cec_private::DisplayCecPowerState::
+          kTransitioningToStandby;
     case ash::CecServiceClient::PowerState::kUnknown:
-      return extensions::api::cec_private::DISPLAY_CEC_POWER_STATE_UNKNOWN;
+      return extensions::api::cec_private::DisplayCecPowerState::kUnknown;
   }
 
   NOTREACHED();
-  return extensions::api::cec_private::DISPLAY_CEC_POWER_STATE_UNKNOWN;
+  return extensions::api::cec_private::DisplayCecPowerState::kUnknown;
 }
 
 }  // namespace
