@@ -17,6 +17,7 @@
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"
+#include "device/bluetooth/floss/floss_sdp_types.h"
 
 namespace dbus {
 class ErrorResponse;
@@ -256,6 +257,12 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   // Returns connected devices.
   virtual void GetConnectedDevices();
 
+  // Initiate an SDP search on device for uuid. Search results provided through
+  // |OnSdpSearchComplete|.
+  virtual void SdpSearch(ResponseCallback<bool> callback,
+                         const FlossDeviceId& device,
+                         device::BluetoothUUID uuid);
+
   // Get the object path for this adapter.
   const dbus::ObjectPath* GetObjectPath() const { return &adapter_path_; }
 
@@ -302,6 +309,11 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   // Handle callback |OnBondStateChanged| on exported object path.
   void OnBondStateChanged(dbus::MethodCall* method_call,
                           dbus::ExportedObject::ResponseSender response_sender);
+
+  // Handle callback |OnSdpSearchComplete| on exported object path.
+  void OnSdpSearchComplete(
+      dbus::MethodCall* method_call,
+      dbus::ExportedObject::ResponseSender response_sender);
 
   // Handle callback |OnDeviceConnected| on exported object path.
   void OnDeviceConnected(dbus::MethodCall* method_call,

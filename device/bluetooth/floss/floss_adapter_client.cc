@@ -171,6 +171,13 @@ void FlossAdapterClient::GetConnectedDevices() {
       adapter::kGetConnectedDevices);
 }
 
+void FlossAdapterClient::SdpSearch(ResponseCallback<bool> callback,
+                                   const FlossDeviceId& device,
+                                   device::BluetoothUUID uuid) {
+  CallAdapterMethod<bool>(std::move(callback), adapter::kSdpSearch, device,
+                          uuid);
+}
+
 void FlossAdapterClient::Init(dbus::Bus* bus,
                               const std::string& service_name,
                               const int adapter_index,
@@ -229,6 +236,12 @@ void FlossAdapterClient::Init(dbus::Bus* bus,
       base::BindRepeating(&FlossAdapterClient::OnBondStateChanged,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&HandleExported, adapter::kOnBondStateChanged));
+
+  callbacks->ExportMethod(
+      adapter::kCallbackInterface, adapter::kOnSdpSearchComplete,
+      base::BindRepeating(&FlossAdapterClient::OnSdpSearchComplete,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&HandleExported, adapter::kOnSdpSearchComplete));
 
   callbacks->ExportMethod(
       adapter::kConnectionCallbackInterface, adapter::kOnDeviceConnected,
@@ -461,6 +474,23 @@ void FlossAdapterClient::OnBondStateChanged(
   }
 
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
+}
+
+void FlossAdapterClient::OnSdpSearchComplete(
+    dbus::MethodCall* method_call,
+    dbus::ExportedObject::ResponseSender response_sender) {
+  dbus::MessageReader reader(method_call);
+  FlossDeviceId device;
+  device::BluetoothUUID uuid;
+  std::vector<BtSdpRecord> sdp_records{};
+
+  if (!ReadAllDBusParams(&reader, &device, &uuid, &sdp_records)) {
+    std::move(response_sender)
+        .Run(dbus::ErrorResponse::FromMethodCall(
+            method_call, kErrorInvalidParameters,
+            /*error_message=*/std::string()));
+    return;
+  }
 }
 
 void FlossAdapterClient::OnDeviceConnected(

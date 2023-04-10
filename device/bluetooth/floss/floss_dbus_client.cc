@@ -75,6 +75,7 @@ const char kSetPin[] = "SetPin";
 const char kSetPasskey[] = "SetPasskey";
 const char kGetBondedDevices[] = "GetBondedDevices";
 const char kGetConnectedDevices[] = "GetConnectedDevices";
+const char kSdpSearch[] = "SdpSearch";
 
 // TODO(abps) - Rename this to AdapterCallback in platform and here
 const char kCallbackInterface[] = "org.chromium.bluetooth.BluetoothCallback";
@@ -91,6 +92,7 @@ const char kOnDiscoveringChanged[] = "OnDiscoveringChanged";
 const char kOnSspRequest[] = "OnSspRequest";
 
 const char kOnBondStateChanged[] = "OnBondStateChanged";
+const char kOnSdpSearchComplete[] = "OnSdpSearchComplete";
 const char kOnDeviceConnected[] = "OnDeviceConnected";
 const char kOnDeviceDisconnected[] = "OnDeviceDisconnected";
 
