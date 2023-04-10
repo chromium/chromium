@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/glanceables/glanceables_tasks_client_impl.h"
 
 #include <algorithm>
+#include <iterator>
 #include <memory>
 #include <string>
 #include <vector>
@@ -133,13 +134,8 @@ void GlanceablesTasksClientImpl::GetTaskLists(
     std::move(callback).Run(task_lists_.get());
     return;
   }
-
   task_lists_ = std::make_unique<ui::ListModel<GlanceablesTaskList>>();
-  GetRequestSender()->StartRequestWithAuthRetry(
-      std::make_unique<ListTaskListsRequest>(
-          request_sender_.get(),
-          base::BindOnce(&GlanceablesTasksClientImpl::OnTaskListsFetched,
-                         weak_factory_.GetWeakPtr(), std::move(callback))));
+  FetchTaskListsPage(/*page_token=*/"", std::move(callback));
 }
 
 void GlanceablesTasksClientImpl::GetTasks(
@@ -152,39 +148,82 @@ void GlanceablesTasksClientImpl::GetTasks(
     std::move(callback).Run(iter->second.get());
     return;
   }
+  FetchTasksPage(task_list_id, /*page_token=*/"", /*accumulated_raw_tasks=*/{},
+                 std::move(callback));
+}
 
+void GlanceablesTasksClientImpl::FetchTaskListsPage(
+    const std::string& page_token,
+    GlanceablesTasksClient::GetTaskListsCallback callback) {
+  GetRequestSender()->StartRequestWithAuthRetry(
+      std::make_unique<ListTaskListsRequest>(
+          request_sender_.get(),
+          base::BindOnce(&GlanceablesTasksClientImpl::OnTaskListsPageFetched,
+                         weak_factory_.GetWeakPtr(), std::move(callback)),
+          page_token));
+}
+
+void GlanceablesTasksClientImpl::OnTaskListsPageFetched(
+    GlanceablesTasksClient::GetTaskListsCallback callback,
+    base::expected<std::unique_ptr<TaskLists>, ApiErrorCode> result) {
+  if (!result.has_value()) {
+    task_lists_->DeleteAll();
+    std::move(callback).Run(task_lists_.get());
+    return;
+  }
+
+  for (const auto& raw_item : result.value()->items()) {
+    task_lists_->Add(std::make_unique<GlanceablesTaskList>(
+        raw_item->id(), raw_item->title(), raw_item->updated()));
+  }
+
+  if (result.value()->next_page_token().empty()) {
+    std::move(callback).Run(task_lists_.get());
+  } else {
+    FetchTaskListsPage(result.value()->next_page_token(), std::move(callback));
+  }
+}
+
+void GlanceablesTasksClientImpl::FetchTasksPage(
+    const std::string& task_list_id,
+    const std::string& page_token,
+    std::vector<std::unique_ptr<Task>> accumulated_raw_tasks,
+    GlanceablesTasksClient::GetTasksCallback callback) {
   GetRequestSender()->StartRequestWithAuthRetry(
       std::make_unique<ListTasksRequest>(
           request_sender_.get(),
-          base::BindOnce(&GlanceablesTasksClientImpl::OnTasksFetched,
+          base::BindOnce(&GlanceablesTasksClientImpl::OnTasksPageFetched,
                          weak_factory_.GetWeakPtr(), task_list_id,
-                         std::move(callback)),
-          task_list_id));
+                         std::move(accumulated_raw_tasks), std::move(callback)),
+          task_list_id, page_token));
 }
 
-void GlanceablesTasksClientImpl::OnTaskListsFetched(
-    GlanceablesTasksClient::GetTaskListsCallback callback,
-    base::expected<std::unique_ptr<TaskLists>, ApiErrorCode> result) const {
-  if (result.has_value()) {
-    for (const auto& raw_item : result.value()->items()) {
-      task_lists_->Add(std::make_unique<GlanceablesTaskList>(
-          raw_item->id(), raw_item->title(), raw_item->updated()));
-    }
-  }
-  std::move(callback).Run(task_lists_.get());
-}
-
-void GlanceablesTasksClientImpl::OnTasksFetched(
+void GlanceablesTasksClientImpl::OnTasksPageFetched(
     const std::string& task_list_id,
+    std::vector<std::unique_ptr<Task>> accumulated_raw_tasks,
     GlanceablesTasksClient::GetTasksCallback callback,
     base::expected<std::unique_ptr<Tasks>, ApiErrorCode> result) {
   const auto iter = tasks_in_task_lists_.find(task_list_id);
-  if (result.has_value()) {
-    for (auto& item : ConvertTasks(result.value()->items())) {
+
+  if (!result.has_value()) {
+    std::move(callback).Run(iter->second.get());
+    return;
+  }
+
+  accumulated_raw_tasks.insert(
+      accumulated_raw_tasks.end(),
+      std::make_move_iterator(result.value()->mutable_items()->begin()),
+      std::make_move_iterator(result.value()->mutable_items()->end()));
+
+  if (result.value()->next_page_token().empty()) {
+    for (auto& item : ConvertTasks(accumulated_raw_tasks)) {
       iter->second->Add(std::move(item));
     }
+    std::move(callback).Run(iter->second.get());
+  } else {
+    FetchTasksPage(task_list_id, result.value()->next_page_token(),
+                   std::move(accumulated_raw_tasks), std::move(callback));
   }
-  std::move(callback).Run(iter->second.get());
 }
 
 google_apis::RequestSender* GlanceablesTasksClientImpl::GetRequestSender() {

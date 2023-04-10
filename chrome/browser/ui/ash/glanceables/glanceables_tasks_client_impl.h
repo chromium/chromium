@@ -58,18 +58,54 @@ class GlanceablesTasksClientImpl : public GlanceablesTasksClient {
                 GlanceablesTasksClient::GetTasksCallback callback) override;
 
  private:
-  // Callback for `GetTaskLists()`. Transforms fetched items to ash-friendly
-  // types.
-  void OnTaskListsFetched(
+  // Fetches one page of task lists data.
+  // `page_token` - token specifying the result page to return, comes from the
+  //                previous fetch request. Use an empty string to fetch the
+  //                first page.
+  // `callback`   - done callback passed from `GetTaskLists()` to
+  //                `OnTaskListsPageFetched()`.
+  void FetchTaskListsPage(
+      const std::string& page_token,
+      GlanceablesTasksClient::GetTaskListsCallback callback);
+
+  // Callback for `FetchTaskListsPage()`. Transforms fetched items to
+  // ash-friendly types. If `next_page_token()` in the `result` is not empty -
+  // calls another `FetchTaskListsPage()`, otherwise runs `callback`.
+  void OnTaskListsPageFetched(
       GlanceablesTasksClient::GetTaskListsCallback callback,
       base::expected<std::unique_ptr<google_apis::tasks::TaskLists>,
-                     google_apis::ApiErrorCode> result) const;
+                     google_apis::ApiErrorCode> result);
 
-  // Callback for `GetTasks()`. Transforms fetched items to ash-friendly types.
-  void OnTasksFetched(const std::string& task_list_id,
-                      GlanceablesTasksClient::GetTasksCallback callback,
-                      base::expected<std::unique_ptr<google_apis::tasks::Tasks>,
-                                     google_apis::ApiErrorCode> result);
+  // Fetches one page of tasks data.
+  // `task_list_id`          - task list identifier.
+  // `page_token`            - token specifying the result page to return, comes
+  //                           from the previous fetch request. Use an empty
+  //                           string to fetch the first page.
+  // `accumulated_raw_tasks` - in contrast to the task lists conversion logic,
+  //                           tasks can't be converted independently on every
+  //                           single page response (subtasks could go first,
+  //                           but their parent tasks will be on the next page).
+  //                           This parameter helps to accumulate all of them
+  //                           first and then do the conversion once the last
+  //                           page is fetched.
+  // `callback`              - done callback passed from `GetTasks()` to
+  //                           `OnTasksPageFetched()`.
+  void FetchTasksPage(const std::string& task_list_id,
+                      const std::string& page_token,
+                      std::vector<std::unique_ptr<google_apis::tasks::Task>>
+                          accumulated_raw_tasks,
+                      GlanceablesTasksClient::GetTasksCallback callback);
+
+  // Callback for `FetchTasksPage()`. Transforms fetched items to ash-friendly
+  // types. If `next_page_token()` in the `result` is not empty - calls another
+  // `FetchTasksPage()`, otherwise runs `callback`.
+  void OnTasksPageFetched(
+      const std::string& task_list_id,
+      std::vector<std::unique_ptr<google_apis::tasks::Task>>
+          accumulated_raw_tasks,
+      GlanceablesTasksClient::GetTasksCallback callback,
+      base::expected<std::unique_ptr<google_apis::tasks::Tasks>,
+                     google_apis::ApiErrorCode> result);
 
   // Returns lazily initialized `request_sender_`.
   google_apis::RequestSender* GetRequestSender();
