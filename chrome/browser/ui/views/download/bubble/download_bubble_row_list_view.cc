@@ -42,13 +42,9 @@ std::unique_ptr<views::View> DownloadBubbleRowListView::CreateWithScroll(
     DownloadBubbleUIController* bubble_controller,
     DownloadBubbleNavigationHandler* navigation_handler,
     std::vector<DownloadUIModel::DownloadUIModelPtr> rows,
-    int fixed_width,
-    base::OnceClosure on_mouse_entered_closure) {
-  if (is_partial_view && rows.empty())
-    return nullptr;
-
-  auto row_list_view = std::make_unique<DownloadBubbleRowListView>(
-      is_partial_view, browser, std::move(on_mouse_entered_closure));
+    int fixed_width) {
+  auto row_list_view =
+      std::make_unique<DownloadBubbleRowListView>(is_partial_view, browser);
   for (DownloadUIModel::DownloadUIModelPtr& model : rows) {
     // raw pointer is safe as the toolbar owns the bubble, which owns an
     // individual row view.
@@ -67,14 +63,11 @@ std::unique_ptr<views::View> DownloadBubbleRowListView::CreateWithScroll(
   return scroll_view;
 }
 
-DownloadBubbleRowListView::DownloadBubbleRowListView(
-    bool is_partial_view,
-    Browser* browser,
-    base::OnceClosure on_mouse_entered_closure)
+DownloadBubbleRowListView::DownloadBubbleRowListView(bool is_partial_view,
+                                                     Browser* browser)
     : is_partial_view_(is_partial_view),
       creation_time_(base::Time::Now()),
-      browser_(browser),
-      on_mouse_entered_closure_(std::move(on_mouse_entered_closure)) {
+      browser_(browser) {
   SetOrientation(views::LayoutOrientation::kVertical);
   SetNotifyEnterExitOnChild(true);
   if (IsIncognitoInfoRowEnabled()) {
@@ -131,12 +124,6 @@ DownloadBubbleRowListView::~DownloadBubbleRowListView() {
       base::StrCat({"Download.Bubble.", is_partial_view_ ? "Partial" : "Full",
                     "View.VisibleTime"}),
       base::Time::Now() - creation_time_);
-}
-
-void DownloadBubbleRowListView::OnMouseEntered(const ui::MouseEvent& event) {
-  if (on_mouse_entered_closure_) {
-    std::move(on_mouse_entered_closure_).Run();
-  }
 }
 
 bool DownloadBubbleRowListView::IsIncognitoInfoRowEnabled() {

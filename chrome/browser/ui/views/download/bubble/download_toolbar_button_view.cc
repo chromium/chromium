@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/download/bubble/download_bubble_partial_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_list_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_security_view.h"
@@ -380,11 +381,9 @@ bool DownloadToolbarButtonView::ShouldShowInkdropAfterIphInteraction() {
 
 std::unique_ptr<views::View> DownloadToolbarButtonView::GetPrimaryView() {
   if (is_primary_partial_view_) {
-    return DownloadBubbleRowListView::CreateWithScroll(
-        /*is_partial_view=*/true, browser_, bubble_controller_.get(), this,
+    return DownloadBubblePartialView::Create(
+        browser_, bubble_controller_.get(), this,
         bubble_controller_->GetPartialView(),
-        ChromeLayoutProvider::Get()->GetDistanceMetric(
-            views::DISTANCE_BUBBLE_PREFERRED_WIDTH),
         base::BindOnce(&DownloadToolbarButtonView::DeactivateAutoClose,
                        base::Unretained(this)));
   }
@@ -467,9 +466,6 @@ void DownloadToolbarButtonView::CreateBubbleDialogDelegate(
       switcher_view->AddChildView(std::make_unique<DownloadBubbleSecurityView>(
           bubble_controller_.get(), this, bubble_delegate.get()));
   security_view_->SetVisible(false);
-  bubble_delegate->set_fixed_width(
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   bubble_delegate->set_margins(GetPrimaryViewMargin());
   bubble_delegate->SetEnableArrowKeyTraversal(true);
   bubble_delegate_ = bubble_delegate.get();
