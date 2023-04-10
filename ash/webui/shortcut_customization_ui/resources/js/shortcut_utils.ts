@@ -152,7 +152,7 @@ export const getAccelerator =
  * Sort the modifiers in the order of ctrl, alt, shift, meta.
  */
 export const getSortedModifiers = (modifierStrings: string[]): string[] => {
-  const sortOrder = ['ctrl', 'alt', 'shift', 'meta'];
+  const sortOrder = ['meta', 'ctrl', 'alt', 'shift'];
   if (modifierStrings.length <= 1) {
     return modifierStrings;
   }

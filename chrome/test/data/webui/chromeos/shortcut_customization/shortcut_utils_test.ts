@@ -135,16 +135,16 @@ suite('shortcutUtilsTest', function() {
 
     // Multiple modifiers
     const actualMultiple = getSortedModifiers(['ctrl', 'shift', 'meta', 'alt']);
-    const expectedMultiple: string[] = ['ctrl', 'alt', 'shift', 'meta'];
+    const expectedMultiple: string[] = ['meta', 'ctrl', 'alt', 'shift'];
     assertTrue(areModifiersEqual(actualMultiple, expectedMultiple));
 
     const actualMultiple2 = getSortedModifiers(['ctrl', 'shift', 'meta']);
-    const expectedMultiple2: string[] = ['ctrl', 'shift', 'meta'];
+    const expectedMultiple2: string[] = ['meta', 'ctrl', 'shift'];
     assertTrue(areModifiersEqual(actualMultiple2, expectedMultiple2));
 
     const actualMultiple3 =
         getSortedModifiers(['shift', 'meta', 'ctrl', 'alt']);
-    const expectedMultiple3: string[] = ['ctrl', 'alt', 'shift', 'meta'];
+    const expectedMultiple3: string[] = ['meta', 'ctrl', 'alt', 'shift'];
     assertTrue(areModifiersEqual(actualMultiple3, expectedMultiple3));
   });
 
@@ -171,7 +171,7 @@ suite('shortcutUtilsTest', function() {
             Modifier.ALT | Modifier.CONTROL, /*keyCode=*/ 221,
             /*keyDisplay=*/ ']')));
     assertArrayEquals(
-        ['ctrl', 'alt', 'shift', 'meta'],
+        ['meta', 'ctrl', 'alt', 'shift'],
         getModifiersForAcceleratorInfo(createStandardAcceleratorInfo(
             Modifier.ALT | Modifier.CONTROL | Modifier.COMMAND | Modifier.SHIFT,
             /*keyCode=*/ 221,
