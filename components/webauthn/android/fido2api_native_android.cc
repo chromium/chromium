@@ -35,54 +35,22 @@ static jboolean JNI_Fido2Api_ParseAttestationObject(
   std::vector<uint8_t> attestation_object_bytes;
   JavaByteArrayToByteVector(env, jattestation_object_bytes,
                             &attestation_object_bytes);
-
-  absl::optional<cbor::Value> attestation_object_map =
-      cbor::Reader::Read(attestation_object_bytes);
-  if (!attestation_object_map || !attestation_object_map->is_map()) {
+  absl::optional<device::AttestationObject::ResponseFields> fields =
+      device::AttestationObject::ParseForResponseFields(
+          std::move(attestation_object_bytes), attestation_acceptable);
+  if (!fields) {
     return false;
   }
 
-  absl::optional<device::AttestationObject> attestation_object =
-      device::AttestationObject::Parse(*attestation_object_map);
-  if (!attestation_object) {
-    return false;
-  }
-
-  const absl::optional<device::AttestedCredentialData>& att_cred_data(
-      attestation_object->authenticator_data().attested_data());
-  if (!att_cred_data) {
-    return false;
-  }
-
-  const device::PublicKey* pub_key = att_cred_data->public_key();
-  const absl::optional<std::vector<uint8_t>>& der_bytes(pub_key->der_bytes);
   ScopedJavaLocalRef<jbyteArray> spki_java;
-  if (der_bytes) {
-    spki_java.Reset(ToJavaByteArray(env, *der_bytes));
+  if (fields->public_key_der) {
+    spki_java.Reset(ToJavaByteArray(env, *fields->public_key_der));
   }
 
-  base::span<const uint8_t> attestation_obj_out = attestation_object_bytes;
-  absl::optional<std::vector<uint8_t>> data_without_attestation_vec;
-
-  if (!attestation_acceptable) {
-    const bool did_modify = attestation_object->EraseAttestationStatement(
-        device::AttestationObject::AAGUID::kInclude);
-    if (did_modify) {
-      // The devicePubKey extension signs over the authenticator data so its
-      // signature is now invalid and we have to remove the extension.
-      attestation_object->EraseExtension(device::kExtensionDevicePublicKey);
-    }
-    data_without_attestation_vec =
-        cbor::Writer::Write(AsCBOR(*attestation_object));
-    attestation_obj_out = *data_without_attestation_vec;
-  }
-
-  ScopedJavaLocalRef<jbyteArray> auth_data_java = ToJavaByteArray(
-      env, attestation_object->authenticator_data().SerializeToByteArray());
-
-  Java_AttestationObjectParts_setAll(env, out_result, auth_data_java, spki_java,
-                                     pub_key->algorithm,
-                                     ToJavaByteArray(env, attestation_obj_out));
+  Java_AttestationObjectParts_setAll(
+      env, out_result, ToJavaByteArray(env, fields->authenticator_data),
+      spki_java, fields->public_key_algo,
+      ToJavaByteArray(env, fields->attestation_object_bytes));
 
   return true;
 }

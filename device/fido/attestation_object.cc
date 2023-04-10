@@ -6,14 +6,20 @@
 
 #include <utility>
 
+#include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "device/fido/attestation_statement.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/opaque_attestation_statement.h"
+#include "device/fido/public_key.h"
 
 namespace device {
+
+AttestationObject::ResponseFields::ResponseFields() = default;
+AttestationObject::ResponseFields::~ResponseFields() = default;
+AttestationObject::ResponseFields::ResponseFields(ResponseFields&&) = default;
 
 // static
 absl::optional<AttestationObject> AttestationObject::Parse(
@@ -49,6 +55,58 @@ absl::optional<AttestationObject> AttestationObject::Parse(
   }
   return AttestationObject(std::move(*authenticator_data),
                            std::move(attestation_statement));
+}
+
+// static
+absl::optional<AttestationObject::ResponseFields>
+AttestationObject::ParseForResponseFields(
+    std::vector<uint8_t> attestation_object_bytes,
+    bool attestation_acceptable) {
+  absl::optional<cbor::Value> attestation_object_map =
+      cbor::Reader::Read(attestation_object_bytes);
+  if (!attestation_object_map || !attestation_object_map->is_map()) {
+    return absl::nullopt;
+  }
+
+  absl::optional<device::AttestationObject> attestation_object =
+      device::AttestationObject::Parse(*attestation_object_map);
+  if (!attestation_object) {
+    return absl::nullopt;
+  }
+
+  const absl::optional<device::AttestedCredentialData>& att_cred_data(
+      attestation_object->authenticator_data().attested_data());
+  if (!att_cred_data) {
+    return absl::nullopt;
+  }
+
+  const device::PublicKey* pub_key = att_cred_data->public_key();
+  ResponseFields ret;
+  if (pub_key->der_bytes) {
+    ret.public_key_der = pub_key->der_bytes;
+  }
+  ret.public_key_algo = pub_key->algorithm;
+
+  if (attestation_acceptable) {
+    ret.attestation_object_bytes = std::move(attestation_object_bytes);
+  } else {
+    const bool did_modify = attestation_object->EraseAttestationStatement(
+        device::AttestationObject::AAGUID::kInclude);
+    if (did_modify) {
+      // The devicePubKey extension signs over the authenticator data so its
+      // signature is now invalid and we have to remove the extension.
+      attestation_object->EraseExtension(device::kExtensionDevicePublicKey);
+      ret.attestation_object_bytes =
+          *cbor::Writer::Write(AsCBOR(*attestation_object));
+    } else {
+      ret.attestation_object_bytes = std::move(attestation_object_bytes);
+    }
+  }
+
+  ret.authenticator_data =
+      attestation_object->authenticator_data().SerializeToByteArray();
+
+  return ret;
 }
 
 AttestationObject::AttestationObject(

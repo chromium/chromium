@@ -7,6 +7,7 @@
 #include "base/base64url.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
+#include "device/fido/attestation_object.h"
 #include "device/fido/authenticator_selection_criteria.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/fido_constants.h"
@@ -478,19 +479,27 @@ MakeCredentialResponseFromValue(const base::Value& value) {
     return InvalidMakeCredentialField("response");
   }
 
-  absl::optional<std::string> authenticator_data =
-      Base64UrlDecodeStringKey(*attestation_response, "authenticatorData");
-  if (!authenticator_data) {
-    return InvalidMakeCredentialField("authenticatorData");
-  }
-  response->info->authenticator_data = ToByteVector(*authenticator_data);
-
   absl::optional<std::string> attestation_object =
       Base64UrlDecodeStringKey(*attestation_response, "attestationObject");
   if (!attestation_object) {
     return InvalidMakeCredentialField("attestationObject");
   }
-  response->attestation_object = ToByteVector(*attestation_object);
+  std::vector<uint8_t> attestation_object_bytes =
+      ToByteVector(*attestation_object);
+
+  absl::optional<device::AttestationObject::ResponseFields> fields =
+      device::AttestationObject::ParseForResponseFields(
+          std::move(attestation_object_bytes), /*attestation_acceptable=*/true);
+  if (!fields) {
+    return InvalidMakeCredentialField("attestationObject");
+  }
+
+  response->attestation_object = std::move(fields->attestation_object_bytes);
+  response->info->authenticator_data = std::move(fields->authenticator_data);
+  response->public_key_algo = fields->public_key_algo;
+  if (fields->public_key_der) {
+    response->public_key_der = std::move(*fields->public_key_der);
+  }
 
   absl::optional<std::string> client_data_json =
       Base64UrlDecodeStringKey(*attestation_response, "clientDataJSON");
@@ -498,23 +507,6 @@ MakeCredentialResponseFromValue(const base::Value& value) {
     return InvalidMakeCredentialField("clientDataJSON");
   }
   response->info->client_data_json = ToByteVector(*client_data_json);
-
-  // publicKey is required but nullable.
-  auto [ok, opt_public_key] =
-      Base64UrlDecodeNullableStringKey(*attestation_response, "publicKey");
-  if (!ok) {
-    return InvalidMakeCredentialField("publicKey");
-  }
-  if (opt_public_key) {
-    response->public_key_der = ToByteVector(*opt_public_key);
-  }
-
-  absl::optional<int> public_key_algorithm =
-      attestation_response->FindInt("publicKeyAlgorithm");
-  if (!public_key_algorithm) {
-    return InvalidMakeCredentialField("publicKeyAlgorithm");
-  }
-  response->public_key_algo = *public_key_algorithm;
 
   const base::Value::List* transports =
       attestation_response->FindList("transports");
