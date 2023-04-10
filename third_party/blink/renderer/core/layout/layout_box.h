@@ -322,10 +322,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // border-after edge.
   virtual LayoutUnit LogicalHeightWithVisibleOverflow() const;
 
-  LayoutUnit ConstrainLogicalWidthByMinMax(LayoutUnit,
-                                           LayoutUnit,
-                                           const LayoutBlock*,
-                                           bool allow_intrinsic = true) const;
   LayoutUnit ConstrainLogicalHeightByMinMax(
       LayoutUnit logical_height,
       LayoutUnit intrinsic_content_height) const;
@@ -553,12 +549,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   bool CanResize() const;
 
   LayoutUnit ContainerWidthInInlineDirection() const;
-  // Whether we should (and are able to) compute the logical width using the
-  // aspect ratio. Since we compute the logical *height* as part of this check,
-  // we provide it in an optional out parameter in case the caller needs it
-  // (only valid if this function returns true).
-  bool ShouldComputeLogicalWidthFromAspectRatio(
-      LayoutUnit* logical_height = nullptr) const;
   bool ShouldComputeLogicalHeightFromAspectRatio() const {
     NOT_DESTROYED();
     if (ShouldComputeLogicalWidthFromAspectRatioAndInsets())
@@ -581,7 +571,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       return true;
     return false;
   }
-  bool ComputeLogicalWidthFromAspectRatio(LayoutUnit* logical_width) const;
 
   MinMaxSizes ComputeMinMaxLogicalWidthFromAspectRatio() const;
 
@@ -1276,9 +1265,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   LayoutUnit PerpendicularContainingBlockLogicalHeight() const;
 
-  virtual void UpdateLogicalWidth();
-  void UpdateLogicalHeight();
-  void ComputeLogicalHeight(LogicalExtentComputedValues&) const;
   virtual void ComputeLogicalHeight(LayoutUnit logical_height,
                                     LayoutUnit logical_top,
                                     LogicalExtentComputedValues&) const;
@@ -1289,8 +1275,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // When there is no explicit height, this function assumes a content height of
   // zero (and returns just border+padding).
   LayoutUnit ComputeLogicalHeightWithoutLayout() const;
-
-  void ComputeLogicalWidth(LogicalExtentComputedValues&) const;
 
   bool StretchesToViewport() const {
     NOT_DESTROYED();
@@ -1319,11 +1303,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   bool AutoWidthShouldFitContent() const;
 
-  LayoutUnit ComputeLogicalWidthUsing(
-      SizeType,
-      const Length& logical_width,
-      LayoutUnit available_logical_width,
-      const LayoutBlock* containing_block) const;
   LayoutUnit ComputeLogicalHeightUsing(
       SizeType,
       const Length& height,
@@ -1336,16 +1315,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       SizeType,
       const Length& height,
       LayoutUnit intrinsic_content_height) const;
-  LayoutUnit ComputeReplacedLogicalWidthUsing(SizeType, Length width) const;
-  LayoutUnit ComputeReplacedLogicalWidthRespectingMinMaxWidth(
-      LayoutUnit logical_width,
-      ShouldComputePreferred = kComputeActual) const;
   LayoutUnit ComputeReplacedLogicalHeightUsing(SizeType, Length height) const;
   LayoutUnit ComputeReplacedLogicalHeightRespectingMinMaxHeight(
       LayoutUnit logical_height) const;
 
-  virtual LayoutUnit ComputeReplacedLogicalWidth(
-      ShouldComputePreferred = kComputeActual) const;
   virtual LayoutUnit ComputeReplacedLogicalHeight(
       LayoutUnit estimated_used_width = LayoutUnit()) const;
 
@@ -1509,9 +1482,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                          const PhysicalOffset& paint_offset) const;
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;
   ResourcePriority ComputeResourcePriority() const final;
-
-  void LogicalExtentAfterUpdatingLogicalWidth(const LayoutUnit& logical_top,
-                                              LogicalExtentComputedValues&);
 
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
   PositionWithAffinity PositionForPointInFragments(const PhysicalOffset&) const;
@@ -1963,12 +1933,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       unsigned max_depth_to_test) const;
   virtual bool ComputeBackgroundIsKnownToBeObscured() const;
 
-  virtual void ComputePositionedLogicalWidth(
-      LogicalExtentComputedValues&) const;
-
-  LayoutUnit ComputeIntrinsicLogicalWidthUsing(
-      const Length& logical_width_length,
-      LayoutUnit available_logical_width) const;
   LayoutUnit ComputeIntrinsicLogicalContentHeightUsing(
       SizeType height_type,
       const Length& logical_height_length,

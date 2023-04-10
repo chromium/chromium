@@ -60,11 +60,6 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   LayoutReplaced(Element*, const LayoutSize& intrinsic_size);
   ~LayoutReplaced() override;
 
-  LayoutUnit ComputeReplacedLogicalWidth(
-      ShouldComputePreferred = kComputeActual) const override;
-  LayoutUnit ComputeReplacedLogicalHeight(
-      LayoutUnit estimated_used_width = LayoutUnit()) const override;
-
   bool HasReplacedLogicalHeight() const;
 
   // This function returns the local rect of the replaced content. The rectangle
@@ -166,11 +161,6 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
                       height_override.value_or(intrinsic_size_.Height()));
   }
 
-  void ComputePositionedLogicalWidth(
-      LogicalExtentComputedValues&) const override;
-  void ComputePositionedLogicalHeight(
-      LogicalExtentComputedValues&) const override;
-
   MinMaxSizes ComputeIntrinsicLogicalWidths() const final;
 
   // This function calculates the placement of the replaced contents. It takes
@@ -228,12 +218,7 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
       const NGPhysicalBoxStrut& border_padding,
       const LayoutSize* overridden_intrinsic_size) const;
 
-  MinMaxSizes PreferredLogicalWidths() const final;
-
   void ComputeIntrinsicSizingInfoForReplacedContent(IntrinsicSizingInfo&) const;
-  gfx::SizeF ConstrainIntrinsicSizeToMinMax(const IntrinsicSizingInfo&) const;
-
-  LayoutUnit ComputeConstrainedLogicalWidth(ShouldComputePreferred) const;
 
   absl::optional<LayoutUnit> IntrinsicWidthOverride() const {
     NOT_DESTROYED();
