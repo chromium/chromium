@@ -110,11 +110,8 @@ export class PowerBookmarksListElement extends PolymerElement {
 
       labels_: {
         type: Array,
-        value: () => [{
-          label: loadTimeData.getString('priceTrackingLabel'),
-          icon: 'bookmarks:price-tracking',
-          active: false,
-        }],
+        value: () => [],
+        computed: 'computePriceTrackingLabel_(trackedProductInfos_.*)',
       },
 
       activeSortIndex_: {
@@ -369,6 +366,23 @@ export class PowerBookmarksListElement extends PolymerElement {
 
   private onBookmarkPriceUntracked_(bookmarkId: string) {
     this.set(`trackedProductInfos_.${bookmarkId}`, null);
+  }
+
+  // TODO(emshack): Once there is more than one bookmark power, remove this
+  // logic and always display the price tracking label button.
+  private computePriceTrackingLabel_() {
+    const showLabel =
+        Object.keys(this.trackedProductInfos_)
+            .some(key => this.get(`trackedProductInfos_.${key}`) !== null);
+    if (showLabel) {
+      return [{
+        label: loadTimeData.getString('priceTrackingLabel'),
+        icon: 'bookmarks:price-tracking',
+        active: false,
+      }];
+    } else {
+      return [];
+    }
   }
 
   /**
