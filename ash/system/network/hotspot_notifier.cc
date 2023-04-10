@@ -4,6 +4,7 @@
 
 #include "ash/system/network/hotspot_notifier.h"
 #include "ash/public/cpp/hotspot_config_service.h"
+#include "ash/public/cpp/network_config_service.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -35,18 +36,32 @@ HotspotNotifier::HotspotNotifier() {
       remote_cros_hotspot_config_.BindNewPipeAndPassReceiver());
   remote_cros_hotspot_config_->ObserveEnabledStateChanges(
       hotspot_enabled_state_observer_receiver_.BindNewPipeAndPassRemote());
+
+  GetNetworkConfigService(
+      remote_cros_network_config_.BindNewPipeAndPassReceiver());
+  remote_cros_network_config_->AddObserver(
+      cros_network_config_observer_receiver_.BindNewPipeAndPassRemote());
 }
 
 HotspotNotifier::~HotspotNotifier() = default;
 
 void HotspotNotifier::OnHotspotTurnedOn(bool wifi_turned_off) {
   if (wifi_turned_off) {
+    scoped_refptr<message_center::NotificationDelegate> delegate =
+        base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+            base::BindRepeating(&HotspotNotifier::EnableWiFiHandler,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                kWiFiTurnedOffNotificationId));
+
+    std::vector<message_center::ButtonInfo> notification_actions;
     std::unique_ptr<message_center::Notification> notification =
         CreateNotification(IDS_ASH_HOTSPOT_ON_TITLE,
                            IDS_ASH_HOTSPOT_WIFI_TURNED_OFF_MESSAGE,
-                           kWiFiTurnedOffNotificationId,
-                           /*delegate=*/nullptr);
-
+                           kWiFiTurnedOffNotificationId, delegate);
+    notification_actions.push_back(
+        message_center::ButtonInfo(l10n_util::GetStringUTF16(
+            IDS_ASH_HOTSPOT_NOTIFICATION_WIFI_TURN_ON_BUTTON)));
+    notification->set_buttons(notification_actions);
     message_center::MessageCenter* message_center =
         message_center::MessageCenter::Get();
     message_center->RemoveNotification(kWiFiTurnedOffNotificationId,
@@ -136,6 +151,40 @@ void HotspotNotifier::EnableHotspotHandler(const char* notification_id,
                                                /*by_user=*/false);
           }
         }));
+  }
+}
+
+void HotspotNotifier::EnableWiFiHandler(const char* notification_id,
+                                        absl::optional<int> button_index) {
+  if (!button_index) {
+    return;
+  }
+
+  if (button_index.value() == 0) {
+    remote_cros_network_config_->SetNetworkTypeEnabledState(
+        chromeos::network_config::mojom::NetworkType::kWiFi, /*enabled=*/true,
+        base::DoNothing());
+  }
+}
+
+void HotspotNotifier::OnDeviceStateListChanged() {
+  remote_cros_network_config_->GetDeviceStateList(base::BindOnce(
+      &HotspotNotifier::OnGetDeviceStateList, weak_ptr_factory_.GetWeakPtr()));
+}
+
+void HotspotNotifier::OnGetDeviceStateList(
+    std::vector<chromeos::network_config::mojom::DeviceStatePropertiesPtr>
+        devices) {
+  for (auto& device : devices) {
+    if (device->type == chromeos::network_config::mojom::NetworkType::kWiFi &&
+        device->device_state ==
+            chromeos::network_config::mojom::DeviceStateType::kEnabled) {
+      message_center::MessageCenter* message_center =
+          message_center::MessageCenter::Get();
+      message_center->RemoveNotification(kWiFiTurnedOffNotificationId,
+                                         /*by_user=*/false);
+      return;
+    }
   }
 }
 

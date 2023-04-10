@@ -2581,6 +2581,9 @@ Connect your device to power.
       <message name="IDS_ASH_HOTSPOT_NOTIFICATION_TURN_ON_BUTTON" desc="The label used as the button to turn on hotspot.">
         Turn on hotspot
       </message>
+      <message name="IDS_ASH_HOTSPOT_NOTIFICATION_WIFI_TURN_ON_BUTTON" desc="The label for button to turn WiFi on in the hotspot notification.">
+        Turn on WiFi instead
+      </message>
       <message name="IDS_ASH_HOTSPOT_WIFI_TURNED_OFF_MESSAGE" desc="Message displayed in the system notification shown when WiFi is turned off upon enabling hotspot.">
         We've turned off the WiFi to start using Hotspot through Mobile data. This may incur data costs.
       </message>

@@ -11,8 +11,12 @@
 #include "chromeos/ash/components/network/hotspot_state_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/network/network_state_test_helper.h"
+#include "chromeos/ash/services/hotspot_config/cros_hotspot_config.h"
 #include "chromeos/ash/services/hotspot_config/public/cpp/cros_hotspot_config_test_helper.h"
+#include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 
 namespace ash {
 
@@ -116,6 +120,8 @@ class HotspotNotifierTest : public NoSessionAshTestBase {
       cros_network_config_test_helper_;
   std::unique_ptr<hotspot_config::CrosHotspotConfigTestHelper>
       cros_hotspot_config_test_helper_;
+  std::unique_ptr<HotspotNotifier> hotspot_notifier_;
+  mojo::Remote<hotspot_config::mojom::CrosHotspotConfig> cros_hotspot_config_;
 };
 
 TEST_F(HotspotNotifierTest, WiFiTurnedOff) {
@@ -129,6 +135,13 @@ TEST_F(HotspotNotifierTest, WiFiTurnedOff) {
   EnableHotspot();
   EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
       HotspotNotifier::kWiFiTurnedOffNotificationId));
+
+  message_center::MessageCenter::Get()->ClickOnNotificationButton(
+      HotspotNotifier::kWiFiTurnedOffNotificationId, 0);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          HotspotNotifier::kWiFiTurnedOffNotificationId));
 }
 
 TEST_F(HotspotNotifierTest, AdminRestricted) {
