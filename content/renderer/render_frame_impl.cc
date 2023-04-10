@@ -5291,7 +5291,10 @@ void RenderFrameImpl::BeginNavigation(
       frame_->IsOnInitialEmptyDocument() && first_navigation_in_render_frame &&
       // If this is a subframe history navigation that should be sent to the
       // browser, don't commit it synchronously.
-      !is_history_navigation_in_new_child_frame;
+      !is_history_navigation_in_new_child_frame &&
+      // Fullscreen navigation requests must go to the browser (for permission
+      // checks and other security measures).
+      !info->is_fullscreen_requested;
 
   if (should_do_synchronous_about_blank_navigation) {
     for (auto& observer : observers_)
