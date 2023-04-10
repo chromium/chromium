@@ -153,6 +153,10 @@ class WorkerThread::InterruptData {
 };
 
 WorkerThread::~WorkerThread() {
+  if (!recordreplay::AreEventsDisallowed()) {
+    recordreplay::Assert("[RUN-1537-1689] WorkerThread::~WorkerThread %d", recordreplay::PointerId(this));
+  }
+
   recordreplay::UnregisterPointer(this);
   DCHECK_CALLED_ON_VALID_THREAD(parent_thread_checker_);
   base::AutoLock locker(ThreadSetLock());
@@ -291,6 +295,9 @@ void WorkerThread::Terminate() {
   ScheduleToTerminateScriptExecution();
 
   inspector_task_runner_->Dispose();
+
+  recordreplay::Assert("[RUN-1537-1689] WorkerThread::Terminate %d",
+                       recordreplay::PointerId(this));
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       GetWorkerBackingThread().BackingThread().GetTaskRunner();
@@ -662,6 +669,10 @@ void WorkerThread::InitializeOnWorkerThread(
 
   {
     base::AutoLock locker(ThreadSetLock());
+
+    recordreplay::Assert("[RUN-1537-1689] InitializeOnWorkerThread %d %u %u",
+                         recordreplay::PointerId(this), WorkerThreads().size(), InitializingWorkerThreads().size());
+
     DCHECK(InitializingWorkerThreads().Contains(this));
     DCHECK(!WorkerThreads().Contains(this));
     InitializingWorkerThreads().erase(this);
@@ -756,6 +767,10 @@ void WorkerThread::PrepareForShutdownOnWorkerThread() {
 
   if (WorkerThreadDebugger* debugger = WorkerThreadDebugger::From(GetIsolate()))
     debugger->WorkerThreadDestroyed(this);
+
+  recordreplay::Assert(
+      "[RUN-1537-1689] WorkerThread::PrepareForShutdownOnWorkerThread %d",
+      recordreplay::PointerId(this));
 
   GetWorkerReportingProxy().WillDestroyWorkerGlobalScope();
 

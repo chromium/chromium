@@ -40,8 +40,8 @@ LocaleController::LocaleController()
 
 String LocaleController::SetLocaleOverride(const String& locale) {
   recordreplay::Assert(
-      "[RUN-1537-1688] LocaleController::SetLocaleOverride A %s %s %d",
-      locale_override_.Utf8().c_str(), locale.Utf8().c_str(), locale.empty());
+      "[RUN-1537-1681] LocaleController::SetLocaleOverride A %s %s",
+      locale_override_.Utf8().c_str(), locale.Utf8().c_str());
   if (locale_override_ == locale)
     return String();
   if (locale.empty()) {
@@ -50,7 +50,7 @@ String LocaleController::SetLocaleOverride(const String& locale) {
     icu::Locale locale_object(locale.Ascii().data());
     const char* lang = locale_object.getLanguage();
     recordreplay::Assert(
-        "[RUN-1537-1688] LocaleController::SetLocaleOverride B %s", lang ? lang : "");
+        "[RUN-1537-1681] LocaleController::SetLocaleOverride B %s", lang ? lang : "");
     if (!lang || *lang == '\0')
       return "Invalid locale name";
     UpdateLocale(locale);
