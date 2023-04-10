@@ -30,45 +30,6 @@ source_set("feature_engagement") {
   ]
 }
 
-source_set("eg_app_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
-  testonly = true
-  sources = [
-    "feature_engagement_app_interface.h",
-    "feature_engagement_app_interface.mm",
-  ]
-  deps = [
-    "//base",
-    "//base/test:test_support",
-    "//components/feature_engagement/public",
-    "//components/feature_engagement/test:test_support",
-    "//components/keyed_service/core",
-    "//components/translate/core/browser",
-    "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/feature_engagement",
-    "//ios/chrome/test/app:test_support",
-  ]
-}
-
-source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
-  testonly = true
-  sources = [
-    "feature_engagement_app_interface.h",
-    "feature_engagement_app_interface_stub.mm",
-  ]
-  deps = [
-    "//base",
-    "//ios/testing/earl_grey:eg_test_support+eg2",
-  ]
-}
-
 source_set("eg2_tests") {
   configs += [
     "//build/config/compiler:enable_arc",
@@ -77,7 +38,6 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "feature_engagement_egtest.mm" ]
   deps = [
-    ":eg_test_support+eg2",
     "//base",
     "//components/feature_engagement/public",
     "//ios/chrome/app/strings",
@@ -91,4 +51,18 @@ source_set("eg2_tests") {
     "//url",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "feature_engagement_unittest.mm" ]
+  frameworks = [ "Foundation.framework" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/feature_engagement/public",
+    "//components/feature_engagement/test:test_support",
+    "//testing/gtest",
+  ]
 }

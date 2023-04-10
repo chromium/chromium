@@ -88,7 +88,6 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/default_browser:test_support",
     "//ios/chrome/browser/default_browser:utils",
     "//ios/chrome/browser/device_sharing:eg_app_support+eg2",
-    "//ios/chrome/browser/feature_engagement:eg_app_support+eg2",
     "//ios/chrome/browser/find_in_page",
     "//ios/chrome/browser/find_in_page:eg_app_support+eg2",
     "//ios/chrome/browser/https_upgrades:eg_app_support+eg2",

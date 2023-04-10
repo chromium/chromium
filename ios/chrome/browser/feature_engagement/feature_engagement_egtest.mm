@@ -4,9 +4,10 @@
 
 #import <XCTest/XCTest.h>
 
+#import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#import "ios/chrome/browser/feature_engagement/feature_engagement_app_interface.h"
+#import "components/feature_engagement/public/feature_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
@@ -17,6 +18,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/base/mac/url_conversions.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
@@ -34,17 +36,6 @@ namespace {
 
 using base::test::ios::kWaitForUIElementTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
-
-// The minimum number of times Chrome must be opened in order for the Reading
-// List Badge to be shown.
-const int kMinChromeOpensRequiredForReadingList = 5;
-
-// The minimum number of times Chrome must be opened in order for the New Tab
-// Tip to be shown.
-const int kMinChromeOpensRequiredForNewTabTip = 3;
-
-// URL path for a page with text in French.
-const char kFrenchPageURLPath[] = "/french";
 
 // Matcher for the Reading List Text Badge.
 id<GREYMatcher> ReadingListTextBadge() {
@@ -103,14 +94,6 @@ id<GREYMatcher> TabPinnedTip() {
       l10n_util::GetNSString(IDS_IOS_PINNED_TAB_OVERFLOW_ACTION_IPH_TEXT));
 }
 
-// Opens the TabGrid and then opens a new tab.
-void OpenTabGridAndOpenTab() {
-  [ChromeEarlGreyUI openTabGrid];
-
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridNewTabButton()]
-      performAction:grey_tap()];
-}
-
 // Opens and closes the tab switcher.
 void OpenAndCloseTabSwitcher() {
   [ChromeEarlGreyUI openTabGrid];
@@ -135,54 +118,35 @@ void RequestDesktopVersion() {
       onElementWithMatcher:toolsMenuMatcher] performAction:grey_tap()];
 }
 
-// net::EmbeddedTestServer handler for kFrenchPageURLPath.
-std::unique_ptr<net::test_server::HttpResponse> LoadFrenchPage(
-    const net::test_server::HttpRequest& request) {
-  std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
-      new net::test_server::BasicHttpResponse);
-  http_response->set_content_type("text/html");
-  http_response->set_content(
-      "Maître Corbeau, sur un arbre perché, Tenait en son bec un fromage. "
-      "Maître Renard, par l’odeur alléché, Lui tint à peu près ce langage");
-  return std::move(http_response);
-}
-
 }  // namespace
 
-// Tests related to the triggering of In Product Help features.
+// Tests related to the triggering of In Product Help features. Tests here
+// should verify that the UI presents correctly once the help has been
+// triggered. The feature engagement tracker Demo Mode feature can be used for
+// this.
 @interface FeatureEngagementTestCase : ChromeTestCase
 @end
 
 @implementation FeatureEngagementTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
+- (void)enableDemoModeForFeature:(std::string)feature {
+  std::string enable_features = base::StringPrintf(
+      "%s:chosen_feature/%s", feature_engagement::kIPHDemoMode.name,
+      feature.c_str());
   if ([self isRunningTest:@selector(testPinTabFromOverflowMenu)]) {
-    AppLaunchConfiguration config;
-    config.additional_args.push_back(
-        "--enable-features=" + std::string(kEnablePinnedTabs.name) + ":" +
-        kEnablePinnedTabsOverflowParam + "/true");
-    return config;
+    enable_features += base::StringPrintf(",%s:%s/true", kEnablePinnedTabs.name,
+                                          kEnablePinnedTabsOverflowParam);
   }
-  return [super appConfigurationForTestCase];
-}
-
-- (void)tearDown {
-  [FeatureEngagementAppInterface reset];
-  [super tearDown];
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.additional_args.push_back("--enable-features=" + enable_features);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 }
 
 // Verifies that the Badged Reading List feature shows when triggering
 // conditions are met. Also verifies that the Badged Reading List does not
 // appear again after being shown.
 - (void)testBadgedReadingListFeatureShouldShow {
-  GREYAssert([FeatureEngagementAppInterface enableBadgedReadingListTriggering],
-             @"Feature Engagement tracker did not load");
-
-  // Ensure that Chrome has been launched enough times for the Badged Reading
-  // List to appear.
-  for (int index = 0; index < kMinChromeOpensRequiredForReadingList; index++) {
-    [FeatureEngagementAppInterface simulateChromeOpenedEvent];
-  }
+  [self enableDemoModeForFeature:"IPH_BadgedReadingList"];
 
   [ChromeEarlGreyUI openToolsMenu];
 
@@ -190,72 +154,17 @@ std::unique_ptr<net::test_server::HttpResponse> LoadFrenchPage(
          usingSearchAction:grey_scrollInDirection(kGREYDirectionRight, 150)
       onElementWithMatcher:grey_accessibilityID(kPopupMenuToolsMenuTableViewId)]
       assertWithMatcher:grey_notNil()];
-
-  [ChromeEarlGreyUI closeToolsMenu];
-
-  // Reopen tools menu to verify that the badge does not appear again.
-  [ChromeEarlGreyUI openToolsMenu];
-  // Make sure the ReadingList entry is visible.
-  [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
-                                              kToolsMenuReadingListId),
-                                          grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionRight, 150)
-      onElementWithMatcher:grey_accessibilityID(kPopupMenuToolsMenuTableViewId)]
-      assertWithMatcher:grey_notNil()];
-
-  [[EarlGrey selectElementWithMatcher:ReadingListTextBadge()]
-      assertWithMatcher:grey_notVisible()];
 }
 
-// Verifies that the Badged Reading List feature does not show if Chrome has
-// not opened enough times.
-- (void)testBadgedReadingListFeatureTooFewChromeOpens {
-  GREYAssert([FeatureEngagementAppInterface enableBadgedReadingListTriggering],
-             @"Feature Engagement tracker did not load");
-
-  // Open Chrome just one time.
-  [FeatureEngagementAppInterface simulateChromeOpenedEvent];
-
-  [ChromeEarlGreyUI openToolsMenu];
-
-  [[EarlGrey selectElementWithMatcher:ReadingListTextBadge()]
-      assertWithMatcher:grey_notVisible()];
-}
-
-// Verifies that the Badged Reading List feature does not show if the reading
-// list has already been used.
-- (void)testBadgedReadingListFeatureReadingListAlreadyUsed {
-  GREYAssert([FeatureEngagementAppInterface enableBadgedReadingListTriggering],
-             @"Feature Engagement tracker did not load");
-
-  // Ensure that Chrome has been launched enough times to meet the trigger
-  // condition.
-  for (int index = 0; index < kMinChromeOpensRequiredForReadingList; index++) {
-    [FeatureEngagementAppInterface simulateChromeOpenedEvent];
-  }
-
-  [FeatureEngagementAppInterface showReadingList];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kTableViewNavigationDismissButtonId)]
-      performAction:grey_tap()];
-
-  [ChromeEarlGreyUI openToolsMenu];
-
-  [[EarlGrey selectElementWithMatcher:ReadingListTextBadge()]
-      assertWithMatcher:grey_notVisible()];
-}
-
-// Verifies that the Badged Manual Translate Trigger feature shows only once
-// when the triggering conditions are met.
-- (void)testBadgedTranslateManualTriggerFeatureShouldShowOnce {
+// Verifies that the Badged Manual Translate Trigger feature shows.
+- (void)testBadgedTranslateManualTriggerFeatureShows {
   if ([ChromeEarlGrey isNewOverflowMenuEnabled]) {
     // TODO(crbug.com/1285154): Reenable once this is supported.
     EARL_GREY_TEST_DISABLED(
         @"New overflow menu does not support translate badge");
   }
-  GREYAssert([FeatureEngagementAppInterface enableBadgedTranslateManualTrigger],
-             @"Feature Engagement tracker did not load");
+
+  [self enableDemoModeForFeature:"IPH_BadgedTranslateManualTrigger"];
 
   [ChromeEarlGreyUI openToolsMenu];
 
@@ -270,78 +179,12 @@ std::unique_ptr<net::test_server::HttpResponse> LoadFrenchPage(
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 150)
       onElementWithMatcher:chrome_test_util::ToolsMenuView()]
       assertWithMatcher:grey_notNil()];
-
-  // Close tools menu by tapping reload.
-  [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   chrome_test_util::ReloadButton(),
-                                   grey_ancestor(
-                                       chrome_test_util::ToolsMenuView()),
-                                   nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionUp, 150)
-      onElementWithMatcher:chrome_test_util::ToolsMenuView()]
-      performAction:grey_tap()];
-
-  [ChromeEarlGreyUI openToolsMenu];
-
-  // Make sure the Manual Translate Trigger entry is visible.
-  [[[EarlGrey selectElementWithMatcher:TranslateManualTriggerButton()]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 150)
-      onElementWithMatcher:chrome_test_util::ToolsMenuView()]
-      assertWithMatcher:grey_notNil()];
-
-  // Verify that the badge does not appear again.
-  [[[EarlGrey selectElementWithMatcher:TranslateManualTriggerBadge()]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 150)
-      onElementWithMatcher:chrome_test_util::ToolsMenuView()]
-      assertWithMatcher:grey_notVisible()];
-}
-
-// Verifies that the Badged Manual Translate Trigger feature does not show if
-// the entry has already been used.
-// TODO(crbug.com/1321264): This is failing flakily on several configurations.
-- (void)DISABLED_testBadgedTranslateManualTriggerFeatureAlreadyUsed {
-  // Set up the test server.
-  self.testServer->RegisterDefaultHandler(base::BindRepeating(
-      net::test_server::HandlePrefixedRequest, kFrenchPageURLPath,
-      base::BindRepeating(&LoadFrenchPage)));
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start");
-
-  // Load a URL with french text so that language detection is performed.
-  [ChromeEarlGrey loadURL:self.testServer->GetURL(kFrenchPageURLPath)];
-
-  GREYAssert([FeatureEngagementAppInterface enableBadgedTranslateManualTrigger],
-             @"Feature Engagement tracker did not load");
-
-  // Simulate using the Manual Translate Trigger entry.
-  [FeatureEngagementAppInterface showTranslate];
-
-  [ChromeEarlGreyUI openToolsMenu];
-
-  // Make sure the Manual Translate Trigger entry is visible.
-  [[[EarlGrey selectElementWithMatcher:TranslateManualTriggerButton()]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 150)
-      onElementWithMatcher:chrome_test_util::ToolsMenuView()]
-      assertWithMatcher:grey_notNil()];
-
-  // Verify that the badge does not appear.
-  [[[EarlGrey selectElementWithMatcher:TranslateManualTriggerBadge()]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 150)
-      onElementWithMatcher:chrome_test_util::ToolsMenuView()]
-      assertWithMatcher:grey_notVisible()];
 }
 
 // Verifies that the New Tab Tip appears when all conditions are met.
 // TODO(crbug.com/934248) The test is flaky.
 - (void)DISABLED_testNewTabTipPromoShouldShow {
-  GREYAssert([FeatureEngagementAppInterface enableNewTabTipTriggering],
-             @"Feature Engagement tracker did not load");
-
-  // Ensure that Chrome has been launched enough times to meet the trigger
-  // condition.
-  for (int index = 0; index < kMinChromeOpensRequiredForNewTabTip; index++) {
-    [FeatureEngagementAppInterface simulateChromeOpenedEvent];
-  }
+  [self enableDemoModeForFeature:"IPH_NewTabTip"];
 
   // Navigate to a page other than the NTP to allow for the New Tab Tip to
   // appear.
@@ -358,14 +201,7 @@ std::unique_ptr<net::test_server::HttpResponse> LoadFrenchPage(
 // Verifies that the New Tab Tip does not appear if all conditions are met,
 // but the NTP is open.
 - (void)testNewTabTipPromoDoesNotAppearOnNTP {
-  GREYAssert([FeatureEngagementAppInterface enableNewTabTipTriggering],
-             @"Feature Engagement tracker did not load");
-
-  // Ensure that Chrome has been launched enough times to meet the trigger
-  // condition.
-  for (int index = 0; index < kMinChromeOpensRequiredForNewTabTip; index++) {
-    [FeatureEngagementAppInterface simulateChromeOpenedEvent];
-  }
+  [self enableDemoModeForFeature:"IPH_NewTabTip"];
 
   // Open and close the tab switcher to potentially trigger the New Tab Tip.
   OpenAndCloseTabSwitcher();
@@ -381,12 +217,11 @@ std::unique_ptr<net::test_server::HttpResponse> LoadFrenchPage(
   if (![ChromeEarlGrey isSplitToolbarMode])
     return;
 
-  GREYAssert([FeatureEngagementAppInterface enableBottomToolbarTipTriggering],
-             @"Feature Engagement tracker did not load");
+  // The IPH appears immediately on startup, so don't open a new tab when the
+  // app starts up.
+  [[self class] testForStartup];
 
-  // Open and close the tab switcher to potentially trigger the Bottom Toolbar
-  // Tip.
-  OpenAndCloseTabSwitcher();
+  [self enableDemoModeForFeature:"IPH_BottomToolbarTip"];
 
   // Verify that the Bottom toolbar Tip appeared.
   ConditionBlock condition = ^{
@@ -406,14 +241,13 @@ std::unique_ptr<net::test_server::HttpResponse> LoadFrenchPage(
   if ([ChromeEarlGrey isSplitToolbarMode])
     return;
 
-  GREYAssert([FeatureEngagementAppInterface enableBottomToolbarTipTriggering],
-             @"Feature Engagement tracker did not load");
+  // The IPH appears immediately on startup, so don't open a new tab when the
+  // app starts up.
+  [[self class] testForStartup];
 
-  // Open and close the tab switcher to potentially trigger the Bottom Toolbar
-  // Tip.
-  OpenAndCloseTabSwitcher();
+  [self enableDemoModeForFeature:"IPH_BottomToolbarTip"];
 
-  // Verify that the Bottom toolbar Tip appeared.
+  // Verify that the Bottom toolbar Tip didn't appear.
   ConditionBlock condition = ^{
     NSError* error = nil;
     [[EarlGrey selectElementWithMatcher:BottomToolbarTipBubble()]
@@ -432,50 +266,15 @@ std::unique_ptr<net::test_server::HttpResponse> LoadFrenchPage(
   if (![ChromeEarlGrey isSplitToolbarMode])
     return;
 
-  GREYAssert([FeatureEngagementAppInterface enableLongPressTipTriggering],
-             @"Feature Engagement tracker did not load");
+  // The IPH appears immediately on startup, so don't open a new tab when the
+  // app starts up.
+  [[self class] testForStartup];
 
-  // Open the tab switcher and open a new tab to try to trigger the tip.
-  OpenTabGridAndOpenTab();
-
-  // Verify that the Long Press Tip don't appear if the bottom toolbar tip
-  // hasn't been displayed.
-  ConditionBlock condition = ^{
-    NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:LongPressTipBubble()]
-        assertWithMatcher:grey_sufficientlyVisible()
-                    error:&error];
-    return error == nil;
-  };
-  GREYAssert(
-      !WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, condition),
-      @"The Long Press tip shouldn't appear before showing the other tip");
-
-  // Enable the Bottom Toolbar tip.
-  GREYAssert([FeatureEngagementAppInterface enableBottomToolbarTipTriggering],
-             @"Feature Engagement tracker did not load");
-
-  // Open the tab switcher and open a new tab to try to trigger the tip.
-  OpenAndCloseTabSwitcher();
-
-  // Verify that the Bottom Toolbar tip has been displayed.
-  condition = ^{
-    NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:BottomToolbarTipBubble()]
-        assertWithMatcher:grey_sufficientlyVisible()
-                    error:&error];
-    return error == nil;
-  };
-  GREYAssert(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, condition),
-             @"Waiting for the Bottom Toolbar tip.");
-
-  // Open the tab switcher and open a new tab to try to trigger the LongPress
-  // tip.
-  OpenTabGridAndOpenTab();
+  [self enableDemoModeForFeature:"IPH_LongPressToolbarTip"];
 
   // Verify that the Long Press Tip appears now that the Bottom Toolbar tip has
   // been shown.
-  condition = ^{
+  ConditionBlock condition = ^{
     NSError* error = nil;
     [[EarlGrey selectElementWithMatcher:LongPressTipBubble()]
         assertWithMatcher:grey_sufficientlyVisible()
@@ -486,82 +285,20 @@ std::unique_ptr<net::test_server::HttpResponse> LoadFrenchPage(
              @"Waiting for the Long Press tip.");
 }
 
-// Verifies that the IPH for Request desktop is shown after 3 requests of the
-// desktop version of a website.
+// Verifies that the IPH for Request desktop shows when triggered
 - (void)testRequestDesktopTip {
-  GREYAssert([FeatureEngagementAppInterface enableDefaultSiteViewTipTriggering],
-             @"Feature Engagement tracker did not load");
+  [self enableDemoModeForFeature:"IPH_DefaultSiteView"];
 
   self.testServer->AddDefaultHandlers();
 
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start");
 
-  // Request the desktop version of a website, this should not trigger the tip.
-  [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
-  RequestDesktopVersion();
-
-  [[EarlGrey selectElementWithMatcher:DefaultSiteViewTip()]
-      assertWithMatcher:grey_nil()];
-
-  // Second time, still no tip.
-  [ChromeEarlGreyUI openNewTab];
-  [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
-  RequestDesktopVersion();
-
-  [[EarlGrey selectElementWithMatcher:DefaultSiteViewTip()]
-      assertWithMatcher:grey_nil()];
-
-  // Third time, this should trigger the tip.
-  [ChromeEarlGreyUI openNewTab];
+  // Request the desktop version of a website to trigger the tip.
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
   RequestDesktopVersion();
 
   [[EarlGrey selectElementWithMatcher:DefaultSiteViewTip()]
       assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Fourth time, the tip should no longer trigger.
-  [ChromeEarlGreyUI openNewTab];
-  [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
-  RequestDesktopVersion();
-
-  [[EarlGrey selectElementWithMatcher:DefaultSiteViewTip()]
-      assertWithMatcher:grey_nil()];
-}
-
-// Verifies that the IPH for Request desktop is not shown if the user interacted
-// with the default page mode.
-- (void)testRequestDesktopTipAfterChangingDefaultPageMode {
-  GREYAssert([FeatureEngagementAppInterface enableDefaultSiteViewTipTriggering],
-             @"Feature Engagement tracker did not load");
-
-  [self togglePageMode];
-
-  self.testServer->AddDefaultHandlers();
-
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start");
-
-  // Request the desktop version of a website, this should not trigger the tip.
-  [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
-  RequestDesktopVersion();
-
-  [[EarlGrey selectElementWithMatcher:DefaultSiteViewTip()]
-      assertWithMatcher:grey_nil()];
-
-  // Second time, still no tip.
-  [ChromeEarlGreyUI openNewTab];
-  [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
-  RequestDesktopVersion();
-
-  [[EarlGrey selectElementWithMatcher:DefaultSiteViewTip()]
-      assertWithMatcher:grey_nil()];
-
-  // Third time, the tip should still not be shown.
-  [ChromeEarlGreyUI openNewTab];
-  [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
-  RequestDesktopVersion();
-
-  [[EarlGrey selectElementWithMatcher:DefaultSiteViewTip()]
-      assertWithMatcher:grey_nil()];
 }
 
 // Verifies that the IPH for Pinned tab is displayed after pinning a tab from
@@ -576,9 +313,9 @@ std::unique_ptr<net::test_server::HttpResponse> LoadFrenchPage(
     // Only available for iOS 15+.
     return;
   }
+  [self enableDemoModeForFeature:"IPH_TabPinnedFeature"];
+
   XCUIApplication* app = [[XCUIApplication alloc] init];
-  GREYAssert([FeatureEngagementAppInterface enableTabPinnedTipTriggering],
-             @"Feature Engagement tracker did not load");
 
   // Make sure that the pinned tabs feature has never been used from the
   // overflow menu.
@@ -586,7 +323,7 @@ std::unique_ptr<net::test_server::HttpResponse> LoadFrenchPage(
 
   [ChromeEarlGreyUI openToolsMenu];
 
-  // Check that the "N" IPH bagde is displayed before tapping on the action.
+  // Check that the "N" IPH badge is displayed before tapping on the action.
   GREYAssert([[app images][@"overflowRowIPHBadgeIdentifier"] exists],
              @"The 'N' IPH bagde should be displayed.");
   [ChromeEarlGreyUI
@@ -631,32 +368,6 @@ std::unique_ptr<net::test_server::HttpResponse> LoadFrenchPage(
   // Tap the snackbar to make it disappear.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityLabel(pinTabSnackbarMessage)]
-      performAction:grey_tap()];
-}
-
-#pragma mark - Helpers
-
-// Toggles the page mode from Mobile to Desktop and then back to Mobile.
-- (void)togglePageMode {
-  [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI
-      tapSettingsMenuButton:chrome_test_util::ContentSettingsButton()];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_DEFAULT_PAGE_MODE_LABEL)]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::StaticTextWithAccessibilityLabelId(
-                     IDS_IOS_DEFAULT_PAGE_MODE_DESKTOP)]
-      performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(chrome_test_util::StaticTextWithAccessibilityLabelId(
-                         IDS_IOS_DEFAULT_PAGE_MODE_MOBILE),
-                     grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
       performAction:grey_tap()];
 }
 

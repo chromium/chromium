@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 #import "base/ios/ios_util.h"
+#import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/feature_engagement/feature_engagement_app_interface.h"
+#import "components/feature_engagement/public/feature_constants.h"
 #import "ios/chrome/browser/find_in_page/features.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -217,18 +218,17 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
     EARL_GREY_TEST_SKIPPED(
         @"The overflow menu IPH only exists when the overflow menu is enabled.")
   }
-  GREYAssert([FeatureEngagementAppInterface enableOverflowMenuTipTriggering],
-             @"Feature Engagement tracker did not load");
 
-  // Open and close tools menu twice with no action to trigger tooltip.
-  [ChromeEarlGreyUI openToolsMenu];
-  [ChromeEarlGreyUI closeToolsMenu];
+  // Enable the IPH Demo Mode feature to ensure the IPH triggers
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.additional_args.push_back(base::StringPrintf(
+      "--enable-features=%s:chosen_feature/IPH_OverflowMenuTip",
+      feature_engagement::kIPHDemoMode.name));
 
-  [ChromeEarlGreyUI openToolsMenu];
-  [ChromeEarlGreyUI closeToolsMenu];
-
-  // Background and foreground the app, which should show tooltip.
-  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+  // The IPH appears immediately on startup, so don't open a new tab when the
+  // app starts up.
+  [[self class] testForStartup];
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
                       grey_accessibilityID(@"BubbleViewLabelIdentifier")];

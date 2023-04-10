@@ -9,6 +9,7 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
@@ -28,6 +29,10 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
+}  // namespace
 
 @interface PopupMenuHelpCoordinator () <SceneStateObserver>
 
@@ -158,7 +163,7 @@
   self.popupMenuBubblePresenter = nil;
 }
 
-- (void)showPopupMenuBubbleIfNecessary {
+- (void)prepareToShowPopupMenuBubble {
   // The alternate IPH flow only shows the IPH when entering the menu.
   if (IsNewOverflowMenuAlternateIPHEnabled()) {
     return;
@@ -173,11 +178,24 @@
           if (!success) {
             return;
           }
-          [weakSelf showPopupMenuBubbleIfNecessary];
+          [weakSelf prepareToShowPopupMenuBubble];
         }));
     return;
   }
 
+  if (tests_hook::DelayAppLaunchPromos()) {
+    __weak __typeof(self) weakSelf = self;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
+                                 kPromoDisplayDelayForTests.InNanoseconds()),
+                   dispatch_get_main_queue(), ^{
+                     [weakSelf showPopupMenuBubbleIfNecessary];
+                   });
+  } else {
+    [self showPopupMenuBubbleIfNecessary];
+  }
+}
+
+- (void)showPopupMenuBubbleIfNecessary {
   // Skip if a presentation is already in progress
   if (self.popupMenuBubblePresenter) {
     return;
@@ -259,7 +277,7 @@
   if (level <= SceneActivationLevelBackground) {
     self.inSessionWithPopupMenuIPH = NO;
   } else if (level >= SceneActivationLevelForegroundActive) {
-    [self showPopupMenuBubbleIfNecessary];
+    [self prepareToShowPopupMenuBubble];
   }
 }
 
