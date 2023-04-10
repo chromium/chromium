@@ -1133,7 +1133,7 @@ void ArcNetHostImpl::RequestPasspointAppApproval(
         mojom::PasspointApprovalResponse::New(/*allow=*/false));
     return;
   }
-  PasspointDialogView::Show(window, request->app_name, std::move(callback));
+  PasspointDialogView::Show(window, std::move(request), std::move(callback));
 }
 
 void ArcNetHostImpl::AddPasspointCredentialsWithProperties(

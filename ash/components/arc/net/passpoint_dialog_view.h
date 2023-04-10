@@ -46,7 +46,7 @@ class PasspointDialogView : public views::BoxLayoutView {
     PasspointDialogView* const view_;
   };
 
-  PasspointDialogView(base::StringPiece app_name,
+  PasspointDialogView(mojom::PasspointApprovalRequestPtr request,
                       PasspointDialogCallback callback);
   PasspointDialogView(const PasspointDialogView&) = delete;
   PasspointDialogView& operator=(const PasspointDialogView&) = delete;
@@ -55,14 +55,23 @@ class PasspointDialogView : public views::BoxLayoutView {
   // Shows confirmation dialog for asking user to approve the app to install
   // Passpoint credentials.
   static void Show(aura::Window* parent,
-                   base::StringPiece app_name,
+                   mojom::PasspointApprovalRequestPtr request,
                    PasspointDialogCallback callback);
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
 
  private:
-  std::unique_ptr<views::View> MakeContentsView();
+  // Get width to be used by label. This is calculated by getting the dialog's
+  // width and subtracting it with it's inside margin.
+  int GetLabelWidth();
+
+  std::unique_ptr<views::View> MakeBaseLabelView(bool is_expiring);
+  std::unique_ptr<views::View> MakeSubscriptionLabelView(
+      base::StringPiece friendly_name);
+  std::unique_ptr<views::View> MakeContentsView(
+      bool is_expiring,
+      base::StringPiece friendly_name);
   std::unique_ptr<views::View> MakeButtonsView();
 
   void OnLearnMoreClicked();
@@ -72,6 +81,7 @@ class PasspointDialogView : public views::BoxLayoutView {
 
   // Added for testing.
   views::StyledLabel* body_text_{nullptr};
+  views::StyledLabel* body_subscription_text_{nullptr};
   views::MdTextButton* allow_button_{nullptr};
   views::MdTextButton* dont_allow_button_{nullptr};
 
