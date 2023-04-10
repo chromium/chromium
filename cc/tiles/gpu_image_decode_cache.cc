@@ -3218,12 +3218,12 @@ sk_sp<SkImage> GpuImageDecodeCache::CreateImageFromYUVATexturesInternal(
   SkYUVAInfo yuva_info({image_width, image_height}, yuva_plane_config,
                        yuva_subsampling, yuv_color_space);
   GrBackendTexture yuv_textures[3]{};
-  SkImages::GetBackendTextureFromImage(uploaded_y_image, &yuv_textures[0],
-                                       false);
-  SkImages::GetBackendTextureFromImage(uploaded_u_image, &yuv_textures[1],
-                                       false);
-  SkImages::GetBackendTextureFromImage(uploaded_v_image, &yuv_textures[2],
-                                       false);
+  CHECK(SkImages::GetBackendTextureFromImage(uploaded_y_image, &yuv_textures[0],
+                                             false));
+  CHECK(SkImages::GetBackendTextureFromImage(uploaded_u_image, &yuv_textures[1],
+                                             false));
+  CHECK(SkImages::GetBackendTextureFromImage(uploaded_v_image, &yuv_textures[2],
+                                             false));
   GrYUVABackendTextures yuva_backend_textures(yuva_info, yuv_textures,
                                               kTopLeft_GrSurfaceOrigin);
   DCHECK(yuva_backend_textures.isValid());
@@ -3236,7 +3236,7 @@ sk_sp<SkImage> GpuImageDecodeCache::CreateImageFromYUVATexturesInternal(
   sk_sp<SkImage> yuva_image = SkImages::TextureFromYUVATextures(
       context_->GrContext(), yuva_backend_textures,
       std::move(decoded_color_space));
-  if (target_color_space) {
+  if (target_color_space && yuva_image) {
     return yuva_image->makeColorSpace(target_color_space,
                                       context_->GrContext());
   }
