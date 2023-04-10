@@ -2946,13 +2946,6 @@
           '--extra-browser-args=--disable-wcg-for-test',
         ],
       },
-      'ChromeOS FYI Release Skylab (kevin)': {
-        'args': [
-          # Skylab currently doesn't support use of LUCI_CONTEXT, so Gold cannot
-          # automatically get the service account to authenticate with.
-          '--service-account=/creds/service_accounts/skylab-drone.json',
-        ],
-      },
       'android_optional_gpu_tests_rel': {
         'args': [
           # See above.
@@ -2972,6 +2965,17 @@
         'args': {
           '--git-revision': '${got_cr_revision}',
         },
+      },
+    },
+  },
+  'maps_pixel_validating_test KEVIN_PUBLIC_LKGM': {
+    'modifications': {
+      'ChromeOS FYI Release Skylab (kevin)': {
+        'args': [
+          # Skylab currently doesn't support use of LUCI_CONTEXT, so Gold cannot
+          # automatically get the service account to authenticate with.
+          '--service-account=/creds/service_accounts/skylab-drone.json',
+        ],
       },
     },
   },
@@ -3439,13 +3443,6 @@
           '--extra-browser-args=--disable-wcg-for-test',
         ],
       },
-      'ChromeOS FYI Release Skylab (kevin)': {
-        'args': [
-          # Skylab currently doesn't support use of LUCI_CONTEXT, so Gold cannot
-          # automatically get the service account to authenticate with.
-          '--service-account=/creds/service_accounts/skylab-drone.json',
-        ],
-      },
       'android_optional_gpu_tests_rel': {
         'args': [
           # See above.
@@ -3468,6 +3465,17 @@
         'args': {
           '--git-revision': '${got_cr_revision}',
         },
+      },
+    },
+  },
+  'pixel_skia_gold_validating_test KEVIN_PUBLIC_LKGM': {
+    'modifications': {
+      'ChromeOS FYI Release Skylab (kevin)': {
+        'args': [
+          # Skylab currently doesn't support use of LUCI_CONTEXT, so Gold cannot
+          # automatically get the service account to authenticate with.
+          '--service-account=/creds/service_accounts/skylab-drone.json',
+        ],
       },
     },
   },

@@ -5353,7 +5353,8 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--service-account=/creds/service_accounts/skylab-drone.json"
         ],
         "autotest_name": "chromium_Graphics",
         "bucket": "chromiumos-image-archive",
@@ -5424,7 +5425,8 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--service-account=/creds/service_accounts/skylab-drone.json"
         ],
         "autotest_name": "chromium_Graphics",
         "bucket": "chromiumos-image-archive",
