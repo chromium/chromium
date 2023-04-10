@@ -480,13 +480,15 @@ void NGLineBreaker::ComputeBaseDirection() {
     ++start_offset;
   }
 
-  base_direction_ =
-      NGBidiParagraph::BaseDirectionForString(StringView(text, start_offset))
-          // `plaintext` uses P2 and P3 of UAX#9:
-          // https://w3c.github.io/csswg-drafts/css-writing-modes-3/#valdef-unicode-bidi-plaintext
-          // which sets to LTR if no strong characters.
-          // https://unicode.org/reports/tr9/#P3
-          .value_or(TextDirection::kLtr);
+  // LTR when no strong characters because `plaintext` uses P2 and P3 of UAX#9:
+  // https://w3c.github.io/csswg-drafts/css-writing-modes-3/#valdef-unicode-bidi-plaintext
+  // which sets to LTR if no strong characters.
+  // https://unicode.org/reports/tr9/#P3
+  base_direction_ = NGBidiParagraph::BaseDirectionForStringOrLtr(
+      StringView(text, start_offset),
+      // For CSS processing, line feed (U+000A) is treated as a segment break.
+      // https://w3c.github.io/csswg-drafts/css-text-3/#segment-break
+      Character::IsLineFeed);
 }
 
 void NGLineBreaker::RecalcClonedBoxDecorations() {

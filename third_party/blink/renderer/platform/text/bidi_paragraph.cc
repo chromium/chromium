@@ -44,13 +44,14 @@ bool BidiParagraph::SetParagraph(const String& text,
 // static
 template <>
 absl::optional<TextDirection> BidiParagraph::BaseDirectionForString(
-    base::span<const LChar> text) {
+    base::span<const LChar> text,
+    bool (*stop_at)(UChar)) {
   for (const LChar ch : text) {
     if (u_charDirection(ch) == U_LEFT_TO_RIGHT) {
       return TextDirection::kLtr;
     }
 
-    if (ch == kNewlineCharacter) {
+    if (stop_at && stop_at(ch)) {
       break;
     }
   }
@@ -60,7 +61,8 @@ absl::optional<TextDirection> BidiParagraph::BaseDirectionForString(
 // static
 template <>
 absl::optional<TextDirection> BidiParagraph::BaseDirectionForString(
-    base::span<const UChar> text) {
+    base::span<const UChar> text,
+    bool (*stop_at)(UChar)) {
   const UChar* data = text.data();
   const size_t len = text.size();
   for (size_t i = 0; i < len;) {
@@ -76,7 +78,7 @@ absl::optional<TextDirection> BidiParagraph::BaseDirectionForString(
         break;
     }
 
-    if (ch == kNewlineCharacter) {
+    if (stop_at && stop_at(ch)) {
       break;
     }
   }
@@ -85,9 +87,10 @@ absl::optional<TextDirection> BidiParagraph::BaseDirectionForString(
 
 // static
 absl::optional<TextDirection> BidiParagraph::BaseDirectionForString(
-    const StringView& text) {
-  return text.Is8Bit() ? BaseDirectionForString(text.Span8())
-                       : BaseDirectionForString(text.Span16());
+    const StringView& text,
+    bool (*stop_at)(UChar)) {
+  return text.Is8Bit() ? BaseDirectionForString(text.Span8(), stop_at)
+                       : BaseDirectionForString(text.Span16(), stop_at);
 }
 
 // static

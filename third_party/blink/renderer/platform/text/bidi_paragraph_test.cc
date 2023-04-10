@@ -6,6 +6,7 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -39,7 +40,8 @@ TEST(BidiParagraph, GetLogicalRuns) {
 
 static struct BaseDirectionData {
   const UChar* text;
-  absl::optional<TextDirection> direction;
+  absl::optional<TextDirection> direction_line_feed;
+  absl::optional<TextDirection> direction_no_stop;
 } base_direction_data[] = {
     {u"A", TextDirection::kLtr},
     {u"\u05D0", TextDirection::kRtl},
@@ -54,9 +56,9 @@ static struct BaseDirectionData {
     {u"!A\u05D0", TextDirection::kLtr},
     {u"!\u05D0Z", TextDirection::kRtl},
     // Strong characters after a segment break should be ignored.
-    {u"!\nA", absl::nullopt},
-    {u"!\nA\u05D0", absl::nullopt},
-    {u"!\n\u05D0Z", absl::nullopt}};
+    {u"!\nA", absl::nullopt, TextDirection::kLtr},
+    {u"!\nA\u05D0", absl::nullopt, TextDirection::kLtr},
+    {u"!\n\u05D0Z", absl::nullopt, TextDirection::kRtl}};
 class BaseDirectionTest : public testing::TestWithParam<BaseDirectionData> {};
 INSTANTIATE_TEST_SUITE_P(BidiParagraph,
                          BaseDirectionTest,
@@ -65,14 +67,33 @@ INSTANTIATE_TEST_SUITE_P(BidiParagraph,
 TEST_P(BaseDirectionTest, Data) {
   const BaseDirectionData& test = GetParam();
   String text(test.text);
-  EXPECT_EQ(BidiParagraph::BaseDirectionForString(text), test.direction)
+
+  // Test when the search stops at Line Feed.
+  EXPECT_EQ(BidiParagraph::BaseDirectionForString(text, Character::IsLineFeed),
+            test.direction_line_feed)
+      << text;
+
+  // Test without stop characters.
+  EXPECT_EQ(BidiParagraph::BaseDirectionForString(text),
+            test.direction_no_stop ? test.direction_no_stop
+                                   : test.direction_line_feed)
       << text;
 
   // Test the 8 bits code path if all characters are 8 bits.
   if (text.IsAllSpecialCharacters<[](UChar ch) { return ch <= 0x00FF; }>()) {
     String text8 =
         String::Make8BitFrom16BitSource(text.Characters16(), text.length());
-    EXPECT_EQ(BidiParagraph::BaseDirectionForString(text8), test.direction)
+
+    // Test when the search stops at Line Feed.
+    EXPECT_EQ(
+        BidiParagraph::BaseDirectionForString(text8, Character::IsLineFeed),
+        test.direction_line_feed)
+        << text;
+
+    // Test without stop characters.
+    EXPECT_EQ(BidiParagraph::BaseDirectionForString(text8),
+              test.direction_no_stop ? test.direction_no_stop
+                                     : test.direction_line_feed)
         << text;
   }
 }

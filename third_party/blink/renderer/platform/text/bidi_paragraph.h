@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -58,7 +59,14 @@ class PLATFORM_EXPORT BidiParagraph {
   // the first segment break.
   // http://unicode.org/reports/tr9/#The_Paragraph_Level
   static absl::optional<TextDirection> BaseDirectionForString(
-      const StringView&);
+      const StringView&,
+      bool (*stop_at)(UChar) = nullptr);
+
+  // Same as `BaseDirectionForString().value_or(kLtr)`, with an optimized code
+  // path for when the default (no strong characters) is LTR.
+  static TextDirection BaseDirectionForStringOrLtr(
+      const StringView& text,
+      bool (*stop_at)(UChar) = nullptr);
 
   // Create a string that enforces directional override by wrapping the given
   // string with a Unicode BiDi override character (LRO or ROL) and PDF.
@@ -109,7 +117,8 @@ class PLATFORM_EXPORT BidiParagraph {
  private:
   template <typename TChar>
   static absl::optional<TextDirection> BaseDirectionForString(
-      base::span<const TChar>);
+      base::span<const TChar>,
+      bool (*stop_at)(UChar));
 
   struct UBiDiDeleter {
     void operator()(UBiDi* ubidi) const { ubidi_close(ubidi); }
@@ -119,6 +128,18 @@ class PLATFORM_EXPORT BidiParagraph {
   UBidiPtr ubidi_;
   TextDirection base_direction_ = TextDirection::kLtr;
 };
+
+// static
+inline TextDirection BidiParagraph::BaseDirectionForStringOrLtr(
+    const StringView& text,
+    bool (*stop_at)(UChar)) {
+  if (text.empty() || text.Is8Bit()) {
+    // The result is LTR when 8 bits string and the distinction between LTR or
+    // neutral is not needed, because U+0000-00FF are LTR or neutral.
+    return TextDirection::kLtr;
+  }
+  return BaseDirectionForString(text, stop_at).value_or(TextDirection::kLtr);
+}
 
 }  // namespace blink
 
