@@ -34,10 +34,9 @@ declare_args() {
 
   # Indicates if ChromeOS protected media support exists. This is used
   # to enable the CDM daemon in Chrome OS as well as support for
-  # encrypted content with HW video decoders.
-  # TODO(jkardatzke): Enable this for Lacros always, it is determined at runtime
-  # in that configuration.
-  use_chromeos_protected_media = false
+  # encrypted content with HW video decoders. This is always enabled for Lacros
+  # because it detects support at runtime.
+  use_chromeos_protected_media = is_chromeos_lacros
 
   # Indicates if the ChromeOS protected media functionality should also be
   # utilized by HW video decoding for ARC.
