@@ -1531,7 +1531,7 @@ const base::FeatureParam<SearchPreloadShareableCacheType>::Option
 const base::FeatureParam<SearchPreloadShareableCacheType>
     kSearchPreloadShareableCacheTypeParam{
         &kSupportSearchSuggestionForPrerender2, "shareable_cache",
-        SearchPreloadShareableCacheType::kDisabled,
+        SearchPreloadShareableCacheType::kEnabled,
         &search_preload_shareable_cache_types};
 
 BASE_FEATURE(kAutocompleteActionPredictorConfidenceCutoff,

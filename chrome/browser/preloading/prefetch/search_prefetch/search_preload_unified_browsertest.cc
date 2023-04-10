@@ -103,7 +103,10 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
             {features::kSupportSearchSuggestionForPrerender2,
-             {{"implementation_type", "use_prefetch"}}},
+             {
+                 {"implementation_type", "use_prefetch"},
+                 {"shareable_cache", "disabled"},
+             }},
             {kSearchPrefetchServicePrefetching,
              {{"max_attempts_per_caching_duration", "3"},
               {"cache_size", "1"},
@@ -1532,7 +1535,8 @@ class NoCancelSearchPreloadUnifiedBrowserTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
             {features::kSupportSearchSuggestionForPrerender2,
-             {{"implementation_type", "use_prefetch"}}},
+             {{"implementation_type", "use_prefetch"},
+              {"shareable_cache", "disabled"}}},
             {kSearchPrefetchSkipsCancel, {}},
             {kSearchPrefetchServicePrefetching,
              {{"max_attempts_per_caching_duration", "3"},
