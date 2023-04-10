@@ -4,6 +4,8 @@
 
 #include "cc/trees/target_property.h"
 
+#include <stdint.h>
+
 #include "ui/gfx/animation/keyframe/target_property.h"
 
 namespace cc {
