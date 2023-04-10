@@ -434,7 +434,9 @@ bool AbortSignal::HasPendingActivity() const {
   }
   DCHECK(RuntimeEnabledFeatures::AbortSignalCompositionEnabled());
   // Settled signals cannot signal abort, so they can be GCed.
-  if (composition_manager_->IsSettled()) {
+  // `composition_manager_` will be null if this is called before the object is
+  // fully constructed.
+  if (!composition_manager_ || composition_manager_->IsSettled()) {
     return false;
   }
   // Otherwise the signal needs to be kept alive if aborting can be observed.
