@@ -27,6 +27,12 @@ class PLATFORM_EXPORT BidiParagraph {
   STACK_ALLOCATED();
 
  public:
+  BidiParagraph() = default;
+  BidiParagraph(const String& text,
+                absl::optional<TextDirection> base_direction) {
+    SetParagraph(text, base_direction);
+  }
+
   // Splits the given paragraph to bidi runs and resolves the bidi embedding
   // level of each run.
   //
@@ -51,6 +57,13 @@ class PLATFORM_EXPORT BidiParagraph {
   // http://unicode.org/reports/tr9/#The_Paragraph_Level
   static TextDirection BaseDirectionForString(const StringView&);
 
+  // Create a string that enforces directional override by wrapping the given
+  // string with a Unicode BiDi override character (LRO or ROL) and PDF.
+  // https://unicode.org/reports/tr9/#Explicit_Directional_Overrides
+  // https://unicode.org/reports/tr9/#Terminating_Explicit_Directional_Embeddings_and_Overrides
+  static String StringWithDirectionalOverride(const StringView& text,
+                                              TextDirection direction);
+
   struct Run {
     Run(unsigned start, unsigned end, UBiDiLevel level)
         : start(start), end(end), level(level) {
@@ -70,14 +83,19 @@ class PLATFORM_EXPORT BidiParagraph {
   };
   using Runs = Vector<Run, 32>;
 
-  // Get a list of |Run| in the logical order (before bidi reorder.)
-  // |text| must be the same one as |SetParagraph|.
-  // This is higher-level API for |GetLogicalRun|.
+  // Get a list of `Run` in the logical order (before bidi reorder.)
+  // `text` must be the same one as `SetParagraph`.
+  // This is higher-level API for `GetLogicalRun`.
   void GetLogicalRuns(const String& text, Runs* runs) const;
 
   // Returns the end offset of a logical run that starts from the |start|
   // offset.
   unsigned GetLogicalRun(unsigned start, UBiDiLevel*) const;
+
+  // Get a list of `Run` in the visual order (after bidi reorder.)
+  // `text` must be the same one as `SetParagraph`.
+  // This is higher-level API for `GetLogicalRuns` and `IndicesInVisualOrder`.
+  void GetVisualRuns(const String& text, Runs* runs) const;
 
   // Create a list of indices in the visual order.
   // A wrapper for ICU |ubidi_reorderVisual()|.
