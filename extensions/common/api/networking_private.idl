@@ -27,6 +27,7 @@
 // TODO(stevenjb/pneubeck): Merge the ONC documentation with this document and
 // use it as the ONC specification.
 
+[modernised_enums]
 namespace networkingPrivate {
   enum ActivationStateType {
     Activated, Activating, NotActivated, PartiallyActivated

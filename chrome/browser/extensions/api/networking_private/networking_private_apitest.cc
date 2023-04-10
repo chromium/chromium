@@ -172,8 +172,8 @@ class TestNetworkingPrivateDelegate : public NetworkingPrivateDelegate {
       result = std::make_unique<DeviceStateList>();
       std::unique_ptr<api::networking_private::DeviceStateProperties>
           properties(new api::networking_private::DeviceStateProperties);
-      properties->type = api::networking_private::NETWORK_TYPE_ETHERNET;
-      properties->state = api::networking_private::DEVICE_STATE_TYPE_ENABLED;
+      properties->type = api::networking_private::NetworkType::kEthernet;
+      properties->state = api::networking_private::DeviceStateType::kEnabled;
       result->push_back(std::move(properties));
     }
     std::move(callback).Run(std::move(result));

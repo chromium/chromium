@@ -28,22 +28,22 @@ namespace {
 api::networking_private::CaptivePortalStatus GetCaptivePortalStatus(
     const NetworkState* network) {
   if (!network) {
-    return api::networking_private::CAPTIVE_PORTAL_STATUS_UNKNOWN;
+    return api::networking_private::CaptivePortalStatus::kUnknown;
   }
   if (!network->IsConnectedState()) {
-    return api::networking_private::CAPTIVE_PORTAL_STATUS_OFFLINE;
+    return api::networking_private::CaptivePortalStatus::kOffline;
   }
   switch (network->GetPortalState()) {
     case NetworkState::PortalState::kUnknown:
-      return api::networking_private::CAPTIVE_PORTAL_STATUS_UNKNOWN;
+      return api::networking_private::CaptivePortalStatus::kUnknown;
     case NetworkState::PortalState::kOnline:
-      return api::networking_private::CAPTIVE_PORTAL_STATUS_ONLINE;
+      return api::networking_private::CaptivePortalStatus::kOnline;
     case NetworkState::PortalState::kPortalSuspected:
     case NetworkState::PortalState::kPortal:
     case NetworkState::PortalState::kNoInternet:
-      return api::networking_private::CAPTIVE_PORTAL_STATUS_PORTAL;
+      return api::networking_private::CaptivePortalStatus::kPortal;
     case NetworkState::PortalState::kProxyAuthRequired:
-      return api::networking_private::CAPTIVE_PORTAL_STATUS_PROXYAUTHREQUIRED;
+      return api::networking_private::CaptivePortalStatus::kProxyAuthRequired;
   }
 }
 
