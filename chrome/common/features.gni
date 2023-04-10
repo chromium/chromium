@@ -38,7 +38,7 @@ declare_args() {
   # chrome_root_store_optional platforms.
   # See https://crbug.com/1228958. This can be removed when the Chrome Root
   # Store is unconditionally enabled on all platforms.
-  chrome_root_store_policy_supported = is_linux || is_chromeos
+  chrome_root_store_policy_supported = is_linux || is_chromeos || is_android
 
   # Enables support for background apps.
   enable_background_contents = !is_android

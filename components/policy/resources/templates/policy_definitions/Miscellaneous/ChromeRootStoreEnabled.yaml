@@ -34,6 +34,7 @@ schema:
 supported_on:
 - chrome.win:105-112
 - chrome.mac:105-112
+- android:114-
 future_on:
 - chrome.linux
 - chrome_os
