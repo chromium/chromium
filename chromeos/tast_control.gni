@@ -362,4 +362,7 @@ tast_disabled_tests_from_lacros_all = [
   "tast.inputs.VirtualKeyboardDeadKeys.*@jacuzzi",
   "tast.inputs.PhysicalKeyboardShapeBasedChineseTyping.array_lacros",
   "tast.inputs.VirtualKeyboardSpeech.lacros",
+
+  # https://crbug.com/1431937
+  "tast.lacros.ShelfLaunch.primary",
 ]
