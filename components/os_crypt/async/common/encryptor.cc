@@ -15,6 +15,7 @@
 #include "components/os_crypt/sync/os_crypt.h"
 #include "crypto/aead.h"
 #include "crypto/random.h"
+#include "mojo/public/cpp/bindings/default_construct_tag.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace os_crypt_async {
@@ -39,7 +40,7 @@ Encryptor::Key::Key(base::span<const uint8_t> key,
   }
 }
 
-Encryptor::Key::Key() = default;
+Encryptor::Key::Key(mojo::DefaultConstruct::Tag) {}
 
 Encryptor::Key::Key(Key&& other) = default;
 Encryptor::Key& Encryptor::Key::operator=(Key&& other) = default;
@@ -51,6 +52,7 @@ Encryptor::Key Encryptor::Key::Clone() const {
 }
 
 Encryptor::Encryptor() = default;
+Encryptor::Encryptor(mojo::DefaultConstruct::Tag) : Encryptor() {}
 
 Encryptor::Encryptor(Encryptor&& other) = default;
 Encryptor& Encryptor::operator=(Encryptor&& other) = default;

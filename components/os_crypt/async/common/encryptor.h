@@ -12,6 +12,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "mojo/public/cpp/bindings/default_construct_tag.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
@@ -49,10 +50,8 @@ class Encryptor {
 
     static const size_t kAES256GCMKeySize = 256u / 8u;
 
-    // Mojo must be able to construct this class for serialization.
-    // TODO(crbug.com/1427202): Remove this once mojo::DefaultConstruct::Tag can
-    // be used instead.
-    Key();
+    // Mojo uses this public constructor for serialization.
+    explicit Key(mojo::DefaultConstruct::Tag);
 
     Key(base::span<const uint8_t> key, const mojom::Algorithm& algo);
 
@@ -81,13 +80,8 @@ class Encryptor {
 
   using KeyRing = std::map</*tag=*/std::string, Key>;
 
-  // Create an encryptor with no keys or encryption provider. In this case, all
-  // encryption operations will be delegated to OSCrypt.
-  // Must be public for mojo to be able to construct this class for
-  // serialization.
-  // TODO(crbug.com/1427202): Remove this once mojo::DefaultConstruct::Tag can
-  // be used instead.
-  Encryptor();
+  // Mojo uses this public constructor for serialization.
+  explicit Encryptor(mojo::DefaultConstruct::Tag);
 
   ~Encryptor();
 
@@ -122,6 +116,10 @@ class Encryptor {
                                    os_crypt_async::Encryptor>;
 
   FRIEND_TEST_ALL_PREFIXES(EncryptorTraitsTest, TraitsRoundTrip);
+
+  // Create an encryptor with no keys or encryption provider. In this case, all
+  // encryption operations will be delegated to OSCrypt.
+  Encryptor();
 
   // Create an encryptor with a set of `keys`. The `provider_for_encryption`
   // specifies which provider is used for encryption, and must have a
