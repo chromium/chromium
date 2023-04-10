@@ -146,11 +146,10 @@ SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
   overflow_button_ = AddChildView(
       std::make_unique<SavedTabGroupOverflowButton>(base::BindRepeating(
           &SavedTabGroupBar::MaybeShowOverflowMenu, base::Unretained(this))));
-
-  AddAllButtons();
-
-  ReorderChildView(overflow_button_, children().size());
   HideOverflowButton();
+
+  LoadAllButtonsFromModel();
+  ReorderChildView(overflow_button_, children().size());
 }
 
 SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
@@ -409,7 +408,8 @@ void SavedTabGroupBar::OnWidgetDestroying(views::Widget* widget) {
 int SavedTabGroupBar::CalculatePreferredWidthRestrictedBy(int max_x) {
   const int button_padding = GetLayoutConstant(TOOLBAR_ELEMENT_PADDING);
   int current_x = 0;
-  // iterate through the list of buttons in the child views
+  // Calculate the amount of space that the SavedTabGroupBar can utilize
+  // restricted by `max_x`.
   for (auto* button : children()) {
     gfx::Size preferred_size = button->GetPreferredSize();
     int next_x =
@@ -497,7 +497,7 @@ void SavedTabGroupBar::SavedTabGroupUpdated(const base::GUID& guid) {
   SchedulePaint();
 }
 
-void SavedTabGroupBar::AddAllButtons() {
+void SavedTabGroupBar::LoadAllButtonsFromModel() {
   const std::vector<SavedTabGroup>& saved_tab_groups =
       saved_tab_group_model_->saved_tab_groups();
 
