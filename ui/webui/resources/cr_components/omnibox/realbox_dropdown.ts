@@ -263,7 +263,7 @@ export class RealboxDropdownElement extends PolymerElement {
   }
 
   /**
-   * @returns The unique suggestion group IDs that belong to given side type
+   * @returns The unique suggestion group IDs that belong to the given side type
    *     while preserving the order in which they appear in the list of matches.
    */
   private groupIdsForSide_(side: SideType): number[] {
@@ -297,15 +297,6 @@ export class RealboxDropdownElement extends PolymerElement {
   }
 
   /**
-   * @returns The filter function to filter matches that belong to the given
-   *     suggestion group ID.
-   */
-  private matchIsInGroupFilter_(groupId: number):
-      (match: AutocompleteMatch) => boolean {
-    return match => match.suggestionGroupId === groupId;
-  }
-
-  /**
    * @returns Index of the match in the autocomplete result. Passed to the match
    *     so it knows its position in the list of matches.
    */
@@ -314,13 +305,14 @@ export class RealboxDropdownElement extends PolymerElement {
   }
 
   /**
-   * @returns The list of matches that belong to given side type. Updates if
-   *     secondary matches are currently or were at any point available to show.
+   * @returns The list of visible matches that belong to the given suggestion
+   *     group ID.
    */
-  private matchesForSide_(side: SideType): AutocompleteMatch[] {
-    return (this.result?.matches ?? [])
-        .filter(
-            match => this.sideTypeForGroup_(match.suggestionGroupId) === side);
+  private matchesForGroup_(groupId: number): AutocompleteMatch[] {
+    return this.groupIsHidden_(groupId) ?
+        [] :
+        (this.result?.matches ??
+         []).filter(match => match.suggestionGroupId === groupId);
   }
 
   /**

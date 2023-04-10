@@ -101,18 +101,13 @@
             </cr-icon-button>
           </div>
         </template>
-        <template is="dom-if" if="[[!groupIsHidden_(groupId, hiddenGroupIds_.*)]]"
-            restamp>
-          <template is="dom-repeat"
-              items="[[matchesForSide_(side, result.matches.*)]]" as="match"
-              filter="[[matchIsInGroupFilter_(groupId)]]"
-              on-dom-change="onResultRepaint_">
-            <cr-realbox-match tabindex="0" role="option" match="[[match]]"
-                match-index="[[matchIndex_(match)]]"
-                side-type="[[sideTypeForGroup_(groupId)]]"
-                selected$="[[isSelected_(match, selectedMatchIndex)]]">
-            </cr-realbox-match>
-          </template>
+        <template is="dom-repeat"
+            items="[[matchesForGroup_(groupId, result.matches.*, hiddenGroupIds_.*)]]"
+            as="match" on-dom-change="onResultRepaint_">
+          <cr-realbox-match tabindex="0" role="option" match="[[match]]"
+              match-index="[[matchIndex_(match)]]" side-type="[[side]]"
+              selected$="[[isSelected_(match, selectedMatchIndex)]]">
+          </cr-realbox-match>
         </template>
       </template>
     </div>
