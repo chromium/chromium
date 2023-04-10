@@ -71,6 +71,12 @@ enum class RecordingType {
   kGif,
 };
 
+// Specifies the capture mode behavior types.
+enum class BehaviorType {
+  kDefault,
+  kProjector,
+};
+
 // Converts the enum class `RecordingType` to its integer value.
 constexpr int ToInt(RecordingType type) {
   return static_cast<int>(type);

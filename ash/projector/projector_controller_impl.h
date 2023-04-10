@@ -90,8 +90,9 @@ class ASH_EXPORT ProjectorControllerImpl
       CreateScreencastContainerFolderCallback callback);
 
   // Called by Capture Mode to notify with the state of a video recording.
-  // `current_root` is the window being recorded. `is_in_projector_mode`
-  // indicates whether it's a projector-initiated video recording.
+  // `current_root` is the root window, which is either being captured itself or
+  // a descendant of it. `is_in_projector_mode` indicates whether it's a
+  // projector-initiated video recording.
   void OnRecordingStarted(aura::Window* current_root,
                           bool is_in_projector_mode);
   void OnRecordingEnded(bool is_in_projector_mode);

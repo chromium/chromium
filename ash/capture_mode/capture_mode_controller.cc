@@ -8,9 +8,11 @@
 #include <vector>
 
 #include "ash/capture_mode/capture_mode_ash_notification_view.h"
+#include "ash/capture_mode/capture_mode_behavior.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_notification_view.h"
+#include "ash/capture_mode/capture_mode_observer.h"
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
@@ -955,6 +957,14 @@ void CaptureModeController::MaybeRestoreCachedCaptureConfigurations() {
   enable_audio_recording_ = cached_normal_session_configs_->audio_on;
   enable_demo_tools_ = cached_normal_session_configs_->demo_tools_enabled;
   cached_normal_session_configs_.reset();
+}
+
+void CaptureModeController::AddObserver(CaptureModeObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void CaptureModeController::RemoveObserver(CaptureModeObserver* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void CaptureModeController::PushNewRootSizeToRecordingService(
@@ -1987,6 +1997,16 @@ void CaptureModeController::OnShareToYouTubeButtonPressed() {
       GURL(kShareToYouTubeURL),
       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
+}
+
+CaptureModeBehavior* CaptureModeController::GetBehavior(
+    BehaviorType behavior_type) {
+  auto& behavior = behaviors_map_[behavior_type];
+  if (!behavior) {
+    behavior = CaptureModeBehavior::Create(behavior_type);
+  }
+
+  return behavior.get();
 }
 
 }  // namespace ash

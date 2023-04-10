@@ -42,7 +42,9 @@ class SequencedTaskRunner;
 
 namespace ash {
 
+class CaptureModeBehavior;
 class CaptureModeCameraController;
+class CaptureModeObserver;
 class CaptureModeSession;
 
 // Defines a callback type that will be invoked when an attempt to delete the
@@ -288,6 +290,9 @@ class ASH_EXPORT CaptureModeController
   // TODO(b/276982457): Hook this function with the "Share to YouTube" button to
   // be shown in the notification area once implemented.
   void OnShareToYouTubeButtonPressed();
+
+  void AddObserver(CaptureModeObserver* observer);
+  void RemoveObserver(CaptureModeObserver* observer);
 
   CaptureModeDelegate* delegate_for_testing() const { return delegate_.get(); }
   VideoRecordingWatcher* video_recording_watcher_for_testing() const {
@@ -538,6 +543,11 @@ class ASH_EXPORT CaptureModeController
   // Gets the corresponding `SaveLocation` enum value on the given `path`.
   CaptureModeSaveToLocation GetSaveToOption(const base::FilePath& path);
 
+  // Retrieves the instance of the `CaptureModeBehavior` by the given
+  // `behavior_type` from the `behaviors_map_` if exits, or creates an instance
+  // otherwise.
+  CaptureModeBehavior* GetBehavior(BehaviorType behavior_type);
+
   std::unique_ptr<CaptureModeDelegate> delegate_;
 
   // Controls the selfie camera feature of capture mode.
@@ -642,6 +652,12 @@ class ASH_EXPORT CaptureModeController
   // not in video recording mode, between sessions. Initially, this value is set
   // to false, ensuring that this is an opt-in feature.
   bool enable_demo_tools_ = false;
+
+  // Maps an instance of the `CaptureModeBehavior` by `BehaviorType`.
+  base::flat_map<BehaviorType, std::unique_ptr<CaptureModeBehavior>>
+      behaviors_map_;
+
+  base::ObserverList<CaptureModeObserver> observers_;
 
   base::WeakPtrFactory<CaptureModeController> weak_ptr_factory_{this};
 };
