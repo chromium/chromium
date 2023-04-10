@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/bindings/callback_function_base.h"
 #include "third_party/blink/renderer/platform/bindings/callback_interface_base.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 
 namespace blink {
@@ -28,7 +29,11 @@ bool CallbackInvokeHelper<CallbackBase, mode, return_type_is_promise>::
     ScriptForbiddenScope::ThrowScriptForbiddenException(isolate);
     return Abort();
   }
-  DCHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
+  if (RuntimeEnabledFeatures::BlinkLifecycleScriptForbiddenEnabled()) {
+    CHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
+  } else {
+    DCHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
+  }
 
   if constexpr (mode == CallbackInvokeHelperMode::kConstructorCall) {
     // step 3. If ! IsConstructor(F) is false, throw a TypeError exception.

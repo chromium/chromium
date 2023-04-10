@@ -9,6 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "v8/include/v8.h"
@@ -118,7 +119,11 @@ void EventLoop::RunEndOfMicrotaskCheckpointTasks() {
 void EventLoop::PerformMicrotaskCheckpoint() {
   if (ScriptForbiddenScope::IsScriptForbidden())
     return;
-  DCHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
+  if (RuntimeEnabledFeatures::BlinkLifecycleScriptForbiddenEnabled()) {
+    CHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
+  } else {
+    DCHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
+  }
 
   if (microtask_queue_) {
     microtask_queue_->PerformCheckpoint(isolate_);
